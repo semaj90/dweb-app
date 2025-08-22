@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
   import { Alert, AlertDescription } from '$lib/components/ui/alert';
   import { Button } from '$lib/components/ui/button';
@@ -37,7 +37,7 @@ import type { CommonProps } from '$lib/types/common-props';
   import { superForm } from 'sveltekit-superforms';
   import { zodClient } from 'sveltekit-superforms/adapters';
 
-  export let data: { form: unknown };
+  export let data: { form: any };
   export let caseId: string = '';
   const { form, errors, enhance, submitting, delayed, message } = superForm(data.form, {
     validators: zodClient(fileUploadSchema),

@@ -677,7 +677,7 @@ export class LokiCacheVSCodeIntegration {
       options?: { type?: CacheableItem['type']; ttl?: number };
     }>,
     triggerTaskAfter?: string
-  ): Promise<any[]> {
+  ): Promise<unknown[]> {
     console.log(`📦 Batch caching ${operations.length} items...`);
 
     const results = await Promise.all(
@@ -967,7 +967,7 @@ export class LegalAICacheUtils {
   static async cacheVectorSearch(
     query: string,
     searchType: 'legal' | 'evidence' | 'case' = 'legal'
-  ): Promise<any[]> {
+  ): Promise<unknown[]> {
     return lokiCache.smartCache(
       `vector-search:${searchType}:${query}`,
       async () => {

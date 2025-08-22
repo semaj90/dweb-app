@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $derived } from 'svelte';
 
   import { aiHistory } from "$lib/stores/aiHistoryStore";
   import Fuse from "fuse.js";
@@ -8,7 +8,7 @@ import type { CommonProps } from '$lib/types/common-props';
   let recommendations: any[] = [];
   let fuse: Fuse<any>;
 
-  $: history = $aiHistory;
+  let history = $derived($aiHistory);
 
   onMount(() => {
     fuse = new Fuse(history, {
@@ -38,7 +38,4 @@ import type { CommonProps } from '$lib/types/common-props';
   </ul>
 </div>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

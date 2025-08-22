@@ -1,8 +1,7 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// Endpoint to list evidence including summaryType field
-import type { RequestHandler } from "@sveltejs/kit";
-
-import { evidence } from "$lib/server/db/schema-postgres-enhanced";
+import { db } from '$lib/server/db';
+import { evidence } from '$lib/server/db/schema-postgres-enhanced';
+import { desc } from 'drizzle-orm';
 
 export const GET: RequestHandler = async () => {
   try {

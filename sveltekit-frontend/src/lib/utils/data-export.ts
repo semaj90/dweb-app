@@ -1,5 +1,5 @@
 import { browser } from "$app/environment";
-// @ts-nocheck
+
 /**
  * Advanced data export/utilities for the Detective Mode app
  * Provides secure, comprehensive data management with multiple formats
@@ -299,7 +299,7 @@ export async function importCases(
   }
 }
 // Utility Functions
-function applyCaseFilters(cases: any[], filters: Record<string, any>): any[] {
+function applyCaseFilters(cases: any[], filters: Record<string, any>): unknown[] {
   return cases.filter((c) => {
     return Object.entries(filters).every(([key, value]) => {
       if (!value) return true;
@@ -324,7 +324,7 @@ function applyCaseFilters(cases: any[], filters: Record<string, any>): any[] {
 function applyEvidenceFilters(
   evidence: any[],
   filters: Record<string, any>,
-): any[] {
+): unknown[] {
   return evidence.filter((e) => {
     return Object.entries(filters).every(([key, value]) => {
       if (!value) return true;
@@ -399,7 +399,7 @@ async function generateExcel(data: any[]): Promise<Blob> {
     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   });
 }
-async function includeEvidenceFiles(evidence: any[]): Promise<any[]> {
+async function includeEvidenceFiles(evidence: any[]): Promise<unknown[]> {
   // In production, this would fetch and include actual file data
   return evidence.map((e) => ({
     ...e,
@@ -430,7 +430,7 @@ async function parseImportFile(file: File, format: string): Promise<any> {
       throw new Error("Unsupported import format");
   }
 }
-function parseCSV(csvText: string): any[] {
+function parseCSV(csvText: string): unknown[] {
   const lines = csvText.split("\n");
   const headers = lines[0].split(",").map((h) => h.trim().replace(/"/g, ""));
 
@@ -497,7 +497,7 @@ async function processCaseImport(
   return true;
 }
 // Template generators for different export formats
-export function generateCaseExportTemplate(): any {
+export function generateCaseExportTemplate(): unknown {
   return {
     title: "Sample Case Title",
     description: "Detailed case description",
@@ -510,7 +510,7 @@ export function generateCaseExportTemplate(): any {
     estimatedCompletion: null,
   };
 }
-export function generateEvidenceExportTemplate(): any {
+export function generateEvidenceExportTemplate(): unknown {
   return {
     title: "Sample Evidence Item",
     description: "Evidence description",

@@ -1,7 +1,8 @@
 <!-- YorhaAI Assistant - Advanced Chat Interface with SvelteKit 5 + Bits UI + Melt UI -->
 <!-- Integrates with go-llama, MCP orchestrator, and tensor transport services -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state, $derived, $effect } from 'svelte';
+
 
 	import { onMount, tick } from 'svelte';
 	import { browser } from '$app/environment';
@@ -1022,7 +1023,3 @@ import type { CommonProps } from '$lib/types/common-props';
 		animation: var(--animation-pulse);
 	}
 </style>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>

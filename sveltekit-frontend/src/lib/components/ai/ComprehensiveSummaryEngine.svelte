@@ -2,7 +2,7 @@
 <!-- Features: Local LLM + Enhanced RAG + Loki.js + Fuse.js + XState + Service Workers -->
 
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived } from 'svelte';
 
   import { onMount, onDestroy } from 'svelte';
   import { writable } from 'svelte/store';
@@ -411,9 +411,9 @@ import type { CommonProps } from '$lib/types/common-props';
   }
 
   // Reactive statements
-  $: progressPercentage = $summaryProgress;
-  $: canExport = $synthesisResult !== null;
-  $: showMetrics = metrics.llmProcessingTime > 0;
+  let progressPercentage = $derived($summaryProgress);
+  let canExport = $derived($synthesisResult !== null);
+  let showMetrics = $derived(metrics.llmProcessingTime > 0);
 </script>
 
 <!-- Main Component Template -->

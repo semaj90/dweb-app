@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import Dialog from 'bits-ui/Dialog.svelte';
+  import { $props } from 'svelte';
   import Button from 'bits-ui/Button.svelte';
   import { onMount } from 'svelte';
   import { superValidate } from 'sveltekit-superforms/client';
@@ -121,7 +121,4 @@ import type { CommonProps } from '$lib/types/common-props';
   }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

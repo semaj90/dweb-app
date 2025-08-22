@@ -4,7 +4,7 @@
 -->
 
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $state } from 'svelte';
 
   import { onMount } from 'svelte';
   import { createWasmGpuService, WasmGpuHelpers } from '$lib/wasm/gpu-wasm-init';
@@ -491,7 +491,4 @@ import type { CommonProps } from '$lib/types/common-props';
     {/if}
   </div>
 </div>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

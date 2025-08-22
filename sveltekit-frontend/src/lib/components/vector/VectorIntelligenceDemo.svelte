@@ -3,7 +3,7 @@ Vector Intelligence Demo Component
 Comprehensive showcase of Phase 4 Vector Intelligence capabilities
 -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $state } from 'svelte';
 
   import { onMount } from 'svelte';
   import { Button } from '$lib/components/ui/button';
@@ -1037,7 +1037,4 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
 <style>
   /* @unocss-include */
 </style>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

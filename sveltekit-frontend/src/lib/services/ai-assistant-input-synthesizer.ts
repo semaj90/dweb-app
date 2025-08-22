@@ -55,7 +55,7 @@ export interface InputMetadata {
   jurisdiction?: string;
   caseId?: string;
   documentIds?: string[];
-  sessionContext?: any;
+  sessionContext?: unknown;
   timestamp: string;
   quality: number;
   processingTime: number;
@@ -181,7 +181,7 @@ export class AIAssistantInputSynthesizer {
       userRole?: string;
       caseId?: string;
       documentIds?: string[];
-      sessionContext?: any;
+      sessionContext?: unknown;
     }
   ): Promise<SynthesizedInput> {
     const startTime = Date.now();
@@ -361,7 +361,7 @@ export class AIAssistantInputSynthesizer {
   /**
    * Enhance the original prompt with context and legal framework
    */
-  private async enhancePrompt(query: string, context?: any): Promise<string> {
+  private async enhancePrompt(query: string, context?: unknown): Promise<string> {
     const sections = [];
 
     // Add role-based context
@@ -666,11 +666,11 @@ export class AIAssistantInputSynthesizer {
     return hash;
   }
 
-  private generateCacheKey(query: string, context?: any): string {
+  private generateCacheKey(query: string, context?: unknown): string {
     return `${query}:${JSON.stringify(context || {})}`;
   }
 
-  private createFallbackSynthesis(query: string, context?: any): SynthesizedInput {
+  private createFallbackSynthesis(query: string, context?: unknown): SynthesizedInput {
     return {
       originalQuery: query,
       enhancedPrompt: query,
@@ -705,7 +705,7 @@ export class AIAssistantInputSynthesizer {
    * Batch synthesis for multiple queries
    */
   async synthesizeBatch(
-    queries: Array<{ query: string; context?: any }>
+    queries: Array<{ query: string; context?: unknown }>
   ): Promise<SynthesizedInput[]> {
     return Promise.all(queries.map(({ query, context }) => this.synthesizeInput(query, context)));
   }

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * AI Worker Manager - Orchestrates multiple AI workers for parallel processing
  * Handles task distribution, load balancing, and worker lifecycle management
@@ -14,9 +14,8 @@ import type {
   AIServiceWorkerManager,
   TaskResult,
   ProcessingMetrics,
-} from "$lib/types";
   WorkerConfiguration,
-} from "$lib/types/ai-worker.js";
+} from "$lib/types";
 
 export class AIWorkerManager implements AIServiceWorkerManager {
   private workerPool: WorkerPool;

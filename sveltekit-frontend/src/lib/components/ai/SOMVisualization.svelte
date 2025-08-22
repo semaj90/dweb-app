@@ -1,11 +1,11 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { onMount } from 'svelte';
+  import { $props, $state } from 'svelte';
   import { createSOMRAGSystem, type SOMConfig } from '$lib/ai/som-rag-system';
   import { createEnhancedIngestionPipeline, type IngestionStats } from '$lib/ai/enhanced-ingestion-pipeline';
 
-  interface Props extends CommonProps {
+  interface Props {
     class?: string;
     width?: number;
     height?: number;
@@ -22,7 +22,7 @@ import type { CommonProps } from '$lib/types/common-props';
   // Visualization state
   let isInitialized = $state(false);
   let isTraining = $state(false);
-  let visualizationData = $state<any[]>([]);
+  let visualizationData = $state<unknown[]>([]);
   let stats = $state<IngestionStats & { queue_size: number; is_processing: boolean; som_visualization: any }>({
     total_processed: 0,
     successful: 0,

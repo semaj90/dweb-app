@@ -2,6 +2,7 @@
 <!-- Real-time GPU-accelerated legal AI visualizations -->
 
 <script lang="ts">
+  import { $state } from 'svelte';
   import { onMount, onDestroy } from 'svelte';
   import { Button } from '$lib/components/ui/button';
   import { Card } from '$lib/components/ui/card';

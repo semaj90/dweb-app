@@ -1,17 +1,15 @@
-// @ts-nocheck
+
 // src/lib/server/vector/vectorService.ts (continued)
 import { QdrantClient } from "@qdrant/js-client-rest";
-// Orphaned content: import Redis from "ioredis";
-import {
-
+import Redis from "ioredis";
 import {
   embeddingCache,
   vectorMetadata,
   cases,
   evidence,
-  criminals,
+  criminals
 } from "../db/schema-postgres.js";
-// Orphaned content: import { eq, and, sql, or, ilike
+import { eq, and, sql, or, ilike } from "drizzle-orm";
 import cuid2 from "@paralleldrive/cuid2";
 
 export interface VectorSearchOptions {
@@ -168,7 +166,7 @@ export class VectorService {
       case_id?: string;
       title: string;
       created_at: string;
-      [key: string]: any;
+      [key: string]: unknown;
     },
   ): Promise<void> {
     try {
@@ -432,7 +430,7 @@ export class VectorService {
   }
 
   // Build Qdrant filter from options
-  private buildQdrantFilter(filter: Record<string, any>): any {
+  private buildQdrantFilter(filter: Record<string, any>): unknown {
     if (!filter || Object.keys(filter).length === 0) {
       return undefined;
     }

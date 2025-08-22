@@ -1,6 +1,6 @@
 <!-- Rust WASM Bridge Demo Component -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $state } from 'svelte';
 
   import { onMount } from 'svelte';
   import { 
@@ -21,7 +21,7 @@ import type { CommonProps } from '$lib/types/common-props';
   let systemInfo = $state<SystemInfo | null>(null);
   let gpuInfo = $state<string[]>([]);
   let performanceMetrics = $state<PerformanceMetrics | null>(null);
-  let windowsServices = $state<any[]>([]);
+  let windowsServices = $state<unknown[]>([]);
   let bridgeStatus = $state<any>(null);
   let benchmarkResults = $state<any>(null);
   
@@ -491,7 +491,4 @@ import type { CommonProps } from '$lib/types/common-props';
     color: #f39c12;
   }
 </style>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

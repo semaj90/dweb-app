@@ -161,8 +161,8 @@ export const aiSummarizedDocuments = pgTable('ai_summarized_documents', {
   metadata: jsonb('metadata').$type<DocumentMetadata>().default({}).notNull(),
   summary: jsonb('summary').$type<Record<string, any>>().default({}).notNull(),
   analysis: jsonb('analysis').$type<Record<string, any>>().default({}).notNull(),
-  entities: jsonb('entities').$type<any[]>().default([]).notNull(),
-  citations: jsonb('citations').$type<any[]>().default([]).notNull(),
+  entities: jsonb('entities').$type<unknown[]>().default([]).notNull(),
+  citations: jsonb('citations').$type<unknown[]>().default([]).notNull(),
   summaryData: jsonb('summary_data').$type<SummaryData>().default({
     executive_summary: null,
     key_findings: [],

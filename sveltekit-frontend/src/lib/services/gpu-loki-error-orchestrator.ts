@@ -3,7 +3,7 @@
 // Handles large-scale TypeScript error processing with GPU optimization
 // ======================================================================
 
-import { enhancedLoki, enhancedLokiDB } from '../stores/enhancedLokiStore.js';
+import { enhancedLoki, enhancedLokiDB } from '$lib/stores/enhancedLokiStore.js';
 import { writable, derived } from 'svelte/store';
 import { browser } from '$app/environment';
 

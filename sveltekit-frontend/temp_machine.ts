@@ -7,8 +7,8 @@ interface UploadContext {
     uploadProgress?: number;
     step?: string;
     stepProgress?: number;
-    fragment?: any;
-    result?: any;
+    fragment?: unknown;
+    result?: unknown;
     status?: 'uploading' | 'processing' | 'done' | 'error';
     error?: string;
   }>;
@@ -21,9 +21,9 @@ interface UploadContext {
 type UploadEvent =
   | { type: 'START_PROCESS'; sessionId: string; fileId: string }
   | { type: 'UPLOAD_PROGRESS'; fileId: string; progress: number }
-  | { type: 'PROCESSING_STEP'; fileId: string; step: string; progress?: number; fragment?: any }
-  | { type: 'PROCESSING_COMPLETE'; fileId: string; result?: any }
-  | { type: 'ERROR'; fileId?: string; error: any }
+  | { type: 'PROCESSING_STEP'; fileId: string; step: string; progress?: number; fragment?: unknown }
+  | { type: 'PROCESSING_COMPLETE'; fileId: string; result?: unknown }
+  | { type: 'ERROR'; fileId?: string; error: unknown }
   | { type: 'WS_CLOSED' }
   | { type: 'WS_OPENED' }
   | { type: 'RETRY' }

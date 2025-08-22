@@ -3,7 +3,7 @@ Multi-LLM Orchestration Component
 Provides UI for managing multiple AI workers and orchestrating parallel processing
 -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state, $derived } from 'svelte';
 
   import { onMount, onDestroy } from 'svelte';
   import { derived, writable } from 'svelte/store';
@@ -38,7 +38,7 @@ import type { CommonProps } from '$lib/types/common-props';
     WorkerPool 
   } from '$lib/types/ai-worker.js';
 
-  interface Props extends CommonProps {
+  interface Props {
     autoStart?: boolean;
     showMetrics?: boolean;
     maxConcurrentTasks?: number;

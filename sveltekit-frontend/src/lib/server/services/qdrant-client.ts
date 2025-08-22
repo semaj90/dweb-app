@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Use process.env instead of SvelteKit env for server-side code
 // { env } from "$env/dynamic/private";
 // Orphaned content: import {

@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { createEventDispatcher, onMount } from "svelte";
+  import { $props } from 'svelte';
   import { quintOut } from "svelte/easing";
   import { fade, slide } from "svelte/transition";
 
@@ -105,7 +105,7 @@ import type { CommonProps } from '$lib/types/common-props';
 <div
   class="mx-auto px-4 max-w-7xl"
   bind:this={scrollContainer}
-  on:scroll={handleScroll}
+  onscroll={handleScroll}
   role="listbox"
   aria-label="{itemType} list"
 >

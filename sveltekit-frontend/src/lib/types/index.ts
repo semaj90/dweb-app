@@ -1,16 +1,16 @@
-// @ts-nocheck
+
 // Core types stub for frontend services
 export interface Database {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface API {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 // Additional types can be added here as needed
 export interface Config {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 // UI Component Types
@@ -68,10 +68,13 @@ export interface User {
   firstName: string;
   lastName: string;
   role: 'admin' | 'prosecutor' | 'detective' | 'user';
-  createdAt: string;
-  updatedAt: string;
+  createdAt: string; // ISO string
+  updatedAt: string; // ISO string
   avatarUrl?: string;
   isActive: boolean;
   emailVerified: boolean;
   preferences?: Record<string, any>;
+  // Optional legacy / alternate casing fields encountered in some sources
+  created_at?: string;
+  last_login?: string;
 }

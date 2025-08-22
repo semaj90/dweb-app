@@ -1,5 +1,4 @@
 mcp<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { Button } from "$lib/components/ui/button";
   import { notifications, type Notification } from "$lib/stores/notification";
@@ -26,11 +25,11 @@ import type { CommonProps } from '$lib/types/common-props';
   let enableSounds = true;
 
   // Reactive notifications list
-  $: visibleNotifications = $notifications.notifications.slice(0, maxVisible);
-  $: hiddenCount = Math.max(
+  let visibleNotifications = $derived($notifications.notifications.slice(0, maxVisible));
+  let hiddenCount = $derived(Math.max(
     0,
     $notifications.notifications.length - maxVisible
-  );
+  ));
 
   onMount(() => {
     // Announce notifications to screen readers
@@ -208,14 +207,14 @@ import type { CommonProps } from '$lib/types/common-props';
     {#each visibleNotifications as notification (notification.id)}
       <div
         class="container mx-auto px-4"
-        use:setNotificationElement={notification.id}
+        use:setNotificationelement={notification.id}
         role="alert"
         aria-labelledby="notification-title-{notification.id}"
         aria-describedby="notification-message-{notification.id}"
         onmouseenter={() => pauseTimer(notification)}
         onmouseleave={() => resumeTimer(notification)}
-        on:focusin={() => pauseTimer(notification)}
-        on:focusout={() => resumeTimer(notification)}
+        onfocusin={() => pauseTimer(notification)}
+        onfocusout={() => resumeTimer(notification)}
       >
         <div
           class="container mx-auto px-4"
@@ -437,7 +436,4 @@ import type { CommonProps } from '$lib/types/common-props';
 }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

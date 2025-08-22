@@ -1,6 +1,6 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { URL } from "url";
-// @ts-nocheck
+
 import { reports } from "$lib/server/db/schema";
 
 import { db } from "$lib/server/db/index";

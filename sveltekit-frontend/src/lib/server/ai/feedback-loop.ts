@@ -1,9 +1,16 @@
-// @ts-nocheck
+
 // lib/server/ai/feedback-loop.ts
 // Machine learning feedback loop for continuous improvement of AI synthesis
 
-import { logger } from "./logger";
-import { prisma, , interface FeedbackData {,   requestId: string;,   userId: string;,   rating: number; // 1-5 stars,   feedback?: string;,   improvedResponse?: string; } from
+import { logger } from "./logger.js";
+
+interface FeedbackData {
+  requestId: string;
+  userId: string;
+  rating: number; // 1-5 stars
+  feedback?: string;
+  improvedResponse?: string;
+}
 
 interface InteractionData {
   requestId: string;
@@ -223,7 +230,7 @@ class FeedbackLoop {
   /**
    * Get feedback statistics
    */
-  getStats(): any {
+  getStats(): unknown {
     const totalFeedback = this.feedbackQueue.length;
     const averageRating = this.calculateAverageRating();
     const satisfactionByUser = Array.from(this.learningMetrics.userSatisfaction.entries());
@@ -466,7 +473,7 @@ class FeedbackLoop {
     }
   }
 
-  private extractQueryFeatures(query: string): any {
+  private extractQueryFeatures(query: string): unknown {
     const features = {
       isComplexLegal: false,
       isResearch: false,

@@ -1,18 +1,15 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-
-  interface Props extends CommonProps {
+  // Svelte runes are provided by the compiler/runtime; don't import them.
+  interface Props {
     variant?: 'default' | 'secondary' | 'destructive' | 'outline';
     size?: 'default' | 'sm' | 'lg';
     class?: string;
-    children?: any;
   }
 
   let {
     variant = 'default',
     size = 'default',
-    class: className = '',
-    children
+    class: className = ''
   }: Props = $props();
 
   const variants = {
@@ -28,14 +25,14 @@ import type { CommonProps } from '$lib/types/common-props';
     lg: 'px-3 py-1 text-sm'
   };
 
-  const classes = $derived([
-    'mx-auto px-4 max-w-7xl',
+  $: classes = [
+    'inline-flex items-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
     variants[variant],
     sizes[size],
     className
-  ].filter(Boolean).join(' '));
+  ].filter(Boolean).join(' ');
 </script>
 
 <span class={classes}>
-  {@render children?.()}
+  <slot />
 </span>

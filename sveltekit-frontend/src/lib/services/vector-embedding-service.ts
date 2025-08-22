@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { Redis } from "ioredis";
 // Orphaned content: import type { OCRResult
 
@@ -462,7 +462,7 @@ export class EnhancedVectorEmbeddingService {
         "jurisdiction",
         "case_type",
         "__vector_score"
-      )) as any[];
+      )) as unknown[];
 
       // Process and rank results
       const results: SearchResult[] = [];

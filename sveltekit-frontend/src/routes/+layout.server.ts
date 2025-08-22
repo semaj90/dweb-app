@@ -1,5 +1,5 @@
 import { URL } from "url";
-// @ts-nocheck
+
 
 // Expose session and user to all layouts/pages (SSR)
 export const load = async ({ locals, url, request }) => {

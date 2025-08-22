@@ -1,5 +1,5 @@
 import crypto from "crypto";
-// @ts-nocheck
+
 // ======================================================================
 // ENHANCED LOKI.JS STORE WITH ADVANCED CACHING & REAL-TIME SYNC
 // Building on existing lokiStore.ts with sophisticated data pipeline patterns
@@ -8,7 +8,7 @@ import crypto from "crypto";
 import { writable, derived } from "svelte/store";
 // Orphaned content: import {
 
-import type { Evidence } from '../data/types.js';
+import type { Evidence } from '$lib/data/types.js';
 
 // Enhanced types for the data pipeline
 interface CacheConfig {
@@ -48,7 +48,7 @@ interface CollectionStats {
 interface IndexStrategy {
   field: string;
   type: "btree" | "hash" | "text" | "vector";
-  options?: any;
+  options?: unknown;
 }
 
 // ======================================================================
@@ -892,7 +892,7 @@ export const enhancedLoki = {
     async cacheEmbeddings(
       contentHash: string,
       embeddings: number[],
-      metadata?: any
+      metadata?: unknown
     ) {
       return await enhancedLokiDB.cacheEmbeddings(
         contentHash,

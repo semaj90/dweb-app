@@ -1,5 +1,4 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { writable, derived, get } from 'svelte/store';
@@ -741,7 +740,4 @@ import type { CommonProps } from '$lib/types/common-props';
 		background: rgba(139, 92, 246, 0.8);
 	}
 </style>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

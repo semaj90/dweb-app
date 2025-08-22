@@ -1,6 +1,5 @@
 <!-- Keyboard Shortcut Provider - Initialize shortcuts system -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { onMount } from 'svelte';
   import { initializeKeyboardShortcuts, registerShortcut } from '$lib/utils/keyboard-shortcuts';
@@ -259,7 +258,4 @@ import type { CommonProps } from '$lib/types/common-props';
     border: 0;
   }
 </style>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

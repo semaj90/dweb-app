@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // MCP Memory2 Read Graph utility
 // Enhanced for duplicate variable tracking and component optimization
 // Ensures #mcp_memory2_read_graph is available in the codebase
@@ -119,7 +119,7 @@ export async function analyzePropDestructuring(filePath: string): Promise<{
     const nodes = duplicateGroups[propName];
     return {
       duplicateVariables: [propName],
-      suggestedInterface: `interface Props {\n  ${propName}?: any;\n}`,
+      suggestedInterface: `interface Props {\n  ${propName}?: unknown;\n}`,
       suggestedDestructuring: `let { ${propName} } = $props();`
     };
   });

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Extension to unified-schema.ts for vector search capabilities
 import {
   pgTable,
@@ -39,7 +39,7 @@ export const documentEmbeddings = pgTable(
         section?: string;
         highlighted?: boolean;
         confidence?: number;
-        [key: string]: any;
+        [key: string]: unknown;
       }>()
       .default({}),
     modelUsed: text("model_used").default("nomic-embed-text"),
@@ -84,7 +84,7 @@ export const searchQueries = pgTable(
           documentType: string;
           similarity: number;
           snippet: string;
-          metadata?: any;
+          metadata?: unknown;
         }>;
         totalFound: number;
         searchTime: number;
@@ -124,7 +124,7 @@ export const aiModels = pgTable(
         apiKey?: string;
         temperature?: number;
         maxTokens?: number;
-        [key: string]: any;
+        [key: string]: unknown;
       }>()
       .default({}),
     isActive: integer("is_active").notNull().default(1),

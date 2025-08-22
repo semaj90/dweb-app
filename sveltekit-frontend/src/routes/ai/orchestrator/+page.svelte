@@ -3,6 +3,7 @@ Multi-LLM Orchestrator Demo Page
 Showcases the service worker-based AI orchestration system
 -->
 <script lang="ts">
+  import { $state } from 'svelte';
   import { onMount } from 'svelte';
   import { Button } from '$lib/components/ui/button';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
@@ -31,7 +32,7 @@ Showcases the service worker-based AI orchestration system
   let selectedModel: LLMModel | undefined = $state();
   let userPrompt = $state('Analyze the following legal document for key terms, potential issues, and recommendations...');
   let isProcessing = $state(false);
-  let demoResults = $state<Array<{ task: AITask; response?: any; error?: string }>>([]);
+  let demoResults = $state<Array<{ task: AITask; response?: unknown; error?: string }>>([]);
   
   // Demo scenarios
   const demoScenarios = [
@@ -437,7 +438,7 @@ Showcases the service worker-based AI orchestration system
     <MultiLLMOrchestrator 
       autoStart={true}
       showMetrics={true}
-      maxConcurrentTasks={3}
+      maxConcurrenttasks={3}
       enabledProviders={['ollama', 'vllm', 'autogen', 'crewai']}
     />
 

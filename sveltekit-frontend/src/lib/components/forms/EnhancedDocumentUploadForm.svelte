@@ -2,7 +2,7 @@
 <!-- Production-ready form with state management, validation, and progress tracking -->
 
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived } from 'svelte';
 
   import {
     createDocumentUploadForm,
@@ -194,15 +194,14 @@ import type { CommonProps } from '$lib/types/common-props';
   // REACTIVE STATEMENTS
   // ============================================================================
 
-  $: stateValue = $state;
-  $: contextValue = $context;
-  $: canSubmit = $isValid && selectedFile && !$isSubmitting;
-  $: showProgress = $progress > 0 && $progress < 100;
-  $: isCompleted = stateValue === "completed";
-  $: isError =
-    stateValue === "uploadError" ||
+  let stateValue = $derived($state);
+  let contextValue = $derived($context);
+  let canSubmit = $derived($isValid && selectedFile && !$isSubmitting);
+  let showProgress = $derived($progress > 0 && $progress < 100);
+  let isCompleted = $derived(stateValue === "completed");
+  let isError = $derived(stateValue === "uploadError" ||
     stateValue === "processingError" ||
-    stateValue === "failed";
+    stateValue === "failed");
 
   // Ensure default form shape to prevent runtime errors
   $: if ($formData) {
@@ -632,7 +631,7 @@ import type { CommonProps } from '$lib/types/common-props';
   }
 
   .file-upload-card:hover {
-    @apply border-primary border-opacity-50;
+    @apply border-blue-500 border-opacity-50;
   }
 
   .drop-zone {
@@ -640,7 +639,7 @@ import type { CommonProps } from '$lib/types/common-props';
   }
 
   .drop-zone.drag-active {
-    @apply bg-primary bg-opacity-5 border-primary;
+    @apply bg-blue-500 bg-opacity-5 border-blue-500;
   }
 
   .drop-zone-content {

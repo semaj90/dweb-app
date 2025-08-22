@@ -1,8 +1,7 @@
 // Real database connection configuration
 import { drizzle } from 'drizzle-orm/postgres-js';
-// Orphaned content: import postgres from "postgres";
-import {
-pgTable, serial, text, timestamp, jsonb, vector, real, uuid
+import postgres from "postgres";
+import { pgTable, serial, text, timestamp, jsonb, vector, real, uuid } from 'drizzle-orm/pg-core';
 
 // Database connection
 const connectionString = import.meta.env.DATABASE_URL || 

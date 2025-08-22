@@ -182,7 +182,7 @@ export interface CompletedStep {
   status: 'success' | 'failed' | 'skipped';
   duration: number;
   error?: string;
-  result?: any;
+  result?: unknown;
 }
 
 // XState Machine Integration for Complex Upload Workflows

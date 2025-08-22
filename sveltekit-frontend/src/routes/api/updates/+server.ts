@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+
 // Server-Sent Events API route for SSR-safe real-time updates
 import { createClient } from "redis";
 import { URL } from "url";

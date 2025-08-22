@@ -23,8 +23,8 @@ export interface TensorOperation {
 export interface StreamingResponse {
 	id: string;
 	type: 'analysis_start' | 'chunk_analysis' | 'analysis_complete' | 'search_batch' | 'tensor_result';
-	data?: any;
-	delta?: any;
+	data?: unknown;
+	delta?: unknown;
 	status: 'processing' | 'progress' | 'completed' | 'error';
 	timestamp: number;
 	finished: boolean;
@@ -33,7 +33,7 @@ export interface StreamingResponse {
 		total_chunks?: number;
 		chunk_index?: number;
 		confidence?: number;
-		[key: string]: any;
+		[key: string]: unknown;
 	};
 }
 

@@ -32,7 +32,7 @@ interface TensorProcessingJob extends BaseJobData {
 
 interface VectorIndexJob extends BaseJobData {
   embeddings: number[][];
-  metadata: Array<{ docId: string; chunkId: string; text: string; [key: string]: any }>;
+  metadata: Array<{ docId: string; chunkId: string; text: string; [key: string]: unknown }>;
   indexType: 'qdrant' | 'pgvector' | 'faiss';
 }
 

@@ -1,15 +1,15 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     position: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left' ;
     size: 'sm' | 'md' | 'lg' ;
     variant: 'primary' | 'secondary' | 'accent' ;
-    disabled?: any;
-    loading?: any;
-    notification?: any;
-    notificationCount?: any;
-    tooltip?: any;
+    disabled?: unknown;
+    loading?: unknown;
+    notification?: unknown;
+    notificationCount?: unknown;
+    tooltip?: unknown;
   }
   let {
     position = 'bottom-right',

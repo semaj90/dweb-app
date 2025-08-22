@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state, $effect } from 'svelte';
 
   import Fuse from 'fuse.js';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
@@ -322,7 +322,4 @@ import type { CommonProps } from '$lib/types/common-props';
   }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

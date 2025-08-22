@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Custom Reranker for Legal AI - Replaces basic top-K ANN with intelligent scoring
 // Integrates with our existing Qdrant + PGVector setup
 

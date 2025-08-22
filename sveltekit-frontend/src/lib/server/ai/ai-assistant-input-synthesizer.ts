@@ -1,16 +1,17 @@
-// @ts-nocheck
+
 // lib/server/ai/ai-assistant-input-synthesizer.ts
 // Comprehensive AI Assistant Input Synthesizer integrating all enhanced components
 
 import { logger } from "./logger";
-// Orphaned content: import {
-legalBERT, type LegalAnalysisResult
 import { enhancedRAGPipeline } from "./rag-pipeline-enhanced";
-// Orphaned content: import {
+
+export interface LegalAnalysisResult {
+  confidence: number;
+  categories: string[];
+  summary: string;
+}
 
 import { generateEmbedding } from "./embeddings-simple";
-// Orphaned content: import {
-metrics, withRetry, withTimeout
 
 // Input types for the synthesizer
 interface SynthesizerInput {
@@ -18,7 +19,7 @@ interface SynthesizerInput {
   context?: {
     caseId?: string;
     userId: string;
-    legalBertAnalysis?: any; // Add missing property
+    legalBertAnalysis?: unknown; // Add missing property
     conversationHistory?: Array<{
       role: 'user' | 'assistant';
       content: string;
@@ -264,7 +265,7 @@ export class AIAssistantInputSynthesizer {
   private async performMultiStrategyRetrieval(
     processedQuery: SynthesizedOutput['processedQuery'],
     context?: SynthesizerInput['context'],
-    options?: any
+    options?: unknown
   ): Promise<any> {
     const retrievalResults = {
       sources: [],
@@ -606,7 +607,7 @@ export class AIAssistantInputSynthesizer {
     sources: any[],
     query: string,
     lambda: number = 0.5
-  ): Promise<any[]> {
+  ): Promise<unknown[]> {
     // Implement MMR algorithm for diversity
     if (sources.length <= 1) return sources;
 
@@ -663,7 +664,7 @@ export class AIAssistantInputSynthesizer {
     return selected;
   }
 
-  private async applyCrossEncoderReranking(sources: any[], query: string): Promise<any[]> {
+  private async applyCrossEncoderReranking(sources: any[], query: string): Promise<unknown[]> {
     // Apply cross-encoder reranking using LegalBERT
     try {
       const rerankedSources = [];

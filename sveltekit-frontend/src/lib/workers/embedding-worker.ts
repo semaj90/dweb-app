@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Embedding Worker
  * Multi-threaded processing worker for embeddings and text processing
@@ -21,7 +21,7 @@ export interface WorkerMessage {
 export interface WorkerResponse {
   id: string;
   success: boolean;
-  data?: any;
+  data?: unknown;
   error?: string;
   progress?: number;
   metadata?: Record<string, any>;
@@ -468,9 +468,9 @@ if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScop
       return flattened;
     }
     
-    private groupData(data: any[]): Record<string, any[]> {
+    private groupData(data: any[]): Record<string, unknown[]> {
       // Simple grouping by first property
-      const grouped: Record<string, any[]> = {};
+      const grouped: Record<string, unknown[]> = {};
       
       data.forEach((item: any) => {
         const key = Object.values(item)[0] as string;
@@ -483,7 +483,7 @@ if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScop
       return grouped;
     }
     
-    private filterData(data: any[], criteria: Record<string, any>): any[] {
+    private filterData(data: any[], criteria: Record<string, any>): unknown[] {
       return data.filter((item: any) => {
         return Object.entries(criteria).every(([key, value]) => {
           return item[key] === value;
@@ -506,7 +506,7 @@ export class EmbeddingWorkerManager {
   private pendingTasks = new Map<string, {
     resolve: (value: any) => void;
     reject: (error: Error) => void;
-    onProgress?: (progress: number, data?: any) => void;
+    onProgress?: (progress: number, data?: unknown) => void;
   }>();
   
   constructor() {
@@ -562,21 +562,21 @@ export class EmbeddingWorkerManager {
   
   public async processEmbeddings(
     task: EmbeddingTask,
-    onProgress?: (progress: number, data?: any) => void
+    onProgress?: (progress: number, data?: unknown) => void
   ): Promise<BatchEmbeddingResult> {
     return this.executeTask('embeddings', task, onProgress);
   }
   
   public async processChunking(
     task: ChunkingTask,
-    onProgress?: (progress: number, data?: any) => void
+    onProgress?: (progress: number, data?: unknown) => void
   ): Promise<DocumentChunk[]> {
     return this.executeTask('chunking', task, onProgress);
   }
   
   public async processSimilarity(
     task: SimilarityTask,
-    onProgress?: (progress: number, data?: any) => void
+    onProgress?: (progress: number, data?: unknown) => void
   ): Promise<Array<{index: number, similarity: number}>> {
     return this.executeTask('similarity', task, onProgress);
   }
@@ -584,7 +584,7 @@ export class EmbeddingWorkerManager {
   public async processGeneral(
     data: any,
     options: any,
-    onProgress?: (progress: number, data?: any) => void
+    onProgress?: (progress: number, data?: unknown) => void
   ): Promise<any> {
     return this.executeTask('processing', data, onProgress, options);
   }
@@ -592,8 +592,8 @@ export class EmbeddingWorkerManager {
   private async executeTask(
     type: WorkerMessage['type'],
     data: any,
-    onProgress?: (progress: number, data?: any) => void,
-    options?: any
+    onProgress?: (progress: number, data?: unknown) => void,
+    options?: unknown
   ): Promise<any> {
     if (!this.worker) {
       throw new Error('Worker not available');

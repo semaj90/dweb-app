@@ -1,5 +1,4 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { goto } from "$app/navigation";
   import { citationStore } from "$lib/stores/citations";
@@ -38,10 +37,10 @@ import type { CommonProps } from '$lib/types/common-props';
   });
 
   // Get recent citations
-  $: recentCitations = citationStore.getRecentCitations($citationStore, 5);
+  let recentCitations = $derived(citationStore.getRecentCitations($citationStore, 5));
 
   // Available commands
-  $: commands = [
+  let commands = $derived([
     {
       id: "search",
       label: "Search Cases",
@@ -106,26 +105,26 @@ import type { CommonProps } from '$lib/types/common-props';
       action: () => insertCitation(citation),
       category: "Citations",
     })),
-  ];
+  ]);
 
   // Filter commands based on search query
-  $: filteredCommands = commands.filter(
+  let filteredCommands = $derived(commands.filter(
     (cmd) =>
       cmd.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
       cmd.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  ));
 
   // Group commands by category
-  $: groupedCommands = filteredCommands.reduce(
+  let groupedCommands = $derived(filteredCommands.reduce(
     (acc, cmd) => {
       if (!acc[cmd.category]) {
         acc[cmd.category] = [];
-}
+      }
       acc[cmd.category].push(cmd);
       return acc;
     },
     {} as Record<string, typeof commands>
-  );
+  ));
 
   // Handle keyboard navigation
   function handleKeydown(e: KeyboardEvent) {
@@ -184,7 +183,7 @@ import type { CommonProps } from '$lib/types/common-props';
 }
     onInsert(text);
 }
-  function insertCitation(citation?: any) {
+  function insertCitation(citation?: unknown) {
     if (citation) {
       // Format the citation properly
       const formattedCitation = `[${citation.title}${citation.source ? `, ${citation.source}` : ""}${citation.date ? ` (${citation.date})` : ""}]`;

@@ -1,11 +1,11 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
   import { Dialog } from "bits-ui";
   import { X } from "lucide-svelte";
   import { fade, fly } from "svelte/transition";
   
-  interface Props extends CommonProps {
+  interface Props {
     open?: boolean;
     title?: string;
     description?: string;
@@ -14,8 +14,8 @@ import type { CommonProps } from '$lib/types/common-props';
     class?: string;
     onopen?: () => void;
     onclose?: () => void;
-    children?: any;
-    footer?: any;
+    children?: unknown;
+    footer?: unknown;
   }
   
   let {
@@ -49,7 +49,7 @@ import type { CommonProps } from '$lib/types/common-props';
   }
 </script>
 
-<Dialog.Root bind:open onOpenChange={handleOpenChange}>
+<Dialog.Root bind:open onopenchange={handleOpenChange}>
   <Dialog.Trigger>
     {@render children.trigger()}
   </Dialog.Trigger>

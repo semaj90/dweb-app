@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+
 // Logout API endpoint using Lucia v3
 import { json, redirect } from "@sveltejs/kit";
 import { lucia } from "$lib/auth/session";

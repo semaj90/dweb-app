@@ -1,5 +1,5 @@
 import crypto from "crypto";
-// @ts-nocheck
+
 /**
  * Autonomous Engineering System
  * Comprehensive wrapper for Copilot self-prompting with multi-agent orchestration,
@@ -621,7 +621,7 @@ Please provide:
     }
   }
 
-  private async semanticSearchForIssues(query: string): Promise<any[]> {
+  private async semanticSearchForIssues(query: string): Promise<unknown[]> {
     if (this.semanticSearchCache.has(query)) {
       return this.semanticSearchCache.get(query);
     }
@@ -646,7 +646,7 @@ Please provide:
     }
   }
 
-  private async semanticSearchForBestPractices(query: string): Promise<any[]> {
+  private async semanticSearchForBestPractices(query: string): Promise<unknown[]> {
     try {
       const response = await fetch(
         `${this.mcpEndpoint}/api/semantic/best-practices`,
@@ -778,7 +778,7 @@ Please provide:
 
   private async waitForConversationCompletion(
     conversationId: string,
-  ): Promise<any[]> {
+  ): Promise<unknown[]> {
     // Wait for AutoGen conversation completion
     let attempts = 0;
     const maxAttempts = 24; // 2 minutes with 5-second intervals

@@ -1,6 +1,6 @@
 <!-- Enhanced Legal Document Editor with UnoCSS + Melt UI -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived } from 'svelte';
 
   import {
     createDialog,
@@ -289,7 +289,7 @@ import type { CommonProps } from '$lib/types/common-props';
     scheduleAutoSave();
 }
   // Reactive statement to update save status
-  $: saveStatus = getSaveStatus();
+  let saveStatus = $derived(getSaveStatus());
 
   // Function to load document from API
   async function loadDocument() {

@@ -1,8 +1,8 @@
-// @ts-nocheck
+
 export type DashboardCard = {
   title: string;
   value: string | number;
-  icon?: any;
+  icon?: unknown;
 };
 
 export type DashboardLayout = {

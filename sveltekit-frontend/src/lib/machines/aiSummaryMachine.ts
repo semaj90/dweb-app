@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * XState Machine for AI Summary Reading and Analysis
  * Handles evidence reports, document summaries, and synthesis workflows

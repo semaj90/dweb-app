@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
+  import { $state, $effect } from 'svelte';
   import { createActor } from 'xstate';
   import { evidenceProcessingMachine, type EvidenceProcessingContext } from '$lib/state/evidenceProcessingMachine';
   import { documentUploadMachine, type DocumentUploadContext } from '$lib/state/documentUploadMachine';

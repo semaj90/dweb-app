@@ -1,89 +1,178 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $derived } from 'svelte';
+
 
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
+	import { browser } from '$app/environment';
 	import { cn } from '$lib/utils';
-	import Badge from '$lib/components/ui/Badge.svelte';
-	import Button from '$lib/components/ui/button/Button.svelte';
+	import { 
+		Shield, 
+		Search, 
+		Database, 
+		Folder, 
+		Eye, 
+		Users, 
+		BarChart3, 
+		Settings,
+		Terminal,
+		Brain
+	} from 'lucide-svelte';
 
 	const navItems = [
-		{ href: '/', label: 'Dashboard', icon: '🏠' },
-		{ href: '/evidence/analyze', label: 'Evidence Analysis', icon: '🔍' },
-		{ href: '/cases', label: 'Cases', icon: '📁' },
-		{ href: '/semantic-search-demo', label: 'Search Demo', icon: '🔎' },
-		{ href: '/dev/self-prompting-demo', label: 'Agent Orchestration', icon: '🤖' },
-		{ href: '/dev/mcp-tools', label: 'MCP Tools', icon: '🔧' },
-		{ href: '/dev/metrics', label: 'Metrics', icon: '📊' } // added metrics
+		{ href: '/', label: 'COMMAND CENTER', icon: Database },
+		{ href: '/evidence', label: 'EVIDENCE', icon: Eye },
+		{ href: '/cases', label: 'CASES', icon: Folder },
+		{ href: '/persons', label: 'PERSONS', icon: Users },
+		{ href: '/analysis', label: 'ANALYSIS', icon: BarChart3 },
+		{ href: '/search', label: 'SEARCH', icon: Search },
+		{ href: '/terminal', label: 'TERMINAL', icon: Terminal }
 	];
 
-	let currentPath = $derived($page.url.pathname);
+	let currentPath = $derived(browser && $page.url ? $page.url.pathname : '/');
 
 	// Optimized navigation with instant transitions
 	function handleNavigation(href: string, event?: Event) {
 		event?.preventDefault();
-		// Use replaceState for instant visual feedback, then navigate
-		history.pushState(null, '', href);
 		goto(href, { replaceState: false, noScroll: false, keepFocus: false, invalidateAll: false });
 	}
 </script>
 
-<nav class="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-		<div class="flex justify-between h-16">
-			<div class="flex items-center">
-				<div class="flex-shrink-0">
-					<h1 class="text-xl font-bold">⚖️ Legal AI System</h1>
-				</div>
-				<div class="ml-10 flex items-center space-x-1">
-					{#each navItems as item}
-						<Button
-							variant={currentPath === item.href ? 'default' : 'ghost'}
-							size="sm"
-							onclick={() => handleNavigation(item.href)}
-							class={cn(
-								"justify-start gap-2 cursor-pointer transition-all duration-100",
-								currentPath === item.href && "bg-muted"
-							)}
-						>
-							<span>{item.icon}</span>
-							{item.label}
-							{#if item.href === '/dev/metrics'}
-								<Badge variant="outline" class="ml-1 px-1 text-[10px]">live</Badge>
-							{/if}
-						</Button>
-					{/each}
+<nav class="yorha-header">
+	<div class="flex items-center justify-between">
+		<div class="flex items-center space-x-6">
+			<div class="flex items-center space-x-3">
+				<Shield class="w-8 h-8 yorha-text-accent" />
+				<div>
+					<h1 class="yorha-header h1">YORHA DETECTIVE</h1>
+					<p class="yorha-header subtitle">Investigation Interface</p>
 				</div>
 			</div>
+			
+			<nav class="flex items-center space-x-1 ml-8">
+				{#each navItems as item}
+					<a
+						href={item.href}
+						onclick={(e) => handleNavigation(item.href, e)}
+						class={cn(
+							"yorha-nav-item text-sm px-3 py-2 rounded-md transition-all duration-200",
+							currentPath === item.href && "active"
+						)}
+					>
+						<item.icon class="w-4 h-4" />
+						<span>{item.label}</span>
+					</a>
+				{/each}
+			</nav>
+		</div>
 
-			<div class="flex items-center space-x-4">
-				<!-- AI Search Button -->
-				<Button
-					variant="outline"
-					size="sm"
-					onclick={() => {
-						// Trigger global FindModal via Ctrl+K event
-						window.dispatchEvent(new KeyboardEvent('keydown', {
-							key: 'k',
-							ctrlKey: true,
-							bubbles: true
-						}));
-					}}
-					class="gap-2"
-				>
-					<span>🔍</span>
-					AI Search
-				</Button>
+		<div class="flex items-center space-x-4">
+			<!-- AI Search Button -->
+			<button
+				class="yorha-btn yorha-btn-secondary"
+				onclick={() => {
+					// Trigger global FindModal via Ctrl+K event
+					window.dispatchEvent(new KeyboardEvent('keydown', {
+						key: 'k',
+						ctrlKey: true,
+						bubbles: true
+					}));
+				}}
+			>
+				<Search class="w-4 h-4 mr-2" />
+				GLOBAL SEARCH
+			</button>
 
-				<Badge variant="outline" class="gap-2">
-					<span>🤖</span>
-					Multi-Agent Pipeline
-				</Badge>
-				<div class="flex items-center gap-2">
-					<div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" title="System Online"></div>
-					<span class="text-sm text-muted-foreground">Online</span>
-				</div>
+			<div class="flex items-center space-x-2">
+				<Brain class="w-4 h-4 yorha-text-accent" />
+				<span class="yorha-badge yorha-badge-success">AI ACTIVE</span>
+			</div>
+			
+			<div class="flex items-center space-x-2">
+				<div class="yorha-status-indicator yorha-status-online"></div>
+				<span class="yorha-text-primary text-sm font-medium">Online</span>
 			</div>
 		</div>
 	</div>
 </nav>
+
+<style>
+	.modern-header {
+		background: var(--yorha-bg-secondary);
+		border-bottom: 1px solid var(--yorha-border-primary);
+		box-shadow: var(--yorha-shadow-sm);
+		sticky: top;
+		top: 0;
+		z-index: 40;
+	}
+	
+	.header-title {
+		font-size: var(--text-lg);
+		font-weight: 700;
+		color: var(--yorha-accent-gold);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin: 0;
+	}
+	
+	.header-subtitle {
+		font-size: var(--text-xs);
+		color: var(--yorha-text-secondary);
+		margin: 0;
+		text-transform: uppercase;
+		letter-spacing: 0.025em;
+	}
+	
+	.nav-link {
+		display: flex;
+		align-items: center;
+		gap: var(--golden-sm);
+		padding: var(--golden-sm) var(--golden-md);
+		color: var(--yorha-text-secondary);
+		text-decoration: none;
+		border-radius: 0.375rem;
+		font-weight: 500;
+		font-size: var(--text-sm);
+		text-transform: uppercase;
+		letter-spacing: 0.025em;
+		transition: all 200ms ease;
+		border: 1px solid transparent;
+	}
+	
+	.nav-link:hover {
+		background-color: var(--yorha-bg-hover);
+		color: var(--yorha-text-primary);
+		border-color: var(--yorha-border-primary);
+	}
+	
+	.nav-link-active {
+		background-color: var(--yorha-bg-tertiary);
+		color: var(--yorha-accent-gold);
+		border-color: var(--yorha-border-accent);
+	}
+	
+	.nav-link:focus-visible {
+		outline: 2px solid var(--yorha-accent-gold);
+		outline-offset: 2px;
+	}
+	
+	.status-indicator {
+		gap: var(--golden-xs);
+	}
+	
+	.status-info {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+	
+	@media (max-width: 768px) {
+		.header-title {
+			font-size: var(--text-base);
+		}
+		
+		.header-subtitle {
+			display: none;
+		}
+	}
+</style>

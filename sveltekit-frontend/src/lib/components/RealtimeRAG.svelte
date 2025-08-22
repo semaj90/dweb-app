@@ -1,6 +1,6 @@
 <!-- Real-time RAG Interface Component -->
 <script>
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived } from 'svelte';
 
   import { onMount, onDestroy } from 'svelte';
   import { useMachine } from '@xstate/svelte';
@@ -27,12 +27,12 @@ import type { CommonProps } from '$lib/types/common-props';
   let selectedDocumentTypes = [];
   
   // Reactive state from stores
-  $: documents = ragStore.documents;
-  $: ragHistory = ragStore.ragHistory;
-  $: processingJobs = ragStore.processingJobs;
-  $: stats = ragStore.stats;
-  $: machineState = ragMachine.state;
-  $: machineContext = ragMachine.context;
+  let documents = $derived(ragStore.documents);
+  let ragHistory = $derived(ragStore.ragHistory);
+  let processingJobs = $derived(ragStore.processingJobs);
+  let stats = $derived(ragStore.stats);
+  let machineState = $derived(ragMachine.state);
+  let machineContext = $derived(ragMachine.context);
 
   onMount(() => {
     ragStore.connect();

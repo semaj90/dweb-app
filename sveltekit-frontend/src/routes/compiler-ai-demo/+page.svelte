@@ -2,6 +2,7 @@
 <!-- Real-time demonstration of AI-driven development architecture -->
 
 <script lang="ts">
+  import { $state } from 'svelte';
   import { onMount, onDestroy } from 'svelte';
   import { Button } from '$lib/components/ui/button';
   import { Card } from '$lib/components/ui/card';
@@ -301,11 +302,15 @@
         <div class="space-y-3 max-h-80 overflow-y-auto">
           {#each events.slice(-10).reverse() as event}
             {@const IconComponent = getEventIcon(event)}
-            <div
-              class="p-3 rounded-lg bg-slate-700/50 border border-slate-600 cursor-pointer hover:bg-slate-700 transition-colors"
+            <button
+              type="button"
+              class="w-full p-3 rounded-lg bg-slate-700/50 border border-slate-600 cursor-pointer hover:bg-slate-700 transition-colors text-left"
               onclick={() => (selectedEvent = event)}
+              onkeydown={(e) => e.key === 'Enter' && (selectedEvent = event)}
               class:ring-2={selectedEvent?.logs[0]?.id === event.logs[0]?.id}
-              class:ring-blue-500={selectedEvent?.logs[0]?.id === event.logs[0]?.id}>
+              class:ring-blue-500={selectedEvent?.logs[0]?.id === event.logs[0]?.id}
+              aria-label="Select event: {event.logs[0]?.message || 'Unknown event'}"
+            >
               <div class="flex items-start gap-3">
                 <IconComponent class="h-4 w-4 mt-1 text-orange-400" />
                 <div class="flex-1 min-w-0">
@@ -324,7 +329,7 @@
                   {/if}
                 </div>
               </div>
-            </div>
+            </button>
           {/each}
 
           {#if events.length === 0}

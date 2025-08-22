@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { $state } from 'svelte';
   import type { AIResponse } from '$lib/types/ai';
 
   let cases: any[] = $state([]);
@@ -45,7 +46,7 @@
       });
 
       const data = await response.json();
-      aiResponse = data.aiMetadata;
+      aiResponse = data.performance ? data : { performance: data };
       chatMessage = '';
     } catch (error) {
       console.error('AI request failed:', error);
@@ -101,19 +102,21 @@
           <h2 class="text-xl font-mono font-semibold text-white mb-4">Active Cases</h2>
           <div class="space-y-3">
             {#each cases as caseItem}
-              <button
-                class="w-full text-left p-3 rounded border transition-all duration-200 {selectedCase === caseItem.id ? 'border-yellow-400 bg-yellow-400/10' : 'border-gray-600 hover:border-gray-500'}"
-                onclick={() => selectCase(caseItem.id)}
-              >
-                <div class="font-mono text-sm text-yellow-400">{caseItem.id}</div>
-                <div class="font-semibold text-white text-sm">{caseItem.title}</div>
-                <div class="text-xs text-gray-400 mt-1">
-                  Status: {caseItem.status} • Priority: {caseItem.priority}
-                </div>
-                <div class="text-xs text-gray-500 mt-1">
-                  Evidence: {caseItem.evidenceCount} • Docs: {caseItem.documentsCount}
-                </div>
-              </button>
+              {#if caseItem && typeof caseItem === 'object'}
+                <button
+                  class="w-full text-left p-3 rounded border transition-all duration-200 {selectedCase === caseItem.id ? 'border-yellow-400 bg-yellow-400/10' : 'border-gray-600 hover:border-gray-500'}"
+                  onclick={() => selectCase(caseItem.id)}
+                >
+                  <div class="font-mono text-sm text-yellow-400">{caseItem.id || 'Unknown ID'}</div>
+                  <div class="font-semibold text-white text-sm">{caseItem.title || 'Untitled Case'}</div>
+                  <div class="text-xs text-gray-400 mt-1">
+                    Status: {caseItem.status || 'Unknown'} • Priority: {caseItem.priority || 'Unknown'}
+                  </div>
+                  <div class="text-xs text-gray-500 mt-1">
+                    Evidence: {caseItem.evidenceCount || 0} • Docs: {caseItem.documentsCount || 0}
+                  </div>
+                </button>
+              {/if}
             {/each}
           </div>
         </div>
@@ -199,29 +202,33 @@
 
           <div class="space-y-3">
             {#each evidence as item}
-              <div class="p-4 bg-gray-800/30 rounded border border-gray-700 hover:border-gray-600 transition-colors">
-                <div class="flex justify-between items-start mb-2">
-                  <div>
-                    <div class="font-semibold text-white">{item.title}</div>
-                    <div class="text-sm text-gray-400">{item.type} • {item.fileSize}</div>
+              {#if item && typeof item === 'object'}
+                <div class="p-4 bg-gray-800/30 rounded border border-gray-700 hover:border-gray-600 transition-colors">
+                  <div class="flex justify-between items-start mb-2">
+                    <div>
+                      <div class="font-semibold text-white">{item.title || 'Untitled'}</div>
+                      <div class="text-sm text-gray-400">{item.type || 'Unknown'} • {item.fileSize || 'Unknown size'}</div>
+                    </div>
+                    <div class="text-xs text-gray-500">
+                      {item.uploadedAt ? new Date(item.uploadedAt).toLocaleDateString() : 'Unknown date'}
+                    </div>
                   </div>
-                  <div class="text-xs text-gray-500">
-                    {new Date(item.uploadedAt).toLocaleDateString()}
+
+                  <div class="text-sm text-gray-300 mb-2 line-clamp-2">
+                    {item.content || 'No content available'}
+                  </div>
+
+                  <div class="flex flex-wrap gap-1">
+                    {#if item.tags && Array.isArray(item.tags)}
+                      {#each item.tags as tag}
+                        <span class="px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-xs">
+                          {tag}
+                        </span>
+                      {/each}
+                    {/if}
                   </div>
                 </div>
-
-                <div class="text-sm text-gray-300 mb-2 line-clamp-2">
-                  {item.content}
-                </div>
-
-                <div class="flex flex-wrap gap-1">
-                  {#each item.tags as tag}
-                    <span class="px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-xs">
-                      {tag}
-                    </span>
-                  {/each}
-                </div>
-              </div>
+              {/if}
             {/each}
 
             {#if evidence.length === 0}

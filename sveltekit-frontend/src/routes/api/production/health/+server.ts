@@ -10,7 +10,7 @@ interface ServiceStatus {
   name: string;
   status: 'healthy' | 'warning' | 'error';
   response_time?: number;
-  details?: any;
+  details?: unknown;
 }
 
 interface HealthResponse {

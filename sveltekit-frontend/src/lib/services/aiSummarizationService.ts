@@ -1,11 +1,11 @@
 import type { EvidenceItem } from "$lib/types/api";
 import crypto from "crypto";
-// @ts-nocheck
-import type { Case } from "$lib/types";
-// Orphaned content: // AI Summarization Service for Case Management
-// Integrates with local LLM to generate comprehensive case reports
 
-import { dev
+import type { Case } from "$lib/types";
+import { dev } from "$app/environment";
+
+// AI Summarization Service for Case Management
+// Integrates with local LLM to generate comprehensive case reports
 
 interface CaseData {
   id: string;
@@ -33,7 +33,7 @@ interface AISummaryReport {
     | "prosecution_strategy";
   title: string;
   content: string;
-  richTextContent?: any; // Tiptap JSON content
+  richTextContent?: unknown; // Tiptap JSON content
   metadata: {
     generatedAt: string;
     modelUsed: string;
@@ -455,7 +455,7 @@ Structure as comprehensive timeline JSON analysis.
       updatedAt: new Date(),
     };
   }
-  private parseStructuredText(text: string): any {
+  private parseStructuredText(text: string): unknown {
     // Parse structured text into sections
     const sections: Record<string, string> = {};
     const lines = text.split("\n");
@@ -481,7 +481,7 @@ Structure as comprehensive timeline JSON analysis.
     }
     return sections;
   }
-  private convertToTiptapJSON(content: any): any {
+  private convertToTiptapJSON(content: any): unknown {
     // Convert parsed content to Tiptap-compatible JSON structure
     const doc = {
       type: "doc",

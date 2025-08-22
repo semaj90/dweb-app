@@ -1,8 +1,8 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
-  interface Props extends CommonProps {
-    onselect?: (event?: any) => void;
+  interface Props {
+    onselect?: (event?: unknown) => void;
   }
   let {
     class_ = "",

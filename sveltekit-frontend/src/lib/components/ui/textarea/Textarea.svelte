@@ -1,7 +1,9 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
-  interface Props extends CommonProps {
+import { cn } from "../../../utils";
+
+  interface Props {
     value?: string;
     placeholder?: string;
     disabled?: boolean;
@@ -38,8 +40,6 @@ import type { CommonProps } from '$lib/types/common-props';
     onfocus = undefined,
     onblur = undefined
   }: Props = $props();
-
-  import { cn } from "../../../utils";
 </script>
 
 <textarea

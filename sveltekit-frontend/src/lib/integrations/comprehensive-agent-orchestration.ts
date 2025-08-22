@@ -8,25 +8,25 @@ import { getContext7MulticoreService, type RecommendationRequest, type Processin
 // Agent interfaces (defined locally to avoid import issues)
 interface ClaudeAgentRequest {
   prompt: string;
-  context?: any;
-  options?: any;
+  context?: unknown;
+  options?: unknown;
 }
 
 interface CrewAIAgentRequest {
   prompt: string;
-  context?: any;
-  options?: any;
+  context?: unknown;
+  options?: unknown;
 }
 
 interface AutoGenAgentRequest {
   prompt: string;
-  context?: any;
-  options?: any;
+  context?: unknown;
+  options?: unknown;
 }
 
 export interface ComprehensiveAgentRequest {
   prompt: string;
-  context?: any;
+  context?: unknown;
   options?: {
     agents?: ('claude' | 'crewai' | 'autogen')[];
     priority?: 'low' | 'medium' | 'high' | 'critical';
@@ -55,7 +55,7 @@ export interface ComprehensiveAgentResponse {
   }>;
   multicoreAnalysis?: {
     recommendations: string[];
-    errorPatterns?: any;
+    errorPatterns?: unknown;
     performanceMetrics: any;
   };
   systemStatus: {

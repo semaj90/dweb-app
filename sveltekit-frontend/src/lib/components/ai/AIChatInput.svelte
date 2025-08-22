@@ -1,6 +1,6 @@
 <!-- AI Chat Input Component -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived } from 'svelte';
 
   import { browser } from "$app/environment";
   import { createEventDispatcher, onMount } from "svelte";
@@ -108,9 +108,9 @@ import type { CommonProps } from '$lib/types/common-props';
     dispatch("blur");
   }
   // Character count
-  $: characterCount = value.length;
-  $: isNearLimit = characterCount > maxLength * 0.8;
-  $: isAtLimit = characterCount >= maxLength;
+  let characterCount = $derived(value.length);
+  let isNearLimit = $derived(characterCount > maxLength * 0.8);
+  let isAtLimit = $derived(characterCount >= maxLength);
 </script>
 
 <div class="chat-input-wrapper" class:multiline={isMultiline}>
@@ -346,7 +346,4 @@ import type { CommonProps } from '$lib/types/common-props';
   }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

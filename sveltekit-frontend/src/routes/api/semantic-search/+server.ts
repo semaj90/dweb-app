@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+
 import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db/pg";
 import { sql } from "drizzle-orm";

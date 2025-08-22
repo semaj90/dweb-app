@@ -1,13 +1,27 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+import { json } from "@sveltejs/kit";
+import { URL } from "url";
+
 // Multi-Agent AI Orchestration API
 // Unified endpoint for Autogen, CrewAI, and vLLM integration
 
-import { json, type RequestHandler } from "@sveltejs/kit";
-AutogenLegalTeam,
-  type LegalAnalysisRequest as AutogenRequest,
-import { URL } from "url";
-import { CrewAILegalTeam, type WorkflowResult } from "$lib/ai/crewai-legal-team";
+interface AutogenLegalTeam {
+  analyze: (request: LegalAnalysisRequest) => Promise<unknown>;
+}
+
+interface LegalAnalysisRequest {
+  query: string;
+  caseId?: string;
+}
+
+interface CrewAILegalTeam {
+  executeWorkflow: (request: any) => Promise<WorkflowResult>;
+}
+
+interface WorkflowResult {
+  status: string;
+  result: any;
+}
 
 interface MultiAgentRequest {
   query: string;
@@ -31,10 +45,10 @@ interface MultiAgentResponse {
   analysisType: string;
   workflowType?: string;
   results: {
-    autogen?: any;
+    autogen?: unknown;
     crewai?: WorkflowResult;
-    vllm?: any;
-    hybrid?: any;
+    vllm?: unknown;
+    hybrid?: unknown;
   };
   performance: {
     totalTime: number;

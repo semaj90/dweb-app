@@ -122,7 +122,7 @@ export class AdvancedPatchStreamer {
     contextId: string,
     target: string,
     patches: Operation[],
-    metadata?: any
+    metadata?: unknown
   ): Promise<void> {
     const context = this.contexts.get(contextId);
     if (!context) {

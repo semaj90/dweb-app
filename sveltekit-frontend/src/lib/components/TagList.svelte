@@ -1,5 +1,4 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { debounce } from "$lib/utils/debounce";
   import { Plus, Tag, X } from "lucide-svelte";
@@ -22,20 +21,19 @@ import type { CommonProps } from '$lib/types/common-props';
 
   let inputValue = "";
   let showSuggestions = false;
-  let suggestions: string[] = [];
   let inputElement: HTMLInputElement;
   let suggestionsContainer: HTMLElement;
   let activeIndex = -1;
 
-  $: filteredSuggestions = availableTags
+  let filteredSuggestions = $derived(availableTags
     .filter(
       (tag) =>
         !tags.includes(tag) &&
         tag.toLowerCase().includes(inputValue.toLowerCase())
     )
-    .slice(0, 5);
+    .slice(0, 5));
 
-  $: suggestions = filteredSuggestions;
+  let suggestions = $derived(filteredSuggestions);
 
   const debouncedSearch = debounce(async (query: string) => {
     dispatch("search", query);

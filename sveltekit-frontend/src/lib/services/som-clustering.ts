@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Self-Organizing Map (SOM) Implementation for Legal Document Clustering
  * Unsupervised learning for document similarity and topic discovery

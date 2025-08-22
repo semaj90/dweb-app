@@ -1,6 +1,6 @@
 <!-- Comprehensive CRUD Dashboard showing all entities working together -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $state } from 'svelte';
 
   import { notifications } from "$lib/stores/notification";
   import {
@@ -648,7 +648,4 @@ import type { CommonProps } from '$lib/types/common-props';
   }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

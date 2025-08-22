@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+
 import { db } from "$lib/server/db/index";
 cases, criminals, evidence
 import { json } from "@sveltejs/kit";
@@ -321,7 +321,7 @@ async function importParticipants(
     }
   }
 }
-function parseCSV(csvContent: string): any[] {
+function parseCSV(csvContent: string): unknown[] {
   const lines = csvContent.split("\n");
   if (lines.length < 2) return [];
 
@@ -343,7 +343,7 @@ function parseCSV(csvContent: string): any[] {
   }
   return data;
 }
-function parseXML(xmlContent: string): any {
+function parseXML(xmlContent: string): unknown {
   // Simple XML parser - in production, use a proper XML parser like 'fast-xml-parser'
   try {
     // This is a simplified parser - for production use a proper XML library
@@ -353,7 +353,7 @@ function parseXML(xmlContent: string): any {
     // Convert XML to JSON structure
     const result: any = {};
 
-    function xmlToJson(node: any): any {
+    function xmlToJson(node: any): unknown {
       const obj: any = {};
 
       if (node.children && node.children.length > 0) {

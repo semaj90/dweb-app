@@ -455,7 +455,7 @@ Provide a brief summary and recommendations for improvement.`;
     return await this.runAutosolveCycle();
   }
 
-  getStatus(): any {
+  getStatus(): unknown {
     return {
       is_running: this.isRunning,
       cycle_count: this.autosolveCycle,
@@ -464,7 +464,7 @@ Provide a brief summary and recommendations for improvement.`;
     };
   }
 
-  async getAutosolvHistory(limit: number = 10): Promise<any[]> {
+  async getAutosolvHistory(limit: number = 10): Promise<unknown[]> {
     try {
       const history = await (databaseOrchestrator as any).queryDatabase?.(
         { limit, order_by: 'timestamp DESC' },

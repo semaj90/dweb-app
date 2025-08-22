@@ -1,6 +1,6 @@
 <!-- Enhanced ThinkingStyleToggle with Nier Automata + Harvard Crimson Theme -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived } from 'svelte';
 
   import type { Props } from "$lib/types/global";
 
@@ -183,7 +183,7 @@ import type { CommonProps } from '$lib/types/common-props';
   {#if showConfig && premium}
     <div
       class="config-panel nier-border-glow"
-      transitionslide={{ duration: 300 }}
+      transition:slide={{ duration: 300 }}
     >
       <div class="config-header">
         <h4 class="text-foreground font-semibold">Thinking Style Configuration</h4>
@@ -262,7 +262,7 @@ import type { CommonProps } from '$lib/types/common-props';
   {#if !premium}
     <div
       class="premium-banner"
-      transitionslide={{ duration: 300 }}
+      transition:slide={{ duration: 300 }}
     >
       <div class="premium-content">
         <Crown class="h-5 w-5 text-harvard-gold" />
@@ -464,7 +464,4 @@ import type { CommonProps } from '$lib/types/common-props';
 </style>
 
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

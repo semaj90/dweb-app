@@ -1,9 +1,9 @@
-// @ts-nocheck
+
 // Enhanced Caching Service - Stub Implementation
 // Simple caching interface that can be extended later
 
-import type { Writable }, {
-writable } from "svelte/store";
+import type { Writable } from "svelte/store";
+import { writable } from "svelte/store";
 
 // ============================================================================
 // CACHE SERVICE INTERFACE
@@ -135,8 +135,7 @@ class EnhancedCachingService {
 
   async batchSet<T>(items: Array<{ key: string; value: T; options?: CacheOptions }>): Promise<boolean[]> {
     // Individual sets for simple implementation
-    const promises = items.map((item: any) => this.set(item.key, item.value, item.options || {})
-    );
+    const promises = items.map((item) => this.set(item.key, item.value, item.options || {}));
     return await Promise.all(promises);
   }
 
@@ -164,7 +163,7 @@ class EnhancedCachingService {
     });
   }
 
-  async getCachedSearchResults(query: string, options: SearchCacheOptions = {}): Promise<any[] | null> {
+  async getCachedSearchResults(query: string, options: SearchCacheOptions = {}): Promise<unknown[] | null> {
     const cacheKey = `search:${this.hashQuery(query)}`;
     const cached = await this.get<any>(cacheKey, options);
     
@@ -198,9 +197,9 @@ class EnhancedCachingService {
     });
   }
 
-  async getCachedVectorSimilarity(queryHash: string, options: CacheOptions = {}): Promise<any[] | null> {
+  async getCachedVectorSimilarity(queryHash: string, options: CacheOptions = {}): Promise<unknown[] | null> {
     const cacheKey = `vector:${queryHash}`;
-    return await this.get<any[]>(cacheKey, options);
+    return await this.get<unknown[]>(cacheKey, options);
   }
 
   // ============================================================================
@@ -237,7 +236,7 @@ class EnhancedCachingService {
 
   async getStats(): Promise<{
     service: typeof this.stats;
-    layers?: any;
+    layers?: unknown;
   }> {
     const layerStats = null; // Simple implementation
     
@@ -254,7 +253,7 @@ class EnhancedCachingService {
   async healthCheck(): Promise<{
     healthy: boolean;
     service: boolean;
-    layers?: any;
+    layers?: unknown;
   }> {
     let serviceHealthy = true;
     
@@ -343,7 +342,7 @@ export async function cacheSearchResults(query: string, results: any[], options?
   return cachingService.cacheSearchResults(query, results, options);
 }
 
-export async function getCachedSearchResults(query: string, options?: SearchCacheOptions): Promise<any[] | null> {
+export async function getCachedSearchResults(query: string, options?: SearchCacheOptions): Promise<unknown[] | null> {
   return cachingService.getCachedSearchResults(query, options);
 }
 

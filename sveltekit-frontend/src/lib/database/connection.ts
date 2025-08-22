@@ -1,11 +1,11 @@
-// @ts-nocheck
-import { drizzle } from "drizzle-orm/node-postgres";
-// Orphaned content: import {
 
+import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from 'pg';
-// Orphaned content: import * as schema from './schema.js';
-// import { env // Temporarily disabled for build
-const env = { DATABASE_URL: import.meta.env.DATABASE_URL };
+import * as schema from './schema';
+
+const env = { 
+  DATABASE_URL: process.env.DATABASE_URL || import.meta.env?.DATABASE_URL 
+};
 
 // Create PostgreSQL connection pool
 const pool = new Pool({
@@ -22,7 +22,7 @@ export const db = drizzle(pool, { schema });
 export async function testDatabaseConnection(): Promise<{
   success: boolean;
   message: string;
-  details?: any;
+  details?: unknown;
 }> {
   try {
     // Test basic connection

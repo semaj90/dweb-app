@@ -6,17 +6,11 @@ import crypto from "crypto";
 // (Header line previously corrupted; cleaned.)
 
 import { Ollama } from "@langchain/community/llms/ollama";
-// Orphaned content: import {
-
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-// Orphaned content: import {
-
 import { PromptTemplate } from "@langchain/core/prompts";
-// Orphaned content: import {
-RunnableSequence, RunnablePassthrough
+import { RunnableSequence, RunnablePassthrough } from "@langchain/core/runnables";
 import { StringOutputParser } from '@langchain/core/output_parsers';
-// Orphaned content: import postgres from "postgres";
-import {
+import postgres from "postgres";
 
 // Import schema directly (same path used across project). If it fails at runtime we degrade gracefully.
 

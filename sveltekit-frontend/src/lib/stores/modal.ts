@@ -1,9 +1,9 @@
 import { writable } from "svelte/store";
-// @ts-nocheck
+
 
 export interface ModalConfig {
   id: string;
-  component?: any; // Svelte component
+  component?: unknown; // Svelte component
   props?: Record<string, any>;
   title?: string;
   size?: "sm" | "md" | "lg" | "xl" | "full";

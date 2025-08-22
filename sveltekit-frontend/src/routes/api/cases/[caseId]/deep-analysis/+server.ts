@@ -1,12 +1,12 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+import { json } from "@sveltejs/kit";
+import { db } from "$lib/server/db/index";
+import { caseActivities, cases, evidence } from "$lib/server/db/index";
+import { eq } from "drizzle-orm";
+import { QdrantClient } from "@qdrant/js-client-rest";
+
 // Environment variables fallback
 const env = process.env || {};
-import { caseActivities, cases, evidence } from "$lib/server/db/index";
-
-type { RequestHandler }, {
-json } from "@sveltejs/kit";
-import { db } from "$lib/server/db/index";
 
 const QDRANT_URL = env.QDRANT_URL || "http://localhost:6333";
 const NLP_SERVICE_URL = env.LLM_SERVICE_URL || "http://localhost:8000";

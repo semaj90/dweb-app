@@ -1,7 +1,8 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+
 
 	import type { HTMLInputAttributes } from 'svelte/elements';
+  import { $props, $derived } from 'svelte';
 
 	interface Props extends Omit<HTMLInputAttributes, 'size' | 'disabled' | 'required' | 'readonly'> {
 		label?: string;
@@ -156,24 +157,64 @@ import type { CommonProps } from '$lib/types/common-props';
 		{/if}
 
 		<!-- Input -->
-		<input
-			bind:this={inputElement}
-			id={inputId}
-			class={inputClasses}
-			bind:value
-			{disabled}
-			{readonly}
-			{required}
-			{placeholder}
-			{type}
-			aria-invalid={hasError}
-			aria-describedby={(hasError ? errorId : '') + (hint ? ' ' + hintId : '')}
-			oninput={handleInput}
-			onchange={handleChange}
-			onfocus={handleFocus}
-			onblur={handleBlur}
-			{...restProps}
-		/>
+		{#if type === 'password'}
+			<input
+				bind:this={inputElement}
+				id={inputId}
+				class={inputClasses}
+				bind:value
+				{disabled}
+				{readonly}
+				{required}
+				{placeholder}
+				type="password"
+				aria-invalid={hasError}
+				aria-describedby={(hasError ? errorId : '') + (hint ? ' ' + hintId : '')}
+				oninput={handleInput}
+				onchange={handleChange}
+				onfocus={handleFocus}
+				onblur={handleBlur}
+				{...restProps}
+			/>
+		{:else if type === 'email'}
+			<input
+				bind:this={inputElement}
+				id={inputId}
+				class={inputClasses}
+				bind:value
+				{disabled}
+				{readonly}
+				{required}
+				{placeholder}
+				type="email"
+				aria-invalid={hasError}
+				aria-describedby={(hasError ? errorId : '') + (hint ? ' ' + hintId : '')}
+				oninput={handleInput}
+				onchange={handleChange}
+				onfocus={handleFocus}
+				onblur={handleBlur}
+				{...restProps}
+			/>
+		{:else}
+			<input
+				bind:this={inputElement}
+				id={inputId}
+				class={inputClasses}
+				bind:value
+				{disabled}
+				{readonly}
+				{required}
+				{placeholder}
+				type="text"
+				aria-invalid={hasError}
+				aria-describedby={(hasError ? errorId : '') + (hint ? ' ' + hintId : '')}
+				oninput={handleInput}
+				onchange={handleChange}
+				onfocus={handleFocus}
+				onblur={handleBlur}
+				{...restProps}
+			/>
+		{/if}
 
 		<!-- Right Icon or Status -->
 		{#if loading}

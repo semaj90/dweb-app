@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { $state } from 'svelte';
   import { Button } from '$lib/components/ui/button';
   import Badge from '$lib/components/ui/Badge.svelte';
   import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '$lib/components/ui/card';
@@ -197,7 +198,7 @@
   </div>
 
   <!-- Main Content -->
-  <Tabs value={activeTab} onValueChange={(value) => activeTab = value}>
+  <Tabs value={activeTab} onvaluechange={(value) => activeTab = value}>
     <TabsList class="grid w-full grid-cols-5">
       <TabsTrigger value="overview">Overview</TabsTrigger>
       <TabsTrigger value="vector-demo">Vector Intelligence</TabsTrigger>
@@ -343,9 +344,9 @@
             width={800} 
             height={600} 
             caseId="demo-case-001"
-            on:save={(e) => console.log('Canvas saved:', e.detail)}
-            on:delete={(e) => console.log('Object deleted:', e.detail)}
-            on:select={(e) => console.log('Object selected:', e.detail)}
+            onsave={(e) => console.log('Canvas saved:', e.detail)}
+            ondelete={(e) => console.log('Object deleted:', e.detail)}
+            onselect={(e) => console.log('Object selected:', e.detail)}
           />
         </CardContent>
       </Card>

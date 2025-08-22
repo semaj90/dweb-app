@@ -1,7 +1,7 @@
 <!-- @migration-task Error while migrating Svelte code: Unexpected token
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $effect } from 'svelte';
 
   import { useChatActor, chatActions } from '$lib/stores/chatStore';
   import { Card } from '$lib/components/ui/card';
@@ -169,7 +169,4 @@ import type { CommonProps } from '$lib/types/common-props';
   }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

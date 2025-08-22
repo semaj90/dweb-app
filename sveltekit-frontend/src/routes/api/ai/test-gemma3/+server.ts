@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+
 // Test endpoint for Gemma3 local LLM integration
 import { json } from "@sveltejs/kit";
 import { tauriLLM } from "$lib/services/tauri-llm";

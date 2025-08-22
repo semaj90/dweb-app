@@ -7,17 +7,17 @@ import { randomUUID } from 'crypto';
 import path from 'path';
 import { qdrantService } from '$lib/services/qdrantService';
 // Placeholder services to avoid compile errors if originals missing
-// @ts-ignore
+
 import { cases, legalDocuments } from '$lib/server/db/enhanced-legal-schema';
-// @ts-ignore
+
 import { eq } from 'drizzle-orm';
-// @ts-ignore
+
 import { writeFile, mkdir } from 'fs/promises';
-// @ts-ignore
+
 import pdf from 'pdf-parse';
-// @ts-ignore
+
 import { createWorker } from 'tesseract.js';
-// @ts-ignore
+
 import { ollamaService } from '$lib/server/ai/ollama-service';
 
 import { legalBERT } from '$lib/server/ai/legalbert-middleware';
@@ -26,9 +26,9 @@ import { legalBERT } from '$lib/server/ai/legalbert-middleware';
 
 // Production logging
 const logger = {
-  info: (msg: string, data?: any) => console.log(`[INFO] ${new Date().toISOString()} - ${msg}`, data || ''),
-  error: (msg: string, error?: any) => console.error(`[ERROR] ${new Date().toISOString()} - ${msg}`, error || ''),
-  warn: (msg: string, data?: any) => console.warn(`[WARN] ${new Date().toISOString()} - ${msg}`, data || '')
+  info: (msg: string, data?: unknown) => console.log(`[INFO] ${new Date().toISOString()} - ${msg}`, data || ''),
+  error: (msg: string, error?: unknown) => console.error(`[ERROR] ${new Date().toISOString()} - ${msg}`, error || ''),
+  warn: (msg: string, data?: unknown) => console.warn(`[WARN] ${new Date().toISOString()} - ${msg}`, data || '')
 };
 
 // File type validation
@@ -42,9 +42,9 @@ interface UploadResult {
   success: boolean;
   documentId?: string;
   evidenceId?: string;
-  analysis?: any;
+  analysis?: unknown;
   embeddings?: number[];
-  ocrResult?: any;
+  ocrResult?: unknown;
   error?: string;
   processingTime: number;
 }
@@ -85,7 +85,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
     }
 
     // Verify case exists
-    const existingCase = await db.select().from(cases).where(eq(cases.id, caseId)).limit(1).catch(() => [] as any[]);
+    const existingCase = await db.select().from(cases).where(eq(cases.id, caseId)).limit(1).catch(() => [] as unknown[]);
     if (existingCase.length === 0) {
       logger.error(`Case not found: ${caseId}`);
       return json({ success: false, error: 'Case not found' }, { status: 404 });

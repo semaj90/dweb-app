@@ -1,5 +1,5 @@
 import { URL } from "url";
-// @ts-nocheck
+
 import { ContextService } from "$lib/services/context-service";
 
 // Environment variables fallback

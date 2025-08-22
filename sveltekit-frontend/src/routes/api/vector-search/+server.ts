@@ -22,7 +22,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
     const result = await response.json();
     return json(result);
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("Vector search failed:", error);
     return json(
       {

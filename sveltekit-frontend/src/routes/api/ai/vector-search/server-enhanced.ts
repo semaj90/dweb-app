@@ -1,14 +1,30 @@
-// @ts-nocheck
-import { json } from "@sveltejs/kit";
-// Orphaned content: import type { RequestHandler
-import {
-enhancedAiPipeline } from "$lib/services/enhanced-ai-pipeline";
-// Orphaned content: import type {
-  EnhancedSearchOptions,
-  SearchRequest,
-  SearchResponse,
 
-// Enhanced POST endpoint using Go microservice or local fallback
+import type { RequestHandler } from '@sveltejs/kit';
+import { json } from "@sveltejs/kit";
+import { vectorSearchService } from "$lib/services/real-vector-search-service";
+
+interface EnhancedSearchOptions {
+  maxResults?: number;
+  threshold?: number;
+  collection?: string;
+  includeMetadata?: boolean;
+  filter?: Record<string, any>;
+}
+
+interface SearchRequest {
+  query: string;
+  options?: EnhancedSearchOptions;
+}
+
+interface SearchResponse {
+  success: boolean;
+  results?: any[];
+  error?: string;
+  queryTime?: number;
+  model?: string;
+}
+
+// Enhanced POST endpoint using real vector search service
 export const POST: RequestHandler = async ({ request }) => {
   try {
     const { query, options = {} } = await request.json();
@@ -20,50 +36,46 @@ export const POST: RequestHandler = async ({ request }) => {
       );
     }
 
-    // Initialize enhanced AI pipeline
-    await enhancedAiPipeline.initialize();
-
     // Create search options with defaults
     const searchOptions: EnhancedSearchOptions = {
-      limit: options.limit || 10,
-      minSimilarity: options.minSimilarity || 0.6,
-      documentType: options.documentType,
-      practiceArea: options.practiceArea,
-      jurisdiction: options.jurisdiction || "US",
-      useCache: options.useCache !== false,
-      useGPU: options.useGPU !== false,
-      temperature: options.temperature || 0.1,
-      ragMode: options.ragMode || "enhanced",
-      includeContext: options.includeContext !== false,
-      contextWindow: options.contextWindow || 4096,
+      maxResults: options.maxResults || options.limit || 10,
+      threshold: options.threshold || options.minSimilarity || 0.7,
+      collection: options.collection || 'legal_documents',
+      includeMetadata: options.includeMetadata !== false,
+      filter: options.filter
     };
 
-    // Perform enhanced semantic search (will use Go microservice if available)
-    const results = await enhancedAiPipeline.semanticSearch(
-      query,
-      searchOptions
-    );
+    // Perform real vector search
+    const searchResponse = await vectorSearchService.search(query, searchOptions);
+
+    if (!searchResponse.success) {
+      return json(
+        { 
+          success: false, 
+          error: "Vector search failed",
+          timestamp: new Date().toISOString()
+        },
+        { status: 500 }
+      );
+    }
 
     // Enhanced response with detailed metadata
     return json({
       success: true,
-      results,
+      results: searchResponse.results,
       query,
-      total: results.length,
+      total: searchResponse.totalResults,
+      queryTime: searchResponse.queryTime,
       timestamp: new Date().toISOString(),
       searchMetadata: {
-        embeddingModel: "nomic-embed-text",
-        vectorStore: "postgresql-pgvector",
-        llmModel: "gemma3-legal",
-        processingMode: "enhanced",
-        usedGoMicroservice: enhancedAiPipeline.useGoMicroservice,
+        embeddingModel: searchResponse.model,
+        vectorStore: "qdrant",
         searchOptions,
       },
       performance: {
-        cached: results.some((r) => r.ragContext?.relatedDocuments?.length),
-        gpu_accelerated: searchOptions.useGPU,
-        rag_mode: searchOptions.ragMode,
-      },
+        queryTimeMs: searchResponse.queryTime,
+        resultsFound: searchResponse.totalResults,
+      }
     });
   } catch (error) {
     console.error("Enhanced vector search API error:", error);
@@ -71,9 +83,8 @@ export const POST: RequestHandler = async ({ request }) => {
     return json(
       {
         success: false,
-        error: error.message || "Internal server error during vector search",
+        error: error instanceof Error ? error.message : "Internal server error during vector search",
         timestamp: new Date().toISOString(),
-        fallback: true,
       },
       { status: 500 }
     );
@@ -83,23 +94,28 @@ export const POST: RequestHandler = async ({ request }) => {
 // GET endpoint for search status and health check
 export const GET: RequestHandler = async () => {
   try {
-    // Check microservice health
-    const goHealthy = await enhancedAiPipeline.checkGoMicroserviceHealth();
+    // Check real vector search service health
+    const healthStatus = await vectorSearchService.healthCheck();
 
     return json({
       status: "operational",
       services: {
-        goMicroservice: goHealthy ? "healthy" : "unavailable",
-        localPipeline: "available",
-        fallbackEnabled: true,
+        ollama: healthStatus.ollama ? "healthy" : "unavailable",
+        qdrant: healthStatus.qdrant ? "healthy" : "unavailable",
+        vectorSearch: healthStatus.overall ? "operational" : "degraded",
       },
       capabilities: {
-        vectorSearch: true,
-        semanticAnalysis: true,
-        legalAnalysis: true,
-        cudaAcceleration: true,
-        redisCache: true,
-        gemma3Legal: true,
+        vectorSearch: healthStatus.overall,
+        semanticAnalysis: healthStatus.ollama,
+        legalAnalysis: healthStatus.overall,
+        embeddings: healthStatus.ollama,
+        vectorStorage: healthStatus.qdrant,
+        realTimeSearch: healthStatus.overall,
+      },
+      metadata: {
+        embeddingModel: "nomic-embed-text",
+        vectorStore: "qdrant",
+        searchEngine: "cosine_similarity",
       },
       timestamp: new Date().toISOString(),
     });
@@ -107,7 +123,7 @@ export const GET: RequestHandler = async () => {
     return json(
       {
         status: "error",
-        error: error.message,
+        error: error instanceof Error ? error.message : "Health check failed",
         timestamp: new Date().toISOString(),
       },
       { status: 500 }

@@ -1,33 +1,23 @@
-// @ts-nocheck
+
 // Enhanced AI Synthesis Orchestrator with Full Stack Integration
 // Connects Neo4j, PostgreSQL/pgvector, XState, Redis, Ollama, and Go services
 
 import { logger } from "./logger.js";
-import { drizzle, {,   pgTable,,   text,,   vector,,   timestamp,,   jsonb,,   uuid,,   integer,,   boolean, } from
-// Orphaned content: import { eq, sql
-postgres from "postgres";
-// Orphaned content: import {
-
+import { drizzle } from "drizzle-orm/postgres-js";
+import { pgTable, text, vector, timestamp, jsonb, uuid, integer, boolean } from "drizzle-orm/pg-core";
+import { eq, sql } from "drizzle-orm";
+import postgres from "postgres";
 import { createMachine, interpret, State } from "xstate";
-// Orphaned content: import {
-
 import { OllamaEmbeddings } from "@langchain/ollama";
-// Orphaned content: import {
-
 import { PGVectorStore } from "@langchain/community/vectorstores/pgvector";
-// Orphaned content: import {
-
 import { Document } from '@langchain/core/documents';
-// Orphaned content: // Import existing components
-import { aiAssistantSynthesizer
-import {
-legalBERT } from "./legalbert-middleware.js";
-// Orphaned content: import { cachingLayer
-import {
-feedbackLoop } from "./feedback-loop.js";
-// Orphaned content: import { monitoringService
-import {
-EventEmitter } from "events";
+// Import existing components
+import { aiAssistantSynthesizer } from "./ai-assistant-synthesizer.js";
+import { legalBERT } from "./legalbert-middleware.js";
+import { cachingLayer } from "./caching-layer.js";
+import { feedbackLoop } from "./feedback-loop.js";
+import { monitoringService } from "./monitoring-service.js";
+import { EventEmitter } from "events";
 
 // ===== DATABASE SCHEMA (Drizzle ORM TypeScript Safe) =====
 
@@ -939,7 +929,7 @@ TEMPLATE """{{ if .System }}<|system|>
     return crypto.createHash('sha256').update(query).digest('hex');
   }
 
-  private applyMMR(documents: any[], lambda: number = 0.7): any[] {
+  private applyMMR(documents: any[], lambda: number = 0.7): unknown[] {
     if (documents.length <= 1) return documents;
 
     const selected = [documents[0]];
@@ -1080,7 +1070,7 @@ RESPONSE:`;
 
   // ===== PUBLIC API =====
 
-  async process(query: string, options?: any): Promise<any> {
+  async process(query: string, options?: unknown): Promise<any> {
     if (!this.initialized) {
       await this.initialize();
     }
@@ -1127,7 +1117,7 @@ RESPONSE:`;
     });
   }
 
-  async processWithStreaming(query: string, options?: any): AsyncGenerator<any> {
+  async processWithStreaming(query: string, options?: unknown): AsyncGenerator<any> {
     // Streaming implementation
     const streamingMachine = this.machine.withContext({
       query,

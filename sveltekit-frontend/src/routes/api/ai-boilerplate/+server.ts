@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * AI-Assisted Boilerplate Generation API
  * Generates legal boilerplate text based on high-performing phrase patterns
@@ -142,7 +142,7 @@ export const POST: RequestHandler = async ({ request }) => {
 async function getHighPerformingPhrases(
     type: string,
     jurisdiction?: string,
-    context?: any
+    context?: unknown
 ) {
     const db = getDB();
     
@@ -298,7 +298,7 @@ function buildSystemPrompt(type: string, tone: string): string {
     return `${basePrompt}${typePrompts[type]} ${toneAdjustments[tone]}`;
 }
 
-function buildContextPrompt(context?: any): string {
+function buildContextPrompt(context?: unknown): string {
     if (!context) return '';
 
     let contextPrompt = 'Context for this document:\n';

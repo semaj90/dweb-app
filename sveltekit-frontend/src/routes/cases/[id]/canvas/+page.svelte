@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { $derived } from 'svelte';
   import { page } from "$app/stores";
   import { caseService } from "$lib/services/caseService";
   import { onMount } from 'svelte';
@@ -59,7 +60,7 @@
     error: caseServiceError,
   } = caseService;
 
-  $: caseId = $page.params.id;
+  let caseId = $derived($page.params.id);
   let canvasElement: HTMLElement;
   let contextMenuState: ContextMenuState = { show: false, x: 0, y: 0 };
 
@@ -193,7 +194,7 @@
         class="container mx-auto px-4"
         role="application"
         aria-label="Case evidence canvas"
-        on:contextmenu={handleCanvasContextMenu}
+        oncontextmenu={handleCanvasContextMenu}
         ondrop={handleCanvasDrop}
         ondragover={handleCanvasDragOver}
         ondragenter={handleCanvasDragEnter}

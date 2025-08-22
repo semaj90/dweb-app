@@ -226,7 +226,7 @@ export const agentShellServices = {
 
 // Action implementations
 export const agentShellActions = {
-  acceptPatchAction: async ({ event }: any) => {
+  acceptPatchAction: async ({ event }: unknown) => {
     try {
       const result = await goServiceClient.acceptPatch({
         jobId: event.jobId,
@@ -240,7 +240,7 @@ export const agentShellActions = {
     }
   },
 
-  rateSuggestionAction: async ({ event }: any) => {
+  rateSuggestionAction: async ({ event }: unknown) => {
     try {
       const result = await goServiceClient.rateSuggestion({
         jobId: event.jobId,

@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
 	import { onMount } from 'svelte';
+  import { $state, $derived, $effect } from 'svelte';
 	import { frontendRAG } from '$lib/ai/frontend-rag-pipeline';
 	import type { SemanticChunk } from '$lib/ai/frontend-rag-pipeline';
 	import { Button } from '$lib/components/ui/button';
@@ -16,7 +16,7 @@ import type { CommonProps } from '$lib/types/common-props';
 		sources: SemanticChunk[];
 		confidence: number;
 		generationMethod: string;
-		stats?: any;
+		stats?: unknown;
 	} | null>(null);
 	let searchHistory = $state<string[]>([]);
 	let contextMode = $state<'legal' | 'technical' | 'general'>('legal');
@@ -312,7 +312,4 @@ import type { CommonProps } from '$lib/types/common-props';
 		border-radius: 2px;
 	}
 </style>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

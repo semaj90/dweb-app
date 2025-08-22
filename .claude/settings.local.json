@@ -374,7 +374,16 @@
       "Bash(./build.bat)",
       "Bash(set WEBASM_GPU_PORT=8092)",
       "Bash(.webasm-gpu-middleware.exe)",
-      "Bash(./webasm-gpu-middleware.exe)"
+      "Bash(./webasm-gpu-middleware.exe)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT version();\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT version();\" --no-password)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT version();\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -d legal_ai_db -c \"CREATE EXTENSION IF NOT EXISTS vector;\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -d legal_ai_db -c \"SELECT extname FROM pg_extension WHERE extname = ''vector'';\")",
+      "Bash(./complete-vector-setup.bat)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -d legal_ai_db -f \"C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\drizzle\\safe-vector-migration.sql\")",
+      "Bash(.simple-api-endpoints.exe)",
+      "Bash(./simple-api-endpoints.exe)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits",

@@ -1,5 +1,6 @@
-<script>
-import type { CommonProps } from '$lib/types/common-props';
+<script lang="ts">
+  import { $props } from 'svelte';
+  
 
   let {
     className = '',

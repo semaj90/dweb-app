@@ -1,6 +1,12 @@
-// @ts-nocheck
 import { writable } from "svelte/store";
-import { browser, , interface AvatarState {,   url: string | null;,   isUploading: boolean;,   error: string | null;,   lastUpdated: number | null; } from
+import { browser } from "$app/environment";
+
+interface AvatarState {
+  url: string | null;
+  isUploading: boolean;
+  error: string | null;
+  lastUpdated: number | null;
+}
 
 const initialState: AvatarState = {
   url: null,

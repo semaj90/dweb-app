@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { createEventDispatcher } from 'svelte';
+  import { $props } from 'svelte';
   import { Button } from 'bits-ui';
   import { fade } from 'svelte/transition';
 

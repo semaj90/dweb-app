@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import { $state } from 'svelte';
 
   interface Document {
     id: string;

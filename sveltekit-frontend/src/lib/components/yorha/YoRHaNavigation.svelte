@@ -1,6 +1,6 @@
 <!-- YoRHa Navigation Sidebar Component -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $state, $derived, $effect } from 'svelte';
 
   import type { Props } from "$lib/types/global";
   import { page } from "$app/stores";
@@ -318,7 +318,4 @@ import type { CommonProps } from '$lib/types/common-props';
 </style>
 
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

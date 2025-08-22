@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  // $state is declared globally in src/types/svelte-helpers.d.ts
   import { fade, fly } from 'svelte/transition';
 
   // Test state

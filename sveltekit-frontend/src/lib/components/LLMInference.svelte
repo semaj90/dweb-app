@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { onMount } from 'svelte';
+  import { $state } from 'svelte';
   import { getAvailableModels, runInference } from "$lib/llm/tauri-llm";
 
   let models: string[] = $state([]);
@@ -121,7 +121,4 @@ select, textarea {
 }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

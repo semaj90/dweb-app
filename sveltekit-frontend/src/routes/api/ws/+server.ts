@@ -67,7 +67,7 @@ function initializeWebSocket() {
     socket.on('user-attention', (data: {
       type: 'focus' | 'blur' | 'scroll' | 'click' | 'typing';
       timestamp: string;
-      metadata?: any;
+      metadata?: unknown;
     }) => {
       // Track user attention for AI context switching
       trackUserAttention(socket.id, data);

@@ -1,8 +1,8 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
-  interface Props extends CommonProps {
-    items?: any;
+  interface Props {
+    items?: unknown;
   }
   let {
     items = ['Active Cases', 'Pending Cases', 'Closed Cases']
@@ -50,7 +50,7 @@ import type { CommonProps } from '$lib/types/common-props';
       <div 
         use:menu 
         class="space-y-4"
-        transitionfade={{ duration: 150 }}
+        transition:fade={{ duration: 150 }}
       >
         {#each items as item, index}
           <div 
@@ -75,7 +75,7 @@ import type { CommonProps } from '$lib/types/common-props';
   
   <!-- Melt UI Dialog -->
   {#if $open}
-    <div use:overlay class="space-y-4" transitionfade={{ duration: 150 }}>
+    <div use:overlay class="space-y-4" transition:fade={{ duration: 150 }}>
       <div use:content class="space-y-4">
         <h3 use:dialogTitle class="space-y-4">
           Case Management System

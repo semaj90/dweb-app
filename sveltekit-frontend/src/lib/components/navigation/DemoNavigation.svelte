@@ -1,6 +1,6 @@
 <!-- Demo Navigation Component -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $state } from 'svelte';
 
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
@@ -208,7 +208,4 @@ import type { CommonProps } from '$lib/types/common-props';
     animation: slideIn 0.3s ease-out;
   }
 </style>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

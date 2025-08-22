@@ -1,10 +1,10 @@
 <!-- @migration-task Error while migrating Svelte code: Unexpected token
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived } from 'svelte';
 
-  interface Props extends CommonProps {
-    open?: any;
+  interface Props {
+    open?: unknown;
   }
   let { open = false }: Props = $props();
 

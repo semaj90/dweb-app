@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Compiler Feedback Loop Service
  * Implements the AI-driven development architecture with:
@@ -304,7 +304,7 @@ export class CompilerFeedbackLoop {
   /**
    * Find similar issues using Enhanced RAG
    */
-  private async findSimilarIssues(vectors: Float32Array, clusterId?: string): Promise<any[]> {
+  private async findSimilarIssues(vectors: Float32Array, clusterId?: string): Promise<unknown[]> {
     const cluster = clusterId ? this.somClustering.getCluster(clusterId) : null;
     
     // Query RAG engine for similar compiler errors

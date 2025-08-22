@@ -1,5 +1,5 @@
 import { getLocalOllamaUrl } from "$lib/constants/local-llm-config";
-// @ts-nocheck
+
 /**
  * Automated TODO Generation & LLM Misfire Tracking
  * Captures and categorizes development issues for AI review
@@ -67,7 +67,7 @@ class TodoAutogen {
   /**
    * Log LLM misfire for review
    */
-  async logLLMMisfire(data: LLMMisfireData, context?: any): Promise<string> {
+  async logLLMMisfire(data: LLMMisfireData, context?: unknown): Promise<string> {
     const id = `llm-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
     const todo: TodoEntry = {
@@ -121,7 +121,7 @@ class TodoAutogen {
   /**
    * Log runtime exceptions
    */
-  async logRuntimeError(error: Error, context?: any): Promise<string> {
+  async logRuntimeError(error: Error, context?: unknown): Promise<string> {
     const id = `runtime-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
     const todo: TodoEntry = {

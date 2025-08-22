@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state, $derived } from 'svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     class?: string;
     children?: import('svelte').Snippet;
   }
@@ -43,7 +43,7 @@ import type { CommonProps } from '$lib/types/common-props';
     /** Maximum character count */
     maxlength?: number;
     /** Icon to display */
-    icon?: any;
+    icon?: unknown;
     /** Icon position */
     iconPosition?: 'left' | 'right';
     class?: string;

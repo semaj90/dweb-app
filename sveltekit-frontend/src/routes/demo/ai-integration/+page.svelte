@@ -1,5 +1,6 @@
 <!-- AI Integration Demo - Complete System Showcase -->
 <script lang="ts">
+  import { $state, $derived } from 'svelte';
   import { onMount } from 'svelte';
   import { useMachine } from '@xstate/svelte';
   import { prefetchMachine } from '$lib/machines/prefetchMachine';
@@ -43,7 +44,8 @@
   ];
 
   onMount(() => {
-    checkSystemHealth();
+    // Disabled auto health checks to prevent CORS errors
+    // checkSystemHealth();
     generateDemoEmbeddings();
 
     // Start monitoring if specified

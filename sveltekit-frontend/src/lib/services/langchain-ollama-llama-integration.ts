@@ -530,7 +530,7 @@ export class LangChainOllamaIntegration {
    * Batch process multiple documents
    */
   async batchProcessDocuments(
-    documents: Array<{ title: string; content: string; metadata?: any }>,
+    documents: Array<{ title: string; content: string; metadata?: unknown }>,
     options: {
       useGPUAcceleration?: boolean;
       generateSummaries?: boolean;

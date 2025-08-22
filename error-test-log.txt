@@ -1,0 +1,47 @@
+YoRHa Legal AI Platform - Error Test Log 
+Date: Wed 08/20/2025 15:49:31.18 
+=============================================================================== 
+ 
+PASS: PostgreSQL connection 
+PASS: MinIO API accessible 
+PASS: Ollama service accessible 
+PASS: Enhanced RAG health check 
+RAG Health Response: 
+{"active_patterns":0,"context7_connected":"false","status":"healthy","timestamp":"2025-08-20T15:49:36-07:00","training_sessions":0,"websocket_connections":0}PASS: Upload service health check 
+Upload Health Response: 
+{"db":false,"ecosystem":"kratos","framework":"gin","minio":false,"status":"healthy","time":"2025-08-20T15:49:36-07:00"}ERROR: YoRHa homepage failed - Error code: 28 
+ERROR: YoRHa alternative port failed - Error code: 56 
+ERROR: YoRHa RAG API request failed - Error code: 56 
+ERROR: YoRHa Legal Data API request failed - Error code: 7 
+ERROR: Cluster Health API request failed - Error code: 7 
+PASS: File upload processed 
+Upload Response: 
+{"message":"Object storage not available","success":false} 
+PASS: Ollama models list retrieved 
+Available Models: 
+{"models":[{"name":"gemma3-legal:latest","model":"gemma3-legal:latest","modified_at":"2025-08-02T09:45:28.7920343-07:00","size":7300779419,"digest":"45f85b7417c3e474841b2433314ed832c27b33f46661020471ee7cc1990d3fd7","details":{"parent_model":"","format":"gguf","family":"gemma3","families":["gemma3"],"parameter_size":"11.8B","quantization_level":"Q4_K_M"}},{"name":"nomic-embed-text:latest","model":"nomic-embed-text:latest","modified_at":"2025-08-01T16:22:44.0364173-07:00","size":274302450,"digest":"0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f","details":{"parent_model":"","format":"gguf","family":"nomic-bert","families":["nomic-bert"],"parameter_size":"137M","quantization_level":"F16"}}]} 
+ERROR: Ollama generation failed - Error code: 28 
+PASS: PostgreSQL basic query 
+PG Query Result: 
+       current_timestamp       
+-------------------------------
+ 2025-08-20 15:52:32.308248-07
+(1 row)
+
+ 
+PASS: pgvector extension check 
+pgvector Status: 
+ oid | extname | extowner | extnamespace | extrelocatable | extversion | extconfig | extcondition 
+-----+---------+----------+--------------+----------------+------------+-----------+--------------
+(0 rows)
+
+ 
+PASS: RAG-Ollama integration test 
+RAG-Ollama Response: 
+404 page not found 
+ERROR: Frontend-Backend communication failed - Error code: 7 
+ 
+=============================================================================== 
+ERROR SUMMARY AND SOLUTIONS 
+=============================================================================== 
+NO ERRORS DETECTED - System is functioning correctly! 

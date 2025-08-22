@@ -1,13 +1,13 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { onMount, onDestroy } from 'svelte';
+  import { $props } from 'svelte';
   import { io, type Socket } from 'socket.io-client';
   import { uploadStore } from '$lib/stores/upload-machine';
   import { writable } from 'svelte/store';
   
   // Props
-  interface Props extends CommonProps {
+  interface Props {
     caseId?: string;
     uploadId?: string;
     showTensorMetrics?: boolean;
@@ -208,7 +208,7 @@ import type { CommonProps } from '$lib/types/common-props';
   function setupAttentionTracking() {
     if (!socket) return;
 
-    const trackEvent = (type: string, metadata?: any) => {
+    const trackEvent = (type: string, metadata?: unknown) => {
       socket?.emit('user-attention', {
         type,
         timestamp: new Date().toISOString(),

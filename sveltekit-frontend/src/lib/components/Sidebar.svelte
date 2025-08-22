@@ -1,5 +1,9 @@
+<script context="module" lang="ts">
+// Svelte runes are declared globally in `src/types/svelte-helpers.d.ts`.
+export {};
+</script>
+
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import Fuse from "fuse.js";
   import { onMount } from "svelte";
@@ -14,17 +18,17 @@ import type { CommonProps } from '$lib/types/common-props';
   import { FileText, Folder, Tag, X } from "lucide-svelte";
 
   let sidebarElement: HTMLElement;
-  let isHovered = false;
-  let isPinned = false;
-  let searchQuery = "";
-  let activeTab = "evidence";
+  let isHovered = $state(false);
+  let isPinned = $state(false);
+  let searchQuery = $state("");
+  let activeTab = $state("evidence");
   let fuse: Fuse<any>;
 
   // Reactive data
-  $: sidebarOpen = $sidebarStore.open || isHovered || isPinned;
-  $: evidenceItems = $lokiStore.evidence || [];
-  $: notesItems = $lokiStore.notes || [];
-  $: canvasStates = $lokiStore.canvasStates || [];
+  let sidebarOpen = $derived($sidebarStore.open || isHovered || isPinned);
+  let evidenceItems = $derived($lokiStore.evidence || []);
+  let notesItems = $derived($lokiStore.notes || []);
+  let canvasStates = $derived($lokiStore.canvasStates || []);
 
   // Initialize Fuse search
   $: if (activeTab === "evidence" && evidenceItems.length > 0) {
@@ -39,12 +43,11 @@ import type { CommonProps } from '$lib/types/common-props';
     });
 }
   // Search results
-  $: searchResults =
-    searchQuery && fuse
+  let searchResults = $derived(searchQuery && fuse
       ? fuse.search(searchQuery).map((result) => result.item)
       : activeTab === "evidence"
         ? evidenceItems
-        : notesItems;
+        : notesItems);
 
   onMount(() => {
     // Initialize Loki store
@@ -133,7 +136,7 @@ import type { CommonProps } from '$lib/types/common-props';
         <SearchBar
           placeholder="Search {activeTab}..."
           value={searchQuery}
-          on:search={handleSearch}
+          onsearch={handleSearch}
         />
       </div>
 
@@ -172,8 +175,8 @@ import type { CommonProps } from '$lib/types/common-props';
             <InfiniteScrollList
               items={searchResults}
               itemType="evidence"
-              on:itemClick={handleItemClick}
-              on:loadMore={refreshData}
+              onitemclick={handleItemClick}
+              onloadmore={refreshData}
             />
           </div>
         {/if}
@@ -184,8 +187,8 @@ import type { CommonProps } from '$lib/types/common-props';
             <InfiniteScrollList
               items={searchResults}
               itemType="notes"
-              on:itemClick={handleItemClick}
-              on:loadMore={refreshData}
+              onitemclick={handleItemClick}
+              onloadmore={refreshData}
             />
           </div>
         {/if}
@@ -196,8 +199,8 @@ import type { CommonProps } from '$lib/types/common-props';
             <InfiniteScrollList
               items={canvasStates}
               itemType="canvas"
-              on:itemClick={handleItemClick}
-              on:loadMore={refreshData}
+              onitemclick={handleItemClick}
+              onloadmore={refreshData}
             />
           </div>
         {/if}
@@ -330,7 +333,4 @@ import type { CommonProps } from '$lib/types/common-props';
 }}
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

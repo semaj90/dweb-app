@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { type RequestHandler,  json } from '@sveltejs/kit';
 import { aiService } from "$lib/server/services/ai-service.js";
 import { URL } from "url";

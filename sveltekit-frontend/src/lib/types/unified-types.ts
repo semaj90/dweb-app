@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Unified Types - Consolidates duplicate type exports across the application
  * Replaces scattered type definitions with single source of truth
@@ -258,13 +258,13 @@ export interface ValidationError {
   field: string;
   message: string;
   code: string;
-  value?: any;
+  value?: unknown;
 }
 
 export interface ApiError {
   code: string;
   message: string;
-  details?: any;
+  details?: unknown;
   timestamp: string;
   requestId?: string;
   validationErrors?: ValidationError[];
@@ -374,7 +374,7 @@ export interface WorkflowContext {
 
 export interface WorkflowEvent {
   type: string;
-  payload?: any;
+  payload?: unknown;
   timestamp: Date;
   userId: string;
 }

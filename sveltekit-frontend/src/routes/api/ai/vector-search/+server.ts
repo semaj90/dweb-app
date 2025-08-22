@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { json } from '@sveltejs/kit';
 import { getEmbeddingRepository } from '$lib/server/embedding/embedding-repository';
 

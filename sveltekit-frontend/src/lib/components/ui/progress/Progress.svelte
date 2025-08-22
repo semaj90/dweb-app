@@ -1,20 +1,18 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived } from 'svelte';
 
-  interface Props extends CommonProps {
-    value?: any;
-    max?: any;
+import { cn } from '$lib/utils';
+
+  interface Props {
+    value?: unknown;
+    max?: unknown;
+    class?: string;
   }
   let {
     value = 0,
-    max = 100
+    max = 100,
+    class: className = ''
   }: Props = $props();
-
-
-
-	import { cn } from '$lib/utils';
-
-	let className = $state('');
 
 	const percentage = $derived(Math.min((value / max) * 100, 100));
 </script>

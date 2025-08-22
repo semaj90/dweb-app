@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
 	import { createEventDispatcher } from 'svelte';
+  import { $derived } from 'svelte';
 	import { toolbarStore } from "../stores/canvas";
 	
 	import { 
@@ -51,12 +51,12 @@ import type { CommonProps } from '$lib/types/common-props';
 	];
 
 	// Reactive toolbar state
-	$: selectedTool = $toolbarStore.selectedTool;
-	$: formatting = $toolbarStore.formatting;
-	$: drawing = $toolbarStore.drawing;
-	$: canUndo = $toolbarStore.canUndo;
-	$: canRedo = $toolbarStore.canRedo;
-	$: zoom = $toolbarStore.zoom;
+	let selectedTool = $derived($toolbarStore.selectedTool);
+	let formatting = $derived($toolbarStore.formatting);
+	let drawing = $derived($toolbarStore.drawing);
+	let canUndo = $derived($toolbarStore.canUndo);
+	let canRedo = $derived($toolbarStore.canRedo);
+	let zoom = $derived($toolbarStore.zoom);
 
 	function selectTool(toolId: string) {
 		toolbarStore.update(state => ({
@@ -459,7 +459,4 @@ import type { CommonProps } from '$lib/types/common-props';
 }}
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

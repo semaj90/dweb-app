@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { test, expect } from '@playwright/test';
 
 test.describe('PostgreSQL and pgvector Operations', () => {
@@ -17,7 +17,7 @@ test.describe('PostgreSQL and pgvector Operations', () => {
     expect(response.status()).toBe(200);
     
     const extensions = await response.json();
-    const pgvector = extensions.find((ext: any) => ext.name === 'vector');
+    const pgvector = extensions.find((ext: unknown) => ext.name === 'vector');
     
     expect(pgvector).toBeDefined();
     expect(pgvector.installed).toBe(true);
@@ -60,7 +60,7 @@ test.describe('PostgreSQL and pgvector Operations', () => {
     expect(results).toHaveProperty('matches');
     expect(Array.isArray(results.matches)).toBe(true);
     
-    results.matches.forEach((match: any) => {
+    results.matches.forEach((match: unknown) => {
       expect(match).toHaveProperty('id');
       expect(match).toHaveProperty('distance');
       expect(match).toHaveProperty('content');
@@ -291,7 +291,7 @@ test.describe('PostgreSQL and pgvector Operations', () => {
     const results = await Promise.all(promises);
     
     // All operations should succeed
-    results.forEach(response: any => {
+    results.forEach(response: unknown => {
       expect([200, 201]).toContain(response.status());
     });
   });

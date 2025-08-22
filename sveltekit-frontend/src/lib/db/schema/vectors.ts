@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import {
   pgTable,
   text,
@@ -10,7 +10,7 @@ import {
   index,
   customType
 } from "drizzle-orm/pg-core";
-// Orphaned content: import { sql
+import { sql } from "drizzle-orm";
 
 // Custom pgvector type for Drizzle
 const vector = customType<{ data: number[]; driverData: string }>({

@@ -1,10 +1,9 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-
+  import { $props, $derived, $effect } from 'svelte';
 	// Using standard button element instead of melt-ui Button
 	import { cva, type VariantProps } from 'class-variance-authority';
 	import { cn } from '$lib/utils/cn';
-	import { createButton } from '@melt-ui/svelte';
+	import { createButton } from '@melt-ui/svelte/builders';
 	
 	const buttonVariants = cva(
 		'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none',
@@ -35,9 +34,10 @@ import type { CommonProps } from '$lib/types/common-props';
 			}
 		}
 	);
-	
-	type $$Props = VariantProps<typeof buttonVariants> & {
-		class?: string;
+
+	interface Props {
+		variant?: VariantProps<typeof buttonVariants>['variant'];
+		size?: VariantProps<typeof buttonVariants>['size'];
 		disabled?: boolean;
 		type?: 'button' | 'submit' | 'reset';
 		href?: string;
@@ -45,35 +45,24 @@ import type { CommonProps } from '$lib/types/common-props';
 		loading?: boolean;
 		loadingText?: string;
 		onclick?: (e: MouseEvent) => void;
-		'data-testid'?: string;
-	};
-
-	interface $$RestProps {
-		[key: string]: any;
+		class?: string;
 	}
-
-	let $$restProps: $$RestProps = {};
-	$: $$restProps = Object.fromEntries(
-		Object.entries($$props).filter(([key]) => ![
-			'variant', 'size', 'disabled', 'type', 'href', 'target', 
-			'loading', 'loadingText', 'onclick', 'class'
-		].includes(key))
-	);
 	
-	export let variant: $$Props['variant'] = 'default';
-	export let size: $$Props['size'] = 'default';
-	export let disabled = false;
-	export let type: $$Props['type'] = 'button';
-	export let href: $$Props['href'] = undefined;
-	export let target: $$Props['target'] = undefined;
-	export let loading = false;
-	export let loadingText = 'Loading...';
+	let {
+		variant = 'default',
+		size = 'default',
+		disabled = false,
+		type = 'button',
+		href = undefined,
+		target = undefined,
+		loading = false,
+		loadingText = 'Loading...',
+		onclick = undefined,
+		class: className = ''
+	}: Props = $props();
 	
-	let className: $$Props['class'] = '';
-	export { className as class };
-	
-	$: isDisabled = disabled || loading;
-	$: buttonClass = cn(buttonVariants({ variant, size }), className);
+	let isDisabled = $derived(disabled || loading);
+	let buttonClass = $derived(cn(buttonVariants({ variant, size }), className));
 
 	// Create melt-ui button
 	const {
@@ -83,7 +72,9 @@ import type { CommonProps } from '$lib/types/common-props';
 		disabled: isDisabled
 	});
 
-	$: disabledStore.set(isDisabled);
+	$effect(() => {
+		disabledStore.set(isDisabled);
+	});
 </script>
 
 {#if href}
@@ -94,7 +85,7 @@ import type { CommonProps } from '$lib/types/common-props';
 		role="button"
 		tabindex="0"
 		aria-disabled={isDisabled}
-		data-testid={$$restProps['data-testid']}
+		data-testid="button"
 		onclick
 		onkeydown={(e) => {
 			if (e.key === 'Enter' || e.key === ' ') {
@@ -136,7 +127,7 @@ import type { CommonProps } from '$lib/types/common-props';
 		{type}
 		disabled={isDisabled}
 		class={buttonClass}
-		data-testid={$$restProps['data-testid']}
+		data-testid="button"
 		onclick
 	>
 		{#if loading}
@@ -168,4 +159,3 @@ import type { CommonProps } from '$lib/types/common-props';
 	</button>
 {/if}
 
-<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

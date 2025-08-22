@@ -2,7 +2,7 @@
 <!-- Demonstrates Loki.js + Redis + PostgreSQL caching with real-time statistics -->
 
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $state } from 'svelte';
 
   import { onMount } from 'svelte';
   import { writable } from 'svelte/store';
@@ -29,7 +29,7 @@ import type { CommonProps } from '$lib/types/common-props';
   const cacheStats = writable<any>(null);
   const healthStatus = writable<any>(null);
   const isLoading = writable(false);
-  const testResults = writable<any[]>([]);
+  const testResults = writable<unknown[]>([]);
 
   // Form state
   let cacheKey = $state('');
@@ -777,7 +777,4 @@ import type { CommonProps } from '$lib/types/common-props';
     @apply max-w-7xl mx-auto p-4;
   }
 </style>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

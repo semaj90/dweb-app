@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $state } from 'svelte';
 
   import { apiFetch } from "$lib/api/clients/api-client";
   import { onMount } from "svelte";
@@ -87,7 +87,7 @@ import type { CommonProps } from '$lib/types/common-props';
       });
       result = resp;
       if (resp.error) error = resp.error;
-    } catch (e: unknown) {
+    } catch (e: any) {
       error = e instanceof Error ? e.message : String(e);
     } finally {
       analyzing = false;
@@ -211,7 +211,4 @@ import type { CommonProps } from '$lib/types/common-props';
   }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

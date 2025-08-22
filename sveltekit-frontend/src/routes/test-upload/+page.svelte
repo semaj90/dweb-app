@@ -1,5 +1,6 @@
 <script lang="ts">
   import AdvancedFileUpload from "$lib/components/upload/AdvancedFileUpload.svelte";
+  // $state runtime rune is provided globally
 
   interface UploadedFile {
     name: string;
@@ -8,7 +9,7 @@
     status?: string;
     url?: string;
   }
-  
+
   let uploadedFiles: UploadedFile[] = $state([]);
 
   function handleFilesAdded(event: CustomEvent<{ files: File[] }>) {
@@ -40,9 +41,9 @@
       enableDragDrop={true}
       enablePasteUpload={true}
       autoUpload={false}
-      on:filesAdded={handleFilesAdded}
-      on:uploadComplete={handleUploadComplete}
-      on:fileRemoved={handleFileRemoved}
+      onfilesadded={handleFilesAdded}
+      onuploadcomplete={handleUploadComplete}
+      onfileremoved={handleFileRemoved}
     />
   </div>
 

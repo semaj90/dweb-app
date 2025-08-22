@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Demo Data Generator for Legal AI System Testing
  */

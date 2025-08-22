@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { afterUpdate, createEventDispatcher, onMount, tick } from "svelte";
+  import { $props } from 'svelte';
   import { elasticOut, quintOut } from "svelte/easing";
   import { writable } from "svelte/store";
   import { fade, fly, scale } from "svelte/transition";
@@ -34,9 +34,9 @@ import type { CommonProps } from '$lib/types/common-props';
       role: "user" | "assistant";
       content: string;
       timestamp: Date;
-      contextUsed?: any;
+      contextUsed?: unknown;
       suggestions?: string[];
-      actions?: Array<{ type: string; text: string; data?: any }>;
+      actions?: Array<{ type: string; text: string; data?: unknown }>;
       isTyping?: boolean;
       isError?: boolean;
     }>

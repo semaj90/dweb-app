@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": [
+    "src/lib/**/*",
+    "src/routes/**/*",
+    "src/types/**/*.d.ts"
+  ],
+  "exclude": [
+    "src/server/**/*",
+    "src/routes/api/**/*",
+    "node_modules"
+  ]
+}

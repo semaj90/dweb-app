@@ -1,15 +1,16 @@
-// @ts-nocheck
+
 /**
  * AI Processing XState Machine
  * Orchestrates AI tasks across multiple providers and services
  */
 
 import { createMachine, assign, fromPromise } from "xstate";
-// Orphaned content: import type {
+import type {
   AIProcessingContext,
   AIProcessingEvents,
   AITask,
-  AITaskResult,
+  AITaskResult
+} from '$lib/types';
 import { goMicroserviceServices } from "./goMicroserviceMachine";
 
 export const aiProcessingMachine = createMachine(
@@ -398,7 +399,7 @@ export const createAITask = (
 
 // Common AI task creators
 export const aiTaskCreators = {
-  parseJSON: (data: any, options?: any) =>
+  parseJSON: (data: any, options?: unknown) =>
     createAITask(
       "parse",
       {
@@ -409,7 +410,7 @@ export const aiTaskCreators = {
       { priority: "high" }
     ),
 
-  trainSOM: (vectors: number[][], labels: string[], options?: any) =>
+  trainSOM: (vectors: number[][], labels: string[], options?: unknown) =>
     createAITask(
       "som-train",
       {
@@ -420,7 +421,7 @@ export const aiTaskCreators = {
       { priority: "low", estimatedDuration: 30000 }
     ),
 
-  cudaInference: (model: string, input: any, options?: any) =>
+  cudaInference: (model: string, input: any, options?: unknown) =>
     createAITask(
       "cuda-infer",
       {

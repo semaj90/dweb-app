@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { Worker } from 'bullmq';
 // Orphaned content: // import { logQueue // Missing module
 import { getEmbedding } from '$lib/server/services/embeddingService'; // You'll create this

@@ -1,18 +1,15 @@
-// @ts-nocheck
+
 // CaseScoringService.ts - AI-Powered Case Scoring System
 // Implements 0-100 scoring with multi-criteria analysis
 
 import { ollamaService } from "./OllamaService";
-// Orphaned content: import {
-
 import { caseScores } from "../db/schema";
-// Orphaned content: import {
-
 import { eq } from "drizzle-orm";
-// Orphaned content: import type {
+import type {
   CaseScoringRequest,
   CaseScoringResult,
-  ScoringCriteria,
+  ScoringCriteria
+} from "$lib/types/scoring";
 
 export class CaseScoringService {
   private readonly DEFAULT_TEMPERATURE = 0.7;
@@ -330,7 +327,7 @@ Provide 2-3 specific strategic recommendations for the prosecution team.`;
   /**
    * Parse AI-generated scores from text
    */
-  private parseAIScores(aiResponse: string): any {
+  private parseAIScores(aiResponse: string): unknown {
     try {
       // Try to extract JSON from response
       const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);

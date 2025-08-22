@@ -1,10 +1,10 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { onMount } from 'svelte';
+  import { $props, $state, $derived } from 'svelte';
   import { fade, fly } from 'svelte/transition';
   
-  interface Props extends CommonProps {
+  interface Props {
     open?: boolean;
     title?: string;
     size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -22,7 +22,7 @@ import type { CommonProps } from '$lib/types/common-props';
     onclose,
     children,
     footer
-  }: Props & { children?: any, footer?: any } = $props();
+  }: Props & { children?: unknown, footer?: unknown } = $props();
   
   let modalElement: HTMLDivElement = $state();
   

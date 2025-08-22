@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Performance Monitoring and Metrics Collection Service
  * Tracks AI pipeline performance, queue metrics, cache efficiency, and system health

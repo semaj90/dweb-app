@@ -1,6 +1,6 @@
 <!-- Enhanced File Upload with Real OCR, Embeddings, and Database Integration -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state, $effect } from 'svelte';
 
   import { createUploadMachine } from '$lib/machines/uploadMachine';
   import type { ProcessingPipeline } from '$lib/types/upload';
@@ -10,7 +10,7 @@ import type { CommonProps } from '$lib/types/common-props';
   import { createActor } from 'xstate';
 
   // Props interface
-  interface Props extends CommonProps {
+  interface Props {
     onUploadComplete?: (doc: any) => void;
     accept?: string;
     maxSize?: number;
@@ -35,7 +35,7 @@ import type { CommonProps } from '$lib/types/common-props';
   let files = $state<File[]>([]);
   let fileStates = $state<Map<string, any>>(new Map());
   let searchQuery = $state('');
-  let searchResults = $state<any[]>([]);
+  let searchResults = $state<unknown[]>([]);
   let isSearching = $state(false);
   let systemStatus = $state<any>({});
 

@@ -2,7 +2,7 @@
 https://svelte.dev/e/js_parse_error -->
 <!-- LLM Provider Selector with Bits UI v2 and Real-time Status -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $effect } from 'svelte';
 
 	import { createSelect, melt } from '@melt-ui/svelte';
 	import { Badge } from 'bits-ui';
@@ -11,7 +11,7 @@ import type { CommonProps } from '$lib/types/common-props';
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
 
-	interface Props extends CommonProps {
+	interface Props {
 		selectedProvider?: LLMProvider | null;
 		disabled?: boolean;
 	}
@@ -241,7 +241,7 @@ import type { CommonProps } from '$lib/types/common-props';
 		<div
 			use:melt={$menu}
 			class="z-50 min-w-[320px] rounded-md border border-yorha-border bg-yorha-bg-primary p-1 shadow-lg focus:outline-none"
-			transitionfly={{ y: -5, duration: 150 }}
+			transition:fly={{ y: -5, duration: 150 }}
 		>
 			{#each $providers as provider (provider.id)}
 				<div

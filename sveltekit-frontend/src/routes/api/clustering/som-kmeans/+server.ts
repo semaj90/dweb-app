@@ -80,7 +80,7 @@ export const POST: RequestHandler = async ({ request }) => {
   }
 };
 
-function extractFeaturesForClustering(ragData: any): any {
+function extractFeaturesForClustering(ragData: any): unknown {
   const document = ragData.ragResults || ragData;
   
   // Extract numerical features for clustering
@@ -199,7 +199,7 @@ function generateFeatureLabels(document: any): string[] {
   return labels;
 }
 
-async function performKMeansClustering(features: any, k: number): Promise<any[]> {
+async function performKMeansClustering(features: any, k: number): Promise<unknown[]> {
   const vectors = features.vectors;
   
   // Initialize centroids randomly
@@ -329,7 +329,7 @@ function initializeRandomCentroids(vectors: number[][], k: number): number[][] {
   return centroids;
 }
 
-function assignPointsToClusters(vectors: number[][], centroids: number[][], labels: string[]): any[] {
+function assignPointsToClusters(vectors: number[][], centroids: number[][], labels: string[]): unknown[] {
   const clusters = centroids.map((centroid, index) => ({
     centroid: [...centroid],
     points: [],
@@ -455,7 +455,7 @@ function calculateQuantizationError(vectors: number[][], neurons: number[][][], 
 
 // Additional helper functions...
 
-function calculateClusteringQuality(kmeansClusters: any[], somResults: any): any {
+function calculateClusteringQuality(kmeansClusters: any[], somResults: any): unknown {
   return {
     silhouetteScore: 0.75 + Math.random() * 0.2, // Simulated
     inertia: 50 + Math.random() * 30, // Simulated
@@ -466,7 +466,7 @@ function calculateClusteringQuality(kmeansClusters: any[], somResults: any): any
   };
 }
 
-function analyzeClusterContent(points: number[][], labels: string[]): any {
+function analyzeClusterContent(points: number[][], labels: string[]): unknown {
   return {
     dominantTerms: labels.slice(0, 3),
     averageVector: points[0] || [],
@@ -475,7 +475,7 @@ function analyzeClusterContent(points: number[][], labels: string[]): any {
   };
 }
 
-function analyzeClusterCharacteristics(clusters: any[]): any[] {
+function analyzeClusterCharacteristics(clusters: any[]): unknown[] {
   return clusters.map(cluster => ({
     id: cluster.id,
     size: cluster.size,
@@ -502,7 +502,7 @@ function calculateSuggestionConfidence(suggestions: string[]): number {
   return Math.min(95, 60 + suggestions.length * 2);
 }
 
-function categorizeSuggestions(suggestions: string[]): any {
+function categorizeSuggestions(suggestions: string[]): unknown {
   return {
     legal_terms: suggestions.filter(s => s.includes('law') || s.includes('legal')),
     procedural: suggestions.filter(s => s.includes('process') || s.includes('procedure')),
@@ -520,7 +520,7 @@ function calculateClusterQuality(points: number[][], centroid: number[]): number
   return Math.max(0, 1 - (avgDistance / 10)); // Normalized quality score
 }
 
-function generateSOMTopology(neurons: number[][][], width: number, height: number): any {
+function generateSOMTopology(neurons: number[][][], width: number, height: number): unknown {
   return {
     gridSize: `${width}x${height}`,
     totalNeurons: width * height,

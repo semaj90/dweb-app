@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Enhanced REST Architecture for Legal AI
 // Provides type-safe API patterns and advanced clustering
 
@@ -51,7 +51,7 @@ export interface DocumentCluster {
   // Additional properties for various search contexts
   documentId?: string;
   embedding?: number[];
-  result?: any;
+  result?: unknown;
 }
 
 export interface ClusterResult {

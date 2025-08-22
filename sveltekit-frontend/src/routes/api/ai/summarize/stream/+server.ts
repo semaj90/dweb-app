@@ -5,7 +5,7 @@ const SUMMARIZER_BASE =
   import.meta.env.SUMMARIZER_BASE_URL || "http://localhost:8091";
 
 export const POST: RequestHandler = async ({ request }) => {
-  let payload: unknown;
+  let payload: any;
   try {
     payload = await request.json();
   } catch {
@@ -19,7 +19,7 @@ export const POST: RequestHandler = async ({ request }) => {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify(payload),
-  }).catch((e: unknown) => {
+  }).catch((e: any) => {
     const msg = e instanceof Error ? e.message : "upstream error";
     return new Response(JSON.stringify({ ok: false, error: msg }), {
       status: 502,

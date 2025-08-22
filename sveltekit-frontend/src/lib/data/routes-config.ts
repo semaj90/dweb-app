@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Complete Routes Configuration for YoRHa Navigation
  * Comprehensive mapping of all available demo routes and features
@@ -46,6 +46,16 @@ export const allRoutes: RouteDefinition[] = [
     category: 'main',
     status: 'active',
     tags: ['evidence', 'ocr', 'analysis']
+  },
+  {
+    id: 'detective',
+    label: 'YoRHa Detective Center',
+    route: '/yorha/detective',
+    icon: '🕵️',
+    description: 'YoRHa-themed detective command center with case management',
+    category: 'main',
+    status: 'active',
+    tags: ['detective', 'yorha', 'cases', 'command-center']
   },
   {
     id: 'persons',
@@ -460,6 +470,26 @@ export const allRoutes: RouteDefinition[] = [
     category: 'dev',
     status: 'active',
     tags: ['vector', 'search', 'development']
+  },
+  {
+    id: 'dev-dynamic-routing-test',
+    label: 'Dynamic Routing Test',
+    route: '/dev/dynamic-routing-test',
+    icon: '🛣️',
+    description: 'Dynamic routing system testing and demonstration',
+    category: 'dev',
+    status: 'active',
+    tags: ['routing', 'dynamic', 'testing']
+  },
+  {
+    id: 'routes-index',
+    label: 'Routes Index',
+    route: '/routes',
+    icon: '🗺️',
+    description: 'Complete navigation index of all available routes and APIs',
+    category: 'admin',
+    status: 'active',
+    tags: ['navigation', 'index', 'routes', 'admin', 'api']
   },
 
   // === ADMINISTRATIVE ===

@@ -1,38 +1,38 @@
 {
-  "timestamp": "2025-08-19T19:29:21.260Z",
-  "totalTime": 30175.448,
+  "timestamp": "2025-08-21T17:27:42.913Z",
+  "totalTime": 385935.9921,
   "successes": 6,
   "errors": 0,
   "tasks": {
     "gpu-cluster": {
-      "startTime": 398.1967,
-      "endTime": 30410.8494,
-      "duration": 30012.6527
+      "startTime": 1862.5307,
+      "endTime": 31867.5254,
+      "duration": 30004.9947
     },
     "simd-parser": {
-      "startTime": 400.0418,
-      "endTime": 15422.6147,
-      "duration": 15022.5729
+      "startTime": 1866.6986,
+      "endTime": 16880.2022,
+      "duration": 15013.5036
     },
     "simd-indexer": {
-      "startTime": 410.22,
-      "endTime": 20415.0126,
-      "duration": 20004.792599999997
+      "startTime": 1871.2698,
+      "endTime": 21878.3833,
+      "duration": 20007.1135
     },
     "webgpu-som": {
-      "startTime": 410.8998,
-      "endTime": 11135.7529,
-      "duration": 10724.8531
+      "startTime": 1874.2448,
+      "endTime": 387675.8468,
+      "duration": 385801.602
     },
     "cluster-manager": {
-      "startTime": 432.5662,
-      "endTime": 30442.0129,
-      "duration": 30009.4467
+      "startTime": 1894.0804,
+      "endTime": 31898.8048,
+      "duration": 30004.724400000003
     },
     "vscode-integration": {
-      "startTime": 433.7775,
-      "endTime": 435.9213,
-      "duration": 2.143799999999999
+      "startTime": 1898.472,
+      "endTime": 1916.9914,
+      "duration": 18.519400000000132
     }
   }
 }

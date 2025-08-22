@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+
 import { aiHistory } from "$lib/db/schema/aiHistory";
 
 import { json } from "@sveltejs/kit";

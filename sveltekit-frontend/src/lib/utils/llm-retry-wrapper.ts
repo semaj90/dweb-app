@@ -1,11 +1,18 @@
-// @ts-nocheck
 /**
  * LLM Retry Wrapper with TODO Auto-generation
  * Handles Ollama GPU throttling, token limits, and failure logging
  */
 
 import { getLocalOllamaUrl, LOCAL_LLM_CONFIG } from "$lib/constants/local-llm-config";
-import { todoAutogen, retryLLMCall, , export interface LLMCallOptions {,   model?: string;,   temperature?: number;,   maxTokens?: number;,   timeout?: number;,   retries?: number;,   useGPU?: boolean; } from
+
+export interface LLMCallOptions {
+  model?: string;
+  temperature?: number;
+  maxTokens?: number;
+  timeout?: number;
+  retries?: number;
+  useGPU?: boolean;
+}
 
 export interface LLMResponse {
   response: string;
@@ -14,6 +21,27 @@ export interface LLMResponse {
   duration?: number;
   success: boolean;
 }
+
+// Placeholder implementations for missing dependencies
+const todoAutogen = {
+  logPerformanceIssue: async (type: string, details: any) => {
+    console.warn(`Performance issue: ${type}`, details);
+  },
+  logLLMMisfire: async (details: any) => {
+    console.warn('LLM misfire:', details);
+  }
+};
+
+const retryLLMCall = async (fn: () => Promise<any>, model: string, prompt: string, retries: number) => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (i === retries - 1) throw error;
+      await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+    }
+  }
+};
 
 /**
  * Enhanced LLM wrapper with retry logic and TODO generation
@@ -106,7 +134,7 @@ export class OllamaRetryWrapper {
             success: true
           };
 
-        } catch (error) {
+        } catch (error: any) {
           clearTimeout(timeoutId);
           
           // Track failures
@@ -159,7 +187,8 @@ export class OllamaRetryWrapper {
       // Check if required models are available
       const requiredModels = Object.values(LOCAL_LLM_CONFIG.OLLAMA_MODELS);
       const availableModels = models.map((m: any) => m.name);
-      const missingModels = requiredModels.filter((model: any) => !availableModels.some((available: any) => available.includes(model))
+      const missingModels = requiredModels.filter((model: string) => 
+        !availableModels.some((available: string) => available.includes(model))
       );
 
       const status = missingModels.length === 0 ? 'healthy' : 'degraded';
@@ -182,7 +211,7 @@ export class OllamaRetryWrapper {
 
       return { status, details };
 
-    } catch (error) {
+    } catch (error: any) {
       await todoAutogen.logLLMMisfire({
         model: 'health-check',
         prompt: 'health check request',
@@ -211,7 +240,7 @@ export class OllamaRetryWrapper {
       timeSinceLastSuccess: Date.now() - this.lastSuccessTime,
       baseUrl: this.baseUrl,
       memoryConfig: {
-        maxOldSpaceSize: import.meta.env.NODE_OPTIONS?.includes('max-old-space-size'),
+        maxOldSpaceSize: (import.meta as any).env?.NODE_OPTIONS?.includes('max-old-space-size'),
         gpuMemoryFraction: LOCAL_LLM_CONFIG.GPU_MEMORY_FRACTION
       }
     };
@@ -254,7 +283,7 @@ export async function* streamLLM(
   const timeoutId = setTimeout(() => controller.abort(), timeout);
 
   try {
-    const response = await fetch(`${ollamaWrapper['baseUrl']}/api/generate`, {
+    const response = await fetch(`${(ollamaWrapper as any).baseUrl}/api/generate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       signal: controller.signal,
@@ -280,7 +309,7 @@ export async function* streamLLM(
       if (done) break;
 
       const chunk = decoder.decode(value);
-      const lines = chunk.split('\n').filter((line: any) => line.trim());
+      const lines = chunk.split('\n').filter((line: string) => line.trim());
 
       for (const line of lines) {
         try {
@@ -294,7 +323,7 @@ export async function* streamLLM(
       }
     }
 
-  } catch (error) {
+  } catch (error: any) {
     await todoAutogen.logLLMMisfire({
       model,
       prompt: prompt.substring(0, 200) + '...',

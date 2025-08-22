@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { type RequestHandler,  json } from '@sveltejs/kit';
 import { qdrantService } from "$lib/server/services/qdrant-service";
 

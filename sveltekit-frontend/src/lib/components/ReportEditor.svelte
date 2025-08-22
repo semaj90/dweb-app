@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
   import { browser } from "$app/environment";
   import type { CitationPoint, Report, ReportSection } from "$lib/data/types";
@@ -441,7 +441,7 @@ import type { CommonProps } from '$lib/types/common-props';
     <div
       bind:this={editorElement}
       class="container mx-auto px-4"
-      class:read-on:ly={readOnly}
+      class:read-only={readOnly}
       role="textbox"
       aria-multiline="true"
       aria-label="Report content editor"

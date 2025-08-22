@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // End-to-End Vector Pipeline Test
 // Tests: Document Upload → Embedding → Search → Results
 

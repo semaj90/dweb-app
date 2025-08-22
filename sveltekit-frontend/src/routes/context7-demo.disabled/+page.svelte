@@ -3,6 +3,7 @@
 
 <script lang="ts">
   import { writable } from 'svelte/store';
+  import { $props, $state, $derived } from 'svelte';
   import { copilotOrchestrator } from '$lib/utils/mcp-helpers';
   import { resolveLibraryId, getLibraryDocs, semanticSearch } from '$lib/ai/mcp-helpers';
   import { getEnhancedContext, copilotSelfPrompt } from '$lib/utils/copilot-self-prompt';

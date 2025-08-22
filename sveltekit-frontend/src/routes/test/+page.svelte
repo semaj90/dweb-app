@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  // $state runtime rune is provided globally
   import { aiAgentStore, isAIConnected, systemHealth, currentConversation } from '$lib/stores/ai-agent';
   import type { User } from '$lib/types';
 

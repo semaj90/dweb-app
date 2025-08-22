@@ -1,15 +1,15 @@
 <!-- AI Search Bar: Svelte 5, Bits UI, UnoCSS, analytics logging -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state } from 'svelte';
 
   import { createEventDispatcher } from 'svelte';
   import { Input, Button } from './index.js';
   import { Search } from 'lucide-svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     placeholder?: string;
-    userContext?: any;
-    neo4jContext?: any;
+    userContext?: unknown;
+    neo4jContext?: unknown;
     analyticsLog?: (event: any) => void;
     onResults?: (results: any) => void;
   }

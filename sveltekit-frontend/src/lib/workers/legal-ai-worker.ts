@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * BullMQ Worker for Legal AI Document Processing
  * Integrates SvelteKit with Go Legal AI Server
@@ -313,7 +313,7 @@ export async function addLegalAIJob(
 export async function getLegalAIJobStatus(jobId: string): Promise<{
 	status: string;
 	progress: number;
-	result?: any;
+	result?: unknown;
 	error?: string;
 }> {
 	const { Queue } = await import('bullmq');

@@ -1,4 +1,5 @@
 import { EventEmitter } from "events";
+import os from "os";
 /**
  * Context7 Multicore Service - Legal AI Integration
  * Production-ready multicore processing with Go-SIMD, Go-LLAMA, and MCP integration
@@ -40,7 +41,7 @@ export interface ProcessingTask {
   createdAt: Date;
   workerId?: string;
   status: 'queued' | 'processing' | 'completed' | 'failed';
-  result?: any;
+  result?: unknown;
   error?: string;
 }
 
@@ -63,7 +64,7 @@ export interface TensorData {
 
 export interface JSONParsingResult {
   valid: boolean;
-  data?: any;
+  data?: unknown;
   error?: string;
   schema?: string;
   complexity: number;
@@ -111,7 +112,7 @@ class Context7MulticoreService extends EventEmitter {
     super();
 
     this.config = {
-      workerCount: config.workerCount || Math.min(8, require('os').cpus().length),
+      workerCount: config.workerCount || Math.min(8, os.cpus().length),
       basePort: config.basePort || 4100,
       loadBalancerPort: config.loadBalancerPort || 8099,
       enableGPU: config.enableGPU ?? true,

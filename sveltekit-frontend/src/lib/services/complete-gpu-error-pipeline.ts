@@ -199,7 +199,7 @@ export class CompleteGPUErrorPipeline {
     console.log(`   - Tokens/second: ${this.pipeline.performance.tokens_per_second.toFixed(1)}`);
   }
 
-  private parseTypeScriptErrors(output: string): any[] {
+  private parseTypeScriptErrors(output: string): unknown[] {
     const errorLines = output.split('\n').filter(line => 
       line.includes('TS') && (line.includes('error') || line.includes('warning'))
     );
@@ -217,7 +217,7 @@ export class CompleteGPUErrorPipeline {
     });
   }
 
-  private generateMockErrors(count: number): any[] {
+  private generateMockErrors(count: number): unknown[] {
     const errorTypes = [
       { code: 'TS2322', message: "Type 'string' is not assignable to type 'number'", category: 'type' },
       { code: 'TS2307', message: "Cannot find module 'missing-module'", category: 'import' },

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { $props, $state } from 'svelte';
   interface Props {
     data: PageData;
   }

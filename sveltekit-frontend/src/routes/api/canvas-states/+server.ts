@@ -1,7 +1,7 @@
-// @ts-nocheck
+
 import { canvasLayouts } from "$lib/server/db/schema-canvas";
-type { RequestEvent }, {
-json } from "@sveltejs/kit";
+import type { RequestEvent } from "@sveltejs/kit";
+import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db/index";
 
 export async function GET({ url, locals }: RequestEvent) {

@@ -1,16 +1,22 @@
-// @ts-nocheck
+
 /**
  * Redis Vector Service for caching and vector operations
  */
 
-Redis from "ioredis";
-import { logger, , export interface VectorSearchResult {,   id: string;,   score: number;,   payload: any;,   vector?: number[]; } from
+import Redis from "ioredis";
+import { logger } from "$lib/utils/logger";
 
+export interface VectorSearchResult {
+  id: string;
+  score: number;
+  payload: any;
+  vector?: number[];
+}
 export interface DocumentVector {
   id: string;
   vector: number[];
   payload: any;
-  metadata?: any;
+  metadata?: unknown;
 }
 
 export class RedisVectorService {

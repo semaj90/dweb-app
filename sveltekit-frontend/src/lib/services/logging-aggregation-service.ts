@@ -15,7 +15,7 @@ export interface LogEntry {
   level: LogLevel;
   category: string;
   message: string;
-  data?: any;
+  data?: unknown;
   error?: Error;
   service?: string;
   userId?: string;
@@ -232,23 +232,23 @@ class LoggingAggregationService {
   }
 
   // Public logging methods
-  public debug(category: string, message: string, data?: any, meta?: Record<string, any>) {
+  public debug(category: string, message: string, data?: unknown, meta?: Record<string, any>) {
     this.log('debug', category, message, data, undefined, meta);
   }
 
-  public info(category: string, message: string, data?: any, meta?: Record<string, any>) {
+  public info(category: string, message: string, data?: unknown, meta?: Record<string, any>) {
     this.log('info', category, message, data, undefined, meta);
   }
 
-  public warn(category: string, message: string, data?: any, meta?: Record<string, any>) {
+  public warn(category: string, message: string, data?: unknown, meta?: Record<string, any>) {
     this.log('warn', category, message, data, undefined, meta);
   }
 
-  public error(category: string, message: string, data?: any, error?: Error, meta?: Record<string, any>) {
+  public error(category: string, message: string, data?: unknown, error?: Error, meta?: Record<string, any>) {
     this.log('error', category, message, data, error, meta);
   }
 
-  public fatal(category: string, message: string, data?: any, error?: Error, meta?: Record<string, any>) {
+  public fatal(category: string, message: string, data?: unknown, error?: Error, meta?: Record<string, any>) {
     this.log('fatal', category, message, data, error, meta);
   }
 
@@ -272,7 +272,7 @@ class LoggingAggregationService {
     level: LogLevel,
     category: string,
     message: string,
-    data?: any,
+    data?: unknown,
     error?: Error,
     meta?: Record<string, any>
   ) {
@@ -618,27 +618,27 @@ class LoggingAggregationService {
 export const loggingService = new LoggingAggregationService();
 
 // Convenience functions
-export function log(level: LogLevel, category: string, message: string, data?: any, error?: Error) {
+export function log(level: LogLevel, category: string, message: string, data?: unknown, error?: Error) {
   loggingService.log(level, category, message, data, error);
 }
 
-export function debug(category: string, message: string, data?: any) {
+export function debug(category: string, message: string, data?: unknown) {
   loggingService.debug(category, message, data);
 }
 
-export function info(category: string, message: string, data?: any) {
+export function info(category: string, message: string, data?: unknown) {
   loggingService.info(category, message, data);
 }
 
-export function warn(category: string, message: string, data?: any) {
+export function warn(category: string, message: string, data?: unknown) {
   loggingService.warn(category, message, data);
 }
 
-export function error(category: string, message: string, data?: any, errorObj?: Error) {
+export function error(category: string, message: string, data?: unknown, errorObj?: Error) {
   loggingService.error(category, message, data, errorObj);
 }
 
-export function fatal(category: string, message: string, data?: any, errorObj?: Error) {
+export function fatal(category: string, message: string, data?: unknown, errorObj?: Error) {
   loggingService.fatal(category, message, data, errorObj);
 }
 

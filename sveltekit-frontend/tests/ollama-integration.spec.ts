@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { test, expect } from '@playwright/test';
 
 test.describe('Ollama Integration', () => {
@@ -28,7 +28,7 @@ test.describe('Ollama Integration', () => {
     expect(Array.isArray(data.models)).toBe(true);
     
     // Check if specific models are available
-    const modelNames = data.models.map((m: any) => m.name);
+    const modelNames = data.models.map((m: unknown) => m.name);
     expect(modelNames).toContain('llama3.2');
   });
 
@@ -136,12 +136,12 @@ test.describe('Ollama Integration', () => {
     const responses = await Promise.all(promises);
     
     // Verify all responses are successful
-    responses.forEach(response: any => {
+    responses.forEach(response: unknown => {
       expect(response.status()).toBe(200);
     });
     
     // Check response content
-    const results = await Promise.all(responses.map(r: any => r.json()));
+    const results = await Promise.all(responses.map(r: unknown => r.json()));
     results.forEach((result, index) => {
       expect(result).toHaveProperty('response');
       expect(result.response).toBeTruthy();

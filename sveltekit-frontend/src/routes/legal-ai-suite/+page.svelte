@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { $state, $derived } from 'svelte';
   import { Button } from '$lib/components/ui/button/index.js';
   import { Input } from '$lib/components/ui/input/index.js';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
@@ -10,9 +11,9 @@
   // Svelte 5 runes for state management
   let selectedFiles = $state<File[]>([]);
   let isProcessing = $state(false);
-  let processedDocuments = $state<any[]>([]);
+  let processedDocuments = $state<unknown[]>([]);
   let ragQuery = $state('');
-  let ragResults = $state<any[]>([]);
+  let ragResults = $state<unknown[]>([]);
   let systemMetrics = $state({
     gpuAcceleration: false,
     ollamaStatus: 'unknown',

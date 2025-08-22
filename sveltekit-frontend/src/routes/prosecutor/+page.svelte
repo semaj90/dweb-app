@@ -3,6 +3,7 @@ Prosecutor Dashboard - Complete Legal AI Workflow
 Features: Case management, evidence upload, AI chat, vector search
 -->
 <script lang="ts">
+  import { $state } from 'svelte';
   import type { SearchResults } from "$lib/types/global";
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
   import { Button } from '$lib/components/ui/button';
@@ -282,7 +283,7 @@ Features: Case management, evidence upload, AI chat, vector search
         <EvidenceUploadComponent 
           caseId={selectedCaseId}
           enableWebGPU={webGPUEnabled}
-          onUploadComplete={handleEvidenceUploaded}
+          onuploadcomplete={handleEvidenceUploaded}
         />
 
         <!-- Recent Evidence -->

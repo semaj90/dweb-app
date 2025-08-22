@@ -1,6 +1,13 @@
 import { synthesizeMultiLLMOutput } from "./custom-reranker";
-// @ts-nocheck
+
 // TODOs and stub mocks for multi-LLM synthesis pipeline integration
+import type {
+  AIModelOutput,
+  UserHistory,
+  UploadedFile,
+  MCPServerData,
+  SynthesisOptions,
+} from "./types";
 import {
   mockAIModelOutput,
   mockUserHistory,
@@ -8,12 +15,6 @@ import {
   mockMCPServerData,
   mockSynthesisOptions,
 } from "./types";
-// Orphaned content: import type {
-  AIModelOutput,
-  UserHistory,
-  UploadedFile,
-  MCPServerData,
-  SynthesisOptions,
 
 // Example usage with stub mocks
 export async function runSynthesisExample() {

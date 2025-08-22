@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Advanced Memory Optimizer with LOD, k-means, SOM, and multi-layer caching
  * Optimizes memory usage across the entire legal AI system
@@ -861,7 +861,7 @@ export class AdvancedMemoryOptimizer {
   /**
    * Parallel document processing using SIMD parser and worker threads
    */
-  async processDocumentsBatch(documents: string[]): Promise<any[]> {
+  async processDocumentsBatch(documents: string[]): Promise<unknown[]> {
     console.log(
       `📄 Processing ${documents.length} documents with worker threads and SIMD`
     );
@@ -869,7 +869,7 @@ export class AdvancedMemoryOptimizer {
     if (documents.length === 0) return [];
 
     const batchSize = Math.ceil(documents.length / this.maxWorkers);
-    const promises: Promise<any[]>[] = [];
+    const promises: Promise<unknown[]>[] = [];
 
     // Split documents into chunks for parallel processing
     for (
@@ -902,7 +902,7 @@ export class AdvancedMemoryOptimizer {
   private async processDocumentChunk(
     documents: string[],
     chunkIndex: number
-  ): Promise<any[]> {
+  ): Promise<unknown[]> {
     const workerId = `document-processor-${chunkIndex}`;
 
     try {
@@ -1043,7 +1043,7 @@ export class AdvancedMemoryOptimizer {
   /**
    * Serialize memory pools for worker communication
    */
-  private serializeMemoryPools(): any[] {
+  private serializeMemoryPools(): unknown[] {
     return Array.from(this.memoryPools.entries()).map(([id, pool]) => ({
       id,
       type: pool.type,
@@ -1058,7 +1058,7 @@ export class AdvancedMemoryOptimizer {
   /**
    * Serialize clusters for worker communication
    */
-  private serializeClusters(): any[] {
+  private serializeClusters(): unknown[] {
     return Array.from(this.clusters.values());
   }
 

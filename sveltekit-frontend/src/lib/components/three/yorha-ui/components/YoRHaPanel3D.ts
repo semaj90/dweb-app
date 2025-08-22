@@ -4,7 +4,7 @@
  */
 
 import * as THREE from 'three';
-import { YoRHa3DComponent, type YoRHaStyle, YORHA_COLORS } from '../YoRHaUI3D';
+import { YoRHa3DComponent, type YoRHaStyle, YORHA_COLORS } from '$lib/YoRHaUI3D';
 
 export interface YoRHaPanel3DOptions extends YoRHaStyle {
   title?: string;

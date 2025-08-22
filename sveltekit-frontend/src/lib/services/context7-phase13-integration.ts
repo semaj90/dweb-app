@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Context7 MCP Phase 13 Integration Service
  * Comprehensive integration of Context7 MCP tools with Phase 13 enhanced features
@@ -6,10 +6,21 @@
  */
 
 import { writable, derived, type Writable } from "svelte/store";
-import { browser, { ,   copilotOrchestrator, ,   mcpMemoryReadGraph,,   semanticSearch,,   generateMCPPrompt,,   validateMCPRequest,,   commonMCPQueries,,   type OrchestrationOptions,,   type MCPToolRequest } from
-// Orphaned content: import type { EnhancedRAGEngine
+import { browser } from "$app/environment";
+import { 
+  copilotOrchestrator,
+  mcpMemoryReadGraph,
+  semanticSearch,
+  generateMCPPrompt,
+  validateMCPRequest,
+  commonMCPQueries
+} from "$lib/optimization/comprehensive-orchestrator";
+import type { 
+  OrchestrationOptions,
+  MCPToolRequest,
+  EnhancedRAGEngine
+} from "$lib/types/ai";
 import type { StatelessAPICoordinator } from "./stateless-api-coordinator";
-// Orphaned content: import {
 
 // Context7 MCP integration types
 export interface MCPSemanticResult {
@@ -725,11 +736,11 @@ export class Context7Phase13Integration {
   }
 
   // Public API methods
-  public async search(query: string, options?: any): Promise<MCPSemanticResult[]> {
+  public async search(query: string, options?: unknown): Promise<MCPSemanticResult[]> {
     return this.performEnhancedSemanticSearch(query, options);
   }
 
-  public async getRecommendations(context: string, options?: any): Promise<MCPAgentRecommendation[]> {
+  public async getRecommendations(context: string, options?: unknown): Promise<MCPAgentRecommendation[]> {
     return this.requestAgentRecommendations(context, options);
   }
 

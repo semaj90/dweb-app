@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+
 import { json } from "@sveltejs/kit";
 import { vectorSearch } from "$lib/server/search/vector-search";
 

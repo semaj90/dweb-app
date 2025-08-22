@@ -1,8 +1,8 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
   import { cn } from "$lib/utils";
-  interface Props extends CommonProps {
+  interface Props {
     children?: import('svelte').Snippet;
   }
 

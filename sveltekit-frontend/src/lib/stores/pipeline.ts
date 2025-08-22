@@ -4,7 +4,7 @@ import { writable, derived } from "svelte/store";
 
 export interface PipelineEventBase { type: string; ts: number; raw: any }
 export interface EvidenceUploadEvent extends PipelineEventBase { type: 'evidence.upload' }
-export interface AIResponseEvent extends PipelineEventBase { type: 'ai.response'; llmResult?: any }
+export interface AIResponseEvent extends PipelineEventBase { type: 'ai.response'; llmResult?: unknown }
 export type PipelineEvent = EvidenceUploadEvent | AIResponseEvent | PipelineEventBase;
 
 function createPipelineStore(){

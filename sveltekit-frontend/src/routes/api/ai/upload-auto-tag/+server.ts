@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Auto-Tagging API Endpoint
  * Integrates with Ollama GPU service, PostgreSQL pgvector, and Go microservice

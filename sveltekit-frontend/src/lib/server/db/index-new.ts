@@ -1,13 +1,13 @@
-// @ts-nocheck
-import { building } from "$app/environment";
-// Orphaned content: import * as schema from "$lib/server/db/schema-postgres";
-import {
 
-dotenv from "dotenv";
-// Orphaned content: import {
-drizzle, type NodePgDatabase
+import { building } from "$app/environment";
+import * as schema from "$lib/server/db/schema-postgres";
+import { Pool } from "pg";
+import dotenv from "dotenv";
+import {
+  drizzle, type NodePgDatabase
+} from "drizzle-orm/node-postgres";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
-// Orphaned content: import {
+import { initializeQdrantCollection } from "$lib/qdrant/collection-seeder";
 
 // Load environment-specific variables
 const envFile = `.env.${import.meta.env.NODE_ENV || "development"}`;

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Auto-Complete API Endpoint
  * Provides real-time legal phrase suggestions using semantic search
@@ -290,7 +290,7 @@ function generatePrefixes(query: string): string[] {
     return prefixes;
 }
 
-function removeDuplicates(suggestions: any[]): any[] {
+function removeDuplicates(suggestions: any[]): unknown[] {
     const seen = new Set();
     return suggestions.filter((s: any) => {
         const key = s.suggestion.toLowerCase();
@@ -302,7 +302,7 @@ function removeDuplicates(suggestions: any[]): any[] {
     });
 }
 
-function rankSuggestions(suggestions: any[], query: string): any[] {
+function rankSuggestions(suggestions: any[], query: string): unknown[] {
     const queryLower = query.toLowerCase();
     
     return suggestions.map((s: any) => {

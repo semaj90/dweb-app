@@ -2,11 +2,11 @@
 https://svelte.dev/e/component_invalid_directive -->
 <!-- NieR: Automata Themed Rich Text Editor using bits-ui -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
-  interface Props extends CommonProps {
-    content?: any;
-    placeholder?: any;
+  interface Props {
+    content?: unknown;
+    placeholder?: unknown;
   }
   let {
     content = "",

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { db } from "$lib/db";
 // Orphaned content: import {
 documentVectors, 
@@ -288,7 +288,7 @@ export class VectorRankingService {
     // Calculate preference based on clicked results history
     let preferenceScore = 0.5;
     for (const query of userQueries) {
-      const clickedResults = query.clickedResults as any[] || [];
+      const clickedResults = query.clickedResults as unknown[] || [];
       if (clickedResults.includes(documentId)) {
         preferenceScore += 0.1;
       }

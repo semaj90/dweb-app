@@ -1,9 +1,9 @@
 {
-  "timestamp": "2025-08-20T06:25:51.409Z",
+  "timestamp": "2025-08-20T16:38:12.836Z",
   "ports": {
-    "upload_service": 8096,
-    "simple_upload": 8097,
-    "quic_gateway": 8098
+    "upload_service": 8093,
+    "simple_upload": 8094,
+    "quic_gateway": 8097
   },
   "metadata": {
     "generator": "start-microservices.mjs",

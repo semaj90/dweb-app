@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Comprehensive Database Synchronization Utility
 // Ensures all CRUD operations maintain perfect sync with PostgreSQL database
 
@@ -20,7 +20,7 @@ export interface EntityEndpoints {
 }
 export class DatabaseSyncManager {
   private static instance: DatabaseSyncManager;
-  private syncQueue: Map<string, any[]> = new Map();
+  private syncQueue: Map<string, unknown[]> = new Map();
   private pendingOperations: Set<string> = new Set();
 
   private endpoints: Record<string, EntityEndpoints> = {
@@ -310,10 +310,10 @@ export class DatabaseSyncManager {
       operation: "create" | "read" | "update" | "patch" | "delete";
       entity: string;
       id?: string;
-      data?: any;
+      data?: unknown;
       options?: SyncOptions;
     }>,
-  ): Promise<any[]> {
+  ): Promise<unknown[]> {
     const results: any[] = [];
 
     for (const op of operations) {
@@ -511,7 +511,7 @@ export const dbSync = DatabaseSyncManager.getInstance();
 
 // Entity-specific helper functions
 export const CasesAPI = {
-  list: (params?: any, options?: SyncOptions) =>
+  list: (params?: unknown, options?: SyncOptions) =>
     dbSync.read("cases", undefined, params, options),
   get: (id: string, options?: SyncOptions) =>
     dbSync.read("cases", id, {}, options),
@@ -526,7 +526,7 @@ export const CasesAPI = {
 };
 
 export const EvidenceAPI = {
-  list: (params?: any, options?: SyncOptions) =>
+  list: (params?: unknown, options?: SyncOptions) =>
     dbSync.read("evidence", undefined, params, options),
   get: (id: string, options?: SyncOptions) =>
     dbSync.read("evidence", id, {}, options),
@@ -539,7 +539,7 @@ export const EvidenceAPI = {
 };
 
 export const ReportsAPI = {
-  list: (params?: any, options?: SyncOptions) =>
+  list: (params?: unknown, options?: SyncOptions) =>
     dbSync.read("reports", undefined, params, options),
   get: (id: string, options?: SyncOptions) =>
     dbSync.read("reports", id, {}, options),
@@ -554,7 +554,7 @@ export const ReportsAPI = {
 };
 
 export const CriminalsAPI = {
-  list: (params?: any, options?: SyncOptions) =>
+  list: (params?: unknown, options?: SyncOptions) =>
     dbSync.read("criminals", undefined, params, options),
   get: (id: string, options?: SyncOptions) =>
     dbSync.read("criminals", id, {}, options),
@@ -569,7 +569,7 @@ export const CriminalsAPI = {
 };
 
 export const ActivitiesAPI = {
-  list: (params?: any, options?: SyncOptions) =>
+  list: (params?: unknown, options?: SyncOptions) =>
     dbSync.read("activities", undefined, params, options),
   get: (id: string, options?: SyncOptions) =>
     dbSync.read("activities", id, {}, options),
@@ -584,7 +584,7 @@ export const ActivitiesAPI = {
 };
 
 export const UsersAPI = {
-  list: (params?: any, options?: SyncOptions) =>
+  list: (params?: unknown, options?: SyncOptions) =>
     dbSync.read("users", undefined, params, options),
   get: (id: string, options?: SyncOptions) =>
     dbSync.read("users", id, {}, options),
@@ -599,7 +599,7 @@ export const UsersAPI = {
 };
 
 export const CanvasAPI = {
-  list: (params?: any, options?: SyncOptions) =>
+  list: (params?: unknown, options?: SyncOptions) =>
     dbSync.read("canvasStates", undefined, params, options),
   get: (id: string, options?: SyncOptions) =>
     dbSync.read("canvasStates", id, {}, options),

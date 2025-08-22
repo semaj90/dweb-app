@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // AI embedding generation service
 // Supports local Ollama models with Redis/memory caching for performance
 // Use process.env for server-side environment variables
@@ -8,7 +8,7 @@ import { cases, evidence } from "$lib/server/db/schema-postgres";
 import type { EmbeddingOptions } from "../../types/vector.js";
 // Orphaned content: import {
 cacheEmbedding, getCachedEmbedding
-import { db } from '../db/index.js';
+import { db } from '$lib/db/index.js';
 
 export async function generateEmbedding(
   text: string,

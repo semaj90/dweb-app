@@ -1,5 +1,5 @@
 import stream from "stream";
-// @ts-nocheck
+
 /**
  * Browser Cache Manager for Neural Sprite JSON States
  * Multi-layer caching with compression and Service Worker integration
@@ -328,7 +328,7 @@ export class BrowserCacheManager {
     });
   }
 
-  private decompressData(data: any, compressed: boolean): any {
+  private decompressData(data: any, compressed: boolean): unknown {
     if (!compressed) {
       return data;
     }

@@ -5,7 +5,8 @@ Vector Search Widget
 Compact searchable component for embedding in other interfaces
 -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state, $effect } from 'svelte';
+
 
   import { onMount } from 'svelte';
   import { Button } from '$lib/components/ui/button';
@@ -25,7 +26,7 @@ import type { CommonProps } from '$lib/types/common-props';
   import { vectorIntelligenceService } from '$lib/services/vector-intelligence-service.js';
   import type { VectorSearchResult } from '$lib/services/vector-intelligence-service.js';
 
-  interface Props extends CommonProps {
+  interface Props {
     placeholder?: string;
     maxResults?: number;
     threshold?: number;
@@ -181,19 +182,19 @@ import type { CommonProps } from '$lib/types/common-props';
             >
               <div class="flex items-start justify-between mb-2">
                 <div class="flex items-center gap-2">
-                  <svelte:component this={getEntityIcon(result.source)} class="h-4 w-4 text-muted-foreground" />
-                  <span class="text-sm font-medium truncate">{result.id}</span>
+                  <svelte:component this={getEntityIcon(result?.source || 'unknown')} class="h-4 w-4 text-muted-foreground" />
+                  <span class="text-sm font-medium truncate">{result?.id || 'Unknown'}</span>
                 </div>
                 <div class="flex items-center gap-1">
-                  <Badge class={`text-xs ${getConfidenceColor(result.similarity)}`}>
-                    {Math.round(result.similarity * 100)}%
+                  <Badge class={`text-xs ${getConfidenceColor(result?.similarity || 0)}`}>
+                    {Math.round((result?.similarity || 0) * 100)}%
                   </Badge>
-                  <Badge variant="outline" class="text-xs">{result.source}</Badge>
+                  <Badge variant="outline" class="text-xs">{result?.source || 'unknown'}</Badge>
                 </div>
               </div>
 
               <p class="text-xs text-muted-foreground line-clamp-2 mb-2">
-                {result.content.substring(0, 120)}...
+                {(result?.content || '').substring(0, 120)}{(result?.content || '').length > 120 ? '...' : ''}
               </p>
 
               {#if result.highlights?.length > 0}

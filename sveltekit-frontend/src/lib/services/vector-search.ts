@@ -1,8 +1,9 @@
-// @ts-nocheck
+
 import { db } from "$lib/server/database";
-// Orphaned content: import {
-legalDocuments as documents,
+import {
+  legalDocuments as documents,
   embeddingCache,
+} from "$lib/db/schema";
 import { eq, sql, desc, asc } from "drizzle-orm";
 import crypto from "crypto";
 

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Unified AI Store - Phase 2 Integration
  * Merges ai-commands.js with ai-command-parser.js

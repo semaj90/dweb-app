@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     for_?: string;
     class_?: string;
   }
@@ -10,7 +10,7 @@ import type { CommonProps } from '$lib/types/common-props';
     for_ = '',
     class_ = '',
     children
-  }: Props & { children?: any } = $props();
+  }: Props & { children?: unknown } = $props();
 </script>
 
 <label for={for_} class="text-sm font-medium text-gray-700 dark:text-gray-300 {class_}">

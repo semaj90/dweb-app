@@ -1,7 +1,6 @@
 <!-- @migration-task Error while migrating Svelte code: `$evidenceStore` is an illegal variable name. To reference a global variable called `$evidenceStore`, use `globalThis.$evidenceStore`
 https://svelte.dev/e/global_reference_invalid -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import Badge from "$lib/components/ui/Badge.svelte";
   import Button from "$lib/components/ui/button/Button.svelte";
@@ -35,6 +34,77 @@ import type { CommonProps } from '$lib/types/common-props';
   
   // Stub for activeUsers - replace with actual implementation
   const activeUsers = writable([]);
+
+  // State variables for the component
+  let viewMode = $state('columns');
+  let canvasContainer: HTMLDivElement;
+  let columns = $state([
+    { id: 'new', title: 'New Evidence', items: [] },
+    { id: 'processing', title: 'Processing', items: [] },
+    { id: 'verified', title: 'Verified', items: [] }
+  ]);
+  let canvasEvidence = $state([]);
+  let contextMenu = $state({
+    show: false,
+    x: 0,
+    y: 0,
+    item: null
+  });
+  let miniModal = $state({
+    show: false,
+    x: 0,
+    y: 0,
+    type: ''
+  });
+
+  // Functions
+  function switchViewMode(mode: 'columns' | 'canvas') {
+    viewMode = mode;
+  }
+
+  function handleFileUpload(event: any, columnId: string) {
+    console.log('File upload:', event, columnId);
+  }
+
+  function handleDndConsider(event: any, columnId: string) {
+    console.log('DnD consider:', event, columnId);
+  }
+
+  function handleDndFinalize(event: any, columnId: string) {
+    console.log('DnD finalize:', event, columnId);
+  }
+
+  function handleRightClick(event: MouseEvent, item: any) {
+    event.preventDefault();
+    contextMenu = {
+      show: true,
+      x: event.clientX,
+      y: event.clientY,
+      item
+    };
+  }
+
+  function closeContextMenu() {
+    contextMenu = { ...contextMenu, show: false };
+  }
+
+  function showMiniModal(type: string) {
+    miniModal = { ...miniModal, show: true, type };
+  }
+
+  function hideMiniModal() {
+    miniModal = { ...miniModal, show: false };
+  }
+
+  function broadcastPositionUpdate(id: string, x: number, y: number) {
+    console.log('Position update:', id, x, y);
+  }
+
+  function handleGlobalKeydown(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      closeContextMenu();
+    }
+  }
 
   async function saveTo(target: string) {
     if (!contextMenu.item) return closeContextMenu();
@@ -271,7 +341,7 @@ import type { CommonProps } from '$lib/types/common-props';
               <!-- Upload Zone for first column -->
               {#if column.id === "new"}
                 <UploadZone
-                  on:upload={(e) => handleFileUpload(e.detail, column.id)}
+                  onupload={(e) => handleFileUpload(e.detail, column.id)}
                 />
               {/if}
 
@@ -287,13 +357,13 @@ import type { CommonProps } from '$lib/types/common-props';
                     borderRadius: "8px",
                   },
                 }}
-                on:consider={(e) => handleDndConsider(e, column.id)}
-                on:finalize={(e) => handleDndFinalize(e, column.id)}
+                onconsider={(e) => handleDndConsider(e, column.id)}
+                onfinalize={(e) => handleDndFinalize(e, column.id)}
               >
                 {#each column.items as item (item.id)}
                   <div
                     class="cursor-grab active:cursor-grabbing transition-transform hover:scale-105"
-                    on:contextmenu={(e) => handleRightClick(e, item)}
+                    oncontextmenu={(e) => handleRightClick(e, item)}
                     role="button"
                     tabindex="0"
                   >
@@ -346,7 +416,7 @@ import type { CommonProps } from '$lib/types/common-props';
                 size={{ width: 300, height: 200 }}
                 isSelected={false}
                 isDirty={false}
-                on:positionUpdate={(e) =>
+                onpositionupdate={(e) =>
                   broadcastPositionUpdate(evidence.id, e.detail.x, e.detail.y)}
               />
             </div>
@@ -357,7 +427,7 @@ import type { CommonProps } from '$lib/types/common-props';
         <div class="absolute bottom-4 right-4">
           <UploadZone
             minimal={true}
-            on:upload={(e) => handleFileUpload(e.detail, "new")}
+            onupload={(e) => handleFileUpload(e.detail, "new")}
           />
         </div>
       </div>
@@ -376,17 +446,17 @@ import type { CommonProps } from '$lib/types/common-props';
         <p class="space-y-4">Evidence Actions</p>
       </div>
       <ContextMenu.Item
-        on:select={() =>
+        onselect={() =>
           window.open(`/evidence/${contextMenu.item?.id}`, "_blank")}
         >View Details</ContextMenu.Item
       >
       <ContextMenu.Item
-        on:select={() =>
+        onselect={() =>
           (window.location.href = `/evidence/${contextMenu.item?.id}/edit`)}
         >Edit</ContextMenu.Item
       >
       <ContextMenu.Item
-        on:select={() =>
+        onselect={() =>
           contextMenu.item?.fileUrl &&
           (() => {
             const link = document.createElement("a");
@@ -396,17 +466,17 @@ import type { CommonProps } from '$lib/types/common-props';
           })()}>Download</ContextMenu.Item
       >
       <ContextMenu.Item
-        on:select={() =>
+        onselect={() =>
           console.log("Duplicate evidence:", contextMenu.item?.id)}
         >Duplicate</ContextMenu.Item
       >
       <ContextMenu.Item
-        on:select={() => {
+        onselect={() => {
           /* TODO: Audit evidence logic */
         }}>Audit (Semantic/Vector)</ContextMenu.Item
       >
       <ContextMenu.Item
-        on:select={() => {
+        onselect={() => {
           /* TODO: Trigger agent review logic */
         }}>Trigger Agent Review</ContextMenu.Item
       >
@@ -417,25 +487,25 @@ import type { CommonProps } from '$lib/types/common-props';
       <ContextMenu.Item
         onmouseenter={() => showMiniModal("citation")}
         onmouseleave={hideMiniModal}
-        on:select={() => saveTo("savedcitations")}
+        onselect={() => saveTo("savedcitations")}
         >Add to /savedcitations</ContextMenu.Item
       >
       <ContextMenu.Item
         onmouseenter={() => showMiniModal("aisummary")}
         onmouseleave={hideMiniModal}
-        on:select={() => saveTo("savedaisummaries")}
+        onselect={() => saveTo("savedaisummaries")}
         >Add to /savedaisummaries</ContextMenu.Item
       >
       <ContextMenu.Item
         onmouseenter={() => showMiniModal("userreport")}
         onmouseleave={hideMiniModal}
-        on:select={() => saveTo("saveduserreports")}
+        onselect={() => saveTo("saveduserreports")}
         >Add to /saveduserreports</ContextMenu.Item
       >
       <ContextMenu.Item
         onmouseenter={() => showMiniModal("mcpcontext")}
         onmouseleave={hideMiniModal}
-        on:select={() => saveTo("mcpcontext")}
+        onselect={() => saveTo("mcpcontext")}
         >Add to MCP Context (LLM)</ContextMenu.Item
       >
       <ContextMenu.Separator />
@@ -443,7 +513,7 @@ import type { CommonProps } from '$lib/types/common-props';
         <p class="space-y-4">Send to Case</p>
       </div>
       <ContextMenu.Item
-        on:select={() => {
+        onselect={() => {
           /* TODO: Show case selection and call sendToCase */
         }}>Send to /casesid</ContextMenu.Item
       >
@@ -451,7 +521,7 @@ import type { CommonProps } from '$lib/types/common-props';
       <ContextMenu.Item
         onmouseenter={() => showMiniModal("find")}
         onmouseleave={hideMiniModal}
-        on:select={findWithLLM}>Find (search/query with LLM)</ContextMenu.Item
+        onselect={findWithLLM}>Find (search/query with LLM)</ContextMenu.Item
       >
       {#if findModal.show}
         <div
@@ -558,7 +628,4 @@ import type { CommonProps } from '$lib/types/common-props';
   </div>
 {/if}
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

@@ -1,15 +1,19 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $effect } from 'svelte';
+
 
   import { caseFormSchema, type CaseForm } from "$lib/schemas/forms";
   import { getAuthContext } from "$lib/stores/auth";
   import { superForm, type SuperValidated } from 'sveltekit-superforms';
   import { zodClient } from 'sveltekit-superforms/adapters';
+  import { createEventDispatcher } from 'svelte';
 
-  interface Props extends CommonProps {
+  const dispatch = createEventDispatcher();
+
+  interface Props {
     initialData?: SuperValidated<CaseForm> | Partial<CaseForm>;
     isEditing?: boolean;
-    formApi?: any;
+    formApi?: unknown;
     onsuccess?: (data: any) => void;
     onerror?: (error: any) => void;
   }

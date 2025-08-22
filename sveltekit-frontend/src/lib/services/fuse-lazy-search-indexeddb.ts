@@ -27,7 +27,7 @@ export interface SearchOptions {
 export interface SearchResult {
   item: SearchableItem;
   score?: number;
-  matches?: any[];
+  matches?: unknown[];
   similarity?: number;
   refIndex: number;
 }

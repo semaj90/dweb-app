@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Redis caching service for embeddings and search results
 // Use process.env for server-side environment variables
 
@@ -144,9 +144,9 @@ class CacheService {
     query: string,
     searchType: string,
     filters: any = {},
-  ): Promise<any[] | null> {
+  ): Promise<unknown[] | null> {
     const key = `search:${searchType}:${this.hashString(query)}:${this.hashString(JSON.stringify(filters))}`;
-    return this.get<any[]>(key);
+    return this.get<unknown[]>(key);
   }
   async setSearchResults(
     query: string,
@@ -190,11 +190,11 @@ export const cacheSearchResults = (
   query: string,
   searchType: string,
   results: any[],
-  filters?: any,
+  filters?: unknown,
 ) => cache.setSearchResults(query, searchType, results, filters);
 
 export const getCachedSearchResults = (
   query: string,
   searchType: string,
-  filters?: any,
+  filters?: unknown,
 ) => cache.getSearchResults(query, searchType, filters);

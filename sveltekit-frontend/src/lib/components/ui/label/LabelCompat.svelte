@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
-  import Label from '../Label.svelte';
+  import Label from '$lib/Label.svelte';
+  import { $props } from 'svelte';
   import type { HTMLAttributes } from 'svelte/elements';
 
   // Svelte 5 props pattern - Accept legacy props and map to base Label
@@ -10,7 +10,7 @@ import type { CommonProps } from '$lib/types/common-props';
     class?: string;
   }
 
-  let { 'for': forProp = '', class: classProp = '', children, ...rest }: Props & { children?: any } = $props();
+  let { 'for': forProp = '', class: classProp = '', children, ...rest }: Props & { children?: unknown } = $props();
 </script>
 
 <Label for_={forProp} class_={classProp} {...rest}>

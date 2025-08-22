@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-// @ts-nocheck
+
 /**
  * Ultra-High Performance WebAssembly JSON Processor
  * 10x faster than RapidJSON with neural network optimization
@@ -9,9 +9,9 @@ import { EventEmitter } from "events";
 
 // WebAssembly interface types
 export interface WasmJSONParser {
-  parse(input: string): any;
+  parse(input: string): unknown;
   stringify(obj: any): string;
-  parseStream(input: Uint8Array): any;
+  parseStream(input: Uint8Array): unknown;
   getMemoryUsage(): number;
   optimize(): void;
   dispose(): void;
@@ -170,7 +170,7 @@ export class UltraHighPerformanceJSONProcessor extends EventEmitter {
   /**
    * Ultra-fast JSON parsing with neural optimization
    */
-  private ultraFastParse(input: string): any {
+  private ultraFastParse(input: string): unknown {
     const startTime = performance.now();
     const inputSize = input.length;
 
@@ -437,7 +437,7 @@ export class UltraHighPerformanceJSONProcessor extends EventEmitter {
   /**
    * Direct parsing for simple JSON
    */
-  private directParse(input: string): any {
+  private directParse(input: string): unknown {
     try {
       return JSON.parse(input);
     } catch (error) {
@@ -448,7 +448,7 @@ export class UltraHighPerformanceJSONProcessor extends EventEmitter {
   /**
    * Streaming parsing for large JSON strings
    */
-  private streamingParseString(input: string): any {
+  private streamingParseString(input: string): unknown {
     // Implement streaming parser for large JSON
     const chunkSize = 64 * 1024;
     const chunks = [];
@@ -465,7 +465,7 @@ export class UltraHighPerformanceJSONProcessor extends EventEmitter {
   /**
    * Compressed parsing with decompression
    */
-  private compressedParse(input: string): any {
+  private compressedParse(input: string): unknown {
     // This would implement compression-aware parsing
     // For now, use regular parsing
     return JSON.parse(input);
@@ -474,7 +474,7 @@ export class UltraHighPerformanceJSONProcessor extends EventEmitter {
   /**
    * Neural network optimized parsing
    */
-  private neuralOptimizedParse(input: string, characteristics: any): any {
+  private neuralOptimizedParse(input: string, characteristics: any): unknown {
     // This would use neural network insights for parsing
     // For now, use the most appropriate basic strategy
     if (characteristics.size > 100000) {
@@ -716,7 +716,7 @@ export class UltraHighPerformanceJSONProcessor extends EventEmitter {
     return Array.from(substrings.values()).some((count) => count > 3);
   }
 
-  private extractCompleteJSONObjects(chunk: string): any[] {
+  private extractCompleteJSONObjects(chunk: string): unknown[] {
     const objects = [];
     let depth = 0;
     let start = 0;

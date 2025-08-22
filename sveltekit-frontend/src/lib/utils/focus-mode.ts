@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Focus Mode Utility
  * Provides distraction-free writing experience by dimming non-essential UI elements

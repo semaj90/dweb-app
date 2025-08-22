@@ -1,5 +1,6 @@
 <!-- Document Upload Page with MinIO Integration -->
 <script lang="ts">
+  import { $props, $state } from 'svelte';
   import MinIOUpload from '$lib/components/upload/MinIOUpload.svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
@@ -54,7 +55,7 @@
 
   // Recent uploads state
   let showRecentUploads = $state(false);
-  let recentUploads = $state<any[]>([]);
+  let recentUploads = $state<unknown[]>([]);
 
   // Load recent uploads
   async function loadRecentUploads() {
@@ -89,8 +90,8 @@
       <MinIOUpload
         {data}
         {caseId}
-        onUploadComplete={handleUploadComplete}
-        onUploadError={handleUploadError}
+        onuploadcomplete={handleUploadComplete}
+        onuploaderror={handleUploadError}
       />
     </div>
 

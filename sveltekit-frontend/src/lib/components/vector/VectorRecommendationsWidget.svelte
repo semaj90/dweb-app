@@ -3,7 +3,7 @@ Vector Recommendations Widget
 Compact AI recommendations component for sidebar/dashboard use
 -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state } from 'svelte';
 
   import { onMount } from 'svelte';
   import { Button } from '$lib/components/ui/button';
@@ -26,7 +26,7 @@ import type { CommonProps } from '$lib/types/common-props';
   import { vectorIntelligenceService } from '$lib/services/vector-intelligence-service.js';
   import type { IntelligenceRecommendation } from '$lib/services/vector-intelligence-service.js';
 
-  interface Props extends CommonProps {
+  interface Props {
     context?: string;
     userRole?: 'prosecutor' | 'detective' | 'admin' | 'user';
     currentCaseId?: string;

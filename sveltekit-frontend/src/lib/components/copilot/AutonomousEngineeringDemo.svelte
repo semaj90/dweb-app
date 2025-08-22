@@ -3,7 +3,7 @@ Autonomous Engineering Demo Component
 Showcases Copilot self-prompting with comprehensive AI orchestration
 -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state } from 'svelte';
 
   import { onMount } from 'svelte';
   import { Button } from '$lib/components/ui/button';
@@ -38,7 +38,7 @@ import type { CommonProps } from '$lib/types/common-props';
   import { copilotSelfPrompt } from '$lib/utils/copilot-self-prompt.js';
   import type { CopilotSelfPromptResult, NextAction, Recommendation } from '$lib/utils/copilot-self-prompt.js';
 
-  interface Props extends CommonProps {
+  interface Props {
     showAdvancedOptions?: boolean;
     autoExecuteExamples?: boolean;
   }

@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+
 // API endpoint for vector search operations
 import VectorService from "$lib/server/services/vector-service";
 

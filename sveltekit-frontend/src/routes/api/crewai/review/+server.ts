@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // CrewAI Multi-Agent Document Review API
 // Orchestrates legal document analysis with multiple AI agents
 

@@ -15,7 +15,7 @@ export interface VectorOperation {
 
 export interface VectorResult {
   success: boolean;
-  data?: any;
+  data?: unknown;
   error?: string;
   latency: number;
   protocol: 'quic' | 'grpc' | 'http';

@@ -91,8 +91,8 @@ function detectErrorCategory(code: string, message: string): string {
   return 'unknown';
 }
 
-function categorizeErrorsForGPU(errors: any[]): Record<string, any[]> {
-  const categories: Record<string, any[]> = {};
+function categorizeErrorsForGPU(errors: any[]): Record<string, unknown[]> {
+  const categories: Record<string, unknown[]> = {};
   
   for (const error of errors) {
     if (!categories[error.category]) {
@@ -104,7 +104,7 @@ function categorizeErrorsForGPU(errors: any[]): Record<string, any[]> {
   return categories;
 }
 
-async function processErrorsWithGPU(categorizedErrors: Record<string, any[]>): Promise<any[]> {
+async function processErrorsWithGPU(categorizedErrors: Record<string, unknown[]>): Promise<unknown[]> {
   const fixes: any[] = [];
   
   for (const [category, errors] of Object.entries(categorizedErrors)) {
@@ -119,7 +119,7 @@ async function processErrorsWithGPU(categorizedErrors: Record<string, any[]>): P
   return fixes;
 }
 
-function generateErrorFix(error: any, category: string): any {
+function generateErrorFix(error: any, category: string): unknown {
   const fixTemplates = {
     svelte5: {
       code: "let { prop1, prop2, ...restProps } = $props();",

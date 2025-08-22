@@ -1,7 +1,13 @@
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+<script context="module" lang="ts">
+  import { $props, $state } from 'svelte';
+  // Keep module import for Svelte runes; ambient types are provided globally.
+  export {};
+</script>
 
-  interface Props extends CommonProps {
+<script lang="ts">
+
+
+  interface Props {
     user: User | null ;
   }
   let {
@@ -26,9 +32,9 @@ import type { CommonProps } from '$lib/types/common-props';
     User as UserIcon,
   } from "lucide-svelte";
 
-  
-  let searchQuery = "";
-  let userMenuOpen = false;
+
+  let searchQuery = $state('');
+  let userMenuOpen = $state(false);
 
   function handleSearch(event: CustomEvent) {
     searchQuery = event.detail.query;
@@ -135,7 +141,7 @@ import type { CommonProps } from '$lib/types/common-props';
       <SearchInput
         placeholder="Search cases, evidence, notes..."
         value={searchQuery}
-        on:search={handleSearch}
+        onsearch={handleSearch}
       />
     </div>
 
@@ -227,7 +233,7 @@ import type { CommonProps } from '$lib/types/common-props';
 <style>
   /* @unocss-include */
   .app-header {
-    @apply fixed top-0 left-0 right-0 h-15 bg-card border-b border-border z-30;
+    @apply fixed top-0 left-0 right-0 h-16 bg-card border-b border-border z-30;
     backdrop-filter: blur(8px);
   }
 

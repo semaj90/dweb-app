@@ -1,6 +1,6 @@
 <!-- Advanced Rich Text Editor with Google Slides/Photoshop-like Features -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived } from 'svelte';
 
   import { Editor } from "@tiptap/core";
   import Color from "@tiptap/extension-color";
@@ -431,7 +431,7 @@ import type { CommonProps } from '$lib/types/common-props';
   }
 
   // Reactive statements
-  $: state = get(editorState);
+  let state = $derived(get(editorState));
 
   // Exported functions for parent component access
   export function setContent(content: string) {

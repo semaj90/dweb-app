@@ -1,4 +1,4 @@
-import { setCache } from '../utils/server-cache.js';
+import { setCache } from '$lib/utils/server-cache.js';
 
 const RABBITMQ_URL = import.meta.env.RABBITMQ_URL || "amqp://localhost";
 const QUEUE_NAME = "summarization_tasks";

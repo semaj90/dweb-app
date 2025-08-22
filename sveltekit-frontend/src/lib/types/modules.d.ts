@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Module declarations for packages without proper TypeScript types
  */
@@ -45,7 +45,7 @@ declare module "lokijs" {
     autosaveInterval?: number;
     autoload?: boolean;
     autoloadCallback?: (err: any) => void;
-    adapter?: any;
+    adapter?: unknown;
     serializationMethod?: string;
     destructureDelimiter?: string;
     persistenceMethod?: string;
@@ -66,23 +66,23 @@ declare module "lokijs" {
     disableFreeze?: boolean;
     ttl?: number;
     ttlInterval?: number;
-    transforms?: any;
+    transforms?: unknown;
   }
 
   interface Collection<T = any> {
     insert(doc: T): T;
-    find(query?: any): T[];
-    findOne(query?: any): T | null;
+    find(query?: unknown): T[];
+    findOne(query?: unknown): T | null;
     update(doc: T): T;
     remove(doc: T): void;
     removeWhere(query: any): void;
-    count(query?: any): number;
+    count(query?: unknown): number;
     data: T[];
     chain(): {
-      find(query?: any): any;
-      where(filter: (obj: T) => boolean): any;
-      simplesort(property: string, desc?: boolean): any;
-      limit(qty: number): any;
+      find(query?: unknown): unknown;
+      where(filter: (obj: T) => boolean): unknown;
+      simplesort(property: string, desc?: boolean): unknown;
+      limit(qty: number): unknown;
       data(): T[];
     };
     clear(): void;
@@ -98,7 +98,7 @@ declare module "lokijs" {
     getCollection<T = any>(name: string): Collection<T> | null;
     removeCollection(name: string): void;
     saveDatabase(callback?: (err: any) => void): void;
-    loadDatabase(options?: any, callback?: (err: any) => void): void;
+    loadDatabase(options?: unknown, callback?: (err: any) => void): void;
     close(): void;
     listCollections(): Array<{ name: string; data: any[]; options: any }>;
   }

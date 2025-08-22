@@ -1,10 +1,8 @@
-// @ts-nocheck
+
 // src/lib/server/db/drizzle.ts
 import { drizzle } from "drizzle-orm/node-postgres";
-// Orphaned content: import {
-
-* as schema from './schema-postgres.js';
-// Orphaned content: import type { NodePgDatabase
+import * as schema from './schema-postgres.js';
+import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 // Create a mock pool for build time
 const createMockPool = () =>

@@ -1,5 +1,5 @@
 import axios from "axios";
-// @ts-nocheck
+
 
 // This function calls your local Ollama server to get an embedding
 export async function getEmbedding(text: string): Promise<number[]> {

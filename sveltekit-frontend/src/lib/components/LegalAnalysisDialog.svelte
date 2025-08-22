@@ -2,7 +2,7 @@
 https://svelte.dev/e/element_invalid_closing_tag -->
 <!-- Legal Case Analysis Dialog - Bits UI Component -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state } from 'svelte';
 
   import { Dialog } from 'bits-ui/components/dialog';
 import { Select } from 'bits-ui/components/select';
@@ -12,7 +12,7 @@ import { Progress } from 'bits-ui/components/progress';
   import { legalCaseStore } from '$lib/stores/legal-case.store.svelte';
   import type { LegalCase } from '$lib/types/legal';
 
-  interface Props extends CommonProps {
+  interface Props {
     open: boolean;
     onOpenChange: (open: boolean) => void;
   }

@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     report: Report;
   }
   let {
@@ -96,12 +96,12 @@ let dragStartY = 0;
   <ContextMenu.Content menu={true}>
     <ContextMenu.Item
     <ContextMenu.Item
-      on:select={() => saveCitation(window.getSelection()?.toString() || "")}
+      onselect={() => saveCitation(window.getSelection()?.toString() || "")}
     >
       <Link class="space-y-4" />
       Save as Citation
     </ContextMenu.Item>
-    <ContextMenu.Item on:select={summarizeReport}>
+    <ContextMenu.Item onselect={summarizeReport}>
       <Sparkles class="space-y-4" />
       AI Summary
     </ContextMenu.Item>

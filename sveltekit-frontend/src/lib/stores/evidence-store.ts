@@ -1,8 +1,8 @@
 import crypto from "crypto";
-// @ts-nocheck
+
 import Fuse from "fuse.js";
-import type { Writable }, {
-derived, writable } from "svelte/store";
+import type { Writable } from "svelte/store";
+import { derived, writable } from "svelte/store";
 
 // === TYPES ===
 
@@ -55,7 +55,7 @@ export interface UploadFile {
   status: "pending" | "uploading" | "processing" | "completed" | "error";
   preview?: string;
   extractedText?: string;
-  aiAnalysis?: any;
+  aiAnalysis?: unknown;
   error?: string;
 }
 

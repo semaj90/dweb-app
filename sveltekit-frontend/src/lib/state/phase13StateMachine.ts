@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Phase 13 Enhanced XState Machine with WebGL Vertex Streaming
  * Integrates stateless API coordination, real-time PageRank feedback,
@@ -6,10 +6,8 @@
  */
 
 import { setup, assign, fromPromise, fromCallback, createActor, type StateValue } from "xstate";
-// Orphaned content: import {
-writable, derived, type Writable
+import { writable, derived, type Writable } from "svelte/store";
 import { NeuralSpriteEngine } from "$lib/engines/neural-sprite-engine";
-// Orphaned content: import {
 
 // Enhanced context for Phase 13 with WebGL vertex streaming
 export interface Phase13Context {

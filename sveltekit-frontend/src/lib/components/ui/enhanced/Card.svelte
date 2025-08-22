@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
 	import type { HTMLAttributes } from 'svelte/elements';
+  import { $props, $derived } from 'svelte';
 
 	interface Props extends HTMLAttributes<HTMLDivElement> {
 		elevated?: boolean;

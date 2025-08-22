@@ -41,7 +41,7 @@ export interface DatabaseOrchestratorConfig {
 
 export interface DatabaseOrchestratorResponse {
   success: boolean;
-  data?: any;
+  data?: unknown;
   error?: string;
   timestamp: string;
 }
@@ -51,13 +51,13 @@ class StubOrchestrator extends EventEmitter {
   private running = false;
   private _conditions: Map<string, any> = new Map();
   private queue: any[] = [];
-  private inMemoryTables: Map<string, any[]> = new Map();
+  private inMemoryTables: Map<string, unknown[]> = new Map();
 
   private get persistenceMode() {
     return db ? 'postgres' : 'in-memory';
   }
 
-  private resolveTable(table?: string): any | null {
+  private resolveTable(table?: string): unknown | null {
     if (!table) return null;
     if (!schema) return null;
     // Accept both exact key and camel/underscore variants
@@ -151,7 +151,7 @@ class StubOrchestrator extends EventEmitter {
             try {
               const { eq } = await import('drizzle-orm');
               if (tbl[k]) {
-                // @ts-ignore dynamic field
+                // dynamic field
                 q = q.where(eq(tbl[k], v));
               }
             } catch {
@@ -176,7 +176,7 @@ class StubOrchestrator extends EventEmitter {
     }
     return rows.slice(0, query.limit || rows.length);
   }
-  async executeQuery(query: string, params?: any) {
+  async executeQuery(query: string, params?: unknown) {
     return { success: true, data: { query, params }, timestamp: new Date().toISOString() };
   }
   async performHealthCheck() {
@@ -232,7 +232,7 @@ export function runFullIntegrationTest(): Promise<any> {
 }
 
 // Enhanced text processing integration
-export function splitIntoSentences(text: string, options?: any): string[] {
+export function splitIntoSentences(text: string, options?: unknown): string[] {
   // Import the enhanced splitter lazily to avoid circular dependencies
   try {
     return splitSentencesEnhanced(text);
@@ -250,7 +250,7 @@ export function splitIntoSentences(text: string, options?: any): string[] {
 export async function generateMMRSummary(
   documents: any[],
   query: string,
-  config?: any
+  config?: unknown
 ): Promise<any> {
   try {
     const { generateMMRSummary } = await import('./mmr-summary-generator');
@@ -293,7 +293,7 @@ export async function startOrchestrator(config?: DatabaseOrchestratorConfig): Pr
 export async function processRAGPipeline(
   query: string,
   documents: any[],
-  config?: any
+  config?: unknown
 ): Promise<any> {
   try {
     const { processLegalQuery } = await import('./rag-pipeline-integrator');
@@ -327,7 +327,7 @@ export async function processRAGPipeline(
 export async function createPatchStream(
   target: string,
   initialData: any,
-  options?: any
+  options?: unknown
 ): Promise<any> {
   try {
     const { AdvancedPatchStreamer } = await import('./advanced-patch-streaming');
@@ -356,7 +356,7 @@ export async function synthesizeAIInput(
     userRole?: string;
     caseId?: string;
     documentIds?: string[];
-    sessionContext?: any;
+    sessionContext?: unknown;
   }
 ): Promise<any> {
   try {
@@ -468,7 +468,7 @@ export async function processAIAssistantQuery(
     userRole?: string;
     caseId?: string;
     documentIds?: string[];
-    sessionContext?: any;
+    sessionContext?: unknown;
     enableLegalBERT?: boolean;
     enableRAG?: boolean;
     maxDocuments?: number;
@@ -569,8 +569,8 @@ export async function processAIAssistantQuery(
 export async function rerankSearchResults(
   query: string,
   results: any[],
-  config?: any
-): Promise<any[]> {
+  config?: unknown
+): Promise<unknown[]> {
   try {
     const { CrossEncoderReranker } = await import('./cross-encoder-reranker');
     const reranker = new CrossEncoderReranker();
@@ -611,7 +611,7 @@ export async function processDocuments(documents: any[]): Promise<any> {
   return Promise.resolve({ processed: true, count: documents.length });
 }
 
-export async function searchVector(query: string, options?: any): Promise<any> {
+export async function searchVector(query: string, options?: unknown): Promise<any> {
   return Promise.resolve({ query, results: [], options });
 }
 

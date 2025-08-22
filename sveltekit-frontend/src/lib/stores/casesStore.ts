@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import type { Case } from "$lib/types";
 // Orphaned content: import {
 
@@ -28,8 +28,8 @@ const initialData: CaseStoreData = {
 export const casesStore = writable<CaseStoreData>(initialData);
 
 // Computed stores for easy access
-export const activeCases = writable<any[]>([]);
-export const caseStats = writable<any[]>([]);
+export const activeCases = writable<unknown[]>([]);
+export const caseStats = writable<unknown[]>([]);
 export const filterState = writable<CaseStoreData["filters"]>(
   initialData.filters,
 );

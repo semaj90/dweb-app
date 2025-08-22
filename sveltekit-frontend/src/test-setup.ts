@@ -1,5 +1,5 @@
 import { beforeAll, vi, expect } from 'vitest';
-// @ts-nocheck
+
 
 // Mock browser environment
 beforeAll(() => {

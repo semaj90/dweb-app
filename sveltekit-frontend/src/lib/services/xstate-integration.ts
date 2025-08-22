@@ -7,10 +7,10 @@ import { createActor, type ActorRefFrom } from 'xstate';
 import { writable, derived, type Writable, type Readable } from 'svelte/store';
 
 // Import all XState machines
-import { authMachine, type AuthContext, type AuthEvent } from '../machines/auth-machine.js';
-import { sessionMachine, sessionServices, sessionActions } from '../machines/sessionMachine.js';
-import { aiAssistantMachine, type AIAssistantContext } from '../machines/aiAssistantMachine.js';
-import { agentShellMachine } from '../machines/agentShellMachine.js';
+import { authMachine, type AuthContext, type AuthEvent } from '$lib/machines/auth-machine.js';
+import { sessionMachine, sessionServices, sessionActions } from '$lib/machines/sessionMachine.js';
+import { aiAssistantMachine, type AIAssistantContext } from '$lib/machines/aiAssistantMachine.js';
+import { agentShellMachine } from '$lib/machines/agentShellMachine.js';
 
 // Import services
 import { productionServiceClient, services } from './production-service-client.js';
@@ -449,7 +449,7 @@ class XStateIntegrationService {
            false;
   }
 
-  public async uploadDocument(file: File, metadata?: any): Promise<any> {
+  public async uploadDocument(file: File, metadata?: unknown): Promise<any> {
     try {
       const response = await productionServiceClient.execute('file.upload', {
         file,

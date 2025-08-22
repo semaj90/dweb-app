@@ -73,7 +73,7 @@ export interface IntegratedResponse {
 
 export interface DatabaseOperations {
   postgresql: {
-    query: (sql: string, params?: any[]) => Promise<any[]>;
+    query: (sql: string, params?: unknown[]) => Promise<unknown[]>;
     insert: (table: string, data: any) => Promise<string>;
     update: (table: string, id: string, data: any) => Promise<boolean>;
   };
@@ -83,17 +83,17 @@ export interface DatabaseOperations {
     del: (key: string) => Promise<boolean>;
   };
   qdrant: {
-    search: (vector: number[], collection: string, limit?: number) => Promise<any[]>;
+    search: (vector: number[], collection: string, limit?: number) => Promise<unknown[]>;
     upsert: (collection: string, points: any[]) => Promise<boolean>;
   };
   neo4j: {
-    query: (cypher: string, params?: any) => Promise<any[]>;
+    query: (cypher: string, params?: unknown) => Promise<unknown[]>;
     createNode: (label: string, properties: any) => Promise<string>;
     createRelationship: (
       from: string,
       to: string,
       type: string,
-      properties?: any
+      properties?: unknown
     ) => Promise<string>;
   };
 }
@@ -528,7 +528,7 @@ class ComprehensiveIntegrationService {
   }
 
   // Database operation implementations
-  private async executePostgreSQLQuery(sql: string, params?: any[]): Promise<any[]> {
+  private async executePostgreSQLQuery(sql: string, params?: unknown[]): Promise<unknown[]> {
     const response = await fetch('http://localhost:8094/api/database/postgres/query', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -589,7 +589,7 @@ class ComprehensiveIntegrationService {
     return response.ok;
   }
 
-  private async searchQdrant(vector: number[], collection: string, limit = 10): Promise<any[]> {
+  private async searchQdrant(vector: number[], collection: string, limit = 10): Promise<unknown[]> {
     const response = await fetch(`http://localhost:6333/collections/${collection}/points/search`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -610,7 +610,7 @@ class ComprehensiveIntegrationService {
     return response.ok;
   }
 
-  private async queryNeo4j(cypher: string, params?: any): Promise<any[]> {
+  private async queryNeo4j(cypher: string, params?: unknown): Promise<unknown[]> {
     const response = await fetch('http://localhost:7474/db/neo4j/tx/commit', {
       method: 'POST',
       headers: {
@@ -637,7 +637,7 @@ class ComprehensiveIntegrationService {
     from: string,
     to: string,
     type: string,
-    properties?: any
+    properties?: unknown
   ): Promise<string> {
     const cypher = `
             MATCH (a), (b)

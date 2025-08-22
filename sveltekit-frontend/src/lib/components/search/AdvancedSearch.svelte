@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { createCombobox, melt } from '@melt-ui/svelte';
+  // Global Svelte runes are declared in src/types/svelte-helpers.d.ts
   import { fly } from 'svelte/transition';
   import Fuse from "fuse.js";
   import { Search, X, Tag, Calendar, FileType } from 'lucide-svelte';
@@ -64,8 +64,8 @@ import type { CommonProps } from '$lib/types/common-props';
     searchResults = items.slice(0, maxResults);
   }
 
-  // Apply filters
-  $: filteredResults = searchResults.filter(item => {
+  // Apply filters (wrap in derived function)
+  let filteredResults = $derived(() => searchResults.filter((item: Evidence) => {
     // Type filter
     if (selectedTypes.length > 0 && !selectedTypes.includes(item.type)) {
       return false;
@@ -84,12 +84,12 @@ import type { CommonProps } from '$lib/types/common-props';
       if (dateRange.end && itemDate > dateRange.end) return false;
     }
     return true;
-  });
+  }));
 
   // Update results when filters change
   $: onResults(filteredResults);
 
-  // Sync input value
+  // Sync input value from combobox state (reactive)
   $: searchValue = $inputValue;
 
   // Handle item selection

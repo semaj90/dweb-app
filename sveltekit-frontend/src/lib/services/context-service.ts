@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 export class ContextService {
   static async getCurrentContext() {
     // TODO: Implement context retrieval using Drizzle ORM and pgvector

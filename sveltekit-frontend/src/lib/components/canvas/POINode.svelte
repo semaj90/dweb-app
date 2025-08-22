@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { createEventDispatcher } from "svelte";
+  import { $props } from 'svelte';
   import { draggable } from '$lib/actions/draggable';
   import { aiService } from '$lib/services/aiService';
 // UI Components
@@ -198,7 +198,7 @@ import Input from "$lib/components/ui/Input.svelte";
           dispatch("updatePosition", { id: poi.id, x: posX, y: posY });
         }
       }}
-      on:contextmenu={handleContextMenu}
+      oncontextmenu={handleContextMenu}
       role="menu"
       tabindex={0}
       aria-label="POI context menu"
@@ -328,12 +328,12 @@ import Input from "$lib/components/ui/Input.svelte";
     </div>
   </ContextMenu.Trigger>
   <ContextMenu.Content menu={showContextMenu} class="container mx-auto px-4">
-    <ContextMenu.Item on:select={startEditing}>
+    <ContextMenu.Item onselect={startEditing}>
       <Edit class="container mx-auto px-4" />
       Edit Profile
     </ContextMenu.Item>
 
-    <ContextMenu.Item on:select={summarizePOI}>
+    <ContextMenu.Item onselect={summarizePOI}>
       <Sparkles class="container mx-auto px-4" />
       AI Summary
     </ContextMenu.Item>
@@ -341,7 +341,7 @@ import Input from "$lib/components/ui/Input.svelte";
     <ContextMenu.Separator />
 
     <ContextMenu.Item
-      on:select={() => {
+      onselect={() => {
         threatLevel = "low";
         dispatch("update", { ...poi, threatLevel: "low" });
       }}
@@ -352,7 +352,7 @@ import Input from "$lib/components/ui/Input.svelte";
       Low
     </ContextMenu.Item>
     <ContextMenu.Item
-      on:select={() => {
+      onselect={() => {
         threatLevel = "medium";
         dispatch("update", { ...poi, threatLevel: "medium" });
       }}
@@ -363,7 +363,7 @@ import Input from "$lib/components/ui/Input.svelte";
       Medium
     </ContextMenu.Item>
     <ContextMenu.Item
-      on:select={() => {
+      onselect={() => {
         threatLevel = "high";
         dispatch("update", { ...poi, threatLevel: "high" });
       }}
@@ -376,7 +376,7 @@ import Input from "$lib/components/ui/Input.svelte";
 
     <ContextMenu.Separator />
 
-    <ContextMenu.Item on:select={() => dispatch("delete", poi.id)}>
+    <ContextMenu.Item onselect={() => dispatch("delete", poi.id)}>
       <X class="container mx-auto px-4" />
       Delete POI
     </ContextMenu.Item>

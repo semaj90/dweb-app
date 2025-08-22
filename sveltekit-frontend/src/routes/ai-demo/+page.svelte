@@ -2,6 +2,7 @@
 https://svelte.dev/e/const_tag_invalid_placement -->
 <!-- AI Demo Page - SvelteKit 2.0 + Svelte 5 + Ollama Integration -->
 <script lang="ts">
+  import { $state, $derived } from 'svelte';
   import OllamaChatInterface from "$lib/components/OllamaChatInterface.svelte";
   import { Alert, AlertDescription } from "$lib/components/ui/alert";
   import { Badge } from "$lib/components/ui/badge";

@@ -1,7 +1,7 @@
 <!-- @migration-task Error while migrating Svelte code: Unexpected token
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $derived } from 'svelte';
 
   import { onDestroy, onMount } from "svelte";
   import { quintOut } from "svelte/easing";
@@ -220,8 +220,8 @@ import type { CommonProps } from '$lib/types/common-props';
             </button>
           </div>
             items={$report.attachedEvidence}
-            onResults={(results) => (evidenceSearchResults = results)}
-            onSelect={handleInsertEvidence}
+            onresults={(results) => (evidenceSearchResults = results)}
+            onselect={handleInsertEvidence}
             placeholder="Search evidence..."
           />
         </section>
@@ -239,10 +239,10 @@ import type { CommonProps } from '$lib/types/common-props';
             >
               <EvidenceCard
                 evidence={item}
-                onView={handleViewEvidence}
-                onEdit={handleEditEvidence}
-                onDelete={handleDeleteEvidence}
-                onDownload={handleDownloadEvidence}
+                onview={handleViewEvidence}
+                onedit={handleEditEvidence}
+                ondelete={handleDeleteEvidence}
+                ondownload={handleDownloadEvidence}
                 compact={true}
               />
             </MasonryGrid>
@@ -251,10 +251,10 @@ import type { CommonProps } from '$lib/types/common-props';
               {#each evidenceSearchResults as evidence (evidence.id)}
                 <EvidenceCard
                   {evidence}
-                  onView={handleViewEvidence}
-                  onEdit={handleEditEvidence}
-                  onDelete={handleDeleteEvidence}
-                  onDownload={handleDownloadEvidence}
+                  onview={handleViewEvidence}
+                  onedit={handleEditEvidence}
+                  ondelete={handleDeleteEvidence}
+                  ondownload={handleDownloadEvidence}
                   compact={true}
                 />
               {/each}
@@ -381,25 +381,25 @@ import type { CommonProps } from '$lib/types/common-props';
           >
             <EvidenceCard
               evidence={item}
-              onView={handleViewEvidence}
-              onEdit={handleEditEvidence}
-              onDelete={handleDeleteEvidence}
-              onDownload={handleDownloadEvidence}
+              onview={handleViewEvidence}
+              onedit={handleEditEvidence}
+              ondelete={handleDeleteEvidence}
+              ondownload={handleDownloadEvidence}
               compact={true}
             />
   {#if showEvidenceModal}
     <EvidenceForm
       data={evidenceFormData}
       evidence={selectedEvidence}
-      on:success={() => {
+      onsuccess={() => {
         showEvidenceModal = false;
         selectedEvidence = null;
       }}
-      on:error={(e) => {
+      onerror={(e) => {
         console.error("Evidence form error:", e.detail);
         alert("Error saving evidence");
       }}
-      on:cancel={() => {
+      oncancel={() => {
         showEvidenceModal = false;
         selectedEvidence = null;
       }}
@@ -408,11 +408,11 @@ import type { CommonProps } from '$lib/types/common-props';
         showEvidenceModal = false;
         selectedEvidence = null;
       }}
-      on:error={(e) => {
+      onerror={(e) => {
         console.error("Evidence form error:", e.detail);
         alert("Error saving evidence");
       }}
-      on:cancel={() => {
+      oncancel={() => {
         showEvidenceModal = false;
         selectedEvidence = null;
       }}
@@ -695,7 +695,4 @@ import type { CommonProps } from '$lib/types/common-props';
   }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

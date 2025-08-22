@@ -1,6 +1,6 @@
 <!-- YoRHa Notification Manager Component -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $derived, $effect } from 'svelte';
 
   import YoRHaNotification from './YoRHaNotification.svelte';
   import { notificationStore as notificationStoreExport } from '$lib/stores/notifications';
@@ -59,7 +59,7 @@ import type { CommonProps } from '$lib/types/common-props';
     {#each notificationGroup as notification (notification.id)}
       <YoRHaNotification
         {...notification}
-        on:close={() => removeNotification(notification.id)}
+        onclose={() => removeNotification(notification.id)}
       />
     {/each}
   </div>
@@ -126,7 +126,4 @@ import type { CommonProps } from '$lib/types/common-props';
     }
   }
 </style>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

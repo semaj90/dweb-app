@@ -1,15 +1,16 @@
-// @ts-nocheck
+
 /**
  * Go Microservice XState Machine
  * Manages connections and requests to the Go AI microservice
  */
 
 import { createMachine, assign, fromPromise } from "xstate";
-// Orphaned content: import type {
+import type {
   GoMicroserviceContext,
   GoMicroserviceEvents,
   GoServiceRequest,
   GoServiceResponse,
+} from '$lib/types/go-microservice';
 
 const DEFAULT_TIMEOUT = 30000; // 30 seconds
 const HEALTH_CHECK_INTERVAL = 60000; // 1 minute

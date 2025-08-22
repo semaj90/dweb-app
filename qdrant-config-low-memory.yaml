@@ -1,0 +1,36 @@
+log_level: INFO
+storage:
+  storage_path: ./qdrant-storage
+  snapshots_path: ./qdrant-snapshots
+  temp_path: ./qdrant-temp
+  
+service:
+  http_port: 6333
+  grpc_port: 6334
+  
+# Low memory configuration
+cluster:
+  enabled: false
+  
+performance:
+  max_search_threads: 2
+  max_optimization_threads: 1
+  
+# Reduce memory usage
+hnsw_config:
+  m: 8
+  ef_construct: 100
+  full_scan_threshold: 10000
+  
+quantization:
+  scalar:
+    type: int8
+    quantile: 0.99
+    always_ram: false
+    
+# Low memory collection defaults
+collection_config:
+  optimizer_config:
+    deleted_threshold: 0.5
+    vacuum_min_vector_number: 1000
+    max_optimization_threads: 1

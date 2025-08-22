@@ -1,12 +1,13 @@
-// @ts-nocheck
+
 // Fixed MCP Graph Reader with proper Drizzle ORM query patterns
 import { db } from "$lib/server/db";
-// Orphaned content: import {
-cases,
+import {
+  cases,
   evidence,
   reports,
   users,
   ragSessions,
+} from "$lib/server/db/schema-unified";
 import { eq, sql, and, or, desc, count, like } from "drizzle-orm";
 
 export interface GraphQuery {

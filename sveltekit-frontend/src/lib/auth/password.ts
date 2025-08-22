@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-// @ts-nocheck
+
 // Password hashing utilities using bcrypt
 
 // Salt rounds for bcrypt (higher = more secure but slower)

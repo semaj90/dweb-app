@@ -329,7 +329,7 @@ export const legalAITableConfigs = {
 };
 
 // Utility functions
-export function formatTableData(data: any[], columns: string[]): any[] {
+export function formatTableData(data: any[], columns: string[]): unknown[] {
   return data.map(row => {
     const formatted: any = { id: row.id };
     columns.forEach(col => {

@@ -1,9 +1,9 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import CommandMenu from "./CommandMenu.svelte";
+  import { $props, $effect } from 'svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     value?: string;
     placeholder?: string;
     rows?: number;
@@ -151,7 +151,7 @@ import type { CommonProps } from '$lib/types/common-props';
       <CommandMenu
         bind:this={commandMenu}
         textareaElement={textarea}
-        onInsert={handleCommandInsert}
+        oninsert={handleCommandInsert}
         onclose={() => (showCommandMenu = false)}
       />
     </div>

@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+
 // Cloud AI health check endpoint for fallback AI services
 import { json } from "@sveltejs/kit";
 

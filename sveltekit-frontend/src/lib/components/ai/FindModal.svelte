@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $state, $effect } from 'svelte';
 
   import { Dialog } from 'bits-ui';
   import { Search, Sparkles, FileText, Users, Calendar, Zap, Brain, Target } from 'lucide-svelte';
@@ -18,7 +18,7 @@ import type { CommonProps } from '$lib/types/common-props';
   // Svelte 5 reactive state
   let isOpen = $state(false);
   let searchQuery = $state('');
-  let searchResults = $state<any[]>([]);
+  let searchResults = $state<unknown[]>([]);
   let isSearching = $state(false);
   let selectedType = $state<'all' | 'cases' | 'evidence' | 'documents' | 'ai'>('all');
   let showAdvanced = $state(false);
@@ -866,7 +866,4 @@ import type { CommonProps } from '$lib/types/common-props';
     outline-offset: 2px;
   }
 </style>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

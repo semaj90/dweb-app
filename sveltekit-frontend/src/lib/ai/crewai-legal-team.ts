@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // CrewAI Legal Team Integration
 // Orchestrated multi-agent workflows for legal case management
 

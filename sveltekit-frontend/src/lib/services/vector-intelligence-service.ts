@@ -1,5 +1,5 @@
 import crypto from "crypto";
-// @ts-nocheck
+
 /**
  * Vector Intelligence Service - Phase 4 Implementation
  * Advanced recommendation engine with vector search and semantic analysis
@@ -668,7 +668,7 @@ ${content.substring(0, 2000)}...
   private async createVectorCollection(): Promise<void> {
     /* Implementation */
   }
-  private async fetchExistingDocuments(): Promise<any[]> {
+  private async fetchExistingDocuments(): Promise<unknown[]> {
     return [];
   }
   private async storeVector(
@@ -696,13 +696,13 @@ ${content.substring(0, 2000)}...
   ): VectorSearchResult[] {
     return [];
   }
-  private identifyPatterns(results: VectorSearchResult[]): any {
+  private identifyPatterns(results: VectorSearchResult[]): unknown {
     return {};
   }
   private extractInsights(
     results: VectorSearchResult[],
     request: RecommendationRequest,
-  ): any {
+  ): unknown {
     return {};
   }
   private async generateActionRecommendations(

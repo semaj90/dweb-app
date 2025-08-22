@@ -1,9 +1,9 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { getContext } from 'svelte';
+  import { $props } from 'svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     value: string;
     class?: string;
   }
@@ -12,7 +12,7 @@ import type { CommonProps } from '$lib/types/common-props';
     value,
     class: classNameVar = '',
     children
-  }: Props & { children?: any } = $props();
+  }: Props & { children?: unknown } = $props();
 
   const { activeTab } = getContext('tabs') as any;
 </script>

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // routes/api/ai-synthesizer/test/+server.ts
 // Integration test and demo endpoint for AI synthesis system
 

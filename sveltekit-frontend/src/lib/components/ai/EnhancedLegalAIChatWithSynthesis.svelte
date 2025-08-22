@@ -3,7 +3,7 @@ Enhanced Legal AI Chat with Input Synthesis and LegalBERT Integration
 Combines all advanced services: input synthesis, LegalBERT analysis, RAG pipeline, and streaming
 -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state } from 'svelte';
 
   import type { SystemStatus } from "$lib/types/global";
   import type { Props } from "$lib/types/global";
@@ -30,7 +30,7 @@ import type { CommonProps } from '$lib/types/common-props';
   import * as Tooltip from '$lib/components/ui/tooltip';
 
   // Props
-  interface Props extends CommonProps {
+  interface Props {
     caseId?: string;
     userRole?: 'prosecutor' | 'defense' | 'judge' | 'paralegal' | 'student' | 'client';
     documentIds?: string[];
@@ -52,12 +52,12 @@ import type { CommonProps } from '$lib/types/common-props';
     role: 'user' | 'assistant' | 'system';
     content: string;
     timestamp: number;
-    synthesizedInput?: any;
-    legalAnalysis?: any;
-    ragResults?: any;
+    synthesizedInput?: unknown;
+    legalAnalysis?: unknown;
+    ragResults?: unknown;
     confidence?: number;
     processingTime?: number;
-    metadata?: any;
+    metadata?: unknown;
   }
 
   // State management

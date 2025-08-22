@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { Queue, Worker, Job, QueueEvents } from "bullmq";
 // Orphaned content: import {
 
@@ -54,7 +54,7 @@ export interface CacheInvalidationJob {
 // Job results
 export interface JobResult {
   success: boolean;
-  data?: any;
+  data?: unknown;
   error?: string;
   processingTime: number;
   metadata?: Record<string, any>;

@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $state, $derived } from 'svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     class?: string;
     children?: import('svelte').Snippet;
   }
@@ -309,7 +309,7 @@ import type { CommonProps } from '$lib/types/common-props';
 
         <!-- Case Management Dialog -->
         <Dialog
-          open={dialogOpen} onOpenChange={(open) => dialogOpen = open}
+          open={dialogOpen} onopenchange={(open) => dialogOpen = open}
           size="lg"
           legal
           caseManagement
@@ -376,7 +376,7 @@ import type { CommonProps } from '$lib/types/common-props';
 
         <!-- Evidence Upload Dialog -->
         <Dialog
-          open={evidenceDialogOpen} onOpenChange={(open) => evidenceDialogOpen = open}
+          open={evidenceDialogOpen} onopenchange={(open) => evidenceDialogOpen = open}
           size="md"
           legal
           evidenceAnalysis

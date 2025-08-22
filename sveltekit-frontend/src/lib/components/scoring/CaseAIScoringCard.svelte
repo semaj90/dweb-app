@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state } from 'svelte';
 
   import { Button } from "bits-ui";
   import { onMount } from "svelte";
@@ -17,7 +17,7 @@ import type { CommonProps } from '$lib/types/common-props';
     lastUpdated: string;
   }
 
-  interface Props extends CommonProps {
+  interface Props {
     caseId: string;
     evidenceId?: string;
     content: string;

@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+
 // Optimized case search API endpoint
 // Supports multiple search strategies with automatic fallbacks
 import { json } from "@sveltejs/kit";
@@ -66,7 +66,7 @@ async function searchCasesText(
   query: string,
   limit: number,
   filters: any,
-): Promise<any[]> {
+): Promise<unknown[]> {
   try {
     const whereConditions = [
       or(

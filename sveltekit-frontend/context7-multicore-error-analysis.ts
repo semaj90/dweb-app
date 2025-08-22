@@ -3,8 +3,8 @@
  * Uses the Context7 multicore service to analyze the 1962 TypeScript/Svelte errors
  */
 
-import { getContext7MulticoreService } from './src/lib/services/context7-multicore';
-import type { RecommendationRequest, ProcessingTask } from './src/lib/services/context7-multicore';
+import { getContext7MulticoreService } from './src/lib/services/context7-multicore.js';
+import type { RecommendationRequest, ProcessingTask } from './src/lib/services/context7-multicore.js';
 
 async function analyzeCurrentErrors() {
   console.log('🚀 Starting Context7 Multicore Error Analysis...');
@@ -147,7 +147,7 @@ async function analyzeCurrentErrors() {
   return report;
 }
 
-function generateOverallRecommendations(analysisResults: any[]) {
+function generateOverallRecommendations(analysisResults: unknown[]) {
   const recommendations = [
     "Execute systematic Svelte 5 migration using automated tools",
     "Update UI component library usage patterns with API documentation",
@@ -165,7 +165,7 @@ function generateOverallRecommendations(analysisResults: any[]) {
   return [...new Set(recommendations)]; // Remove duplicates
 }
 
-function generateAutomationPlan(analysisResults: any[]) {
+function generateAutomationPlan(analysisResults: unknown[]) {
   return {
     phase_1: "Automated Svelte 5 props migration (800+ fixes)",
     phase_2: "UI component API reconciliation (600+ fixes)", 

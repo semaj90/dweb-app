@@ -1,6 +1,6 @@
 <!-- YoRHa Dialog Manager Component -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $effect } from 'svelte';
 
   import YoRHaDialog from './YoRHaDialog.svelte';
   import { dialogStore, type Dialog } from '$lib/stores/dialogs';
@@ -40,12 +40,9 @@ import type { CommonProps } from '$lib/types/common-props';
     position={dialog.position}
     persistent={dialog.persistent}
     value={dialog.value}
-    on:close={() => handleDialogClose(dialog)}
-    on:confirm={(event) => handleDialogConfirm(dialog, event)}
-    on:cancel={() => handleDialogCancel(dialog)}
+    onclose={() => handleDialogClose(dialog)}
+    onconfirm={(event) => handleDialogConfirm(dialog, event)}
+    oncancel={() => handleDialogCancel(dialog)}
   />
 {/each}
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

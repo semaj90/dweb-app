@@ -5,31 +5,8 @@ https://svelte.dev/e/js_parse_error -->
   Features: Drag & drop, progress tracking, AI processing, validation, preview
 -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-
-  interface Props extends CommonProps {
-    caseId: string | undefined ;
-    multiple?: any;
-    compact?: any;
-    initialData: Partial<FileUpload> | undefined ;
-    disabled?: any;
-    maxFiles?: any;
-    maxSizeMB?: any;
-    acceptedTypes: string[] ;
-  }
-  let {
-    caseId = undefined,
-    multiple = false,
-    compact = false,
-    initialData = undefined,
-    disabled = false,
-    maxFiles = multiple ? 10 : 1,
-    maxSizeMB = 100,
-    acceptedTypes = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png', '.txt']
-  }: Props = $props();
-
-
-
+  import { $props } from 'svelte';
+  
   import { Alert, AlertDescription } from "$lib/components/ui/alert";
   import { Badge } from "$lib/components/ui/badge";
   import { Button } from "$lib/components/ui/button";
@@ -70,13 +47,34 @@ import type { CommonProps } from '$lib/types/common-props';
   import { superForm } from "sveltekit-superforms";
   import { zodClient } from "sveltekit-superforms/adapters";
 
+  // Props interface
+  interface Props {
+    caseId?: string;
+    multiple?: boolean;
+    compact?: boolean;
+    initialData?: Partial<FileUpload>;
+    disabled?: boolean;
+    maxFiles?: number;
+    maxSizeMB?: number;
+    acceptedTypes?: string[];
+  }
+
+  let {
+    caseId = undefined,
+    multiple = false,
+    compact = false,
+    initialData = undefined,
+    disabled = false,
+    maxFiles = multiple ? 10 : 1,
+    maxSizeMB = 100,
+    acceptedTypes = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png', '.txt']
+  }: Props = $props();
+
   const dispatch = createEventDispatcher<{
     upload: { files: File[]; formData: FileUpload[] };
     cancel: void;
     progress: { progress: number; file: string };
   }>();
-
-  // Props already defined above - no duplicate declarations needed
 
   // State
   let fileInput: HTMLInputElement;

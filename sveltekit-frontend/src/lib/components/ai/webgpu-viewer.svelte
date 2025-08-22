@@ -2,7 +2,7 @@
 https://svelte.dev/e/js_parse_error -->
 <!-- WebGPU Embedding Visualization - 3D Vector Space with Real-time Updates -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state, $effect } from 'svelte';
 
 import { onMount, onDestroy } from 'svelte';
 import { Play, Pause, RotateCw, ZoomIn, ZoomOut, Layers } from 'lucide-svelte';
@@ -415,7 +415,7 @@ $effect(() => {
     onmousemove={handleMouseMove}
     onmouseup={handleMouseUp}
     onmouseleave={handleMouseUp}
-    on:wheel={handleWheel}
+    onwheel={handleWheel}
   />
   
   {#if labels.length > 0}
@@ -505,7 +505,4 @@ $effect(() => {
     backdrop-filter: blur(10px);
   }
 </style>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

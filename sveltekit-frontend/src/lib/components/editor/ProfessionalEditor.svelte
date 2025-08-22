@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { onMount, createEventDispatcher } from 'svelte';
+  import { $props } from 'svelte';
   import { writable } from 'svelte/store';
   import { Save, Maximize, Minimize, Eye, EyeOff, FileText, Keyboard } from 'lucide-svelte';
 
@@ -326,7 +326,7 @@ import type { CommonProps } from '$lib/types/common-props';
 <!-- Keyboard Shortcuts Modal -->
 {#if showShortcuts}
   <div class="shortcuts-overlay" onclick={() => showShortcuts = false}>
-    <div class="shortcuts-modal yorha-card" onclick|stopPropagation>
+    <div class="shortcuts-modal yorha-card" onclick={(e) => e.stopPropagation()}>
       <h3 class="shortcuts-title gradient-text-primary">
         Keyboard Shortcuts
       </h3>

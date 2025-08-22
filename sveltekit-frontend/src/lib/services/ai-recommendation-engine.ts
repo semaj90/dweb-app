@@ -1,6 +1,15 @@
-// @ts-nocheck
+
 import { writable, derived, get } from "svelte/store";
-import { advancedCache, , export interface RecommendationContext {,   userQuery: string;,   legalDomain: 'contract' | 'litigation' | 'compliance' | 'intellectual_property' | 'employment' | 'general';,   userRole: 'prosecutor' | 'detective' | 'legal_analyst' | 'paralegal' | 'client';,   caseType?: string;,   jurisdiction?: string;,   priority: 'low' | 'medium' | 'high' | 'urgent'; } from
+import { advancedCache } from "$lib/caching/advanced-cache-manager.js";
+
+export interface RecommendationContext {
+  userQuery: string;
+  legalDomain: 'contract' | 'litigation' | 'compliance' | 'intellectual_property' | 'employment' | 'general';
+  userRole: 'prosecutor' | 'detective' | 'legal_analyst' | 'paralegal' | 'client';
+  caseType?: string;
+  jurisdiction?: string;
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+}
 
 export interface Recommendation {
   id: string;
@@ -368,7 +377,7 @@ class AIRecommendationEngine {
     ];
 
     for (const indicator of riskIndicators) {
-      const hasRiskTerms = indicator.terms.some((term: any) => query.includes(term));
+      const hasRiskTerms = indicator.terms.some((term: string) => query.includes(term));
       
       if (hasRiskTerms) {
         recommendations.push({
@@ -413,7 +422,7 @@ class AIRecommendationEngine {
   }
 
   private updateUserPatterns(query: string) {
-    this.userPatterns.update((patterns: any) => {
+    this.userPatterns.update((patterns: Map<string, number>) => {
       const current = patterns.get(query) || 0;
       patterns.set(query, current + 1);
       
@@ -458,9 +467,9 @@ class AIRecommendationEngine {
     const highRiskAreas = ['litigation', 'compliance', 'liability'];
     const mediumRiskAreas = ['contract', 'employment', 'audit'];
 
-    if (highRiskAreas.some((area: any) => expertise.includes(area))) {
+    if (highRiskAreas.some((area: string) => expertise.includes(area))) {
       return 'high';
-    } else if (mediumRiskAreas.some((area: any) => expertise.includes(area))) {
+    } else if (mediumRiskAreas.some((area: string) => expertise.includes(area))) {
       return 'medium';
     }
     
@@ -554,8 +563,8 @@ class AIRecommendationEngine {
       totalQueries: Array.from(patterns.values()).reduce((sum, count) => sum + count, 0),
       uniqueQueries: patterns.size,
       activeRecommendations: recommendations.length,
-      highConfidenceRecs: recommendations.filter((r: any) => r.confidence > 0.7).length,
-      actionableRecs: recommendations.filter((r: any) => r.actionable).length
+      highConfidenceRecs: recommendations.filter((r: Recommendation) => r.confidence > 0.7).length,
+      actionableRecs: recommendations.filter((r: Recommendation) => r.actionable).length
     };
   }
 }

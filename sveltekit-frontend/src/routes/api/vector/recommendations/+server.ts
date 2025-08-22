@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+
 /**
  * Vector Intelligence Recommendations API
  * Provides intelligent recommendations using vector analysis and machine learning

@@ -2,7 +2,8 @@
 // Fixes $state(), $derived(), and runes syntax errors
 
 import type { Readable, Writable } from 'svelte/store';
-// Orphaned content: import type {
+// Import types
+import type {
   User,
   ChatSession,
   ChatMessage,
@@ -15,7 +16,8 @@ import type { Readable, Writable } from 'svelte/store';
   PerformanceMetrics,
   AIModel,
   SearchFilters,
-  SearchFacets,
+  SearchFacets
+} from '$lib/types';
 
 // =====================================================
 // SVELTE 5 RUNES TYPES
@@ -149,7 +151,7 @@ export interface MachineConfig {
   id: string;
   initial: string;
   states: Record<string, any>;
-  context?: any;
+  context?: unknown;
   on?: Record<string, any>;
 }
 

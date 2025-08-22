@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $derived } from 'svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     class?: string;
     children?: import('svelte').Snippet;
   }
@@ -11,25 +11,25 @@ import type { CommonProps } from '$lib/types/common-props';
   import { Separator } from '$lib/components/ui/separator/Separator.svelte';
   
   export let analysisData: {
-    evidenceAnalysis?: any;
-    personsData?: any;
-    caseSynthesis?: any;
+    evidenceAnalysis?: unknown;
+    personsData?: unknown;
+    caseSynthesis?: unknown;
     caseId?: string;
     timestamp?: string;
   };
 
   // Extract data with fallbacks
-  $: evidence = analysisData?.evidenceAnalysis ?? {};
-  $: persons = analysisData?.personsData?.persons ?? [];
-  $: relationships = analysisData?.personsData?.relationships ?? [];
-  $: synthesis = analysisData?.caseSynthesis ?? {};
+  let evidence = $derived(analysisData?.evidenceAnalysis ?? {});
+  let persons = $derived(analysisData?.personsData?.persons ?? []);
+  let relationships = $derived(analysisData?.personsData?.relationships ?? []);
+  let synthesis = $derived(analysisData?.caseSynthesis ?? {});
   
   // Case strength styling
-  $: strengthColor = {
+  let strengthColor = $derived({
     strong: 'text-green-600 bg-green-50',
     moderate: 'text-yellow-600 bg-yellow-50', 
     weak: 'text-red-600 bg-red-50'
-  }[synthesis.caseStrength] ?? 'text-gray-600 bg-gray-50';
+  }[synthesis.caseStrength] ?? 'text-gray-600 bg-gray-50');
 
   // Role colors for persons
   const roleColors = {

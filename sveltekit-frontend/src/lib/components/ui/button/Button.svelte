@@ -1,10 +1,17 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-
   import type { HTMLButtonAttributes } from 'svelte/elements';
   import type { ButtonVariant, ButtonSize } from '$lib/types';
 
-  // Migrated to Svelte 5 runes
+  interface Props extends HTMLButtonAttributes {
+    variant?: ButtonVariant;
+    size?: ButtonSize;
+    loading?: boolean;
+    icon?: string;
+    iconPosition?: 'left' | 'right';
+    fullWidth?: boolean;
+    class?: string;
+  }
+
   let {
     variant = 'primary',
     size = 'md',
@@ -13,20 +20,8 @@ import type { CommonProps } from '$lib/types/common-props';
     iconPosition = 'left',
     fullWidth = false,
     class: className = '',
-    children,
-    ref = $bindable(undefined),
-    ...rest
-  }: {
-    variant?: ButtonVariant;
-    size?: ButtonSize;
-    loading?: boolean;
-    icon?: string;
-    iconPosition?: 'left' | 'right';
-    fullWidth?: boolean;
-    class?: string;
-    children?: any;
-    ref?: HTMLButtonElement;
-  } & HTMLButtonAttributes = $props();
+    ...restProps
+  }: Props = $props();
 
   let classes = $derived([
     'nier-btn',
@@ -39,11 +34,10 @@ import type { CommonProps } from '$lib/types/common-props';
 </script>
 
 <button
-  bind:this={ref}
   class={classes}
-  disabled={loading || Boolean(rest.disabled)}
-  {...rest}
+  disabled={loading}
   data-button-root
+  {...restProps}
 >
   {#if icon && iconPosition === 'left'}
     <i class={icon} aria-hidden="true"></i>
@@ -51,9 +45,7 @@ import type { CommonProps } from '$lib/types/common-props';
   {#if loading}
     <span class="loader mr-2"></span>
   {/if}
-  {#if children}
-    {@render children()}
-  {/if}
+  <slot />
   {#if icon && iconPosition === 'right'}
     <i class={icon} aria-hidden="true"></i>
   {/if}

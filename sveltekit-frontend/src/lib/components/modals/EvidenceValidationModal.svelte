@@ -1,13 +1,13 @@
 <!-- @migration-task Error while migrating Svelte code: Identifier 'aiEvent' has already been declared
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $effect } from 'svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     open?: boolean;
-    evidence?: any;
-    aiEvent?: any;
-    onvalidated?: (event?: any) => void;
+    evidence?: unknown;
+    aiEvent?: unknown;
+    onvalidated?: (event?: unknown) => void;
   }
   let {
     open = false,

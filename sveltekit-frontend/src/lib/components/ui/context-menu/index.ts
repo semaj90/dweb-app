@@ -1,10 +1,9 @@
-import type { CommonProps } from '$lib/types/common-props';
 import Root from "./context-menu-root.svelte";
 import Trigger from "./context-menu-trigger.svelte";
 import Content from "./context-menu-content.svelte";
 import Item from "./context-menu-item.svelte";
 import Separator from "./context-menu-separator.svelte";
-// @ts-nocheck
+
 
 export { Root, Trigger, Content, Item, Separator };
 

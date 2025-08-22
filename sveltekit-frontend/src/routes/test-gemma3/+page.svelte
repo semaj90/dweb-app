@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  // $state is provided globally via src/types/svelte-helpers.d.ts
 
   let prompt = $state("Explain the legal concept of due process in criminal law.");
   let response = $state("");

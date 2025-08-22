@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Self-Organizing Neural Sprite Engine
  * NES-inspired rapid state switching with AI prediction and multi-core processing
@@ -8,14 +8,10 @@
  * Enhanced with Self-Organizing Maps (SOM) and multi-core worker orchestration
  */
 
-Loki, { type Collection } from "lokijs";
-// Orphaned content: import {
-writable, derived, type Readable
-* as fabric from "fabric";
-// Orphaned content: import {
-
+import Loki, { type Collection } from "lokijs";
+import { writable, derived, type Readable } from "svelte/store";
+import * as fabric from "fabric";
 import { BrowserCacheManager } from "./browser-cache-manager";
-// Orphaned content: import {
 
 // Types for our "sprite sheet" system
 export interface CanvasSprite {
@@ -74,7 +70,7 @@ export interface ProcessingTask {
   workerId?: number;
   startTime?: number;
   completionTime?: number;
-  result?: any;
+  result?: unknown;
 }
 
 // Performance Analytics

@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
 	import { createEventDispatcher } from 'svelte';
+  import { $props } from 'svelte';
 	import SearchInput from './SearchInput.svelte';
 	
 	import { Filter, ArrowUpDown } from 'lucide-svelte';
@@ -68,7 +68,7 @@ import type { CommonProps } from '$lib/types/common-props';
 	<SearchInput 
 		{placeholder}
 		{value}
-		on:search={handleSearch}
+		onsearch={handleSearch}
 	/>
 
 	<!-- Controls -->

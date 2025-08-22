@@ -1,8 +1,7 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+import { json } from '@sveltejs/kit';
+
 import { canvasStates } from "$lib/server/db/schema-postgres";
-type { RequestHandler }, {
-json } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 import { URL } from "url";
 

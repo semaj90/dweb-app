@@ -168,7 +168,7 @@ async function vectorSearch(
   limit: number,
   threshold: number,
   filters: any
-): Promise<any[]> {
+): Promise<unknown[]> {
   try {
     console.log('[Search] Performing vector similarity search');
 
@@ -227,7 +227,7 @@ async function vectorSearch(
 }
 
 // Full-text keyword search
-async function keywordSearch(query: string, limit: number, filters: any): Promise<any[]> {
+async function keywordSearch(query: string, limit: number, filters: any): Promise<unknown[]> {
   try {
     console.log('[Search] Performing full-text search');
 
@@ -288,7 +288,7 @@ async function hybridSearch(
   limit: number,
   threshold: number,
   filters: any
-): Promise<any[]> {
+): Promise<unknown[]> {
   console.log('[Search] Performing hybrid search');
 
   // Perform both searches in parallel
@@ -343,7 +343,7 @@ async function semanticSearch(
   limit: number,
   threshold: number,
   filters: any
-): Promise<any[]> {
+): Promise<unknown[]> {
   console.log('[Search] Performing semantic search with context');
 
   // Get vector results first

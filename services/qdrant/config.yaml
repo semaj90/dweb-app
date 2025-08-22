@@ -1,0 +1,20 @@
+log_level: INFO
+storage:
+  storage_path: ./storage
+  snapshots_path: ./snapshots
+service:
+  http_port: 6333
+  grpc_port: 6334
+  max_request_size_mb: 32
+cluster:
+  enabled: false
+performance:
+  max_optimization_threads: 
+hnsw_config:
+  ef_construct: 100
+  full_scan_threshold: 5000
+quantization:
+  scalar:
+    type: int8
+    quantile: 0.99
+    always_ram: false

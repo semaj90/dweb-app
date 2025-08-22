@@ -5,7 +5,7 @@ https://svelte.dev/e/js_parse_error -->
 <!-- Integrates with QUIC streaming and attention tracking -->
 
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $effect } from 'svelte';
 
 	import { onMount, onDestroy } from 'svelte';
 	import { writable, derived } from 'svelte/store';
@@ -19,7 +19,7 @@ import type { CommonProps } from '$lib/types/common-props';
 		streamingEnabled = true,
 		class: className = ''
 	}: {
-		documentData?: any[];
+		documentData?: unknown[];
 		enableWebGPU?: boolean;
 		enableAttentionTracking?: boolean;
 		streamingEnabled?: boolean;
@@ -1063,7 +1063,4 @@ import type { CommonProps } from '$lib/types/common-props';
 		@apply text-red-400 mr-1;
 	}
 </style>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

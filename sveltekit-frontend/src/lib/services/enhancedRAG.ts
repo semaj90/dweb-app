@@ -1,14 +1,11 @@
-// @ts-nocheck
+
 /**
  * Enhanced RAG System with Query Synthesis
  * Combines vector search, graph reasoning, and LLM synthesis
  */
 
 import { writable, type Writable } from "svelte/store";
-// Orphaned content: import {
-qdrantService,
-  type SearchResult,
-  type DocumentVector,
+import { qdrantService, type SearchResult, type DocumentVector } from "$lib/ai/qdrant-service";
 import type { LLMProvider } from "$lib/types/llm";
 
 // Enhanced RAG Types
@@ -88,7 +85,7 @@ export class EnhancedRAGSystem {
   private cache: Map<string, RAGResponse> = new Map();
   private readonly CACHE_TTL = 1000 * 60 * 30; // 30 minutes
 
-  private safeJSONParse(jsonString: string): any {
+  private safeJSONParse(jsonString: string): unknown {
     try {
       return JSON.parse(jsonString);
     } catch (error) {

@@ -1,9 +1,9 @@
 <!-- AI Chat Message: Svelte 5, Bits UI, UnoCSS, analytics logging -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
-  interface Props extends CommonProps {
-    message: { role: string; content: string; timestamp?: string; references?: any[] };
+  interface Props {
+    message: { role: string; content: string; timestamp?: string; references?: unknown[] };
     showReferences?: boolean;
   }
 

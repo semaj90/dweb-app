@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Lightweight local text splitter (word-based with overlap) – no heavy deps.
 
 export interface SplitterOptions {

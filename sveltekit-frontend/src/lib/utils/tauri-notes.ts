@@ -1,5 +1,5 @@
 import type { SavedNote } from "$lib/stores/saved-notes";
-// @ts-nocheck
+
 // Tauri-specific utilities for desktop app integration
 // Conditional imports to support both web and desktop environments
 

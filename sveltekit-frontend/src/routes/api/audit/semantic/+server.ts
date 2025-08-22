@@ -1,17 +1,31 @@
 import type { RequestHandler } from '@sveltejs/kit';
+import { json } from '@sveltejs/kit';
 import { copilotOrchestrator } from "$lib/utils/mcp-helpers";
-// @ts-nocheck
+
 // Phase 10: Semantic Search Audit API Endpoint (Context7) - REAL IMPLEMENTATION
 // This endpoint uses real Context7 semantic search, logging, and agent triggers.
-// Updated to use the Context7SemanticAuditor and Context7AgentOrchestrator implementations.
-import type { RequestHandler } from "@sveltejs/kit";
-context7SemanticAuditor,
-  context7AgentOrchestrator,
-  performContext7Search,
-  type SemanticAuditResult,
-  type AuditLogEntry,
-  type AgentTrigger,
-  type Context7SearchOptions
+
+interface SemanticAuditResult {
+  id: string;
+  score: number;
+  content: string;
+}
+
+interface AuditLogEntry {
+  timestamp: string;
+  query: string;
+  results: SemanticAuditResult[];
+}
+
+interface AgentTrigger {
+  type: string;
+  data: any;
+}
+
+interface Context7SearchOptions {
+  threshold?: number;
+  maxResults?: number;
+}
 
 // Real: log audit results using Context7AgentOrchestrator
 async function logAuditResult(results: SemanticAuditResult[]) {

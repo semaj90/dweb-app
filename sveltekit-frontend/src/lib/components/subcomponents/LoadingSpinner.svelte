@@ -2,9 +2,9 @@
 https://svelte.dev/e/js_parse_error -->
 <!-- Loading Spinner Component -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived } from 'svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     size: 'sm' | 'md' | 'lg' | 'xl' ;
     color: 'blue' | 'green' | 'red' | 'yellow' | 'gray' | 'white' ;
     label: string ;

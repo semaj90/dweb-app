@@ -8,6 +8,6 @@
 declare namespace svelteHTML {
   interface HTMLAttributes<T> {
     // Generic catch-all for attributify utility props (e.g., p-4, flex, mb-2)
-    [attr: string]: any; // TODO: Narrow after remediation batches
+    [attr: string]: unknown; // TODO: Narrow after remediation batches
   }
 }

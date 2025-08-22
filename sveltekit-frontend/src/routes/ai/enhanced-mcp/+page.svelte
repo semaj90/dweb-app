@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { $state } from 'svelte';
 	/**
 	 * Enhanced MCP Integration Demo Page
 	 * Demonstrates cluster system, MCP tools, and Context7 integration with SvelteKit

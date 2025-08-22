@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Enhanced Frontend RAG Pipeline with Loki.js, SIMD, and Semantic Synthesis
 // Lightweight text generation with g0llama microservice integration
 import loki from "lokijs";

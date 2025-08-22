@@ -1,9 +1,9 @@
-// @ts-nocheck
+
 import { writable, derived } from "svelte/store";
 // Orphaned content: import {
 
 // Case data store
-export const cases = writable<any[]>([]);
+export const cases = writable<unknown[]>([]);
 
 // Search and filter state
 export const caseSearch = writable("");

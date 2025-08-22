@@ -34,7 +34,7 @@ interface AuthContext {
   lastLoginAttempt?: Date;
   lockoutUntil?: Date;
   twoFactorRequired: boolean;
-  registrationData?: any;
+  registrationData?: unknown;
 }
 
 // Authentication events
@@ -65,7 +65,7 @@ interface LoginData {
   password: string;
   rememberMe?: boolean;
   twoFactorCode?: string;
-  deviceInfo?: any;
+  deviceInfo?: unknown;
 }
 
 interface RegistrationData {
@@ -78,7 +78,7 @@ interface RegistrationData {
   jurisdiction: string;
   badgeNumber?: string;
   enableTwoFactor?: boolean;
-  deviceInfo?: any;
+  deviceInfo?: unknown;
 }
 
 // Authentication services
@@ -357,7 +357,7 @@ export const authMachine = createMachine({
         onError: [
           {
             target: 'requiresTwoFactor',
-            cond: (_context, event) => (event as any).data?.message === 'TWO_FACTOR_REQUIRED',
+            guard: (_context, event) => (event as any).data?.message === 'TWO_FACTOR_REQUIRED',
             actions: assign({
               twoFactorRequired: () => true,
               isLoading: () => false
@@ -365,7 +365,7 @@ export const authMachine = createMachine({
           },
           {
             target: 'accountLocked',
-            cond: (context, _event) => {
+            guard: (context, _event) => {
               const newAttempts = context.loginAttempts + 1;
               return newAttempts >= context.maxLoginAttempts;
             },

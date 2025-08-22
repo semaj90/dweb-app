@@ -2,7 +2,7 @@
 https://svelte.dev/e/js_parse_error -->
 <!-- EnhancedRAGInterface.svelte - SvelteKit 2.0 Advanced RAG Interface -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $state, $derived } from 'svelte';
 
   import { onMount, tick } from 'svelte';
   import { enhancedRAGStore } from '$lib/stores/enhanced-rag-store.js';
@@ -568,7 +568,4 @@ import type { CommonProps } from '$lib/types/common-props';
   }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

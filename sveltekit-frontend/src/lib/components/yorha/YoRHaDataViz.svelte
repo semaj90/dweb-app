@@ -1,6 +1,6 @@
 <!-- YoRHa Data Visualization Component -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state, $derived } from 'svelte';
 
   import { onMount } from 'svelte';
 
@@ -657,7 +657,4 @@ import type { CommonProps } from '$lib/types/common-props';
     }
   }
 </style>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

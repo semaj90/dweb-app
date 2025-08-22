@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived, $effect } from 'svelte';
 
   import type { Evidence } from '$lib/types';
   import { Button } from "$lib/components/ui/button";
@@ -36,7 +36,7 @@ import type { CommonProps } from '$lib/types/common-props';
   } from "lucide-svelte";
   import { onMount } from "svelte";
 
-  interface Props extends CommonProps {
+  interface Props {
     caseId?: string;
     showHeader?: boolean;
     columns?: number;
@@ -348,7 +348,7 @@ import type { CommonProps } from '$lib/types/common-props';
             <div
               class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4 hover:shadow-lg transition-shadow cursor-pointer {selectedItems.has(item.id) ? 'ring-2 ring-blue-500' : ''}"
               onclick={() => toggleSelection(item)}
-              on:contextmenu={(e) => { e.preventDefault(); showContextMenu(e, item); }}
+              oncontextmenu={(e) => { e.preventDefault(); showContextMenu(e, item); }}
             >
               <!-- Preview/Thumbnail -->
               <div
@@ -440,7 +440,7 @@ import type { CommonProps } from '$lib/types/common-props';
             <div
               class="space-y-4"
               onclick={() => toggleSelection(item)}
-              on:contextmenu={(e) => { e.preventDefault(); showContextMenu(e, item); }}
+              oncontextmenu={(e) => { e.preventDefault(); showContextMenu(e, item); }}
             >
               <!-- Selection checkbox -->
               <input

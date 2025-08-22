@@ -102,7 +102,7 @@ class ProductionServiceClient {
    */
   async callService<T = any>(
     endpoint: string, 
-    data?: any, 
+    data?: unknown, 
     options: {
       preferredProtocol?: ProtocolType;
       timeout?: number;
@@ -406,7 +406,7 @@ class ProductionServiceClient {
   }
 
   // Convenience methods for common operations
-  async uploadDocument(file: File, metadata?: any): Promise<ServiceResponse> {
+  async uploadDocument(file: File, metadata?: unknown): Promise<ServiceResponse> {
     const formData = new FormData();
     formData.append('file', file);
     if (metadata) {
@@ -419,7 +419,7 @@ class ProductionServiceClient {
     });
   }
 
-  async queryRAG(query: string, context?: any): Promise<ServiceResponse> {
+  async queryRAG(query: string, context?: unknown): Promise<ServiceResponse> {
     return this.callService('/api/v1/rag', {
       query,
       context
@@ -429,7 +429,7 @@ class ProductionServiceClient {
     });
   }
 
-  async getLegalAnalysis(document: string, options?: any): Promise<ServiceResponse> {
+  async getLegalAnalysis(document: string, options?: unknown): Promise<ServiceResponse> {
     return this.callService('/api/v1/legal', {
       document,
       options
@@ -439,7 +439,7 @@ class ProductionServiceClient {
     });
   }
 
-  async getRecommendations(userId: string, context?: any): Promise<ServiceResponse> {
+  async getRecommendations(userId: string, context?: unknown): Promise<ServiceResponse> {
     return this.callService('/api/v1/recommendations', {
       userId,
       context

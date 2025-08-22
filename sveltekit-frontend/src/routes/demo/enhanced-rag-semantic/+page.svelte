@@ -1,5 +1,6 @@
 <!-- Enhanced RAG Semantic Analysis Demo Page -->
 <script lang="ts">
+  import { $state } from 'svelte';
   import { onMount } from 'svelte';
   import EnhancedRAGDemo from '$lib/components/ai/EnhancedRAGDemo.svelte';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';

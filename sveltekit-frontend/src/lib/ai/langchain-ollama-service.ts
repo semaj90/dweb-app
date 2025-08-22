@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // LangChain + Ollama Integration with CUDA Support
 // Production-ready AI service for legal document processing
 
@@ -11,7 +11,7 @@ import { Document as LangChainDocument } from "@langchain/core/documents";
 import { VectorStoreRetriever } from "@langchain/core/vectorstores";
 import { BaseRetriever } from "@langchain/core/retrievers";
 import { CallbackManagerForRetrieverRun } from "@langchain/core/callbacks/manager";
-import crypto from 'crypto';
+import { createHash } from 'crypto';
 
 // ============================================================================
 // CONFIGURATION & TYPES
@@ -125,7 +125,7 @@ export class LangChainOllamaService {
     metadata: Record<string, any> = {}
   ): Promise<ProcessingResult> {
     const startTime = Date.now();
-    const documentId = crypto.randomUUID();
+    const documentId = createHash('sha256').update(content + Date.now().toString()).digest('hex').substring(0, 16);
 
     try {
       // Split document into chunks

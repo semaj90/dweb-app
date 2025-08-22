@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { browser } from '$app/environment';
 
 export class MemoryMonitoringService {

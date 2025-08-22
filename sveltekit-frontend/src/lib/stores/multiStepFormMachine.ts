@@ -1,6 +1,6 @@
 import path from 'path';
 import crypto from 'crypto';
-// @ts-nocheck
+
 // src/lib/stores/multiStepFormMachine.ts - XState v5 Multi-step Forms with Superforms & Zod
 import { setup, createActor, assign, fromPromise } from 'xstate';
 // Orphaned content: import {

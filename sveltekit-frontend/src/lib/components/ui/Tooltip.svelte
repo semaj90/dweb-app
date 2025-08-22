@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state } from 'svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     content?: string;
     placement?: "top" | "bottom" | "left" | "right";
     disabled?: boolean;

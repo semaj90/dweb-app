@@ -10,7 +10,7 @@ export interface ServiceStatus {
   name: string;
   url: string;
   status: 'healthy' | 'unhealthy' | 'unreachable';
-  details?: any;
+  details?: unknown;
 }
 
 export class ServiceOrchestrator {
@@ -52,7 +52,7 @@ export class ServiceOrchestrator {
   }
 
   // Dynamic API call
-  async callApi(endpointKey: keyof typeof ServiceRegistry.endpoints, method: string = 'GET', body?: any) {
+  async callApi(endpointKey: keyof typeof ServiceRegistry.endpoints, method: string = 'GET', body?: unknown) {
     const url = ServiceRegistry.endpoints[endpointKey];
     const options: RequestInit = { method };
     if (body) {

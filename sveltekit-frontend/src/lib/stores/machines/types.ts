@@ -1,5 +1,5 @@
 import type { StateValue, AnyEventObject } from "xstate";
-// @ts-nocheck
+
 /**
  * XState Types for Go Microservice Integration
  */
@@ -88,7 +88,7 @@ export interface GoMicroserviceContext extends BaseMachineContext {
 export interface GoServiceRequest {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
   path: string;
-  body?: any;
+  body?: unknown;
   headers?: Record<string, string>;
 }
 
@@ -172,7 +172,7 @@ export interface AIProcessingEvents {
 
 export interface DocumentEvents {
   UPLOAD_DOCUMENT: { file: File };
-  START_OCR: { options?: any };
+  START_OCR: { options?: unknown };
   OCR_COMPLETE: { result: OCRResult };
   EXTRACT_FIELDS: { ocrResult: OCRResult };
   FIELDS_EXTRACTED: { fields: ExtractedField[] };
@@ -196,7 +196,7 @@ export interface GoMicroserviceEvents {
 }
 
 export interface RAGEvents {
-  START_QUERY: { query: string; options?: any };
+  START_QUERY: { query: string; options?: unknown };
   ANALYZE_INTENT: { query: RAGQuery };
   INTENT_ANALYZED: { intent: string; expandedQueries: string[] };
   SEARCH_DOCUMENTS: { queries: string[]; filters?: RAGFilters };

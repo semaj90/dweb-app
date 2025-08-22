@@ -3,6 +3,7 @@
   Using Bits UI v2 + Superforms + XState + MCP GPU Orchestrator
 -->
 <script lang="ts">
+  import { $props, $state, $derived } from 'svelte';
   import { enhance } from '$app/forms';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
@@ -253,7 +254,7 @@
   }
 
   // Real-time password strength checker
-  $: passwordStrength = calculatePasswordStrength($form.password || '');
+  let passwordStrength = $derived(calculatePasswordStrength($form.password || ''));
 
   function calculatePasswordStrength(password: string): { score: number; feedback: string; color: string } {
     if (!password) return { score: 0, feedback: 'Enter a password', color: 'text-gray-400' };

@@ -1,11 +1,15 @@
 import LRU from "lru-cache";
 import crypto from "crypto";
-// @ts-nocheck
+
 // lib/server/ai/caching-layer.ts
 // Advanced caching layer for AI synthesis results with Redis and LRU fallback
 
 import { logger } from "./logger.js";
-import { Redis, , interface CacheOptions {,   ttl?: number; // Time to live in seconds,   tags?: string[]; // Tags for cache invalidation,   priority?: number; // Cache priority (higher = more important) } from
+interface CacheOptions {
+  ttl?: number; // Time to live in seconds
+  tags?: string[]; // Tags for cache invalidation
+  priority?: number; // Cache priority (higher = more important)
+}
 
 interface CacheStats {
   hits: number;

@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived } from 'svelte';
 
   export let currentStep: number;
   export let totalSteps: number;
@@ -32,7 +32,7 @@ import type { CommonProps } from '$lib/types/common-props';
     'Review'
   ];
 
-  $: labels = stepLabels.length > 0 ? stepLabels : defaultLabels;
+  let labels = $derived(stepLabels.length > 0 ? stepLabels : defaultLabels);
 </script>
 
 <div class="py-6">

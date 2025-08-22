@@ -1,9 +1,9 @@
 <!-- @migration-task Error while migrating Svelte code: Identifier 'autoFetch' has already been declared
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  // $props is a Svelte rune provided by the compiler/runtime — do not import it.
 
-  interface Props extends CommonProps {
+  interface Props {
     autoFetch: boolean ;
     data: ValidateResponse | null ;
   }
@@ -16,7 +16,7 @@ import type { CommonProps } from '$lib/types/common-props';
 
   import { onMount } from 'svelte';
 
-  export type ValidateResponse = {
+  type ValidateResponse = {
     ok: boolean;
     message?: string;
     details?: {

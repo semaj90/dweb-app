@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { Search, Database, Brain, FileText, AlertCircle, CheckCircle2, Loader2, Star, Clock } from "lucide-svelte";
+  import { $state, $derived } from 'svelte';
   import { Button } from "$lib/components/ui/button";
   import Input from "$lib/components/ui/Input.svelte";
   import Badge from "$lib/components/ui/Badge.svelte";
@@ -378,7 +378,4 @@ import type { CommonProps } from '$lib/types/common-props';
     </Card>
   </div>
 {/if}
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

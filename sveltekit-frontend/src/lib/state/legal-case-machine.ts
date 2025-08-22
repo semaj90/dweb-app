@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Legal Case Management State Machine
  * Comprehensive XState machine for managing legal case workflows

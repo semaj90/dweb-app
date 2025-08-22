@@ -1,5 +1,5 @@
 import type { LegalDocument, Evidence } from "$lib/types/legal-types";
-// @ts-nocheck
+
 // Client-side embedding generation using nomic-embed or llama.cpp WASM
 // 70% memory reduction through optimized client processing
 

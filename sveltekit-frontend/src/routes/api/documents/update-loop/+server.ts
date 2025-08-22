@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Document Update Loop API
 // Handles document changes with automatic re-embedding and re-ranking
 

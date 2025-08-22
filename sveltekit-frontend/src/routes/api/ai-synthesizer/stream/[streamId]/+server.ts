@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // routes/api/ai-synthesizer/stream/[streamId]/+server.ts
 // Server-Sent Events endpoint for streaming AI synthesis updates
 

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Fixed database query utilities with proper field mappings
 import { SQL, eq, and, or, like, desc, asc } from 'drizzle-orm';
 // Orphaned content: import type { PgColumn

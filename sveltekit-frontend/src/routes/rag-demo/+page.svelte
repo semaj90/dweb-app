@@ -1,5 +1,6 @@
 <!-- RAG System Demo Page -->
 <script lang="ts">
+  import { $state } from 'svelte';
   import AskAI from "$lib/components/ai/AskAI.svelte";
   import {
     AlertTriangle,
@@ -231,8 +232,8 @@
               showReferences={true}
               enableVoiceInput={true}
               maxHeight="500px"
-              on:response={handleAIResponse}
-              on:referenceClicked={handleReferenceClick}
+              onresponse={handleAIResponse}
+              onreferenceclicked={handleReferenceClick}
             />
           </div>
         </div>

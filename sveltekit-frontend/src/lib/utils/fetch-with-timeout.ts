@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Fetch utility with AbortController timeout
  * Replaces deprecated timeout in RequestInit for better error handling
@@ -223,7 +223,7 @@ function sleep(ms: number): Promise<void> {
 /**
  * Check if error is a timeout error
  */
-export function isTimeoutError(error: unknown): error is FetchTimeoutError {
+export function isTimeoutError(error: any): error is FetchTimeoutError {
   return error instanceof Error && 
          error.name === 'TimeoutError' && 
          'code' in error && 
@@ -233,7 +233,7 @@ export function isTimeoutError(error: unknown): error is FetchTimeoutError {
 /**
  * Check if error is an abort error
  */
-export function isAbortError(error: unknown): error is FetchAbortError {
+export function isAbortError(error: any): error is FetchAbortError {
   return error instanceof Error && 
          error.name === 'AbortError' && 
          'code' in error && 
@@ -243,7 +243,7 @@ export function isAbortError(error: unknown): error is FetchAbortError {
 /**
  * Check if error is a network error
  */
-export function isNetworkError(error: unknown): error is FetchNetworkError {
+export function isNetworkError(error: any): error is FetchNetworkError {
   return error instanceof Error && 
          error.name === 'NetworkError' && 
          'code' in error && 

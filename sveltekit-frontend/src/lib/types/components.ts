@@ -22,7 +22,7 @@ export interface ComponentPropsBase {
   class?: string;
   id?: string;
   children?: import('svelte').Snippet;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface ButtonProps extends ComponentPropsBase {

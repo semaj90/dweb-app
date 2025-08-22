@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuperForms + Zod + Enhanced Actions Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #0a0a0a; color: #ffffff; }
+        .demo-container { max-width: 800px; margin: 0 auto; padding: 2rem; }
+        .code-block { background: #1e1e1e; padding: 1rem; border-radius: 0.5rem; margin: 1rem 0; overflow-x: auto; }
+        .highlight { color: #ffd700; }
+        .success { color: #00ff41; }
+        .error { color: #ff0041; }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1 class="text-4xl font-bold mb-6 text-center">
+            <span class="highlight">SuperForms + Zod + Enhanced Actions</span><br>
+            <span class="text-gray-400 text-xl">Complete Implementation Guide</span>
+        </h1>
+
+        <!-- Form Enhancement Pattern -->
+        <div class="bg-gray-900 p-6 rounded-lg border border-gray-700 mb-8">
+            <h2 class="text-2xl font-semibold mb-4 highlight">✅ Form Enhancement Pattern</h2>
+            
+            <div class="code-block">
+                <h3 class="text-lg font-medium mb-2 text-green-400">1. Basic SuperForm Setup</h3>
+                <pre class="text-sm text-gray-300"><code>import { enhance } from '$app/forms';
+import { superForm } from 'sveltekit-superforms/client';
+import { zod } from 'sveltekit-superforms/adapters';
+import { z } from 'zod';
+
+// Zod schema
+const schema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  email: z.string().email('Invalid email'),
+  message: z.string().min(10, 'Message too short')
+});
+
+// SuperForm integration
+const { form, errors, enhance: formEnhance, submitting } = superForm(data, {
+  validators: zod(schema),
+  onSubmit: async ({ formData }) => {
+    console.log('Submitting:', Object.fromEntries(formData));
+  }
+});</code></pre>
+            </div>
+
+            <div class="code-block">
+                <h3 class="text-lg font-medium mb-2 text-green-400">2. Enhanced Actions Implementation</h3>
+                <pre class="text-sm text-gray-300"><code>function createEnhancedSubmit() {
+  return enhance(({ formData, action, cancel }) => {
+    // Add metadata to form submission
+    formData.append('metadata', JSON.stringify({
+      timestamp: new Date().toISOString(),
+      userAgent: navigator.userAgent,
+      validationStatus: 'client-validated'
+    }));
+
+    // Add uploaded files
+    uploadedFiles.forEach((file, index) => {
+      formData.append(`attachments[${index}]`, file);
+    });
+
+    return async ({ result, update }) => {
+      if (result.type === 'success') {
+        // Handle success
+        toast.success('Form submitted successfully!');
+        dispatch('success', { data: result.data });
+      } else if (result.type === 'error') {
+        // Handle error  
+        toast.error(result.error?.message || 'Submission failed');
+        dispatch('error', { message: result.error?.message });
+      }
+
+      // Update the form state
+      await update();
+    };
+  });
+}</code></pre>
+            </div>
+
+            <div class="code-block">
+                <h3 class="text-lg font-medium mb-2 text-green-400">3. Form Template with Enhancement</h3>
+                <pre class="text-sm text-gray-300"><code>&lt;form 
+  method="POST" 
+  action="?/submit"
+  use:createEnhancedSubmit()
+  class="space-y-4"
+&gt;
+  &lt;!-- Form fields with validation --&gt;
+  &lt;div&gt;
+    &lt;input
+      name="name"
+      bind:value={$form.name}
+      class:border-red-500={$errors.name}
+    /&gt;
+    {#if $errors.name}
+      &lt;p class="text-red-400"&gt;{$errors.name[0]}&lt;/p&gt;
+    {/if}
+  &lt;/div&gt;
+
+  &lt;button 
+    type="submit" 
+    disabled={$submitting}
+  &gt;
+    {$submitting ? 'Submitting...' : 'Submit'}
+  &lt;/button&gt;
+&lt;/form&gt;</code></pre>
+            </div>
+        </div>
+
+        <!-- Server Actions -->
+        <div class="bg-gray-900 p-6 rounded-lg border border-gray-700 mb-8">
+            <h2 class="text-2xl font-semibold mb-4 highlight">🚀 Server Actions (+page.server.ts)</h2>
+            
+            <div class="code-block">
+                <h3 class="text-lg font-medium mb-2 text-blue-400">Load Function</h3>
+                <pre class="text-sm text-gray-300"><code>export const load: PageServerLoad = async () => {
+  const form = await superValidate(zod(schema));
+  return { form };
+};</code></pre>
+            </div>
+
+            <div class="code-block">
+                <h3 class="text-lg font-medium mb-2 text-blue-400">Enhanced Actions</h3>
+                <pre class="text-sm text-gray-300"><code>export const actions: Actions = {
+  submit: async ({ request, locals }) => {
+    const form = await superValidate(request, zod(schema));
+
+    if (!form.valid) {
+      return fail(400, { form });
+    }
+
+    try {
+      // Process form data
+      const { name, email, message } = form.data;
+      
+      // Handle file uploads
+      const formData = await request.formData();
+      const files = [];
+      for (const [key, value] of formData.entries()) {
+        if (key.startsWith('attachments[') && value instanceof File) {
+          files.push(value);
+        }
+      }
+
+      // Save to database
+      const result = await db.insert({
+        name, email, message, files
+      });
+
+      return message(form, {
+        type: 'success',
+        text: 'Submission successful!',
+        data: result
+      });
+
+    } catch (error) {
+      return fail(500, {
+        form,
+        message: 'Server error occurred'
+      });
+    }
+  }
+};</code></pre>
+            </div>
+        </div>
+
+        <!-- Advanced Features -->
+        <div class="bg-gray-900 p-6 rounded-lg border border-gray-700 mb-8">
+            <h2 class="text-2xl font-semibold mb-4 highlight">⚡ Advanced Features</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-lg font-medium mb-3 text-green-400">✅ Real-time Validation</h3>
+                    <ul class="text-sm text-gray-300 space-y-1">
+                        <li>• Instant field validation</li>
+                        <li>• Custom error messages</li>
+                        <li>• Conditional validation</li>
+                        <li>• Cross-field validation</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-medium mb-3 text-blue-400">📁 File Upload</h3>
+                    <ul class="text-sm text-gray-300 space-y-1">
+                        <li>• Multiple file support</li>
+                        <li>• File type validation</li>
+                        <li>• Size limit checking</li>
+                        <li>• Progress tracking</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-medium mb-3 text-yellow-400">💾 Auto-save</h3>
+                    <ul class="text-sm text-gray-300 space-y-1">
+                        <li>• Draft saving</li>
+                        <li>• Form state persistence</li>
+                        <li>• Recovery on page reload</li>
+                        <li>• Configurable intervals</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-medium mb-3 text-purple-400">🔄 State Management</h3>
+                    <ul class="text-sm text-gray-300 space-y-1">
+                        <li>• XState integration</li>
+                        <li>• Complex form flows</li>
+                        <li>• Multi-step forms</li>
+                        <li>• Conditional rendering</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Implementation Files -->
+        <div class="bg-gray-900 p-6 rounded-lg border border-gray-700 mb-8">
+            <h2 class="text-2xl font-semibold mb-4 highlight">📁 Files Created</h2>
+            
+            <div class="space-y-3">
+                <div class="flex items-center space-x-3">
+                    <span class="success">✅</span>
+                    <code class="text-sm">sveltekit-frontend/src/lib/components/forms/EnhancedCaseFormWithZod.svelte</code>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <span class="success">✅</span>
+                    <code class="text-sm">sveltekit-frontend/src/routes/cases/create/+page.server.ts</code>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <span class="success">✅</span>
+                    <code class="text-sm">sveltekit-frontend/src/routes/cases/create/+page.svelte</code>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <span class="success">✅</span>
+                    <code class="text-sm">sveltekit-frontend/src/routes/test-forms/+page.svelte</code>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <span class="success">✅</span>
+                    <code class="text-sm">sveltekit-frontend/src/routes/test-forms/+page.server.ts</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Next Steps -->
+        <div class="bg-gradient-to-r from-blue-900 to-purple-900 p-6 rounded-lg border border-blue-700">
+            <h2 class="text-2xl font-semibold mb-4 text-white">🎯 Next Steps</h2>
+            
+            <div class="space-y-3 text-blue-200">
+                <p><strong>1. Fix Rollup Dependencies:</strong></p>
+                <div class="code-block bg-black/30">
+                    <code>npm cache clean --force<br>
+rm -rf node_modules package-lock.json<br>
+npm install</code>
+                </div>
+                
+                <p><strong>2. Start Development Server:</strong></p>
+                <div class="code-block bg-black/30">
+                    <code>npm run dev</code>
+                </div>
+                
+                <p><strong>3. Test SuperForms Implementation:</strong></p>
+                <div class="code-block bg-black/30">
+                    <code>Navigate to: http://localhost:5174/test-forms</code>
+                </div>
+                
+                <p><strong>4. Use in Production:</strong></p>
+                <div class="code-block bg-black/30">
+                    <code>Copy patterns to your own forms<br>
+Customize validation schemas<br>
+Add your business logic</code>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-8 text-gray-400">
+            <p>SuperForms + Zod + Enhanced Actions Implementation Complete ✨</p>
+        </div>
+    </div>
+</body>
+</html>

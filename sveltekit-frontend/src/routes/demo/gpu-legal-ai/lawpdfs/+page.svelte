@@ -1,6 +1,7 @@
 <!-- @migration-task Error while migrating Svelte code: Expected token >
 https://svelte.dev/e/expected_token -->
 <script lang="ts">
+  import { $state, $effect } from 'svelte';
   import { page } from '$app/state';
   import { enhance } from '$app/forms';
   import { invalidateAll } from '$app/navigation';
@@ -10,14 +11,14 @@ https://svelte.dev/e/expected_token -->
   // Svelte 5 reactive state
   let uploadProgress = $state(0);
   let isProcessing = $state(false);
-  let ocrResults = $state<any[]>([]);
+  let ocrResults = $state<unknown[]>([]);
   let processingStage = $state('');
   let errorMessage = $state('');
   let uploadedFiles = $state<File[]>([]);
   let jsonOutput = $state<any>(null);
   let simdResults = $state<any>(null);
   let clusteringResults = $state<any>(null);
-  let ragRecommendations = $state<any[]>([]);
+  let ragRecommendations = $state<unknown[]>([]);
 
   // AI readiness state for gating actions
   let aiReady = $state<boolean | null>(null);

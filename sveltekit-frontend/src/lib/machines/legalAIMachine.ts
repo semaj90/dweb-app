@@ -8,10 +8,9 @@ export interface Case {
   status: string;
   priority: string;
   category: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
-export interface LegalAIContext {
 export interface Evidence {
   id: string;
   caseId: string;
@@ -19,7 +18,7 @@ export interface Evidence {
   description?: string;
   fileUrl?: string;
   metadata?: Record<string, any>;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface LegalAIContext {
@@ -46,13 +45,7 @@ export interface LegalAIContext {
     };
     loading: boolean;
     error: string | null;
-  export interface Evidence {
-    id: string;
-    caseId: string;
-    type: string;
-    data: any;
-    [key: string]: any;
-  }
+  };
   ai: {
     isProcessing: boolean;
     lastQuery: string | null;
@@ -62,14 +55,6 @@ export interface LegalAIContext {
       primary: ModelName;
       embedding: EmbeddingModelName;
       available: ModelName[];
-    };
-  };
-    lastResponse: any | null;
-    error: string | null;
-    models: {
-      primary: string;
-      embedding: string;
-      available: string[];
     };
   };
   system: {
@@ -87,21 +72,12 @@ export interface LegalAIContext {
     };
   };
 }
-      gpu: boolean;
-    };
-    metrics: {
-      errorCount: number;
-      performanceScore: number;
-      uptime: number;
-    };
-  };
-}
 
 export type LegalAIEvent =
   | { type: 'AUTH.LOGIN'; email: string; password: string }
   | { type: 'AUTH.LOGOUT' }
   | { type: 'AUTH.REGISTER'; userData: any }
-  | { type: 'CASES.LOAD'; filters?: any }
+  | { type: 'CASES.LOAD'; filters?: unknown }
   | { type: 'CASES.CREATE'; caseData: any }
   | { type: 'CASES.UPDATE'; id: string; updates: any }
   | { type: 'CASES.DELETE'; id: string }
@@ -110,7 +86,8 @@ export type LegalAIEvent =
   | { type: 'EVIDENCE.LOAD'; caseId: string }
   | { type: 'EVIDENCE.UPLOAD'; file: File; metadata: any }
   | { type: 'EVIDENCE.ANALYZE'; evidenceId: string }
-  | { type: 'AI.QUERY'; prompt: string; context?: any }
+  | { type: 'AI.QUERY'; prompt: string; context?: unknown };
+
 export enum ModelName {
   GEMMA3_LEGAL = 'gemma3-legal',
   GPT4_LEGAL = 'gpt4-legal',
@@ -147,12 +124,6 @@ const initialContext: LegalAIContext = {
     loading: false,
     error: null
   },
-  evidence: {
-    items: [],
-    currentEvidence: null,
-    loading: false,
-    error: null
-  },
   ai: {
     isProcessing: false,
     lastQuery: null,
@@ -171,14 +142,6 @@ const initialContext: LegalAIContext = {
       redis: false,
       ollama: false,
       gpu: false
-    },
-    metrics: {
-      errorCount: 0,
-      performanceScore: 0,
-      uptime: 0
-    }
-  }
-};
     },
     metrics: {
       errorCount: 0,
@@ -272,8 +235,7 @@ export const legalAIMachine = createMachine<LegalAIContext, LegalAIEvent>({
           target: 'idle',
           actions: assign({
             user: initialContext.user,
-            cases: initialContext.cases,
-            evidence: initialContext.evidence
+            cases: initialContext.cases
           })
         }
       },
@@ -429,35 +391,10 @@ export const legalAIMachine = createMachine<LegalAIContext, LegalAIEvent>({
         },
 
         loadingEvidence: {
-          entry: assign({
-            evidence: (context) => ({
-              ...context.evidence,
-              loading: true,
-              error: null
-            })
-          }),
           invoke: {
             src: 'loadEvidence',
-            onDone: {
-              target: 'managingCases',
-              actions: assign({
-                evidence: (context, event) => ({
-                  ...context.evidence,
-                  items: event.data.data,
-                  loading: false
-                })
-              })
-            },
-            onError: {
-              target: 'managingCases',
-              actions: assign({
-                evidence: (context, event) => ({
-                  ...context.evidence,
-                  loading: false,
-                  error: event.data.message || 'Failed to load evidence'
-                })
-              })
-            }
+            onDone: 'managingCases',
+            onError: 'managingCases'
           }
         },
 

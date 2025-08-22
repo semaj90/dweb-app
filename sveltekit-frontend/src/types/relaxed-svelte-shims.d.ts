@@ -4,16 +4,16 @@
 // Allow arbitrary data-* / utility / attributify props (UnoCSS etc.)
 declare namespace svelteHTML {
   interface HTMLAttributes<T> {
-    [attr: `data-${string}`]: any;
-    [attr: `${string}:${string}`]: any; // e.g. border:"~ gray-200"
-    mb?: any; mt?: any; mx?: any; my?: any; p?: any; px?: any; py?: any; // common utility aliases
-    'mb-8'?: any; // legacy attributify style key
+    [attr: `data-${string}`]: unknown;
+    [attr: `${string}:${string}`]: unknown; // e.g. border:"~ gray-200"
+    mb?: unknown; mt?: unknown; mx?: unknown; my?: unknown; p?: unknown; px?: unknown; py?: unknown; // common utility aliases
+    'mb-8'?: unknown; // legacy attributify style key
   }
 }
 
 // Broad file preview / import result shims
 interface FilePreviewGeneric {
-  name: string; size: number; content?: string; raw?: string; data?: any; type?: string;
+  name: string; size: number; content?: string; raw?: string; data?: unknown; type?: string;
   skipped?: number; imported?: number; updated?: number; errors?: string[];
 }
 declare global {

@@ -1,12 +1,10 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+import { json } from "@sveltejs/kit";
+import { caseActivities, cases } from "$lib/server/db/schema-postgres";
+import { db } from "$lib/server/db/index";
+
 // Environment variables fallback
 const env = process.env || {};
-import { caseActivities, cases } from "$lib/server/db/schema-postgres";
-
-type { RequestHandler }, {
-json } from "@sveltejs/kit";
-import { db } from "$lib/server/db/index";
 
 const QDRANT_URL = env.QDRANT_URL || "http://localhost:6333";
 const NLP_SERVICE_URL = env.LLM_SERVICE_URL || "http://localhost:8000";

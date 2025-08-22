@@ -1,5 +1,4 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { goto } from "$app/navigation";
   import { Button } from "$lib/components/ui/button";
@@ -371,7 +370,4 @@ import type { CommonProps } from '$lib/types/common-props';
 }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

@@ -1,6 +1,6 @@
 <!-- Case Summary Modal with AI-generated insights -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
   import { Button } from "$lib/components/ui/button";
   import { createEventDispatcher } from "svelte";
@@ -163,7 +163,7 @@ import type { CommonProps } from '$lib/types/common-props';
     </svelte:fragment>
   </Drawer>
 {:else}
-  <Dialog.Root open={isOpen} on:close={closeModal}>
+  <Dialog.Root open={isOpen} onclose={closeModal}>
     <Dialog.Content size="lg">
       <Dialog.Header>
         <Dialog.Title>Case Summary</Dialog.Title>

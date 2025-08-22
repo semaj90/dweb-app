@@ -2,15 +2,15 @@
 https://svelte.dev/e/js_parse_error -->
 
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
-  interface Props extends CommonProps {
-    onauditResults?: (event?: any) => void;
-    onauditError?: (event?: any) => void;
-    onagentReviewResult?: (event?: any) => void;
-    onagentReviewError?: (event?: any) => void;
-    onsendToCase?: (event?: any) => void;
-    onclose?: (event?: any) => void;
+  interface Props {
+    onauditResults?: (event?: unknown) => void;
+    onauditError?: (event?: unknown) => void;
+    onagentReviewResult?: (event?: unknown) => void;
+    onagentReviewError?: (event?: unknown) => void;
+    onsendToCase?: (event?: unknown) => void;
+    onclose?: (event?: unknown) => void;
   }
   let {
     x,
@@ -121,7 +121,7 @@ import type { CommonProps } from '$lib/types/common-props';
 }
 </script>
 <DropdownMenuRoot
-  on:openChange={(e) => {
+  onopenchange={(e) => {
     if (!e.detail.open) closeMenu();
   }}
 >
@@ -146,27 +146,27 @@ import type { CommonProps } from '$lib/types/common-props';
           Evidence Actions
         </p>
       </div>
-      <DropdownMenuItem on:select={viewEvidence}>
+      <DropdownMenuItem onselect={viewEvidence}>
         <i class="space-y-4"></i>
         <span class="space-y-4">View Details</span>
       </DropdownMenuItem>
-      <DropdownMenuItem on:select={editEvidence}>
+      <DropdownMenuItem onselect={editEvidence}>
         <i class="space-y-4"></i>
         <span class="space-y-4">Edit</span>
       </DropdownMenuItem>
-      <DropdownMenuItem on:select={downloadEvidence}>
+      <DropdownMenuItem onselect={downloadEvidence}>
         <i class="space-y-4"></i>
         <span class="space-y-4">Download</span>
       </DropdownMenuItem>
-      <DropdownMenuItem on:select={duplicateEvidence}>
+      <DropdownMenuItem onselect={duplicateEvidence}>
         <i class="space-y-4"></i>
         <span class="space-y-4">Duplicate</span>
       </DropdownMenuItem>
-      <DropdownMenuItem on:select={auditEvidence}>
+      <DropdownMenuItem onselect={auditEvidence}>
         <i class="space-y-4"></i>
         <span class="space-y-4">Audit (Semantic/Vector)</span>
       </DropdownMenuItem>
-      <DropdownMenuItem on:select={triggerAgentReview}>
+      <DropdownMenuItem onselect={triggerAgentReview}>
         <i class="space-y-4"></i>
         <span class="space-y-4">Trigger Agent Review</span>
       </DropdownMenuItem>
@@ -178,7 +178,7 @@ import type { CommonProps } from '$lib/types/common-props';
           </p>
         </div>
         {#each cases as case_}
-          <DropdownMenuItem on:select={() => sendToCase(case_.id)}>
+          <DropdownMenuItem onselect={() => sendToCase(case_.id)}>
             <i class="space-y-4"></i>
             <div class="space-y-4">
               <div class="space-y-4">{case_.title}</div>
@@ -196,7 +196,7 @@ import type { CommonProps } from '$lib/types/common-props';
         </p>
       </div>
       <DropdownMenuItem
-        on:select={deleteEvidence}
+        onselect={deleteEvidence}
         class="space-y-4"
       >
         <i class="space-y-4"></i>

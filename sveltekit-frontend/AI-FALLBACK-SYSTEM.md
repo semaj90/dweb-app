@@ -88,7 +88,7 @@ Returns:
   fallbackChain: {
     legal: ['gemma3:legal-latest', 'legal-bert'],
     general: ['gemma3:legal-latest', 'legal-bert'],
-    embedding: ['nomic-embed-text', 'bge-large-en']
+    embedding: ['nomic-embed-text', '']
   }
 }
 */
@@ -117,7 +117,7 @@ START-AI-SYSTEM.bat
 // The system automatically handles fallback
 const response = await ollamaService.generate(
   "What are the key elements of a valid contract?",
-  { 
+  {
     // No need to specify model - system selects automatically
   }
 );

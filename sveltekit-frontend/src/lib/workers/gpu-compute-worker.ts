@@ -6,7 +6,7 @@ interface TensorOp {
     type: 'matmul' | 'conv2d' | 'attention' | 'fft' | 'embedding';
     inputA: Float32Array;
     inputB?: Float32Array;
-    params?: any;
+    params?: unknown;
 }
 
 interface VertexCache {

@@ -3,14 +3,14 @@ import { fail } from '@sveltejs/kit';
 import { superValidate, message } from 'sveltekit-superforms/server';
 import { zod } from 'sveltekit-superforms/adapters';
 import { z } from 'zod';
-// @ts-ignore
+
 import { db, evidence, documentVectors } from '$lib/server/database';
-// @ts-ignore
+
 import { eq } from 'drizzle-orm';
 import crypto from 'crypto';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
-// @ts-ignore
+
 import { ollamaService } from '$lib/server/ai/ollama-service';
 import type { PageServerLoad, Actions } from './$types';
 

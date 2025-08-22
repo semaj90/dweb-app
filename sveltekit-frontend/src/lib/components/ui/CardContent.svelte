@@ -1,14 +1,14 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived } from 'svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     class?: string;
   }
   
   let {
     class: className = '',
     children
-  }: Props & { children?: any } = $props();
+  }: Props & { children?: unknown } = $props();
 
   const classes = $derived(className);
 </script>

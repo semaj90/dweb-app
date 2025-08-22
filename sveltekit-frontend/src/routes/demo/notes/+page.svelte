@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { $state, $effect } from 'svelte';
   import { page } from '$app/state';
   import { BookOpen, Plus, Search, Tag } from 'lucide-svelte';
   import { onMount } from 'svelte';
@@ -211,7 +212,7 @@ Priority: High
             <RichTextEditor
               content={currentNote.content}
               placeholder="Start writing your note..."
-              on:save={handleEditorSave}
+              onsave={handleEditorSave}
               onchange={handleEditorChange}
               autoSave={true}
               autoSaveDelay={3000}
@@ -231,7 +232,7 @@ Priority: High
             <DragDropZone
               accept="image/*,.pdf,.doc,.docx,.txt"
               maxSize={10485760}
-              on:filesDropped={handleFilesDropped}
+              onfilesdropped={handleFilesDropped}
             />
           </div>
         </div>
@@ -359,14 +360,14 @@ Priority: High
     content={selectedNote.content}
     markdown={selectedNote.markdown}
     html={selectedNote.html}
-    contentJson={selectedNote.contentJson}
+    contentjson={selectedNote.contentJson}
     noteType={selectedNote.noteType}
     tags={selectedNote.tags}
     userId={selectedNote.userId}
     caseId={selectedNote.caseId}
     createdAt={new Date(selectedNote.savedAt)}
     canEdit={true}
-    on:save={(event) => {
+    onsave={(event) => {
       console.log('Note updated:', event.detail);
       // Refresh the note in the list
       notesManager.saveNote(event.detail);

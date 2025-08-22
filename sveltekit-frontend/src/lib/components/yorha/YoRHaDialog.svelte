@@ -2,7 +2,7 @@
 https://svelte.dev/e/mixed_event_handler_syntaxes -->
 <!-- YoRHa Dialog Component - Lightweight Terminal Dialog -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state, $derived, $effect } from 'svelte';
 
   import { createEventDispatcher } from "svelte";
   import { quintOut } from "svelte/easing";
@@ -507,7 +507,4 @@ import type { CommonProps } from '$lib/types/common-props';
   }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

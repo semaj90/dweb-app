@@ -1,5 +1,5 @@
 import { cases, evidence, users, sessions } from "$lib/server/db/schema-postgres";
-// @ts-nocheck
+
 // This file re-exports everything from the unified schema for backward compatibility
 // Simplified to avoid TypeScript compilation errors
 

@@ -1,10 +1,8 @@
-// @ts-nocheck
-import { pgTable, text, timestamp, integer, boolean, json, uuid, varchar } from "drizzle-orm/pg-core";
-// Orphaned content: import {
 
+import { pgTable, text, timestamp, integer, boolean, json, uuid, varchar, vector } from "drizzle-orm/pg-core";
 import { sql } from 'drizzle-orm';
 
-// Users table
+// Users table with enhanced authentication fields
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().default(sql`gen_random_uuid()`),
   email: varchar('email', { length: 255 }).notNull().unique(),
@@ -13,8 +11,51 @@ export const users = pgTable('users', {
   lastName: varchar('last_name', { length: 100 }),
   role: varchar('role', { length: 50 }).notNull().default('user'), // admin, prosecutor, detective, user
   isActive: boolean('is_active').default(true),
+  emailVerified: timestamp('email_verified'),
+  emailVerificationToken: varchar('email_verification_token', { length: 255 }),
+  passwordResetToken: varchar('password_reset_token', { length: 255 }),
+  passwordResetExpires: timestamp('password_reset_expires'),
+  lastLoginAt: timestamp('last_login_at'),
+  loginAttempts: integer('login_attempts').default(0),
+  lockoutUntil: timestamp('lockout_until'),
+  twoFactorSecret: text('two_factor_secret'),
+  twoFactorEnabled: boolean('two_factor_enabled').default(false),
+  profilePicture: text('profile_picture'),
+  preferences: json('preferences').$type<{
+    theme?: 'light' | 'dark' | 'system';
+    notifications?: boolean;
+    language?: string;
+    timezone?: string;
+  }>().default({}),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// Sessions table for Lucia v3 compatibility
+export const sessions = pgTable('sessions', {
+  id: text('id').primaryKey(),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull(),
+  ipAddress: varchar('ip_address', { length: 45 }),
+  userAgent: text('user_agent'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// User audit logs for security tracking
+export const userAuditLogs = pgTable('user_audit_logs', {
+  id: uuid('id').primaryKey().default(sql`gen_random_uuid()`),
+  userId: uuid('user_id').references(() => users.id),
+  action: varchar('action', { length: 100 }).notNull(), // login, logout, password_change, profile_update, etc.
+  ipAddress: varchar('ip_address', { length: 45 }),
+  userAgent: text('user_agent'),
+  metadata: json('metadata').$type<{
+    previousValues?: Record<string, unknown>;
+    newValues?: Record<string, unknown>;
+    success?: boolean;
+    errorMessage?: string;
+    [key: string]: unknown;
+  }>(),
+  createdAt: timestamp('created_at').defaultNow(),
 });
 
 // Cases table
@@ -47,7 +88,7 @@ export const documents = pgTable('documents', {
     extractionMethod?: string;
     confidence?: number;
     language?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   }>(),
   tags: json('tags').$type<string[]>().default([]),
   isIndexed: boolean('is_indexed').default(false),
@@ -118,7 +159,7 @@ export const aiInteractions = pgTable('ai_interactions', {
       title: string;
       relevance: number;
     }>;
-    [key: string]: any;
+    [key: string]: unknown;
   }>(),
   createdAt: timestamp('created_at').defaultNow(),
 });
@@ -134,7 +175,7 @@ export const searchIndex = pgTable('search_index', {
     title?: string;
     tags?: string[];
     relevanceScore?: number;
-    [key: string]: any;
+    [key: string]: unknown;
   }>(),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
@@ -143,11 +184,19 @@ export const searchIndex = pgTable('search_index', {
 // Relations for type safety
 export const relations = {
   users: {
+    sessions: sessions,
+    auditLogs: userAuditLogs,
     createdCases: cases,
     assignedCases: cases,
     createdDocuments: documents,
     createdEvidence: evidence,
     aiInteractions: aiInteractions,
+  },
+  sessions: {
+    user: users,
+  },
+  userAuditLogs: {
+    user: users,
   },
   cases: {
     creator: users,
@@ -175,6 +224,12 @@ export const relations = {
 // Type exports for use in application
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
+
+export type Session = typeof sessions.$inferSelect;
+export type NewSession = typeof sessions.$inferInsert;
+
+export type UserAuditLog = typeof userAuditLogs.$inferSelect;
+export type NewUserAuditLog = typeof userAuditLogs.$inferInsert;
 
 export type Case = typeof cases.$inferSelect;
 export type NewCase = typeof cases.$inferInsert;

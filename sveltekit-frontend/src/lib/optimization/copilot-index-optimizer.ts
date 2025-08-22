@@ -1,5 +1,5 @@
 import type { RAGSearchResult } from "$lib/types/rag";
-// @ts-nocheck
+
 /**
  * Copilot Index Optimizer - Advanced semantic search with Context7 MCP integration
  * Optimizes the copilot.md context for enhanced GitHub Copilot suggestions

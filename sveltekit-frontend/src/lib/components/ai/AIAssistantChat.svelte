@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { $props, $state, $derived, $effect } from 'svelte';
   import { Button } from '$lib/components/ui/button/index.js';
   import { Input } from '$lib/components/ui/input/index.js';
   import { Badge } from '$lib/components/ui/badge/index.js';
@@ -337,7 +338,7 @@
 </Card>
 
 <!-- Settings Dialog -->
-<Dialog.Root open={showSettingsDialog} onOpenChange={(open) => showSettingsDialog = open}>
+<Dialog.Root open={showSettingsDialog} onopenchange={(open) => showSettingsDialog = open}>
   <Dialog.Portal>
     <Dialog.Overlay class="fixed inset-0 z-50 bg-black/80" />
     <Dialog.Content class="fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 sm:rounded-lg">
@@ -369,7 +370,7 @@
             min={0}
             max={2}
             step={0.1}
-            onValueChange={(values) => aiAssistantManager.setTemperature(values[0])}
+            onvaluechange={(values) => aiAssistantManager.setTemperature(values[0])}
           />
           <p class="text-xs text-gray-500">
             Lower values make responses more focused, higher values more creative
@@ -420,7 +421,7 @@
 </Dialog.Root>
 
 <!-- Export Dialog -->
-<Dialog.Root open={showExportDialog} onOpenChange={(open) => showExportDialog = open}>
+<Dialog.Root open={showExportDialog} onopenchange={(open) => showExportDialog = open}>
   <Dialog.Portal>
     <Dialog.Overlay class="fixed inset-0 z-50 bg-black/80" />
     <Dialog.Content class="fixed left-[50%] top-[50%] z-50 grid w-full max-w-md translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 sm:rounded-lg">

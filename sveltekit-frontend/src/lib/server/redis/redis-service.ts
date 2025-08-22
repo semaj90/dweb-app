@@ -1,5 +1,5 @@
 import { createClient } from "redis";
-// @ts-nocheck
+
 // Redis pub/sub service for real-time updates
 
 interface RedisConfig {
@@ -188,7 +188,7 @@ class RedisService {
   public async publishUserActivity(
     userId: string,
     activity: string,
-    metadata?: any,
+    metadata?: unknown,
   ) {
     await this.publish("user_activity", {
       type: "USER_ACTIVITY",

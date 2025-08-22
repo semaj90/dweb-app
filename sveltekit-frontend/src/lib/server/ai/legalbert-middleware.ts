@@ -1,6 +1,6 @@
 import { logger } from "./logger.js";
 import crypto from "crypto";
-// @ts-nocheck
+
 // lib/server/ai/legalbert-middleware.ts
 // LegalBERT middleware for specialized legal embeddings and analysis
 

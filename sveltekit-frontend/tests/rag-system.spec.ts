@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { test, expect } from '@playwright/test';
 import path from 'path';
 
@@ -72,7 +72,7 @@ test.describe('RAG (Retrieval-Augmented Generation) System', () => {
     expect(Array.isArray(results.chunks)).toBe(true);
     
     // Check each result has required fields
-    results.chunks.forEach((chunk: any) => {
+    results.chunks.forEach((chunk: unknown) => {
       expect(chunk).toHaveProperty('content');
       expect(chunk).toHaveProperty('metadata');
       expect(chunk).toHaveProperty('similarity_score');
@@ -106,7 +106,7 @@ test.describe('RAG (Retrieval-Augmented Generation) System', () => {
     expect(result.sources.length).toBeGreaterThan(0);
     
     // Check that sources have proper structure
-    result.sources.forEach((source: any) => {
+    result.sources.forEach((source: unknown) => {
       expect(source).toHaveProperty('document_id');
       expect(source).toHaveProperty('chunk_text');
       expect(source).toHaveProperty('relevance_score');
@@ -213,7 +213,7 @@ test.describe('RAG (Retrieval-Augmented Generation) System', () => {
     });
     
     const results1 = await searchResponse1.json();
-    expect(results1.chunks.some((c: any) => c.document_id === document.id)).toBe(true);
+    expect(results1.chunks.some((c: unknown) => c.document_id === document.id)).toBe(true);
     
     // Update the document
     const updateResponse = await page.request.put(`/api/documents/${document.id}`, {
@@ -236,7 +236,7 @@ test.describe('RAG (Retrieval-Augmented Generation) System', () => {
     });
     
     const results2 = await searchResponse2.json();
-    expect(results2.chunks.some((c: any) => c.document_id === document.id)).toBe(true);
+    expect(results2.chunks.some((c: unknown) => c.document_id === document.id)).toBe(true);
     
     // Verify old content is not found
     const searchResponse3 = await page.request.post('/api/rag/search', {
@@ -247,7 +247,7 @@ test.describe('RAG (Retrieval-Augmented Generation) System', () => {
     });
     
     const results3 = await searchResponse3.json();
-    const docChunks = results3.chunks.filter((c: any) => c.document_id === document.id);
+    const docChunks = results3.chunks.filter((c: unknown) => c.document_id === document.id);
     expect(docChunks.length).toBe(0);
   });
 
@@ -275,7 +275,7 @@ test.describe('RAG (Retrieval-Augmented Generation) System', () => {
     expect(chunks.chunks.length).toBeGreaterThan(1);
     
     // Verify chunk properties
-    chunks.chunks.forEach((chunk: any) => {
+    chunks.chunks.forEach((chunk: unknown) => {
       expect(chunk).toHaveProperty('content');
       expect(chunk).toHaveProperty('chunk_index');
       expect(chunk).toHaveProperty('embedding');
@@ -302,7 +302,7 @@ test.describe('RAG (Retrieval-Augmented Generation) System', () => {
     const results = await response.json();
     
     // Verify all results match filters
-    results.chunks.forEach((chunk: any) => {
+    results.chunks.forEach((chunk: unknown) => {
       expect(chunk.metadata.document_type).toBe('case_law');
       expect(chunk.metadata.jurisdiction).toBe('federal');
       expect(new Date(chunk.metadata.date)).toBeGreaterThan(new Date('2020-01-01'));
@@ -327,7 +327,7 @@ test.describe('RAG (Retrieval-Augmented Generation) System', () => {
     expect(results.search_method).toBe('hybrid');
     
     // Check that results have both scores
-    results.results.forEach((result: any) => {
+    results.results.forEach((result: unknown) => {
       expect(result).toHaveProperty('semantic_score');
       expect(result).toHaveProperty('keyword_score');
       expect(result).toHaveProperty('combined_score');

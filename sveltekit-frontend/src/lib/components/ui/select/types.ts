@@ -1,6 +1,5 @@
-import type { CommonProps } from '$lib/types/common-props';
 import type { Writable } from "svelte/store";
-// @ts-nocheck
+
 
 export interface SelectContext {
   selected: Writable<any>;
@@ -14,7 +13,7 @@ export interface SelectItemProps extends CommonProps {
   selected?: boolean;
 }
 export interface SelectProps {
-  value?: any;
+  value?: unknown;
   onValueChange?: (value: any) => void;
   disabled?: boolean;
   class_?: string;

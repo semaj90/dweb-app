@@ -1,9 +1,9 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { AlertCircle, FileText, Image, Upload } from 'lucide-svelte';
+  import { $props, $state } from 'svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     accept?: string;
     multiple?: boolean;
     maxSize?: number;

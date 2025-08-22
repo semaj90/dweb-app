@@ -1,6 +1,6 @@
 <!-- Enhanced Case Form with proper schema mapping -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
   import { notifications } from "$lib/stores/notification";
   import type { User } from "$lib/types/user";

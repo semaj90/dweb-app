@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { $state } from 'svelte';
   import { Button } from '$lib/components/ui/button';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
   import { Input } from '$lib/components/ui/input';
@@ -407,7 +408,7 @@
                 bind:content={demoContent}
                 title="Legal Analysis Demo"
                 autoSave={false}
-                on:save={(e) => console.log('Demo save:', e.detail)}
+                onsave={(e) => console.log('Demo save:', e.detail)}
               />
             </div>
           </CardContent>

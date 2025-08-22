@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $derived } from 'svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     class?: string;
     children?: import('svelte').Snippet;
   }
@@ -33,9 +33,9 @@ import type { CommonProps } from '$lib/types/common-props';
   }> = [];
 
   // Filter relationships for this person
-  $: personRelationships = relationships.filter(rel => 
+  let personRelationships = $derived(relationships.filter(rel => 
     rel.person1 === person.name || rel.person2 === person.name
-  );
+  ));
 
   // Role styling
   const roleConfig = {
@@ -66,11 +66,11 @@ import type { CommonProps } from '$lib/types/common-props';
     }
   };
 
-  $: roleInfo = roleConfig[person.role] ?? roleConfig.unknown;
+  let roleInfo = $derived(roleConfig[person.role] ?? roleConfig.unknown);
   
   // Confidence level styling
-  $: confidenceColor = person.confidence > 0.8 ? 'text-green-600' : 
-                      person.confidence > 0.6 ? 'text-yellow-600' : 'text-red-600';
+  let confidenceColor = $derived(person.confidence > 0.8 ? 'text-green-600' : 
+                      person.confidence > 0.6 ? 'text-yellow-600' : 'text-red-600');
 
   let showFullDetails = false;
 </script>

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Enhanced RAG Query API
  * Context-aware legal document retrieval with prosecution scoring

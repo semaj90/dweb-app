@@ -1,5 +1,4 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { Button } from "$lib/components/ui/button";
   import { quintOut } from "svelte/easing";
@@ -135,7 +134,4 @@ import type { CommonProps } from '$lib/types/common-props';
 }}
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

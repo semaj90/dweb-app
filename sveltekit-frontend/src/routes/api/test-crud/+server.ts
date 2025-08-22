@@ -1,6 +1,6 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import type { RequestHandler } from "./$types";
-// @ts-nocheck
+
 import { json } from "@sveltejs/kit";
 
 export const POST: RequestHandler = async ({ request }) => {

@@ -1,11 +1,12 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+import { json } from "@sveltejs/kit";
+
 // Embeddings API Endpoint
 // Handles embedding generation and bulk embedding operations
-type { RequestHandler }, {
-json } from "@sveltejs/kit";
+import {
   generateBatchEmbeddings,
   generateEmbedding,
+} from "$lib/services/enhanced-ollama-service";
 import { fetchEmbedding } from "$lib/server/qdrant";
 // import { syncDocumentEmbeddings
 

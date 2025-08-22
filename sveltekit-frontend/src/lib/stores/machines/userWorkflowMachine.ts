@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * User Workflow XState Machine
  * Manages user interaction workflows, case management, and collaborative processes
@@ -44,8 +44,8 @@ export interface UserWorkflowContext extends WorkflowContext {
 export type UserWorkflowEvent =
   | { type: 'LOGIN'; user: User }
   | { type: 'LOGOUT' }
-  | { type: 'START_WORKFLOW'; workflowType: 'case_creation' | 'evidence_processing' | 'document_review' | 'collaboration' | 'case_closure'; data?: any }
-  | { type: 'NEXT_STEP'; data?: any }
+  | { type: 'START_WORKFLOW'; workflowType: 'case_creation' | 'evidence_processing' | 'document_review' | 'collaboration' | 'case_closure'; data?: unknown }
+  | { type: 'NEXT_STEP'; data?: unknown }
   | { type: 'PREVIOUS_STEP' }
   | { type: 'COMPLETE_STEP'; stepData: any }
   | { type: 'CANCEL_WORKFLOW' }

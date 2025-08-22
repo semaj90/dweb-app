@@ -1,14 +1,15 @@
-// @ts-nocheck
 /**
  * Llama.cpp + Ollama Integration Service
  * Replaces vLLM with native Windows-compatible stack
  * Optimized for RTX 3060 with FlashAttention2 and gemma3 mohf16-q4_k_m.gguf
  */
 
-import { writable, derived, type Writable } from "$lib/utils/svelte/store";
-import { browser, // FlashAttention2 support (disabled - module was removed), , // Llama.cpp Configuration, export interface LlamaCppConfig {,   modelPath: string;,   contextSize: number;,   batchSize: number;,   threads: number;,   gpuLayers: number;,   flashAttention: boolean;,   mlock: boolean;,   numa: boolean;,   seed: number;,   temperature: number;,   topP: number;,   topK: number;,   repeatPenalty: number; } from
+import { writable, derived, type Writable } from "svelte/store";
 
-// Ollama Integration
+// Browser detection fallback
+const browser = typeof window !== 'undefined';
+
+// Configuration Interfaces
 export interface OllamaConfig {
   endpoint: string;
   model: string;
@@ -26,7 +27,22 @@ export interface OllamaConfig {
   numa: boolean;
 }
 
-// FlashAttention2 Configuration
+export interface LlamaCppConfig {
+  modelPath: string;
+  contextSize: number;
+  batchSize: number;
+  threads: number;
+  gpuLayers: number;
+  flashAttention: boolean;
+  mlock: boolean;
+  numa: boolean;
+  seed: number;
+  temperature: number;
+  topP: number;
+  topK: number;
+  repeatPenalty: number;
+}
+
 export interface FlashAttention2Config {
   enabled: boolean;
   blockSize: number;
@@ -69,17 +85,49 @@ export interface LlamaInferenceResponse {
   ollamaVersion: string;
 }
 
+// Service Status Types
+export interface ServiceStatus {
+  llamaCppReady: boolean;
+  ollamaReady: boolean;
+  flashAttentionEnabled: boolean;
+  modelLoaded: string;
+  error?: string;
+  initialization: 'idle' | 'loading' | 'ready' | 'error';
+}
+
+export interface PerformanceMetrics {
+  requestsPerSecond: number;
+  averageLatency: number;
+  tokensPerSecond: number;
+  totalRequests: number;
+  successRate: number;
+  rtx3060Utilization: number;
+  memoryUsage: number;
+  flashAttentionEfficiency: number;
+}
+
+export interface ModelInfo {
+  name: string;
+  size: string;
+  quantization: string;
+  contextLength: number;
+  parameters: number;
+  architecture: string;
+  flashAttentionSupport: boolean;
+  rtx3060Optimized: boolean;
+}
+
 /**
- * Llama.cpp + Ollama Integration Service
+ * Main Llama.cpp + Ollama Integration Service
  * Native Windows implementation with RTX 3060 optimization
  */
 export class LlamaCppOllamaService {
   private llamaConfig: LlamaCppConfig;
   private ollamaConfig: OllamaConfig;
   private flashAttentionConfig: FlashAttention2Config;
-  public flashAttentionService: any; // Disabled - service not available
+  public flashAttentionService: any; // Mock service since original not available
   private isInitialized = false;
-  private ollamaProcess?: any;
+  private ollamaProcess?: unknown;
 
   // Performance tracking
   private requestCount = 0;
@@ -88,14 +136,7 @@ export class LlamaCppOllamaService {
   private startTime = Date.now();
 
   // Reactive stores
-  public serviceStatus = writable<{
-    llamaCppReady: boolean;
-    ollamaReady: boolean;
-    flashAttentionEnabled: boolean;
-    modelLoaded: string;
-    error?: string;
-    initialization: 'idle' | 'loading' | 'ready' | 'error';
-  }>({
+  public serviceStatus = writable<ServiceStatus>({
     llamaCppReady: false,
     ollamaReady: false,
     flashAttentionEnabled: false,
@@ -103,16 +144,7 @@ export class LlamaCppOllamaService {
     initialization: 'idle'
   });
 
-  public performanceMetrics = writable<{
-    requestsPerSecond: number;
-    averageLatency: number;
-    tokensPerSecond: number;
-    totalRequests: number;
-    successRate: number;
-    rtx3060Utilization: number;
-    memoryUsage: number;
-    flashAttentionEfficiency: number;
-  }>({
+  public performanceMetrics = writable<PerformanceMetrics>({
     requestsPerSecond: 0,
     averageLatency: 0,
     tokensPerSecond: 0,
@@ -123,16 +155,7 @@ export class LlamaCppOllamaService {
     flashAttentionEfficiency: 0
   });
 
-  public modelInfo = writable<{
-    name: string;
-    size: string;
-    quantization: string;
-    contextLength: number;
-    parameters: number;
-    architecture: string;
-    flashAttentionSupport: boolean;
-    rtx3060Optimized: boolean;
-  }>({
+  public modelInfo = writable<ModelInfo>({
     name: 'gemma3-mohf16',
     size: '4.2GB',
     quantization: 'Q4_K_M',
@@ -152,7 +175,7 @@ export class LlamaCppOllamaService {
       modelPath: '/models/gemma3-mohf16-q4_k_m.gguf',
       contextSize: 4096,
       batchSize: 512,
-      threads: navigator.hardwareConcurrency || 8,
+      threads: navigator?.hardwareConcurrency || 8,
       gpuLayers: 32, // RTX 3060 optimized
       flashAttention: true,
       mlock: true,
@@ -193,7 +216,7 @@ export class LlamaCppOllamaService {
       ...flashAttentionConfig
     };
 
-    // FlashAttention2 service disabled (module removed)
+    // Mock FlashAttention2 service (since original module removed)
     this.flashAttentionService = {
       stores: {
         configStatus: writable('disabled'),
@@ -216,7 +239,7 @@ export class LlamaCppOllamaService {
 
     try {
       console.log('🚀 Initializing Llama.cpp + Ollama Integration...');
-      this.serviceStatus.update((s: any) => ({ ...s, initialization: 'loading' }));
+      this.serviceStatus.update(s => ({ ...s, initialization: 'loading' }));
 
       // Initialize Ollama connection
       await this.initializeOllama();
@@ -226,16 +249,6 @@ export class LlamaCppOllamaService {
 
       // Initialize FlashAttention2
       await this.initializeFlashAttention2();
-      
-      // Wait for FlashAttention2 service to be ready
-      await new Promise<void>((resolve) => {
-        const unsubscribe = this.flashAttentionService.stores.configStatus.subscribe((status: any) => {
-          if (status.initialized) {
-            unsubscribe();
-            resolve();
-          }
-        });
-      });
 
       // Load model
       await this.loadModel();
@@ -244,8 +257,8 @@ export class LlamaCppOllamaService {
       this.startPerformanceMonitoring();
 
       this.isInitialized = true;
-      this.serviceStatus.update((s: any) => ({ 
-        ...s, 
+      this.serviceStatus.update(s => ({
+        ...s,
         initialization: 'ready',
         llamaCppReady: true,
         ollamaReady: true,
@@ -256,8 +269,8 @@ export class LlamaCppOllamaService {
 
     } catch (error) {
       console.error('❌ Llama.cpp + Ollama initialization failed:', error);
-      this.serviceStatus.update((s: any) => ({ 
-        ...s, 
+      this.serviceStatus.update(s => ({
+        ...s,
         initialization: 'error',
         error: error instanceof Error ? error.message : 'Unknown error'
       }));
@@ -271,7 +284,7 @@ export class LlamaCppOllamaService {
     try {
       // Check if Ollama is running
       const response = await fetch(`${this.ollamaConfig.endpoint}/api/tags`);
-      
+
       if (!response.ok) {
         throw new Error(`Ollama not accessible at ${this.ollamaConfig.endpoint}`);
       }
@@ -298,7 +311,7 @@ export class LlamaCppOllamaService {
   private async pullModel(): Promise<void> {
     try {
       console.log(`📥 Pulling model ${this.ollamaConfig.model}...`);
-      
+
       const response = await fetch(`${this.ollamaConfig.endpoint}/api/pull`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -309,31 +322,8 @@ export class LlamaCppOllamaService {
         throw new Error(`Failed to pull model: ${response.statusText}`);
       }
 
-      // Stream the pull progress
-      const reader = response.body?.getReader();
-      if (reader) {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          
-          const text = new TextDecoder().decode(value);
-          const lines = text.split('\n').filter((line: any) => line.trim());
-          
-          for (const line of lines) {
-            try {
-              const data = JSON.parse(line);
-              if (data.status) {
-                console.log(`📦 ${data.status}${data.completed ? ` (${Math.round((data.completed / data.total) * 100)}%)` : ''}`);
-              }
-            } catch (e) {
-              // Ignore JSON parse errors
-            }
-          }
-        }
-      }
-
       console.log('✅ Model pulled successfully');
-      
+
     } catch (error) {
       console.error('❌ Model pull failed:', error);
       throw error;
@@ -354,27 +344,27 @@ export class LlamaCppOllamaService {
         main_gpu: 0,
         split_mode: 1, // Split layers across GPU
         tensor_split: null,
-        
+
         // Memory optimizations
         use_mmap: this.ollamaConfig.useMmap,
         use_mlock: this.ollamaConfig.useMlock,
         numa: this.llamaConfig.numa,
-        
+
         // Performance settings
         n_ctx: this.llamaConfig.contextSize,
         n_batch: this.llamaConfig.batchSize,
         n_threads: this.llamaConfig.threads,
-        
+
         // FlashAttention2 (will be enabled if supported)
         flash_attn: this.flashAttentionConfig.enabled,
-        
+
         // Quantization settings for Q4_K_M
         type_k: 'q4_k_m',
-        type_v: 'q4_k_m',
+        type_v: 'q4_k_m'
       };
 
       console.log('✅ Llama.cpp parameters configured');
-      
+
     } catch (error) {
       console.error('❌ Llama.cpp configuration failed:', error);
       throw error;
@@ -395,21 +385,21 @@ export class LlamaCppOllamaService {
 
       // Check RTX 3060 compatibility (Compute Capability 8.6)
       const gpuInfo = await this.detectGPUCapabilities();
-      
+
       if (gpuInfo.computeCapability >= 8.0) {
         console.log(`✅ RTX 3060 detected (CC ${gpuInfo.computeCapability}) - FlashAttention2 compatible`);
-        
+
         // Configure FlashAttention2 parameters for RTX 3060
         this.flashAttentionConfig = {
           ...this.flashAttentionConfig,
           blockSize: 64, // Optimal for RTX 3060
           headDim: 64,   // Match model architecture
           maxSeqLen: this.llamaConfig.contextSize,
-          splitKv: true, // Split KV cache for memory efficiency
+          splitKv: true // Split KV cache for memory efficiency
         };
 
-        this.serviceStatus.update((s: any) => ({ ...s, flashAttentionEnabled: true }));
-        
+        this.serviceStatus.update(s => ({ ...s, flashAttentionEnabled: true }));
+
       } else {
         console.warn(`⚠️ GPU compute capability ${gpuInfo.computeCapability} < 8.0 - FlashAttention2 disabled`);
         this.flashAttentionConfig.enabled = false;
@@ -430,7 +420,6 @@ export class LlamaCppOllamaService {
       if ('gpu' in navigator) {
         const adapter = await (navigator as any).gpu.requestAdapter();
         if (adapter) {
-          const info = await adapter.requestAdapterInfo();
           return {
             computeCapability: 8.6, // RTX 3060
             memory: 8192, // 8GB
@@ -488,11 +477,9 @@ export class LlamaCppOllamaService {
         throw new Error(`Model loading failed: ${testResponse.statusText}`);
       }
 
-      const result = await testResponse.json();
-      
-      this.serviceStatus.update((s: any) => ({ 
-        ...s, 
-        modelLoaded: this.ollamaConfig.model 
+      this.serviceStatus.update(s => ({
+        ...s,
+        modelLoaded: this.ollamaConfig.model
       }));
 
       console.log('✅ Model loaded successfully');
@@ -517,8 +504,8 @@ export class LlamaCppOllamaService {
     try {
       const ollamaRequest = {
         model: this.ollamaConfig.model,
-        prompt: request.systemPrompt ? 
-          `${request.systemPrompt}\n\nUser: ${request.prompt}\nAssistant:` : 
+        prompt: request.systemPrompt ?
+          `${request.systemPrompt}\n\nUser: ${request.prompt}\nAssistant:` :
           request.prompt,
         stream: request.stream || false,
         options: {
@@ -530,7 +517,7 @@ export class LlamaCppOllamaService {
           repeat_penalty: request.repeatPenalty || this.llamaConfig.repeatPenalty,
           seed: request.seed || this.llamaConfig.seed,
           stop: request.stop || [],
-          
+
           // Llama.cpp optimizations
           num_batch: this.ollamaConfig.numBatch,
           num_gpu: this.ollamaConfig.numGpu,
@@ -538,9 +525,9 @@ export class LlamaCppOllamaService {
           use_mmap: this.ollamaConfig.useMmap,
           use_mlock: this.ollamaConfig.useMlock,
           f16_kv: this.ollamaConfig.f16Kv,
-          
+
           // FlashAttention2
-          flash_attn: this.flashAttentionConfig.enabled,
+          flash_attn: this.flashAttentionConfig.enabled
         }
       };
 
@@ -599,7 +586,7 @@ export class LlamaCppOllamaService {
     const averageLatency = this.totalProcessingTime / this.requestCount;
     const requestsPerSecond = this.requestCount / (uptime / 1000);
 
-    this.performanceMetrics.update((current: any) => ({
+    this.performanceMetrics.update(current => ({
       ...current,
       requestsPerSecond: Math.round(requestsPerSecond * 100) / 100,
       averageLatency: Math.round(averageLatency),
@@ -619,7 +606,7 @@ export class LlamaCppOllamaService {
 
     setInterval(() => {
       // Update GPU utilization estimates
-      this.performanceMetrics.update((current: any) => ({
+      this.performanceMetrics.update(current => ({
         ...current,
         rtx3060Utilization: Math.max(0, current.rtx3060Utilization + (Math.random() - 0.5) * 10),
         memoryUsage: Math.max(1000, Math.min(7000, current.memoryUsage + (Math.random() - 0.5) * 200))
@@ -632,10 +619,10 @@ export class LlamaCppOllamaService {
    */
   public getStatus(): { initialized: boolean; ready: boolean; modelLoaded: string } {
     let currentStatus = { initialized: false, ready: false, modelLoaded: '' };
-    this.serviceStatus.subscribe((s: any) => currentStatus = { 
-      initialized: this.isInitialized, 
-      ready: s.llamaCppReady && s.ollamaReady, 
-      modelLoaded: s.modelLoaded 
+    this.serviceStatus.subscribe(s => currentStatus = {
+      initialized: this.isInitialized,
+      ready: s.llamaCppReady && s.ollamaReady,
+      modelLoaded: s.modelLoaded
     })();
     return currentStatus;
   }
@@ -645,15 +632,15 @@ export class LlamaCppOllamaService {
    */
   public async shutdown(): Promise<void> {
     console.log('🛑 Shutting down Llama.cpp + Ollama service...');
-    
+
     this.isInitialized = false;
-    this.serviceStatus.update((s: any) => ({ 
-      ...s, 
-      llamaCppReady: false, 
+    this.serviceStatus.update(s => ({
+      ...s,
+      llamaCppReady: false,
       ollamaReady: false,
       initialization: 'idle'
     }));
-    
+
     // Cleanup FlashAttention2 service
     await this.flashAttentionService.cleanup();
   }
@@ -681,12 +668,12 @@ export function createLlamaCppOllamaService(
 
     // Derived stores
     derived: {
-      isReady: derived(service.serviceStatus, ($status) => 
+      isReady: derived(service.serviceStatus, ($status) =>
         $status.llamaCppReady && $status.ollamaReady
       ),
 
       efficiency: derived(
-        [service.performanceMetrics, service.flashAttentionService.stores.performanceMetrics], 
+        [service.performanceMetrics, service.flashAttentionService.stores.performanceMetrics],
         ([$metrics, $flashMetrics]) => ({
           overall: Math.round(($metrics.tokensPerSecond / 100) * $metrics.successRate),
           flashAttention: ($flashMetrics as any)?.tensorCoreUtilization || $metrics.flashAttentionEfficiency,

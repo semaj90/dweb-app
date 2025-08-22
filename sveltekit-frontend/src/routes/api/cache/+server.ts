@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Cache Management API - Production-ready endpoints for multi-layer cache system
 // Provides REST interface for cache operations, health checks, and statistics
 

@@ -1,6 +1,6 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { URL } from "url";
-// @ts-nocheck
+
 // ======================================================================
 // REAL-TIME WEBSOCKET HANDLER FOR ENHANCED LEGAL AI SYSTEM
 // Supporting streaming updates, live processing results, and system monitoring
@@ -45,7 +45,7 @@ class EnhancedWebSocketManager {
     this.startHealthCheck();
   }
 
-  addClient(clientId: string, ws: any, metadata?: any) {
+  addClient(clientId: string, ws: any, metadata?: unknown) {
     const client: ConnectedClient = {
       id: clientId,
       ws,

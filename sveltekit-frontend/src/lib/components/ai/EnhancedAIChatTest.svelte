@@ -1,6 +1,6 @@
 <!-- Enhanced AI Chat Test Component - Svelte 5 with bits-ui and shadcn-svelte -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state } from 'svelte';
 
   import { browser } from '$app/environment';
   import { onMount, tick } from 'svelte';
@@ -43,7 +43,7 @@ import type { CommonProps } from '$lib/types/common-props';
       timestamp: Date;
       loading?: boolean;
       error?: boolean;
-      metadata?: any;
+      metadata?: unknown;
     }>
   >([]);
 
@@ -526,7 +526,4 @@ import type { CommonProps } from '$lib/types/common-props';
   }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

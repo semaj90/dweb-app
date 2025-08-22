@@ -1,6 +1,6 @@
 <!-- Enhanced Interactive Canvas with Fabric.js, No VDOM, Auto-save with Loki.js -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived } from 'svelte';
 
   import { aiSummarizationService } from "$lib/services/aiSummarizationService";
   import { evidenceStore } from "$lib/stores/evidenceStore";
@@ -1007,7 +1007,7 @@ import type { CommonProps } from '$lib/types/common-props';
   }
 
   // Reactive statements
-  $: state = get(canvasState);
+  let state = $derived(get(canvasState));
 
   // Exported functions for parent component access
   export function addEvidenceToCanvas(evidence: any) {

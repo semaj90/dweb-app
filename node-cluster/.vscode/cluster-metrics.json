@@ -1,7 +1,7 @@
 {
-  "timestamp": 1755668254155,
-  "uptimeSec": 4518,
-  "startTime": 1755663735898,
+  "timestamp": 1755709695317,
+  "uptimeSec": 178,
+  "startTime": 1755709517408,
   "spawned": {
     "legal": 3,
     "ai": 2,
@@ -17,120 +17,120 @@
   "lastAllocation": {
     "type": "database",
     "port": 3042,
-    "time": 1755663735997
+    "time": 1755709517567
   },
   "events": [
     {
       "e": "spawn:legal@3010",
-      "t": 1755663735934
+      "t": 1755709517460
     },
     {
       "e": "spawn:legal@3011",
-      "t": 1755663735942
+      "t": 1755709517470
     },
     {
       "e": "spawn:legal@3012",
-      "t": 1755663735947
+      "t": 1755709517478
     },
     {
       "e": "spawn:ai@3020",
-      "t": 1755663735953
+      "t": 1755709517488
     },
     {
       "e": "spawn:ai@3021",
-      "t": 1755663735961
+      "t": 1755709517497
     },
     {
       "e": "spawn:vector@3030",
-      "t": 1755663735968
+      "t": 1755709517506
     },
     {
       "e": "spawn:vector@3031",
-      "t": 1755663735975
+      "t": 1755709517514
     },
     {
       "e": "spawn:database@3040",
-      "t": 1755663735982
+      "t": 1755709517527
     },
     {
       "e": "spawn:database@3041",
-      "t": 1755663735990
+      "t": 1755709517540
     },
     {
       "e": "spawn:database@3042",
-      "t": 1755663735997
+      "t": 1755709517567
     }
   ],
   "workers": [
     {
       "type": "legal",
-      "pid": 27136,
+      "pid": 46224,
       "port": 3010,
       "status": "online",
-      "uptimeSec": 4518
+      "uptimeSec": 178
     },
     {
       "type": "legal",
-      "pid": 28324,
+      "pid": 18312,
       "port": 3011,
       "status": "online",
-      "uptimeSec": 4518
+      "uptimeSec": 178
     },
     {
       "type": "legal",
-      "pid": 40340,
+      "pid": 47492,
       "port": 3012,
       "status": "online",
-      "uptimeSec": 4518
+      "uptimeSec": 178
     },
     {
       "type": "ai",
-      "pid": 60824,
+      "pid": 61076,
       "port": 3020,
       "status": "online",
-      "uptimeSec": 4518
+      "uptimeSec": 178
     },
     {
       "type": "ai",
-      "pid": 18000,
+      "pid": 17980,
       "port": 3021,
       "status": "online",
-      "uptimeSec": 4518
+      "uptimeSec": 178
     },
     {
       "type": "vector",
-      "pid": 24780,
+      "pid": 36592,
       "port": 3030,
       "status": "online",
-      "uptimeSec": 4518
+      "uptimeSec": 178
     },
     {
       "type": "vector",
-      "pid": 14024,
+      "pid": 45252,
       "port": 3031,
       "status": "online",
-      "uptimeSec": 4518
+      "uptimeSec": 178
     },
     {
       "type": "database",
-      "pid": 29132,
+      "pid": 4524,
       "port": 3040,
       "status": "online",
-      "uptimeSec": 4518
+      "uptimeSec": 178
     },
     {
       "type": "database",
-      "pid": 20376,
+      "pid": 28404,
       "port": 3041,
       "status": "online",
-      "uptimeSec": 4518
+      "uptimeSec": 178
     },
     {
       "type": "database",
-      "pid": 12312,
+      "pid": 42416,
       "port": 3042,
       "status": "online",
-      "uptimeSec": 4518
+      "uptimeSec": 178
     }
   ],
   "deferredQueue": []

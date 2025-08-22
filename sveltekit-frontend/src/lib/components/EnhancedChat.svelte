@@ -2,7 +2,6 @@
      Rename the variable and try again or migrate by hand. -->
 <!-- Enhanced Chat Component with bits-ui, melt-ui, shadcn-svelte integration -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
 	import { onMount, onDestroy } from 'svelte';
 	import { useMachine } from '@xstate/svelte';
@@ -461,7 +460,4 @@ import type { CommonProps } from '$lib/types/common-props';
 		background: #94a3b8;
 	}
 </style>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

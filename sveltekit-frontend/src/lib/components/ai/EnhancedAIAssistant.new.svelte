@@ -1,6 +1,6 @@
 <!-- Enhanced AI Assistant - Simplified Version -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
   import {
     Brain,

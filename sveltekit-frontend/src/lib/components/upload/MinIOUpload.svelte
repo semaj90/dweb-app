@@ -1,6 +1,7 @@
 <!-- MinIO Upload Component with SvelteKit 2 + Superforms + PostgreSQL Integration -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state, $effect } from 'svelte';
+
 
   import { superForm } from 'sveltekit-superforms/client';
   import { fileUploadSchema, type FileUploadData } from '$lib/schemas/upload';
@@ -12,7 +13,7 @@ import type { CommonProps } from '$lib/types/common-props';
   import { documentApiService } from '$lib/services/documentApi';
   
   // Props
-  interface Props extends CommonProps {
+  interface Props {
     data: PageData;
     caseId?: string;
     onUploadComplete?: (result: UploadResult) => void;

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Context7 MCP Helpers: Production implementation with VS Code Extension Integration
 // Library ID resolution using Context7 MCP server
 
@@ -309,7 +309,7 @@ export async function getLibraryDocs(
 }
 
 // Enhanced semantic search using Context7 MCP server
-export async function semanticSearch(query: string): Promise<any[]> {
+export async function semanticSearch(query: string): Promise<unknown[]> {
   try {
     const response = await fetch("http://localhost:3000/api/semantic-search", {
       method: "POST",

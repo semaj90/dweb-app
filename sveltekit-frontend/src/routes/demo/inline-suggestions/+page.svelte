@@ -5,6 +5,7 @@ https://svelte.dev/e/bind_invalid_expression -->
   Demonstrates real-time AI-powered editing with comprehensive suggestion types
 -->
 <script lang="ts">
+  import { $state, $effect } from 'svelte';
   import { onMount } from 'svelte';
   import EnhancedInlineEditor from '$lib/components/ai/EnhancedInlineEditor.svelte';
   import { inlineSuggestionService, type SuggestionOptions } from '$lib/services/inlineSuggestionService';
@@ -215,10 +216,10 @@ Furthermore, the doctrine of mitigation requires that the injured party take rea
               enableGrammarCheck={serviceOptions.enableGrammarCheck}
               enableSemanticSuggestions={serviceOptions.enableLegalTerms}
               minCharactersForSuggestion={serviceOptions.minCharacters}
-              suggestionDelay={serviceOptions.suggestionDelay}
+              suggestiondelay={serviceOptions.suggestionDelay}
               maxSuggestions={serviceOptions.maxSuggestions}
               class="w-full"
-              on:suggestionaccepted={handleSuggestionAccepted}
+              onsuggestionaccepted={handleSuggestionAccepted}
             />
           </CardContent>
         </Card>

@@ -15,7 +15,7 @@ export interface ChatMessage {
   type?: 'user' | 'assistant' | 'system' | 'error' | 'command';
   metadata?: {
     confidence?: number;
-    sources?: any[];
+    sources?: unknown[];
     processing_time?: number;
     model?: string;
     tokens_used?: number;
@@ -234,7 +234,7 @@ class AIChatStore {
   }
 
   // Enhanced RAG Integration
-  async sendToRAG(message: string, context?: any): Promise<any> {
+  async sendToRAG(message: string, context?: unknown): Promise<any> {
     chatStore.update(state => {
       state.isLoading = true;
       state.lastError = null;

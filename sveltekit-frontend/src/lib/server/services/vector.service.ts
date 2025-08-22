@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Simple Vector Operations Service - TODO: Re-enhance with full functionality
 // This is a temporary simple version to resolve TypeScript errors
 //
@@ -182,7 +182,7 @@ export class VectorOperationsService {
   static async semanticSearch(
     query: string,
     options: any = {},
-  ): Promise<any[]> {
+  ): Promise<unknown[]> {
     console.warn(
       "semanticSearch is a stub - implement with full pgvector integration",
     );
@@ -223,7 +223,7 @@ export class VectorOperationsService {
   static async findSimilarDocuments(
     documentId: string,
     options: any = {},
-  ): Promise<any[]> {
+  ): Promise<unknown[]> {
     console.warn(
       "findSimilarDocuments is a stub - implement with full similarity search",
     );
@@ -236,7 +236,7 @@ export class VectorOperationsService {
    * TODO: Batch process multiple documents for embedding generation
    *
    * static async batchGenerateEmbeddings(
-   *   documents: Array<{ id: string; content: string; metadata?: any }>
+   *   documents: Array<{ id: string; content: string; metadata?: unknown }>
    * ): Promise<Array<{ id: string; embedding: number[]; success: boolean }>>
    */
 

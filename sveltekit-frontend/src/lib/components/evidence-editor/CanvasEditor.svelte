@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived } from 'svelte';
 
   import { browser } from '$app/environment';
   import { autoTaggingMachine } from '$lib/stores/autoTaggingMachine';
@@ -10,7 +10,7 @@ import type { CommonProps } from '$lib/types/common-props';
   const { snapshot, send } = useMachine(autoTaggingMachine);
 
   // Access state from snapshot
-  $: state = $snapshot;
+  let state = $derived($snapshot);
 
   export let caseId: string | null = null;
   export let readOnly = false;
@@ -29,8 +29,8 @@ import type { CommonProps } from '$lib/types/common-props';
     y: number;
     width: number;
     height: number;
-    aiTags?: any;
-    metadata?: any;
+    aiTags?: unknown;
+    metadata?: unknown;
     connections?: string[]; // Connected node IDs
   }> = [];
 
@@ -764,7 +764,7 @@ import type { CommonProps } from '$lib/types/common-props';
     onmousemove={handleMouseMove}
     onmouseup={handleMouseUp}
     onmouseleave={handleMouseUp}
-    on:wheel={handleWheel}
+    onwheel={handleWheel}
     on:contextmenu|preventDefault
   ></canvas>
 

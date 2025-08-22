@@ -6,12 +6,11 @@ import { getContext7MulticoreService } from "../services/context7-multicore";
  */
 
 import { comprehensiveOrchestrator, type ComprehensiveAgentRequest } from "./comprehensive-agent-orchestration";
-// Orphaned content: import {
-flashAttentionMulticoreBridge, type FlashAttentionMulticoreRequest
+import { flashAttentionMulticoreBridge, type FlashAttentionMulticoreRequest } from "../services/flash-attention-multicore";
 
 export interface FullStackWorkflowRequest {
   mode: 'error_analysis' | 'legal_processing' | 'system_diagnostic' | 'performance_test';
-  data?: any;
+  data?: unknown;
   options?: {
     useGPU?: boolean;
     enableAgents?: boolean;
@@ -24,10 +23,10 @@ export interface FullStackWorkflowResult {
   mode: string;
   success: boolean;
   results: {
-    agentOrchestration?: any;
-    gpuProcessing?: any;
-    multicoreAnalysis?: any;
-    systemMetrics?: any;
+    agentOrchestration?: unknown;
+    gpuProcessing?: unknown;
+    multicoreAnalysis?: unknown;
+    systemMetrics?: unknown;
     error?: string;
   };
   performance: {
@@ -611,7 +610,7 @@ export async function initializeFullStack(): Promise<void> {
   await fullStackWorkflow.initialize();
 }
 
-export async function runErrorAnalysis(errorData?: any): Promise<FullStackWorkflowResult> {
+export async function runErrorAnalysis(errorData?: unknown): Promise<FullStackWorkflowResult> {
   return await fullStackWorkflow.executeWorkflow({
     mode: 'error_analysis',
     data: errorData,

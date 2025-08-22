@@ -1,13 +1,13 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
-  interface Props extends CommonProps {
-    content?: any;
-    placeholder?: any;
-    editable?: any;
-    showToolbar?: any;
-    autoSave?: any;
-    autoSaveDelay?: any;
+  interface Props {
+    content?: unknown;
+    placeholder?: unknown;
+    editable?: unknown;
+    showToolbar?: unknown;
+    autoSave?: unknown;
+    autoSaveDelay?: unknown;
   }
   let {
     content = "",

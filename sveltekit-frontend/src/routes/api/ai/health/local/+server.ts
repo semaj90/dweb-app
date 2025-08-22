@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+
 // Local AI health check endpoint for Gemma3 Ollama integration
 import { json } from "@sveltejs/kit";
 import { ollamaService } from "$lib/services/ollama-service";
@@ -52,7 +52,8 @@ async function testLlamaCppConnection(): Promise<{
   message: string;
 }> {
   try {
-    const response = await fetch("http://localhost:8080/health", {
+    // Use working Node API endpoint instead of problematic 8080
+    const response = await fetch("http://localhost:3005/healthz", {
       method: "GET",
       signal: AbortSignal.timeout(5000),
     });

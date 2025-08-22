@@ -10,7 +10,7 @@
   let currentView = $state('grid');
   let modalOpen = $state(false);
   let terminalActive = $state(true);
-  let notifications = $state<any[]>([]);
+  let notifications = $state<unknown[]>([]);
 
   // Sample data for demonstration
   let demoData = $state([
@@ -145,7 +145,7 @@
   ];
 
   // Enhanced RAG simulation
-  let ragResults = $state<any[]>([]);
+  let ragResults = $state<unknown[]>([]);
   let ragAnalysis = $state<any>(null);
 
   // Functions
@@ -180,7 +180,7 @@
 
   function performAnalysis(row: any) {
     addNotification('info', `Initiating enhanced AI analysis for ${row.yorha_id}`);
-    
+
     // Simulate enhanced analysis
     setTimeout(() => {
       ragResults = [
@@ -300,7 +300,7 @@
       timestamp: new Date()
     };
     notifications = [...notifications, notification];
-    
+
     setTimeout(() => {
       notifications = notifications.filter(n => n.id !== notification.id);
     }, 5000);
@@ -327,27 +327,27 @@
         <span class="status-indicator">AI: ENHANCED</span>
       </div>
     </div>
-    
+
     <nav class="demo-nav">
-      <button 
+      <button
         class="nav-btn {currentView === 'grid' ? 'active' : ''}"
         onclick={() => currentView = 'grid'}
       >
         DATA GRID
       </button>
-      <button 
+      <button
         class="nav-btn {currentView === 'analysis' ? 'active' : ''}"
         onclick={() => currentView = 'analysis'}
       >
         AI ANALYSIS
       </button>
-      <button 
+      <button
         class="nav-btn {currentView === 'form' ? 'active' : ''}"
         onclick={() => currentView = 'form'}
       >
         DOCUMENT ENTRY
       </button>
-      <button 
+      <button
         class="nav-btn"
         onclick={() => modalOpen = true}
       >
@@ -367,7 +367,7 @@
               <span class="record-count">{demoData.length} CLASSIFIED DOCUMENTS</span>
             </div>
           </div>
-          
+
           <YoRHaDataGrid
             columns={columns}
             data={demoData}
@@ -406,10 +406,10 @@
                       <span class="risk-level">Risk: {result.riskLevel}</span>
                     </div>
                   </div>
-                  
+
                   <div class="result-content">
                     <p class="summary">{result.summary}</p>
-                    
+
                     <div class="key-terms">
                       <h4>Key Legal Terms:</h4>
                       <div class="terms">
@@ -470,7 +470,7 @@
           <div class="section-header">
             <h2 class="section-title">DOCUMENT CREATION INTERFACE</h2>
           </div>
-          
+
           <YoRHaForm
             title="Create New Legal Document"
             subtitle="Enter classified legal document information"
@@ -478,7 +478,7 @@
             submitLabel="CREATE DOCUMENT"
             cancelLabel="ABORT"
             onsubmit={createDocument}
-            on:cancel={() => currentView = 'grid'}
+            oncancel={() => currentView = 'grid'}
           />
         </section>
       {/if}
@@ -489,7 +489,7 @@
       <YoRHaTerminal
         title="YoRHa Legal AI Command Terminal"
         isActive={terminalActive}
-        onCommand={handleTerminalCommand}
+        oncommand={handleTerminalCommand}
       />
     </aside>
   </main>
@@ -499,7 +499,7 @@
     <YoRHaModal
       isOpen={modalOpen}
       title="Create New Legal Document"
-      onClose={() => modalOpen = false}
+      onclose={() => modalOpen = false}
     >
       <YoRHaForm
         title="Document Creation Interface"
@@ -508,7 +508,7 @@
         submitLabel="CREATE"
         cancelLabel="CANCEL"
         onsubmit={createDocument}
-        on:cancel={() => modalOpen = false}
+        oncancel={() => modalOpen = false}
       />
     </YoRHaModal>
   {/if}
@@ -521,7 +521,7 @@
           <span class="notification-type">[{notification.type.toUpperCase()}]</span>
           <span class="notification-message">{notification.message}</span>
         </div>
-        <button 
+        <button
           class="notification-close"
           onclick={() => notifications = notifications.filter(n => n.id !== notification.id)}
         >

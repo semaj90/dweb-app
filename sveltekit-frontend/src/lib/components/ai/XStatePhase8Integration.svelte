@@ -1,7 +1,7 @@
 <!-- @migration-task Error while migrating Svelte code: Cannot subscribe to stores that are not declared at the top level of the component
 https://svelte.dev/e/store_invalid_scoped_subscription -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state, $derived, $effect } from 'svelte';
 
   import { onMount } from 'svelte';
   import { useMachine } from '@xstate/svelte';
@@ -18,7 +18,7 @@ import type { CommonProps } from '$lib/types/common-props';
   import { LegalAIReranker, enhancedSearch, type UserContext } from '$lib/ai/custom-reranker';
   import { PredictivePrefetcher } from '$lib/workers/predictive-prefetch';
 
-  interface Props extends CommonProps {
+  interface Props {
     class?: string;
   }
 

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * WebAssembly Clustering Support
  * High-performance clustering algorithms for legal document processing

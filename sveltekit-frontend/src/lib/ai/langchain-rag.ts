@@ -1,24 +1,16 @@
-// @ts-nocheck
+
 // LangChain.js RAG Implementation for Legal AI Platform
 // Advanced RAG with Ollama integration and legal domain specialization
-// { LLMChainExtractor } from "@langchain/community/document_compressors";
-// Orphaned content: // import { ContextualCompressionRetriever
-// { MultiQueryRetriever } from "@langchain/community/retrievers/multi_query";
-// Orphaned content: import {
 
 import type { Document } from "@langchain/core/documents";
-// Orphaned content: import {
-
 import { ChatPromptTemplate, PromptTemplate } from "@langchain/core/prompts";
-// Orphaned content: import {
-RunnableMap,
+import { 
+  RunnableMap,
   RunnablePassthrough,
   RunnableSequence,
+} from "@langchain/core/runnables";
 import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
-// Orphaned content: import {
-
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-// Orphaned content: import {
 
 import type { LegalDocumentMetadata } from './qdrant-service.js';
 

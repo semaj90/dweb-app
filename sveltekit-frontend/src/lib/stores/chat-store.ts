@@ -11,7 +11,18 @@
  */
 
 import { writable, derived, readable, get } from "svelte/store";
-import { browser, import type { ,   ChatMessage, ,   ChatSession, ,   MessageAnalysis, ,   RAGContext, ,   Recommendation,,   StreamingResponse,,   UserActivity,,   AttentionData,,   ConnectionStatus } from
+import { browser } from "$app/environment";
+import type { 
+  ChatMessage, 
+  ChatSession, 
+  MessageAnalysis, 
+  RAGContext, 
+  Recommendation,
+  StreamingResponse,
+  UserActivity,
+  AttentionData,
+  ConnectionStatus 
+} from "$lib/types";
 
 // Core chat state
 export const chatMessages = writable<ChatMessage[]>([]);
@@ -50,7 +61,7 @@ export const processingMetrics = writable({
 
 // Error handling
 export const lastError = writable<string | null>(null);
-export const errorHistory = writable<Array<{ timestamp: Date; error: string; context?: any }>>([]);
+export const errorHistory = writable<Array<{ timestamp: Date; error: string; context?: unknown }>>([]);
 
 // User interaction
 export const userAttention = writable<AttentionData>({
@@ -311,7 +322,7 @@ export const chatActions = {
   },
 
   // Error handling
-  addError: (message: string, context?: any): void => {
+  addError: (message: string, context?: unknown): void => {
     const error = {
       timestamp: new Date(),
       error: message,

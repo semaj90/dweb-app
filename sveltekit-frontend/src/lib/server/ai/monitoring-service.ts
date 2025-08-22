@@ -1,9 +1,18 @@
-// @ts-nocheck
+
 // lib/server/ai/monitoring-service.ts
 // Comprehensive monitoring and observability for AI synthesis pipeline
 
-import { logger } from "./logger";
-import { EventEmitter, , interface MetricData {,   requestId: string;,   processingTime: number;,   confidence: number;,   sourceCount: number;,   strategies: string[];,   qualityScore: number; } from
+import { logger } from "./logger.js";
+import { EventEmitter } from "events";
+
+interface MetricData {
+  requestId: string;
+  processingTime: number;
+  confidence: number;
+  sourceCount: number;
+  strategies: string[];
+  qualityScore: number;
+}
 
 interface AlertRule {
   name: string;
@@ -21,7 +30,7 @@ interface PerformanceMetrics {
 }
 
 class MonitoringService extends EventEmitter {
-  private metrics: Map<string, any[]> = new Map();
+  private metrics: Map<string, unknown[]> = new Map();
   private alerts: AlertRule[] = [];
   private healthChecks: Map<string, () => Promise<boolean>> = new Map();
   private performanceHistory: number[] = [];
@@ -94,7 +103,7 @@ class MonitoringService extends EventEmitter {
   /**
    * Track stage completion within a request
    */
-  trackStage(requestId: string, stage: string, duration: number, metadata?: any): void {
+  trackStage(requestId: string, stage: string, duration: number, metadata?: unknown): void {
     const request = this.requestTracking.get(requestId);
     if (request) {
       request.stages.set(stage, {
@@ -230,7 +239,7 @@ class MonitoringService extends EventEmitter {
   /**
    * Get current statistics
    */
-  getStats(): any {
+  getStats(): unknown {
     const cacheHitRate =
       this.counters.cacheHits / (this.counters.cacheHits + this.counters.cacheMisses) || 0;
 
@@ -266,7 +275,7 @@ class MonitoringService extends EventEmitter {
   /**
    * Get detailed metrics for analysis
    */
-  getDetailedMetrics(timeRange?: { start: Date; end: Date }): any {
+  getDetailedMetrics(timeRange?: { start: Date; end: Date }): unknown {
     const metrics = {};
 
     for (const [name, values] of this.metrics) {

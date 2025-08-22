@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state } from 'svelte';
 
   // Enhanced AI Search Component with Bits UI and UnoCSS
   // Svelte 5 + Go Microservice + Gemma3-Legal Integration
@@ -14,7 +14,7 @@ import type { CommonProps } from '$lib/types/common-props';
   import { Button, Select } from "bits-ui";
 
   // Props
-  interface Props extends CommonProps {
+  interface Props {
     initialQuery?: string;
     practiceArea?: PracticeArea;
     jurisdiction?: Jurisdiction;

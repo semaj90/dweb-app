@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
 	import { createEventDispatcher } from 'svelte';
+  import { $derived } from 'svelte';
 	import { aiStore } from "../stores/canvas";
 	import Dialog from './Dialog.svelte';
 	
@@ -10,8 +10,8 @@ import type { CommonProps } from '$lib/types/common-props';
 	const dispatch = createEventDispatcher();
 
 	// Reactive state
-	$: dialogOpen = $aiStore.dialogOpen;
-	$: isGenerating = $aiStore.isGenerating;
+	let dialogOpen = $derived($aiStore.dialogOpen);
+	let isGenerating = $derived($aiStore.isGenerating);
 
 	function toggleDialog() {
 		aiStore.update(state => ({
@@ -49,8 +49,8 @@ import type { CommonProps } from '$lib/types/common-props';
 	<Dialog
 		title="AI Assistant"
 		open={dialogOpen}
-		on:close={toggleDialog}
-		on:aiRequest={handleAIRequest}
+		onclose={toggleDialog}
+		onairequest={handleAIRequest}
 	/>
 {/if}
 
@@ -144,7 +144,4 @@ import type { CommonProps } from '$lib/types/common-props';
 }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

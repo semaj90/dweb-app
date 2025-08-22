@@ -1,9 +1,24 @@
-// @ts-nocheck
+
 // lib/stores/ai.ts
 // Global AI Summary Store using XState v5, with memoization and streaming support
 import { setup, createActor, assign, fromPromise } from "$lib/utils/xstate";
-import { writable, , // Memoization cache (in-memory, can be replaced with Redis for persistence), const summaryCache = new Map<string, string>();, , // Define context and events interfaces, interface AIContext {,   summary: string;,   error: string;,   loading: boolean;,   caseId: string;,   evidence: any[];,   userId: string;,   stream: string;,   cacheKey: string;,   sources: any[]; } from
+import { writable } from "svelte/store";
 
+// Memoization cache (in-memory, can be replaced with Redis for persistence)
+const summaryCache = new Map<string, string>();
+
+// Define context and events interfaces
+interface AIContext {
+  summary: string;
+  error: string;
+  loading: boolean;
+  caseId: string;
+  evidence: any[];
+  userId: string;
+  stream: string;
+  cacheKey: string;
+  sources: any[];
+}
 type AIEvent =
   | { type: "SUMMARIZE"; caseId: string; evidence: any[]; userId: string }
   | { type: "RETRY" }

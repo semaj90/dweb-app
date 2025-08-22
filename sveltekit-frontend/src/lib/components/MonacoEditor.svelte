@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $state } from 'svelte';
 
 import * as monaco from 'monaco-editor';
 import { onDestroy, onMount } from 'svelte';
@@ -35,7 +35,4 @@ onDestroy(() => {
 }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Draggable action for making elements draggable on the canvas
  */

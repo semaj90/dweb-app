@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { $props, $effect } from 'svelte';
   interface Props {
     form: ActionData;
   }

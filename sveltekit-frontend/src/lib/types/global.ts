@@ -6,19 +6,19 @@
 // =====================================================
 
 export interface Props {
-  data?: any;
+  data?: unknown;
   children?: import('svelte').Snippet;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface LayoutProps {
   children: import('svelte').Snippet;
-  data?: any;
+  data?: unknown;
 }
 
 export interface PageProps {
   data: any;
-  form?: any;
+  form?: unknown;
 }
 
 // =====================================================
@@ -85,7 +85,7 @@ export interface SearchResults {
     title: string;
     content: string;
     score: number;
-    metadata?: any;
+    metadata?: unknown;
     // Additional search result properties
     type?: string;
     relevance?: number;
@@ -104,7 +104,7 @@ export interface SearchResults {
 export interface TestResults {
   // Core fields (optional to allow progressive assignment)
   query?: string;
-  results?: any[];
+  results?: unknown[];
   timestamp?: string;
   performance?: {
     embedding_time?: number;
@@ -162,7 +162,7 @@ export interface AnalysisResults {
     | {
         message: string;
         code: string;
-        details?: any;
+    details?: unknown;
       };
   summary?:
     | {
@@ -267,6 +267,21 @@ export interface TimelineEvent {
   type: 'incident' | 'investigation' | 'legal' | 'evidence';
   participants?: string[];
   evidence_ids?: string[];
+}
+
+// =====================================================
+// DOCUMENT / LEGAL DOCUMENT
+// A lightweight, canonical Document type used across frontend components
+export interface Document {
+  id: string;
+  title: string;
+  content: string;
+  documentType?: string; // e.g., 'deed', 'contract', 'report'
+  caseId?: string;
+  fileUrl?: string;
+  metadata?: Record<string, any>;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 // =====================================================
@@ -421,7 +436,7 @@ export interface ChatSession {
 export interface APIError {
   code: string;
   message: string;
-  details?: any;
+  details?: unknown;
   timestamp: string;
   request_id?: string;
 }
@@ -430,7 +445,7 @@ export interface ValidationError {
   field: string;
   message: string;
   code: string;
-  value?: any;
+  value?: unknown;
 }
 
 export interface ValidationFormState {

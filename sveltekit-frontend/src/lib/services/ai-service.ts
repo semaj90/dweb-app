@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Fix embedding type handling
 const normalizeEmbedding = (embedding: number[] | number[][]): number[] => {
   if (Array.isArray(embedding) && Array.isArray(embedding[0])) {
@@ -278,7 +278,7 @@ class EnhancedAIService {
     Array<{
       id: string;
       embedding: number[];
-      classification?: any;
+      classification?: unknown;
       summary?: string;
       error?: string;
     }>
@@ -290,7 +290,7 @@ class EnhancedAIService {
       const results: Array<{
         id: string;
         embedding: number[];
-        classification?: any;
+        classification?: unknown;
         summary?: string;
         error?: string;
       }> = [];
@@ -326,7 +326,7 @@ class EnhancedAIService {
       const results: Array<{
         id: string;
         embedding: number[];
-        classification?: any;
+        classification?: unknown;
         summary?: string;
         error?: string;
       }> = [];

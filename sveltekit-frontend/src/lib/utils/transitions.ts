@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Transition utilities for Melt UI components
 // Compatible with Pico CSS + UnoCSS setup
 

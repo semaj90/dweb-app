@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { test, expect } from '@playwright/test';
 
 test.describe('Drizzle ORM Database Operations', () => {
@@ -158,7 +158,7 @@ test.describe('Drizzle ORM Database Operations', () => {
     expect(fullCase.documents).toHaveLength(3);
     
     // Verify document structure
-    fullCase.documents.forEach((doc: any) => {
+    fullCase.documents.forEach((doc: unknown) => {
       expect(doc).toHaveProperty('id');
       expect(doc).toHaveProperty('title');
       expect(doc).toHaveProperty('content');
@@ -183,7 +183,7 @@ test.describe('Drizzle ORM Database Operations', () => {
     
     // Test pagination
     const pageSize = 10;
-    let allDocuments: any[] = [];
+    let allDocuments: unknown[] = [];
     let currentPage = 1;
     let hasMore = true;
     
@@ -341,7 +341,7 @@ test.describe('Drizzle ORM Database Operations', () => {
     const results = await queryResponse.json();
     
     expect(results.items.length).toBeGreaterThan(0);
-    const found = results.items.find((d: any) => d.id === document.id);
+    const found = results.items.find((d: unknown) => d.id === document.id);
     expect(found).toBeDefined();
     expect(found.metadata.tags).toContain('contract');
   });

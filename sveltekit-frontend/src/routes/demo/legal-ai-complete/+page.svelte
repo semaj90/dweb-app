@@ -7,6 +7,7 @@
   - XState Document Processing Workflows
 -->
 <script lang="ts">
+  import { $state } from 'svelte';
   import LegalDocumentProcessor from '$lib/components/legal/LegalDocumentProcessor.svelte';
   import type { LegalDocument } from '$lib/services/legalRAGEngine';
   
@@ -114,7 +115,7 @@ While the company demonstrates strong commitment to compliance, several areas re
 
   // Component state
   let selectedDocument = $state<Partial<LegalDocument> | undefined>(undefined);
-  let processingResults = $state<any[]>([]);
+  let processingResults = $state<unknown[]>([]);
   let isShowingResults = $state(false);
 
   // Event handlers
@@ -266,8 +267,8 @@ While the company demonstrates strong commitment to compliance, several areas re
       {#if selectedDocument}
         <LegalDocumentProcessor
           bind:document={selectedDocument}
-          onComplete={onProcessingComplete}
-          onError={onProcessingError}
+          oncomplete={onProcessingComplete}
+          onerror={onProcessingError}
           autoStart={false}
         />
       {:else}

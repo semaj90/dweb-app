@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Context7 MCP Integration with Enhanced Resource Optimization
  * Advanced integration of Context7 tools with optimization suite for legal AI development
@@ -33,7 +33,7 @@ interface Context7MCPRequest {
 
 interface Context7MCPResponse {
   success: boolean;
-  data?: any;
+  data?: unknown;
   error?: string;
   optimization_recommendations?: OptimizationRecommendation[];
   performance_impact?: {

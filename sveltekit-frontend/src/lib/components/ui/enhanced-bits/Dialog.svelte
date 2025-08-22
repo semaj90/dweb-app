@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived } from 'svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     class?: string;
     children?: import('svelte').Snippet;
   }
@@ -97,7 +97,7 @@ import type { CommonProps } from '$lib/types/common-props';
   }
 </script>
 
-<BitsDialog.Root {open} onOpenChange={handleOpenChange}>
+<BitsDialog.Root {open} onopenchange={handleOpenChange}>
   {@render children?.()}
 
   <!-- Portal rendering for dialog content -->

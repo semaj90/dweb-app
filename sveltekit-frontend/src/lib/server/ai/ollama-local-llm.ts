@@ -1,9 +1,16 @@
-// @ts-nocheck
+
 // lib/server/ai/ollama-local-llm.ts
 // Ollama integration for local LLM inference with legal models
 
-import { logger } from "./logger";
-import { streamingService, , interface OllamaModel {,   name: string;,   size: string;,   digest: string;,   modified: string; } from
+import { logger } from "./logger.js";
+import { streamingService } from "./streaming-service.js";
+
+interface OllamaModel {
+  name: string;
+  size: string;
+  digest: string;
+  modified: string;
+}
 
 interface OllamaGenerateOptions {
   model: string;
@@ -343,7 +350,7 @@ TEMPLATE """{{ if .System }}<|system|>
   async processLegalDocument(
     document: string,
     task: 'summarize' | 'extract' | 'analyze' | 'classify',
-    options?: any
+    options?: unknown
   ): Promise<any> {
     try {
       let prompt = '';

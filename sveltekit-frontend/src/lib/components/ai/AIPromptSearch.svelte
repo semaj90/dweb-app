@@ -1,15 +1,14 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $derived } from 'svelte';
 
   import { aiHistory } from "$lib/stores/aiHistoryStore";
   import Fuse from "fuse.js";
   import { onMount } from "svelte";
 
   let query = "";
-  let results: any[] = [];
   let fuse: Fuse<any>;
 
-  $: history = $aiHistory;
+  let history = $derived($aiHistory);
 
   onMount(() => {
     fuse = new Fuse(history, {
@@ -18,7 +17,7 @@ import type { CommonProps } from '$lib/types/common-props';
     });
   });
 
-  $: results = query && fuse ? fuse.search(query).map((r) => r.item) : history;
+  let results = $derived(query && fuse ? fuse.search(query).map((r) => r.item) : history);
 </script>
 
 <div class="container mx-auto px-4">
@@ -39,7 +38,4 @@ import type { CommonProps } from '$lib/types/common-props';
   </ul>
 </div>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

@@ -1,12 +1,9 @@
-// @ts-nocheck
+
 import { canvasStates, cases, evidence } from "$lib/server/db/schema-postgres";
-// Orphaned content: import {
-
 import { eq } from "drizzle-orm";
-// Orphaned content: import {
-
 import type { PageServerLoad } from "./$types.js";
-// Orphaned content: import {
+import { redirect } from '@sveltejs/kit';
+import { db } from '$lib/server/db';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
   if (!locals.user) {

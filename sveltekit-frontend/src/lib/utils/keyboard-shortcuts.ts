@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Professional Keyboard Shortcuts Manager
  * Provides centralized keyboard shortcut handling for the legal AI platform

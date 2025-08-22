@@ -1,6 +1,7 @@
 <!-- YoRHa Form Component with Terminal Styling -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $effect } from 'svelte';
+
 
   import { createEventDispatcher } from 'svelte';
 
@@ -8,7 +9,7 @@ import type { CommonProps } from '$lib/types/common-props';
     id: string;
     label: string;
     type: 'text' | 'email' | 'password' | 'textarea' | 'select' | 'checkbox' | 'radio' | 'file' | 'number' | 'date';
-    value?: any;
+    value?: unknown;
     placeholder?: string;
     required?: boolean;
     disabled?: boolean;
@@ -711,7 +712,3 @@ import type { CommonProps } from '$lib/types/common-props';
 </style>
 
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>

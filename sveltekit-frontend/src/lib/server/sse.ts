@@ -1,6 +1,6 @@
 import { logger } from "./logger.js";
 import stream from "stream";
-// @ts-nocheck
+
 // lib/server/sse.ts
 // Server-Sent Events helper for real-time streaming
 

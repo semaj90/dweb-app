@@ -1,7 +1,16 @@
 import { and, eq, gte } from "drizzle-orm";
 // Modern server-managed session authentication utilities (no Lucia)
 import { db } from "$lib/server/db/index";
-import { sessions, bcrypt from "bcryptjs";, // Orphaned content: import {, randomBytes, , // --- Helper Functions ---, function generateId(length: number = 40): string {,   return randomBytes(Math.ceil(length / 2)),     .toString("hex"),     .slice(0, length); } from
+import { sessions } from "$lib/server/db/schema-postgres";
+import bcrypt from "bcryptjs";
+import { randomBytes } from "crypto";
+
+// --- Helper Functions ---
+function generateId(length: number = 40): string {
+  return randomBytes(Math.ceil(length / 2))
+    .toString("hex")
+    .slice(0, length);
+}
 
 function createDate(timeSpan: { days: number }): Date {
   const date = new Date();

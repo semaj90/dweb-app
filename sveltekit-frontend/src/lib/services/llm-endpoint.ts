@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // LLM Endpoint Service
 // Returns the Ollama endpoint
 

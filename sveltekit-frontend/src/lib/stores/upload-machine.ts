@@ -26,7 +26,7 @@ interface UploadContext {
   results: {
     extractedText?: string;
     embeddings?: number[][];
-    tensorProcessing?: any;
+    tensorProcessing?: unknown;
     indexingComplete?: boolean;
   };
 }

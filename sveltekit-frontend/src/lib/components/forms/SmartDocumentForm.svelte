@@ -1,6 +1,6 @@
 <!-- Smart Document Form with OCR Auto-Population -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived } from 'svelte';
 
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { Button } from 'bits-ui';
@@ -37,10 +37,10 @@ import type { CommonProps } from '$lib/types/common-props';
 	let selectedDocumentType = 'auto';
 
 	// OCR stores
-	$: processing = ocrService.processing$;
-	$: progress = ocrService.progress$;
-	$: ocrResult = ocrService.currentResult$;
-	$: extractedFields = ocrService.extractedFields$;
+	let processing = $derived(ocrService.processing$);
+	let progress = $derived(ocrService.progress$);
+	let ocrResult = $derived(ocrService.currentResult$);
+	let extractedFields = $derived(ocrService.extractedFields$);
 
 	// Form validation
 	const formErrors = writable<Record<string, string>>({});

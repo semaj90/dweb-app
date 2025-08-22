@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Nomic Embedding Service
  * Advanced embedding generation service using nomic-embed-text
@@ -6,17 +6,11 @@
  */
 
 import { OllamaEmbeddings } from "@langchain/ollama";
-// Orphaned content: import {
-
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
-// Orphaned content: import {
-
 import type { VectorStore } from '@langchain/core/vectorstores';
-// Orphaned content: // Import our database service for persistent storage
-import { db
-import {
-searchIndex, type NewSearchIndex } from "$lib/database/schema";
-// Orphaned content: import { eq, sql, desc, asc, and
+import { db } from "$lib/database";
+import { searchIndex, type NewSearchIndex } from "$lib/database/schema";
+import { eq, sql, desc, asc, and } from "drizzle-orm";
 
 // Import sentence transformer for enhanced analysis
 import { legalNLP } from './sentence-transformer.js';
@@ -42,7 +36,7 @@ export interface DocumentChunk {
     totalChunks: number;
     startIndex: number;
     endIndex: number;
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 
@@ -340,13 +334,13 @@ class NomicEmbeddingService {
       title?: string;
       entityType: string;
       entityId: string;
-      [key: string]: any;
+      [key: string]: unknown;
     }
   ): Promise<{
     chunks: DocumentChunk[];
     embeddings: EmbeddingResult[];
     indexedCount: number;
-    analysis?: any;
+    analysis?: unknown;
   }> {
     try {
       if (!this.initialized) {

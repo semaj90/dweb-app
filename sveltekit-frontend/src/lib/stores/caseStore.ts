@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Global case management store with real data integration
 import { writable, derived, get } from "svelte/store";
 // Orphaned content: import {

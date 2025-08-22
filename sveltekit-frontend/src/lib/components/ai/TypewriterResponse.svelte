@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
 	import { onMount, onDestroy, createEventDispatcher } from 'svelte';
+  import { $props } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { quintOut, elasticOut } from 'svelte/easing';
 	import { advancedCache } from '$lib/services/advanced-cache-manager';

@@ -25,8 +25,8 @@ interface SummaryResult {
     sourceDocuments?: number;
     averageRelevance?: number;
     averageDiversity?: number;
-    mmrConfig?: any;
-    sources?: any[];
+    mmrConfig?: unknown;
+    sources?: unknown[];
     confidence?: number;
   };
 }

@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
 	import type { HTMLInputAttributes } from 'svelte/elements';
+  import { $props, $derived } from 'svelte';
 
 	interface Props extends Omit<HTMLInputAttributes, 'class' | 'value'> {
 		label?: string;

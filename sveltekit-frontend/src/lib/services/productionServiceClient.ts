@@ -358,11 +358,11 @@ export const productionServiceClient = new ProductionServiceClient();
 
 // Convenience functions for common operations
 export const services = {
-  async queryRAG(query: string, context?: any) {
+  async queryRAG(query: string, context?: unknown) {
     return productionServiceClient.execute('rag.query', { query, context });
   },
 
-  async uploadFile(file: File, metadata?: any) {
+  async uploadFile(file: File, metadata?: unknown) {
     return productionServiceClient.execute('file.upload', { file, metadata });
   },
 

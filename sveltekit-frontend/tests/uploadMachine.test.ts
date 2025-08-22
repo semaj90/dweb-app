@@ -2,7 +2,7 @@ import { createUploadMachine } from '$lib/machines/uploadMachine';
 import { describe, expect, it } from 'vitest';
 import { createActor } from 'xstate';
 
-const pipeline: any = {
+const pipeline: unknown = {
   gpu: { enabled: false },
   rag: { enabled: true, extractText: true, generateEmbeddings: true, storeVectors: true, updateIndex: true },
   ocr: { enabled: true, engines: ['tesseract'], languages: ['eng'] },

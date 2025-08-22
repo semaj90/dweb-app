@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+
 // Enhanced local TTS / (legacy) STT endpoint
 import type { RequestHandler } from "./$types";
 

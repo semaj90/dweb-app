@@ -244,8 +244,8 @@
     {:else if currentView === 'create-case'}
       <div class="space-y-4">
         <CaseForm 
-          on:success={handleCaseFormSuccess}
-          on:cancel={handleCaseFormCancel}
+          onsuccess={handleCaseFormSuccess}
+          oncancel={handleCaseFormCancel}
         />
       </div>
     {:else if currentView === 'auth-demo'}

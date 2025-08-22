@@ -1,7 +1,7 @@
 // src/lib/server/wsBroker.ts
-WebSocket from 'ws';
-// Orphaned content: import Redis from 'ioredis';
-import type { ProgressMsg
+import WebSocket from 'ws';
+import Redis from 'ioredis';
+import type { ProgressMsg } from '$lib/types/progress';
 
 // In-memory session registry
 const sessions = new Map<string, Set<WebSocket>>();

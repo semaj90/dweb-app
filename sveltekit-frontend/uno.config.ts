@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import {
   defineConfig,
   presetUno,
@@ -143,6 +143,48 @@ export default defineConfig({
       "agent-autonomous": "#10b981",
       "agent-semantic": "#3b82f6",
       "agent-memory": "#f59e0b",
+
+      // Shadcn/UI Design System Tokens
+      "background": "#ffffff",
+      "foreground": "#0a0a0a",
+      "card": "#ffffff",
+      "card-foreground": "#0a0a0a", 
+      "popover": "#ffffff",
+      "popover-foreground": "#0a0a0a",
+      "primary": "#0f172a",
+      "primary-foreground": "#f8fafc",
+      "secondary": "#f1f5f9",
+      "secondary-foreground": "#0f172a",
+      "muted": "#f1f5f9",
+      "muted-foreground": "#64748b",
+      "accent": "#f1f5f9",
+      "accent-foreground": "#0f172a",
+      "destructive": "#ef4444",
+      "destructive-foreground": "#fef2f2",
+      "border": "#e2e8f0",
+      "input": "#ffffff",
+      "ring": "#0f172a",
+
+      // Dark mode variants
+      "dark-background": "#0a0a0a",
+      "dark-foreground": "#fafafa",
+      "dark-card": "#0a0a0a",
+      "dark-card-foreground": "#fafafa",
+      "dark-popover": "#0a0a0a",
+      "dark-popover-foreground": "#fafafa",
+      "dark-primary": "#fafafa",
+      "dark-primary-foreground": "#0a0a0a",
+      "dark-secondary": "#262626",
+      "dark-secondary-foreground": "#fafafa",
+      "dark-muted": "#262626",
+      "dark-muted-foreground": "#a3a3a3",
+      "dark-accent": "#262626",
+      "dark-accent-foreground": "#fafafa",
+      "dark-destructive": "#7f1d1d",
+      "dark-destructive-foreground": "#fafafa",
+      "dark-border": "#262626",
+      "dark-input": "#262626",
+      "dark-ring": "#d4d4d8",
     },
     fontFamily: {
       mono: [

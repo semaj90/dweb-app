@@ -1,5 +1,5 @@
 import cluster from "node:cluster";
-// @ts-nocheck
+
 /**
  * Cluster Scaling API Endpoint
  * Handles dynamic scaling of worker processes

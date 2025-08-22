@@ -1,11 +1,12 @@
 <!-- Simple Upload Test Page -->
 <script lang="ts">
+  // $state runtime rune is provided globally
   import SimpleFileUpload from '$lib/components/ai/SimpleFileUpload.svelte';
   import { onMount } from 'svelte';
 
-  let uploadResults = $state<any[]>([]);
+  let uploadResults = $state<unknown[]>([]);
   let searchQuery = $state('');
-  let searchResults = $state<any[]>([]);
+  let searchResults = $state<unknown[]>([]);
   let isSearching = $state(false);
 
   function handleUploadComplete(result: any) {
@@ -53,7 +54,7 @@
   <!-- Upload Section -->
   <div class="mb-8">
     <h2 class="text-xl font-semibold mb-4">File Upload & Processing</h2>
-    <SimpleFileUpload onUploadComplete={handleUploadComplete} />
+    <SimpleFileUpload onuploadcomplete={handleUploadComplete} />
   </div>
 
   <!-- Search Section -->

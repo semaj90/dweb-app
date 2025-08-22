@@ -1,10 +1,10 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $effect } from 'svelte';
 
   import { marked } from "marked";
   import { onMount } from "svelte";
 
-  interface Props extends CommonProps {
+  interface Props {
     markdown?: string;
     class?: string;
     unsafe?: boolean; // Allow raw HTML in markdown
@@ -53,7 +53,7 @@ import type { CommonProps } from '$lib/types/common-props';
       const renderer = new marked.Renderer();
 
       // Customize link rendering for security
-      renderer.link = ({ href, title, tokens }: { href: string; title?: string; tokens?: any[] }) => {
+      renderer.link = ({ href, title, tokens }: { href: string; title?: string; tokens?: unknown[] }) => {
         const titleAttr = title ? ` title="${title}"` : "";
         const target = href.startsWith("http")
           ? ' target="_blank" rel="noopener noreferrer"'

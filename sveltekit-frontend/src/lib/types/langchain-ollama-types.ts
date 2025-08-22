@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Comprehensive TypeScript Types for LangChain-Ollama Integration
  * Production-ready types for legal AI system with advanced features
@@ -83,7 +83,7 @@ export interface EmbeddingMetadata {
   tokenCount: number;
   processingTime: number;
   tags: string[];
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface SimilarityResult {
@@ -226,7 +226,7 @@ export interface ParameterProperty {
   type: string;
   description: string;
   enum?: string[];
-  default?: any;
+  default?: unknown;
   minimum?: number;
   maximum?: number;
   pattern?: string;
@@ -1552,7 +1552,7 @@ export interface DashboardVariable {
   name: string;
   type: 'query' | 'constant' | 'interval' | 'datasource';
   query?: string;
-  value?: any;
+  value?: unknown;
   options?: VariableOption[];
 }
 

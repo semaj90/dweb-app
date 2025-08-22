@@ -122,7 +122,7 @@ function createAIService() {
         /**
          * Summarize evidence
          */
-        summarizeEvidence: async (evidence: { title: string; description?: string; aiAnalysis?: any }, evidenceId?: string, caseId?: string): Promise<string | null> => {
+        summarizeEvidence: async (evidence: { title: string; description?: string; aiAnalysis?: unknown }, evidenceId?: string, caseId?: string): Promise<string | null> => {
             let content = evidence.title;
             if (evidence.description) {
                 content += '\n\nDescription: ' + evidence.description;

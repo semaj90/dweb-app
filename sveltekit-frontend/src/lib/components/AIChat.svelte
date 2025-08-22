@@ -1,7 +1,7 @@
 <!-- @migration-task Error while migrating Svelte code: Unexpected token
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $effect } from 'svelte';
 
 	import { useMachine } from '@xstate/svelte';
 	import { onMount } from 'svelte';
@@ -143,7 +143,4 @@ import type { CommonProps } from '$lib/types/common-props';
 	@keyframes typing { to { transform: translateY(-0.25rem); } }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

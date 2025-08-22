@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import Button from "$lib/components/ui/Button.svelte";
+  import { $derived } from 'svelte';
   import { uploadActions, uploadModal } from "$lib/stores/evidence-store";
   import { formatFileSize } from "$lib/utils/file-utils";
   import {
@@ -19,12 +19,12 @@ import type { CommonProps } from '$lib/types/common-props';
   let fileInput: HTMLInputElement;
   let dragActive = false;
 
-  $: isOpen = $uploadModal.isOpen;
-  $: files = $uploadModal.files || [];
-  $: activeUploads = files.filter(
+  let isOpen = $derived($uploadModal.isOpen);
+  let files = $derived($uploadModal.files || []);
+  let activeUploads = $derived(files.filter(
     (f) => f?.status === "uploading" || f?.status === "processing"
-  );
-  $: completedUploads = files.filter((f) => f?.status === "completed");
+  ));
+  let completedUploads = $derived(files.filter((f) => f?.status === "completed"));
 
   function handleFileSelect(event: Event) {
     const target = event.target as HTMLInputElement;
@@ -214,7 +214,4 @@ import type { CommonProps } from '$lib/types/common-props';
   </div>
 {/if}
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

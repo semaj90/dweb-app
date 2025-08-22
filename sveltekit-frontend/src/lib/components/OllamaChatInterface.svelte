@@ -1,6 +1,6 @@
 <!-- OllamaChatInterface.svelte - Svelte 5 + SvelteKit 2.0 Enhanced AI Chat -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state, $derived, $effect } from 'svelte';
 
   import TokenUsageManager from "$lib/components/TokenUsageManager.svelte";
   import { Badge } from "$lib/components/ui/badge";
@@ -28,7 +28,7 @@ import type { CommonProps } from '$lib/types/common-props';
   import { onMount, tick } from "svelte";
 
   // Props
-  interface Props extends CommonProps {
+  interface Props {
     caseId?: string;
     model?: string;
     useRAG?: boolean;

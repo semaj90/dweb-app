@@ -1,5 +1,5 @@
 import fs from "fs/promises";
-// @ts-nocheck
+
 /**
  * Copilot Orchestration Wrapper
  * Self-prompts after using MCP memory/codebase tools
@@ -62,14 +62,14 @@ export interface OrchestrationOptions {
   logErrors?: boolean;
   synthesizeOutputs?: boolean;
   directoryPath?: string;
-  context?: any;
+  context?: unknown;
   agents?: string[]; // e.g. ["autogen", "crewai", "copilot", "claude"]
 }
 
 // --- Agent Registry for Extensible Orchestration ---
 const agentRegistry: Record<
   string,
-  (prompt: string, context?: any) => Promise<AgentResult>
+  (prompt: string, context?: unknown) => Promise<AgentResult>
 > = {
   autogen: async (prompt, context) => {
     try {
@@ -346,7 +346,7 @@ export interface MCPToolRequest {
 
 export interface MCPResponse {
   success: boolean;
-  data?: any;
+  data?: unknown;
   error?: string;
 }
 
@@ -810,7 +810,7 @@ export async function mcpReadDirectory(path: string) {
 
 // Production: Autogen agent orchestration (stub, replace with real API integration if available)
 const autogenServiceFallback = {
-  async runAgents(prompt: string, context?: any) {
+  async runAgents(prompt: string, context?: unknown) {
     // TODO: Replace with real Autogen API call
     return { agent: "autogen", result: `AutoGen agent result for: ${prompt}` };
   },

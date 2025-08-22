@@ -5,7 +5,7 @@
   - Backend: expects /api/ai/process-evidence (LangChain, Ollama, pg_vector, Neo4j, Redis, Docker)
 -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
   import { getContext, onMount } from 'svelte';
 
@@ -34,8 +34,8 @@ import type { CommonProps } from '$lib/types/common-props';
   const getUser = getContext('user');
   const user = typeof getUser === 'function' ? getUser() : undefined;
 
-  interface Props extends CommonProps {
-    contextItems?: any[];
+  interface Props {
+    contextItems?: unknown[];
     caseId?: string;
   }
 

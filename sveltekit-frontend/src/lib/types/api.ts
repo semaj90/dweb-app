@@ -1,5 +1,5 @@
 import type { User } from "$lib/types/user";
-// @ts-nocheck
+
 
 // Evidence AI Analysis Type
 export interface EvidenceAIAnalysis {
@@ -26,7 +26,7 @@ export interface EvidenceAIAnalysis {
   version?: number;
   
   // Allow additional properties for backward compatibility
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface AnalysisMetrics {
@@ -283,7 +283,7 @@ export interface Citation {
     caseId?: string;
     evidenceId?: string;
     userId?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   };
   metadata?: {
     author?: string;

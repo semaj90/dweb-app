@@ -5,19 +5,16 @@ import crypto from "crypto";
 // Go Microservice Integration for SvelteKit 2
 
 import { OllamaEmbeddings } from "@langchain/community/embeddings/ollama";
-// Orphaned content: import {
-
 import { PGVectorStore } from "@langchain/community/vectorstores/pgvector";
-// Orphaned content: import type { Document
-import {
-sql } from "drizzle-orm";
-// Orphaned content: import { drizzle
-Redis from "ioredis";
-// Orphaned content: import {
-
+import type { Document } from "@langchain/core/documents";
+import { sql } from "drizzle-orm";
+import { drizzle } from "drizzle-orm/postgres-js";
+import Redis from "ioredis";
 import { Pool } from "pg";
-// Orphaned content: import postgres from "postgres";
-import {
+import postgres from "postgres";
+import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
+import { Ollama } from "@langchain/community/llms/ollama";
+import { legalDocuments } from "$lib/database/schema.js";
 
 // Go Microservice Integration Types
 export interface GoMicroserviceConfig {

@@ -11,7 +11,7 @@ export const GET: RequestHandler = async () => {
   clients.add(writer);
 
   // Send welcome and keepalive
-  const send = (obj: unknown) =>
+  const send = (obj: any) =>
     writer.write(`data: ${JSON.stringify(obj)}\n\n`);
   send({ type: "welcome", ts: Date.now() });
 

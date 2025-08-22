@@ -1,12 +1,12 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { getContext, onDestroy, onMount } from 'svelte';
+  import { $props } from 'svelte';
   import type { Writable } from 'svelte/store';
 
-  interface Props extends CommonProps {
+  interface Props {
     class?: string;
-    children?: any;
+    children?: unknown;
   }
 
   let { 

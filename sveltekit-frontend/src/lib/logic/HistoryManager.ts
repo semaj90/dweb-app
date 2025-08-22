@@ -1,10 +1,10 @@
-// @ts-nocheck
+
 // Simple content node interface
 export interface ContentNode {
   type: string;
   text?: string;
   children?: ContentNode[];
-  [key: string]: any;
+  [key: string]: unknown;
 }
 /**
  * History Manager for undo/redo functionality in reports

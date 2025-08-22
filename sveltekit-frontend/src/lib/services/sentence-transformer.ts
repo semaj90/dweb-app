@@ -2,8 +2,8 @@
 // Implements sentence transformers for YoRHa Legal AI Platform
 
 import { pipeline, env } from '@xenova/transformers';
-// Orphaned content: // Lightweight in-memory LRU + optional Redis cache + metrics hooks
-import type { Redis
+// Lightweight in-memory LRU + optional Redis cache + metrics hooks
+import type { Redis } from 'ioredis';
 
 interface CacheLayer {
   get(key: string): Promise<EmbeddingResult | undefined> | EmbeddingResult | undefined;

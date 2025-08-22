@@ -1,18 +1,40 @@
+
 import { evidence, db } from "$lib/server/db";
 import path from "path";
-// @ts-nocheck
-type { RequestHandler }, {
-json } from "@sveltejs/kit";
-// Orphaned content: import { randomUUID
-import {
-promises as fs } from "fs";
+import { json } from "@sveltejs/kit";
+import { randomUUID } from "crypto";
+import { promises as fs } from "fs";
 
-export const POST: RequestHandler = async ({ request, locals, url }) => {
+interface EvidenceRecord {
+  id: string;
+  title: string;
+  description: string;
+  caseId: string;
+  criminalId: string | null;
+  evidenceType: string;
+  fileUrl: string;
+  fileType: string;
+  fileSize: number;
+  tags: string[];
+  uploadedBy: string;
+  uploadedAt: Date;
+  updatedAt: Date;
+  fileName: string;
+  summary: string | null;
+  aiSummary: string | null;
+}
+
+export const POST = async ({ request, locals }: { request: Request; locals: App.Locals }) => {
   const user = locals.user;
-  if (!user) {
+  if (!user || typeof user.id !== "string") {
     return json({ error: "Not authenticated" }, { status: 401 });
   }
-  const formData = await request.formData();
+  let formData: FormData;
+  try {
+    formData = await request.formData();
+  } catch (e) {
+    return json({ error: "Invalid form data" }, { status: 400 });
+  }
   const file = formData.get("file");
   const caseId = formData.get("caseId")?.toString();
   const description = formData.get("description")?.toString() || "";
@@ -25,14 +47,18 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
   const safeName = `${id}${ext}`;
   const uploadDir = path.resolve("static", "uploads", caseId);
   const filePath = path.join(uploadDir, safeName);
-  await fs.mkdir(uploadDir, { recursive: true });
-  const arrayBuffer = await file.arrayBuffer();
-  await fs.writeFile(filePath, Buffer.from(arrayBuffer));
+  try {
+    await fs.mkdir(uploadDir, { recursive: true });
+    const arrayBuffer = await file.arrayBuffer();
+    await fs.writeFile(filePath, Buffer.from(arrayBuffer));
+  } catch (e) {
+    return json({ error: "File upload failed", details: String(e) }, { status: 500 });
+  }
 
   // Auto-tagging (simple: by file type)
-  const tags = [ext.replace(".", ""), "uploaded", `case:${caseId}`];
+  const tags: string[] = [ext.replace(".", ""), "uploaded", `case:${caseId}`];
 
-  const newEvidence = {
+  const newEvidence: EvidenceRecord = {
     id,
     title: file.name,
     description,
@@ -50,6 +76,10 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
     summary: null,
     aiSummary: null,
   };
-  await db.insert(evidence).values(newEvidence);
+  try {
+    await db.insert(evidence).values(newEvidence);
+  } catch (e) {
+    return json({ error: "Database insert failed", details: String(e) }, { status: 500 });
+  }
   return json(newEvidence, { status: 201 });
 };

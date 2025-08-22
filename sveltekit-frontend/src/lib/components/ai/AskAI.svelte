@@ -1,15 +1,15 @@
 <!-- Ask AI Component with Vector Search Integration -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     caseId: string | undefined ;
     evidenceIds: string[] ;
-    placeholder?: any;
-    maxHeight?: any;
-    showReferences?: any;
-    enableVoiceInput?: any;
-    enableVoiceOutput?: any;
+    placeholder?: unknown;
+    maxHeight?: unknown;
+    showReferences?: unknown;
+    enableVoiceInput?: unknown;
+    enableVoiceOutput?: unknown;
   }
   let {
     caseId = undefined,

@@ -9,7 +9,7 @@ import { browser } from '$app/environment';
 import { set as idbSet, get as idbGet, del as idbDel, clear as idbClear, keys as idbKeys } from 'idb-keyval';
 // LokiJS is optional; wrap dynamic import & define minimal types to avoid build break if absent.
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
-type LokiDatabase = { getCollection: (name: string) => any; addCollection: (name: string, opts?: any) => any } | null;
+type LokiDatabase = { getCollection: (name: string) => any; addCollection: (name: string, opts?: unknown) => any } | null;
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 type LokiStatic = new (name: string, opts: any) => any;
 let LokiRef: LokiStatic | null = null;
@@ -23,7 +23,7 @@ export interface RedisLike {
 }
 
 // SIMD helper (optional) – safe wrapper. If unavailable operations will degrade gracefully.
-const simdRedisClient: { healthCheck?: () => Promise<any>; cacheJSON?: (k: string, v: unknown) => Promise<any> } = {};
+const simdRedisClient: { healthCheck?: () => Promise<any>; cacheJSON?: (k: string, v: any) => Promise<any> } = {};
 
 export interface CacheConfig {
   enableBrowserCache: boolean;
@@ -280,7 +280,7 @@ class ComprehensiveCachingService {
       if (!LokiRef) {
         // Dynamic import to keep client bundle lean if unused.
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+        
         const mod = await import('lokijs');
         LokiRef = mod.default || mod;
       }
@@ -582,7 +582,7 @@ class ComprehensiveCachingService {
    * Warm up cache with frequently accessed data
    */
   public async warmup(
-    data: Array<{ key: string; value: any; options?: any }>
+    data: Array<{ key: string; value: any; options?: unknown }>
   ): Promise<void> {
     console.log(`🔥 Warming up cache with ${data.length} entries`);
 

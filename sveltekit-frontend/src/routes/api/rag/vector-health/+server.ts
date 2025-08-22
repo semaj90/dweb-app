@@ -15,7 +15,7 @@ export const GET = async () => {
 
     // Sample a few embeddings to check length
   const sample = await db.execute(sql`SELECT id, document_id, embedding FROM legal_embeddings LIMIT 25`) as any;
-    const anomalies = [] as any[];
+    const anomalies = [] as unknown[];
     let ok = 0;
     for (const row of sample.rows) {
       const vec: number[] = (row as any).embedding;

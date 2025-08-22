@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $effect } from 'svelte';
 
   import type { SearchResults } from "$lib/types/global";
   import { onMount } from 'svelte';
@@ -342,7 +342,4 @@ import type { CommonProps } from '$lib/types/common-props';
 </style>
 </script>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

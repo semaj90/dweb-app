@@ -1,10 +1,10 @@
-// @ts-nocheck
+
 // QdrantService.ts - Production Implementation
 // Fixed: 384-dimensional vectors for nomic-embed-text
 
 import { QdrantClient } from "@qdrant/js-client-rest";
-import { env } from '../../env/dynamic/private.js';
-import { logger } from '../logger.js';
+import { env } from '$lib/../env/dynamic/private.js';
+import { logger } from '$lib/logger.js';
 import crypto from "crypto";
 import type {
   VectorSearchResult,

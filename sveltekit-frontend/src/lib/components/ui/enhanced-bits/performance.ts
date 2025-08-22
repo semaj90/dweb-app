@@ -1,6 +1,5 @@
-import type { CommonProps } from '$lib/types/common-props';
 import type { ComponentType } from "svelte";
-// @ts-nocheck
+
 /**
  * Performance Optimizations for Enhanced Bits UI Components
  *
@@ -231,7 +230,7 @@ export function createDebouncedSearch<T>(
 /**
  * Memoization utility for expensive computations
  */
-export function memoize<Args extends any[], Return>(
+export function memoize<Args extends unknown[], Return>(
   fn: (...args: Args) => Return,
   keyFn?: (...args: Args) => string,
 ): (...args: Args) => Return {

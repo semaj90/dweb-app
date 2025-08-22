@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $effect } from 'svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     message: { role: 'user' | 'assistant' | 'error', content: string, timestamp?: string }
     analyticsLog?: (event: any) => void;
   }

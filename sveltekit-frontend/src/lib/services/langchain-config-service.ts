@@ -1,23 +1,19 @@
 import { ollamaCudaService, type ModelMetrics } from "./ollama-cuda-service.js";
-// @ts-nocheck
+
 /**
  * LangChain Configuration Service
  * Advanced configuration and orchestration for LangChain with local LLMs
  * Supports multiple model providers, chains, and advanced workflows
  */
 
-{ ChatOllama }, {
-OllamaEmbeddings } from "@langchain/ollama";
-// Orphaned content: import { ConversationChain
-import {
-BufferMemory, ConversationSummaryMemory } from "langchain/memory";
-// Orphaned content: import { PromptTemplate, ChatPromptTemplate, MessagesPlaceholder
-import {
-RunnableSequence, RunnablePassthrough } from "@langchain/core/runnables";
-// Orphaned content: import { StringOutputParser
-import {
-HumanMessage, AIMessage, SystemMessage } from "@langchain/core/messages";
-// Orphaned content: import type { BaseLanguageModel
+import { ChatOllama, OllamaEmbeddings } from "@langchain/ollama";
+import { ConversationChain } from "langchain/chains";
+import { BufferMemory, ConversationSummaryMemory } from "langchain/memory";
+import { PromptTemplate, ChatPromptTemplate, MessagesPlaceholder } from "@langchain/core/prompts";
+import { RunnableSequence, RunnablePassthrough } from "@langchain/core/runnables";
+import { StringOutputParser } from "@langchain/core/output_parsers";
+import { HumanMessage, AIMessage, SystemMessage } from "@langchain/core/messages";
+import type { BaseLanguageModel } from "@langchain/core/language_models/base";
 import type { BaseMemory } from 'langchain/memory';
 // Orphaned content: import type { BasePromptTemplate
 

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Legal Case Store - Svelte 5 Runes Implementation
 import type {
   LegalCase,

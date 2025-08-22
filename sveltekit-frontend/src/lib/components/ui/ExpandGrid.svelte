@@ -1,9 +1,9 @@
 <!-- @migration-task Error while migrating Svelte code: Unexpected token
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived } from 'svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     columns?: number;
     expandedColumns?: number;
     gap?: string;
@@ -11,7 +11,7 @@ import type { CommonProps } from '$lib/types/common-props';
     easing?: string;
     expandOnHover?: boolean;
     expandOnFocus?: boolean;
-    onexpand?: (event?: any) => void;
+    onexpand?: (event?: unknown) => void;
   }
   
   let {
@@ -71,8 +71,8 @@ import type { CommonProps } from '$lib/types/common-props';
   "
   onmouseenter={handleMouseEnter}
   onmouseleave={handleMouseLeave}
-  on:focusin={handleFocusIn}
-  on:focusout={handleFocusOut}
+  onfocusin={handleFocusIn}
+  onfocusout={handleFocusOut}
   role="grid"
   tabindex={0}
 >

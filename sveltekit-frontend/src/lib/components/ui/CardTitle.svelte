@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import type { HTMLAttributes } from 'svelte/elements';
+  import { $props, $derived } from 'svelte';
 
   interface Props extends HTMLAttributes<HTMLHeadingElement> {
     level?: 1 | 2 | 3 | 4 | 5 | 6;
@@ -12,7 +12,7 @@ import type { CommonProps } from '$lib/types/common-props';
     class: className = '',
     children,
     ...restProps
-  }: Props & { children?: any } = $props();
+  }: Props & { children?: unknown } = $props();
 
   const classes = $derived([
     'nier-card-title',

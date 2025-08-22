@@ -3,7 +3,7 @@ Integrity Verification Component
 Displays detailed integrity verification results with AI analysis
 -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
   import { Badge } from '$lib/components/ui/badge';
   import { Progress } from '$lib/components/ui/progress';
@@ -29,7 +29,7 @@ import type { CommonProps } from '$lib/types/common-props';
     flaggedAnomalies: string[];
   }
 
-  interface Props extends CommonProps {
+  interface Props {
     integrityStatus: 'pending' | 'verified' | 'compromised' | 'requires-attention';
     verificationResults: VerificationResults | undefined;
     aiAnalysis: AIAnalysis | undefined;

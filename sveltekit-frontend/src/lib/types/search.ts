@@ -10,7 +10,7 @@ export interface SearchResult {
   excerpt?: string;
   score: number;
   rank?: number;
-  document?: any; // Backward compatibility
+  document?: unknown; // Backward compatibility
   metadata?: Record<string, any>;
   type?: string;
 }
@@ -66,7 +66,7 @@ export interface TestResults {
     duration: number;
     documentsSearched: number;
   };
-  error?: any;
+  error?: unknown;
 }
 
 export interface TensorOperation {

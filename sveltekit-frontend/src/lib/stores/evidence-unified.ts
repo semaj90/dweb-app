@@ -1,11 +1,18 @@
 import { writable, derived, get } from "svelte/store";
-// @ts-nocheck
+
 /**
  * FIXED Evidence Unified Store - Phase 2 Integration
  * Addresses critical and compatibility issues
  */
 
-import { browser, , // Safe import with fallback, let selectedCase: any;, try {,   const casesModule = await import("./cases");,   selectedCase = casesModule.selectedCase || writable(null); } from
+import { browser } from "$app/environment";
+
+// Safe import with fallback
+let selectedCase: any;
+try {
+  const casesModule = await import("./cases");
+  selectedCase = casesModule.selectedCase || writable(null);
+} catch {
   console.warn("Cases store not found, using fallback");
   selectedCase = writable(null);
 }

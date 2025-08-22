@@ -1,13 +1,13 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     title: string ;
     fileUrl: string ;
-    position?: any;
-    size?: any;
-    isSelected?: any;
-    isDirty?: any;
+    position?: unknown;
+    size?: unknown;
+    isSelected?: unknown;
+    isDirty?: unknown;
   }
   let {
     title = '',
@@ -253,7 +253,7 @@ import type { CommonProps } from '$lib/types/common-props';
     <div 
       class="resize-handle resize-bottom-right"
       onmousedown={(e) => handleResize('bottom-right', e)}
-      on:touchstart={(e) => handleResizeTouch('bottom-right', e)}
+      ontouchstart={(e) => handleResizeTouch('bottom-right', e)}
       onkeydown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -267,7 +267,7 @@ import type { CommonProps } from '$lib/types/common-props';
     <div 
       class="resize-handle resize-bottom"
       onmousedown={(e) => handleResize('bottom', e)}
-      on:touchstart={(e) => handleResizeTouch('bottom', e)}
+      ontouchstart={(e) => handleResizeTouch('bottom', e)}
       onkeydown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -281,7 +281,7 @@ import type { CommonProps } from '$lib/types/common-props';
     <div 
       class="resize-handle resize-right"
       onmousedown={(e) => handleResize('right', e)}
-      on:touchstart={(e) => handleResizeTouch('right', e)}
+      ontouchstart={(e) => handleResizeTouch('right', e)}
       onkeydown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();

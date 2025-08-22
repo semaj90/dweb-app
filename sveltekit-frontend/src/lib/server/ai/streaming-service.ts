@@ -1,10 +1,15 @@
 import { EventEmitter } from "events";
-// @ts-nocheck
+
 // lib/server/ai/streaming-service.ts
 // Real-time streaming service for AI synthesis with progressive updates
 
-import { logger } from "./logger";
-import { aiAssistantSynthesizer, , interface StreamEvent {,   type: 'status' | 'progress' | 'stage' | 'source' | 'complete' | 'error' | 'heartbeat';,   data: any; } from
+import { logger } from "./logger.js";
+import { aiAssistantSynthesizer } from "./ai-assistant-synthesizer.js";
+
+interface StreamEvent {
+  type: 'status' | 'progress' | 'stage' | 'source' | 'complete' | 'error' | 'heartbeat';
+  data: any;
+}
 
 interface StreamSubscriber {
   callback: (event: StreamEvent) => void;
@@ -14,10 +19,10 @@ interface StreamSubscriber {
 interface StreamingOptions {
   input: {
     query: string;
-    context?: any;
-    options?: any;
+    context?: unknown;
+    options?: unknown;
   };
-  onProgress?: (stage: string, progress: number, data?: any) => void;
+  onProgress?: (stage: string, progress: number, data?: unknown) => void;
   onStage?: (stage: string, data: any) => void;
   onSource?: (source: any) => void;
   onComplete?: (result: any) => void;
@@ -364,7 +369,7 @@ class StreamingService extends EventEmitter {
   private async streamRetrieval(
     input: any,
     onSource: (source: any, index: number, total: number) => void
-  ): Promise<any[]> {
+  ): Promise<unknown[]> {
     const sources = [];
     const totalSources = 10; // Simulate finding 10 sources
     
@@ -393,7 +398,7 @@ class StreamingService extends EventEmitter {
   private async streamRanking(
     sources: any[],
     onProgress: (progress: number) => void
-  ): Promise<any[]> {
+  ): Promise<unknown[]> {
     const steps = 5;
     
     for (let i = 0; i < steps; i++) {
@@ -436,7 +441,7 @@ class StreamingService extends EventEmitter {
   /**
    * Get stream status
    */
-  getStreamStatus(streamId: string): any {
+  getStreamStatus(streamId: string): unknown {
     const processing = this.activeProcessing.get(streamId);
     const tracking = this.progressTracking.get(streamId);
     const subscribers = this.streams.get(streamId);
@@ -457,7 +462,7 @@ class StreamingService extends EventEmitter {
   /**
    * Get all active streams
    */
-  getActiveStreams(): any[] {
+  getActiveStreams(): unknown[] {
     const streams = [];
     
     for (const [streamId, processing] of this.activeProcessing) {

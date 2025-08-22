@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $state } from 'svelte';
 
   import { Button, Dialog, Select } from "bits-ui";
   import { onMount } from "svelte";
@@ -484,7 +484,7 @@ import type { CommonProps } from '$lib/types/common-props';
 </div>
 
 <!-- Process Results Dialog -->
-<Dialog.Root open={showProcessDialog} onOpenChange={(open) => showProcessDialog = open}>
+<Dialog.Root open={showProcessDialog} onopenchange={(open) => showProcessDialog = open}>
   <Dialog.Portal>
     <Dialog.Overlay class="fixed inset-0 bg-black/50 z-40" />
     <Dialog.Content
@@ -593,7 +593,7 @@ import type { CommonProps } from '$lib/types/common-props';
 </Dialog.Root>
 
 <!-- Search Results Dialog -->
-<Dialog.Root open={showSearchDialog} onOpenChange={(open) => showSearchDialog = open}>
+<Dialog.Root open={showSearchDialog} onopenchange={(open) => showSearchDialog = open}>
   <Dialog.Portal>
     <Dialog.Overlay class="fixed inset-0 bg-black/50 z-40" />
     <Dialog.Content
@@ -657,7 +657,4 @@ import type { CommonProps } from '$lib/types/common-props';
   }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

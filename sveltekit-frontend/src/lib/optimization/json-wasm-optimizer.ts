@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-// @ts-nocheck
+
 /**
  * JSON to WebAssembly Optimization Engine
  * High-performance JSON processing with WebAssembly and ECMAScript optimization

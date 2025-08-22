@@ -1,6 +1,6 @@
 import type { LegalDocument, Evidence, User } from "$lib/types/legal-types";
 import crypto from "crypto";
-// @ts-nocheck
+
 // SIMD-optimized JSON parser for legal document processing
 // Achieves 4-6 GB/s parsing speed for large legal documents
 
@@ -92,7 +92,7 @@ export class SIMDJSONParser {
   /**
    * Parse streaming legal case data (for real-time processing)
    */
-  async parseStreamingCaseData(chunks: string[]): Promise<any[]> {
+  async parseStreamingCaseData(chunks: string[]): Promise<unknown[]> {
     const results = [];
     
     // Process chunks in parallel using SIMD
@@ -119,7 +119,7 @@ export class SIMDJSONParser {
   /**
    * Fallback parser for environments without SIMD support
    */
-  private fallbackParse(buffer: ArrayBuffer | SharedArrayBuffer): any {
+  private fallbackParse(buffer: ArrayBuffer | SharedArrayBuffer): unknown {
     // TextDecoder can handle both ArrayBuffer and SharedArrayBuffer via Uint8Array
     const uint8Array = new Uint8Array(buffer);
     const jsonString = new TextDecoder().decode(uint8Array);

@@ -1,132 +1,107 @@
 <!-- YoRHa Legal AI Dashboard - Complete Integration -->
 <script lang="ts">
+  import { $derived } from 'svelte';
   import { onMount } from 'svelte';
-  import { page } from "$app/stores";
   import YoRHaDataGrid from '$lib/components/yorha/YoRHaDataGrid.svelte';
   import YoRHaForm from '$lib/components/yorha/YoRHaForm.svelte';
   import YoRHaTerminal from '$lib/components/yorha/YoRHaTerminal.svelte';
   import YoRHaModal from '$lib/components/yorha/YoRHaModal.svelte';
   import YoRHaNotification from '$lib/components/yorha/YoRHaNotification.svelte';
 
+  // Domain interfaces
+  interface RagAnalysis {
+    confidenceScore: number;
+    legalComplexity: string;
+    riskLevel: string;
+  }
+
+  interface RagResult {
+    title?: string;
+    yorha_type?: string;
+    yorha_confidence?: number;
+    content?: string;
+    summary?: string;
+    yorha_analysis?: {
+      relevanceScore?: number;
+      legalWeight?: number;
+      riskFactor?: number;
+      actionRequired?: string;
+    };
+  }
+
+  interface RagRecommendation {
+    title: string;
+    priority: string;
+    description: string;
+    actionItems: string[];
+    estimatedTime?: string;
+    yorha_confidence?: number;
+  }
+
+  interface Pagination {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  }
+
+  interface NotificationItem {
+    id: number;
+    type: 'success' | 'error' | 'warning' | 'info';
+    message: string;
+    timestamp: Date;
+  }
+
   // State management
-  let activeTab = $state('documents');
-  let isLoading = $state(false);
-  let selectedData = $state<any[]>([]);
-  let searchQuery = $state('');
-  let modalOpen = $state(false);
-  let modalType = $state('create');
-  let modalData = $state<any>(null);
-  let notifications = $state<any[]>([]);
-  let terminalActive = $state(false);
+  let activeTab = 'documents';
+  let isLoading = false;
+  let selectedData: any[] = [];
+  let searchQuery = '';
+  let modalOpen = false;
+  let modalType: 'create' | 'edit' = 'create';
+  let modalData: any = null;
+  let notifications: NotificationItem[] = [];
+  let terminalActive = false;
 
   // Data stores
-  let documentsData = $state<any[]>([]);
-  let casesData = $state<any[]>([]);
-  let evidenceData = $state<any[]>([]);
-  let pagination = $state({
+  let documentsData: any[] = [];
+  let casesData: any[] = [];
+  let evidenceData: any[] = [];
+  let pagination: Pagination = {
     page: 1,
     limit: 25,
     total: 0,
     totalPages: 0
-  });
+  };
 
   // Enhanced RAG state
-  let ragResults = $state<any[]>([]);
-  let ragAnalysis = $state<any>(null);
-  let ragRecommendations = $state<any[]>([]);
+  let ragResults: RagResult[] = [];
+  let ragAnalysis: RagAnalysis | null = null;
+  let ragRecommendations: RagRecommendation[] = [];
 
-  // Grid configurations
-  const documentsColumns = [
-    { key: 'yorha_id', title: 'YORHA ID', sortable: true, width: 140 },
-    { key: 'title', title: 'DOCUMENT TITLE', sortable: true, filterable: true, width: 300 },
-    { key: 'documentType', title: 'TYPE', sortable: true, filterable: true, width: 120 },
-    { key: 'jurisdiction', title: 'JURISDICTION', sortable: true, width: 150 },
-    { key: 'yorha_confidence', title: 'CONFIDENCE', sortable: true, width: 120, type: 'number' as const },
-    { key: 'yorha_status', title: 'STATUS', sortable: true, type: 'text' as const, width: 100 },
-    { key: 'yorha_timestamp', title: 'PROCESSED', sortable: true, type: 'date' as const, width: 140 },
-    { key: 'actions', title: 'ACTIONS', type: 'action' as const, width: 150 }
-  ];
+  // Reactive selection based on activeTab (using $derived)
+  let currentData = $derived(activeTab === 'documents'
+    ? documentsData
+    : activeTab === 'cases'
+      ? casesData
+      : evidenceData);
 
-  const casesColumns = [
-    { key: 'yorha_id', title: 'YORHA ID', sortable: true, width: 140 },
-    { key: 'title', title: 'CASE TITLE', sortable: true, filterable: true, width: 300 },
-    { key: 'caseNumber', title: 'CASE NUMBER', sortable: true, width: 150 },
-    { key: 'yorha_priority', title: 'PRIORITY', sortable: true, type: 'text' as const, width: 100 },
-    { key: 'assignedTo', title: 'ASSIGNED TO', sortable: true, width: 150 },
-    { key: 'yorha_status', title: 'STATUS', sortable: true, type: 'text' as const, width: 100 },
-    { key: 'yorha_timestamp', title: 'CREATED', sortable: true, type: 'date' as const, width: 140 },
-    { key: 'actions', title: 'ACTIONS', type: 'action' as const, width: 150 }
-  ];
+  let currentColumns = $derived(activeTab === 'documents'
+    ? documentsColumns
+    : activeTab === 'cases'
+      ? casesColumns
+      : evidenceColumns);
 
-  const evidenceColumns = [
-    { key: 'yorha_id', title: 'YORHA ID', sortable: true, width: 140 },
-    { key: 'title', title: 'EVIDENCE TITLE', sortable: true, filterable: true, width: 250 },
-    { key: 'evidenceType', title: 'TYPE', sortable: true, type: 'text' as const, width: 120 },
-    { key: 'caseId', title: 'CASE ID', sortable: true, width: 120 },
-    { key: 'collectedBy', title: 'COLLECTED BY', sortable: true, width: 150 },
-    { key: 'yorha_status', title: 'STATUS', sortable: true, type: 'text' as const, width: 100 },
-    { key: 'yorha_timestamp', title: 'COLLECTED', sortable: true, type: 'date' as const, width: 140 },
-    { key: 'actions', title: 'ACTIONS', type: 'action' as const, width: 150 }
-  ];
+  let currentFormFields = $derived(activeTab === 'documents'
+    ? documentFormFields
+    : activeTab === 'cases'
+      ? caseFormFields
+      : evidenceFormFields);
 
-  // Form configurations
-  const documentFormFields = [
-    { id: 'title', label: 'Document Title', type: 'text' as const, required: true },
-    { id: 'content', label: 'Content', type: 'textarea' as const, required: true },
-    { id: 'documentType', label: 'Document Type', type: 'select' as const, required: true, 
-      options: [
-        { value: 'contract', label: 'Contract' },
-        { value: 'statute', label: 'Statute' },
-        { value: 'regulation', label: 'Regulation' },
-        { value: 'precedent', label: 'Legal Precedent' },
-        { value: 'brief', label: 'Legal Brief' }
-      ]
-    },
-    { id: 'jurisdiction', label: 'Jurisdiction', type: 'text' as const },
-    { id: 'court', label: 'Court', type: 'text' as const },
-    { id: 'citation', label: 'Citation', type: 'text' as const }
-  ];
+  // Grid configurations (centralized constants)
+  import { documentsColumns, casesColumns, evidenceColumns, documentFormFields, caseFormFields, evidenceFormFields, debounce, withAbort } from '$lib/yorha/constants';
 
-  const caseFormFields = [
-    { id: 'title', label: 'Case Title', type: 'text' as const, required: true },
-    { id: 'description', label: 'Description', type: 'textarea' as const, required: true },
-    { id: 'caseNumber', label: 'Case Number', type: 'text' as const, required: true },
-    { id: 'priority', label: 'Priority', type: 'select' as const, required: true,
-      options: [
-        { value: 'low', label: 'Low' },
-        { value: 'medium', label: 'Medium' },
-        { value: 'high', label: 'High' },
-        { value: 'critical', label: 'Critical' }
-      ]
-    },
-    { id: 'assignedTo', label: 'Assigned To', type: 'text' as const },
-    { id: 'status', label: 'Status', type: 'select' as const,
-      options: [
-        { value: 'active', label: 'Active' },
-        { value: 'pending', label: 'Pending' },
-        { value: 'closed', label: 'Closed' },
-        { value: 'archived', label: 'Archived' }
-      ]
-    }
-  ];
-
-  const evidenceFormFields = [
-    { id: 'title', label: 'Evidence Title', type: 'text' as const, required: true },
-    { id: 'description', label: 'Description', type: 'textarea' as const, required: true },
-    { id: 'evidenceType', label: 'Evidence Type', type: 'select' as const, required: true,
-      options: [
-        { value: 'document', label: 'Document' },
-        { value: 'image', label: 'Image' },
-        { value: 'video', label: 'Video' },
-        { value: 'audio', label: 'Audio' },
-        { value: 'digital', label: 'Digital Evidence' },
-        { value: 'physical', label: 'Physical Evidence' }
-      ]
-    },
-    { id: 'caseId', label: 'Case ID', type: 'text' as const },
-    { id: 'collectedBy', label: 'Collected By', type: 'text' as const, required: true },
-    { id: 'collectedAt', label: 'Collection Date', type: 'date' as const }
-  ];
+  const triggerSearch = debounce(() => loadData(), 400);
 
   // Lifecycle
   onMount(() => {
@@ -152,58 +127,33 @@
   }
 
   async function loadDocuments() {
-    let response: Response;
-        try {
-          response = await fetch(`/api/yorha/legal-data?type=documents&page=${pagination.page}&limit=${pagination.limit}&search=${searchQuery}`);
-          if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-          }
-        } catch (error) {
-          console.error('Fetch failed:', error);
-          throw error;
-        }
-    const result = await response.json();
-    
-    if (result.success) {
-      documentsData = result.data;
-      pagination = result.pagination;
-    }
+    const { promise } = withAbort(async (signal) => {
+      const url = `/api/yorha/legal-data?type=documents&page=${pagination.page}&limit=${pagination.limit}&search=${encodeURIComponent(searchQuery)}`;
+      const response = await fetch(url, { signal, headers: { 'Accept': 'application/json' } });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return response.json();
+    });
+    try { const result = await promise; if (result.success) { documentsData = result.data; pagination = result.pagination; } } catch (e) { if ((e as any).name !== 'AbortError') console.error('Documents load failed', e); }
   }
 
   async function loadCases() {
-    let response: Response;
-        try {
-          response = await fetch(`/api/yorha/legal-data?type=cases&page=${pagination.page}&limit=${pagination.limit}&search=${searchQuery}`);
-          if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-          }
-        } catch (error) {
-          console.error('Fetch failed:', error);
-          throw error;
-        }
-    const result = await response.json();
-    
-    if (result.success) {
-      casesData = result.data;
-    }
+    const { promise } = withAbort(async (signal) => {
+      const url = `/api/yorha/legal-data?type=cases&page=${pagination.page}&limit=${pagination.limit}&search=${encodeURIComponent(searchQuery)}`;
+      const response = await fetch(url, { signal, headers: { 'Accept': 'application/json' } });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return response.json();
+    });
+    try { const result = await promise; if (result.success) { casesData = result.data; } } catch (e) { if ((e as any).name !== 'AbortError') console.error('Cases load failed', e); }
   }
 
   async function loadEvidence() {
-    let response: Response;
-        try {
-          response = await fetch(`/api/yorha/legal-data?type=evidence&page=${pagination.page}&limit=${pagination.limit}&search=${searchQuery}`);
-          if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-          }
-        } catch (error) {
-          console.error('Fetch failed:', error);
-          throw error;
-        }
-    const result = await response.json();
-    
-    if (result.success) {
-      evidenceData = result.data;
-    }
+    const { promise } = withAbort(async (signal) => {
+      const url = `/api/yorha/legal-data?type=evidence&page=${pagination.page}&limit=${pagination.limit}&search=${encodeURIComponent(searchQuery)}`;
+      const response = await fetch(url, { signal, headers: { 'Accept': 'application/json' } });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return response.json();
+    });
+    try { const result = await promise; if (result.success) { evidenceData = result.data; } } catch (e) { if ((e as any).name !== 'AbortError') console.error('Evidence load failed', e); }
   }
 
   // Enhanced RAG functions
@@ -225,7 +175,7 @@
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
         ragResults = result.results;
         ragAnalysis = result.analysis;
@@ -252,7 +202,7 @@
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
         await loadData();
         addNotification('success', `${dataType} created successfully`);
@@ -275,7 +225,7 @@
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
         await loadData();
         addNotification('success', `${dataType} updated successfully`);
@@ -300,7 +250,7 @@
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
         await loadData();
         addNotification('success', `${dataType} deleted successfully`);
@@ -340,7 +290,7 @@
       timestamp: new Date()
     };
     notifications = [...notifications, notification];
-    
+
     // Auto-remove after 5 seconds
     setTimeout(() => {
       notifications = notifications.filter(n => n.id !== notification.id);
@@ -351,7 +301,7 @@
   function handleTerminalCommand(command: string) {
     const parts = command.toLowerCase().split(' ');
     const cmd = parts[0];
-    
+
     switch (cmd) {
       case 'analyze':
         if (parts[1]) {
@@ -380,15 +330,6 @@
     }
   }
 
-  // Get current data based on active tab
-  let currentData = $derived(activeTab === 'documents' ? documentsData : 
-                             activeTab === 'cases' ? casesData : evidenceData);
-  
-  let currentColumns = $derived(activeTab === 'documents' ? documentsColumns : 
-                               activeTab === 'cases' ? casesColumns : evidenceColumns);
-  
-  let currentFormFields = $derived(activeTab === 'documents' ? documentFormFields : 
-                                  activeTab === 'cases' ? caseFormFields : evidenceFormFields);
 </script>
 
 <svelte:head>
@@ -421,24 +362,18 @@
         </div>
       </div>
     </div>
-    
+
     <!-- Controls -->
     <div class="header-controls">
       <div class="search-container">
-        <input
-          type="text"
-          class="search-input"
-          placeholder="Search legal data..."
-          bind:value={searchQuery}
-          onkeydown={(e) => e.key === 'Enter' && loadData()}
-        />
+  <input type="search" class="search-input" placeholder="Search legal data..." aria-label="Search legal data" bind:value={searchQuery} oninput={() => triggerSearch()} onkeydown={(e) => e.key === 'Enter' && loadData()} />
         <button class="search-btn" onclick={() => loadData()}>SEARCH</button>
       </div>
-      
+
       <button class="analyze-btn" onclick={() => performEnhancedAnalysis(searchQuery)}>
         ENHANCED ANALYSIS
       </button>
-      
+
       <button class="terminal-btn" onclick={() => terminalActive = !terminalActive}>
         TERMINAL
       </button>
@@ -447,19 +382,19 @@
 
   <!-- Tab Navigation -->
   <nav class="tab-navigation">
-    <button 
+    <button
       class="tab-btn {activeTab === 'documents' ? 'active' : ''}"
       onclick={() => activeTab = 'documents'}
     >
       DOCUMENTS
     </button>
-    <button 
+    <button
       class="tab-btn {activeTab === 'cases' ? 'active' : ''}"
       onclick={() => activeTab = 'cases'}
     >
       CASES
     </button>
-    <button 
+    <button
       class="tab-btn {activeTab === 'evidence' ? 'active' : ''}"
       onclick={() => activeTab = 'evidence'}
     >
@@ -478,11 +413,11 @@
             CREATE NEW {activeTab.toUpperCase().slice(0, -1)}
           </button>
         </div>
-        
+
         <YoRHaDataGrid
           columns={currentColumns}
           data={currentData}
-          disabled={isLoading}
+          loading={isLoading}
           selectable={true}
           multiSelect={true}
           sortable={true}
@@ -490,7 +425,6 @@
           resizable={true}
           maxHeight={500}
           glitchEffect={false}
-          actions={true}
         />
       </section>
 
@@ -507,7 +441,7 @@
               {/if}
             </div>
           </div>
-          
+
           <div class="rag-results">
             {#each ragResults as result}
               <div class="rag-result">
@@ -538,15 +472,15 @@
           <!-- Recommendations -->
           {#if ragRecommendations.length > 0}
             <div class="recommendations">
-              <h3 class="recommendations-title">AI RECOMMENDATIONS</h3>
-              {#each ragRecommendations as rec}
-                <div class="recommendation">
-                  <div class="rec-header">
-                    <h4 class="rec-title">{rec.title}</h4>
-                    <span class="rec-priority priority-{rec.priority.toLowerCase()}">{rec.priority}</span>
-                  </div>
-                  <p class="rec-description">{rec.description}</p>
-                  <div class="rec-actions">
+    <YoRHaModal
+      open={modalOpen}
+      title={(modalType === 'create' ? 'Create' : 'Edit') + ' ' + activeTab.toUpperCase().slice(0, -1)}
+    >
+      <YoRHaForm
+        title={(modalType === 'create' ? 'Create New' : 'Edit') + ' ' + activeTab.toUpperCase().slice(0, -1)}
+        fields={currentFormFields}
+        submitLabel={modalType === 'create' ? 'Create' : 'Update'}
+        onsubmit={(data) => {
                     {#each rec.actionItems as action}
                       <span class="rec-action">{action}</span>
                     {/each}
@@ -569,7 +503,7 @@
         <YoRHaTerminal
           title="YoRHa Legal AI Terminal"
           isActive={terminalActive}
-          onCommand={handleTerminalCommand}
+          oncommand={handleTerminalCommand}
         />
       </aside>
     {/if}
@@ -592,18 +526,18 @@
             updateItem(activeTab, modalData?.id, data);
           }
         }}
-        on:cancel={closeModal}
+        oncancel={closeModal}
       />
     </YoRHaModal>
   {/if}
 
   <!-- Notifications -->
-  <div class="notifications">
+  <div class="notifications" role="region" aria-live="polite" aria-label="Notifications">
     {#each notifications as notification}
       <YoRHaNotification
         type={notification.type}
         message={notification.message}
-        on:close={() => notifications = notifications.filter(n => n.id !== notification.id)}
+        onclose={() => notifications = notifications.filter(n => n.id !== notification.id)}
       />
     {/each}
   </div>

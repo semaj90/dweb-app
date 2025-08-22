@@ -1,9 +1,18 @@
-// @ts-nocheck
+
 import { browser } from "$app/environment";
 // Orphaned content: import Fuse from "fuse.js";
-import {
-del, get, keys, set
 import { derived, writable } from "svelte/store";
+
+// Placeholder indexedDB utilities
+const idbUtils = {
+  del: async (key: string) => localStorage.removeItem(key),
+  get: async (key: string) => {
+    const item = localStorage.getItem(key);
+    return item ? JSON.parse(item) : null;
+  },
+  keys: async () => Object.keys(localStorage).filter(k => k.startsWith('note:')),
+  set: async (key: string, value: any) => localStorage.setItem(key, JSON.stringify(value))
+};
 
 export interface SavedNote {
   id: string;
@@ -17,7 +26,7 @@ export interface SavedNote {
   caseId?: string;
   userId: string;
   savedAt: Date;
-  metadata?: any;
+  metadata?: unknown;
 }
 
 export interface NoteFilters {

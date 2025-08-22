@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Qdrant Vector Database Service
  * High-performance vector search and auto-tagging integration
@@ -107,7 +107,7 @@ export class QdrantService {
   }
 
   // Compatibility shim: upsert points into a collection (used by older call sites)
-  public async upsert(collection: string, payload: { id: string; vector: number[]; payload?: any }[]) {
+  public async upsert(collection: string, payload: { id: string; vector: number[]; payload?: unknown }[]) {
     if (!this.isConnected) throw new Error('Qdrant not connected');
     const points = payload.map(p => {
       let v = p.vector;

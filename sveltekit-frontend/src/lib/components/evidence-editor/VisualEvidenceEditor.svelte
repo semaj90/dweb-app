@@ -1,9 +1,9 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     caseId: string | null ;
-    readOnly?: any;
+    readOnly?: unknown;
   }
   let {
     caseId = null,
@@ -54,8 +54,8 @@ import type { CommonProps } from '$lib/types/common-props';
         bind:this={canvasComponent}
         {caseId}
         {readOnly}
-        on:nodeSelect={handleNodeSelect}
-        on:nodeSave={handleNodeSave}
+        onnodeselect={handleNodeSelect}
+        onnodesave={handleNodeSave}
       />
     </div>
     
@@ -64,7 +64,7 @@ import type { CommonProps } from '$lib/types/common-props';
       <InspectorPanel 
         selectedNode={currentSelectedNode}
         {readOnly}
-        on:save={handleNodeSave}
+        onsave={handleNodeSave}
       />
     </div>
     
@@ -72,7 +72,7 @@ import type { CommonProps } from '$lib/types/common-props';
     <div class="space-y-4">
       <AIAssistantPanel 
         selectedNode={currentSelectedNode}
-        on:tagsUpdate={(e) => {
+        ontagsupdate={(e) => {
           if (currentSelectedNode) {
             currentSelectedNode.aiTags = e.detail;
             selectedNode.update(n => ({ ...n, aiTags: e.detail }));

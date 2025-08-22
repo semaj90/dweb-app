@@ -1,8 +1,6 @@
 import type { RequestHandler } from '@sveltejs/kit';
+import { json } from "@sveltejs/kit";
 import { caseActivities } from "$lib/server/db/schema-postgres";
-// @ts-nocheck
-type { RequestHandler }, {
-json } from "@sveltejs/kit";
 import { db } from "$lib/server/db/index";
 
 export const GET: RequestHandler = async ({ params, locals }) => {

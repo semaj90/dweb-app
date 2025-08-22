@@ -1,8 +1,7 @@
-// @ts-nocheck
+
 // Enhanced Svelte 5 + UnoCSS Component Library
 // Optimized for legal AI application with NieR theming
 
-import type { CommonProps } from '$lib/types/common-props';
 import crypto from "crypto";
 
 export { default as Button } from "./Button.svelte";

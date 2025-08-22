@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { $state } from 'svelte';
   import Typewriter from "$lib/components/Typewriter.svelte";
   import UploadArea from "$lib/components/UploadArea.svelte";
   import { browser } from '$app/environment';
@@ -120,7 +121,7 @@
         <h3 class="space-y-4">Quick Evidence Upload</h3>
         <p class="space-y-4">Drag and drop files for instant AI analysis</p>
         
-        <UploadArea on:upload={handleQuickUpload} />
+        <UploadArea onupload={handleQuickUpload} />
       </div>
       
       <!-- Case Analytics -->

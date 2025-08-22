@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived } from 'svelte';
 
 	import { type ButtonVariants, buttonVariants } from './button-variants';
 	import type { HTMLButtonAttributes } from 'svelte/elements';

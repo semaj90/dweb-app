@@ -341,9 +341,9 @@ export interface CollaborationState {
 export interface AIResponse {
   response: string;
   confidence?: number;
-  contextUsed?: any[];
+  contextUsed?: unknown[];
   suggestions?: string[];
-  actions?: Array<{ type: string; text: string; data?: any }>;
+  actions?: Array<{ type: string; text: string; data?: unknown }>;
   metadata?: {
     provider: "local" | "hybrid" | "cloud";
     model: string;
@@ -375,7 +375,7 @@ export interface LocalModel {
 // API Response types
 export interface ApiResponse {
   success: boolean;
-  data?: any;
+  data?: unknown;
   error?: string;
   message?: string;
 }

@@ -1,7 +1,7 @@
-// @ts-nocheck
+
 import { citationPoints } from "$lib/server/db/unified-schema";
-type { RequestEvent }, {
-json } from "@sveltejs/kit";
+import type { RequestEvent } from "@sveltejs/kit";
+import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db/index";
 
 // Sample citations for when database is not available or for demo data

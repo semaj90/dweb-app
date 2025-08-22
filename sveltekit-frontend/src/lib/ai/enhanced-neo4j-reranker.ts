@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Enhanced Neo4j Path Context Reranker for Legal AI
 // Provides 95% accuracy search with boolean pattern matching and audit trails
 

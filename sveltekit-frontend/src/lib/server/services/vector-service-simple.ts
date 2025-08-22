@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Simplified Vector Service - TODO: Re-enhance with full functionality
 // This is a temporary simple version to resolve TypeScript errors
 
@@ -50,7 +50,7 @@ export class VectorService {
       limit?: number;
       threshold?: number;
     } = {},
-  ): Promise<any[]> {
+  ): Promise<unknown[]> {
     try {
       // TODO: Implement proper vector similarity search
       // For now, return empty array to avoid errors
@@ -63,7 +63,7 @@ export class VectorService {
   /**
    * Get embeddings for a user
    */
-  static async getUserEmbeddings(userId: string): Promise<any[]> {
+  static async getUserEmbeddings(userId: string): Promise<unknown[]> {
     try {
       const results = await db
         .select()

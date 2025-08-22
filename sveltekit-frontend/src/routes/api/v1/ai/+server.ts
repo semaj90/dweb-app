@@ -9,7 +9,7 @@ import { productionServiceClient } from "$lib/services/productionServiceClient";
 interface AIRequest {
   type: 'summary' | 'legal' | 'live' | 'analysis';
   content?: string;
-  document?: any;
+  document?: unknown;
   sessionId?: string;
   userId: string;
   options?: {

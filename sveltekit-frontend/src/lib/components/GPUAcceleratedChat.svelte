@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { onMount, onDestroy } from 'svelte';
+  import { $state } from 'svelte';
   import { writable } from 'svelte/store';
   import type { GPUChatMessage, GPUProcessingStatus } from '$lib/types/search';
   
@@ -1175,7 +1175,4 @@ Type your legal question or upload a document to begin!`,
   }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

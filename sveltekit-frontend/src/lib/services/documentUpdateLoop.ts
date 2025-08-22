@@ -1,18 +1,19 @@
-// @ts-nocheck
+
 // Document Update Loop Service
 // Auto re-embed and re-rank on document changes with intelligent diff detection
 
 import { db } from "$lib/server/database";
-// Orphaned content: import {
-documents, 
+import {
+  documents, 
   documentVectors, 
   caseSummaryVectors,
   evidenceVectors,
   queryVectors
+} from "$lib/db/schema";
 import { eq, sql, and, desc } from "drizzle-orm";
-// Orphaned content: import {
 
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
+import { OllamaEmbeddings } from '@langchain/community/embeddings/ollama';
 import crypto from 'crypto';
 
 // ============================================================================
@@ -296,7 +297,7 @@ export class DocumentUpdateLoop {
       const queryEmbedding = queryRecord.embedding;
       
       // Get original results (from clicked results)
-      const originalResults = (queryRecord.clickedResults as any[]) || [];
+      const originalResults = (queryRecord.clickedResults as unknown[]) || [];
 
       // Perform new search with updated embeddings
       const newSearchResults = await db

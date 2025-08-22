@@ -1,4 +1,5 @@
 <script lang="ts">
+  // $state runtime rune is provided globally via src/types/svelte-helpers.d.ts
   import { browser } from "$app/environment";
   import { onMount } from "svelte";
   import AIChatInterface from "$lib/components/ai/AIChatInterface.svelte";

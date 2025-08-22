@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Lightweight Matrix Transform Library (~10KB)
  * Optimized for CSS transforms and WebGL integration

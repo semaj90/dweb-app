@@ -1,6 +1,6 @@
 // src/lib/server/rabbitmq.ts
-* as amqp from 'amqplib';
-// Orphaned content: import type { Channel
+import * as amqp from 'amqplib';
+import type { Channel } from 'amqplib';
 
 let connection: any | null = null;
 let channel: Channel | null = null;

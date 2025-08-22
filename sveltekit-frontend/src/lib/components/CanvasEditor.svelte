@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
 	import { onMount, onDestroy } from 'svelte';
+  import { $props } from 'svelte';
 	import { writable } from 'svelte/store';
 	import { browser } from '$app/environment';
 	import type { CanvasState, CanvasStateData, Evidence, CitationPoint } from "../data/types";

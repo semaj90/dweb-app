@@ -19,7 +19,7 @@
   let activeTab = writable("canvas");
   let sidebarOpen = writable(true);
   let aiGenerating = false;
-  let aiReports = writable<any[]>([]);
+  let aiReports = writable<unknown[]>([]);
 
   // Component references for integration
   let canvasEditor: any;
@@ -407,7 +407,7 @@
       <div class="container mx-auto px-4">
         {#if $activeTab === "evidence"}
           <div class="container mx-auto px-4">
-            <EvidenceUploader {caseId} on:uploaded={handleEvidenceUploaded} />
+            <EvidenceUploader {caseId} onuploaded={handleEvidenceUploaded} />
 
             <div class="container mx-auto px-4">
               <div class="container mx-auto px-4">
@@ -541,7 +541,7 @@
             <EnhancedCanvasEditor
               bind:this={canvasEditor}
               {caseId}
-              on:canvasChange={handleCanvasChange}
+              oncanvaschange={handleCanvasChange}
               width={1200}
               height={600}
             />
@@ -556,7 +556,7 @@
             {/if}
             <AdvancedRichTextEditor
               bind:this={reportEditor}
-              on:contentChange={handleReportChange}
+              oncontentchange={handleReportChange}
               placeholder="Write your case report, notes, or analysis here..."
             />
           </div>

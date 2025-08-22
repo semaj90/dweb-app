@@ -1,6 +1,6 @@
 <!-- TokenUsageManager.svelte - Advanced Token Management with Slider -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state, $derived } from 'svelte';
 
   import { onMount, createEventDispatcher } from 'svelte';
   import { writable, derived } from 'svelte/store';
@@ -22,7 +22,7 @@ import type { CommonProps } from '$lib/types/common-props';
   } from 'lucide-svelte';
 
   // Props
-  interface Props extends CommonProps {
+  interface Props {
     currentModel?: string;
     initialLimit?: number;
     class?: string;

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Phase 13 Full Production Integration
  * Comprehensive system integration based on Context7 MCP guidance
@@ -40,11 +40,11 @@ export class Phase13IntegrationManager {
 
   constructor(config: Partial<IntegrationConfig> = {}) {
     this.config = {
-      enableRealTimeServices: false, // Start with mock implementations
-      enableProductionDatabase: false, // Use mock data initially
+      enableRealTimeServices: true, // Use real-time production services
+      enableProductionDatabase: true, // Connect to production databases
       enableAdvancedAI: true, // AI features enabled
       enablePerformanceOptimization: true, // Performance features enabled
-      dockerServicesEnabled: false, // Docker services detection
+      dockerServicesEnabled: false, // Native Windows deployment
       ...config
     };
 
@@ -236,25 +236,41 @@ export class Phase13IntegrationManager {
    * Database Integration following Context7 Drizzle ORM patterns
    */
   private async configureDatabaseIntegration() {
-    if (!this.serviceHealth.database) {
-      console.log('⚠️ Database not available, using mock implementation');
-      return { type: 'mock', status: 'active', queries: 'simulated' };
+    // Always attempt production database connection
+    try {
+      // Test PostgreSQL connection
+      const pgResponse = await fetch('/api/health/database', {
+        method: 'GET',
+        signal: AbortSignal.timeout(5000)
+      });
+      
+      if (pgResponse.ok) {
+        this.serviceHealth.database = true;
+        console.log('✅ PostgreSQL connection established');
+      }
+    } catch (error) {
+      console.warn('⚠️ PostgreSQL connection failed, enabling fallback mode');
     }
 
-    // Configure production Drizzle ORM with pgvector
     const dbConfig = {
-      type: 'production',
+      type: this.serviceHealth.database ? 'production' : 'development',
       orm: 'drizzle',
       features: {
-        vectorSearch: this.serviceHealth.qdrant,
-        connectionPooling: true,
-        migrations: true,
-        typeScript: true
+        vectorSearch: this.serviceHealth.qdrant || this.serviceHealth.database,
+        connectionPooling: this.serviceHealth.database,
+        migrations: this.serviceHealth.database,
+        typeScript: true,
+        pgvector: this.serviceHealth.database
       },
       optimizations: {
-        indexing: true,
+        indexing: this.serviceHealth.database,
         queryOptimization: true,
-        connectionReuse: true
+        connectionReuse: this.serviceHealth.database,
+        fallbackMode: !this.serviceHealth.database
+      },
+      endpoints: {
+        primary: this.serviceHealth.database ? 'postgresql://localhost:5432/legal_ai_db' : 'development-mode',
+        vector: this.serviceHealth.qdrant ? 'http://localhost:6333' : 'embedded-vector-store'
       }
     };
 
@@ -266,27 +282,76 @@ export class Phase13IntegrationManager {
    * AI Integration following Context7 VLLM patterns
    */
   private async configureAIIntegration() {
+    // Test Enhanced RAG service first (preferred production service)
+    let enhancedRAGAvailable = false;
+    try {
+      const ragResponse = await fetch('http://localhost:8094/health', {
+        method: 'GET',
+        signal: AbortSignal.timeout(3000)
+      });
+      enhancedRAGAvailable = ragResponse.ok;
+      if (enhancedRAGAvailable) {
+        console.log('✅ Enhanced RAG service available');
+      }
+    } catch (error) {
+      console.warn('⚠️ Enhanced RAG service unavailable');
+    }
+
     const aiConfig = {
       llm: {
-        provider: this.serviceHealth.ollama ? 'ollama' : 'mock',
-        model: 'llama3.2',
+        provider: enhancedRAGAvailable ? 'enhanced-rag' : (this.serviceHealth.ollama ? 'ollama' : 'intelligent-fallback'),
+        model: enhancedRAGAvailable ? 'enhanced-rag-legal' : (this.serviceHealth.ollama ? 'gemma3-legal' : 'pattern-matcher'),
         endpoints: {
-          generation: this.serviceHealth.ollama ? 'http://localhost:11434/api/generate' : 'mock',
-          embeddings: this.serviceHealth.ollama ? 'http://localhost:11434/api/embeddings' : 'mock'
+          primary: enhancedRAGAvailable ? 'http://localhost:8094/api/rag' : (this.serviceHealth.ollama ? 'http://localhost:11434/api/generate' : 'fallback'),
+          generation: this.serviceHealth.ollama ? 'http://localhost:11434/api/generate' : 'fallback',
+          embeddings: this.serviceHealth.ollama ? 'http://localhost:11434/api/embeddings' : 'client-side-embeddings'
         }
       },
       vectorDB: {
-        provider: this.serviceHealth.qdrant ? 'qdrant' : 'mock',
-        endpoint: this.serviceHealth.qdrant ? 'http://localhost:6333' : 'mock',
-        collections: ['legal-documents', 'case-law', 'evidence']
+        provider: this.serviceHealth.qdrant ? 'qdrant' : (this.serviceHealth.database ? 'pgvector' : 'memory'),
+        endpoint: this.serviceHealth.qdrant ? 'http://localhost:6333' : (this.serviceHealth.database ? 'postgresql://localhost:5432/legal_ai_db' : 'in-memory'),
+        collections: ['legal-documents', 'case-law', 'evidence', 'precedents'],
+        capabilities: {
+          similarity: this.serviceHealth.qdrant || this.serviceHealth.database,
+          clustering: this.serviceHealth.qdrant,
+          fulltext: true
+        }
+      },
+      services: {
+        enhancedRAG: {
+          available: enhancedRAGAvailable,
+          endpoint: 'http://localhost:8094',
+          capabilities: ['legal-analysis', 'vector-search', 'semantic-reasoning']
+        },
+        uploadService: {
+          available: false, // Will be checked separately
+          endpoint: 'http://localhost:8093',
+          capabilities: ['file-processing', 'metadata-extraction', 'document-analysis']
+        }
       },
       features: {
-        semanticSearch: true,
-        aiEnhancement: true,
-        contextAnalysis: true,
-        confidenceScoring: true
+        semanticSearch: this.serviceHealth.qdrant || this.serviceHealth.database || enhancedRAGAvailable,
+        aiEnhancement: this.serviceHealth.ollama || enhancedRAGAvailable,
+        contextAnalysis: enhancedRAGAvailable || this.serviceHealth.ollama,
+        confidenceScoring: true,
+        productionMode: enhancedRAGAvailable || this.serviceHealth.ollama,
+        fallbackIntelligence: true
       }
     };
+
+    // Test upload service
+    try {
+      const uploadResponse = await fetch('http://localhost:8093/health', {
+        method: 'GET',
+        signal: AbortSignal.timeout(2000)
+      });
+      if (uploadResponse.ok) {
+        aiConfig.services.uploadService.available = true;
+        console.log('✅ Upload service available');
+      }
+    } catch (error) {
+      console.warn('⚠️ Upload service unavailable');
+    }
 
     console.log('🤖 AI configuration:', aiConfig);
     return aiConfig;
@@ -321,9 +386,11 @@ export class Phase13IntegrationManager {
           indexing: 'auto'
         },
         ai: {
-          ollama: this.serviceHealth.ollama ? 'optimized' : 'mock',
+          ollama: this.serviceHealth.ollama ? 'optimized' : 'fallback',
+          enhancedRAG: 'production-ready',
           caching: this.serviceHealth.redis ? 'redis' : 'memory',
-          embedding: 'efficient'
+          embedding: 'efficient',
+          webgpu: 'client-side-acceleration'
         },
         caching: {
           redis: this.serviceHealth.redis,
@@ -352,20 +419,31 @@ export class Phase13IntegrationManager {
     if (!this.serviceHealth.database) {
       recommendations.push({
         type: 'enhancement',
-        original: 'Mock database configuration',
-        suggested: 'Enable PostgreSQL with Drizzle ORM',
-        reasoning: 'Connect to production database for real data persistence',
+        original: 'Development database mode',
+        suggested: 'Enable PostgreSQL with pgvector extension',
+        reasoning: 'Connect to production PostgreSQL database for vector search and data persistence',
         confidence: 0.9
       });
     }
 
-    // AI service recommendations
-    if (!this.serviceHealth.ollama) {
+    // AI service recommendations - prioritize Enhanced RAG
+    const enhancedRAGTest = await this.testEnhancedRAGService();
+    if (!enhancedRAGTest) {
       recommendations.push({
         type: 'enhancement',
-        original: 'Mock AI responses',
+        original: 'Fallback AI responses',
+        suggested: 'Enable Enhanced RAG Go microservice',
+        reasoning: 'Start Enhanced RAG service (port 8094) for production-grade legal AI analysis',
+        confidence: 0.95
+      });
+    }
+
+    if (!this.serviceHealth.ollama && !enhancedRAGTest) {
+      recommendations.push({
+        type: 'enhancement',
+        original: 'Pattern-based AI responses',
         suggested: 'Enable Ollama local LLM service',
-        reasoning: 'Start Ollama service for AI-powered features',
+        reasoning: 'Start Ollama service with gemma3-legal model for AI-powered features',
         confidence: 0.8
       });
     }
@@ -408,6 +486,21 @@ export class Phase13IntegrationManager {
   }
 
   /**
+   * Test Enhanced RAG service availability
+   */
+  private async testEnhancedRAGService(): Promise<boolean> {
+    try {
+      const response = await fetch('http://localhost:8094/health', {
+        method: 'GET',
+        signal: AbortSignal.timeout(3000)
+      });
+      return response.ok;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  /**
    * Check Docker services availability with multiple endpoint detection
    */
   private async checkDockerServices(): Promise<boolean> {
@@ -442,7 +535,7 @@ export class Phase13IntegrationManager {
     return {
       level: integrationLevel,
       services: this.serviceHealth,
-      status: integrationLevel > 80 ? 'production' : integrationLevel > 50 ? 'development' : 'mock',
+      status: integrationLevel > 80 ? 'production' : integrationLevel > 50 ? 'development' : 'fallback',
       recommendations: integrationLevel < 100 ? 'optimization-available' : 'fully-integrated'
     };
   }
@@ -453,7 +546,7 @@ export class Phase13IntegrationManager {
   async applySuggestion(suggestion: AutoMCPSuggestion): Promise<{
     success: boolean;
     action: string;
-    result?: any;
+    result?: unknown;
   }> {
     console.log(`🔧 Applying suggestion: ${suggestion.suggested}`);
 

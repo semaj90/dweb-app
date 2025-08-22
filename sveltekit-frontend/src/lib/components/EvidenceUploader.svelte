@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { createEventDispatcher } from 'svelte';
+  // do not import the Svelte rune for props; the compiler provides it automatically
   import { writable } from 'svelte/store';
 
   export let caseId: string;
@@ -38,7 +38,7 @@ import type { CommonProps } from '$lib/types/common-props';
   function handleDrop(e: DragEvent) {
     e.preventDefault();
     dragActive = false;
-    
+
     const droppedFiles = e.dataTransfer?.files;
     if (droppedFiles) {
       files = droppedFiles;
@@ -64,7 +64,7 @@ import type { CommonProps } from '$lib/types/common-props';
     try {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        
+
         // Validate file type
         if (!allAllowedTypes.includes(file.type)) {
           uploadStatus.set(`Unsupported file type: ${file.type}`);
@@ -93,7 +93,7 @@ import type { CommonProps } from '$lib/types/common-props';
         if (response.ok) {
           const result = await response.json();
           uploadProgress.set(((i + 1) / files.length) * 100);
-          
+
           // Dispatch success event
           dispatch('uploaded', {
             file,
@@ -145,7 +145,7 @@ import type { CommonProps } from '$lib/types/common-props';
 </script>
 
 <div class="mx-auto px-4 max-w-7xl">
-  <div 
+  <div
     class="mx-auto px-4 max-w-7xl"
     class:drag-active={dragActive}
     class:uploading

@@ -1,12 +1,25 @@
-// @ts-nocheck
+
 /**
  * Enhanced Database Schema with Advanced pgvector Integration
  * Optimized for LangChain-Ollama workflows with nomic-embed-text
  */
 
-import { pgTable, text, timestamp, integer, boolean, json, uuid, varchar, real, index } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, integer, boolean, json, uuid, varchar, real, index, customType } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { relations } from "drizzle-orm";
+
+// Custom vector type for pgvector
+const vector = customType<{ data: number[]; driverData: string }>({
+  dataType(config) {
+    return `vector(${config?.dimensions ?? 1536})`;
+  },
+  toDriver(value: number[]): string {
+    return `[${value.join(',')}]`;
+  },
+  fromDriver(value: string): number[] {
+    return value.slice(1, -1).split(',').map(Number);
+  },
+});
 
 // Core tables (existing)
 export const users = pgTable('users', {
@@ -54,7 +67,7 @@ export const documents = pgTable('documents', {
     processingTime?: number;
     chunkCount?: number;
     avgChunkSize?: number;
-    [key: string]: any;
+    [key: string]: unknown;
   }>(),
   tags: json('tags').$type<string[]>().default([]),
   isIndexed: boolean('is_indexed').default(false),
@@ -89,7 +102,7 @@ export const documentChunks = pgTable('document_chunks', {
       label: string;
       confidence: number;
     }>;
-    [key: string]: any;
+    [key: string]: unknown;
   }>(),
   createdAt: timestamp('created_at').defaultNow(),
 }, (table) => ({
@@ -163,7 +176,7 @@ export const searchIndex = pgTable('search_index', {
     processingTime?: number;
     chunkIndex?: number;
     totalChunks?: number;
-    [key: string]: any;
+    [key: string]: unknown;
   }>(),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
@@ -205,7 +218,7 @@ export const aiInteractions = pgTable('ai_interactions', {
     }>;
     chainType?: string;
     memoryUsed?: boolean;
-    [key: string]: any;
+    [key: string]: unknown;
   }>(),
   createdAt: timestamp('created_at').defaultNow(),
 }, (table) => ({
@@ -291,7 +304,7 @@ export const embeddingJobs = pgTable('embedding_jobs', {
     estimatedTime?: number;
     startedAt?: string;
     completedAt?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   }>(),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),

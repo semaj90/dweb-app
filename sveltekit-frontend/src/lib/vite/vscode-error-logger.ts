@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { resolve, dirname } from 'path';
 import { writeFileSync, existsSync, mkdirSync, readFileSync } from 'fs';
 

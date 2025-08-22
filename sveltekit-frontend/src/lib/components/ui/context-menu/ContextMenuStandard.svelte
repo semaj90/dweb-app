@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
   import { ContextMenu } from "bits-ui";
   import type { Snippet } from "svelte";
@@ -43,7 +43,7 @@ import type { CommonProps } from '$lib/types/common-props';
           <ContextMenu.CheckboxItem 
             value={item.value} 
             disabled={item.disabled}
-            onSelect={item.onSelect}
+            onselect={item.onSelect}
           >
             {#snippet children({ checked })}
               {#if checked}✓{/if}
@@ -54,7 +54,7 @@ import type { CommonProps } from '$lib/types/common-props';
           <ContextMenu.RadioItem 
             value={item.value} 
             disabled={item.disabled}
-            onSelect={item.onSelect}
+            onselect={item.onSelect}
           >
             {#snippet children({ checked })}
               {#if checked}●{/if}
@@ -70,7 +70,7 @@ import type { CommonProps } from '$lib/types/common-props';
                   <ContextMenu.Item 
                     textValue={subItem.label}
                     disabled={subItem.disabled}
-                    onSelect={subItem.onSelect}
+                    onselect={subItem.onSelect}
                   >
                     {subItem.label}
                   </ContextMenu.Item>
@@ -82,7 +82,7 @@ import type { CommonProps } from '$lib/types/common-props';
           <ContextMenu.Item 
             textValue={item.label}
             disabled={item.disabled}
-            onSelect={item.onSelect}
+            onselect={item.onSelect}
           >
             {item.label}
           </ContextMenu.Item>

@@ -3,7 +3,7 @@
   Demonstrates XState integration with Svelte 5 for legal document processing
 -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived, $effect } from 'svelte';
 
   import { useMachine } from '@xstate/svelte';
   import { legalDocumentProcessingMachine, selectors } from '$lib/state/legalDocumentProcessingMachine';
@@ -353,7 +353,4 @@ Context: {JSON.stringify($context, null, 2)}
     max-width: 800px;
   }
 </style>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

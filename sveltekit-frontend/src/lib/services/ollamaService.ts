@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // import { env } from '$env/dynamic/private'; // Missing module
 const env = { OLLAMA_API_URL: "http://localhost:11434" }; // Placeholder
 import type {

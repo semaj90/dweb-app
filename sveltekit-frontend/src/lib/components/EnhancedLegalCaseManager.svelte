@@ -1,6 +1,6 @@
 <!-- Enhanced Legal Case Manager with Production Features -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $state, $derived, $effect } from 'svelte';
 
     import { onMount, tick } from 'svelte';
     import { page } from '$app/stores';
@@ -28,9 +28,9 @@ import type { CommonProps } from '$lib/types/common-props';
             phone: string;
             address: string;
         };
-        documents?: any[];
-        aiAnalysis?: any;
-        [key: string]: any; // Allow additional properties
+        documents?: unknown[];
+        aiAnalysis?: unknown;
+        [key: string]: unknown; // Allow additional properties
     }
     import { notifications } from '$lib/stores/notification';
     import { analyticsStore } from '$lib/stores/analyticsStore';
@@ -611,7 +611,7 @@ import type { CommonProps } from '$lib/types/common-props';
     <ProgressIndicator
         {steps}
         currentStep={currentStep}
-        validationResults={validationResults}
+        validationresults={validationResults}
         on:step-click={(e) => jumpToStep(e.detail)}
     />
 
@@ -653,7 +653,7 @@ import type { CommonProps } from '$lib/types/common-props';
                     {@const Component = currentStepConfig.component}
                     <Component
                         bind:caseData={caseData}
-                        validationResult={validationResults[currentStep]}
+                        validationresult={validationResults[currentStep]}
                         on:data-changed={() => {
                             caseData.metadata = { ...(typeof caseData.metadata === 'object' && caseData.metadata !== null ? caseData.metadata : {}), updatedAt: new Date() };
                         }}
@@ -762,7 +762,4 @@ import type { CommonProps } from '$lib/types/common-props';
     }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

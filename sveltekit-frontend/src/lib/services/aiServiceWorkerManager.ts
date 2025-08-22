@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * AI Service Worker Manager
  * Handles multi-threaded AI processing with load balancing and task distribution
@@ -25,7 +25,7 @@ export interface AITask {
 export interface AITaskResult {
 	taskId: string;
 	success: boolean;
-	result?: any;
+	result?: unknown;
 	error?: string;
 	duration: number;
 	metrics?: {

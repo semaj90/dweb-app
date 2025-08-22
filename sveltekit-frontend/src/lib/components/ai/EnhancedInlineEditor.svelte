@@ -3,7 +3,7 @@
   Real-time AI-powered editing with mini text box suggestions
 -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state } from 'svelte';
 
   import { onMount, onDestroy, tick } from 'svelte';
   import { createActor } from 'xstate';
@@ -593,7 +593,4 @@ import type { CommonProps } from '$lib/types/common-props';
     }
   }
 </style>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

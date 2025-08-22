@@ -1,5 +1,5 @@
 import crypto from "crypto";
-// @ts-nocheck
+
 /**
  * Enhanced Copilot Self-Prompt Wrapper Utility
  * Integrates semantic search, memory MCP servers, multi-agent orchestration,
@@ -102,7 +102,7 @@ export interface CopilotSelfPromptResult {
   contextResults: any[];
   memoryResults: any[];
   agentResults: any[];
-  engineeringAnalysis?: any;
+  engineeringAnalysis?: unknown;
   synthesizedOutput: string;
   nextActions: NextAction[];
   recommendations: Recommendation[];
@@ -304,7 +304,7 @@ export async function copilotSelfPrompt(
 async function performSemanticSearch(
   prompt: string,
   context: any
-): Promise<any[]> {
+): Promise<unknown[]> {
   try {
     // Quick health check with timeout to avoid hanging
     const controller = new AbortController();
@@ -353,7 +353,7 @@ async function performSemanticSearch(
 export async function accessMemoryMCP(
   prompt: string,
   context: any
-): Promise<any[]> {
+): Promise<unknown[]> {
   try {
     // Quick timeout to avoid hanging
     const controller = new AbortController();
@@ -400,7 +400,7 @@ export async function accessMemoryMCP(
 async function orchestrateMultiAgentAnalysis(
   prompt: string,
   context: any
-): Promise<any[]> {
+): Promise<unknown[]> {
   const results: any[] = [];
   try {
     // AutoGen analysis (production)

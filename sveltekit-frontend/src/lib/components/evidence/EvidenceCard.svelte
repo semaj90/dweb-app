@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived } from 'svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     class?: string;
     children?: import('svelte').Snippet;
   }
@@ -88,11 +88,11 @@ import type { CommonProps } from '$lib/types/common-props';
   const fileSize = evidence.metadata?.size || evidence.fileSize || 0;
   let isHovered = false;
 
-  $: IconComponent = getIcon(
+  let IconComponent = $derived(getIcon(
     ["document", "image", "video", "audio", "link"].includes(evidence.evidenceType || evidence.type)
       ? (evidence.evidenceType || evidence.type) as Evidence["type"]
       : "document"
-  );
+  ));
 
   function handleMouseEnter() {
     if (expandOnHover) {

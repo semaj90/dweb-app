@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Service Worker for AI-Driven Predictive Prefetching
 // Integrates with our legal AI system for intelligent resource loading
 

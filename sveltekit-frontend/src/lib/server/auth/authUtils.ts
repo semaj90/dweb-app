@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-// @ts-nocheck
+
 // Use process.env for server-side environment variables
 
 const JWT_SECRET_FALLBACK = "your-jwt-secret-change-in-production";

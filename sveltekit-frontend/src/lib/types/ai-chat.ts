@@ -55,7 +55,7 @@ export interface RAGContext {
     relevance: number;
   }>;
   metadata: Record<string, any>;
-  recommendations?: any[];
+  recommendations?: unknown[];
   did_you_mean?: string;
 }
 

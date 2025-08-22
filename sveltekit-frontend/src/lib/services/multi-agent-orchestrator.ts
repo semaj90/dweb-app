@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Multi-Agent Orchestrator Service - Stub implementation
  * TODO: Replace with actual implementation
@@ -49,7 +49,7 @@ export const multiAgentOrchestrator = {
     return { success: true, workflowId: `workflow_${Date.now()}` };
   },
 
-  async executeWorkflow(workflowId: string, data?: any) {
+  async executeWorkflow(workflowId: string, data?: unknown) {
     return { success: true, results: {} };
   },
 

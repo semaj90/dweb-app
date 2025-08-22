@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+
 import { json } from "@sveltejs/kit";
 import { enhancedSearchWithNeo4j } from "$lib/ai/custom-reranker";
 import { mcpContext72GetLibraryDocs } from "$lib/mcp-context72-get-library-docs";

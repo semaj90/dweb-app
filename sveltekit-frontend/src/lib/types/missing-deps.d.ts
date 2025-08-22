@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Missing type definitions for external libraries
 
 declare module 'fuse.js' {
@@ -19,7 +19,7 @@ declare module 'fuse.js' {
   interface FuseResult<T> {
     item: T;
     score?: number;
-    matches?: any[];
+    matches?: unknown[];
   }
 
   class Fuse<T> {
@@ -69,7 +69,7 @@ declare module '@tiptap/extension-table' {
     resizable?: boolean;
     handleWidth?: number;
     cellMinWidth?: number;
-    View?: any;
+    View?: unknown;
     lastColumnResizable?: boolean;
     allowTableNodeSelection?: boolean;
   }
@@ -85,8 +85,8 @@ declare module '@tailwindcss/postcss' {
 // Global type declarations
 declare global {
   interface Window {
-    __TAURI__?: any;
-    electronAPI?: any;
+    __TAURI__?: unknown;
+    electronAPI?: unknown;
   }
 
   interface HTMLElement {

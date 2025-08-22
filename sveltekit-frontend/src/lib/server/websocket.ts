@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { WebSocketServer } from "ws";
 // Orphaned content: import type { IncomingMessage
 import type { Socket } from "net";
@@ -178,7 +178,7 @@ function handleWebSocketMessage(
 function broadcastToCase(
   caseId: string,
   message: any,
-  excludeConnection?: any,
+  excludeConnection?: unknown,
 ) {
   const connections = caseConnections.get(caseId);
   if (!connections) return;

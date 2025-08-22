@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
 	import { onMount } from 'svelte';
+  import { $state } from 'svelte';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	
@@ -460,7 +460,4 @@ import type { CommonProps } from '$lib/types/common-props';
 		font-family: 'Monaco', 'Menlo', monospace;
 	}
 </style>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

@@ -1,10 +1,10 @@
-// @ts-nocheck
+
 // PgVector-backed implementation of EmbeddingRepository.
-import { db } from '../db/drizzle';
-import { documentChunks } from '../db/schema-postgres';
+import { db } from '$lib/db/drizzle';
+import { documentChunks } from '$lib/db/schema-postgres';
 import { sql } from 'drizzle-orm';
 import { splitText } from './text-splitter';
-import { getEmbedding } from '../ai/embedding-service';
+import { getEmbedding } from '$lib/ai/embedding-service';
 import type { EmbeddingRepository, IngestionJobRequest, SimilarityQueryOptions, SimilarityResult, IngestionJobStatus } from './embedding-repository';
 import { enqueue, processNext as queueProcessNext, getStatus } from './ingestion-queue';
 

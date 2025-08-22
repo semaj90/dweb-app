@@ -1,8 +1,8 @@
 <!-- EnhancedRAG:Studio UI - Complete RAG Management Dashboard -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $state } from 'svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     class?: string;
     children?: import('svelte').Snippet;
   }
@@ -30,10 +30,10 @@ import type { CommonProps } from '$lib/types/common-props';
   let activeTab = $state<'upload' | 'crawl' | 'search' | 'logs' | 'settings'>('search');
   let isLoading = $state(false);
   let serviceStatus = $state<any>({});
-  let searchResults = $state<any[]>([]);
-  let recentLogs = $state<any[]>([]);
-  let embeddings = $state<any[]>([]);
-  let patches = $state<any[]>([]);
+  let searchResults = $state<unknown[]>([]);
+  let recentLogs = $state<unknown[]>([]);
+  let embeddings = $state<unknown[]>([]);
+  let patches = $state<unknown[]>([]);
   let rlMetrics = $state<any>({});
 
   // Form states

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { db } from "$lib/server/db/drizzle";
 // Orphaned content: import {
 errorLogs // A new table you'll need to create

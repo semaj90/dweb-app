@@ -1,6 +1,6 @@
 import path from "path";
 import crypto from "crypto";
-// @ts-nocheck
+
 /**
  * Global Application State Machine
  * Coordinates multiple state machines and manages global application state
@@ -59,7 +59,7 @@ export interface AppContext {
   error: {
     code: string;
     message: string;
-    details?: any;
+    details?: unknown;
     recoverable: boolean;
   } | null;
   
@@ -308,7 +308,7 @@ const disconnectWebSocket = assign({
 });
 
 const spawnLegalCaseMachine = assign({
-  legalCaseMachine: ({ spawnChild }: { spawnChild?: any }) => {
+  legalCaseMachine: ({ spawnChild }: { spawnChild?: unknown }) => {
     // XState v5: Use spawnChild from context
     if (typeof spawnChild === 'function') {
       return spawnChild(legalCaseMachine);

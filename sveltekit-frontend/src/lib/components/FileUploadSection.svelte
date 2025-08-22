@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+
 
   interface FileUpload {
     id: string;
@@ -23,43 +23,60 @@ import type { CommonProps } from '$lib/types/common-props';
     onerror?: (e: CustomEvent<string>) => void;
   }
 
-  let { reportId = '', acceptedTypes = ['.pdf', '.jpg', '.jpeg', '.png', '.gif', '.txt', '.doc', '.docx'], maxFileSize = 10 * 1024 * 1024, maxFiles = 5, multiple = true }: FileUploadSectionProps = $props();
+  export let reportId: string = '';
+  export let acceptedTypes: string[] = ['.pdf', '.jpg', '.jpeg', '.png', '.gif', '.txt', '.doc', '.docx'];
+  export let maxFileSize: number = 10 * 1024 * 1024;
+  export let maxFiles: number = 5;
+  export let multiple: boolean = true;
 
+  import { browser } from "$app/environment";
+  import {
+    AlertCircle,
+    CheckCircle,
+    CloudUpload,
+    File as FileIcon,
+    FileText,
+    Image,
+    Upload,
+    X
+  } from 'lucide-svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
+  import { storageService, processDocumentWorkflow, documentWorkflows } from '$lib/services/minio-neo4j-pgvector-integration';
+  import { ComprehensiveAISystemIntegration } from '$lib/integration/comprehensive-ai-system-integration';
+  import { mcpContext72GetLibraryDocs } from '$lib/mcp-context72-get-library-docs';
+  // loki is optional/hybrid local DB - guard access at runtime
+  import loki from '$lib/services/loki-client';
+  import TagList from './TagList.svelte';
 
+  const dispatch = createEventDispatcher<{
+    upload: { files: globalThis.File[]; tags: string[] };
+    filesChanged: FileUpload[];
+    error: string;
+  }>();
 
-	import { browser } from "$app/environment";
-	import {
-	  AlertCircle,
-	  CheckCircle,
-	  CloudUpload,
-	  File as FileIcon,
-	  FileText,
-	  Image,
-	  Upload,
-	  X
-	} from 'lucide-svelte';
-	import { createEventDispatcher } from 'svelte';
-	import { loki } from "./stores/lokiStore";
-	import TagList from './TagList.svelte';
-
-	const dispatch = createEventDispatcher<{
-		upload: { files: globalThis.File[]; tags: string[] };
-		filesChanged: FileUpload[];
-		error: string;
-	}>();
-
-	let fileInput: HTMLInputElement;
-	let dragActive = false;
-	let uploads: FileUpload[] = [];
-	let availableTags: string[] = [];
+  let fileInput: HTMLInputElement;
+  let dragActive = false;
+  let uploads: FileUpload[] = [];
+  let aiSystem: ComprehensiveAISystemIntegration;
+  let docStatus: string = '';
+  let docs: any = null;
+  let availableTags: string[] = [];
   let summaryType: 'key_points' | 'narrative' | 'prosecutorial' = 'narrative';
 
-	// Load available tags
-	$effect(() => {
-		if (browser) {
-			loadAvailableTags();
-		}
-	});
+  // Load available tags
+  onMount(async () => {
+    if (browser) {
+      loadAvailableTags();
+      aiSystem = new ComprehensiveAISystemIntegration();
+      await aiSystem.initializeComponents();
+      // Optionally fetch Svelte docs for context/help
+      try {
+        docs = await mcpContext72GetLibraryDocs('/sveltejs/svelte', 'file-upload|runes');
+      } catch (e) {
+        docs = null;
+      }
+    }
+  });
 
 	async function loadAvailableTags() {
 		try {
@@ -192,77 +209,62 @@ import type { CommonProps } from '$lib/types/common-props';
 			return;
 		}
 		// Start uploading files
-		for (const upload of pendingUploads) {
-			upload.status = 'uploading';
-			uploads = [...uploads];
-
-			try {
-				// Simulate progress
-				for (let progress = 0; progress <= 100; progress += 10) {
-					upload.progress = progress;
-					uploads = [...uploads];
-					await new Promise(resolve => setTimeout(resolve, 100));
-				}
-				// Store in Loki.js for now (would normally upload to server)
-      const evidenceData = {
-					id: upload.id,
-					caseId: reportId,
-					criminalId: null,
-					title: upload.file.name,
-					description: `Uploaded file: ${upload.file.name}`,
-					evidenceType: upload.file.type.includes('image') ? 'photo' :
-						upload.file.type.includes('video') ? 'video' :
-						upload.file.type.includes('audio') ? 'audio' : 'document',
-					fileType: upload.file.type,
-					subType: null,
-					fileUrl: upload.preview || `file://${upload.file.name}`,
-					fileName: upload.file.name,
-					fileSize: upload.file.size,
-					mimeType: upload.file.type,
-					hash: upload.hash || null,
-					tags: upload.tags,
-					chainOfCustody: [],
-					collectedAt: null,
-					collectedBy: null,
-					location: null,
-					labAnalysis: {},
-					aiAnalysis: {},
-					aiTags: [],
-      aiSummary: null,
-      summary: null,
-      summaryType,
-					isAdmissible: true,
-					confidentialityLevel: 'standard',
-					canvasPosition: {},
-					uploadedBy: 'current-user', // TODO: get from auth context
-					uploadedAt: new Date(),
-					updatedAt: new Date()
-				};
-
-				loki.evidence.add(evidenceData);
-
-				upload.status = 'success';
-				upload.progress = 100;
-			} catch (error) {
-				upload.status = 'error';
-				upload.error = error instanceof Error ? error.message : 'Upload failed';
-			}
-		}
-		uploads = [...uploads];
-
-		// Notify parent component
-		const successfulFiles = uploads
-			.filter(u => u.status === 'success')
-			.map(u => u.file);
-
-		if (successfulFiles.length > 0) {
-			const allTags = uploads
-				.filter(u => u.status === 'success')
-				.flatMap(u => u.tags);
-
-			dispatch('upload', { files: successfulFiles, tags: [...new Set(allTags)] });
-		}
-	}
+    for (const upload of pendingUploads) {
+      upload.status = 'uploading';
+      uploads = [...uploads];
+      try {
+        // Prepare DocumentWorkflow
+        const workflow = {
+          documentId: upload.id,
+          caseId: reportId,
+          userId: 'current-user', // TODO: get from auth context
+          filename: upload.file.name,
+          content: await upload.file.arrayBuffer(),
+          metadata: {
+            filename: upload.file.name,
+            mimeType: upload.file.type,
+            fileSize: upload.file.size,
+            uploadDate: new Date(),
+            caseId: reportId,
+            userId: 'current-user',
+            tags: upload.tags,
+            classification: 'evidence',
+            confidentialityLevel: 'internal',
+            retentionPolicy: 'standard',
+            customFields: {}
+          },
+          stages: [],
+          currentStage: 0,
+          startTime: new Date(),
+          status: 'pending'
+        };
+        // Process workflow (MinIO, Neo4j, pgvector)
+        await processDocumentWorkflow(workflow);
+        // Trigger AI/ML analysis
+        if (aiSystem) {
+          await aiSystem.processDocument(upload.id, upload.file.name, { tags: upload.tags });
+        }
+        upload.status = 'success';
+        upload.progress = 100;
+        docStatus = 'Upload and analysis complete.';
+      } catch (error) {
+        upload.status = 'error';
+        upload.error = error instanceof Error ? error.message : 'Upload failed';
+        docStatus = 'Error: ' + upload.error;
+      }
+    }
+    uploads = [...uploads];
+    // Notify parent component
+    const successfulFiles = uploads
+      .filter(u => u.status === 'success')
+      .map(u => u.file);
+    if (successfulFiles.length > 0) {
+      const allTags = uploads
+        .filter(u => u.status === 'success')
+        .flatMap(u => u.tags);
+      dispatch('upload', { files: successfulFiles, tags: [...new Set(allTags)] });
+    }
+  }
 	function clearCompleted() {
 		uploads = uploads.filter(u => u.status !== 'success');
 		dispatch('filesChanged', uploads);
@@ -287,13 +289,13 @@ import type { CommonProps } from '$lib/types/common-props';
     class="space-y-4"
     class:drag-active={dragActive}
     class:has-files={uploads.length > 0}
-    ondragover={handleDragOver}
-    ondragleave={handleDragLeave}
-    ondrop={handleDrop}
+  ondragover={handleDragOver}
+  ondragleave={handleDragLeave}
+  ondrop={handleDrop}
     role="button"
     tabindex={0}
-    onclick={triggerFileSelect}
-    onkeydown={(e) => e.key === 'Enter' && triggerFileSelect()}>
+  onclick={triggerFileSelect}
+  onkeydown={(e) => e.key === 'Enter' && triggerFileSelect()}>
     {#if uploads.length === 0}
       <div class="space-y-4">
         <Upload class="space-y-4" size={48} />
@@ -383,12 +385,11 @@ import type { CommonProps } from '$lib/types/common-props';
 
           {#if upload.status === 'pending' || upload.status === 'error'}
             <div class="space-y-4">
-              <TagList
-                bind:tags={upload.tags}
-                {availableTags}
-                placeholder="Add tags for this file..."
-                maxTags={5}
-                onchange={(e) => updateFileTags(upload.id, e.detail)} />
+              <TagList bind:tags={upload.tags}
+                       {availableTags}
+                       placeholder="Add tags for this file..."
+                       maxTags={5}
+                       onchange={(e) => updateFileTags(upload.id, e.detail)} />
             </div>
           {/if}
 
@@ -413,11 +414,19 @@ import type { CommonProps } from '$lib/types/common-props';
           ({uploads.filter((u) => u.status === 'pending').length})
         {/if}
       </button>
-
+      {#if docStatus}
+        <div class="space-y-4" aria-live="polite">{docStatus}</div>
+      {/if}
       {#if uploads.some((u) => u.status === 'success')}
         <button type="button" class="space-y-4" onclick={() => clearCompleted()}>
           Clear Completed
         </button>
+      {/if}
+      {#if docs}
+        <details class="space-y-4">
+          <summary>Show Svelte 5 File Upload Docs (Context7.2)</summary>
+          <pre>{docs.content}</pre>
+        </details>
       {/if}
     </div>
   {/if}
@@ -645,7 +654,3 @@ import type { CommonProps } from '$lib/types/common-props';
   }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>

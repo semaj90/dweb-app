@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * WebGL Shader Cache and Optimization System
  * High-performance shader compilation and caching for legal AI visualizations

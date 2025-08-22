@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Streaming (SSE) vector search endpoint.
 // Usage: GET /api/ai/vector-search/stream?query=...&limit=8&threshold=0.2&model=...&mode=simple
 // Sends events: result (per similarity row), meta (once), error (if any), done (end)

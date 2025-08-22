@@ -3,10 +3,10 @@
   import SimpleFileUpload from '$lib/components/ai/SimpleFileUpload.svelte';
   import { onMount } from 'svelte';
 
-  interface ServiceStatus { healthy: boolean; [key: string]: any }
-  interface SystemStatus { services?: Record<string, ServiceStatus>; [key: string]: any }
+  interface ServiceStatus { healthy: boolean; [key: string]: unknown }
+  interface SystemStatus { services?: Record<string, ServiceStatus>; [key: string]: unknown }
 
-  let uploadResults = $state<any[]>([]);
+  let uploadResults = $state<unknown[]>([]);
   let systemStatus = $state<SystemStatus>({});
 
   function handleUploadComplete(result: any) {
@@ -105,7 +105,7 @@
   <!-- Simple File Upload Component (UnoCSS attributify) -->
   <!-- Converted UnoCSS attributify props to class to satisfy TS HTMLProps -->
   <div class="mb-8 border border-gray-200 rounded-lg p-4">
-    <SimpleFileUpload on:uploadComplete={handleUploadComplete} />
+    <SimpleFileUpload onuploadcomplete={handleUploadComplete} />
   </div>
 
   <!-- Upload Results -->

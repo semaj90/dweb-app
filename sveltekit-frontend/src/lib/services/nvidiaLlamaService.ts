@@ -5,7 +5,38 @@ import crypto from "crypto";
  */
 
 import { writable, derived } from "svelte/store";
-import { productionServiceClient, ServiceTier, , export interface NvidiaLlamaConfig {,   // GPU Configuration,   gpu_devices: number[];,   gpu_memory_per_device: number; // GB,   tensor_parallel_size: number;,   pipeline_parallel_size: number;,   ,   // Model Configuration,   model_path: string;,   model_type: 'llama2' | 'llama3' | 'codellama' | 'legal-llama';,   max_tokens: number;,   context_length: number;,   ,   // Performance Settings,   batch_size: number;,   beam_size: number;,   temperature: number;,   top_p: number;,   top_k: number;,   ,   // Optimization,   use_fp16: boolean;,   use_kv_cache: boolean;,   enable_streaming: boolean;,   quantization: 'none' | 'int8' | 'int4' | 'fp8';,   ,   // Load Balancing,   worker_count: number;,   load_balancing: 'round_robin' | 'least_busy' | 'gpu_utilization'; } from
+import { productionServiceClient, ServiceTier } from "$lib/api/production-client";
+
+export interface NvidiaLlamaConfig {
+  // GPU Configuration
+  gpu_devices: number[];
+  gpu_memory_per_device: number; // GB
+  tensor_parallel_size: number;
+  pipeline_parallel_size: number;
+  
+  // Model Configuration
+  model_path: string;
+  model_type: 'llama2' | 'llama3' | 'codellama' | 'legal-llama';
+  max_tokens: number;
+  context_length: number;
+  
+  // Performance Settings
+  batch_size: number;
+  beam_size: number;
+  temperature: number;
+  top_p: number;
+  top_k: number;
+  
+  // Optimization
+  use_fp16: boolean;
+  use_kv_cache: boolean;
+  enable_streaming: boolean;
+  quantization: 'none' | 'int8' | 'int4' | 'fp8';
+  
+  // Load Balancing
+  worker_count: number;
+  load_balancing: 'round_robin' | 'least_busy' | 'gpu_utilization';
+}
 
 export interface NvidiaLlamaStats {
   // Performance Metrics

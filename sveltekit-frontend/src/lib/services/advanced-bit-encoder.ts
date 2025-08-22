@@ -421,7 +421,7 @@ export class AdvancedBitEncoder {
 		};
 	}
 
-	private analyzeJSONStructure(data: any): any {
+	private analyzeJSONStructure(data: any): unknown {
 		const analysis = {
 			type: typeof data,
 			size: 0,

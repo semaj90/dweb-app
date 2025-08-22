@@ -7,8 +7,8 @@ import { enhancedRAGPipeline } from "$lib/services/enhancedRAGPipeline";
 
 // Logging
 const logger = {
-  info: (msg: string, data?: any) => console.log(`[VECTOR-TEST] ${new Date().toISOString()} - ${msg}`, data || ''),
-  error: (msg: string, error?: any) => console.error(`[VECTOR-TEST] ${new Date().toISOString()} - ${msg}`, error || '')
+  info: (msg: string, data?: unknown) => console.log(`[VECTOR-TEST] ${new Date().toISOString()} - ${msg}`, data || ''),
+  error: (msg: string, error?: unknown) => console.error(`[VECTOR-TEST] ${new Date().toISOString()} - ${msg}`, error || '')
 };
 
 export const POST: RequestHandler = async ({ request }) => {
@@ -147,7 +147,7 @@ export const POST: RequestHandler = async ({ request }) => {
           topK: 5
         });
         // Normalize qdrant results to expected shape
-        const qdrantResults = (qdrantResultsRaw as any[] || []).map(r => ({ id: r.id, score: r.score || 0, payload: r.payload || {} }));
+        const qdrantResults = (qdrantResultsRaw as unknown[] || []).map(r => ({ id: r.id, score: r.score || 0, payload: r.payload || {} }));
 
         results.tests.qdrantSearch = {
           success: true,

@@ -1,6 +1,6 @@
 <!-- YoRHa Modal Manager Component -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $effect } from 'svelte';
 
   import YoRHaModal from './YoRHaModal.svelte';
   import { modalStore, type Modal } from '$lib/stores/dialogs';
@@ -39,9 +39,9 @@ import type { CommonProps } from '$lib/types/common-props';
     persistent={modal.persistent}
     showHeader={true}
     showFooter={modal.type === 'confirm' || modal.type === 'alert'}
-    on:close={() => handleModalClose(modal)}
-    on:confirm={(event) => handleModalConfirm(modal, event)}
-    on:cancel={() => handleModalCancel(modal)}
+    onclose={() => handleModalClose(modal)}
+    onconfirm={(event) => handleModalConfirm(modal, event)}
+    oncancel={() => handleModalCancel(modal)}
   >
     {#snippet children()}
       {#if modal.component}
@@ -56,7 +56,4 @@ import type { CommonProps } from '$lib/types/common-props';
     {/snippet}
   </YoRHaModal>
 {/each}
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

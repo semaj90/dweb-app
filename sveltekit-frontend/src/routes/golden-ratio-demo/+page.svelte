@@ -1,5 +1,6 @@
 <script lang="ts">
   import GoldenRatioGrid from '$lib/components/ui/layout/GoldenRatioGrid.svelte';
+  import { $state } from 'svelte';
   import { Button } from '$lib/components/ui/button';
   import { Card } from '$lib/components/ui/enhanced-bits';
 

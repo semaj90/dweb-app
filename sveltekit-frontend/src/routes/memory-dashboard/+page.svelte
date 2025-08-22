@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { browser } from '$app/environment';
-  
+
   let systemStatus = $state(null);
   let memoryPrediction = $state(null);
   let isLoading = $state(true);
@@ -10,7 +10,7 @@
   onMount(async () => {
     if (browser) {
       await loadData();
-      
+
       // Refresh data every 30 seconds
       setInterval(loadData, 30000);
     }
@@ -19,7 +19,7 @@
   async function loadData() {
     try {
       error = null;
-      
+
       // Fetch system status and memory prediction
       const [statusResponse, predictionResponse] = await Promise.all([
         fetch('/api/memory/neural?action=status'),
@@ -48,7 +48,7 @@
     try {
       const response = await fetch('/api/memory/neural?action=optimize');
       const result = await response.json();
-      
+
       if (result.success) {
         // Reload data after optimization
         await loadData();
@@ -88,7 +88,7 @@
       {#if isLoading}
         <div class="text-sm text-gray-500">Loading...</div>
       {/if}
-      <button 
+      <button
         class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
         onclick={triggerOptimization}
         disabled={isLoading}
@@ -150,7 +150,7 @@
               <span class="font-medium capitalize">{poolName}</span>
               <div class="flex items-center gap-3">
                 <div class="w-32 h-3 bg-gray-200 rounded-full overflow-hidden">
-                  <div 
+                  <div
                     class="h-full transition-all duration-300 {utilization > 0.8 ? 'bg-red-500' : utilization > 0.6 ? 'bg-yellow-500' : 'bg-green-500'}"
                     style="width: {Math.min(100, utilization * 100)}%"
                   ></div>
@@ -170,7 +170,7 @@
     <!-- Memory Prediction -->
     <div class="bg-white rounded-lg border p-6">
       <h3 class="text-xl font-semibold mb-4">Memory Prediction (30 minutes)</h3>
-      
+
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
           <h4 class="font-medium mb-2">Expected Usage</h4>
@@ -178,7 +178,7 @@
             {formatBytes(memoryPrediction.expectedUsage)}
           </div>
         </div>
-        
+
         <div>
           <h4 class="font-medium mb-2">Confidence</h4>
           <div class="text-2xl font-bold {getHealthColor(memoryPrediction.confidence)}">
@@ -228,7 +228,7 @@
   <div class="bg-white rounded-lg border p-6">
     <h3 class="text-xl font-semibold mb-4">Quick Actions</h3>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <button 
+      <button
         class="p-4 border border-gray-300 rounded-lg hover:bg-gray-50 text-left transition-colors"
         onclick={loadData}
         disabled={isLoading}
@@ -236,8 +236,8 @@
         <div class="font-medium mb-1">Refresh Data</div>
         <div class="text-sm text-gray-600">Update all metrics</div>
       </button>
-      
-      <button 
+
+      <button
         class="p-4 border border-blue-300 rounded-lg hover:bg-blue-50 text-left transition-colors"
         onclick={triggerOptimization}
         disabled={isLoading}
@@ -245,8 +245,8 @@
         <div class="font-medium mb-1 text-blue-700">Run Optimization</div>
         <div class="text-sm text-gray-600">Optimize memory usage</div>
       </button>
-      
-      <button 
+
+      <button
         class="p-4 border border-gray-300 rounded-lg hover:bg-gray-50 text-left transition-colors"
         disabled
       >

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 export interface EmbeddingResponse {
   embedding: number[];
 }
@@ -49,7 +49,7 @@ export interface DocumentChunk {
     chunkIndex: number;
     totalChunks: number;
     documentId?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 

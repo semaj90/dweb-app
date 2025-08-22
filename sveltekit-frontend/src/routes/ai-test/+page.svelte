@@ -1,5 +1,6 @@
 <!-- AI Chat Test Page - Showcasing Svelte 5 + bits-ui + Docker Ollama Integration -->
 <script lang="ts">
+  import { $state } from 'svelte';
   import { onMount } from 'svelte';
   import Button from '$lib/components/ui/button/Button.svelte';
   import { Card } from '$lib/components/ui/Card';

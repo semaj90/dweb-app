@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { test, expect } from '@playwright/test';
 
 test.describe('GPU Acceleration and NVIDIA CUDA', () => {
@@ -31,7 +31,7 @@ test.describe('GPU Acceleration and NVIDIA CUDA', () => {
     expect(Array.isArray(gpuList.devices)).toBe(true);
     
     if (gpuList.devices.length > 0) {
-      gpuList.devices.forEach((gpu: any) => {
+      gpuList.devices.forEach((gpu: unknown) => {
         expect(gpu).toHaveProperty('id');
         expect(gpu).toHaveProperty('name');
         expect(gpu).toHaveProperty('memory_total');
@@ -159,7 +159,7 @@ test.describe('GPU Acceleration and NVIDIA CUDA', () => {
     
     // Analyze memory usage
     if (initialMemory.gpu_available && memorySnapshots.length > 0) {
-      const maxMemoryUsed = Math.max(...memorySnapshots.map(s: any => s.memory_used || 0));
+      const maxMemoryUsed = Math.max(...memorySnapshots.map(s: unknown => s.memory_used || 0));
       const avgMemoryUsed = memorySnapshots.reduce((sum, s) => sum + (s.memory_used || 0), 0) / memorySnapshots.length;
       
       console.log(`Initial Memory: ${initialMemory.memory_used || 0} MB`);
@@ -319,9 +319,9 @@ test.describe('GPU Acceleration and NVIDIA CUDA', () => {
     
     // Analyze temperature data
     if (temperatureReadings.length > 0) {
-      const maxTemp = Math.max(...temperatureReadings.map(r: any => r.temperature || 0));
+      const maxTemp = Math.max(...temperatureReadings.map(r: unknown => r.temperature || 0));
       const avgTemp = temperatureReadings.reduce((sum, r) => sum + (r.temperature || 0), 0) / temperatureReadings.length;
-      const throttlingOccurred = temperatureReadings.some(r: any => r.throttling);
+      const throttlingOccurred = temperatureReadings.some(r: unknown => r.throttling);
       
       console.log(`Max Temperature: ${maxTemp}°C`);
       console.log(`Average Temperature: ${avgTemp.toFixed(1)}°C`);

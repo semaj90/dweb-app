@@ -1,13 +1,16 @@
-// @ts-nocheck
+
 /**
  * Comprehensive Optimization Test Suite and Validation System
  * Tests all optimization components and validates integration
  */
 
 import { performance } from 'perf_hooks';
-type { OptimizationSuite, PerformanceMetrics }, {
-createOptimizationSuite, optimizeForDevelopment } from "./index.js";
-// Orphaned content: import { createContext7MCPIntegration
+import { 
+  type OptimizationSuite, 
+  type PerformanceMetrics,
+  createOptimizationSuite, 
+  optimizeForDevelopment 
+} from "./index.js";
 
 // === Test Result Types ===
 interface TestResult {
@@ -15,7 +18,7 @@ interface TestResult {
   passed: boolean;
   duration_ms: number;
   error?: string;
-  details?: any;
+  details?: unknown;
   performance_impact?: {
     before: number;
     after: number;

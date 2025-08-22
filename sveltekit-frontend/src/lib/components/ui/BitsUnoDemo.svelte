@@ -1,5 +1,4 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { createDialog, createPopover, createDropdownMenu, melt } from '@melt-ui/svelte';
   import { fade } from 'svelte/transition';
@@ -233,7 +232,4 @@ import type { CommonProps } from '$lib/types/common-props';
   </div>
 </div>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

@@ -481,7 +481,7 @@ function generateRecommendations(testResults: any): string[] {
   return recommendations;
 }
 
-function generateTestSummary(testResults: any): any {
+function generateTestSummary(testResults: any): unknown {
   return {
     overall_status: testResults.overall_status,
     services_tested: Object.keys(testResults.services || {}).length,

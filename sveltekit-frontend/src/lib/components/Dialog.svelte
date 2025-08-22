@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived } from 'svelte';
 
 	import { aiStore } from "$lib/stores/canvas";
 	import { createEventDispatcher, onMount } from 'svelte';
@@ -27,11 +27,11 @@ import type { CommonProps } from '$lib/types/common-props';
 	];
 
 	// Reactive state
-	$: selectedVibe = $aiStore.selectedVibe;
-	$: prompt = $aiStore.prompt;
-	$: response = $aiStore.response;
-	$: isGenerating = $aiStore.isGenerating;
-	$: history = $aiStore.history;
+	let selectedVibe = $derived($aiStore.selectedVibe);
+	let prompt = $derived($aiStore.prompt);
+	let response = $derived($aiStore.response);
+	let isGenerating = $derived($aiStore.isGenerating);
+	let history = $derived($aiStore.history);
 
 	let currentPrompt = '';
 

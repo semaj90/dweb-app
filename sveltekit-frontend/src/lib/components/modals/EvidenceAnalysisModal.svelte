@@ -2,14 +2,14 @@
 https://svelte.dev/e/js_parse_error -->
 <!-- Evidence Analysis Modal with LLM integration -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
   interface Evidence {
     id: string;
     content: string;
     type: string;
     caseId?: string;
-    metadata?: any;
+    metadata?: unknown;
     analysis?: {
       summary: string;
       keyPoints: string[];
@@ -21,11 +21,11 @@ import type { CommonProps } from '$lib/types/common-props';
     tags?: string[];
   }
 
-  interface Props extends CommonProps {
+  interface Props {
     open?: boolean;
     evidence?: Evidence;
-    onevidenceUpdated?: (event?: any) => void;
-    onsaveAnalysis?: (event?: any) => void;
+    onevidenceUpdated?: (event?: unknown) => void;
+    onsaveAnalysis?: (event?: unknown) => void;
     similarEvidence?: Array<{
       id: string;
       content: string;

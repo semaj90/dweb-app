@@ -2,7 +2,7 @@
 <!-- Shows real-time updates for document re-embedding and re-ranking -->
 
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state, $derived } from 'svelte';
 
   import {
     documentUpdateNotifications,
@@ -343,7 +343,4 @@ import type { CommonProps } from '$lib/types/common-props';
   }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

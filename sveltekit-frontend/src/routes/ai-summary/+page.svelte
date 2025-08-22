@@ -2,6 +2,7 @@
 <!-- File: sveltekit-frontend/src/routes/ai-summary/+page.svelte -->
 
 <script lang="ts">
+  import { $state } from 'svelte';
   import { onMount } from 'svelte';
   
   let caseData = $state(null);

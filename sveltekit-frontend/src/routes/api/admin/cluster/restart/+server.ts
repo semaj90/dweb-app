@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Cluster Restart API Endpoint
  * Handles graceful rolling restart of worker processes

@@ -1,5 +1,5 @@
 import crypto from "crypto";
-// @ts-nocheck
+
 // SIMD + Redis Performance Testing API
 import { type RequestHandler,  json } from '@sveltejs/kit';
 import { simdRedisClient } from "$lib/services/simd-redis-client";

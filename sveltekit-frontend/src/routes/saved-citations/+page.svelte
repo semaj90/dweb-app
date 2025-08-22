@@ -1,5 +1,6 @@
 <script lang="ts">
   import { run } from 'svelte/legacy';
+  import { $state, $derived } from 'svelte';
 
   import Badge from '$lib/components/ui/Badge.svelte';
   import { Button } from '$lib/components/ui/button';
@@ -348,7 +349,7 @@
 </div>
 
 <!-- Add Citation Dialog -->
-<DialogRoot open={showAddDialog} onOpenChange={(open) => showAddDialog = open}>
+<DialogRoot open={showAddDialog} onopenchange={(open) => showAddDialog = open}>
   <DialogContent class="sm:max-w-[425px]" overlay={{}} content={{}} openState={showAddDialog}>
     <DialogHeader>
       <DialogTitle title="Add New Citation" />
@@ -412,7 +413,7 @@
 
 <!-- Edit Citation Dialog -->
 {#if editingCitation}
-  <DialogRoot open={true} onOpenChange={() => (editingCitation = null)}>
+  <DialogRoot open={true} onopenchange={() => (editingCitation = null)}>
     <DialogContent class="sm:max-w-[425px]" overlay={{}} content={{}} openState={true}>
       <DialogHeader>
         <DialogTitle title="Edit Citation" />

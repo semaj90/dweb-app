@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
 	import type { Snippet } from 'svelte';
+  import { $props } from 'svelte';
 	
 	let { open = false, title, children }: {
 		open?: boolean;
@@ -55,7 +55,4 @@ import type { CommonProps } from '$lib/types/common-props';
 	}
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

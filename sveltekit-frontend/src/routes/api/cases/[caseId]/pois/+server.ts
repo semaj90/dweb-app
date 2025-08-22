@@ -1,6 +1,6 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import type { RequestHandler } from "./$types";
-// @ts-nocheck
+
 import { personsOfInterest } from "$lib/server/db/schema-postgres";
 
 import { eq } from "drizzle-orm";

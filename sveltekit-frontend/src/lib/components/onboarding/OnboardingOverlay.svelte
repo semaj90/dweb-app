@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived, $effect } from 'svelte';
 
   import { browser } from "$app/environment";
   import { Button } from "$lib/components/ui/button";
@@ -32,7 +32,7 @@ import type { CommonProps } from '$lib/types/common-props';
     video?: string;
   }
 
-  interface Props extends CommonProps {
+  interface Props {
     open?: boolean;
     currentStep?: number;
     steps?: OnboardingStep[];
@@ -40,8 +40,8 @@ import type { CommonProps } from '$lib/types/common-props';
     progressDelay?: number;
     showMinimap?: boolean;
     allowSkip?: boolean;
-      onclose?: (event?: any) => void;
-    oncomplete?: (event?: any) => void;
+      onclose?: (event?: unknown) => void;
+    oncomplete?: (event?: unknown) => void;
   }
 
   let {

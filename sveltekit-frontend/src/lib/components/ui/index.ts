@@ -1,5 +1,4 @@
-import type { CommonProps } from '$lib/types/common-props';
-// @ts-nocheck
+
 // Comprehensive UI Component Exports
 // Auto-generated barrel file for all UI components
 

@@ -1,6 +1,6 @@
 <!-- Real-time Communication Demo Component -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $state, $effect } from 'svelte';
 
   import { onMount, onDestroy } from 'svelte';
   import {
@@ -652,7 +652,4 @@ import type { CommonProps } from '$lib/types/common-props';
   }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

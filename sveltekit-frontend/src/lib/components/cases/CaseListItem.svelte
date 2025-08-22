@@ -4,11 +4,11 @@ import type { Case } from '$lib/types';
 
 
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived } from 'svelte';
 
-  interface Props extends CommonProps {
-    onclick?: (event?: any) => void;
-    onstatusChange?: (event?: any) => void;
+  interface Props {
+    onclick?: (event?: unknown) => void;
+    onstatusChange?: (event?: unknown) => void;
   }
   let {
     caseData,

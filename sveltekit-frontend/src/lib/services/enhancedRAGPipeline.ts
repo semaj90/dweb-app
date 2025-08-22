@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Enhanced RAG Pipeline with LangChain Bridge
  * Self-organizing map integration, SIMD JSON parsing, Redis caching
@@ -459,7 +459,7 @@ Format your response as JSON:
   /**
    * Self-organizing map for document clustering
    */
-  async createDocumentMap(documents: any[]): Promise<any[]> {
+  async createDocumentMap(documents: any[]): Promise<unknown[]> {
     // Generate embeddings for all documents
     const embeddings = await Promise.all(
       documents.map((doc) =>

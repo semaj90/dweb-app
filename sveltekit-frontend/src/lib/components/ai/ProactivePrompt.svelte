@@ -1,10 +1,9 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
-  interface Props extends CommonProps {
-    onaccept?: (event?: any) => void;
-    ondismiss?: (event?: any) => void;
-    onquickResponse?: (event?: any) => void;
+  interface Props {
+    onaccept?: (event?: unknown) => void;
+    ondismiss?: (event?: unknown) => void;
+    onquickResponse?: (event?: unknown) => void;
   }
 
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { $state } from 'svelte';
 import { Button } from 'bits-ui';
 import { onMount } from 'svelte';
 

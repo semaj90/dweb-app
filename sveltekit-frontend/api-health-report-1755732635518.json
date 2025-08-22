@@ -1,0 +1,158 @@
+{
+  "timestamp": "2025-08-20T23:30:35.516Z",
+  "summary": {
+    "total_tests": 9,
+    "successful": 7,
+    "routing_issues_404": 1,
+    "server_errors": 4,
+    "timeout_issues": 0,
+    "slow_responses": 0
+  },
+  "issues": {
+    "routing_problems": [
+      {
+        "endpoint": "/api/ollama/api/tags",
+        "method": "GET",
+        "status": 404,
+        "duration": 12,
+        "expected": true,
+        "timeout": false,
+        "response_preview": "404 page not found",
+        "issue": "Route not found - possible routing configuration problem"
+      }
+    ],
+    "ollama_timeouts": [],
+    "server_errors": [
+      {
+        "endpoint": "/api/evidence/upload",
+        "method": "GET",
+        "status": 500,
+        "duration": 4349,
+        "expected": true,
+        "timeout": false,
+        "response_preview": "{\"message\":\"Failed to serve file\"}",
+        "issue": "Server error - check service health"
+      },
+      {
+        "endpoint": "/api/context7-autosolve",
+        "method": "GET",
+        "status": 500,
+        "duration": 151,
+        "expected": true,
+        "timeout": false,
+        "response_preview": "{\"message\":\"Internal Error\"}",
+        "issue": "Server error - check service health"
+      },
+      {
+        "endpoint": "/api/v1/ai",
+        "method": "POST",
+        "status": 500,
+        "duration": 16,
+        "expected": true,
+        "timeout": false,
+        "response_preview": "{\"message\":\"AI service unavailable: Unknown error\"}",
+        "issue": "Server error - check service health"
+      },
+      {
+        "endpoint": "/api/v1/rag",
+        "method": "POST",
+        "status": 500,
+        "duration": 25,
+        "expected": true,
+        "timeout": false,
+        "response_preview": "{\"message\":\"RAG service unavailable: HTTP 404: Not Found\"}",
+        "issue": "Server error - check service health"
+      }
+    ]
+  },
+  "all_results": [
+    {
+      "endpoint": "/api/evidence/list",
+      "method": "GET",
+      "status": 200,
+      "duration": 149,
+      "expected": true,
+      "timeout": false,
+      "response_preview": "{\"evidence\":[{\"id\":\"5b8258bc-085f-4ce3-8dcd-5cb908195254\",\"filename\":\"Financial Records Q3 2024\",\"st"
+    },
+    {
+      "endpoint": "/api/evidence/upload",
+      "method": "GET",
+      "status": 500,
+      "duration": 4349,
+      "expected": true,
+      "timeout": false,
+      "response_preview": "{\"message\":\"Failed to serve file\"}",
+      "issue": "Server error - check service health"
+    },
+    {
+      "endpoint": "/api/activities",
+      "method": "GET",
+      "status": 401,
+      "duration": 23,
+      "expected": false,
+      "timeout": false,
+      "response_preview": "{\"error\":\"Not authenticated\"}",
+      "issue": "Unexpected response code"
+    },
+    {
+      "endpoint": "/api/canvas",
+      "method": "GET",
+      "status": 400,
+      "duration": 12,
+      "expected": false,
+      "timeout": false,
+      "response_preview": "{\"error\":\"Case ID is required\"}",
+      "issue": "Unexpected response code"
+    },
+    {
+      "endpoint": "/api/yorha/system/status",
+      "method": "GET",
+      "status": 200,
+      "duration": 27,
+      "expected": true,
+      "timeout": false,
+      "response_preview": "{\"database\":{\"connected\":true,\"latency\":50,\"activeConnections\":19,\"queryCount\":817},\"backend\":{\"heal"
+    },
+    {
+      "endpoint": "/api/context7-autosolve",
+      "method": "GET",
+      "status": 500,
+      "duration": 151,
+      "expected": true,
+      "timeout": false,
+      "response_preview": "{\"message\":\"Internal Error\"}",
+      "issue": "Server error - check service health"
+    },
+    {
+      "endpoint": "/api/ollama/api/tags",
+      "method": "GET",
+      "status": 404,
+      "duration": 12,
+      "expected": true,
+      "timeout": false,
+      "response_preview": "404 page not found",
+      "issue": "Route not found - possible routing configuration problem"
+    },
+    {
+      "endpoint": "/api/v1/ai",
+      "method": "POST",
+      "status": 500,
+      "duration": 16,
+      "expected": true,
+      "timeout": false,
+      "response_preview": "{\"message\":\"AI service unavailable: Unknown error\"}",
+      "issue": "Server error - check service health"
+    },
+    {
+      "endpoint": "/api/v1/rag",
+      "method": "POST",
+      "status": 500,
+      "duration": 25,
+      "expected": true,
+      "timeout": false,
+      "response_preview": "{\"message\":\"RAG service unavailable: HTTP 404: Not Found\"}",
+      "issue": "Server error - check service health"
+    }
+  ]
+}

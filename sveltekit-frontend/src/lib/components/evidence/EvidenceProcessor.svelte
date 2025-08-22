@@ -1,6 +1,6 @@
 // Enhanced Evidence Processing Component
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived } from 'svelte';
 
   import { createActor } from 'xstate';
   import { uploadMachine, getFileProgress, getAllFilesStatus, getOverallProgress } from '$lib/machines/uploadMachine';
@@ -18,16 +18,16 @@ import type { CommonProps } from '$lib/types/common-props';
   let uploadActor = createActor(uploadMachine);
   
   // Reactive state
-  $: machineState = uploadActor.getSnapshot();
-  $: currentState = machineState.value;
-  $: context = machineState.context;
-  $: fileProgress = getFileProgress(context, evidenceId);
-  $: allFiles = getAllFilesStatus(context);
-  $: overallProgress = getOverallProgress(context);
-  $: isConnected = context.wsConnected;
-  $: hasError = fileProgress.status === 'error' || context.lastError;
-  $: isProcessing = currentState === 'processing';
-  $: isComplete = fileProgress.status === 'done';
+  let machineState = $derived(uploadActor.getSnapshot());
+  let currentState = $derived(machineState.value);
+  let context = $derived(machineState.context);
+  let fileProgress = $derived(getFileProgress(context, evidenceId));
+  let allFiles = $derived(getAllFilesStatus(context));
+  let overallProgress = $derived(getOverallProgress(context));
+  let isConnected = $derived(context.wsConnected);
+  let hasError = $derived(fileProgress.status === 'error' || context.lastError);
+  let isProcessing = $derived(currentState === 'processing');
+  let isComplete = $derived(fileProgress.status === 'done');
 
   // Local state
   let showDetails = false;

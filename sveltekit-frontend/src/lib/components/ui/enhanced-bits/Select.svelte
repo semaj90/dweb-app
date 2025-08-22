@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived } from 'svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     class?: string;
     children?: import('svelte').Snippet;
   }
@@ -142,7 +142,7 @@ import type { CommonProps } from '$lib/types/common-props';
 </script>
 
 <div class="select-wrapper" class:w-full={fullWidth}>
-  <SelectRoot {value} onValueChange={handleValueChange} {disabled} type="single">
+  <SelectRoot {value} onvaluechange={handleValueChange} {disabled} type="single">
     <SelectTrigger class={triggerClasses}>
       <div class="select-value">
         {selectedLabel}

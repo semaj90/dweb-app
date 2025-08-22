@@ -1,10 +1,10 @@
 <!-- @migration-task Error while migrating Svelte code: Identifier 'minimal' has already been declared
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
-  interface Props extends CommonProps {
-    onupload?: (event?: any) => void;
+  interface Props {
+    onupload?: (event?: unknown) => void;
     minimal?: boolean;
   }
   let {

@@ -1,6 +1,6 @@
 import { QdrantClient } from "@qdrant/js-client-rest";
 import VectorService from "./vector-service.js";
-// @ts-nocheck
+
 // Production Qdrant Service - Fixed vector dimensions and stub implementations
 
 interface QdrantPoint {
@@ -260,7 +260,7 @@ Return ONLY a JSON object:
   }
 
   // Helper: Get evidence from PostgreSQL
-  private async getPostgreSQLEvidence(limit: number): Promise<any[]> {
+  private async getPostgreSQLEvidence(limit: number): Promise<unknown[]> {
     try {
       // Mock implementation - replace with actual DB query
       return [
@@ -287,7 +287,7 @@ Return ONLY a JSON object:
       caseId?: string;
       type: string;
       tags?: string[];
-      [key: string]: any;
+      [key: string]: unknown;
     },
   ): Promise<string> {
     await this.initialize();

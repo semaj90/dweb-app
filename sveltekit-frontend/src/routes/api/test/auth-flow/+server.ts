@@ -8,7 +8,7 @@ interface AuthFlowTestResult {
   step: string;
   success: boolean;
   duration: number;
-  data?: any;
+  data?: unknown;
   error?: string;
 }
 

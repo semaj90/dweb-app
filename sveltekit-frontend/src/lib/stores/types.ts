@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Type definitions for the Gemma3 Legal AI Chat System
  */

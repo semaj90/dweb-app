@@ -1,9 +1,9 @@
 <!-- @migration-task Error while migrating Svelte code: Identifier 'size' has already been declared
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  // $props is a Svelte rune; do not import it.
 
-  interface Props extends CommonProps {
+  interface Props {
     size?: 'sm' | 'md' | 'lg';
     message?: string;
     showMessage?: boolean;

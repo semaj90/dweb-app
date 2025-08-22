@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+
 /**
  * Library Sync API Endpoints - Step 6 & 7 Integration
  */

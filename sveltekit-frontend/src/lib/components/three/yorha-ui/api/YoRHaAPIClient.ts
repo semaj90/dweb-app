@@ -4,10 +4,10 @@
  * and real-time data subscriptions (SSE / WebSocket / polling).
  */
 
-import type { YoRHaButton3DOptions } from '../components/YoRHaButton3D';
-import type { YoRHaPanel3DOptions } from '../components/YoRHaPanel3D';
-import type { YoRHaInput3DOptions } from '../components/YoRHaInput3D';
-import type { YoRHaModal3DOptions } from '../components/YoRHaModal3D';
+import type { YoRHaButton3DOptions } from '$lib/components/YoRHaButton3D';
+import type { YoRHaPanel3DOptions } from '$lib/components/YoRHaPanel3D';
+import type { YoRHaInput3DOptions } from '$lib/components/YoRHaInput3D';
+import type { YoRHaModal3DOptions } from '$lib/components/YoRHaModal3D';
 
 export interface YoRHaAPIConfig {
   baseURL: string;
@@ -24,7 +24,7 @@ export interface YoRHaComponentData {
   id: string;
   type: 'button' | 'panel' | 'input' | 'modal' | 'layout';
   config: any;
-  data?: any;
+  data?: unknown;
   metrics?: YoRHaMetrics;
   events?: YoRHaEvent[];
 }
@@ -33,10 +33,10 @@ export interface YoRHaComponentInstance {
   id: string;
   type: 'button' | 'panel' | 'input' | 'modal' | 'layout';
   config: any;
-  data?: any;
+  data?: unknown;
   metrics?: YoRHaMetrics;
   events?: YoRHaEvent[];
-  state?: any;
+  state?: unknown;
 }
 
 export interface YoRHaMetrics {
@@ -97,7 +97,9 @@ export interface YoRHaGraphData {
 export class YoRHaAPIClient {
   private config: YoRHaAPIConfig;
   private websocket?: WebSocket;
+  private wsAttempts = 0;
   private eventSource?: EventSource;
+  private sseAttempts = 0;
   private cache = new Map<string, any>();
   private subscribers = new Map<string, Set<Function>>();
   private layout: any = null;
@@ -140,7 +142,7 @@ export class YoRHaAPIClient {
   }
 
   /** Get the active layout object (if loaded). */
-  getLayout(): any { return this.layout; }
+  getLayout(): unknown { return this.layout; }
 
   /** Start polling / mock generation for declared dataSources in the layout. */
   startDataStreams(): void {
@@ -197,7 +199,7 @@ export class YoRHaAPIClient {
   }
 
   /** Retrieve last value for a data source */
-  getDataSourceValue(id: string): any { return this.cache.get(`ds:${id}`); }
+  getDataSourceValue(id: string): unknown { return this.cache.get(`ds:${id}`); }
 
   // Component Configuration API
   async getComponentConfig(componentId: string, type: string): Promise<YoRHaComponentData> {
@@ -319,7 +321,7 @@ export class YoRHaAPIClient {
   }
 
   // Subscription System
-  subscribe(event: string, callback: Function): () => void {
+  subscribe<T = any>(event: string, callback: (data: T) => void): () => void {
     if (!this.subscribers.has(event)) {
       this.subscribers.set(event, new Set());
     }
@@ -348,9 +350,15 @@ export class YoRHaAPIClient {
 
     const wsUrl = this.config.baseURL.replace(/^https?/, 'wss') + '/ws';
 
-    this.websocket = new WebSocket(wsUrl);
+    try {
+      this.websocket = new WebSocket(wsUrl);
+    } catch (e) {
+      console.warn('WebSocket init failed', e);
+      return;
+    }
 
     this.websocket.onopen = () => {
+      this.wsAttempts = 0;
       console.log('YoRHa WebSocket connected');
     };
 
@@ -364,8 +372,10 @@ export class YoRHaAPIClient {
     };
 
     this.websocket.onclose = () => {
-      console.log('YoRHa WebSocket disconnected, attempting reconnect...');
-      setTimeout(() => this.initWebSocket(), 3000);
+      const delay = Math.min(30000, Math.pow(2, this.wsAttempts) * 1000 + Math.random() * 500);
+      this.wsAttempts++;
+      console.log(`YoRHa WebSocket disconnected, reconnecting in ${(delay / 1000).toFixed(1)}s (attempt ${this.wsAttempts})`);
+      setTimeout(() => this.initWebSocket(), delay);
     };
   }
 
@@ -397,7 +407,12 @@ export class YoRHaAPIClient {
       return;
     }
 
-    this.eventSource = new EventSource(`${this.config.baseURL}/events/stream`);
+    try {
+      this.eventSource = new EventSource(`${this.config.baseURL}/events/stream`);
+    } catch (e) {
+      console.warn('SSE init failed', e);
+      return;
+    }
 
     this.eventSource.onmessage = (event) => {
       try {
@@ -414,7 +429,11 @@ export class YoRHaAPIClient {
     };
 
     this.eventSource.onerror = () => {
-      console.error('SSE connection error');
+      this.eventSource?.close();
+      const delay = Math.min(30000, Math.pow(2, this.sseAttempts) * 1000 + Math.random() * 500);
+      this.sseAttempts++;
+      console.error(`SSE connection error, retrying in ${(delay / 1000).toFixed(1)}s (attempt ${this.sseAttempts})`);
+      setTimeout(() => this.initServerSentEvents(), delay);
     };
   }
 

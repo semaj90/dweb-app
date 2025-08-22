@@ -1,5 +1,5 @@
 import crypto from "crypto";
-// @ts-nocheck
+
 // XState Legal Form Machine for AI-Aware Browser States
 // Integrates with Phase 8 Matrix UI System and Context7 MCP
 

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Main Drizzle Schema - Legal AI Case Management System
 // This is the central schema file that Drizzle expects
 
@@ -12,7 +12,7 @@ import {
   boolean,
   decimal,
 } from "drizzle-orm/pg-core";
-// Orphaned content: import { relations
+import { relations } from "drizzle-orm";
 
 // Users table
 export const users = pgTable("users", {

@@ -1,5 +1,6 @@
 <!-- Real AI File Upload Demo Page with Production System -->
 <script lang="ts">
+  import { $state } from 'svelte';
 	import EnhancedFileUpload from '$lib/components/ai/EnhancedFileUpload.svelte';
 	import { onMount } from 'svelte';
 	
@@ -82,7 +83,7 @@
 		}
 	}
 
-	async function testAPI(endpoint: string, method: string = 'GET', body?: any) {
+	async function testAPI(endpoint: string, method: string = 'GET', body?: unknown) {
 		try {
 			const options: RequestInit = { method };
 			if (body) {
@@ -201,7 +202,7 @@
 
 			<!-- Enhanced File Upload Component -->
 			<EnhancedFileUpload
-				onUploadComplete={handleUploadComplete}
+				onuploadcomplete={handleUploadComplete}
 				enableOCR={true}
 				enableEmbedding={true}
 				enableRAG={true}

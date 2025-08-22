@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+
 import { json } from "@sveltejs/kit";
 import { enhancedSearchWithNeo4j } from "$lib/ai/custom-reranker";
 import { legalDocuments, cases, evidence } from "$lib/server/db/schema-postgres";
@@ -176,7 +176,7 @@ async function performYoRHaAnalysis(
   rerankedResults: any[],
   dbResults: any[],
   analysisType: string
-): Promise<any[]> {
+): Promise<unknown[]> {
   
   // Combine all results
   const allResults = [
@@ -216,7 +216,7 @@ async function generateYoRHaRecommendations(
   query: string,
   analysisResults: any[],
   dataType: string
-): Promise<any[]> {
+): Promise<unknown[]> {
   
   // Basic recommendation logic (would be enhanced with actual AI)
   const recommendations = [
@@ -327,7 +327,7 @@ function extractLegalAreas(results: any[]): string[] {
   return Array.from(areas);
 }
 
-function findRelevantPrecedents(results: any[]): any[] {
+function findRelevantPrecedents(results: any[]): unknown[] {
   return results
     .filter(r => r.documentType === "precedent" || r.classification === "PRECEDENT")
     .slice(0, 3);

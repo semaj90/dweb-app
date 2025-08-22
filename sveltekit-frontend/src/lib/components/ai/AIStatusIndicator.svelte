@@ -1,6 +1,6 @@
 <!-- AI Status Indicator Component -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived } from 'svelte';
 
   export let isReady = false;
   export let isLoading = false;
@@ -9,42 +9,41 @@ import type { CommonProps } from '$lib/types/common-props';
   export let error: string | null = null;
 
   // Status computation
-  $: currentStatus = error
+  let currentStatus = $derived(error
     ? "error"
     : isLoading
       ? "loading"
       : isReady
         ? "ready"
-        : "unavailable";
+        : "unavailable");
 
-  $: statusText = {
+  let statusText = $derived({
     ready: "AI Ready",
     loading: "Loading...",
     error: "AI Error",
     unavailable: "AI Unavailable",
-  }[currentStatus];
+  }[currentStatus]);
 
-  $: statusColor = {
+  let statusColor = $derived({
     ready: "var(--status-success, #10b981)",
     loading: "var(--status-warning, #f59e0b)",
     error: "var(--status-error, #ef4444)",
     unavailable: "var(--status-muted, #94a3b8)",
-  }[currentStatus];
+  }[currentStatus]);
 
   // Provider details
-  $: providerText =
-    provider === "local"
+  let providerText = $derived(provider === "local"
       ? "Local AI"
       : provider === "cloud"
         ? "Cloud AI"
         : provider === "hybrid"
           ? "Hybrid AI"
-          : "No Provider";
+          : "No Provider");
 
-  $: isErrorState = currentStatus === "error";
-  $: isLoadingState = currentStatus === "loading";
-  $: isReadyState = currentStatus === "ready";
-  $: modelText = model || "No Model";
+  let isErrorState = $derived(currentStatus === "error");
+  let isLoadingState = $derived(currentStatus === "loading");
+  let isReadyState = $derived(currentStatus === "ready");
+  let modelText = $derived(model || "No Model");
 </script>
 
 <div

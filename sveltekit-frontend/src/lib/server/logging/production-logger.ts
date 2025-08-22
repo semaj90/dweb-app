@@ -1,9 +1,10 @@
-import { eq } from "drizzle-orm";
-// Production Error Logging System
-// Comprehensive logging for PostgreSQL, Qdrant, OCR, AI services
+/**
+ * Production Error Logging System
+ * Comprehensive logging for PostgreSQL, Qdrant, OCR, AI services
+ */
+
 import { writeFile, appendFile, mkdir, readFile } from 'fs/promises';
-// Orphaned content: import path from "path";
-import {
+import * as path from "path";
 
 export interface LogEntry {
   id: string;
@@ -11,7 +12,7 @@ export interface LogEntry {
   level: 'info' | 'warn' | 'error' | 'debug';
   service: string;
   message: string;
-  data?: any;
+  data?: unknown;
   error?: Error;
   userId?: string;
   caseId?: string;
@@ -60,14 +61,14 @@ export class ProductionLogger {
     // Console output with colors
     const timestamp = logEntry.timestamp.toISOString();
     const levelColors = {
-      info: '\\x1b[36m', // Cyan
-      warn: '\\x1b[33m', // Yellow  
-      error: '\\x1b[31m', // Red
-      debug: '\\x1b[90m'  // Gray
+      info: '\x1b[36m', // Cyan
+      warn: '\x1b[33m', // Yellow  
+      error: '\x1b[31m', // Red
+      debug: '\x1b[90m'  // Gray
     };
     
     const color = levelColors[logEntry.level];
-    const reset = '\\x1b[0m';
+    const reset = '\x1b[0m';
     
     console.log(`${color}[${logEntry.level.toUpperCase()}]${reset} ${timestamp} [${logEntry.service}] ${logEntry.message}`);
     
@@ -101,7 +102,7 @@ export class ProductionLogger {
           stack: entry.error.stack,
           name: entry.error.name
         } : undefined
-      }) + '\\n';
+      }) + '\n';
       
       await appendFile(filePath, logLine);
       
@@ -136,7 +137,7 @@ export class ProductionLogger {
         ...errorData
       };
       
-      await appendFile(errorLogPath, JSON.stringify(errorLog) + '\\n');
+      await appendFile(errorLogPath, JSON.stringify(errorLog) + '\n');
       
     } catch (error) {
       console.error('[LOGGER] Failed to store error in database:', error);
@@ -148,7 +149,7 @@ export class ProductionLogger {
   }
 
   // Service-specific logging methods
-  async logDatabaseOperation(operation: string, data?: any, error?: Error, performanceMetrics?: any): Promise<void> {
+  async logDatabaseOperation(operation: string, data?: unknown, error?: Error, performanceMetrics?: unknown): Promise<void> {
     await this.log({
       level: error ? 'error' : 'info',
       service: 'database',
@@ -159,7 +160,7 @@ export class ProductionLogger {
     });
   }
 
-  async logOCROperation(fileName: string, result?: any, error?: Error, performanceMetrics?: any): Promise<void> {
+  async logOCROperation(fileName: string, result?: unknown, error?: Error, performanceMetrics?: unknown): Promise<void> {
     await this.log({
       level: error ? 'error' : 'info',
       service: 'ocr',
@@ -170,7 +171,7 @@ export class ProductionLogger {
     });
   }
 
-  async logVectorOperation(operation: string, query?: string, results?: any, error?: Error): Promise<void> {
+  async logVectorOperation(operation: string, query?: string, results?: unknown, error?: Error): Promise<void> {
     await this.log({
       level: error ? 'error' : 'info',
       service: 'vector',
@@ -180,7 +181,7 @@ export class ProductionLogger {
     });
   }
 
-  async logAIOperation(model: string, prompt?: string, response?: any, error?: Error, performanceMetrics?: any): Promise<void> {
+  async logAIOperation(model: string, prompt?: string, response?: unknown, error?: Error, performanceMetrics?: unknown): Promise<void> {
     await this.log({
       level: error ? 'error' : 'info',
       service: 'ai',
@@ -195,7 +196,7 @@ export class ProductionLogger {
     });
   }
 
-  async logUploadOperation(fileName: string, fileSize: number, caseId?: string, result?: any, error?: Error): Promise<void> {
+  async logUploadOperation(fileName: string, fileSize: number, caseId?: string, result?: unknown, error?: Error): Promise<void> {
     await this.log({
       level: error ? 'error' : 'info',
       service: 'upload',
@@ -207,7 +208,7 @@ export class ProductionLogger {
     });
   }
 
-  async logXStateTransition(machine: string, state: string, event: string, context?: any, error?: Error): Promise<void> {
+  async logXStateTransition(machine: string, state: string, event: string, context?: unknown, error?: Error): Promise<void> {
     await this.log({
       level: error ? 'error' : 'debug',
       service: 'xstate',
@@ -224,7 +225,7 @@ export class ProductionLogger {
       const logFile = path.join(this.logDir, `${today}.log`);
       
       const logContent = await readFile(logFile, 'utf-8').catch(() => '');
-      const lines = logContent.split('\\n').filter(line => line.trim());
+      const lines = logContent.split('\n').filter(line => line.trim());
       
       let logs = lines.map(line => {
         try {
@@ -285,31 +286,31 @@ export const logger = new ProductionLogger();
 
 // Export service-specific loggers
 export const dbLogger = {
-  info: (operation: string, data?: any, metrics?: any) => logger.logDatabaseOperation(operation, data, undefined, metrics),
-  error: (operation: string, error: Error, data?: any) => logger.logDatabaseOperation(operation, data, error)
+  info: (operation: string, data?: unknown, metrics?: unknown) => logger.logDatabaseOperation(operation, data, undefined, metrics),
+  error: (operation: string, error: Error, data?: unknown) => logger.logDatabaseOperation(operation, data, error)
 };
 
 export const ocrLogger = {
-  info: (fileName: string, result?: any, metrics?: any) => logger.logOCROperation(fileName, result, undefined, metrics),
+  info: (fileName: string, result?: unknown, metrics?: unknown) => logger.logOCROperation(fileName, result, undefined, metrics),
   error: (fileName: string, error: Error) => logger.logOCROperation(fileName, undefined, error)
 };
 
 export const vectorLogger = {
-  info: (operation: string, query?: string, results?: any) => logger.logVectorOperation(operation, query, results),
+  info: (operation: string, query?: string, results?: unknown) => logger.logVectorOperation(operation, query, results),
   error: (operation: string, error: Error, query?: string) => logger.logVectorOperation(operation, query, undefined, error)
 };
 
 export const aiLogger = {
-  info: (model: string, prompt?: string, response?: any, metrics?: any) => logger.logAIOperation(model, prompt, response, undefined, metrics),
+  info: (model: string, prompt?: string, response?: unknown, metrics?: unknown) => logger.logAIOperation(model, prompt, response, undefined, metrics),
   error: (model: string, error: Error, prompt?: string) => logger.logAIOperation(model, prompt, undefined, error)
 };
 
 export const uploadLogger = {
-  info: (fileName: string, fileSize: number, caseId?: string, result?: any) => logger.logUploadOperation(fileName, fileSize, caseId, result),
+  info: (fileName: string, fileSize: number, caseId?: string, result?: unknown) => logger.logUploadOperation(fileName, fileSize, caseId, result),
   error: (fileName: string, fileSize: number, error: Error, caseId?: string) => logger.logUploadOperation(fileName, fileSize, caseId, undefined, error)
 };
 
 export const xstateLogger = {
-  info: (machine: string, state: string, event: string, context?: any) => logger.logXStateTransition(machine, state, event, context),
-  error: (machine: string, state: string, event: string, error: Error, context?: any) => logger.logXStateTransition(machine, state, event, context, error)
+  info: (machine: string, state: string, event: string, context?: unknown) => logger.logXStateTransition(machine, state, event, context),
+  error: (machine: string, state: string, event: string, error: Error, context?: unknown) => logger.logXStateTransition(machine, state, event, context, error)
 };

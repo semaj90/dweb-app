@@ -3,7 +3,7 @@ Enhanced Evidence Upload Component for Prosecutors
 Features: MinIO storage, AI analysis, multi-file support, drag-drop
 -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state } from 'svelte';
 
   import type { Props } from "$lib/types/global";
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
@@ -479,7 +479,4 @@ import type { CommonProps } from '$lib/types/common-props';
 </style>
 
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

@@ -1,7 +1,17 @@
 import { getUserById } from "./db/queries.js";
-// @ts-nocheck
+
 import type { RequestEvent } from "@sveltejs/kit";
-import { signJWT, verifyJWT, , // In-memory session store (for development), const sessions = new Map<string, Session>();, , export interface Session {,   id: string;,   userId: string;,   expiresAt: Date; } from
+import { signJWT, verifyJWT } from "./auth-utils.js";
+
+// In-memory session store (for development)
+const sessions = new Map<string, Session>();
+
+export interface Session {
+  id: string;
+  userId: string;
+  expiresAt: Date;
+}
+
 export interface User {
   id: string;
   email: string;

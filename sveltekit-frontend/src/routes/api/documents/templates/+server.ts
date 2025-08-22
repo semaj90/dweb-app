@@ -1,6 +1,6 @@
-// @ts-nocheck
-type { RequestEvent }, {
-json } from "@sveltejs/kit";
+
+import type { RequestEvent } from "@sveltejs/kit";
+import { json } from "@sveltejs/kit";
 
 // Document templates with pre-filled content
 const documentTemplates = {

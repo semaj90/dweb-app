@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Evidence Enhancement API
  * Analyzes uploaded evidence and suggests relevant labels and classifications
@@ -256,7 +256,7 @@ Consider:
     };
 }
 
-async function suggestLabels(evidenceText: string, caseContext?: any) {
+async function suggestLabels(evidenceText: string, caseContext?: unknown) {
     const db = getDB();
     
     try {
@@ -401,7 +401,7 @@ function getContext(text: string, entity: string): string {
     return text.substring(start, end).trim();
 }
 
-async function findSimilarEvidence(evidenceText: string, caseContext?: any) {
+async function findSimilarEvidence(evidenceText: string, caseContext?: unknown) {
     const db = getDB();
     
     try {
@@ -454,7 +454,7 @@ async function findSimilarEvidence(evidenceText: string, caseContext?: any) {
     }
 }
 
-async function analyzeProsecutionValue(evidenceText: string, caseContext?: any) {
+async function analyzeProsecutionValue(evidenceText: string, caseContext?: unknown) {
     try {
         const analysisPrompt = `As a prosecution strategist, analyze this evidence for its prosecution value:
 

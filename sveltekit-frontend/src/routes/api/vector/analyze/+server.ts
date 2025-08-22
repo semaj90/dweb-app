@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+
 /**
  * Vector Intelligence Semantic Analysis API
  * Provides advanced semantic analysis of legal documents and content

@@ -1,5 +1,5 @@
 import { URL } from "url";
-// @ts-nocheck
+
 import { json } from "@sveltejs/kit";
 
 import { personsOfInterest } from "$lib/server/db/schema-postgres";

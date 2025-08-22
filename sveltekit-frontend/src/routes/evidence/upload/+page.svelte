@@ -1,5 +1,6 @@
 <script lang="ts">
   import FileUploadForm from '$lib/components/upload/FileUploadForm.svelte';
+  import { $derived } from 'svelte';
   import { page } from '$app/state';
   import type { PageData } from './$types';
 

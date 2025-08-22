@@ -2,7 +2,7 @@
 https://svelte.dev/e/js_parse_error -->
 <!-- AI Processing Dashboard - Integration Demo -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $derived } from 'svelte';
 
 	import { onMount, onDestroy } from 'svelte';
 	import { Badge } from 'bits-ui';
@@ -245,8 +245,8 @@ import type { CommonProps } from '$lib/types/common-props';
 		<CardContent>
 			<LLMProviderSelector 
 				bind:selectedProvider
-				on:providerSelected={handleProviderSelected}
-				on:statusChanged={handleStatusChanged}
+				onproviderselected={handleProviderSelected}
+				onstatuschanged={handleStatusChanged}
 			/>
 		</CardContent>
 	</Card>
@@ -350,7 +350,7 @@ import type { CommonProps } from '$lib/types/common-props';
 					{#each processingResults as result (result.taskId)}
 						<div 
 							class="p-3 bg-yorha-bg-secondary rounded-md border border-yorha-border"
-							transitionfly={{ y: -20, duration: 300 }}
+							transition:fly={{ y: -20, duration: 300 }}
 						>
 							<div class="flex items-center justify-between mb-2">
 								<div class="flex items-center space-x-2">
@@ -427,7 +427,4 @@ import type { CommonProps } from '$lib/types/common-props';
 		background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
 	}
 </style>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Enhanced Service Worker for Legal AI with WebGPU & GGUF Runtime
  * Handles offline caching, background processing, and GPU coordination
@@ -6,6 +6,20 @@
  */
 
 /// <reference types="@webgpu/types" />
+
+// Minimal ambient event typings for incremental typecheck stability in the service worker.
+declare global {
+  interface ExtendableEvent {
+    waitUntil(promise: Promise<any>): void;
+  }
+  interface FetchEvent extends Event {
+    request: Request;
+    respondWith(response: Promise<Response> | Response): void;
+  }
+  interface SyncEvent extends Event {
+    tag?: string;
+  }
+}
 
 import { build, files, version } from "$service-worker";
 // Orphaned content: import {
@@ -40,7 +54,7 @@ const SYNC_TAGS = {
 
 self.addEventListener('install', (event) => {
   console.log('🔧 Enhanced Service Worker installing...');
-  
+
   event.waitUntil(
     Promise.all([
       caches.open(STATIC_CACHE).then((cache: any) => cache.addAll(ASSETS)),
@@ -60,7 +74,7 @@ self.addEventListener('install', (event) => {
 
 self.addEventListener('activate', (event) => {
   console.log('✅ Enhanced Service Worker activating...');
-  
+
   event.waitUntil(
     Promise.all([
       // Clean up old caches
@@ -87,7 +101,7 @@ async function initializeWebGPU(): Promise<void> {
       const adapter = await (navigator as any).gpu.requestAdapter({
         powerPreference: 'high-performance'
       });
-      
+
       if (adapter) {
         webgpuDevice = await adapter.requestDevice({
           requiredFeatures: [],
@@ -96,7 +110,7 @@ async function initializeWebGPU(): Promise<void> {
             maxStorageBufferBindingSize: 128 * 1024 * 1024 // 128MB
           }
         });
-        
+
         console.log('✅ WebGPU initialized in Service Worker');
       }
     }
@@ -132,7 +146,7 @@ self.addEventListener('fetch', (event) => {
 
       // Try to get the response from a cache.
       const cache = await caches.open(CACHE);
-      
+
       // Handle API requests - always try network first for fresh data
       if (url.pathname.startsWith('/api/')) {
         try {
@@ -142,11 +156,11 @@ self.addEventListener('fetch', (event) => {
           // If network fails, try cache for GET requests
           const cached = await cache.match(event.request);
           if (cached) return cached;
-          
+
           // Return offline fallback
-          return new Response(JSON.stringify({ 
-            error: 'Offline', 
-            message: 'Network unavailable' 
+          return new Response(JSON.stringify({
+            error: 'Offline',
+            message: 'Network unavailable'
           }), {
             status: 503,
             headers: { 'Content-Type': 'application/json' }
@@ -163,17 +177,17 @@ self.addEventListener('fetch', (event) => {
       // For everything else, try the network first, falling back to cache
       try {
         const response = await fetch(event.request);
-        
+
         // Cache successful responses for GET requests
         if (response.status === 200) {
           cache.put(event.request, response.clone());
         }
-        
+
         return response;
       } catch {
         const cached = await cache.match(event.request);
         if (cached) return cached;
-        
+
         return new Response('Offline', { status: 503 });
       }
     })()
@@ -190,7 +204,7 @@ self.addEventListener('message', (event: ExtendableMessageEvent) => {
     case 'CACHE_LEGAL_DATA':
       event.waitUntil(
         caches.open('legal-data').then((cache) => {
-          return cache.put(`/api/legal/cache/${data.caseId}`, 
+          return cache.put(`/api/legal/cache/${data.caseId}`,
             new Response(JSON.stringify(data.data), {
               headers: { 'Content-Type': 'application/json' }
             })
@@ -202,7 +216,7 @@ self.addEventListener('message', (event: ExtendableMessageEvent) => {
     case 'QUEUE_INFERENCE':
       queueInferenceRequest(data);
       break;
-    
+
     case 'GET_WEBGPU_STATUS':
       event.ports[0]?.postMessage({
         type: 'WEBGPU_STATUS',
@@ -212,7 +226,7 @@ self.addEventListener('message', (event: ExtendableMessageEvent) => {
         }
       });
       break;
-    
+
     case 'PROCESS_WEBGPU_TASK':
       processWebGPUTask(data).then((result: any) => {
         event.ports[0]?.postMessage({
@@ -226,7 +240,7 @@ self.addEventListener('message', (event: ExtendableMessageEvent) => {
         });
       });
       break;
-    
+
     case 'CLEAR_CACHE':
       clearAllCaches().then(() => {
         event.ports[0]?.postMessage({ type: 'CACHE_CLEARED' });
@@ -245,19 +259,19 @@ self.addEventListener('sync', (event) => {
     case SYNC_TAGS.INFERENCE_QUEUE:
       event.waitUntil(processInferenceQueue());
       break;
-    
+
     case SYNC_TAGS.DOCUMENT_UPLOAD:
       event.waitUntil(syncDocumentUploads());
       break;
-    
+
     case SYNC_TAGS.RAG_UPDATE:
       event.waitUntil(syncRAGUpdates());
       break;
-    
+
     case SYNC_TAGS.PERFORMANCE_METRICS:
       event.waitUntil(uploadPerformanceMetrics());
       break;
-    
+
     case 'evidence-upload':
       event.waitUntil(syncEvidenceUploads());
       break;
@@ -311,7 +325,7 @@ async function processWebGPUInference(request: any): Promise<void> {
 
   try {
     const { prompt, maxTokens } = request.payload;
-    
+
     // Create buffers for legal AI processing
     const inputBuffer = webgpuDevice.createBuffer({
       size: 1024 * 4, // 1024 floats
@@ -339,7 +353,7 @@ async function processWebGPUInference(request: any): Promise<void> {
     // Execute compute shader
     const commandEncoder = webgpuDevice.createCommandEncoder();
     const passEncoder = commandEncoder.beginComputePass();
-    
+
     passEncoder.setPipeline(computePipeline);
     passEncoder.dispatchWorkgroups(Math.ceil(maxTokens / 64));
     passEncoder.end();
@@ -347,7 +361,7 @@ async function processWebGPUInference(request: any): Promise<void> {
     webgpuDevice.queue.submit([commandEncoder.finish()]);
 
     console.log('✅ WebGPU legal inference completed');
-    
+
   } catch (error) {
     console.error('❌ WebGPU inference failed:', error);
   }
@@ -379,12 +393,12 @@ function getLegalInferenceShader(): string {
       // Legal domain-specific processing
       let input_val = input_tokens[index];
       let processed = input_val * config.temperature;
-      
+
       // Apply legal terminology bias for RTX 3060 optimization
       let legal_bias = select(1.0, 1.15, input_val > 0.6);
       let contract_bias = select(1.0, 1.1, input_val > 0.7);
       let evidence_bias = select(1.0, 1.05, input_val > 0.8);
-      
+
       output_tokens[index] = processed * legal_bias * contract_bias * evidence_bias;
     }
   `;
@@ -395,11 +409,11 @@ function getLegalInferenceShader(): string {
  */
 async function processCPUInference(request: any): Promise<void> {
   const { prompt, maxTokens } = request.payload;
-  
+
   // Simulate GGUF CPU inference with Windows optimization
   const processingTime = Math.max(100, prompt.length * 2 + maxTokens * 5);
   await new Promise((resolve: any) => setTimeout(resolve, processingTime));
-  
+
   console.log('✅ GGUF CPU inference completed');
 }
 
@@ -416,13 +430,13 @@ async function processWebGPUTask(data: any): Promise<any> {
   switch (operation) {
     case 'VECTOR_SIMILARITY':
       return await processLegalVectorSimilarity(parameters);
-    
+
     case 'TEXT_EMBEDDING':
       return await processLegalTextEmbedding(parameters);
-    
+
     case 'DOCUMENT_ANALYSIS':
       return await processDocumentAnalysis(parameters);
-    
+
     default:
       throw new Error(`Unknown WebGPU operation: ${operation}`);
   }
@@ -435,10 +449,10 @@ async function processLegalVectorSimilarity(parameters: any): Promise<any> {
   if (!webgpuDevice) throw new Error('WebGPU not available');
 
   const { queryVector, documentVectors } = parameters;
-  
+
   // Mock GPU vector similarity with legal domain optimization
   await new Promise((resolve: any) => setTimeout(resolve, 50 + Math.random() * 150));
-  
+
   return {
     similarities: documentVectors.map((doc: any, index: number) => ({
       documentId: doc.id,
@@ -457,10 +471,10 @@ async function processLegalTextEmbedding(parameters: any): Promise<any> {
   if (!webgpuDevice) throw new Error('WebGPU not available');
 
   const { text } = parameters;
-  
+
   // Mock GPU text embedding with legal domain specialization
   await new Promise((resolve: any) => setTimeout(resolve, 100 + Math.random() * 200));
-  
+
   return {
     embedding: new Array(384).fill(0).map(() => Math.random() * 2 - 1),
     dimensions: 384,
@@ -478,10 +492,10 @@ async function processDocumentAnalysis(parameters: any): Promise<any> {
   if (!webgpuDevice) throw new Error('WebGPU not available');
 
   const { document, analysisType } = parameters;
-  
+
   // Mock GPU document analysis
   await new Promise((resolve: any) => setTimeout(resolve, 200 + Math.random() * 300));
-  
+
   return {
     analysisType,
     confidence: 0.8 + Math.random() * 0.2,
@@ -538,12 +552,12 @@ async function uploadPerformanceMetrics(): Promise<void> {
  */
 async function getCacheSize(): Promise<number> {
   let totalSize = 0;
-  
+
   const cacheNames = await caches.keys();
   for (const cacheName of cacheNames) {
     const cache = await caches.open(cacheName);
     const requests = await cache.keys();
-    
+
     for (const request of requests) {
       const response = await cache.match(request);
       if (response) {
@@ -552,7 +566,7 @@ async function getCacheSize(): Promise<number> {
       }
     }
   }
-  
+
   return totalSize;
 }
 

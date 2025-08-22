@@ -1,8 +1,14 @@
 import type { WebSocket } from "ws";
-// @ts-nocheck
+
 // WebSocket server for real-time updates
 import { WebSocketServer } from "ws";
-import { createClient, , interface ClientConnection {,   ws: WebSocket;,   userId?: string;,   subscriptions: Set<string>; } from
+import { createClient } from 'redis';
+
+interface ClientConnection {
+  ws: WebSocket;
+  userId?: string;
+  subscriptions: Set<string>;
+}
 class RealTimeServer {
   private wss: WebSocketServer;
   private redisClient: any;

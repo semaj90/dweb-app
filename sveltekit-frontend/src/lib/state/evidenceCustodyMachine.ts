@@ -1,5 +1,5 @@
 import crypto from "crypto";
-// @ts-nocheck
+
 /**
  * XState State Machine for Evidence Chain of Custody Workflow
  * Handles the complete legal custody lifecycle with AI-powered verification,
@@ -7,13 +7,13 @@ import crypto from "crypto";
  */
 
 import { createMachine, assign, fromPromise } from "xstate";
-// Orphaned content: import type { Evidence, NewEvidence
+import type { Evidence, NewEvidence } from "$lib/types/evidence";
+import { db } from "$lib/db";
 import {
-db } from "$lib/db";
-// Orphaned content: import {
   evidence,
   evidenceVectors,
   collaborationSessions,
+} from "$lib/db/schema";
 import { eq, and, desc } from "drizzle-orm";
 
 // Types for the custody workflow state machine

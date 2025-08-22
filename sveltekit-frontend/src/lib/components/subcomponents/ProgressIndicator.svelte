@@ -1,6 +1,6 @@
 <!-- Progress Indicator Component -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived } from 'svelte';
 
     import { createEventDispatcher } from 'svelte';
 
@@ -60,7 +60,7 @@ import type { CommonProps } from '$lib/types/common-props';
         }
     }
 
-    $: progressPercentage = Math.round((currentStep / (steps.length - 1)) * 100);
+    let progressPercentage = $derived(Math.round((currentStep / (steps.length - 1)) * 100));
 </script>
 
 <div class="progress-indicator bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">

@@ -1,5 +1,5 @@
 import path from "path";
-// @ts-nocheck
+
 import type { PageServerLoad } from "./$types.js";
 import { resolveLibraryId, getLibraryDocs } from "$lib/utils/context7-helper";
 import { copilotSelfPrompt } from "$lib/utils/copilot-self-prompt";

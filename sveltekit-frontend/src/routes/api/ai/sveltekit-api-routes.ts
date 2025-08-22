@@ -444,6 +444,36 @@ export function getRoutesByMethod(method: string): Array<ApiRoute & { group: str
 }
 
 /**
+ * Test endpoint availability and return status
+ */
+export async function testEndpoint(path: string, method: string = 'GET'): Promise<{
+  available: boolean;
+  responseTime?: number;
+  status?: number;
+  error?: string;
+}> {
+  const startTime = Date.now();
+  try {
+    const response = await fetch(`http://localhost:5173${path}`, {
+      method,
+      signal: AbortSignal.timeout(5000)
+    });
+    
+    return {
+      available: true,
+      responseTime: Date.now() - startTime,
+      status: response.status
+    };
+  } catch (error) {
+    return {
+      available: false,
+      responseTime: Date.now() - startTime,
+      error: (error as Error).message
+    };
+  }
+}
+
+/**
  * Get routes by group
  */
 export function getRoutesByGroup(groupKey: string): ApiRoute[] {

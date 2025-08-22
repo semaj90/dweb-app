@@ -1,49 +1,50 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import { 
-    logEntries, 
-    logStats, 
+  // Svelte runes are declared globally in src/types/svelte-helpers.d.ts
+  import {
+    logEntries,
+    logStats,
     loggingService,
-    type LogEntry, 
+    type LogEntry,
     type LogLevel,
     type LogFilter
   } from '$lib/services/logging-aggregation-service';
   import { Button } from '$lib/components/ui/button';
   import { Card } from '$lib/components/ui/Card';
   import { Badge } from '$lib/components/ui/badge';
-  
+
   export let visible = true;
   export let height = '600px';
-  
+
   let selectedLevel: LogLevel | 'all' = 'all';
   let selectedCategory = 'all';
   let searchQuery = '';
   let autoScroll = true;
   let showDetails = false;
   let selectedEntry: LogEntry | null = null;
-  
-  $: filteredEntries = $logEntries.filter(entry => {
+
+  let filteredEntries = $derived(() => $logEntries.filter((entry: LogEntry) => {
     const matchesLevel = selectedLevel === 'all' || entry.level === selectedLevel;
     const matchesCategory = selectedCategory === 'all' || entry.category === selectedCategory;
-    const matchesSearch = !searchQuery || 
+    const matchesSearch = !searchQuery ||
       entry.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
       entry.category.toLowerCase().includes(searchQuery.toLowerCase());
-    
+
     return matchesLevel && matchesCategory && matchesSearch;
-  });
-  
-  $: categories = Array.from(new Set($logEntries.map(e => e.category))).sort();
-  $: stats = $logStats;
-  
+  }));
+
+  let categories = $derived(() => Array.from(new Set($logEntries.map((e: LogEntry) => e.category))).sort());
+  let stats = $derived(() => $logStats);
+
   let logContainer: HTMLDivElement;
   let refreshInterval: NodeJS.Timeout;
-  
+
   onMount(() => {
     // Auto-scroll to bottom when new entries arrive
     if (autoScroll) {
       scrollToBottom();
     }
-    
+
     // Refresh dashboard periodically
     refreshInterval = setInterval(() => {
       if (autoScroll) {
@@ -51,19 +52,19 @@
       }
     }, 1000);
   });
-  
+
   onDestroy(() => {
     if (refreshInterval) {
       clearInterval(refreshInterval);
     }
   });
-  
+
   function scrollToBottom() {
     if (logContainer) {
       logContainer.scrollTop = logContainer.scrollHeight;
     }
   }
-  
+
   function getLevelColor(level: LogLevel): string {
     const colors = {
       debug: 'bg-gray-100 text-gray-600',
@@ -74,7 +75,7 @@
     };
     return colors[level] || 'bg-gray-100 text-gray-600';
   }
-  
+
   function getLevelIcon(level: LogLevel): string {
     const icons = {
       debug: '🐛',
@@ -85,7 +86,7 @@
     };
     return icons[level] || 'ℹ️';
   }
-  
+
   function getCategoryIcon(category: string): string {
     const icons = {
       system: '⚙️',
@@ -100,7 +101,7 @@
     };
     return icons[category] || '📋';
   }
-  
+
   function formatTimestamp(timestamp: number): string {
     return new Date(timestamp).toLocaleTimeString('en-US', {
       hour12: false,
@@ -110,7 +111,7 @@
       fractionalSecondDigits: 3
     });
   }
-  
+
   function formatData(data: any): string {
     if (!data) return '';
     try {
@@ -119,22 +120,22 @@
       return String(data);
     }
   }
-  
+
   function clearLogs() {
     if (confirm('Are you sure you want to clear all logs?')) {
       // This would require a method in the logging service
       location.reload(); // Simple solution for now
     }
   }
-  
+
   function exportLogs() {
     const filter: LogFilter = {
       category: selectedCategory !== 'all' ? [selectedCategory] : undefined,
       level: selectedLevel !== 'all' ? [selectedLevel] : undefined
     };
-    
+
     const exportData = loggingService.exportLogs('json', filter);
-    
+
     // Create download
     const blob = new Blob([exportData], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -146,7 +147,7 @@
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }
-  
+
   function selectEntry(entry: LogEntry) {
     selectedEntry = entry;
     showDetails = true;
@@ -162,17 +163,17 @@
           📊 Logging Dashboard
           <span class="text-sm text-gray-400">({stats.totalEntries} entries)</span>
         </h2>
-        
+
         <div class="flex items-center gap-2">
-          <Button size="sm" variant="outline" on:click={exportLogs}>
+          <Button size="sm" variant="outline" onclick={exportLogs}>
             📤 Export
           </Button>
-          <Button size="sm" variant="outline" on:click={clearLogs}>
+          <Button size="sm" variant="outline" onclick={clearLogs}>
             🗑️ Clear
           </Button>
         </div>
       </div>
-      
+
       <!-- Stats Bar -->
       <div class="grid grid-cols-6 gap-4 mb-4">
         <div class="text-center">
@@ -200,7 +201,7 @@
           <div class="text-green-300 font-mono">{stats.avgLogsPerMinute}/min</div>
         </div>
       </div>
-      
+
       <!-- Filters -->
       <div class="flex gap-4">
         <input
@@ -209,8 +210,8 @@
           bind:value={searchQuery}
           class="flex-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white placeholder-gray-400"
         />
-        
-        <select 
+
+        <select
           bind:value={selectedLevel}
           class="px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white"
         >
@@ -221,8 +222,8 @@
           <option value="error">Error</option>
           <option value="fatal">Fatal</option>
         </select>
-        
-        <select 
+
+        <select
           bind:value={selectedCategory}
           class="px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white"
         >
@@ -231,7 +232,7 @@
             <option value={category}>{category}</option>
           {/each}
         </select>
-        
+
         <label class="flex items-center gap-2">
           <input
             type="checkbox"
@@ -242,9 +243,9 @@
         </label>
       </div>
     </div>
-    
+
     <!-- Log Entries -->
-    <div 
+    <div
       class="flex-1 overflow-y-auto p-2"
       bind:this={logContainer}
     >
@@ -256,53 +257,53 @@
       {:else}
         <div class="space-y-1">
           {#each filteredEntries as entry (entry.id)}
-            <div 
+            <div
               class="log-entry group hover:bg-gray-800 p-2 rounded cursor-pointer transition-colors duration-150"
-              on:click={() => selectEntry(entry)}
+              onclick={() => selectEntry(entry)}
             >
               <div class="flex items-start gap-3">
                 <!-- Timestamp -->
                 <div class="text-xs text-gray-400 font-mono min-w-[80px]">
                   {formatTimestamp(entry.timestamp)}
                 </div>
-                
+
                 <!-- Level Badge -->
                 <div class="min-w-[60px]">
                   <Badge class={getLevelColor(entry.level) + ' text-xs'}>
                     {getLevelIcon(entry.level)} {entry.level.toUpperCase()}
                   </Badge>
                 </div>
-                
+
                 <!-- Category -->
                 <div class="text-xs text-gray-300 min-w-[80px] flex items-center gap-1">
                   <span>{getCategoryIcon(entry.category)}</span>
                   <span>{entry.category}</span>
                 </div>
-                
+
                 <!-- Message -->
                 <div class="flex-1 text-sm">
                   <span class="text-white">{entry.message}</span>
-                  
+
                   {#if entry.service}
                     <span class="text-gray-400 text-xs ml-2">({entry.service})</span>
                   {/if}
-                  
+
                   {#if entry.data}
                     <div class="text-xs text-gray-400 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       📎 Has additional data
                     </div>
                   {/if}
-                  
+
                   {#if entry.error}
                     <div class="text-xs text-red-400 mt-1">
                       🐛 {entry.error.message}
                     </div>
                   {/if}
                 </div>
-                
+
                 <!-- Actions -->
                 <div class="opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Button size="sm" variant="ghost" on:click|stopPropagation={() => selectEntry(entry)}>
+                  <Button size="sm" variant="ghost" onclick={(e) => { e.stopPropagation(); () => selectEntry(entry)(); }}>
                     👁️
                   </Button>
                 </div>
@@ -324,11 +325,11 @@
           <h3 class="text-xl font-bold text-green-400 flex items-center gap-2">
             {getLevelIcon(selectedEntry.level)} Log Entry Details
           </h3>
-          <Button variant="ghost" on:click={() => showDetails = false}>
+          <Button variant="ghost" onclick={() => showDetails = false}>
             ✕
           </Button>
         </div>
-        
+
         <!-- Entry Details -->
         <div class="space-y-4 overflow-y-auto max-h-96">
           <div class="grid grid-cols-2 gap-4">
@@ -338,7 +339,7 @@
                 {new Date(selectedEntry.timestamp).toISOString()}
               </div>
             </div>
-            
+
             <div>
               <label class="text-sm text-gray-400">Level</label>
               <div>
@@ -347,40 +348,40 @@
                 </Badge>
               </div>
             </div>
-            
+
             <div>
               <label class="text-sm text-gray-400">Category</label>
               <div class="text-white flex items-center gap-2">
                 {getCategoryIcon(selectedEntry.category)} {selectedEntry.category}
               </div>
             </div>
-            
+
             <div>
               <label class="text-sm text-gray-400">Entry ID</label>
               <div class="font-mono text-white text-sm">{selectedEntry.id}</div>
             </div>
-            
+
             {#if selectedEntry.service}
               <div>
                 <label class="text-sm text-gray-400">Service</label>
                 <div class="text-white">{selectedEntry.service}</div>
               </div>
             {/if}
-            
+
             {#if selectedEntry.userId}
               <div>
                 <label class="text-sm text-gray-400">User ID</label>
                 <div class="font-mono text-white text-sm">{selectedEntry.userId}</div>
               </div>
             {/if}
-            
+
             {#if selectedEntry.sessionId}
               <div>
                 <label class="text-sm text-gray-400">Session ID</label>
                 <div class="font-mono text-white text-sm">{selectedEntry.sessionId}</div>
               </div>
             {/if}
-            
+
             {#if selectedEntry.requestId}
               <div>
                 <label class="text-sm text-gray-400">Request ID</label>
@@ -388,7 +389,7 @@
               </div>
             {/if}
           </div>
-          
+
           <!-- Message -->
           <div>
             <label class="text-sm text-gray-400">Message</label>
@@ -396,7 +397,7 @@
               <code class="text-white whitespace-pre-wrap">{selectedEntry.message}</code>
             </div>
           </div>
-          
+
           <!-- Data -->
           {#if selectedEntry.data}
             <div>
@@ -406,7 +407,7 @@
               </div>
             </div>
           {/if}
-          
+
           <!-- Error -->
           {#if selectedEntry.error}
             <div>
@@ -419,7 +420,7 @@
               </div>
             </div>
           {/if}
-          
+
           <!-- Meta -->
           {#if selectedEntry.meta}
             <div>
@@ -429,7 +430,7 @@
               </div>
             </div>
           {/if}
-          
+
           <!-- Tags -->
           {#if selectedEntry.tags && selectedEntry.tags.length > 0}
             <div>
@@ -442,18 +443,18 @@
             </div>
           {/if}
         </div>
-        
+
         <!-- Actions -->
         <div class="flex gap-2 mt-6">
-          <Button 
-            variant="outline" 
-            on:click={() => {
+          <Button
+            variant="outline"
+            onclick={() => {
               navigator.clipboard.writeText(JSON.stringify(selectedEntry, null, 2));
             }}
           >
             📋 Copy JSON
           </Button>
-          <Button variant="outline" on:click={() => showDetails = false}>
+          <Button variant="outline" onclick={() => showDetails = false}>
             Close
           </Button>
         </div>
@@ -468,35 +469,35 @@
     flex-direction: column;
     font-family: 'Monaco', 'Consolas', 'Courier New', monospace;
   }
-  
+
   .log-entry {
     font-size: 0.875rem;
     line-height: 1.25rem;
   }
-  
+
   pre {
     white-space: pre-wrap;
     word-wrap: break-word;
   }
-  
+
   :global(.logging-dashboard .log-entry:nth-child(even)) {
     background-color: rgba(255, 255, 255, 0.02);
   }
-  
+
   /* Scrollbar styling */
   .overflow-y-auto::-webkit-scrollbar {
     width: 8px;
   }
-  
+
   .overflow-y-auto::-webkit-scrollbar-track {
     background: #1f2937;
   }
-  
+
   .overflow-y-auto::-webkit-scrollbar-thumb {
     background: #4b5563;
     border-radius: 4px;
   }
-  
+
   .overflow-y-auto::-webkit-scrollbar-thumb:hover {
     background: #6b7280;
   }

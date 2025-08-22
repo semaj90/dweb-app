@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+
 import { json } from "@sveltejs/kit";
 
 export const POST: RequestHandler = async ({ request }) => {
@@ -311,7 +311,7 @@ async function parseAndReturnTags(
   }
   return json(tagsResult);
 }
-function validateAndCleanParsedData(parsed: any, enhanced: boolean): any {
+function validateAndCleanParsedData(parsed: any, enhanced: boolean): unknown {
   const result: any = {};
 
   // Validate arrays
@@ -460,7 +460,7 @@ function attemptJsonRepair(jsonStr: string): string | null {
     return null;
   }
 }
-function extractWithFallbackMethods(text: string, enhanced: boolean): any {
+function extractWithFallbackMethods(text: string, enhanced: boolean): unknown {
   const result: any = {
     tags: extractBasicTags(text),
     summary: text.substring(0, 200) + "...",
@@ -589,7 +589,7 @@ function enhanceWithFileMetadata(
   result: any,
   fileName?: string,
   fileType?: string,
-): any {
+): unknown {
   if (fileName) {
     // Extract metadata from filename
     const lowerName = fileName.toLowerCase();

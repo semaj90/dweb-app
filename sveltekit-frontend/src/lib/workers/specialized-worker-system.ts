@@ -1,13 +1,11 @@
-// @ts-nocheck
+
 /**
  * Specialized Worker System - Event-Driven "Hive Programming"
  * Implements RabbitMQ-based job distribution for AI services
  * Jobs: SUMMARIZE_DOCUMENT, GET_CASE_LAW, GENERATE_EMBEDDING
  */
 
-amqp from "amqplib";
-// Orphaned content: import {
-
+import amqp from "amqplib";
 import type { RAGDocument } from '$lib/types/rag.js';
 
 export interface SpecializedJob {
@@ -29,7 +27,7 @@ export interface SpecializedJob {
 export interface WorkerResult {
   jobId: string;
   success: boolean;
-  data?: any;
+  data?: unknown;
   error?: string;
   processingTime: number;
   workerInfo: {
@@ -438,7 +436,7 @@ export class CaseLawWorker extends SpecializedWorker {
     };
   }
 
-  private async searchCaseLaw(query: string, options: any): Promise<any[]> {
+  private async searchCaseLaw(query: string, options: any): Promise<unknown[]> {
     // Placeholder for case law search
     return [
       {

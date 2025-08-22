@@ -1,9 +1,8 @@
 import { Pool } from "pg";
-// @ts-nocheck
+
 import { building } from "$app/environment";
-// Orphaned content: import * as schema from "$lib/server/db/schema-postgres";
-import {
-drizzle, type NodePgDatabase
+import * as schema from "$lib/server/db/schema-postgres";
+import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 
 let _db: NodePgDatabase<typeof schema> | null = null;
 let _pool: Pool | null = null;

@@ -1,10 +1,11 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+
 // Simplified Ollama API route for Legal AI Chat
 // SvelteKit 2.0 + Svelte 5 + Direct Ollama integration
 
 import { json, error } from "@sveltejs/kit";
 import { ollamaService } from "$lib/server/services/OllamaService";
+import { logger } from "$lib/server/logger";
 import { dev } from "$app/environment";
 
 export interface ChatRequest {
@@ -39,7 +40,7 @@ export const POST: RequestHandler = async ({ request }) => {
   try {
     const {
       message,
-      model = "gemma2:2b",
+      model = "gemma3-legal:latest",
       temperature = 0.7,
       stream = false,
     }: ChatRequest = await request.json();
@@ -57,19 +58,7 @@ export const POST: RequestHandler = async ({ request }) => {
     }
 
     // Add legal AI system prompt
-    const systemPrompt = `You are a specialized legal AI assistant for prosecutors, detectives, and legal professionals.
-
-Instructions:
-- Provide accurate, well-reasoned legal analysis
-- Cite relevant laws, precedents, and procedures when possible
-- Consider ethical implications and due process
-- Focus on factual, evidence-based responses
-- Always note when additional professional legal research is recommended
-- Keep responses concise but comprehensive
-
-User question: ${message}
-
-Please provide a helpful legal analysis:`;
+    const systemPrompt = `You are a legal AI assistant. User question: ${message}`;
 
     // Handle streaming vs non-streaming responses
     if (stream) {

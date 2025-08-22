@@ -1,5 +1,5 @@
 import path from "path";
-// @ts-nocheck
+
 // Fuse.js import wrapper with fallback
 let Fuse: any;
 

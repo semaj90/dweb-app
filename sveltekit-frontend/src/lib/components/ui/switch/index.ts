@@ -1,4 +1,3 @@
-import type { CommonProps } from '$lib/types/common-props';
 // Switch Component Barrel Export
 import { Switch } from "bits-ui";
 

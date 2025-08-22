@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Server-side logger utility
  */
@@ -15,22 +15,22 @@ export class Logger {
     return Logger.instance;
   }
 
-  info(message: string, meta?: any) {
+  info(message: string, meta?: unknown) {
     console.log(`[INFO] ${new Date().toISOString()} - ${message}`, meta || "");
   }
 
-  error(message: string, error?: any) {
+  error(message: string, error?: unknown) {
     console.error(
       `[ERROR] ${new Date().toISOString()} - ${message}`,
       error || ""
     );
   }
 
-  warn(message: string, meta?: any) {
+  warn(message: string, meta?: unknown) {
     console.warn(`[WARN] ${new Date().toISOString()} - ${message}`, meta || "");
   }
 
-  debug(message: string, meta?: any) {
+  debug(message: string, meta?: unknown) {
     if (import.meta.env.NODE_ENV === "development") {
       console.debug(
         `[DEBUG] ${new Date().toISOString()} - ${message}`,

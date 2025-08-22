@@ -1,9 +1,9 @@
-// @ts-nocheck
+
 // Vector search types and interfaces
 export interface SearchResult {
   id: string;
   score: number;
-  payload?: any;
+  payload?: unknown;
   metadata?: Record<string, any>;
 }
 export interface VectorSearchOptions {

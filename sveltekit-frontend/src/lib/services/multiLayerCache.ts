@@ -536,7 +536,7 @@ export class MultiLayerCache {
   /**
    * Get persistent collection by type
    */
-  private getPersistentCollection(type: string): any { // Collection<CacheEntry>
+  private getPersistentCollection(type: string): unknown { // Collection<CacheEntry>
     if (!this.persistentDb) {
       throw new Error('Persistent storage not initialized');
     }

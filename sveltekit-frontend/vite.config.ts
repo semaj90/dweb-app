@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { sveltekit } from "@sveltejs/kit/vite";
 import { defineConfig } from "vite";
 import UnoCSS from "unocss/vite";
@@ -14,7 +14,7 @@ async function findAvailablePort(startPort: number, maxAttempts: number = 10): P
     try {
       await new Promise<void>((resolve, reject) => {
         const server = net.createServer();
-        server.listen(port, (err?: any) => {
+        server.listen(port, (err?: unknown) => {
           if (err) {
             reject(err);
           } else {
@@ -91,8 +91,8 @@ export default defineConfig(async ({ mode }) => {
     cors: true,
     strictPort: false, // Allow Vite to find alternative ports if needed
     hmr: {
-      port: 3131,
-      clientPort: 3131
+      port: 24679,
+      clientPort: 24679
     },
     fs: {
       allow: ['..', '../../']

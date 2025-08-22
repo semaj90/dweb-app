@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * LLM Provider and Multi-Agent System Types
  * Comprehensive type definitions for the AI orchestration system
@@ -126,7 +126,7 @@ export interface ToolParameter {
 	type: 'string' | 'number' | 'boolean' | 'array' | 'object';
 	description: string;
 	required: boolean;
-	default?: any;
+	default?: unknown;
 }
 
 export interface AgentConfig {
@@ -258,7 +258,7 @@ export interface TaskRequirements {
 export interface AITaskResponse {
 	taskId: string;
 	success: boolean;
-	result?: any;
+	result?: unknown;
 	error?: string;
 	duration: number;
 	metrics?: ResponseMetrics;
@@ -286,7 +286,7 @@ export interface ProcessingStep {
 	name: string;
 	duration: number;
 	status: 'completed' | 'failed' | 'skipped';
-	output?: any;
+	output?: unknown;
 }
 
 // System Health and Monitoring Types

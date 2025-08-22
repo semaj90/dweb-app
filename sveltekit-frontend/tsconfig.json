@@ -47,6 +47,9 @@
     "js_tests/**",
     "enhanced-package-setup.mjs",
     "../vscode-llm-extension/**",
-    "../rag/**"
+    "../rag/**",
+    "node_modules/drizzle-orm/mysql-core/**",
+    "node_modules/drizzle-orm/sqlite-core/**",
+    "node_modules/drizzle-orm/singlestore-core/**"
   ]
 }

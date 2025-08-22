@@ -2,11 +2,11 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { json } from "@sveltejs/kit";
 import type { RequestHandler } from "@sveltejs/kit";
 import { z } from "zod";
-import { users } from "$lib/server/db/schema-postgres";
+import { users, userProfiles } from "$lib/server/db/schema-postgres";
 import { lucia } from "$lib/server/auth";
 import { db } from "$lib/server/db";
 import { eq } from "drizzle-orm";
-import { Argon2id } from "oslo/password";
+import bcrypt from 'bcryptjs';
 
 const registerSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -55,7 +55,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress, cookies 
     }
 
     // Hash password
-    const hashedPassword = await new Argon2id().hash(password);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create user in database
     const [newUser] = await db
@@ -70,6 +70,33 @@ export const POST: RequestHandler = async ({ request, getClientAddress, cookies 
         isActive: true,
       })
       .returning();
+
+    // Create user profile with default values and permissions
+    const defaultPermissions = getDefaultPermissions(role);
+    try {
+      await db
+        .insert(userProfiles)
+        .values({
+          userId: newUser.id,
+          permissions: defaultPermissions,
+          experienceLevel: 'junior',
+          preferences: {
+            theme: 'light',
+            notifications: true,
+            autoSave: true,
+          },
+          workPatterns: {
+            mostActiveHours: [],
+            documentsPerWeek: 0,
+            casesHandled: 0,
+          },
+          specializations: [],
+          certifications: [],
+          metadata: {},
+        });
+    } catch (profileError) {
+      console.log("⚠️ User profile creation failed, continuing without profile:", profileError.message);
+    }
 
     console.log("✅ User registered successfully:", {
       id: newUser.id,

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { test, expect } from '@playwright/test';
 
 test.describe('System Health and Logging', () => {
@@ -118,7 +118,7 @@ test.describe('System Health and Logging', () => {
     expect(Array.isArray(logs.entries)).toBe(true);
     
     // Find login error log
-    const loginError = logs.entries.find((log: any) => 
+    const loginError = logs.entries.find((log: unknown) => 
       log.message.includes('login') || log.message.includes('authentication')
     );
     
@@ -155,7 +155,7 @@ test.describe('System Health and Logging', () => {
     expect(performance).toHaveProperty('endpoints');
     
     // Check metrics for each endpoint
-    endpoints.forEach(endpoint: any => {
+    endpoints.forEach(endpoint: unknown => {
       if (performance.endpoints[endpoint]) {
         expect(performance.endpoints[endpoint]).toMatchObject({
           avg_response_time_ms: expect.any(Number),
@@ -200,7 +200,7 @@ test.describe('System Health and Logging', () => {
     
     // Check for slow queries
     if (dbMetrics.slow_queries && dbMetrics.slow_queries.length > 0) {
-      dbMetrics.slow_queries.forEach((query: any) => {
+      dbMetrics.slow_queries.forEach((query: unknown) => {
         expect(query).toMatchObject({
           query: expect.any(String),
           duration_ms: expect.any(Number),
@@ -225,7 +225,7 @@ test.describe('System Health and Logging', () => {
     
     // Check error patterns
     if (errorMetrics.summary.top_errors.length > 0) {
-      errorMetrics.summary.top_errors.forEach((error: any) => {
+      errorMetrics.summary.top_errors.forEach((error: unknown) => {
         expect(error).toMatchObject({
           type: expect.any(String),
           count: expect.any(Number),
@@ -260,7 +260,7 @@ test.describe('System Health and Logging', () => {
     
     // Recent activities should include our actions
     const recentActivities = activityLogs.activities.slice(0, 5);
-    const activityTypes = recentActivities.map((a: any) => a.action);
+    const activityTypes = recentActivities.map((a: unknown) => a.action);
     
     expect(activityTypes).toContain('login');
     expect(activityTypes).toContain('page_view');
@@ -328,7 +328,7 @@ test.describe('System Health and Logging', () => {
     
     // Check for failed jobs
     if (jobStatus.failed_jobs && jobStatus.failed_jobs.length > 0) {
-      jobStatus.failed_jobs.forEach((job: any) => {
+      jobStatus.failed_jobs.forEach((job: unknown) => {
         expect(job).toMatchObject({
           id: expect.any(String),
           name: expect.any(String),

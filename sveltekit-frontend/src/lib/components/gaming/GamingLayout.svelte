@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state, $derived } from 'svelte';
 
 	import { page } from '$app/state';
 	import GamingHUD from './GamingHUD.svelte';
@@ -462,7 +462,4 @@ import type { CommonProps } from '$lib/types/common-props';
 		/* Mobile sidebar toggle would need JavaScript implementation */
 	}
 </style>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

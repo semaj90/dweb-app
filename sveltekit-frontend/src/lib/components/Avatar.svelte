@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
 	import { onMount } from 'svelte';
+  import { $props, $derived } from 'svelte';
 	import { avatarStore } from "../stores/avatarStore";
 	
 	export let size: 'small' | 'medium' | 'large' = 'medium';
@@ -11,11 +11,11 @@ import type { CommonProps } from '$lib/types/common-props';
 	let fileInput: HTMLInputElement;
 	let dragOver = false;
 	
-	$: avatarSize = {
+	let avatarSize = $derived({
 		small: '32px',
 		medium: '48px', 
 		large: '80px'
-	}[size];
+	}[size]);
 	
 	onMount(() => {
 		avatarStore.loadAvatar();

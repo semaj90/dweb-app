@@ -9,16 +9,16 @@
   import { browser } from '$app/environment';
   import WasmGpuDemo from '$lib/components/demo/WasmGpuDemo.svelte';
   import { WasmGpuHelpers } from '$lib/wasm/gpu-wasm-init';
-  
+
   let webGpuSupported = $state(false);
   let supportCheckComplete = $state(false);
-  
+
   onMount(async () => {
     if (browser) {
       // Check WebGPU support
       webGpuSupported = await WasmGpuHelpers.validateWebGpuSupport();
       supportCheckComplete = true;
-      
+
       console.log('🎮 WebGPU support check:', webGpuSupported ? 'Supported' : 'Not supported');
     }
   });
@@ -46,10 +46,10 @@
         <div class="text-red-400 text-6xl mb-6">⚠️</div>
         <h1 class="text-3xl font-bold text-white mb-4">WebGPU Not Supported</h1>
         <p class="text-gray-300 mb-6 leading-relaxed">
-          Your browser doesn't support WebGPU, which is required for this demonstration. 
+          Your browser doesn't support WebGPU, which is required for this demonstration.
           WebGPU enables high-performance GPU compute operations directly in the browser.
         </p>
-        
+
         <div class="bg-gray-800 rounded-lg p-6 text-left mb-6">
           <h3 class="text-lg font-semibold text-yellow-400 mb-3">Requirements:</h3>
           <ul class="space-y-2 text-gray-300">
@@ -71,7 +71,7 @@
             </li>
           </ul>
         </div>
-        
+
         <div class="bg-blue-900/20 border border-blue-700 rounded-lg p-4 mb-6">
           <h4 class="text-blue-400 font-semibold mb-2">Chrome Setup Instructions:</h4>
           <ol class="text-sm text-gray-300 text-left space-y-1">
@@ -81,16 +81,16 @@
             <li>4. Restart Chrome</li>
           </ol>
         </div>
-        
+
         <div class="flex gap-4 justify-center">
-          <a 
-            href="/" 
+          <a
+            href="/"
             class="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
           >
             Return Home
           </a>
-          <button 
-            onclick={() => window.location.reload()} 
+          <button
+            onclick={() => window.location.reload()}
             class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
           >
             Check Again

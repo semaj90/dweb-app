@@ -1,32 +1,31 @@
 <!-- Replace the Card component file -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-
+  // Do not import Svelte runes; they are provided by the compiler/runtime.
   import type { HTMLAttributes } from 'svelte/elements';
 
   interface Props extends HTMLAttributes<HTMLDivElement> {
     variant?: 'default' | 'interactive' | 'outline';
     padding?: 'none' | 'sm' | 'md' | 'lg';
+    class?: string;
   }
 
   let {
     variant = 'default',
     padding = 'md',
     class: className = '',
-    children,
     ...restProps
-  }: Props & { children?: any } = $props();
+  }: Props = $props();
 
-  const classes = $derived([
+  $: classes = [
     'nier-card',
     `nier-card-${variant}`,
     padding !== 'none' && `nier-card-padding-${padding}`,
     className
-  ].filter(Boolean).join(' '));
+  ].filter(Boolean).join(' ');
 </script>
 
-<div class={classes} {...restProps} data-card-root>
-  {@render children?.()}
+<div class={classes} data-card-root {...restProps}>
+  <slot />
 </div>
 
 <style>

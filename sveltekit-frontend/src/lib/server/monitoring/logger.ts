@@ -1,5 +1,5 @@
 import { dev } from "$app/environment";
-// @ts-nocheck
+
 /**
  * Advanced Logging & Performance Monitoring System
  * For Legal Case Management Application
@@ -186,20 +186,20 @@ class AppLogger {
 export const logger = new AppLogger();
 
 // Convenience methods
-export const logInfo = (message: string, metadata?: any) =>
+export const logInfo = (message: string, metadata?: unknown) =>
   logger.log("info", message, metadata);
-export const logWarn = (message: string, metadata?: any) =>
+export const logWarn = (message: string, metadata?: unknown) =>
   logger.log("warn", message, metadata);
-export const logError = (message: string, metadata?: any) =>
+export const logError = (message: string, metadata?: unknown) =>
   logger.log("error", message, metadata);
-export const logDebug = (message: string, metadata?: any) =>
+export const logDebug = (message: string, metadata?: unknown) =>
   logger.log("debug", message, metadata);
 
 // User action logging for audit trail
 export const logUserAction = (
   action: string,
   userId: string,
-  metadata?: any,
+  metadata?: unknown,
 ) => {
   logger.log("info", `User action: ${action}`, {
     action,

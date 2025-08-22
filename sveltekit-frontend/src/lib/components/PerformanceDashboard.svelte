@@ -4,7 +4,7 @@
 -->
 
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $state } from 'svelte';
 
   import { onMount } from 'svelte';
   import { writable } from 'svelte/store';
@@ -24,7 +24,7 @@ import type { CommonProps } from '$lib/types/common-props';
 }
   const metrics = writable<PerformanceMetrics | null>(null);
   const health = writable<SystemHealth | null>(null);
-  const logs = writable<any[]>([]);
+  const logs = writable<unknown[]>([]);
   
   let refreshInterval: NodeJS.Timeout;
   let autoRefresh = $state(true);
@@ -456,7 +456,4 @@ import type { CommonProps } from '$lib/types/common-props';
   .text-gray-600 { color: #6b7280; }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

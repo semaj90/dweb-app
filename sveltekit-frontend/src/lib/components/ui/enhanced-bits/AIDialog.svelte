@@ -1,8 +1,7 @@
 <!-- AI Dialog: Svelte 5, Bits UI, UnoCSS, transitions, analytics logging -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
-  interface Props extends CommonProps {
+  interface Props {
     class?: string;
     children?: import('svelte').Snippet;
   }

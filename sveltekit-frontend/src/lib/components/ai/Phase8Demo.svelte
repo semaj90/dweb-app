@@ -1,13 +1,13 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { onMount } from 'svelte';
+  import { $props, $state } from 'svelte';
   import { MatrixUICompiler, type MatrixUINode } from '$lib/ui/matrix-compiler';
   import { MatrixLODSystem, type ViewportFocus } from '$lib/ui/matrix-lod';
   import { LegalAIReranker, type UserContext, enhancedSearch } from '$lib/ai/custom-reranker';
   import { PredictivePrefetcher } from '$lib/workers/predictive-prefetch';
 
-  interface Props extends CommonProps {
+  interface Props {
     class?: string;
   }
 

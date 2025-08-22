@@ -6,7 +6,15 @@ import { analyzeCurrentErrors } from "../../context7-multicore-error-analysis.js
  */
 
 import { phase13Integration, initializePhase13, getSystemHealth } from "./phase13-full-integration.js";
-import { flashAttention2Service, , export interface SystemOrchestrationConfig {,   enableFlashAttention: boolean;,   enablePhase13Integration: boolean;,   enableErrorAnalysis: boolean;,   enableAutoRemediation: boolean;,   performanceMode: 'development' | 'production' | 'debug'; } from
+import { flashAttention2Service } from "../services/flash-attention2-service";
+
+export interface SystemOrchestrationConfig {
+  enableFlashAttention: boolean;
+  enablePhase13Integration: boolean;
+  enableErrorAnalysis: boolean;
+  enableAutoRemediation: boolean;
+  performanceMode: 'development' | 'production' | 'debug';
+}
 
 export interface OrchestrationResult {
   success: boolean;
@@ -14,7 +22,7 @@ export interface OrchestrationResult {
     flashAttention2: any;
     phase13: any;
     errorAnalysis: any;
-    autoRemediation?: any;
+    autoRemediation?: unknown;
   };
   performance: {
     initializationTime: number;

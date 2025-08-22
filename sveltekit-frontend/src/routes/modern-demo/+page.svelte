@@ -1,478 +1,419 @@
 <script lang="ts">
-  import EvidenceCard from "$lib/components/evidence/EvidenceCard.svelte";
-  import ExpandGrid from "$lib/components/ui/ExpandGrid.svelte";
-  import GoldenLayout from "$lib/components/ui/GoldenLayout.svelte";
-  import SmartTextarea from "$lib/components/ui/SmartTextarea.svelte";
-  import { citationStore } from "$lib/stores/citations";
-  import type { Evidence } from "$lib/stores/report";
-  import { onMount } from "svelte";
+  import { ModernCard, ModernButton, ModernDialog } from '$lib/components/ui/modern';
+  import {
+    Shield,
+    Settings,
+    Bell,
+    User,
+    FileText,
+    Search,
+    Brain,
+    Database
+  } from 'lucide-svelte';
 
-  let sidebarCollapsed = $state(false);
-  let textareaValue =
-    $state("Try typing # or pressing Ctrl+K to open the command menu!\n\nThis smart textarea integrates with your citations and commands.");
+  // Demo state
+  let dialogOpen = $state(false);
+  let notifications = $state(3);
+  let loadingCard = $state(false);
 
-  // Sample evidence data
-  const sampleEvidence = [
-    {
-      id: "1",
-      title: "Crime Scene Photo 1",
-      description: "Primary evidence showing the scene of the incident",
-      type: "image" as const,
-      url: "https://via.placeholder.com/200x150/4f46e5/white?text=Evidence+1",
-      tags: ["crime scene", "primary evidence"],
-      metadata: { size: 2048576, format: "JPEG" },
-      createdAt: new Date("2024-01-15"),
-      updatedAt: new Date("2024-01-15"),
-    },
-    {
-      id: "2",
-      title: "Witness Statement Video",
-      description: "Interview with key witness recorded on-site",
-      type: "video" as const,
-      url: "https://via.placeholder.com/200x150/10b981/white?text=Video+Evidence",
-      tags: ["witness", "interview"],
-      metadata: { size: 50331648, format: "MP4" },
-      createdAt: new Date("2024-01-16"),
-      updatedAt: new Date("2024-01-16"),
-    },
-    {
-      id: "3",
-      title: "Audio Recording",
-      description: "Phone call recording related to the case",
-      type: "audio" as const,
-      tags: ["audio", "phone call"],
-      metadata: { size: 1048576, format: "WAV" },
-      createdAt: new Date("2024-01-17"),
-      updatedAt: new Date("2024-01-17"),
-    },
-    {
-      id: "4",
-      title: "Legal Document",
-      description: "Contract related to the dispute",
-      type: "document" as const,
-      tags: ["contract", "legal"],
-      metadata: { size: 524288, format: "PDF" },
-      createdAt: new Date("2024-01-18"),
-      updatedAt: new Date("2024-01-18"),
-    },
-    {
-      id: "5",
-      title: "External Link",
-      description: "Reference to online legal database",
-      type: "link" as const,
-      url: "https://example.com/legal-database",
-      tags: ["reference", "database"],
-      metadata: { format: "URL" },
-      createdAt: new Date("2024-01-19"),
-      updatedAt: new Date("2024-01-19"),
-    },
-    {
-      id: "6",
-      title: "Additional Evidence",
-      description: "Supporting documentation for the case",
-      type: "document" as const,
-      tags: ["supporting", "documentation"],
-      metadata: { size: 256000, format: "DOCX" },
-      createdAt: new Date("2024-01-20"),
-      updatedAt: new Date("2024-01-20"),
-    },
-  ];
+  function handleCardClick() {
+    console.log('Card clicked!');
+  }
 
-  onMount(() => {
-    // Load citations when component mounts
-    citationStore.loadCitations();
-  });
-
-  function handleEvidenceView(evidence: Evidence) {
-    console.log("View evidence:", evidence);
-}
-  function handleEvidenceEdit(evidence: Evidence) {
-    console.log("Edit evidence:", evidence);
-}
-  function handleEvidenceDelete(evidence: Evidence) {
-    console.log("Delete evidence:", evidence);
-}
-  function handleEvidenceDownload(evidence: Evidence) {
-    console.log("Download evidence:", evidence);
-}
-  function handleGridExpand(event: CustomEvent) {
-    console.log("Grid expand:", event.detail);
-}
-  function handleTextareaInput(event: CustomEvent) {
-    console.log("Textarea input:", event.detail);
-}
-  function handleCommandInsert(event: CustomEvent) {
-    console.log("Command insert:", event.detail);
-}
+  function handleLoadingDemo() {
+    loadingCard = true;
+    setTimeout(() => {
+      loadingCard = false;
+    }, 3000);
+  }
 </script>
 
 <svelte:head>
-  <title>Modern SvelteKit Components Demo</title>
-  <meta
-    name="description"
-    content="Demonstration of modern SvelteKit components with Melt UI"
-  />
+  <title>Modern Components Demo - YoRHa Legal AI</title>
 </svelte:head>
 
-<div class="space-y-4">
-  <header class="space-y-4">
-    <h1>Modern SvelteKit Components Demo</h1>
-    <p>
-      Showcasing modern layout techniques, command menus, and interactive
-      components
-    </p>
+<div class="modern-demo">
+  <header class="demo-header">
+    <ModernCard title="Modern SvelteKit 2 Demo" subtitle="Golden Ratio Design System with Bits-UI + Melt-UI">
+      {#snippet children()}
+        <p class="demo-description">
+          This page demonstrates the modern component library built with Svelte 5,
+          golden ratio spacing, CSS Grid layouts, and modular architecture.
+        </p>
+      {/snippet}
+    </ModernCard>
   </header>
 
-  <GoldenLayout
-    ratio="golden"
-    collapsible={true}
-    bind:collapsed={sidebarCollapsed}
-    on:toggle={(e) => console.log("Sidebar toggled:", e.detail.collapsed)}
-  >
-    <div class="space-y-4" >
-      <section class="space-y-4">
-        <h2>📝 Smart Textarea with Command Menu</h2>
-        <p>
-          This textarea integrates a command menu system. Try typing <code
-            >#</code
-          >
-          or pressing
-          <kbd>Ctrl+K</kbd> to open the command menu. You can insert citations, navigate
-          to different parts of the app, or insert common text snippets.
-        </p>
+  <!-- Button Variants Demo -->
+  <section class="demo-section">
+    <h2 class="section-title">Button Components</h2>
+    <div class="button-grid">
+      <ModernButton variant="primary" tooltip="Primary action button">
+        {#snippet icon()}<Shield class="w-4 h-4" />{/snippet}
+        {#snippet children()}Primary Action{/snippet}
+      </ModernButton>
 
-        <SmartTextarea
-          bind:value={textareaValue}
-          placeholder="Type # for commands or Ctrl+K for command menu..."
-          rows={6}
-          onInput={handleTextareaInput}
-          onCommandInsert={handleCommandInsert}
-        />
-      </section>
+      <ModernButton variant="secondary" tooltip="Secondary action button">
+        {#snippet icon()}<Settings class="w-4 h-4" />{/snippet}
+        {#snippet children()}Secondary{/snippet}
+      </ModernButton>
 
-      <section class="space-y-4">
-        <h2>🎨 Hover-Expanding Grid</h2>
-        <p>
-          This grid starts with 1 column and expands to 3 columns on hover.
-          Perfect for showcasing cards or gallery items with smooth transitions.
-        </p>
+      <ModernButton variant="ghost" tooltip="Ghost style button">
+        {#snippet icon()}<User class="w-4 h-4" />{/snippet}
+        {#snippet children()}Ghost{/snippet}
+      </ModernButton>
 
-        <ExpandGrid
-          columns={1}
-          expandedColumns={3}
-          expandDuration="0.4s"
-          on:expand={handleGridExpand}
-        >
-          {#each sampleEvidence as evidence}
-            <div class="space-y-4">
-              <EvidenceCard
-                {evidence}
-                onView={handleEvidenceView}
-                onEdit={handleEvidenceEdit}
-                onDelete={handleEvidenceDelete}
-                onDownload={handleEvidenceDownload}
-                expandOnHover={true}
-                compact={false}
-              />
-            </div>
-          {/each}
-        </ExpandGrid>
-      </section>
+      <ModernButton variant="outline" tooltip="Outlined button">
+        {#snippet icon()}<FileText class="w-4 h-4" />{/snippet}
+        {#snippet children()}Outline{/snippet}
+      </ModernButton>
 
-      <section class="space-y-4">
-        <h2>⚡ Fast SvelteKit Navigation</h2>
-        <p>
-          These links use standard <code>&lt;a&gt;</code> tags but SvelteKit automatically
-          intercepts them for fast, SPA-style navigation without page refreshes.
-        </p>
+      <ModernButton
+        variant="danger"
+        size="lg"
+        onclick={() => handleLoadingDemo()}
+        tooltip="Danger action with loading demo"
+      >
+        {#snippet children()}Danger Large{/snippet}
+      </ModernButton>
 
-        <div class="space-y-4">
-          <a href="/cases" class="space-y-4">📁 Cases</a>
-          <a href="/evidence" class="space-y-4">🔍 Evidence</a>
-          <a href="/search" class="space-y-4">🔎 Search</a>
-          <a href="/ai-assistant" class="space-y-4">🤖 AI Assistant</a>
-          <a href="/reports" class="space-y-4">📊 Reports</a>
-        </div>
-      </section>
-
-      <section class="space-y-4">
-        <h2>🎯 Features Demonstrated</h2>
-        <div class="space-y-4">
-          <div class="space-y-4">
-            <h3>Golden Ratio Layout</h3>
-            <p>
-              Sidebar uses the golden ratio (1.618:1) for optimal visual balance
-            </p>
-          </div>
-          <div class="space-y-4">
-            <h3>Command Menu</h3>
-            <p>Slash commands and keyboard shortcuts for power users</p>
-          </div>
-          <div class="space-y-4">
-            <h3>Smart Components</h3>
-            <p>
-              Context-aware interactions with real-time search and filtering
-            </p>
-          </div>
-          <div class="space-y-4">
-            <h3>Responsive Design</h3>
-            <p>Adapts to different screen sizes with mobile-first approach</p>
-          </div>
-        </div>
-      </section>
+      <ModernButton
+        variant="success"
+        size="xl"
+        tooltip="Success extra large button"
+      >
+        {#snippet icon()}<Brain class="w-4 h-4" />{/snippet}
+        {#snippet children()}Success XL{/snippet}
+      </ModernButton>
     </div>
+  </section>
 
-    {#snippet sidebar()}
-        <div class="space-y-4" >
-        <h3>📋 Citations</h3>
-        <p>Recent citations from your library:</p>
+  <!-- Card Variants Demo -->
+  <section class="demo-section">
+    <h2 class="section-title">Card Components</h2>
+    <div class="cards-grid">
+      <ModernCard
+        title="Default Card"
+        subtitle="Standard card with actions"
+        variant="default"
+        hoverable
+        clickable
+        onclick={handleCardClick}
+        tooltip="This is a clickable card with hover effects"
+      >
+        {#snippet children()}
+          <p>This is a default card with golden ratio spacing and modern styling.</p>
+        {/snippet}
+        {#snippet actions()}
+          <ModernButton variant="ghost" size="sm">
+            {#snippet icon()}<Bell class="w-4 h-4" />{/snippet}
+          </ModernButton>
+          <span class="notification-badge">{notifications}</span>
+        {/snippet}
+      </ModernCard>
 
-        <div class="space-y-4">
-          {#each citationStore.getRecentCitations($citationStore, 5) as citation}
-            <div class="space-y-4">
-              <div class="space-y-4">{citation.title}</div>
-              <div class="space-y-4">
-                {citation.source || citation.author}
-              </div>
-              <div class="space-y-4">{citation.date}</div>
+      <ModernCard
+        title="Elevated Card"
+        subtitle="Enhanced shadow and depth"
+        variant="elevated"
+        size="lg"
+        loading={loadingCard}
+      >
+        {#snippet children()}
+          <p>This elevated card demonstrates loading states and larger sizing.</p>
+          <div class="feature-list">
+            <div class="feature-item">
+              <Search class="w-5 h-5 text-yorha-accent-gold" />
+              <span>Advanced Search</span>
             </div>
-          {/each}
-        </div>
+            <div class="feature-item">
+              <Database class="w-5 h-5 text-yorha-accent-blue" />
+              <span>Vector Database</span>
+            </div>
+            <div class="feature-item">
+              <Brain class="w-5 h-5 text-yorha-accent-green" />
+              <span>AI Processing</span>
+            </div>
+          </div>
+        {/snippet}
+      </ModernCard>
 
-        <h3>🔧 Keyboard Shortcuts</h3>
-        <div class="space-y-4">
-          <div class="space-y-4">
-            <kbd>Ctrl</kbd> + <kbd>K</kbd>
-            <span>Open command menu</span>
+      <ModernCard
+        variant="outline"
+        size="xl"
+      >
+        {#snippet header()}
+          <div class="custom-header">
+            <Shield class="w-6 h-6 text-yorha-accent-gold" />
+            <div>
+              <h3 class="custom-title">Custom Header</h3>
+              <p class="custom-subtitle">With custom layout and icons</p>
+            </div>
           </div>
-          <div class="space-y-4">
-            <kbd>#</kbd>
-            <span>Trigger command menu</span>
+        {/snippet}
+        {#snippet children()}
+          <p>This card uses a custom header snippet with flexible layout options.</p>
+        {/snippet}
+        {#snippet footer()}
+          <div class="card-footer-actions">
+            <ModernButton variant="outline" size="sm">Cancel</ModernButton>
+            <ModernButton variant="primary" size="sm">Continue</ModernButton>
           </div>
-          <div class="space-y-4">
-            <kbd>Ctrl</kbd> + <kbd>\</kbd>
-            <span>Toggle sidebar</span>
-          </div>
-          <div class="space-y-4">
-            <kbd>Ctrl</kbd> + <kbd>1-4</kbd>
-            <span>Switch tabs</span>
-          </div>
-        </div>
+        {/snippet}
+      </ModernCard>
 
-        <h3>🎨 CSS Features</h3>
-        <ul class="space-y-4">
-          <li>CSS Grid with dynamic columns</li>
-          <li>Flexbox golden ratio layouts</li>
-          <li>Smooth transitions and animations</li>
-          <li>Hover effects and micro-interactions</li>
-          <li>Responsive breakpoints</li>
-          <li>CSS custom properties</li>
-        </ul>
+      <ModernCard
+        variant="ghost"
+        hoverable
+      >
+        {#snippet children()}
+          <div class="ghost-content">
+            <h3>Ghost Card</h3>
+            <p>Transparent background that appears on hover</p>
+            <ModernButton
+              variant="primary"
+              onclick={() => dialogOpen = true}
+            >
+              Open Dialog
+            </ModernButton>
+          </div>
+        {/snippet}
+      </ModernCard>
+    </div>
+  </section>
+
+  <!-- Dialog Demo -->
+  <ModernDialog
+    bind:open={dialogOpen}
+    title="Modern Dialog Example"
+    description="This dialog demonstrates the modern component with proper focus management and accessibility."
+    size="lg"
+  >
+    {#snippet children()}
+      <div class="dialog-content">
+        <p>This is a modern dialog built with Melt-UI and Bits-UI primitives.</p>
+        <div class="dialog-features">
+          <div class="feature">✅ Proper focus management</div>
+          <div class="feature">✅ Keyboard navigation</div>
+          <div class="feature">✅ Screen reader support</div>
+          <div class="feature">✅ Golden ratio spacing</div>
+        </div>
       </div>
+    {/snippet}
+    {#snippet footer()}
+      <div class="dialog-footer">
+        <ModernButton variant="ghost" onclick={() => dialogOpen = false}>
+          Cancel
+        </ModernButton>
+        <ModernButton variant="primary" onclick={() => dialogOpen = false}>
+          Confirm
+        </ModernButton>
+      </div>
+    {/snippet}
+  </ModernDialog>
+
+  <!-- Layout Demo -->
+  <section class="demo-section">
+    <h2 class="section-title">Layout System</h2>
+    <ModernCard title="Golden Ratio Grid System" subtitle="CSS Grid with φ = 1.618 spacing">
+      {#snippet children()}
+        <div class="layout-demo">
+          <div class="grid-item">Item 1</div>
+          <div class="grid-item">Item 2</div>
+          <div class="grid-item">Item 3</div>
+          <div class="grid-item">Item 4</div>
+        </div>
       {/snippet}
-  </GoldenLayout>
+    </ModernCard>
+  </section>
 </div>
 
 <style>
-  /* @unocss-include */
-  .demo-page {
-    height: 100vh;
-    overflow: hidden;
-    background: #f8fafc;
-}
-  .demo-header {
-    padding: 2rem;
-    text-align: center;
-    background: #ffffff;
-    border-bottom: 1px solid #e2e8f0;
-}
-  .demo-header h1 {
-    margin: 0 0 0.5rem 0;
-    color: #3b82f6;
-    font-size: 2.5rem;
-}
-  .demo-header p {
-    margin: 0;
-    color: #6b7280;
-    font-size: 1.125rem;
-}
-  .main-content {
-    padding: 2rem;
-    overflow-y: auto;
-    height: 100%;
-}
-  .demo-section {
-    margin-bottom: 3rem;
-}
-  .demo-section h2 {
-    margin: 0 0 1rem 0;
-    color: #111827;
-    font-size: 1.5rem;
-}
-  .demo-section p {
-    margin: 0 0 1.5rem 0;
-    color: #6b7280;
-    line-height: 1.6;
-}
-  .navigation-demo {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-  .demo-link {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.75rem 1.5rem;
-    background: #3b82f6;
-    color: white;
-    text-decoration: none;
-    border-radius: 0.5rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
-}
-  .demo-link:hover {
-    background: #2563eb;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-  .features-grid {
+  .modern-demo {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--golden-xl);
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1.5rem;
-}
-  .feature-card {
-    padding: 1.5rem;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 0.75rem;
-    transition: all 0.2s ease;
-}
-  .feature-card:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
-}
-  .feature-card h3 {
-    margin: 0 0 0.5rem 0;
-    color: #3b82f6;
-    font-size: 1.125rem;
-}
-  .feature-card p {
-    margin: 0;
-    color: #6b7280;
-    font-size: 0.875rem;
-}
-.sidebar-content h3 {
-    margin: 0 0 1rem 0;
-    color: #111827;
-    font-size: 1.125rem;
-}
-  .citations-list {
-    margin-bottom: 2rem;
-}
-  .citation-item {
-    padding: 0.75rem;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 0.5rem;
-    margin-bottom: 0.5rem;
-}
-  .citation-title {
+    gap: var(--golden-xl);
+  }
+
+  .demo-header {
+    text-align: center;
+    margin-bottom: var(--golden-lg);
+  }
+
+  .demo-description {
+    color: var(--yorha-text-secondary);
+    line-height: 1.6;
+    font-size: var(--text-lg);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .demo-section {
+    display: grid;
+    gap: var(--golden-lg);
+  }
+
+  .section-title {
+    font-size: var(--text-2xl);
     font-weight: 600;
-    color: #111827;
-    font-size: 0.875rem;
-    margin-bottom: 0.25rem;
-}
-  .citation-source {
-    color: #6b7280;
-    font-size: 0.75rem;
-    margin-bottom: 0.25rem;
-}
-  .citation-date {
-    color: #9ca3af;
-    font-size: 0.75rem;
-}
-  .shortcuts-list {
-    margin-bottom: 2rem;
-}
-  .shortcut-item {
+    color: var(--yorha-text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    border-bottom: 2px solid var(--yorha-border-accent);
+    padding-bottom: var(--golden-sm);
+  }
+
+  .button-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--golden-md);
+    align-items: start;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: var(--golden-lg);
+  }
+
+  .feature-list {
+    display: grid;
+    gap: var(--golden-sm);
+    margin-top: var(--golden-md);
+  }
+
+  .feature-item {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #e2e8f0;
-}
-  .shortcut-item:last-child {
-    border-bottom: none;
-}
-  .shortcut-item kbd {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 0.25rem;
-    padding: 0.125rem 0.375rem;
+    gap: var(--golden-sm);
+    color: var(--yorha-text-secondary);
+  }
+
+  .notification-badge {
+    background: var(--yorha-accent-gold);
+    color: var(--yorha-bg-primary);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 0.75rem;
     font-weight: 600;
-    color: var(--pico-color, #111827);
-}
-  .shortcut-item span {
-    color: var(--pico-muted-color, #6b7280);
-    font-size: 0.875rem;
-}
-  .features-list {
-    list-style: none;
-    padding: 0;
+  }
+
+  .custom-header {
+    display: flex;
+    align-items: center;
+    gap: var(--golden-md);
+  }
+
+  .custom-title {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--yorha-text-primary);
     margin: 0;
-}
-  .features-list li {
-    padding: 0.5rem 0;
-    color: var(--pico-muted-color, #6b7280);
-    font-size: 0.875rem;
-    border-bottom: 1px solid var(--pico-border-color, #e2e8f0);
-}
-  .features-list li:last-child {
-    border-bottom: none;
-}
-  .features-list li::before {
-    content: "✓";
-    color: var(--pico-primary, #3b82f6);
-    font-weight: bold;
-    margin-right: 0.5rem;
-}
-  code {
-    background: var(--pico-card-sectioning-background-color, #f1f5f9);
-    padding: 0.125rem 0.375rem;
-    border-radius: 0.25rem;
-    font-size: 0.875rem;
-    color: var(--pico-primary, #3b82f6);
-}
-  kbd {
-    background: var(--pico-card-background-color, #ffffff);
-    border: 1px solid var(--pico-border-color, #e2e8f0);
-    border-radius: 0.25rem;
-    padding: 0.125rem 0.375rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--pico-color, #111827);
-}
+  }
+
+  .custom-subtitle {
+    font-size: var(--text-sm);
+    color: var(--yorha-text-muted);
+    margin: 0;
+  }
+
+  .card-footer-actions {
+    display: flex;
+    gap: var(--golden-sm);
+    justify-content: flex-end;
+  }
+
+  .ghost-content {
+    text-align: center;
+    padding: var(--golden-lg);
+  }
+
+  .ghost-content h3 {
+    font-size: var(--text-xl);
+    color: var(--yorha-text-primary);
+    margin-bottom: var(--golden-sm);
+  }
+
+  .ghost-content p {
+    color: var(--yorha-text-secondary);
+    margin-bottom: var(--golden-md);
+  }
+
+  .dialog-content {
+    display: grid;
+    gap: var(--golden-lg);
+  }
+
+  .dialog-features {
+    display: grid;
+    gap: var(--golden-sm);
+  }
+
+  .feature {
+    padding: var(--golden-sm);
+    background: var(--yorha-bg-secondary);
+    border-radius: 0.375rem;
+    font-size: var(--text-sm);
+    color: var(--yorha-text-primary);
+  }
+
+  .dialog-footer {
+    display: flex;
+    gap: var(--golden-sm);
+    justify-content: flex-end;
+  }
+
+  .layout-demo {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--golden-md);
+    margin-top: var(--golden-md);
+  }
+
+  .grid-item {
+    background: var(--yorha-bg-tertiary);
+    border: 1px solid var(--yorha-border-primary);
+    border-radius: 0.5rem;
+    padding: var(--golden-lg);
+    text-align: center;
+    color: var(--yorha-text-primary);
+    font-weight: 500;
+    aspect-ratio: 1.618; /* Golden ratio */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 200ms ease;
+  }
+
+  .grid-item:hover {
+    background: var(--yorha-bg-hover);
+    border-color: var(--yorha-border-accent);
+    transform: translateY(-2px);
+    box-shadow: var(--yorha-shadow-md);
+  }
+
   /* Responsive design */
   @media (max-width: 768px) {
-    .demo-header {
-      padding: 1rem;
-}
-    .demo-header h1 {
-      font-size: 2rem;
-}
-    .main-content {
-      padding: 1rem;
-}
-    .features-grid {
+    .modern-demo {
+      padding: var(--golden-lg);
+    }
+
+    .cards-grid {
       grid-template-columns: 1fr;
-}
-    .navigation-demo {
-      flex-direction: column;
-}
-    .demo-link {
-      justify-content: center;
-}
-}
+    }
+
+    .button-grid {
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+
+    .layout-demo {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
 </style>

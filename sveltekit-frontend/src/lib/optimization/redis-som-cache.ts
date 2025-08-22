@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-// @ts-nocheck
+
 /**
  * Redis-Compatible Self-Organizing Map Cache System
  * Advanced memory management with machine learning clustering

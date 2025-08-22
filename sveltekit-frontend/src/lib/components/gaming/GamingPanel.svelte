@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
 	import type { ComponentProps } from 'svelte';
+  import { $props, $state } from 'svelte';
 	
 	interface GamingPanelProps {
 		title?: string;
@@ -402,7 +402,4 @@ import type { CommonProps } from '$lib/types/common-props';
 		}
 	}
 </style>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

@@ -1,6 +1,6 @@
 <!-- Real-time Evidence Grid with WebSocket and local sync -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  // Svelte runes ($state, $derived, etc.) are declared globally in src/types/svelte-helpers.d.ts
 
   import { Button } from "$lib/components/ui/button/index.js";
   import { evidenceStore, type Evidence } from "$lib/stores/evidenceStore";
@@ -35,11 +35,7 @@ import type { CommonProps } from '$lib/types/common-props';
   export let selectedTypes: string[] = [];
   export const showAdvancedFilters: boolean = false;
 
-  // Store subscriptions
-  let evidence: Evidence[] = [];
-  let isLoading = false;
-  let isConnected = false;
-  let error: string | null = null;
+  // Store subscriptions - using $derived below
 
   // Connection status
   let connectionStatus = "disconnected";
@@ -60,11 +56,11 @@ import type { CommonProps } from '$lib/types/common-props';
   let paginatedEvidence: Evidence[] = [];
   let totalPages = 0;
 
-  // Subscribe to store values
-  $: evidence = $evidenceStore.evidence || [];
-  $: isLoading = $evidenceStore.isLoading || false;
-  $: isConnected = $evidenceStore.isConnected || false;
-  $: error = $evidenceStore.error || null;
+  // Subscribe to store values (use function form so the global $derived signature is satisfied)
+  let evidence = $derived(() => $evidenceStore.evidence || []);
+  let isLoading = $derived(() => $evidenceStore.isLoading || false);
+  let isConnected = $derived(() => $evidenceStore.isConnected || false);
+  let error = $derived(() => $evidenceStore.error || null);
 
   // Reactive filtering and sorting
   $: {

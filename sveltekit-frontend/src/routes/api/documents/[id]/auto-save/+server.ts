@@ -1,8 +1,21 @@
-import { legalDocuments } from "$lib/server/db/unified-schema";
-// @ts-nocheck
-type { RequestEvent }, {
-json } from "@sveltejs/kit";
+import type { RequestEvent } from "@sveltejs/kit";
+import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db/index";
+import { eq } from "drizzle-orm";
+
+// Import with fallback for different schema files
+let legalDocuments: any;
+try {
+  const schema = await import("$lib/server/db/unified-schema");
+  legalDocuments = schema.legalDocuments;
+} catch (error) {
+  try {
+    const schema = await import("$lib/server/db/schema-postgres");
+    legalDocuments = schema.legalDocuments;
+  } catch (error2) {
+    console.warn("No legal documents schema available");
+  }
+}
 
 // POST /api/documents/[id]/auto-save - Auto-save document content
 export async function POST({ params, request }: RequestEvent) {

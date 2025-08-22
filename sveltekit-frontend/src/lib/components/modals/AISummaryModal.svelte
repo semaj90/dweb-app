@@ -1,10 +1,10 @@
 <!-- @migration-task Error while migrating Svelte code: Unexpected token
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $derived } from 'svelte';
 
-  interface Props extends CommonProps {
-    onclose?: (event?: any) => void;
+  interface Props {
+    onclose?: (event?: unknown) => void;
   }
 
 
@@ -39,7 +39,7 @@ import type { CommonProps } from '$lib/types/common-props';
 }
 </script>
 
-<Dialog.Root open={isOpen} on:close={closeModal}>
+<Dialog.Root open={isOpen} onclose={closeModal}>
   <Dialog.Content size="lg">
   <Dialog.Header>
     <Dialog.Title>AI Summary</Dialog.Title>

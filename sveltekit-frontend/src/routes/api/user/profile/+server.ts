@@ -1,12 +1,10 @@
-// @ts-nocheck
-import { users } from "$lib/server/db/index";
-// Orphaned content: import {
 
-type { RequestHandler }, {
-json } from "@sveltejs/kit";
-// Orphaned content: import { eq
-import {
-db } from "$lib/server/db/index";
+import { users } from "$lib/server/db/index";
+import { eq } from 'drizzle-orm';
+
+import type { RequestHandler } from "@sveltejs/kit";
+import { json } from "@sveltejs/kit";
+import { db } from "$lib/server/db/index";
 
 export const GET: RequestHandler = async ({ locals }) => {
   const authUser = locals.user;

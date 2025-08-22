@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { $state } from 'svelte';
   import { browser } from "$app/environment";
   import { Tooltip } from "$lib/components/ui";
   import { Button } from "$lib/components/ui/button";
@@ -38,7 +39,7 @@
     size: number;
     type: string;
     content?: string;
-    data?: any;
+    data?: unknown;
     raw?: string;
   } | null = $state(null);
   let dragActive = $state(false);

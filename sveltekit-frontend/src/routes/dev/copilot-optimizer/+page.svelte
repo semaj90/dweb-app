@@ -6,6 +6,7 @@ https://svelte.dev/e/js_parse_error -->
 -->
 
 <script lang="ts">
+  import { $props, $state } from 'svelte';
   import { onMount } from 'svelte';
   import { page } from '$app/state';
   import { Dialog } from 'bits-ui';

@@ -1,5 +1,6 @@
 <!-- Demo page for the Legal Document Editor -->
 <script lang="ts">
+  import { $state } from 'svelte';
   import LegalDocumentEditor from "$lib/components/editor/LegalDocumentEditor.svelte";
 
   let documentId = $state("doc-1"); // Use sample document ID
@@ -94,9 +95,9 @@
     documentType={selectedDocumentType}
     title={editorTitle}
     readonly={isReadonly}
-    on:save={handleSave}
-    on:aiRequest={handleAIRequest}
-    on:citationAdded={handleCitationAdded}
+    onsave={handleSave}
+    onairequest={handleAIRequest}
+    oncitationadded={handleCitationAdded}
   />
 </div>
 

@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { onMount } from 'svelte'
+  import { $props, $state, $derived } from 'svelte';
   import { scale, fly, fade } from 'svelte/transition'
   import { spring } from 'svelte/motion'
   import {
@@ -38,7 +38,7 @@ import NierAIAssistant from './NierAIAssistant.svelte';
     }
   }
 
-  interface Props extends CommonProps {
+  interface Props {
     caseContext?: {
       id: string
       title: string
@@ -294,8 +294,8 @@ let isTyping = $state(false);
   bind:isVisible={isVisible}
   bind:aiMode={aiMode}
   {isConnected}
-  on:toggle={toggleInterface}
-  on:settingsClick={() => terminalMode = !terminalMode}
+  ontoggle={toggleInterface}
+  onsettingsclick={() => terminalMode = !terminalMode}
 />
 
 <!-- Gaming AI Interface -->
@@ -550,7 +550,7 @@ let isTyping = $state(false);
   <NierAIAssistant
     bind:isOpen={showNierAssistant}
     {caseContext}
-    onClose={() => showNierAssistant = false}
+    onclose={() => showNierAssistant = false}
   />
 {/if}
 

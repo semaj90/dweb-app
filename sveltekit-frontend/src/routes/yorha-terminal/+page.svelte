@@ -29,12 +29,12 @@
   onMount(() => {
     // Focus input on mount
     inputElement?.focus();
-    
+
     // Cursor blink animation
     const cursorInterval = setInterval(() => {
       cursor = !cursor;
     }, 500);
-    
+
     // Click to focus
     terminalElement?.addEventListener('click', () => {
       inputElement?.focus();
@@ -74,13 +74,13 @@
 
   function navigateHistory(direction: 'up' | 'down') {
     if (commandHistory.length === 0) return;
-    
+
     if (direction === 'up') {
       historyIndex = Math.min(historyIndex + 1, commandHistory.length - 1);
     } else {
       historyIndex = Math.max(historyIndex - 1, -1);
     }
-    
+
     if (historyIndex >= 0) {
       terminalInput = commandHistory[commandHistory.length - 1 - historyIndex];
     } else {
@@ -93,11 +93,11 @@
       'help', 'clear', 'status', 'analyze', 'search', 'context7',
       'rag', 'mcp', 'cases', 'evidence', 'documents', 'ai', 'exit'
     ];
-    
-    const matches = availableCommands.filter(cmd => 
+
+    const matches = availableCommands.filter(cmd =>
       cmd.startsWith(terminalInput.toLowerCase())
     );
-    
+
     if (matches.length === 1) {
       terminalInput = matches[0];
     } else if (matches.length > 1) {
@@ -109,16 +109,16 @@
 
   async function executeCommand() {
     if (!terminalInput.trim()) return;
-    
+
     const cmd = terminalInput.trim();
     commandHistory = [cmd, ...commandHistory.slice(0, 49)];
     historyIndex = -1;
-    
+
     addToHistory(`> ${cmd}`);
-    
+
     isProcessing = true;
     aiStatus = 'PROCESSING';
-    
+
     try {
       await processCommand(cmd);
     } catch (error) {
@@ -132,7 +132,7 @@
 
   async function processCommand(cmd: string) {
     const [command, ...args] = cmd.toLowerCase().split(' ');
-    
+
     switch (command) {
       case 'help':
         addToHistory('YoRHa Legal AI Commands:');
@@ -150,7 +150,7 @@
         addToHistory('  ai             - AI system diagnostics');
         addToHistory('  exit           - Close terminal');
         break;
-        
+
       case 'clear':
         terminalHistory = [
           '> YoRHa Legal AI Terminal v4.0.0',
@@ -158,7 +158,7 @@
           ''
         ];
         break;
-        
+
       case 'status':
         addToHistory('YoRHa Legal AI System Status:');
         addToHistory(`  AI Status:       ${aiStatus}`);
@@ -169,13 +169,13 @@
         addToHistory('  Database:        CONNECTED');
         addToHistory('  Last Backup:     2 hours ago');
         break;
-        
+
       case 'analyze':
         if (args.length === 0) {
           addToHistory('Usage: analyze <text>');
           break;
         }
-        
+
         addToHistory(`Analyzing: "${args.join(' ')}"...`);
         try {
           const response = await fetch('/api/yorha/enhanced-rag', {
@@ -187,9 +187,9 @@
               includeRecommendations: true
             })
           });
-          
+
           const result = await response.json();
-          
+
           if (result.success) {
             addToHistory('Analysis complete:');
             addToHistory(`  Confidence: ${(result.analysis?.confidenceScore * 100 || 0).toFixed(1)}%`);
@@ -209,13 +209,13 @@
           addToHistory('  Risk level: MEDIUM');
         }
         break;
-        
+
       case 'search':
         if (args.length === 0) {
           addToHistory('Usage: search <term>');
           break;
         }
-        
+
         addToHistory(`Searching legal database for: "${args.join(' ')}"...`);
         addToHistory('Found 7 relevant documents:');
         addToHistory('  Contract_2023_Amendment.pdf');
@@ -226,7 +226,7 @@
         addToHistory('  Evidence_Analysis_Report.pdf');
         addToHistory('  Jurisdiction_Guidelines.pdf');
         break;
-        
+
       case 'context7':
         addToHistory('Testing Context7 MCP integration...');
         try {
@@ -244,13 +244,13 @@
           context7Status = 'ERROR';
         }
         break;
-        
+
       case 'rag':
         if (args.length === 0) {
           addToHistory('Usage: rag <query>');
           break;
         }
-        
+
         addToHistory(`Enhanced RAG analysis: "${args.join(' ')}"...`);
         addToHistory('Initializing semantic analysis...');
         addToHistory('Processing with neural embeddings...');
@@ -262,7 +262,7 @@
         addToHistory('  Action required: REVIEW');
         addToHistory('  Recommendations: 3 generated');
         break;
-        
+
       case 'mcp':
         addToHistory('MCP (Model Context Protocol) Status:');
         addToHistory('  Server: context7-mcp-server v1.0.0');
@@ -271,7 +271,7 @@
         addToHistory('  Last sync: Active');
         addToHistory('  Performance: Excellent');
         break;
-        
+
       case 'cases':
         addToHistory('Active Legal Cases:');
         addToHistory('  CASE-2024-001  [HIGH]    Corporate Litigation');
@@ -280,7 +280,7 @@
         addToHistory('  CASE-2024-004  [HIGH]    IP Infringement');
         addToHistory('  CASE-2024-005  [MEDIUM]  Regulatory Compliance');
         break;
-        
+
       case 'evidence':
         if (args[0] === 'list') {
           addToHistory('Evidence Repository:');
@@ -295,7 +295,7 @@
           addToHistory('  evidence scan  - Scan for new evidence');
         }
         break;
-        
+
       case 'documents':
         addToHistory('Document Analysis System:');
         addToHistory('  Total documents: 1,247');
@@ -304,7 +304,7 @@
         addToHistory('  AI confidence avg: 87.4%');
         addToHistory('  Last update: 14 minutes ago');
         break;
-        
+
       case 'ai':
         addToHistory('AI System Diagnostics:');
         addToHistory('  Model: gemma3-legal');
@@ -315,31 +315,31 @@
         addToHistory('  Context window: 8192 tokens');
         addToHistory('  Accuracy score: 94.2%');
         break;
-        
+
       case 'exit':
         addToHistory('Terminal session ending...');
         addToHistory('Session saved to audit log.');
         addToHistory('Goodbye.');
         break;
-        
+
       default:
         addToHistory(`Unknown command: ${command}`);
         addToHistory('Type "help" for available commands.');
     }
-    
+
     addToHistory('');
   }
 
   // Role-based functionality
   let currentRole = $state('detective'); // detective, prosecutor, admin
-  
+
   function switchRole(role: string) {
     currentRole = role;
     addToHistory(`Role switched to: ${role.toUpperCase()}`);
     addToHistory(`Access level: ${getRoleAccess(role)}`);
     addToHistory('');
   }
-  
+
   function getRoleAccess(role: string) {
     switch (role) {
       case 'detective': return 'EVIDENCE_ANALYSIS, CASE_INVESTIGATION';
@@ -370,22 +370,22 @@
         </span>
       </div>
     </div>
-    
+
     <div class="header-right">
       <div class="role-switcher">
-        <button 
+        <button
           class="role-btn {currentRole === 'detective' ? 'active' : ''}"
           onclick={() => switchRole('detective')}
         >
           Detective
         </button>
-        <button 
+        <button
           class="role-btn {currentRole === 'prosecutor' ? 'active' : ''}"
           onclick={() => switchRole('prosecutor')}
         >
           Prosecutor
         </button>
-        <button 
+        <button
           class="role-btn {currentRole === 'admin' ? 'active' : ''}"
           onclick={() => switchRole('admin')}
         >
@@ -396,7 +396,7 @@
   </div>
 
   <!-- Terminal -->
-  <div 
+  <div
     class="terminal-container"
     bind:this={terminalElement}
   >
@@ -407,7 +407,7 @@
           <pre>{line}</pre>
         </div>
       {/each}
-      
+
       <!-- Current Input Line -->
       <div class="terminal-input-line" class:processing={isProcessing}>
         <span class="prompt">YoRHa:{currentRole}></span>
@@ -626,17 +626,17 @@
       flex-direction: column;
       align-items: flex-start;
     }
-    
+
     .status-indicators,
     .role-switcher {
       width: 100%;
       justify-content: flex-start;
     }
-    
+
     .quick-commands {
       padding: 12px 16px;
     }
-    
+
     .terminal-container {
       padding: 16px;
     }

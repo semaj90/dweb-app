@@ -1,12 +1,12 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
   import { Select } from 'bits-ui';
 
-  interface Props extends CommonProps {
+  interface Props {
     value?: string;
     onValueChange?: (value: string) => void;
-    children?: any;
+    children?: unknown;
   }
 
   let { value = $bindable(), onValueChange, children, ...restProps }: Props = $props();

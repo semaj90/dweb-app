@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Phase 3: Performance Optimization - Complete File
 // #get-library-docs sveltekit2 #memory #create_entities
 
@@ -75,7 +75,7 @@ export class CacheService {
 export function createDebouncedSearch(delay = 300) {
   let timeoutId: NodeJS.Timeout;
 
-  return function <T extends any[]>(fn: (...args: T) => void) {
+  return function <T extends unknown[]>(fn: (...args: T) => void) {
     return (...args: T) => {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => fn(...args), delay);

@@ -5,9 +5,9 @@ import type { User } from '$lib/types/user';
 
 
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     user: User | null ;
   }
   let {
@@ -112,7 +112,7 @@ import type { User } from '$lib/types/user';
       <SearchInput
         placeholder="Search cases, evidence, notes..."
         value={searchQuery}
-        on:search={handleSearch}
+        onsearch={handleSearch}
       />
     </div>
 

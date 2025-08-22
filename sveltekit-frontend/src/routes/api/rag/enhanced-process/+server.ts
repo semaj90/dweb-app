@@ -72,7 +72,7 @@ export const POST: RequestHandler = async ({ request }) => {
   }
 };
 
-function extractDocumentContent(simdData: any): any {
+function extractDocumentContent(simdData: any): unknown {
   return {
     fullText: simdData.document?.content?.fullText || '',
     sections: simdData.document?.structure?.sections || [],
@@ -129,7 +129,7 @@ async function performSemanticAnalysis(content: any): Promise<any> {
   return analysis;
 }
 
-async function generateRAGRecommendations(content: any, analysis: any): Promise<any[]> {
+async function generateRAGRecommendations(content: any, analysis: any): Promise<unknown[]> {
   const recommendations = [];
   
   // Generate recommendations based on document content and semantic analysis
@@ -185,7 +185,7 @@ async function generateRAGRecommendations(content: any, analysis: any): Promise<
   return recommendations.sort((a, b) => (b.relevance * b.confidence) - (a.relevance * a.confidence));
 }
 
-function createEnhancedMetadata(simdData: any, analysis: any): any {
+function createEnhancedMetadata(simdData: any, analysis: any): unknown {
   return {
     processing: {
       simd_processing_time: simdData.processingTime || 0,
@@ -292,7 +292,7 @@ function extractKeyTopics(text: string): string[] {
   return Array.from(topics);
 }
 
-function analyzeLegalSentiment(text: string): any {
+function analyzeLegalSentiment(text: string): unknown {
   // Simplified legal sentiment analysis
   const positivePatterns = /(?:agree|consent|approve|grant|allow|permit)/gi;
   const negativePatterns = /(?:deny|refuse|object|prohibit|forbid|breach)/gi;
@@ -312,7 +312,7 @@ function analyzeLegalSentiment(text: string): any {
   };
 }
 
-function recognizeNamedEntities(text: string): any {
+function recognizeNamedEntities(text: string): unknown {
   const entities = {
     persons: extractPersonNames(text),
     organizations: extractOrganizations(text),
@@ -396,7 +396,7 @@ function extractMonetaryAmounts(text: string): string[] {
 }
 
 // Additional helper functions...
-function analyzeArgumentStructure(text: string): any {
+function analyzeArgumentStructure(text: string): unknown {
   return { structure: 'analyzed', confidence: 85 };
 }
 
@@ -440,7 +440,7 @@ function calculateOverallConfidence(analysis: any, recommendations: any[]): numb
   return Math.round((analysis.coherenceScore + avgRecommendationConfidence) / 2);
 }
 
-function generateSimilarCases(topics: string[]): any[] {
+function generateSimilarCases(topics: string[]): unknown[] {
   return topics.slice(0, 3).map((topic, index) => ({
     case_name: `Sample Case ${index + 1} - ${topic}`,
     citation: `123 F.3d ${456 + index}`,
@@ -449,7 +449,7 @@ function generateSimilarCases(topics: string[]): any[] {
   }));
 }
 
-function analyzePrecedents(citations: string[]): any[] {
+function analyzePrecedents(citations: string[]): unknown[] {
   return citations.slice(0, 3).map(citation => ({
     citation,
     status: 'good_law',
@@ -457,7 +457,7 @@ function analyzePrecedents(citations: string[]): any[] {
   }));
 }
 
-function generateCompletenessRecommendations(analysis: any): any[] {
+function generateCompletenessRecommendations(analysis: any): unknown[] {
   return [
     { suggestion: 'Add more supporting citations', priority: 'high' },
     { suggestion: 'Expand factual background', priority: 'medium' },
@@ -465,7 +465,7 @@ function generateCompletenessRecommendations(analysis: any): any[] {
   ];
 }
 
-function generateResearchSuggestions(topics: string[], practiceArea: string): any[] {
+function generateResearchSuggestions(topics: string[], practiceArea: string): unknown[] {
   return topics.map(topic => ({
     research_area: topic,
     priority: Math.floor(Math.random() * 3) + 1,

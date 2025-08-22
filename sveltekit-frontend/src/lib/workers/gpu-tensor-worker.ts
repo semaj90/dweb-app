@@ -7,13 +7,13 @@
 interface WorkerMessage {
   type: 'PROCESS_TENSOR' | 'INITIALIZE' | 'GET_STATS' | 'CLEAR_CACHE';
   id?: string;
-  data?: any;
+  data?: unknown;
 }
 
 interface WorkerResponse {
   type: 'SUCCESS' | 'ERROR' | 'STATS' | 'INITIALIZED';
   id?: string;
-  data?: any;
+  data?: unknown;
   error?: string;
 }
 

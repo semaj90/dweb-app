@@ -1,5 +1,5 @@
-// @ts-nocheck
-// @ts-nocheck
+
+
 // ======================================================================
 // ENHANCED RAG SERVICE - Production Ready
 // Integrates vector search, semantic analysis, and local LLM processing
@@ -412,7 +412,7 @@ class EnhancedRAGService {
     answer: string;
     confidence: number;
     model: string;
-    reasoning?: any;
+    reasoning?: unknown;
   }> {
     const context = sources
       .map((s) => `Source: ${s.source}\n${s.content}`)

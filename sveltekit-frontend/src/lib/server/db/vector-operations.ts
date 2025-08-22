@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Vector operations helper for pgvector integration
 import { db } from "./index.js";
 // Orphaned content: import {
@@ -10,7 +10,7 @@ interface SimilarityResult {
   id: string;
   content: string;
   similarity: number;
-  metadata?: any;
+  metadata?: unknown;
 }
 
 // Generate a sample embedding (replace with actual AI model in production)

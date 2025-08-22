@@ -1,5 +1,6 @@
 <!-- YoRHa Demos Single Page App with ScrollArea -->
 <script lang="ts">
+  import { $state, $derived } from 'svelte';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { Button } from 'bits-ui';

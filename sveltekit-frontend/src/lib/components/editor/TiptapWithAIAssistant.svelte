@@ -1,11 +1,11 @@
 <!-- @migration-task Error while migrating Svelte code: A component can have a single top-level `<script>
-import type { CommonProps } from '$lib/types/common-props';
 ` element and/or a single top-level `<script module>` element
 https://svelte.dev/e/script_duplicate -->
 <!-- Tiptap Editor with AI Assistant Integration -->
 <!-- Real-time suggestions, auto-save, and CrewAI inline recommendations -->
 
 <script lang="ts">
+  import { $props, $state, $derived } from 'svelte';
   import { onMount, onDestroy, tick } from 'svelte';
   import { Editor } from '@tiptap/core';
   import StarterKit from '@tiptap/starter-kit';
@@ -377,7 +377,7 @@ https://svelte.dev/e/script_duplicate -->
     });
   }
 
-  async function fetchInlineSuggestions(content: string): Promise<any[]> {
+  async function fetchInlineSuggestions(content: string): Promise<unknown[]> {
     // This would call your AI suggestion API
     const response = await fetch('/api/ai/suggestions', {
       method: 'POST',
@@ -475,7 +475,7 @@ https://svelte.dev/e/script_duplicate -->
   {#if aiAssistantVisible}
     <div 
       class="ai-assistant-panel absolute top-0 right-0 w-80 bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-10"
-      transitionslide={{ axis: 'x', duration: 200 }}
+      transition:slide={{ axis: 'x', duration: 200 }}
     >
       <div class="flex items-center justify-between mb-4">
         <h3 class="font-semibold text-gray-800">AI Assistant</h3>
@@ -513,7 +513,7 @@ https://svelte.dev/e/script_duplicate -->
           {#each $state.context.currentRecommendations as rec (rec.id)}
             <div 
               class="recommendation-item p-2 border border-gray-200 rounded mb-2"
-              transitionfade={{ duration: 150 }}
+              transition:fade={{ duration: 150 }}
             >
               <div class="flex items-start justify-between">
                 <div class="flex-1">
@@ -559,7 +559,7 @@ https://svelte.dev/e/script_duplicate -->
     <div 
       class="inline-suggestion absolute bg-yellow-50 border border-yellow-300 rounded-lg p-3 shadow-lg z-20 max-w-xs"
       style="left: {recommendationPosition.x}px; top: {recommendationPosition.y + 25}px;"
-      transitionfade={{ duration: 150 }}
+      transition:fade={{ duration: 150 }}
     >
       <div class="text-sm text-gray-800 mb-2">{currentRecommendation}</div>
       
@@ -644,7 +644,4 @@ https://svelte.dev/e/script_duplicate -->
     }
   }
 </script>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

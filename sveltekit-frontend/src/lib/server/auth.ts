@@ -1,4 +1,4 @@
-import { sessions, users } from "./db/schema-postgres";
+import { sessions, users } from "./db/schema-unified";
 import { dev } from "$app/environment";
 import { db } from "./db/index";
 import { Lucia } from "lucia";

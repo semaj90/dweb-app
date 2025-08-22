@@ -3,7 +3,7 @@
 import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
 import { createActor } from 'xstate';
-import { sessionMachine, sessionServices, sessionActions } from '../machines/sessionMachine.js';
+import { sessionMachine, sessionServices, sessionActions } from '$lib/machines/sessionMachine.js';
 import { authService, type User } from './auth.svelte.js';
 
 // Session state interface

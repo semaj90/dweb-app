@@ -1,24 +1,25 @@
 import stream from "stream";
-// @ts-nocheck
+
 // ollamaChatStream.ts - Ollama Chat Stream with Langchain integration
 import { ChatOllama } from "@langchain/ollama";
-// Orphaned content: import {
-HumanMessage,
+import {
+  HumanMessage,
   AIMessage,
   SystemMessage,
+} from "@langchain/core/messages";
 import { StringOutputParser } from "@langchain/core/output_parsers";
-// Orphaned content: import {
 
 import { db } from "$lib/server/db/index";
-// Orphaned content: import {
-chatEmbeddings,
+import {
+  chatEmbeddings,
   evidenceVectors,
   caseEmbeddings,
+} from "$lib/db/schema";
 import { eq, sql } from "drizzle-orm";
 
 export interface ChatStreamOptions {
   message: string;
-  context?: any[];
+  context?: unknown[];
   conversationId?: string;
   model?: string;
   temperature?: number;
@@ -32,7 +33,7 @@ export interface StreamChunk {
   text: string;
   metadata?: {
     type: "text" | "thinking" | "sources" | "final";
-    sources?: any[];
+    sources?: unknown[];
     confidence?: number;
   };
 }
@@ -145,7 +146,7 @@ export class OllamaChatStreamService {
   private async performVectorSearch(
     query: string,
     threshold: number = 0.7,
-  ): Promise<any[]> {
+  ): Promise<unknown[]> {
     try {
       // Generate embedding for the query (simplified - you'd use actual embedding service)
       const queryEmbedding = await this.generateEmbedding(query);
@@ -182,7 +183,7 @@ export class OllamaChatStreamService {
   private buildContextPrompt(
     message: string,
     vectorContext: any[],
-    chatContext?: any[],
+    chatContext?: unknown[],
     systemPrompt?: string,
   ): ChatPromptTemplate {
     const baseSystemPrompt =
@@ -215,7 +216,7 @@ Please provide a detailed, professional response based on the context and your l
 
   private formatContextForPrompt(
     vectorContext: any[],
-    chatContext?: any[],
+    chatContext?: unknown[],
   ): string {
     let contextText = "";
 

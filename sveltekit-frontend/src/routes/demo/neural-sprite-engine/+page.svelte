@@ -2,6 +2,7 @@
 https://svelte.dev/e/js_parse_error -->
 <!-- NES-Inspired Neural Sprite Engine Demo -->
 <script lang="ts">
+  import { $derived } from 'svelte';
   import { onMount, onDestroy } from 'svelte';
   import { writable, derived } from 'svelte/store';
   import { fabric } from 'fabric';

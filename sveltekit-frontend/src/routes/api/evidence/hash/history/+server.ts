@@ -1,8 +1,8 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+
 import { evidence, hashVerifications, users } from "$lib/server/db/schema-postgres";
-type { RequestHandler }, {
-json } from "@sveltejs/kit";
+import type { RequestHandler } from "@sveltejs/kit";
+import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db/index";
 
 export const POST: RequestHandler = async ({ request, locals }) => {

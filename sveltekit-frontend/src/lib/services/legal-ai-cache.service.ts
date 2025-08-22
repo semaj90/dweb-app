@@ -1,6 +1,6 @@
 import type { AIAnalysisResult, LegalDocument } from "$lib/types/legal";
 import crypto from "crypto";
-// @ts-nocheck
+
 // Legal AI Cache Service - Performance Optimization
 
 interface CacheEntry<T> {

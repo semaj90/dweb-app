@@ -1,5 +1,5 @@
 import crypto from "crypto";
-// @ts-nocheck
+
 /**
  * XState State Machine for Document Upload Workflow
  * Handles file upload, validation, processing, and search indexing
@@ -34,7 +34,7 @@ export interface DocumentUploadContext {
   evidenceId?: string;
   
   // Child machine state
-  evidenceProcessingState?: any;
+  evidenceProcessingState?: unknown;
   
   // Timestamps and metrics
   uploadStartTime: number;

@@ -1,6 +1,13 @@
-// @ts-nocheck
+
 import { Worker } from "bullmq";
-import { logQueue, , // Define the type for the log entry data, interface LogEntryData {,   timestamp: string;,   level: string;,   message: string; } from
+import { logQueue } from "./logQueue.js";
+
+// Define the type for the log entry data
+interface LogEntryData {
+  timestamp: string;
+  level: string;
+  message: string;
+}
 
 // Create a new BullMQ Worker instance
 // Ensure your Redis connection details are correct (same as logQueue)

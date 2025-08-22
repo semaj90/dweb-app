@@ -1,9 +1,9 @@
 <!-- @migration-task Error while migrating Svelte code: Unexpected token
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $effect } from 'svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     isOpen?: boolean;
     caseId?: string;
     evidenceId?: string;
@@ -113,7 +113,7 @@ import type { CommonProps } from '$lib/types/common-props';
   });
 </script>
 
-<Dialog bind:isOpen title="Legal AI Analysis" onClose={closeDialog}>
+<Dialog bind:isOpen title="Legal AI Analysis" onclose={closeDialog}>
   <div class="space-y-6">
     {#if !analysis}
       <!-- Analysis Input Form -->

@@ -17,16 +17,39 @@ import {
   jsonb,
   decimal
 } from 'drizzle-orm/pg-core';
-import { vector } from 'drizzle-orm/pg-vector';
+// import { vector } from 'drizzle-orm/pg-vector'; // Temporarily disabled - pgvector import issue
+// Using custom vector type for now
+const vector = (name: string, config: { dimensions: number }) => text(name); // Temporary fallback
 import { relations } from 'drizzle-orm';
 
 // --- Foundational tables (must precede references) ---
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
   email: varchar('email', { length: 255 }).notNull().unique(),
-  passwordHash: varchar('password_hash', { length: 255 }),
-  role: varchar('role', { length: 50 }).default('user').notNull(),
-  displayName: varchar('display_name', { length: 255 }),
+  hashedPassword: varchar('hashed_password', { length: 255 }),
+  firstName: varchar('first_name', { length: 100 }),
+  lastName: varchar('last_name', { length: 100 }),
+  name: varchar('name', { length: 255 }),
+  role: varchar('role', { length: 50 }).default('prosecutor').notNull(),
+  isActive: boolean('is_active').default(true).notNull(),
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
+});
+
+// User profiles table for additional user data
+export const userProfiles = pgTable('user_profiles', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }).unique(),
+  bio: text('bio'),
+  phone: varchar('phone', { length: 20 }),
+  address: text('address'),
+  preferences: jsonb('preferences').default({}).notNull(),
+  permissions: jsonb('permissions').default([]).notNull(),
+  specializations: jsonb('specializations').default([]).notNull(),
+  certifications: jsonb('certifications').default([]).notNull(),
+  experienceLevel: varchar('experience_level', { length: 20 }).default('junior'),
+  workPatterns: jsonb('work_patterns').default({}).notNull(),
+  metadata: jsonb('metadata').default({}).notNull(),
   createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
 });
@@ -75,8 +98,6 @@ export const legalDocuments = pgTable("legal_documents", {
   id: uuid("id").primaryKey().defaultRandom(),
   title: varchar("title", { length: 500 }).notNull(),
   documentType: varchar("document_type", { length: 50 }).notNull(), // statute, regulation, case_law, precedent, contract
-  jurisdiction: varchar("jurisdiction", { length: 100 }),
-  court: varchar("court", { length: 200 }),
   citation: varchar("citation", { length: 300 }),
   fullCitation: text("full_citation"),
   docketNumber: varchar("docket_number", { length: 100 }),
@@ -593,6 +614,9 @@ export type NewCriminal = typeof criminals.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 
+export type UserProfile = typeof userProfiles.$inferSelect;
+export type NewUserProfile = typeof userProfiles.$inferInsert;
+
 export type RagSession = typeof ragSessions.$inferSelect;
 export type NewRagSession = typeof ragSessions.$inferInsert;
 
@@ -746,7 +770,11 @@ export const legalAnalysisSessionsRelations = relations(
 
 // === RELATIONSHIPS ===
 
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, ({ one, many }) => ({
+  profile: one(userProfiles, {
+    fields: [users.id],
+    references: [userProfiles.userId],
+  }),
   casesAsLead: many(cases, { relationName: "leadProsecutor" }),
   casesCreated: many(cases, { relationName: "createdBy" }),
   evidenceUploaded: many(evidence),
@@ -754,6 +782,13 @@ export const usersRelations = relations(users, ({ many }) => ({
   activitiesCreated: many(caseActivities, { relationName: "createdBy" }),
   criminalsCreated: many(criminals),
   sessions: many(sessions),
+}));
+
+export const userProfilesRelations = relations(userProfiles, ({ one }) => ({
+  user: one(users, {
+    fields: [userProfiles.userId],
+    references: [users.id],
+  }),
 }));
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({

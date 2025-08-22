@@ -214,7 +214,7 @@ export function connectRealtimeSSE(
   }
 }
 
-export function sendRealtime(payload: unknown) {
+export function sendRealtime(payload: any) {
   if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(payload));
   // For SSE, send via fetch POST to /api/realtime
   if (!ws && typeof fetch !== "undefined") {

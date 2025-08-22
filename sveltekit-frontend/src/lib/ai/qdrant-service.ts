@@ -1,5 +1,5 @@
-import { QdrantClient } from "@qdrant/js-client-rest";
-// @ts-nocheck
+import { QdrantClient, type QdrantClient as QdrantClientType } from "@qdrant/js-client-rest";
+
 // TODO: Integrate QdrantService with Context7 audit/agent pipeline
 // - Use this service for vector search in semantic_search-driven audit
 // - Expose helper to fetch similar legal documents for audit/agent flows
@@ -76,7 +76,7 @@ export interface QdrantServiceConfig {
 }
 
 export class QdrantService {
-  private client: QdrantClient;
+  private client: QdrantClientType;
   private collectionName: string;
   private vectorSize: number;
 

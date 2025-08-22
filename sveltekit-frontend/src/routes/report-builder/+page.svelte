@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { $state } from 'svelte';
   import type { Evidence } from '$lib/types/api';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
@@ -228,7 +229,7 @@
 					<ReportEditor
 						report={currentReport}
 						{caseId}
-						onSave={handleReportSave}
+						onsave={handleReportSave}
 						autoSaveEnabled={true}
 					/>
 				</div>
@@ -245,7 +246,7 @@
 						reportId={currentReport?.id || 'temp-report-id'}
 						{evidence}
 						{citationPoints}
-						onSave={handleCanvasSave}
+						onsave={handleCanvasSave}
 					/>
 				</div>
 			{/if}

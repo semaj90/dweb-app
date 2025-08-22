@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { $state, $derived } from 'svelte';
   import { page } from "$app/state";
   import ChatInterface from "$lib/components/ai/ChatInterface.svelte";
   import { Button } from "$lib/components/ui/button";

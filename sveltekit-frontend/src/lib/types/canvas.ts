@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Canvas types for interactive features
 export interface CanvasNode {
   id: string;

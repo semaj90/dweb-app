@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { $state } from 'svelte';
   // Web Speech API type declarations
   interface SpeechRecognition extends EventTarget {
     continuous: boolean;
@@ -35,12 +36,7 @@
     error: string;
   }
 
-  declare global {
-    interface Window {
-      SpeechRecognition?: typeof SpeechRecognition;
-      webkitSpeechRecognition?: typeof SpeechRecognition;
-    }
-  }
+  // Global Web Speech types are provided by src/types/web-speech.d.ts
 
   import { onMount, tick } from 'svelte';
   import { writable } from 'svelte/store';
@@ -152,9 +148,9 @@
     type: 'user' | 'assistant' | 'system';
     content: string;
     timestamp: Date;
-    context?: any;
+    context?: unknown;
     suggestions?: string[];
-    metadata?: any;
+    metadata?: unknown;
   }
 
   interface Report {
@@ -177,9 +173,9 @@
 
   // Data stores
   let reports = $state<Report[]>([]);
-  let summaries = $state<any[]>([]);
+  let summaries = $state<unknown[]>([]);
   let citations = $state<Citation[]>([]);
-  let chatHistory = $state<any[]>([]);
+  let chatHistory = $state<unknown[]>([]);
 
   // AI Suggestions
   let aiSuggestions = $state<string[]>([]);

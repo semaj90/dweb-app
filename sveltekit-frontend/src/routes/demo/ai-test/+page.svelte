@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { $state } from 'svelte';
   import { OllamaService } from '$lib/services/ollamaService';
   import { multiLayerCache } from '$lib/services/multiLayerCache';
   

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Complete Vector Search Service - Production Ready
 // Combines PostgreSQL pgvector + Qdrant + Local caching + Loki.js + Fuse.js
 import { browser } from "$app/environment";

@@ -1,7 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
-type { RequestHandler }, {
-json } from "@sveltejs/kit";
+import { json } from '@sveltejs/kit';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
   try {
@@ -27,7 +25,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 async function generateAIResponse(
   prompt: string,
   vibe: string = "professional",
-  context?: any,
+  context?: unknown,
 ) {
   try {
     // Use the ollama service instance
@@ -54,7 +52,7 @@ async function generateAIResponse(
     return generateMockResponse(prompt, vibe, context);
   }
 }
-function createSystemPrompt(vibe: string, context?: any): string {
+function createSystemPrompt(vibe: string, context?: unknown): string {
   const basePrompt = `You are an AI assistant for legal case management. You help prosecutors and legal professionals analyze cases, organize evidence, and provide insights.`;
 
   const vibeInstructions = {
@@ -201,7 +199,7 @@ function extractActions(response: string, prompt: string) {
 async function generateMockResponse(
   prompt: string,
   vibe: string = "professional",
-  context?: any,
+  context?: unknown,
 ) {
   // Simulate AI processing delay
   await new Promise((resolve) =>

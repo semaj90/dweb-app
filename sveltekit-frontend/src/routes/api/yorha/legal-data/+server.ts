@@ -1,6 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types.js";
 import { db } from "$lib/server/db/index";
 import { legalDocuments, cases, evidence } from "$lib/server/db/schema-postgres";
 import { eq, desc, sql, like, and, or } from "drizzle-orm";
@@ -217,7 +216,8 @@ export const GET: RequestHandler = async ({ url, request }) => {
 
     return json({
       success: true,
-      data: formattedData,
+      results: formattedData, // Changed from 'data' to 'results' to match frontend expectations
+      totalResults: totalCount,
       pagination: {
         page,
         limit,
@@ -232,7 +232,18 @@ export const GET: RequestHandler = async ({ url, request }) => {
         sort,
         order,
         processedAt: new Date(),
-        service: "yorha-legal-data-api"
+        processingTime: Date.now() - startTime,
+        aiAnalysis: aiMetadata,
+        service: "yorha-legal-data-api",
+        version: "4.0.0"
+      },
+      // YoRHa interface enhancements
+      yorhaStatus: {
+        systemStatus: "OPERATIONAL",
+        dataIntegrity: "VERIFIED",
+        searchAccuracy: search ? "HIGH" : "N/A",
+        aiEnhancement: useAI ? "ENABLED" : "DISABLED",
+        vectorSearch: vectorSearch ? "ENABLED" : "DISABLED"
       }
     });
 

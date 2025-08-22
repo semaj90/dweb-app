@@ -2,6 +2,7 @@
   // Integrated System Demo - All XState Machines Working Together
   // Demonstrates authentication, session management, AI assistant, and production services
   import { onMount } from 'svelte';
+  import { $state, $derived } from 'svelte';
   import { Button } from '$lib/components/ui/button/index.js';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card/index.js';
   import { Badge } from '$lib/components/ui/badge/index.js';
@@ -523,9 +524,9 @@
 
 <!-- Authentication Dialog -->
 <ModernAuthForm 
-  open={showAuthDialog} onOpenChange={(open) => showAuthDialog = open}
+  open={showAuthDialog} onopenchange={(open) => showAuthDialog = open}
   mode="login"
-  onSuccess={handleAuthSuccess}
+  onsuccess={handleAuthSuccess}
 />
 
 <style>

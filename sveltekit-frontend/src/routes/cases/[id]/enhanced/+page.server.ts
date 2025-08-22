@@ -1,5 +1,5 @@
 import type { PageServerLoad } from "./$types";
-// @ts-nocheck
+
 import { cases, evidence } from "$lib/server/db/schema-postgres";
 // Orphaned content: import {
 

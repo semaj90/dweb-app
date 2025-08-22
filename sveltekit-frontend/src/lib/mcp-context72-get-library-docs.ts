@@ -1,5 +1,5 @@
 import type { RequestHandler } from "@sveltejs/kit";
-// @ts-nocheck
+
 // MCP Context7.2 Get Library Docs utility
 // Enhanced for Svelte 5 + Bits UI v2 integration
 // Ensures #mcp_context72_get-library-docs is available in the codebase

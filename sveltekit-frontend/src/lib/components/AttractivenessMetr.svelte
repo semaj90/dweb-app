@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { createEventDispatcher } from 'svelte';
+  import { $props, $derived } from 'svelte';
   
   export let score: number = 5; // Current attractiveness score (1-10)
   export let label: string = 'Attractiveness Rating';
@@ -43,12 +43,12 @@ import type { CommonProps } from '$lib/types/common-props';
     hoveredScore = null;
   }
   
-  $: displayScore = hoveredScore !== null ? hoveredScore : score;
-  $: sizeClasses = {
+  let displayScore = $derived(hoveredScore !== null ? hoveredScore : score);
+  let sizeClasses = $derived({
     sm: 'w-4 h-4',
     md: 'w-6 h-6', 
     lg: 'w-8 h-8'
-  };
+  });
 </script>
 
 <div class="mx-auto px-4 max-w-7xl">

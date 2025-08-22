@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+
 import { db } from "$lib/server/db/index";
 cases, evidence
 import { json } from "@sveltejs/kit";

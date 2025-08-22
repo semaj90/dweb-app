@@ -1,9 +1,8 @@
-// @ts-nocheck
+
 // lib/components/ai-synthesis-client.svelte
 // Frontend client for AI synthesis with real-time streaming
 
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { onMount, onDestroy } from 'svelte';
   import { writable } from 'svelte/store';
@@ -18,10 +17,10 @@ import type { CommonProps } from '$lib/types/common-props';
   const streamId = writable<string | null>(null);
   const progress = writable(0);
   const currentStage = writable('');
-  const sources = writable<any[]>([]);
+  const sources = writable<unknown[]>([]);
   const result = writable<any | null>(null);
   const error = writable<string | null>(null);
-  const events = writable<any[]>([]);
+  const events = writable<unknown[]>([]);
 
   // Configuration
   let enableStreaming = true;
@@ -650,7 +649,4 @@ import type { CommonProps } from '$lib/types/common-props';
 
 
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

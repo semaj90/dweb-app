@@ -1,5 +1,6 @@
 <script lang="ts">
   import AISummaryReader from '$lib/components/legal/AISummaryReader.svelte';
+  import { $state } from 'svelte';
   import EvidenceReportSummary from '$lib/components/legal/EvidenceReportSummary.svelte';
   import CaseSynthesisWorkflow from '$lib/components/legal/CaseSynthesisWorkflow.svelte';
   import { Brain, FileText, GitMerge, Play } from 'lucide-svelte';

@@ -1,9 +1,9 @@
 <!-- @migration-task Error while migrating Svelte code: Identifier 'caseId' has already been declared
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $effect } from 'svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     caseId?: string | null;
   }
   let {
@@ -382,13 +382,13 @@ import type { CommonProps } from '$lib/types/common-props';
         'AI Analysis',
         'Review & Submit'
       ]}
-      on:stepClick={(e) => goToStep(e.detail)}
+      onstepclick={(e) => goToStep(e.detail)}
     />
   </div>
 
   <!-- Loading Overlay -->
   {#if $isLoading}
-    <div class="loading-overlay" transitionfade={{ duration: 300 }}>
+    <div class="loading-overlay" transition:fade={{ duration: 300 }}>
       <LoadingSpinner />
       <p class="loading-message">{$processingMessage}</p>
     </div>
@@ -397,52 +397,52 @@ import type { CommonProps } from '$lib/types/common-props';
   <!-- Form Steps -->
   <div class="form-container" class:loading={$isLoading}>
     {#if $currentStep === 1}
-      <div transitionslide={{ duration: 300, easing: cubicOut }}>
+      <div transition:slide={{ duration: 300, easing: cubicOut }}>
         <CaseInfoForm
           bind:data={$formData.caseInfo}
-          on:next={nextStep}
+          onnext={nextStep}
           isValid={$stepValidation}
         />
       </div>
     {:else if $currentStep === 2}
-      <div transitionslide={{ duration: 300, easing: cubicOut }}>
+      <div transition:slide={{ duration: 300, easing: cubicOut }}>
         <DocumentUploadForm
           bind:data={$formData.documents}
-          on:process={(e) => processDocuments(e.detail)}
-          on:next={nextStep}
-          on:prev={prevStep}
+          onprocess={(e) => processDocuments(e.detail)}
+          onnext={nextStep}
+          onprev={prevStep}
           isValid={$stepValidation}
         />
       </div>
     {:else if $currentStep === 3}
-      <div transitionslide={{ duration: 300, easing: cubicOut }}>
+      <div transition:slide={{ duration: 300, easing: cubicOut }}>
         <EvidenceAnalysisForm
           bind:data={$formData.evidence}
           ocrResults={$formData.documents.ocr_results}
-          on:extract={extractEvidence}
-          on:next={nextStep}
-          on:prev={prevStep}
+          onextract={extractEvidence}
+          onnext={nextStep}
+          onprev={prevStep}
           isValid={$stepValidation}
         />
       </div>
     {:else if $currentStep === 4}
-      <div transitionslide={{ duration: 300, easing: cubicOut }}>
+      <div transition:slide={{ duration: 300, easing: cubicOut }}>
         <AIAnalysisForm
           bind:data={$formData.ai_analysis}
           caseData={$formData}
-          on:analyze={performAIAnalysis}
-          on:next={nextStep}
-          on:prev={prevStep}
+          onanalyze={performAIAnalysis}
+          onnext={nextStep}
+          onprev={prevStep}
           isValid={$stepValidation}
         />
       </div>
     {:else if $currentStep === 5}
-      <div transitionslide={{ duration: 300, easing: cubicOut }}>
+      <div transition:slide={{ duration: 300, easing: cubicOut }}>
         <ReviewSubmitForm
           bind:data={$formData.review}
           fullCaseData={$formData}
           onsubmit={submitForm}
-          on:prev={prevStep}
+          onprev={prevStep}
           isValid={$stepValidation}
         />
       </div>

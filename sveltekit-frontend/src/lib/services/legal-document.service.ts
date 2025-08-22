@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Legal Document Service - Clean Architecture Implementation
 import type {
   LegalDocument,
@@ -18,7 +18,7 @@ export interface DocumentRepository {
 export interface AIAnalysisService {
   analyze(document: LegalDocument): Promise<AIInsights>;
   summarize(content: string): Promise<string>;
-  extractEntities(content: string): Promise<any[]>;
+  extractEntities(content: string): Promise<unknown[]>;
 }
 
 export interface ComplianceService {
@@ -160,7 +160,7 @@ export class LegalAuditService {
     entityType: string;
     entityId: string;
     userId: string;
-    details?: any;
+    details?: unknown;
   }) {
     const auditEntry = {
       ...action,

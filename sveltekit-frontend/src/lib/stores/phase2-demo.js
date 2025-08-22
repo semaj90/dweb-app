@@ -11,11 +11,12 @@
  */
 
 import { parseAICommand, aiCommandService } from "./ai-command-parser.js";
-// Orphaned content: import {
-createEnhancedButton,
+import {
+  createEnhancedButton,
   mergeBitsUIProps,
   uiUpdateManager,
   YorhaClassManager,
+} from "./enhanced-ui-system.js";
 import { aiCommandMachine } from "./ai-command-machine.js";
 
 /**

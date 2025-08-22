@@ -31,6 +31,9 @@ const config = {
       $text: "../shared/text",
       $sharedText: "src/lib/shared-text" // wrapper re-export if preferred
     },
+    experimental: {
+      remoteFunctions: true
+    }
   },
 };
 

@@ -8,7 +8,7 @@
 ```bash
 # Enhanced RAG Services (AI Engine - Port 8094):
 ../go-microservice/cmd/enhanced-rag/main.go → builds to enhanced-rag.exe
-../go-microservice/cmd/enhanced-rag-v2/main.go → builds to enhanced-rag-v2.exe  
+../go-microservice/cmd/enhanced-rag-v2/main.go → builds to enhanced-rag-v2.exe
 ../go-microservice/cmd/production-rag/main.go → builds to production-rag.exe
 
 # Kratos Services (Legal gRPC - Port 50051):
@@ -96,7 +96,7 @@ export class ClaudeAgent {
 
 #### **Active Services (as of current session):**
 - ✅ SvelteKit Frontend: http://localhost:5175
-- ✅ MCP Multi-cluster: localhost:40000 (4 worker threads)  
+- ✅ MCP Multi-cluster: localhost:40000 (4 worker threads)
 - ⚠️ Enhanced RAG: 8094 (needs binary check)
 - ⚠️ Kratos Server: 50051 (build issues - use existing)
 - ⚠️ Upload Service: 8093 (pending)
@@ -132,7 +132,7 @@ The XState machine in `src/lib/machines/agentShellMachine.ts` is the **central o
 
 ### **Integration Points:**
 - **Claude Agent**: `agents/claude-agent.ts` (Context7 + AutoFix)
-- **CrewAI Agent**: `agents/crewai-agent.ts` 
+- **CrewAI Agent**: `agents/crewai-agent.ts`
 - **AutoGen Agent**: `agents/autogen-agent.ts`
 
 ### **Service Communication Flow:**
@@ -141,7 +141,7 @@ agentShellMachine.ts → Go Services
 ├── Enhanced RAG (8094) ← semantic search, AI analysis
 ├── Kratos Server (50051) ← gRPC legal services, GPU compute
 ├── Upload Service (8093) ← file processing, storage
-└── MCP Server (40000) ← multi-agent coordination
+└── MCP Server (4001) ← multi-agent coordination
 ```
 
 This architecture ensures **optimal resource usage** by reusing compiled Go binaries and coordinating services through the XState machine.

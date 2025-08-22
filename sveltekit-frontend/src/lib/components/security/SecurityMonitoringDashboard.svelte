@@ -3,7 +3,7 @@
   Displays security events, system health, and security metrics
 -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $derived } from 'svelte';
 
   import { Button } from "$lib/components/ui/button";
   import { notifications } from "$lib/stores/notification";
@@ -41,17 +41,17 @@ import type { CommonProps } from '$lib/types/common-props';
   let loading = false;
 
   // Security metrics
-  $: criticalEvents = securityEvents.filter(
+  let criticalEvents = $derived(securityEvents.filter(
     (e) => e.severity === "critical"
-  ).length;
-  $: highEvents = securityEvents.filter((e) => e.severity === "high").length;
-  $: recentEvents = securityEvents.filter(
+  ).length);
+  let highEvents = $derived(securityEvents.filter((e) => e.severity === "high").length);
+  let recentEvents = $derived(securityEvents.filter(
     (e) => Date.now() - e.timestamp < 24 * 60 * 60 * 1000
-  ).length;
-  $: loginAttempts = securityEvents.filter((e) => e.type === "login").length;
-  $: accessDeniedEvents = securityEvents.filter(
+  ).length);
+  let loginAttempts = $derived(securityEvents.filter((e) => e.type === "login").length);
+  let accessDeniedEvents = $derived(securityEvents.filter(
     (e) => e.type === "access_denied"
-  ).length;
+  ).length);
 
   // System status
   const systemHealth = writable({
@@ -487,7 +487,4 @@ import type { CommonProps } from '$lib/types/common-props';
   </div>
 </div>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

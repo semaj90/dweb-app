@@ -1,11 +1,11 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { onMount } from 'svelte';
+  import { $state } from 'svelte';
   import { writable } from 'svelte/store';
   
   // Test state
-  const testResults = writable<any[]>([]);
+  const testResults = writable<unknown[]>([]);
   const isRunning = writable(false);
   const currentTest = writable<string>('');
   
@@ -359,7 +359,4 @@ import type { CommonProps } from '$lib/types/common-props';
     </div>
   </div>
 </div>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

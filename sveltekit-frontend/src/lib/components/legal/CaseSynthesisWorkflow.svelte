@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { useMachine } from '@xstate/svelte';
+  import { $props, $derived } from 'svelte';
   import { createMachine, assign } from 'xstate';
   import AISummaryReader from './AISummaryReader.svelte';
   import EvidenceReportSummary from './EvidenceReportSummary.svelte';
@@ -360,12 +360,12 @@ import type { CommonProps } from '$lib/types/common-props';
   let selectedDocuments = new Set<string>();
   let selectedReports = new Set<string>();
 
-  $: allItems = [
+  let allItems = $derived([
     ...documents.map(d => ({ id: d.id, type: 'document', title: d.title, data: d })),
     ...evidenceReports.map(r => ({ id: r.id, type: 'report', title: r.title, data: r }))
-  ];
+  ]);
 
-  $: selectedCount = selectedDocuments.size + selectedReports.size;
+  let selectedCount = $derived(selectedDocuments.size + selectedReports.size);
 
   function toggleSelection(id: string, type: 'document' | 'report') {
     if (type === 'document') {

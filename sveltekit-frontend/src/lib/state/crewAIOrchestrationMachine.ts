@@ -1,10 +1,13 @@
-// @ts-nocheck
+
 // XState CrewAI Orchestration Machine
 // Manages multi-agent workflows with self-prompting and auto-save
 
 import { setup, assign, fromPromise, raise } from "xstate";
-// Orphaned content: import {
-crewAIOrchestrator, type DocumentReviewTask, type AgentResponse
+import {
+  crewAIOrchestrator,
+  type DocumentReviewTask,
+  type AgentResponse
+} from '$lib/ai/crewai-legal-agents';
 import { documentUpdateLoop } from '$lib/services/documentUpdateLoop';
 
 // ============================================================================
@@ -542,7 +545,7 @@ export const crewAIOrchestrationMachine = setup({
 // HELPER FUNCTIONS
 // ============================================================================
 
-async function generateContextualRecommendations(context: CrewAIContext): Promise<any[]> {
+async function generateContextualRecommendations(context: CrewAIContext): Promise<unknown[]> {
   // This would implement your self-prompting logic
   const recommendations = [];
   

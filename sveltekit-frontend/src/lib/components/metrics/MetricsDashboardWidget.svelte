@@ -1,5 +1,4 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { onMount } from 'svelte';
   type NLPQuantiles = { p50:number; p90:number; p99:number };
@@ -237,7 +236,4 @@ import type { CommonProps } from '$lib/types/common-props';
   .metrics-widget { font-family: system-ui, sans-serif; }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

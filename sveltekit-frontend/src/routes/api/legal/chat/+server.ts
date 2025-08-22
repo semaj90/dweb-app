@@ -1,8 +1,16 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+import { json } from '@sveltejs/kit';
+
 // Legal AI Chat API - Context7 Enhanced with Gemma3 Legal
 import { db } from "$lib/server/db/index";
-import { type RequestHandler, json , { , legalAnalysisSessions, , legalDocuments, , legalPrecedents } from import { type InsertLegalAnalysisSession } from "$lib/server/db/types";
+
+// Mock interfaces for now
+interface InsertLegalAnalysisSession {
+  userId: string;
+  prompt: string;
+  response: string;
+  caseId?: string;
+}
 
 interface LegalChatRequest {
   prompt: string;
@@ -14,7 +22,7 @@ interface LegalChatRequest {
     | "document_review"
     | "precedent_search";
   context?: {
-    caseDetails?: any;
+    caseDetails?: unknown;
     evidenceIds?: string[];
     requestedAnalysis?: string[];
   };
@@ -183,7 +191,7 @@ async function findRelevantLegalSources(prompt: string, caseId?: string) {
 async function generateLegalAnalysis(
   prompt: string,
   sources: any[],
-  context?: any
+  context?: unknown
 ) {
   try {
     // Construct analysis prompt with legal context

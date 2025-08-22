@@ -1,6 +1,6 @@
 <!-- YoRHa Notification/Alert System Component -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state, $derived } from 'svelte';
 
   import { createEventDispatcher, onMount } from 'svelte';
   import { fade, fly } from 'svelte/transition';
@@ -105,7 +105,7 @@ import type { CommonProps } from '$lib/types/common-props';
   <div
     bind:this={notificationElement}
   class="yorha-notification {type}"
-  transitionfly="{{ x: position.includes('right') ? 150 : -150, duration: 250 }}"
+  transition:fly="{{ x: position.includes('right') ? 150 : -150, duration: 250 }}"
   onmouseenter={pauseAutoClose}
   onmouseleave={resumeAutoClose}
     role="alert"
@@ -117,7 +117,7 @@ import type { CommonProps } from '$lib/types/common-props';
         <div
           class="progress-fill"
           style="width: {progress}%"
-          transitionfade="{{ duration: 200 }}"
+          transition:fade="{{ duration: 200 }}"
         ></div>
       </div>
     {/if}
@@ -365,7 +365,4 @@ import type { CommonProps } from '$lib/types/common-props';
     }
   }
 </style>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

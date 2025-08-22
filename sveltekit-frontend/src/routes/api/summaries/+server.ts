@@ -38,7 +38,7 @@ interface AILLMOutput {
 interface BasicVectorResult {
   id: string;
   content?: string;
-  payload?: { content?: string; [k: string]: any };
+  payload?: { content?: string; [k: string]: unknown };
   score?: number;
   relevance?: number;
   source?: string;

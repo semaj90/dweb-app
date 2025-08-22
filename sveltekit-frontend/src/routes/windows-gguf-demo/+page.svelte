@@ -7,6 +7,7 @@ https://svelte.dev/e/js_parse_error -->
 -->
 
 <script lang="ts">
+  // $state and $derived are declared globally in src/types/svelte-helpers.d.ts
   import type { AIResponse } from '$lib/types/ai';
   import { onMount, onDestroy } from 'svelte';
   import { createGGUFRuntime, GGUFHelpers } from '$lib/services/gguf-runtime';
@@ -28,7 +29,7 @@ https://svelte.dev/e/js_parse_error -->
   // Reactive state
   let demoInput = $state('Analyze the liability provisions in this employment contract and identify potential legal risks.');
   let isProcessing = $state(false);
-  let results = $state<any[]>([]);
+  let results = $state<unknown[]>([]);
   let currentDemo = $state('inference');
   let webgpuStatus = $state({ available: false, device: null });
   let performanceMetrics = $state({ fps: 0, latency: 0, throughput: 0 });

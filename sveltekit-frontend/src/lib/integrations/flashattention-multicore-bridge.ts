@@ -16,7 +16,7 @@ export interface FlashAttentionMulticoreRequest {
     priority?: 'low' | 'medium' | 'high' | 'critical';
     enableGPU?: boolean;
     useAgentOrchestration?: boolean;
-    errorData?: any;
+    errorData?: unknown;
     maxSequenceLength?: number;
     memoryOptimization?: 'speed' | 'memory' | 'balanced';
   };
@@ -26,7 +26,7 @@ export interface FlashAttentionMulticoreResponse {
   attentionResult: AttentionResult;
   legalAnalysis: LegalContextAnalysis;
   multicoreRecommendations: string[];
-  agentOrchestrationResult?: any;
+  agentOrchestrationResult?: unknown;
   systemMetrics: {
     totalProcessingTime: number;
     gpuUtilization: number;

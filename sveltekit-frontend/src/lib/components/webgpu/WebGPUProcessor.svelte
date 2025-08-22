@@ -7,6 +7,7 @@
 	// ================================================================================
 
 	import { onMount, onDestroy } from 'svelte';
+  import { $props, $derived } from 'svelte';
 	import * as THREE from 'three';
 	import { writable, derived } from 'svelte/stores';
 
@@ -493,7 +494,7 @@
 	}
 
 	function getMemoryUsage(): number {
-		// @ts-ignore
+		
 		return (performance as any).memory?.usedJSHeapSize || 0;
 	}
 
@@ -503,7 +504,7 @@
 	}
 
 	function getNetworkUsage(): number {
-		// @ts-ignore
+		
 		return (navigator as any).connection?.downlink || 0;
 	}
 
@@ -622,9 +623,9 @@
 
 				// Render
 				const $three = threeStore;
-				// @ts-ignore
+				
 				if ($three && $three.renderer && $three.scene && $three.camera) {
-					// @ts-ignore
+					
 					$three.renderer.render($three.scene, $three.camera);
 				}
 			}
@@ -685,7 +686,7 @@
 		// Canvas is ready, initialization will happen in onMount
 	}
 
-	$: metrics = $performanceMetrics;
+	let metrics = $derived($performanceMetrics);
 </script>
 
 <!-- ============================================================================ -->

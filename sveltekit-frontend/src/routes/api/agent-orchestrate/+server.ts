@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+
 /**
  * Agent Orchestrator API Endpoint
  * Coordinates multiple AI agents with Context7 MCP integration and auto-fix capabilities
@@ -13,7 +13,7 @@ import { enhancedRAGService } from "../../../../../rag/enhanced-rag-service.js";
 
 export interface AgentOrchestrationRequest {
   prompt: string;
-  context?: any;
+  context?: unknown;
   agents?: string[]; // ['claude', 'autogen', 'crewai', 'rag']
   options?: {
     includeContext7?: boolean;

@@ -6,6 +6,7 @@
 -->
 
 <script lang="ts">
+  import { $state } from 'svelte';
   import { Dialog, DropdownMenu } from 'bits-ui';
   import { onMount, tick } from 'svelte';
   import type { Case, Evidence, Report, CanvasState } from '$lib/data/types';

@@ -1,9 +1,9 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { onMount } from 'svelte';
+  import { $derived } from 'svelte';
   import { WebGPUSOMCache, type IntelligentTodo, type NPMError, initializeSOMCache } from '$lib/webgpu/som-webgpu-cache.js';
-  
+
   let somCache: WebGPUSOMCache;
   let isLoading = false;
   let webGPUEnabled = false;
@@ -13,7 +13,7 @@ import type { CommonProps } from '$lib/types/common-props';
   let npmOutput = `
 src/app.ts(1,25): error TS2307: Cannot find module '@types/node' or its corresponding type declarations.
 src/utils.ts(15,23): error TS2339: Property 'foo' does not exist on type 'Object'.
-src/api.ts(25,10): error: Service unavailable: http://localhost:8080 
+src/api.ts(25,10): error: Service unavailable: http://localhost:8080
 src/parser.ts(42,15): error TS1005: Unexpected token ';'.
 src/index.ts(8,32): error TS2307: Module not found: Can't resolve './missing'
 src/components/Button.tsx(12,8): error TS2322: Type 'string' is not assignable to type 'number'.
@@ -57,21 +57,21 @@ src/hooks.server.ts(18,25): error: Database connection timeout after 5000ms
       // Process npm check errors with SOM analysis
       const generatedTodos = await somCache.processNPMCheckErrors(npmOutput);
       todos = generatedTodos;
-      
+
       // Extract errors from npm output for display
       errors = extractErrorsFromOutput(npmOutput);
-      
+
       // Simulate performance metrics (in a real implementation, these would come from the cache)
       performanceMetrics = {
         somTrainingTime: 150 + Math.random() * 50, // ms
-        webGPUProcessingTime: 12 + Math.random() * 8, // ms  
+        webGPUProcessingTime: 12 + Math.random() * 8, // ms
         pageRankIterations: 20,
         cacheHitRatio: Math.random() * 0.3 + 0.1,
         totalProcessingTime: performance.now() - startTime
       };
 
       processingTime = performanceMetrics.totalProcessingTime;
-      
+
     } catch (error) {
       console.error('Error processing npm output:', error);
       alert('Failed to process errors: ' + error.message);
@@ -83,7 +83,7 @@ src/hooks.server.ts(18,25): error: Database connection timeout after 5000ms
   function extractErrorsFromOutput(output: string): NPMError[] {
     const lines = output.trim().split('\n');
     const extractedErrors: NPMError[] = [];
-    
+
     lines.forEach(line => {
       const match = line.match(/(.+\.tsx?)\((\d+),\d+\): (.+)/);
       if (match) {
@@ -99,7 +99,7 @@ src/hooks.server.ts(18,25): error: Database connection timeout after 5000ms
         });
       }
     });
-    
+
     return extractedErrors;
   }
 
@@ -143,18 +143,19 @@ src/hooks.server.ts(18,25): error: Database connection timeout after 5000ms
     return 'text-green-600';
   }
 
-  $: filteredTodos = todos.filter(todo => 
-    filterCategory === 'all' || todo.category === filterCategory
-  ).sort((a, b) => {
-    switch (sortBy) {
-      case 'priority': return b.priority - a.priority;
-      case 'confidence': return b.confidence - a.confidence;
-      case 'effort': return a.estimated_effort - b.estimated_effort;
-      default: return 0;
-    }
-  });
+  let filteredTodos = $derived(() => todos
+    .filter(todo => filterCategory === 'all' || todo.category === filterCategory)
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'priority': return b.priority - a.priority;
+        case 'confidence': return b.confidence - a.confidence;
+        case 'effort': return a.estimated_effort - b.estimated_effort;
+        default: return 0;
+      }
+    })
+  );
 
-  $: uniqueCategories = [...new Set(todos.map(todo => todo.category))];
+  let uniqueCategories = $derived([...new Set(todos.map(todo => todo.category))]);
 </script>
 
 <div class="p-6 max-w-7xl mx-auto">
@@ -165,7 +166,7 @@ src/hooks.server.ts(18,25): error: Database connection timeout after 5000ms
     <p class="text-gray-600 mb-4">
       Advanced semantic analysis using Self-Organizing Maps, WebGPU acceleration, and real-time PageRank prioritization
     </p>
-    
+
     <!-- Status Indicators -->
     <div class="flex flex-wrap gap-4 mb-6">
       <div class="flex items-center space-x-2">
@@ -192,14 +193,14 @@ src/hooks.server.ts(18,25): error: Database connection timeout after 5000ms
   <!-- NPM Output Input -->
   <div class="bg-gray-900 rounded-lg p-4 mb-6">
     <h3 class="text-white font-medium mb-3">📋 NPM Check Output:</h3>
-    <textarea 
+    <textarea
       bind:value={npmOutput}
       class="w-full h-32 bg-gray-800 text-green-400 font-mono text-sm p-3 rounded border-none resize-none"
       placeholder="Paste npm check output here..."
     ></textarea>
-    
+
     <div class="flex justify-between items-center mt-4">
-      <button 
+      <button
         onclick={processErrors}
         disabled={isLoading || !somCache}
         class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-6 py-2 rounded-lg font-medium transition-colors"
@@ -210,7 +211,7 @@ src/hooks.server.ts(18,25): error: Database connection timeout after 5000ms
           🚀 Generate Intelligent Todos
         {/if}
       </button>
-      
+
       {#if processingTime > 0}
         <div class="text-white text-sm">
           ⚡ Processed in {processingTime.toFixed(1)}ms
@@ -263,14 +264,14 @@ src/hooks.server.ts(18,25): error: Database connection timeout after 5000ms
             <option value={category}>{category}</option>
           {/each}
         </select>
-        
+
         <select bind:value={sortBy} class="px-3 py-2 border rounded-lg">
           <option value="priority">Sort by Priority</option>
           <option value="confidence">Sort by Confidence</option>
           <option value="effort">Sort by Effort</option>
         </select>
       </div>
-      
+
       <div class="flex items-center space-x-4">
         <label class="flex items-center space-x-2">
           <input type="checkbox" bind:checked={showDetails} class="rounded">
@@ -298,7 +299,7 @@ src/hooks.server.ts(18,25): error: Database connection timeout after 5000ms
                   </div>
                 </div>
                 <p class="text-gray-600 mb-3">{todo.description}</p>
-                
+
                 <div class="flex flex-wrap gap-2 mb-3">
                   {#each todo.tags as tag}
                     <span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
@@ -307,7 +308,7 @@ src/hooks.server.ts(18,25): error: Database connection timeout after 5000ms
                   {/each}
                 </div>
               </div>
-              
+
               <div class="text-right ml-6">
                 <div class={`text-lg font-bold mb-1 ${getPriorityColor(todo.priority)}`}>
                   Priority: {todo.priority.toFixed(4)}
@@ -415,7 +416,4 @@ src/hooks.server.ts(18,25): error: Database connection timeout after 5000ms
     background-color: #f8fafc;
   }
 </style>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

@@ -1,5 +1,5 @@
 import crypto from "crypto";
-// @ts-nocheck
+
 // ======================================================================
 // ENHANCED STATE MACHINES FOR LEGAL AI SYSTEM - FIXED VERSION
 // Building on existing autoTaggingMachine with advanced capabilities

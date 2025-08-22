@@ -1,8 +1,7 @@
 import { Pool } from "pg";
-// @ts-nocheck
+import { drizzle } from "drizzle-orm/postgres-js";
 import { building } from "$app/environment";
-// Orphaned content: import * as schema from "$lib/server/db/schema-postgres";
-import {
+import * as schema from "$lib/server/db/schema-postgres";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 let _pool: Pool | null = null;

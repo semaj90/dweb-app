@@ -1,6 +1,7 @@
 <script lang="ts">
+  import { $props } from 'svelte';
   interface Props {
-    data?: any;
+    data?: unknown;
   }
   let {
     data

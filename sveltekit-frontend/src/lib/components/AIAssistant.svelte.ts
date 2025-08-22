@@ -1,5 +1,4 @@
-import type { CommonProps } from '$lib/types/common-props';
-// @ts-nocheck
+
 import { writable } from "svelte/store";
 // Orphaned content: import {
 

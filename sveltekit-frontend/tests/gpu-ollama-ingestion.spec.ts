@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { test, expect } from '@playwright/test';
 
 test.describe('GPU-Enabled Ollama Ingestion Pipeline', () => {
@@ -44,8 +44,8 @@ test.describe('GPU-Enabled Ollama Ingestion Pipeline', () => {
     const models = await modelsResponse.json();
     
     const requiredModels = ['llama3.2', 'nomic-embed-text'];
-    requiredModels.forEach(modelName: any => {
-      const model = models.models.find((m: any) => m.name.includes(modelName));
+    requiredModels.forEach(modelName: unknown => {
+      const model = models.models.find((m: unknown) => m.name.includes(modelName));
       expect(model).toBeDefined();
       if (model && model.details) {
         expect(model.details.gpu_layers).toBeGreaterThan(0);
@@ -76,7 +76,7 @@ test.describe('GPU-Enabled Ollama Ingestion Pipeline', () => {
           const newFiles = [...currentFiles, file];
           
           const newDataTransfer = new DataTransfer();
-          newFiles.forEach(f: any => newDataTransfer.items.add(f));
+          newFiles.forEach(f: unknown => newDataTransfer.items.add(f));
           input.files = newDataTransfer.files;
           input.dispatchEvent(new Event('change', { bubbles: true }));
         }
@@ -261,7 +261,7 @@ test.describe('GPU-Enabled Ollama Ingestion Pipeline', () => {
     });
     
     const searchResults = await searchResponse.json();
-    const batchDocuments = searchResults.results.filter((r: any) => 
+    const batchDocuments = searchResults.results.filter((r: unknown) => 
       r.metadata.title && r.metadata.title.includes('Batch Document')
     );
     
@@ -325,7 +325,7 @@ test.describe('GPU-Enabled Ollama Ingestion Pipeline', () => {
     }
     
     // Analyze memory usage
-    const maxMemoryUsed = Math.max(...memoryReadings.map(r: any => r.used_mb));
+    const maxMemoryUsed = Math.max(...memoryReadings.map(r: unknown => r.used_mb));
     const avgMemoryUsed = memoryReadings.reduce((sum, r) => sum + r.used_mb, 0) / memoryReadings.length;
     const memoryIncrease = maxMemoryUsed - baseline.used_mb;
     
@@ -345,7 +345,7 @@ test.describe('GPU-Enabled Ollama Ingestion Pipeline', () => {
     const modelsResponse = await page.request.get('/api/ollama/models');
     const models = await modelsResponse.json();
     
-    const embeddingModels = models.models.filter((m: any) => 
+    const embeddingModels = models.models.filter((m: unknown) => 
       m.name.includes('embed') || m.capabilities?.includes('embedding')
     );
     
@@ -445,8 +445,8 @@ test.describe('GPU-Enabled Ollama Ingestion Pipeline', () => {
     });
     
     // Test similarity between related queries
-    const contractEmbedding = embeddings.find(e: any => e.query.includes('contract'))?.embedding;
-    const tortEmbedding = embeddings.find(e: any => e.query.includes('tort'))?.embedding;
+    const contractEmbedding = embeddings.find(e: unknown => e.query.includes('contract'))?.embedding;
+    const tortEmbedding = embeddings.find(e: unknown => e.query.includes('tort'))?.embedding;
     
     if (contractEmbedding && tortEmbedding) {
       const similarity = cosineSimilarity(contractEmbedding, tortEmbedding);

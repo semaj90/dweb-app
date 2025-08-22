@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { onMount } from 'svelte';
+  import { $props } from 'svelte';
   import { Button } from '$lib/components/ui/button';
   import Badge from '$lib/components/ui/Badge.svelte';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
@@ -10,7 +10,7 @@ import type { CommonProps } from '$lib/types/common-props';
     Save, Download, Image as ImageIcon, FileText 
   } from 'lucide-svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     width?: number;
     height?: number;
     caseId?: string;

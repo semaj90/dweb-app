@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Autogen Multi-Agent Framework for Legal AI
 // Ultra-efficient legal analysis using specialized AI agents
 

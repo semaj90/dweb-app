@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+
 import { json } from "@sveltejs/kit";
 
 const REPORT_TEMPLATES = {
@@ -110,7 +110,7 @@ function generateReportContent(
   caseId: string,
   reportId: string,
   existingContent?: string,
-  context?: any,
+  context?: unknown,
 ): string {
   const now = new Date();
   const formattedDate = now.toLocaleDateString("en-US", {
@@ -159,7 +159,7 @@ function generateSectionContent(
   section: string,
   reportType: string,
   existingContent?: string,
-  context?: any,
+  context?: unknown,
 ): string {
   const sampleContent: { [key: string]: string } = {
     "Executive Summary": `

@@ -37,7 +37,7 @@ export async function apiFetch<T = unknown>(
   );
   const timeoutMs = retry?.timeoutMs ?? 0;
 
-  let lastErr: unknown;
+  let lastErr: any;
   for (let i = 0; i < attempts; i++) {
     const controller = timeoutMs > 0 ? new AbortController() : undefined;
     const t =

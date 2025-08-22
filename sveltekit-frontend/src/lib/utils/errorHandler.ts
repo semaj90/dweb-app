@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Comprehensive Error Handling System for Legal AI Application
  */
@@ -7,7 +7,7 @@ export interface AppError {
   id: string;
   type: "validation" | "network" | "auth" | "system" | "analysis" | "upload";
   message: string;
-  details?: any;
+  details?: unknown;
   timestamp: Date;
   userId?: string;
   caseId?: string;
@@ -36,7 +36,7 @@ class ErrorHandler {
   logError(
     type: AppError["type"],
     message: string,
-    details?: any,
+    details?: unknown,
     severity: AppError["severity"] = "medium",
   ): AppError {
     const error: AppError = {
@@ -84,22 +84,22 @@ class ErrorHandler {
   /**
    * Wrapper for common error types
    */
-  validation = (message: string, details?: any) =>
+  validation = (message: string, details?: unknown) =>
     this.logError("validation", message, details, "low");
 
-  network = (message: string, details?: any) =>
+  network = (message: string, details?: unknown) =>
     this.logError("network", message, details, "medium");
 
-  auth = (message: string, details?: any) =>
+  auth = (message: string, details?: unknown) =>
     this.logError("auth", message, details, "high");
 
-  system = (message: string, details?: any) =>
+  system = (message: string, details?: unknown) =>
     this.logError("system", message, details, "critical");
 
-  analysis = (message: string, details?: any) =>
+  analysis = (message: string, details?: unknown) =>
     this.logError("analysis", message, details, "high");
 
-  upload = (message: string, details?: any) =>
+  upload = (message: string, details?: unknown) =>
     this.logError("upload", message, details, "medium");
 
   /**
@@ -290,7 +290,7 @@ export function handleDatabaseError(error: any, operation: string): string {
 /**
  * Session validation helper
  */
-export function validateUserSession(locals: any): any {
+export function validateUserSession(locals: any): unknown {
   if (!locals.user) {
     throw new Error('Authentication required');
   }

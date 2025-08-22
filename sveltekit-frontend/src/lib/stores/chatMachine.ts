@@ -1,5 +1,5 @@
 import crypto from "crypto";
-// @ts-nocheck
+
 /**
  * XState Chat Machine for Svelte 5 + Gemma3 Integration
  * Enhanced with streaming, context injection, and model selection
@@ -25,7 +25,7 @@ export interface ChatContext {
 
 export type ChatEvent =
   | { type: "SEND_MESSAGE"; message: string }
-  | { type: "RECEIVE_MESSAGE"; message: string; metadata?: any }
+  | { type: "RECEIVE_MESSAGE"; message: string; metadata?: unknown }
   | { type: "START_STREAMING" }
   | { type: "STREAM_CHUNK"; chunk: string }
   | { type: "STREAM_COMPLETE" }

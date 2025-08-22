@@ -1,22 +1,21 @@
-import crypto from "crypto";
-// @ts-nocheck
+import { randomUUID } from "crypto";
+
 // Loki.js based local memory and sync service for enhanced performance
 // Browser environment check
 const browser = typeof window !== "undefined";
-Loki from "lokijs";
-// Orphaned content: import type { Collection
-import type { Evidence } from '../stores/evidenceStore.js';
+import Loki, { type Collection } from "lokijs";
+import type { Evidence } from '$lib/stores/evidenceStore.js';
 
 interface LokiEvidence extends Evidence {
   $loki?: number;
-  meta?: any;
+  meta?: unknown;
 }
 interface SyncOperation {
   id: string;
   type: "CREATE" | "UPDATE" | "DELETE";
   collectionName: string;
   recordId: string;
-  data?: any;
+  data?: unknown;
   timestamp: string;
   synced: boolean;
   retryCount: number;

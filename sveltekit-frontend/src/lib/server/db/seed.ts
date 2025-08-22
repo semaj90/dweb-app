@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { db } from "./index.js";
 // Orphaned content: import {
 users, 

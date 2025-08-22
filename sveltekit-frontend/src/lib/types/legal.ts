@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Legal AI System Type Definitions
 export interface LegalCase {
   id: string;
@@ -233,7 +233,7 @@ export interface ApiResponse<T> {
   error?: {
     message: string;
     code: string;
-    details?: any;
+    details?: unknown;
   };
   metadata?: {
     timestamp: Date;
@@ -263,7 +263,7 @@ export interface DocumentProcessingJob {
   progress: number; // 0-100
   startedAt?: Date;
   completedAt?: Date;
-  result?: any;
+  result?: unknown;
   error?: string;
   retryCount: number;
 }

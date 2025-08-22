@@ -6,7 +6,7 @@ import { json } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 import { lucia } from "$lib/server/auth";
 import { db } from "$lib/server/db";
-import { Argon2id } from "oslo/password";
+import bcrypt from 'bcryptjs';
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
   try {
@@ -59,7 +59,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
       const demoUser = demoUsers.find((du) => du.email === email);
       if (demoUser) {
         console.log("[Login API] Creating demo user:", email);
-        const hashedPassword = await new Argon2id().hash(demoUser.password);
+        const hashedPassword = await bcrypt.hash(demoUser.password, 10);
 
         const [newUser] = await db
           .insert(users)
@@ -82,7 +82,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
       return json({ error: "Invalid credentials" }, { status: 401 });
     }
     // Verify password
-    const validPassword = await new Argon2id().verify(user.hashedPassword, password);
+    const validPassword = await bcrypt.compare(password, user.hashedPassword);
     if (!validPassword) {
       return json({ error: "Invalid credentials" }, { status: 401 });
     }

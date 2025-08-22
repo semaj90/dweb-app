@@ -9,8 +9,8 @@ interface UploadContext {
     uploadProgress?: number;
     step?: string;
     stepProgress?: number;
-    fragment?: any;
-    result?: any;
+    fragment?: unknown;
+    result?: unknown;
     status?: 'uploading' | 'processing' | 'done' | 'error';
     error?: string;
   }>;
@@ -23,8 +23,8 @@ interface UploadContext {
 type UploadEvent =
   | { type: 'START_PROCESS'; sessionId: string; fileId: string }
   | { type: 'UPLOAD_PROGRESS'; fileId: string; progress: number }
-  | { type: 'PROCESSING_STEP'; fileId: string; step: string; progress?: number; fragment?: any }
-  | { type: 'PROCESSING_COMPLETE'; fileId: string; result?: any }
+  | { type: 'PROCESSING_STEP'; fileId: string; step: string; progress?: number; fragment?: unknown }
+  | { type: 'PROCESSING_COMPLETE'; fileId: string; result?: unknown }
   | { type: 'ERROR'; fileId?: string; error: any }
   | { type: 'WS_CLOSED' }
   | { type: 'WS_OPENED' }
@@ -456,7 +456,7 @@ export function getFileProgress(context: UploadContext, fileId: string): {
   step?: string;
   stepProgress?: number;
   status: string;
-  fragment?: any;
+  fragment?: unknown;
   error?: string;
 } {
   const file = context.files[fileId];
@@ -484,7 +484,7 @@ export function getAllFilesStatus(context: UploadContext): Array<{
   step?: string;
   stepProgress?: number;
   status: string;
-  fragment?: any;
+  fragment?: unknown;
   error?: string;
 }> {
   return Object.entries(context.files).map(([fileId, file]) => ({

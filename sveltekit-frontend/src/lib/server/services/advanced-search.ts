@@ -1,14 +1,13 @@
-// @ts-nocheck
+
 /**
  * Advanced Search & Filtering System (Simplified)
  * Supports full-text search, filters, and suggestions
  */
 
 import { db } from "$lib/server/db/index";
-// Orphaned content: import {
-cases, evidence
-import type { SQL }, {
-and, gte, like, lte, or, sql } from "drizzle-orm";
+import { cases, evidence } from "$lib/database/schema";
+import type { SQL } from "drizzle-orm";
+import { and, gte, like, lte, or, sql } from "drizzle-orm";
 
 export interface SearchFilters {
   query?: string;

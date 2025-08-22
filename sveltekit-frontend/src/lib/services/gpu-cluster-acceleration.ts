@@ -1,4 +1,6 @@
-// @ts-nocheck
+// GPU Cluster Acceleration System - RTX 3060 Ti optimized
+// Provides WebGL/WebGPU context switching across Node.js cluster workers
+// Integrates with Legal AI for vector processing and attention weight computation
 /**
  * GPU Cluster Acceleration System
  * Multi-cluster GPU context switching with WebGL/WebGPU shader caching
@@ -6,14 +8,16 @@
  */
 
 import { EventEmitter } from "node:events";
-// Orphaned content: import {
-Worker, isMainThread, parentPort, workerData
+import {
+  Worker, isMainThread, parentPort, workerData
+} from "node:worker_threads";
 // Canvas types - will be dynamically imported when needed
 type Canvas = any;
 import { JSDOM } from 'jsdom';
-// Orphaned content: import cluster from "node:cluster";
+import cluster from "node:cluster";
 import {
-writable, type Writable
+  writable, type Writable
+} from "svelte/store";
 
 // GPU context and shader interfaces
 export interface GPUContext {
@@ -260,7 +264,7 @@ export class GPUClusterManager extends EventEmitter {
     if (!device) {
       // Create WebGL context using node-canvas (dynamic import)
       try {
-        // @ts-ignore - Optional canvas module for Node.js environments
+        // - Optional canvas module for Node.js environments
         const canvasModule = await import('canvas');
         canvas = canvasModule.createCanvas(1, 1); // Offscreen canvas
       } catch {
@@ -758,7 +762,7 @@ export class GPUClusterManager extends EventEmitter {
    */
   private selectOptimalContext(workloadType?: string): GPUContext | null {
     const availableContexts = Array.from(this.contexts.values())
-      .filter((ctx: any) => !ctx.isActive)
+      .filter((ctx: GPUContext) => !ctx.isActive)
       .sort((a, b) => {
         // Prefer WebGPU for compute workloads
         if (workloadType?.includes('vector') || workloadType?.includes('matrix')) {
@@ -778,7 +782,7 @@ export class GPUClusterManager extends EventEmitter {
    */
   private switchContext(contextId: string): void {
     // Deactivate current contexts
-    this.contexts.forEach((ctx: any) => ctx.isActive = false);
+    this.contexts.forEach((ctx: GPUContext) => ctx.isActive = false);
     
     // Activate target context
     const context = this.contexts.get(contextId);
@@ -806,10 +810,10 @@ export class GPUClusterManager extends EventEmitter {
         if (message?.type === 'gpu-workload') {
           this.executeWorkload(message.workload)
             .then((result: any) => {
-              process.send?.({ type: 'gpu-result', result, workloadId: message.workload?.id });
+              process.send?.({ type: 'gpu-result', result, workloadId: message.workload?.id});
             })
             .catch((error: any) => {
-              process.send?.({ type: 'gpu-error', error: error.message, workloadId: message.workload?.id });
+              process.send?.({ type: 'gpu-error', error: (error as Error).message, workloadId: message.workload?.id});
             });
         }
       });
@@ -902,7 +906,7 @@ export class GPUClusterManager extends EventEmitter {
     
     const toRemove = shaders.slice(0, Math.floor(this.config.shaderCacheSize * 0.1));
     
-    toRemove.forEach((shader: any) => {
+    toRemove.forEach((shader: CachedShader) => {
       this.shaderCache.delete(shader.id);
       
       // Clean up GPU resources
@@ -925,7 +929,7 @@ export class GPUClusterManager extends EventEmitter {
       .reduce((sum, ctx) => sum + ctx.memoryUsage, 0);
     
     const activeContexts = Array.from(this.contexts.values())
-      .filter((ctx: any) => ctx.isActive).length;
+      .filter((ctx: GPUContext) => ctx.isActive).length;
     
     const cacheHitRate = this.cacheHits + this.cacheMisses > 0 ? 
       this.cacheHits / (this.cacheHits + this.cacheMisses) : 0;
@@ -972,7 +976,7 @@ export class GPUClusterManager extends EventEmitter {
   // Cleanup
   public async destroy(): Promise<void> {
     // Clean up GPU contexts
-    this.contexts.forEach((context: any) => {
+    this.contexts.forEach((context: GPUContext) => {
       if (context.gl) {
         // Clean up WebGL context
         const loseContext = context.gl.getExtension('WEBGL_lose_context');
@@ -981,7 +985,7 @@ export class GPUClusterManager extends EventEmitter {
     });
 
     // Terminate GPU workers
-    this.gpuWorkers.forEach((worker: any) => worker.terminate());
+    this.gpuWorkers.forEach((worker: Worker) => worker.terminate());
     
     this.contexts.clear();
     this.shaderCache.clear();
@@ -1018,7 +1022,7 @@ if (!isMainThread && workerData?.type === 'gpu-worker') {
       try {
         // Process GPU workload in worker thread
         const result = await processGPUWorkloadInWorker(message.workload);
-        parentPort?.postMessage({ type: 'result', result, workloadId: message.workload.id });
+        parentPort?.postMessage({ type: 'result', result, workloadId: message.workload.id});
       } catch (error) {
         parentPort?.postMessage({ 
           type: 'error', 
@@ -1064,7 +1068,7 @@ export async function checkGPUCapabilities(): Promise<{
     // Check WebGL support in Node.js
     let canvas: any;
     try {
-      // @ts-ignore - Optional canvas module for Node.js environments
+      // - Optional canvas module for Node.js environments
       const canvasModule = await import('canvas');
       canvas = canvasModule.createCanvas(1, 1);
     } catch {

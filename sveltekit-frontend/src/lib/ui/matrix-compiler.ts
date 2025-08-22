@@ -1,5 +1,4 @@
-import type { CommonProps } from '$lib/types/common-props';
-// @ts-nocheck
+
 // JSON UI Compiler with Matrix Transforms
 // Builds on UnoCSS + Svelte 5 for GPU-accelerated layouts
 
@@ -29,7 +28,7 @@ export interface MatrixUINode {
     hover?: string;
     active?: string;
     disabled?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   };
   events?: string[];
   children?: MatrixUINode[];
@@ -113,7 +112,7 @@ export class MatrixUICompiler {
    */
   async compileEnhanced(
     nodes: MatrixUINode[],
-    xstateContext?: any,
+    xstateContext?: unknown,
   ): Promise<{
     compiled: CompiledNode[];
     webgl: EnhancedWebGLBuffer;
@@ -259,7 +258,7 @@ export class MatrixUICompiler {
     return classes;
   }
 
-  private async generateEnhancedCSS(nodes: MatrixUINode[], xstateContext?: any): Promise<CSSOutput> {
+  private async generateEnhancedCSS(nodes: MatrixUINode[], xstateContext?: unknown): Promise<CSSOutput> {
     const classes: string[] = [];
     const variables: Record<string, string> = {};
     const animations: string[] = [];

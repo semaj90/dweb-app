@@ -1,12 +1,13 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { $state } from 'svelte';
   
   let testResults = $state<Array<{
     test: string;
     status: 'pending' | 'success' | 'error';
     message: string;
     duration?: number;
-    data?: any;
+    data?: unknown;
   }>>([]);
   
   let isRunning = $state(false);

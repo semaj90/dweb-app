@@ -1,11 +1,27 @@
 import { browser } from "$app/environment";
-import { realtimeComm, , type TelemetryPayload = {,   session_id: string;,   user_id?: string;,   is_typing?: boolean;,   visible?: boolean;,   long_tasks?: number;,   hints?: string[]; } from
+
+export type TelemetryPayload = {
+  session_id: string;
+  user_id?: string;
+  is_typing?: boolean;
+  visible?: boolean;
+  long_tasks?: number;
+  hints?: string[];
+};
+
+// Placeholder realtime communication service
+const realtimeComm = {
+  sendMessage: async (type: string, data: any, priority: string) => {
+    console.log(`Telemetry: ${type}`, data);
+  }
+};
 
 let typingTimer: ReturnType<typeof setTimeout> | null = null;
 const TYPING_IDLE_MS = 800;
 
 export function initTypingDetector(getSession: () => string, getUser?: () => string) {
   if (!browser) return;
+  
   const send = (data: Partial<TelemetryPayload>) => {
     const payload: TelemetryPayload = {
       session_id: getSession(),
@@ -21,70 +37,43 @@ export function initTypingDetector(getSession: () => string, getUser?: () => str
     typingTimer = setTimeout(() => send({ is_typing: false }), TYPING_IDLE_MS);
   };
 
-  window.addEventListener('keydown', onInput, { passive: true });
-  window.addEventListener('input', onInput as any, { passive: true } as any);
+  const onVisibilityChange = () => {
+    send({ visible: !document.hidden });
+  };
 
-  document.addEventListener('visibilitychange', () =>
-    send({ visible: document.visibilityState === 'visible' })
-  );
+  // Add event listeners
+  document.addEventListener('input', onInput, { passive: true });
+  document.addEventListener('visibilitychange', onVisibilityChange, { passive: true });
 
-  try {
-    // Minimal long task observer
-    const po = new PerformanceObserver((list) => {
-      send({ long_tasks: list.getEntries().length });
-    });
-    po.observe({ entryTypes: ['longtask'] as any });
-  } catch {}
-}
-
-export function bridgePrefetchToSW(urls: string[]) {
-  if (!browser) return;
-  if (navigator.serviceWorker?.controller) {
-    navigator.serviceWorker.controller.postMessage({ type: 'PREFETCH_URLS', data: { urls } });
-  }
-}
-
-// Optional: wire realtime PrefetchPlan -> Service Worker prefetch (offline-safe)
-export function enablePrefetchFromRealtime() {
-  if (!browser) return;
-  try {
-    realtimeComm.onMessage('prefetch_plan' as any, (msg: any) => {
-      const urls: string[] = msg?.data?.urls ?? [];
-      if (Array.isArray(urls) && urls.length) bridgePrefetchToSW(urls);
-    });
-  } catch {
-    // No-op if realtime layer not initialized yet
-  }
-}
-
-// Tiny helper to request GET_CACHE_STATUS from Service Worker
-export async function getServiceWorkerCacheStatus(): Promise<{ name: string; count: number }[]> {
-  if (!browser) return [];
-  if (!navigator.serviceWorker?.controller) return [];
-
-  return new Promise((resolve) => {
-    const channel = new MessageChannel();
-    const timeout = setTimeout(() => {
-      try {
-        channel.port1.close();
-      } catch {}
-      resolve([]);
-    }, 3000);
-
-    channel.port1.onmessage = (evt) => {
-      clearTimeout(timeout);
-      try {
-        channel.port1.close();
-      } catch {}
-      const data = evt.data;
-      if (data?.type === 'CACHE_STATUS' && Array.isArray(data.data)) {
-        resolve(data.data as { name: string; count: number }[]);
-      } else {
-        resolve([]);
+  // Performance observer for long tasks
+  if ('PerformanceObserver' in window) {
+    const observer = new PerformanceObserver((list) => {
+      const longTasks = list.getEntries().length;
+      if (longTasks > 0) {
+        send({ long_tasks: longTasks });
       }
-    };
+    });
+    observer.observe({ entryTypes: ['longtask'] });
+  }
 
-    navigator.serviceWorker.controller.postMessage({ type: 'GET_CACHE_STATUS' }, [channel.port2]);
-  });
+  // Initial visibility state
+  send({ visible: !document.hidden });
+
+  // Cleanup function
+  return () => {
+    document.removeEventListener('input', onInput);
+    document.removeEventListener('visibilitychange', onVisibilityChange);
+    if (typingTimer) clearTimeout(typingTimer);
+  };
 }
 
+export function trackUserHint(hint: string, getSession: () => string) {
+  if (!browser) return;
+  
+  const payload: TelemetryPayload = {
+    session_id: getSession(),
+    hints: [hint]
+  };
+  
+  realtimeComm.sendMessage('user_hint', { telemetry: payload }, 'normal').catch(() => {});
+}

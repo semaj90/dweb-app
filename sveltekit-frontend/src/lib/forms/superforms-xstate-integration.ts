@@ -29,20 +29,23 @@ import type {
 // FORM STATE INTEGRATION TYPES
 // ============================================================================
 
-export interface FormMachineIntegration<T extends Record<string, unknown>, M> {
+export interface FormMachineIntegration<
+  T extends Record<string, unknown>, 
+  M extends ActorRefFrom<any>
+> {
   form: ReturnType<typeof superForm<T>>;
   actor: M;
-  state: Writable<any>;
-  context: Writable<any>;
+  state: Writable<M['getSnapshot']>;
+  context: Writable<M['getSnapshot']['context']>;
   isValid: Readable<boolean>;
   isSubmitting: Readable<boolean>;
   errors: Readable<Record<string, string[]>>;
   progress: Readable<number>;
 }
 
-export interface FormOptions {
-  onSubmit?: (data: any) => void | Promise<void>;
-  onSuccess?: (result: any) => void;
+export interface FormOptions<T = unknown, R = unknown> {
+  onSubmit?: (data: T) => void | Promise<void>;
+  onSuccess?: (result: R) => void;
   onError?: (error: string) => void;
   autoSave?: boolean;
   autoSaveDelay?: number;
@@ -56,7 +59,7 @@ export interface FormOptions {
 export function createDocumentUploadForm(
   data: any, // SuperValidated<Infer<typeof DocumentUploadSchema>>,
   options: FormOptions = {}
-): any { // FormMachineIntegration<Infer<typeof DocumentUploadSchema>, DocumentUploadActor> {
+): unknown { // FormMachineIntegration<Infer<typeof DocumentUploadSchema>, DocumentUploadActor> {
   
   // Create XState actor
   const actor = createActor(documentUploadMachine);
@@ -177,7 +180,7 @@ export function createDocumentUploadForm(
 export function createCaseCreationForm(
   data: any, // SuperValidated<Infer<typeof CaseCreationSchema>>,
   options: FormOptions = {}
-): any { // FormMachineIntegration<Infer<typeof CaseCreationSchema>, CaseCreationActor> {
+): unknown { // FormMachineIntegration<Infer<typeof CaseCreationSchema>, CaseCreationActor> {
   
   const actor = createActor(caseCreationMachine);
   actor.start();
@@ -276,7 +279,7 @@ export function createCaseCreationForm(
 export function createSearchForm(
   data: any, // SuperValidated<Infer<typeof SearchQuerySchema>>,
   options: FormOptions = {}
-): any { // FormMachineIntegration<Infer<typeof SearchQuerySchema>, SearchActor> {
+): unknown { // FormMachineIntegration<Infer<typeof SearchQuerySchema>, SearchActor> {
   
   const actor = createActor(searchMachine);
   actor.start();
@@ -380,7 +383,7 @@ export function createSearchForm(
 export function createAIAnalysisForm(
   data: any, // SuperValidated<Infer<typeof AIAnalysisSchema>>,
   options: FormOptions = {}
-): any { // FormMachineIntegration<Infer<typeof AIAnalysisSchema>, AIAnalysisActor> {
+): unknown { // FormMachineIntegration<Infer<typeof AIAnalysisSchema>, AIAnalysisActor> {
   
   const actor = createActor(aiAnalysisMachine);
   actor.start();
@@ -476,15 +479,15 @@ export function createAIAnalysisForm(
 
 export function createFormValidator<T extends z.ZodType>(schema: T) {
   return {
-    validate: (data: unknown): data is z.infer<T> => {
+    validate: (data: any): data is z.infer<T> => {
       return schema.safeParse(data).success;
     },
-    getErrors: (data: unknown): Record<string, string[]> => {
+    getErrors: (data: any): Record<string, string[]> => {
       const result = schema.safeParse(data);
       if (result.success) return {};
       return result.error.flatten().fieldErrors;
     },
-    validateAsync: async (data: unknown): Promise<z.infer<T>> => {
+    validateAsync: async (data: any): Promise<z.infer<T>> => {
       return schema.parseAsync(data);
     }
   };
@@ -509,13 +512,13 @@ export function createMultiStepForm<T extends z.ZodType[]>(...schemas: T) {
         currentStep.set(step);
       }
     },
-    validateStep: (step: number, data: unknown) => {
+    validateStep: (step: number, data: any) => {
       if (step >= 0 && step < schemas.length) {
         return createFormValidator(schemas[step]).validate(data);
       }
       return false;
     },
-    getStepErrors: (step: number, data: unknown) => {
+    getStepErrors: (step: number, data: any) => {
       if (step >= 0 && step < schemas.length) {
         return createFormValidator(schemas[step]).getErrors(data);
       }
@@ -546,7 +549,7 @@ export class FormStatePersistence {
     }
   }
 
-  load(): any | null {
+  load(): unknown | null {
     try {
       const stored = localStorage.getItem(this.storageKey);
       if (stored) {

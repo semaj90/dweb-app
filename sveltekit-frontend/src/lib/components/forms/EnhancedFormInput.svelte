@@ -3,7 +3,7 @@
   Demonstrates the validation utilities in practice
 -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived } from 'svelte';
 
   import {
     FormValidator,
@@ -59,12 +59,11 @@ import type { CommonProps } from '$lib/types/common-props';
   let inputElement: HTMLInputElement | HTMLTextAreaElement;
 
   // Computed properties
-  $: inputType = type === "password" && showPassword ? "text" : type;
-  $: hasErrors = errors.length > 0;
-  $: hasWarnings = warnings.length > 0;
-  $: showErrorState = showValidation && isDirty && hasErrors;
-  $: showSuccessState =
-    showValidation && isDirty && isValid && !hasErrors && value.trim() !== "";
+  let inputType = $derived(type === "password" && showPassword ? "text" : type);
+  let hasErrors = $derived(errors.length > 0);
+  let hasWarnings = $derived(warnings.length > 0);
+  let showErrorState = $derived(showValidation && isDirty && hasErrors);
+  let showSuccessState = $derived(showValidation && isDirty && isValid && !hasErrors && value.trim() !== "");
 
   function handleInput(event: Event) {
     const target = event.target as HTMLInputElement | HTMLTextAreaElement;

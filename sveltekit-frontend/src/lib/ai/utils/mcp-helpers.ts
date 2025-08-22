@@ -4,7 +4,7 @@
 
 export interface MCPRequest {
   method: string;
-  params?: any;
+  params?: unknown;
 }
 
 export interface MCPToolRequest {
@@ -44,7 +44,7 @@ export async function copilotOrchestrator(
   };
 }
 
-export async function semanticSearch(query: string, options?: any) {
+export async function semanticSearch(query: string, options?: unknown) {
   // Implementation placeholder
   return [];
 }

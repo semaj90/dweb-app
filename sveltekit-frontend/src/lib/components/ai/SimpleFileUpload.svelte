@@ -1,13 +1,13 @@
 <!-- Simple File Upload Test Component (No XState) -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state } from 'svelte';
 
   import { toast } from '$lib/utils/toast';
   import { Upload, Check, X, Loader2 } from 'lucide-svelte';
   import { onMount } from 'svelte';
 
   // Props interface
-  interface Props extends CommonProps {
+  interface Props {
     onUploadComplete?: (doc: any) => void;
     accept?: string;
     maxSize?: number;

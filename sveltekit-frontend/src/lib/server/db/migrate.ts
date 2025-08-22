@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 "dotenv/config";
 // Orphaned content: import { drizzle
 import {

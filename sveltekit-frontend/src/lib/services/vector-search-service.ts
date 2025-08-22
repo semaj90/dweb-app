@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Vector Search and Ranking Service with Nomic-Embed Integration
  * Advanced semantic search with multi-modal ranking and relevance scoring
@@ -852,7 +852,7 @@ class VectorSearchService {
     };
   }
 
-  private async performKMeansClustering(documents: any[], numClusters: number): Promise<any[]> {
+  private async performKMeansClustering(documents: any[], numClusters: number): Promise<unknown[]> {
     // Simplified K-means clustering implementation
     // In production, you might want to use a more sophisticated clustering library
     return [];

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { $state, $derived, $effect } from 'svelte';
   import { writable } from 'svelte/store';
   import { page } from "$app/state";
   import { createDialog } from '@melt-ui/svelte';
@@ -377,7 +378,7 @@
     prosecutionScore?: number;
     tags: string[];
     summaryType?: string | null;
-    context7Analysis?: any; // future structured type
+    context7Analysis?: unknown; // future structured type
   }
 
   function getSummaryTypeVariant(summaryType: string) {

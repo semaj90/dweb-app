@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * SIMD JSON Index Processor - Optimized Copilot Context Processing (Fixed)
  * Integrates with Enhanced RAG system and Context7 MCP for high-performance index parsing

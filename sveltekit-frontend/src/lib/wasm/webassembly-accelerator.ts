@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * WebAssembly Integration for Legal AI Performance Acceleration
  * Handles ECMAScript to WebAssembly compilation and execution
@@ -368,7 +368,7 @@ export class WebAssemblyAccelerator {
     return new Uint8Array(modules[moduleName] || modules["simdjson"]);
   }
 
-  private readJSONFromMemory(module: WasmModule, ptr: number): any {
+  private readJSONFromMemory(module: WasmModule, ptr: number): unknown {
     // Read JSON structure from WASM memory
     // This would implement a proper JSON deserializer
     return {};

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { json } from "@sveltejs/kit";
 import { db, legalDocuments } from "$lib/server/db";
 import { eq } from "drizzle-orm";

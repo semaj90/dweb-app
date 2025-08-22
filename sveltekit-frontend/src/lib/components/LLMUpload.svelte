@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $state } from 'svelte';
 
   import { invoke } from '@tauri-apps/api/tauri';
   let uploadResult = $state('');
@@ -76,7 +76,4 @@ import type { CommonProps } from '$lib/types/common-props';
 }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

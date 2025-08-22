@@ -1,10 +1,10 @@
 <!-- @migration-task Error while migrating Svelte code: 'import' and 'export' may only appear at the top level
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $effect } from 'svelte';
 
-  interface Props extends CommonProps {
-    onchange?: (event?: any) => void;
+  interface Props {
+    onchange?: (event?: unknown) => void;
   }
   let {
     content = [],

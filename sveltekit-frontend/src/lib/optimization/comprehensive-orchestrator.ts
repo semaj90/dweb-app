@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Comprehensive Memory Optimization Integration System - DISABLED
  * This file has been temporarily disabled due to syntax errors.

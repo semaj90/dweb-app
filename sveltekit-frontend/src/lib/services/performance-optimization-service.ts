@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Performance Optimization Service
  * Advanced optimization patterns for LangChain-Ollama integration
@@ -377,7 +377,7 @@ class PerformanceOptimizationService {
     processBatch();
   }
 
-  private async processBatchRequests(type: string, requests: BatchRequest[]): Promise<any[]> {
+  private async processBatchRequests(type: string, requests: BatchRequest[]): Promise<unknown[]> {
     // This would integrate with the actual services
     switch (type) {
       case 'embeddings':
@@ -391,7 +391,7 @@ class PerformanceOptimizationService {
     }
   }
 
-  private async processBatchEmbeddings(requests: BatchRequest[]): Promise<any[]> {
+  private async processBatchEmbeddings(requests: BatchRequest[]): Promise<unknown[]> {
     // Simulate batch embedding processing
     const texts = requests.map((req: any) => req.data as string);
     
@@ -407,7 +407,7 @@ class PerformanceOptimizationService {
     return results;
   }
 
-  private async processBatchCompletions(requests: BatchRequest[]): Promise<any[]> {
+  private async processBatchCompletions(requests: BatchRequest[]): Promise<unknown[]> {
     // Simulate batch completion processing
     return requests.map((req: any) => ({
       response: `Processed: ${JSON.stringify(req.data)}`,
@@ -418,7 +418,7 @@ class PerformanceOptimizationService {
     }));
   }
 
-  private async processBatchSimilarity(requests: BatchRequest[]): Promise<any[]> {
+  private async processBatchSimilarity(requests: BatchRequest[]): Promise<unknown[]> {
     // Simulate batch similarity processing
     return requests.map((req: any) => ({
       similarities: new Array(10).fill(0).map(() => Math.random()),

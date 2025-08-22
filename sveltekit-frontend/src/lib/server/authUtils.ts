@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-// @ts-nocheck
+
 
 const JWT_SECRET = import.meta.env.JWT_SECRET || "fallback-secret-key";
 const JWT_EXPIRATION = import.meta.env.JWT_EXPIRATION || "86400"; // 24 hours
@@ -38,7 +38,7 @@ export function signJWT(payload: object): string {
 /**
  * Verifies a JWT token and returns the payload.
  */
-export function verifyJWT(token: string): any {
+export function verifyJWT(token: string): unknown {
   try {
     return jwt.verify(token, JWT_SECRET);
   } catch (error) {

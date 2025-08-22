@@ -1,21 +1,26 @@
-import * as vectorSchema from "../database/vector-schema-simple.js";
-import * as schema from "./unified-schema.js";
+// Central DB export surface - re-export canonical schema and selected auth artifacts
+export * from './schema-postgres';
+// Re-export audit log from the legacy auth schema so routes can import a single source
+export { authAuditLog } from './auth-schema';
+
+// Optionally export other legacy helpers here in future, e.g. authUsers compatibility shim
+// export { authUsers as legacyAuthUsers } from './auth-schema';
+import * as schema from "./schema-unified";
 // Database connection and schema exports
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
-import { sql } from 'drizzle-orm';
+import { sql, eq, and, or, desc, asc, count, like, ilike, isNull, isNotNull, ne, SQL } from 'drizzle-orm';
 
-// Re-export sql helper for convenience
-export { sql };
+// Re-export sql and common query helpers for convenience across server code
+export { sql, eq, and, or, desc, asc, count, like, ilike, isNull, isNotNull, ne };
+// Export SQL type for utilities that reference it
+export type { SQL };
 
 // Database type helper - exported first to avoid temporal dead zone
 export const isPostgreSQL = true;
 
-// Combine all schemas
-export const fullSchema = {
-  ...schema,
-  ...vectorSchema,
-};
+// Use the schema directly
+export const fullSchema = schema;
 
 // Create the connection
 const connectionString = import.meta.env.DATABASE_URL || 'postgresql://legal_admin:123456@localhost:5432/legal_ai_db';
@@ -28,9 +33,9 @@ export const db = drizzle(queryClient, { schema: fullSchema });
 const migrationClient = postgres(connectionString, { max: 1 });
 export const migrationDb = drizzle(migrationClient);
 
-// Export all schemas and types
-export * from '../database/vector-schema-simple';
-export * from './unified-schema';
+// Note: we intentionally re-export only the canonical schema module(s).
+// Avoid exporting both `schema-postgres` and `schema-unified` because
+// they contain overlapping symbol names which causes duplicate-export errors.
 
 // Helper function to test database connection
 export async function testConnection() {

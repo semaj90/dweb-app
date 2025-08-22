@@ -1,10 +1,54 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
-/**
- * Agent Logs API Endpoints - Step 6 & 7 Integration
- */
-
-import type { RequestHandler } from "./$types.js";
-
+import { json } from '@sveltejs/kit';
 import { librarySyncService } from "$lib/services/library-sync-service";
-import { // GET /api/agent-logs - Get recent agent logs export const GET: RequestHandler = async ({ url }) => { try { const agentType = url.searchParams.get("agentType") || undefined; const limit = parseInt(url.searchParams.get("limit") || "50"); const logs = await librarySyncService.getRecentAgentLogs( agentType as any, limit ); return json({ success: true, logs, count: logs.length }); } catch (error) { console.error("Failed to get agent logs:", error); return json( { success: false, error: "Failed to get agent logs" }, { status: 500 } ); } }; // POST /api/agent-logs - Log a new agent call export const POST: RequestHandler = async ({ request }) => { try { const logData = await request.json(); const agentLog = { id: crypto.randomUUID(), timestamp: new Date(), ...logData }; await librarySyncService.logAgentCall(agentLog); return json({ success: true, message: "Agent call logged successfully", logId: agentLog.id }); } catch (error) { console.error("Failed to log agent call:", error); return json( { success: false, error: "Failed to log agent call" }, { status: 500 } ); } };
+
+// GET /api/agent-logs - Get recent agent logs
+export const GET: RequestHandler = async ({ url }) => {
+  try {
+    const agentType = url.searchParams.get("agentType") || undefined;
+    const limit = parseInt(url.searchParams.get("limit") || "50");
+    
+    const logs = await librarySyncService.getRecentAgentLogs(
+      agentType as any,
+      limit
+    );
+    
+    return json({
+      success: true,
+      logs,
+      count: logs.length
+    });
+  } catch (error) {
+    console.error("Failed to get agent logs:", error);
+    return json(
+      { success: false, error: "Failed to get agent logs" },
+      { status: 500 }
+    );
+  }
+};
+
+// POST /api/agent-logs - Log a new agent call
+export const POST: RequestHandler = async ({ request }) => {
+  try {
+    const logData = await request.json();
+    const agentLog = {
+      id: crypto.randomUUID(),
+      timestamp: new Date(),
+      ...logData
+    };
+    
+    await librarySyncService.logAgentCall(agentLog);
+    
+    return json({
+      success: true,
+      message: "Agent call logged successfully",
+      logId: agentLog.id
+    });
+  } catch (error) {
+    console.error("Failed to log agent call:", error);
+    return json(
+      { success: false, error: "Failed to log agent call" },
+      { status: 500 }
+    );
+  }
+};

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Legal AI Form State Machines with XState
 // Advanced state management for legal document processing workflows
 

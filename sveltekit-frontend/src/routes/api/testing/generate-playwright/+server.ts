@@ -696,7 +696,7 @@ function calculateEstimatedRunTime(testResults: any): string {
   return `${totalMinutes} minutes`;
 }
 
-function assessTestCoverage(testResults: any): any {
+function assessTestCoverage(testResults: any): unknown {
   return {
     ocrProcessing: '95%',
     jsonConversion: '90%',

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Stateless API Coordinator for Phase 13
  * Redis/NATS/ZeroMQ integration with task coordination and load balancing
@@ -31,7 +31,7 @@ export interface TaskMessage {
 export interface TaskResult {
   taskId: string;
   status: "SUCCESS" | "FAILURE" | "TIMEOUT" | "RETRY";
-  result?: any;
+  result?: unknown;
   error?: string;
   processingTime: number;
   nodeId: string;

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 export class CollaborationService {
   static async shareInsight({
     messageId,

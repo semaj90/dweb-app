@@ -57,7 +57,7 @@ export interface GPUTaskResult {
   legalVerification?: {
     verified: boolean;
     confidence: number;
-    details?: any;
+    details?: unknown;
   };
 }
 
@@ -143,10 +143,19 @@ class MCPGPUOrchestrator {
   }
 
   private async startMetricsCollection() {
+    // Disabled metrics collection to prevent SvelteKit fetch errors
+    // These .vscode files are not accessible as web URLs
+    console.log('Metrics collection disabled - .vscode files not accessible via HTTP');
+    return;
+    
+    /* // Only run metrics collection in browser context
+    if (typeof window === 'undefined') return;
+    
     // Poll cluster metrics every 3 seconds
     setInterval(async () => {
       try {
-        const metricsResponse = await fetch('/.vscode/cluster-metrics.json');
+        // Use absolute URL for SvelteKit compatibility
+        const metricsResponse = await fetch(`${window.location.origin}/.vscode/cluster-metrics.json`);
         if (metricsResponse.ok) {
           this.clusterMetrics = await metricsResponse.json();
         }
@@ -155,7 +164,8 @@ class MCPGPUOrchestrator {
       }
 
       try {
-        const autosolveResponse = await fetch('/.vscode/auto-solve-report.json');
+        // Use absolute URL for SvelteKit compatibility  
+        const autosolveResponse = await fetch(`${window.location.origin}/.vscode/auto-solve-report.json`);
         if (autosolveResponse.ok) {
           const report = await autosolveResponse.json();
           this.autosolveContext = report.autosolveContext || null;
@@ -163,7 +173,7 @@ class MCPGPUOrchestrator {
       } catch (error) {
         console.warn('Failed to load autosolve context:', error);
       }
-    }, 3000);
+    }, 3000); */
   }
 
   /**
@@ -370,7 +380,7 @@ class MCPGPUOrchestrator {
     });
   }
 
-  private buildLegalPrompt(data: any, context?: any): string {
+  private buildLegalPrompt(data: any, context?: unknown): string {
     const basePrompt = `You are a legal AI assistant specialized in document analysis and case law research.`;
     
     if (context?.caseId) {

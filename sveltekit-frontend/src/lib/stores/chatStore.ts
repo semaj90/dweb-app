@@ -1,16 +1,58 @@
-// @ts-nocheck
 /**
  * Svelte 5 Compatible Chat Store with XState-like Interface
  * Enhanced for Gemma3 Legal AI Integration
+ * Optimized for legal document analysis and precedent search
  */
 
-import { writable, derived, readonly } from "$lib/utils/svelte/store";
+import { writable, derived, readonly } from "svelte/store";
 
-import type {
-  ChatMessage,
-  Conversation,
-  ChatSettings,
-  ServiceStatus,
+// === TYPE DEFINITIONS ===
+export interface ChatMessage {
+  id: string;
+  content: string;
+  role: "user" | "assistant" | "system";
+  timestamp: Date;
+  conversationId?: string;
+  metadata?: {
+    model?: string;
+    tokensUsed?: number;
+    references?: string[];
+    confidence?: number;
+    legalContext?: unknown;
+  };
+}
+
+export interface Conversation {
+  id: string;
+  title: string;
+  messages: ChatMessage[];
+  created: Date;
+  updated: Date;
+  metadata?: {
+    caseType?: string;
+    jurisdiction?: string;
+    precedents?: string[];
+  };
+}
+
+export interface ChatSettings {
+  model: string;
+  temperature: number;
+  maxTokens: number;
+  streaming: boolean;
+  contextWindow: number;
+  proactiveMode: boolean;
+  emotionalMode: boolean;
+  legalMode?: boolean;
+  citationMode?: boolean;
+}
+
+export interface ServiceStatus {
+  ollama: "unknown" | "loading" | "connected" | "error";
+  qdrant: "unknown" | "loading" | "connected" | "error";
+  database: "unknown" | "loading" | "connected" | "error";
+  gemma3: "unknown" | "loading" | "ready" | "error";
+}
 
 // === CHAT STATE INTERFACE ===
 export interface ChatContext {
@@ -27,6 +69,8 @@ export interface ChatContext {
     enabled: boolean;
     documents: string[];
     vectorResults: any[];
+    precedents?: string[];
+    caseContext?: unknown;
   };
 }
 
@@ -48,11 +92,15 @@ const initialState: ChatContext = {
     contextWindow: 8192,
     proactiveMode: true,
     emotionalMode: false,
+    legalMode: true,
+    citationMode: true,
   },
   contextInjection: {
     enabled: false,
     documents: [],
     vectorResults: [],
+    precedents: [],
+    caseContext: null,
   },
 };
 
@@ -109,13 +157,18 @@ export const isActiveChat = derived(
 // === ACTIONS ===
 export const chatActions = {
   // Create new conversation
-  newConversation: (title?: string) => {
+  newConversation: (title?: string, caseType?: string) => {
     const conversation: Conversation = {
       id: crypto.randomUUID(),
-      title: title || "New Conversation",
+      title: title || "New Legal Consultation",
       messages: [],
       created: new Date(),
       updated: new Date(),
+      metadata: {
+        caseType: caseType || "general",
+        jurisdiction: "federal",
+        precedents: [],
+      },
     };
 
     chatStore.update((state) => ({
@@ -143,7 +196,7 @@ export const chatActions = {
   },
 
   // Add message
-  addMessage: (content: string, role: "user" | "assistant", metadata?: any) => {
+  addMessage: (content: string, role: "user" | "assistant" | "system", metadata?: unknown) => {
     chatStore.update((state) => {
       if (!state.currentConversation) {
         // Create new conversation if none exists
@@ -153,6 +206,11 @@ export const chatActions = {
           messages: [],
           created: new Date(),
           updated: new Date(),
+          metadata: {
+            caseType: "general",
+            jurisdiction: "federal",
+            precedents: [],
+          },
         };
         state.currentConversation = conversation;
         state.conversations = [conversation, ...state.conversations];
@@ -223,6 +281,8 @@ export const chatActions = {
           model: data.model,
           tokensUsed: data.tokensUsed,
           references: data.references,
+          confidence: data.confidence,
+          legalContext: data.legalContext,
         });
       }
     } catch (error) {
@@ -270,6 +330,20 @@ export const chatActions = {
     }));
   },
 
+  // Legal-specific context injection
+  injectLegalContext: (documents: string[], precedents?: string[], caseContext?: unknown) => {
+    chatStore.update((state) => ({
+      ...state,
+      contextInjection: {
+        ...state.contextInjection,
+        enabled: true,
+        documents,
+        precedents: precedents || [],
+        caseContext: caseContext || null,
+      },
+    }));
+  },
+
   // Context injection
   injectContext: (documents: string[]) => {
     chatStore.update((state) => ({
@@ -289,6 +363,8 @@ export const chatActions = {
         enabled: false,
         documents: [],
         vectorResults: [],
+        precedents: [],
+        caseContext: null,
       },
     }));
   },
@@ -514,6 +590,72 @@ export function useChatActor() {
   };
 }
 
+// === LEGAL AI INTEGRATION ===
+export const legalActions = {
+  // Search legal precedents
+  searchPrecedents: async (query: string, jurisdiction?: string) => {
+    try {
+      const response = await fetch("/api/legal/precedents/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query, jurisdiction }),
+      });
+
+      if (response.ok) {
+        const precedents = await response.json();
+        chatStore.update((state) => ({
+          ...state,
+          contextInjection: {
+            ...state.contextInjection,
+            precedents: precedents.results || [],
+          },
+        }));
+        return precedents;
+      }
+    } catch (error) {
+      console.error("Error searching precedents:", error);
+    }
+    return null;
+  },
+
+  // Analyze legal document
+  analyzeDocument: async (documentText: string) => {
+    try {
+      const response = await fetch("/api/legal/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: documentText }),
+      });
+
+      if (response.ok) {
+        const analysis = await response.json();
+        return analysis;
+      }
+    } catch (error) {
+      console.error("Error analyzing document:", error);
+    }
+    return null;
+  },
+
+  // Extract legal entities
+  extractEntities: async (text: string) => {
+    try {
+      const response = await fetch("/api/legal/entities", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+
+      if (response.ok) {
+        return await response.json();
+      }
+    } catch (error) {
+      console.error("Error extracting entities:", error);
+    }
+    return null;
+  },
+};
+
 // === PERSISTENCE ===
 export const persistenceHelpers = {
   saveToStorage: () => {
@@ -569,3 +711,6 @@ if (typeof window !== "undefined") {
   persistenceHelpers.loadFromStorage();
   persistenceHelpers.saveToStorage();
 }
+
+// Export default store for convenience
+export default chatStore;

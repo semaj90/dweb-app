@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $state } from 'svelte';
 
   import { Button } from 'bits-ui'
   import { createDialog, melt } from '@melt-ui/svelte'
@@ -216,13 +216,13 @@ import type { CommonProps } from '$lib/types/common-props';
             <div
               use:melt={$overlay}
               class="nier-modal-overlay"
-              transitionfade={{ duration: 200 }}
+              transition:fade={{ duration: 200 }}
 ></div>
             
             <div
               use:melt={$content}
               class="nier-modal"
-              transitionfly={{ y: 20, duration: 300 }}
+              transition:fly={{ y: 20, duration: 300 }}
             >
               <h2 use:melt={$title} class="text-2xl font-display nier-heading mb-4">
                 System Alert
@@ -442,7 +442,4 @@ import type { CommonProps } from '$lib/types/common-props';
   }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

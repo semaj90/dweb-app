@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * AI-Powered Find API with Context7 MCP Integration
  * Advanced semantic search with LLM enhancement and memory graph updates
@@ -10,14 +10,14 @@ import { copilotOrchestrator, generateMCPPrompt, commonMCPQueries, semanticSearc
 // Define the types locally since they're not exported from mcp-helpers
 interface MCPContextAnalysis {
   query?: string;
-  context?: any;
+  context?: unknown;
   suggestions?: string[];
   confidence?: number;
-  stackAnalysis?: any;
-  recommendations?: any[];
-  bestPractices?: any[];
-  integrationSuggestions?: any[];
-  [key: string]: any; // Allow additional properties
+  stackAnalysis?: unknown;
+  recommendations?: unknown[];
+  bestPractices?: unknown[];
+  integrationSuggestions?: unknown[];
+  [key: string]: unknown; // Allow additional properties
 }
 
 interface AutoMCPSuggestion {
@@ -29,7 +29,7 @@ interface AutoMCPSuggestion {
   priority?: string;
   suggestion?: string;
   implementation?: string;
-  [key: string]: any; // Allow additional properties
+  [key: string]: unknown; // Allow additional properties
 }
 // Mock database imports for testing without DB connection
 // { db } from '$lib/server/db';
@@ -160,7 +160,7 @@ async function performDatabaseSearch(
   type: string, 
   maxResults: number,
   confidenceThreshold: number
-): Promise<any[]> {
+): Promise<unknown[]> {
   // Mock data for testing without database connection
   const mockCases = [
     {

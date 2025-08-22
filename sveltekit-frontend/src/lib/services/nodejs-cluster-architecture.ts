@@ -1,19 +1,16 @@
-// @ts-nocheck
+
 /**
  * Node.js Cluster Architecture for SvelteKit 2
  * Provides horizontal scaling with intelligent load balancing and health monitoring
  */
 
-cluster from 'node:cluster';
-// Orphaned content: import type { Worker
-import {
-cpus } from "node:os";
-// Orphaned content: import { EventEmitter
-import {
-createServer } from "node:http";
-// Orphaned content: // Handler will be imported dynamically when build is available
+import cluster, { type Worker } from 'node:cluster';
+import { cpus } from "node:os";
+import { EventEmitter } from 'node:events';
+import { createServer } from "node:http";
+// Handler will be imported dynamically when build is available
 let handler: any;
-import { writable, type Writable
+import { writable, type Writable } from 'svelte/store';
 
 // Cluster configuration interfaces
 export interface ClusterConfig {

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Enhanced Ingestion Pipeline for Legal AI System
 // Processes legal documents, creates embeddings, and stores in vector database
 // Production Stack: PostgreSQL + pgvector, LangChain, Qdrant, GraphQL, Neo4j, Redis, RabbitMQ
@@ -6,15 +6,14 @@
 import { QdrantVectorStore } from "@langchain/community/vectorstores/qdrant";
 import { QdrantClient } from "@qdrant/js-client-rest";
 import { createClient } from "redis";
-// Orphaned content: import {
 
 // import neo4j from "neo4j-driver"; // TODO: Install neo4j-driver dependency
 const neo4j = null as any;
 // import { errorHandler } from "$lib/utils/errorHandler";
 // Fallback error handler for when the module is not available
 const errorHandler = {
-  system: (message: string, data?: any) => console.error(`[SYSTEM] ${message}`, data),
-  analysis: (message: string, data?: any) => console.error(`[ANALYSIS] ${message}`, data),
+  system: (message: string, data?: unknown) => console.error(`[SYSTEM] ${message}`, data),
+  analysis: (message: string, data?: unknown) => console.error(`[ANALYSIS] ${message}`, data),
 };
 import type { Document } from "@langchain/core/documents";
 import { resolveLibraryId, getLibraryDocs } from '$lib/mcp-context72-get-library-docs';
@@ -680,7 +679,7 @@ export class EnhancedIngestionPipeline {
   getStats(): IngestionStats & {
     queue_size: number;
     is_processing: boolean;
-    collection_info?: any;
+    collection_info?: unknown;
   } {
     return {
       ...this.stats,

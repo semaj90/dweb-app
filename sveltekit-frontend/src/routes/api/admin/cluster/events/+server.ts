@@ -1,12 +1,16 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+import { EventEmitter } from "events";
+
 /**
  * Cluster Events API Endpoint (Server-Sent Events)
  * Provides real-time cluster health and worker metrics via SSE
  */
 
-import type { RequestHandler } from './$types.js';
-import type { Worker import { EventEmitter } from "events";
+interface Worker {
+  id: string;
+  status: string;
+  metrics: any;
+}
 
 export const GET: RequestHandler = async ({ request }) => {
   // Check if client accepts text/event-stream

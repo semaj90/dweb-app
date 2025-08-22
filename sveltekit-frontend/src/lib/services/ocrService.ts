@@ -1,12 +1,11 @@
-// @ts-nocheck
+
 /**
  * OCR Service with Auto-Population
  * Handles document OCR, field extraction, and form auto-population
  */
 
 import { writable, type Writable } from "svelte/store";
-// Orphaned content: import {
-createWorker, type Worker, PSM
+import { createWorker, type Worker, PSM } from "tesseract.js";
 import { z } from 'zod';
 
 // OCR Types

@@ -5,8 +5,8 @@
 
 import { type RequestHandler,  json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types.js';
-import { productionServiceRegistry, GO_SERVICES_REGISTRY, type ServiceDefinition } from '../../../../../lib/services/production-service-registry.js';
-import { context7OrchestrationService } from '../../../../../lib/services/context7-orchestration-integration.js';
+import { productionServiceRegistry, GO_SERVICES_REGISTRY, type ServiceDefinition } from '$lib/../../../../lib/services/production-service-registry.js';
+import { context7OrchestrationService } from '$lib/../../../../lib/services/context7-orchestration-integration.js';
 
 export const GET: RequestHandler = async ({ url }) => {
   const category = url.searchParams.get('category');
@@ -114,7 +114,7 @@ function getProtocolBreakdown(services: ServiceDefinition[]): Record<string, num
   return breakdown;
 }
 
-async function handleStartServices(serviceNames: string[], options?: any): Promise<Response> {
+async function handleStartServices(serviceNames: string[], options?: unknown): Promise<Response> {
   const results: Record<string, { success: boolean; message: string }> = {};
   
   for (const serviceName of serviceNames) {

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // src/routes/api/documents/+server.ts
 import { type RequestHandler,  json } from '@sveltejs/kit';
 import { URL } from "url";

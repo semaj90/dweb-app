@@ -8,7 +8,7 @@ import { productionServiceClient } from "$lib/services/productionServiceClient";
 
 interface XStateEvent {
   type: string;
-  data?: any;
+  data?: unknown;
   machineId?: string;
   actorId?: string;
   timestamp?: string;

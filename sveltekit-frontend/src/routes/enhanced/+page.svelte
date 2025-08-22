@@ -160,7 +160,7 @@
 		<p class="text-sm text-neutral-500 dark:text-neutral-400">Interact with the unified pgvector + (stub) enhanced RAG pipeline. Choose simple (direct similarity) or enhanced (RAG fallback) mode.</p>
 	</header>
 
-	<form class="grid gap-4 md:grid-cols-7 items-end bg-neutral-50 dark:bg-neutral-900/40 p-4 rounded-lg border border-neutral-200 dark:border-neutral-700" on:submit|preventDefault={submit}>
+	<form class="grid gap-4 md:grid-cols-7 items-end bg-neutral-50 dark:bg-neutral-900/40 p-4 rounded-lg border border-neutral-200 dark:border-neutral-700" onsubmit={(e) => { e.preventDefault(); submit(); }}>
 		<div class="md:col-span-3 flex flex-col gap-1">
 			<label for="query-input" class="text-xs font-medium uppercase tracking-wide">Query</label>
 			<input id="query-input" bind:value={query} oninput={scheduleDebounced} class="px-3 py-2 rounded border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Find clauses about indemnification..." />

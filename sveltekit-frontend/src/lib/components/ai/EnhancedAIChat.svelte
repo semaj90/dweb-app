@@ -1,7 +1,7 @@
 <!-- @migration-task Error while migrating Svelte code: Cannot use `$props()` more than once
 https://svelte.dev/e/props_duplicate -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
   import { onMount, onDestroy, tick } from 'svelte';
   import { browser } from '$app/environment';
@@ -407,7 +407,7 @@ import type { CommonProps } from '$lib/types/common-props';
   function setupAttentionTracking() {
     if (!enableAttentionTracking || !browser) return;
 
-    const trackEvent = (type: string, data?: any) => {
+    const trackEvent = (type: string, data?: unknown) => {
       userAttention.update(current => ({
         ...current,
         lastActivity: Date.now(),
@@ -466,7 +466,7 @@ import type { CommonProps } from '$lib/types/common-props';
     attentionListeners = [];
   }
 
-  function trackUserActivity(type: string, data?: any) {
+  function trackUserActivity(type: string, data?: unknown) {
     if (!enableAttentionTracking) return;
 
     userHistoryStore.addActivity({
@@ -1040,7 +1040,4 @@ import type { CommonProps } from '$lib/types/common-props';
     @apply text-primary hover:underline;
   }
 </style>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

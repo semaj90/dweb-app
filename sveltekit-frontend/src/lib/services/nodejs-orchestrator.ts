@@ -49,7 +49,7 @@ export interface Task {
   dependencies?: string[];
   gpuRequired?: boolean;
   model?: 'gemma3-legal' | 'nomic-embed-text'; // Required model specification
-  errorData?: any; // For GPU error processing tasks
+  errorData?: unknown; // For GPU error processing tasks
 }
 
 // Worker Status with GPU metrics

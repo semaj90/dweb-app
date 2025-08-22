@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Generic EmbeddingRepository abstraction for ingestion & semantic search
 // Minimal initial contract – can be extended with pagination, updates, deletions.
 
@@ -55,7 +55,7 @@ let _repo: EmbeddingRepository | null = null;
 export function getEmbeddingRepository(): EmbeddingRepository {
   if (_repo) return _repo;
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
+  
   const impl = require('./pgvector-embedding-repository');
   _repo = impl.pgvectorEmbeddingRepository as EmbeddingRepository;
   return _repo!;

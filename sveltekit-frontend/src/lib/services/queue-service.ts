@@ -1,6 +1,6 @@
 import { Queue } from "bullmq";
 import Redis from "ioredis";
-// @ts-nocheck
+
 
 // Redis connection
 const redis = new Redis({

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Enhanced RAG Self-Organizing Loop System
  * Combines llama.cpp/Ollama with LangChain for advanced document analysis

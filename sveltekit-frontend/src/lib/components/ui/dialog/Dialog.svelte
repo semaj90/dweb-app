@@ -1,9 +1,9 @@
 <!-- Enhanced Dialog component with custom implementation -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
-  interface Props extends CommonProps {
-    onclose?: (event?: any) => void;
+  interface Props {
+    onclose?: (event?: unknown) => void;
   }
   let {
     open = false,
@@ -53,7 +53,7 @@ import type { CommonProps } from '$lib/types/common-props';
 {#if open}
   <div
     class="space-y-4"
-    transitionfade={{ duration: 200, easing: quadOut }}
+    transition:fade={{ duration: 200, easing: quadOut }}
     onclick={handleOutsideClick}
     onkeydown={handleKeydown}
     role="dialog"
@@ -69,7 +69,7 @@ import type { CommonProps } from '$lib/types/common-props';
       "fixed left-1/2 top-1/2 z-50 grid w-full -translate-x-1/2 -translate-y-1/2 gap-4 border border-slate-200 bg-white p-6 shadow-lg duration-200 dark:border-slate-800 dark:bg-slate-950 sm:rounded-lg",
       sizeClasses[size]
     )}
-    transitionfly={{ y: -20, duration: 200, easing: quadOut }}
+    transition:fly={{ y: -20, duration: 200, easing: quadOut }}
     role="dialog"
     tabindex={0}
     aria-modal="true"

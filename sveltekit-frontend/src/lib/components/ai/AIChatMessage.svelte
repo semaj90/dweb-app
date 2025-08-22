@@ -1,7 +1,7 @@
 <script context="module">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { slide } from "svelte/transition";
+  import { $props } from 'svelte';
 </script>
 
 <!-- AI Chat Message Component -->
@@ -473,7 +473,4 @@ import type { CommonProps } from '$lib/types/common-props';
   }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

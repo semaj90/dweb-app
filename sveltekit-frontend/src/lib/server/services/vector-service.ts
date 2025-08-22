@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Production Vector Service - Real Implementation
  * Integrates Redis Vector DB, Qdrant, and Ollama for production use
@@ -21,7 +21,7 @@ const redisVectorService = {
   async storeDocument(doc: any) {
     return { success: true };
   },
-  async searchSimilar(embedding: any, options?: any) {
+  async searchSimilar(embedding: any, options?: unknown) {
     return [];
   },
   async getDocument(id: string) {
@@ -94,7 +94,7 @@ export class VectorService {
   static async storeEvidenceVector(evidence: {
     id: string;
     content: string;
-    metadata?: any;
+    metadata?: unknown;
     evidenceId?: string;
   }): Promise<void> {
     const embedding = await this.generateEmbedding(evidence.content);
@@ -117,7 +117,7 @@ export class VectorService {
   static async storeCaseEmbedding(data: {
     caseId: string;
     content: string;
-    metadata?: any;
+    metadata?: unknown;
     embedding?: number[];
   }): Promise<void> {
     const embedding =
@@ -171,7 +171,7 @@ export class VectorService {
       type?: string;
       userId?: string;
     } = {}
-  ): Promise<any[]> {
+  ): Promise<unknown[]> {
     const results = await redisVectorService.searchSimilar(embedding, {
       topK: options.limit || 10,
       threshold: options.threshold || 0.7,
@@ -197,7 +197,7 @@ export class VectorService {
       type?: string;
       userId?: string;
     } = {}
-  ): Promise<any[]> {
+  ): Promise<unknown[]> {
     const queryEmbedding = await this.generateEmbedding(query);
     return this.findSimilar(queryEmbedding, options);
   }
@@ -270,7 +270,7 @@ export class VectorService {
       threshold?: number;
       type?: string;
     } = {}
-  ): Promise<any[]> {
+  ): Promise<unknown[]> {
     return this.semanticSearch(query, options);
   }
 
@@ -280,7 +280,7 @@ export class VectorService {
   static async findSimilarDocuments(
     documentId: string,
     limit: number = 10
-  ): Promise<any[]> {
+  ): Promise<unknown[]> {
     try {
       const doc = await redisVectorService.getDocument(`doc:${documentId}`);
       if (!doc) {
@@ -323,7 +323,7 @@ export class VectorService {
   /**
    * Get user embeddings (legacy compatibility)
    */
-  static async getUserEmbeddings(userId: string): Promise<any[]> {
+  static async getUserEmbeddings(userId: string): Promise<unknown[]> {
     const results = await redisVectorService.searchSimilar(
       new Array(384).fill(0), // Dummy embedding for filtering
       {
@@ -372,7 +372,7 @@ export class VectorService {
       limit?: number;
       threshold?: number;
     } = {}
-  ): Promise<any[]> {
+  ): Promise<unknown[]> {
     return this.semanticSearch(query, options);
   }
 

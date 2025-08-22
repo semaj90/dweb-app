@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Document Processing XState Machine
  * Manages document lifecycle, AI analysis, and processing workflows
@@ -18,7 +18,7 @@ export interface DocumentContext {
   currentStep?: string;
   extractedText?: string;
   embedding?: number[];
-  entities?: any[];
+  entities?: unknown[];
   riskScore?: number;
   confidence?: number;
   processedAt?: Date;

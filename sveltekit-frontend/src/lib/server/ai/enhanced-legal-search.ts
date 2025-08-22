@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Enhanced Legal AI Search Service with LangChain.js, Nomic Embed, and pgvector
 // Implements RAG pattern with vector similarity search and semantic enhancement
 

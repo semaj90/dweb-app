@@ -8,7 +8,7 @@ export const chatSessions = pgTable('chat_sessions', {
     userAgent?: string;
     context?: string;
     tags?: string[];
-    [key: string]: any;
+    [key: string]: unknown;
   }>().default({}),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
@@ -32,7 +32,7 @@ export const chatMessages = pgTable('chat_messages', {
     evalCount?: number;
     sources?: string[];
     processingTime?: number;
-    [key: string]: any;
+    [key: string]: unknown;
   }>().default({}),
   model: text('model'),
   confidence: decimal('confidence', { precision: 5, scale: 4 }),
@@ -63,7 +63,7 @@ export const legalDocuments = pgTable('legal_documents', {
     };
     uploadedBy?: string;
     tags?: string[];
-    [key: string]: any;
+    [key: string]: unknown;
   }>().default({}),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull()

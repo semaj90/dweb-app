@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import type { HTMLFormAttributes } from "svelte/elements";
+  import { $props, $derived } from 'svelte';
   import type { Snippet } from "svelte";
   import { enhance } from "$app/forms";
   import type { SubmitFunction } from "@sveltejs/kit";

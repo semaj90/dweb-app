@@ -1,10 +1,10 @@
 <!-- Enhanced Canvas Evidence Board with Fabric.js Integration -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $state } from 'svelte';
 
-  interface Props extends CommonProps {
-    onevidenceUpdated?: (event?: any) => void;
-    onsave?: (event?: any) => void;
+  interface Props {
+    onevidenceUpdated?: (event?: unknown) => void;
+    onsave?: (event?: unknown) => void;
   }
 
 

@@ -138,7 +138,7 @@ export class GoMicroservicesClient {
   }
 
   // Enhanced RAG Service Integration
-  async performRAGQuery(query: string, context?: any): Promise<ServiceResponse> {
+  async performRAGQuery(query: string, context?: unknown): Promise<ServiceResponse> {
     const startTime = Date.now();
     
     try {

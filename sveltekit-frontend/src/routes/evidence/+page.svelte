@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { $derived } from 'svelte';
   import { browser } from "$app/environment";
   import { page } from "$app/stores";
   import EvidenceUploadModal from "$lib/components/modals/EvidenceUploadModal.svelte";
@@ -101,13 +102,13 @@
   let bulkOperationLoading = false;
 
   // Get case ID from URL if available
-  $: caseId = $page.url.searchParams.get("caseId") || undefined;
+  let caseId = $derived($page.url.searchParams.get("caseId") || undefined);
 
   // Reactive values from SSR data and store
   $: ({ isLoading: loading, error } = $evidenceGrid);
-  $: allEvidence = data.evidence || [];
-  $: filteredEvidence = filterAndSortEvidence(allEvidence);
-  $: visibleEvidence = getPaginatedEvidence();
+  let allEvidence = $derived(data.evidence || []);
+  let filteredEvidence = $derived(filterAndSortEvidence(allEvidence));
+  let visibleEvidence = $derived(getPaginatedEvidence());
 
   onMount(() => {
     // Initialize store with SSR data
@@ -599,7 +600,7 @@
           bind:enabled={thinkingStyleEnabled}
           premium={true}
           size="sm"
-          on:toggle={handleThinkingToggle}
+          ontoggle={handleThinkingToggle}
         />
       </div>
 
@@ -1374,7 +1375,7 @@
   bind:open={validationModal.open}
   evidence={validationModal.evidence}
   aiEvent={validationModal.aiEvent}
-  on:complete={handleValidationComplete}
+  oncomplete={handleValidationComplete}
 />
 
 <!-- AI Analysis Results Modal -->
@@ -1435,8 +1436,8 @@
         multiple={true}
         maxFiles={10}
         maxFileSize={50 * 1024 * 1024}
-        on:upload={handleFileUpload}
-        on:cancel={() => (showAdvancedUpload = false)}
+        onupload={handleFileUpload}
+        oncancel={() => (showAdvancedUpload = false)}
       />
     </div>
     <div

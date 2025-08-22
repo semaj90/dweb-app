@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived } from 'svelte';
 
   import type { User } from '$lib/types';
   import { onMount, createEventDispatcher } from 'svelte';
@@ -29,12 +29,12 @@ import type { CommonProps } from '$lib/types/common-props';
   let searchQuery = '';
   let selectedIndex = 0;
   
-  $: filteredItems = searchQuery 
+  let filteredItems = $derived(searchQuery 
     ? allItems.filter(item => 
         item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.description.toLowerCase().includes(searchQuery.toLowerCase())
       )
-    : allItems;
+    : allItems);
   
   const allItems: CommandItem[] = [
     // Navigation

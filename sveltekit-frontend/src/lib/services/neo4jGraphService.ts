@@ -4,7 +4,14 @@
  */
 
 import { writable, derived } from "svelte/store";
-import { productionServiceClient, , export interface GraphNode {,   id: string;,   labels: string[];,   properties: Record<string, any>;,   embedding?: number[]; } from
+import { productionServiceClient } from "$lib/api/production-client";
+
+export interface GraphNode {
+  id: string;
+  labels: string[];
+  properties: Record<string, any>;
+  embedding?: number[];
+}
 
 export interface GraphRelationship {
   id: string;

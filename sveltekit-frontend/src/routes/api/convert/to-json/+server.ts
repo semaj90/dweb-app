@@ -79,7 +79,7 @@ export const POST: RequestHandler = async ({ request }) => {
   }
 };
 
-function extractSections(text: string): any[] {
+function extractSections(text: string): unknown[] {
   const sections = [];
   const lines = text.split('\n');
   let currentSection = { title: '', content: '', startLine: 0 };
@@ -218,7 +218,7 @@ function extractMonetaryAmounts(text: string): string[] {
   return Array.from(amounts);
 }
 
-function identifyDocumentSections(text: string): any[] {
+function identifyDocumentSections(text: string): unknown[] {
   const commonSections = [
     'recitals', 'definitions', 'scope of work', 'payment terms',
     'termination', 'confidentiality', 'governing law', 'signatures',
@@ -246,7 +246,7 @@ function extractHeadings(text: string): string[] {
     .slice(0, 20); // Limit to 20 headings
 }
 
-function generateTableOfContents(text: string): any[] {
+function generateTableOfContents(text: string): unknown[] {
   const headings = extractHeadings(text);
   return headings.map((heading, index) => ({
     level: determineHeadingLevel(heading),
@@ -289,7 +289,7 @@ function chunkTextForEmbedding(text: string, maxChunkSize: number = 512): string
   return chunks.filter(chunk => chunk.length > 0);
 }
 
-function identifySemanticSections(text: string): any[] {
+function identifySemanticSections(text: string): unknown[] {
   const semanticPatterns = [
     { type: 'legal_obligation', pattern: /(?:shall|must|required to|obligated to)/gi },
     { type: 'conditional_clause', pattern: /(?:if|unless|provided that|subject to)/gi },

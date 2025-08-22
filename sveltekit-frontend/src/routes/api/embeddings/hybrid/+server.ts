@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+
 /**
  * Hybrid Vector Embedding API - PGVector + Qdrant + Local LLM Integration
  * Supports multiple embedding models with fallback strategies
@@ -7,7 +7,8 @@ import type { RequestHandler } from '@sveltejs/kit';
 
 import { json, error } from "@sveltejs/kit";
 import { db } from "$lib/server/db/drizzle";
-import { eq, sql import { URL } from "url";
+import { eq, sql } from "drizzle-orm";
+import { URL } from "url";
 
 // Embedding models configuration
 interface EmbeddingModel {

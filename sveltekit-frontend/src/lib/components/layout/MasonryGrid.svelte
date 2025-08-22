@@ -1,23 +1,23 @@
 <!-- @migration-task Error while migrating Svelte code: Unexpected token
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $derived, $effect } from 'svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     items: any[] ;
-    columnWidth?: any;
-    gutter?: any;
-    itemSelector?: any;
-    containerClass?: any;
-    fitWidth?: any;
-    horizontalOrder?: any;
-    percentPosition?: any;
-    resize?: any;
-    initLayout?: any;
-    transitionDuration?: any;
-    dragDisabled?: any;
-    dropTargetStyle?: any;
-    dropFromOthersDisabled?: any;
+    columnWidth?: unknown;
+    gutter?: unknown;
+    itemSelector?: unknown;
+    containerClass?: unknown;
+    fitWidth?: unknown;
+    horizontalOrder?: unknown;
+    percentPosition?: unknown;
+    resize?: unknown;
+    initLayout?: unknown;
+    transitionDuration?: unknown;
+    dragDisabled?: unknown;
+    dropTargetStyle?: unknown;
+    dropFromOthersDisabled?: unknown;
   }
   let {
     items = [],
@@ -142,8 +142,8 @@ import type { CommonProps } from '$lib/types/common-props';
     dropTargetStyle,
     dropFromOthersDisabled
   }}
-  on:consider={handleDndConsider}
-  on:finalize={handleDndFinalize}
+  onconsider={handleDndConsider}
+  onfinalize={handleDndFinalize}
   style="--column-width: {columnWidth}px; --gutter: {gutter}px;"
 >
   {#each items as item, index (item.id)}

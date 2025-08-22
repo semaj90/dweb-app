@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * AI Auto-Tagging Service
  * GPU-accelerated document analysis with Ollama + nomic-embed

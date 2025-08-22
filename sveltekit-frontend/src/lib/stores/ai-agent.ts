@@ -1,9 +1,9 @@
 import type { ChatMessage } from "$lib/types/api";
 import crypto from "crypto";
 import stream from "stream";
-// @ts-nocheck
+
 import { writable, derived } from "svelte/store";
-// Orphaned content: import type { Database
+import { realAIService } from "$lib/services/real-ai-service";
 
 // ======================================================================
 // ENHANCED AI AGENT STORE WITH PRODUCTION FEATURES
@@ -58,7 +58,7 @@ interface ProcessingJob {
   type: "chat" | "summarize" | "analyze" | "embed" | "search";
   status: "pending" | "processing" | "completed" | "failed";
   input: any;
-  output?: any;
+  output?: unknown;
   startTime: Date;
   endTime?: Date;
   error?: string;
@@ -87,7 +87,7 @@ interface AIError {
   type: "connection" | "processing" | "timeout" | "model" | "rate_limit";
   message: string;
   timestamp: Date;
-  context?: any;
+  context?: unknown;
   resolved: boolean;
   retryable: boolean;
 }
@@ -132,33 +132,19 @@ const createAIAgentStore = () => {
       update((state) => ({ ...state, isProcessing: true }));
 
       try {
-        // Try real endpoint first, fallback to mock for development
-        let response = await fetch("/api/ai/connect", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ model: modelName || "gemma3-legal" }),
-        });
+        // Use real AI service for connection
+        const connectionResult = await realAIService.connect(modelName || "gemma3-legal");
 
-        // If real endpoint fails, try mock endpoint
-        if (!response.ok) {
-          console.warn('Real AI endpoint failed, using mock endpoint for development');
-          response = await fetch("/api/ai/connect-mock", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ model: modelName || "gemma3-legal" }),
-          });
+        if (!connectionResult.success) {
+          throw new Error(connectionResult.error || "Connection failed");
         }
-
-        if (!response.ok) throw new Error("Both real and mock connections failed");
-
-        const data = await response.json();
 
         update((state) => ({
           ...state,
           isConnected: true,
           isProcessing: false,
-          currentModel: data.model,
-          availableModels: data.availableModels || state.availableModels,
+          currentModel: connectionResult.model,
+          availableModels: connectionResult.availableModels,
           lastHeartbeat: new Date(),
           systemHealth: "healthy",
         }));
@@ -192,7 +178,7 @@ const createAIAgentStore = () => {
     },
 
     // Chat Functions
-    async sendMessage(message: string, context?: any) {
+    async sendMessage(message: string, context?: unknown) {
       const startTime = Date.now();
       const jobId = crypto.randomUUID();
       const sessionId = crypto.randomUUID();
@@ -229,48 +215,22 @@ const createAIAgentStore = () => {
       }));
 
       try {
-        // Try real chat endpoint first, fallback to mock
-        let response = await fetch("/api/ai/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            message,
-            sessionId,
-            context: {
-              conversationHistory: [],
-              ...context,
-            },
+        // Use real AI service for chat
+        const chatResponse = await realAIService.sendMessage({
+          message,
+          sessionId,
+          context: {
+            conversationHistory: [],
+            ...context,
+          },
+          options: {
             stream: true,
-          }),
+            useRAG: true
+          }
         });
 
-        // If real endpoint fails, try mock endpoint
-        if (!response.ok) {
-          console.warn('Real chat endpoint failed, using mock endpoint for development');
-          response = await fetch("/api/ai/chat-mock", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              message,
-              sessionId,
-              context: {
-                conversationHistory: [],
-                ...context,
-              },
-              stream: true,
-            }),
-          });
-        }
-
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-        // Handle streaming response
-        if (response.body) {
-          await this.handleStreamingResponse(response.body, jobId);
-        } else {
-          const data = await response.json();
-          this.completeJob(jobId, data);
-        }
+        // Complete the chat response
+        this.completeStreamingResponse(chatResponse.response, chatResponse, jobId);
 
         const responseTime = Date.now() - startTime;
 
@@ -389,22 +349,18 @@ const createAIAgentStore = () => {
     // RAG Functions
     async searchSimilarDocuments(query: string, limit = 5) {
       try {
-        const response = await fetch("/api/rag/search", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ query, limit, type: "semantic" }),
+        // Use real AI service for document search
+        const documents = await realAIService.searchSimilarDocuments(query, { 
+          limit,
+          threshold: 0.7
         });
-
-        if (!response.ok) throw new Error("Search failed");
-
-        const results = await response.json();
 
         update((state) => ({
           ...state,
-          similarDocuments: results.documents || [],
+          similarDocuments: documents,
         }));
 
-        return results.documents;
+        return documents;
       } catch (error) {
         this.addError({
           type: "processing",
@@ -418,31 +374,31 @@ const createAIAgentStore = () => {
     async indexDocument(document: {
       title: string;
       content: string;
-      metadata?: any;
+      metadata?: unknown;
     }) {
       try {
-        const response = await fetch("/api/rag/index", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(document),
+        // Use real AI service for document indexing
+        const result = await realAIService.indexDocument({
+          title: document.title,
+          content: document.content,
+          metadata: document.metadata as Record<string, any>
         });
 
-        if (!response.ok) throw new Error("Indexing failed");
-
-        const result = await response.json();
+        if (!result.success) {
+          throw new Error(result.error || "Indexing failed");
+        }
 
         update((state) => ({
           ...state,
           vectorStore: {
             ...state.vectorStore,
-            documentCount:
-              result.totalDocuments || state.vectorStore.documentCount + 1,
+            documentCount: state.vectorStore.documentCount + 1,
             lastIndexUpdate: new Date(),
             isIndexed: true,
           },
         }));
 
-        return result;
+        return { success: true };
       } catch (error) {
         this.addError({
           type: "processing",
@@ -458,13 +414,12 @@ const createAIAgentStore = () => {
       update((state) => ({ ...state, isProcessing: true }));
 
       try {
-        const response = await fetch("/api/ai/model/switch", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ model: modelName }),
-        });
+        // Use real AI service for model switching
+        const result = await realAIService.switchModel(modelName);
 
-        if (!response.ok) throw new Error("Model switch failed");
+        if (!result.success) {
+          throw new Error(result.error || "Model switch failed");
+        }
 
         update((state) => ({
           ...state,
@@ -599,20 +554,15 @@ const createAIAgentStore = () => {
     startHeartbeat() {
       const interval = setInterval(async () => {
         try {
-          // Try real health endpoint first, fallback to mock
-          let response = await fetch("/api/ai/health");
-          
-          if (!response.ok) {
-            response = await fetch("/api/ai/health-mock");
-          }
-          
-          const health = await response.json();
+          // Use real AI service for health checks
+          const health = await realAIService.healthCheck();
 
           update((state) => ({
             ...state,
             lastHeartbeat: new Date(),
-            systemHealth: health.status,
-            availableModels: health.models || state.availableModels,
+            systemHealth: health.overall ? "healthy" : "critical",
+            availableModels: health.models.map(m => m.name),
+            isConnected: health.overall,
           }));
         } catch (error) {
           update((state) => ({

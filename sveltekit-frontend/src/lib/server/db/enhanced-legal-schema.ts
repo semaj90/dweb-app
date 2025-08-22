@@ -1,12 +1,12 @@
-// @ts-nocheck
+
 /**
  * Enhanced Legal Schema for Hybrid Vector Storage (Qdrant + PGVector)
  * Implements Phase 8 architecture with legal-specific AI enhancements
  */
 
 import { relations, sql } from "drizzle-orm";
-// Orphaned content: import {
-boolean,
+import {
+  boolean,
   decimal,
   integer,
   jsonb,
@@ -16,6 +16,7 @@ boolean,
   timestamp,
   uuid,
   varchar,
+} from "drizzle-orm/pg-core";
 import { vector } from "pgvector/drizzle-orm";
 
 // === ENHANCED LEGAL EVIDENCE WITH HYBRID VECTOR STORAGE ===

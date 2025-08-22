@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+  import { $state, $derived } from 'svelte';
 	import type { AIResponse } from '$lib/types/ai';
 	
 	// Modern Svelte 5 patterns

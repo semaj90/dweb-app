@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { test, expect } from '@playwright/test';
 import path from 'path';
 
@@ -243,7 +243,7 @@ test.describe('Complete RAG Pipeline Integration', () => {
     
     const search1Results = await search1Response.json();
     const originalFound = search1Results.chunks.some(
-      (c: any) => c.document_id === document.id
+      (c: unknown) => c.document_id === document.id
     );
     expect(originalFound).toBe(true);
     
@@ -269,7 +269,7 @@ test.describe('Complete RAG Pipeline Integration', () => {
     
     const search2Results = await search2Response.json();
     const updatedFound = search2Results.chunks.some(
-      (c: any) => c.document_id === document.id
+      (c: unknown) => c.document_id === document.id
     );
     expect(updatedFound).toBe(true);
     
@@ -283,7 +283,7 @@ test.describe('Complete RAG Pipeline Integration', () => {
     
     const search3Results = await search3Response.json();
     const oldContentFound = search3Results.chunks.some(
-      (c: any) => c.document_id === document.id && 
+      (c: unknown) => c.document_id === document.id && 
       c.content.includes('property')
     );
     expect(oldContentFound).toBe(false);
@@ -437,8 +437,8 @@ test.describe('Complete RAG Pipeline Integration', () => {
     expect(exportData.sources_used.length).toBeGreaterThan(0);
     
     // Each message should have associated sources
-    const assistantMessages = exportData.messages.filter((m: any) => m.role === 'assistant');
-    assistantMessages.forEach((msg: any) => {
+    const assistantMessages = exportData.messages.filter((m: unknown) => m.role === 'assistant');
+    assistantMessages.forEach((msg: unknown) => {
       expect(msg.sources).toBeDefined();
       expect(Array.isArray(msg.sources)).toBe(true);
     });

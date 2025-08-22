@@ -1,7 +1,7 @@
 import path from 'path';
 import type { PageServerLoad } from './$types';
 import { copilotSelfPrompt } from '$lib/utils/copilot-self-prompt';
-// @ts-ignore
+
 import { resolveLibraryId, getLibraryDocs } from '$lib/services/context7-lib-resolver';
 import fs from 'fs/promises';
 

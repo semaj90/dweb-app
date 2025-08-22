@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Test Full Re-embed + Re-rank Loop
 // End-to-end testing of document changes, re-embedding, and re-ranking
 

@@ -1,12 +1,51 @@
-// @ts-nocheck
+
 // Self-Prompting & Auto-Save System
 // Intelligent user intent detection with contextual recommendations
 
 import { writable } from "svelte/store";
-// Orphaned content: import {
-
+import { ChatOllama } from '@langchain/ollama';
 import { crewAIOrchestrator } from "$lib/ai/crewai-legal-agents";
-import { documentUpdateLoop, , // ============================================================================, // TYPES & INTERFACES, // ============================================================================, , export interface UserContext {,   // Document context,   documentId: string;,   documentType: 'contract' | 'brief' | 'memo' | 'agreement' | 'other';,   currentContent: string;,   contentLength: number;,   ,   // User behavior,   lastActivity: Date;,   activityPattern: 'writing' | 'editing' | 'reviewing' | 'idle' | 'researching';,   keystrokes: number;,   idleDuration: number; // milliseconds,   ,   // Session context,   sessionStart: Date;,   totalEdits: number;,   lastSaveTime: Date | null;,   unsavedChanges: boolean;,   ,   // AI interaction history,   lastAIInteraction: Date | null;,   acceptedSuggestions: number;,   rejectedSuggestions: number;,   ,   // Focus and intent,   currentFocus: 'content_creation' | 'legal_review' | 'formatting' | 'research';,   userGoal: string; // Inferred or explicitly set,   confidenceLevel: number; // How confident we are about user intent } from
+
+// ============================================================================
+// TYPES & INTERFACES
+// ============================================================================
+
+export interface UserContext {
+  // Document context
+  documentId: string;
+  documentType: 'contract' | 'brief' | 'memo' | 'agreement' | 'other';
+  currentContent: string;
+  contentLength: number;
+  
+  // User behavior
+  lastActivity: Date;
+  activityPattern: 'writing' | 'editing' | 'reviewing' | 'idle' | 'researching';
+  keystrokes: number;
+  idleDuration: number; // milliseconds
+  
+  // Session context
+  sessionStart: Date;
+  totalEdits: number;
+  lastSaveTime: Date | null;
+  unsavedChanges: boolean;
+  
+  // AI interaction history
+  lastAIInteraction: Date | null;
+  acceptedSuggestions: number;
+  rejectedSuggestions: number;
+  
+  // Focus and intent
+  currentFocus: 'content_creation' | 'legal_review' | 'formatting' | 'research';
+  userGoal: string; // Inferred or explicitly set
+  confidenceLevel: number; // How confident we are about user intent
+}
+
+// Mock document update service for now
+const documentUpdateLoop = {
+  queueDocumentUpdate: async (docId: string, content: string) => {
+    console.log('Document update queued:', { docId, contentLength: content.length });
+  }
+};
 
 export interface SelfPrompt {
   id: string;
@@ -199,7 +238,7 @@ export class SelfPromptingSystem {
     }
   }
 
-  private analyzeCurrentContext(): any {
+  private analyzeCurrentContext(): unknown {
     const content = this.userContext.currentContent;
     const words = content.split(/\s+/).length;
     const sentences = content.split(/[.!?]+/).length;
@@ -556,7 +595,7 @@ export class SelfPromptingSystem {
     });
   }
 
-  private generateFocusChangeSuggestions(): any {
+  private generateFocusChangeSuggestions(): unknown {
     const currentFocus = this.userContext.currentFocus;
     const suggestions = {
       'content_creation': 'legal_review',

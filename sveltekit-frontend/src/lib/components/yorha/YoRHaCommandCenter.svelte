@@ -1,27 +1,19 @@
 <!-- YoRHa Command Center Dashboard Component -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  // Standard Svelte imports instead of Svelte 5 runes
 
   import type { Props } from "$lib/types/global";
   import { onMount } from 'svelte';
   import { goto } from "$app/navigation";
-  import YorhaAIAssistant from "$lib/components/ai/YorhaAIAssistant.svelte";
-  
-  // Props
-  let { systemData } = $props<{
-    systemData: {
-      activeCases: number;
-      evidenceItems: number;
-      aiQueries: number;
-      gpuUtilization: number;
-      networkLatency: number;
-    };
-  }>();
+  // import YorhaAIAssistant from "$lib/components/ai/YorhaAIAssistant.svelte";
+
+  // Exported prop - accept any for quick-pass fixes (refactor later to strict types)
+  export let systemData: any = {};
 
   // Dashboard state
-  let selectedCard = $state<string | null>(null);
-  let animationPhase = $state(0);
-  let recentActivity = $state([
+  let selectedCard: string | null = null;
+  let animationPhase = 0;
+  let recentActivity = [
     { id: 1, action: 'Case Analysis Completed', target: 'CASE-2024-087', time: '2 minutes ago', type: 'success' },
     { id: 2, action: 'Evidence Upload', target: 'Digital Forensics Report', time: '5 minutes ago', type: 'info' },
     { id: 3, action: 'AI Query Processed', target: 'Contract Liability Analysis', time: '8 minutes ago', type: 'ai' },
@@ -41,12 +33,12 @@ import type { CommonProps } from '$lib/types/common-props';
   ];
 
   // System health indicators
-  let systemHealth = $derived(() => {
+  $: systemHealth = (() => {
     const avgLoad = (systemData.systemLoad + systemData.gpuUtilization + systemData.memoryUsage) / 3;
     if (avgLoad > 85) return { status: 'critical', color: 'red', message: 'System under heavy load' };
     if (avgLoad > 70) return { status: 'warning', color: 'yellow', message: 'Elevated resource usage' };
     return { status: 'optimal', color: 'green', message: 'All systems operational' };
-  });
+  })();
 
   // Animation cycle
   onMount(() => {
@@ -58,9 +50,9 @@ import type { CommonProps } from '$lib/types/common-props';
   });
 
   function handleQuickAction(action: any) {
-    selectedCard = action.id;
+    selectedCard = action?.id ?? null;
     setTimeout(() => {
-      goto(action.route);
+      if (action?.route) goto(action.route);
     }, 300);
   }
 
@@ -97,7 +89,7 @@ import type { CommonProps } from '$lib/types/common-props';
 
 <!-- Command Center Dashboard -->
 <div class="yorha-command-center min-h-full bg-yorha-dark text-yorha-light p-6">
-  
+
   <!-- Header Section -->
   <div class="dashboard-header mb-8">
     <div class="flex items-center justify-between">
@@ -120,10 +112,10 @@ import type { CommonProps } from '$lib/types/common-props';
 
   <!-- Main Dashboard Grid -->
   <div class="dashboard-grid grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-    
+
     <!-- System Overview Cards -->
     <div class="overview-cards lg:col-span-2 grid grid-cols-2 md:grid-cols-4 gap-4">
-      
+
       <!-- Active Cases -->
       <div class="metric-card bg-yorha-darker border border-yorha-accent-warm/30 rounded-lg p-4 hover:border-yorha-accent-warm/50 transition-all duration-300">
         <div class="flex items-center justify-between mb-2">
@@ -176,7 +168,7 @@ import type { CommonProps } from '$lib/types/common-props';
     <!-- System Health Panel -->
     <div class="system-health bg-yorha-darker border border-yorha-accent-warm/30 rounded-lg p-6">
       <h3 class="text-lg font-bold text-yorha-accent-warm mb-4">System Health</h3>
-      
+
       <div class="health-metrics space-y-4">
         <div class="metric">
           <div class="flex justify-between items-center mb-1">
@@ -184,7 +176,7 @@ import type { CommonProps } from '$lib/types/common-props';
             <span class="text-sm font-mono">{systemData.systemLoad}%</span>
           </div>
           <div class="progress-bar w-full h-2 bg-yorha-dark rounded-full overflow-hidden">
-            <div 
+            <div
               class="h-full rounded-full transition-all duration-300 {systemData.systemLoad > 80 ? 'bg-red-500' : systemData.systemLoad > 60 ? 'bg-yellow-500' : 'bg-green-500'}"
               style="width: {systemData.systemLoad}%"
             ></div>
@@ -197,7 +189,7 @@ import type { CommonProps } from '$lib/types/common-props';
             <span class="text-sm font-mono">{systemData.gpuUtilization}%</span>
           </div>
           <div class="progress-bar w-full h-2 bg-yorha-dark rounded-full overflow-hidden">
-            <div 
+            <div
               class="h-full rounded-full transition-all duration-300 {systemData.gpuUtilization > 80 ? 'bg-red-500' : systemData.gpuUtilization > 60 ? 'bg-yellow-500' : 'bg-green-500'}"
               style="width: {systemData.gpuUtilization}%"
             ></div>
@@ -210,7 +202,7 @@ import type { CommonProps } from '$lib/types/common-props';
             <span class="text-sm font-mono">{systemData.memoryUsage}%</span>
           </div>
           <div class="progress-bar w-full h-2 bg-yorha-dark rounded-full overflow-hidden">
-            <div 
+            <div
               class="h-full rounded-full transition-all duration-300 {systemData.memoryUsage > 80 ? 'bg-red-500' : systemData.memoryUsage > 60 ? 'bg-yellow-500' : 'bg-green-500'}"
               style="width: {systemData.memoryUsage}%"
             ></div>
@@ -270,13 +262,13 @@ import type { CommonProps } from '$lib/types/common-props';
     </div>
   </div>
 
-  <!-- YoRHa AI Assistant - Integrated with Command Center -->
-  <YorhaAIAssistant 
+  <!-- YoRHa AI Assistant - Temporarily disabled -->
+  <!-- <YorhaAIAssistant
     theme="yorha"
     enableGPUAcceleration={true}
     enableMCPIntegration={true}
     initialOpen={false}
-  />
+  /> -->
 </div>
 
 <style>
@@ -289,7 +281,7 @@ import type { CommonProps } from '$lib/types/common-props';
     --yorha-muted: #f0f0f0;
     --yorha-dark: #aca08a;
     --yorha-darker: #b8ad98;
-    
+
     font-family: 'JetBrains Mono', monospace;
     background: linear-gradient(135deg, var(--yorha-dark) 0%, var(--yorha-darker) 100%);
   }
@@ -325,11 +317,11 @@ import type { CommonProps } from '$lib/types/common-props';
 
   /* Animation effects */
   @keyframes pulse-glow {
-    0%, 100% { 
-      box-shadow: 0 0 5px currentColor; 
+    0%, 100% {
+      box-shadow: 0 0 5px currentColor;
     }
-    50% { 
-      box-shadow: 0 0 15px currentColor, 0 0 25px currentColor; 
+    50% {
+      box-shadow: 0 0 15px currentColor, 0 0 25px currentColor;
     }
   }
 
@@ -342,19 +334,14 @@ import type { CommonProps } from '$lib/types/common-props';
     .yorha-command-center {
       padding: 16px;
     }
-    
+
     .dashboard-header h1 {
       font-size: 24px;
     }
-    
+
     .actions-grid {
       grid-template-columns: repeat(2, 1fr);
     }
   }
 </style>
 
-
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>

@@ -1,11 +1,11 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { getContext } from 'svelte';
+  import { $props } from 'svelte';
   
-  interface Props extends CommonProps {
+  interface Props {
     disabled?: boolean;
-    onclick?: (event?: any) => void;
+    onclick?: (event?: unknown) => void;
   }
   let { children,
     disabled = false,

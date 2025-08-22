@@ -1,13 +1,13 @@
 <!-- AI Recommendations: Svelte 5, Bits UI, UnoCSS, analytics logging -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state } from 'svelte';
 
   import { onMount } from 'svelte';
-  import { UiCard as Card, UiCardHeader as CardHeader, UiCardTitle as CardTitle, UiCardContent as CardContent } from '../index.js';
+  import { UiCard as Card, UiCardHeader as CardHeader, UiCardTitle as CardTitle, UiCardContent as CardContent } from '$lib/index.js';
 
-  interface Props extends CommonProps {
-    userContext?: any;
-    neo4jContext?: any;
+  interface Props {
+    userContext?: unknown;
+    neo4jContext?: unknown;
     analyticsLog?: (event: any) => void;
     onRecommendations?: (results: any) => void;
   }
@@ -19,7 +19,7 @@ import type { CommonProps } from '$lib/types/common-props';
     onRecommendations = () => {}
   }: Props = $props();
 
-  let recommendations = $state<any[]>([]);
+  let recommendations = $state<unknown[]>([]);
   let loading = $state(false);
 
   async function fetchRecommendations() {

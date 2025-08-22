@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // SIMD JSON Processing API - SvelteKit Integration with Go Microservice
 import { type RequestHandler,  json } from '@sveltejs/kit';
 import { simdRedisClient } from "$lib/services/simd-redis-client";

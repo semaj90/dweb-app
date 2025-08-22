@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+
 // src/routes/api/embeddings/generate/+server.ts
 import { json, error } from "@sveltejs/kit";
 import { vectorService } from "$lib/server/vector/vectorService.js";

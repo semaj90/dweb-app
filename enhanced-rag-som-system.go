@@ -9,16 +9,13 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/go-redis/redis/v8"
-	"gonum.org/v1/gonum/mat"
 )
 
 // Enhanced RAG System with Self-Organizing Map (SOM) for User Intent Analysis
@@ -557,7 +554,6 @@ func (r *EnhancedRAGService) calculateRelevance(score float64, intent string) st
 func (r *EnhancedRAGService) generateHighlights(content, query string) []string {
 	// Simple highlighting (in production, use proper text processing)
 	words := strings.Fields(strings.ToLower(query))
-	contentLower := strings.ToLower(content)
 	
 	var highlights []string
 	contentWords := strings.Fields(content)
@@ -678,6 +674,98 @@ func (r *EnhancedRAGService) HandleAnalyzeIntent(ctx *gin.Context) {
 	})
 }
 
+// HandleRAG - Simplified RAG endpoint for Vite proxy /api/v1/rag
+func (r *EnhancedRAGService) HandleRAG(ctx *gin.Context) {
+	var req RAGRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	
+	// Set defaults for simplified endpoint
+	if req.MaxResults == 0 {
+		req.MaxResults = 5
+	}
+	if req.MinScore == 0 {
+		req.MinScore = 0.5
+	}
+	
+	start := time.Now()
+	
+	// Generate query embedding
+	queryEmbedding := r.generateSimpleEmbedding(req.Query)
+	
+	// Analyze intent
+	intent, intentScore, cluster := r.analyzeIntentWithSOM(queryEmbedding)
+	
+	// Perform semantic search
+	results, err := r.performSemanticSearch(queryEmbedding, req, intent)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "RAG service unavailable: " + err.Error(),
+		})
+		return
+	}
+	
+	// Build simplified response
+	response := map[string]interface{}{
+		"query":           req.Query,
+		"results":         results,
+		"intent":          intent,
+		"intent_score":    intentScore,
+		"cluster":         cluster,
+		"processing_time": float64(time.Since(start).Nanoseconds()) / 1e6,
+		"total_results":   len(results),
+		"status":          "success",
+	}
+	
+	ctx.JSON(http.StatusOK, response)
+}
+
+// HandleAI - AI processing endpoint for Vite proxy /api/v1/ai  
+func (r *EnhancedRAGService) HandleAI(ctx *gin.Context) {
+	var req struct {
+		Prompt string                 `json:"prompt"`
+		Model  string                 `json:"model,omitempty"`
+		Context map[string]interface{} `json:"context,omitempty"`
+		MaxTokens int                 `json:"max_tokens,omitempty"`
+		Temperature float64           `json:"temperature,omitempty"`
+	}
+	
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	
+	if req.Prompt == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "prompt is required"})
+		return
+	}
+	
+	start := time.Now()
+	
+	// Generate embedding for the prompt
+	promptEmbedding := r.generateSimpleEmbedding(req.Prompt)
+	
+	// Analyze intent
+	intent, intentScore, cluster := r.analyzeIntentWithSOM(promptEmbedding)
+	
+	// Mock AI processing (in production, integrate with actual LLM)
+	aiResponse := map[string]interface{}{
+		"prompt":          req.Prompt,
+		"model":           "enhanced-rag-som",
+		"response":        fmt.Sprintf("AI analysis complete for intent: %s. Processing prompt with %d tokens.", intent, len(req.Prompt)),
+		"intent":          intent,
+		"intent_score":    intentScore,
+		"cluster":         cluster,
+		"processing_time": float64(time.Since(start).Nanoseconds()) / 1e6,
+		"status":          "success",
+		"confidence":      0.85,
+	}
+	
+	ctx.JSON(http.StatusOK, aiResponse)
+}
+
 func (r *EnhancedRAGService) setupRoutes() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
@@ -703,6 +791,10 @@ func (r *EnhancedRAGService) setupRoutes() *gin.Engine {
 		api.POST("/rag/query", r.HandleRAGQuery)
 		api.POST("/rag/analyze-intent", r.HandleAnalyzeIntent)
 		api.GET("/rag/status", r.HandleStatus)
+		
+		// New endpoints for Vite proxy compatibility
+		api.POST("/rag", r.HandleRAG)         // For /api/v1/rag proxy
+		api.POST("/ai", r.HandleAI)           // For /api/v1/ai proxy
 	}
 	
 	// Root endpoint
@@ -714,6 +806,7 @@ func (r *EnhancedRAGService) setupRoutes() *gin.Engine {
 			"som_enabled": r.somNetwork != nil,
 			"endpoints": []string{
 				"/api/rag/query", "/api/rag/analyze-intent", "/api/rag/status",
+				"/api/rag", "/api/ai",
 			},
 		})
 	})

@@ -26,26 +26,33 @@ export interface AuthState {
   isAuthenticated: boolean;
 }
 
-// Reactive authentication state using $state rune
-const authState = $state<AuthState>({
+// Reactive authentication state using $state rune (browser-only)
+const authState = browser ? $state<AuthState>({
   user: null,
   loading: false,
   error: null,
   isAuthenticated: false
-});
+}) : {
+  user: null,
+  loading: false,
+  error: null,
+  isAuthenticated: false
+};
 
-// Derived state for common auth checks
-export const isAdmin = $derived(() => 
-  authState.user?.role === 'admin' || authState.user?.role === 'lead_prosecutor'
-);
+// Derived state functions for common auth checks
+export function isAdmin(): boolean {
+  return authState.user?.role === 'admin' || authState.user?.role === 'lead_prosecutor' || false;
+}
 
-export const canCreateCases = $derived(() => 
-  authState.user?.role === 'admin' || 
-  authState.user?.role === 'lead_prosecutor' || 
-  authState.user?.role === 'prosecutor'
-);
+export function canCreateCases(): boolean {
+  return authState.user?.role === 'admin' || 
+         authState.user?.role === 'lead_prosecutor' || 
+         authState.user?.role === 'prosecutor' || false;
+}
 
-export const canViewEvidence = $derived(() => authState.isAuthenticated);
+export function canViewEvidence(): boolean {
+  return authState.isAuthenticated;
+}
 
 // Auth service with reactive methods
 export class AuthService {

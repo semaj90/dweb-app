@@ -1,12 +1,12 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { createEventDispatcher } from "svelte";
+  import { $props } from 'svelte';
 
   
   
   
-  interface Props extends CommonProps {
+  interface Props {
     class?: string;
     ratio?: "golden" | "thirds" | "half" | "custom";
     mainFlex?: number;

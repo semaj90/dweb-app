@@ -1,23 +1,20 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+import { onMount } from 'svelte';
+import type { Document } from "$lib/types/global";
 
-  import { onMount } from 'svelte';
-  import type { Document } from "$lib/types/global";
+// Types
+interface SimilarityResult extends Document {
+  similarity: number;
+}
 
-  // Types
-  interface SimilarityResult extends Document {
-    similarity: number;
-  }
+// Props (exported so parent can bind)
+export let selectedDocument: Document | null = null;
+export let searchQuery: string = '';
 
-  // Props
-  let { selectedDocument = $bindable(null) }: { selectedDocument: Document | null } = $props();
-  let { searchQuery = $bindable('') }: { searchQuery: string } = $props();
-
-  // State
-  let similarDocuments: SimilarityResult[] = [];
-  let isLoading: boolean = false;
-  let error: string | null = null;
-
+// State
+let similarDocuments: SimilarityResult[] = [];
+let isLoading: boolean = false;
+let error: string | null = null;
   async function performSemanticSearch(query: string) {
     if (!query.trim()) {
       similarDocuments = [];
@@ -56,18 +53,17 @@ import type { CommonProps } from '$lib/types/common-props';
     }
   }
 
-  // Reactive search when query changes
-  $effect(() => {
-    if (searchQuery) {
-      performSemanticSearch(searchQuery);
-    }
-  });
+// Reactive search when query changes
+$: if (searchQuery && searchQuery.trim().length) {
+  // simple reactive trigger (debounce could be added later)
+  performSemanticSearch(searchQuery);
+}
 
-  onMount(() => {
-    if (searchQuery) {
-      performSemanticSearch(searchQuery);
-    }
-  });
+onMount(() => {
+  if (searchQuery && searchQuery.trim().length) {
+    performSemanticSearch(searchQuery);
+  }
+});
 </script>
 
 <!-- Search Input -->
@@ -202,7 +198,4 @@ import type { CommonProps } from '$lib/types/common-props';
 </div>
 
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

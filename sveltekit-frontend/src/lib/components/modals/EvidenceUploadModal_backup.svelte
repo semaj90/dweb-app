@@ -1,7 +1,7 @@
 <!-- @migration-task Error while migrating Svelte code: Unexpected token
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $derived } from 'svelte';
 
   import { uploadActions, uploadModal } from "$lib/stores/evidence-store";
 
@@ -29,7 +29,4 @@ import type { CommonProps } from '$lib/types/common-props';
   </div>
 {/if}
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

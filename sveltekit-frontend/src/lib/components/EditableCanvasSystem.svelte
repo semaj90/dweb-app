@@ -1,11 +1,11 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     userId: string;
     canvasId: string | null ;
-    readonly?: any;
-    maxNodes?: any;
+    readonly?: unknown;
+    maxNodes?: unknown;
   }
   let {
     userId,
@@ -316,7 +316,7 @@ import type { CommonProps } from '$lib/types/common-props';
     <div class="toolbar-right">
       <span 
         class="status" 
-        class:on:line={$isOnline}
+        class:online={$isOnline}
         aria-label={$isOnline ? 'Connected' : 'Disconnected'}
       >
         {$isOnline ? 'Online' : 'Offline'}

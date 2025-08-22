@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Legal Document Processing State Machine
  * XState workflow for comprehensive legal document analysis pipeline
@@ -36,7 +36,7 @@ export interface LegalDocumentContext {
   };
   
   // Context7 MCP results
-  mcpAnalysis?: any;
+  mcpAnalysis?: unknown;
   stackRecommendations?: string[];
   
   // Error handling

@@ -1,5 +1,6 @@
 <script lang="ts">
   import ProfessionalEditor from '$lib/components/editor/ProfessionalEditor.svelte';
+  import { $state } from 'svelte';
   import { FileText, Zap, Keyboard, Eye, Save, BarChart3 } from 'lucide-svelte';
 
   let editorContent = $state(`<h1>Professional Document Editor</h1>
@@ -139,7 +140,7 @@
             bind:title={documentTitle}
             autoSave={true}
             autoSaveInterval={5000}
-            on:save={handleSave}
+            onsave={handleSave}
           />
         </div>
       </section>

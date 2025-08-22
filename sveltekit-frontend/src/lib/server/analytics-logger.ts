@@ -1,6 +1,6 @@
 import { writeFile } from "fs/promises";
 import path from "path";
-// @ts-nocheck
+
 // Simple analytics logger for API endpoints
 // In production, replace with a real analytics/event system
 

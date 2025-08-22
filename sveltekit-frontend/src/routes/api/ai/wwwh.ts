@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { ollamaService } from "$lib/services/ollama-service";
 // Orphaned content: import type { RequestHandler
 

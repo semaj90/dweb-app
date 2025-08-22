@@ -4,7 +4,7 @@
  */
 
 import { productionServiceRegistry, getOptimalServiceForRoute, type ServiceDefinition } from './production-service-registry.js';
-import { productionAPIClient, type ServiceRequest, type ServiceResponse } from '../api/production-client.js';
+import { productionAPIClient, type ServiceRequest, type ServiceResponse } from '$lib/api/production-client.js';
 
 export interface ServiceDiscoveryConfig {
   healthCheckInterval: number;

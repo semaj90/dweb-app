@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { json } from '@sveltejs/kit';
 
 // Simple stub for logQueue

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { type RequestHandler,  json } from '@sveltejs/kit';
 import { URL } from "url";
 import { queueDocumentProcessing, getJobStatus, getQueueStats, type DocumentProcessingJobData } from "$lib/services/queue-service";

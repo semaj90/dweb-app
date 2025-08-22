@@ -1,5 +1,6 @@
 <script lang="ts">
   import NierThemeShowcase from '$lib/components/NierThemeShowcase.svelte'
+  import { $state, $effect } from 'svelte';
   import NierHeader from '$lib/components/NierHeader.svelte'
   import CaseCard from '$lib/components/cases/CaseCard.svelte'
   import NierAIAssistant from '$lib/components/ai/NierAIAssistant.svelte'
@@ -193,10 +194,10 @@
         {#each sampleCases as caseData}
           <CaseCard
             case={caseData}
-            onView={handleViewCase}
-            onEdit={handleEditCase}
-            onArchive={handleArchiveCase}
-            onDelete={handleDeleteCase}
+            onview={handleViewCase}
+            onedit={handleEditCase}
+            onarchive={handleArchiveCase}
+            ondelete={handleDeleteCase}
           />
         {/each}
       </div>

@@ -1,23 +1,16 @@
 import crypto from "crypto";
-// @ts-nocheck
+
 // Enhanced AI Pipeline Service - Real Integration
 // Connects Ollama models with PostgreSQL pgvector for semantic search
 // Production-ready legal document processing
 
 import { OllamaEmbeddings } from "@langchain/community/embeddings/ollama";
-// Orphaned content: import {
-
 import { PGVectorStore } from "@langchain/community/vectorstores/pgvector";
-// Orphaned content: import {
-
 import { drizzle } from "drizzle-orm/postgres-js";
-// Orphaned content: import {
-
-postgres from "postgres";
-// Orphaned content: import type { Document
-import {
-userEmbeddings } from "../server/db/schema-postgres.js";
-// Orphaned content: import { OllamaService
+import postgres from "postgres";
+import type { Document } from "@langchain/core/documents";
+import { userEmbeddings } from "../server/db/schema-postgres.js";
+import { OllamaService } from "./OllamaService";
 
 export interface SemanticSearchOptions {
   limit?: number;

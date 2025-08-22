@@ -1,5 +1,6 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state, $derived } from 'svelte';
+
 
   interface TableColumn {
     key: string;
@@ -12,7 +13,7 @@ import type { CommonProps } from '$lib/types/common-props';
 
   interface TableRow {
     id: string | number;
-    [key: string]: any;
+    [key: string]: unknown;
   }
 
   interface TableProps {

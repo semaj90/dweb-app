@@ -353,7 +353,7 @@ export interface RagStreamStore {
   }>;
   traceparent: Readable<string | undefined>;
   streamId: Readable<string | undefined>;
-  patches: Readable<any[]>;
+  patches: Readable<unknown[]>;
   appliedObject?: Readable<any>; // auto-applied object derived from patches
   summary: Readable<string | undefined>;
   start: (
@@ -386,7 +386,7 @@ export interface RagStreamStoreInit extends Partial<RagStreamGeneratorOptions> {
   patches?: {
     autoApply?: boolean; // apply patches to derived object
     mode?: 'auto' | 'json-patch' | 'merge'; // auto tries json-patch then merge
-    initialObject?: any; // seed object
+    initialObject?: unknown; // seed object
     keepInverses?: boolean; // maintain inverse operations (JSON Patch only)
     snapshotInterval?: number; // take full snapshot every N patches (default 20)
   };
@@ -413,7 +413,7 @@ export function createRagStreamStore(initial?: RagStreamStoreInit): RagStreamSto
   }>({ reconnects: 0, errors: 0 });
   const traceparentW = writable<string | undefined>(undefined);
   const streamIdW = writable<string | undefined>(undefined);
-  const patchesW = writable<any[]>([]);
+  const patchesW = writable<unknown[]>([]);
   const appliedObjectW = writable<any>(initial?.patches?.initialObject ?? {});
   const summaryW = writable<string | undefined>(undefined);
   const inverseStack: any[][] = [];
@@ -880,4 +880,4 @@ export function createRagStreamStore(initial?: RagStreamStoreInit): RagStreamSto
 // const { tokens, status, summary } = rag; // destructure the individual Svelte stores
 // onMount(() => { rag.start({ query: 'Explain force majeure' }); });
 // $: tokenList = $tokens; // reactive tokens array
-// <button on:click={() => rag.cancel()}>Cancel</button>
+// <button onclick={() => rag.cancel()}>Cancel</button>

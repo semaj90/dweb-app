@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
+
 // ======================================================================
 // ENHANCED AI PROCESSING API ENDPOINT
 // Integrating XState workflows with multi-model AI pipeline
@@ -11,11 +11,11 @@ import { json } from "@sveltejs/kit";
 interface ProcessingPipeline {
   evidenceId: string;
   stages: {
-    embedding: { status: string; result?: any; error?: string };
-    tagging: { status: string; result?: any; error?: string };
-    analysis: { status: string; result?: any; error?: string };
-    vectorSearch: { status: string; result?: any; error?: string };
-    graphDiscovery: { status: string; result?: any; error?: string };
+    embedding: { status: string; result?: unknown; error?: string };
+    tagging: { status: string; result?: unknown; error?: string };
+    analysis: { status: string; result?: unknown; error?: string };
+    vectorSearch: { status: string; result?: unknown; error?: string };
+    graphDiscovery: { status: string; result?: unknown; error?: string };
   };
   overallStatus: "pending" | "processing" | "complete" | "error";
   startTime: Date;

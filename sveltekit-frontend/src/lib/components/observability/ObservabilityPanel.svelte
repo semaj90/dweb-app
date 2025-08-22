@@ -1,6 +1,6 @@
 <!-- Observability Panel: Real-time alerts + sustained monitoring dashboard -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $state, $derived } from 'svelte';
 
   import { onMount, onDestroy } from 'svelte';
   import type { ObservabilityState } from '$lib/services/observability-persistence';
@@ -564,7 +564,4 @@ import type { CommonProps } from '$lib/types/common-props';
     }
   }
 </style>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

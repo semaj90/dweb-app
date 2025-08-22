@@ -2,7 +2,7 @@
 // Bridges AI Assistant machine with reactive Svelte components
 import { browser } from '$app/environment';
 import { createActor } from 'xstate';
-import { aiAssistantMachine, aiAssistantServices, aiAssistantActions } from '../machines/aiAssistantMachine.js';
+import { aiAssistantMachine, aiAssistantServices, aiAssistantActions } from '$lib/machines/aiAssistantMachine.js';
 
 // AI Assistant reactive state interface
 export interface AIAssistantState {
@@ -408,7 +408,7 @@ export const context7Analysis = () => aiAssistantState.context7Analysis;
 export const aiUsage = () => aiAssistantState.usage;
 
 // Convenience functions
-export const sendAIMessage = (message: string, options?: any) => 
+export const sendAIMessage = (message: string, options?: unknown) => 
   aiAssistantManager.sendMessage(message, options);
 export const setAIModel = (model: string) => aiAssistantManager.setModel(model);
 export const setAITemperature = (temp: number) => aiAssistantManager.setTemperature(temp);

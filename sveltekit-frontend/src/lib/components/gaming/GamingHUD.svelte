@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
 	import { onMount } from 'svelte';
+  import { $props, $state, $derived } from 'svelte';
 	import type { ComponentProps } from 'svelte';
 	
 	// Gaming-themed props using Svelte 5 patterns
@@ -79,7 +79,7 @@ import type { CommonProps } from '$lib/types/common-props';
 		
 		<!-- System Status -->
 		<div class="status-section">
-			<div class="status-indicator" class:on:line={isOnline} class:offline={!isOnline}>
+			<div class="status-indicator" class:online={isOnline} class:offline={!isOnline}>
 				<div class="status-dot"></div>
 				<span>{isOnline ? 'ONLINE' : 'OFFLINE'}</span>
 			</div>
@@ -376,7 +376,4 @@ import type { CommonProps } from '$lib/types/common-props';
 		}
 	}
 </style>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

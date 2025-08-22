@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { $state } from 'svelte';
   import { browser } from "$app/environment";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";

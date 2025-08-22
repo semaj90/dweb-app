@@ -1,9 +1,9 @@
 import crypto from "crypto";
-// @ts-nocheck
+
 import { writable } from "svelte/store";
 // Orphaned content: import {
 
-import type { Evidence } from '../data/types.js';
+import type { Evidence } from '$lib/data/types.js';
 
 let lokiDb: any = null;
 let db: any = null;
@@ -58,8 +58,8 @@ function databaseInitialize() {
 export const lokiStore = writable({
   initialized: false,
   evidence: [] as Evidence[],
-  canvasStates: [] as any[],
-  notes: [] as any[],
+  canvasStates: [] as unknown[],
+  notes: [] as unknown[],
 });
 
 // Loki operations
@@ -229,7 +229,7 @@ export const loki = {
       return notesCollection.find({ reportId });
     },
 
-    search(query: string): any[] {
+    search(query: string): unknown[] {
       if (!notesCollection || !query) return this.getAll();
 
       return notesCollection.find({

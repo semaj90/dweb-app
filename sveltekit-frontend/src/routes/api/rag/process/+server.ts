@@ -101,7 +101,7 @@ async function saveDocument(docData: {
   content: string;
   metadata: any;
   confidence?: number;
-  legalAnalysis?: any;
+  legalAnalysis?: unknown;
   filePath: string;
 }) {
   try {

@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
-  interface Props extends CommonProps {
+  interface Props {
     overlay: any;
     content: any;
     openState: any;
@@ -13,7 +13,7 @@ import type { CommonProps } from '$lib/types/common-props';
     openState,
     size = 'md',
     children
-  }: Props & { children?: any } = $props();
+  }: Props & { children?: unknown } = $props();
 
 
 
@@ -34,14 +34,14 @@ import type { CommonProps } from '$lib/types/common-props';
   <div
     use:overlay
     class="space-y-4"
-    transitionfade={{ duration: 200 }}
+    transition:fade={{ duration: 200 }}
   ></div>
 
   <!-- Content -->
   <div
     use:content
     class="space-y-4"
-    transitionfly={{ y: -20, duration: 200  }}
+    transition:fly={{ y: -20, duration: 200  }}
     
   >
     {#if children}

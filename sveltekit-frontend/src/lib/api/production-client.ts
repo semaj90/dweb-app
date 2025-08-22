@@ -3,12 +3,12 @@
  * Integrates with all 37 Go binaries through HTTP/gRPC/QUIC/WebSocket
  */
 
-import { productionServiceRegistry, getOptimalServiceForRoute, type ServiceDefinition } from '../services/production-service-registry.js';
+import { productionServiceRegistry, getOptimalServiceForRoute, type ServiceDefinition } from '$lib/services/production-service-registry.js';
 
 export interface ServiceRequest {
   route: string;
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
-  body?: any;
+  body?: unknown;
   headers?: Record<string, string>;
   timeout?: number;
   retries?: number;
@@ -243,7 +243,7 @@ export class ProductionAPIClient {
 export class RAGAPIClient {
   constructor(private client: ProductionAPIClient) {}
 
-  async query(query: string, context?: any): Promise<ServiceResponse> {
+  async query(query: string, context?: unknown): Promise<ServiceResponse> {
     return this.client.request({
       route: '/api/v1/rag/query',
       method: 'POST',
@@ -251,7 +251,7 @@ export class RAGAPIClient {
     });
   }
 
-  async semanticSearch(query: string, filters?: any): Promise<ServiceResponse> {
+  async semanticSearch(query: string, filters?: unknown): Promise<ServiceResponse> {
     return this.client.request({
       route: '/api/v1/rag/semantic',
       method: 'POST',
@@ -271,7 +271,7 @@ export class RAGAPIClient {
 export class UploadAPIClient {
   constructor(private client: ProductionAPIClient) {}
 
-  async uploadFile(file: File, metadata?: any): Promise<ServiceResponse> {
+  async uploadFile(file: File, metadata?: unknown): Promise<ServiceResponse> {
     const formData = new FormData();
     formData.append('file', file);
     if (metadata) formData.append('metadata', JSON.stringify(metadata));

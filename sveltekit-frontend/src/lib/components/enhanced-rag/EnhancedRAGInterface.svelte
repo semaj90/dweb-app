@@ -1,14 +1,14 @@
 <!-- Enhanced RAG Interface Component for SvelteKit 2 + Svelte 5 -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $state, $effect } from 'svelte';
 
   import { onMount } from 'svelte';
   import Fuse from 'fuse.js';
   
   // Svelte 5 reactive state
   let searchQuery = $state('');
-  let documents = $state<any[]>([]);
-  let searchResults = $state<any[]>([]);
+  let documents = $state<unknown[]>([]);
+  let searchResults = $state<unknown[]>([]);
   let isLoading = $state(false);
   let embeddings = $state<Map<string, number[]>>(new Map());
   let analytics = $state({
@@ -465,7 +465,4 @@ import type { CommonProps } from '$lib/types/common-props';
     border-radius: 4px;
   }
 </style>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

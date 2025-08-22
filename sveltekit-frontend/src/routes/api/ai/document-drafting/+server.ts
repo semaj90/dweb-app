@@ -15,7 +15,7 @@ interface DocumentDraftingRequest {
     type?: 'individual' | 'corporation' | 'government';
   }[];
   keyTerms?: {
-    [key: string]: any;
+    [key: string]: unknown;
   };
   templateId?: string;
   userRole?: string;

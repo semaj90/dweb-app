@@ -1,5 +1,4 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
 	import { Button } from "$lib/components/ui/button";
 	import { quintOut } from 'svelte/easing';
@@ -7,7 +6,7 @@ import type { CommonProps } from '$lib/types/common-props';
 	import { modals } from "../../stores/modal";
 
 	// Built-in modal components
-	function ConfirmModal({ props, onConfirm, onClose }: any) {
+	function ConfirmModal({ props, onConfirm, onClose }: unknown) {
 		return {
 			title: 'Confirm Action',
 			content: props.message,
@@ -25,7 +24,7 @@ import type { CommonProps } from '$lib/types/common-props';
 			]
 		};
 }
-	function AlertModal({ props, onClose }: any) {
+	function AlertModal({ props, onClose }: unknown) {
 		return {
 			title: 'Alert',
 			content: props.message,
@@ -38,7 +37,7 @@ import type { CommonProps } from '$lib/types/common-props';
 			]
 		};
 }
-	function PromptModal({ props, onConfirm, onClose }: any) {
+	function PromptModal({ props, onConfirm, onClose }: unknown) {
 		let inputValue = props.defaultValue || '';
 
 		return {
@@ -190,8 +189,8 @@ import type { CommonProps } from '$lib/types/common-props';
 					<!-- Custom Svelte component -->
 					<modal.component
 						{...modal.props}
-						on:close={() => modals.close(modal.id)}
-						on:confirm={modal.onConfirm}
+						onclose={() => modals.close(modal.id)}
+						onconfirm={modal.onConfirm}
 					/>
 				{:else}
 					<!-- Default slot content -->
@@ -227,7 +226,4 @@ import type { CommonProps } from '$lib/types/common-props';
 </style>
 
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

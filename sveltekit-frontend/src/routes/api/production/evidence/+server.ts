@@ -16,7 +16,7 @@ interface EvidenceItem {
   file_hash?: string;
   status: 'pending' | 'processing' | 'processed' | 'failed';
   extracted_text?: string;
-  smart_detection_results?: any[];
+  smart_detection_results?: unknown[];
   created_at: string;
   updated_at: string;
 }
@@ -27,7 +27,7 @@ interface ProcessingJob {
   job_type: string;
   status: 'queued' | 'processing' | 'completed' | 'failed';
   progress: number;
-  result?: any;
+  result?: unknown;
   error_message?: string;
   created_at: string;
 }

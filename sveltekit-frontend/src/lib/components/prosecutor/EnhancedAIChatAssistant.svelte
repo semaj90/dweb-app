@@ -3,7 +3,7 @@ Enhanced AI Chat Assistant for Prosecutors
 Features: Self-prompting, elemental awareness (YOLO), enhanced RAG, local LLM
 -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state } from 'svelte';
 
   import type { Props } from "$lib/types/global";
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
@@ -474,7 +474,4 @@ ${caseId ? `I'm ready to assist with Case ${caseId}.` : 'Select a case to get st
   }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

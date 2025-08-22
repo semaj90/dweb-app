@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { SpeechService } from "$lib/services/speech-service";
 
 export async function POST({ request }) {

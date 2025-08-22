@@ -1,13 +1,12 @@
-// @ts-nocheck
 /**
  * AI Summarization Service with Embeddings Generation
  * Comprehensive document processing and analysis pipeline
  */
 import { ollamaCudaService } from "./ollama-cuda-service";
-import { db, {,   evidence,,   embeddingCache,,   cases, } from
-// Orphaned content: import { eq, sql, and, desc, isNotNull
+import { db, evidence, embeddingCache, cases } from "$lib/database/schema";
+import { eq, sql, and, desc, isNotNull } from "drizzle-orm";
 import type { AiAnalysisResult } from "$lib/schemas/file-upload";
-// Orphaned content: import {
+import { createHash } from "crypto";
 
 import { SystemMessage, HumanMessage } from "@langchain/core/messages";
 

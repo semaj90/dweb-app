@@ -1,6 +1,6 @@
 <!-- Enhanced RAG Demo Component with Semantic Analysis -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $state, $effect } from 'svelte';
 
   import { onMount } from 'svelte';
   import {
@@ -535,7 +535,4 @@ IN WITNESS WHEREOF, the parties have executed this MOU as of the date first writ
   }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Memory-Efficient VS Code Extension Orchestrator - DISABLED
  * This file has been temporarily disabled due to syntax errors.

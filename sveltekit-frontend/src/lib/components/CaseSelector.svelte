@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $state } from 'svelte';
 
   import { user } from "$lib/stores/user";
   import { Button } from "$lib/components/ui/button";
@@ -36,7 +36,4 @@ import type { CommonProps } from '$lib/types/common-props';
   </div>
 </Modal>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

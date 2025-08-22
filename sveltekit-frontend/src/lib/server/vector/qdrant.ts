@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // --- Qdrant passthroughs for admin API ---
 export async function getCollections() {
   const client = getQdrantClient();
@@ -107,7 +107,7 @@ export async function initializeCollections(): Promise<void> {
 interface SearchOptions {
   limit?: number;
   offset?: number;
-  filter?: any;
+  filter?: unknown;
   withPayload?: boolean;
   scoreThreshold?: number;
 }
@@ -115,7 +115,7 @@ interface SearchOptions {
 export async function searchCases(
   query: string,
   options: SearchOptions = {}
-): Promise<any[]> {
+): Promise<unknown[]> {
   const client = getQdrantClient();
   if (!client) {
     return [];
@@ -148,7 +148,7 @@ export async function searchCases(
 export async function searchEvidence(
   query: string,
   options: SearchOptions = {}
-): Promise<any[]> {
+): Promise<unknown[]> {
   const client = getQdrantClient();
   if (!client) {
     return [];

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { $props, $state } from 'svelte';
   import { goto } from '$app/navigation';
   import { browser } from '$app/environment';
   import { authService } from '$lib/stores/auth.svelte.js';
@@ -69,8 +70,8 @@
     <!-- Modern Authentication Dialog Component -->
     <ModernAuthForm 
       bind:mode={authMode}
-      open={showAuthDialog} onOpenChange={(open) => showAuthDialog = open}
-      onSuccess={handleAuthSuccess}
+      open={showAuthDialog} onopenchange={(open) => showAuthDialog = open}
+      onsuccess={handleAuthSuccess}
     />
 
     <div class="login-footer">
@@ -153,72 +154,6 @@
     color: #6b7280;
     font-size: 0.875rem;
   }
-.form-group {
-    margin-bottom: 1rem;
-  }
-
-  .form-group label {
-    display: block;
-    font-weight: 500;
-    color: #374151;
-    margin-bottom: 0.5rem;
-    font-size: 0.875rem;
-  }
-
-  .form-input {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #d1d5db;
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    transition: border-color 0.2s ease;
-  }
-
-  .form-input:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  }
-
-  .login-button {
-    width: 100%;
-    background: #3b82f6;
-    color: white;
-    border: none;
-    padding: 0.875rem;
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-  }
-
-  .login-button:hover:not(:disabled) {
-    background: #2563eb;
-  }
-
-  .login-button:disabled {
-    background: #9ca3af;
-    cursor: not-allowed;
-  }
-
-  .spinner {
-    width: 16px;
-    height: 16px;
-    border: 2px solid transparent;
-    border-top: 2px solid currentColor;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
-
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
 
   .login-footer {
     margin-top: 2rem;
@@ -296,16 +231,6 @@
     font-family: monospace;
   }
 
-  .field-error {
-    color: #dc2626;
-    font-size: 0.75rem;
-    margin-top: 0.25rem;
-  }
-
-  .form-input.error {
-    border-color: #dc2626;
-    box-shadow: 0 0 0 1px #dc2626;
-  }
 
   .login-links {
     display: flex;

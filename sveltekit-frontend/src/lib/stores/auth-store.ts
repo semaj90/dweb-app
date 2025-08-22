@@ -29,7 +29,7 @@ export interface Session {
   fresh: boolean;
   ipAddress?: string;
   userAgent?: string;
-  deviceInfo?: any;
+  deviceInfo?: unknown;
 }
 
 export interface AuthState {
@@ -44,8 +44,10 @@ export interface AuthState {
   lockoutUntil?: Date;
 }
 
-// Enhanced reactive auth store using Svelte 5 runes + XState
-let authState = $state<AuthState>({
+// Enhanced reactive auth store using Svelte stores + XState
+import { writable } from 'svelte/store';
+
+const authState = writable<AuthState>({
   user: null,
   session: null,
   isAuthenticated: false,
@@ -66,15 +68,18 @@ if (browser) {
   
   // Subscribe to machine state changes
   authActor.subscribe((state) => {
-    authState.machineState = state.value as string;
-    authState.user = state.context.user as User | null;
-    authState.session = state.context.session as Session | null;
-    authState.isAuthenticated = state.context.user !== null;
-    authState.isLoading = state.context.isLoading;
-    authState.error = state.context.error || null;
-    authState.twoFactorRequired = state.context.twoFactorRequired;
-    authState.loginAttempts = state.context.loginAttempts;
-    authState.lockoutUntil = state.context.lockoutUntil;
+    authState.update(currentState => ({
+      ...currentState,
+      machineState: state.value as string,
+      user: state.context.user as User | null,
+      session: state.context.session as Session | null,
+      isAuthenticated: state.context.user !== null,
+      isLoading: state.context.isLoading,
+      error: state.context.error || null,
+      twoFactorRequired: state.context.twoFactorRequired,
+      loginAttempts: state.context.loginAttempts,
+      lockoutUntil: state.context.lockoutUntil
+    }));
     
     // Handle side effects
     if (state.matches('authenticated')) {

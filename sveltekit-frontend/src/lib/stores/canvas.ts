@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { writable } from "svelte/store";
 // Orphaned content: import type { Evidence
 
@@ -6,7 +6,7 @@ import { writable } from "svelte/store";
 export const sidebarStore = writable({
   open: false,
   width: 320,
-  items: [] as any[],
+  items: [] as unknown[],
   searchQuery: "",
   loading: false,
 });
@@ -40,8 +40,8 @@ export const toolbarStore = writable({
 export const canvasStore = writable({
   width: 800,
   height: 600,
-  objects: [] as any[],
-  selectedObjects: [] as any[],
+  objects: [] as unknown[],
+  selectedObjects: [] as unknown[],
   clipboard: null as any,
   isDirty: false,
   isLoading: false,
@@ -57,7 +57,7 @@ export const aiStore = writable({
   prompt: "",
   response: "",
   isGenerating: false,
-  history: [] as any[],
+  history: [] as unknown[],
 });
 
 // File upload state

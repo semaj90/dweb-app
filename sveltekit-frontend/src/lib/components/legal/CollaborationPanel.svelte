@@ -3,7 +3,7 @@ Collaboration Panel Component
 Real-time collaboration interface for multiple investigators working on evidence custody
 -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state, $effect } from 'svelte';
 
   import { onMount } from 'svelte';
   import { Badge } from '$lib/components/ui/badge';

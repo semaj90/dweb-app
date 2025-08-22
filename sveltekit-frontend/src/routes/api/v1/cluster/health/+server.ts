@@ -5,8 +5,8 @@
 
 import { type RequestHandler,  json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types.js';
-import { productionServiceRegistry } from '../../../../../lib/services/production-service-registry.js';
-import { context7OrchestrationService } from '../../../../../lib/services/context7-orchestration-integration.js';
+import { productionServiceRegistry } from '$lib/../../../../lib/services/production-service-registry.js';
+import { context7OrchestrationService } from '$lib/../../../../lib/services/context7-orchestration-integration.js';
 
 export const GET: RequestHandler = async ({ url }) => {
   const includeMetrics = url.searchParams.get('metrics') === 'true';

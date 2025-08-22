@@ -44,7 +44,7 @@ async function httpCheck(url: string): Promise<HttpCheck> {
   try {
     const r = await fetch(url, { method: "GET" });
     return { url, ok: r.ok, status: r.status };
-  } catch (e: unknown) {
+  } catch (e: any) {
     return {
       url,
       ok: false,

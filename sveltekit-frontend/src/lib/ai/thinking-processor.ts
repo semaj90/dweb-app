@@ -109,7 +109,7 @@ export class ThinkingProcessor {
   /**
    * Extracts JSON from text content
    */
-  private static extractJSON(text: string): any {
+  private static extractJSON(text: string): unknown {
     try {
       const jsonMatch = text.match(/\{[\s\S]*\}/);
       return jsonMatch ? JSON.parse(jsonMatch[0]) : null;
@@ -183,7 +183,7 @@ export class ThinkingProcessor {
   /**
    * Gets analysis history for a document
    */
-  static async getAnalysisHistory(options: { evidenceId?: string; caseId?: string; limit?: number }): Promise<any[]> {
+  static async getAnalysisHistory(options: { evidenceId?: string; caseId?: string; limit?: number }): Promise<unknown[]> {
     const params = new URLSearchParams();
     if (options.evidenceId) params.append('evidenceId', options.evidenceId);
     if (options.caseId) params.append('caseId', options.caseId);

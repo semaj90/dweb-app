@@ -1,54 +1,68 @@
-<!--
-  Login Page - Legal AI Platform
-  Enhanced with GPU security analysis and XState integration
--->
 <script lang="ts">
-  import LoginForm from '$lib/components/auth/LoginForm.svelte';
-  import * as Card from '$lib/components/ui/card';
-  import { Shield } from 'lucide-svelte';
-  
-  interface Props {
-    data: any;
-  }
-  
-  let { data }: Props = $props();
+  import { $props } from 'svelte';
+  let { data } = $props();
+  let { form } = $props();
 </script>
 
 <svelte:head>
-  <title>Sign In - Legal AI Platform</title>
-  <meta name="description" content="Secure login for legal professionals using GPU-enhanced authentication" />
+  <title>Login - Legal AI Platform</title>
 </svelte:head>
 
-<div class="min-h-screen flex items-center justify-center bg-background px-4">
-  <div class="w-full max-w-md space-y-6">
-    <!-- Header -->
-    <div class="text-center space-y-2">
-      <div class="flex items-center justify-center mb-4">
-        <Shield class="h-10 w-10 text-primary mr-3" />
-        <h1 class="text-3xl font-bold">Legal AI Platform</h1>
+<div class="min-h-screen flex items-center justify-center bg-gray-900 px-4">
+  <div class="w-full max-w-md">
+    <div class="bg-gray-800 p-8 rounded-lg border border-gray-700">
+      <h1 class="text-3xl font-bold text-center text-yellow-400 mb-8">
+        Legal AI Platform
+      </h1>
+      
+      {#if form?.error}
+        <div class="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded mb-4">
+          {form.error}
+        </div>
+      {/if}
+
+      <form method="POST" class="space-y-6">
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-300 mb-2">
+            Email
+          </label>
+          <input
+            type="email"
+            name="email"
+            id="email"
+            required
+            class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-yellow-400"
+            placeholder="Enter your email"
+          />
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-300 mb-2">
+            Password
+          </label>
+          <input
+            type="password"
+            name="password"
+            id="password"
+            required
+            class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-yellow-400"
+            placeholder="Enter your password"
+          />
+        </div>
+
+        <button
+          type="submit"
+          class="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded transition-colors"
+        >
+          Sign In
+        </button>
+      </form>
+
+      <div class="mt-6 text-center">
+        <p class="text-gray-400 text-sm">
+          Demo: Use any email and password to login
+        </p>
       </div>
-      <p class="text-muted-foreground">
-        Secure access for legal professionals
-      </p>
-    </div>
-
-    <!-- Login Form -->
-    <LoginForm 
-      {data} 
-      enableGPUAuth={true}
-      showRegistration={true}
-    />
-
-    <!-- Footer -->
-    <div class="text-center text-sm text-muted-foreground">
-      <p>
-        Protected by GPU-enhanced security analysis
-      </p>
-      <p class="mt-2">
-        <a href="/legal/privacy" class="hover:underline">Privacy Policy</a> • 
-        <a href="/legal/terms" class="hover:underline">Terms of Service</a> • 
-        <a href="/support" class="hover:underline">Support</a>
-      </p>
     </div>
   </div>
 </div>

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import type { User } from "./user";
 // Orphaned content: import type { InferInsertModel, InferSelectModel
 import {
@@ -118,7 +118,7 @@ export interface CaseWithRelations extends DatabaseCase {
   criminal?: Criminal;
   evidence?: DatabaseEvidence[];
   assignedTo?: User;
-  documents?: any[];
+  documents?: unknown[];
 }
 
 // User with profile

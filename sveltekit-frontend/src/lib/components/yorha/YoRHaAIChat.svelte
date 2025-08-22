@@ -1,13 +1,12 @@
 <!-- YoRHa AI Chat Component with Enhanced RAG Integration -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { onMount } from 'svelte';
   import { writable } from 'svelte/store';
   import { aiChatStore } from '$lib/stores/ai-chat-store';
 
   // Chat state
-  let messages = writable<any[]>([]);
+  let messages = writable<unknown[]>([]);
   let currentMessage = writable('');
   let isTyping = writable(false);
   let isConnected = writable(false);
@@ -433,7 +432,4 @@ ${error.message}
     background: var(--yorha-accent-cool);
   }
 </style>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

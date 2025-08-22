@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { createEventDispatcher, onMount } from 'svelte';
+  import { $props } from 'svelte';
   import { writable } from 'svelte/store';
   
   const dispatch = createEventDispatcher();

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { error, json } from "@sveltejs/kit";
 mkdir, rename
 import { tmpdir } from "os";

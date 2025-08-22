@@ -2,9 +2,9 @@
 // File: AIAssistantButton.svelte
 
 <script>
-import type { CommonProps } from '$lib/types/common-props';
 
   import { createEventDispatcher } from 'svelte';
+  import { $props } from 'svelte';
   import { Button } from 'bits-ui';
   import { Badge } from 'bits-ui';
   import { Loader2, Brain, Zap, AlertTriangle } from 'lucide-svelte';

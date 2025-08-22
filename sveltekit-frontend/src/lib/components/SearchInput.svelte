@@ -1,24 +1,30 @@
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+<script context="module" lang="ts">
+	import { $props, $state } from 'svelte';
+	// module imports kept; rely on global ambient types for runes to avoid illegal-declaration
+	export {};
+</script>
 
-  interface Props extends CommonProps {
-    onsearch?: (event?: any) => void;
+<script lang="ts">
+
+
+  interface Props {
+    onsearch?: (event?: unknown) => void;
   }
   let {
-    placeholder = 'Search...',
-    value = '',
-    debounceTime = 300
+	placeholder = 'Search...',
+	value = $state(''),
+	debounceTime = 300
   }: Props = $props();
 
 
 
 		import { Search, X } from 'lucide-svelte';
 
-			
-	
+
+
 	let debounceTimer: NodeJS.Timeout;
 	let inputElement: HTMLInputElement;
-	let isFocused = false;
+	let isFocused = $state(false);
 
 	function handleInput() {
 		clearTimeout(debounceTimer);
@@ -51,7 +57,7 @@ import type { CommonProps } from '$lib/types/common-props';
 	<div class="space-y-4">
 		<Search size={18} />
 	</div>
-	
+
 	<input
 		bind:this={inputElement}
 		bind:value
@@ -64,7 +70,7 @@ import type { CommonProps } from '$lib/types/common-props';
 		onblur={handleBlur}
 		aria-label="Search"
 	/>
-	
+
 	{#if value}
 		<button
 			class="space-y-4"

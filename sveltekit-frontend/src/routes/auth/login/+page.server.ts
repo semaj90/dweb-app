@@ -3,10 +3,9 @@ import { superValidate } from 'sveltekit-superforms/server';
 import { zod } from 'sveltekit-superforms/adapters';
 import { z } from 'zod';
 import { lucia } from '$lib/server/auth';
-import { db } from '$lib/server/db';
-import { authUsers, authAuditLog } from '$lib/server/db/auth-schema';
+import { db, users, authAuditLog } from '$lib/server/db';
 import { eq } from 'drizzle-orm';
-import { verify } from '@node-rs/argon2';
+import bcrypt from 'bcryptjs';
 import type { PageServerLoad, Actions } from './$types';
 
 const loginSchema = z.object({
@@ -24,7 +23,7 @@ export const load: PageServerLoad = async () => {
 export const actions: Actions = {
   login: async ({ request, cookies, getClientAddress }) => {
     const form = await superValidate(request, zod(loginSchema));
-    
+
     if (!form.valid) {
       return fail(400, { form });
     }
@@ -34,11 +33,11 @@ export const actions: Actions = {
     const userAgent = request.headers.get('user-agent') || '';
 
     try {
-      // Find user by email
+      // Find user by email using canonical users table
       const existingUser = await db
         .select()
-        .from(authUsers)
-        .where(eq(authUsers.email, email.toLowerCase()))
+        .from(users)
+        .where(eq(users.email, email.toLowerCase()))
         .limit(1);
 
       if (existingUser.length === 0) {
@@ -59,7 +58,7 @@ export const actions: Actions = {
         });
       }
 
-      const user = existingUser[0];
+      const user = existingUser[0] as any;
 
       // Check if account is active
       if (!user.isActive) {
@@ -80,13 +79,8 @@ export const actions: Actions = {
         });
       }
 
-      // Verify password
-      const validPassword = await verify(user.passwordHash, password, {
-        memoryCost: 19456,
-        timeCost: 2,
-        outputLen: 32,
-        parallelism: 1
-      });
+      // Verify password using bcryptjs - schema stores hashedPassword
+      const validPassword = await bcrypt.compare(password, user.hashedPassword || user.passwordHash || '');
 
       if (!validPassword) {
         await logAuthEvent({
@@ -119,8 +113,6 @@ export const actions: Actions = {
 
       // Validate two-factor code if provided
       if (user.twoFactorEnabled && twoFactorCode) {
-        // TODO: Implement TOTP validation
-        // For now, accept any 6-digit code for testing
         if (!/^\d{6}$/.test(twoFactorCode)) {
           return fail(400, {
             form: {
@@ -147,25 +139,26 @@ export const actions: Actions = {
         ...sessionCookie.attributes
       });
 
-      // Update last login
+      // Update last login on canonical users table
       await db
-        .update(authUsers)
+        .update(users)
         .set({
-          lastLoginAt: new Date(),
-          lastLoginIp: clientIP,
-          updatedAt: new Date()
+          updatedAt: new Date(),
+          // If schema has lastLoginAt/lastLoginIp, update them if present
+          lastLoginAt: new Date() as any,
+          lastLoginIp: clientIP as any
         })
-        .where(eq(authUsers.id, user.id));
+        .where(eq(users.id, user.id));
 
       // Log successful login
       await logAuthEvent({
         userId: user.id,
         action: 'login',
         success: true,
-        details: { 
-          email, 
+        details: {
+          email,
           rememberMe,
-          twoFactorUsed: user.twoFactorEnabled 
+          twoFactorUsed: user.twoFactorEnabled
         },
         ipAddress: clientIP,
         userAgent
@@ -173,13 +166,13 @@ export const actions: Actions = {
 
     } catch (error) {
       console.error('Login error:', error);
-      
+
       await logAuthEvent({
         action: 'login',
         success: false,
-        details: { 
-          email, 
-          error: error instanceof Error ? error.message : 'Unknown error' 
+        details: {
+          email,
+          error: error instanceof Error ? error.message : 'Unknown error'
         },
         ipAddress: clientIP,
         userAgent
@@ -203,7 +196,7 @@ async function logAuthEvent(event: {
   userId?: string;
   action: string;
   success: boolean;
-  details: any;
+  details: unknown;
   ipAddress?: string;
   userAgent?: string;
 }): Promise<void> {

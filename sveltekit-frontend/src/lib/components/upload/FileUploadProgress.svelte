@@ -1,10 +1,10 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
-  interface Props extends CommonProps {
-    progress?: any;
-    fileName?: any;
-    label?: any;
+  interface Props {
+    progress?: unknown;
+    fileName?: unknown;
+    label?: unknown;
   }
   let {
     progress = 0,

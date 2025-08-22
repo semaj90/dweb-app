@@ -1,5 +1,5 @@
 import { dev } from "$app/environment";
-// @ts-nocheck
+
 
 // Performance monitoring for production
 if (!dev && typeof window !== "undefined") {

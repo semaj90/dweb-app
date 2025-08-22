@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import { $state } from 'svelte';
   let items: any[] = $state([]);
   let count = $state(0);
   onMount(async () => {

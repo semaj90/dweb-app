@@ -1,17 +1,18 @@
-// @ts-nocheck
+
 // Enhanced Vector Service - Auto-generated from 11 files
 // Generated: 2025-07-25T03:29:35.246Z
 // Features detected: hasOllama, hasQdrant, hasRedis, hasPgVector, hasEmbeddings
 
 import { QdrantClient } from "@qdrant/js-client-rest";
-// Orphaned content: import Redis from "ioredis";
+import Redis from "ioredis";
 import {
-
-{ cases, evidence, criminals }, {
-embeddingCache,
-  vectorMetadata,
+  cases,
+  evidence,
+  criminals,
+  embeddingCache,
+  vectorMetadata
 } from "../db/schema-postgres-enhanced.js";
-// Orphaned content: import { eq, sql
+import { eq, sql } from "drizzle-orm";
 
 export class EnhancedVectorService {
   private qdrant: QdrantClient;

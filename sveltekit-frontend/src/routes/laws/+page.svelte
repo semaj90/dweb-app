@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { $props, $state } from 'svelte';
   import {
     Card,
     CardContent,
@@ -92,9 +93,9 @@
 
   <!-- AI Toolbar -->
   <AIToolbar
-    onAISearch={handleAISearchResult}
-    onAIChat={handleAIChatResult}
-    onAISummarize={handleAISummarizeResult} />
+    onaisearch={handleAISearchResult}
+    onaichat={handleAIChatResult}
+    onaisummarize={handleAISummarizeResult} />
 
   <!-- Enhanced Fuse.js Search -->
   <EnhancedFuseSearch maxResults={10} />

@@ -1,13 +1,23 @@
-// @ts-nocheck
-import type { User } from "$lib/types/user";
-// Orphaned content: /**
- * Security utilities for the Detective Mode app
+/**
+ * Security utilities for the Legal AI Platform
  * Provides authentication, authorization, data protection, and security monitoring
+ * Enhanced for legal document handling and attorney-client privilege protection
  */
 
-import { browser
-crypto from "crypto";
-import { EventEmitter, , // Security configuration, export interface SecurityConfig {,   maxFileSize: number;,   allowedFileTypes: string[];,   sessionTimeout: number;,   maxLoginAttempts: number;,   passwordMinLength: number;,   requireMFA: boolean; } from
+import { browser } from "$app/environment";
+import type { User } from "$lib/types/user";
+
+// Security configuration
+export interface SecurityConfig {
+  maxFileSize: number;
+  allowedFileTypes: string[];
+  sessionTimeout: number;
+  maxLoginAttempts: number;
+  passwordMinLength: number;
+  requireMFA: boolean;
+  encryptionKey?: string;
+}
+
 export const DEFAULT_SECURITY_CONFIG: SecurityConfig = {
   maxFileSize: 50 * 1024 * 1024, // 50MB
   allowedFileTypes: [
@@ -22,6 +32,8 @@ export const DEFAULT_SECURITY_CONFIG: SecurityConfig = {
     "video/webm",
     "audio/mp3",
     "audio/wav",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/msword",
   ],
   sessionTimeout: 30 * 60 * 1000, // 30 minutes
   maxLoginAttempts: 5,
@@ -39,7 +51,11 @@ export interface UserSession {
   loginTime: number;
   lastActivity: number;
   sessionId: string;
+  isLegalProfessional?: boolean;
+  barNumber?: string;
+  jurisdiction?: string;
 }
+
 export interface SecurityEvent {
   type:
     | "login"
@@ -47,14 +63,22 @@ export interface SecurityEvent {
     | "access_denied"
     | "suspicious_activity"
     | "file_upload"
-    | "data_export";
+    | "data_export"
+    | "privileged_access"
+    | "evidence_access";
   userId?: string;
   timestamp: number;
   details: Record<string, any>;
   severity: "low" | "medium" | "high" | "critical";
   ipAddress?: string;
   userAgent?: string;
+  legalContext?: {
+    caseId?: string;
+    clientId?: string;
+    isPrivileged?: boolean;
+  };
 }
+
 // Session management
 class SessionManager {
   private session: UserSession | null = null;
@@ -64,6 +88,7 @@ class SessionManager {
   constructor(config: SecurityConfig = DEFAULT_SECURITY_CONFIG) {
     this.config = config;
   }
+
   startSession(
     user: Omit<UserSession, "loginTime" | "lastActivity" | "sessionId">,
   ): UserSession {
@@ -80,12 +105,13 @@ class SessionManager {
       type: "login",
       userId: user.userId,
       timestamp: now,
-      details: { username: user.name, role: user.role },
+      details: { username: user.username, role: user.role },
       severity: "low",
     });
 
     return this.session;
   }
+
   endSession(): void {
     if (this.session) {
       this.logSecurityEvent({
@@ -102,11 +128,13 @@ class SessionManager {
       this.sessionCheckInterval = null;
     }
   }
+
   updateActivity(): void {
     if (this.session) {
       this.session.lastActivity = Date.now();
     }
   }
+
   isSessionValid(): boolean {
     if (!this.session) return false;
 
@@ -115,15 +143,26 @@ class SessionManager {
 
     return timeSinceActivity < this.config.sessionTimeout;
   }
+
   getSession(): UserSession | null {
     return this.isSessionValid() ? this.session : null;
   }
+
   hasPermission(permission: string): boolean {
     return this.session?.permissions.includes(permission) || false;
   }
-  private generateSessionId(): string {
-    return crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36);
+
+  hasLegalPrivilege(): boolean {
+    return this.session?.isLegalProfessional || false;
   }
+
+  private generateSessionId(): string {
+    if (browser && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+    return Math.random().toString(36) + Date.now().toString(36);
+  }
+
   private startSessionMonitoring(): void {
     if (!browser) return;
 
@@ -134,19 +173,21 @@ class SessionManager {
       }
     }, 60000); // Check every minute
   }
+
   private logSecurityEvent(event: SecurityEvent): void {
     console.log("Security Event:", event);
     // In a real app, this would send to a security monitoring service
   }
 }
+
 // Singleton session manager
 export const sessionManager = new SessionManager();
 
-// Data protection utilities
+// Data protection utilities for legal documents
 export function encryptSensitiveData(data: string, key?: string): string {
   // Simple XOR cipher for demo purposes
   // In production, use proper encryption like AES
-  if (!key) key = "detective-mode-key-2024";
+  if (!key) key = "legal-ai-security-key-2024";
 
   let result = "";
   for (let i = 0; i < data.length; i++) {
@@ -156,12 +197,13 @@ export function encryptSensitiveData(data: string, key?: string): string {
   }
   return btoa(result);
 }
+
 export function decryptSensitiveData(
   encryptedData: string,
   key?: string,
 ): string {
   try {
-    if (!key) key = "detective-mode-key-2024";
+    if (!key) key = "legal-ai-security-key-2024";
 
     const data = atob(encryptedData);
     let result = "";
@@ -175,11 +217,13 @@ export function decryptSensitiveData(
     return "";
   }
 }
-// Hash generation for file integrity
+
+// Hash generation for file integrity and evidence chain
 export async function generateFileHash(file: File): Promise<string> {
   if (!browser || !crypto.subtle) {
     return Math.random().toString(36); // Fallback for non-browser environments
   }
+
   try {
     const arrayBuffer = await file.arrayBuffer();
     const hashBuffer = await crypto.subtle.digest("SHA-256", arrayBuffer);
@@ -190,6 +234,7 @@ export async function generateFileHash(file: File): Promise<string> {
     return Math.random().toString(36);
   }
 }
+
 // Input sanitization for security
 export function sanitizeForSQL(input: string): string {
   return input
@@ -199,11 +244,23 @@ export function sanitizeForSQL(input: string): string {
     .replace(/\*\//g, "")
     .trim();
 }
+
 export function sanitizeForHTML(input: string): string {
+  if (!browser) {
+    // Server-side fallback
+    return input
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
   const div = document.createElement("div");
   div.textContent = input;
   return div.innerHTML;
 }
+
 export function sanitizeForJavaScript(input: string): string {
   return input.replace(/[<>'"&]/g, (match) => {
     const entityMap: Record<string, string> = {
@@ -216,6 +273,7 @@ export function sanitizeForJavaScript(input: string): string {
     return entityMap[match];
   });
 }
+
 // Generic input sanitization function
 export function sanitizeInput(
   input: string,
@@ -232,28 +290,61 @@ export function sanitizeInput(
       return sanitizeForHTML(input);
   }
 }
-// File security checks
+
+// File security checks with legal document considerations
 export interface FileSecurityResult {
   isSafe: boolean;
   issues: string[];
   risk: "low" | "medium" | "high";
+  isLegalDocument?: boolean;
+  requiresPrivilegedAccess?: boolean;
 }
+
 export function checkFileSecurityAI(file: File): FileSecurityResult {
   const issues: string[] = [];
   let risk: "low" | "medium" | "high" = "low";
+  let isLegalDocument = false;
+  let requiresPrivilegedAccess = false;
 
   // File size check
   if (file.size > DEFAULT_SECURITY_CONFIG.maxFileSize) {
     issues.push("File size exceeds maximum allowed");
     risk = "medium";
   }
+
   // File type check
   if (!DEFAULT_SECURITY_CONFIG.allowedFileTypes.includes(file.type)) {
     issues.push("File type not allowed");
     risk = "high";
   }
-  // Filename security check
+
+  // Legal document detection
   const filename = file.name.toLowerCase();
+  const legalPatterns = [
+    /contract/,
+    /agreement/,
+    /brief/,
+    /pleading/,
+    /deposition/,
+    /evidence/,
+    /discovery/,
+    /confidential/,
+    /privileged/,
+    /attorney/,
+    /legal/,
+  ];
+
+  for (const pattern of legalPatterns) {
+    if (pattern.test(filename)) {
+      isLegalDocument = true;
+      if (filename.includes("privileged") || filename.includes("confidential")) {
+        requiresPrivilegedAccess = true;
+      }
+      break;
+    }
+  }
+
+  // Filename security check
   const suspiciousPatterns = [
     /\.exe$/,
     /\.bat$/,
@@ -275,19 +366,24 @@ export function checkFileSecurityAI(file: File): FileSecurityResult {
       break;
     }
   }
+
   // Double extension check
   const parts = filename.split(".");
   if (parts.length > 2) {
     issues.push("Multiple file extensions detected");
     risk = "medium";
   }
+
   return {
     isSafe: issues.length === 0,
     issues,
     risk,
+    isLegalDocument,
+    requiresPrivilegedAccess,
   };
 }
-// Rate limiting
+
+// Rate limiting for security
 class RateLimiter {
   private attempts: Map<string, number[]> = new Map();
 
@@ -312,10 +408,12 @@ class RateLimiter {
     if (recentAttempts.length >= maxAttempts) {
       return false;
     }
+
     // Add current attempt
     recentAttempts.push(now);
     return true;
   }
+
   getRemainingAttempts(
     identifier: string,
     maxAttempts: number,
@@ -328,13 +426,15 @@ class RateLimiter {
 
     return Math.max(0, maxAttempts - recentAttempts.length);
   }
+
   reset(identifier: string): void {
     this.attempts.delete(identifier);
   }
 }
+
 export const rateLimiter = new RateLimiter();
 
-// Security monitoring
+// Security monitoring with legal context
 export function logSecurityEvent(
   event: Omit<SecurityEvent, "timestamp">,
 ): void {
@@ -347,6 +447,7 @@ export function logSecurityEvent(
     fullEvent.ipAddress = "client-side"; // Would get real IP server-side
     fullEvent.userAgent = navigator.userAgent;
   }
+
   console.log("Security Event:", fullEvent);
 
   // Store locally for demo (in production, send to security service)
@@ -360,6 +461,7 @@ export function logSecurityEvent(
     localStorage.setItem("security_events", JSON.stringify(events));
   }
 }
+
 export function getSecurityEvents(): SecurityEvent[] {
   if (!browser) return [];
 
@@ -369,6 +471,7 @@ export function getSecurityEvents(): SecurityEvent[] {
     return [];
   }
 }
+
 // Content Security Policy helpers
 export function generateCSPNonce(): string {
   if (browser && crypto.randomUUID) {
@@ -376,6 +479,7 @@ export function generateCSPNonce(): string {
   }
   return Math.random().toString(36).substring(2);
 }
+
 // Password security
 export function checkPasswordStrength(password: string): {
   score: number;
@@ -406,6 +510,7 @@ export function checkPasswordStrength(password: string): {
 
   return { score, feedback, isStrong };
 }
+
 // Secure random string generation
 export function generateSecureToken(length: number = 32): string {
   if (browser && crypto.getRandomValues) {
@@ -415,6 +520,7 @@ export function generateSecureToken(length: number = 32): string {
       "",
     );
   }
+
   // Fallback for non-secure environments
   let result = "";
   const chars = "abcdef0123456789";
@@ -423,15 +529,22 @@ export function generateSecureToken(length: number = 32): string {
   }
   return result;
 }
-// Evidence chain of custody protection
+
+// Evidence chain of custody protection for legal compliance
 export interface ChainOfCustodyEvent {
   timestamp: number;
-  action: "created" | "accessed" | "modified" | "transferred" | "analyzed";
+  action: "created" | "accessed" | "modified" | "transferred" | "analyzed" | "sealed";
   userId: string;
   details: string;
   hash?: string;
   signature?: string;
+  legalContext?: {
+    caseId?: string;
+    isPrivileged?: boolean;
+    witnessPresent?: boolean;
+  };
 }
+
 export function addChainOfCustodyEvent(
   evidenceId: string,
   event: Omit<ChainOfCustodyEvent, "timestamp">,
@@ -443,7 +556,7 @@ export function addChainOfCustodyEvent(
 
   // In a real app, this would be cryptographically signed and stored immutably
   logSecurityEvent({
-    type: "suspicious_activity",
+    type: "evidence_access",
     userId: event.userId,
     details: {
       action: "chain_of_custody",
@@ -451,10 +564,12 @@ export function addChainOfCustodyEvent(
       custodyEvent: fullEvent,
     },
     severity: "low",
+    legalContext: event.legalContext,
   });
 }
-// Data export security
-export function secureDataExport(data: any, userId: string): void {
+
+// Data export security with legal privilege protection
+export function secureDataExport(data: any, userId: string, legalContext?: unknown): void {
   logSecurityEvent({
     type: "data_export",
     userId,
@@ -465,8 +580,10 @@ export function secureDataExport(data: any, userId: string): void {
         Array.isArray(data) && data.length > 0 ? Object.keys(data[0]) : [],
     },
     severity: "medium",
+    legalContext,
   });
 }
+
 // XSS protection
 export function escapeHTML(unsafe: string): string {
   return unsafe
@@ -476,6 +593,7 @@ export function escapeHTML(unsafe: string): string {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 }
+
 // CSRF protection (client-side helpers)
 export function getCSRFToken(): string {
   if (browser) {
@@ -486,7 +604,90 @@ export function getCSRFToken(): string {
   }
   return generateSecureToken(32);
 }
+
 export function addCSRFToken(formData: FormData): FormData {
   formData.append("csrf_token", getCSRFToken());
   return formData;
+}
+
+// Legal-specific security functions
+export function checkAttorneyClientPrivilege(
+  userId: string,
+  documentId: string,
+  action: string,
+): boolean {
+  const session = sessionManager.getSession();
+  
+  if (!session?.isLegalProfessional) {
+    logSecurityEvent({
+      type: "access_denied",
+      userId,
+      details: {
+        reason: "non_legal_professional_access",
+        documentId,
+        action,
+      },
+      severity: "high",
+    });
+    return false;
+  }
+
+  return true;
+}
+
+export function validateLegalAccess(
+  requiredPermission: string,
+  caseId?: string,
+): boolean {
+  const session = sessionManager.getSession();
+  
+  if (!session) {
+    return false;
+  }
+
+  const hasPermission = session.permissions.includes(requiredPermission);
+  
+  if (!hasPermission) {
+    logSecurityEvent({
+      type: "access_denied",
+      userId: session.userId,
+      details: {
+        requiredPermission,
+        caseId,
+        userPermissions: session.permissions,
+      },
+      severity: "medium",
+      legalContext: { caseId },
+    });
+  }
+
+  return hasPermission;
+}
+
+// Privileged document access tracking
+export function trackPrivilegedAccess(
+  documentId: string,
+  action: "view" | "edit" | "download" | "print",
+  caseId?: string,
+): void {
+  const session = sessionManager.getSession();
+  
+  if (session) {
+    logSecurityEvent({
+      type: "privileged_access",
+      userId: session.userId,
+      details: {
+        documentId,
+        action,
+        caseId,
+        isLegalProfessional: session.isLegalProfessional,
+        barNumber: session.barNumber,
+      },
+      severity: "medium",
+      legalContext: {
+        caseId,
+        isPrivileged: true,
+      },
+    });
+  }
 }

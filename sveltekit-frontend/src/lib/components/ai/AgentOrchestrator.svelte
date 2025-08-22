@@ -3,7 +3,7 @@ Agent Orchestrator Component
 Manages AutoGen and CrewAI multi-agent workflows
 -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state } from 'svelte';
 
   import { onMount, onDestroy } from 'svelte';
   import { writable } from 'svelte/store';
@@ -44,7 +44,7 @@ import type { CommonProps } from '$lib/types/common-props';
     CrewTaskResult
   } from '$lib/services/crewai-service.js';
 
-  interface Props extends CommonProps {
+  interface Props {
     defaultWorkflow?: string;
     showAdvancedControls?: boolean;
     autoStartServices?: boolean;

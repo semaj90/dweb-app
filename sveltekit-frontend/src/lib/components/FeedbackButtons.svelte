@@ -1,5 +1,4 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   let { sessionId }: string;
   let { query }: string;
@@ -65,7 +64,4 @@ import type { CommonProps } from '$lib/types/common-props';
 
 
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

@@ -2,6 +2,7 @@
 <!-- Complete integration of XState, WebGL, Enhanced RAG, and Context7 MCP -->
 
 <script lang="ts">
+  import { $state } from 'svelte';
   import { onMount, onDestroy } from 'svelte';
   import { Button } from '$lib/components/ui/button';
   import { Card } from '$lib/components/ui/card';
@@ -34,8 +35,8 @@
 
   // Demo data
   let searchQuery = $state('contract liability clauses');
-  let searchResults = $state<any[]>([]);
-  let recommendations = $state<any[]>([]);
+  let searchResults = $state<unknown[]>([]);
+  let recommendations = $state<unknown[]>([]);
   let systemHealth = $state(0);
 
   // Initialize Phase 13 system

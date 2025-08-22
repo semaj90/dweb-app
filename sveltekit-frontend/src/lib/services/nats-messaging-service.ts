@@ -30,12 +30,12 @@ export interface MessageHandler {
 // Generic types for NATS compatibility
 interface NATSConnection {
   publish(subject: string, data: Uint8Array): void;
-  subscribe(subject: string): any;
+  subscribe(subject: string): unknown;
   request(subject: string, data: Uint8Array, options?: { timeout: number }): Promise<any>;
   drain(): Promise<void>;
   closed(): Promise<any>;
   isClosed(): boolean;
-  info?: any;
+  info?: unknown;
 }
 
 interface NATSSubscription {
@@ -45,7 +45,7 @@ interface NATSSubscription {
 
 interface NATSCodec {
   encode(data: any): Uint8Array;
-  decode(data: Uint8Array): any;
+  decode(data: Uint8Array): unknown;
 }
 
 // Lightweight EventEmitter (browser + Node)
@@ -304,7 +304,7 @@ export class NATSMessagingService extends EventEmitter {
   /**
    * Get connection info
    */
-  getConnectionInfo(): any {
+  getConnectionInfo(): unknown {
     return this.connection?.info;
   }
 
@@ -336,7 +336,7 @@ export class NATSMessagingService extends EventEmitter {
   }
 
   // Real-time search
-  async sendSearchQuery(query: string, filters?: any): Promise<any> {
+  async sendSearchQuery(query: string, filters?: unknown): Promise<any> {
     return await this.request(this.subjects.SEARCH_QUERY, { query, filters });
   }
 

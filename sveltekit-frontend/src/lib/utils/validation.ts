@@ -1,5 +1,5 @@
 import type { Case } from "$lib/types";
-// @ts-nocheck
+
 
 /**
  * Comprehensive validation utilities for the Detective Mode app
@@ -11,7 +11,7 @@ export interface ValidationResult {
   isValid: boolean;
   errors: string[];
   warnings: string[];
-  value?: any;
+  value?: unknown;
 }
 export interface ValidationRule<T> {
   name: string;
@@ -32,7 +32,7 @@ export function createValidationResult(
   isValid: boolean,
   errors: string[] = [],
   warnings: string[] = [],
-  value?: any,
+  value?: unknown,
 ): ValidationResult {
   return { isValid, errors, warnings, value };
 }

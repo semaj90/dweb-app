@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { $state } from 'svelte';
   import { Badge } from '$lib/components/ui/badge';
   import { Button } from '$lib/components/ui/button';
   import {
@@ -34,7 +35,7 @@
   let personalized = $state(false);
   let includeExplanation = $state(true);
   let searching = $state(false);
-  let results = $state<any[]>([]);
+  let results = $state<unknown[]>([]);
   let error = $state<string | null>(null);
 
   // Document type icons

@@ -1,17 +1,13 @@
 import { registerSchema } from "$lib/schemas/auth";
-// Orphaned content: import {
-
 import { users } from "$lib/server/db/schema-postgres";
-// Orphaned content: import {
-
+import { db } from "$lib/server/db";
+import { eq } from "drizzle-orm";
+import { hashPassword } from "$lib/server/lucia";
 import { fail, redirect } from "@sveltejs/kit";
-// Orphaned content: import {
-
 import type { JSONSchema7 } from "json-schema";
-// Orphaned content: import {
-message, superValidate
+import { message, superValidate } from "sveltekit-superforms";
 import { zod } from "sveltekit-superforms/adapters";
-// Orphaned content: import type { Actions, PageServerLoad
+import type { Actions, PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ locals }) => {
   if (locals.user) {
@@ -78,12 +74,9 @@ export const actions: Actions = {
         });
       }
 
-      const hashedPassword = await hash(form.data.password, {
-        memoryCost: 19456,
-        timeCost: 2,
-        outputLen: 32,
-        parallelism: 1,
-      });
+      const hashedPassword = await hashPassword(form.data.password);
+
+      const nameValue = String(form.data.name || '');
 
       const [newUser] = await db
         .insert(users)
@@ -91,8 +84,8 @@ export const actions: Actions = {
           email: form.data.email,
           hashedPassword,
           name: form.data.name,
-          firstName: form.data.name.split(" ")[0] || "",
-          lastName: form.data.name.split(" ").slice(1).join(" ") || "",
+          firstName: nameValue.split(" ")[0] || "",
+          lastName: nameValue.split(" ").slice(1).join(" ") || "",
           role: form.data.role,
           isActive: true,
         })

@@ -4,7 +4,7 @@ Main UI component for managing the complete custody workflow with real-time coll
 and AI-powered verification features.
 -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state, $derived } from 'svelte';
 
   import { onMount } from 'svelte';
   import { createActor } from 'xstate';
@@ -340,7 +340,7 @@ import type { CommonProps } from '$lib/types/common-props';
           <CardContent>
             <IntegrityVerification 
               {integrityStatus}
-              verificationResults={currentState.context.verificationResults}
+              verificationresults={currentState.context.verificationResults}
               originalHash={currentState.context.originalHash}
               currentHash={currentState.context.currentHash}
               aiAnalysis={currentState.context.aiAnalysis}
@@ -422,12 +422,12 @@ import type { CommonProps } from '$lib/types/common-props';
     <div class="space-y-6">
       {#if isCollaborationExpanded || activeCollaborators.length > 0}
         <CollaborationPanel 
-          collaborationSession={currentState.context.collaborationSession}
+          collaborationsession={currentState.context.collaborationSession}
           {activeCollaborators}
           {userId}
           {evidenceId}
           {wsConnection}
-          onAddAnnotation={(content, position) => {
+          onaddannotation={(content, position) => {
             custodyActor.send({
               type: 'ADD_ANNOTATION',
               userId,

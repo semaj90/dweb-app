@@ -1,16 +1,14 @@
 import stream from "stream";
-// @ts-nocheck
+
 /**
  * Ollama CUDA-Optimized Service
  * Production-ready service for managing Ollama with NVIDIA CUDA acceleration
  * Integrates with LangChain for advanced AI workflows
  */
 
-{ Ollama }, {
-ChatOllama } from "@langchain/ollama";
-// Orphaned content: import { OllamaEmbeddings
+import { Ollama, ChatOllama, OllamaEmbeddings } from "@langchain/ollama";
 import type { BaseMessage } from '@langchain/core/messages';
-// Orphaned content: import type { CallbackManagerForLLMRun
+import type { CallbackManagerForLLMRun } from '@langchain/core/callbacks/manager';
 
 export interface CudaConfig {
   enabled: boolean;

@@ -21,7 +21,7 @@ npm install
 TEST-FULL-SYSTEM.bat
 
 # Start development
-npm run dev
+npm run dev:full
 ```
 
 ## Code Patterns

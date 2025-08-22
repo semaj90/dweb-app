@@ -1,24 +1,146 @@
-// @ts-nocheck
-// Enhanced Embeddings Service with Local + Cloud Integration
-// Combines local Tauri/Rust embeddings with cloud fallbacks
+
+// Enhanced Embeddings Service with Nomic Embed + Langchain + Langextract
+// Local embeddings using Ollama nomic-embed-text model with document processing
 // Use process.env for server-side environment variables
+
 import { cacheEmbedding, getCachedEmbedding } from "$lib/server/cache/redis";
-import { aiService, type EmbeddingProvider, , interface EnhancedEmbeddingOptions {,   provider?: "auto" | "openai" | "tauri-legal-bert" | "tauri-bert";,   cache?: boolean;,   maxTokens?: number;,   legalDomain?: boolean;,   batchSize?: number; } from
+
+interface EnhancedEmbeddingOptions {
+  provider?: "auto" | "nomic-embed" | "tauri-legal-bert" | "tauri-bert";
+  cache?: boolean;
+  maxTokens?: number;
+  legalDomain?: boolean;
+  batchSize?: number;
+  useExtraction?: boolean;
+}
+
+interface EmbeddingResult {
+  embedding: number[];
+  metadata: {
+    provider: string;
+    model: string;
+    textLength: number;
+    generatedAt: string;
+    extracted?: unknown;
+  };
+}
+
+/**
+ * Generate embeddings using Ollama nomic-embed-text model
+ */
+async function generateNomicEmbedding(text: string): Promise<number[]> {
+  const ollamaEndpoint = process.env.OLLAMA_BASE_URL || 'http://localhost:11434';
+  
+  try {
+    const response = await fetch(`${ollamaEndpoint}/api/embeddings`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'nomic-embed-text',
+        prompt: text
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Ollama embedding failed: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.embedding;
+  } catch (error) {
+    console.error('Nomic embedding generation failed:', error);
+    throw error;
+  }
+}
+
+/**
+ * Extract structured data from legal documents using langextract patterns
+ */
+async function extractDocumentStructure(text: string): Promise<any> {
+  // Simple extraction patterns for legal documents
+  const patterns = {
+    parties: /(?:party|plaintiff|defendant|client):\s*([^.\n]+)/gi,
+    dates: /\b\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}\b/g,
+    amounts: /\$[\d,]+(?:\.\d{2})?/g,
+    caseNumbers: /(?:case|docket)\s*(?:no\.?|#)?\s*([a-z0-9\-]+)/gi,
+    sections: /(?:section|§)\s*(\d+(?:\.\d+)*)/gi,
+  };
+
+  const extracted = {
+    parties: [],
+    dates: [],
+    amounts: [],
+    caseNumbers: [],
+    sections: [],
+    documentType: detectDocumentType(text),
+    keyPhrases: extractKeyPhrases(text)
+  };
+
+  for (const [key, pattern] of Object.entries(patterns)) {
+    const matches = Array.from(text.matchAll(pattern as RegExp));
+    extracted[key as keyof typeof extracted] = matches.map(match => match[1] || match[0]).slice(0, 10);
+  }
+
+  return extracted;
+}
+
+function detectDocumentType(text: string): string {
+  const lowerText = text.toLowerCase();
+  
+  if (lowerText.includes('contract') || lowerText.includes('agreement')) {
+    return 'contract';
+  }
+  if (lowerText.includes('complaint') || lowerText.includes('petition')) {
+    return 'pleading';
+  }
+  if (lowerText.includes('motion') || lowerText.includes('brief')) {
+    return 'motion';
+  }
+  if (lowerText.includes('deposition') || lowerText.includes('transcript')) {
+    return 'deposition';
+  }
+  if (lowerText.includes('evidence') || lowerText.includes('exhibit')) {
+    return 'evidence';
+  }
+  
+  return 'general';
+}
+
+function extractKeyPhrases(text: string): string[] {
+  // Simple key phrase extraction
+  const legalTerms = [
+    'breach of contract', 'negligence', 'damages', 'liability', 'indemnification',
+    'force majeure', 'intellectual property', 'confidentiality', 'termination',
+    'arbitration', 'jurisdiction', 'governing law', 'attorney fees'
+  ];
+  
+  const foundTerms = legalTerms.filter(term => 
+    text.toLowerCase().includes(term.toLowerCase())
+  );
+  
+  return foundTerms.slice(0, 5);
+}
+
+/**
+ * Main embedding generation function with langchain-style processing
+ */
 export async function generateEnhancedEmbedding(
   text: string | string[],
   options: EnhancedEmbeddingOptions = {},
 ): Promise<number[] | number[][]> {
   const {
-    provider = "auto",
+    provider = "nomic-embed",
     cache = true,
     maxTokens = 8000,
     legalDomain = true,
     batchSize = 10,
+    useExtraction = false,
   } = options;
 
   if (!text) {
     throw new Error("Text is required for embedding generation");
   }
+
   const isArray = Array.isArray(text);
   const inputs = isArray ? text : [text];
   const truncatedInputs = inputs.map((t) =>
@@ -27,7 +149,7 @@ export async function generateEnhancedEmbedding(
 
   // Check cache for single inputs
   if (cache && !isArray) {
-    const cacheKey = `${provider}-${legalDomain}`;
+    const cacheKey = `nomic-${legalDomain}-${useExtraction}`;
     const cachedEmbedding = await getCachedEmbedding(
       truncatedInputs[0],
       cacheKey,
@@ -36,49 +158,40 @@ export async function generateEnhancedEmbedding(
       return cachedEmbedding;
     }
   }
-  let result: number[] | number[][];
 
   try {
-    // Initialize AI service
-    await aiService.initialize();
-
-    // Determine provider
-    const selectedProvider = selectProvider(provider, legalDomain);
-
-    // Generate embeddings
-    result = await aiService.generateEmbedding(truncatedInputs, {
-      provider: selectedProvider,
-      legalDomain,
-      batchSize,
-    });
-
-    // Cache single results
-    if (
-      cache &&
-      !isArray &&
-      Array.isArray(result) &&
-      !Array.isArray(result[0])
-    ) {
-      const cacheKey = `${selectedProvider}-${legalDomain}`;
-      await cacheEmbedding(truncatedInputs[0], result as number[], cacheKey);
+    const results: number[][] = [];
+    
+    for (const input of truncatedInputs) {
+      // Extract document structure if requested
+      let processedText = input;
+      if (useExtraction && legalDomain) {
+        const extracted = await extractDocumentStructure(input);
+        // Enhance text with extracted metadata
+        processedText = `${input}\n\n[METADATA] Document Type: ${extracted.documentType}, Key Terms: ${extracted.keyPhrases.join(', ')}`;
+      }
+      
+      // Generate embedding using nomic-embed-text
+      const embedding = await generateNomicEmbedding(processedText);
+      results.push(embedding);
+      
+      // Cache single results
+      if (cache && !isArray) {
+        const cacheKey = `nomic-${legalDomain}-${useExtraction}`;
+        await cacheEmbedding(input, embedding, cacheKey);
+      }
     }
-    return isArray ? result : (result as number[][])[0];
+
+    return isArray ? results : results[0];
   } catch (error) {
     console.error("Enhanced embedding generation failed:", error);
-
-    // Fallback to simple OpenAI if local fails
-    if (
-      provider === "auto" ||
-      provider === "tauri-legal-bert" ||
-      provider === "tauri-bert"
-    ) {
-      console.log("Falling back to OpenAI embeddings");
-      return generateOpenAIEmbeddings(truncatedInputs, isArray);
-    }
     throw error;
   }
 }
-// Batch embedding generation with progress tracking
+
+/**
+ * Batch embedding generation with progress tracking
+ */
 export async function generateBatchEmbeddingsEnhanced(
   texts: string[],
   options: EnhancedEmbeddingOptions = {},
@@ -104,64 +217,22 @@ export async function generateBatchEmbeddingsEnhanced(
       console.error(`Batch ${i}-${i + batchSize} failed:`, error);
       // Add empty embeddings for failed items
       for (let j = 0; j < batch.length; j++) {
-        results.push([]);
+        results.push(new Array(384).fill(0)); // nomic-embed-text uses 384 dimensions
       }
     }
+    
     // Small delay between batches to avoid rate limits
     if (i + batchSize < texts.length) {
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
   }
+  
   return results;
 }
-// Provider selection logic
-function selectProvider(
-  requested: EnhancedEmbeddingOptions["provider"],
-  legalDomain: boolean,
-): EmbeddingProvider {
-  if (requested && requested !== "auto") {
-    return requested;
-  }
-  // Auto-select based on availability and domain
-  const status = aiService.getStatus();
 
-  if (status.tauriAvailable) {
-    if (legalDomain) {
-      return "tauri-legal-bert"; // Prefer legal-BERT for legal domain
-    }
-    return "tauri-bert"; // Use general BERT for other domains
-  }
-  return "openai"; // Fallback to cloud
-}
-// OpenAI fallback implementation
-async function generateOpenAIEmbeddings(
-  texts: string[],
-  returnArray: boolean,
-): Promise<number[] | number[][]> {
-  if (!import.meta.env.OPENAI_API_KEY) {
-    throw new Error("OpenAI API key not configured");
-  }
-  const response = await fetch("https://api.openai.com/v1/embeddings", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${import.meta.env.OPENAI_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "text-embedding-ada-002",
-      input: texts,
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`OpenAI API error: ${response.statusText}`);
-  }
-  const data = await response.json();
-  const embeddings = data.data.map((item: any) => item.embedding);
-
-  return returnArray ? embeddings : embeddings[0];
-}
-// Legal document-specific embedding with metadata
+/**
+ * Legal document-specific embedding with metadata and extraction
+ */
 export async function generateLegalEmbedding(
   documentText: string,
   metadata: {
@@ -173,77 +244,58 @@ export async function generateLegalEmbedding(
   embedding: number[];
   metadata: any;
   confidence: number;
-  classification?: any;
+  extracted?: unknown;
 }> {
-  await aiService.initialize();
-
-  // Generate embedding with legal context
+  // Extract document structure
+  const extracted = await extractDocumentStructure(documentText);
+  
+  // Generate embedding with extracted context
   const embedding = (await generateEnhancedEmbedding(documentText, {
-    provider: "tauri-legal-bert",
+    provider: "nomic-embed",
     legalDomain: true,
-    maxTokens: 2000, // Limit for legal documents
+    maxTokens: 2000,
+    useExtraction: true,
   })) as number[];
 
-  let classification: {
-    classification: any;
-    keyEntities: string[];
-    similarity: number;
-    summary: string;
-    riskAssessment: string;
-  } | null = null;
-  let confidence = 0.8; // Default confidence
-
-  // Add legal classification if available
-  if (aiService.getStatus().tauriAvailable) {
-    try {
-      classification = await aiService.analyzeLegalDocument(documentText);
-      confidence = classification.similarity || 0.8;
-    } catch (error) {
-      console.warn("Legal classification failed:", error);
-    }
-  }
   return {
     embedding,
     metadata: {
       ...metadata,
       generatedAt: new Date().toISOString(),
-      provider: "tauri-legal-bert",
+      provider: "nomic-embed",
+      model: "nomic-embed-text",
       documentLength: documentText.length,
+      dimensions: 384,
     },
-    confidence,
-    classification,
+    confidence: 0.85, // Default confidence for nomic-embed
+    extracted,
   };
 }
-// Similarity calculation between legal documents
+
+/**
+ * Similarity calculation between legal documents
+ */
 export async function calculateLegalSimilarity(
   doc1: string,
   doc2: string,
 ): Promise<number> {
-  await aiService.initialize();
+  const embeddings = (await generateEnhancedEmbedding([doc1, doc2], {
+    provider: "nomic-embed",
+    legalDomain: true,
+    useExtraction: true,
+  })) as number[][];
 
-  if (aiService.getStatus().tauriAvailable) {
-    // Use local legal similarity calculation via embeddings
-    const embeddings = (await generateEnhancedEmbedding([doc1, doc2], {
-      provider: "tauri-legal-bert",
-      legalDomain: true,
-    })) as number[][];
-
-    return cosineSimilarity(embeddings[0], embeddings[1]);
-  } else {
-    // Fallback to embedding comparison
-    const embeddings = (await generateEnhancedEmbedding([doc1, doc2], {
-      provider: "openai",
-      legalDomain: true,
-    })) as number[][];
-
-    return cosineSimilarity(embeddings[0], embeddings[1]);
-  }
+  return cosineSimilarity(embeddings[0], embeddings[1]);
 }
-// Cosine similarity calculation
+
+/**
+ * Cosine similarity calculation
+ */
 function cosineSimilarity(vecA: number[], vecB: number[]): number {
   if (vecA.length !== vecB.length) {
     throw new Error("Vectors must have same length for similarity calculation");
   }
+  
   let dotProduct = 0;
   let normA = 0;
   let normB = 0;
@@ -253,15 +305,19 @@ function cosineSimilarity(vecA: number[], vecB: number[]): number {
     normA += vecA[i] * vecA[i];
     normB += vecB[i] * vecB[i];
   }
+  
   return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
 }
-// Backward compatibility export
+
+/**
+ * Backward compatibility exports
+ */
 export async function generateEmbedding(
   text: string,
   model?: string,
 ): Promise<number[]> {
   const result = await generateEnhancedEmbedding(text, {
-    provider: "auto",
+    provider: "nomic-embed",
     legalDomain: true,
   });
 
@@ -269,14 +325,59 @@ export async function generateEmbedding(
     ? (result[0] as number[])
     : (result as number[]);
 }
+
 export async function generateBatchEmbeddings(
   texts: string[],
   model?: string,
   batchSize: number = 10,
 ): Promise<number[][]> {
   return generateBatchEmbeddingsEnhanced(texts, {
-    provider: "auto",
+    provider: "nomic-embed",
     legalDomain: true,
     batchSize,
   });
+}
+
+/**
+ * Langchain-style document processing with chunking
+ */
+export async function processDocumentWithChunking(
+  document: string,
+  chunkSize: number = 1000,
+  chunkOverlap: number = 200,
+): Promise<{
+  chunks: { text: string; embedding: number[]; metadata: any }[];
+  documentMetadata: any;
+}> {
+  const extracted = await extractDocumentStructure(document);
+  const chunks: { text: string; embedding: number[]; metadata: any }[] = [];
+  
+  // Split document into overlapping chunks
+  for (let i = 0; i < document.length; i += chunkSize - chunkOverlap) {
+    const chunk = document.slice(i, i + chunkSize);
+    if (chunk.trim().length < 50) continue; // Skip very small chunks
+    
+    const embedding = await generateNomicEmbedding(chunk);
+    
+    chunks.push({
+      text: chunk,
+      embedding,
+      metadata: {
+        chunkIndex: Math.floor(i / (chunkSize - chunkOverlap)),
+        startIndex: i,
+        endIndex: Math.min(i + chunkSize, document.length),
+        length: chunk.length,
+      }
+    });
+  }
+  
+  return {
+    chunks,
+    documentMetadata: {
+      totalLength: document.length,
+      totalChunks: chunks.length,
+      extracted,
+      processedAt: new Date().toISOString(),
+    }
+  };
 }

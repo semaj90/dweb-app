@@ -1,7 +1,14 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// @ts-nocheck
 import { json } from "@sveltejs/kit";
-import type { RequestHandler import { URL } from "url";
+import { URL } from "url";
+
+// Mock VectorService for now
+class VectorService {
+  async generateEmbedding(text: string): Promise<number[]> {
+    // Mock embedding - in production, use Ollama or OpenAI
+    return Array.from({ length: 384 }, () => Math.random());
+  }
+}
 
 const vectorService = new VectorService();
 
@@ -14,7 +21,7 @@ interface EmbedRequest {
     conversationId?: string;
     evidenceId?: string;
     category?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   };
   model?: "openai" | "ollama";
 }

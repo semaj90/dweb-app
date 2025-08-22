@@ -3,28 +3,15 @@
 // TypeScript-safe implementation with MCP Context7 best practices
 
 import { logger } from "../logger.js";
-// Orphaned content: import {
-
-postgres from "postgres";
-// Orphaned content: import {
-
+import postgres from "postgres";
 import { createMachine, createActor, fromPromise } from "xstate";
-// Orphaned content: import {
-
 import { OllamaEmbeddings } from "@langchain/ollama";
-// Orphaned content: import {
-
 import { PGVectorStore } from "@langchain/community/vectorstores/pgvector";
-// Orphaned content: import {
-
 import type { Document } from '@langchain/core/documents';
-// Orphaned content: // Import internal modules
-import { aiAssistantSynthesizer
-import {
-legalBERT } from "./legalbert-middleware.js";
-// Orphaned content: import { cachingLayer
-import {
-monitoringService } from "./monitoring-service.js";
+import { aiAssistantSynthesizer } from "./ai-assistant-synthesizer.js";
+import { legalBERT } from "./legalbert-middleware.js";
+import { cachingLayer } from "./caching-layer.js";
+import { monitoringService } from "./monitoring-service.js";
 
 // Type definitions for TypeScript safety
 interface ServiceConfig {
@@ -61,7 +48,7 @@ interface ServiceConfig {
 
 interface AutoSolveQuery {
   query: string;
-  context?: any;
+  context?: unknown;
   options?: {
     enableMMR?: boolean;
     enableCrossEncoder?: boolean;
@@ -148,8 +135,8 @@ const orchestrationMachine = createMachine({
     embeddings: null as number[] | null,
     neo4jResults: null as Document[] | null,
     pgVectorResults: null as Document[] | null,
-    ragResults: null as any[] | null,
-    rankedResults: null as any[] | null, // Add rankedResults to context
+    ragResults: null as unknown[] | null,
+    rankedResults: null as unknown[] | null, // Add rankedResults to context
     legalBertAnalysis: null as any | null,
     ollamaResponse: null as string | null,
     finalSynthesis: null as AutoSolveResult | null,
@@ -746,7 +733,7 @@ RESPONSE:`;
     return prompt;
   }
 
-  private applyMMR(documents: any[], lambda: number = 0.5): any[] {
+  private applyMMR(documents: any[], lambda: number = 0.5): unknown[] {
     if (documents.length <= 1) return documents;
 
     const selected = [documents[0]];
@@ -805,7 +792,7 @@ RESPONSE:`;
   }
 
   // Public API
-  async process(query: string, options?: any): Promise<AutoSolveResult> {
+  async process(query: string, options?: unknown): Promise<AutoSolveResult> {
     // Ensure initialization
     await this.initialize();
 
@@ -854,7 +841,7 @@ RESPONSE:`;
   }
 
   // Streaming API
-  async *processStream(query: string, options?: any): AsyncGenerator<any> {
+  async *processStream(query: string, options?: unknown): AsyncGenerator<any> {
     await this.initialize();
 
     logger.info(`[Orchestrator] Starting streaming for: "${query}"`);

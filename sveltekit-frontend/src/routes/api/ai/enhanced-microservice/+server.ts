@@ -50,7 +50,7 @@ class GoMicroserviceClient {
   private async makeRequest(
     endpoint: string,
     method: string = "GET",
-    body?: any
+    body?: unknown
   ): Promise<any> {
     const url = `${this.baseUrl}${endpoint}`;
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $state } from 'svelte';
 
   interface GridColumn {
     key: string;
@@ -19,7 +19,7 @@ import type { CommonProps } from '$lib/types/common-props';
 
   interface GridRow {
     id: string | number;
-    [key: string]: any;
+    [key: string]: unknown;
   }
 
   interface DataGridProps {
@@ -366,7 +366,7 @@ import type { CommonProps } from '$lib/types/common-props';
                       value={row[column.key]}
                       oninput={(e) => handleCellEdit(rowIndex, column.key, (e.target as HTMLInputElement).value)}
                       onblur={() => editingCell = null}
-                      on:focusin={(e) => (e.target as HTMLInputElement).select()}
+                      onfocusin={(e) => (e.target as HTMLInputElement).select()}
                     />
                   {/if}
                 {:else}
@@ -627,7 +627,4 @@ import type { CommonProps } from '$lib/types/common-props';
   // (Previous self-import caused TS to still report 'is not a module')
   export {};
 </script>
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

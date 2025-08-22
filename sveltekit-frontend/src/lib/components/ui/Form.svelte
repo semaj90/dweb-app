@@ -1,11 +1,11 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props, $effect } from 'svelte';
 
   import { Button } from "$lib/components/ui/button";
   import { createFormStore, type FormOptions } from '$lib/stores/form';
   import { notifications } from '$lib/stores/notification';
 
-  interface Props extends CommonProps {
+  interface Props {
     options?: FormOptions;
     class?: string;
     novalidate?: boolean;
@@ -17,7 +17,7 @@ import type { CommonProps } from '$lib/types/common-props';
     resetText?: string;
     showResetButton?: boolean;
     loading?: boolean;
-    formApi?: any; // Add bindable formApi prop
+    formApi?: unknown; // Add bindable formApi prop
     onsubmit?: (event: { values: Record<string, any>; isValid: boolean }) => void;
     onreset?: () => void;
     onchange?: (event: { values: Record<string, any> }) => void;

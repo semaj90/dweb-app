@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Real-time Document Update Notifications
 // WebSocket-based notifications for document re-embedding and re-ranking progress
 

@@ -9,18 +9,18 @@ export interface Dialog {
   position?: 'center' | 'top' | 'bottom';
   persistent?: boolean;
   resolve?: (result: any) => void;
-  reject?: (reason?: any) => void;
+  reject?: (reason?: unknown) => void;
 }
 
 export interface Modal {
   id: string;
-  component?: any;
+  component?: unknown;
   props?: Record<string, any>;
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'fullscreen';
   type?: 'default' | 'confirm' | 'alert' | 'system';
   persistent?: boolean;
   resolve?: (result: any) => void;
-  reject?: (reason?: any) => void;
+  reject?: (reason?: unknown) => void;
 }
 
 function createDialogStore() {
@@ -44,7 +44,7 @@ function createDialogStore() {
     });
   }
 
-  function remove(id: string, result?: any) {
+  function remove(id: string, result?: unknown) {
     update(dialogs => {
       const dialog = dialogs.find(d => d.id === id);
       if (dialog?.resolve) {
@@ -54,7 +54,7 @@ function createDialogStore() {
     });
   }
 
-  function reject(id: string, reason?: any) {
+  function reject(id: string, reason?: unknown) {
     update(dialogs => {
       const dialog = dialogs.find(d => d.id === id);
       if (dialog?.reject) {
@@ -206,7 +206,7 @@ function createModalStore() {
     });
   }
 
-  function remove(id: string, result?: any) {
+  function remove(id: string, result?: unknown) {
     update(modals => {
       const modal = modals.find(m => m.id === id);
       if (modal?.resolve) {
@@ -216,7 +216,7 @@ function createModalStore() {
     });
   }
 
-  function reject(id: string, reason?: any) {
+  function reject(id: string, reason?: unknown) {
     update(modals => {
       const modal = modals.find(m => m.id === id);
       if (modal?.reject) {

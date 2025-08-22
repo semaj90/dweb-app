@@ -3,6 +3,7 @@
   Comprehensive navigation for all demonstrations and testing interfaces
 -->
 <script lang="ts">
+  import { $state } from 'svelte';
   import { goto } from '$app/navigation';
   import * as Card from '$lib/components/ui/card';
   import { Button } from '$lib/components/ui/button';
@@ -318,7 +319,7 @@
   let viewMode = $state<'grid' | 'list'>('grid');
 
   // Computed values
-  const filteredCategories = $derived(() => {
+  const filteredCategories = $derived.by(() => {
     if (selectedCategory === 'all') {
       return demoCategories.map(category => ({
         ...category,
@@ -342,11 +343,11 @@
     }
   });
 
-  const totalDemos = $derived(() => 
+  const totalDemos = $derived.by(() => 
     demoCategories.reduce((total, category) => total + category.demos.length, 0)
   );
 
-  const productionDemos = $derived(() =>
+  const productionDemos = $derived.by(() =>
     demoCategories.reduce((total, category) => 
       total + category.demos.filter(demo => demo.status === 'production').length, 0)
   );

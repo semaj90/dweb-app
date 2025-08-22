@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $props } from 'svelte';
 
   import { Dialog, Button, Select, AlertDialog } from 'bits-ui';
   import { fade } from 'svelte/transition';
@@ -103,7 +103,7 @@ import type { CommonProps } from '$lib/types/common-props';
   <!-- Bits UI Select -->
   <div class="mx-auto px-4 max-w-7xl">
     <label class="mx-auto px-4 max-w-7xl" for="practice-area-select">Legal Practice Area</label>
-    <Select.Root type="single" onValueChange={() => showWarningNotification()}>
+    <Select.Root type="single" onvaluechange={() => showWarningNotification()}>
       <Select.Trigger class="mx-auto px-4 max-w-7xl" id="practice-area-select">
         Select practice area...
       </Select.Trigger>
@@ -120,7 +120,7 @@ import type { CommonProps } from '$lib/types/common-props';
   </div>
   
   <!-- Bits UI Dialog -->
-  <Dialog.Root bind:open={dialogOpen} onOpenChange={(open) => { if (open) showInfoNotification(); }}>
+  <Dialog.Root bind:open={dialogOpen} onopenchange={(open) => { if (open) showInfoNotification(); }}>
     <Dialog.Trigger class="mx-auto px-4 max-w-7xl">
       Case Management Options
     </Dialog.Trigger>

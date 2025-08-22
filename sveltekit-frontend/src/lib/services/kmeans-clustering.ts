@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * K-Means Clustering Implementation for Legal Document Analysis
  * Optimized for high-dimensional embedding spaces with legal document context

@@ -1,5 +1,5 @@
 import crypto from "crypto";
-// @ts-nocheck
+
 // Global authentication store with AI assistant integration
 import { writable, derived, get } from "svelte/store";
 // Orphaned content: import {
@@ -284,7 +284,7 @@ export interface AIAssistantState {
     prompt: string;
     response: string;
     confidence: number;
-    context?: any;
+    context?: unknown;
   }>;
 }
 

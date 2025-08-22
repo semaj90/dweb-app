@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  // Svelte runes are declared globally in src/types/svelte-helpers.d.ts
 
-  interface Props extends CommonProps {
+  interface Props {
     class?: string;
     children?: import('svelte').Snippet;
   }
@@ -9,7 +9,7 @@ import type { CommonProps } from '$lib/types/common-props';
   import { Badge } from '$lib/components/ui/badge';
   import { Button } from '$lib/components/ui/button';
   import { Separator } from '$lib/components/ui/separator/Separator.svelte';
-  
+
   export let timelineEvents: Array<{
     date: string;
     time?: string;
@@ -22,20 +22,23 @@ import type { CommonProps } from '$lib/types/common-props';
 
   export let caseId: string;
 
-  // Sort events chronologically
-  $: sortedEvents = timelineEvents
-    .sort((a, b) => new Date(a.date + ' ' + (a.time || '00:00')).getTime() - 
-                   new Date(b.date + ' ' + (b.time || '00:00')).getTime());
+  // Sort events chronologically (use function form to avoid mutating props)
+  let sortedEvents = $derived(() => {
+    return [...timelineEvents].sort((a, b) => new Date(a.date + ' ' + (a.time || '00:00')).getTime() -
+      new Date(b.date + ' ' + (b.time || '00:00')).getTime());
+  });
 
   // Group events by date
-  $: groupedEvents = sortedEvents.reduce((groups, event) => {
-    const dateKey = event.date;
-    if (!groups[dateKey]) {
-      groups[dateKey] = [];
-    }
-    groups[dateKey].push(event);
-    return groups;
-  }, {} as Record<string, typeof timelineEvents>);
+  let groupedEvents = $derived(() => {
+    return (sortedEvents as any as Array<any>).reduce((groups: Record<string, typeof timelineEvents>, event: any) => {
+      const dateKey = event.date;
+      if (!groups[dateKey]) {
+        groups[dateKey] = [];
+      }
+      groups[dateKey].push(event);
+      return groups;
+    }, {} as Record<string, typeof timelineEvents>);
+  });
 
   // Category styling
   const categoryConfig = {
@@ -69,11 +72,11 @@ import type { CommonProps } from '$lib/types/common-props';
   // Format date for display
   function formatDate(dateStr: string): string {
     const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     });
   }
 
@@ -83,10 +86,10 @@ import type { CommonProps } from '$lib/types/common-props';
     const [hours, minutes] = timeStr.split(':');
     const date = new Date();
     date.setHours(parseInt(hours), parseInt(minutes));
-    return date.toLocaleTimeString('en-US', { 
-      hour: 'numeric', 
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
       minute: '2-digit',
-      hour12: true 
+      hour12: true
     });
   }
 
@@ -111,7 +114,7 @@ import type { CommonProps } from '$lib/types/common-props';
       </CardTitle>
       <div class="flex gap-2">
         <Button variant="outline" size="sm">
-          📊 Timeline Analysis  
+          📊 Timeline Analysis
         </Button>
         <Button variant="outline" size="sm">
           🗂️ Export Timeline
@@ -135,7 +138,7 @@ import type { CommonProps } from '$lib/types/common-props';
       <div class="relative">
         <!-- Timeline line -->
         <div class="absolute left-8 top-0 bottom-0 w-0.5 bg-gray-300"></div>
-        
+
         <div class="space-y-6">
           {#each Object.entries(groupedEvents) as [date, events]}
             <div class="relative">
@@ -145,7 +148,7 @@ import type { CommonProps } from '$lib/types/common-props';
                   <div class="w-4 h-4 bg-blue-500 rounded-full border-4 border-white shadow-md"></div>
                 </div>
                 <div class="flex-1">
-                  <button 
+                  <button
                     class="text-left w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                     onclick={() => toggleDate(date)}
                   >
@@ -182,9 +185,9 @@ import type { CommonProps } from '$lib/types/common-props';
                           <div class="flex items-center gap-2">
                             <div class="text-xs text-gray-500">Confidence</div>
                             <div class="w-16 bg-gray-200 rounded-full h-1.5">
-                              <div 
-                                class="h-1.5 rounded-full {event.confidence > 0.8 ? 'bg-green-500' : 
-                                                          event.confidence > 0.6 ? 'bg-yellow-500' : 'bg-red-500'}" 
+                              <div
+                                class="h-1.5 rounded-full {event.confidence > 0.8 ? 'bg-green-500' :
+                                                          event.confidence > 0.6 ? 'bg-yellow-500' : 'bg-red-500'}"
                                 style="width: {event.confidence * 100}%"
                               ></div>
                             </div>
@@ -227,12 +230,12 @@ import type { CommonProps } from '$lib/types/common-props';
 
       <!-- Timeline actions -->
       <Separator class="my-6" />
-      
+
       <div class="flex items-center justify-between">
         <div class="text-sm text-gray-600">
           {timelineEvents.length} events across {Object.keys(groupedEvents).length} day{Object.keys(groupedEvents).length !== 1 ? 's' : ''}
         </div>
-        
+
         <div class="flex gap-2">
           <Button variant="outline" size="sm">
             🔍 Find Gaps
@@ -262,7 +265,7 @@ import type { CommonProps } from '$lib/types/common-props';
     border-radius: 50%;
     box-shadow: 0 0 0 1px #e5e7eb;
   }
-  
+
   .timeline-connector {
     position: absolute;
     left: -1px;
@@ -271,7 +274,7 @@ import type { CommonProps } from '$lib/types/common-props';
     width: 2px;
     background: #e5e7eb;
   }
-  
+
   .timeline-last .timeline-connector {
     display: none;
   }

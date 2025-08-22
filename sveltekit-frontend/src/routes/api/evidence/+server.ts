@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { type RequestHandler, json } from '@sveltejs/kit';
 import { getEmbeddingRepository } from '$lib/server/embedding/embedding-repository';
 import { db } from "$lib/server/db/drizzle";
@@ -163,7 +163,7 @@ Respond in JSON format with structured analysis.`;
     query: string, 
     caseId?: string, 
     limit: number = 20
-  ): Promise<any[]> {
+  ): Promise<unknown[]> {
     try {
       // Generate query embedding
       const queryEmbedding = await this.generateEmbedding(query);

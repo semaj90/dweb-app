@@ -634,7 +634,7 @@ class WebGPUAccelerator {
     /**
      * Get performance metrics
      */
-    getPerformanceMetrics(): any {
+    getPerformanceMetrics(): unknown {
         return {
             initialized: this.initialized,
             capabilities: this.capabilities,

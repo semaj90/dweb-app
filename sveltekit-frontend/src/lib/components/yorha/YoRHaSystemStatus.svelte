@@ -1,6 +1,6 @@
 <!-- YoRHa System Status Bar Component -->
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
+  import { $state, $derived } from 'svelte';
 
   import type { SystemStatus } from "$lib/types/global";
   import type { Props } from "$lib/types/global";
@@ -15,6 +15,7 @@ import type { CommonProps } from '$lib/types/common-props';
   } = $props<{
     systemLoad: number;
     gpuUtilization: number;
+    memoryUsage: number;
     networkLatency: number;
   }>();
 
@@ -167,7 +168,7 @@ import type { CommonProps } from '$lib/types/common-props';
       <span class="metric-value {getStatusColor(networkStatus)}">
         {networkLatency}ms
       </span>
-      <div class="network-indicator w-1 h-1 rounded-full {getStatusColor(networkStatus).replace('text-', 'bg-')}"></div>
+      <div class="network-indicator w-1 h-1 rounded-full {getStatusColor(networkStatus)?.replace('text-', 'bg-') || 'bg-gray-400'}"></div>
     </div>
 
     <!-- Active Connections -->
@@ -304,7 +305,4 @@ import type { CommonProps } from '$lib/types/common-props';
   }
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

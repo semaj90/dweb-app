@@ -1,5 +1,4 @@
-import type { CommonProps } from '$lib/types/common-props';
-// @ts-nocheck
+
 /**
  * Layout Components - Golden Ratio Grid System
  *

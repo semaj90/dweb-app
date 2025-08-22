@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
 
   import { onMount } from 'svelte';
+  import { $state } from 'svelte';
   import { speak } from "./speak";
 
   let isSupported = $state(false);
@@ -97,7 +97,4 @@ import type { CommonProps } from '$lib/types/common-props';
   /* Add your styles here */
 </style>
 
-<script lang="ts">
-import type { CommonProps } from '$lib/types/common-props';
-interface Props extends CommonProps {}
-</script>
+

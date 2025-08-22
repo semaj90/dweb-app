@@ -196,7 +196,7 @@ export interface AnalysisResult {
   metadata?: {
     modelUsed?: string;
     timestamp?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 
