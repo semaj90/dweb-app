@@ -7,18 +7,14 @@ export { default as ModernCard } from './ModernCard.svelte';
 export { default as ModernButton } from './ModernButton.svelte';
 export { default as ModernDialog } from './ModernDialog.svelte';
 
-// Type exports for better TypeScript support
-export type { 
-  Props as ModernCardProps 
-} from './ModernCard.svelte';
+// Type exports for better TypeScript support (Svelte 5 compatible)
+import type ModernCard from './ModernCard.svelte';
+import type ModernButton from './ModernButton.svelte';
+import type ModernDialog from './ModernDialog.svelte';
 
-export type { 
-  Props as ModernButtonProps 
-} from './ModernButton.svelte';
-
-export type { 
-  Props as ModernDialogProps 
-} from './ModernDialog.svelte';
+export type ModernCardProps = InstanceType<typeof ModernCard>['$$props'];
+export type ModernButtonProps = InstanceType<typeof ModernButton>['$$props'];
+export type ModernDialogProps = InstanceType<typeof ModernDialog>['$$props'];
 
 // Component variants for easier usage
 export const cardVariants = [

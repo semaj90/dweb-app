@@ -1,16 +1,19 @@
 
-import type { PageServerLoad } from "@sveltejs/kit";
+import type { PageServerLoad, Actions } from "@sveltejs/kit";
 import { redirect } from "@sveltejs/kit";
 import { cases, criminals } from "$lib/server/db/schema-postgres";
 import { db } from "$lib/server/db";
 
 export const load: PageServerLoad = async ({ locals }) => {
-  // For demo purposes, skip authentication check
-  // if (!locals.session || !locals.user) {
-  //   throw redirect(302, "/login");
-  // }
+  // Session information for dashboard display
+  const sessionInfo = {
+    userId: locals.session?.user?.id ?? null,
+    sessionId: locals.session?.id ?? null,
+    email: locals.session?.user?.email ?? null,
+    isAuthenticated: !!locals.session?.user
+  };
   
-  // Return mock data for now
+  // Return mock data for now (keeping existing for backward compatibility)
   const recentCases = [
     { id: 'case-001', title: 'Sample Legal Case', status: 'active', createdAt: new Date() },
     { id: 'case-002', title: 'Evidence Analysis', status: 'pending', createdAt: new Date() }
@@ -21,7 +24,21 @@ export const load: PageServerLoad = async ({ locals }) => {
   ];
 
   return {
+    // Session data for display
+    ...sessionInfo,
+    
+    // Existing dashboard data
     recentCases,
     recentCriminals,
   };
+};
+
+export const actions: Actions = {
+  logout: async ({ cookies }) => {
+    // Clear the auth-session cookie
+    cookies.delete('auth-session', { path: '/' });
+
+    // Redirect back to homepage after logout
+    throw redirect(303, '/');
+  }
 };

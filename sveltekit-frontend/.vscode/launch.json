@@ -15,8 +15,7 @@
       },
       "console": "integratedTerminal",
       "restart": true,
-      "protocol": "inspector",
-      "skipFiles": ["<node_internals>/**"]
+  "skipFiles": ["<node_internals>/**"]
     },
     {
       "name": "SvelteKit Build with High Memory",
@@ -30,18 +29,19 @@
         "NODE_ENV": "production"
       },
       "console": "integratedTerminal",
-      "restart": false,
-      "protocol": "inspector"
+  "restart": false
     },
     {
-      "name": "TypeScript Check with Memory Limit",
+      "name": "TypeScript Check with Memory Limit (no-debug)",
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/node_modules/typescript/bin/tsc",
       "args": ["--noEmit", "--skipLibCheck"],
       "cwd": "${workspaceFolder}",
       "env": {
-        "NODE_OPTIONS": "--max-old-space-size=6144"
+        // Ensure debugger bootloader / inspector is not injected via NODE_OPTIONS/NODE_INSPECT
+        "NODE_OPTIONS": "",
+        "NODE_INSPECT": ""
       },
       "console": "integratedTerminal"
     },

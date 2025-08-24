@@ -156,7 +156,7 @@ export class CrewAILegalReviewSystem {
 
       // Store results and trigger document update loop
       await this.storeResults(task, responses);
-      documentUpdateLoop(task.documentId, responses);
+      documentUpdateLoop.queueDocumentUpdate(task.documentId, JSON.stringify(responses));
       
       return responses;
     } finally {
@@ -202,7 +202,7 @@ Please provide your analysis in the following JSON format:
         `)
       ];
 
-      const response = await ollama.invoke(messages);
+      const response = await ollama.invoke(messages.map(m => m.content).join('\n'));
       const responseText = response.content.toString();
       
       // Parse structured response
@@ -263,16 +263,12 @@ Please provide your analysis in the following JSON format:
       const db = (await import('$lib/server/db')).db;
       
       await db.insert(aiHistory).values({
-        sessionId: task.taskId,
-        promptTokens: task.documentContent.length / 4, // Rough estimate
-        completionTokens: responses.reduce((acc, r) => acc + r.reviewSummary.length, 0) / 4,
-        totalTokens: 0, // Will be calculated
-        model: 'gemma3-legal',
-        temperature: 0.1,
-        maxTokens: 2000,
+        userId: 'system', // TODO: Get from context
+        prompt: `Legal document review: ${task.reviewType}`,
         response: JSON.stringify(responses),
-        timestamp: new Date(),
-        userId: null, // TODO: Get from context
+        model: 'gemma3-legal',
+        tokensUsed: Math.floor((task.documentContent.length + responses.reduce((acc, r) => acc + r.reviewSummary.length, 0)) / 4),
+        cost: 0, // TODO: Calculate based on token usage
         metadata: {
           taskType: 'legal-document-review',
           reviewType: task.reviewType,

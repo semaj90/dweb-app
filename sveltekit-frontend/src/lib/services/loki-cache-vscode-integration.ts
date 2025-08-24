@@ -3,7 +3,7 @@
  * High-performance in-memory database with VS Code automation
  */
 
-import loki from 'lokijs';
+import Loki from 'lokijs';
 import type { Collection } from 'lokijs';
 
 export interface CacheableItem {
@@ -138,8 +138,8 @@ export class LokiCacheVSCodeIntegration {
   private initializeDB(): void {
     console.log('🗄️ Initializing Loki.js in-memory database...');
 
-    this.db = new loki(this.dbName, {
-      adapter: typeof window !== 'undefined' ? new loki.LokiMemoryAdapter() : undefined,
+    this.db = new Loki(this.dbName, {
+      adapter: typeof window !== 'undefined' ? new Loki.LokiMemoryAdapter() : undefined,
       autoload: false,
       autoloadCallback: () => {
         console.log('📊 Loki.js database loaded');

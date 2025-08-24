@@ -10,8 +10,10 @@
 
 import Loki, { type Collection } from "lokijs";
 import { writable, derived, type Readable } from "svelte/store";
-import * as fabric from "fabric";
+import { fabric } from "fabric";
 import { BrowserCacheManager } from "./browser-cache-manager";
+import { ShaderCache } from "./webgl-shader-cache";
+import { MatrixTransformLib } from "./matrix-transform-lib";
 
 // Types for our "sprite sheet" system
 export interface CanvasSprite {

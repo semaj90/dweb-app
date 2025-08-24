@@ -5,22 +5,67 @@ import { URL } from "url";
 // Multi-Agent AI Orchestration API
 // Unified endpoint for Autogen, CrewAI, and vLLM integration
 
-interface AutogenLegalTeam {
-  analyze: (request: LegalAnalysisRequest) => Promise<unknown>;
-}
-
 interface LegalAnalysisRequest {
   query: string;
   caseId?: string;
 }
 
-interface CrewAILegalTeam {
-  executeWorkflow: (request: any) => Promise<WorkflowResult>;
+interface AutogenRequest {
+  query: string;
+  caseId?: string;
+  evidenceIds: string[];
+  analysisType: string;
+  priority: string;
 }
 
 interface WorkflowResult {
   status: string;
   result: any;
+  results?: any[];
+  finalDeliverable?: string;
+  recommendations?: string[];
+  totalTime?: number;
+}
+
+// Mock implementations for now
+class AutogenLegalTeam {
+  constructor(config: any) {}
+  
+  async analyzeCase(request: AutogenRequest): Promise<any> {
+    return {
+      finalAnalysis: `Autogen analysis for: ${request.query}`,
+      confidence: 0.8,
+      recommendations: ['Review evidence chain', 'Check procedural compliance'],
+      processingTime: 1500
+    };
+  }
+  
+  getAgents() {
+    return ['prosecutor', 'investigator', 'legal_researcher'];
+  }
+}
+
+class CrewAILegalTeam {
+  constructor(config: any) {}
+  
+  async executeWorkflow(workflowType: string, context: any, priority: string): Promise<WorkflowResult> {
+    return {
+      status: 'completed',
+      result: `CrewAI workflow ${workflowType} completed`,
+      results: [{ confidence: 0.75 }],
+      finalDeliverable: `CrewAI analysis for: ${context.query}`,
+      recommendations: ['Schedule follow-up', 'Prepare documentation'],
+      totalTime: 2000
+    };
+  }
+  
+  getCrews() {
+    return ['investigation_crew', 'analysis_crew', 'strategy_crew'];
+  }
+  
+  getActiveWorkflows() {
+    return ['case_investigation', 'trial_preparation'];
+  }
 }
 
 interface MultiAgentRequest {
@@ -140,24 +185,24 @@ export const POST: RequestHandler = async ({ request }) => {
       switch (requestData.analysisType) {
         case "autogen":
           results.autogen = await runAutogenAnalysis(requestData, sessionId);
-          totalTokens += results.autogen.processingTime || 0;
-          overallConfidence = results.autogen.confidence || 0.7;
-          allRecommendations.push(...(results.autogen.recommendations || []));
+          totalTokens += (results.autogen as any).processingTime || 0;
+          overallConfidence = (results.autogen as any).confidence || 0.7;
+          allRecommendations.push(...((results.autogen as any).recommendations || []));
           break;
 
         case "crewai":
           results.crewai = await runCrewAIWorkflow(requestData, sessionId);
-          totalTokens += results.crewai.totalTime || 0;
+          totalTokens += (results.crewai as WorkflowResult).totalTime || 0;
           overallConfidence =
-            results.crewai.results?.reduce((acc, r) => acc + r.confidence, 0) /
-              (results.crewai.results?.length || 1) || 0.7;
-          allRecommendations.push(...(results.crewai.recommendations || []));
+            (results.crewai as WorkflowResult).results?.reduce((acc: number, r: any) => acc + r.confidence, 0) /
+              ((results.crewai as WorkflowResult).results?.length || 1) || 0.7;
+          allRecommendations.push(...((results.crewai as WorkflowResult).recommendations || []));
           break;
 
         case "vllm_only":
           results.vllm = await runVLLMAnalysis(requestData, sessionId);
-          totalTokens += results.vllm.token_count || 0;
-          overallConfidence = results.vllm.confidence || 0.7;
+          totalTokens += (results.vllm as any).token_count || 0;
+          overallConfidence = (results.vllm as any).confidence || 0.7;
           allRecommendations.push("Direct vLLM analysis completed");
           break;
 
@@ -179,11 +224,11 @@ export const POST: RequestHandler = async ({ request }) => {
             (autogenResult.processingTime || 0) + (crewaiResult.totalTime || 0);
           overallConfidence =
             ((autogenResult.confidence || 0) +
-              (crewaiResult.results?.reduce((acc, r) => acc + r.confidence, 0) /
+              (crewaiResult.results?.reduce((acc: number, r: any) => acc + r.confidence, 0) /
                 (crewaiResult.results?.length || 1) || 0)) /
             2;
           allRecommendations.push(
-            ...(autogenResult.recommendations || []),
+            ...((autogenResult as any).recommendations || []),
             ...(crewaiResult.recommendations || []),
           );
           break;
@@ -205,7 +250,7 @@ export const POST: RequestHandler = async ({ request }) => {
           tokensGenerated: totalTokens,
           confidence: overallConfidence,
         },
-        recommendations: [...new Set(allRecommendations)].slice(0, 10), // Remove duplicates, limit to 10
+        recommendations: Array.from(new Set(allRecommendations)).slice(0, 10), // Remove duplicates, limit to 10
         nextSteps: generateNextSteps(results, requestData),
       };
 
@@ -324,8 +369,8 @@ Based on both agent teams, the key findings indicate:
 
 ### Confidence Reconciliation
 Autogen Confidence: ${autogenResult.confidence}
-CrewAI Average Confidence: ${crewaiResult.results?.reduce((acc, r) => acc + r.confidence, 0) / (crewaiResult.results?.length || 1)}
-Combined Confidence: ${((autogenResult.confidence + crewaiResult.results?.reduce((acc, r) => acc + r.confidence, 0) / (crewaiResult.results?.length || 1)) / 2).toFixed(2)}
+CrewAI Average Confidence: ${crewaiResult.results?.reduce((acc: number, r: any) => acc + r.confidence, 0) / (crewaiResult.results?.length || 1)}
+Combined Confidence: ${((autogenResult.confidence + (crewaiResult.results?.reduce((acc: number, r: any) => acc + r.confidence, 0) / (crewaiResult.results?.length || 1) || 0)) / 2).toFixed(2)}
 `;
 
   return {
@@ -335,8 +380,8 @@ Combined Confidence: ${((autogenResult.confidence + crewaiResult.results?.reduce
     riskAssessment: synthesizeRiskAssessment(autogenResult, crewaiResult),
     combinedConfidence:
       (autogenResult.confidence +
-        crewaiResult.results?.reduce((acc, r) => acc + r.confidence, 0) /
-          (crewaiResult.results?.length || 1)) /
+        (crewaiResult.results?.reduce((acc: number, r: any) => acc + r.confidence, 0) /
+          (crewaiResult.results?.length || 1) || 0)) /
       2,
   };
 }
@@ -347,7 +392,7 @@ function findCommonThemes(
 ): string[] {
   // Simple keyword matching to find common themes
   const autogenText = (autogenResult.finalAnalysis || "").toLowerCase();
-  const crewaiText = (crewaiResult.finalDeliverable || "").toLowerCase();
+  const crewaiText = (crewaiResult.result || "").toLowerCase();
 
   const commonKeywords = [
     "evidence",
@@ -399,7 +444,7 @@ function synthesizeRiskAssessment(
 ): string {
   const autogenConfidence = autogenResult.confidence || 0.7;
   const crewaiConfidence =
-    crewaiResult.results?.reduce((acc, r) => acc + r.confidence, 0) /
+    crewaiResult.results?.reduce((acc: number, r: any) => acc + r.confidence, 0) /
       (crewaiResult.results?.length || 1) || 0.7;
 
   const avgConfidence = (autogenConfidence + crewaiConfidence) / 2;

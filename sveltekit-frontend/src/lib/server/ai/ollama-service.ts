@@ -5,7 +5,7 @@ import { EventEmitter } from "events";
  */
 
 import { OLLAMA_CONFIG, getModelConfig, getOptimalModel, selectBestAvailableModel, isLegalTask } from './ollama-config';
-// Orphaned content: import type {
+import type {
   OllamaGenerateRequest,
   OllamaResponse,
   OllamaEmbeddingRequest,
@@ -14,6 +14,7 @@ import { OLLAMA_CONFIG, getModelConfig, getOptimalModel, selectBestAvailableMode
   LegalDocument,
   AnalysisResult,
   UserQuery
+} from './types';
 
 class OllamaService extends EventEmitter {
   private baseUrl: string;

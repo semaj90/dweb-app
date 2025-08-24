@@ -1,5 +1,7 @@
 import type { PageLoad } from "./$types";
-// TODO: Fix import - // Orphaned content: import {  export const load: PageLoad = async ({ fetch, url, depends }) => {
+import { error } from '@sveltejs/kit';
+
+export const load: PageLoad = async ({ fetch, url, depends }) => {
   // Dependency tracking for cache invalidation
   depends('laws:quicklinks');
   depends('laws:search');
@@ -113,6 +115,6 @@ import type { PageLoad } from "./$types";
     
   } catch (err) {
     console.error('Failed to load laws page data:', err);
-    throw error(500, 'Failed to load page data');
+    error(500, 'Failed to load page data');
   }
 };

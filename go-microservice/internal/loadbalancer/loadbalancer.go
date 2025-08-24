@@ -61,6 +61,7 @@ type Metrics struct {
 	MemoryUsage       float64          `json:"memory_usage"`
 	Timestamp         string           `json:"timestamp"`
 	SimulatedGPU      bool             `json:"simulated_gpu"`
+	JSON              fastjson.Stats   `json:"json_stats"`
 }
 
 func NewUpstreamServer(serverURL string) *UpstreamServer { url, err := url.Parse(serverURL); if err != nil { log.Printf("Error parsing server URL %s: %v", serverURL, err); return nil }; return &UpstreamServer{URL: url, Alive: true} }
@@ -237,7 +238,7 @@ func (lb *LoadBalancer) MetricsHandler(w http.ResponseWriter, r *http.Request) {
 		s.mutex.RUnlock()
 		snap = append(snap, clone)
 	}
-	m := &Metrics{TotalRequests: atomic.LoadInt64(&lb.totalRequests), ActiveConnections: atomic.LoadInt64(&lb.activeConnections), ServerStats: snap, Timestamp: time.Now().Format(time.RFC3339)}
+	m := &Metrics{TotalRequests: atomic.LoadInt64(&lb.totalRequests), ActiveConnections: atomic.LoadInt64(&lb.activeConnections), ServerStats: snap, Timestamp: time.Now().Format(time.RFC3339), JSON: fastjson.GetStats()}
 	if os.Getenv("CUDA_ENABLED") == "true" { m.GPUUtilization = getGPUUtilization(); m.MemoryUsage = getGPUMemoryUsage() }
 	m.SimulatedGPU = true
 	w.Header().Set("Content-Type", "application/json")
@@ -339,6 +340,10 @@ func Start() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", lb.ProxyHandler)
 	mux.HandleFunc("/metrics", lb.MetricsHandler)
+	mux.HandleFunc("/metrics/json", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(fastjson.GetStats())
+	})
 	mux.HandleFunc("/prometheus", lb.PrometheusHandler)
 	mux.HandleFunc("/status", lb.StatusHandler)
 	mux.HandleFunc("/admin/upstreams", lb.adminUpstreamsHandler)

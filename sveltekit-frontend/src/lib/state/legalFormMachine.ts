@@ -4,7 +4,8 @@ import crypto from "crypto";
 // Integrates with Phase 8 Matrix UI System and Context7 MCP
 
 import { setup, assign, type StateValue, fromPromise } from "xstate";
-// TODO: Fix import - // Orphaned content: import {  export interface LegalFormContext {
+
+export interface LegalFormContext {
   evidenceFiles: File[];
   caseTitle: string;
   caseDescription: string;

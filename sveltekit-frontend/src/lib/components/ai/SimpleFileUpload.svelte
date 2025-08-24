@@ -1,12 +1,24 @@
-<!-- Simple File Upload Test Component (No XState) -->
+<!-- Enhanced File Upload Component with Full Stack Integration -->
 <script lang="ts">
-  import { $props, $state } from 'svelte';
-
-  import { toast } from '$lib/utils/toast';
-  import { Upload, Check, X, Loader2 } from 'lucide-svelte';
-  import { onMount } from 'svelte';
-
-  // Props interface
+  import { onMount, onDestroy } from 'svelte';
+  import { createMachine, interpret, type ActorRefFrom } from 'xstate';
+  import { Upload, Check, X, Loader2, Database, Cpu, Cloud, Zap } from 'lucide-svelte';
+  
+  // Store imports with TypeScript barrel exports
+  import { 
+    notificationStore,
+    enhancedRAGStore,
+    evidenceStore,
+    lokiStore,
+    aiAssistantManager
+  } from '$lib/stores';
+  
+  // Service imports
+  import { qdrantService } from '$lib/services/qdrantService';
+  import { vectorEmbeddingService } from '$lib/services/vector-embedding-service';
+  import { comprehensiveCachingService } from '$lib/services/comprehensive-caching-service';
+  
+  // Types
   interface Props {
     onUploadComplete?: (doc: any) => void;
     accept?: string;
@@ -14,38 +26,193 @@
     enableOCR?: boolean;
     enableEmbedding?: boolean;
     enableRAG?: boolean;
-    class?: string; // note: renamed locally to avoid reserved identifier usage
+    enableAutoTags?: boolean;
+    enableWebGPU?: boolean;
+    class?: string;
+    caseId?: string;
   }
 
-  // Svelte 5 props with defaults
+  // Svelte 5 props with enhanced defaults
   let {
     onUploadComplete = () => {},
-    accept = '.pdf,.docx,.txt,.jpg,.png,.tiff',
-    maxSize = 50 * 1024 * 1024, // 50MB
+    accept = '.pdf,.docx,.txt,.jpg,.png,.tiff,.json,.csv,.xml,.html',
+    maxSize = 100 * 1024 * 1024, // 100MB
     enableOCR = true,
     enableEmbedding = true,
     enableRAG = true,
+    enableAutoTags = true,
+    enableWebGPU = false,
     class: classNameVar = '',
+    caseId = null,
   }: Props = $props();
 
-  // State variables
+  // Enhanced state variables
   let files = $state<File[]>([]);
   let uploadStates = $state<Map<string, any>>(new Map());
   let isDragOver = $state(false);
-  let fileInput: HTMLInputElement;
-  let systemStatus = $state<any>({});
+  let fileInput: HTMLInputElement | undefined = $state();
+  let systemStatus = $state<any>({
+    services: {},
+    performance: {},
+    queues: {},
+    storage: {}
+  });
+  let uploadMachine: ActorRefFrom<typeof fileUploadMachine> | null = null;
 
-  // Check system status on mount
-  onMount(async () => {
-    try {
-      const response = await fetch('/api/rag/status');
-      if (response.ok) {
-        systemStatus = await response.json();
+  // XState Machine for Upload Management
+  const fileUploadMachine = createMachine({
+    id: 'fileUpload',
+    initial: 'idle',
+    context: {
+      files: [],
+      currentFile: null,
+      progress: 0,
+      error: null,
+      results: [],
+      services: {
+        postgresql: false,
+        minio: false,
+        qdrant: false,
+        redis: false,
+        rabbitmq: false,
+        ollama: false
       }
-    } catch (error) {
-      console.error('Failed to fetch system status:', error);
+    },
+    states: {
+      idle: {
+        on: {
+          UPLOAD_FILES: {
+            target: 'validating',
+            actions: 'setFiles'
+          },
+          CHECK_SERVICES: {
+            target: 'checkingServices'
+          }
+        }
+      },
+      checkingServices: {
+        invoke: {
+          src: 'checkAllServices',
+          onDone: {
+            target: 'idle',
+            actions: 'updateServiceStatus'
+          },
+          onError: {
+            target: 'idle',
+            actions: 'setError'
+          }
+        }
+      },
+      validating: {
+        invoke: {
+          src: 'validateFiles',
+          onDone: {
+            target: 'uploading',
+            actions: 'setValidFiles'
+          },
+          onError: {
+            target: 'error',
+            actions: 'setError'
+          }
+        }
+      },
+      uploading: {
+        invoke: {
+          src: 'processUpload',
+          onDone: {
+            target: 'processing',
+            actions: 'setUploadComplete'
+          },
+          onError: {
+            target: 'error',
+            actions: 'setError'
+          }
+        },
+        on: {
+          PROGRESS_UPDATE: {
+            actions: 'updateProgress'
+          }
+        }
+      },
+      processing: {
+        invoke: {
+          src: 'processWithAI',
+          onDone: {
+            target: 'completed',
+            actions: 'setProcessingComplete'
+          },
+          onError: {
+            target: 'error',
+            actions: 'setError'
+          }
+        }
+      },
+      completed: {
+        on: {
+          RESET: {
+            target: 'idle',
+            actions: 'reset'
+          }
+        }
+      },
+      error: {
+        on: {
+          RETRY: {
+            target: 'validating'
+          },
+          RESET: {
+            target: 'idle',
+            actions: 'reset'
+          }
+        }
+      }
     }
   });
+
+  // System status check on mount
+  onMount(async () => {
+    uploadMachine = interpret(fileUploadMachine).start();
+    uploadMachine.send({ type: 'CHECK_SERVICES' });
+    
+    try {
+      const [ragStatus, systemHealth] = await Promise.all([
+        fetch('/api/v1/rag/status').then(r => r.json()).catch(() => ({})),
+        fetch('/api/v1/cluster/health').then(r => r.json()).catch(() => ({}))
+      ]);
+      
+      systemStatus = {
+        services: {
+          postgresql: ragStatus.postgresql || false,
+          minio: ragStatus.minio || false,
+          qdrant: ragStatus.qdrant || false,
+          redis: ragStatus.redis || false,
+          rabbitmq: ragStatus.rabbitmq || false,
+          ollama: ragStatus.ollama || false,
+          webgpu: enableWebGPU && (await checkWebGPUSupport())
+        },
+        performance: systemHealth.performance || {},
+        queues: ragStatus.queues || {},
+        storage: ragStatus.storage || {}
+      };
+    } catch (error) {
+      console.error('Failed to fetch system status:', error);
+      notificationStore.error('Failed to connect to backend services');
+    }
+  });
+
+  onDestroy(() => {
+    uploadMachine?.stop();
+  });
+
+  async function checkWebGPUSupport(): Promise<boolean> {
+    try {
+      if (!navigator.gpu) return false;
+      const adapter = await navigator.gpu.requestAdapter();
+      return !!adapter;
+    } catch {
+      return false;
+    }
+  }
 
   function handleDragOver(event: DragEvent) {
     event.preventDefault();
@@ -59,7 +226,6 @@
   function handleDrop(event: DragEvent) {
     event.preventDefault();
     isDragOver = false;
-
     const droppedFiles = Array.from(event.dataTransfer?.files || []);
     handleFiles(droppedFiles);
   }
@@ -71,84 +237,404 @@
   }
 
   function handleFiles(newFiles: File[]) {
-    // Validate files
-    const validFiles = newFiles.filter(file => {
-      if (file.size > maxSize) {
-        toast.error(`File ${file.name} is too large (max ${Math.round(maxSize / 1024 / 1024)}MB)`);
-        return false;
-      }
-      return true;
-    });
-
-    files = [...files, ...validFiles];
-
-    // Start upload for each file
-    validFiles.forEach(file => {
-      uploadFile(file);
+    uploadMachine?.send({ 
+      type: 'UPLOAD_FILES', 
+      files: newFiles 
     });
   }
 
-  async function uploadFile(file: File) {
+  // Enhanced upload processing with full stack integration
+  async function processEnhancedUpload(file: File): Promise<any> {
     const fileId = `${file.name}-${Date.now()}`;
-
-    // Initialize upload state
-    uploadStates.set(fileId, {
-      status: 'uploading',
+    
+    // Initialize comprehensive upload state
+    const initialState = {
+      status: 'initializing',
       progress: 0,
       fileName: file.name,
-      fileSize: file.size
-    });
+      fileSize: file.size,
+      fileType: file.type,
+      stages: {
+        validation: 'pending',
+        storage: 'pending',
+        ocr: enableOCR ? 'pending' : 'skipped',
+        embedding: enableEmbedding ? 'pending' : 'skipped',
+        vectorization: enableEmbedding ? 'pending' : 'skipped',
+        indexing: 'pending',
+        tagging: enableAutoTags ? 'pending' : 'skipped',
+        caching: 'pending'
+      },
+      results: {
+        documentId: null,
+        minioPath: null,
+        embeddingId: null,
+        vectorId: null,
+        tags: [],
+        metadata: {}
+      },
+      performance: {
+        startTime: Date.now(),
+        endTime: null,
+        totalTime: null,
+        stageTimings: {}
+      }
+    };
+
+    uploadStates.set(fileId, initialState);
     uploadStates = new Map(uploadStates);
 
     try {
-      // Create form data
-      const formData = new FormData();
-      formData.append('files', file);
-      formData.append('enableOCR', enableOCR.toString());
-      formData.append('enableEmbedding', enableEmbedding.toString());
-      formData.append('enableRAG', enableRAG.toString());
+      // Stage 1: File Validation
+      await updateStage(fileId, 'validation', 'processing');
+      await validateFile(file);
+      await updateStage(fileId, 'validation', 'completed');
 
-      console.log('Uploading file:', file.name, 'to /api/rag/process');
+      // Stage 2: MinIO Storage with protocol selection (JSON/gRPC/QUIC)
+      await updateStage(fileId, 'storage', 'processing');
+      const storageResult = await uploadToMinIO(file, fileId);
+      await updateStage(fileId, 'storage', 'completed');
+      updateResult(fileId, 'minioPath', storageResult.path);
 
-      // Upload to RAG API
-      const response = await fetch('/api/rag/process', {
-        method: 'POST',
-        body: formData
-      });
+      // Stage 3: PostgreSQL with Drizzle ORM
+      await updateStage(fileId, 'indexing', 'processing');
+      const documentRecord = await createDocumentRecord(file, storageResult, fileId);
+      await updateStage(fileId, 'indexing', 'completed');
+      updateResult(fileId, 'documentId', documentRecord.id);
 
-      const result = await response.json();
-
-      if (response.ok) {
-        // Update state to success
-        uploadStates.set(fileId, {
-          ...uploadStates.get(fileId),
-          status: 'success',
-          progress: 100,
-          result
-        });
-        uploadStates = new Map(uploadStates);
-
-        toast.success(`Successfully processed ${file.name}`);
-        onUploadComplete(result);
-
-        console.log('Upload result:', result);
-      } else {
-        throw new Error(result.error || 'Upload failed');
+      // Stage 4: OCR Processing (if enabled)
+      let extractedText = '';
+      if (enableOCR && ['image/', 'application/pdf'].some(type => file.type.includes(type))) {
+        await updateStage(fileId, 'ocr', 'processing');
+        extractedText = await performOCR(file, fileId);
+        await updateStage(fileId, 'ocr', 'completed');
       }
 
+      // Stage 5: Vector Embeddings with Ollama
+      if (enableEmbedding) {
+        await updateStage(fileId, 'embedding', 'processing');
+        const embeddingResult = await generateEmbeddings(file, extractedText, fileId);
+        await updateStage(fileId, 'embedding', 'completed');
+        updateResult(fileId, 'embeddingId', embeddingResult.id);
+
+        // Stage 6: Qdrant Vector Storage
+        await updateStage(fileId, 'vectorization', 'processing');
+        const vectorResult = await storeInQdrant(embeddingResult, documentRecord, fileId);
+        await updateStage(fileId, 'vectorization', 'completed');
+        updateResult(fileId, 'vectorId', vectorResult.id);
+      }
+
+      // Stage 7: Auto-tagging with AI
+      if (enableAutoTags) {
+        await updateStage(fileId, 'tagging', 'processing');
+        const tags = await generateAutoTags(file, extractedText, fileId);
+        await updateStage(fileId, 'tagging', 'completed');
+        updateResult(fileId, 'tags', tags);
+      }
+
+      // Stage 8: Redis Caching
+      await updateStage(fileId, 'caching', 'processing');
+      await cacheProcessedDocument(documentRecord, fileId);
+      await updateStage(fileId, 'caching', 'completed');
+
+      // Stage 9: RabbitMQ Notification
+      await publishUploadEvent(documentRecord, fileId);
+
+      // Final success update
+      const finalState = uploadStates.get(fileId);
+      if (finalState) {
+        finalState.status = 'success';
+        finalState.progress = 100;
+        finalState.performance.endTime = Date.now();
+        finalState.performance.totalTime = finalState.performance.endTime - finalState.performance.startTime;
+        uploadStates.set(fileId, finalState);
+        uploadStates = new Map(uploadStates);
+      }
+
+      // Update stores
+      evidenceStore.addDocument(documentRecord);
+      if (caseId) {
+        evidenceStore.linkToCase(documentRecord.id, caseId);
+      }
+
+      notificationStore.success(`Successfully processed ${file.name} with full AI pipeline`);
+      onUploadComplete(documentRecord);
+
+      return documentRecord;
+
     } catch (error) {
-      console.error('Upload error:', error);
+      console.error('Enhanced upload error:', error);
+      
+      const errorState = uploadStates.get(fileId);
+      if (errorState) {
+        errorState.status = 'error';
+        errorState.error = error instanceof Error ? error.message : 'Unknown error';
+        errorState.performance.endTime = Date.now();
+        errorState.performance.totalTime = errorState.performance.endTime - errorState.performance.startTime;
+        uploadStates.set(fileId, errorState);
+        uploadStates = new Map(uploadStates);
+      }
 
-      // Update state to error
-      uploadStates.set(fileId, {
-        ...uploadStates.get(fileId),
-        status: 'error',
-        error: error.message
-      });
-      uploadStates = new Map(uploadStates);
-
-      toast.error(`Failed to upload ${file.name}: ${error.message}`);
+      notificationStore.error(`Failed to process ${file.name}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw error;
     }
+  }
+
+  // Helper functions for each stage
+  async function updateStage(fileId: string, stage: string, status: 'pending' | 'processing' | 'completed' | 'error') {
+    const state = uploadStates.get(fileId);
+    if (state) {
+      state.stages[stage] = status;
+      state.performance.stageTimings[stage] = Date.now();
+      uploadStates.set(fileId, state);
+      uploadStates = new Map(uploadStates);
+    }
+  }
+
+  function updateResult(fileId: string, key: string, value: any) {
+    const state = uploadStates.get(fileId);
+    if (state) {
+      state.results[key] = value;
+      uploadStates.set(fileId, state);
+      uploadStates = new Map(uploadStates);
+    }
+  }
+
+  async function validateFile(file: File): Promise<void> {
+    if (file.size > maxSize) {
+      throw new Error(`File too large (max ${Math.round(maxSize / 1024 / 1024)}MB)`);
+    }
+    
+    const allowedTypes = accept.split(',').map(t => t.trim());
+    const fileExt = '.' + file.name.split('.').pop()?.toLowerCase();
+    
+    if (!allowedTypes.includes(fileExt) && !allowedTypes.includes(file.type)) {
+      throw new Error(`File type not supported: ${file.type || fileExt}`);
+    }
+  }
+
+  async function uploadToMinIO(file: File, fileId: string): Promise<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('fileId', fileId);
+    formData.append('bucket', 'legal-documents');
+    
+    // Try QUIC first, fallback to gRPC, then JSON
+    const protocols = ['quic', 'grpc', 'json'];
+    
+    for (const protocol of protocols) {
+      try {
+        const endpoint = `/api/v1/storage/${protocol}/upload`;
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-Upload-Protocol': protocol.toUpperCase()
+          }
+        });
+        
+        if (response.ok) {
+          return await response.json();
+        }
+      } catch (error) {
+        console.warn(`${protocol.toUpperCase()} upload failed, trying next protocol:`, error);
+      }
+    }
+    
+    throw new Error('All upload protocols failed');
+  }
+
+  async function createDocumentRecord(file: File, storageResult: any, fileId: string): Promise<any> {
+    const documentData = {
+      id: crypto.randomUUID(),
+      fileName: file.name,
+      fileSize: file.size,
+      fileType: file.type,
+      minioPath: storageResult.path,
+      uploadId: fileId,
+      caseId: caseId,
+      metadata: {
+        originalName: file.name,
+        uploadTime: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        enabledFeatures: {
+          ocr: enableOCR,
+          embedding: enableEmbedding,
+          rag: enableRAG,
+          autoTags: enableAutoTags,
+          webgpu: enableWebGPU
+        }
+      }
+    };
+
+    const response = await fetch('/api/v1/documents', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(documentData)
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create document record');
+    }
+
+    return await response.json();
+  }
+
+  async function performOCR(file: File, fileId: string): Promise<string> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('fileId', fileId);
+    
+    const response = await fetch('/api/v1/ocr/extract', {
+      method: 'POST',
+      body: formData
+    });
+
+    if (!response.ok) {
+      throw new Error('OCR processing failed');
+    }
+
+    const result = await response.json();
+    return result.extractedText || '';
+  }
+
+  async function generateEmbeddings(file: File, extractedText: string, fileId: string): Promise<any> {
+    const content = extractedText || file.name;
+    
+    // Use WebGPU if enabled and available
+    if (enableWebGPU && systemStatus.services.webgpu) {
+      return await generateWebGPUEmbeddings(content, fileId);
+    }
+    
+    // Fallback to Ollama embeddings
+    const response = await fetch('/api/v1/ollama/embeddings', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'nomic-embed-text',
+        prompt: content,
+        fileId: fileId
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('Embedding generation failed');
+    }
+
+    return await response.json();
+  }
+
+  async function generateWebGPUEmbeddings(content: string, fileId: string): Promise<any> {
+    // WebGPU-accelerated embeddings processing
+    const response = await fetch('/api/v1/webgpu/embeddings', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        content: content,
+        fileId: fileId,
+        model: 'webgpu-transformer'
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('WebGPU embedding generation failed');
+    }
+
+    return await response.json();
+  }
+
+  async function storeInQdrant(embeddingResult: any, documentRecord: any, fileId: string): Promise<any> {
+    const vectorData = {
+      id: documentRecord.id,
+      vector: embeddingResult.embedding,
+      payload: {
+        fileName: documentRecord.fileName,
+        fileType: documentRecord.fileType,
+        caseId: documentRecord.caseId,
+        uploadId: fileId,
+        timestamp: new Date().toISOString()
+      }
+    };
+
+    const response = await fetch('/api/v1/qdrant/points/upsert', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        collection: 'legal-documents',
+        points: [vectorData]
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('Vector storage failed');
+    }
+
+    return await response.json();
+  }
+
+  async function generateAutoTags(file: File, extractedText: string, fileId: string): Promise<string[]> {
+    const content = extractedText || file.name;
+    
+    const response = await fetch('/api/v1/ai/auto-tags', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        content: content,
+        fileName: file.name,
+        fileType: file.type,
+        fileId: fileId
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('Auto-tagging failed');
+    }
+
+    const result = await response.json();
+    return result.tags || [];
+  }
+
+  async function cacheProcessedDocument(documentRecord: any, fileId: string): Promise<void> {
+    const cacheKey = `document:${documentRecord.id}`;
+    const cacheData = {
+      ...documentRecord,
+      processedAt: new Date().toISOString(),
+      fileId: fileId
+    };
+
+    await comprehensiveCachingService.set(cacheKey, cacheData, 3600); // Cache for 1 hour
+  }
+
+  async function publishUploadEvent(documentRecord: any, fileId: string): Promise<void> {
+    const event = {
+      type: 'document.uploaded',
+      documentId: documentRecord.id,
+      fileName: documentRecord.fileName,
+      caseId: documentRecord.caseId,
+      uploadId: fileId,
+      timestamp: new Date().toISOString()
+    };
+
+    await fetch('/api/v1/rabbitmq/publish', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        exchange: 'legal-events',
+        routingKey: 'document.uploaded',
+        message: event
+      })
+    });
   }
 
   function removeFile(index: number) {
@@ -162,26 +648,96 @@
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
+
+  function formatDuration(ms: number): string {
+    if (ms < 1000) return `${ms}ms`;
+    if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`;
+    return `${(ms / 60000).toFixed(1)}m`;
+  }
+
+  function getStageIcon(stage: string) {
+    switch (stage) {
+      case 'validation': return Check;
+      case 'storage': return Cloud;
+      case 'ocr': return Loader2;
+      case 'embedding': return Cpu;
+      case 'vectorization': return Database;
+      case 'indexing': return Database;
+      case 'tagging': return Zap;
+      case 'caching': return Database;
+      default: return Check;
+    }
+  }
 </script>
 
-<div class={`space-y-4 ${classNameVar}`}>
-  <!-- System Status -->
+<div class={`space-y-6 ${classNameVar}`}>
+  <!-- Enhanced System Status Dashboard -->
   {#if systemStatus.services}
-    <div class="mb-4 p-3 bg-gray-50 rounded-lg">
-      <h3 class="text-sm font-medium mb-2">System Status</h3>
-      <div class="flex flex-wrap gap-2">
+    <div class="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-4 border">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
+          <Database class="w-5 h-5 text-blue-600" />
+          Full-Stack System Status
+        </h3>
+        <button 
+          class="text-sm bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-full border border-blue-200 transition-colors"
+          onclick={() => uploadMachine?.send({ type: 'CHECK_SERVICES' })}
+        >
+          Refresh Status
+        </button>
+      </div>
+      
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         {#each Object.entries(systemStatus.services) as [service, status]}
-          <span class="inline-flex items-center px-2 py-1 rounded-full text-xs {status.healthy ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
-            {status.healthy ? '✓' : '✗'} {service}
-          </span>
+          <div class="flex flex-col items-center p-3 rounded-lg border {status ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}">
+            <div class="flex items-center gap-2 mb-1">
+              {#if service === 'postgresql'}
+                <Database class="w-4 h-4" />
+              {:else if service === 'minio'}
+                <Cloud class="w-4 h-4" />
+              {:else if service === 'qdrant'}
+                <Cpu class="w-4 h-4" />
+              {:else if service === 'redis'}
+                <Zap class="w-4 h-4" />
+              {:else if service === 'webgpu'}
+                <Cpu class="w-4 h-4" />
+              {:else}
+                <Check class="w-4 h-4" />
+              {/if}
+              <span class="text-xs font-medium {status ? 'text-green-700' : 'text-red-700'}">
+                {status ? '✓' : '✗'}
+              </span>
+            </div>
+            <span class="text-xs text-center font-medium capitalize {status ? 'text-green-600' : 'text-red-600'}">
+              {service.replace(/([A-Z])/g, ' $1')}
+            </span>
+          </div>
         {/each}
+      </div>
+
+      <!-- Protocol Status Indicators -->
+      <div class="mt-4 flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <span class="text-sm font-medium text-gray-600">Protocols:</span>
+          <div class="flex gap-2">
+            <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">QUIC</span>
+            <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">gRPC</span>
+            <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs">JSON/REST</span>
+          </div>
+        </div>
+        {#if enableWebGPU && systemStatus.services.webgpu}
+          <div class="flex items-center gap-2 text-green-600">
+            <Zap class="w-4 h-4" />
+            <span class="text-xs font-medium">WebGPU Accelerated</span>
+          </div>
+        {/if}
       </div>
     </div>
   {/if}
 
-  <!-- Upload Zone -->
+  <!-- Enhanced Upload Zone -->
   <div
-    class="border-2 border-dashed rounded-lg p-8 text-center transition-colors {isDragOver ? 'border-blue-400 bg-blue-50' : 'border-gray-300 hover:border-gray-400'}"
+    class="relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 {isDragOver ? 'border-blue-400 bg-blue-50 scale-102' : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'}"
     ondragover={handleDragOver}
     ondragleave={handleDragLeave}
     ondrop={handleDrop}
@@ -190,51 +746,202 @@
     onclick={() => fileInput?.click()}
     onkeydown={(e) => e.key === 'Enter' && fileInput?.click()}
   >
-    <Upload class="w-12 h-12 text-gray-400 mx-auto mb-4" />
-    <p class="text-lg font-medium text-gray-600 mb-2">
-      Drop files here or click to upload
-    </p>
-    <p class="text-sm text-gray-500">
-      Supports: {accept} (max {Math.round(maxSize / 1024 / 1024)}MB each)
-    </p>
+    <div class="flex flex-col items-center">
+      <div class="mb-4 p-3 bg-gray-100 rounded-full">
+        <Upload class="w-8 h-8 text-gray-600" />
+      </div>
+      <p class="text-xl font-semibold text-gray-700 mb-2">
+        Upload Legal Documents
+      </p>
+      <p class="text-gray-500 mb-4">
+        Drop files here or click to browse
+      </p>
+      <div class="flex flex-wrap justify-center gap-2 text-xs">
+        {#each accept.split(',') as fileType}
+          <span class="px-2 py-1 bg-gray-200 text-gray-600 rounded">{fileType.trim()}</span>
+        {/each}
+      </div>
+      <p class="text-xs text-gray-400 mt-2">
+        Maximum file size: {Math.round(maxSize / 1024 / 1024)}MB each
+      </p>
+    </div>
 
     <input
       bind:this={fileInput}
       type="file"
       multiple
       {accept}
-      class="hidden"
+      class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
       onchange={handleFileInput}
     />
   </div>
 
-  <!-- Upload Progress -->
+  <!-- Advanced Processing Pipeline Display -->
   {#if uploadStates.size > 0}
-    <div class="space-y-3">
-      <h3 class="text-lg font-medium">Upload Progress</h3>
+    <div class="space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
+          <Loader2 class="w-5 h-5 text-blue-600" />
+          Processing Pipeline
+        </h3>
+        <span class="text-sm text-gray-500">{uploadStates.size} file{uploadStates.size !== 1 ? 's' : ''}</span>
+      </div>
+      
       {#each Array.from(uploadStates.entries()) as [fileId, state]}
-        <div class="border rounded-lg p-4">
-          <div class="flex items-center justify-between mb-2">
-            <span class="font-medium truncate">{state.fileName}</span>
-            <span class="text-sm text-gray-500">{formatFileSize(state.fileSize)}</span>
+        <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+          <!-- File Header -->
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <div class="p-2 bg-gray-100 rounded-lg">
+                {#if state.fileType.includes('pdf')}
+                  📄
+                {:else if state.fileType.includes('image')}
+                  🖼️
+                {:else if state.fileType.includes('text')}
+                  📝
+                {:else}
+                  📎
+                {/if}
+              </div>
+              <div>
+                <h4 class="font-semibold text-gray-800 truncate max-w-md">{state.fileName}</h4>
+                <p class="text-sm text-gray-500">
+                  {formatFileSize(state.fileSize)} • {state.fileType}
+                </p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              {#if state.status === 'initializing' || state.status === 'processing'}
+                <Loader2 class="w-5 h-5 animate-spin text-blue-600" />
+                <span class="text-sm text-blue-600 font-medium">Processing</span>
+              {:else if state.status === 'success'}
+                <Check class="w-5 h-5 text-green-600" />
+                <span class="text-sm text-green-600 font-medium">Completed</span>
+              {:else if state.status === 'error'}
+                <X class="w-5 h-5 text-red-600" />
+                <span class="text-sm text-red-600 font-medium">Error</span>
+              {/if}
+            </div>
           </div>
 
-          <div class="flex items-center gap-2">
-            {#if state.status === 'uploading'}
-              <Loader2 class="w-4 h-4 animate-spin text-blue-600" />
-              <span class="text-sm text-blue-600">Processing...</span>
-            {:else if state.status === 'success'}
-              <Check class="w-4 h-4 text-green-600" />
-              <span class="text-sm text-green-600">Completed</span>
-            {:else if state.status === 'error'}
-              <X class="w-4 h-4 text-red-600" />
-              <span class="text-sm text-red-600">Error: {state.error}</span>
-            {/if}
+          <!-- Processing Stages -->
+          <div class="mb-4">
+            <div class="grid grid-cols-4 md:grid-cols-8 gap-2">
+              {#each Object.entries(state.stages || {}) as [stageName, stageStatus]}
+                {@const IconComponent = getStageIcon(stageName)}
+                <div class="flex flex-col items-center p-2 rounded-lg {
+                  stageStatus === 'completed' ? 'bg-green-100 border border-green-200' :
+                  stageStatus === 'processing' ? 'bg-blue-100 border border-blue-200' :
+                  stageStatus === 'error' ? 'bg-red-100 border border-red-200' :
+                  stageStatus === 'skipped' ? 'bg-gray-100 border border-gray-200' :
+                  'bg-gray-50 border border-gray-200'
+                }">
+                  {#if stageStatus === 'processing'}
+                    <Loader2 class="w-4 h-4 animate-spin text-blue-600 mb-1" />
+                  {:else if stageStatus === 'completed'}
+                    <Check class="w-4 h-4 text-green-600 mb-1" />
+                  {:else if stageStatus === 'error'}
+                    <X class="w-4 h-4 text-red-600 mb-1" />
+                  {:else}
+                    <IconComponent class="w-4 h-4 text-gray-400 mb-1" />
+                  {/if}
+                  <span class="text-xs font-medium capitalize text-center {
+                    stageStatus === 'completed' ? 'text-green-700' :
+                    stageStatus === 'processing' ? 'text-blue-700' :
+                    stageStatus === 'error' ? 'text-red-700' :
+                    'text-gray-600'
+                  }">
+                    {stageName.replace(/([A-Z])/g, ' $1').trim()}
+                  </span>
+                </div>
+              {/each}
+            </div>
           </div>
 
-          {#if state.result}
-            <div class="mt-2 p-2 bg-gray-50 rounded text-xs">
-              <pre>{JSON.stringify(state.result, null, 2)}</pre>
+          <!-- Progress Bar -->
+          <div class="mb-4">
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-gray-600">Progress</span>
+              <span class="text-gray-600">{state.progress || 0}%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div class="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-300" 
+                   style="width: {state.progress || 0}%"></div>
+            </div>
+          </div>
+
+          <!-- Performance Metrics -->
+          {#if state.performance?.totalTime}
+            <div class="flex justify-between text-xs text-gray-500 mb-3">
+              <span>Processing time: {formatDuration(state.performance.totalTime)}</span>
+              {#if state.results?.documentId}
+                <span>Document ID: {state.results.documentId.substring(0, 8)}...</span>
+              {/if}
+            </div>
+          {/if}
+
+          <!-- Results Display -->
+          {#if state.results}
+            <div class="border-t pt-3">
+              <button 
+                class="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                onclick={() => {
+                  const detailsEl = document.getElementById(`details-${fileId}`);
+                  if (detailsEl) {
+                    detailsEl.classList.toggle('hidden');
+                  }
+                }}
+              >
+                View Processing Results
+              </button>
+              <div id="details-{fileId}" class="hidden mt-2 p-3 bg-gray-50 rounded-lg">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                  {#if state.results.documentId}
+                    <div>
+                      <span class="font-medium text-gray-700">Document ID:</span>
+                      <span class="text-gray-600 font-mono">{state.results.documentId}</span>
+                    </div>
+                  {/if}
+                  {#if state.results.minioPath}
+                    <div>
+                      <span class="font-medium text-gray-700">Storage Path:</span>
+                      <span class="text-gray-600 font-mono">{state.results.minioPath}</span>
+                    </div>
+                  {/if}
+                  {#if state.results.embeddingId}
+                    <div>
+                      <span class="font-medium text-gray-700">Embedding ID:</span>
+                      <span class="text-gray-600 font-mono">{state.results.embeddingId}</span>
+                    </div>
+                  {/if}
+                  {#if state.results.vectorId}
+                    <div>
+                      <span class="font-medium text-gray-700">Vector ID:</span>
+                      <span class="text-gray-600 font-mono">{state.results.vectorId}</span>
+                    </div>
+                  {/if}
+                  {#if state.results.tags && state.results.tags.length > 0}
+                    <div class="md:col-span-2">
+                      <span class="font-medium text-gray-700">Auto-Generated Tags:</span>
+                      <div class="flex flex-wrap gap-1 mt-1">
+                        {#each state.results.tags as tag}
+                          <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">{tag}</span>
+                        {/each}
+                      </div>
+                    </div>
+                  {/if}
+                </div>
+              </div>
+            </div>
+          {/if}
+
+          <!-- Error Display -->
+          {#if state.error}
+            <div class="border-t pt-3">
+              <div class="p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p class="text-sm text-red-700 font-medium mb-1">Processing Error</p>
+                <p class="text-xs text-red-600">{state.error}</p>
+              </div>
             </div>
           {/if}
         </div>
@@ -242,20 +949,49 @@
     </div>
   {/if}
 
-  <!-- Settings -->
-  <div class="flex flex-wrap gap-4 text-sm">
-    <label class="flex items-center gap-2">
-      <input type="checkbox" bind:checked={enableOCR} />
-      Enable OCR
-    </label>
-    <label class="flex items-center gap-2">
-      <input type="checkbox" bind:checked={enableEmbedding} />
-      Enable Embeddings
-    </label>
-    <label class="flex items-center gap-2">
-      <input type="checkbox" bind:checked={enableRAG} />
-      Enable RAG
-    </label>
+  <!-- Advanced Feature Settings -->
+  <div class="bg-white border border-gray-200 rounded-xl p-6">
+    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+      <Zap class="w-5 h-5 text-yellow-600" />
+      Processing Features
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <label class="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+        <input type="checkbox" bind:checked={enableOCR} class="w-4 h-4 text-blue-600" />
+        <div>
+          <span class="font-medium text-gray-700">OCR Processing</span>
+          <p class="text-xs text-gray-500">Extract text from images and PDFs</p>
+        </div>
+      </label>
+      <label class="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+        <input type="checkbox" bind:checked={enableEmbedding} class="w-4 h-4 text-blue-600" />
+        <div>
+          <span class="font-medium text-gray-700">Vector Embeddings</span>
+          <p class="text-xs text-gray-500">Generate semantic embeddings with Ollama</p>
+        </div>
+      </label>
+      <label class="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+        <input type="checkbox" bind:checked={enableRAG} class="w-4 h-4 text-blue-600" />
+        <div>
+          <span class="font-medium text-gray-700">RAG Integration</span>
+          <p class="text-xs text-gray-500">Enhanced retrieval-augmented generation</p>
+        </div>
+      </label>
+      <label class="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+        <input type="checkbox" bind:checked={enableAutoTags} class="w-4 h-4 text-blue-600" />
+        <div>
+          <span class="font-medium text-gray-700">Auto-Tagging</span>
+          <p class="text-xs text-gray-500">AI-powered automatic tag generation</p>
+        </div>
+      </label>
+      <label class="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+        <input type="checkbox" bind:checked={enableWebGPU} class="w-4 h-4 text-blue-600" />
+        <div>
+          <span class="font-medium text-gray-700">WebGPU Acceleration</span>
+          <p class="text-xs text-gray-500">Hardware-accelerated processing</p>
+        </div>
+      </label>
+    </div>
   </div>
 </div>
 

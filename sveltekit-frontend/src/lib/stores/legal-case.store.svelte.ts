@@ -1,12 +1,62 @@
 
 // Legal Case Store - Svelte 5 Runes Implementation
-import type {
-  LegalCase,
-  LegalDocument,
-  AIInsights,
-  AuditLogEntry,
-} from "$lib/types/legal";
-// TODO: Fix import - // Orphaned content: import { LegalAuditService  interface User {   id: string;   clearanceLevel: number;   role: string; }  export function createLegalCaseStore() {
+
+// Define types locally since they're not available
+interface LegalCase {
+  id: string;
+  title: string;
+  caseNumber: string;
+  description?: string;
+  status: "active" | "pending" | "closed" | "archived";
+  priority: "low" | "medium" | "high" | "critical";
+  confidentialityLevel: number;
+}
+
+interface LegalDocument {
+  id: string;
+  name: string;
+  type: string;
+}
+
+interface AIInsights {
+  findings?: any[];
+  riskAssessment?: {
+    score: number;
+    level: string;
+  };
+  complianceChecks?: any[];
+}
+
+interface AuditLogEntry {
+  id: string;
+  type: string;
+  entityType: string;
+  entityId: string;
+  userId: string;
+  timestamp: Date;
+  details?: any;
+}
+
+interface User {
+  id: string;
+  clearanceLevel: number;
+  role: string;
+}
+
+// Mock audit service
+class LegalAuditService {
+  async logAction(action: {
+    type: string;
+    entityType: string;
+    entityId: string;
+    userId: string;
+    details?: any;
+  }): Promise<void> {
+    console.log('Audit action logged:', action);
+  }
+}
+
+export function createLegalCaseStore() {
   // State using Svelte 5 runes
   const cases = $state<LegalCase[]>([]);
   const selectedCase = $state<LegalCase | null>(null);

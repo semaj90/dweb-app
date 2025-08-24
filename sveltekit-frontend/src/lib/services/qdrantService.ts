@@ -5,6 +5,7 @@
  */
 
 import { QdrantClient } from '@qdrant/js-client-rest';
+import type { PointStruct } from '@qdrant/js-client-rest';
 // Orphaned content: import type { PointStruct, Filter, SearchRequest
 import {
 writable, type Writable } from "svelte/store";

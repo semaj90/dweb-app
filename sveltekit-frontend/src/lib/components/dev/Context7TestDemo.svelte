@@ -1,7 +1,6 @@
 <script lang="ts">
 
   import { onMount } from 'svelte';
-  import { $state } from 'svelte';
   import { writable } from 'svelte/store';
   
   // Test state

@@ -1,25 +1,52 @@
 <!-- YoRHa Command Center Dashboard Component -->
 <script lang="ts">
-  // Standard Svelte imports instead of Svelte 5 runes
-
-  import type { Props } from "$lib/types/global";
+  // Svelte 5 runes and modern imports
+  import { $state } from 'svelte';
   import { onMount } from 'svelte';
   import { goto } from "$app/navigation";
-  // import YorhaAIAssistant from "$lib/components/ai/YorhaAIAssistant.svelte";
+  import { Button } from '$lib/components/ui/button/index.js';
+  import { Badge } from '$lib/components/ui/badge/index.js';
+  import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card/index.js';
+  import RealTimeLegalSearch from '$lib/components/search/RealTimeLegalSearch.svelte';
+  import { useRealTimeSearch } from '$lib/services/real-time-search.js';
 
-  // Exported prop - accept any for quick-pass fixes (refactor later to strict types)
-  export let systemData: any = {};
+  // Props interface
+  interface SystemData {
+    activeCases?: number;
+    evidenceItems?: number;
+    personsOfInterest?: number;
+    aiQueries?: number;
+    systemLoad?: number;
+    gpuUtilization?: number;
+    memoryUsage?: number;
+    networkLatency?: number;
+  }
 
-  // Dashboard state
-  let selectedCard: string | null = null;
-  let animationPhase = 0;
-  let recentActivity = [
+  // Exported props with defaults
+  export let systemData: SystemData = {
+    activeCases: 0,
+    evidenceItems: 0,
+    personsOfInterest: 0,
+    aiQueries: 0,
+    systemLoad: 0,
+    gpuUtilization: 0,
+    memoryUsage: 0,
+    networkLatency: 0
+  };
+
+  // Dashboard state using Svelte 5 runes
+  let selectedCard = $state<string | null>(null);
+  let animationPhase = $state(0);
+  let recentActivity = $state([
     { id: 1, action: 'Case Analysis Completed', target: 'CASE-2024-087', time: '2 minutes ago', type: 'success' },
     { id: 2, action: 'Evidence Upload', target: 'Digital Forensics Report', time: '5 minutes ago', type: 'info' },
     { id: 3, action: 'AI Query Processed', target: 'Contract Liability Analysis', time: '8 minutes ago', type: 'ai' },
     { id: 4, action: 'System Alert', target: 'GPU Memory Optimization', time: '12 minutes ago', type: 'warning' },
     { id: 5, action: 'New Case Created', target: 'CASE-2024-088', time: '15 minutes ago', type: 'success' }
   ]);
+
+  // Real-time search integration
+  const { state: searchState, search: performSearch } = useRealTimeSearch();
 
   // Quick actions
   const quickActions = [
@@ -238,6 +265,38 @@
           <div class="text-sm font-medium">{action.label}</div>
         </button>
       {/each}
+    </div>
+  </div>
+
+  <!-- Real-time Search Section -->
+  <div class="search-section mb-8">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-bold text-yorha-accent-warm">Legal AI Search</h2>
+      <div class="flex items-center space-x-2">
+        <div class="w-2 h-2 rounded-full {$searchState.isConnected ? 'bg-green-400' : 'bg-red-400'} animate-pulse"></div>
+        <span class="text-xs text-yorha-muted">
+          {$searchState.isConnected ? 'Connected' : 'Offline'}
+        </span>
+      </div>
+    </div>
+    
+    <div class="search-panel bg-yorha-darker border border-yorha-accent-warm/30 rounded-lg p-6">
+      <RealTimeLegalSearch
+        placeholder="Search cases, evidence, precedents, statutes..."
+        categories={['cases', 'evidence', 'precedents', 'statutes', 'criminals']}
+        enableVectorSearch={true}
+        aiSuggestions={true}
+        onselect={(result) => {
+          // Handle search result selection
+          recentActivity = [{
+            id: Date.now(),
+            action: 'Search Query Executed',
+            target: `"${result.title}"`,
+            time: 'just now',
+            type: 'ai'
+          }, ...recentActivity.slice(0, 4)];
+        }}
+      />
     </div>
   </div>
 

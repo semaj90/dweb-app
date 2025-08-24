@@ -5,8 +5,8 @@
  */
 
 import { EventEmitter } from "events";
-import type { OptimizationSuite, PerformanceMetrics } from "./index.js";
-import { createOptimizationSuite } from "./index.js";
+import type { EnhancedOptimizationSuite, EnhancedPerformanceMetrics } from "./index.js";
+import { createEnhancedOptimizationSuite } from "./index.js";
 
 // === Context7 MCP Tool Integration Types ===
 interface Context7MCPRequest {
@@ -55,16 +55,16 @@ interface OptimizationRecommendation {
 
 // === Enhanced Context7 MCP Integration Class ===
 export class Context7MCPOptimizationIntegrator extends EventEmitter {
-  private optimizationSuite: OptimizationSuite;
+  private optimizationSuite: EnhancedOptimizationSuite;
   private context7_endpoint = "http://localhost:40000/mcp";
   private optimization_cache = new Map<string, Context7MCPResponse>();
-  private performance_baseline: PerformanceMetrics | null = null;
+  private performance_baseline: EnhancedPerformanceMetrics | null = null;
 
-  constructor(suite?: OptimizationSuite) {
+  constructor(suite?: EnhancedOptimizationSuite) {
     super();
     this.optimizationSuite =
       suite ||
-      createOptimizationSuite({
+      createEnhancedOptimizationSuite({
         development_mode: true,
         memory_limit_gb: 8,
         enable_wasm: true,
@@ -221,12 +221,36 @@ export class Context7MCPOptimizationIntegrator extends EventEmitter {
     };
   }
 
-  private async collectCurrentMetrics(): Promise<PerformanceMetrics> {
+  private async collectCurrentMetrics(): Promise<EnhancedPerformanceMetrics> {
     const dockerStats = this.optimizationSuite.docker.getResourceUtilization();
     const cacheStats = this.optimizationSuite.cache.getStats();
     const jsonStats = this.optimizationSuite.json.getPerformanceStats();
 
     return {
+      system: {
+        memoryUsageGB: dockerStats.total_memory_used / 1024,
+        cpuUsagePercent: dockerStats.total_cpu_used,
+        gpuMemoryUsageGB: 0,
+        gpuUtilizationPercent: 0
+      },
+      legalAI: {
+        documentsProcessedPerMinute: 0,
+        averageAnalysisTimeMs: 0,
+        caseSearchLatencyMs: 0,
+        evidenceProcessingThroughput: 0
+      },
+      services: {
+        ollamaResponseTimeMs: 0,
+        databaseQueryTimeMs: 0,
+        vectorSearchLatencyMs: 0,
+        goServiceHealthScores: {}
+      },
+      cache: {
+        hitRatePercent: cacheStats.cache.hit_rate,
+        evictionCount: 0,
+        memoryEfficiency: 0,
+        legalDocumentCacheHits: 0
+      },
       memory_usage: dockerStats.total_memory_used,
       cpu_usage: dockerStats.total_cpu_used,
       cache_hit_rate: cacheStats.cache.hit_rate,
@@ -364,8 +388,8 @@ export class Context7MCPOptimizationIntegrator extends EventEmitter {
         expected_benefit: "Reduce memory usage by 20-30%",
         code_example: `
 // Enable memory optimization
-import { optimizeForDevelopment } from '$lib/optimization';
-const { suite } = await optimizeForDevelopment();
+import { optimizeForLegalAIProduction } from '$lib/optimization';
+const suite = await optimizeForLegalAIProduction();
 await suite.docker.optimizeMemoryUsage();`,
       });
     }
@@ -460,7 +484,7 @@ jsonOptimizer.setOptimizationLevel('high');`,
           expected_benefit: "Reduce memory footprint by 40-60%",
           code_example: `
 // Comprehensive memory optimization
-const { suite } = await optimizeForDevelopment();
+const suite = await optimizeForLegalAIProduction();
 await suite.cache.analyzeAccessPatterns();
 await suite.docker.optimizeMemoryUsage();`,
         });
@@ -509,8 +533,8 @@ const dockerCompose = optimizer.generateOptimizedDockerCompose();`,
           "Optimized integration with minimal performance impact",
         code_example: `
 // Optimized feature integration
-import { createOptimizationSuite } from '$lib/optimization';
-const suite = createOptimizationSuite();
+import { createEnhancedOptimizationSuite } from '$lib/optimization';
+const suite = createEnhancedOptimizationSuite();
 // Integrate ${feature} with optimization awareness`,
       },
     ];
@@ -631,7 +655,7 @@ const db = drizzle(pool, {
 
   // === Public API Methods ===
   async runComprehensiveOptimizationAnalysis(): Promise<{
-    current_metrics: PerformanceMetrics;
+    current_metrics: EnhancedPerformanceMetrics;
     recommendations: OptimizationRecommendation[];
     estimated_improvements: Record<string, number>;
     implementation_plan: string[];
@@ -678,7 +702,7 @@ const db = drizzle(pool, {
     };
   }
 
-  getOptimizationSuite(): OptimizationSuite {
+  getOptimizationSuite(): EnhancedOptimizationSuite {
     return this.optimizationSuite;
   }
 
@@ -689,7 +713,7 @@ const db = drizzle(pool, {
 
 // === Factory Functions ===
 export function createContext7MCPIntegration(
-  suite?: OptimizationSuite
+  suite?: EnhancedOptimizationSuite
 ): Context7MCPOptimizationIntegrator {
   return new Context7MCPOptimizationIntegrator(suite);
 }

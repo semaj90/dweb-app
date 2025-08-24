@@ -1,9 +1,9 @@
 <script lang="ts">
   import { $props, $derived, $effect } from 'svelte';
   import { Dialog as DialogPrimitive } from "bits-ui";
-  import { createDialog, melt } from "melt";
+  import { createDialog } from "melt";  // melt 0.39 only for builders
   import ModernButton from "./ModernButton.svelte";
-  
+
   interface Props {
     open?: boolean;
     title: string;
@@ -16,8 +16,8 @@
     footer?: import('svelte').Snippet;
     onClose?: () => void;
   }
-  
-  let { 
+
+  let {
     open = $bindable(false),
     title,
     description,
@@ -29,39 +29,20 @@
     footer,
     onClose
   }: Props = $props();
-  
-  // Melt-UI dialog for enhanced functionality
-  const {
-    elements: { 
-      trigger: triggerEl, 
-      overlay, 
-      content, 
-      title: titleEl, 
-      description: descEl,
-      close
-    },
-    states: { open: openState }
-  } = createDialog({
+
+  // Melt 0.39 builder for enhanced functionality (builders only)
+  const dialog = createDialog({
     preventScroll: true,
     closeOnEscape: !persistent,
     closeOnOutsideClick: !persistent
   });
-  
-  // Sync with bindable prop
-  $effect(() => {
-    openState.set(open);
-  });
-  
-  $effect(() => {
-    open = $openState;
-  });
-  
+
   // Handle close events
   function handleClose() {
     open = false;
     onClose?.();
   }
-  
+
   // Dynamic classes for size
   const dialogClasses = $derived(() => {
     const sizes = {
@@ -77,60 +58,55 @@
 
 <DialogPrimitive.Root bind:open>
   {#if trigger}
-    <DialogPrimitive.Trigger use:melt={$triggerEl}>
+    <DialogPrimitive.Trigger>
       {@render trigger()}
     </DialogPrimitive.Trigger>
   {/if}
-  
+
   <DialogPrimitive.Portal>
     <!-- Backdrop overlay -->
-    <DialogPrimitive.Overlay 
+    <DialogPrimitive.Overlay
       class="dialog-overlay"
-      use:melt={$overlay}
     />
-    
+
     <!-- Dialog content -->
-    <DialogPrimitive.Content 
+    <DialogPrimitive.Content
       class={dialogClasses}
-      use:melt={$content}
     >
       <!-- Header -->
       <header class="dialog-header">
         <div class="golden-flex-between">
           <div class="space-y-golden">
-            <DialogPrimitive.Title 
-              use:melt={$titleEl} 
-              class="dialog-title"
-            >
-              {title}
-            </DialogPrimitive.Title>
-            
+            <DialogPrimitive.Title
+                class="dialog-title"
+              >
+                {title}
+              </DialogPrimitive.Title>
+
             {#if description}
-              <DialogPrimitive.Description 
-                use:melt={$descEl} 
+              <DialogPrimitive.Description
                 class="dialog-description"
               >
                 {description}
               </DialogPrimitive.Description>
             {/if}
           </div>
-          
+
           {#if showClose}
-            <DialogPrimitive.Close 
-              use:melt={$close}
+            <DialogPrimitive.Close
               class="dialog-close"
               onclick={handleClose}
             >
-              <svg 
-                class="w-4 h-4" 
-                fill="none" 
-                stroke="currentColor" 
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path 
-                  stroke-linecap="round" 
-                  stroke-linejoin="round" 
-                  stroke-width="2" 
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
                   d="M6 18L18 6M6 6l12 12"
                 />
               </svg>
@@ -139,12 +115,12 @@
           {/if}
         </div>
       </header>
-      
+
       <!-- Body content -->
       <div class="dialog-body">
         {@render children?.()}
       </div>
-      
+
       <!-- Footer if provided -->
       {#if footer}
         <footer class="dialog-footer">
@@ -164,7 +140,7 @@
     z-index: 50;
     animation: overlayShow 200ms cubic-bezier(0.16, 1, 0.3, 1);
   }
-  
+
   .dialog-content {
     position: fixed;
     top: 50%;
@@ -182,13 +158,13 @@
     flex-direction: column;
     animation: contentShow 200ms cubic-bezier(0.16, 1, 0.3, 1);
   }
-  
+
   .dialog-header {
     padding: var(--golden-xl);
     border-bottom: 1px solid var(--yorha-border-secondary);
     flex-shrink: 0;
   }
-  
+
   .dialog-title {
     font-size: var(--text-xl);
     font-weight: 600;
@@ -197,14 +173,14 @@
     letter-spacing: 0.025em;
     margin: 0;
   }
-  
+
   .dialog-description {
     color: var(--yorha-text-secondary);
     font-size: var(--text-sm);
     margin: 0;
     line-height: 1.5;
   }
-  
+
   .dialog-close {
     display: flex;
     align-items: center;
@@ -218,30 +194,30 @@
     cursor: pointer;
     transition: all 200ms ease;
   }
-  
+
   .dialog-close:hover {
     color: var(--yorha-text-primary);
     background: var(--yorha-bg-hover);
     border-color: var(--yorha-border-accent);
   }
-  
+
   .dialog-close:focus-visible {
     outline: 2px solid var(--yorha-accent-gold);
     outline-offset: 2px;
   }
-  
+
   .dialog-body {
     padding: var(--golden-xl);
     overflow-y: auto;
     flex: 1;
   }
-  
+
   .dialog-footer {
     padding: var(--golden-xl);
     border-top: 1px solid var(--yorha-border-secondary);
     flex-shrink: 0;
   }
-  
+
   /* Animations */
   @keyframes overlayShow {
     from {
@@ -251,7 +227,7 @@
       opacity: 1;
     }
   }
-  
+
   @keyframes contentShow {
     from {
       opacity: 0;
@@ -262,7 +238,7 @@
       transform: translate(-50%, -50%) scale(1);
     }
   }
-  
+
   /* Responsive adjustments */
   @media (max-width: 768px) {
     .dialog-content {
@@ -270,18 +246,18 @@
       max-height: calc(100vh - var(--golden-lg));
       border-radius: 0.75rem;
     }
-    
+
     .dialog-header,
     .dialog-body,
     .dialog-footer {
       padding: var(--golden-lg);
     }
-    
+
     .dialog-title {
       font-size: var(--text-lg);
     }
   }
-  
+
   /* Full size variant */
   .dialog-content:has(.max-w-7xl) {
     width: calc(100vw - var(--golden-md));

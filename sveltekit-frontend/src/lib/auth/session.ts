@@ -32,36 +32,14 @@ export const lucia = new Lucia(adapter, {
     return {
       id: attributes.id,
       email: attributes.email,
-      name: attributes.name,
       firstName: attributes.firstName,
       lastName: attributes.lastName,
       role: attributes.role,
       isActive: attributes.isActive,
-      avatarUrl: attributes.avatarUrl,
       emailVerified: attributes.emailVerified,
     };
   },
 });
 
-// TypeScript declaration for user attributes
-declare module "lucia" {
-  interface Register {
-    Lucia: typeof lucia;
-    DatabaseUserAttributes: {
-      id: string;
-      email: string;
-      name?: string;
-      firstName?: string;
-      lastName?: string;
-      role: string;
-      isActive: boolean;
-      avatarUrl?: string;
-      emailVerified?: Date | boolean; // Can be boolean or Date
-      hashedPassword?: string;
-      createdAt: Date;
-      updatedAt: Date;
-    };
-    DatabaseSessionAttributes: {};
-  }
-}
+// TypeScript declaration for user attributes - using server auth definitions
 export type Auth = typeof lucia;

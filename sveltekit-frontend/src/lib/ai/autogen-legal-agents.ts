@@ -385,7 +385,7 @@ Identify any compliance issues and provide mitigation strategies.`,
 
     const recommendations: string[] = [];
     for (const pattern of recommendationPatterns) {
-      const matches = analysis.matchAll(pattern);
+      const matches = Array.from(analysis.matchAll(pattern));
       for (const match of matches) {
         if (match[1]?.trim()) {
           recommendations.push(match[1].trim());

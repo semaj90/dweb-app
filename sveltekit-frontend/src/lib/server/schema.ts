@@ -63,8 +63,9 @@ export const evidenceVectorsTable = pgTable('evidence_vectors', {
   evidence_id: text('evidence_id').notNull(),
   model: text('model').notNull(),
   dimensions: integer('dimensions').notNull(),
-  vector: vector('vector', { dimensions: 1536 }), // pgvector type
-  metadata: jsonb('metadata'),
+  // pgvector type - always present after ingest-service processes
+  vector: vector('vector', { dimensions: 1536 }).notNull(),
+  metadata: jsonb('metadata').default({}).notNull(),
   created_at: timestamp('created_at').notNull().defaultNow(),
   updated_at: timestamp('updated_at').defaultNow()
 }, (table) => ({
@@ -102,12 +103,15 @@ export const evidenceTable = pgTable('evidence', {
   uploaded_at: timestamp('uploaded_at').notNull().defaultNow(),
   chain_of_custody: jsonb('chain_of_custody'),
   metadata: jsonb('metadata'),
+  // Always present tags array for auto-tagging worker
+  tags: jsonb('tags').$type<string[]>().default([]).notNull(),
   is_active: boolean('is_active').default(true)
 }, (table) => ({
   caseIdIdx: index('evidence_case_id_idx').on(table.case_id),
   uploadedByIdx: index('evidence_uploaded_by_idx').on(table.uploaded_by),
   hashIdx: index('evidence_hash_idx').on(table.hash),
-  uploadedAtIdx: index('evidence_uploaded_at_idx').on(table.uploaded_at)
+  uploadedAtIdx: index('evidence_uploaded_at_idx').on(table.uploaded_at),
+  tagsIdx: index('evidence_tags_idx').using('gin', table.tags)
 }));
 
 // Cases table (if not already exists)
@@ -128,6 +132,26 @@ export const casesTable = pgTable('cases', {
   statusIdx: index('cases_status_idx').on(table.status),
   createdByIdx: index('cases_created_by_idx').on(table.created_by),
   assignedToIdx: index('cases_assigned_to_idx').on(table.assigned_to)
+}));
+
+// Reports table for detective/legal reports
+export const reportsTable = pgTable('reports', {
+  id: uuid('id').primaryKey(),
+  case_id: text('case_id').notNull(),
+  evidence_id: text('evidence_id'), // Optional - report can be linked to specific evidence
+  title: text('title').notNull().default('Untitled Report'),
+  doc: jsonb('doc').default({}).notNull(), // Rich text editor content
+  // Always present summary for auto-summarization worker
+  summary: text('summary').default('').notNull(),
+  created_by: text('created_by').notNull(),
+  created_at: timestamp('created_at').notNull().defaultNow(),
+  updated_at: timestamp('updated_at').defaultNow(),
+  metadata: jsonb('metadata').default({}).notNull()
+}, (table) => ({
+  caseIdIdx: index('reports_case_id_idx').on(table.case_id),
+  evidenceIdIdx: index('reports_evidence_id_idx').on(table.evidence_id),
+  createdByIdx: index('reports_created_by_idx').on(table.created_by),
+  createdAtIdx: index('reports_created_at_idx').on(table.created_at)
 }));
 
 // System health and monitoring
@@ -178,6 +202,9 @@ export type NewEvidence = typeof evidenceTable.$inferInsert;
 
 export type Case = typeof casesTable.$inferSelect;
 export type NewCase = typeof casesTable.$inferInsert;
+
+export type Report = typeof reportsTable.$inferSelect;
+export type NewReport = typeof reportsTable.$inferInsert;
 
 export type SystemHealth = typeof systemHealthTable.$inferSelect;
 export type NewSystemHealth = typeof systemHealthTable.$inferInsert;

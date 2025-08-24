@@ -5,7 +5,9 @@ import stream from "stream";
 // Integrates with WebGPU processing and real-time tensor operations
 
 import { writable, derived, get, type Writable } from 'svelte/store';
-// Orphaned content: import type { TensorOperation, StreamingResponse, QUICMetrics
+// Minimal placeholder type aliases to avoid TS errors; expand with actual shapes later.
+export type TensorOperation = { type: string; input: Float32Array | number[]; shape?: number[]; metadata?: Record<string, any> };
+export type StreamingResponse = { event?: string; data?: any; final?: boolean };
 
 // QUIC Connection State
 interface QUICConnectionState {
@@ -61,7 +63,7 @@ class QUICClient {
 
 	constructor(serverUrl: string = 'https://localhost:8443') {
 		this.baseUrl = serverUrl;
-		
+
 		// Initialize stores
 		this.connectionState = writable<QUICConnectionState>({
 			isConnected: false,
@@ -105,7 +107,7 @@ class QUICClient {
 
 			if (response.ok) {
 				const health = await response.json();
-				
+
 				this.connectionState.update(state => ({
 					...state,
 					isConnected: true,
@@ -124,7 +126,7 @@ class QUICClient {
 
 		} catch (error) {
 			console.error('❌ QUIC connection failed:', error);
-			
+
 			this.connectionState.update(state => ({
 				...state,
 				isConnected: false,
@@ -141,12 +143,12 @@ class QUICClient {
 	// Enhanced fetch with QUIC/HTTP3 optimizations
 	private async fetch(path: string, options: RequestInit = {}): Promise<Response> {
 		const url = `${this.baseUrl}${path}`;
-		
+
 		// Add HTTP/3 headers for optimal performance
 		const headers = new Headers(options.headers);
 		headers.set('Connection', 'keep-alive');
 		headers.set('Alt-Svc', 'h3=":8443"; ma=86400');
-		
+
 		// Priority hints for different request types
 		if (path.includes('/tensor')) {
 			headers.set('Priority', 'u=1, i'); // High priority for tensor operations
@@ -173,8 +175,9 @@ class QUICClient {
 			return response;
 
 		} catch (error) {
-			console.error(`QUIC fetch failed for ${path}:`, error);
-			throw error;
+			const msg = error instanceof Error ? error.message : String(error);
+			console.error(`QUIC fetch failed for ${path}: ${msg}`);
+			throw new Error(msg);
 		}
 	}
 
@@ -184,7 +187,7 @@ class QUICClient {
 		onChunk: StreamingHandler<any>
 	): Promise<string> {
 		const streamId = this.createStream('tensor', 1);
-		
+
 		try {
 			const response = await this.fetch('/quic/tensor-process', {
 				method: 'POST',
@@ -207,12 +210,13 @@ class QUICClient {
 
 			// Handle streaming response
 			await this.handleStreamingResponse(response, streamId, onChunk);
-			
+
 			return streamId;
 
 		} catch (error) {
-			this.closeStream(streamId, `Tensor operation error: ${error.message}`);
-			throw error;
+			const msg = error instanceof Error ? error.message : String(error);
+			this.closeStream(streamId, `Tensor operation error: ${msg}`);
+			throw new Error(msg);
 		}
 	}
 
@@ -247,8 +251,9 @@ class QUICClient {
 			return streamId;
 
 		} catch (error) {
-			this.closeStream(streamId, `LLM analysis error: ${error.message}`);
-			throw error;
+			const msg = error instanceof Error ? error.message : String(error);
+			this.closeStream(streamId, `LLM analysis error: ${msg}`);
+			throw new Error(msg);
 		}
 	}
 
@@ -277,8 +282,9 @@ class QUICClient {
 			return streamId;
 
 		} catch (error) {
-			this.closeStream(streamId, `Vector search error: ${error.message}`);
-			throw error;
+			const msg = error instanceof Error ? error.message : String(error);
+			this.closeStream(streamId, `Vector search error: ${msg}`);
+			throw new Error(msg);
 		}
 	}
 
@@ -312,7 +318,7 @@ class QUICClient {
 			this.eventSource.onerror = (event) => {
 				console.error('SSE connection error:', event);
 				onError(new Error('SSE connection failed'));
-				
+
 				// Attempt to reconnect
 				setTimeout(() => {
 					if (this.eventSource?.readyState === EventSource.CLOSED) {
@@ -344,7 +350,7 @@ class QUICClient {
 		try {
 			while (true) {
 				const { done, value } = await reader.read();
-				
+
 				if (done) {
 					// Process any remaining data in buffer
 					if (buffer.trim()) {
@@ -374,8 +380,9 @@ class QUICClient {
 			this.closeStream(streamId);
 
 		} catch (error) {
-			this.closeStream(streamId, `Stream processing error: ${error.message}`);
-			throw error;
+			const msg = error instanceof Error ? error.message : String(error);
+			this.closeStream(streamId, `Stream processing error: ${msg}`);
+			throw new Error(msg);
 		} finally {
 			reader.releaseLock();
 		}
@@ -407,7 +414,7 @@ class QUICClient {
 	// Create new stream
 	private createStream(type: QUICStream['type'], priority: number): string {
 		const streamId = `${type}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-		
+
 		const stream: QUICStream = {
 			id: streamId,
 			type,
@@ -419,10 +426,10 @@ class QUICClient {
 		};
 
 		this.streams.set(streamId, stream);
-		
+
 		// Update active streams
 		this.activeStreams.update(streams => [...streams, stream]);
-		
+
 		// Update connection state
 		this.connectionState.update(state => ({
 			...state,
@@ -452,7 +459,7 @@ class QUICClient {
 		}));
 
 		// Remove from active streams
-		this.activeStreams.update(streams => 
+		this.activeStreams.update(streams =>
 			streams.filter(s => s.id !== streamId)
 		);
 
@@ -489,7 +496,7 @@ class QUICClient {
 	private calculateThroughput(): number {
 		const now = performance.now();
 		const timeWindow = 5000; // 5 seconds
-		
+
 		let totalBytes = 0;
 		for (const stream of this.streams.values()) {
 			if (now - stream.startTime < timeWindow) {

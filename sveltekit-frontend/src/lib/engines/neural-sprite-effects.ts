@@ -10,15 +10,15 @@ export interface SpriteEffect {
   id: string;
   name: string;
   description: string;
-  apply: (canvas: fabric.Canvas, options: any) => Promise<void>;
-  cleanup?: (canvas: fabric.Canvas) => void;
+  apply: (canvas: any, options: any) => Promise<void>;
+  cleanup?: (canvas: any) => void;
 }
 
 export class NeuralSpriteEffects {
-  private canvas: fabric.Canvas;
+  private canvas: any;
   private activeEffects: Map<string, any> = new Map();
 
-  constructor(canvas: fabric.Canvas) {
+  constructor(canvas: any) {
     this.canvas = canvas;
   }
 
@@ -29,7 +29,7 @@ export class NeuralSpriteEffects {
 
     // Create scanlines
     for (let y = 0; y < canvasHeight; y += 4) {
-      const scanline = new fabric.Rect({
+      const scanline = new (fabric as any).Rect({
         left: 0,
         top: y,
         width: canvasWidth,
@@ -53,8 +53,8 @@ export class NeuralSpriteEffects {
     });
 
     // Apply to all image objects
-    this.canvas.getObjects().forEach((obj) => {
-      if (obj instanceof fabric.Image) {
+    this.canvas.getObjects().forEach((obj: any) => {
+      if (obj.type === 'image') {
         obj.filters = [filter];
         obj.applyFilters();
       }
@@ -73,13 +73,13 @@ export class NeuralSpriteEffects {
     const characters = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ§±!@#$%^&*()_+";
 
     const columns = Math.floor(canvasWidth / 20);
-    const rainDrops: fabric.Text[] = [];
+    const rainDrops: any[] = [];
 
     for (let i = 0; i < columns; i++) {
       const x = i * 20;
       const char = characters[Math.floor(Math.random() * characters.length)];
 
-      const raindrop = new fabric.Text(char, {
+      const raindrop = new (fabric as any).Text(char, {
         left: x,
         top: -20,
         fontSize: 16,
@@ -153,12 +153,12 @@ export class NeuralSpriteEffects {
 
   // Neural network visualization effect
   async applyNeuralNetworkEffect(): Promise<void> {
-    const nodes: fabric.Circle[] = [];
-    const connections: fabric.Line[] = [];
+    const nodes: any[] = [];
+    const connections: any[] = [];
 
     // Create neural network nodes
     for (let i = 0; i < 20; i++) {
-      const node = new fabric.Circle({
+      const node = new (fabric as any).Circle({
         left: Math.random() * this.canvas.getWidth(),
         top: Math.random() * this.canvas.getHeight(),
         radius: 5 + Math.random() * 10,
@@ -185,7 +185,7 @@ export class NeuralSpriteEffects {
 
         if (distance < 150) {
           // Connect nearby nodes
-          const connection = new fabric.Line(
+          const connection = new (fabric as any).Line(
             [node1.left, node1.top, node2.left, node2.top],
             {
               stroke: "#00aaff",
@@ -227,14 +227,14 @@ export class NeuralSpriteEffects {
 
   // Legal document highlight effect
   async applyLegalHighlightEffect(
-    evidenceObjects: fabric.Object[],
+    evidenceObjects: any[],
   ): Promise<void> {
     evidenceObjects.forEach((obj, index) => {
       const highlightColors = ["#ffff00", "#00ff00", "#ff6b6b", "#4ecdc4"];
       const color = highlightColors[index % highlightColors.length];
 
       // Create highlight glow
-      const glow = new fabric.Rect({
+      const glow = new (fabric as any).Rect({
         left: obj.left - 5,
         top: obj.top - 5,
         width: obj.width + 10,
@@ -267,31 +267,31 @@ export class NeuralSpriteEffects {
 
   // Performance stress test effect
   async applyStressTestEffect(): Promise<void> {
-    const stressObjects: fabric.Object[] = [];
+    const stressObjects: any[] = [];
 
     // Create many moving objects for stress testing
     for (let i = 0; i < 100; i++) {
       const shapes = ["circle", "rect", "triangle"];
       const shapeType = shapes[Math.floor(Math.random() * shapes.length)];
 
-      let shape: fabric.Object;
+      let shape: any;
 
       switch (shapeType) {
         case "circle":
-          shape = new fabric.Circle({
+          shape = new (fabric as any).Circle({
             radius: 5 + Math.random() * 10,
             fill: `hsl(${Math.random() * 360}, 70%, 60%)`,
           });
           break;
         case "rect":
-          shape = new fabric.Rect({
+          shape = new (fabric as any).Rect({
             width: 10 + Math.random() * 20,
             height: 10 + Math.random() * 20,
             fill: `hsl(${Math.random() * 360}, 70%, 60%)`,
           });
           break;
         case "triangle":
-          shape = new fabric.Triangle({
+          shape = new (fabric as any).Triangle({
             width: 10 + Math.random() * 20,
             height: 10 + Math.random() * 20,
             fill: `hsl(${Math.random() * 360}, 70%, 60%)`,
@@ -340,12 +340,12 @@ export class NeuralSpriteEffects {
 
   // Particle system effect
   async applyParticleSystemEffect(): Promise<void> {
-    const particles: fabric.Circle[] = [];
+    const particles: any[] = [];
     const particleCount = 50;
 
     // Create particles
     for (let i = 0; i < particleCount; i++) {
-      const particle = new fabric.Circle({
+      const particle = new (fabric as any).Circle({
         left: this.canvas.getWidth() / 2,
         top: this.canvas.getHeight() / 2,
         radius: 2 + Math.random() * 4,
@@ -413,7 +413,7 @@ export class NeuralSpriteEffects {
       ["drops", "nodes", "connections", "objects", "particles"].forEach(
         (prop) => {
           if (effect[prop]) {
-            effect[prop].forEach((obj: fabric.Object) => {
+            effect[prop].forEach((obj: any) => {
               this.canvas.remove(obj);
             });
           }

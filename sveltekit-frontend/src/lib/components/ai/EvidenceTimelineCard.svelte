@@ -1,16 +1,15 @@
 <script lang="ts">
   // Svelte runes are declared globally in src/types/svelte-helpers.d.ts
 
-  interface Props {
-    class?: string;
-    children?: import('svelte').Snippet;
-  }
+  // runes-mode: props accessed via $props()
   import { Card, CardHeader, CardTitle, CardContent } from '$lib/components/ui/card';
   import { Badge } from '$lib/components/ui/badge';
   import { Button } from '$lib/components/ui/button';
-  import { Separator } from '$lib/components/ui/separator/Separator.svelte';
+  import Separator from '$lib/components/ui/separator/Separator.svelte';
 
-  export let timelineEvents: Array<{
+  // Access props via Svelte runes $props()
+  const _props = $props();
+  const timelineEvents: Array<{
     date: string;
     time?: string;
     event: string;
@@ -20,7 +19,7 @@
     category?: 'crime' | 'witness' | 'discovery' | 'movement' | 'communication';
   }> = [];
 
-  export let caseId: string;
+  const caseId: string | undefined = _props.caseId;
 
   // Sort events chronologically (use function form to avoid mutating props)
   let sortedEvents = $derived(() => {
@@ -30,14 +29,14 @@
 
   // Group events by date
   let groupedEvents = $derived(() => {
-    return (sortedEvents as any as Array<any>).reduce((groups: Record<string, typeof timelineEvents>, event: any) => {
+    return (sortedEvents as any as Array<any>).reduce((groups: Record<string, Array<any>>, event: any) => {
       const dateKey = event.date;
       if (!groups[dateKey]) {
         groups[dateKey] = [];
       }
       groups[dateKey].push(event);
       return groups;
-    }, {} as Record<string, typeof timelineEvents>);
+    }, {} as Record<string, Array<any>>);
   });
 
   // Category styling

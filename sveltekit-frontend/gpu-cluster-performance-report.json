@@ -1,38 +1,7 @@
 {
-  "timestamp": "2025-08-21T17:27:42.913Z",
-  "totalTime": 385935.9921,
-  "successes": 6,
+  "timestamp": "2025-08-24T01:27:42.399Z",
+  "totalTime": 132.9072,
+  "successes": 0,
   "errors": 0,
-  "tasks": {
-    "gpu-cluster": {
-      "startTime": 1862.5307,
-      "endTime": 31867.5254,
-      "duration": 30004.9947
-    },
-    "simd-parser": {
-      "startTime": 1866.6986,
-      "endTime": 16880.2022,
-      "duration": 15013.5036
-    },
-    "simd-indexer": {
-      "startTime": 1871.2698,
-      "endTime": 21878.3833,
-      "duration": 20007.1135
-    },
-    "webgpu-som": {
-      "startTime": 1874.2448,
-      "endTime": 387675.8468,
-      "duration": 385801.602
-    },
-    "cluster-manager": {
-      "startTime": 1894.0804,
-      "endTime": 31898.8048,
-      "duration": 30004.724400000003
-    },
-    "vscode-integration": {
-      "startTime": 1898.472,
-      "endTime": 1916.9914,
-      "duration": 18.519400000000132
-    }
-  }
+  "tasks": {}
 }

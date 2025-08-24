@@ -1,6 +1,6 @@
 <script lang="ts">
 
-	import { onMount, createEventDispatcher, tick } from 'svelte';
+	import { onMount, tick } from 'svelte';
   import { $props, $effect } from 'svelte';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { quintOut, elasticOut } from 'svelte/easing';
@@ -35,7 +35,12 @@
 		fallbackEndpoint = 'http://localhost:8000/v1/chat/completions',
 		modelName = 'gemma3-legal:latest',
 		title = 'YoRHa Legal AI',
-		subtitle = 'Powered by Gemma3'
+		subtitle = 'Powered by Gemma3',
+		onclose,
+		onminimize,
+		onmaximize,
+		onmessage,
+		onsettingschange
 	}: {
 		visible?: boolean;
 		minimized?: boolean;
@@ -47,6 +52,11 @@
 		modelName?: string;
 		title?: string;
 		subtitle?: string;
+		onclose?: () => void;
+		onminimize?: () => void;
+		onmaximize?: () => void;
+		onmessage?: (event: { message: Message }) => void;
+		onsettingschange?: (event: { settings: ChatSettings }) => void;
 	} = $props();
 
 	// State
@@ -74,14 +84,6 @@
 	let inputElement: HTMLTextAreaElement;
 	let windowElement: HTMLDivElement;
 
-	// Event dispatcher
-	const dispatch = createEventDispatcher<{
-		close: void;
-		minimize: void;
-		maximize: void;
-		message: { message: Message };
-		settingsChange: { settings: ChatSettings };
-	}>();
 
 	// Initialize welcome message
 	onMount(() => {
@@ -127,7 +129,7 @@ How can I assist you with your legal needs today?`);
 		};
 
 		messages = [...messages, message];
-		dispatch('message', { message });
+		onmessage?.({ message });
 		return message;
 	}
 
@@ -325,12 +327,16 @@ How can I assist you with your legal needs today?`);
 	// Window controls
 	function closeWindow() {
 		visible = false;
-		dispatch('close');
+		onclose?.();
 	}
 
 	function minimizeWindow() {
 		minimized = !minimized;
-		dispatch(minimized ? 'minimize' : 'maximize');
+		if (minimized) {
+			onminimize?.();
+		} else {
+			onmaximize?.();
+		}
 	}
 
 	// Clear chat
@@ -346,7 +352,7 @@ How can I assist you with your legal needs today?`);
 
 	// Update settings
 	function updateSettings() {
-		dispatch('settingsChange', { settings });
+		onsettingschange?.({ settings });
 		settingsOpen = false;
 	}
 

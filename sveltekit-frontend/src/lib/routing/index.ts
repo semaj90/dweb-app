@@ -3,6 +3,8 @@
  * Complete routing solution for SvelteKit with dynamic generation
  */
 
+import type { DynamicRouteConfig, GeneratedRoute } from './dynamic-route-generator';
+
 // Core route generation
 export {
   DynamicRouteGenerator,
@@ -351,7 +353,7 @@ export function debugRoutes(): {
   }>;
 } {
   const allRoutes = getAllDynamicRoutes();
-  const staticRoutesFromRegistry = Array.from(routeRegistry.getState().subscribe(state => state.routes)());
+  const staticRoutesFromRegistry = Array.from((routeRegistry.getState() as any).routes || new Map());
   
   const routeList = [
     ...staticRoutesFromRegistry.map(([id, route]) => ({

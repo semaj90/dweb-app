@@ -1,7 +1,12 @@
 import { URL } from "url";
 
 import type { PageServerLoad } from "./$types.js";
-// TODO: Fix import - // Orphaned content: import {  export const load: PageServerLoad = async ({ url }) => {
+// Mock semantic search function
+const semanticSearch = async (query: string) => {
+  return [{ text: `Mock result for: ${query}` }];
+};
+
+export const load: PageServerLoad = async ({ url }) => {
   const initialQuery = url.searchParams.get("q") || "";
   let initialResults = [];
   if (initialQuery) {

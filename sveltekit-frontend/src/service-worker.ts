@@ -6,18 +6,33 @@
  */
 
 /// <reference types="@webgpu/types" />
+/// <reference lib="webworker" />
 
 // Minimal ambient event typings for incremental typecheck stability in the service worker.
+// These augmentations help TypeScript understand service-worker specific events while
+// we do a gradual type-cleanup across the codebase.
 declare global {
   interface ExtendableEvent {
     waitUntil(promise: Promise<any>): void;
   }
-  interface FetchEvent extends Event {
-    request: Request;
+
+  // FetchEvent in service workers provides `request` and `respondWith`.
+  interface FetchEvent extends ExtendableEvent {
+    readonly request: Request;
     respondWith(response: Promise<Response> | Response): void;
   }
-  interface SyncEvent extends Event {
-    tag?: string;
+
+  // Use a separate interface name to avoid conflicting declarations from lib.webworker.
+  interface ServiceWorkerMessageEvent {
+    readonly data?: any;
+    readonly ports?: ReadonlyArray<MessagePort>;
+    readonly source: Client | ServiceWorker | MessagePort | null;
+    waitUntil(p: Promise<any>): void;
+  }
+
+  // Sync events provide an optional tag and are extendable.
+  interface SyncEvent extends ExtendableEvent {
+    readonly tag?: string;
   }
 }
 

@@ -4,7 +4,6 @@ export {};
 </script>
 
 <script lang="ts">
-
   import Fuse from "fuse.js";
   import { onMount } from "svelte";
   import { quintOut } from "svelte/easing";
@@ -14,46 +13,43 @@ export {};
   import InfiniteScrollList from "./InfiniteScrollList.svelte";
   import SearchBar from "./SearchBar.svelte";
   import TagList from "./TagList.svelte";
-
   import { FileText, Folder, Tag, X } from "lucide-svelte";
 
   let sidebarElement: HTMLElement;
-  let isHovered = $state(false);
-  let isPinned = $state(false);
-  let searchQuery = $state("");
-  let activeTab = $state("evidence");
-  let fuse: Fuse<any>;
+  let isHovered = false;
+  let isPinned = false;
+  let searchQuery = "";
+  let activeTab: "evidence" | "notes" | "canvas" = "evidence";
+  let fuse: Fuse<any> | null = null;
 
-  // Reactive data
-  let sidebarOpen = $derived($sidebarStore.open || isHovered || isPinned);
-  let evidenceItems = $derived($lokiStore.evidence || []);
-  let notesItems = $derived($lokiStore.notes || []);
-  let canvasStates = $derived($lokiStore.canvasStates || []);
+  // Svelte store values (auto-unwrapped with $)
+  // $sidebarStore and $lokiStore provided by imports
+  $: sidebarOpen = $sidebarStore?.open || isHovered || isPinned;
+  $: evidenceItems = $lokiStore?.evidence ?? [];
+  $: notesItems = $lokiStore?.notes ?? [];
+  $: canvasStates = $lokiStore?.canvasStates ?? [];
 
-  // Initialize Fuse search
+  // Create Fuse instance when relevant items change
   $: if (activeTab === "evidence" && evidenceItems.length > 0) {
-    fuse = new Fuse(evidenceItems, {
-      keys: ["fileName", "description", "tags"],
-      threshold: 0.3,
-    });
+    fuse = new Fuse(evidenceItems, { keys: ["fileName", "description", "tags"], threshold: 0.3 });
   } else if (activeTab === "notes" && notesItems.length > 0) {
-    fuse = new Fuse(notesItems, {
-      keys: ["title", "content", "tags"],
-      threshold: 0.3,
-    });
-}
-  // Search results
-  let searchResults = $derived(searchQuery && fuse
-      ? fuse.search(searchQuery).map((result) => result.item)
-      : activeTab === "evidence"
-        ? evidenceItems
-        : notesItems);
+    fuse = new Fuse(notesItems, { keys: ["title", "content", "tags"], threshold: 0.3 });
+  } else {
+    fuse = null;
+  }
+
+  // Compute search results reactively
+  $: searchResults = (() => {
+    if (searchQuery && fuse) {
+      return fuse.search(searchQuery).map((r) => r.item);
+    }
+    if (activeTab === "evidence") return evidenceItems;
+    if (activeTab === "notes") return notesItems;
+    return canvasStates;
+  })();
 
   onMount(() => {
-    // Initialize Loki store
     loki.init();
-
-    // Load data
     refreshData();
   });
 
@@ -62,29 +58,38 @@ export {};
       loki.evidence.refreshStore();
     } else if (activeTab === "notes") {
       loki.notes.refreshStore();
-}}
+    } else {
+      // canvas states could be refreshed here if needed
+    }
+  }
+
   function handleMouseEnter() {
     isHovered = true;
-}
+  }
+
   function handleMouseLeave() {
     isHovered = false;
-}
+  }
+
   function togglePin() {
     isPinned = !isPinned;
     sidebarStore.update((state) => ({ ...state, open: isPinned }));
-}
-  function handleSearch(event: CustomEvent) {
+  }
+
+  function handleSearch(event: CustomEvent<{ query: string }>) {
     searchQuery = event.detail.query;
-}
+  }
+
   function handleItemClick(item: any) {
+    // Forward or handle item click
     console.log("Item clicked:", item);
-    // Emit event or call parent function
-}
-  function handleTabChange(tab: string) {
+  }
+
+  function handleTabChange(tab: "evidence" | "notes" | "canvas") {
     activeTab = tab;
     searchQuery = "";
     refreshData();
-}
+  }
 </script>
 
 <div
@@ -93,121 +98,64 @@ export {};
   bind:this={sidebarElement}
   role="complementary"
   aria-label="Content sidebar"
-  onmouseenter={handleMouseEnter}
-  onmouseleave={handleMouseLeave}
+  on:mouseenter={handleMouseEnter}
+  on:mouseleave={handleMouseLeave}
 >
-  <!-- Hover trigger area when closed -->
   {#if !sidebarOpen}
-    <div class="container mx-auto px-4" aria-hidden="true"></div>
+    <div class="container mx-auto px-4 hover-trigger" aria-hidden="true"></div>
   {/if}
 
-  <!-- Sidebar content -->
   {#if sidebarOpen}
-    <div
-      class="container mx-auto px-4"
-      transition:slide={{ duration: 300, easing: quintOut, axis: "x" }}
-    >
-      <!-- Header -->
-      <div class="container mx-auto px-4">
+    <div class="sidebar-content" transition:slide={{ duration: 300, easing: quintOut, axis: "x" }}>
+      <div class="sidebar-header">
         <h3>Content Library</h3>
-        <div class="container mx-auto px-4">
+        <div class="header-actions">
           <button
             class={`pin-button ${isPinned ? "pinned" : ""}`}
-            onclick={() => togglePin()}
+            on:click={togglePin}
             aria-label={isPinned ? "Unpin sidebar" : "Pin sidebar"}
+            type="button"
           >
             <Tag size={16} />
           </button>
 
           {#if !isPinned}
-            <button
-              class="container mx-auto px-4"
-              onclick={() => (isHovered = false)}
-              aria-label="Close sidebar"
-            >
+            <button class="close-button" on:click={() => (isHovered = false)} aria-label="Close sidebar" type="button">
               <X size={16} />
             </button>
           {/if}
         </div>
       </div>
 
-      <!-- Search -->
-      <div class="container mx-auto px-4">
-        <SearchBar
-          placeholder="Search {activeTab}..."
-          value={searchQuery}
-          onsearch={handleSearch}
-        />
+      <div class="search-section">
+        <SearchBar placeholder={`Search ${activeTab}...`} value={searchQuery} on:search={handleSearch} />
       </div>
 
-      <!-- Tabs -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <button
-            class="container mx-auto px-4"
-            class:active={activeTab === "evidence"}
-            onclick={() => handleTabChange("evidence")}
-          >
-            <Folder size={16} />
-            Evidence
+      <div class="tabs-container">
+        <div class="tab-list">
+          <button class="tab-trigger" class:active={activeTab === "evidence"} on:click={() => handleTabChange("evidence")} type="button">
+            <Folder size={16} /> Evidence
           </button>
-          <button
-            class="container mx-auto px-4"
-            class:active={activeTab === "notes"}
-            onclick={() => handleTabChange("notes")}
-          >
-            <FileText size={16} />
-            Notes
+          <button class="tab-trigger" class:active={activeTab === "notes"} on:click={() => handleTabChange("notes")} type="button">
+            <FileText size={16} /> Notes
           </button>
-          <button
-            class="container mx-auto px-4"
-            class:active={activeTab === "canvas"}
-            onclick={() => handleTabChange("canvas")}
-          >
-            <Tag size={16} />
-            Canvas
+          <button class="tab-trigger" class:active={activeTab === "canvas"} on:click={() => handleTabChange("canvas")} type="button">
+            <Tag size={16} /> Canvas
           </button>
         </div>
 
-        <!-- Evidence Tab -->
-        {#if activeTab === "evidence"}
-          <div class="container mx-auto px-4">
-            <InfiniteScrollList
-              items={searchResults}
-              itemType="evidence"
-              onitemclick={handleItemClick}
-              onloadmore={refreshData}
-            />
-          </div>
-        {/if}
-
-        <!-- Notes Tab -->
-        {#if activeTab === "notes"}
-          <div class="container mx-auto px-4">
-            <InfiniteScrollList
-              items={searchResults}
-              itemType="notes"
-              onitemclick={handleItemClick}
-              onloadmore={refreshData}
-            />
-          </div>
-        {/if}
-
-        <!-- Canvas States Tab -->
-        {#if activeTab === "canvas"}
-          <div class="container mx-auto px-4">
-            <InfiniteScrollList
-              items={canvasStates}
-              itemType="canvas"
-              onitemclick={handleItemClick}
-              onloadmore={refreshData}
-            />
-          </div>
-        {/if}
+        <div class="tab-content">
+          {#if activeTab === "evidence"}
+            <InfiniteScrollList items={searchResults} itemType="evidence" on:itemClick={handleItemClick} on:loadMore={refreshData} />
+          {:else if activeTab === "notes"}
+            <InfiniteScrollList items={searchResults} itemType="notes" on:itemClick={handleItemClick} on:loadMore={refreshData} />
+          {:else}
+            <InfiniteScrollList items={canvasStates} itemType="canvas" on:itemClick={handleItemClick} on:loadMore={refreshData} />
+          {/if}
+        </div>
       </div>
 
-      <!-- Tags -->
-      <div class="container mx-auto px-4">
+      <div class="tags-section">
         <TagList />
       </div>
     </div>
@@ -226,11 +174,11 @@ export {};
     pointer-events: none;
     transition: transform 0.3s ease;
     transform: translateX(-100%);
-}
+  }
   .sidebar-container.open {
     transform: translateX(0);
     pointer-events: all;
-}
+  }
   .hover-trigger {
     position: absolute;
     top: 0;
@@ -240,29 +188,39 @@ export {};
     background: transparent;
     pointer-events: all;
     z-index: 1;
-}
-.sidebar-header {
+  }
+  .sidebar-content {
+    width: 100%;
+    height: 100%;
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-light);
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .sidebar-header {
     padding: 1rem;
     border-bottom: 1px solid var(--border-light);
     display: flex;
     align-items: center;
     justify-content: space-between;
     background: var(--bg-primary);
-}
+  }
   .sidebar-header h3 {
     margin: 0;
     font-size: 1.1rem;
     font-weight: 600;
     color: var(--text-primary);
-}
+  }
   .header-actions {
     display: flex;
     gap: 0.5rem;
-}
+  }
   .pin-button.pinned {
     background: var(--bg-secondary);
     color: var(--text-inverse);
-}
+  }
   .pin-button,
   .close-button {
     background: transparent;
@@ -274,20 +232,20 @@ export {};
     align-items: center;
     justify-content: center;
     color: var(--text-primary);
-}
+  }
   .pin-button:hover,
   .close-button:hover {
     background: var(--bg-tertiary);
-}
+  }
   .search-section {
     padding: 1rem;
     border-bottom: 1px solid var(--border-light);
-}
+  }
   .tab-list {
     display: flex;
     border-bottom: 1px solid var(--border-light);
     background: var(--bg-primary);
-}
+  }
   .tab-trigger {
     flex: 1;
     display: flex;
@@ -299,38 +257,72 @@ export {};
     color: var(--text-muted);
     cursor: pointer;
     transition: all 0.2s ease;
-}
+  }
   .tab-trigger:hover {
     background: var(--bg-tertiary);
     color: var(--text-primary);
-}
+  }
   .tab-trigger.active {
     background: var(--bg-secondary);
     color: var(--text-inverse);
     border-bottom: 2px solid var(--harvard-crimson);
-}
+  }
   .tab-content {
     flex: 1;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-}
+  }
   .tabs-container {
     flex: 1;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-}
+  }
   .tags-section {
     padding: 1rem;
     border-top: 1px solid var(--border-light);
     background: var(--bg-primary);
-}
+  }
   /* Responsive */
   @media (max-width: 768px) {
     .sidebar-container {
       width: 280px;
-}}
-</style>
+    }
+  }
+  */*
+I can do that — quick question before I modify the file:
+
+- Which exact packages are installed (npm names)? e.g. is it "@melt-ui/core" / "@melt-ui/svelte" or "melt" / "melt-ui"? And what's the package name for -bits UI v2 (e.g. "@bits/ui" or "-bits")?
+- Which parts do you want replaced with those libraries? (Tabs, buttons/pin, search input, list items, entire layout)
+- Do you want the new UI to keep the same behavior (hover-to-open, pin, fuse search, infinite list) or simplify some behaviors?
+// Packages to install (frontend)
+- melt                       // `npm install melt`
+- lucide-svelte              // `npm install lucide-svelte`
+- fuse.js                    // `npm install fuse.js`
+- xstate & @xstate/svelte    // `npm install xstate @xstate/svelte`
+
+// Packages to install (backend / server-only)
+- postgres (postgres-js)     // `npm install postgres`
+- drizzle-orm (Postgres adapter) // `npm install drizzle-orm @drizzle-orm/postgres-js`
+// Note: postgres-js + drizzle-orm must run on server endpoints / server-side routes (SvelteKit +server.ts), NOT bundled into the frontend.
+
+Which components to swap (recommended)
+- Tabs: Melt Tabs (TabList / Tab / TabPanel)
+- Buttons: Melt Button / IconButton for pin/close/actions
+- Search input: Melt TextField / Input (keep Fuse search wiring)
+- List rows: keep your InfiniteScrollList but render items with Melt List/ListItem or simple Melt-styled row components
+- TagList: keep or convert to Melt chips/buttons later
+
+Behavior decisions
+- Keep current behaviors: hover-to-open, pin/unpin, Fuse search, InfiniteScrollList.
+- Use xstate on the frontend to represent auth/login state (so UI can show/hide or change behavior when logged in).
+- Keep DB usage (postgres-js + drizzle) on backend endpoints; call them from the frontend via fetch.
+
+Minimal examples
+
+1) Simple auth machine (frontend)
+Reply with the package names and which components to swap and I'll produce the exact Svelte 5-compatible code to drop into $SELECTION_PLACEHOLDER$.
 
 
+/

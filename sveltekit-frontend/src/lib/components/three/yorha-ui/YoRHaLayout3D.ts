@@ -64,12 +64,14 @@ export class YoRHaLayout3D extends THREE.Group {
     this.options = options;
   }
 
-  public addChild(component: YoRHa3DComponent, layout: YoRHaChildLayout = {}): void {
+  public addChild(component: YoRHa3DComponent | YoRHaLayout3D, layout: YoRHaChildLayout = {}): void {
     // Store original position
     const originalPosition = component.position.clone();
     
+    // Cast to YoRHa3DComponent for the internal array (layout components can be treated as components)
+    const comp = component as YoRHa3DComponent;
     this.children3D.push({
-      component,
+      component: comp,
       layout,
       originalPosition
     });
@@ -488,5 +490,3 @@ export class YoRHaLayoutPresets {
     });
   }
 }
-
-export { YoRHaLayout3D };

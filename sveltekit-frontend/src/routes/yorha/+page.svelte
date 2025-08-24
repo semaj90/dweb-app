@@ -3,7 +3,9 @@
   import { goto } from '$app/navigation';
   import { yorhaAPI } from '$lib/components/three/yorha-ui/api/YoRHaAPIClient';
   import YoRHaCommandCenter from '$lib/components/yorha/YoRHaCommandCenter.svelte';
+  import YoRHaCommandInterface from '$lib/components/yorha/YoRHaCommandInterface.svelte';
   import { onMount } from 'svelte';
+  import { slide } from 'svelte/transition';
   import {
     Play,
     Terminal,
@@ -17,35 +19,52 @@
     Search,
     FileText,
     Bot,
-    Zap
+    Zap,
+    Network,
+    Shield,
+    Brain
   } from 'lucide-svelte';
   import { debounce, withAbort } from '$lib/yorha/constants';
   import YoRHaNavCard from '$lib/components/yorha/YoRHaNavCard.svelte';
   import { ensureLocalIndex, localSearch, isLocalIndexReady, getLocalDocumentCount, wasLoadedFromCache, mergeResults } from '$lib/yorha/localSearch';
   import { initHybridLayer, reRankWithPgVector } from '$lib/yorha/hybridSearchManager';
+  import type { 
+    SystemMetrics, 
+    YoRHaModule, 
+    HolographicScene, 
+    CommandResult,
+    LegalAISession
+  } from '$lib/types/yorha-interface';
 
-  // System data for command center
-  let systemData = $state({
-    activeCases: 12,
-    evidenceItems: 234,
-    personsOfInterest: 8,
-    aiQueries: 1847,
-    systemLoad: 45,
-    gpuUtilization: 78,
-    memoryUsage: 62,
-    networkLatency: 23
+  // Enhanced YoRHa system data with full metrics
+  let systemData = $state<SystemMetrics>({
+    cpu_usage: 45,
+    memory_usage: 62,
+    gpu_utilization: 78,
+    network_latency: 23,
+    active_processes: 12,
+    security_level: 'HIGH',
+    quantum_state: 'COHERENT',
+    neural_activity: 87
   });
 
-  // API response states
-  let ragResult = $state(null);
-  let searchResults = $state([]);
-  let isLoading = $state(false);
-  let activeSection = $state('dashboard');
-  let layoutData = $state(null);
+  // Enhanced YoRHa state management
+  let ragResult = $state<any>(null);
+  let searchResults = $state<any[]>([]);
+  let isLoading = $state<boolean>(false);
+  let activeSection = $state<string>('dashboard');
+  let layoutData = $state<any>(null);
   let searchMode = $state<'local' | 'hybrid' | 'remote'>('hybrid');
-  let localIndexReady = $state(false);
-  let localIndexCount = $state(0);
-  let localLoadedFromCache = $state(false);
+  let localIndexReady = $state<boolean>(false);
+  let localIndexCount = $state<number>(0);
+  let localLoadedFromCache = $state<boolean>(false);
+
+  // YoRHa interface state
+  let showCommandInterface = $state<boolean>(false);
+  let activeModule = $state<string>('dashboard');
+  let holographicMode = $state<boolean>(true);
+  let legalSession = $state<LegalAISession | null>(null);
+  let commandHistory = $state<CommandResult[]>([]);
 
   onMount(() => {
     // Fire and forget async initialization
@@ -59,22 +78,69 @@
       }
     })();
 
-    // Update system data periodically
+    // Update YoRHa system metrics periodically
     const interval = setInterval(() => {
       systemData = {
         ...systemData,
-        systemLoad: Math.max(20, Math.min(90, systemData.systemLoad + (Math.random() - 0.5) * 10)),
-        gpuUtilization: Math.max(30, Math.min(95, systemData.gpuUtilization + (Math.random() - 0.5) * 8)),
-        memoryUsage: Math.max(40, Math.min(85, systemData.memoryUsage + (Math.random() - 0.5) * 6)),
-        networkLatency: Math.max(10, Math.min(100, systemData.networkLatency + (Math.random() - 0.5) * 5))
+        cpu_usage: Math.max(20, Math.min(90, systemData.cpu_usage + (Math.random() - 0.5) * 10)),
+        gpu_utilization: Math.max(30, Math.min(95, systemData.gpu_utilization + (Math.random() - 0.5) * 8)),
+        memory_usage: Math.max(40, Math.min(85, systemData.memory_usage + (Math.random() - 0.5) * 6)),
+        network_latency: Math.max(10, Math.min(100, systemData.network_latency + (Math.random() - 0.5) * 5)),
+        neural_activity: Math.max(60, Math.min(100, systemData.neural_activity + (Math.random() - 0.5) * 4)),
+        active_processes: Math.max(8, Math.min(20, systemData.active_processes + Math.round((Math.random() - 0.5) * 2)))
       };
     }, 3000);
+
+    // Initialize legal AI session
+    initializeLegalSession();
 
     return () => clearInterval(interval);
   });
 
   function navigateTo(path: string) {
     goto(path);
+  }
+
+  // Initialize legal AI session
+  async function initializeLegalSession() {
+    try {
+      const response = await fetch('/api/v1/legal/session/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: 'yorha-user-001',
+          case_id: `case-${Date.now()}`,
+          context: {
+            jurisdiction: 'Global',
+            practice_area: ['AI Law', 'Tech Ethics', 'Data Privacy'],
+            case_type: 'Investigation',
+            priority_level: 8,
+            security_classification: 'HIGH'
+          }
+        })
+      });
+
+      if (response.ok) {
+        legalSession = await response.json();
+        console.log('[YoRHa] Legal AI session initialized:', legalSession?.session_id);
+      }
+    } catch (error) {
+      console.warn('[YoRHa] Legal session initialization failed:', error);
+    }
+  }
+
+  // Enhanced command interface functions
+  function toggleCommandInterface() {
+    showCommandInterface = !showCommandInterface;
+  }
+
+  function toggleHolographicMode() {
+    holographicMode = !holographicMode;
+  }
+
+  function switchModule(module: string) {
+    activeModule = module;
+    activeSection = module;
   }
 
   // API integration functions
@@ -94,7 +160,7 @@
     try {
       const data = await promise;
       ragResult = data;
-      systemData.aiQueries += 1;
+      systemData.active_processes += 1;
       activeSection = 'rag-results';
     } catch (e) {
       if ((e as any).name !== 'AbortError') console.error('RAG query failed', e);
@@ -153,8 +219,9 @@
     try {
       const healthData = await promise;
       if (healthData.services) {
-        systemData.systemLoad = healthData.cpu_usage || systemData.systemLoad;
-        systemData.memoryUsage = healthData.memory_usage || systemData.memoryUsage;
+        systemData.cpu_usage = healthData.cpu_usage || systemData.cpu_usage;
+        systemData.memory_usage = healthData.memory_usage || systemData.memory_usage;
+        systemData.gpu_utilization = healthData.gpu_utilization || systemData.gpu_utilization;
       }
       activeSection = 'system-health';
     } catch (e) {
@@ -208,12 +275,45 @@
       <div class="yorha-hero-status">
         <div class="yorha-status-indicator yorha-status-online">
           <Activity size={20} />
-          <span>SYSTEM OPERATIONAL</span>
+          <span>SYSTEM OPERATIONAL - {systemData.quantum_state}</span>
         </div>
-        <div class="yorha-hero-stats">
-          <span>AI QUERIES: {systemData.aiQueries}</span>
-          <span>CASES: {systemData.activeCases}</span>
-          <span>EVIDENCE: {systemData.evidenceItems}</span>
+        <div class="yorha-hero-metrics">
+          <div class="yorha-metric">
+            <Cpu size={16} />
+            <span>CPU: {systemData.cpu_usage}%</span>
+          </div>
+          <div class="yorha-metric">
+            <Brain size={16} />
+            <span>NEURAL: {systemData.neural_activity}%</span>
+          </div>
+          <div class="yorha-metric">
+            <Shield size={16} />
+            <span>SEC: {systemData.security_level}</span>
+          </div>
+          <div class="yorha-metric">
+            <Network size={16} />
+            <span>PROC: {systemData.active_processes}</span>
+          </div>
+        </div>
+        
+        <!-- YoRHa Control Panel -->
+        <div class="yorha-control-panel">
+          <button 
+            class="yorha-control-btn {showCommandInterface ? 'active' : ''}"
+            onclick={toggleCommandInterface}
+            aria-label="Toggle command interface"
+          >
+            <Terminal size={16} />
+            TERMINAL
+          </button>
+          <button 
+            class="yorha-control-btn {holographicMode ? 'active' : ''}"
+            onclick={toggleHolographicMode}
+            aria-label="Toggle holographic mode"
+          >
+            <Zap size={16} />
+            HOLO
+          </button>
         </div>
       </div>
     </div>
@@ -271,6 +371,20 @@
   <section class="yorha-dashboard">
     <YoRHaCommandCenter {systemData} />
   </section>
+
+  <!-- YoRHa Command Interface (Toggle) -->
+  {#if showCommandInterface}
+    <section class="yorha-command-interface" transition:slide={{ duration: 300 }}>
+      <YoRHaCommandInterface 
+        {systemData}
+        {legalSession}
+        {holographicMode}
+        onCommand={(result) => {
+          commandHistory = [result, ...commandHistory.slice(0, 49)]; // Keep last 50
+        }}
+      />
+    </section>
+  {/if}
 
   <!-- Interface Navigation -->
   <section class="yorha-navigation">
@@ -393,8 +507,27 @@
     @apply border-green-400 text-green-400;
   }
 
-  .yorha-hero-stats {
-    @apply flex gap-6 text-sm text-amber-400 opacity-60;
+  .yorha-hero-metrics {
+    @apply grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-amber-400;
+  }
+
+  .yorha-metric {
+    @apply flex items-center gap-2 px-3 py-2 bg-black bg-opacity-30 border border-amber-400 border-opacity-20;
+  }
+
+  .yorha-control-panel {
+    @apply flex gap-4 mt-6;
+  }
+
+  .yorha-control-btn {
+    @apply flex items-center gap-2 px-4 py-2 bg-black border-2 border-amber-400 border-opacity-50;
+    @apply text-amber-400 hover:border-opacity-100 hover:bg-amber-400 hover:text-black;
+    @apply transition-all duration-300 text-sm font-mono tracking-wider;
+  }
+
+  .yorha-control-btn.active {
+    @apply bg-amber-400 text-black border-opacity-100;
+    box-shadow: 0 0 15px rgba(255, 191, 0, 0.5);
   }
 
   /* Quick Actions */
@@ -443,6 +576,18 @@
   /* Dashboard */
   .yorha-dashboard {
     @apply px-6;
+  }
+
+  /* Command Interface */
+  .yorha-command-interface {
+    @apply px-6 py-8 bg-gray-900 bg-opacity-50 border-y border-amber-400 border-opacity-30;
+    background-image: 
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 1px,
+        rgba(255, 191, 0, 0.05) 2px
+      );
   }
 
   /* Navigation */

@@ -1,5 +1,10 @@
 import type { Writable } from "svelte/store";
 
+// Common props interface
+interface CommonProps {
+  className?: string;
+  [key: string]: any;
+}
 
 export interface SelectContext {
   selected: Writable<any>;
@@ -7,6 +12,7 @@ export interface SelectContext {
   onSelect: (value: any) => void;
   onToggle: () => void;
 }
+
 export interface SelectItemProps extends CommonProps {
   value: any;
   class_?: string;

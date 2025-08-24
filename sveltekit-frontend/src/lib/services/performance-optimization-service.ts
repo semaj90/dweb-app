@@ -6,7 +6,9 @@
  */
 
 import { writable, type Writable } from "svelte/store";
-// TODO: Fix import - // Orphaned content: import {  export interface PerformanceMetrics {
+import { browser } from "$app/environment";
+
+export interface PerformanceMetrics {
   memory: {
     heapUsed: number;
     heapTotal: number;

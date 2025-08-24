@@ -1,5 +1,4 @@
-import { createMachine, assign } from 'xstate';
-import { productionServiceClient } from '$lib/services/production-service-client';
+import { setup, assign, createActor, fromPromise } from 'xstate';
 
 // Authentication context interface
 interface AuthContext {
@@ -81,500 +80,307 @@ interface RegistrationData {
   deviceInfo?: unknown;
 }
 
-// Authentication services
-const authServices = {
-  // Login service with production service client integration
-  login: async (context: AuthContext, event: any) => {
-    const { email, password, rememberMe, twoFactorCode, deviceInfo } = event.data;
-
-    try {
-      // Use production service client for enhanced authentication
-      const response = await productionServiceClient.request({
-        method: 'POST',
-        path: '/auth/login',
-        body: {
-          email,
-          password,
-          rememberMe,
-          twoFactorCode,
-          deviceInfo: {
-            ...deviceInfo,
-            timestamp: new Date().toISOString(),
-            ipAddress: await getClientIP()
-          }
-        },
-        options: {
-          timeout: 10000,
-          retries: 2,
-          protocol: 'auto' // Will try QUIC -> gRPC -> HTTP
-        }
-      });
-
-      if (response.requiresTwoFactor) {
-        throw new Error('TWO_FACTOR_REQUIRED');
-      }
-
-      if (response.user && response.session) {
-        // Log successful login to audit trail
-        await logAuthEvent({
-          action: 'login',
-          userId: response.user.id,
-          success: true,
-          details: {
-            deviceInfo,
-            rememberMe,
-            protocol: response.metadata?.protocol
-          }
-        });
-
-        return { user: response.user, session: response.session };
-      }
-
-      throw new Error(response.error || 'Login failed');
-    } catch (error: any) {
-      // Log failed login attempt
-      await logAuthEvent({
-        action: 'login',
-        success: false,
-        details: {
-          email,
-          error: error.message,
-          deviceInfo
-        }
-      });
-
-      if (error.message === 'TWO_FACTOR_REQUIRED') {
-        throw new Error('TWO_FACTOR_REQUIRED');
-      }
-
-      throw new Error(error.message || 'Login failed');
-    }
-  },
-
-  // Registration service with legal professional validation
-  register: async (context: AuthContext, event: any) => {
-    const registrationData = event.data;
-
-    try {
-      // Enhanced registration with legal professional verification
-      const response = await productionServiceClient.request({
-        method: 'POST',
-        path: '/auth/register',
-        body: {
-          ...registrationData,
-          metadata: {
-            registrationType: 'legal_professional',
-            validationLevel: 'enhanced',
-            timestamp: new Date().toISOString()
-          }
-        },
-        options: {
-          timeout: 15000,
-          retries: 1,
-          protocol: 'auto'
-        }
-      });
-
-      if (response.user) {
-        // Log successful registration
-        await logAuthEvent({
-          action: 'register',
-          userId: response.user.id,
-          success: true,
-          details: {
-            role: registrationData.role,
-            department: registrationData.department,
-            jurisdiction: registrationData.jurisdiction
-          }
-        });
-
-        return { user: response.user };
-      }
-
-      throw new Error(response.error || 'Registration failed');
-    } catch (error: any) {
-      // Log failed registration
-      await logAuthEvent({
-        action: 'register',
-        success: false,
-        details: {
-          email: registrationData.email,
-          error: error.message,
-          role: registrationData.role
-        }
-      });
-
-      throw new Error(error.message || 'Registration failed');
-    }
-  },
-
-  // Session validation service
-  validateSession: async (context: AuthContext) => {
-    try {
-      const response = await productionServiceClient.request({
-        method: 'GET',
-        path: '/auth/session',
-        options: {
-          timeout: 5000,
-          protocol: 'auto'
-        }
-      });
-
-      return {
-        user: response.user,
-        session: response.session,
-        valid: response.valid
-      };
-    } catch (error) {
-      return { valid: false };
-    }
-  },
-
-  // Logout service
-  logout: async (context: AuthContext) => {
-    try {
-      await productionServiceClient.request({
-        method: 'POST',
-        path: '/auth/logout',
-        options: {
-          timeout: 5000,
-          protocol: 'auto'
-        }
-      });
-
-      // Log logout
-      if (context.user?.id) {
-        await logAuthEvent({
-          action: 'logout',
-          userId: context.user.id,
-          success: true,
-          details: {}
-        });
-      }
-
-      return { success: true };
-    } catch (error) {
-      // Still return success for logout even if server call fails
-      return { success: true };
-    }
-  }
+const initialContext: AuthContext = {
+  user: null,
+  session: null,
+  error: undefined,
+  isLoading: false,
+  deviceInfo: undefined,
+  loginAttempts: 0,
+  maxLoginAttempts: 5,
+  lastLoginAttempt: undefined,
+  lockoutUntil: undefined,
+  twoFactorRequired: false,
+  registrationData: undefined,
 };
 
-// Helper functions
-async function getClientIP(): Promise<string> {
-  try {
-    // This would normally get the real client IP
-    // For now, return a placeholder
-    return '127.0.0.1';
-  } catch {
-    return '127.0.0.1';
-  }
-}
+// Helper functions for inline guards
+const isMaxAttemptsReached = ({ context }: { context: AuthContext }) => {
+  return context.loginAttempts >= context.maxLoginAttempts;
+};
 
-async function logAuthEvent(event: {
-  action: string;
-  userId?: string;
-  success: boolean;
-  details: any;
-}): Promise<void> {
-  try {
-    await productionServiceClient.request({
-      method: 'POST',
-      path: '/auth/audit',
-      body: {
-        ...event,
-        timestamp: new Date().toISOString(),
-        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'server'
-      },
-      options: {
-        timeout: 3000,
-        protocol: 'auto'
+const isAccountLocked = ({ context }: { context: AuthContext }) => {
+  return context.lockoutUntil ? new Date() < context.lockoutUntil : false;
+};
+
+export const authMachine = setup({
+  types: {} as {
+    context: AuthContext;
+    events: AuthEvent;
+  },
+  actions: {
+    setLoading: assign({
+      isLoading: () => true,
+      error: () => undefined
+    }),
+    clearLoading: assign({
+      isLoading: () => false
+    }),
+    setError: assign({
+      error: ({ event }) => (event as any).data?.error || 'An error occurred',
+      isLoading: () => false
+    }),
+    setUser: assign({
+      user: ({ event }) => (event as any).data?.user || null,
+      session: ({ event }) => (event as any).data?.session || null,
+      isLoading: () => false,
+      error: () => undefined,
+      loginAttempts: () => 0
+    }),
+    clearUser: assign({
+      user: () => null,
+      session: () => null,
+      error: () => undefined
+    }),
+    incrementLoginAttempts: assign({
+      loginAttempts: ({ context }) => context.loginAttempts + 1,
+      lastLoginAttempt: () => new Date()
+    }),
+    resetLoginAttempts: assign({
+      loginAttempts: () => 0,
+      lastLoginAttempt: () => undefined
+    }),
+    setLockout: assign({
+      lockoutUntil: () => new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
+      loginAttempts: () => 0
+    }),
+    clearLockout: assign({
+      lockoutUntil: () => undefined
+    }),
+    setTwoFactorRequired: assign({
+      twoFactorRequired: () => true
+    }),
+    clearTwoFactor: assign({
+      twoFactorRequired: () => false
+    }),
+    setRegistrationData: assign({
+      registrationData: ({ event }) => (event as any).data
+    }),
+    clearRegistrationData: assign({
+      registrationData: () => undefined
+    })
+  },
+  guards: {
+    isMaxAttemptsReached: ({ context }) => {
+      return context.loginAttempts >= context.maxLoginAttempts;
+    },
+    isAccountLocked: ({ context }) => {
+      return context.lockoutUntil ? new Date() < context.lockoutUntil : false;
+    }
+  },
+  actors: {
+    authenticate: fromPromise(async ({ input }: { input: LoginData }) => {
+      // Mock authentication - replace with actual service call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Simulate occasional failures for testing
+      if (input.email === 'fail@test.com') {
+        throw new Error('Invalid credentials');
       }
-    });
-  } catch (error) {
-    console.warn('Failed to log auth event:', error);
+      
+      return {
+        user: {
+          id: '1',
+          email: input.email,
+          firstName: 'Legal',
+          lastName: 'Professional',
+          role: 'prosecutor',
+          permissions: ['read:cases', 'write:cases', 'ai:query']
+        },
+        session: {
+          id: 'session_123',
+          expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+          fresh: true
+        }
+      };
+    }),
+    register: fromPromise(async ({ input }: { input: RegistrationData }) => {
+      // Mock registration
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      return {
+        user: {
+          id: '2',
+          email: input.email,
+          firstName: input.firstName,
+          lastName: input.lastName,
+          role: input.role,
+          department: input.department,
+          permissions: []
+        }
+      };
+    }),
+    logout: fromPromise(async () => {
+      // Mock logout
+      await new Promise(resolve => setTimeout(resolve, 500));
+      return { success: true };
+    }),
+    resetPassword: fromPromise(async ({ input }: { input: { email: string } }) => {
+      // Mock password reset
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return { success: true };
+    })
   }
-}
-
-// Authentication state machine
-export const authMachine = createMachine({
+}).createMachine({
   id: 'auth',
-  predictableActionArguments: true,
-  schema: {
-    context: {} as AuthContext,
-    events: {} as AuthEvent
-  },
-  context: {
-    user: null,
-    session: null,
-    error: undefined,
-    isLoading: false,
-    loginAttempts: 0,
-    maxLoginAttempts: 5,
-    twoFactorRequired: false,
-    registrationData: undefined
-  },
   initial: 'idle',
+  context: initialContext,
   states: {
     idle: {
       on: {
         START_LOGIN: {
           target: 'authenticating',
-          actions: assign({
-            isLoading: true,
-            error: undefined
-          })
+          guard: ({ context }) => !isAccountLocked({ context })
         },
-        START_REGISTRATION: {
-          target: 'registering',
-          actions: assign({
-            isLoading: true,
-            error: undefined,
-            registrationData: (_context, event) => (event as any).data
-          })
-        },
-        LOGOUT: {
-          target: 'loggingOut'
-        }
+        START_REGISTRATION: 'registering',
+        RESET_PASSWORD: 'resettingPassword'
       }
     },
-
     authenticating: {
+      entry: 'setLoading',
       invoke: {
-        src: 'login',
+        src: 'authenticate',
+        input: ({ event }) => (event as any).data,
         onDone: [
           {
+            target: 'requiresTwoFactor',
+            guard: ({ event }) => (event as any).output?.requiresTwoFactor,
+            actions: ['setTwoFactorRequired', 'clearLoading']
+          },
+          {
             target: 'authenticated',
-            actions: assign({
-              user: (_context, event) => (event as any).data.user,
-              session: (_context, event) => (event as any).data.session,
-              isLoading: false,
-              error: undefined,
-              loginAttempts: 0
-            })
+            actions: ['setUser', 'resetLoginAttempts']
           }
         ],
         onError: [
           {
-            target: 'requiresTwoFactor',
-            guard: (_context, event) => (event as any).data?.message === 'TWO_FACTOR_REQUIRED',
-            actions: assign({
-              twoFactorRequired: () => true,
-              isLoading: () => false
-            })
+            target: 'locked',
+            guard: ({ context }) => isMaxAttemptsReached({ context }),
+            actions: ['setLockout', 'setError']
           },
           {
-            target: 'accountLocked',
-            guard: (context, _event) => {
-              const newAttempts = context.loginAttempts + 1;
-              return newAttempts >= context.maxLoginAttempts;
-            },
-            actions: assign({
-              loginAttempts: (context) => context.loginAttempts + 1,
-              lockoutUntil: () => new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
-              isLoading: () => false,
-              error: () => 'Account locked due to too many failed attempts'
-            })
-          },
-          {
-            target: 'error',
-            actions: assign({
-              error: (_context, event) => (event as any).data?.message || 'Login failed',
-              loginAttempts: (context) => context.loginAttempts + 1,
-              lastLoginAttempt: () => new Date(),
-              isLoading: () => false
-            })
+            target: 'idle',
+            actions: ['incrementLoginAttempts', 'setError']
           }
         ]
       }
     },
-
-    registering: {
-      invoke: {
-        src: 'register',
-        onDone: {
-          target: 'requiresVerification',
-          actions: assign({
-            user: (_context, event) => (event as any).data.user,
-            isLoading: () => false,
-            error: () => undefined
-          })
-        },
-        onError: {
-          target: 'error',
-          actions: assign({
-            error: (_context, event) => (event as any).data?.message || 'Registration failed',
-            isLoading: () => false
-          })
-        }
-      }
-    },
-
-    authenticated: {
-      entry: assign({
-        isLoading: () => false,
-        error: () => undefined,
-        twoFactorRequired: () => false
-      }),
-      on: {
-        LOGOUT: {
-          target: 'loggingOut'
-        },
-        SESSION_EXPIRED: {
-          target: 'idle',
-          actions: assign({
-            user: () => null,
-            session: () => null,
-            error: () => 'Session expired. Please login again.'
-          })
-        },
-        UPDATE_PROFILE: {
-          target: 'updatingProfile'
-        }
-      }
-    },
-
     requiresTwoFactor: {
       on: {
-        START_LOGIN: {
-          target: 'authenticating',
-          actions: assign({
-            isLoading: true,
-            error: undefined
-          })
-        },
         TWO_FACTOR_SUCCESS: {
           target: 'authenticated',
-          actions: assign({
-            session: (_context, event) => (event as any).data.session,
-            twoFactorRequired: () => false,
-            isLoading: () => false
-          })
+          actions: ['setUser', 'clearTwoFactor', 'resetLoginAttempts']
         },
         TWO_FACTOR_FAILURE: {
-          target: 'error',
-          actions: assign({
-            error: (_context, event) => (event as any).data?.error,
-            isLoading: () => false
-          })
-        }
-      }
-    },
-
-    requiresVerification: {
-      on: {
-        VERIFY_EMAIL: {
-          target: 'verifyingEmail'
-        },
-        EMAIL_VERIFIED: {
           target: 'idle',
-          actions: assign({
-            error: () => undefined
-          })
+          actions: ['setError', 'clearTwoFactor']
         }
       }
     },
-
-    verifyingEmail: {
-      // This would invoke an email verification service
+    authenticated: {
+      entry: 'clearLoading',
       on: {
-        EMAIL_VERIFIED: {
-          target: 'idle'
-        }
+        LOGOUT: 'loggingOut',
+        SESSION_EXPIRED: 'idle',
+        UPDATE_PROFILE: 'updatingProfile'
       }
     },
-
     loggingOut: {
+      entry: 'setLoading',
       invoke: {
         src: 'logout',
         onDone: {
           target: 'idle',
-          actions: assign({
-            user: () => null,
-            session: () => null,
-            isLoading: () => false,
-            error: () => undefined,
-            twoFactorRequired: () => false
-          })
+          actions: ['clearUser', 'clearLoading']
         },
         onError: {
           target: 'idle',
-          actions: assign({
-            user: () => null,
-            session: () => null,
-            isLoading: () => false,
-            error: () => undefined,
-            twoFactorRequired: () => false
-          })
+          actions: ['clearUser', 'setError']
         }
       }
     },
-
-    accountLocked: {
-      after: {
-        900000: { // 15 minutes
+    registering: {
+      entry: ['setLoading', 'setRegistrationData'],
+      invoke: {
+        src: 'register',
+        input: ({ event }) => (event as any).data,
+        onDone: {
+          target: 'registrationSuccess',
+          actions: ['setUser', 'clearRegistrationData']
+        },
+        onError: {
           target: 'idle',
-          actions: assign({
-            loginAttempts: () => 0,
-            lockoutUntil: () => undefined,
-            error: () => undefined
-          })
+          actions: ['setError', 'clearRegistrationData']
         }
+      }
+    },
+    registrationSuccess: {
+      on: {
+        EMAIL_VERIFIED: 'authenticated',
+        VERIFY_EMAIL: 'verifyingEmail'
       },
+      after: {
+        5000: 'authenticated' // Auto-advance after 5 seconds
+      }
+    },
+    verifyingEmail: {
+      entry: 'setLoading',
+      after: {
+        2000: {
+          target: 'authenticated',
+          actions: 'clearLoading'
+        }
+      }
+    },
+    resettingPassword: {
+      entry: 'setLoading',
+      invoke: {
+        src: 'resetPassword',
+        input: ({ event }) => ({ email: (event as any).data.email }),
+        onDone: {
+          target: 'passwordResetSent',
+          actions: 'clearLoading'
+        },
+        onError: {
+          target: 'idle',
+          actions: 'setError'
+        }
+      }
+    },
+    passwordResetSent: {
+      after: {
+        3000: 'idle'
+      }
+    },
+    locked: {
+      entry: 'setLockout',
       on: {
         UNLOCK_ACCOUNT: {
           target: 'idle',
-          actions: assign({
-            loginAttempts: () => 0,
-            lockoutUntil: () => undefined,
-            error: () => undefined
-          })
+          actions: ['clearLockout', 'resetLoginAttempts']
         }
-      }
-    },
-
-    updatingProfile: {
-      // This would invoke a profile update service
-      on: {
-        PROFILE_UPDATED: {
-          target: 'authenticated',
-          actions: assign({
-            user: (_context, event) => ({ ...(event as any).data }),
-            isLoading: () => false
-          })
-        }
-      }
-    },
-
-    error: {
-      on: {
-        RETRY: {
+      },
+      after: {
+        900000: { // 15 minutes
           target: 'idle',
-          actions: assign({
-            error: () => undefined,
-            isLoading: () => false
-          })
-        },
-        START_LOGIN: {
-          target: 'authenticating',
-          actions: assign({
-            error: () => undefined,
-            isLoading: () => true
-          })
-        },
-        START_REGISTRATION: {
-          target: 'registering',
-          actions: assign({
-            error: () => undefined,
-            isLoading: () => true
-          })
+          actions: ['clearLockout', 'resetLoginAttempts']
+        }
+      }
+    },
+    updatingProfile: {
+      entry: 'setLoading',
+      after: {
+        1500: {
+          target: 'authenticated',
+          actions: 'clearLoading'
         }
       }
     }
   }
-}, {
-  services: authServices
 });
 
-// Export types for use in components
-export type { AuthContext, AuthEvent, LoginData, RegistrationData };
+// Create the actor
+export const authActor = createActor(authMachine);
+
+// Export for use in components
+export default authActor;

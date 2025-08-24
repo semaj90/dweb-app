@@ -1,6 +1,22 @@
 
 import { writable, derived, get } from "svelte/store";
 import { advancedCache } from "$lib/caching/advanced-cache-manager.js";
+import { createMachine, assign, interpret } from 'xstate';
+import Loki from 'lokijs';
+import type { 
+  FeedbackRecommendation, 
+  UserFeedbackContext, 
+  FeedbackMetrics 
+} from '$lib/types/feedback';
+
+// LangChain.js imports for enhanced AI processing
+import { ChatOllama } from "@langchain/community/chat_models/ollama";
+import { PromptTemplate } from "@langchain/core/prompts";
+import { StringOutputParser } from "@langchain/core/output_parsers";
+import { RunnableSequence } from "@langchain/core/runnables";
+
+// Service Worker Integration
+const RECOMMENDATION_WORKER_PATH = '/workers/recommendation-worker.js';
 
 export interface RecommendationContext {
   userQuery: string;
@@ -42,11 +58,109 @@ export interface QueryEnhancement {
   confidence_score: number;
 }
 
+// XState Machine Context for Recommendation Engine
+interface RecommendationMachineContext {
+  userContext: UserFeedbackContext;
+  currentRecommendations: FeedbackRecommendation[];
+  lokiDb: Loki | null;
+  workerClient: Worker | null;
+  llmChain: RunnableSequence | null;
+  isProcessing: boolean;
+  error: string | null;
+}
+
+// XState Machine for Recommendation Engine State Management
+const recommendationMachine = createMachine<RecommendationMachineContext>({
+  id: 'recommendationEngine',
+  initial: 'initializing',
+  context: {
+    userContext: {
+      userId: '',
+      sessionId: '',
+      deviceType: 'desktop',
+      userType: 'attorney'
+    },
+    currentRecommendations: [],
+    lokiDb: null,
+    workerClient: null,
+    llmChain: null,
+    isProcessing: false,
+    error: null
+  },
+  states: {
+    initializing: {
+      entry: 'initializeServices',
+      on: {
+        INITIALIZED: 'idle',
+        ERROR: 'error'
+      }
+    },
+    idle: {
+      on: {
+        GENERATE_RECOMMENDATIONS: 'processing',
+        UPDATE_USER_CONTEXT: { actions: 'updateUserContext' }
+      }
+    },
+    processing: {
+      entry: ['setProcessing', 'generateRecommendations'],
+      on: {
+        RECOMMENDATIONS_GENERATED: {
+          target: 'idle',
+          actions: ['storeRecommendations', 'clearProcessing']
+        },
+        ERROR: 'error'
+      }
+    },
+    error: {
+      entry: 'logError',
+      on: {
+        RETRY: 'initializing'
+      }
+    }
+  }
+}, {
+  actions: {
+    initializeServices: assign({
+      lokiDb: () => new Loki('recommendations.db'),
+      workerClient: () => {
+        if (typeof Worker !== 'undefined') {
+          return new Worker(RECOMMENDATION_WORKER_PATH);
+        }
+        return null;
+      }
+    }),
+    setProcessing: assign({ isProcessing: true }),
+    clearProcessing: assign({ isProcessing: false }),
+    updateUserContext: assign({
+      userContext: (context, event: any) => ({ ...context.userContext, ...event.data })
+    }),
+    storeRecommendations: assign({
+      currentRecommendations: (context, event: any) => event.data?.recommendations || []
+    }),
+    generateRecommendations: (context) => {
+      // Will be implemented in the service class
+    },
+    logError: assign({
+      error: (context, event: any) => event.data?.message || 'Unknown error',
+      isProcessing: false
+    })
+  }
+});
+
 class AIRecommendationEngine {
   private recommendations = writable<Recommendation[]>([]);
   private queryHistory = writable<string[]>([]);
   private userPatterns = writable<Map<string, number>>(new Map());
   private legalKnowledgeBase = new Map<string, any>();
+  
+  // Enhanced with new integrations
+  private lokiDb: Loki;
+  private machine: any;
+  private interpreter: any;
+  private llmChain: RunnableSequence | null = null;
+  private workerClient: Worker | null = null;
+  private userPatternsCollection: any;
+  private recommendationsCollection: any;
   
   // Legal domain expertise mapping
   private domainExperts = {
@@ -107,6 +221,27 @@ class AIRecommendationEngine {
   ];
 
   constructor() {
+    // Initialize Loki.js database
+    this.lokiDb = new Loki('recommendations.db', {
+      adapter: new Loki.LokiMemoryAdapter(),
+      autoload: true,
+      autoloadCallback: this.onDbLoad.bind(this),
+      autosave: true,
+      autosaveInterval: 4000
+    });
+
+    // Initialize XState machine
+    this.machine = recommendationMachine;
+    this.interpreter = interpret(this.machine);
+    this.interpreter.start();
+
+    // Initialize Service Worker
+    this.initializeWorker();
+
+    // Initialize LangChain.js
+    this.initializeLangChain();
+
+    // Initialize legacy systems
     this.initializeLegalKnowledgeBase();
     this.loadUserPatterns();
   }
@@ -566,6 +701,409 @@ class AIRecommendationEngine {
       highConfidenceRecs: recommendations.filter((r: Recommendation) => r.confidence > 0.7).length,
       actionableRecs: recommendations.filter((r: Recommendation) => r.actionable).length
     };
+  }
+
+  // === NEW ENHANCED INTEGRATION METHODS ===
+
+  /**
+   * Initialize Service Worker for background processing
+   */
+  private async initializeWorker() {
+    if (typeof Worker !== 'undefined' && 'serviceWorker' in navigator) {
+      try {
+        // Register service worker if not already registered
+        const registration = await navigator.serviceWorker.register('/sw.js');
+        console.log('✅ AI Recommendation Service Worker registered:', registration);
+
+        // Create dedicated worker for recommendations
+        this.workerClient = new Worker(RECOMMENDATION_WORKER_PATH);
+        this.workerClient.onmessage = (event) => {
+          this.interpreter.send({
+            type: 'RECOMMENDATIONS_GENERATED',
+            data: event.data
+          });
+        };
+
+        this.workerClient.onerror = (error) => {
+          console.error('❌ Recommendation Worker error:', error);
+          this.interpreter.send({ type: 'ERROR', data: { message: error.message } });
+        };
+
+      } catch (error) {
+        console.error('❌ Service Worker registration failed:', error);
+      }
+    }
+  }
+
+  /**
+   * Initialize LangChain.js with Ollama for enhanced AI processing
+   */
+  private async initializeLangChain() {
+    try {
+      const llm = new ChatOllama({
+        baseUrl: "http://localhost:11434",
+        model: "gemma3-legal",
+        temperature: 0.7,
+        topK: 40,
+        topP: 0.9
+      });
+
+      const prompt = PromptTemplate.fromTemplate(`
+        You are an AI recommendation engine for a Legal AI Platform specializing in user experience optimization.
+        
+        User Context:
+        - Role: {userRole}
+        - Experience: {experienceLevel}
+        - Device: {deviceType}
+        - Legal Domain: {legalDomain}
+        
+        Current Query: {userQuery}
+        
+        User Behavior Patterns: {userPatterns}
+        
+        Recent Interactions: {recentInteractions}
+
+        Generate intelligent recommendations to improve the user's workflow and experience.
+        Focus on:
+        1. Legal research efficiency improvements
+        2. Workflow optimization suggestions
+        3. Feature discovery based on their role and domain
+        4. Learning opportunities relevant to their experience level
+        5. Time-saving shortcuts and advanced features
+
+        Format as JSON array with: id, type, title, description, relevance (0-1), category, actionable (boolean).
+        Limit to 5 most relevant recommendations.
+        
+        Response:
+      `);
+
+      const parser = new StringOutputParser();
+      this.llmChain = RunnableSequence.from([prompt, llm, parser]);
+      
+      console.log('✅ LangChain.js initialized with Ollama gemma3-legal');
+      this.interpreter.send({ type: 'INITIALIZED' });
+
+    } catch (error) {
+      console.error('❌ Failed to initialize LangChain.js:', error);
+      this.interpreter.send({ type: 'ERROR', data: { message: error.message } });
+    }
+  }
+
+  /**
+   * Loki.js database initialization callback
+   */
+  private onDbLoad() {
+    // Get or create collections
+    this.userPatternsCollection = this.lokiDb.getCollection('userPatterns') || 
+      this.lokiDb.addCollection('userPatterns', { 
+        indices: ['userId', 'patternType', 'legalDomain'] 
+      });
+
+    this.recommendationsCollection = this.lokiDb.getCollection('recommendations') ||
+      this.lokiDb.addCollection('recommendations', { 
+        indices: ['userId', 'type', 'category', 'relevance'] 
+      });
+
+    console.log('✅ Loki.js database initialized with collections');
+  }
+
+  /**
+   * Enhanced recommendation generation using all integrated technologies
+   */
+  async generateEnhancedRecommendations(
+    userContext: UserFeedbackContext,
+    query: string,
+    legalDomain: string = 'general'
+  ): Promise<FeedbackRecommendation[]> {
+    
+    // Update XState machine context
+    this.interpreter.send({
+      type: 'UPDATE_USER_CONTEXT',
+      data: userContext
+    });
+
+    // Start processing
+    this.interpreter.send({
+      type: 'GENERATE_RECOMMENDATIONS',
+      data: { query, legalDomain }
+    });
+
+    try {
+      // Get user patterns from Loki.js
+      const userPatterns = this.getUserPatternsFromLoki(userContext.userId);
+      const recentInteractions = this.getRecentInteractionsFromLoki(userContext.userId);
+
+      // Generate AI recommendations using LangChain.js
+      if (this.llmChain) {
+        const aiRecommendations = await this.generateAIRecommendations(
+          userContext, 
+          query, 
+          legalDomain, 
+          userPatterns, 
+          recentInteractions
+        );
+
+        // Store in Loki.js
+        this.storeRecommendationsInLoki(userContext.userId, aiRecommendations);
+
+        // Send to Service Worker for background processing
+        if (this.workerClient) {
+          this.workerClient.postMessage({
+            action: 'process_enhanced_recommendations',
+            data: { userContext, recommendations: aiRecommendations, query, legalDomain }
+          });
+        }
+
+        return aiRecommendations;
+      }
+
+      // Fallback to existing system if LangChain not available
+      return this.getFallbackLegalRecommendations(userContext, query, legalDomain);
+
+    } catch (error) {
+      console.error('❌ Enhanced recommendation generation failed:', error);
+      this.interpreter.send({ type: 'ERROR', data: { message: error.message } });
+      return [];
+    }
+  }
+
+  /**
+   * Generate AI recommendations using LangChain.js
+   */
+  private async generateAIRecommendations(
+    userContext: UserFeedbackContext,
+    query: string,
+    legalDomain: string,
+    userPatterns: any[],
+    recentInteractions: any[]
+  ): Promise<FeedbackRecommendation[]> {
+    
+    if (!this.llmChain) {
+      return this.getFallbackLegalRecommendations(userContext, query, legalDomain);
+    }
+
+    try {
+      const response = await this.llmChain.invoke({
+        userRole: userContext.userType,
+        experienceLevel: userContext.experienceLevel || 'mid',
+        deviceType: userContext.deviceType,
+        legalDomain,
+        userQuery: query,
+        userPatterns: userPatterns.map(p => `${p.type}: ${p.frequency} times`).join(', '),
+        recentInteractions: recentInteractions.slice(-5).map(i => 
+          `${i.type} at ${i.timestamp}`
+        ).join(', ')
+      });
+
+      return this.parseLangChainRecommendations(response);
+
+    } catch (error) {
+      console.error('❌ LangChain AI recommendation failed:', error);
+      return this.getFallbackLegalRecommendations(userContext, query, legalDomain);
+    }
+  }
+
+  /**
+   * Get user patterns from Loki.js database
+   */
+  private getUserPatternsFromLoki(userId: string): any[] {
+    if (!this.userPatternsCollection) return [];
+    
+    return this.userPatternsCollection.find({ userId })
+      .sort((a: any, b: any) => b.frequency - a.frequency)
+      .slice(0, 10);
+  }
+
+  /**
+   * Get recent interactions from Loki.js database
+   */
+  private getRecentInteractionsFromLoki(userId: string): any[] {
+    if (!this.recommendationsCollection) return [];
+    
+    return this.recommendationsCollection.find({ userId })
+      .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 20);
+  }
+
+  /**
+   * Store recommendations in Loki.js database
+   */
+  private storeRecommendationsInLoki(userId: string, recommendations: FeedbackRecommendation[]) {
+    if (!this.recommendationsCollection) return;
+
+    // Clear old recommendations for this user
+    this.recommendationsCollection.removeWhere({ userId, temporary: true });
+
+    // Store new recommendations
+    recommendations.forEach(rec => {
+      this.recommendationsCollection.insert({
+        ...rec,
+        userId,
+        createdAt: new Date(),
+        temporary: true,
+        viewed: false,
+        dismissed: false
+      });
+    });
+
+    // Update user patterns
+    if (this.userPatternsCollection) {
+      recommendations.forEach(rec => {
+        const existing = this.userPatternsCollection.findOne({ 
+          userId, 
+          type: rec.category 
+        });
+
+        if (existing) {
+          existing.frequency += 1;
+          existing.lastSeen = new Date();
+          this.userPatternsCollection.update(existing);
+        } else {
+          this.userPatternsCollection.insert({
+            userId,
+            type: rec.category,
+            frequency: 1,
+            firstSeen: new Date(),
+            lastSeen: new Date()
+          });
+        }
+      });
+    }
+  }
+
+  /**
+   * Parse LangChain.js response into recommendations
+   */
+  private parseLangChainRecommendations(response: string): FeedbackRecommendation[] {
+    try {
+      // Extract JSON from response
+      const jsonMatch = response.match(/\[[\s\S]*\]/);
+      if (jsonMatch) {
+        const recommendations = JSON.parse(jsonMatch[0]);
+        return recommendations.map((rec: any, index: number) => ({
+          id: rec.id || `ai_rec_${Date.now()}_${index}`,
+          type: rec.type || 'improvement',
+          title: rec.title || 'AI Recommendation',
+          description: rec.description || '',
+          relevance: Math.min(Math.max(rec.relevance || 0.5, 0), 1),
+          category: rec.category || 'general',
+          action: rec.actionable ? {
+            type: 'navigate',
+            target: rec.action_target || '/'
+          } : undefined
+        })) as FeedbackRecommendation[];
+      }
+    } catch (error) {
+      console.error('Failed to parse LangChain recommendations:', error);
+    }
+
+    return this.getFallbackLegalRecommendations();
+  }
+
+  /**
+   * Fallback recommendations when AI systems are unavailable
+   */
+  private getFallbackLegalRecommendations(
+    userContext?: UserFeedbackContext, 
+    query?: string, 
+    legalDomain?: string
+  ): FeedbackRecommendation[] {
+    const baseRecs: FeedbackRecommendation[] = [
+      {
+        id: 'fallback_search',
+        type: 'tip',
+        title: 'Advanced Legal Search',
+        description: 'Use legal operators like "AND", "OR", "NEAR" for precise results',
+        relevance: 0.8,
+        category: 'search'
+      },
+      {
+        id: 'fallback_ai_assist',
+        type: 'feature',
+        title: 'AI Legal Assistant',
+        description: 'Ask complex legal questions with natural language',
+        relevance: 0.9,
+        category: 'ai'
+      },
+      {
+        id: 'fallback_case_analysis',
+        type: 'feature',
+        title: 'Case Law Analysis',
+        description: 'Analyze precedents and legal arguments automatically',
+        relevance: 0.7,
+        category: 'analysis'
+      }
+    ];
+
+    // Customize based on user context
+    if (userContext?.userType === 'attorney' && legalDomain === 'litigation') {
+      baseRecs.push({
+        id: 'fallback_litigation',
+        type: 'feature',
+        title: 'Litigation Strategy Tool',
+        description: 'Generate case strategies based on similar precedents',
+        relevance: 0.95,
+        category: 'litigation'
+      });
+    }
+
+    return baseRecs;
+  }
+
+  /**
+   * Get current XState machine state
+   */
+  getEngineState() {
+    return this.interpreter?.state?.value || 'unknown';
+  }
+
+  /**
+   * Get stored recommendations from Loki.js
+   */
+  getStoredRecommendations(userId: string): FeedbackRecommendation[] {
+    if (!this.recommendationsCollection) return [];
+    
+    return this.recommendationsCollection.find({ 
+      userId,
+      dismissed: { $ne: true }
+    }).map((doc: any) => ({
+      id: doc.id,
+      type: doc.type,
+      title: doc.title,
+      description: doc.description,
+      relevance: doc.relevance,
+      category: doc.category,
+      action: doc.action
+    }));
+  }
+
+  /**
+   * Mark recommendation as viewed
+   */
+  markRecommendationViewed(userId: string, recommendationId: string) {
+    if (!this.recommendationsCollection) return;
+    
+    const rec = this.recommendationsCollection.findOne({ userId, id: recommendationId });
+    if (rec) {
+      rec.viewed = true;
+      rec.viewedAt = new Date();
+      this.recommendationsCollection.update(rec);
+    }
+  }
+
+  /**
+   * Clean up resources
+   */
+  destroy() {
+    if (this.workerClient) {
+      this.workerClient.terminate();
+    }
+    if (this.interpreter) {
+      this.interpreter.stop();
+    }
+    if (this.lokiDb) {
+      this.lokiDb.close();
+    }
   }
 }
 

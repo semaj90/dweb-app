@@ -5,7 +5,7 @@
 // Integrates vector search, semantic analysis, and local LLM processing
 // ======================================================================
 
-import type { Database, API } from './types/index.js';
+// import type { Database, API } from './types/index.js';
 
 interface RAGConfig {
   vectorStoreUrl: string;
@@ -68,8 +68,8 @@ class EnhancedRAGService {
 
     try {
       // Check development flags
-      const skipRag = import.meta.env.SKIP_RAG_INITIALIZATION === "true";
-      const usePostgresOnly = import.meta.env.USE_POSTGRESQL_ONLY === "true";
+      const skipRag = process.env.SKIP_RAG_INITIALIZATION === "true";
+      const usePostgresOnly = process.env.USE_POSTGRESQL_ONLY === "true";
 
       if (skipRag || usePostgresOnly) {
         console.log(
@@ -100,7 +100,7 @@ class EnhancedRAGService {
   private async initializeVectorStore(): Promise<void> {
     try {
       // Skip Qdrant health check in development
-      if (import.meta.env.SKIP_QDRANT_HEALTH_CHECK === "true") {
+      if (process.env.SKIP_QDRANT_HEALTH_CHECK === "true") {
         console.log("🔧 Skipping Qdrant health check - development mode");
         this.vectorClient = new InMemoryVectorStore();
         return;
@@ -195,7 +195,11 @@ class EnhancedRAGService {
         confidence: response.confidence,
         processingTime,
         model: response.model,
-        reasoning: response.reasoning,
+        reasoning: {
+          queryIntent: response.reasoning?.queryIntent || '',
+          retrievedContext: response.reasoning?.retrievedContext || [],
+          synthesisStrategy: response.reasoning?.synthesisStrategy || ''
+        },
       };
     } catch (error) {
       console.error("RAG query failed:", error);
@@ -271,7 +275,13 @@ class EnhancedRAGService {
     }
 
     try {
-      // Call Ollama embedding API
+      // Try GPU-accelerated embedding first
+      if (await this.isGPUAvailable()) {
+        console.log('🔥 Using GPU-accelerated embedding generation');
+        return await this.generateGPUEmbedding(text);
+      }
+
+      // Fallback to Ollama embedding API
       const response = await fetch("http://localhost:11434/api/embeddings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -301,6 +311,82 @@ class EnhancedRAGService {
       console.error("Embedding generation failed:", error);
       throw error;
     }
+  }
+
+  private async isGPUAvailable(): Promise<boolean> {
+    try {
+      const response = await fetch('http://localhost:8231/health', {
+        signal: AbortSignal.timeout(2000)
+      });
+      return response.ok;
+    } catch {
+      return false;
+    }
+  }
+
+  private async generateGPUEmbedding(text: string): Promise<EmbeddingResult> {
+    try {
+      // Convert text to simple vector representation for GPU processing
+      const textVector = this.textToVector(text);
+
+      const response = await fetch('/api/v1/gpu', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          service: 'embedding',
+          operation: 'embedding',
+          data: textVector,
+          metadata: { text_length: text.length, source: 'enhanced-rag' },
+          priority: 'high'
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('GPU embedding failed');
+      }
+
+      const result = await response.json();
+
+      if (!result.success || !result.result) {
+        throw new Error('GPU embedding returned no results');
+      }
+
+      const embeddingResult: EmbeddingResult = {
+        vector: result.result,
+        model: `${this.config.embeddingModel}-gpu`,
+        tokens: text.split(" ").length,
+      };
+
+      // Cache the GPU result
+      const cacheKey = this.hashString(text);
+      this.embeddingCache.set(cacheKey, embeddingResult);
+
+      console.log(`✅ GPU embedding completed in ${result.processing_ms}ms (${result.result.length} dimensions)`);
+
+      return embeddingResult;
+    } catch (error) {
+      console.warn('GPU embedding failed, falling back to CPU:', error);
+      throw error; // Let the main method handle fallback
+    }
+  }
+
+  private textToVector(text: string): number[] {
+    // Simple text-to-vector conversion for GPU processing
+    // In production, you'd use a proper embedding model here
+    const words = text.toLowerCase().split(/\W+/).filter(w => w.length > 0);
+    const vector = new Array(384).fill(0); // Match nomic-embed-text dimensions
+
+    // Simple hash-based vector generation
+    for (let i = 0; i < words.length && i < 50; i++) {
+      const word = words[i];
+      const hash = this.hashString(word);
+      const index = Math.abs(hash % 384);
+      vector[index] += (1 + word.length * 0.1) / words.length;
+    }
+
+    // Normalize vector
+    const magnitude = Math.sqrt(vector.reduce((sum, val) => sum + val * val, 0));
+    return magnitude > 0 ? vector.map(val => val / magnitude) : vector;
   }
 
   private async retrieveDocuments(

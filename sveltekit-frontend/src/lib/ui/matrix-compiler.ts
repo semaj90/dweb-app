@@ -3,7 +3,8 @@
 // Builds on UnoCSS + Svelte 5 for GPU-accelerated layouts
 
 import { mat4 } from "gl-matrix";
-// TODO: Fix import - // Orphaned content: import {  export interface MatrixUINode {
+
+export interface MatrixUINode {
   type:
     | "button"
     | "card"

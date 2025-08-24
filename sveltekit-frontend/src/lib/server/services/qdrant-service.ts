@@ -557,3 +557,5 @@ Return only a JSON array of strings, no other text:
 }
 
 export const qdrantService = new QdrantService();
+export { QdrantService };
+export default QdrantService;

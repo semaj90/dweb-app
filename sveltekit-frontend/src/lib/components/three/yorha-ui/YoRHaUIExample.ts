@@ -423,8 +423,7 @@ export class YoRHaUIExample {
       title: 'System Documentation',
       variant: 'terminal',
       size: 'large',
-      closable: true,
-      scrollable: true
+      closable: true
     });
 
     const modalLayout = YoRHaLayoutPresets.createForm();
@@ -582,4 +581,4 @@ export function createYoRHaUIDemo(container: HTMLElement): YoRHaUIExample {
   return new YoRHaUIExample(container);
 }
 
-export { YoRHaUIExample };
+// YoRHaUIExample already exported above

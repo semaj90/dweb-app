@@ -17,6 +17,7 @@ import {
   jsonb,
   decimal
 } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
 import { vector } from 'pgvector/drizzle-orm';
 import { relations } from 'drizzle-orm';
 
@@ -978,3 +979,195 @@ export const documentChunks = pgTable("document_chunks", {
   metadata: jsonb("metadata").default({}).notNull(),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
 });
+
+// === OUTBOX PATTERN FOR REDIS STREAMS + RABBITMQ + CUDA WORKER ===
+
+export const vectorOutbox = pgTable('vector_outbox', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  ownerType: text('owner_type').notNull(), // 'evidence' | 'report' | 'case' | 'document'
+  ownerId: uuid('owner_id').notNull(),
+  event: text('event').notNull(), // 'upsert' | 'delete' | 'reembed'
+  vector: jsonb('vector').$type<number[] | null>(), // null initially; CUDA worker fills it later
+  payload: jsonb('payload').$type<Record<string, any> | null>(),
+  attempts: integer('attempts').default(0),
+  processedAt: timestamp('processed_at', { mode: "date" }),
+  createdAt: timestamp('created_at', { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: "date" }).defaultNow().notNull(),
+});
+
+// === UNIFIED VECTORS TABLE (POSTGRES AS SOURCE OF TRUTH) ===
+// This table ensures every evidence/report has a vector row (created via DB trigger)
+// CUDA worker updates the embedding field after processing
+
+export const vectors = pgTable('vectors', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  ownerType: text('owner_type').notNull(), // 'evidence' | 'report' | 'case' | 'document' 
+  ownerId: uuid('owner_id').notNull(),
+  embedding: vector('embedding', { dimensions: 768 }).default(sql`ARRAY[0]::real[]`), // Zero vector initially
+  metadata: jsonb('metadata').default({}).notNull(),
+  lastUpdated: timestamp('last_updated', { mode: "date" }).defaultNow().notNull(),
+  createdAt: timestamp('created_at', { mode: "date" }).defaultNow().notNull(),
+});
+
+// === WEBGPU/WASM PERFORMANCE CACHE ===
+
+export const webgpuCache = pgTable('webgpu_cache', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  operationType: varchar('operation_type', { length: 50 }).notNull(), // 'embedding' | 'similarity' | 'inference'
+  inputHash: text('input_hash').notNull().unique(),
+  outputData: jsonb('output_data').notNull(),
+  model: varchar('model', { length: 100 }).notNull(), // 'gemma3-legal-wasm' | 'nomic-embed-webgpu'
+  deviceInfo: jsonb('device_info').default({}).notNull(), // GPU/WebGL capabilities
+  performanceMs: integer('performance_ms'), // Execution time in milliseconds
+  createdAt: timestamp('created_at', { mode: "date" }).defaultNow().notNull(),
+  expiresAt: timestamp('expires_at', { mode: "date" }), // Cache expiration
+});
+
+// === JOB STATUS TRACKING (FOR XSTATE INTEGRATION) ===
+
+export const vectorJobs = pgTable('vector_jobs', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  jobId: varchar('job_id', { length: 255 }).notNull().unique(),
+  ownerType: text('owner_type').notNull(),
+  ownerId: uuid('owner_id').notNull(),
+  event: text('event').notNull(), // 'upsert' | 'delete' | 'reembed'
+  status: varchar('status', { length: 20 }).default('enqueued').notNull(), // enqueued | processing | succeeded | failed
+  progress: integer('progress').default(0), // 0-100
+  error: text('error'),
+  result: jsonb('result'),
+  startedAt: timestamp('started_at', { mode: "date" }),
+  completedAt: timestamp('completed_at', { mode: "date" }),
+  createdAt: timestamp('created_at', { mode: "date" }).defaultNow().notNull(),
+});
+
+export type VectorOutbox = typeof vectorOutbox.$inferSelect;
+export type NewVectorOutbox = typeof vectorOutbox.$inferInsert;
+
+export type Vectors = typeof vectors.$inferSelect;
+export type NewVectors = typeof vectors.$inferInsert;
+
+export type VectorJob = typeof vectorJobs.$inferSelect;
+export type NewVectorJob = typeof vectorJobs.$inferInsert;
+
+// === FEEDBACK LOOP SYSTEM WITH PGVECTOR ===
+
+export const userRatings = pgTable("user_ratings", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  sessionId: varchar("session_id", { length: 255 }).notNull(),
+  interactionId: varchar("interaction_id", { length: 255 }).notNull(),
+  ratingType: varchar("rating_type", { length: 50 }).notNull(), // response_quality, search_relevance, ui_experience, ai_accuracy, performance
+  score: decimal("score", { precision: 3, scale: 2 }).notNull(), // 1.00-5.00 scale
+  feedback: text("feedback"),
+  context: jsonb("context").default({}).notNull(), // query, response, responseTime, userIntent, satisfactionLevel
+  metadata: jsonb("metadata").default({}).notNull(), // userAgent, platform, featureUsed, errorEncountered, deviceType
+  queryEmbedding: vector("query_embedding", { dimensions: 768 }), // Embedding of user query for similarity analysis
+  responseEmbedding: vector("response_embedding", { dimensions: 768 }), // Embedding of AI response for quality analysis
+  timestamp: timestamp("timestamp", { mode: "date" }).defaultNow().notNull(),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+});
+
+export const interactionHistory = pgTable("interaction_history", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  sessionId: varchar("session_id", { length: 255 }).notNull(),
+  interactionType: varchar("interaction_type", { length: 50 }).notNull(), // query, search, click, scroll, dwell
+  content: text("content"),
+  contextData: jsonb("context_data").default({}).notNull(),
+  contentEmbedding: vector("content_embedding", { dimensions: 768 }), // For semantic analysis of user behavior
+  duration: integer("duration"), // milliseconds
+  success: boolean("success").default(true),
+  errorDetails: text("error_details"),
+  timestamp: timestamp("timestamp", { mode: "date" }).defaultNow().notNull(),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+});
+
+export const trainingData = pgTable("training_data", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
+  input: text("input").notNull(),
+  expectedOutput: text("expected_output"),
+  actualOutput: text("actual_output"),
+  userRating: decimal("user_rating", { precision: 3, scale: 2 }),
+  corrections: text("corrections"),
+  contextTags: jsonb("context_tags").default([]).notNull(),
+  difficultyLevel: varchar("difficulty_level", { length: 20 }).default("intermediate"), // beginner, intermediate, expert
+  inputEmbedding: vector("input_embedding", { dimensions: 768 }), // For semantic clustering of training examples
+  expectedOutputEmbedding: vector("expected_output_embedding", { dimensions: 768 }),
+  improvementScore: decimal("improvement_score", { precision: 3, scale: 2 }), // Measure of training effectiveness
+  processed: boolean("processed").default(false).notNull(),
+  processedAt: timestamp("processed_at", { mode: "date" }),
+  modelVersion: varchar("model_version", { length: 50 }),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+});
+
+export const userBehaviorPatterns = pgTable("user_behavior_patterns", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }).unique(),
+  commonQueries: jsonb("common_queries").default([]).notNull(),
+  preferredFeatures: jsonb("preferred_features").default([]).notNull(),
+  responseTimeThreshold: integer("response_time_threshold").default(2000).notNull(),
+  qualityExpectations: decimal("quality_expectations", { precision: 3, scale: 2 }).default("3.50").notNull(),
+  learningProgress: jsonb("learning_progress").default({}).notNull(),
+  interactionVectorCentroid: vector("interaction_vector_centroid", { dimensions: 768 }), // Average embedding of user's interactions
+  lastUpdated: timestamp("last_updated", { mode: "date" }).defaultNow().notNull(),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+});
+
+export const feedbackMetrics = pgTable("feedback_metrics", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  metricType: varchar("metric_type", { length: 50 }).notNull(), // daily_average, feature_satisfaction, improvement_trend
+  timeframe: varchar("timeframe", { length: 20 }).notNull(), // daily, weekly, monthly
+  value: decimal("value", { precision: 10, scale: 4 }).notNull(),
+  breakdown: jsonb("breakdown").default({}).notNull(),
+  metadata: jsonb("metadata").default({}).notNull(),
+  calculatedAt: timestamp("calculated_at", { mode: "date" }).defaultNow().notNull(),
+  date: timestamp("date", { mode: "date" }).notNull(),
+});
+
+// Type exports for feedback system
+export type UserRating = typeof userRatings.$inferSelect;
+export type NewUserRating = typeof userRatings.$inferInsert;
+
+export type InteractionHistory = typeof interactionHistory.$inferSelect;
+export type NewInteractionHistory = typeof interactionHistory.$inferInsert;
+
+export type TrainingData = typeof trainingData.$inferSelect;
+export type NewTrainingData = typeof trainingData.$inferInsert;
+
+export type UserBehaviorPattern = typeof userBehaviorPatterns.$inferSelect;
+export type NewUserBehaviorPattern = typeof userBehaviorPatterns.$inferInsert;
+
+export type FeedbackMetric = typeof feedbackMetrics.$inferSelect;
+export type NewFeedbackMetric = typeof feedbackMetrics.$inferInsert;
+
+// Relations for feedback system
+export const userRatingsRelations = relations(userRatings, ({ one }) => ({
+  user: one(users, {
+    fields: [userRatings.userId],
+    references: [users.id],
+  }),
+}));
+
+export const interactionHistoryRelations = relations(interactionHistory, ({ one }) => ({
+  user: one(users, {
+    fields: [interactionHistory.userId],
+    references: [users.id],
+  }),
+}));
+
+export const trainingDataRelations = relations(trainingData, ({ one }) => ({
+  user: one(users, {
+    fields: [trainingData.userId],
+    references: [users.id],
+  }),
+}));
+
+export const userBehaviorPatternsRelations = relations(userBehaviorPatterns, ({ one }) => ({
+  user: one(users, {
+    fields: [userBehaviorPatterns.userId],
+    references: [users.id],
+  }),
+}));

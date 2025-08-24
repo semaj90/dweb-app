@@ -7,7 +7,7 @@ import {
   statutes,
   users,
 } from "$lib/server/db/schema-postgres";
-// Orphaned content: import type { InferInsertModel, InferSelectModel
+import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 
 // Core database types
 export type Case = InferSelectModel<typeof cases>;

@@ -17,6 +17,9 @@
   import { notifications } from "$lib/stores/notification";
   import { ThinkingProcessor } from "$lib/ai/thinking-processor";
   import { logSecurityEvent } from "$lib/utils/security";
+  
+  // Feedback Integration
+  import FeedbackIntegration from '$lib/components/feedback/FeedbackIntegration.svelte';
   import {
     Activity,
     AlertTriangle,
@@ -83,6 +86,11 @@
   let thinkingStyleEnabled = false;
   let bulkAnalysisMode = false;
   let analysisInProgress = new Set<string>();
+
+  // Feedback integration references
+  let evidencePageFeedback: any;
+  let evidenceSearchFeedback: any;
+  let evidenceUploadFeedback: any;
 
   // Filtering and selection
   let selectedEvidence = new Set<string>();
@@ -1468,3 +1476,37 @@
     overflow: hidden;
   }
 </style>
+
+<!-- Feedback Integration Components -->
+<FeedbackIntegration
+  bind:this={evidencePageFeedback}
+  interactionType="page_visit"
+  ratingType="ui_experience"
+  priority="low"
+  context={{ 
+    page: 'evidence',
+    viewMode,
+    evidenceCount: $evidenceGrid.length,
+    hasFilters: searchQuery.trim() || selectedType || selectedStatus
+  }}
+  trackOnMount={true}
+  let:feedback
+/>
+
+<FeedbackIntegration
+  bind:this={evidenceSearchFeedback}
+  interactionType="evidence_search"
+  ratingType="search_relevance"
+  priority="medium"
+  context={{ component: 'EvidenceSearch', legalDomain: 'evidence_management' }}
+  let:feedback
+/>
+
+<FeedbackIntegration
+  bind:this={evidenceUploadFeedback}
+  interactionType="evidence_upload"
+  ratingType="ui_experience"
+  priority="high"
+  context={{ component: 'EvidenceUpload' }}
+  let:feedback
+/>

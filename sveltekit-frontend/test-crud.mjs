@@ -11,7 +11,7 @@ import * as schema from "./src/lib/db/schema.js";
 
 const DATABASE_URL =
   process.env.DATABASE_URL ||
-  "postgresql://legal_admin:LegalSecure2024!@localhost:5432/legal_ai_v3";
+  "postgresql://legal_admin:123456@localhost:5432/legal_ai_v3";
 
 async function testCRUDOperations() {
   console.log("🧪 Testing PostgreSQL CRUD Operations...");

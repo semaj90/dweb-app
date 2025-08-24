@@ -10,10 +10,16 @@
  */
 
 import { writable, type Writable } from 'svelte/store';
-// Orphaned content: import type { EnhancedRAGEngine
-import {
-copilotOrchestrator } from "$lib/utils/mcp-helpers";
-// TODO: Fix import - // Orphaned content: import { EventEmitter  // Core types for compiler feedback system
+import { copilotOrchestrator } from "$lib/utils/mcp-helpers";
+import { EventEmitter } from 'events';
+
+// Mock type for missing interface
+export interface EnhancedRAGEngine {
+  search: (query: string) => Promise<any[]>;
+  index: (document: any) => Promise<void>;
+}
+
+// Core types for compiler feedback system
 export interface CompilerLog {
   id: string;
   timestamp: number;

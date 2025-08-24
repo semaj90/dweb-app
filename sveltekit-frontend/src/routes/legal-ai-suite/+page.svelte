@@ -7,6 +7,7 @@
   import { Badge } from '$lib/components/ui/badge/index.js';
   import { Progress } from '$lib/components/ui/progress/index.js';
   import { AlertCircle, Upload, Search, Brain, CheckCircle, AlertTriangle } from 'lucide-svelte';
+  import GPUAcceleratedLegalSearch from '$lib/components/gpu/GPUAcceleratedLegalSearch.svelte';
 
   // Svelte 5 runes for state management
   let selectedFiles = $state<File[]>([]);
@@ -159,8 +160,26 @@
       const ollamaResponse = await fetch('http://localhost:11434/api/tags');
       systemMetrics.ollamaStatus = ollamaResponse.ok ? 'healthy' : 'offline';
 
-      // Simulate GPU detection
-      systemMetrics.gpuAcceleration = Math.random() > 0.3; // 70% chance for demo
+      // Check actual GPU service status
+      try {
+        const gpuResponse = await fetch('/api/v1/gpu');
+        if (gpuResponse.ok) {
+          const gpuStatus = await gpuResponse.json();
+          systemMetrics.gpuAcceleration = gpuStatus.gpu_status?.gpu_available || false;
+          
+          if (systemMetrics.gpuAcceleration) {
+            addLog(`🔥 GPU acceleration available: ${gpuStatus.integration?.gpu_model || 'RTX 3060 Ti'}`);
+            addLog(`⚡ Expected performance: ${gpuStatus.performance?.speedup_vs_cpu || '8.3x faster'}`);
+          } else {
+            addLog('⚠️ GPU acceleration not available - using CPU fallback');
+          }
+        } else {
+          systemMetrics.gpuAcceleration = false;
+        }
+      } catch (gpuError) {
+        systemMetrics.gpuAcceleration = false;
+        addLog('⚠️ GPU service not responding - using CPU processing');
+      }
 
       addLog(
         `🖥️ System status: Ollama ${systemMetrics.ollamaStatus}, GPU: ${systemMetrics.gpuAcceleration ? 'enabled' : 'disabled'}`
@@ -447,6 +466,24 @@
               </div>
             </div>
           {/if}
+        </CardContent>
+      </Card>
+
+      <!-- GPU-Accelerated Legal Search -->
+      <Card>
+        <CardHeader>
+          <CardTitle class="flex items-center space-x-2">
+            <span>🔥</span>
+            <span>GPU-Accelerated Legal Search</span>
+            {#if systemMetrics.gpuAcceleration}
+              <Badge variant="default" class="text-xs">GPU Active</Badge>
+            {:else}
+              <Badge variant="outline" class="text-xs">CPU Mode</Badge>
+            {/if}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <GPUAcceleratedLegalSearch />
         </CardContent>
       </Card>
     </div>

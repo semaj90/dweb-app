@@ -5,12 +5,38 @@
  */
 
 import { createMachine, assign, type ActorRefFrom } from 'xstate';
-// Orphaned content: import type { 
-  User, 
-  LegalCase, 
-  Evidence, 
-  WorkflowContext, 
-  WorkflowEvent
+
+// Type definitions
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+}
+
+export interface LegalCase {
+  id: string;
+  title: string;
+  status: string;
+  createdAt: Date;
+}
+
+export interface Evidence {
+  id: string;
+  title: string;
+  type: string;
+  caseId: string;
+  createdAt: Date;
+}
+
+export interface WorkflowContext {
+  caseId?: string;
+  userId: string;
+  currentStep: string;
+  progress: number;
+  errors: string[];
+  data: Record<string, any>;
+}
 
 export interface UserWorkflowContext extends WorkflowContext {
   user?: User;

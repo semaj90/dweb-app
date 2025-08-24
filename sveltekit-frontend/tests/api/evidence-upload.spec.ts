@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+/// <reference types="vitest" />
+// Use vitest globals (describe/it/expect/beforeEach) to avoid named-import type issues
 // Attempt to import POST handler and rate limiter reset for direct invocation
 // These imports rely on module paths; adjust if path resolution differs
 import { POST } from '../../src/routes/api/evidence/upload/+server';

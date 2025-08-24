@@ -1,6 +1,16 @@
 
-// Comprehensive UI Component Exports
+// Comprehensive UI Component Exports - Bits UI v2 (Svelte 5 Compatible)
 // Auto-generated barrel file for all UI components
+
+// === BITS UI V2 COMPONENTS (SVELTE 5 COMPATIBLE) ===
+// Primary exports - Production ready components
+export * from "./dialog";
+export * from "./command";
+
+// === MODULAR API-INTEGRATED COMPONENTS ===
+export { default as ModularDialog } from './modular-dialog/ModularDialog.svelte';
+export { default as ModularCommand } from './modular-command/ModularCommand.svelte';
+export { default as CaseManagementExample } from './modular-examples/CaseManagementExample.svelte';
 
 // Enhanced Bits UI Components (Legal AI specific) - Primary exports
 export { default as EnhancedButton } from "./enhanced-bits/Button.svelte";

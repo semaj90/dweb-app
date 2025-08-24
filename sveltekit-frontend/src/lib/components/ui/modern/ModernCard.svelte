@@ -35,15 +35,16 @@
     onclick
   }: Props = $props();
   
-  // Melt-UI tooltip if provided
-  const {
-    elements: { trigger, content: tooltipContent },
-    states: { open }
-  } = createTooltip({
+  // Melt-UI tooltip - conditionally create only when needed
+  const tooltipBuilder = tooltip ? createTooltip({
     openDelay: 500,
     closeDelay: 100,
     forceVisible: true
-  });
+  }) : null;
+  
+  const trigger = tooltipBuilder?.elements.trigger;
+  const tooltipContent = tooltipBuilder?.elements.content;
+  const open = tooltipBuilder?.states.open;
   
   // Dynamic classes based on props
   const cardClasses = $derived(() => {
@@ -73,6 +74,7 @@
   }
 </script>
 
+{#if tooltip}
 <Card.Root 
   class={cardClasses}
   role={clickable ? 'button' : undefined}
@@ -84,8 +86,22 @@
       onclick?.();
     }
   }}
-  use:melt={tooltip ? $trigger : undefined}
+  use:melt={$trigger}
 >
+{:else}
+<Card.Root 
+  class={cardClasses}
+  role={clickable ? 'button' : undefined}
+  tabindex={clickable ? 0 : undefined}
+  onclick={handleClick}
+  onkeydown={(e) => {
+    if (clickable && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      onclick?.();
+    }
+  }}
+>
+{/if}
   {#if loading}
     <div class="loading-overlay">
       <div class="loading-spinner"></div>
@@ -132,6 +148,56 @@
     </Card.Footer>
   {/if}
 </Card.Root>
+
+<!-- Duplicate content for non-tooltip case -->
+{#if !tooltip}
+  {#if loading}
+    <div class="loading-overlay">
+      <div class="loading-spinner"></div>
+    </div>
+  {/if}
+  
+  {#if header || title || subtitle || actions}
+    <Card.Header class="card-header">
+      {#if header}
+        {@render header()}
+      {:else if title || subtitle}
+        <div class="golden-flex-between">
+          <div class="space-y-golden">
+            {#if title}
+              <Card.Title class="card-title text-yorha-text-primary">
+                {title}
+              </Card.Title>
+            {/if}
+            {#if subtitle}
+              <Card.Description class="card-subtitle text-yorha-text-secondary">
+                {subtitle}
+              </Card.Description>
+            {/if}
+          </div>
+          {#if actions}
+            <div class="card-actions">
+              {@render actions()}
+            </div>
+          {/if}
+        </div>
+      {/if}
+    </Card.Header>
+  {/if}
+  
+  {#if children}
+    <Card.Content class="card-content">
+      {@render children()}
+    </Card.Content>
+  {/if}
+  
+  {#if footer}
+    <Card.Footer class="card-footer">
+      {@render footer()}
+    </Card.Footer>
+  {/if}
+</Card.Root>
+{/if}
 
 {#if tooltip && $open}
   <div

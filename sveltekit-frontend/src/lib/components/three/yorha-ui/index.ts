@@ -17,6 +17,14 @@ export {
   type YoRHaTransform
 } from './YoRHaUI3D';
 
+// Import for local use in utility functions
+import { YoRHaButton3D } from './components/YoRHaButton3D';
+import { YoRHaPanel3D } from './components/YoRHaPanel3D';
+import { YoRHaInput3D } from './components/YoRHaInput3D';
+import { YoRHaModal3D } from './components/YoRHaModal3D';
+import { YoRHaLayout3D, YoRHaLayoutPresets } from './YoRHaLayout3D';
+import { createYoRHaUIDemo } from './YoRHaUIExample';
+
 // Core UI Components
 export { YoRHaButton3D, type YoRHaButton3DOptions } from './components/YoRHaButton3D';
 export { YoRHaPanel3D, type YoRHaPanel3DOptions } from './components/YoRHaPanel3D';
@@ -92,34 +100,34 @@ export const YoRHaUtils = {
   }
 };
 
-// Constants for easy access to color schemes
+// Constants for easy access to color schemes (use YORHA_COLORS directly for type safety)
 export const YoRHaThemes = {
   DEFAULT: {
-    background: YORHA_COLORS.primary.beige,
-    text: YORHA_COLORS.primary.black,
-    border: YORHA_COLORS.primary.grey,
-    accent: YORHA_COLORS.accent.gold
+    background: 0xd4c5a9,  // YORHA_COLORS.primary.beige
+    text: 0x0a0a0a,        // YORHA_COLORS.primary.black
+    border: 0x8b8680,      // YORHA_COLORS.primary.grey
+    accent: 0xd4af37       // YORHA_COLORS.accent.gold
   },
 
   TERMINAL: {
-    background: YORHA_COLORS.primary.black,
-    text: YORHA_COLORS.accent.gold,
-    border: YORHA_COLORS.accent.gold,
-    accent: YORHA_COLORS.accent.amber
+    background: 0x0a0a0a,  // YORHA_COLORS.primary.black
+    text: 0xd4af37,        // YORHA_COLORS.accent.gold
+    border: 0xd4af37,      // YORHA_COLORS.accent.gold
+    accent: 0xffc649       // YORHA_COLORS.accent.amber
   },
 
   ALERT: {
-    background: YORHA_COLORS.status.error,
-    text: YORHA_COLORS.primary.white,
+    background: 0xff6b6b,  // YORHA_COLORS.status.error
+    text: 0xfaf6ed,        // YORHA_COLORS.primary.white
     border: 0x8b0000,
-    accent: YORHA_COLORS.status.warning
+    accent: 0xffa500       // YORHA_COLORS.status.warning
   },
 
   SUCCESS: {
-    background: YORHA_COLORS.status.success,
-    text: YORHA_COLORS.primary.black,
+    background: 0x90ee90,  // YORHA_COLORS.status.success
+    text: 0x0a0a0a,        // YORHA_COLORS.primary.black
     border: 0x228b22,
-    accent: YORHA_COLORS.primary.white
+    accent: 0xfaf6ed       // YORHA_COLORS.primary.white
   }
 };
 

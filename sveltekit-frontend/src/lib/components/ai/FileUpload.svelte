@@ -1,13 +1,18 @@
 <script lang="ts">
   import { $state } from 'svelte';
 
-  import { Button } from "$lib/components/ui/button";
-  import { Input } from "$lib/components/ui/input";
-  import { Label } from "$lib/components/ui/label";
-  import { Progress } from "$lib/components/ui/progress";
-  import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/Card";
-  import { Alert, AlertDescription, AlertTitle } from "$lib/components/ui/alert";
+  import Button from "$lib/components/ui/button/Button.svelte";
+  import Input from "$lib/components/ui/Input.svelte";
+  import Label from "$lib/components/ui/Label.svelte";
+  import Progress from "$lib/components/ui/progress/Progress.svelte";
+  import Card from "$lib/components/ui/Card/Card.svelte";
+  import Alert from "$lib/components/ui/alert/Alert.svelte";
+  import AlertDescription from "$lib/components/ui/alert/AlertDescription.svelte";
+  import AlertTitle from "$lib/components/ui/alert/AlertTitle.svelte";
   import { FileUp, BrainCircuit, Search, Loader2 } from "lucide-svelte";
+  
+  // Feedback Integration
+  import FeedbackIntegration from '$lib/components/feedback/FeedbackIntegration.svelte';
 
   // Svelte 5 state management
   let files = $state<FileList>();
@@ -17,6 +22,11 @@
   let uploadProgress = $state(0);
   let error = $state<string | null>(null);
   let analysisResult = $state<any>(null);
+
+  // Feedback integration
+  let feedbackIntegration: any;
+  let currentInteractionId: string | null = null;
+  let uploadStartTime = 0;
 
   async function handleUpload() {
     if (!files || files.length === 0) {
@@ -28,6 +38,17 @@
     error = null;
     analysisResult = null;
     uploadProgress = 0;
+    uploadStartTime = Date.now();
+
+    // Track upload interaction for feedback
+    currentInteractionId = feedbackIntegration?.triggerFeedback({
+      filename: files[0].name,
+      fileSize: files[0].size,
+      fileType: files[0].type,
+      verboseMode,
+      thinkingMode,
+      uploadStarted: new Date().toISOString()
+    });
 
     const formData = new FormData();
     formData.append("file", files[0]);
@@ -46,23 +67,66 @@
 
     xhr.onload = () => {
       isUploading = false;
+      const processingTime = Date.now() - uploadStartTime;
+      
       if (xhr.status === 200) {
         analysisResult = JSON.parse(xhr.responseText);
         uploadProgress = 100;
+        
+        // Track successful upload for feedback
+        if (currentInteractionId && feedbackIntegration) {
+          feedbackIntegration.markCompleted({
+            success: true,
+            processingTime,
+            responseSize: xhr.responseText.length,
+            analysisResultKeys: Object.keys(analysisResult).join(','),
+            uploadCompleted: new Date().toISOString()
+          });
+        }
       } else {
-        error = JSON.parse(xhr.responseText).error || "An unknown error occurred.";
+        const errorText = JSON.parse(xhr.responseText).error || "An unknown error occurred.";
+        error = errorText;
+        
+        // Track failed upload for feedback
+        if (currentInteractionId && feedbackIntegration) {
+          feedbackIntegration.markFailed({
+            httpStatus: xhr.status,
+            errorMessage: errorText,
+            processingTime,
+            uploadFailed: new Date().toISOString()
+          });
+        }
       }
     };
 
     xhr.onerror = () => {
       isUploading = false;
-      error = "Upload failed. Please check your network connection.";
+      const errorMsg = "Upload failed. Please check your network connection.";
+      error = errorMsg;
+      
+      // Track network error for feedback
+      if (currentInteractionId && feedbackIntegration) {
+        feedbackIntegration.markFailed({
+          errorType: 'network_error',
+          errorMessage: errorMsg,
+          processingTime: Date.now() - uploadStartTime,
+          networkError: true
+        });
+      }
     };
 
     xhr.send(formData);
   }
 </script>
 
+<FeedbackIntegration
+  bind:this={feedbackIntegration}
+  interactionType="document_upload"
+  ratingType="ui_experience"
+  priority="medium"
+  context={{ component: 'FileUpload' }}
+  let:feedback
+>
 <Card class="w-full max-w-2xl mx-auto">
   <CardHeader>
     <CardTitle class="flex items-center gap-2">
@@ -120,5 +184,6 @@
     {/if}
   </CardContent>
 </Card>
+</FeedbackIntegration>
 
 

@@ -211,7 +211,7 @@ export class ComprehensiveAgentOrchestrator {
     const recommendationRequest: RecommendationRequest = {
       context: `Legal AI analysis request: ${request.prompt}`,
       errorType: request.options?.analysisType,
-      codeSnippet: request.context?.codeSnippet,
+      codeSnippet: (request.context as any)?.codeSnippet,
       priority: request.options?.priority || 'medium'
     };
 
@@ -235,12 +235,12 @@ export class ComprehensiveAgentOrchestrator {
       if (result.status === 'fulfilled' && result.value.status === 'completed') {
         const taskResult = result.value.result;
         
-        if (tasks[index].type === 'recommendation' && taskResult?.recommendations) {
-          recommendations.push(...taskResult.recommendations);
+        if (tasks[index].type === 'recommendation' && (taskResult as any)?.recommendations) {
+          recommendations.push(...(taskResult as any).recommendations);
         }
         
         if (tasks[index].type === 'semantic_analysis') {
-          errorPatterns = taskResult?.errorPatterns;
+          errorPatterns = (taskResult as any)?.errorPatterns;
         }
       }
     });
@@ -269,11 +269,14 @@ export class ComprehensiveAgentOrchestrator {
     };
 
     // Enhance context with multicore analysis if available
-    let enhancedContext = request.context || {};
+    let enhancedContext: any = request.context || {};
     if (multicoreAnalysis) {
-      enhancedContext.multicoreAnalysis = {
-        recommendations: multicoreAnalysis.recommendations,
-        performanceMetrics: multicoreAnalysis.performanceMetrics
+      enhancedContext = {
+        ...enhancedContext,
+        multicoreAnalysis: {
+          recommendations: multicoreAnalysis.recommendations,
+          performanceMetrics: multicoreAnalysis.performanceMetrics
+        }
       };
     }
 
@@ -377,7 +380,7 @@ export class ComprehensiveAgentOrchestrator {
     if (result.status === 'completed') {
       return {
         analysis: result.result,
-        recommendations: result.result?.recommendations || [
+        recommendations: (result.result as any)?.recommendations || [
           'Run systematic error fixing process',
           'Update component patterns to Svelte 5',
           'Fix UI component API mismatches'
@@ -400,42 +403,60 @@ export class ComprehensiveAgentOrchestrator {
   /**
    * Simulate Claude Agent execution (fallback when agent not available)
    */
-  private async simulateClaudeAgent(request: ClaudeAgentRequest): Promise<any> {
+  private async simulateClaudeAgent(request: ClaudeAgentRequest): Promise<{
+    output: string;
+    score: number;
+    metadata: any;
+  }> {
     return {
-      success: true,
-      agent: 'claude-simulated',
-      response: `Simulated Claude response for: ${request.prompt.substring(0, 100)}...`,
-      confidence: 0.8,
-      reasoning: 'Simulated Claude reasoning based on prompt analysis',
-      timestamp: new Date().toISOString()
+      output: `Simulated Claude response for: ${request.prompt.substring(0, 100)}...`,
+      score: 0.8,
+      metadata: {
+        success: true,
+        agent: 'claude-simulated',
+        reasoning: 'Simulated Claude reasoning based on prompt analysis',
+        timestamp: new Date().toISOString()
+      }
     };
   }
 
   /**
    * Simulate CrewAI Agent execution (fallback when agent not available)
    */
-  private async simulateCrewAIAgent(request: CrewAIAgentRequest): Promise<any> {
+  private async simulateCrewAIAgent(request: CrewAIAgentRequest): Promise<{
+    output: string;
+    score: number;
+    metadata: any;
+  }> {
     return {
-      success: true,
-      agent: 'crewai-simulated',
-      response: `Simulated CrewAI response for: ${request.prompt.substring(0, 100)}...`,
-      confidence: 0.75,
-      crewType: 'legal-analysis',
-      timestamp: new Date().toISOString()
+      output: `Simulated CrewAI response for: ${request.prompt.substring(0, 100)}...`,
+      score: 0.75,
+      metadata: {
+        success: true,
+        agent: 'crewai-simulated',
+        crewType: 'legal-analysis',
+        timestamp: new Date().toISOString()
+      }
     };
   }
 
   /**
    * Simulate AutoGen Agent execution (fallback when agent not available)
    */
-  private async simulateAutoGenAgent(request: AutoGenAgentRequest): Promise<any> {
+  private async simulateAutoGenAgent(request: AutoGenAgentRequest): Promise<{
+    output: string;
+    score: number;
+    metadata: any;
+  }> {
     return {
-      success: true,
-      agent: 'autogen-simulated',
-      response: `Simulated AutoGen response for: ${request.prompt.substring(0, 100)}...`,
-      confidence: 0.7,
-      analysisType: 'automated-review',
-      timestamp: new Date().toISOString()
+      output: `Simulated AutoGen response for: ${request.prompt.substring(0, 100)}...`,
+      score: 0.7,
+      metadata: {
+        success: true,
+        agent: 'autogen-simulated',
+        analysisType: 'automated-review',
+        timestamp: new Date().toISOString()
+      }
     };
   }
 }

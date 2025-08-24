@@ -2,7 +2,7 @@
 
   import { melt } from 'melt';
   import { $props } from 'svelte';
-  
+
   interface Props {
     trigger: any;
   }

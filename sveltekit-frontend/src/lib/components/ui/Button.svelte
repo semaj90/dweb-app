@@ -2,7 +2,20 @@
 	import type { ComponentProps } from 'svelte';
 	import { cva, type VariantProps } from 'class-variance-authority';
 	import { cn } from '$lib/utils';
-	import { createButton, melt } from 'melt';
+	// import { Button as ButtonPrimitive } from 'bits-ui';
+	import { createEventDispatcher, onMount } from 'svelte';
+	import { browser } from '$app/environment';
+	
+	// XState integration
+	import { useMachine } from '@xstate/svelte';
+	
+	// User analytics and tracking
+	import { userAnalyticsStore } from '$lib/stores/analytics';
+	import { lokiButtonCache } from '$lib/services/loki-cache';
+	import { searchableButtonIndex } from '$lib/services/fuse-search';
+	
+	// JSON SSR rendering support
+	import type { UIJsonSSRConfig, ButtonAnalyticsEvent } from '$lib/types/ui-json-ssr';
 	
 	const buttonVariants = cva(
 		'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none',
@@ -44,6 +57,18 @@
 		loading?: boolean;
 		loadingText?: string;
 		class?: string;
+		
+		// Enhanced modular properties
+		id?: string;
+		analyticsCategory?: string;
+		analyticsAction?: string;
+		analyticsLabel?: string;
+		xstateContext?: any;
+		uiJsonConfig?: UIJsonSSRConfig;
+		searchKeywords?: string[];
+		cacheKey?: string;
+		role?: string;
+		'data-testid'?: string;
 	}
 	
 	let {
@@ -56,17 +81,77 @@
 		loading = false,
 		loadingText = 'Loading...',
 		class: className = '',
+		
+		// Enhanced modular properties
+		id = crypto.randomUUID(),
+		analyticsCategory = 'ui',
+		analyticsAction = 'click',
+		analyticsLabel = '',
+		xstateContext,
+		uiJsonConfig,
+		searchKeywords = [],
+		cacheKey,
+		role = 'button',
+		'data-testid': testId,
 		...restProps
 	}: Props = $props();
 	
 	let isDisabled = $derived(disabled || loading);
 	let buttonClass = $derived(cn(buttonVariants({ variant, size }), className));
 	
-	// Create melt-ui button for enhanced accessibility and interactions
-	const {
-		elements: { root: meltButton }
-	} = createButton({
-		disabled: isDisabled
+	// Basic button component props
+	type $$Props = Props;
+	
+	// Event dispatcher for component communication
+	const dispatch = createEventDispatcher<{
+		click: ButtonAnalyticsEvent;
+		analytics: ButtonAnalyticsEvent;
+		cache: { key: string; action: string };
+	}>();
+	
+	// Enhanced click handler with analytics and XState integration
+	function handleClick(event: MouseEvent) {
+		if (isDisabled || loading) return;
+		
+		// Analytics tracking
+		const analyticsEvent: ButtonAnalyticsEvent = {
+			id,
+			category: analyticsCategory,
+			action: analyticsAction,
+			label: analyticsLabel || (event.target as HTMLElement)?.textContent || '',
+			timestamp: Date.now(),
+			context: xstateContext,
+			variant,
+			size
+		};
+		
+		// Store analytics
+		if (browser) {
+			userAnalyticsStore.trackButtonClick(analyticsEvent);
+			dispatch('analytics', analyticsEvent);
+		}
+		
+		// Cache interaction if cacheKey provided
+		if (cacheKey && browser) {
+			lokiButtonCache.recordInteraction(cacheKey, analyticsEvent);
+			dispatch('cache', { key: cacheKey, action: 'click' });
+		}
+		
+		dispatch('click', analyticsEvent);
+	}
+	
+	// Register with searchable index on mount
+	onMount(() => {
+		if (browser && searchKeywords.length > 0) {
+			searchableButtonIndex.addButton({
+				id,
+				keywords: searchKeywords,
+				variant,
+				size,
+				label: analyticsLabel,
+				element: document.getElementById(id)
+			});
+		}
 	});
 </script>
 
@@ -110,11 +195,11 @@
 	</a>
 {:else}
 	<button
-		use:melt={$meltButton}
 		{type}
 		disabled={isDisabled}
 		class={buttonClass}
 		data-testid="button"
+		on:click={handleClick}
 		{...restProps}
 	>
 		{#if loading}

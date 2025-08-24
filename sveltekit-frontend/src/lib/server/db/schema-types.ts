@@ -27,19 +27,7 @@ import {
   criminals,
   personsOfInterest,
   legalDocuments,
-  notes,
-  caseAssignments,
-  evidenceChainOfCustody,
-  complianceAudits,
-  legalHolds,
-  courtFilings,
-  clientCommunications,
-  billableTime,
-  caseTimeline,
-  documentReviews,
-  privilegeLog,
-  conflictChecks,
-  caseCollaborations
+  notes
 } from './unified-schema';
 
 // ===== CORE ENTITY TYPES =====
@@ -94,77 +82,7 @@ export type NoteInsert = InferInsertModel<typeof notes>;
 
 // ===== EXTENDED ENTITY TYPES =====
 
-/**
- * Case Assignment Entity Types
- */
-export type CaseAssignment = InferSelectModel<typeof caseAssignments>;
-export type CaseAssignmentInsert = InferInsertModel<typeof caseAssignments>;
-
-/**
- * Evidence Chain of Custody Entity Types
- */
-export type EvidenceChainOfCustody = InferSelectModel<typeof evidenceChainOfCustody>;
-export type EvidenceChainOfCustodyInsert = InferInsertModel<typeof evidenceChainOfCustody>;
-
-/**
- * Compliance Audit Entity Types
- */
-export type ComplianceAudit = InferSelectModel<typeof complianceAudits>;
-export type ComplianceAuditInsert = InferInsertModel<typeof complianceAudits>;
-
-/**
- * Legal Hold Entity Types
- */
-export type LegalHold = InferSelectModel<typeof legalHolds>;
-export type LegalHoldInsert = InferInsertModel<typeof legalHolds>;
-
-/**
- * Court Filing Entity Types
- */
-export type CourtFiling = InferSelectModel<typeof courtFilings>;
-export type CourtFilingInsert = InferInsertModel<typeof courtFilings>;
-
-/**
- * Client Communication Entity Types
- */
-export type ClientCommunication = InferSelectModel<typeof clientCommunications>;
-export type ClientCommunicationInsert = InferInsertModel<typeof clientCommunications>;
-
-/**
- * Billable Time Entity Types
- */
-export type BillableTime = InferSelectModel<typeof billableTime>;
-export type BillableTimeInsert = InferInsertModel<typeof billableTime>;
-
-/**
- * Case Timeline Entity Types
- */
-export type CaseTimeline = InferSelectModel<typeof caseTimeline>;
-export type CaseTimelineInsert = InferInsertModel<typeof caseTimeline>;
-
-/**
- * Document Review Entity Types
- */
-export type DocumentReview = InferSelectModel<typeof documentReviews>;
-export type DocumentReviewInsert = InferInsertModel<typeof documentReviews>;
-
-/**
- * Privilege Log Entity Types
- */
-export type PrivilegeLog = InferSelectModel<typeof privilegeLog>;
-export type PrivilegeLogInsert = InferInsertModel<typeof privilegeLog>;
-
-/**
- * Conflict Check Entity Types
- */
-export type ConflictCheck = InferSelectModel<typeof conflictChecks>;
-export type ConflictCheckInsert = InferInsertModel<typeof conflictChecks>;
-
-/**
- * Case Collaboration Entity Types
- */
-export type CaseCollaboration = InferSelectModel<typeof caseCollaborations>;
-export type CaseCollaborationInsert = InferInsertModel<typeof caseCollaborations>;
+// Extended entity types removed - tables not yet implemented in unified-schema.ts
 
 // ===== RELATIONSHIP TYPES =====
 
@@ -179,14 +97,6 @@ export type CaseWithRelations = Case & {
   notes?: Note[];
   leadProsecutor?: User;
   createdBy?: User;
-  assignments?: CaseAssignment[];
-  timeline?: CaseTimeline[];
-  courtFilings?: CourtFiling[];
-  complianceAudits?: ComplianceAudit[];
-  legalHolds?: LegalHold[];
-  collaborations?: CaseCollaboration[];
-  billableTime?: BillableTime[];
-  conflictChecks?: ConflictCheck[];
 };
 
 /**
@@ -195,10 +105,6 @@ export type CaseWithRelations = Case & {
 export type EvidenceWithRelations = Evidence & {
   case?: Case;
   uploadedBy?: User;
-  chainOfCustody?: EvidenceChainOfCustody[];
-  reviews?: DocumentReview[];
-  legalHolds?: LegalHold[];
-  complianceAudits?: ComplianceAudit[];
 };
 
 /**
@@ -208,9 +114,6 @@ export type ReportWithRelations = Report & {
   case?: Case;
   createdBy?: User;
   lastEditedBy?: User;
-  reviews?: DocumentReview[];
-  timeline?: CaseTimeline[];
-  billableTime?: BillableTime[];
 };
 
 /**
@@ -219,26 +122,15 @@ export type ReportWithRelations = Report & {
 export type LegalDocumentWithRelations = LegalDocument & {
   case?: Case;
   uploadedBy?: User;
-  reviews?: DocumentReview[];
-  privilegeEntries?: PrivilegeLog[];
-  legalHolds?: LegalHold[];
-  chainOfCustody?: EvidenceChainOfCustody[];
-  complianceAudits?: ComplianceAudit[];
 };
 
 /**
  * User with role and case assignments
  */
 export type UserWithRelations = User & {
-  assignedCases?: CaseAssignment[];
   createdCases?: Case[];
   uploadedEvidence?: Evidence[];
   createdReports?: Report[];
-  billableTime?: BillableTime[];
-  clientCommunications?: ClientCommunication[];
-  documentReviews?: DocumentReview[];
-  privilegeEntries?: PrivilegeLog[];
-  conflictChecks?: ConflictCheck[];
 };
 
 /**
@@ -393,7 +285,6 @@ export type EntityWithAudit = EntityWithTimestamps & {
   createdBy: string;
   lastEditedBy?: string;
   version: number;
-  auditLog?: ComplianceAudit[];
 };
 
 /**
@@ -537,10 +428,10 @@ export function isPrivileged(entity: { confidentialityLevel?: string }): boolean
 }
 
 /**
- * Type guard for checking if entity requires legal hold
+ * Type guard for checking if entity has audit trail
  */
-export function requiresLegalHold(entity: any): boolean {
-  return entity && entity.legalHold === true;
+export function hasAuditTrail(entity: any): entity is EntityWithAudit {
+  return entity && entity.id && entity.createdAt && entity.updatedAt;
 }
 
 // ===== DEFAULT EXPORTS =====
@@ -556,19 +447,8 @@ export default {
   LegalDocument,
   Note,
   
-  // Extended types
-  CaseAssignment,
-  EvidenceChainOfCustody,
-  ComplianceAudit,
-  LegalHold,
-  CourtFiling,
-  ClientCommunication,
-  BillableTime,
-  CaseTimeline,
-  DocumentReview,
-  PrivilegeLog,
-  ConflictCheck,
-  CaseCollaboration,
+  // Extended types - to be implemented
+  // CaseAssignment, EvidenceChainOfCustody, etc. - pending schema implementation
   
   // Relationship types
   CaseWithRelations,
@@ -592,6 +472,5 @@ export default {
   // Type guards
   hasLegalCompliance,
   hasAuditTrail,
-  isPrivileged,
-  requiresLegalHold
+  isPrivileged
 };

@@ -151,6 +151,8 @@ export abstract class YoRHa3DComponent extends THREE.Group {
   protected isHovered: boolean = false;
   protected isActive: boolean = false;
   protected isDisabled: boolean = false;
+  protected eventListeners: Map<string, Array<(event?: any) => void>> = new Map();
+  protected customAnimations: Map<string, (deltaTime: number) => void> = new Map();
 
   constructor(style: YoRHaStyle = {}) {
     super();
@@ -593,13 +595,6 @@ export abstract class YoRHa3DComponent extends THREE.Group {
     this.addCustomAnimation('glitch', glitchAnimation);
   }
 
-  // Animation system
-  private customAnimations: Map<string, (deltaTime: number) => void> = new Map();
-  
-  protected addCustomAnimation(name: string, animationFn: (deltaTime: number) => void): void {
-    this.customAnimations.set(name, animationFn);
-  }
-  
   public update(deltaTime: number): void {
     // Update all custom animations
     this.customAnimations.forEach(animation => animation(deltaTime));
@@ -641,7 +636,7 @@ export abstract class YoRHa3DComponent extends THREE.Group {
     if (this.isDisabled) return;
     
     // Override in subclasses
-    this.dispatchEvent({ type: 'click', target: this });
+    this.emitEvent('click', { target: this });
   }
 
   protected onMouseDown(): void {
@@ -698,7 +693,7 @@ export abstract class YoRHa3DComponent extends THREE.Group {
   }
 
   public getBoundingBox(): THREE.Box3 {
-    return this.boundingBox.copy();
+    return this.boundingBox.clone();
   }
 
   public dispose(): void {
@@ -712,11 +707,50 @@ export abstract class YoRHa3DComponent extends THREE.Group {
     }
     
     this.customAnimations.clear();
+    this.eventListeners.clear();
     
     if (this.animationMixer) {
       this.animationMixer.stopAllAction();
     }
   }
-}
 
-export { YoRHa3DComponent };
+  // Event handling methods
+  public addEventListener(eventType: string, listener: (event?: any) => void): void {
+    if (!this.eventListeners.has(eventType)) {
+      this.eventListeners.set(eventType, []);
+    }
+    this.eventListeners.get(eventType)!.push(listener);
+  }
+
+  public removeEventListener(eventType: string, listener: (event?: any) => void): void {
+    const listeners = this.eventListeners.get(eventType);
+    if (listeners) {
+      const index = listeners.indexOf(listener);
+      if (index > -1) {
+        listeners.splice(index, 1);
+      }
+    }
+  }
+
+  protected emitEvent(eventType: string, event?: any): void {
+    const listeners = this.eventListeners.get(eventType);
+    if (listeners) {
+      listeners.forEach(listener => listener(event));
+    }
+  }
+
+  // Custom animation methods
+  public addCustomAnimation(name: string, animationFunction: (deltaTime: number) => void): void {
+    this.customAnimations.set(name, animationFunction);
+  }
+
+  public removeCustomAnimation(name: string): void {
+    this.customAnimations.delete(name);
+  }
+
+  public updateCustomAnimations(deltaTime: number): void {
+    this.customAnimations.forEach(animationFunction => {
+      animationFunction(deltaTime);
+    });
+  }
+}

@@ -4,12 +4,12 @@
  */
 
 import { redirect, error } from '@sveltejs/kit';
-import type { Load, LoadEvent } from '@sveltejs/kit';
+import type { Load, ServerLoad, ServerLoadEvent } from '@sveltejs/kit';
 import type { RouteDefinition } from '$lib/data/routes-config';
 import type { GeneratedRoute } from './dynamic-route-generator';
 
 export interface RouteGuardContext {
-  event: LoadEvent;
+  event: ServerLoadEvent;
   route: RouteDefinition | GeneratedRoute;
   params: Record<string, string>;
   user?: any;
@@ -269,8 +269,8 @@ export const routeGuards = new RouteGuards();
  */
 export function createGuardedLoader(
   guards: string[],
-  loader?: Load
-): Load {
+  loader?: ServerLoad
+): ServerLoad {
   return async (event) => {
     const route = event.route;
     const params = event.params;

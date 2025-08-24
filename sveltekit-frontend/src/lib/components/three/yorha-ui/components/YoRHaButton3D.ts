@@ -4,7 +4,9 @@
  */
 
 import * as THREE from 'three';
-import { YoRHa3DComponent, type YoRHaStyle, YORHA_COLORS } from '$lib/YoRHaUI3D';
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
+import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
+import { YoRHa3DComponent, type YoRHaStyle, YORHA_COLORS } from '../YoRHaUI3D';
 
 export interface YoRHaButton3DOptions extends YoRHaStyle {
   text?: string;
@@ -131,7 +133,7 @@ export class YoRHaButton3D extends YoRHa3DComponent {
     if (!this.options.text) return;
 
     // Create text using TextGeometry (requires font loader)
-    const loader = new THREE.FontLoader();
+    const loader = new FontLoader();
     
     // For now, use a placeholder - in real implementation, load actual font
     const textGeometry = new THREE.PlaneGeometry(1.5, 0.3);
@@ -421,4 +423,3 @@ export class YoRHaButton3D extends YoRHa3DComponent {
   }
 }
 
-export { YoRHaButton3D };

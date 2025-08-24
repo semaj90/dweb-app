@@ -33,6 +33,7 @@
     "src/**/*.ts",
     "src/**/*.svelte",
     "src/types/**/*.d.ts",
+    "src/lib/types/**/*.d.ts",
     "../shared/**/*.ts",
     "tests/**/*.ts"
   ],

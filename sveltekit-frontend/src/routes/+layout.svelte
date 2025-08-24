@@ -3,9 +3,19 @@
   import { onMount } from 'svelte';
   import { browser } from '$app/environment';
   import { multiLibraryStartup, type StartupStatus } from '$lib/services/multi-library-startup';
+  import { feedbackStore, createFeedbackStore, setFeedbackStore } from '$lib/stores/feedback-store.svelte';
+  import { aiRecommendationEngine } from '$lib/services/ai-recommendation-engine';
+  import FeedbackWidget from '$lib/components/feedback/FeedbackWidget.svelte';
+  import type { FeedbackTrigger } from '$lib/types/feedback';
   
   let startupStatus: StartupStatus | null = $state(null);
   let showStartupLog = $state(false);
+  let currentFeedbackTrigger: FeedbackTrigger | null = $state(null);
+  let showFeedback = $state(false);
+
+  // Create and set feedback store context
+  const store = createFeedbackStore();
+  setFeedbackStore(store);
 
   onMount(async () => {
     if (!browser) return;
@@ -16,6 +26,16 @@
       // Initialize multi-library integration on app startup
       startupStatus = await multiLibraryStartup.initialize();
       
+      // Initialize feedback system
+      const userId = 'user_' + Date.now(); // In production, get from auth
+      const session = store.initializeSession(userId);
+      
+      // Track platform initialization
+      store.trackInteraction('platform_initialization', {
+        services: startupStatus?.services || {},
+        initTime: startupStatus?.initTime || 0
+      });
+
       if (startupStatus.initialized) {
         console.log('✅ YoRHa Legal AI Platform Ready');
         
@@ -24,10 +44,39 @@
         setTimeout(() => {
           showStartupLog = false;
         }, 4000);
+
+        // Generate initial recommendations
+        await aiRecommendationEngine.generateEnhancedRecommendations(
+          {
+            userId: session.userId,
+            sessionId: session.id,
+            deviceType: store.userContext.deviceType,
+            userType: 'attorney' // In production, get from user profile
+          },
+          'platform startup',
+          'general'
+        );
       }
     } catch (error) {
       console.error('❌ Platform initialization failed:', error);
+      store.trackInteraction('platform_error', { error: error.message });
     }
+
+    // Listen for feedback triggers
+    const feedbackInterval = setInterval(() => {
+      if (!store.isCollecting && !showFeedback) {
+        const trigger = store.showNextFeedback();
+        if (trigger) {
+          currentFeedbackTrigger = trigger;
+          showFeedback = true;
+        }
+      }
+    }, 1000);
+
+    return () => {
+      clearInterval(feedbackInterval);
+      store.clearSession();
+    };
   });
 </script>
 
@@ -68,6 +117,49 @@
     <slot />
   </main>
 </div>
+
+<!-- Global Feedback Widget -->
+{#if showFeedback && currentFeedbackTrigger}
+  <FeedbackWidget 
+    interactionId={currentFeedbackTrigger.interactionId}
+    sessionId={store.userContext.sessionId}
+    userId={store.userContext.userId}
+    context={currentFeedbackTrigger.context}
+    show={showFeedback}
+    ratingType={currentFeedbackTrigger.type}
+    onSubmitted={async (data) => {
+      const success = await store.submitFeedback(
+        data.interactionId, 
+        data.rating, 
+        data.feedback,
+        currentFeedbackTrigger?.type || 'response_quality'
+      );
+      
+      if (success) {
+        console.log('✅ Feedback submitted successfully');
+        // Generate updated recommendations based on feedback
+        await aiRecommendationEngine.generateEnhancedRecommendations(
+          store.userContext,
+          'feedback provided',
+          'user_experience'
+        );
+      }
+      
+      showFeedback = false;
+      currentFeedbackTrigger = null;
+    }}
+    onError={(error) => {
+      console.error('❌ Feedback submission failed:', error);
+      showFeedback = false;
+      currentFeedbackTrigger = null;
+    }}
+    onClosed={() => {
+      showFeedback = false;
+      currentFeedbackTrigger = null;
+      store.cancelFeedback();
+    }}
+  />
+{/if}
 
 <style>
   /* Startup Notification Styles */

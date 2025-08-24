@@ -4,7 +4,7 @@
  */
 
 import * as THREE from 'three';
-import { YoRHa3DComponent, type YoRHaStyle, YORHA_COLORS } from '$lib/YoRHaUI3D';
+import { YoRHa3DComponent, type YoRHaStyle, YORHA_COLORS } from '../YoRHaUI3D';
 
 export interface YoRHaModal3DOptions extends YoRHaStyle {
   title?: string;
@@ -396,9 +396,9 @@ export class YoRHaModal3D extends YoRHa3DComponent {
           intensity: 0.5
         },
         animation: {
-          type: 'scan',
-          speed: 1,
-          intensity: 0.3
+          type: 'scan' as const,
+          duration: 1000,
+          loop: true
         }
       }
     };
@@ -461,7 +461,7 @@ export class YoRHaModal3D extends YoRHa3DComponent {
       }
     });
     
-    this.dispatchEvent({ type: 'open' });
+    this.emitEvent('open');
   }
 
   public close(): void {
@@ -478,7 +478,7 @@ export class YoRHaModal3D extends YoRHa3DComponent {
         this.animationProgress = 1;
         this.visible = false;
         this.customAnimations.delete('modalClose');
-        this.dispatchEvent({ type: 'closed' });
+        this.emitEvent('closed');
         return;
       }
       
@@ -501,7 +501,7 @@ export class YoRHaModal3D extends YoRHa3DComponent {
       }
     });
     
-    this.dispatchEvent({ type: 'close' });
+    this.emitEvent('close');
   }
 
   public toggle(): void {
@@ -601,4 +601,4 @@ export class YoRHaModal3D extends YoRHa3DComponent {
   }
 }
 
-export { YoRHaModal3D };
+// Class already exported above

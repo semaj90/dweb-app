@@ -655,3 +655,46 @@ export const routeStats = {
     return acc;
   }, {} as Record<string, number>)
 };
+
+// Additional interfaces and types for compatibility
+export interface DynamicRouteConfig {
+  path: string;
+  component?: any;
+  metadata?: Record<string, any>;
+}
+
+export interface GeneratedRoute {
+  path: string;
+  handler: any;
+  config: DynamicRouteConfig;
+}
+
+export interface NavigationGuard {
+  name: string;
+  condition: (route: RouteDefinition) => boolean;
+}
+
+// Route registry for dynamic route management
+export const routeRegistry = new Map<string, RouteDefinition>();
+
+// Initialize route registry
+allRoutes.forEach(route => {
+  routeRegistry.set(route.id, route);
+});
+
+// Dynamic route management functions
+export function getRoute(id: string): RouteDefinition | undefined {
+  return routeRegistry.get(id) || getRouteById(id);
+}
+
+export function getAllDynamicRoutes(): RouteDefinition[] {
+  return Array.from(routeRegistry.values());
+}
+
+export function registerDynamicRoute(config: DynamicRouteConfig): GeneratedRoute {
+  return {
+    path: config.path,
+    handler: config.component,
+    config
+  };
+}

@@ -5,7 +5,8 @@
  */
 
 import { createActor } from "xstate";
-// TODO: Fix import - // Orphaned content: import {  import type { RAGDocument, RAGSearchResult, TextChunk } from '$lib/types/rag';
+import type { RAGDocument, RAGSearchResult, TextChunk } from '$lib/types/rag';
+import { enhancedRAGStore } from '$lib/stores/enhanced-rag-store';
 
 // SIMD JSON Parser using structured cloning for performance
 interface SIMDJSONParser {
@@ -224,11 +225,15 @@ export class SIMDJSONIndexProcessor {
       relevantChunks: entry.semanticChunks.map((chunk, chunkIndex) => ({
         id: `chunk_${entry.id}_${chunkIndex}`,
         content: chunk.content,
+        text: chunk.content, // Required by TextChunk interface
+        documentId: entry.id,
+        index: chunkIndex, // Required by TextChunk interface
         startIndex: chunk.startOffset,
         endIndex: chunk.endOffset,
         score: this.calculateCosineSimilaritySIMD(queryEmbedding, chunk.embedding),
         embeddings: Array.from(chunk.embedding.slice(0, 10)),
         chunkType: 'paragraph' as const,
+        metadata: {} // Required by TextChunk interface
       } as TextChunk)),
       highlights: this.extractHighlights(entry.content, query),
       explanation: `Enhanced semantic search result (${entry.metadata.source})`,
@@ -414,15 +419,28 @@ export class SIMDJSONIndexProcessor {
    */
   private async generateSemanticClusters(entries: CopilotIndexEntry[]) {
     try {
-      // Use the enhanced RAG store's SOM system
-      const { somRAG } = enhancedRAGStore;
+      // Use the enhanced RAG store's SOM system  
+      const somRAG = enhancedRAGStore.somRAG;
       
       // Train SOM with embeddings (convert Float32Array to regular array)
       for (const entry of entries) {
         await somRAG.trainIncremental(Array.from(entry.embedding), {
           id: entry.id,
+          title: entry.filePath.split('/').pop() || entry.id,
           content: entry.content,
-          metadata: entry.metadata,
+          type: 'document' as const,
+          metadata: {
+            source: entry.metadata.source || "enhanced_local_index",
+            type: 'document',
+            jurisdiction: '',
+            practiceArea: [entry.metadata.priority || 'general'],
+            confidentialityLevel: 0,
+            lastModified: new Date(entry.metadata.timestamp || Date.now()),
+            fileSize: entry.metadata.fileSize || entry.content.length,
+            language: 'en',
+            tags: []
+          },
+          version: '1.0'
         });
       }
 
@@ -461,7 +479,7 @@ export class SIMDJSONIndexProcessor {
    * Integrate with Enhanced RAG store
    */
   private async integrateWithRAGStore(index: CopilotIndex) {
-    const { addDocument } = enhancedRAGStore;
+    const addDocument = enhancedRAGStore.addDocument;
 
     // Add entries as RAG documents
     for (const entry of index.entries) {

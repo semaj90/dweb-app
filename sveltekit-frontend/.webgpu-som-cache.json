@@ -1,7 +1,7 @@
 [
   {
-    "id": "cache_1755797262886_0",
-    "error": "src/lib/stores/machines/aiProcessingMachine.ts(13,1): error TS1109: Expression expected.",
+    "id": "cache_1755880623457_0",
+    "error": "src/lib/server/db/schema-canvas.ts(17,14): error TS1128: Declaration or statement expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -11,11 +11,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.886Z"
+    "timestamp": "2025-08-22T16:37:03.457Z"
   },
   {
-    "id": "cache_1755797262887_1",
-    "error": "src/lib/stores/machines/goMicroserviceMachine.ts(14,1): error TS1109: Expression expected.",
+    "id": "cache_1755880623459_1",
+    "error": "src/lib/server/db/schema-canvas.ts(17,16): error TS1434: Unexpected keyword or identifier.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -25,11 +25,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_2",
-    "error": "src/lib/stores/phase2-demo.js(19,1): error TS1109: Expression expected.",
+    "id": "cache_1755880623459_2",
+    "error": "src/lib/server/db/vector-schema.ts(14,11): error TS1128: Declaration or statement expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -39,11 +39,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_3",
-    "error": "src/lib/stores/saved-notes.ts(6,1): error TS1005: ',' expected.",
+    "id": "cache_1755880623459_3",
+    "error": "src/lib/server/db/vector-schema.ts(14,13): error TS1434: Unexpected keyword or identifier.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -53,11 +53,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_4",
-    "error": "src/lib/stores/saved-notes.ts(6,8): error TS1005: ',' expected.",
+    "id": "cache_1755880623459_4",
+    "error": "src/lib/server/schemas.ts(5,9): error TS1005: ';' expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -67,11 +67,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_5",
-    "error": "src/lib/stores/saved-notes.ts(6,30): error TS1005: ';' expected.",
+    "id": "cache_1755880623459_5",
+    "error": "src/lib/server/schemas.ts(6,8): error TS1005: ';' expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -81,11 +81,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_6",
-    "error": "src/lib/stores/ui.ts(4,6): error TS2457: Type alias name cannot be 'type'.",
+    "id": "cache_1755880623459_6",
+    "error": "src/lib/server/schemas.ts(7,11): error TS1005: ';' expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -95,11 +95,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_7",
-    "error": "src/lib/stores/ui.ts(4,18): error TS1128: Declaration or statement expected.",
+    "id": "cache_1755880623459_7",
+    "error": "src/lib/server/schemas.ts(14,1): error TS1109: Expression expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -109,11 +109,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_8",
-    "error": "src/lib/stores/ui.ts(5,21): error TS1434: Unexpected keyword or identifier.",
+    "id": "cache_1755880623459_8",
+    "error": "src/lib/server/schemas.ts(14,2): error TS1128: Declaration or statement expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -123,11 +123,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_9",
-    "error": "src/lib/types/state.ts(25,9): error TS1005: ';' expected.",
+    "id": "cache_1755880623459_9",
+    "error": "src/lib/services/comprehensive-integration.ts(13,20): error TS1005: ';' expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -137,11 +137,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_10",
-    "error": "src/lib/utils/loki-evidence.ts(6,1): error TS1434: Unexpected keyword or identifier.",
+    "id": "cache_1755880623459_10",
+    "error": "src/lib/services/comprehensive-integration.ts(13,36): error TS1128: Declaration or statement expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -151,11 +151,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_11",
-    "error": "src/lib/utils/loki-evidence.ts(6,6): error TS1434: Unexpected keyword or identifier.",
+    "id": "cache_1755880623459_11",
+    "error": "src/lib/services/comprehensive-integration.ts(13,38): error TS1434: Unexpected keyword or identifier.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -165,11 +165,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_12",
-    "error": "src/lib/utils/mcp-graph-reader.ts(10,1): error TS1109: Expression expected.",
+    "id": "cache_1755880623459_12",
+    "error": "src/lib/services/performance-optimization-service.ts(39,1): error TS1128: Declaration or statement expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -179,11 +179,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_13",
-    "error": "src/lib/workers/ai-service-worker.ts(9,1): error TS1434: Unexpected keyword or identifier.",
+    "id": "cache_1755880623459_13",
+    "error": "src/lib/stores/legal-case.store.svelte.ts(258,1): error TS1128: Declaration or statement expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -193,11 +193,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_14",
-    "error": "src/lib/workers/ai-service-worker.ts(9,8): error TS1434: Unexpected keyword or identifier.",
+    "id": "cache_1755880623459_14",
+    "error": "src/lib/tests/enhanced-sentence-splitter.test.ts(14,5): error TS1128: Declaration or statement expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -207,11 +207,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_15",
-    "error": "src/lib/workers/specialized-worker-system.ts(8,1): error TS1434: Unexpected keyword or identifier.",
+    "id": "cache_1755880623459_15",
+    "error": "src/lib/tests/enhanced-sentence-splitter.test.ts(14,6): error TS1128: Declaration or statement expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -221,11 +221,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_16",
-    "error": "src/lib/workers/specialized-worker-system.ts(8,6): error TS1434: Unexpected keyword or identifier.",
+    "id": "cache_1755880623459_16",
+    "error": "src/lib/tests/enhanced-sentence-splitter.test.ts(24,3): error TS1128: Declaration or statement expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -235,11 +235,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_17",
-    "error": "src/routes/api/admin/cluster/events/+server.ts(9,22): error TS1005: ',' expected.",
+    "id": "cache_1755880623459_17",
+    "error": "src/lib/tests/enhanced-sentence-splitter.test.ts(24,4): error TS1128: Declaration or statement expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -249,11 +249,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_18",
-    "error": "src/routes/api/admin/cluster/events/+server.ts(9,29): error TS1005: ',' expected.",
+    "id": "cache_1755880623459_18",
+    "error": "src/lib/tests/enhanced-sentence-splitter.test.ts(89,1): error TS1128: Declaration or statement expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -263,11 +263,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_19",
-    "error": "src/routes/api/admin/cluster/events/+server.ts(9,46): error TS1005: ';' expected.",
+    "id": "cache_1755880623459_19",
+    "error": "src/lib/tests/enhanced-sentence-splitter.test.ts(89,2): error TS1128: Declaration or statement expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -277,11 +277,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_20",
-    "error": "src/routes/api/ai/ask/server.backup.ts(5,31): error TS1005: 'from' expected.",
+    "id": "cache_1755880623459_20",
+    "error": "src/lib/tests/memory-optimization.test.ts(5,3): error TS1128: Declaration or statement expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -291,11 +291,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_21",
-    "error": "src/routes/api/ai/ask/server.backup.ts(5,42): error TS1005: ';' expected.",
+    "id": "cache_1755880623459_21",
+    "error": "src/lib/tests/memory-optimization.test.ts(5,4): error TS1128: Declaration or statement expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -305,11 +305,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_22",
-    "error": "src/routes/api/ai/ask/server.backup.ts(9,15): error TS1003: Identifier expected.",
+    "id": "cache_1755880623459_22",
+    "error": "src/lib/tests/memory-optimization.test.ts(97,1): error TS1128: Declaration or statement expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -319,11 +319,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_23",
-    "error": "src/routes/api/ai/ask/server.backup.ts(9,16): error TS1109: Expression expected.",
+    "id": "cache_1755880623459_23",
+    "error": "src/lib/tests/memory-optimization.test.ts(97,2): error TS1128: Declaration or statement expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -333,11 +333,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_24",
-    "error": "src/routes/api/ai/ask/server.backup.ts(9,12577): error TS1005: '}' expected.",
+    "id": "cache_1755880623459_24",
+    "error": "src/lib/tests/pipeline-metrics.test.ts(6,3): error TS1128: Declaration or statement expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -347,11 +347,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_25",
-    "error": "src/routes/api/ai/chat-mock/+server.ts(4,31): error TS1005: 'from' expected.",
+    "id": "cache_1755880623459_25",
+    "error": "src/lib/tests/pipeline-metrics.test.ts(6,4): error TS1128: Declaration or statement expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -361,11 +361,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_26",
-    "error": "src/routes/api/ai/chat-mock/+server.ts(4,42): error TS1005: ';' expected.",
+    "id": "cache_1755880623459_26",
+    "error": "src/lib/tests/pipeline-metrics.test.ts(7,1): error TS1128: Declaration or statement expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -375,11 +375,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_27",
-    "error": "src/routes/api/ai/connect-mock/+server.ts(3,31): error TS1005: 'from' expected.",
+    "id": "cache_1755880623459_27",
+    "error": "src/lib/tests/pipeline-metrics.test.ts(7,2): error TS1128: Declaration or statement expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -389,11 +389,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_28",
-    "error": "src/routes/api/ai/connect-mock/+server.ts(3,42): error TS1005: ';' expected.",
+    "id": "cache_1755880623459_28",
+    "error": "src/lib/ui/matrix-compiler.ts(8,5): error TS1109: Expression expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -403,11 +403,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_29",
-    "error": "src/routes/api/ai/connect/+server.ts(3,31): error TS1005: 'from' expected.",
+    "id": "cache_1755880623459_29",
+    "error": "src/lib/ui/matrix-compiler.ts(19,18): error TS1011: An element access expression should take an argument.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -417,11 +417,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_30",
-    "error": "src/routes/api/ai/connect/+server.ts(3,49): error TS1005: ';' expected.",
+    "id": "cache_1755880623459_30",
+    "error": "src/lib/ui/matrix-compiler.ts(21,10): error TS1109: Expression expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -431,11 +431,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_31",
-    "error": "src/routes/api/ai/enhanced-chat/+server.ts(10,23): error TS1109: Expression expected.",
+    "id": "cache_1755880623459_31",
+    "error": "src/lib/ui/matrix-compiler.ts(22,11): error TS1109: Expression expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -445,11 +445,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_32",
-    "error": "src/routes/api/ai/enhanced-chat/+server.ts(10,11766): error TS1005: '}' expected.",
+    "id": "cache_1755880623459_32",
+    "error": "src/lib/ui/matrix-compiler.ts(23,21): error TS1109: Expression expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -459,11 +459,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_33",
-    "error": "src/routes/api/ai/health-mock/+server.ts(3,31): error TS1005: 'from' expected.",
+    "id": "cache_1755880623459_33",
+    "error": "src/lib/ui/matrix-compiler.ts(24,12): error TS1109: Expression expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -473,11 +473,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_34",
-    "error": "src/routes/api/ai/health-mock/+server.ts(3,42): error TS1005: ';' expected.",
+    "id": "cache_1755880623459_34",
+    "error": "src/lib/ui/matrix-compiler.ts(25,13): error TS1109: Expression expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -487,11 +487,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_35",
-    "error": "src/routes/api/ai/health/+server.ts(3,6): error TS2457: Type alias name cannot be 'type'.",
+    "id": "cache_1755880623459_35",
+    "error": "src/lib/ui/matrix-compiler.ts(26,11): error TS1109: Expression expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -501,11 +501,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_36",
-    "error": "src/routes/api/ai/health/+server.ts(3,24): error TS1128: Declaration or statement expected.",
+    "id": "cache_1755880623459_36",
+    "error": "src/lib/ui/matrix-compiler.ts(27,12): error TS1109: Expression expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -515,11 +515,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_37",
-    "error": "src/routes/api/ai/health/+server.ts(4,8): error TS1434: Unexpected keyword or identifier.",
+    "id": "cache_1755880623459_37",
+    "error": "src/lib/ui/matrix-compiler.ts(28,14): error TS1109: Expression expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -529,11 +529,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_38",
-    "error": "src/routes/api/ai/multi-agent/+server.ts(8,8): error TS1005: ';' expected.",
+    "id": "cache_1755880623459_38",
+    "error": "src/lib/ui/matrix-compiler.ts(29,9): error TS1005: ',' expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -543,11 +543,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_39",
-    "error": "src/routes/api/ai/multi-agent/+server.ts(9,1): error TS1109: Expression expected.",
+    "id": "cache_1755880623459_39",
+    "error": "src/lib/ui/matrix-compiler.ts(29,18): error TS1005: ';' expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -557,11 +557,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_40",
-    "error": "src/routes/api/ai/process-document/+server.ts(10,9): error TS1109: Expression expected.",
+    "id": "cache_1755880623459_40",
+    "error": "src/lib/ui/matrix-compiler.ts(31,10): error TS1109: Expression expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -571,11 +571,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_41",
-    "error": "src/routes/api/ai/process-document/+server.ts(10,11461): error TS1005: '}' expected.",
+    "id": "cache_1755880623459_41",
+    "error": "src/lib/ui/matrix-compiler.ts(31,19): error TS1011: An element access expression should take an argument.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -585,11 +585,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_42",
-    "error": "src/routes/api/ai/suggest/+server.ts(3,6): error TS2457: Type alias name cannot be 'type'.",
+    "id": "cache_1755880623459_42",
+    "error": "src/lib/ui/matrix-compiler.ts(32,12): error TS1109: Expression expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -599,11 +599,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_43",
-    "error": "src/routes/api/ai/suggest/+server.ts(3,24): error TS1128: Declaration or statement expected.",
+    "id": "cache_1755880623459_43",
+    "error": "src/lib/ui/matrix-compiler.ts(32,27): error TS1011: An element access expression should take an argument.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -613,11 +613,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_44",
-    "error": "src/routes/api/ai/suggest/+server.ts(4,8): error TS1434: Unexpected keyword or identifier.",
+    "id": "cache_1755880623459_44",
+    "error": "src/lib/ui/matrix-compiler.ts(33,12): error TS1109: Expression expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -627,11 +627,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_45",
-    "error": "src/routes/api/ai/summarize/+server.ts(211,7): error TS1435: Unknown keyword or identifier. Did you mean 'return'?",
+    "id": "cache_1755880623459_45",
+    "error": "src/lib/ui/matrix-compiler.ts(34,54): error TS1005: ',' expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -641,11 +641,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_46",
-    "error": "src/routes/api/ai/vector-search/server-enhanced.ts(12,1): error TS1109: Expression expected.",
+    "id": "cache_1755880623459_46",
+    "error": "src/lib/ui/matrix-compiler.ts(35,24): error TS1005: ',' expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -655,11 +655,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_47",
-    "error": "src/routes/api/analyze/+server.ts(1,3): error TS1443: Module declaration names may only use ' or \" quoted strings.",
+    "id": "cache_1755880623459_47",
+    "error": "src/lib/ui/matrix-compiler.ts(36,26): error TS1005: ',' expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -669,11 +669,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_48",
-    "error": "src/routes/api/analyze/+server.ts(109,48): error TS1434: Unexpected keyword or identifier.",
+    "id": "cache_1755880623459_48",
+    "error": "src/lib/ui/matrix-compiler.ts(37,26): error TS1005: ',' expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -683,11 +683,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_49",
-    "error": "src/routes/api/analyze/+server.ts(109,55): error TS1434: Unexpected keyword or identifier.",
+    "id": "cache_1755880623459_49",
+    "error": "src/lib/ui/matrix-compiler.ts(38,38): error TS1005: ',' expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -697,11 +697,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_50",
-    "error": "src/routes/api/analyze/+server.ts(109,59): error TS1435: Unknown keyword or identifier. Did you mean 'return'?",
+    "id": "cache_1755880623459_50",
+    "error": "src/lib/ui/matrix-compiler.ts(39,23): error TS1005: ',' expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -711,11 +711,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_51",
-    "error": "src/routes/api/analyze/+server.ts(109,68): error TS1434: Unexpected keyword or identifier.",
+    "id": "cache_1755880623459_51",
+    "error": "src/lib/ui/matrix-compiler.ts(41,11): error TS1109: Expression expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -725,11 +725,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_52",
-    "error": "src/routes/api/analyze/+server.ts(159,33): error TS1005: ';' expected.",
+    "id": "cache_1755880623459_52",
+    "error": "src/lib/ui/matrix-compiler.ts(42,10): error TS1109: Expression expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -739,11 +739,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_53",
-    "error": "src/routes/api/analyze/+server.ts(159,48): error TS1434: Unexpected keyword or identifier.",
+    "id": "cache_1755880623459_53",
+    "error": "src/lib/ui/matrix-compiler.ts(43,14): error TS1005: ',' expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -753,11 +753,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_54",
-    "error": "src/routes/api/analyze/+server.ts(159,66): error TS1127: Invalid character.",
+    "id": "cache_1755880623459_54",
+    "error": "src/lib/ui/matrix-compiler.ts(44,14): error TS1005: ',' expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -767,11 +767,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_55",
-    "error": "src/routes/api/analyze/+server.ts(159,67): error TS1434: Unexpected keyword or identifier.",
+    "id": "cache_1755880623459_55",
+    "error": "src/lib/ui/matrix-compiler.ts(45,18): error TS1005: ',' expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -781,11 +781,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_56",
-    "error": "src/routes/api/analyze/+server.ts(159,88): error TS1434: Unexpected keyword or identifier.",
+    "id": "cache_1755880623459_56",
+    "error": "src/lib/ui/matrix-compiler.ts(46,19): error TS1005: ',' expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -795,11 +795,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_57",
-    "error": "src/routes/api/analyze/+server.ts(159,106): error TS1127: Invalid character.",
+    "id": "cache_1755880623459_57",
+    "error": "src/lib/ui/matrix-compiler.ts(48,1): error TS1128: Declaration or statement expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -809,11 +809,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_58",
-    "error": "src/routes/api/analyze/+server.ts(159,107): error TS1434: Unexpected keyword or identifier.",
+    "id": "cache_1755880623459_58",
+    "error": "src/lib/utils/todo-autogen.ts(16,14): error TS1109: Expression expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -823,11 +823,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_59",
-    "error": "src/routes/api/analyze/+server.ts(159,127): error TS1434: Unexpected keyword or identifier.",
+    "id": "cache_1755880623459_59",
+    "error": "src/lib/utils/todo-autogen.ts(17,11): error TS1109: Expression expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -837,11 +837,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_60",
-    "error": "src/routes/api/analyze/+server.ts(165,3): error TS1127: Invalid character.",
+    "id": "cache_1755880623459_60",
+    "error": "src/lib/utils/todo-autogen.ts(18,15): error TS1109: Expression expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -851,11 +851,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_61",
-    "error": "src/routes/api/analyze/+server.ts(165,4): error TS1434: Unexpected keyword or identifier.",
+    "id": "cache_1755880623459_61",
+    "error": "src/lib/utils/todo-autogen.ts(19,15): error TS1109: Expression expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -865,11 +865,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_62",
-    "error": "src/routes/api/analyze/+server.ts(165,23): error TS1127: Invalid character.",
+    "id": "cache_1755880623459_62",
+    "error": "src/lib/utils/todo-autogen.ts(20,21): error TS1005: ',' expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -879,11 +879,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_63",
-    "error": "src/routes/api/analyze/+server.ts(165,24): error TS1434: Unexpected keyword or identifier.",
+    "id": "cache_1755880623459_63",
+    "error": "src/lib/utils/todo-autogen.ts(21,22): error TS1005: ',' expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -893,11 +893,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_64",
-    "error": "src/routes/api/analyze/+server.ts(165,35): error TS1127: Invalid character.",
+    "id": "cache_1755880623459_64",
+    "error": "src/lib/utils/todo-autogen.ts(22,21): error TS1005: ',' expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -907,11 +907,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_65",
-    "error": "src/routes/api/analyze/+server.ts(165,36): error TS1434: Unexpected keyword or identifier.",
+    "id": "cache_1755880623459_65",
+    "error": "src/lib/utils/todo-autogen.ts(24,1): error TS1128: Declaration or statement expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -921,11 +921,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_66",
-    "error": "src/routes/api/analyze/+server.ts(166,39): error TS1005: ';' expected.",
+    "id": "cache_1755880623459_66",
+    "error": "src/routes/cases/new/+page.server.ts(42,1): error TS1109: Expression expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -935,11 +935,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_67",
-    "error": "src/routes/api/analyze/+server.ts(166,55): error TS1127: Invalid character.",
+    "id": "cache_1755880623459_67",
+    "error": "src/routes/laws/+page.ts(118,1): error TS1128: Declaration or statement expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -949,11 +949,11 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   },
   {
-    "id": "cache_1755797262887_68",
-    "error": "src/routes/api/analyze/+server.ts(166,56): error TS1434: Unexpected keyword or identifier.",
+    "id": "cache_1755880623459_68",
+    "error": "src/routes/semantic-search-demo/+page.server.ts(18,1): error TS1128: Declaration or statement expected.",
     "category": "typescript",
     "severity": "high",
     "suggestions": [
@@ -963,1574 +963,6 @@
     ],
     "webgpuProcessed": true,
     "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_69",
-    "error": "src/routes/api/analyze/+server.ts(166,64): error TS1434: Unexpected keyword or identifier.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_70",
-    "error": "src/routes/api/analyze/+server.ts(166,72): error TS1434: Unexpected keyword or identifier.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_71",
-    "error": "src/routes/api/analyze/+server.ts(166,74): error TS1434: Unexpected keyword or identifier.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_72",
-    "error": "src/routes/api/analyze/+server.ts(166,85): error TS1434: Unexpected keyword or identifier.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_73",
-    "error": "src/routes/api/analyze/+server.ts(166,90): error TS1434: Unexpected keyword or identifier.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_74",
-    "error": "src/routes/api/analyze/+server.ts(166,99): error TS1434: Unexpected keyword or identifier.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_75",
-    "error": "src/routes/api/analyze/+server.ts(166,108): error TS1434: Unexpected keyword or identifier.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_76",
-    "error": "src/routes/api/analyze/+server.ts(166,111): error TS1434: Unexpected keyword or identifier.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_77",
-    "error": "src/routes/api/analyze/+server.ts(166,128): error TS1128: Declaration or statement expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_78",
-    "error": "src/routes/api/analyze/+server.ts(167,21): error TS1005: ';' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_79",
-    "error": "src/routes/api/analyze/+server.ts(167,37): error TS1127: Invalid character.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_80",
-    "error": "src/routes/api/analyze/+server.ts(167,38): error TS1434: Unexpected keyword or identifier.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_81",
-    "error": "src/routes/api/analyze/+server.ts(167,46): error TS1434: Unexpected keyword or identifier.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_82",
-    "error": "src/routes/api/analyze/+server.ts(167,68): error TS1005: ';' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_83",
-    "error": "src/routes/api/analyze/+server.ts(167,85): error TS1109: Expression expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_84",
-    "error": "src/routes/api/analyze/+server.ts(167,97): error TS1109: Expression expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_85",
-    "error": "src/routes/api/analyze/+server.ts(167,110): error TS1005: ';' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_86",
-    "error": "src/routes/api/analyze/+server.ts(167,123): error TS1005: ';' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_87",
-    "error": "src/routes/api/analyze/+server.ts(167,128): error TS1003: Identifier expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_88",
-    "error": "src/routes/api/analyze/+server.ts(214,22): error TS1109: Expression expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_89",
-    "error": "src/routes/api/analyze/+server.ts(214,34): error TS1109: Expression expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_90",
-    "error": "src/routes/api/analyze/+server.ts(214,40): error TS1005: ';' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_91",
-    "error": "src/routes/api/analyze/+server.ts(214,43): error TS1434: Unexpected keyword or identifier.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_92",
-    "error": "src/routes/api/analyze/+server.ts(214,52): error TS1434: Unexpected keyword or identifier.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_93",
-    "error": "src/routes/api/analyze/+server.ts(214,59): error TS1228: A type predicate is only allowed in return type position for functions and methods.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_94",
-    "error": "src/routes/api/analyze/+server.ts(214,62): error TS1434: Unexpected keyword or identifier.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_95",
-    "error": "src/routes/api/analyze/+server.ts(214,85): error TS1435: Unknown keyword or identifier. Did you mean 'return'?",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_96",
-    "error": "src/routes/api/analyze/+server.ts(214,95): error TS1434: Unexpected keyword or identifier.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_97",
-    "error": "src/routes/api/analyze/+server.ts(214,112): error TS1003: Identifier expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_98",
-    "error": "src/routes/api/analyze/+server.ts(214,113): error TS1161: Unterminated regular expression literal.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_99",
-    "error": "src/routes/api/analyze/+server.ts(215,11): error TS1128: Declaration or statement expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_100",
-    "error": "src/routes/api/audit/semantic/+server.ts(11,8): error TS1005: ';' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_101",
-    "error": "src/routes/api/audit/semantic/+server.ts(12,8): error TS1005: ';' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_102",
-    "error": "src/routes/api/audit/semantic/+server.ts(13,8): error TS1005: ';' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_103",
-    "error": "src/routes/api/audit/semantic/+server.ts(14,8): error TS1005: ';' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_104",
-    "error": "src/routes/api/canvas-states/+server.ts(3,6): error TS2457: Type alias name cannot be 'type'.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_105",
-    "error": "src/routes/api/canvas-states/+server.ts(3,22): error TS1128: Declaration or statement expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_106",
-    "error": "src/routes/api/canvas-states/+server.ts(4,8): error TS1434: Unexpected keyword or identifier.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_107",
-    "error": "src/routes/api/cases/[caseId]/+server.ts(4,6): error TS2457: Type alias name cannot be 'type'.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_108",
-    "error": "src/routes/api/cases/[caseId]/+server.ts(4,24): error TS1128: Declaration or statement expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_109",
-    "error": "src/routes/api/cases/[caseId]/+server.ts(5,8): error TS1434: Unexpected keyword or identifier.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_110",
-    "error": "src/routes/api/cases/[caseId]/analysis/+server.ts(7,6): error TS2457: Type alias name cannot be 'type'.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_111",
-    "error": "src/routes/api/cases/[caseId]/analysis/+server.ts(7,24): error TS1128: Declaration or statement expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_112",
-    "error": "src/routes/api/cases/[caseId]/analysis/+server.ts(8,8): error TS1434: Unexpected keyword or identifier.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_113",
-    "error": "src/routes/api/cases/[caseId]/canvas/+server.ts(5,6): error TS2457: Type alias name cannot be 'type'.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_114",
-    "error": "src/routes/api/cases/[caseId]/canvas/+server.ts(5,24): error TS1128: Declaration or statement expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_115",
-    "error": "src/routes/api/cases/[caseId]/canvas/+server.ts(6,8): error TS1434: Unexpected keyword or identifier.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_116",
-    "error": "src/routes/api/cases/[caseId]/deep-analysis/+server.ts(7,6): error TS2457: Type alias name cannot be 'type'.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_117",
-    "error": "src/routes/api/cases/[caseId]/deep-analysis/+server.ts(7,24): error TS1128: Declaration or statement expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_118",
-    "error": "src/routes/api/cases/[caseId]/deep-analysis/+server.ts(8,8): error TS1434: Unexpected keyword or identifier.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_119",
-    "error": "src/routes/api/cases/[caseId]/recommendations/+server.ts(6,6): error TS2457: Type alias name cannot be 'type'.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_120",
-    "error": "src/routes/api/cases/[caseId]/recommendations/+server.ts(6,24): error TS1128: Declaration or statement expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_121",
-    "error": "src/routes/api/cases/[caseId]/recommendations/+server.ts(7,8): error TS1434: Unexpected keyword or identifier.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_122",
-    "error": "src/routes/api/citations/+server.ts(3,6): error TS2457: Type alias name cannot be 'type'.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_123",
-    "error": "src/routes/api/citations/+server.ts(3,22): error TS1128: Declaration or statement expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_124",
-    "error": "src/routes/api/citations/+server.ts(4,8): error TS1434: Unexpected keyword or identifier.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_125",
-    "error": "src/routes/api/comprehensive-integration/+server.ts(11,1): error TS1109: Expression expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_126",
-    "error": "src/routes/api/comprehensive-integration/+server.ts(12,62): error TS1003: Identifier expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_127",
-    "error": "src/routes/api/comprehensive-integration/+server.ts(12,63): error TS1109: Expression expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_128",
-    "error": "src/routes/api/comprehensive-integration/+server.ts(12,11797): error TS1005: '}' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_129",
-    "error": "src/routes/api/criminals/+server.ts(4,6): error TS2457: Type alias name cannot be 'type'.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_130",
-    "error": "src/routes/api/criminals/+server.ts(4,24): error TS1128: Declaration or statement expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_131",
-    "error": "src/routes/api/criminals/+server.ts(5,8): error TS1434: Unexpected keyword or identifier.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_132",
-    "error": "src/routes/api/criminals/[criminalId]/+server.ts(4,6): error TS2457: Type alias name cannot be 'type'.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_133",
-    "error": "src/routes/api/criminals/[criminalId]/+server.ts(4,24): error TS1128: Declaration or statement expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_134",
-    "error": "src/routes/api/criminals/[criminalId]/+server.ts(5,8): error TS1434: Unexpected keyword or identifier.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_135",
-    "error": "src/routes/api/documents/[id]/auto-save/+server.ts(3,6): error TS2457: Type alias name cannot be 'type'.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_136",
-    "error": "src/routes/api/documents/[id]/auto-save/+server.ts(3,22): error TS1128: Declaration or statement expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_137",
-    "error": "src/routes/api/documents/[id]/auto-save/+server.ts(4,8): error TS1434: Unexpected keyword or identifier.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_138",
-    "error": "src/routes/api/documents/upload-embed/+server.ts(9,27): error TS1005: ',' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_139",
-    "error": "src/routes/api/documents/upload-embed/+server.ts(9,34): error TS1005: ',' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_140",
-    "error": "src/routes/api/documents/upload-embed/+server.ts(9,43): error TS1005: ';' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_141",
-    "error": "src/routes/api/documents/upload-embed/+server.ts(10,23): error TS1003: Identifier expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_142",
-    "error": "src/routes/api/documents/upload-embed/+server.ts(10,24): error TS1109: Expression expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_143",
-    "error": "src/routes/api/documents/upload-embed/+server.ts(10,6626): error TS1005: '}' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_144",
-    "error": "src/routes/api/documents/upload/+server.ts(5,27): error TS1005: ',' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_145",
-    "error": "src/routes/api/documents/upload/+server.ts(5,34): error TS1005: ',' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_146",
-    "error": "src/routes/api/documents/upload/+server.ts(5,49): error TS1005: ';' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_147",
-    "error": "src/routes/api/documents/upload/+server.ts(6,10): error TS1003: Identifier expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_148",
-    "error": "src/routes/api/documents/upload/+server.ts(6,17): error TS1005: ',' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_149",
-    "error": "src/routes/api/documents/upload/+server.ts(6,38): error TS1005: ';' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_150",
-    "error": "src/routes/api/embed/+server.ts(4,30): error TS1005: ',' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_151",
-    "error": "src/routes/api/embed/+server.ts(4,37): error TS1005: ',' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_152",
-    "error": "src/routes/api/embed/+server.ts(4,45): error TS1005: ';' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_153",
-    "error": "src/routes/api/embeddings/hybrid/+server.ts(10,18): error TS1005: ',' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_154",
-    "error": "src/routes/api/embeddings/hybrid/+server.ts(10,25): error TS1005: ',' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_155",
-    "error": "src/routes/api/embeddings/hybrid/+server.ts(10,33): error TS1005: ';' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_156",
-    "error": "src/routes/api/evaluation/+server.ts(10,9): error TS1109: Expression expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_157",
-    "error": "src/routes/api/evaluation/+server.ts(10,2609): error TS1005: '}' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_158",
-    "error": "src/routes/api/evidence/save-node/+server.ts(5,9): error TS1109: Expression expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_159",
-    "error": "src/routes/api/evidence/save-node/+server.ts(5,12320): error TS1005: '}' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_160",
-    "error": "src/routes/api/gpu-chat/+server.ts(12,9): error TS1109: Expression expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_161",
-    "error": "src/routes/api/gpu-chat/+server.ts(12,6844): error TS1005: '}' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_162",
-    "error": "src/routes/api/gpu-process-live/+server.ts(228,1293): error TS1005: '}' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_163",
-    "error": "src/routes/api/gpu-status/+server.ts(6,1179): error TS1005: '}' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_164",
-    "error": "src/routes/api/legal/chat/+server.ts(5,38): error TS1003: Identifier expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_165",
-    "error": "src/routes/api/legal/chat/+server.ts(5,40): error TS1136: Property assignment expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_166",
-    "error": "src/routes/api/legal/chat/+server.ts(5,65): error TS1136: Property assignment expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_167",
-    "error": "src/routes/api/legal/chat/+server.ts(5,83): error TS1136: Property assignment expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_168",
-    "error": "src/routes/api/legal/chat/+server.ts(5,103): error TS1005: ';' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_169",
-    "error": "src/routes/api/legal/precedents/+server.ts(5,2): error TS1434: Unexpected keyword or identifier.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_170",
-    "error": "src/routes/api/legal/precedents/+server.ts(5,14): error TS1434: Unexpected keyword or identifier.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_171",
-    "error": "src/routes/api/legal/precedents/+server.ts(6,1): error TS1109: Expression expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_172",
-    "error": "src/routes/api/ocr/langextract/+server.ts(4,10): error TS1003: Identifier expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_173",
-    "error": "src/routes/api/ocr/langextract/+server.ts(4,17): error TS1005: ',' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_174",
-    "error": "src/routes/api/ocr/langextract/+server.ts(4,22): error TS1005: ',' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_175",
-    "error": "src/routes/api/ocr/langextract/+server.ts(4,41): error TS1005: ';' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_176",
-    "error": "src/routes/api/ocr/langextract/+server.ts(5,31): error TS1109: Expression expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_177",
-    "error": "src/routes/api/ocr/langextract/+server.ts(5,8596): error TS1005: '}' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_178",
-    "error": "../vscode-llm-extension/src/ollama-gemma-cache.ts(6,11): error TS1005: ';' expected.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_179",
-    "error": "../vscode-llm-extension/src/ollama-gemma-cache.ts(6,17): error TS1434: Unexpected keyword or identifier.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
-  },
-  {
-    "id": "cache_1755797262887_180",
-    "error": "../vscode-llm-extension/src/ollama-gemma-cache.ts(6,25): error TS1434: Unexpected keyword or identifier.",
-    "category": "typescript",
-    "severity": "high",
-    "suggestions": [
-      "Add proper type annotations",
-      "Check import paths",
-      "Verify component props"
-    ],
-    "webgpuProcessed": true,
-    "rtxOptimized": true,
-    "timestamp": "2025-08-21T17:27:42.887Z"
+    "timestamp": "2025-08-22T16:37:03.459Z"
   }
 ]

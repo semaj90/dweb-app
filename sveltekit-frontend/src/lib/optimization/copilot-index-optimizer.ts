@@ -191,11 +191,11 @@ export class CopilotIndexOptimizer {
       }
 
       // Step 1: Perform base semantic search
-      const baseResults = await simdIndexProcessor.semanticSearch(
+      const baseResults = (await simdIndexProcessor.semanticSearch(
         query, 
         this.optimizedIndex, 
         { limit: limit * 2, preferEnhanced: true }
-      );
+      )) as RAGSearchResult[];
 
       // Step 2: Apply Context7 pattern boosting
       let enhancedResults = baseResults;
@@ -408,6 +408,14 @@ export class CopilotIndexOptimizer {
         result.explanation += ` [Context7 boost: +${boost.toFixed(2)}]`;
       }
       
+      // Ensure required properties are present
+      if (!result.type && result.document?.type) {
+        result.type = result.document.type;
+      }
+      if (!result.type) {
+        result.type = 'document'; // Default fallback
+      }
+      
       return result;
     });
   }
@@ -538,6 +546,14 @@ export class CopilotIndexOptimizer {
 
       finalScore = Math.min(1.0, finalScore + patternBonus + priorityBonus + recencyBonus);
       result.score = finalScore;
+
+      // Ensure required properties are present
+      if (!result.type && result.document?.type) {
+        result.type = result.document.type;
+      }
+      if (!result.type) {
+        result.type = 'document'; // Default fallback
+      }
 
       return result;
     });

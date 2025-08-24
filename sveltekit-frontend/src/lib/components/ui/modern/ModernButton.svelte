@@ -31,14 +31,15 @@
     onclick
   }: Props = $props();
   
-  // Melt-UI tooltip
-  const {
-    elements: { trigger, content: tooltipContent },
-    states: { open }
-  } = createTooltip({
+  // Melt-UI tooltip - conditionally create only when needed
+  const tooltipBuilder = tooltip ? createTooltip({
     openDelay: 500,
     closeDelay: 100
-  });
+  }) : null;
+  
+  const trigger = tooltipBuilder?.elements.trigger;
+  const tooltipContent = tooltipBuilder?.elements.content;
+  const open = tooltipBuilder?.states.open;
   
   // Dynamic classes
   const buttonClasses = $derived(() => {
@@ -76,54 +77,105 @@
 </script>
 
 {#if href}
-  <a
-    {href}
-    class={buttonClasses}
-    target={external ? '_blank' : undefined}
-    rel={external ? 'noopener noreferrer' : undefined}
-    use:melt={tooltip ? $trigger : undefined}
-    onclick={handleClick}
-  >
-    <span class="button-content">
-      {#if loading}
-        <div class="loading-spinner"></div>
-      {:else if icon}
-        <span class="button-icon">
-          {@render icon()}
-        </span>
-      {/if}
-      
-      {#if children}
-        <span class="button-text">
-          {@render children()}
-        </span>
-      {/if}
-    </span>
-  </a>
+  {#if tooltip}
+    <a
+      {href}
+      class={buttonClasses}
+      target={external ? '_blank' : undefined}
+      rel={external ? 'noopener noreferrer' : undefined}
+      use:melt={$trigger}
+      onclick={handleClick}
+    >
+      <span class="button-content">
+        {#if loading}
+          <div class="loading-spinner"></div>
+        {:else if icon}
+          <span class="button-icon">
+            {@render icon()}
+          </span>
+        {/if}
+        
+        {#if children}
+          <span class="button-text">
+            {@render children()}
+          </span>
+        {/if}
+      </span>
+    </a>
+  {:else}
+    <a
+      {href}
+      class={buttonClasses}
+      target={external ? '_blank' : undefined}
+      rel={external ? 'noopener noreferrer' : undefined}
+      onclick={handleClick}
+    >
+      <span class="button-content">
+        {#if loading}
+          <div class="loading-spinner"></div>
+        {:else if icon}
+          <span class="button-icon">
+            {@render icon()}
+          </span>
+        {/if}
+        
+        {#if children}
+          <span class="button-text">
+            {@render children()}
+          </span>
+        {/if}
+      </span>
+    </a>
+  {/if}
 {:else}
-  <Button.Root
-    {type}
-    {disabled}
-    class={buttonClasses}
-    onclick={handleClick}
-    use:melt={tooltip ? $trigger : undefined}
-  >
-    <span class="button-content">
-      {#if loading}
-        <div class="loading-spinner"></div>
-      {:else if icon}
-        <span class="button-icon">
-          {@render icon()}
-        </span>
-      {/if}
-      
-      {#if children}
-        <span class="button-text">
-          {@render children()}
-        </span>
-      {/if}
-    </span>
-  </Button.Root>
+  {#if tooltip}
+    <Button.Root
+      {type}
+      {disabled}
+      class={buttonClasses}
+      onclick={handleClick}
+      use:melt={$trigger}
+    >
+      <span class="button-content">
+        {#if loading}
+          <div class="loading-spinner"></div>
+        {:else if icon}
+          <span class="button-icon">
+            {@render icon()}
+          </span>
+        {/if}
+        
+        {#if children}
+          <span class="button-text">
+            {@render children()}
+          </span>
+        {/if}
+      </span>
+    </Button.Root>
+  {:else}
+    <Button.Root
+      {type}
+      {disabled}
+      class={buttonClasses}
+      onclick={handleClick}
+    >
+      <span class="button-content">
+        {#if loading}
+          <div class="loading-spinner"></div>
+        {:else if icon}
+          <span class="button-icon">
+            {@render icon()}
+          </span>
+        {/if}
+        
+        {#if children}
+          <span class="button-text">
+            {@render children()}
+          </span>
+        {/if}
+      </span>
+    </Button.Root>
+  {/if}
 {/if}
 
 {#if tooltip && $open}

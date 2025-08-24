@@ -4,10 +4,10 @@
  * and real-time data subscriptions (SSE / WebSocket / polling).
  */
 
-import type { YoRHaButton3DOptions } from '$lib/components/YoRHaButton3D';
-import type { YoRHaPanel3DOptions } from '$lib/components/YoRHaPanel3D';
-import type { YoRHaInput3DOptions } from '$lib/components/YoRHaInput3D';
-import type { YoRHaModal3DOptions } from '$lib/components/YoRHaModal3D';
+import type { YoRHaButton3DOptions } from '../components/YoRHaButton3D';
+import type { YoRHaPanel3DOptions } from '../components/YoRHaPanel3D';
+import type { YoRHaInput3DOptions } from '../components/YoRHaInput3D';
+import type { YoRHaModal3DOptions } from '../components/YoRHaModal3D';
 
 export interface YoRHaAPIConfig {
   baseURL: string;
@@ -24,7 +24,12 @@ export interface YoRHaComponentData {
   id: string;
   type: 'button' | 'panel' | 'input' | 'modal' | 'layout';
   config: any;
-  data?: unknown;
+  data?: {
+    loading?: boolean;
+    value?: string;
+    error?: boolean;
+    [key: string]: any;
+  };
   metrics?: YoRHaMetrics;
   events?: YoRHaEvent[];
 }
@@ -185,7 +190,7 @@ export class YoRHaAPIClient {
 
   /** Stop all active data source intervals. */
   stopDataStreams(): void {
-    for (const interval of this.dataSourceIntervals.values()) clearInterval(interval as any);
+    Array.from(this.dataSourceIntervals.values()).forEach(interval => clearInterval(interval as any));
     this.dataSourceIntervals.clear();
   }
 

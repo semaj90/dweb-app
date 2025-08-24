@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeAll, vi } from 'vitest';
+/// <reference types="vitest" />
+import { vi } from 'vitest';
 
 function buildRequest(body: any){
   return new Request('http://localhost/api/v1/quic/push', {

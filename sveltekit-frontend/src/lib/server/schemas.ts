@@ -1,6 +1,7 @@
 
 import { z } from "zod";
-// TODO: Fix import - // Orphaned content: import {  export const evidenceSchema = z.object({
+
+export const evidenceSchema = z.object({
   id: z.string().uuid(),
   caseId: z.string().uuid(),
   order: z.number().int().optional(),

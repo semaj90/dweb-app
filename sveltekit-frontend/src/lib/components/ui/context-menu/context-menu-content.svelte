@@ -1,27 +1,17 @@
 <script lang="ts">
-
   import { getContext, onDestroy, onMount } from 'svelte';
-  import { $props } from 'svelte';
   import type { Writable } from 'svelte/store';
+<slots>
+  export let className: string = '';
 
-  interface Props {
-    class?: string;
-    children?: unknown;
-  }
-
-  let { 
-    class: className = '',
-    children
-  }: Props = $props();
-  
   const { isOpen, position, close } = getContext<{
     isOpen: Writable<boolean>;
     position: Writable<{ x: number; y: number }>;
     close: () => void;
   }>('context-menu');
-  
-  let menuElement: HTMLDivElement;
-  
+
+  let menuElement: HTMLDivElement | null = null;
+
   function handleClickOutside(event: MouseEvent) {
     if (menuElement && !menuElement.contains(event.target as Node)) {
       close();
@@ -32,11 +22,12 @@
       close();
     }
   }
+
   onMount(() => {
     document.addEventListener('click', handleClickOutside);
     document.addEventListener('keydown', handleEscape);
   });
-  
+
   onDestroy(() => {
     document.removeEventListener('click', handleClickOutside);
     document.removeEventListener('keydown', handleEscape);
@@ -46,12 +37,12 @@
 {#if $isOpen}
   <div
     bind:this={menuElement}
-    class="space-y-4"
+    class={className || 'context-menu-content'}
     style="left: {$position.x}px; top: {$position.y}px;"
     role="menu"
     tabindex={-1}
   >
-    {@render children?.()}
+    <slot />
   </div>
 {/if}
 
@@ -66,5 +57,5 @@
     border-radius: 0.375rem;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     padding: 0.25rem;
-}
+  }
 </style>

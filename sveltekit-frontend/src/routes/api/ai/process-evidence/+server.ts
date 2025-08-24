@@ -103,15 +103,20 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
       }
     };
 
-    // Route to Enhanced RAG service for processing
-    const ragResponse = await fetch(`${ENHANCED_RAG_URL}/api/rag/analyze`, {
+    // Route to Enhanced RAG service GPU processing
+    const ragResponse = await fetch(`${ENHANCED_RAG_URL}/api/gpu/compute`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-User-ID': userId,
         'X-Case-ID': caseId
       },
-      body: JSON.stringify(enhancedContext)
+      body: JSON.stringify({
+        input_data: enhancedContext,
+        operation: 'legal_analysis',
+        model: model,
+        context: enhancedContext
+      })
     });
 
     if (!ragResponse.ok) {
@@ -120,7 +125,13 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
       return await processWithDirectOllama(enhancedContext, startTime);
     }
 
-    const ragResult = await ragResponse.json();
+    let ragResult;
+    try {
+      ragResult = await ragResponse.json();
+    } catch (error) {
+      console.warn('RAG service response parsing failed, falling back to direct Ollama');
+      return await processWithDirectOllama(enhancedContext, startTime);
+    }
     
     // Enhance response with additional legal analysis
     const enhancedResult: LegalAnalysisResponse = {

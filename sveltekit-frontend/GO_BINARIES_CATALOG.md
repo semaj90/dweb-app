@@ -31,6 +31,9 @@ upload-service.exe                  # Port 8093 ✅ RUNNING - Primary upload ser
 gin-upload.exe                     # Port 8207 - Gin-based upload handler
 simple-upload.exe                  # Port 8208 - Lightweight upload service
 
+# Document Processing
+document-processor-integrated.exe   # Port 8081 ✅ INTEGRATED - Enhanced document processor with SvelteKit APIs
+
 # File Processing
 summarizer-service.exe              # Port 8209 - Document summarization
 summarizer-http.exe                 # Port 8210 - HTTP summarizer
@@ -70,13 +73,13 @@ gpu-indexer-service.exe             # Port 8220 - GPU-powered indexing
 async-indexer.exe                   # Port 8221 - Asynchronous indexing
 
 # Load Balancing
-load-balancer.exe                   # Port 8222 - Service load balancer
+load-balancer.exe                   # Port 8224 - Service load balancer
 recommendation-service.exe          # Port 8223 - ML recommendations
 
 # Development & Testing
-simple-server.exe                   # Port 8224 - Simple HTTP server
-test-server.exe                     # Port 8225 - Testing server
-test-build.exe                      # Port 8226 - Build testing service
+simple-server.exe                   # Port 8225 - Simple HTTP server
+test-server.exe                     # Port 8226 - Testing server
+test-build.exe                      # Port 8227 - Build testing service
 ```
 
 ---
@@ -93,7 +96,8 @@ interface ServiceEndpoints {
     enhancedRAG: 'http://localhost:8094',
     uploadService: 'http://localhost:8093',
     aiSummary: 'http://localhost:8096',
-    clusterManager: 'http://localhost:8213'
+    clusterManager: 'http://localhost:8213',
+    loadBalancer: 'http://localhost:8224'
   },
   
   // gRPC (High Performance)
@@ -157,6 +161,9 @@ src/routes/api/
 │   ├── +server.ts          → upload-service.exe:8093 (HTTP)
 │   ├── gin/+server.ts      → gin-upload.exe:8207 (Alternative)
 │   └── simple/+server.ts   → simple-upload.exe:8208 (Lightweight)
+├── document/
+│   ├── +server.ts          → document-processor-integrated.exe:8081 (HTTP)
+│   └── health/+server.ts   → document-processor-integrated.exe:8081 (Health)
 ├── ai/
 │   ├── summary/+server.ts  → ai-enhanced.exe:8096 (HTTP)
 │   ├── legal/+server.ts    → enhanced-legal-ai.exe:8202 (HTTP)
@@ -186,6 +193,12 @@ export const API_ENDPOINTS = {
     metadata: '/api/v1/upload/metadata'
   },
   
+  document: {
+    process: '/api/v1/document/process',
+    health: '/api/v1/document/health',
+    test: '/api/v1/document/test'
+  },
+  
   ai: {
     summary: '/api/v1/ai/summary',
     legal: '/api/v1/ai/legal/analyze',
@@ -209,6 +222,7 @@ export const API_ENDPOINTS = {
 # Tier 1: Core Services (Must Start First)
 ./go-microservice/bin/enhanced-rag.exe &              # AI Engine
 ./go-microservice/bin/upload-service.exe &            # File Processing
+./ai-summary-service/document-processor-integrated.exe &  # Document Processing
 ./go-microservice/bin/grpc-server.exe &               # gRPC Layer
 
 # Tier 2: Enhanced Services (Performance Layer)
@@ -233,6 +247,7 @@ export const ServiceHealthChecks = {
   tier1: [
     { name: 'enhanced-rag', url: 'http://localhost:8094/health' },
     { name: 'upload-service', url: 'http://localhost:8093/health' },
+    { name: 'document-processor', url: 'http://localhost:8081/api/health' },
     { name: 'grpc-server', url: 'http://localhost:50051/health' }
   ],
   tier2: [

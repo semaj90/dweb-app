@@ -4,6 +4,7 @@
 // Production Stack: PostgreSQL + pgvector, LangChain, Qdrant, GraphQL, Neo4j, Redis, RabbitMQ
 
 import { QdrantVectorStore } from "@langchain/community/vectorstores/qdrant";
+import { PGVectorStore } from "@langchain/community/vectorstores/pgvector";
 import { QdrantClient } from "@qdrant/js-client-rest";
 import { createClient } from "redis";
 
@@ -210,11 +211,7 @@ export class EnhancedIngestionPipeline {
       clusterCount: 8,
     });
     
-    this.qdrantService = new QdrantService({
-      url: config.qdrantUrl || "http://localhost:6333",
-      collectionName: "legal_documents",
-      vectorSize: 384,
-    });
+    this.qdrantService = new QdrantService();
 
     this.initializeCopilotIntegration();
     this.initializeMultimodalProcessors();

@@ -7,19 +7,23 @@
     "noImplicitReturns": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "skipLibCheck": true,
+  "skipLibCheck": true,
+  "lib": ["ES2022", "DOM", "DOM.Iterable", "WebWorker"],
+  "types": ["node", "vitest/globals"],
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": false
   },
   "include": [
+    // Broaden to all src files so the frontend project picks up sources reliably.
+    "src/**/*",
     "src/lib/**/*",
     "src/routes/**/*",
     "src/types/**/*.d.ts"
   ],
   "exclude": [
     "src/server/**/*",
-    "src/routes/api/**/*", 
+    "src/routes/api/**/*",
     "node_modules",
     "**/*three*/**",
     "**/*yorha*/**",
@@ -27,6 +31,6 @@
     "**/*wasm*/**",
     "**/*gpu*/**",
     "**/*worker*/**",
-    "../**"
+
   ]
 }

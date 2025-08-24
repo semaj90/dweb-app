@@ -15,8 +15,12 @@ declare global {
     interface Locals {
       user: SessionUser | null;
       session: string | null;
+      featureFlags?: Record<string, boolean>;
       apiContext?: unknown;
       serviceHealth?: unknown;
+      services?: unknown;
+      requestId?: string;
+      startTime?: number;
     }
 
     interface PageData {

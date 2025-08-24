@@ -188,9 +188,32 @@ export const searchFormSchema = z.object({
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
 });
 
+// Additional schemas for missing imports
+export const DocumentUploadSchema = evidenceFormSchema;
+export const CaseCreationSchema = caseFormSchema;
+export const SearchQuerySchema = searchFormSchema;
+export const AIAnalysisSchema = z.object({
+  prompt: z.string().min(1, 'Analysis prompt is required'),
+  context: z.object({
+    caseId: z.string().optional(),
+    documentIds: z.array(z.string()).optional(),
+    analysisType: z.enum(['summary', 'recommendation', 'risk-assessment', 'precedent-analysis'])
+  }),
+  options: z.object({
+    includeReferences: z.boolean().default(true),
+    maxTokens: z.number().min(100).max(4000).default(1000),
+    temperature: z.number().min(0).max(1).default(0.7),
+    model: z.string().optional()
+  }).optional()
+});
+
 // Export type definitions
 export type CaseForm = z.infer<typeof caseFormSchema>;
 export type EvidenceForm = z.infer<typeof evidenceFormSchema>;
 export type AuthForm = z.infer<typeof authFormSchema>;
 export type RegisterForm = z.infer<typeof registerFormSchema>;
 export type SearchForm = z.infer<typeof searchFormSchema>;
+export type DocumentUploadData = z.infer<typeof DocumentUploadSchema>;
+export type CaseCreationData = z.infer<typeof CaseCreationSchema>;
+export type SearchQueryData = z.infer<typeof SearchQuerySchema>;
+export type AIAnalysisData = z.infer<typeof AIAnalysisSchema>;

@@ -1,16 +1,15 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { $state } from 'svelte';
 
   interface Document {
     id: string;
     title: string;
-    type: string;
+    type?: string;
     created: string;
     status: "draft" | "review" | "final";
-}
-  let documents: Document[] = $state([]);
-  let loading = $state(true);
+  }
+  let documents: Document[] = [];
+  let loading = true;
 
   // Mock data
   const mockDocuments: Document[] = [

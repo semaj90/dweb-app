@@ -6,19 +6,20 @@
 
 import { type RequestHandler,  json, error } from '@sveltejs/kit';
 import { Pool } from "pg";
+import { z } from 'zod';
 
 // Configuration
 const CONFIG = {
     database: {
-        user: import.meta.env.DB_USER || 'postgres',
-        password: import.meta.env.DB_PASSWORD || 'password',
-        host: import.meta.env.DB_HOST || 'localhost',
-        port: parseInt(import.meta.env.DB_PORT || '5432'),
-        database: import.meta.env.DB_NAME || 'prosecutor_db'
+        user: process.env.DB_USER || 'postgres',
+        password: process.env.DB_PASSWORD || 'password',
+        host: process.env.DB_HOST || 'localhost',
+        port: parseInt(process.env.DB_PORT || '5432'),
+        database: process.env.DB_NAME || 'prosecutor_db'
     },
     ollama: {
-        url: import.meta.env.OLLAMA_URL || 'http://localhost:11434',
-        model: import.meta.env.LLM_MODEL || 'gemma3-legal'
+        url: process.env.OLLAMA_URL || 'http://localhost:11434',
+        model: process.env.LLM_MODEL || 'gemma3-legal'
     },
     boilerplate: {
         minProsecutionScore: 70,
@@ -142,7 +143,7 @@ export const POST: RequestHandler = async ({ request }) => {
 async function getHighPerformingPhrases(
     type: string,
     jurisdiction?: string,
-    context?: unknown
+    context?: { case_type?: string; [key: string]: any }
 ) {
     const db = getDB();
     
@@ -298,7 +299,14 @@ function buildSystemPrompt(type: string, tone: string): string {
     return `${basePrompt}${typePrompts[type]} ${toneAdjustments[tone]}`;
 }
 
-function buildContextPrompt(context?: unknown): string {
+function buildContextPrompt(context?: { 
+    defendant_name?: string;
+    charges?: string[];
+    evidence_types?: string[];
+    precedents?: string[];
+    custom_context?: string;
+    [key: string]: any;
+}): string {
     if (!context) return '';
 
     let contextPrompt = 'Context for this document:\n';

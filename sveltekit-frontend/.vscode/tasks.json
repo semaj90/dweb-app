@@ -72,7 +72,7 @@
     },
     {
       "label": "⚡ FlashAttention2 GPU Processing",
-      "type": "shell", 
+      "type": "shell",
       "command": "node",
       "args": [
         "-e",
@@ -98,7 +98,7 @@
     {
       "label": "🔍 Error Analysis with GPU Acceleration",
       "type": "shell",
-      "command": "node", 
+      "command": "node",
       "args": [
         "-e",
         "import(\\\"./src/lib/integrations/flashattention-multicore-bridge.js\\\").then(async m => { console.log(\\\"🔍 Starting GPU-Accelerated Error Analysis...\\\"); const errorData = { totalErrors: 1962, categories: { svelte5_migration: 800, ui_component_mismatch: 600, css_unused: 400, binding_issues: 162 } }; const result = await m.analyzeErrorsWithGPU(errorData, [\\\"export let prop = default\\\", \\\"let { prop } = $props()\\\", \\\"<CardRoot class=\\\\\\\"card\\\\\\\">\\\", \\\"<DialogRoot bind:open={show}>\\\", \\\"unused .container { }\\\"]); console.log(\\\"🎯 Priority Fixes:\\\", result.prioritizedErrors.slice(0, 5)); console.log(\\\"📊 Fix Probability:\\\", result.fixProbability); console.log(\\\"🔧 Relevant Sections:\\\", result.relevantCodeSections.length); });"
@@ -114,7 +114,7 @@
       "group": "test",
       "presentation": {
         "echo": true,
-        "reveal": "always", 
+        "reveal": "always",
         "focus": true,
         "panel": "dedicated"
       },
@@ -127,7 +127,9 @@
       "args": ["run", "dev"],
       "options": {
         "env": {
-          "NODE_OPTIONS": "--max-old-space-size=4096",
+          // Clear NODE_OPTIONS for task-run to avoid debugger injection; preserve needed envs explicitly.
+          "NODE_OPTIONS": "",
+          "NODE_INSPECT": "",
           "OLLAMA_BASE_URL": "http://localhost:11434"
         }
       },
@@ -148,7 +150,9 @@
       "args": ["run", "check"],
       "options": {
         "env": {
-          "NODE_OPTIONS": "--max-old-space-size=6144"
+          // Prevent inspector/bootloader via NODE_OPTIONS
+          "NODE_OPTIONS": "",
+          "NODE_INSPECT": ""
         }
       },
       "group": "build"
@@ -169,7 +173,7 @@
       "type": "shell",
       "command": "node",
       "args": [
-        "-e", 
+        "-e",
         "import(\\\"./src/lib/integrations/comprehensive-agent-orchestration.js\\\").then(m => { console.log(\\\"🚀 Agent Orchestrator Status:\\\", JSON.stringify(m.comprehensiveOrchestrator.getSystemStatus(), null, 2)); }); import(\\\"./src/lib/integrations/flashattention-multicore-bridge.js\\\").then(m => { console.log(\\\"⚡ FlashAttention Bridge Status:\\\", JSON.stringify(m.flashAttentionMulticoreBridge.getStatus(), null, 2)); });"
       ],
       "options": {

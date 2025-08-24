@@ -1,6 +1,8 @@
 
 import type { Case } from "$lib/types";
-// TODO: Fix import - // Orphaned content: import {  export interface CaseStoreData {
+import { writable } from "svelte/store";
+
+export interface CaseStoreData {
   cases: any[];
   stats: any[];
   filters: {

@@ -2,28 +2,30 @@
 <script lang="ts">
   import { $props, $derived } from 'svelte';
 
-  import type { Props } from "$lib/types/global";
-
   let {
-    enabled = false,
+    enabled = $bindable(false),
     loading = false,
     premium = true,
-    size = 'md'
-  }: Props = $props();
+    size = 'md',
+    ontoggle,
+    onconfigure,
+    onupgrade
+  }: {
+    enabled?: boolean;
+    loading?: boolean;
+    premium?: boolean;
+    size?: 'sm' | 'md' | 'lg';
+    ontoggle?: (event: { enabled: boolean }) => void;
+    onconfigure?: () => void;
+    onupgrade?: () => void;
+  } = $props();
 
 
 
-  import { createEventDispatcher } from 'svelte';
   import { fade, slide, scale } from 'svelte/transition';
   import { Brain, Zap, Settings, Crown, Info } from 'lucide-svelte';
   import Button from '$lib/components/ui/Button.svelte';
   import { cn } from '$lib/utils';
-
-
-  const dispatch = createEventDispatcher<{
-    toggle: { enabled: boolean };
-    configure: void;
-  }>();
 
   let showTooltip = false;
   let showConfig = false;
@@ -46,19 +48,19 @@
 
   function handleToggle() {
     if (!premium) {
-      dispatch('upgrade');
+      onupgrade?.();
       return;
-}
+    }
     enabled = !enabled;
-    dispatch('toggle', { enabled });
-}
+    ontoggle?.({ enabled });
+  }
   function handleConfigure() {
     if (!premium) return;
     showConfig = !showConfig;
-    dispatch('configure');
+    onconfigure?.();
 }
   function handleUpgrade() {
-    dispatch('upgrade');
+    onupgrade?.();
 }
 </script>
 

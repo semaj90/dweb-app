@@ -1,4 +1,4 @@
-import http from "http";
+import * as http from "http";
 /**
  * Production Service Client - Multi-Protocol Go Services Integration
  * Supports HTTP/JSON, gRPC, QUIC, and WebSocket protocols

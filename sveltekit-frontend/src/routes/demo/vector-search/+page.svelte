@@ -27,6 +27,9 @@
     TooltipTrigger,
   } from '$lib/components/ui/tooltip';
   import { Brain, Briefcase, FileText, Info, Scale, Search, Sparkles } from 'lucide-svelte';
+  
+  // Feedback Integration
+  import FeedbackIntegration from '$lib/components/feedback/FeedbackIntegration.svelte';
 
   let query = $state('');
   let documentType = $state<'document' | 'evidence' | 'case'>('document');
@@ -38,6 +41,9 @@
   let results = $state<unknown[]>([]);
   let error = $state<string | null>(null);
 
+  // Feedback integration reference
+  let vectorSearchFeedback: any;
+
   // Document type icons
   const typeIcons = {
     document: FileText,
@@ -48,9 +54,20 @@
   async function performSearch() {
     if (!query.trim()) return;
 
+    // Track search interaction for feedback
+    const searchInteractionId = vectorSearchFeedback?.triggerFeedback({
+      query: query.trim(),
+      documentType,
+      threshold: threshold[0],
+      personalized,
+      searchType: 'vector_search_demo',
+      legalDomain: 'general'
+    });
+
     searching = true;
     error = null;
     results = [];
+    const searchStartTime = Date.now();
 
     try {
       const response = await fetch('/api/vector/search', {
@@ -75,8 +92,27 @@
 
       const data = await response.json();
       results = data.results || [];
+      
+      // Track successful search for feedback
+      if (searchInteractionId && vectorSearchFeedback) {
+        vectorSearchFeedback.markCompleted({
+          success: true,
+          resultCount: results.length,
+          searchTime: Date.now() - searchStartTime,
+          averageScore: results.length > 0 ? results.reduce((sum, r) => sum + r.similarity, 0) / results.length : 0
+        });
+      }
     } catch (err) {
       error = err instanceof Error ? err.message : 'Search failed';
+      
+      // Track failed search for feedback
+      if (searchInteractionId && vectorSearchFeedback) {
+        vectorSearchFeedback.markFailed({
+          errorType: 'vector_search_error',
+          errorMessage: error,
+          searchTime: Date.now() - searchStartTime
+        });
+      }
     } finally {
       searching = false;
     }
@@ -339,3 +375,19 @@
     </Card>
   {/if}
 </div>
+
+<!-- Feedback Integration Component -->
+<FeedbackIntegration
+  bind:this={vectorSearchFeedback}
+  interactionType="vector_search_demo"
+  ratingType="search_relevance"
+  priority="medium"
+  context={{ 
+    page: 'vector_search_demo',
+    documentType,
+    threshold: threshold[0],
+    personalized,
+    component: 'VectorSearchDemo'
+  }}
+  let:feedback
+/>

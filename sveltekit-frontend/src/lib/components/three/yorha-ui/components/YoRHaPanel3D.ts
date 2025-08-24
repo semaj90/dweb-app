@@ -4,7 +4,7 @@
  */
 
 import * as THREE from 'three';
-import { YoRHa3DComponent, type YoRHaStyle, YORHA_COLORS } from '$lib/YoRHaUI3D';
+import { YoRHa3DComponent, type YoRHaStyle, YORHA_COLORS } from '../YoRHaUI3D';
 
 export interface YoRHaPanel3DOptions extends YoRHaStyle {
   title?: string;
@@ -296,7 +296,7 @@ export class YoRHaPanel3D extends YoRHa3DComponent {
         borderWidth: 0.03,
         textColor: YORHA_COLORS.accent.gold,
         animation: {
-          type: 'scan',
+          type: 'scan' as const,
           speed: 2,
           intensity: 0.3
         }
@@ -385,15 +385,16 @@ export class YoRHaPanel3D extends YoRHa3DComponent {
   private onCloseClick(): void {
     // Add close animation
     this.addCustomAnimation('closeAnimation', (deltaTime) => {
-      const currentOpacity = this.mesh.material.opacity || 1;
+      const material = Array.isArray(this.mesh.material) ? this.mesh.material[0] : this.mesh.material;
+      const currentOpacity = (material as any).opacity || 1;
       const newOpacity = currentOpacity - deltaTime * 3;
       
       if (newOpacity <= 0) {
-        this.dispatchEvent({ type: 'close' });
+        this.emitEvent('close');
         this.customAnimations.delete('closeAnimation');
       } else {
-        if (this.mesh.material instanceof THREE.MeshStandardMaterial) {
-          this.mesh.material.opacity = newOpacity;
+        if (material instanceof THREE.MeshStandardMaterial) {
+          material.opacity = newOpacity;
         }
       }
     });
@@ -404,7 +405,7 @@ export class YoRHaPanel3D extends YoRHa3DComponent {
     const newHeight = Math.max(1, (this.style.height || 3) + deltaY);
     
     this.setStyle({ width: newWidth, height: newHeight });
-    this.dispatchEvent({ type: 'resize', data: { width: newWidth, height: newHeight } });
+    this.emitEvent('resize', { width: newWidth, height: newHeight });
   }
 
   public override dispose(): void {
@@ -438,5 +439,3 @@ export class YoRHaPanel3D extends YoRHa3DComponent {
     }
   }
 }
-
-export { YoRHaPanel3D };

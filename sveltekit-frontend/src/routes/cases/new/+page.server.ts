@@ -1,8 +1,11 @@
 import type { Actions } from "./$types";
 
 import { cases } from "$lib/server/db/schema-postgres";
-// TODO: Fix import - // Orphaned content: import { fail, redirect import { randomUUID } from "crypto";
-// TODO: Fix import - // Orphaned content: import {  export const actions: Actions = {
+import { fail, redirect } from "@sveltejs/kit";
+import { randomUUID } from "crypto";
+import { db } from "$lib/server/db";
+
+export const actions: Actions = {
   create: async ({ request, locals }) => {
     const form = await request.formData();
     const title = form.get("title")?.toString();
@@ -33,7 +36,7 @@ import { cases } from "$lib/server/db/schema-postgres";
         aiSummary,
         createdBy,
       });
-      throw redirect(303, `/cases/${id}`);
+      redirect(303, `/cases/${id}`);
     } catch (e) {
       console.error(e);
       return fail(500, { error: "Failed to create case." });

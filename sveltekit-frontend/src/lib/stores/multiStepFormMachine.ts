@@ -1,9 +1,11 @@
-import path from 'path';
-import crypto from 'crypto';
+import * as path from 'path';
+import * as crypto from 'crypto';
+import { z } from 'zod';
 
 // src/lib/stores/multiStepFormMachine.ts - XState v5 Multi-step Forms with Superforms & Zod
 import { setup, createActor, assign, fromPromise } from 'xstate';
-// TODO: Fix import - // Orphaned content: import {  import { db, cases, evidence, criminals } from "$lib/server/db";
+import { cases, evidence, criminals } from "../server/db/unified-schema";
+import { db } from "../server/db/drizzle";
 
 // Zod Validation Schemas
 export const CaseFormSchema = z.object({

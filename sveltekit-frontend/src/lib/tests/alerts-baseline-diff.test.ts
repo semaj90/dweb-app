@@ -1,8 +1,12 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+/// <reference types="vitest" />
 
 // Tests baseline diff endpoint mode=baseline returns diff after first invocation
 
+/// <reference types="vitest" />
+// Tests baseline diff endpoint mode=baseline returns diff after first invocation
+
 describe('Alerts Baseline Diff Endpoint', () => {
+  let GET: any;
   let GET: any;
   beforeAll(async () => {
     const mod = await import('../../routes/api/v1/alerts/+server.js');

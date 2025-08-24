@@ -1,11 +1,11 @@
 // Superforms + XState Integration for Legal AI Forms
 // Advanced form management with state machines and validation
 
-import { superForm, type SuperValidated, type Infer } from "sveltekit-superforms";
+import { superForm } from "sveltekit-superforms";
 import { zod } from "sveltekit-superforms/adapters";
 import { writable, derived, type Writable, type Readable } from "svelte/store";
-import { createActor, type ActorRefFrom } from "xstate";
-import type { z } from "zod";
+import { interpret } from "xstate";
+import { z } from "zod";
 import {
   DocumentUploadSchema,
   CaseCreationSchema,
@@ -18,38 +18,33 @@ import {
   searchMachine,
   aiAnalysisMachine
 } from "$lib/machines";
-import type {
-  DocumentUploadActor,
-  CaseCreationActor,
-  SearchActor,
-  AIAnalysisActor
-} from "$lib/types/machines";
 
 // ============================================================================
 // FORM STATE INTEGRATION TYPES
 // ============================================================================
 
-export interface FormMachineIntegration<
-  T extends Record<string, unknown>, 
-  M extends ActorRefFrom<any>
-> {
-  form: ReturnType<typeof superForm<T>>;
+export type SnapshotOf<M> = M extends { getSnapshot: () => infer S } ? S : { value: any; context: any };
+
+export interface FormMachineIntegration<M extends { getSnapshot: () => any }> {
+  form: ReturnType<typeof superForm>;
   actor: M;
-  state: Writable<M['getSnapshot']>;
-  context: Writable<M['getSnapshot']['context']>;
+  state: Writable<SnapshotOf<M>['value']>;
+  context: Writable<SnapshotOf<M>['context']>;
   isValid: Readable<boolean>;
   isSubmitting: Readable<boolean>;
   errors: Readable<Record<string, string[]>>;
   progress: Readable<number>;
+  autoSaveDelay?: number;
+  resetOnSuccess?: boolean;
 }
 
-export interface FormOptions<T = unknown, R = unknown> {
-  onSubmit?: (data: T) => void | Promise<void>;
-  onSuccess?: (result: R) => void;
-  onError?: (error: string) => void;
+export interface FormOptions {
   autoSave?: boolean;
   autoSaveDelay?: number;
   resetOnSuccess?: boolean;
+  onSubmit?: (formData: any) => Promise<any> | void;
+  onSuccess?: (data: any) => void;
+  onError?: (error: any) => void;
 }
 
 // ============================================================================
@@ -60,9 +55,9 @@ export function createDocumentUploadForm(
   data: any, // SuperValidated<Infer<typeof DocumentUploadSchema>>,
   options: FormOptions = {}
 ): unknown { // FormMachineIntegration<Infer<typeof DocumentUploadSchema>, DocumentUploadActor> {
-  
+
   // Create XState actor
-  const actor = createActor(documentUploadMachine);
+  const actor = interpret(documentUploadMachine as any);
   actor.start();
 
   // Create Superform
@@ -73,26 +68,30 @@ export function createDocumentUploadForm(
     timeoutMs: 8000,
     invalidateAll: false,
     onUpdated: ({ form }) => {
+      // When the form becomes valid, ask the actor to validate the form data;
+      // otherwise inform the machine of the updated form data.
       if ((form as any).valid) {
         actor.send({
           type: 'VALIDATE_FORM',
           data: (form as any).data || form
-        });
+        } as any);
+      } else {
+        actor.send({
+          type: 'UPDATE_FORM',
+          data: (form as any).data || form
+        } as any);
       }
     },
     onSubmit: async ({ formData, cancel }) => {
       if (options.onSubmit) {
+        // allow the caller to handle submit if provided
         cancel();
         await options.onSubmit(formData);
       } else {
-        actor.send({ type: 'UPLOAD' });
-      }
-    },
-    onResult: ({ result }) => {
-      if (result.type === 'success' && options.onSuccess) {
-        options.onSuccess(result.data);
-      } else if (result.type === 'error' && options.onError) {
-        options.onError(result.error.message);
+        actor.send({
+          type: 'SUBMIT',
+          data: formData
+        } as any);
       }
     }
   });
@@ -101,13 +100,13 @@ export function createDocumentUploadForm(
   const state = writable(actor.getSnapshot().value);
   const context = writable(actor.getSnapshot().context);
   const isValid = derived([form.form], ([$form]) => !!($form as any).valid);
-  const isSubmitting = derived(state, ($state) => 
+  const isSubmitting = derived(state, ($state) =>
     $state === 'uploading' || $state === 'processing' || $state === 'validating'
   );
   const errors = derived([form.errors, context], ([$errors, $context]) => {
     // Flatten the complex superforms error structure to match interface
     const flattened: Record<string, string[]> = {};
-    
+
     // Handle superforms errors (which can be nested objects)
     const flattenErrors = (obj: any, prefix = ''): void => {
       for (const [key, value] of Object.entries(obj || {})) {
@@ -119,43 +118,47 @@ export function createDocumentUploadForm(
         }
       }
     };
-    
+
     flattenErrors($errors);
-    
+
     // Add context validation errors
-    if ($context.validationErrors) {
+    if ($context?.validationErrors) {
       Object.assign(flattened, $context.validationErrors);
     }
-    
+
     return flattened;
   });
-  const progress = derived(context, ($context) => 
-    Math.max($context.uploadProgress, $context.processingProgress)
+  const progress = derived(context, ($context) =>
+    Math.max($context?.uploadProgress ?? 0, $context?.processingProgress ?? 0)
   );
 
   // Subscribe to actor changes
   actor.subscribe((snapshot) => {
     state.set(snapshot.value);
     context.set(snapshot.context);
-    
+
     // Handle state-specific actions
     if (snapshot.value === 'completed' && options.onSuccess) {
-      options.onSuccess(snapshot.context.aiResults);
+      options.onSuccess(snapshot.context?.aiResults);
     } else if (snapshot.value === 'failed' && options.onError) {
-      options.onError(snapshot.context.error || 'Upload failed');
+      options.onError(snapshot.context?.error || 'Upload failed');
     }
   });
 
   // Auto-save functionality
   if (options.autoSave) {
     const autoSaveDelay = options.autoSaveDelay ?? 2000;
-    let autoSaveTimeout: NodeJS.Timeout;
+    let autoSaveTimeout: ReturnType<typeof setTimeout>;
 
     form.form.subscribe(($form) => {
       if (($form as any).valid) {
         clearTimeout(autoSaveTimeout);
         autoSaveTimeout = setTimeout(() => {
-          localStorage.setItem('document-upload-draft', JSON.stringify(($form as any).data || $form));
+          try {
+            localStorage.setItem('document-upload-draft', JSON.stringify(($form as any).data || $form));
+          } catch (e) {
+            console.warn('Failed to write draft to localStorage', e);
+          }
         }, autoSaveDelay);
       }
     });
@@ -181,8 +184,8 @@ export function createCaseCreationForm(
   data: any, // SuperValidated<Infer<typeof CaseCreationSchema>>,
   options: FormOptions = {}
 ): unknown { // FormMachineIntegration<Infer<typeof CaseCreationSchema>, CaseCreationActor> {
-  
-  const actor = createActor(caseCreationMachine);
+
+  const actor = interpret(caseCreationMachine as any);
   actor.start();
 
   const form = superForm(data, {
@@ -194,15 +197,18 @@ export function createCaseCreationForm(
     onUpdated: ({ form }) => {
       actor.send({
         type: 'UPDATE_FORM',
-        data: form.data
-      });
+        data: (form as any).data || form
+      } as any);
     },
     onSubmit: async ({ formData, cancel }) => {
       if (options.onSubmit) {
         cancel();
         await options.onSubmit(formData);
       } else {
-        actor.send({ type: 'SUBMIT' });
+        actor.send({
+          type: 'SUBMIT_CASE',
+          data: formData
+        } as any);
       }
     }
   });
@@ -210,13 +216,13 @@ export function createCaseCreationForm(
   const state = writable(actor.getSnapshot().value);
   const context = writable(actor.getSnapshot().context);
   const isValid = derived([form.form], ([$form]) => !!($form as any).valid);
-  const isSubmitting = derived(state, ($state) => 
+  const isSubmitting = derived(state, ($state) =>
     $state === 'submitting' || $state === 'validating'
   );
   const errors = derived([form.errors, context], ([$errors, $context]) => {
     // Flatten the complex superforms error structure to match interface
     const flattened: Record<string, string[]> = {};
-    
+
     // Handle superforms errors (which can be nested objects)
     const flattenErrors = (obj: any, prefix = ''): void => {
       for (const [key, value] of Object.entries(obj || {})) {
@@ -228,37 +234,37 @@ export function createCaseCreationForm(
         }
       }
     };
-    
+
     flattenErrors($errors);
-    
+
     // Add context validation errors
-    if ($context.validationErrors) {
+    if ($context?.validationErrors) {
       Object.assign(flattened, $context.validationErrors);
     }
-    
+
     return flattened;
   });
   const progress = derived([state, context], ([$state, $context]) => {
     if ($state === 'completed') return 100;
     if ($state === 'submitting') return 80;
     if ($state === 'validating') return 60;
-    if ($state === 'editing' && $context.isAutoSaving) return 30;
+    if ($state === 'editing' && $context?.isAutoSaving) return 30;
     return 0;
   });
 
   actor.subscribe((snapshot) => {
     state.set(snapshot.value);
     context.set(snapshot.context);
-    
+
     if (snapshot.value === 'completed' && options.onSuccess) {
-      options.onSuccess(snapshot.context.createdCase);
-    } else if (snapshot.context.error && options.onError) {
+      options.onSuccess(snapshot.context?.createdCase);
+    } else if (snapshot.context?.error && options.onError) {
       options.onError(snapshot.context.error);
     }
   });
 
   // Auto-save is built into the case creation machine
-  actor.send({ type: 'START_CREATION' });
+  actor.send({ type: 'START_CREATION' } as any);
 
   return {
     form,
@@ -280,8 +286,8 @@ export function createSearchForm(
   data: any, // SuperValidated<Infer<typeof SearchQuerySchema>>,
   options: FormOptions = {}
 ): unknown { // FormMachineIntegration<Infer<typeof SearchQuerySchema>, SearchActor> {
-  
-  const actor = createActor(searchMachine);
+
+  const actor = interpret(searchMachine as any);
   actor.start();
 
   const form = superForm(data, {
@@ -304,7 +310,7 @@ export function createSearchForm(
         actor.send({
           type: 'SEARCH',
           data: formData
-        });
+        } as any);
       }
     }
   });
@@ -312,13 +318,14 @@ export function createSearchForm(
   const state = writable(actor.getSnapshot().value);
   const context = writable(actor.getSnapshot().context);
   const isValid = derived([form.form], ([$form]) => !!($form as any).valid);
-  const isSubmitting = derived(state, ($state) => 
-    $state === 'searching' || $state === 'validating' || $state === 'loadingMore'
+  const isSubmitting = derived(state, ($state) =>
+    $state === 'searching' || $state === 'validating'
   );
+
   const errors = derived([form.errors, context], ([$errors, $context]) => {
     // Flatten the complex superforms error structure to match interface
     const flattened: Record<string, string[]> = {};
-    
+
     // Handle superforms errors (which can be nested objects)
     const flattenErrors = (obj: any, prefix = ''): void => {
       for (const [key, value] of Object.entries(obj || {})) {
@@ -330,14 +337,14 @@ export function createSearchForm(
         }
       }
     };
-    
+
     flattenErrors($errors);
-    
+
     // Add context validation errors
-    if ($context.validationErrors) {
+    if ($context?.validationErrors) {
       Object.assign(flattened, $context.validationErrors);
     }
-    
+
     return flattened;
   });
   const progress = derived([state], ([$state]) => {
@@ -350,19 +357,19 @@ export function createSearchForm(
   actor.subscribe((snapshot) => {
     state.set(snapshot.value);
     context.set(snapshot.context);
-    
+
     if (snapshot.value === 'results' && options.onSuccess) {
       options.onSuccess({
-        results: snapshot.context.results,
-        analytics: snapshot.context.analytics
+        results: snapshot.context?.results,
+        analytics: snapshot.context?.analytics
       });
     } else if (snapshot.value === 'error' && options.onError) {
-      options.onError(snapshot.context.error || 'Search failed');
+      options.onError(snapshot.context?.error || 'Search failed');
     }
   });
 
   // Load search history on initialization
-  actor.send({ type: 'LOAD_HISTORY' });
+  actor.send({ type: 'LOAD_HISTORY' } as any);
 
   return {
     form,
@@ -384,8 +391,8 @@ export function createAIAnalysisForm(
   data: any, // SuperValidated<Infer<typeof AIAnalysisSchema>>,
   options: FormOptions = {}
 ): unknown { // FormMachineIntegration<Infer<typeof AIAnalysisSchema>, AIAnalysisActor> {
-  
-  const actor = createActor(aiAnalysisMachine);
+
+  const actor = interpret(aiAnalysisMachine as any);
   actor.start();
 
   const form = superForm(data, {
@@ -402,7 +409,7 @@ export function createAIAnalysisForm(
         actor.send({
           type: 'START_ANALYSIS',
           data: formData
-        });
+        } as any);
       }
     }
   });
@@ -410,13 +417,14 @@ export function createAIAnalysisForm(
   const state = writable(actor.getSnapshot().value);
   const context = writable(actor.getSnapshot().context);
   const isValid = derived([form.form], ([$form]) => !!($form as any).valid);
-  const isSubmitting = derived(state, ($state) => 
+  const isSubmitting = derived(state, ($state) =>
     $state === 'analyzing' || $state === 'validating'
   );
+
   const errors = derived([form.errors, context], ([$errors, $context]) => {
     // Flatten the complex superforms error structure to match interface
     const flattened: Record<string, string[]> = {};
-    
+
     // Handle superforms errors (which can be nested objects)
     const flattenErrors = (obj: any, prefix = ''): void => {
       for (const [key, value] of Object.entries(obj || {})) {
@@ -428,19 +436,19 @@ export function createAIAnalysisForm(
         }
       }
     };
-    
+
     flattenErrors($errors);
-    
+
     // Add context validation errors
-    if ($context.validationErrors) {
+    if ($context?.validationErrors) {
       Object.assign(flattened, $context.validationErrors);
     }
-    
+
     return flattened;
   });
   const progress = derived([state, context], ([$state, $context]) => {
     if ($state === 'completed') return 100;
-    if ($state === 'analyzing') return $context.isStreaming ? 70 : 50;
+    if ($state === 'analyzing') return $context?.isStreaming ? 70 : 50;
     if ($state === 'validating') return 10;
     return 0;
   });
@@ -448,16 +456,16 @@ export function createAIAnalysisForm(
   actor.subscribe((snapshot) => {
     state.set(snapshot.value);
     context.set(snapshot.context);
-    
+
     if (snapshot.value === 'completed' && options.onSuccess) {
       options.onSuccess({
-        results: snapshot.context.analysisResults,
-        confidence: snapshot.context.confidence,
-        processingTime: snapshot.context.processingTime,
-        tokensUsed: snapshot.context.tokensUsed
+        results: snapshot.context?.analysisResults,
+        confidence: snapshot.context?.confidence,
+        processingTime: snapshot.context?.processingTime,
+        tokensUsed: snapshot.context?.tokensUsed
       });
     } else if (snapshot.value === 'error' && options.onError) {
-      options.onError(snapshot.context.error || 'Analysis failed');
+      options.onError(snapshot.context?.error || 'Analysis failed');
     }
   });
 
@@ -533,7 +541,7 @@ export function createMultiStepForm<T extends z.ZodType[]>(...schemas: T) {
 
 export class FormStatePersistence {
   private readonly storageKey: string;
-  
+
   constructor(storageKey: string) {
     this.storageKey = storageKey;
   }
@@ -574,8 +582,8 @@ export class FormStatePersistence {
   }
 
   createAutoSave(store: Writable<any>, delayMs = 1000) {
-    let timeout: NodeJS.Timeout;
-    
+    let timeout: ReturnType<typeof setTimeout>;
+
     return store.subscribe((value) => {
       clearTimeout(timeout);
       timeout = setTimeout(() => {

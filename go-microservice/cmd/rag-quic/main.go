@@ -12,7 +12,10 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
+
+	fastjson "legal-ai-production/internal/fastjson"
 )
 
 type EmbedRequest struct {
@@ -68,6 +71,7 @@ func handleEmbed(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, 200, map[string]string{"ok": "true"})
 		return
 	}
+	stream := r.URL.Query().Get("stream") == "1"
 	var req EmbedRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -97,7 +101,40 @@ func handleEmbed(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, 502, map[string]string{"error": err.Error()})
 		return
 	}
-	writeJSON(w, 200, EmbedResponse{Model: model, Vectors: vecs})
+	if !stream {
+		// fast path aggregated
+		if b, e := fastjson.Marshal(EmbedResponse{Model: model, Vectors: vecs}); e == nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(200)
+			w.Write(b)
+			return
+		}
+		writeJSON(w, 200, EmbedResponse{Model: model, Vectors: vecs})
+		return
+	}
+	// streaming mode: one vector per line
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Transfer-Encoding", "chunked")
+	flusher, ok := w.(http.Flusher)
+	if !ok {
+		writeJSON(w, 500, map[string]string{"error": "stream unsupported"})
+		return
+	}
+	meta := map[string]any{"model": model, "count": len(vecs), "stream": true, "ts": time.Now().Format(time.RFC3339)}
+	if b, e := fastjson.Marshal(meta); e == nil { w.Write(b); w.Write([]byte("\n")) } else { mb, _ := json.Marshal(meta); w.Write(mb); w.Write([]byte("\n")) }
+	flusher.Flush()
+	for i, v := range vecs {
+		line := map[string]any{"index": i, "vector": v}
+		b, e := fastjson.Marshal(line)
+		if e != nil { b, _ = json.Marshal(line) }
+		w.Write(b)
+		w.Write([]byte("\n"))
+		flusher.Flush()
+	}
+	final := map[string]any{"complete": true, "total": len(vecs)}
+	if b, e := fastjson.Marshal(final); e == nil { w.Write(b) } else { fb, _ := json.Marshal(final); w.Write(fb) }
+	flusher.Flush()
 }
 
 func handleRAG(w http.ResponseWriter, r *http.Request) {
@@ -175,6 +212,13 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/embed", handleEmbed)
+	mux.HandleFunc("/embed/stats", func(w http.ResponseWriter, r *http.Request) {
+		st := fastjson.GetStats()
+		w.Header().Set("X-JSON-Codec", st.CodecName)
+		w.Header().Set("X-JSON-Encodes", strconv.FormatInt(st.Encodes, 10))
+		w.Header().Set("X-JSON-Bytes", strconv.FormatInt(st.BytesProduced, 10))
+		writeJSON(w, 200, st)
+	})
 	mux.HandleFunc("/rag", handleRAG)
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		status := map[string]any{

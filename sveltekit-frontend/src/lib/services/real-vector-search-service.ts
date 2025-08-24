@@ -38,10 +38,11 @@ export class RealVectorSearchService {
     ollamaUrl?: string;
     embeddingModel?: string;
   }) {
-    this.qdrantClient = new QdrantClient({
-      url: options?.qdrantUrl || process.env.QDRANT_URL || 'http://localhost:6333'
-    });
-    this.ollamaBaseUrl = options?.ollamaUrl || process.env.OLLAMA_URL || 'http://localhost:11434';
+    const qdrantUrl = options?.qdrantUrl || (import.meta as any).env?.QDRANT_URL || 'http://localhost:6333';
+    const ollamaUrl = options?.ollamaUrl || (import.meta as any).env?.OLLAMA_URL || 'http://localhost:11434';
+
+    this.qdrantClient = new QdrantClient({ url: qdrantUrl });
+    this.ollamaBaseUrl = ollamaUrl;
     this.embeddingModel = options?.embeddingModel || 'nomic-embed-text';
   }
 
@@ -64,7 +65,10 @@ export class RealVectorSearchService {
       }
 
       const data = await response.json();
-      return data.embedding;
+      // Ollama embedding response shape: { embedding: number[] }
+      const emb = (data as any)?.embedding;
+      if (!Array.isArray(emb)) throw new Error('Invalid embedding response');
+      return emb as number[];
     } catch (error) {
       console.error('Embedding generation failed:', error);
       throw new Error(`Failed to generate embedding: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -76,7 +80,7 @@ export class RealVectorSearchService {
    */
   async search(query: string, options: VectorSearchOptions = {}): Promise<SearchResponse> {
     const startTime = Date.now();
-    
+
     try {
       // Generate query embedding
       const queryEmbedding = await this.generateEmbedding(query);

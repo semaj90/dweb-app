@@ -400,7 +400,7 @@ export class DynamicNavigation {
   /**
    * Handle beforeunload event
    */
-  private handleBeforeUnload(event: BeforeUnloadEvent): void {
+  private handleBeforeUnload(event: BeforeUnloadEvent): string | void {
     // Check if there are any guards that might prevent navigation
     for (const guard of this.guards.values()) {
       if (guard.action === 'confirm' && guard.message) {

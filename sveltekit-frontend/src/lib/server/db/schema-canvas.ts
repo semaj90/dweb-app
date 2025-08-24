@@ -13,8 +13,7 @@ import {
   uuid,
   real,
 } from "drizzle-orm/pg-core";
-// TODO: Fix import - // Orphaned content: import { relations import {
-users, cases } from "./schema-postgres";
+import { users, cases } from "./schema-postgres";
 
 // === REPORTS & DOCUMENTS ===
 export const reports = pgTable("reports", {

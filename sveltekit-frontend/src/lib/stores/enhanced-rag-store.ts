@@ -11,6 +11,7 @@ export interface RAGDocument {
   id: string;
   title: string;
   content: string;
+  type: 'legal' | 'case' | 'evidence' | 'research' | 'document';
   metadata: {
     source: string;
     type: string;

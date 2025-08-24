@@ -1,6 +1,6 @@
 {
-  "timestamp": 1755876923087,
-  "uptimeSec": 10049,
+  "timestamp": 1755880440376,
+  "uptimeSec": 13566,
   "startTime": 1755866874160,
   "spawned": {
     "legal": 1,
@@ -43,28 +43,28 @@
       "pid": 48808,
       "port": 3010,
       "status": "online",
-      "uptimeSec": 10049
+      "uptimeSec": 13566
     },
     {
       "type": "ai",
       "pid": 34680,
       "port": 3020,
       "status": "online",
-      "uptimeSec": 10049
+      "uptimeSec": 13566
     },
     {
       "type": "vector",
       "pid": 1624,
       "port": 3030,
       "status": "online",
-      "uptimeSec": 10049
+      "uptimeSec": 13566
     },
     {
       "type": "database",
       "pid": 39076,
       "port": 3040,
       "status": "online",
-      "uptimeSec": 10049
+      "uptimeSec": 13566
     }
   ],
   "deferredQueue": []

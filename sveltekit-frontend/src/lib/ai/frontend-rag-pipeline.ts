@@ -1,7 +1,7 @@
 
 // Enhanced Frontend RAG Pipeline with Loki.js, SIMD, and Semantic Synthesis
 // Lightweight text generation with g0llama microservice integration
-import loki from "lokijs";
+import Loki from "lokijs";
 import { pipeline, env } from "@xenova/transformers";
 import type { Pipeline } from "@xenova/transformers";
 import { browser } from "$app/environment";
@@ -53,8 +53,8 @@ class FrontendRAGPipeline {
   }
 
   private initializeLoki() {
-    this.lokiDb = new loki('frontend-rag.db', {
-      adapter: browser ? new loki.LokiFSAdapter() : undefined,
+    this.lokiDb = new Loki('frontend-rag.db', {
+      adapter: browser ? new Loki.LokiMemoryAdapter() : undefined,
       autoload: true,
       autoloadCallback: () => {
         this.semanticCollection = this.lokiDb.getCollection('semantic_chunks');
@@ -99,10 +99,7 @@ class FrontendRAGPipeline {
     }
 
     try {
-      const result = await this.embeddingPipeline(text, {
-        pooling: 'mean',
-        normalize: true
-      });
+      const result = await this.embeddingPipeline(text);
 
       const embedding = new Float32Array(result.data);
       

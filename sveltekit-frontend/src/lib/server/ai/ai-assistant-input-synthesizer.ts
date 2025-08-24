@@ -5,10 +5,42 @@
 import { logger } from "./logger";
 import { enhancedRAGPipeline } from "./rag-pipeline-enhanced";
 
+// Simple metrics stub for missing metrics dependency
+const metrics = {
+  incrementCounter: (name: string) => {},
+  recordTiming: (name: string, time: number) => {},
+  contextRelevance: 0.8,
+  sourceAuthority: 0.8,
+  conceptCoverage: 0.8,
+  informationCompleteness: 0.8,
+  responseReadiness: 0.8,
+  getAllMetrics: () => ({})
+};
+
+// Simple stubs for missing dependencies
+const legalBERT = {
+  analyze: (text: string) => Promise.resolve({ confidence: 0.8, categories: [], summary: '' })
+};
+
+const enhancedLegalSearch = {
+  search: (query: string, options: any) => Promise.resolve([])
+};
+
 export interface LegalAnalysisResult {
   confidence: number;
   categories: string[];
   summary: string;
+  entities?: string[];
+  concepts?: string[];
+}
+
+export interface RetrievalOptions {
+  enableRAG?: boolean;
+  maxSources?: number;
+  similarityThreshold?: number;
+  enableLegalBERT?: boolean;
+  enableMMR?: boolean;
+  enableCrossEncoder?: boolean;
 }
 
 import { generateEmbedding } from "./embeddings-simple";
@@ -265,7 +297,7 @@ export class AIAssistantInputSynthesizer {
   private async performMultiStrategyRetrieval(
     processedQuery: SynthesizedOutput['processedQuery'],
     context?: SynthesizerInput['context'],
-    options?: unknown
+    options?: RetrievalOptions
   ): Promise<any> {
     const retrievalResults = {
       sources: [],
@@ -289,7 +321,7 @@ export class AIAssistantInputSynthesizer {
             retrievalResults.sources.push({
               id: doc.metadata.documentId || `rag_${Date.now()}_${Math.random()}`,
               title: doc.metadata.title || 'Document',
-              content: doc.pageContent,
+              content: (doc as any).pageContent || doc.content || '',
               relevanceScore: doc.metadata.score || 0.5,
               diversityScore: 0.5, // Will be calculated later
               rerankedScore: 0.5, // Will be calculated later

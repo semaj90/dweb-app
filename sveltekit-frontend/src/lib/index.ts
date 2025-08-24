@@ -38,6 +38,30 @@ export type {
   WithElementRef
 } from './utils';
 
+// ===== OLLAMA INTEGRATION SERVICES =====
+export { 
+  comprehensiveOllamaSummarizer,
+  type ComprehensiveSummaryRequest,
+  type ComprehensiveSummaryResponse,
+  type SummarizerConfig,
+  type SummarizerStats
+} from './services/comprehensive-ollama-summarizer';
+
+export { 
+  ollamaIntegrationLayer,
+  type IntegratedChatRequest,
+  type IntegratedChatResponse,
+  type OllamaServiceStatus
+} from './services/ollama-integration-layer';
+
+export { 
+  LangChainOllamaService,
+  langChainOllamaService,
+  type LangChainConfig,
+  type ProcessingResult,
+  type QueryResult
+} from './ai/langchain-ollama-service';
+
 // ===== SERVER SERVICES (Server-side only) =====
 // Note: These should only be imported on the server side
 export type { AuthService } from './server/auth';

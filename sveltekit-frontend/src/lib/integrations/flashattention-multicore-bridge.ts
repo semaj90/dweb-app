@@ -314,8 +314,8 @@ export class FlashAttentionMulticoreBridge {
 
     // Multicore recommendations
     for (const task of multicoreTasks) {
-      if (task.status === 'completed' && task.result?.recommendations) {
-        recommendations.push(...task.result.recommendations);
+      if (task.status === 'completed' && (task.result as any)?.recommendations) {
+        recommendations.push(...(task.result as any).recommendations);
       }
     }
 

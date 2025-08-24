@@ -71,7 +71,7 @@ const nvidiaConfig = {
 Source: `sveltekit-frontend/src/lib/services/sentence-transformer.ts`
 
 Capabilities:
-- Mean‑pooled, normalized sentence embeddings (MiniLM L6, 384 dims default)
+- Mean‑pooled, normalized sentence embeddings (nomic-embed, 384 dims default)
 - Batch + single embedding APIs with lazy model initialization
 - Cosine similarity scoring + filtered threshold ranking
 - Lightweight legal document analysis (keywords, domains, complexity) – pluggable
@@ -308,7 +308,7 @@ const proxyConfig = {
   '/api/go/upload': 'http://localhost:8093',
   '/api/go/cluster': 'http://localhost:8213',
   '/api/ollama': 'http://localhost:11434',
-  '/api/nvidia-llama': 'http://localhost:8222', // Load balancer
+  '/api/nvidia-llama': 'http://localhost:8224', // Load balancer
   '/api/neo4j': 'http://localhost:7474'
 }
 ```
@@ -376,27 +376,27 @@ const NATS_SUBJECTS = {
   CASE_CREATED: 'legal.case.created',
   CASE_UPDATED: 'legal.case.updated',
   CASE_CLOSED: 'legal.case.closed',
-  
+
   // Document processing
   DOCUMENT_UPLOADED: 'legal.document.uploaded',
   DOCUMENT_PROCESSED: 'legal.document.processed',
   DOCUMENT_ANALYZED: 'legal.document.analyzed',
   DOCUMENT_INDEXED: 'legal.document.indexed',
-  
+
   // AI analysis pipeline
   AI_ANALYSIS_STARTED: 'legal.ai.analysis.started',
   AI_ANALYSIS_COMPLETED: 'legal.ai.analysis.completed',
   AI_ANALYSIS_FAILED: 'legal.ai.analysis.failed',
-  
+
   // Search and retrieval
   SEARCH_QUERY: 'legal.search.query',
   SEARCH_RESULTS: 'legal.search.results',
-  
+
   // Real-time chat
   CHAT_MESSAGE: 'legal.chat.message',
   CHAT_RESPONSE: 'legal.chat.response',
   CHAT_STREAMING: 'legal.chat.streaming',
-  
+
   // System monitoring
   SYSTEM_HEALTH: 'system.health',
   SYSTEM_METRICS: 'system.metrics'
@@ -416,7 +416,7 @@ legal.document.processed    → OCR/text extraction completion
 legal.document.analyzed     → AI analysis results + confidence scores
 legal.document.indexed      → Vector embedding completion + search ready
 
-# AI analysis pipeline  
+# AI analysis pipeline
 legal.ai.analysis.started   → Processing notifications + progress tracking
 legal.ai.analysis.completed → Results distribution + confidence metrics
 legal.ai.analysis.failed    → Error handling + retry logic
@@ -557,7 +557,7 @@ Redis (6379)         → Caching + session storage
 # Messaging Services
 NATS Server (4222)    → High-performance messaging
 NATS WebSocket (4223) → Browser client messaging
-NATS HTTP Monitor (8222) → Service monitoring & metrics
+NATS HTTP Monitor (8222) → NATS service monitoring & metrics
 
 # AI/ML Services
 Ollama Primary (11434)    → Legal analysis (gemma3-legal)
@@ -570,7 +570,7 @@ Enhanced RAG (8094)      → Primary AI engine
 Upload Service (8093)    → File processing
 Cluster Manager (8213)   → Service orchestration
 XState Manager (8212)    → State coordination
-Load Balancer (8222)     → Traffic distribution
+Load Balancer (8224)     → Traffic distribution
 
 # Frontend
 SvelteKit (5173)        → User interface + SSR

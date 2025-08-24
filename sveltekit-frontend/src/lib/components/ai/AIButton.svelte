@@ -5,11 +5,14 @@
     position: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left' ;
     size: 'sm' | 'md' | 'lg' ;
     variant: 'primary' | 'secondary' | 'accent' ;
-    disabled?: unknown;
-    loading?: unknown;
-    notification?: unknown;
-    notificationCount?: unknown;
-    tooltip?: unknown;
+    disabled?: boolean;
+    loading?: boolean;
+    notification?: boolean;
+    notificationCount?: number;
+    tooltip?: string;
+    onclick?: () => void;
+    onactivate?: () => void;
+    ondeactivate?: () => void;
   }
   let {
     position = 'bottom-right',
@@ -19,28 +22,22 @@
     loading = false,
     notification = false,
     notificationCount = 0,
-    tooltip = 'Legal AI Assistant'
+    tooltip = 'Legal AI Assistant',
+    onclick,
+    onactivate,
+    ondeactivate
   }: Props = $props();
 
 
 
-	import { onMount, createEventDispatcher } from 'svelte';
+	import { onMount } from 'svelte';
 	import { fly, fade } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	
-	// Component props
-									
 	// State management
 	let mounted = false;
 	let showTooltip = false;
 	let buttonElement: HTMLButtonElement;
-	
-	// Event dispatcher
-	const dispatch = createEventDispatcher<{
-		click: void;
-		activate: void;
-		deactivate: void;
-	}>();
 	
 	// Size configurations
 	const sizeClasses = {
@@ -68,8 +65,8 @@
 	function handleClick() {
 		if (disabled || loading) return;
 		
-		dispatch('click');
-		dispatch('activate');
+		onclick?.();
+		onactivate?.();
 		
 		// Add haptic feedback on supported devices
 		if ('vibrate' in navigator) {

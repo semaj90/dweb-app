@@ -280,7 +280,7 @@ class ComprehensiveCachingService {
       if (!LokiRef) {
         // Dynamic import to keep client bundle lean if unused.
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        
+
         const mod = await import('lokijs');
         LokiRef = mod.default || mod;
       }

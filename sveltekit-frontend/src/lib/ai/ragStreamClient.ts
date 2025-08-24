@@ -1,4 +1,5 @@
 import path from "path";
+import type { Readable } from 'svelte/store';
 /**
  * RAG Streaming Client Helper (SSE)
  * ---------------------------------

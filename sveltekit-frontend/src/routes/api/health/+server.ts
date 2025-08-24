@@ -1,5 +1,8 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { json } from "@sveltejs/kit";
+import { json } from '@sveltejs/kit';
+import { withApiHandler } from '$lib/server/api/response';
+import { checkDatabaseHealth } from '$lib/server/db/enhanced-operations';
+import { SSRCache } from '$lib/server/ssr/enhanced-load';
 import net from "node:net";
 
 type HttpCheck = {

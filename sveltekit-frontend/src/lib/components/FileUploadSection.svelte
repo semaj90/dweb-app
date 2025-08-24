@@ -18,16 +18,23 @@
     maxFileSize?: number;
     maxFiles?: number;
     multiple?: boolean;
-    onupload?: (e: CustomEvent<{ files: File[]; tags: string[] }>) => void;
-    onfilesChanged?: (e: CustomEvent<FileUpload[]>) => void;
-    onerror?: (e: CustomEvent<string>) => void;
+    onupload?: (data: { files: File[]; tags: string[] }) => void;
+    onfilesChanged?: (files: FileUpload[]) => void;
+    onerror?: (error: string) => void;
   }
 
-  export let reportId: string = '';
-  export let acceptedTypes: string[] = ['.pdf', '.jpg', '.jpeg', '.png', '.gif', '.txt', '.doc', '.docx'];
-  export let maxFileSize: number = 10 * 1024 * 1024;
-  export let maxFiles: number = 5;
-  export let multiple: boolean = true;
+  import { $props } from 'svelte';
+
+  let {
+    reportId = '',
+    acceptedTypes = ['.pdf', '.jpg', '.jpeg', '.png', '.gif', '.txt', '.doc', '.docx'],
+    maxFileSize = 10 * 1024 * 1024,
+    maxFiles = 5,
+    multiple = true,
+    onupload,
+    onfilesChanged,
+    onerror
+  }: FileUploadSectionProps = $props();
 
   import { browser } from "$app/environment";
   import {
@@ -40,7 +47,7 @@
     Upload,
     X
   } from 'lucide-svelte';
-  import { createEventDispatcher, onMount } from 'svelte';
+  import { onMount } from 'svelte';
   import { storageService, processDocumentWorkflow, documentWorkflows } from '$lib/services/minio-neo4j-pgvector-integration';
   import { ComprehensiveAISystemIntegration } from '$lib/integration/comprehensive-ai-system-integration';
   import { mcpContext72GetLibraryDocs } from '$lib/mcp-context72-get-library-docs';
@@ -48,11 +55,6 @@
   import loki from '$lib/services/loki-client';
   import TagList from './TagList.svelte';
 
-  const dispatch = createEventDispatcher<{
-    upload: { files: globalThis.File[]; tags: string[] };
-    filesChanged: FileUpload[];
-    error: string;
-  }>();
 
   let fileInput: HTMLInputElement;
   let dragActive = false;
@@ -140,14 +142,14 @@
 
 		// Check total file limit
 		if (uploads.length + fileArray.length > maxFiles) {
-			dispatch('error', `Maximum ${maxFiles} files allowed`);
+			onerror?.(`Maximum ${maxFiles} files allowed`);
 			return;
 		}
 		for (const file of fileArray) {
 			const validation = isFileValid(file);
 
 			if (!validation.valid) {
-				dispatch('error', validation.error!);
+				onerror?.(validation.error!);
 				continue;
 			}
 			const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -164,7 +166,7 @@
 
 			uploads = [...uploads, upload];
 		}
-		dispatch('filesChanged', uploads);
+		onfilesChanged?.(uploads);
 	}
 	function handleFileSelect(event: Event) {
 		const target = event.target as HTMLInputElement;
@@ -193,19 +195,19 @@
 	}
 	function removeFile(id: string) {
 		uploads = uploads.filter(upload => upload.id !== id);
-		dispatch('filesChanged', uploads);
+		onfilesChanged?.(uploads);
 	}
 	function updateFileTags(id: string, tags: string[]) {
 		uploads = uploads.map(upload =>
 			upload.id === id ? { ...upload, tags } : upload
 		);
-		dispatch('filesChanged', uploads);
+		onfilesChanged?.(uploads);
 	}
 	async function uploadFiles() {
 		const pendingUploads = uploads.filter(u => u.status === 'pending');
 
 		if (pendingUploads.length === 0) {
-			dispatch('error', 'No files to upload');
+			onerror?.('No files to upload');
 			return;
 		}
 		// Start uploading files
@@ -262,12 +264,12 @@
       const allTags = uploads
         .filter(u => u.status === 'success')
         .flatMap(u => u.tags);
-      dispatch('upload', { files: successfulFiles, tags: [...new Set(allTags)] });
+      onupload?.({ files: successfulFiles, tags: [...new Set(allTags)] });
     }
   }
 	function clearCompleted() {
 		uploads = uploads.filter(u => u.status !== 'success');
-		dispatch('filesChanged', uploads);
+		onfilesChanged?.(uploads);
 	}
 	function triggerFileSelect() {
 		fileInput?.click();
@@ -281,38 +283,38 @@
     {multiple}
     accept={acceptedTypes.join(',')}
     onchange={handleFileSelect}
-    class="space-y-4"
+    class="hidden"
     aria-label="Select files for upload" />
 
   <!-- Drop Zone -->
   <div
-    class="space-y-4"
+    class="drop-zone"
     class:drag-active={dragActive}
     class:has-files={uploads.length > 0}
-  ondragover={handleDragOver}
-  ondragleave={handleDragLeave}
-  ondrop={handleDrop}
+    ondragover={handleDragOver}
+    ondragleave={handleDragLeave}
+    ondrop={handleDrop}
     role="button"
     tabindex={0}
-  onclick={triggerFileSelect}
-  onkeydown={(e) => e.key === 'Enter' && triggerFileSelect()}>
+    onclick={triggerFileSelect}
+    onkeydown={(e) => e.key === 'Enter' && triggerFileSelect()}>
     {#if uploads.length === 0}
-      <div class="space-y-4">
-        <Upload class="space-y-4" size={48} />
-        <h3 class="space-y-4">Upload Evidence Files</h3>
-        <p class="space-y-4">Drag and drop files here, or click to browse</p>
-        <p class="space-y-4">
+      <div class="drop-zone-content">
+        <Upload size={48} />
+        <h3 class="drop-title">Upload Evidence Files</h3>
+        <p class="drop-description">Drag and drop files here, or click to browse</p>
+        <p class="drop-details">
           Supports: {acceptedTypes.join(', ')} • Max {formatFileSize(maxFileSize)} per file • Up to {maxFiles}
           files
         </p>
       </div>
     {:else}
-      <div class="space-y-4">
+      <div class="upload-summary">
         <CloudUpload size={24} />
         <span>{uploads.length} file{uploads.length !== 1 ? 's' : ''} ready</span>
         <button
           type="button"
-          class="space-y-4"
+          class="btn-link"
           onclick={(e) => {
             e.stopPropagation();
             triggerFileSelect();
@@ -325,110 +327,114 @@
 
   <!-- File List -->
   {#if uploads.length > 0}
-    <div class="space-y-4">
-      <div class="space-y-4">
-        <label class="space-y-4">Summary Type
-          <select bind:value={summaryType} aria-label="Select summary type" class="space-y-4">
+    <div class="file-upload-section">
+      <div>
+        <label>Summary Type
+          <select bind:value={summaryType} aria-label="Select summary type">
             <option value="key_points">Key Points</option>
             <option value="narrative">Narrative Summary</option>
             <option value="prosecutorial">Prosecutorial Analysis</option>
           </select>
         </label>
       </div>
-      {#each uploads as upload (upload.id)}
-        <div class="space-y-4" class:uploading={upload.status === 'uploading'}>
-          <div class="space-y-4">
-            <div class="space-y-4">
-              {#if upload.preview}
-                <img src={upload.preview} alt="File preview" class="space-y-4" />
-              {:else}
-                <svelte:component this={getFileIcon(upload.file)} size={24} />
-              {/if}
-            </div>
-
-            <div class="space-y-4">
-              <div class="space-y-4">{upload.file.name}</div>
-              <div class="space-y-4">
-                {formatFileSize(upload.file.size)}
-                {#if upload.status === 'uploading'}
-                  • Uploading... {upload.progress}%
-                {:else if upload.status === 'success'}
-                  • Uploaded
-                {:else if upload.status === 'error'}
-                  • Error: {upload.error}
+      <div class="file-list">
+        {#each uploads as upload (upload.id)}
+          <div class="file-item" class:uploading={upload.status === 'uploading'}>
+            <div class="file-info">
+              <div class="file-icon-wrapper">
+                {#if upload.preview}
+                  <img src={upload.preview} alt="File preview" class="file-preview" />
+                {:else}
+                  <svelte:component this={getFileIcon(upload.file)} size={24} />
                 {/if}
               </div>
-            </div>
 
-            <div class="space-y-4">
-              {#if upload.status === 'uploading'}
-                <div class="space-y-4">
-                  <div class="space-y-4" style="--progress: {upload.progress}%"></div>
+              <div class="file-details">
+                <div class="file-name">{upload.file.name}</div>
+                <div class="file-meta">
+                  {formatFileSize(upload.file.size)}
+                  {#if upload.status === 'uploading'}
+                    • Uploading... {upload.progress}%
+                  {:else if upload.status === 'success'}
+                    • Uploaded
+                  {:else if upload.status === 'error'}
+                    • Error: {upload.error}
+                  {/if}
                 </div>
-              {:else if upload.status === 'success'}
-                <CheckCircle size={20} class="space-y-4" />
-              {:else if upload.status === 'error'}
-                <AlertCircle size={20} class="space-y-4" />
+              </div>
+
+              <div class="file-status">
+                {#if upload.status === 'uploading'}
+                  <div class="progress-ring">
+                    <div class="progress-fill" style="--progress: {upload.progress}%"></div>
+                  </div>
+                {:else if upload.status === 'success'}
+                  <CheckCircle size={20} class="status-icon success" />
+                {:else if upload.status === 'error'}
+                  <AlertCircle size={20} class="status-icon error" />
+                {/if}
+              </div>
+
+              {#if upload.status !== 'uploading'}
+                <button
+                  type="button"
+                  class="remove-file"
+                  onclick={() => removeFile(upload.id)}
+                  aria-label="Remove {upload.file.name}">
+                  <X size={16} />
+                </button>
               {/if}
             </div>
 
-            {#if upload.status !== 'uploading'}
-              <button
-                type="button"
-                class="space-y-4"
-                onclick={() => removeFile(upload.id)}
-                aria-label="Remove {upload.file.name}">
-                <X size={16} />
-              </button>
+            {#if upload.status === 'pending' || upload.status === 'error'}
+              <div class="file-tags">
+                <TagList bind:tags={upload.tags}
+                         {availableTags}
+                         placeholder="Add tags for this file..."
+                         maxTags={5}
+                         onchange={(e) => updateFileTags(upload.id, e.detail)} />
+              </div>
+            {/if}
+
+            {#if upload.status === 'uploading'}
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: {upload.progress}%"></div>
+              </div>
             {/if}
           </div>
-
-          {#if upload.status === 'pending' || upload.status === 'error'}
-            <div class="space-y-4">
-              <TagList bind:tags={upload.tags}
-                       {availableTags}
-                       placeholder="Add tags for this file..."
-                       maxTags={5}
-                       onchange={(e) => updateFileTags(upload.id, e.detail)} />
-            </div>
-          {/if}
-
-          {#if upload.status === 'uploading'}
-            <div class="space-y-4">
-              <div class="space-y-4" style="width: {upload.progress}%"></div>
-            </div>
-          {/if}
-        </div>
-      {/each}
+        {/each}
+      </div>
     </div>
 
-    <!-- Upload Actions -->
-    <div class="space-y-4">
-      <button
-        type="button"
-        class="space-y-4"
-        onclick={() => uploadFiles()}
-        disabled={uploads.every((u) => u.status !== 'pending')}>
-        Upload Files
-        {#if uploads.filter((u) => u.status === 'pending').length > 0}
-          ({uploads.filter((u) => u.status === 'pending').length})
-        {/if}
-      </button>
-      {#if docStatus}
-        <div class="space-y-4" aria-live="polite">{docStatus}</div>
-      {/if}
-      {#if uploads.some((u) => u.status === 'success')}
-        <button type="button" class="space-y-4" onclick={() => clearCompleted()}>
-          Clear Completed
+      <!-- Upload Actions -->
+      <div class="upload-actions">
+        <button
+          type="button"
+          class="btn btn-primary"
+          onclick={() => uploadFiles()}
+          disabled={uploads.every((u) => u.status !== 'pending')}>
+          Upload Files
+          {#if uploads.filter((u) => u.status === 'pending').length > 0}
+            ({uploads.filter((u) => u.status === 'pending').length})
+          {/if}
         </button>
+        {#if uploads.some((u) => u.status === 'success')}
+          <button type="button" class="btn btn-secondary" onclick={() => clearCompleted()}>
+            Clear Completed
+          </button>
+        {/if}
+      </div>
+      
+      {#if docStatus}
+        <div aria-live="polite">{docStatus}</div>
       {/if}
+      
       {#if docs}
-        <details class="space-y-4">
+        <details>
           <summary>Show Svelte 5 File Upload Docs (Context7.2)</summary>
           <pre>{docs.content}</pre>
         </details>
       {/if}
-    </div>
   {/if}
 </div>
 

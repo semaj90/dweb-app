@@ -1,20 +1,12 @@
 
 
 <script lang="ts">
-  import { $props } from 'svelte';
-
-  interface Props {
-    class?: string;
-    children?: import('svelte').Snippet;
-  }
-  import type { Props } from "$lib/types/global";
-  import { createContextMenu, melt } from 'melt'
-  import { fly, scale } from 'svelte/transition'
-import {
+  import { fly, scale } from 'svelte/transition';
+  import { createDropdownMenu, melt } from '@melt-ui/svelte';
+  import {
     FileText,
     Users,
-      Database,
-      Api,   Calendar,
+    Calendar,
     MoreVertical,
     Eye,
     Edit,
@@ -23,53 +15,73 @@ import {
     AlertTriangle,
     Clock,
     CheckCircle
-  } from 'lucide-svelte'
+  } from 'lucide-svelte';
 
   interface CaseData {
     id: string;
     status: keyof typeof statusConfig;
     priority: keyof typeof priorityConfig;
     title?: string;
+    description?: string;
     updatedAt?: string | Date;
+    created: string | Date;
+    stats: {
+      documents: number;
+      evidence: number;
+      witnesses: number;
+    };
+    progress?: number;
+    tags?: string[];
+    assignee?: {
+      name: string;
+      avatar?: string;
+    };
   }
 
+  interface Props {
+    caseData: CaseData;
+    onView?: (id: string) => void;
+    onEdit?: (id: string) => void;
+    onArchive?: (id: string) => void;
+    onDelete?: (id: string) => void;
+  }
 
   let {
-    case: caseData,
+    caseData,
     onView = () => {},
     onEdit = () => {},
     onArchive = () => {},
     onDelete = () => {}
-  }: Props = $props()
+  }: Props = $props();
 
-  // Create context menu
+  // Melt UI dropdown menu for actions
   const {
     elements: { trigger, menu, item, separator },
     states: { open }
-  } = createContextMenu({
+  } = createDropdownMenu({
     forceVisible: true,
-  })
+  });
 
   // Status configurations
   const statusConfig = {
     active: {
       icon: CheckCircle,
-      class: 'nier-badge-success',
+      class: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
       label: 'Active'
     },
     pending: {
       icon: Clock,
-      class: 'nier-badge-warning',
+      class: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
       label: 'Pending'
     },
     closed: {
       icon: CheckCircle,
-      class: 'nier-badge-error',
+      class: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400',
       label: 'Closed'
     },
     archived: {
       icon: Archive,
-      class: 'text-nier-gray dark:text-nier-silver',
+      class: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300',
       label: 'Archived'
     }
   }
@@ -77,24 +89,24 @@ import {
   // Priority configurations
   const priorityConfig = {
     critical: {
-      class: 'priority-critical',
+      class: 'border-l-4 border-red-500',
       icon: '🚨',
-      color: 'text-harvard-crimson'
+      color: 'text-red-600 dark:text-red-400'
     },
     high: {
-      class: 'priority-high',
+      class: 'border-l-4 border-orange-500',
       icon: '⚠️',
-      color: 'text-digital-orange'
+      color: 'text-orange-600 dark:text-orange-400'
     },
     medium: {
-      class: 'priority-medium',
+      class: 'border-l-4 border-yellow-500',
       icon: '📌',
-      color: 'text-nier-amber'
+      color: 'text-yellow-600 dark:text-yellow-400'
     },
     low: {
-      class: 'priority-low',
+      class: 'border-l-4 border-green-500',
       icon: '📍',
-      color: 'text-digital-green'
+      color: 'text-green-600 dark:text-green-400'
     }
   }
 
@@ -123,8 +135,7 @@ import {
 </script>
 
 <div
-  use:melt={$trigger}
-  class="case-card {currentPriority.class} group relative overflow-hidden"
+  class="case-card {currentPriority.class} group relative overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-200"
   role="article"
   aria-label="Case {caseData.id}"
 >
@@ -139,7 +150,7 @@ import {
     <div class="flex items-start justify-between mb-4">
       <div class="flex-1">
         <div class="flex items-center gap-2 mb-1">
-          <span class="text-sm font-mono text-nier-gray dark:text-nier-silver">
+          <span class="text-sm font-mono text-gray-600 dark:text-gray-300">
             {caseData.id}
           </span>
           <span class="{currentPriority.color} text-lg" title="{caseData.priority} priority">
@@ -147,64 +158,65 @@ import {
           </span>
         </div>
 
-        <h3 class="text-lg font-semibold nier-heading line-clamp-1 group-hover:text-harvard-crimson dark:group-hover:text-digital-green nier-transition">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white line-clamp-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
           {caseData.title}
         </h3>
 
         {#if caseData.description}
-          <p class="text-sm text-nier-gray dark:text-nier-silver line-clamp-2 mt-1">
+          <p class="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mt-1">
             {caseData.description}
           </p>
         {/if}
       </div>
 
       <div class="flex items-center gap-2">
-        <span className="{currentStatus.className}">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {currentStatus.class}">
           {#key currentStatus.icon}
-            <currentStatus.icon class="w-3 h-3 mr-1" />
+            <svelte:component this={currentStatus.icon} class="w-3 h-3 mr-1" />
           {/key}
           {currentStatus.label}
         </span>
 
         <button
-          class="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-nier-white/50 dark:hover:bg-nier-black/50 nier-transition"
+          use:melt={$trigger}
+          class="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
           aria-label="More options"
         >
-          <MoreVertical class="w-5 h-5 text-nier-gray dark:text-nier-silver" />
+          <MoreVertical class="w-5 h-5 text-gray-600 dark:text-gray-300" />
         </button>
       </div>
     </div>
 
     <!-- Stats Grid -->
     <div class="grid grid-cols-3 gap-4 mb-4">
-      <div class="text-center p-3 rounded-lg bg-nier-white/50 dark:bg-nier-black/50">
+      <div class="text-center p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
         <div class="flex items-center justify-center gap-1 mb-1">
-          <FileText class="w-4 h-4 text-nier-gray dark:text-nier-silver" />
-          <p class="text-xl font-bold text-harvard-crimson dark:text-digital-green">
+          <FileText class="w-4 h-4 text-gray-500 dark:text-gray-400" />
+          <p class="text-xl font-bold text-blue-600 dark:text-blue-400">
             {caseData.stats.documents}
           </p>
         </div>
-        <p class="text-xs text-nier-gray dark:text-nier-silver">Documents</p>
+        <p class="text-xs text-gray-600 dark:text-gray-300">Documents</p>
       </div>
 
-      <div class="text-center p-3 rounded-lg bg-nier-white/50 dark:bg-nier-black/50">
+      <div class="text-center p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
         <div class="flex items-center justify-center gap-1 mb-1">
-          <AlertTriangle class="w-4 h-4 text-nier-gray dark:text-nier-silver" />
-          <p class="text-xl font-bold text-harvard-crimson dark:text-digital-green">
+          <AlertTriangle class="w-4 h-4 text-gray-500 dark:text-gray-400" />
+          <p class="text-xl font-bold text-blue-600 dark:text-blue-400">
             {caseData.stats.evidence}
           </p>
         </div>
-        <p class="text-xs text-nier-gray dark:text-nier-silver">Evidence</p>
+        <p class="text-xs text-gray-600 dark:text-gray-300">Evidence</p>
       </div>
 
-      <div class="text-center p-3 rounded-lg bg-nier-white/50 dark:bg-nier-black/50">
+      <div class="text-center p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
         <div class="flex items-center justify-center gap-1 mb-1">
-          <Users class="w-4 h-4 text-nier-gray dark:text-nier-silver" />
-          <p class="text-xl font-bold text-harvard-crimson dark:text-digital-green">
+          <Users class="w-4 h-4 text-gray-500 dark:text-gray-400" />
+          <p class="text-xl font-bold text-blue-600 dark:text-blue-400">
             {caseData.stats.witnesses}
           </p>
         </div>
-        <p class="text-xs text-nier-gray dark:text-nier-silver">Witnesses</p>
+        <p class="text-xs text-gray-600 dark:text-gray-300">Witnesses</p>
       </div>
     </div>
 
@@ -212,12 +224,12 @@ import {
     {#if caseData.progress !== undefined}
       <div class="mb-4">
         <div class="flex justify-between items-center mb-1">
-          <span class="text-xs text-nier-gray dark:text-nier-silver">Progress</span>
-          <span class="text-xs font-medium">{caseData.progress}%</span>
+          <span class="text-xs text-gray-600 dark:text-gray-300">Progress</span>
+          <span class="text-xs font-medium text-gray-900 dark:text-white">{caseData.progress}%</span>
         </div>
-        <div class="h-2 bg-nier-white/50 dark:bg-nier-black/50 rounded-full overflow-hidden">
+        <div class="h-2 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
           <div
-            class="h-full nier-gradient-digital nier-transition"
+            class="h-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-300"
             style="width: {caseData.progress}%"
           ></div>
         </div>
@@ -228,7 +240,7 @@ import {
     {#if caseData.tags && caseData.tags.length > 0}
       <div class="flex flex-wrap gap-2 mb-4">
         {#each caseData.tags as tag}
-          <span class="text-xs px-2 py-1 rounded-full bg-nier-white/50 dark:bg-nier-black/50 text-nier-gray dark:text-nier-silver">
+          <span class="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
             #{tag}
           </span>
         {/each}
@@ -236,7 +248,7 @@ import {
     {/if}
 
     <!-- Footer -->
-    <div class="flex items-center justify-between pt-4 border-t border-nier-light-gray dark:border-nier-gray/30">
+    <div class="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-600">
       <div class="flex items-center gap-3">
         {#if caseData.assignee}
           <div class="flex items-center gap-2">
@@ -247,20 +259,20 @@ import {
                 class="w-6 h-6 rounded-full"
               />
             {:else}
-              <div class="w-6 h-6 rounded-full bg-nier-gradient-crimson flex items-center justify-center">
-                <span class="text-xs font-bold text-nier-white">
+              <div class="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                <span class="text-xs font-bold text-white">
                   {caseData.assignee.name.charAt(0).toUpperCase()}
                 </span>
               </div>
             {/if}
-            <span class="text-sm text-nier-gray dark:text-nier-silver">
+            <span class="text-sm text-gray-600 dark:text-gray-300">
               {caseData.assignee.name}
             </span>
           </div>
         {/if}
       </div>
 
-      <div class="flex items-center gap-2 text-xs text-nier-gray dark:text-nier-silver">
+      <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
         <Calendar class="w-3 h-3" />
         <span title={formatDate(caseData.created)}>
           {daysAgo(caseData.created)}
@@ -272,55 +284,53 @@ import {
     <div class="flex gap-2 mt-4">
       <button
         onclick={() => onView(caseData.id)}
-        class="nier-button-primary text-sm px-4 py-2 flex-1"
+        class="flex-1 bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-md transition-colors duration-200 text-sm font-medium flex items-center justify-center gap-2"
       >
         <Eye class="w-4 h-4" />
         View Details
       </button>
       <button
         onclick={() => onEdit(caseData.id)}
-        class="nier-button-outline text-sm px-4 py-2"
+        class="bg-gray-200 text-gray-800 hover:bg-gray-300 px-4 py-2 rounded-md transition-colors duration-200 text-sm font-medium flex items-center justify-center"
       >
         <Edit class="w-4 h-4" />
       </button>
     </div>
   </div>
 
-  <!-- Digital Effect on Hover -->
-  <div class="absolute inset-0 bg-gradient-to-br from-transparent to-digital-green/5 opacity-0 group-hover:opacity-100 pointer-events-none nier-transition"></div>
 </div>
 
-<!-- Context Menu -->
+<!-- Dropdown Menu -->
 {#if $open}
   <div
     use:melt={$menu}
-    class="nier-panel p-2 min-w-[200px] z-50"
+    class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-2 min-w-[200px] z-50"
     transition:scale={{ duration: 200, start: 0.95 }}
   >
     <button
       use:melt={$item}
       onclick={() => onView(caseData.id)}
-      class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-nier-white/50 dark:hover:bg-nier-black/50 nier-transition w-full text-left"
+      class="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 w-full text-left"
     >
-      <Eye class="w-4 h-4 text-nier-gray dark:text-nier-silver" />
+      <Eye class="w-4 h-4 text-gray-600 dark:text-gray-300" />
       <span>View Details</span>
     </button>
 
     <button
       use:melt={$item}
       onclick={() => onEdit(caseData.id)}
-      class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-nier-white/50 dark:hover:bg-nier-black/50 nier-transition w-full text-left"
+      class="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 w-full text-left"
     >
-      <Edit class="w-4 h-4 text-nier-gray dark:text-nier-silver" />
+      <Edit class="w-4 h-4 text-gray-600 dark:text-gray-300" />
       <span>Edit Case</span>
     </button>
 
-    <div use:melt={$separator} class="h-px bg-nier-light-gray dark:bg-nier-gray/30 my-2"></div>
+    <div use:melt={$separator} class="h-px bg-gray-200 dark:bg-gray-600 my-2"></div>
 
     <button
       use:melt={$item}
       onclick={() => onArchive(caseData.id)}
-      class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-nier-amber/10 text-nier-amber nier-transition w-full text-left"
+      class="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-amber-50 dark:hover:bg-amber-900/20 text-amber-600 dark:text-amber-400 transition-colors duration-200 w-full text-left"
     >
       <Archive class="w-4 h-4" />
       <span>Archive</span>
@@ -329,7 +339,7 @@ import {
     <button
       use:melt={$item}
       onclick={() => onDelete(caseData.id)}
-      class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-harvard-crimson/10 text-harvard-crimson nier-transition w-full text-left"
+      class="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors duration-200 w-full text-left"
     >
       <Trash2 class="w-4 h-4" />
       <span>Delete</span>

@@ -1,33 +1,37 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  import { $props } from 'svelte';
-
-  interface Props {
-    isOpen: boolean;
-    settings: {
-      theme: string;
-      language: string;
-      ttsEngine: string;
-      voiceLanguage: string;
-      enableSuggestions: boolean;
-      enableMasking: boolean;
-      enableAutoSave: boolean;
-      maxHistoryItems: number;
-      enableNotifications: boolean;
-      fontFamily: string;
-      fontSize: string;
-    };
+  export interface Settings {
+    theme: string;
+    language: string;
+    ttsEngine: string;
+    voiceLanguage: string;
+    enableSuggestions: boolean;
+    enableMasking: boolean;
+    enableAutoSave: boolean;
+    maxHistoryItems: number;
+    enableNotifications: boolean;
+    fontFamily: string;
+    fontSize: string;
   }
-  let {
-    isOpen,
-    settings
-  }: Props = $props();
+
+  export let isOpen: boolean = false;
+  export let settings: Settings = {
+    theme: 'light',
+    language: 'en',
+    ttsEngine: 'default',
+    voiceLanguage: 'en-US',
+    enableSuggestions: true,
+    enableMasking: false,
+    enableAutoSave: false,
+    maxHistoryItems: 50,
+    enableNotifications: true,
+    fontFamily: 'Arial',
+    fontSize: '16px'
+  };
 </script>
 
 {#if isOpen}
-  <div class="space-y-4">
-    <div class="space-y-4">
+  <div class="container mx-auto px-4">
+    <div class="container mx-auto px-4">
       <h2>Settings</h2>
       <form>
         <label>

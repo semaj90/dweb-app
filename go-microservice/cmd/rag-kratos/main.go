@@ -39,6 +39,8 @@ import (
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 	pgvector "github.com/pgvector/pgvector-go"
 	redis "github.com/redis/go-redis/v9"
+
+	fastjson "legal-ai-production/internal/fastjson"
 )
 
 // Types (duplicated minimal structs for independence)
@@ -384,7 +386,8 @@ func main() {
 	r.GET("/health", func(c *gin.Context) { c.JSON(200, gin.H{"status": "ok", "time": time.Now().Format(time.RFC3339)}) })
 	r.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
-	r.POST("/embed", func(c *gin.Context) {
+		r.POST("/embed", func(c *gin.Context) {
+		stream := c.Query("stream") == "1"
 		var req EmbedRequest
 		if err := c.ShouldBindJSON(&req); err != nil {
 			c.JSON(400, gin.H{"error": err.Error()})
@@ -431,7 +434,35 @@ func main() {
 				}
 			}
 		}
-		c.JSON(200, EmbedResponse{Model: model, Vectors: result})
+		if !stream {
+			if b, err := fastjson.Marshal(EmbedResponse{Model: model, Vectors: result}); err == nil {
+				c.Writer.Header().Set("Content-Type", "application/json")
+				c.Writer.WriteHeader(200)
+				c.Writer.Write(b)
+				return
+			}
+			c.JSON(200, EmbedResponse{Model: model, Vectors: result})
+			return
+		}
+		// Streaming one vector per line
+		w := c.Writer
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.Header().Set("Cache-Control", "no-cache")
+		w.Header().Set("Transfer-Encoding", "chunked")
+		flusher, ok := w.(http.Flusher)
+		if !ok { c.JSON(500, gin.H{"error": "stream unsupported"}); return }
+		meta := map[string]any{"model": model, "count": len(result), "stream": true, "ts": time.Now().Format(time.RFC3339)}
+		b, _ := json.Marshal(meta)
+		w.Write(b); w.Write([]byte("\n")); flusher.Flush()
+		for i, v := range result {
+			line := map[string]any{"index": i, "vector": v}
+			lb, _ := json.Marshal(line)
+			w.Write(lb); w.Write([]byte("\n")); flusher.Flush()
+		}
+		final := map[string]any{"complete": true, "total": len(result)}
+		fb, _ := json.Marshal(final)
+		w.Write(fb)
+		flusher.Flush()
 	})
 
 	r.POST("/rag", func(c *gin.Context) {
@@ -443,6 +474,7 @@ func main() {
 		if req.TopK <= 0 {
 			req.TopK = 10
 		}
+		stream := c.Query("stream") == "1"
 		// Embed query
 		var qvec []float32
 		if ollama != nil {
@@ -469,6 +501,29 @@ func main() {
 		res, err := pg.CosineSearch(c.Request.Context(), qvec, req.TopK)
 		if err != nil {
 			c.JSON(502, gin.H{"error": err.Error()})
+			return
+		}
+
+		if stream {
+			w := c.Writer
+			w.Header().Set("Content-Type", "application/x-ndjson; charset=utf-8")
+			w.Header().Set("Cache-Control", "no-cache")
+			w.Header().Set("Transfer-Encoding", "chunked")
+			flusher, ok := w.(http.Flusher)
+			if !ok { c.JSON(500, gin.H{"error": "stream unsupported"}); return }
+			// Send metadata line
+			meta := map[string]any{"query": req.Query, "topK": req.TopK, "count": len(res), "stream": true, "ts": time.Now().Format(time.RFC3339)}
+			mb, _ := json.Marshal(meta)
+			w.Write(mb); w.Write([]byte("\n")); flusher.Flush()
+			for i, doc := range res {
+				line := map[string]any{"index": i, "id": doc.ID, "score": doc.Score, "text": doc.Text}
+				b, _ := json.Marshal(line)
+				w.Write(b); w.Write([]byte("\n")); flusher.Flush()
+			}
+			final := map[string]any{"complete": true, "total": len(res)}
+			fb, _ := json.Marshal(final)
+			w.Write(fb)
+			flusher.Flush()
 			return
 		}
 		// Optional graph enrichment if ?graph=1 and neo4j configured

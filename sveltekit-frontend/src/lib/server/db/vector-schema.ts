@@ -10,8 +10,8 @@ import {
   integer,
   real,
 } from "drizzle-orm/pg-core";
-// TODO: Fix import - // Orphaned content: import { vector import {
-relations } from "drizzle-orm";
+import { vector } from "pgvector/drizzle-orm";
+import { relations } from "drizzle-orm";
 
 // Document embeddings for semantic search
 export const documentEmbeddings = pgTable(

@@ -3,7 +3,6 @@
   import { $state, $derived, $effect } from 'svelte';
   import { writable } from 'svelte/store';
   import { page } from "$app/state";
-  import { createDialog } from 'melt';
   // Dropzone and Superforms fallback for SvelteKit 2/Svelte 5
   // If Bits UI and Superforms are unavailable, use SvelteKit's built-in file input and Zod validation
   import { z } from 'zod';
@@ -62,19 +61,12 @@
     );
 
   // Fallback form state
-  // Fallback form state
-  let formErrors = $state<{ files?: string } | null>(null);
+  let formErrors = $state<{ files?: string; summaryType?: string } | null>(null);
   let generateSummary = $state(false);
   let summaryType = $state('key_points');
-  // ...existing code...
-  // ...existing code...
 
 
-  // Melt UI Components
-  const {
-    elements: { trigger, overlay, content, title, description, close },
-    states: { open },
-  } = createDialog();
+  // Dialog components removed - not used in this component
 
   // Fallback file input state
   let dropzoneFiles = $state<FileList | null>(null);
@@ -619,19 +611,9 @@
                           {item.status}
                         </Badge>
                         {#if item.summaryType}
-                          {#key item.summaryType}
-                            {#if item.summaryType}
-                              {#if item.summaryType}
-                                {#key item.summaryType}
-                                  {#if item.summaryType}
-                                    <span class={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${getSummaryTypeVariant(item.summaryType).color}`}>
-                                      {getSummaryTypeVariant(item.summaryType).label}
-                                    </span>
-                                  {/if}
-                                {/key}
-                              {/if}
-                            {/if}
-                          {/key}
+                          <span class={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${getSummaryTypeVariant(item.summaryType).color}`}>
+                            {getSummaryTypeVariant(item.summaryType).label}
+                          </span>
                         {/if}
                       </div>
                       <p class="text-xs text-slate-500">

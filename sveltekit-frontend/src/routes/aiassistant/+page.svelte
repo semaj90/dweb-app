@@ -41,13 +41,16 @@
   import { onMount, tick } from 'svelte';
   import { writable } from 'svelte/store';
   import { createMachine, interpret } from 'xstate';
-  import { createDialog, createTabs, createResizable } from 'melt';
+  import { Dialog, Tabs } from 'bits-ui';
   import { Button } from '$lib/components/ui/button/index.js';
-  import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
+  import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card/index.js';
   import { Badge } from '$lib/components/ui/badge/index.js';
   import { Input } from '$lib/components/ui/input/index.js';
   import { Textarea } from '$lib/components/ui/textarea/index.js';
-  import GoldenRatioLoader from '$lib/components/ui/enhanced-bits/GoldenRatioLoader.svelte';
+
+  // Real-time search integration
+  import RealTimeLegalSearch from '$lib/components/search/RealTimeLegalSearch.svelte';
+  import { useRealTimeSearch } from '$lib/services/real-time-search.ts';
   import {
     MessageSquare,
     FileText,
@@ -181,16 +184,11 @@
   let aiSuggestions = $state<string[]>([]);
   let contextualSuggestions = $state<string[]>([]);
 
-  // Melt UI Components
-  const {
-    elements: { root: tabsRoot, list: tabsList, content: tabsContent, trigger: tabsTrigger },
-  } = createTabs({
-    defaultValue: 'reports',
-  });
+  // Real-time search integration
+  const { state: searchState, search: performSearch } = useRealTimeSearch();
 
-  const {
-    elements: { trigger: settingsDialogTrigger, overlay, content: dialogContent, close },
-  } = createDialog();
+  // Enhanced AI suggestions from real-time search
+  let searchSuggestions = $state<string[]>([]);
 
   onMount(async () => {
     aiService.start();
@@ -253,12 +251,38 @@
     aiService.send('START_CHAT');
 
     try {
+      // Enhance context with real-time search results
+      let enhancedContext = getRelevantContext();
+
+      // Perform real-time search to enrich context
+      if ($searchState.isConnected) {
+        try {
+          const searchResults = await performSearch(messageToSend, {
+            categories: ['cases', 'evidence', 'precedents'],
+            vectorSearch: true,
+            includeAI: true
+          });
+
+          enhancedContext = {
+            ...enhancedContext,
+            searchResults: searchResults.slice(0, 5), // Top 5 relevant results
+            searchMetadata: {
+              query: messageToSend,
+              timestamp: new Date(),
+              resultCount: searchResults.length
+            }
+          };
+        } catch (searchError) {
+          console.warn('Search enhancement failed:', searchError);
+        }
+      }
+
       const response = await fetch('/api/ai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: messageToSend,
-          context: getRelevantContext(),
+          context: enhancedContext,
           chatHistory: chatMessages.slice(-10),
         }),
       });
@@ -440,9 +464,9 @@
           <Download class="h-4 w-4 mr-1" />
           Export
         </Button>
-        <button class="btn-outline btn-sm" use:settingsDialogTrigger>
+        <Button variant="outline" size="sm">
           <Settings class="h-4 w-4" />
-        </button>
+        </Button>
       </div>
     </div>
   </header>
@@ -574,6 +598,13 @@
             {#if isProcessing}
               <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
             {/if}
+            <!-- Real-time Search Status -->
+            <div class="flex items-center space-x-1">
+              <div class="w-2 h-2 rounded-full {$searchState.isConnected ? 'bg-green-500' : 'bg-gray-400'}"></div>
+              <span class="text-xs text-gray-600">
+                {$searchState.isConnected ? 'Search Connected' : 'Search Offline'}
+              </span>
+            </div>
           </div>
           <Button size="sm" variant="ghost" onclick={() => togglePanel('chat')}>
             <Expand class="h-3 w-3" />
@@ -656,8 +687,22 @@
           {/if}
         </div>
 
-        <!-- Chat Input -->
+        <!-- Real-time Search Integration -->
         <div class="p-4 border-t border-slate-200">
+          <div class="mb-4">
+            <RealTimeLegalSearch
+              placeholder="Search cases, evidence, precedents..."
+              categories={['cases', 'evidence', 'precedents', 'statutes']}
+              enableVectorSearch={true}
+              aiSuggestions={true}
+              onselect={(result) => {
+                currentMessage = `Tell me about: ${result.title}`;
+                sendMessage();
+              }}
+            />
+          </div>
+
+          <!-- Chat Input -->
           <div class="flex space-x-2">
             <div class="flex-1">
               <Input

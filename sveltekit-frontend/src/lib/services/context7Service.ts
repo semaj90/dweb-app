@@ -384,7 +384,7 @@ class Context7Service {
    */
   private extractPatterns(content: string, pattern: RegExp): string[] {
     const matches = content.match(pattern) || [];
-    return [...new Set(matches)].slice(0, 10); // Limit and deduplicate
+    return Array.from(new Set(matches)).slice(0, 10); // Limit and deduplicate
   }
 
   async autoFixArea(area: 'performance' | 'security' | 'ui-ux', dryRun = false): Promise<AutoFixResult> {

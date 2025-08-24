@@ -1,175 +1,169 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { json, error } from "@sveltejs/kit";
 import { z } from "zod";
-import { db } from '$lib/database/connection';
-import { cases, users } from '$lib/database/schema';
-import { eq, desc, ilike, and, count } from 'drizzle-orm';
+import { withApiHandler, parseRequestBody, apiSuccess, validationError, createPagination, CommonErrors } from '$lib/server/api/response';
+import { CaseOperations } from '$lib/server/db/enhanced-operations';
+import type { Case } from '$lib/server/db/schema-postgres';
 
-// Enhanced case schema for creation/updates
-const caseSchema = z.object({
-  title: z.string().min(1, "Case title is required"),
+// Enhanced case schemas with comprehensive validation
+const createCaseSchema = z.object({
+  title: z.string().min(1, "Case title is required").max(500, "Case title too long"),
   description: z.string().optional(),
   priority: z.enum(["low", "medium", "high", "critical"]).default("medium"),
-  status: z.enum(["active", "closed", "archived"]).default("active")
+  status: z.enum(["open", "investigating", "pending", "closed", "archived"]).default("open"),
+  incidentDate: z.string().datetime().optional().transform(str => str ? new Date(str) : undefined),
+  location: z.string().optional(),
+  jurisdiction: z.string().optional()
+});
+
+const searchCasesSchema = z.object({
+  query: z.string().optional(),
+  status: z.array(z.string()).optional(),
+  priority: z.array(z.string()).optional(),
+  assignedTo: z.string().optional(),
+  dateRange: z.object({
+    start: z.string().datetime().transform(str => new Date(str)),
+    end: z.string().datetime().transform(str => new Date(str))
+  }).optional(),
+  page: z.number().min(1).default(1),
+  limit: z.number().min(1).max(100).default(50),
+  useVectorSearch: z.boolean().default(true)
 });
 
 // GET - List cases with advanced search and filtering
-export const GET: RequestHandler = async ({ url, locals }) => {
-  const startTime = Date.now();
-  
-  try {
-    // Extract query parameters
-    const search = url.searchParams.get("search");
-    const status = url.searchParams.get("status");
-    const priority = url.searchParams.get("priority");
-    const limit = parseInt(url.searchParams.get("limit") || "50");
-    const offset = parseInt(url.searchParams.get("offset") || "0");
-
-    console.log("🔍 Cases search request:", { search, status, priority, limit, offset });
-
-    // Build query conditions
-    const conditions = [];
-    
-    if (status) {
-      conditions.push(eq(cases.status, status));
-    }
-    if (priority) {
-      conditions.push(eq(cases.priority, priority));
-    }
-    if (search && search.trim()) {
-      conditions.push(ilike(cases.title, `%${search}%`));
+export const GET: RequestHandler = async (event) => {
+  return withApiHandler(async ({ url, locals }) => {
+    // Get user from session
+    const user = locals.user;
+    if (!user) {
+      throw CommonErrors.Unauthorized('User authentication required');
     }
 
-    // Execute database query
-    const [results, totalCount] = await Promise.all([
-      db.select({
-        id: cases.id,
-        title: cases.title,
-        description: cases.description,
-        status: cases.status,
-        priority: cases.priority,
-        caseNumber: cases.caseNumber,
-        createdAt: cases.createdAt,
-        updatedAt: cases.updatedAt,
-        createdBy: users.firstName,
-        createdByLastName: users.lastName
-      })
-      .from(cases)
-      .leftJoin(users, eq(cases.createdBy, users.id))
-      .where(conditions.length > 0 ? and(...conditions) : undefined)
-      .orderBy(desc(cases.createdAt))
-      .limit(limit)
-      .offset(offset),
-      
-      db.select({ count: count() })
-      .from(cases)
-      .where(conditions.length > 0 ? and(...conditions) : undefined)
-    ]);
-
-    const total = totalCount[0]?.count || 0;
-
-    const response = {
-      success: true,
-      data: results,
-      pagination: {
-        total,
-        limit,
-        offset,
-        hasNext: offset + limit < total,
-        hasPrev: offset > 0
-      },
-      search: search ? {
-        term: search,
-        resultsCount: results.length,
-        processingTime: Date.now() - startTime
-      } : null,
-      processingTime: Date.now() - startTime
+    // Parse and validate query parameters
+    const searchParams = {
+      query: url.searchParams.get('query') || undefined,
+      status: url.searchParams.get('status')?.split(',').filter(Boolean) || undefined,
+      priority: url.searchParams.get('priority')?.split(',').filter(Boolean) || undefined,
+      assignedTo: url.searchParams.get('assignedTo') || undefined,
+      dateRange: url.searchParams.get('dateStart') && url.searchParams.get('dateEnd') ? {
+        start: new Date(url.searchParams.get('dateStart')!),
+        end: new Date(url.searchParams.get('dateEnd')!)
+      } : undefined,
+      page: parseInt(url.searchParams.get('page') || '1'),
+      limit: Math.min(parseInt(url.searchParams.get('limit') || '50'), 100),
+      useVectorSearch: url.searchParams.get('useVectorSearch') !== 'false'
     };
 
-    console.log(`✅ Cases search completed: ${results.length}/${total} results in ${Date.now() - startTime}ms`);
-    
-    return json(response);
+    // Validate search parameters
+    try {
+      const validatedParams = searchCasesSchema.parse(searchParams);
+      
+      // Calculate offset from page
+      const offset = (validatedParams.page - 1) * validatedParams.limit;
+      
+      // Perform case search
+      const { cases: caseResults, total } = await CaseOperations.search({
+        ...validatedParams,
+        offset
+      });
 
-  } catch (err) {
-    console.error("❌ Cases search error:", err);
-    return json({
-      success: false,
-      error: "Failed to search cases",
-      message: err instanceof Error ? err.message : "Unknown error"
-    }, { status: 500 });
-  }
+      // Create pagination info
+      const pagination = createPagination(validatedParams.page, validatedParams.limit, total);
+
+      return {
+        cases: caseResults,
+        pagination,
+        search: validatedParams.query ? {
+          term: validatedParams.query,
+          resultsCount: caseResults.length,
+          vectorSearchUsed: validatedParams.useVectorSearch
+        } : null
+      };
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        throw CommonErrors.ValidationFailed('search parameters', error.errors[0]?.message || 'Invalid parameters');
+      }
+      throw error;
+    }
+  }, event);
 };
 
 // POST - Create new case
-export const POST: RequestHandler = async ({ request, locals }) => {
-  const startTime = Date.now();
-  
-  try {
-    // Mock user for now - replace with real auth when available
-    const mockUser = {
-      id: 'mock-user-id',
-      firstName: 'Detective',
-      lastName: 'Smith'
-    };
-
-    const body = await request.json();
-    console.log("📝 Creating new case:", { title: body.title, priority: body.priority });
-
-    // Validate input
-    const validationResult = caseSchema.safeParse(body);
-    if (!validationResult.success) {
-      return json({
-        success: false,
-        error: "Invalid case data",
-        details: validationResult.error.flatten()
-      }, { status: 400 });
+export const POST: RequestHandler = async (event) => {
+  return withApiHandler(async ({ request, locals }) => {
+    // Get authenticated user
+    const user = locals.user;
+    if (!user) {
+      throw CommonErrors.Unauthorized('User authentication required');
     }
 
-    const caseData = validationResult.data;
+    // Parse and validate request body
+    const caseData = await parseRequestBody(request, createCaseSchema);
+    
+    try {
+      // Create case using enhanced operations
+      const newCase = await CaseOperations.create({
+        ...caseData,
+        createdBy: user.id
+      });
 
-    // Generate case number
-    const caseNumber = await generateCaseNumber();
+      console.log(`✅ Case created successfully: ${newCase.caseNumber} by user ${user.id}`);
 
-    // Insert into database
-    const [newCase] = await db.insert(cases).values({
-      title: caseData.title,
-      description: caseData.description,
-      priority: caseData.priority,
-      status: caseData.status,
-      caseNumber,
-      createdBy: mockUser.id,
-      assignedTo: mockUser.id
-    }).returning();
-
-    console.log("✅ Case created successfully:", {
-      id: newCase.id,
-      caseNumber: newCase.caseNumber,
-      processingTime: Date.now() - startTime
-    });
-
-    return json({
-      success: true,
-      message: "Case created successfully",
-      data: newCase
-    }, { status: 201 });
-
-  } catch (err) {
-    console.error("❌ Case creation error:", err);
-    return json({
-      success: false,
-      error: "Failed to create case",
-      message: err instanceof Error ? err.message : "Unknown error"
-    }, { status: 500 });
-  }
+      return {
+        case: newCase,
+        message: `Case ${newCase.caseNumber} created successfully`
+      };
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('duplicate')) {
+        throw CommonErrors.BadRequest('Case with similar details already exists');
+      }
+      throw error;
+    }
+  }, event);
 };
 
-// Helper functions
-async function generateCaseNumber(): Promise<string> {
-  const year = new Date().getFullYear();
-  
-  // Get count of all cases (simplified for now)
-  const caseCount = await db.select({ count: count() }).from(cases);
-  
-  const sequence = (caseCount[0]?.count || 0) + 1;
-  return `CR-${year}-${sequence.toString().padStart(3, '0')}`;
-}
+// Additional endpoints
+
+// PUT - Update existing case
+export const PUT: RequestHandler = async (event) => {
+  return withApiHandler(async ({ request, url, locals }) => {
+    const user = locals.user;
+    if (!user) {
+      throw CommonErrors.Unauthorized('User authentication required');
+    }
+
+    const caseId = url.searchParams.get('id');
+    if (!caseId) {
+      throw CommonErrors.BadRequest('Case ID is required');
+    }
+
+    // Parse and validate update data
+    const updateSchema = createCaseSchema.partial().omit({ status: true });
+    const updates = await parseRequestBody(request, updateSchema);
+
+    try {
+      const updatedCase = await CaseOperations.update(caseId, updates, user.id);
+      
+      return {
+        case: updatedCase,
+        message: 'Case updated successfully'
+      };
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('not found')) {
+        throw CommonErrors.NotFound('Case');
+      }
+      throw error;
+    }
+  }, event);
+};
+
+// OPTIONS - CORS preflight
+export const OPTIONS: RequestHandler = async () => {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
+};

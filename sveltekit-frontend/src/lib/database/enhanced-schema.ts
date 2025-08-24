@@ -11,7 +11,7 @@ import { relations } from "drizzle-orm";
 // Custom vector type for pgvector
 const vector = customType<{ data: number[]; driverData: string }>({
   dataType(config) {
-    return `vector(${config?.dimensions ?? 1536})`;
+    return `vector(${(config as any)?.dimensions ?? 1536})`;
   },
   toDriver(value: number[]): string {
     return `[${value.join(',')}]`;

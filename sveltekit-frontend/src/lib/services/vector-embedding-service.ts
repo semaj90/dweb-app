@@ -1,6 +1,6 @@
 
 import { Redis } from "ioredis";
-// Orphaned content: import type { OCRResult
+import type { OCRResult } from "../types/ocr";
 
 export interface EmbeddingVector {
   id: string;
@@ -148,7 +148,8 @@ export class EnhancedVectorEmbeddingService {
       return data.embedding;
     } catch (error) {
       console.error("❌ Embedding generation failed:", error);
-      throw error;
+      const msg = error instanceof Error ? error.message : String(error);
+      throw new Error(msg);
     }
   }
 
@@ -230,7 +231,8 @@ export class EnhancedVectorEmbeddingService {
       return storedIds;
     } catch (error) {
       console.error(`❌ Failed to process document ${documentId}:`, error);
-      throw error;
+      const msg = error instanceof Error ? error.message : String(error);
+      throw new Error(msg);
     }
   }
 
@@ -462,13 +464,13 @@ export class EnhancedVectorEmbeddingService {
         "jurisdiction",
         "case_type",
         "__vector_score"
-      )) as unknown[];
+      )) as any[];
 
       // Process and rank results
       const results: SearchResult[] = [];
 
       for (let i = 1; i < searchResults.length; i += 2) {
-        const fields = searchResults[i + 1];
+        const fields = searchResults[i + 1] as any[];
         const vectorScore = parseFloat(
           fields[fields.indexOf("__vector_score") + 1]
         );
@@ -506,7 +508,7 @@ export class EnhancedVectorEmbeddingService {
         });
 
         results.push({
-          id: searchResults[i],
+          id: String(searchResults[i]),
           score: 1 - vectorScore,
           metadata,
           highlights: this.extractHighlights(metadata.text_chunk, queryText),
@@ -525,7 +527,8 @@ export class EnhancedVectorEmbeddingService {
       return rankedResults;
     } catch (error) {
       console.error("❌ Vector search failed:", error);
-      throw error;
+      const msg = error instanceof Error ? error.message : String(error);
+      throw new Error(msg);
     }
   }
 

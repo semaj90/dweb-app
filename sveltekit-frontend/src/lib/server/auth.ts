@@ -206,6 +206,34 @@ export class AuthService {
   }
 
   /**
+   * Logout user by invalidating session
+   */
+  async logout(sessionId?: string) {
+    if (sessionId) {
+      await this.invalidateSession(sessionId);
+    }
+  }
+
+  /**
+   * Request password reset (placeholder for email integration)
+   */
+  async requestPasswordReset(email: string) {
+    // Find user by email
+    const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
+    
+    if (!user) {
+      // Don't reveal if email exists or not for security
+      return { success: true };
+    }
+
+    // TODO: Implement email sending service
+    // For now, just log the reset request
+    console.log(`Password reset requested for user: ${email}`);
+    
+    return { success: true };
+  }
+
+  /**
    * Update user profile
    */
   async updateProfile(userId: string, data: Partial<{

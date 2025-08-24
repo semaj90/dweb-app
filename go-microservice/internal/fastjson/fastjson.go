@@ -10,6 +10,10 @@ import (
 	"os"
 	"sync"
 	"time"
+
+	// Optional high-performance codecs
+	"github.com/bytedance/sonic"
+	gojson "github.com/goccy/go-json"
 )
 
 // Codec exposes the minimal surface we need. Additional methods can be added
@@ -27,6 +31,20 @@ func (s stdlibCodec) NewEncoder(buf *bytes.Buffer) *json.Encoder { return json.N
 func (s stdlibCodec) Name() string { return "encoding/json" }
 
 var active Codec = stdlibCodec{}
+
+// sonicCodec implements Codec using bytedance/sonic for Marshal (encoder falls back)
+type sonicCodec struct{}
+func (s sonicCodec) Marshal(v any) ([]byte, error) { return sonic.Marshal(v) }
+// For streaming Encode we fall back to stdlib encoder to keep interface simplicity.
+func (s sonicCodec) NewEncoder(buf *bytes.Buffer) *json.Encoder { return json.NewEncoder(buf) }
+func (s sonicCodec) Name() string { return "sonic" }
+
+// goJSONCodec uses goccy/go-json
+type goJSONCodec struct{}
+func (g goJSONCodec) Marshal(v any) ([]byte, error) { return gojson.Marshal(v) }
+// We return a stdlib encoder for compatibility; Marshal benefits from go-json.
+func (g goJSONCodec) NewEncoder(buf *bytes.Buffer) *json.Encoder { return json.NewEncoder(buf) }
+func (g goJSONCodec) Name() string { return "go-json" }
 
 // metrics (cheap, no locking on fast path except atomic increments if later added)
 type Stats struct {
@@ -77,8 +95,28 @@ func GetStats() Stats { stats.CodecName = active.Name(); return stats }
 // Init allows selecting alternative codec via env var. For now only stdlib exists.
 func Init() {
     // Placeholder: future HIGH_PERF_JSON=1 could load alternative implementation.
-    if os.Getenv("HIGH_PERF_JSON") == "1" {
-        // remain stdlib until alternative integrated
+    switch os.Getenv("HIGH_PERF_JSON") {
+    case "sonic":
+        active = sonicCodec{}
+    case "go-json", "gojson":
+        active = goJSONCodec{}
+    case "1": // temporary alias meaning "sonic" preferred
+        active = sonicCodec{}
+    default:
+        // stdlib
+    }
+}
+
+// SetCodec allows tests/benchmarks to switch codec programmatically.
+// Accepted names: "stdlib", "sonic", "go-json".
+func SetCodec(name string) {
+    switch name {
+    case "sonic":
+        active = sonicCodec{}
+    case "go-json", "gojson":
+        active = goJSONCodec{}
+    default:
+        active = stdlibCodec{}
     }
 }
 
