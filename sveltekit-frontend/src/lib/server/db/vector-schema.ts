@@ -11,7 +11,7 @@ import {
   real,
 } from "drizzle-orm/pg-core";
 import { vector } from "pgvector/drizzle-orm";
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 
 // Document embeddings for semantic search
 export const documentEmbeddings = pgTable(
@@ -33,14 +33,7 @@ export const documentEmbeddings = pgTable(
     chunkText: text("chunk_text").notNull(),
     embedding: vector("embedding", { dimensions: 768 }), // For nomic-embed-text
     metadata: jsonb("metadata")
-      .$type<{
-        pageNumber?: number;
-        section?: string;
-        highlighted?: boolean;
-        confidence?: number;
-        [key: string]: unknown;
-      }>()
-      .default({}),
+      .default(sql`'{}'::jsonb`),
     modelUsed: text("model_used").default("nomic-embed-text"),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
@@ -77,18 +70,7 @@ export const searchQueries = pgTable(
     searchType: text("search_type").notNull().default("semantic"), // 'semantic', 'keyword', 'hybrid'
     resultsCount: integer("results_count").default(0),
     results: jsonb("results")
-      .$type<{
-        items: Array<{
-          documentId: string;
-          documentType: string;
-          similarity: number;
-          snippet: string;
-          metadata?: unknown;
-        }>;
-        totalFound: number;
-        searchTime: number;
-      }>()
-      .default({ items: [], totalFound: 0, searchTime: 0 }),
+      .default(sql`'{"items": [], "totalFound": 0, "searchTime": 0}'::jsonb`),
     createdAt: timestamp("created_at").defaultNow(),
   },
   (table) => ({
@@ -118,14 +100,7 @@ export const aiModels = pgTable(
     embeddingDimensions: integer("embedding_dimensions"),
     contextLength: integer("context_length"),
     config: jsonb("config")
-      .$type<{
-        baseUrl?: string;
-        apiKey?: string;
-        temperature?: number;
-        maxTokens?: number;
-        [key: string]: unknown;
-      }>()
-      .default({}),
+      .default(sql`'{}'::jsonb`),
     isActive: integer("is_active").notNull().default(1),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),

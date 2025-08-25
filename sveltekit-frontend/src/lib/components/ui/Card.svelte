@@ -1,16 +1,19 @@
 <script lang="ts">
+	import type { Snippet } from 'svelte';
 	import { cn } from '$lib/utils';
 	
 	interface Props {
 		variant?: 'default' | 'interactive' | 'outline';
 		padding?: 'none' | 'sm' | 'md' | 'lg';
 		class?: string;
+		children?: Snippet;
 	}
 
 	let {
 		variant = 'default',
 		padding = 'md',
 		class: className = '',
+		children,
 		...restProps
 	}: Props = $props();
 
@@ -36,5 +39,5 @@
 </script>
 
 <div class={cardClass} {...restProps}>
-	<slot />
+	{@render children?.()}
 </div>

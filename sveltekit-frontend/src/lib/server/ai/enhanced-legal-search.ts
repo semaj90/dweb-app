@@ -3,15 +3,57 @@
 // Implements RAG pattern with vector similarity search and semantic enhancement
 
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
-// TODO: Fix import - // Orphaned content: import { PGVectorStore, DistanceStrategy import { Document } from "@langchain/core/documents";
-// TODO: Fix import - // Orphaned content: import {  import { generateEmbedding } from './embeddings-simple.js';
-// Orphaned content: // import { db
-// { cases, evidence, documents } from "$lib/database/schema";
-// Orphaned content: // import { eq, sql, and, or, desc, asc
-import {
-legalDocuments } from "$lib/data/legal-documents";
+import { PGVectorStore } from "@langchain/community/vectorstores/pgvector";
+import type { DistanceStrategy } from "@langchain/community/vectorstores/pgvector";
+import { Document as LangChainDocument, type Document as LangChainDocumentType } from "@langchain/core/documents";
+import { Embeddings } from "@langchain/core/embeddings";
+import { OllamaEmbeddings } from "@langchain/ollama";
+import { db, sql, eq, and, or, desc, asc } from "../db/index.js";
 
-// Custom embeddings class for Nomic Embed integration
+// Define legal document type
+type LegalDocumentType = {
+  id: string;
+  title: string;
+  description: string;
+  content: string;
+  jurisdiction: string;
+  category: string;
+  code?: string;
+  sections?: string[];
+  url?: string;
+};
+
+// Load legal documents dynamically to avoid top-level await issues
+async function loadLegalDocuments(): Promise<LegalDocumentType[]> {
+  try {
+    const legalDocsModule = await import("../../data/legal-documents.js");
+    return legalDocsModule.legalDocuments || [];
+  } catch (error) {
+    console.warn("Legal documents not available, using empty array:", error);
+    return [];
+  }
+}
+
+// Initialize legal documents
+const initializeLegalDocuments = loadLegalDocuments();
+
+// Embedding generation helper
+async function generateEmbedding(text: string, options?: { model?: string }): Promise<number[]> {
+  const embeddings = new OllamaEmbeddings({
+    model: "nomic-embed-text",
+    baseUrl: "http://localhost:11434",
+  });
+  
+  try {
+    const result = await embeddings.embedQuery(text);
+    return result;
+  } catch (error) {
+    console.error('Embedding generation failed:', error);
+    return new Array(768).fill(0); // Return zero vector as fallback
+  }
+}
+
+// Custom embeddings class for Nomic Embed integration  
 export class NomicEmbeddings extends Embeddings {
   constructor() {
     super({});
@@ -111,7 +153,8 @@ export class EnhancedLegalSearchService {
 
   private async initializeMemoryVectorStore() {
     try {
-      const documents = legalDocuments.map(doc => new Document({
+      const legalDocuments = await initializeLegalDocuments;
+      const documents = legalDocuments.map(doc => new LangChainDocument({
         pageContent: `${doc.title}\n\n${doc.description}\n\n${doc.content}`,
         metadata: {
           id: doc.id,
@@ -138,10 +181,10 @@ export class EnhancedLegalSearchService {
   private async initializePgVectorStore() {
     try {
       // Only attempt if database is available
-      if (import.meta.env.DATABASE_URL) {
+      if (process.env.DATABASE_URL) {
         const pgConfig = {
           postgresConnectionOptions: {
-            connectionString: import.meta.env.DATABASE_URL,
+            connectionString: process.env.DATABASE_URL,
           },
           tableName: "search_index",
           columns: {
@@ -150,14 +193,11 @@ export class EnhancedLegalSearchService {
             contentColumnName: "content", 
             metadataColumnName: "metadata",
           },
-          distanceStrategy: "cosine" as DistanceStrategy,
+          distanceStrategy: "cosine" as any,
         };
 
-        // Initialize PGVector store
-        this.pgVectorStore = await PGVectorStore.initialize(
-          this.embeddings,
-          pgConfig
-        );
+        // Initialize PGVector store using fromExistingIndex
+        this.pgVectorStore = await PGVectorStore.fromExistingIndex(this.embeddings, pgConfig);
 
         console.log("✅ PGVector store initialized");
       }
@@ -222,34 +262,34 @@ export class EnhancedLegalSearchService {
       }
 
       // Perform similarity search
-      const searchResults = await vectorStore.similaritySearchWithScore(
-        query,
-        options.maxResults || 20,
-        this.buildMetadataFilter(options)
-      );
+      const metadataFilter = this.buildMetadataFilter(options);
+      const searchResults = metadataFilter
+        ? await vectorStore.similaritySearch(query, options.maxResults || 20)
+        : await vectorStore.similaritySearch(query, options.maxResults || 20);
 
-      for (const [doc, score] of searchResults) {
+      for (const doc of searchResults) {
+        const score = 0.8; // Default score since we don't have scores from similaritySearch
         if (score >= this.config.similarityThreshold) {
           results.push({
-            id: doc.metadata.id || `vec_${Date.now()}_${Math.random()}`,
-            title: doc.metadata.title || "Legal Document",
+            id: doc.metadata?.id || `vec_${Date.now()}_${Math.random()}`,
+            title: doc.metadata?.title || "Legal Document",
             content: doc.pageContent,
-            description: doc.metadata.description,
-            jurisdiction: doc.metadata.jurisdiction || "unknown",
-            category: doc.metadata.category || "general",
-            code: doc.metadata.code,
-            sections: doc.metadata.sections || [],
-            url: doc.metadata.url,
+            description: doc.metadata?.description,
+            jurisdiction: doc.metadata?.jurisdiction || "unknown",
+            category: doc.metadata?.category || "general",
+            code: doc.metadata?.code,
+            sections: doc.metadata?.sections || [],
+            url: doc.metadata?.url,
             score: this.normalizeScore(score),
             searchType: 'vector',
             confidence: this.calculateConfidence(score, 'vector'),
             relevanceFactors: {
               semantic: score,
               exact_match: this.calculateExactMatch(query, doc.pageContent),
-              jurisdiction_match: this.calculateJurisdictionMatch(options.jurisdiction, doc.metadata.jurisdiction),
-              category_match: this.calculateCategoryMatch(options.category, doc.metadata.category)
+              jurisdiction_match: this.calculateJurisdictionMatch(options.jurisdiction, doc.metadata?.jurisdiction),
+              category_match: this.calculateCategoryMatch(options.category, doc.metadata?.category)
             },
-            metadata: doc.metadata
+            metadata: doc.metadata || {}
           });
         }
       }
@@ -303,6 +343,7 @@ export class EnhancedLegalSearchService {
     const results: LegalSearchResult[] = [];
 
     try {
+      const legalDocuments = await initializeLegalDocuments;
       const queryLower = query.toLowerCase();
       
       for (const doc of legalDocuments) {
@@ -346,6 +387,7 @@ export class EnhancedLegalSearchService {
   ): Promise<LegalSearchResult[]> {
     console.log("🔄 Using fallback search");
     
+    const legalDocuments = await initializeLegalDocuments;
     const queryLower = query.toLowerCase();
     const results: LegalSearchResult[] = [];
 

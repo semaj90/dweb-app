@@ -90,7 +90,7 @@ export interface TagPrediction {
 export class QdrantService {
   public client: QdrantClient;
   private isConnected = false;
-  private defaultVectorSize = parseInt(import.meta.env.VECTOR_DIM || import.meta.env.EMBEDDING_DIM || '768', 10);
+  private defaultVectorSize = parseInt(process.env.VECTOR_DIM || process.env.EMBEDDING_DIM || '768', 10);
 
   // Reactive stores for UI integration
   public connectionStatus$: Writable<'connected' | 'disconnected' | 'connecting' | 'error'> =

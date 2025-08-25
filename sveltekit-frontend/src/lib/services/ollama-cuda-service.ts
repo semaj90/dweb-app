@@ -1,4 +1,4 @@
-import stream from "stream";
+import * as stream from "stream";
 
 /**
  * Ollama CUDA-Optimized Service
@@ -70,7 +70,7 @@ class OllamaCudaService {
   private initialized = false;
 
   private constructor() {
-    this.baseUrl = import.meta.env.OLLAMA_BASE_URL || 'http://localhost:11434';
+    this.baseUrl = process.env.OLLAMA_BASE_URL || 'http://localhost:11434';
     this.cudaConfig = this.initializeCudaConfig();
     this.initializeOllama();
   }
@@ -84,12 +84,12 @@ class OllamaCudaService {
 
   private initializeCudaConfig(): CudaConfig {
     return {
-      enabled: import.meta.env.CUDA_ENABLED === 'true' || true,
-      deviceId: parseInt(import.meta.env.CUDA_DEVICE_ID || '0'),
-      memoryFraction: parseFloat(import.meta.env.CUDA_MEMORY_FRACTION || '0.8'),
-      enableTensorCores: import.meta.env.CUDA_TENSOR_CORES === 'true' || true,
-      cudaVersion: import.meta.env.CUDA_VERSION || '12.0',
-      computeCapability: import.meta.env.CUDA_COMPUTE_CAPABILITY || '8.6'
+      enabled: process.env.CUDA_ENABLED === 'true' || true,
+      deviceId: parseInt(process.env.CUDA_DEVICE_ID || '0'),
+      memoryFraction: parseFloat(process.env.CUDA_MEMORY_FRACTION || '0.8'),
+      enableTensorCores: process.env.CUDA_TENSOR_CORES === 'true' || true,
+      cudaVersion: process.env.CUDA_VERSION || '12.0',
+      computeCapability: process.env.CUDA_COMPUTE_CAPABILITY || '8.6'
     };
   }
 

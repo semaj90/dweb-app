@@ -1,12 +1,12 @@
-<!-- YoRHa Legal AI Dashboard - Complete Integration -->
+//-- YoRHa Legal AI Dashboard - Complete Integration
 <script lang="ts">
-  import { $derived } from 'svelte';
   import { onMount } from 'svelte';
   import YoRHaDataGrid from '$lib/components/yorha/YoRHaDataGrid.svelte';
   import YoRHaForm from '$lib/components/yorha/YoRHaForm.svelte';
   import YoRHaTerminal from '$lib/components/yorha/YoRHaTerminal.svelte';
   import YoRHaModal from '$lib/components/yorha/YoRHaModal.svelte';
   import YoRHaNotification from '$lib/components/yorha/YoRHaNotification.svelte';
+  import { documentsColumns, casesColumns, evidenceColumns, documentFormFields, caseFormFields, evidenceFormFields, debounce, withAbort } from '$lib/yorha/constants';
 
   // Domain interfaces
   interface RagAnalysis {
@@ -79,24 +79,24 @@
   let ragAnalysis: RagAnalysis | null = null;
   let ragRecommendations: RagRecommendation[] = [];
 
-  // Reactive selection based on activeTab (using $derived)
-  let currentData = $derived(activeTab === 'documents'
-    ? documentsData
-    : activeTab === 'cases'
-      ? casesData
-      : evidenceData);
+  // Reactive selection based on activeTab
+    $: currentData = activeTab === 'documents'
+      ? documentsData
+      : activeTab === 'cases'
+        ? casesData
+        : evidenceData;
 
-  let currentColumns = $derived(activeTab === 'documents'
-    ? documentsColumns
-    : activeTab === 'cases'
-      ? casesColumns
-      : evidenceColumns);
+    $: currentColumns = activeTab === 'documents'
+      ? documentsColumns
+      : activeTab === 'cases'
+        ? casesColumns
+        : evidenceColumns;
 
-  let currentFormFields = $derived(activeTab === 'documents'
-    ? documentFormFields
-    : activeTab === 'cases'
-      ? caseFormFields
-      : evidenceFormFields);
+    $: currentFormFields = activeTab === 'documents'
+      ? documentFormFields
+      : activeTab === 'cases'
+        ? caseFormFields
+        : evidenceFormFields;
 
   // Grid configurations (centralized constants)
   import { documentsColumns, casesColumns, evidenceColumns, documentFormFields, caseFormFields, evidenceFormFields, debounce, withAbort } from '$lib/yorha/constants';
@@ -470,31 +470,33 @@
           </div>
 
           <!-- Recommendations -->
-          {#if ragRecommendations.length > 0}
-            <div class="recommendations">
-    <YoRHaModal
-      open={modalOpen}
-      title={(modalType === 'create' ? 'Create' : 'Edit') + ' ' + activeTab.toUpperCase().slice(0, -1)}
-    >
-      <YoRHaForm
-        title={(modalType === 'create' ? 'Create New' : 'Edit') + ' ' + activeTab.toUpperCase().slice(0, -1)}
-        fields={currentFormFields}
-        submitLabel={modalType === 'create' ? 'Create' : 'Update'}
-        onsubmit={(data) => {
-                    {#each rec.actionItems as action}
-                      <span class="rec-action">{action}</span>
-                    {/each}
-                  </div>
-                  <div class="rec-meta">
-                    <span class="rec-time">Est. Time: {rec.estimatedTime}</span>
-                    <span class="rec-confidence">Confidence: {(rec.yorha_confidence * 100).toFixed(1)}%</span>
-                  </div>
+        {#if ragRecommendations.length > 0}
+          <div class="recommendations">
+            <h3 class="recommendations-title">RECOMMENDATIONS</h3>
+            {#each ragRecommendations as rec}
+              <div class="recommendation">
+                <div class="rec-header">
+                  <h4 class="rec-title">{rec.title}</h4>
+                  <span class={"rec-priority " + (rec.priority ? 'priority-' + rec.priority.toLowerCase() : '')}>
+                    {rec.priority}
+                  </span>
                 </div>
-              {/each}
-            </div>
-          {/if}
-        </section>
-      {/if}
+                <p class="rec-description">{rec.description}</p>
+                <div class="rec-actions">
+                  {#each rec.actionItems as action}
+                    <span class="rec-action">{action}</span>
+                  {/each}
+                </div>
+                <div class="rec-meta">
+                  {#if rec.estimatedTime}<span class="rec-time">Est. Time: {rec.estimatedTime}</span>{/if}
+                  {#if rec.yorha_confidence !== undefined}<span class="rec-confidence">Confidence: {(rec.yorha_confidence * 100).toFixed(1)}%</span>{/if}
+                </div>
+              </div>
+            {/each}
+          </div>
+        {/if}
+      </section>
+    {/if}
     </div>
 
     <!-- Terminal Panel -->
@@ -508,15 +510,13 @@
       </aside>
     {/if}
   </main>
-
-  <!-- Modal -->
   {#if modalOpen}
     <YoRHaModal
       open={modalOpen}
-      title="{modalType === 'create' ? 'Create' : 'Edit'} {activeTab.toUpperCase().slice(0, -1)}"
+      title={(modalType === 'create' ? 'Create' : 'Edit') + ' ' + activeTab.toUpperCase().slice(0, -1)}
     >
       <YoRHaForm
-        title="{modalType === 'create' ? 'Create New' : 'Edit'} {activeTab.toUpperCase().slice(0, -1)}"
+        title={(modalType === 'create' ? 'Create New' : 'Edit') + ' ' + activeTab.toUpperCase().slice(0, -1)}
         fields={currentFormFields}
         submitLabel={modalType === 'create' ? 'Create' : 'Update'}
         onsubmit={(data) => {
@@ -528,6 +528,8 @@
         }}
         oncancel={closeModal}
       />
+    </YoRHaModal>
+  {/if}
     </YoRHaModal>
   {/if}
 

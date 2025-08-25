@@ -11,6 +11,7 @@ import {
   boolean,
   index
 } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
 
 // Evidence processing sessions
 export const evidenceProcessTable = pgTable('evidence_process', {
@@ -104,7 +105,7 @@ export const evidenceTable = pgTable('evidence', {
   chain_of_custody: jsonb('chain_of_custody'),
   metadata: jsonb('metadata'),
   // Always present tags array for auto-tagging worker
-  tags: jsonb('tags').$type<string[]>().default([]).notNull(),
+  tags: jsonb('tags').default(sql`'[]'::jsonb`).notNull(),
   is_active: boolean('is_active').default(true)
 }, (table) => ({
   caseIdIdx: index('evidence_case_id_idx').on(table.case_id),

@@ -1,7 +1,7 @@
 
-// Use process.env instead of SvelteKit env for server-side code
-// { env } from "$env/dynamic/private";
-// TODO: Fix import - // Orphaned content: import {  export const qdrant = new QdrantClient({ url: import.meta.env.QDRANT_URL || "http://localhost:6333" });
+import { QdrantClient } from '@qdrant/js-client-rest';
+
+export const qdrant = new QdrantClient({ url: process.env.QDRANT_URL || "http://localhost:6333" });
 
 export const EVIDENCE_COLLECTION_NAME = "evidence_v1";
 
@@ -21,9 +21,10 @@ export async function initializeQdrantCollection() {
       await qdrant.createCollection(EVIDENCE_COLLECTION_NAME, {
         vectors: { size: 768, distance: "Cosine" },
       });
-      await qdrant.createPayloadIndex(EVIDENCE_COLLECTION_NAME, {
+      // Create payload index using the correct API
+      await qdrant.createFieldIndex(EVIDENCE_COLLECTION_NAME, {
         field_name: "tags",
-        field_schema: "keyword",
+        field_type: "keyword",
         wait: true,
       });
       console.log("Qdrant collection and payload index created successfully.");

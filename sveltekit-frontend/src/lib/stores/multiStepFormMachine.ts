@@ -4,7 +4,7 @@ import { z } from 'zod';
 
 // src/lib/stores/multiStepFormMachine.ts - XState v5 Multi-step Forms with Superforms & Zod
 import { setup, createActor, assign, fromPromise } from 'xstate';
-import { cases, evidence, criminals } from "../server/db/unified-schema";
+import { cases, evidence } from "../server/db/schema-unified";
 import { db } from "../server/db/drizzle";
 
 // Zod Validation Schemas

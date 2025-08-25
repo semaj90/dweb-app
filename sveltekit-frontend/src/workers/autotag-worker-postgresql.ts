@@ -339,8 +339,8 @@ export class PostgreSQLFirstWorker {
       .set({
         aiTags: autoTags,
         aiAnalysis: {
-          ...(evidenceItem.aiAnalysis || {}),
-          ...aiAnalysis,
+          ...(evidenceItem.aiAnalysis && typeof evidenceItem.aiAnalysis === 'object' ? evidenceItem.aiAnalysis : {}),
+          ...(aiAnalysis && typeof aiAnalysis === 'object' ? aiAnalysis : {}),
           autoTagged: true,
           taggedAt: new Date().toISOString(),
           worker: 'postgresql-first-worker',
@@ -706,7 +706,7 @@ export class PostgreSQLFirstWorker {
             documentType: result.document.documentType,
             content: result.embedding.content,
             metadata: {
-              ...(result.embedding.metadata || {}),
+              ...(result.embedding.metadata && typeof result.embedding.metadata === 'object' ? result.embedding.metadata : {}),
               processingStatus: result.document.processingStatus,
               fileSize: result.document.fileSize,
               contentType: result.document.contentType

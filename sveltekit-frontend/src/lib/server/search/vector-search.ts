@@ -2,7 +2,8 @@
 // Complete Vector Search Service - Production Ready
 // Combines PostgreSQL pgvector + Qdrant + Local caching + Loki.js + Fuse.js
 import { browser } from "$app/environment";
-// TODO: Fix import - // Orphaned content: import { db, isPostgreSQL import { ollamaService } from "$lib/server/services/OllamaService";
+import { db, isPostgreSQL } from "$lib/server/db/index.js";
+import { ollamaService } from "$lib/server/services/OllamaService";
 import {
   and,
   eq,

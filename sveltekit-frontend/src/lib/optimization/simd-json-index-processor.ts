@@ -491,7 +491,7 @@ export class SIMDJSONIndexProcessor {
   /**
    * Convert index entry to RAG document
    */
-  private convertToRAGDocument(entry: CopilotIndexEntry): RAGDocument {
+  private convertToRAGDocument(entry: CopilotIndexEntry): import('$lib/types/rag').RAGDocument {
     return {
       id: entry.id,
       title: entry.filePath.split('/').pop() || entry.id,
@@ -509,7 +509,7 @@ export class SIMDJSONIndexProcessor {
         tags: [entry.metadata.source, entry.metadata.priority],
       },
       version: '1.0',
-    };
+    } as import('$lib/types/rag').RAGDocument;
   }
 
   /**

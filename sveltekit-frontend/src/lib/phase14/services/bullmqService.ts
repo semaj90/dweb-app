@@ -8,6 +8,7 @@ const multiLayerCache = { invalidate: async (pattern: string) => ({ invalidated:
 
 import { db } from "$lib/server/db";
 import { eq } from 'drizzle-orm';
+import { documentEmbeddings } from "$lib/server/db/schema-unified";
 
 // Mock types for missing interfaces
 export interface DocumentProcessingOptions {
@@ -67,6 +68,7 @@ export interface JobResult {
 
 export class BullMQService {
   private redis: Redis;
+  private redisConfig: any;
   private queues: Map<string, Queue> = new Map();
   private workers: Map<string, Worker> = new Map();
   private queueEvents: Map<string, QueueEvents> = new Map();
@@ -81,10 +83,19 @@ export class BullMQService {
   } as const;
 
   constructor(redisUrl: string = 'redis://localhost:6379') {
-    this.redis = new Redis(redisUrl, {
+    this.redis = new Redis({
+      host: 'localhost',
+      port: 6379,
       maxRetriesPerRequest: 3,
       enableOfflineQueue: false
     });
+
+    // Redis connection config for BullMQ
+    this.redisConfig = {
+      host: 'localhost',
+      port: 6379,
+      maxRetriesPerRequest: 3
+    };
 
     this.initializeQueues();
     this.initializeWorkers();
@@ -96,7 +107,7 @@ export class BullMQService {
   private initializeQueues(): void {
     Object.values(BullMQService.QUEUES).forEach((queueName: any) => {
       const queue = new Queue(queueName, {
-        connection: this.redis,
+        connection: this.redisConfig,
         defaultJobOptions: {
           removeOnComplete: 100,
           removeOnFail: 50,
@@ -112,7 +123,7 @@ export class BullMQService {
 
       // Set up queue events
       const queueEvents = new QueueEvents(queueName, {
-        connection: this.redis
+        connection: this.redisConfig
       });
 
       this.queueEvents.set(queueName, queueEvents);
@@ -177,7 +188,7 @@ export class BullMQService {
     options: { concurrency: number }
   ): void {
     const worker = new Worker(queueName, processor, {
-      connection: this.redis,
+      connection: this.redisConfig,
       concurrency: options.concurrency
     });
 
@@ -358,11 +369,11 @@ export class BullMQService {
 
       // Store embedding in database based on type
       if (type === 'document') {
-        await db.insert(documentVectors).values({
+        await db.insert(documentEmbeddings).values({
           documentId: entityId,
-          chunkIndex: 0,
           content,
-          embedding,
+          embedding: embedding as any, // Vector type expects array
+          chunkIndex: 0,
           metadata: metadata || {}
         });
       }
@@ -587,7 +598,15 @@ export class BullMQService {
     );
 
     // Close Redis connection
-    await this.redis.quit();
+    try {
+      if ('disconnect' in this.redis) {
+        await (this.redis as any).disconnect();
+      } else if ('quit' in this.redis) {
+        await (this.redis as any).quit();
+      }
+    } catch (error) {
+      console.warn('Failed to close Redis connection:', error);
+    }
   }
 }
 

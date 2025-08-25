@@ -4,8 +4,8 @@ import postgres from "postgres";
 import { pgTable, serial, text, timestamp, jsonb, vector, real, uuid } from 'drizzle-orm/pg-core';
 
 // Database connection
-const connectionString = import.meta.env.DATABASE_URL || 
-  `postgresql://${import.meta.env.POSTGRES_USER || 'legal_admin'}:${import.meta.env.POSTGRES_PASSWORD || '123456'}@${import.meta.env.POSTGRES_HOST || 'localhost'}:${import.meta.env.POSTGRES_PORT || '5432'}/${import.meta.env.POSTGRES_DB || 'legal_ai_db'}`;
+const connectionString = process.env.DATABASE_URL || 
+  `postgresql://${process.env.POSTGRES_USER || 'legal_admin'}:${process.env.POSTGRES_PASSWORD || '123456'}@${process.env.POSTGRES_HOST || 'localhost'}:${process.env.POSTGRES_PORT || '5432'}/${process.env.POSTGRES_DB || 'legal_ai_db'}`;
 
 const sql = postgres(connectionString, {
   max: 10,

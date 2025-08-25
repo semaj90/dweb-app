@@ -20,7 +20,7 @@ class CacheService {
     this.initializeRedis();
   }
   private async initializeRedis() {
-    if (!import.meta.env.REDIS_URL) {
+    if (!process.env.REDIS_URL) {
       console.log("📝 Using memory cache (Redis not configured)");
       return;
     }
@@ -29,7 +29,7 @@ class CacheService {
       const { createClient } = await import("redis");
 
       this.redisClient = createClient({
-        url: import.meta.env.REDIS_URL,
+        url: process.env.REDIS_URL,
         socket: {
           connectTimeout: 5000,
           reconnectStrategy: (retries) => Math.min(retries * 50, 500),

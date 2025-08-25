@@ -8,7 +8,7 @@
  * Enhanced with Self-Organizing Maps (SOM) and multi-core worker orchestration
  */
 
-import Loki, { type Collection } from "lokijs";
+import Loki from "lokijs";
 import { writable, derived, type Readable } from "svelte/store";
 import { fabric } from "fabric";
 import { BrowserCacheManager } from "./browser-cache-manager";
@@ -90,9 +90,9 @@ export interface PerformanceMetrics {
 // Main Self-Organizing Neural Sprite Engine class
 export class NeuralSpriteEngine {
   private db: Loki;
-  private sprites: Collection<CanvasSprite>;
-  private activities: Collection<UserActivity>;
-  private sequences: Collection<AnimationSequence>;
+  private sprites: any;
+  private activities: any;
+  private sequences: any;
   private canvas: fabric.Canvas;
   private aiWorker?: Worker;
 

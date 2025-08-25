@@ -53,12 +53,11 @@ test.describe('Global Store and State Management', () => {
     
     // Wait for notification count to update
     await page.waitForFunction(
-      (selector, oldCount) => {
+      ([selector, oldCount]) => {
         const el = document.querySelector(selector);
         return el && el.textContent !== oldCount;
       },
-      '[data-testid="notification-badge"]',
-      initialCount
+      ['[data-testid="notification-badge"]', initialCount]
     );
     
     // Verify count increased
@@ -288,7 +287,7 @@ test.describe('Global Store and State Management', () => {
     
     // Perform tracked actions
     await page.goto('/dashboard/cases');
-    await page.click('[data-testid="case-item"]').first();
+    await page.locator('[data-testid="case-item"]').first().click();
     
     // Check analytics state
     await page.goto('/dashboard/analytics');

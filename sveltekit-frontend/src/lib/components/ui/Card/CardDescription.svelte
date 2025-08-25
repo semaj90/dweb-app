@@ -1,12 +1,15 @@
 <script lang="ts">
-
-
+  import type { Snippet } from 'svelte';
   import { cn } from "$lib/utils";
 
-  let className: string = "";
-  
+  interface Props {
+    class?: string;
+    children?: Snippet;
+  }
+
+  let { class: className = '', children }: Props = $props();
 </script>
 
-<p class={cn("text-sm text-muted-foreground", className)} >
-  <slot />
+<p class={cn("text-sm text-muted-foreground", className)}>
+  {@render children?.()}
 </p>

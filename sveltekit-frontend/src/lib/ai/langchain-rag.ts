@@ -2,7 +2,7 @@
 // LangChain.js RAG Implementation for Legal AI Platform
 // Advanced RAG with Ollama integration and legal domain specialization
 
-import type { Document } from "@langchain/core/documents";
+import type { Document as LangChainDocumentType } from "@langchain/core/documents";
 import { ChatPromptTemplate, PromptTemplate } from "@langchain/core/prompts";
 import { 
   RunnableMap,
@@ -14,7 +14,7 @@ import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 
 // Note: formatDocumentsAsString may need to be implemented locally
-const formatDocumentsAsString = (documents: Document[]) => {
+const formatDocumentsAsString = (documents: LangChainDocumentType[]) => {
   return documents.map(doc => doc.pageContent).join('\n\n');
 };
 
@@ -51,7 +51,7 @@ export interface RAGQueryOptions {
 
 export interface RAGResult {
   answer: string;
-  sourceDocuments: Document[];
+  sourceDocuments: LangChainDocumentType[];
   confidence: number;
   reasoning?: string;
   metadata: {
@@ -206,7 +206,7 @@ Only return the queries, one per line.`),
         metadataPayloadKey: "metadata",
         // Mock methods
         similaritySearch: async (query: string, k: number) => [],
-        addDocuments: async (docs: Document[]) => {}
+        addDocuments: async (docs: LangChainDocumentType[]) => {}
       } as QdrantVectorStore;
       console.log("✅ Legal RAG vector store initialized");
     } catch (error) {
@@ -490,7 +490,7 @@ Only return the queries, one per line.`),
    * Calculate confidence score based on retrieved documents
    */
   private calculateConfidence(
-    documents: Document[],
+    documents: LangChainDocumentType[],
     threshold: number
   ): number {
     if (documents.length === 0) return 0;
@@ -636,12 +636,12 @@ Only return the queries, one per line.`),
 
 // Export singleton instance with environment configuration
 export const legalRAG = new LegalRAGService({
-  qdrantUrl: import.meta.env.QDRANT_URL || "http://localhost:6333",
+  qdrantUrl: process.env.QDRANT_URL || "http://localhost:6333",
   ollamaGenerationUrl:
-    import.meta.env.OLLAMA_GENERATION_URL || "http://localhost:11434/v1",
+    process.env.OLLAMA_GENERATION_URL || "http://localhost:11434/v1",
   ollamaEmbeddingUrl:
-    import.meta.env.OLLAMA_EMBEDDING_URL || "http://localhost:11434/v1",
-  apiKey: import.meta.env.OLLAMA_API_KEY || "EMPTY",
+    process.env.OLLAMA_EMBEDDING_URL || "http://localhost:11434/v1",
+  apiKey: process.env.OLLAMA_API_KEY || "EMPTY",
   collectionName: "legal_documents",
   embeddingDimensions: 768,
 });

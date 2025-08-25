@@ -1,6 +1,6 @@
 
 import { writable, derived, get } from "svelte/store";
-import { advancedCache } from "$lib/caching/advanced-cache-manager.js";
+import { advancedCache } from "$lib/services/advanced-cache-manager";
 import { createMachine, assign, interpret } from 'xstate';
 import Loki from 'lokijs';
 import type { 

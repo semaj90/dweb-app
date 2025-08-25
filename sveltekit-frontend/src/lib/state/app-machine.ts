@@ -1,12 +1,12 @@
-import path from "path";
-import crypto from "crypto";
+import * as path from "path";
+import * as crypto from "crypto";
 
 /**
  * Global Application State Machine
  * Coordinates multiple state machines and manages global application state
  */
-import { createMachine, assign, fromPromise } from "xstate";
-// TODO: Fix import - // Orphaned content: import {  import type { ActorRefFrom } from 'xstate';
+import { createMachine, assign, fromPromise, type ActorRefFrom } from "xstate";
+import { legalCaseMachine } from './legal-case-machine.js';
 
 // Global application context
 export interface AppContext {

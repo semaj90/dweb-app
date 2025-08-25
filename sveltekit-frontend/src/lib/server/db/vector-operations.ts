@@ -1,7 +1,9 @@
 
 // Vector operations helper for pgvector integration
 import { db } from "./index.js";
-// TODO: Fix import - // Orphaned content: import { legalDocuments, userAiQueries, embeddingCache import { sql } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
+import { documentMetadata } from './schema-unified.js';
+import { userAiQueries, embeddingCache } from './additional-tables.js';
 
 // Interface for vector similarity search results
 interface SimilarityResult {
@@ -46,12 +48,12 @@ export async function searchSimilarDocuments(
 
     return results.map((row: any) => ({
       id: row.id,
-      content: row.content,
-      title: row.title,
-      similarity: parseFloat(row.similarity),
+      content: row.content || '',
+      title: row.title || '',
+      similarity: parseFloat(row.similarity || '0'),
       metadata: {
-        keywords: row.keywords,
-        topics: row.topics
+        keywords: Array.isArray(row.keywords) ? row.keywords : (row.keywords ? [row.keywords] : []),
+        topics: Array.isArray(row.topics) ? row.topics : (row.topics ? [row.topics] : [])
       }
     }));
   } catch (error) {
@@ -70,8 +72,7 @@ async function fallbackTextSearch(queryEmbedding: number[], limit: number): Prom
       id: legalDocuments.id,
       title: legalDocuments.title,
       content: legalDocuments.content,
-      keywords: legalDocuments.keywords,
-      topics: legalDocuments.topics,
+      metadata: legalDocuments.metadata,
     })
     .from(legalDocuments)
     .limit(limit);
@@ -82,8 +83,8 @@ async function fallbackTextSearch(queryEmbedding: number[], limit: number): Prom
     title: doc.title,
     similarity: 1 - (index * 0.1), // Fake similarity scores
     metadata: {
-      keywords: doc.keywords,
-      topics: doc.topics
+      keywords: (doc.metadata as any)?.keywords || [],
+      topics: (doc.metadata as any)?.topics || []
     }
   }));
 }
@@ -109,15 +110,6 @@ export async function storeAiQueryWithEmbedding(
     });
   } catch (error) {
     console.error('Failed to store AI query with embedding:', error);
-    // Store without embedding as fallback
-    await db.insert(userAiQueries).values({
-      userId,
-      caseId, 
-      query,
-      response,
-      metadata,
-      isSuccessful: true,
-    });
   }
 }
 
@@ -151,7 +143,7 @@ export async function getCachedEmbedding(textHash: string): Promise<number[] | n
       // Parse pgvector format back to array
       const vectorString = result[0].embedding;
       if (typeof vectorString === 'string') {
-        return JSON.parse(vectorString.replace(/^\[|\]$/g, '').split(',').map(n => parseFloat(n)));
+        return vectorString.replace(/^\[|\]$/g, '').split(',').map((n: string) => parseFloat(n));
       }
     }
     return null;

@@ -163,7 +163,7 @@ test.describe('Drizzle ORM Database Operations', () => {
       expect(doc).toHaveProperty('title');
       expect(doc).toHaveProperty('content');
       expect(doc).toHaveProperty('case_id');
-      expect(doc.case_id).toBe(testCaseId);
+      expect((doc as any).case_id).toBe(testCaseId);
     });
   });
 
@@ -341,9 +341,9 @@ test.describe('Drizzle ORM Database Operations', () => {
     const results = await queryResponse.json();
     
     expect(results.items.length).toBeGreaterThan(0);
-    const found = results.items.find((d: unknown) => d.id === document.id);
+    const found = results.items.find((d: unknown) => (d as any).id === document.id);
     expect(found).toBeDefined();
-    expect(found.metadata.tags).toContain('contract');
+    expect((found as any).metadata.tags).toContain('contract');
   });
 
   test('should handle database constraints', async ({ page }) => {

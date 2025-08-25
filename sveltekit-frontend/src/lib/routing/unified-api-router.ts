@@ -4,7 +4,8 @@
  * SvelteKit 2 + Multi-Protocol Support (REST/gRPC/QUIC/WebSocket)
  */
 
-import { binaryEncoder, type EncodingFormat } from '$lib/middleware/binary-encoding';
+// Define encoding format locally since middleware doesn't exist
+export type EncodingFormat = 'json' | 'msgpack' | 'protobuf' | 'binary' | 'cbor';
 import type { RequestEvent } from '@sveltejs/kit';
 import { json, error as svelteError } from '@sveltejs/kit';
 import { dev } from '$app/environment';

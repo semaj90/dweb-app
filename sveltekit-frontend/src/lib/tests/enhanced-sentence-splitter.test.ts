@@ -3,7 +3,7 @@
  * Validates legal abbreviation handling, fragment merging, and streaming support
  */
 
-import { describe, it, expect } from "vitest";
+/// <reference types="vitest" />
 // TODO: Fix import - EnhancedSentenceSplitter, splitSentencesEnhanced, createStreamingSplitter
 
 // Mock implementations for missing services

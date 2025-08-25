@@ -107,20 +107,11 @@ export const legalDocuments = pgTable("legal_documents", {
   summary: text("summary"),
   headnotes: text("headnotes"),
   embedding: vector("embedding", { dimensions: 768 }), // Nomic embed-text default dimension - pgvector enabled
-  keywords: jsonb("keywords").$type<string[]>().default([]),
-  topics: jsonb("topics").$type<string[]>().default([]),
-  parties: jsonb("parties")
-    .$type<{
-      plaintiff?: string;
-      defendant?: string;
-      petitioner?: string;
-      respondent?: string;
-    }>()
-    .default({}),
-  judges: jsonb("judges").$type<string[]>().default([]),
-  attorneys: jsonb("attorneys")
-    .$type<{ plaintiff?: string[]; defendant?: string[] }>()
-    .default({}),
+  keywords: jsonb("keywords").default(sql`'[]'::jsonb`),
+  topics: jsonb("topics").default(sql`'[]'::jsonb`),
+  parties: jsonb("parties").default(sql`'{}'::jsonb`),
+  judges: jsonb("judges").default(sql`'[]'::jsonb`),
+  attorneys: jsonb("attorneys").default(sql`'{}'::jsonb`),
   outcome: varchar("outcome", { length: 100 }),
   precedentialValue: varchar("precedential_value", { length: 50 }), // binding, persuasive, non_precedential
   url: text("url"),
@@ -183,9 +174,9 @@ export const savedReports = pgTable("saved_reports", {
   status: varchar("status", { length: 20 }).default("draft"), // draft, final, archived
   version: integer("version").default(1),
   wordCount: integer("word_count"),
-  tags: jsonb("tags").$type<string[]>().default([]),
+  tags: jsonb("tags").default(sql`'[]'::jsonb`),
   metadata: jsonb("metadata").default({}),
-  sharedWith: jsonb("shared_with").$type<string[]>().default([]),
+  sharedWith: jsonb("shared_with").default(sql`'[]'::jsonb`),
   lastExported: timestamp("last_exported", { mode: "date" }),
   createdBy: uuid("created_by").references(() => users.id),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
@@ -217,7 +208,7 @@ export const legalResearch = pgTable("legal_research", {
   id: uuid("id").primaryKey().defaultRandom(),
   caseId: uuid("case_id").references(() => cases.id, { onDelete: "cascade" }),
   query: text("query").notNull(),
-  searchTerms: jsonb("search_terms").$type<string[]>().default([]),
+  searchTerms: jsonb("search_terms").default(sql`'[]'::jsonb`),
   jurisdiction: varchar("jurisdiction", { length: 100 }),
   dateRange: jsonb("date_range"), // {from: date, to: date}
   courtLevel: varchar("court_level", { length: 50 }), // supreme, appellate, trial
@@ -987,8 +978,8 @@ export const vectorOutbox = pgTable('vector_outbox', {
   ownerType: text('owner_type').notNull(), // 'evidence' | 'report' | 'case' | 'document'
   ownerId: uuid('owner_id').notNull(),
   event: text('event').notNull(), // 'upsert' | 'delete' | 'reembed'
-  vector: jsonb('vector').$type<number[] | null>(), // null initially; CUDA worker fills it later
-  payload: jsonb('payload').$type<Record<string, any> | null>(),
+  vector: jsonb('vector'), // null initially; CUDA worker fills it later
+  payload: jsonb('payload'),
   attempts: integer('attempts').default(0),
   processedAt: timestamp('processed_at', { mode: "date" }),
   createdAt: timestamp('created_at', { mode: "date" }).defaultNow().notNull(),

@@ -12,7 +12,7 @@
 -->
 
 <script lang="ts">
-  import { createDialog, melt } from '@melt-ui/svelte';
+  import { createDialog, melt } from 'melt';
   import { fade, fly, scale } from 'svelte/transition';
   import { cubicInOut } from 'svelte/easing';
   import { onMount } from 'svelte';

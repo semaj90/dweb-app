@@ -64,10 +64,10 @@ export interface RerankingResult {
 
 export class EnhancedNeo4jReranker {
   private qdrantService = new QdrantService({
-    url: import.meta.env.QDRANT_URL || "http://localhost:6333",
+    url: process.env.QDRANT_URL || "http://localhost:6333",
     collectionName: "legal_documents",
     vectorSize: 768,
-    apiKey: import.meta.env.QDRANT_API_KEY
+    apiKey: process.env.QDRANT_API_KEY
   });
   private somRAG = createSOMRAGSystem();
   private config: EnhancedRerankerConfig;

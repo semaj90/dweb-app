@@ -3,7 +3,7 @@
 
 import { json, type RequestEvent } from '@sveltejs/kit';
 import { z } from 'zod';
-import type { ApiResponse, ApiError } from '$lib/types/api';
+import type { ApiResponse, ApiError } from '../../types/api.js';
 
 // Standard response interface
 export interface StandardApiResponse<T = any> {
@@ -150,7 +150,7 @@ export async function withApiHandler<T>(
   const requestId = generateRequestId();
   
   // Add request ID to locals for tracking
-  event.locals.requestId = requestId;
+  (event.locals as any).requestId = requestId;
   
   try {
     const result = await handler(event);

@@ -6,11 +6,14 @@ import crypto from "crypto";
 // (Header line previously corrupted; cleaned.)
 
 import { Ollama } from "@langchain/community/llms/ollama";
+import { OllamaEmbeddings } from "@langchain/community/embeddings/ollama";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence, RunnablePassthrough } from "@langchain/core/runnables";
 import { StringOutputParser } from '@langchain/core/output_parsers';
+import { type Document as LangChainDocumentType, Document as LangChainDocument } from "@langchain/core/documents";
 import postgres from "postgres";
+import { drizzle } from "drizzle-orm/postgres-js";
 
 // Import schema directly (same path used across project). If it fails at runtime we degrade gracefully.
 
@@ -18,28 +21,28 @@ import postgres from "postgres";
 const EMBEDDING_MODEL = 'nomic-embed-text:latest';
 const EMBEDDING_DIMENSIONS = 768;
 const LLM_MODEL = 'gemma3-legal:latest';
-const OLLAMA_BASE_URL = import.meta.env.OLLAMA_URL || 'http://localhost:11434';
+const OLLAMA_BASE_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
 
 // Initialize PostgreSQL connection
 const sql = postgres({
-  host: import.meta.env.DATABASE_HOST || 'localhost',
-  port: parseInt(import.meta.env.DATABASE_PORT || '5432'),
-  database: import.meta.env.DATABASE_NAME || 'legal_ai_db',
-  username: import.meta.env.DATABASE_USER || 'legal_admin',
-  password: import.meta.env.DATABASE_PASSWORD || '123456',
+  host: process.env.DATABASE_HOST || 'localhost',
+  port: parseInt(process.env.DATABASE_PORT || '5432'),
+  database: process.env.DATABASE_NAME || 'legal_ai_db',
+  username: process.env.DATABASE_USER || 'legal_admin',
+  password: process.env.DATABASE_PASSWORD || '123456',
   max: 20,
   idle_timeout: 20,
   prepare: true,
-  ssl: import.meta.env.NODE_ENV === 'production' ? 'require' : false,
+  ssl: process.env.NODE_ENV === 'production' ? 'require' : false,
 });
 
 const db = drizzle(sql, { schema });
 
 // Initialize Redis for caching
 const redis = new Redis({
-  host: import.meta.env.REDIS_HOST || 'localhost',
-  port: parseInt(import.meta.env.REDIS_PORT || '6379'),
-  db: parseInt(import.meta.env.REDIS_DB || '0'),
+  host: process.env.REDIS_HOST || 'localhost',
+  port: parseInt(process.env.REDIS_PORT || '6379'),
+  db: parseInt(process.env.REDIS_DB || '0'),
   maxRetriesPerRequest: 3,
   enableReadyCheck: true,
   lazyConnect: false,
@@ -114,7 +117,7 @@ export class LegalRAGPipeline {
     console.log('[RAG] Database connected:', testResult[0].test === 1);
 
     // Test Redis connection
-    await redis.ping();
+    await redis.set('health-check', 'ok', 'EX', 1);
     console.log('[RAG] Redis connected');
 
     // Test Ollama connection
@@ -237,7 +240,7 @@ export class LegalRAGPipeline {
     documentType?: string;
     limit?: number;
     threshold?: number;
-  }): Promise<Document[]> {
+  }): Promise<LangChainDocumentType[]> {
     const { query, caseId, documentType, limit = 10, threshold = 0.5 } = params;
 
     try {
@@ -309,7 +312,7 @@ export class LegalRAGPipeline {
 
       return sortedResults.map(
         (r) =>
-          new Document({
+          new LangChainDocument({
             pageContent: r.content,
             metadata: {
               ...r.metadata,
@@ -568,7 +571,7 @@ Analysis:
     const embedding = await embeddings.embedQuery(text);
 
     // Cache for 24 hours
-    await redis.setex(cacheKey, 86400, JSON.stringify(embedding));
+    await redis.set(cacheKey, JSON.stringify(embedding), 'EX', 86400);
 
     return embedding;
   }
@@ -658,9 +661,9 @@ Return ONLY a JSON array of tags with confidence scores (0-1):
     }
   }
 
-  private async analyzeAnswer(answer: string, sources: Document[]) {
+  private async analyzeAnswer(answer: string, sources: LangChainDocumentType[]) {
     // Simple confidence calculation based on source relevance
-    const avgScore = sources.reduce((sum, doc) => sum + doc.metadata.score, 0) / sources.length;
+    const avgScore = sources.reduce((sum, doc) => sum + (doc.metadata?.score || 0), 0) / sources.length;
     const confidence = Math.min(0.95, avgScore);
 
     // Extract key points (simplified - could use LLM for better extraction)

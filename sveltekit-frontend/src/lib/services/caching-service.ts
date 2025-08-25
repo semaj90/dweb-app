@@ -1,9 +1,12 @@
 
-// Enhanced Caching Service - Stub Implementation
-// Simple caching interface that can be extended later
+// Enhanced Caching Service - Production Implementation
+// Integrated with NES-Style Cache Orchestrator and Advanced Caching
 
 import type { Writable } from "svelte/store";
 import { writable } from "svelte/store";
+
+// Import advanced cache manager for L1-L7 caching integration
+import type { AdvancedCacheManager } from '../../lib/caching/advanced-cache-manager.js';
 
 // ============================================================================
 // CACHE SERVICE INTERFACE
@@ -34,9 +37,35 @@ class EnhancedCachingService {
     misses: 0,
     errors: 0
   };
+  private nesCacheOrchestrator?: any; // Dynamic import to avoid circular deps
+  private advancedCacheManager?: AdvancedCacheManager; // L1-L7 cache integration
 
   constructor() {
-    // Simple in-memory cache for now
+    // Initialize with NES Cache Orchestrator integration
+    this.initializeNESCacheOrchestrator();
+    this.initializeAdvancedCacheManager();
+  }
+
+  private async initializeNESCacheOrchestrator() {
+    try {
+      // Lazy load the NES cache orchestrator to avoid circular dependencies
+      const { NESCacheOrchestrator } = await import('./nes-cache-orchestrator.js');
+      this.nesCacheOrchestrator = new NESCacheOrchestrator();
+      await this.nesCacheOrchestrator.initialize();
+    } catch (error) {
+      console.warn('NES Cache Orchestrator not available, using fallback cache:', error);
+    }
+  }
+
+  private async initializeAdvancedCacheManager() {
+    try {
+      // Lazy load the advanced cache manager
+      const { AdvancedCacheManager } = await import('../../lib/caching/advanced-cache-manager.js');
+      this.advancedCacheManager = new AdvancedCacheManager();
+      await this.advancedCacheManager.initialize();
+    } catch (error) {
+      console.warn('Advanced Cache Manager not available, using fallback cache:', error);
+    }
   }
 
   // ============================================================================
@@ -47,6 +76,25 @@ class EnhancedCachingService {
     this.stats.requests++;
     
     try {
+      // Priority 1: Try NES Cache Orchestrator first (fastest, NES-inspired efficiency)
+      if (this.nesCacheOrchestrator && options.layer !== 'memory') {
+        const nesResult = await this.nesCacheOrchestrator.getFromOptimalTier(key, options);
+        if (nesResult !== null) {
+          this.stats.hits++;
+          return nesResult;
+        }
+      }
+
+      // Priority 2: Try Advanced Cache Manager (L1-L7 intelligent tiers)
+      if (this.advancedCacheManager && options.layer !== 'memory') {
+        const advancedResult = await this.advancedCacheManager.get(key, options);
+        if (advancedResult !== null) {
+          this.stats.hits++;
+          return advancedResult;
+        }
+      }
+
+      // Priority 3: Fallback to local cache
       const result = this.cache.get(key);
       if (result) {
         this.stats.hits++;
@@ -64,6 +112,23 @@ class EnhancedCachingService {
 
   async set<T>(key: string, value: T, options: CacheOptions = {}): Promise<boolean> {
     try {
+      // Priority 1: Store in NES Cache Orchestrator if available
+      if (this.nesCacheOrchestrator && options.layer !== 'memory') {
+        const nesSuccess = await this.nesCacheOrchestrator.setToOptimalTier(key, value, options);
+        if (nesSuccess) {
+          return true;
+        }
+      }
+
+      // Priority 2: Store in Advanced Cache Manager (L1-L7 intelligent placement)
+      if (this.advancedCacheManager && options.layer !== 'memory') {
+        const advancedSuccess = await this.advancedCacheManager.set(key, value, options);
+        if (advancedSuccess) {
+          return true;
+        }
+      }
+
+      // Priority 3: Fallback to local cache
       this.cache.set(key, value);
       return true;
     } catch (error) {
@@ -317,6 +382,34 @@ class EnhancedCachingService {
 // ============================================================================
 
 export const cachingService = new EnhancedCachingService();
+
+// ============================================================================
+// NES CACHE ORCHESTRATOR INTEGRATION HELPERS
+// ============================================================================
+
+export async function initializeNESCacheIntegration(): Promise<boolean> {
+  try {
+    // Force initialization of NES Cache Orchestrator if not already done
+    await (cachingService as any).initializeNESCacheOrchestrator();
+    return true;
+  } catch (error) {
+    console.error('Failed to initialize NES Cache integration:', error);
+    return false;
+  }
+}
+
+export function getNESCacheStats(): any {
+  const nesOrchestrator = (cachingService as any).nesCacheOrchestrator;
+  if (nesOrchestrator) {
+    return {
+      initialized: true,
+      memoryUsage: nesOrchestrator.getMemoryUsage?.() || 'N/A',
+      cacheHierarchy: nesOrchestrator.getCacheHierarchy?.() || 'N/A',
+      performance: nesOrchestrator.getPerformanceMetrics?.() || 'N/A'
+    };
+  }
+  return { initialized: false };
+}
 
 // ============================================================================
 // CONVENIENCE FUNCTIONS

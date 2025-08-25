@@ -1,6 +1,7 @@
 @import './lib/styles/golden-ratio-utilities.css';
+@import './styles/nes-legal-utilities.css';
 
-/* Golden Ratio CSS Utilities */
+/* Golden Ratio & NES-Legal CSS Utilities */
 
 @tailwind base;
 @tailwind components;

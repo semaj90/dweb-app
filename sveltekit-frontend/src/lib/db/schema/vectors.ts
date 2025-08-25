@@ -129,15 +129,15 @@ import { documents, cases, evidence, users } from "../schema";
 // Helper functions for vector operations
 export const vectorOperations = {
   // Calculate cosine similarity
-  cosineSimilarity: (embedding1: typeof sql.placeholder, embedding2: typeof sql.placeholder) => 
+  cosineSimilarity: (embedding1: any, embedding2: any) => 
     sql`1 - (${embedding1} <=> ${embedding2})`,
   
   // Find nearest neighbors
-  nearestNeighbors: (table: any, embedding: typeof sql.placeholder, limit: number = 10) =>
+  nearestNeighbors: (table: any, embedding: any, limit: number = 10) =>
     sql`SELECT * FROM ${table} ORDER BY embedding <=> ${embedding} LIMIT ${limit}`,
   
   // Hybrid search combining vector and keyword search
-  hybridSearch: (vectorScore: typeof sql.placeholder, textScore: typeof sql.placeholder, vectorWeight: number = 0.7) =>
+  hybridSearch: (vectorScore: any, textScore: any, vectorWeight: number = 0.7) =>
     sql`(${vectorScore} * ${vectorWeight} + ${textScore} * ${1 - vectorWeight})`,
 };
 

@@ -22,7 +22,7 @@ const requestMetrics = {
   lastRequestTime: Date.now()
 };
 
-// Initialize all services
+// Initialize all services with graceful fallback
 async function initializeServices(): Promise<void> {
   if (servicesInitialized) return;
   
@@ -32,33 +32,38 @@ async function initializeServices(): Promise<void> {
   }
 
   initializationPromise = (async () => {
-    console.log('🚀 Initializing full-stack services...');
+    console.log('🚀 Initializing optional services...');
     
-    try {
-      // Initialize services concurrently
-      const initResults = await Promise.allSettled([
+    // Initialize services with timeout and graceful failure handling
+    const initResults = await Promise.allSettled([
+      Promise.race([
         redis.connect(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Redis timeout')), 2000))
+      ]),
+      Promise.race([
         minioService.initialize(),
-        rabbitmqService.connect()
-      ]);
+        new Promise((_, reject) => setTimeout(() => reject(new Error('MinIO timeout')), 2000))
+      ]),
+      Promise.race([
+        rabbitmqService.connect(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('RabbitMQ timeout')), 2000))
+      ])
+    ]);
 
-      const services = ['Redis', 'MinIO', 'RabbitMQ'];
-      initResults.forEach((result, index) => {
-        if (result.status === 'fulfilled' && result.value) {
-          console.log(`✅ ${services[index]} initialized successfully`);
-        } else {
-          console.warn(`⚠️ ${services[index]} initialization failed:`, 
-            result.status === 'rejected' ? result.reason : 'Unknown error');
-        }
-      });
+    const services = ['Redis', 'MinIO', 'RabbitMQ'];
+    let successCount = 0;
+    
+    initResults.forEach((result, index) => {
+      if (result.status === 'fulfilled' && result.value) {
+        console.log(`✅ ${services[index]} connected successfully`);
+        successCount++;
+      } else {
+        console.log(`ℹ️  ${services[index]} not available - running in degraded mode`);
+      }
+    });
 
-      servicesInitialized = true;
-      console.log('✅ All services initialization completed');
-      
-    } catch (error) {
-      console.error('❌ Service initialization error:', error);
-      servicesInitialized = false;
-    }
+    servicesInitialized = true;
+    console.log(`✅ Service initialization completed (${successCount}/3 services available)`);
   })();
 
   await initializationPromise;
@@ -72,7 +77,7 @@ const serviceHealthHandle: Handle = async ({ event, resolve }) => {
   }
 
   // Inject service status into locals
-  event.locals.services = {
+  (event.locals as any).services = {
     redis: redis.getConnectionStatus() === 'connected',
     workflows: workflowOrchestrator.getActiveWorkflowsCount(),
     initialized: servicesInitialized
@@ -92,8 +97,8 @@ const loggingHandle: Handle = async ({ event, resolve }) => {
   const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   
   // Inject request metadata
-  event.locals.requestId = requestId;
-  event.locals.startTime = startTime;
+  (event.locals as any).requestId = requestId;
+  (event.locals as any).startTime = startTime;
 
   console.log(`🌐 [${new Date().toISOString()}] ${method} ${new URL(event.request.url).pathname} - ${ip} - ${requestId}`);
 
@@ -146,7 +151,7 @@ const securityHandle: Handle = async ({ event, resolve }) => {
       // Inject security headers and service status into HTML
       return html.replace(
         '<html',
-        `<html data-services="${servicesInitialized ? 'ready' : 'initializing'}" data-request-id="${event.locals.requestId}"`
+        `<html data-services="${servicesInitialized ? 'ready' : 'initializing'}" data-request-id="${(event.locals as any).requestId}"`
       );
     }
   });
@@ -193,8 +198,8 @@ const sessionHandle: Handle = async ({ event, resolve }) => {
     try {
       const sessionData = await redis.getSession(sessionId);
       if (sessionData) {
-        event.locals.session = sessionData;
-        event.locals.user = {
+        (event.locals as any).session = sessionData;
+        (event.locals as any).user = {
           id: sessionData.userId,
           email: sessionData.email || '',
           name: sessionData.name || null,
@@ -220,7 +225,7 @@ const enhancedErrorHandler: HandleServerError = ({ error, event, status, message
     url: event?.url?.pathname,
     method: event?.request?.method,
     userAgent: event?.request?.headers?.get('user-agent'),
-    requestId: event?.locals?.requestId,
+    requestId: (event?.locals as any)?.requestId,
     status,
     message
   });
@@ -245,8 +250,8 @@ const customFetch: HandleFetch = async ({ request, fetch, event }) => {
   // Inject request metadata for internal service calls
   if (request.url.includes('localhost')) {
     const headers = new Headers(request.headers);
-    headers.set('X-Request-ID', event.locals.requestId || 'unknown');
-    headers.set('X-User-ID', event.locals.user?.id?.toString() || 'anonymous');
+    headers.set('X-Request-ID', (event.locals as any).requestId || 'unknown');
+    headers.set('X-User-ID', (event.locals as any).user?.id?.toString() || 'anonymous');
     headers.set('X-Session-ID', event.cookies.get('session_id') || 'none');
     
     request = new Request(request, { headers });

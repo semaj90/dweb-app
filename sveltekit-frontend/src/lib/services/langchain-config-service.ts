@@ -177,7 +177,7 @@ class LangChainConfigService {
   private async initializeModels(): Promise<void> {
     // Initialize primary Ollama model
     const ollamaModel = new ChatOllama({
-      baseUrl: import.meta.env.OLLAMA_BASE_URL || 'http://localhost:11434',
+      baseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
       model: this.config.modelName,
       temperature: this.config.temperature,
       streaming: this.config.streaming,
@@ -194,7 +194,7 @@ class LangChainConfigService {
 
     // Initialize specialized models for different tasks
     const legalModel = new ChatOllama({
-      baseUrl: import.meta.env.OLLAMA_BASE_URL || 'http://localhost:11434',
+      baseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
       model: 'gemma2:9b',
       temperature: 0.3, // More deterministic for legal analysis
       numCtx: 65536, // Large context for legal documents
@@ -205,7 +205,7 @@ class LangChainConfigService {
 
     // Initialize embedding model
     const embeddingModel = new OllamaEmbeddings({
-      baseUrl: import.meta.env.OLLAMA_BASE_URL || 'http://localhost:11434',
+      baseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
       model: 'nomic-embed-text:latest',
       requestOptions: {
         numGpu: 1,

@@ -575,11 +575,11 @@ export const DEFAULT_CONFIG: ServiceEndpoints = {
 // =====================================
 
 export const RUNTIME_ENV = {
-  isDevelopment: import.meta.env.NODE_ENV === "development",
-  isProduction: import.meta.env.NODE_ENV === "production",
+  isDevelopment: process.env.NODE_ENV === "development",
+  isProduction: process.env.NODE_ENV === "production",
   isBrowser: typeof window !== "undefined",
   isServer: typeof window === "undefined",
-  isTest: import.meta.env.NODE_ENV === "test",
+  isTest: process.env.NODE_ENV === "test",
 } as const;
 
 export default {

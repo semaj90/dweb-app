@@ -119,7 +119,7 @@ test.describe('System Health and Logging', () => {
     
     // Find login error log
     const loginError = logs.entries.find((log: unknown) => 
-      log.message.includes('login') || log.message.includes('authentication')
+      (log as any).message?.includes('login') || (log as any).message?.includes('authentication')
     );
     
     expect(loginError).toBeDefined();
@@ -246,7 +246,7 @@ test.describe('System Health and Logging', () => {
     
     // Perform some actions
     await page.goto('/dashboard/cases');
-    await page.click('[data-testid="case-item"]').first().catch(() => {});
+    await page.locator('[data-testid="case-item"]').first().click().catch(() => {});
     await page.goto('/dashboard/documents');
     
     // Check activity logs

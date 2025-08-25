@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ComponentProps } from 'svelte';
+	import type { ComponentProps, Snippet } from 'svelte';
 	import { cva, type VariantProps } from 'class-variance-authority';
 	import { cn } from '$lib/utils';
 	// import { Button as ButtonPrimitive } from 'bits-ui';
@@ -18,25 +18,30 @@
 	import type { UIJsonSSRConfig, ButtonAnalyticsEvent } from '$lib/types/ui-json-ssr';
 	
 	const buttonVariants = cva(
-		'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none',
+		'inline-flex items-center justify-center font-medium transition-all duration-200 focus-visible:outline-none nes-focus disabled:opacity-50 disabled:pointer-events-none',
 		{
 			variants: {
 				variant: {
-					default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-					destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-					outline: 'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
-					secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-					ghost: 'hover:bg-accent hover:text-accent-foreground',
-					link: 'text-primary underline-offset-4 hover:underline',
-					legal: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
-					evidence: 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500',
-					case: 'bg-purple-600 text-white hover:bg-purple-700 focus:ring-purple-500'
+					default: 'btn-nes-primary',
+					destructive: 'btn-nes-danger',
+					outline: 'border-2 border-gray-400 bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800',
+					secondary: 'btn-nes-secondary',
+					ghost: 'hover:bg-gray-100 dark:hover:bg-gray-800 rounded-none',
+					link: 'text-blue-500 underline-offset-4 hover:underline hover:text-blue-600',
+					legal: 'nes-legal-priority-medium yorha-3d-button',
+					evidence: 'nes-legal-priority-critical yorha-3d-button',
+					case: 'nes-legal-priority-high yorha-3d-button',
+					success: 'btn-nes-success',
+					yorha: 'yorha-3d-button bg-black/80 text-yellow-400 border-2 border-yellow-400',
+					neural: 'neural-sprite-active bg-gradient-to-r from-purple-600 to-blue-600 text-white border-2 border-purple-400'
 				},
 				size: {
 					default: 'h-10 px-4 py-2',
 					sm: 'h-9 rounded-md px-3',
 					lg: 'h-11 rounded-md px-8',
-					icon: 'h-10 w-10',
+					icon: 'h-8 w-8',
+				icon_sm: 'h-6 w-6',
+				icon_lg: 'h-12 w-12',
 					xs: 'h-8 rounded px-2 text-xs'
 				}
 			},
@@ -57,6 +62,8 @@
 		loading?: boolean;
 		loadingText?: string;
 		class?: string;
+		children?: Snippet;
+		onclick?: (event: MouseEvent) => void;
 		
 		// Enhanced modular properties
 		id?: string;
@@ -81,6 +88,8 @@
 		loading = false,
 		loadingText = 'Loading...',
 		class: className = '',
+		children,
+		onclick,
 		
 		// Enhanced modular properties
 		id = crypto.randomUUID(),
@@ -138,6 +147,11 @@
 		}
 		
 		dispatch('click', analyticsEvent);
+		
+		// Call the onclick prop if provided
+		if (onclick) {
+			onclick(event);
+		}
 	}
 	
 	// Register with searchable index on mount
@@ -190,7 +204,7 @@
 			</svg>
 			{loadingText}
 		{:else}
-			<slot />
+			{@render children?.()}
 		{/if}
 	</a>
 {:else}
@@ -199,7 +213,7 @@
 		disabled={isDisabled}
 		class={buttonClass}
 		data-testid="button"
-		on:click={handleClick}
+		onclick={handleClick}
 		{...restProps}
 	>
 		{#if loading}
@@ -226,7 +240,7 @@
 			</svg>
 			{loadingText}
 		{:else}
-			<slot />
+			{@render children?.()}
 		{/if}
 	</button>
 {/if}

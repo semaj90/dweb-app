@@ -54,7 +54,7 @@ class FrontendRAGPipeline {
 
   private initializeLoki() {
     this.lokiDb = new Loki('frontend-rag.db', {
-      adapter: browser ? new Loki.LokiMemoryAdapter() : undefined,
+      adapter: browser ? new (Loki as any).LokiMemoryAdapter() : undefined,
       autoload: true,
       autoloadCallback: () => {
         this.semanticCollection = this.lokiDb.getCollection('semantic_chunks');

@@ -16,7 +16,7 @@ const errorHandler = {
   system: (message: string, data?: unknown) => console.error(`[SYSTEM] ${message}`, data),
   analysis: (message: string, data?: unknown) => console.error(`[ANALYSIS] ${message}`, data),
 };
-import type { Document } from "@langchain/core/documents";
+import type { Document as LangChainDocumentType } from "@langchain/core/documents";
 import { resolveLibraryId, getLibraryDocs } from '$lib/mcp-context72-get-library-docs';
 // import { copilotOrchestrator } from "$lib/utils/mcp-helpers";
 // Mock copilot orchestrator function
@@ -190,7 +190,7 @@ export class EnhancedIngestionPipeline {
       url: config.qdrantUrl || "http://localhost:6333",
     });
     this.pgPool = new Pool({
-      connectionString: config.pgConnectionString || import.meta.env.DATABASE_URL,
+      connectionString: config.pgConnectionString || process.env.DATABASE_URL,
     });
     this.redisClient = createClient({
       url: config.redisUrl || "redis://localhost:6379",

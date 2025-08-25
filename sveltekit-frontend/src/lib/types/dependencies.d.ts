@@ -247,11 +247,12 @@ declare module 'lokijs' {
   }
 
   export interface LokiMemoryAdapter {
-    new (): any;
     loadDatabase(dbname: string, callback: (data: string | null) => void): void;
     saveDatabase(dbname: string, dbstring: string, callback: (err?: Error) => void): void;
     deleteDatabase(dbname: string, callback: (err?: Error) => void): void;
   }
+  
+  export const LokiMemoryAdapter: new () => LokiMemoryAdapter;
 
   export interface LokiFsAdapter {
     new (): any;

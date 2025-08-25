@@ -78,7 +78,7 @@ async function extractDocumentStructure(text: string): Promise<any> {
 
   for (const [key, pattern] of Object.entries(patterns)) {
     const matches = Array.from(text.matchAll(pattern as RegExp));
-    extracted[key as keyof typeof extracted] = matches.map(match => match[1] || match[0]).slice(0, 10);
+    (extracted as any)[key] = matches.map(match => match[1] || match[0]).slice(0, 10);
   }
 
   return extracted;

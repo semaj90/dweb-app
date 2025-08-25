@@ -5,17 +5,20 @@ import { db, sql } from './index';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { eq, and, or, desc, asc, ilike, count, isNull, isNotNull, sql as sqlRaw, gte, lte } from 'drizzle-orm';
 import {
-  cases, evidence, legalDocuments, users, ragSessions, ragMessages,
-  userAiQueries, embeddingCache, documentChunks, caseEmbeddings,
-  evidenceVectors, legalPrecedents
-} from './index';
+  cases, evidence, users, documentMetadata
+} from './schema-unified.js';
+import {
+  ragSessions, ragMessages, userAiQueries, embeddingCache,
+  documentChunks, caseEmbeddings, evidenceVectors, legalPrecedents,
+  evidenceChainOfCustody, caseAssignments
+} from './additional-tables';
 import { ApiErrorClass, CommonErrors } from '../api/response';
 import { arrayToPgVector, generateSampleEmbedding } from './vector-operations';
-import type { Case, Evidence, LegalDocument, User } from './index';
+import type { Case, Evidence, LegalDocument, User } from './schema-types';
 
 // Transaction wrapper for safe database operations
 export async function withTransaction<T>(
-  operation: (tx: NodePgDatabase<typeof import('./index')>) => Promise<T>
+  operation: (tx: any) => Promise<T>
 ): Promise<T> {
   return await db.transaction(async (tx) => {
     try {
@@ -62,16 +65,13 @@ export class CaseOperations {
 
       // Generate AI summary if description exists
       if (newCase.description) {
-        const embedding = generateSampleEmbedding(768);
+        const embedding = generateSampleEmbedding(384); // Match schema dimensions
         await tx.insert(caseEmbeddings).values({
           caseId: newCase.id,
-          content: `${newCase.title} - ${newCase.description}`,
           embedding: arrayToPgVector(embedding),
-          metadata: {
-            caseNumber: newCase.caseNumber,
-            priority: newCase.priority,
-            status: newCase.status
-          }
+          embeddingType: 'description',
+          sourceField: 'description',
+          model: 'nomic-embed-text'
         });
       }
 
@@ -137,7 +137,7 @@ export class CaseOperations {
         `);
         
         return {
-          cases: vectorResults as Case[],
+          cases: vectorResults as unknown as Case[],
           total: vectorResults.length
         };
       } catch (error) {
@@ -213,32 +213,21 @@ export class CaseOperations {
 
       // Update vector embeddings if content changed
       if (updates.title || updates.description) {
-        const embedding = generateSampleEmbedding(768);
-        const content = `${updatedCase.title} - ${updatedCase.description || ''}`;
+        const embedding = generateSampleEmbedding(384); // Match schema dimensions
         
         await tx.insert(caseEmbeddings).values({
           caseId: updatedCase.id,
-          content,
           embedding: arrayToPgVector(embedding),
-          metadata: {
-            caseNumber: updatedCase.caseNumber,
-            priority: updatedCase.priority,
-            status: updatedCase.status,
-            updatedBy,
-            updatedAt: new Date().toISOString()
-          }
+          embeddingType: updates.description ? 'description' : 'title',
+          sourceField: updates.description ? 'description' : 'title',
+          model: 'nomic-embed-text'
         }).onConflictDoUpdate({
           target: [caseEmbeddings.caseId],
           set: {
-            content,
             embedding: arrayToPgVector(embedding),
-            metadata: {
-              caseNumber: updatedCase.caseNumber,
-              priority: updatedCase.priority,
-              status: updatedCase.status,
-              updatedBy,
-              updatedAt: new Date().toISOString()
-            }
+            embeddingType: updates.description ? 'description' : 'title',
+            sourceField: updates.description ? 'description' : 'title',
+            updatedAt: new Date()
           }
         });
       }
@@ -385,7 +374,7 @@ export class EvidenceOperations {
         `);
         
         return {
-          evidence: vectorResults as Evidence[],
+          evidence: vectorResults as unknown as Evidence[],
           total: vectorResults.length
         };
       } catch (error) {

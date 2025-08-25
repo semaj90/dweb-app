@@ -540,7 +540,26 @@ export class UltraHighPerformanceJSONProcessor extends EventEmitter {
       await new Promise((resolve) => this.once("initialized", resolve));
     }
 
-    return this.wasmModule!.parseStream(data);
+    const startTime = performance.now();
+    try {
+      const result = await this.wasmModule!.parseStream(data);
+      const parseTime = performance.now() - startTime;
+      
+      return {
+        chunks: Array.isArray(result) ? result : [result],
+        totalSize: data.length,
+        parseTime,
+        errors: []
+      };
+    } catch (error) {
+      const parseTime = performance.now() - startTime;
+      return {
+        chunks: [],
+        totalSize: data.length,
+        parseTime,
+        errors: [error instanceof Error ? error.message : String(error)]
+      };
+    }
   }
 
   /**

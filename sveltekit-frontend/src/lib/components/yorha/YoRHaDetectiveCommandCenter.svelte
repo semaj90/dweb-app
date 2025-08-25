@@ -23,17 +23,19 @@
     };
   }
 
-  export let currentUser = undefined;
-  export let systemData = {
-    activeCases: 12,
-    evidenceItems: 247,
-    personsOfInterest: 8,
-    aiQueries: 1543,
-    systemLoad: 34,
-    gpuUtilization: 67,
-    memoryUsage: 42,
-    networkLatency: 23
-  };
+  let {
+    currentUser = undefined,
+    systemData = {
+      activeCases: 12,
+      evidenceItems: 247,
+      personsOfInterest: 8,
+      aiQueries: 1543,
+      systemLoad: 34,
+      gpuUtilization: 67,
+      memoryUsage: 42,
+      networkLatency: 23
+    }
+  }: Props = $props();
 
   // State
   let activeTab = 'dashboard';

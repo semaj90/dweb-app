@@ -587,6 +587,20 @@ class OllamaService extends EventEmitter {
       clearInterval(this.modelCheckInterval);
     }
   }
+
+  /**
+   * Embed a document (wrapper for generateEmbedding with document)
+   */
+  async embedDocument(document: LegalDocument): Promise<number[]> {
+    return this.generateEmbedding(document.content);
+  }
+
+  /**
+   * Analyze a document (alias for analyzeLegalDocument) 
+   */
+  async analyzeDocument(document: LegalDocument): Promise<AnalysisResult> {
+    return this.analyzeLegalDocument(document);
+  }
 }
 
 // Export singleton instance

@@ -13,7 +13,7 @@ declare namespace svelteHTML {
   }
 }
 
-declare module '@melt-ui/svelte' {
+declare module 'melt' {
   export interface Action<T = HTMLElement, P = any> {
     (node: T, params?: P): {
       update?: (params: P) => void;

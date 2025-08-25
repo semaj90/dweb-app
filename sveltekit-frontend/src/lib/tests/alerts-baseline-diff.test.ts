@@ -1,8 +1,4 @@
 /// <reference types="vitest" />
-
-// Tests baseline diff endpoint mode=baseline returns diff after first invocation
-
-/// <reference types="vitest" />
 // Tests baseline diff endpoint mode=baseline returns diff after first invocation
 
 describe('Alerts Baseline Diff Endpoint', () => {

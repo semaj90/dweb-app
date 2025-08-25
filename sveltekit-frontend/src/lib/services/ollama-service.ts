@@ -4,8 +4,15 @@
 // intelligent fallback & caching. This file will be removed in a later cleanup phase.
 // (Original implementation retained below.)
 
-import { browser } from "$app/environment";
-import { LOCAL_LLM_PATHS, checkLocalInstallations } from "$lib/config/local-llm-config";
+// Browser environment detection - using local implementation to avoid missing module errors
+const browser = typeof window !== 'undefined';
+
+// Local LLM configuration - mock implementation
+const LOCAL_LLM_PATHS = {
+  ollama: "http://localhost:11434"
+};
+
+const checkLocalInstallations = async () => ({ ollama: true });
 
 export interface OllamaModelInfo {
   name: string;

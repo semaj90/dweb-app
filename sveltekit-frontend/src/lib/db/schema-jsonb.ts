@@ -159,24 +159,24 @@ export const aiSummarizedDocuments = pgTable('ai_summarized_documents', {
   ),
   
   // JSONB columns
-  metadata: jsonb('metadata').$type<DocumentMetadata>().default({}).notNull(),
-  summary: jsonb('summary').$type<Record<string, any>>().default({}).notNull(),
-  analysis: jsonb('analysis').$type<Record<string, any>>().default({}).notNull(),
-  entities: jsonb('entities').$type<unknown[]>().default([]).notNull(),
-  citations: jsonb('citations').$type<unknown[]>().default([]).notNull(),
-  summaryData: jsonb('summary_data').$type<SummaryData>().default({
-    executive_summary: null,
-    key_findings: [],
-    legal_issues: [],
-    recommendations: [],
-    risk_assessment: {
-      overall_risk: 'LOW',
-      risk_factors: [],
-      mitigation: []
+  metadata: jsonb('metadata').default(sql`'{}'::jsonb`).notNull(),
+  summary: jsonb('summary').default(sql`'{}'::jsonb`).notNull(),
+  analysis: jsonb('analysis').default(sql`'{}'::jsonb`).notNull(),
+  entities: jsonb('entities').default(sql`'[]'::jsonb`).notNull(),
+  citations: jsonb('citations').default(sql`'[]'::jsonb`).notNull(),
+  summaryData: jsonb('summary_data').default(sql`'{
+    "executive_summary": null,
+    "key_findings": [],
+    "legal_issues": [],
+    "recommendations": [],
+    "risk_assessment": {
+      "overall_risk": "LOW",
+      "risk_factors": [],
+      "mitigation": []
     },
-    confidence_score: 0,
-    processing_metrics: {}
-  }).notNull(),
+    "confidence_score": 0,
+    "processing_metrics": {}
+  }'::jsonb`).notNull(),
   
   // Processing fields
   status: documentStatusEnum('status').default('pending'),
@@ -224,7 +224,7 @@ export const documentEmbeddings = pgTable('document_embeddings', {
   chunkIndex: integer('chunk_index').notNull(),
   chunkText: text('chunk_text').notNull(),
   embedding: vector('embedding'),
-  metadata: jsonb('metadata').$type<Record<string, any>>().default({}).notNull(),
+  metadata: jsonb('metadata').default(sql`'{}'::jsonb`).notNull(),
   modelName: varchar('model_name', { length: 100 }),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
 }, (table) => ({
@@ -238,14 +238,14 @@ export const summarizationJobs = pgTable('summarization_jobs', {
   id: uuid('id').defaultRandom().primaryKey(),
   documentId: uuid('document_id').references(() => aiSummarizedDocuments.id, { onDelete: 'cascade' }),
   
-  config: jsonb('config').$type<JobConfig>().default({
-    style: 'executive',
-    max_length: 500,
-    temperature: 0.2,
-    include_citations: true,
-    focus_areas: [],
-    language: 'en'
-  }).notNull(),
+  config: jsonb('config').default(sql`'{
+    "style": "executive",
+    "max_length": 500,
+    "temperature": 0.2,
+    "include_citations": true,
+    "focus_areas": [],
+    "language": "en"
+  }'::jsonb`).notNull(),
   
   status: documentStatusEnum('status').default('pending'),
   priority: jobPriorityEnum('priority').default('normal'),
@@ -256,8 +256,8 @@ export const summarizationJobs = pgTable('summarization_jobs', {
   startedAt: timestamp('started_at', { withTimezone: true }),
   completedAt: timestamp('completed_at', { withTimezone: true }),
   
-  result: jsonb('result').$type<any>(),
-  error: jsonb('error').$type<any>(),
+  result: jsonb('result'),
+  error: jsonb('error'),
   
   lockedBy: varchar('locked_by', { length: 100 }),
   lockedAt: timestamp('locked_at', { withTimezone: true }),
@@ -273,32 +273,27 @@ export const summarizationJobs = pgTable('summarization_jobs', {
 // User preferences
 export const userPreferences = pgTable('user_preferences', {
   userId: uuid('user_id').primaryKey(),
-  preferences: jsonb('preferences').$type<UserPreferences>().default({
-    default_style: 'executive',
-    max_summary_length: 500,
-    include_citations: true,
-    auto_summarize: false,
-    notification_settings: {
-      email: true,
-      push: false,
-      webhook_url: undefined
+  preferences: jsonb('preferences').default(sql`'{
+    "default_style": "executive",
+    "max_summary_length": 500,
+    "include_citations": true,
+    "auto_summarize": false,
+    "notification_settings": {
+      "email": true,
+      "push": false,
+      "webhook_url": null
     },
-    api_limits: {
-      daily_quota: 100,
-      rate_limit_per_minute: 10
+    "api_limits": {
+      "daily_quota": 100,
+      "rate_limit_per_minute": 10
     }
-  }).notNull(),
-  statistics: jsonb('statistics').$type<{
-    total_documents: number;
-    total_tokens: number;
-    average_processing_time: number;
-    last_activity: string | null;
-  }>().default({
-    total_documents: 0,
-    total_tokens: 0,
-    average_processing_time: 0,
-    last_activity: null
-  }).notNull(),
+  }'::jsonb`).notNull(),
+  statistics: jsonb('statistics').default(sql`'{
+    "total_documents": 0,
+    "total_tokens": 0,
+    "average_processing_time": 0,
+    "last_activity": null
+  }'::jsonb`).notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
 });

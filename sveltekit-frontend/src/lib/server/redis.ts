@@ -14,7 +14,7 @@ export async function createRedisClient() {
   if (redisClient) {
     return redisClient;
   }
-  const redisUrl = import.meta.env.REDIS_URL || "redis://localhost:6379";
+  const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
 
   redisClient = createClient({
     url: redisUrl,

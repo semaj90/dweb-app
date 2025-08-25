@@ -4,7 +4,8 @@ import { superValidate, message } from 'sveltekit-superforms/server';
 import { zod } from 'sveltekit-superforms/adapters';
 import { z } from 'zod';
 
-import { db, evidence, documentVectors } from '$lib/server/database';
+import { db } from '$lib/server/db';
+import { evidence, documentEmbeddings } from '$lib/server/db/schema-unified';
 
 import { eq } from 'drizzle-orm';
 import crypto from 'crypto';
@@ -27,14 +28,14 @@ const fileUploadSchema = z.object({
 const UPLOAD_DIR = 'uploads';
 
 export const load: PageServerLoad = async () => {
-  const form = await superValidate(fileUploadSchema, zod);
+  const form = await superValidate(zod(fileUploadSchema));
   return { form };
 };
 
 export const actions: Actions = {
   default: async ({ request, locals }) => {
     const formData = await request.formData();
-    const form = await superValidate(formData, fileUploadSchema, zod);
+    const form = await superValidate(formData, zod(fileUploadSchema));
 
     if (!form.valid) {
       return fail(400, { form });
@@ -51,8 +52,9 @@ export const actions: Actions = {
       const buffer = await file.arrayBuffer();
       const hash = crypto.createHash('sha256').update(Buffer.from(buffer)).digest('hex');
 
-      // Create upload directory if it doesn't exist
-      const uploadPath = join(process.cwd(), UPLOAD_DIR, form.data.caseId);
+      // Create upload directory if it doesn't exist  
+      const caseId = String(form.data.caseId);
+      const uploadPath = join(process.cwd(), UPLOAD_DIR, caseId);
       await mkdir(uploadPath, { recursive: true });
 
       // Save file to disk
@@ -92,7 +94,7 @@ export const actions: Actions = {
       if (form.data.aiAnalysis && extractedText) {
         try {
           // Generate embeddings for the content
-          const { chunks = [] } = await ollamaService.embedDocument?.(
+          const embeddingResult = await ollamaService.embedDocument?.(
             extractedText,
             {
               evidenceId: newEvidence.id,
@@ -100,15 +102,16 @@ export const actions: Actions = {
               title: form.data.title
             }
           );
+          const chunks = embeddingResult?.chunks || [];
 
           // Store document vectors
           for (const chunk of chunks) {
-            await db.insert(documentVectors).values({
-              documentId: newEvidence.id, // Using evidence ID as document ID
-              chunkIndex: chunk.metadata.chunkIndex,
+            await db.insert(documentEmbeddings).values({
+              evidenceId: newEvidence.id, // Using evidence ID 
+              chunkIndex: chunk.metadata?.chunkIndex || 0,
               content: chunk.content,
-              embedding: chunk.embedding,
-              metadata: chunk.metadata
+              embedding: chunk.embedding as any, // Type assertion for vector
+              metadata: chunk.metadata || {}
             });
           }
 

@@ -16,7 +16,6 @@ const REDIS_CONFIG: RedisOptions = {
   // Connection settings
   connectTimeout: 10000,
   commandTimeout: 5000,
-  retryDelayOnFailover: 100,
   maxRetriesPerRequest: 3,
   
   // Connection pool
@@ -24,9 +23,13 @@ const REDIS_CONFIG: RedisOptions = {
   keepAlive: 30000,
   family: 4,
   
-  // Reconnection strategy
+  // Reconnection strategy - stop after 3 attempts to avoid spam
   retryStrategy: (times: number) => {
-    const delay = Math.min(times * 50, 2000);
+    if (times > 3) {
+      console.log('Redis: Max reconnection attempts reached, stopping retries');
+      return null; // Stop retrying
+    }
+    const delay = Math.min(times * 1000, 3000);
     return delay;
   },
   

@@ -94,24 +94,24 @@
 </script>
 
 <!-- Navigation Container -->
-<div class="yorha-navigation h-full flex flex-col bg-yorha-darker">
+<div class="yorha-3d-panel nes-legal-container h-full flex flex-col">
   
   <!-- Search Bar (when not collapsed) -->
   {#if !collapsed}
-    <div class="search-section p-4 border-b border-yorha-accent-warm/30">
+    <div class="nes-search-section neural-sprite-loading">
       <div class="relative">
         <input
           bind:value={searchQuery}
           placeholder="Search operations..."
-          class="w-full bg-yorha-dark border border-yorha-accent-warm/50 rounded px-3 py-2 text-sm text-yorha-light placeholder-yorha-muted/70 focus:outline-none focus:border-yorha-accent-warm focus:ring-1 focus:ring-yorha-accent-warm"
+          class="nes-legal-priority-medium yorha-3d-button w-full"
         />
-        <div class="absolute right-3 top-2.5 text-yorha-muted/50">
+        <div class="neural-sprite-active absolute right-3 top-2.5">
           🔍
         </div>
       </div>
       
       {#if searchQuery}
-        <div class="mt-2 text-xs text-yorha-muted">
+        <div class="nes-legal-priority-low mt-2 text-xs">
           Found {filteredRoutes.length} operation{filteredRoutes.length !== 1 ? 's' : ''}
         </div>
       {/if}
@@ -119,22 +119,22 @@
   {/if}
 
   <!-- Navigation Content -->
-  <div class="nav-content flex-1 overflow-y-auto custom-scrollbar">
+  <div class="nes-nav-content neural-sprite-active flex-1 overflow-y-auto custom-scrollbar">
     
     {#if searchQuery}
       <!-- Search Results -->
       <div class="search-results p-2">
         {#each filteredRoutes as route}
           <button
-            class="nav-item w-full text-left p-3 mb-1 rounded border border-transparent hover:border-yorha-accent-warm/50 hover:bg-yorha-accent-warm/10 transition-all duration-200 {isRouteActive(route.route) ? 'active bg-yorha-accent-warm/20 border-yorha-accent-warm text-yorha-accent-warm' : 'text-yorha-light'}"
+            class="nes-nav-item nes-legal-priority-medium yorha-3d-button w-full text-left {isRouteActive(route.route) ? 'nes-legal-priority-high neural-sprite-active' : ''}"
             onclick={() => navigateToRoute(route.route)}
             onmouseenter={() => hoveredRoute = route.id}
             onmouseleave={() => hoveredRoute = null}
           >
             <div class="flex items-center gap-3">
-              <span class="text-lg">{route.icon}</span>
+              <span class="neural-sprite-active text-lg">{route.icon}</span>
               {#if !collapsed}
-                <span class="text-sm font-medium">{route.label}</span>
+                <span class="nes-legal-title text-sm font-medium">{route.label}</span>
               {/if}
             </div>
           </button>

@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import { randomUUID } from "crypto";
 
 import { writable } from "svelte/store";
 
@@ -44,7 +44,7 @@ function createCitationStore() {
     ) => {
       const newCitation: Citation = {
         ...citation,
-        id: crypto.randomUUID(),
+        id: randomUUID(),
         createdAt: new Date(),
         updatedAt: new Date(),
       };

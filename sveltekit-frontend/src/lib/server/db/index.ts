@@ -1,10 +1,6 @@
 // Central DB export surface - re-export canonical schema and selected auth artifacts
-export * from './schema-postgres';
-// Re-export audit log from the legacy auth schema so routes can import a single source
-export { authAuditLog } from './auth-schema';
+export * from './schema-unified';
 
-// Optionally export other legacy helpers here in future, e.g. authUsers compatibility shim
-// export { authUsers as legacyAuthUsers } from './auth-schema';
 import * as schema from "./schema-unified";
 // Database connection and schema exports
 import { drizzle } from 'drizzle-orm/postgres-js';
@@ -23,7 +19,7 @@ export const isPostgreSQL = true;
 export const fullSchema = schema;
 
 // Create the connection
-const connectionString = import.meta.env.DATABASE_URL || 'postgresql://legal_admin:123456@localhost:5432/legal_ai_db';
+const connectionString = process.env.DATABASE_URL || 'postgresql://legal_admin:123456@localhost:5432/legal_ai_db';
 
 // For query purposes
 const queryClient = postgres(connectionString);
@@ -66,7 +62,7 @@ export async function testConnection() {
 }
 
 // Initialize pgvector on first run
-if (import.meta.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== 'production') {
   testConnection().catch(console.error);
 }
 

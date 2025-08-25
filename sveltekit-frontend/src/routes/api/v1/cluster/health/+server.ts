@@ -3,54 +3,55 @@
  * Real-time health checks for all 37 Go services + external dependencies
  */
 
-import { type RequestHandler,  json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types.js';
-import { productionServiceRegistry } from '$lib/../../../../lib/services/production-service-registry.js';
-import { context7OrchestrationService } from '$lib/../../../../lib/services/context7-orchestration-integration.js';
+import { type RequestHandler, json } from '@sveltejs/kit';
+import { redis } from '$lib/server/cache/redis-service.js';
+import { minioService } from '$lib/server/storage/minio-service.js';
+import { rabbitmqService } from '$lib/server/messaging/rabbitmq-service.js';
 
 export const GET: RequestHandler = async ({ url }) => {
   const includeMetrics = url.searchParams.get('metrics') === 'true';
-  const tier = url.searchParams.get('tier');
   
   try {
-    // Update service health in real-time
-    await context7OrchestrationService.updateServiceHealth();
+    // Check health of available services
+    const [redisHealth, minioHealth, rabbitmqHealth] = await Promise.all([
+      redis.healthCheck(),
+      minioService.healthCheck(),
+      rabbitmqService.healthCheck()
+    ]);
+
+    // Check external services
+    const externalServices = await checkExternalServices();
     
-    // Get comprehensive cluster health
-    const clusterHealth = await productionServiceRegistry.getClusterHealth();
+    // Count healthy services
+    const internalServices = { 
+      redis: redisHealth.status === 'healthy', 
+      minio: minioHealth.status === 'healthy',
+      rabbitmq: rabbitmqHealth.status === 'healthy'
+    };
     
-    // Get orchestration metrics if requested
-    let orchestrationMetrics = null;
-    if (includeMetrics) {
-      orchestrationMetrics = context7OrchestrationService.getMetrics();
-    }
-    
-    // Filter by tier if specified
-    let filteredServices = clusterHealth.services;
-    if (tier) {
-      const tierServices = productionServiceRegistry.getServicesByTier(tier as any);
-      const tierServiceNames = tierServices.map(s => s.name);
-      filteredServices = Object.fromEntries(
-        Object.entries(clusterHealth.services).filter(([name]) => 
-          tierServiceNames.includes(name)
-        )
-      );
-    }
+    const totalHealthy = Object.values(internalServices).filter(Boolean).length + 
+                        Object.values(externalServices).filter(Boolean).length;
+    const totalServices = Object.keys(internalServices).length + Object.keys(externalServices).length;
 
     const response = {
       timestamp: new Date().toISOString(),
-      cluster: {
-        overall: clusterHealth.overall,
-        services: filteredServices,
-        tiers: clusterHealth.tiers,
-        summary: {
-          total: Object.keys(clusterHealth.services).length,
-          healthy: Object.values(clusterHealth.services).filter(Boolean).length,
-          failed: Object.values(clusterHealth.services).filter(status => !status).length
-        }
+      status: totalHealthy > 0 ? 'operational' : 'degraded',
+      summary: {
+        total: totalServices,
+        healthy: totalHealthy,
+        degraded: totalServices - totalHealthy
       },
-      external_services: await checkExternalServices(),
-      ...(orchestrationMetrics && { orchestration: orchestrationMetrics })
+      services: {
+        internal: internalServices,
+        external: externalServices
+      },
+      ...(includeMetrics && {
+        details: {
+          redis: redisHealth.details,
+          minio: minioHealth.details,
+          rabbitmq: rabbitmqHealth.details
+        }
+      })
     };
 
     return json(response);
@@ -60,7 +61,8 @@ export const GET: RequestHandler = async ({ url }) => {
       {
         error: 'Health check failed',
         message: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        status: 'error'
       },
       { status: 500 }
     );
@@ -68,98 +70,62 @@ export const GET: RequestHandler = async ({ url }) => {
 };
 
 export const POST: RequestHandler = async ({ request }) => {
-  const { action, services } = await request.json();
-  
-  switch (action) {
-    case 'restart_service':
-      return handleServiceRestart(services);
-    case 'update_health':
-      return handleHealthUpdate();
-    case 'force_health_check':
-      return handleForceHealthCheck(services);
-    default:
-      return json({ error: 'Invalid action' }, { status: 400 });
+  try {
+    const { action } = await request.json();
+    
+    switch (action) {
+      case 'force_health_check':
+        // Force refresh of all service health checks
+        const [redisHealth, minioHealth, rabbitmqHealth] = await Promise.all([
+          redis.healthCheck(),
+          minioService.healthCheck(),
+          rabbitmqService.healthCheck()
+        ]);
+        
+        return json({
+          action: 'force_health_check',
+          results: {
+            redis: redisHealth.status === 'healthy',
+            minio: minioHealth.status === 'healthy',
+            rabbitmq: rabbitmqHealth.status === 'healthy'
+          },
+          timestamp: new Date().toISOString()
+        });
+        
+      default:
+        return json({ error: 'Invalid action' }, { status: 400 });
+    }
+  } catch (error) {
+    return json({ 
+      error: 'Action failed', 
+      message: error instanceof Error ? error.message : 'Unknown error' 
+    }, { status: 500 });
   }
 };
 
 async function checkExternalServices(): Promise<Record<string, boolean>> {
   const externalChecks = [
-    { name: 'postgresql', url: 'http://localhost:5432', expectedError: true }, // TCP connection
-    { name: 'redis', url: 'http://localhost:6379', expectedError: true }, // TCP connection  
-    { name: 'neo4j', url: 'http://localhost:7474' },
-    { name: 'ollama_primary', url: 'http://localhost:11434/api/tags' },
-    { name: 'ollama_secondary', url: 'http://localhost:11435/api/tags' },
-    { name: 'ollama_embeddings', url: 'http://localhost:11436/api/tags' },
-    { name: 'minio', url: 'http://localhost:9000/minio/health/live' },
-    { name: 'qdrant', url: 'http://localhost:6333/health' },
-    { name: 'nats_server', url: 'http://localhost:8222' }, // NATS monitoring
+    { name: 'enhanced_rag', url: 'http://localhost:8095/health' },
+    { name: 'upload_service', url: 'http://localhost:8093/health' },
+    { name: 'ollama', url: 'http://localhost:11434/api/tags' },
+    { name: 'sveltekit', url: 'http://localhost:5173/' }
   ];
 
   const results: Record<string, boolean> = {};
   
   await Promise.all(
-    externalChecks.map(async ({ name, url, expectedError }) => {
+    externalChecks.map(async ({ name, url }) => {
       try {
         const response = await fetch(url, { 
           method: 'GET',
-          signal: AbortSignal.timeout(3000)
+          signal: AbortSignal.timeout(2000)
         });
-        results[name] = expectedError ? false : response.ok; // TCP services will fail HTTP
+        results[name] = response.ok || response.status < 500;
       } catch {
-        results[name] = expectedError ? true : false; // TCP services expected to fail HTTP
+        results[name] = false;
       }
     })
   );
 
   return results;
-}
-
-async function handleServiceRestart(services: string[]): Promise<Response> {
-  // In production, this would trigger service restart via Windows service manager
-  // For now, return status of requested services
-  const restartResults: Record<string, boolean> = {};
-  
-  for (const serviceName of services) {
-    try {
-      // Simulate restart attempt
-      const healthy = await productionServiceRegistry.checkServiceHealth(serviceName);
-      restartResults[serviceName] = healthy;
-    } catch {
-      restartResults[serviceName] = false;
-    }
-  }
-
-  return json({
-    action: 'restart_service',
-    results: restartResults,
-    timestamp: new Date().toISOString()
-  });
-}
-
-async function handleHealthUpdate(): Promise<Response> {
-  await context7OrchestrationService.updateServiceHealth();
-  const metrics = context7OrchestrationService.getMetrics();
-  
-  return json({
-    action: 'update_health',
-    metrics,
-    timestamp: new Date().toISOString()
-  });
-}
-
-async function handleForceHealthCheck(services?: string[]): Promise<Response> {
-  const servicesToCheck = services || Object.keys(productionServiceRegistry['services'] || {});
-  const healthResults: Record<string, boolean> = {};
-  
-  await Promise.all(
-    servicesToCheck.map(async (serviceName) => {
-      healthResults[serviceName] = await productionServiceRegistry.checkServiceHealth(serviceName);
-    })
-  );
-
-  return json({
-    action: 'force_health_check',
-    results: healthResults,
-    timestamp: new Date().toISOString()
-  });
 }

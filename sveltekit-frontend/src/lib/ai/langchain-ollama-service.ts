@@ -7,7 +7,7 @@ import { OllamaEmbeddings } from "@langchain/ollama";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { PromptTemplate } from "@langchain/core/prompts";
-import { Document as LangChainDocument } from "@langchain/core/documents";
+import type { Document as LangChainDocument } from "@langchain/core/documents";
 import { VectorStoreRetriever } from "@langchain/core/vectorstores";
 import { BaseRetriever } from "@langchain/core/retrievers";
 import { CallbackManagerForRetrieverRun } from "@langchain/core/callbacks/manager";

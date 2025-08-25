@@ -117,8 +117,8 @@ export class VectorService {
       const result = await response.json();
       const embedding = result.embedding;
 
-      // Cache the result with 24-hour expiry
-      await this.redis.setex(cacheKey, 24 * 60 * 60, JSON.stringify(embedding));
+      // Cache the result with 24-hour expiry - using modern Redis syntax
+      await this.redis.set(cacheKey, JSON.stringify(embedding), 'EX', 24 * 60 * 60);
 
       // Also store in PostgreSQL for persistence
       await db
@@ -253,7 +253,7 @@ export class VectorService {
 
       // Cache search results
       const cacheKey = `search:${Buffer.from(query + JSON.stringify(options)).toString("base64")}`;
-      await this.redis.setex(cacheKey, 5 * 60, JSON.stringify(results)); // 5-minute cache
+      await this.redis.set(cacheKey, JSON.stringify(results), 'EX', 5 * 60); // 5-minute cache
 
       return results;
     } catch (error) {

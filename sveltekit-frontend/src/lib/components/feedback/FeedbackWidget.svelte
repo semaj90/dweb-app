@@ -2,13 +2,24 @@
   import { createEventDispatcher, onMount } from 'svelte';
   import { page } from '$app/stores';
 
-  // Props
-  export let interactionId: string;
-  export let sessionId: string;
-  export let userId: string;
-  export let context: Record<string, any> = {};
-  export let show: boolean = false;
-  export let ratingType: 'response_quality' | 'search_relevance' | 'ui_experience' | 'ai_accuracy' | 'performance' = 'response_quality';
+  // Props interface
+  interface Props {
+    interactionId: string;
+    sessionId: string;
+    userId: string;
+    context?: Record<string, any>;
+    show?: boolean;
+    ratingType?: 'response_quality' | 'search_relevance' | 'ui_experience' | 'ai_accuracy' | 'performance';
+  }
+
+  let {
+    interactionId,
+    sessionId,
+    userId,
+    context = {},
+    show = false,
+    ratingType = 'response_quality'
+  }: Props = $props();
 
   // Component state
   let rating: number = 0;
@@ -18,15 +29,18 @@
 
   const dispatch = createEventDispatcher();
 
-  // Auto-generate interaction ID if not provided
-  $: if (!interactionId) {
-    interactionId = `interaction_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  }
+  // Auto-generate IDs using $effect for side effects
+  $effect(() => {
+    if (!interactionId) {
+      interactionId = `interaction_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    }
+  });
 
-  // Auto-generate session ID if not provided
-  $: if (!sessionId) {
-    sessionId = `session_${Date.now()}_${userId}`;
-  }
+  $effect(() => {
+    if (!sessionId) {
+      sessionId = `session_${Date.now()}_${userId}`;
+    }
+  });
 
   function setRating(score: number) {
     rating = score;

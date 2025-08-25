@@ -4,8 +4,8 @@
 
   import { aiSummarizationService } from "$lib/services/aiSummarizationService";
   import { evidenceStore } from "$lib/stores/evidenceStore";
-  import type { TEvent } from "fabric";
   import * as fabric from "fabric";
+  type TEvent = any;
   import Fuse from "fuse.js";
   import Loki from "lokijs";
   import {

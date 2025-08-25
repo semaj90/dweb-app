@@ -159,9 +159,9 @@ const authMachine = createMachine({
       invoke: {
         src: loginService,
         // fromPromise passes original event as event in invoke meta; route it via event for LOGIN
-        input: ({ event }: unknown) => ({
-          email: (event as any).email,
-          password: (event as any).password,
+        input: ({ event }: { event: any }) => ({
+          email: event.email,
+          password: event.password,
         }),
         onDone: {
           target: 'authenticated',
@@ -186,7 +186,7 @@ const authMachine = createMachine({
           target: 'unauthenticated',
           actions: assign({
             isLoading: false,
-            error: ({ event }: unknown) => (event as any).error?.message || 'Login failed',
+            error: ({ event }: { event: any }) => event.error?.message || 'Login failed',
           }),
         },
       },
@@ -199,7 +199,7 @@ const authMachine = createMachine({
       }),
       invoke: {
         src: registerService,
-        input: ({ event }: unknown) => (event as any).userData,
+        input: ({ event }: { event: any }) => event.userData,
         onDone: {
           target: 'authenticated',
           actions: [
@@ -221,7 +221,7 @@ const authMachine = createMachine({
           target: 'unauthenticated',
           actions: assign({
             isLoading: false,
-            error: ({ event }: unknown) => (event as any).error?.message || 'Registration failed',
+            error: ({ event }: { event: any }) => event.error?.message || 'Registration failed',
           }),
         },
       },

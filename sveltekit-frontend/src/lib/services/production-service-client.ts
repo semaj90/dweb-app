@@ -11,7 +11,7 @@ import {
   PROTOCOL_CONFIG,
   type ServiceConfig,
   type ProtocolRoute
-} from '$lib/config/multi-protocol-routes.js';
+} from '../config/multi-protocol-routes.js';
 
 export type ProtocolType = 'http' | 'grpc' | 'quic' | 'ws';
 export type ServiceResponse<T = any> = {
@@ -356,12 +356,18 @@ class ProductionServiceClient {
   private async startHealthChecking(): Promise<void> {
     setInterval(async () => {
       for (const [serviceName, config] of Object.entries(SERVICES_CONFIG)) {
-        if (config.healthEndpoint) {
+        const serviceConfig = config as ServiceConfig;
+        if (serviceConfig.healthEndpoint) {
           try {
-            const response = await fetch(`http://localhost:${config.port}${config.healthEndpoint}`, {
-              timeout: 5000
+            // Create AbortController for timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000);
+            
+            const response = await fetch(`http://localhost:${serviceConfig.port}${serviceConfig.healthEndpoint}`, {
+              signal: controller.signal
             });
             
+            clearTimeout(timeoutId);
             this.updateHealthStatus(serviceName, 'http', response.ok, 0);
           } catch (error) {
             this.updateHealthStatus(serviceName, 'http', false, 0);

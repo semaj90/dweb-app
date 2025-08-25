@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+/// <reference types="vitest" />
 // TODO: Fix import - // Orphaned content: import {  const MAX_MS_PER_DOC = parseFloat(import.meta.env.SPLITTER_MAX_MS_PER_DOC || '3.5');
 
 describe('LegalSentenceSplitter Performance', () => {

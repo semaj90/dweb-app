@@ -1,4 +1,5 @@
-import crypto from "crypto";
+import { randomUUID } from "crypto";
+import { browser } from "$app/environment";
 
 // ======================================================================
 // ENHANCED LOKI.JS STORE WITH ADVANCED CACHING & REAL-TIME SYNC
@@ -357,7 +358,7 @@ class EnhancedLokiDB {
     if (!col) return null;
 
     const cacheEntry = {
-      id: crypto.randomUUID(),
+      id: randomUUID(),
       evidenceId,
       analysisType: analysis.type || "general",
       model,
@@ -427,7 +428,7 @@ class EnhancedLokiDB {
     }
 
     const embeddingEntry = {
-      id: crypto.randomUUID(),
+      id: randomUUID(),
       contentHash,
       embeddings,
       dimension: embeddings.length,
@@ -474,7 +475,7 @@ class EnhancedLokiDB {
     col.findAndRemove({ queryHash });
 
     const cacheEntries = matches.map((match) => ({
-      id: crypto.randomUUID(),
+      id: randomUUID(),
       queryHash,
       targetId: match.id,
       similarity: match.similarity,
@@ -516,7 +517,7 @@ class EnhancedLokiDB {
 
     const enhancedRelationships = relationships.map((rel) => ({
       ...rel,
-      id: rel.id || crypto.randomUUID(),
+      id: rel.id || randomUUID(),
       createdAt: rel.createdAt || new Date(),
       accessCount: 0,
     }));
@@ -642,7 +643,7 @@ class EnhancedLokiDB {
     priority: number = 1
   ) {
     const syncOp: SyncOperation = {
-      id: crypto.randomUUID(),
+      id: randomUUID(),
       type: operation,
       collection,
       data,

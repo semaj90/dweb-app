@@ -4,7 +4,7 @@
 import { superForm } from "sveltekit-superforms";
 import { zod } from "sveltekit-superforms/adapters";
 import { writable, derived, type Writable, type Readable } from "svelte/store";
-import { interpret } from "xstate";
+import { createActor } from "xstate";
 import { z } from "zod";
 import {
   DocumentUploadSchema,
@@ -23,13 +23,13 @@ import {
 // FORM STATE INTEGRATION TYPES
 // ============================================================================
 
-export type SnapshotOf<M> = M extends { getSnapshot: () => infer S } ? S : { value: any; context: any };
+export type SnapshotOf<M> = M extends { getSnapshot: () => infer S } ? S : { status: any; context: any };
 
 export interface FormMachineIntegration<M extends { getSnapshot: () => any }> {
   form: ReturnType<typeof superForm>;
   actor: M;
-  state: Writable<SnapshotOf<M>['value']>;
-  context: Writable<SnapshotOf<M>['context']>;
+  state: Writable<any>;
+  context: Writable<any>;
   isValid: Readable<boolean>;
   isSubmitting: Readable<boolean>;
   errors: Readable<Record<string, string[]>>;
@@ -57,7 +57,7 @@ export function createDocumentUploadForm(
 ): unknown { // FormMachineIntegration<Infer<typeof DocumentUploadSchema>, DocumentUploadActor> {
 
   // Create XState actor
-  const actor = interpret(documentUploadMachine as any);
+  const actor = createActor(documentUploadMachine as any);
   actor.start();
 
   // Create Superform
@@ -96,9 +96,10 @@ export function createDocumentUploadForm(
     }
   });
 
-  // Reactive state stores
-  const state = writable(actor.getSnapshot().value);
-  const context = writable(actor.getSnapshot().context);
+  // Reactive state stores (XState v5 compatibility)
+  const snapshot = actor.getSnapshot() as any;
+  const state = writable(snapshot.status || snapshot.value || 'idle');
+  const context = writable(snapshot.context || {});
   const isValid = derived([form.form], ([$form]) => !!($form as any).valid);
   const isSubmitting = derived(state, ($state) =>
     $state === 'uploading' || $state === 'processing' || $state === 'validating'
@@ -132,16 +133,18 @@ export function createDocumentUploadForm(
     Math.max($context?.uploadProgress ?? 0, $context?.processingProgress ?? 0)
   );
 
-  // Subscribe to actor changes
+  // Subscribe to actor changes (XState v5 compatibility)
   actor.subscribe((snapshot) => {
-    state.set(snapshot.value);
-    context.set(snapshot.context);
+    const stateValue = (snapshot as any).status || (snapshot as any).value || 'idle';
+    const contextValue = (snapshot as any).context || {};
+    state.set(stateValue);
+    context.set(contextValue);
 
     // Handle state-specific actions
-    if (snapshot.value === 'completed' && options.onSuccess) {
-      options.onSuccess(snapshot.context?.aiResults);
-    } else if (snapshot.value === 'failed' && options.onError) {
-      options.onError(snapshot.context?.error || 'Upload failed');
+    if (stateValue === 'completed' && options.onSuccess) {
+      options.onSuccess(contextValue?.aiResults);
+    } else if (stateValue === 'failed' && options.onError) {
+      options.onError(contextValue?.error || 'Upload failed');
     }
   });
 
@@ -185,7 +188,7 @@ export function createCaseCreationForm(
   options: FormOptions = {}
 ): unknown { // FormMachineIntegration<Infer<typeof CaseCreationSchema>, CaseCreationActor> {
 
-  const actor = interpret(caseCreationMachine as any);
+  const actor = createActor(caseCreationMachine as any);
   actor.start();
 
   const form = superForm(data, {
@@ -213,8 +216,9 @@ export function createCaseCreationForm(
     }
   });
 
-  const state = writable(actor.getSnapshot().value);
-  const context = writable(actor.getSnapshot().context);
+  const snapshot = actor.getSnapshot() as any;
+  const state = writable(snapshot.status || snapshot.value || 'idle');
+  const context = writable(snapshot.context || {});
   const isValid = derived([form.form], ([$form]) => !!($form as any).valid);
   const isSubmitting = derived(state, ($state) =>
     $state === 'submitting' || $state === 'validating'
@@ -253,13 +257,15 @@ export function createCaseCreationForm(
   });
 
   actor.subscribe((snapshot) => {
-    state.set(snapshot.value);
-    context.set(snapshot.context);
+    const stateValue = (snapshot as any).status || (snapshot as any).value || 'idle';
+    const contextValue = (snapshot as any).context || {};
+    state.set(stateValue);
+    context.set(contextValue);
 
-    if (snapshot.value === 'completed' && options.onSuccess) {
-      options.onSuccess(snapshot.context?.createdCase);
-    } else if (snapshot.context?.error && options.onError) {
-      options.onError(snapshot.context.error);
+    if (stateValue === 'completed' && options.onSuccess) {
+      options.onSuccess(contextValue?.createdCase);
+    } else if (contextValue?.error && options.onError) {
+      options.onError(contextValue.error);
     }
   });
 
@@ -287,7 +293,7 @@ export function createSearchForm(
   options: FormOptions = {}
 ): unknown { // FormMachineIntegration<Infer<typeof SearchQuerySchema>, SearchActor> {
 
-  const actor = interpret(searchMachine as any);
+  const actor = createActor(searchMachine as any);
   actor.start();
 
   const form = superForm(data, {
@@ -315,8 +321,9 @@ export function createSearchForm(
     }
   });
 
-  const state = writable(actor.getSnapshot().value);
-  const context = writable(actor.getSnapshot().context);
+  const snapshot = actor.getSnapshot() as any;
+  const state = writable(snapshot.status || snapshot.value || 'idle');
+  const context = writable(snapshot.context || {});
   const isValid = derived([form.form], ([$form]) => !!($form as any).valid);
   const isSubmitting = derived(state, ($state) =>
     $state === 'searching' || $state === 'validating'
@@ -355,16 +362,18 @@ export function createSearchForm(
   });
 
   actor.subscribe((snapshot) => {
-    state.set(snapshot.value);
-    context.set(snapshot.context);
+    const stateValue = (snapshot as any).status || (snapshot as any).value || 'idle';
+    const contextValue = (snapshot as any).context || {};
+    state.set(stateValue);
+    context.set(contextValue);
 
-    if (snapshot.value === 'results' && options.onSuccess) {
+    if (stateValue === 'results' && options.onSuccess) {
       options.onSuccess({
-        results: snapshot.context?.results,
-        analytics: snapshot.context?.analytics
+        results: contextValue?.results,
+        analytics: contextValue?.analytics
       });
-    } else if (snapshot.value === 'error' && options.onError) {
-      options.onError(snapshot.context?.error || 'Search failed');
+    } else if (stateValue === 'error' && options.onError) {
+      options.onError(contextValue?.error || 'Search failed');
     }
   });
 
@@ -392,7 +401,7 @@ export function createAIAnalysisForm(
   options: FormOptions = {}
 ): unknown { // FormMachineIntegration<Infer<typeof AIAnalysisSchema>, AIAnalysisActor> {
 
-  const actor = interpret(aiAnalysisMachine as any);
+  const actor = createActor(aiAnalysisMachine as any);
   actor.start();
 
   const form = superForm(data, {
@@ -414,8 +423,9 @@ export function createAIAnalysisForm(
     }
   });
 
-  const state = writable(actor.getSnapshot().value);
-  const context = writable(actor.getSnapshot().context);
+  const snapshot = actor.getSnapshot() as any;
+  const state = writable(snapshot.status || snapshot.value || 'idle');
+  const context = writable(snapshot.context || {});
   const isValid = derived([form.form], ([$form]) => !!($form as any).valid);
   const isSubmitting = derived(state, ($state) =>
     $state === 'analyzing' || $state === 'validating'
@@ -454,18 +464,20 @@ export function createAIAnalysisForm(
   });
 
   actor.subscribe((snapshot) => {
-    state.set(snapshot.value);
-    context.set(snapshot.context);
+    const stateValue = (snapshot as any).status || (snapshot as any).value || 'idle';
+    const contextValue = (snapshot as any).context || {};
+    state.set(stateValue);
+    context.set(contextValue);
 
-    if (snapshot.value === 'completed' && options.onSuccess) {
+    if (stateValue === 'completed' && options.onSuccess) {
       options.onSuccess({
-        results: snapshot.context?.analysisResults,
-        confidence: snapshot.context?.confidence,
-        processingTime: snapshot.context?.processingTime,
-        tokensUsed: snapshot.context?.tokensUsed
+        results: contextValue?.analysisResults,
+        confidence: contextValue?.confidence,
+        processingTime: contextValue?.processingTime,
+        tokensUsed: contextValue?.tokensUsed
       });
-    } else if (snapshot.value === 'error' && options.onError) {
-      options.onError(snapshot.context?.error || 'Analysis failed');
+    } else if (stateValue === 'error' && options.onError) {
+      options.onError(contextValue?.error || 'Analysis failed');
     }
   });
 

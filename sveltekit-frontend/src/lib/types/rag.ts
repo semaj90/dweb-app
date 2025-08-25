@@ -101,7 +101,17 @@ export interface RAGDocument {
   content: string;
   type: DocumentType['type'];
   embedding?: number[];
-  metadata: Record<string, any>;
+  metadata: {
+    source: string;
+    type: string;
+    jurisdiction: string;
+    practiceArea: string[];
+    confidentialityLevel: number;
+    lastModified: Date;
+    fileSize: number;
+    language: string;
+    tags: string[];
+  };
   createdAt?: Date;
   updatedAt?: Date;
   version?: string;

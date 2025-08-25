@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { $state } from 'svelte';
+
 
   let systemInfo = $state({
     uptime: '6 hours, 23 minutes',

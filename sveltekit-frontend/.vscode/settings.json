@@ -75,7 +75,7 @@
   "autosolve.effectiveness": "40% reduction from 4000+ baseline",
   "autosolve.criticalErrors": "resolved",
   "autosolve.systemStatus": "PRODUCTION_READY",
-  
+
   // npm check commands updated for proper error detection
   "npm.checkCommands.updated": "2025-08-24T01:51:00.000Z",
   "npm.checkCommands.typescript": "tsc --noEmit (no skipLibCheck, no incremental)",
@@ -163,7 +163,7 @@
   "mcpContext7.serverPort": 40000,
   "mcpContext7.logLevel": "debug",
   "chat.mcp.serverSampling": {
-    "SvelteKit Frontend/.vscode/mcp.json: memory": {
+    "SvelteKit Frontend/.vscode/mcp.json: gpu-error-processor": {
       "allowedModels": [
         "copilot/gpt-4.1",
         "copilot/claude-opus-4",

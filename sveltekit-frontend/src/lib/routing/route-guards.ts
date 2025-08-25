@@ -97,7 +97,7 @@ export class RouteGuards {
    */
   private authGuard: RouteGuard = async (context) => {
     const { event } = context;
-    const user = event.locals.user;
+    const user = (event.locals as any).user;
 
     if (!user) {
       return {
@@ -117,7 +117,7 @@ export class RouteGuards {
    */
   private adminGuard: RouteGuard = async (context) => {
     const { event } = context;
-    const user = event.locals.user;
+    const user = (event.locals as any).user;
 
     if (!user) {
       return {
@@ -144,7 +144,7 @@ export class RouteGuards {
    */
   private devGuard: RouteGuard = async (context) => {
     const isDevelopment = process.env.NODE_ENV === 'development';
-    const isDevUser = context.event.locals.user?.role === 'developer';
+    const isDevUser = (context.event.locals as any).user?.role === 'developer';
 
     if (!isDevelopment && !isDevUser) {
       return {
@@ -171,7 +171,7 @@ export class RouteGuards {
     }
 
     // Check if feature is enabled
-    const featureFlags = context.event.locals.featureFlags || {};
+    const featureFlags = (context.event.locals as any).featureFlags || {};
     const isEnabled = featureFlags[featureName];
 
     if (!isEnabled) {
@@ -220,7 +220,7 @@ export class RouteGuards {
   private maintenanceGuard: RouteGuard = async (context) => {
     const isMaintenanceMode = process.env.MAINTENANCE_MODE === 'true';
     const isMaintenancePage = context.route.id === 'maintenance';
-    const isAdmin = context.event.locals.user?.role === 'admin';
+    const isAdmin = (context.event.locals as any).user?.role === 'admin';
 
     if (isMaintenanceMode && !isMaintenancePage && !isAdmin) {
       return {
@@ -279,8 +279,8 @@ export function createGuardedLoader(
       event,
       route: route as any,
       params,
-      user: event.locals.user,
-      session: event.locals.session
+      user: (event.locals as any).user,
+      session: (event.locals as any).session
     };
 
     // Execute guards
@@ -342,8 +342,8 @@ export function createRouteGuardMiddleware(globalGuards: string[] = []) {
       event,
       route: route as any,
       params,
-      user: event.locals.user,
-      session: event.locals.session
+      user: (event.locals as any).user,
+      session: (event.locals as any).session
     };
 
     // Execute global guards

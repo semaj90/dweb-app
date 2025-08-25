@@ -1,5 +1,5 @@
 import { pgTable, uuid, varchar, text, timestamp, integer, decimal, boolean, jsonb, serial, index, vector } from 'drizzle-orm/pg-core';
-import { relations } from 'drizzle-orm';
+import { relations, sql } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
 
 // Type definitions for complex JSON fields
@@ -35,12 +35,18 @@ export interface Collaborator {
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
   email: varchar('email', { length: 255 }).notNull().unique(),
+  hashedPassword: varchar('hashed_password', { length: 255 }),
   username: varchar('username', { length: 100 }),
   firstName: varchar('first_name', { length: 100 }),
   lastName: varchar('last_name', { length: 100 }),
+  name: varchar('name', { length: 200 }), // Added computed field for full name
   role: varchar('role', { length: 50 }).default('user').notNull(),
   department: varchar('department', { length: 100 }),
+  jurisdiction: varchar('jurisdiction', { length: 100 }),
+  permissions: jsonb('permissions').default([]).notNull(),
   isActive: boolean('is_active').default(true).notNull(),
+  emailVerified: boolean('email_verified').default(false).notNull(),
+  avatarUrl: varchar('avatar_url', { length: 500 }),
   lastLoginAt: timestamp('last_login_at', { mode: 'date' }),
   createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
@@ -448,29 +454,26 @@ export const legalDocuments = pgTable(
 
     // Type-safe JSON fields with Zod validation
     metadata: jsonb("metadata")
-      .$type<DocumentMetadataExt>()
-      .default({
-        keywords: [],
-        customFields: {},
-        confidentialityLevel: "restricted",
-      })
+      .default(sql`'{
+        "keywords": [],
+        "customFields": {},
+        "confidentialityLevel": "restricted"
+      }'::jsonb`)
       .notNull(),
 
-    citations: jsonb("citations").$type<Citation[]>().default([]).notNull(),
+    citations: jsonb("citations").default(sql`'[]'::jsonb`).notNull(),
 
     autoSaveData: jsonb("auto_save_data")
-      .$type<AutoSaveData>()
-      .default({
-        content: "",
-        citations: [],
-        autoSavedAt: new Date().toISOString(),
-        isDirty: false,
-      })
+      .default(sql`'{
+        "content": "",
+        "citations": [],
+        "autoSavedAt": "",
+        "isDirty": false
+      }'::jsonb`)
       .notNull(),
 
     collaborators: jsonb("collaborators")
-      .$type<Collaborator[]>()
-      .default([])
+      .default(sql`'[]'::jsonb`)
       .notNull(),
 
     // Search and AI features
@@ -518,20 +521,17 @@ export const notes = pgTable(
     priority: varchar("priority", { length: 20 }).default("medium").notNull(),
 
     // Type-safe JSON fields
-    tags: jsonb("tags").$type<string[]>().default([]).notNull(),
+    tags: jsonb("tags").default(sql`'[]'::jsonb`).notNull(),
     metadata: jsonb("metadata")
-      .$type<Record<string, unknown>>()
-      .default({})
+      .default(sql`'{}'::jsonb`)
       .notNull(),
 
     // References to other entities
     relatedEvidenceIds: jsonb("related_evidence_ids")
-      .$type<string[]>()
-      .default([])
+      .default(sql`'[]'::jsonb`)
       .notNull(),
     relatedCriminalIds: jsonb("related_criminal_ids")
-      .$type<string[]>()
-      .default([])
+      .default(sql`'[]'::jsonb`)
       .notNull(),
 
     // AI features
@@ -540,7 +540,7 @@ export const notes = pgTable(
 
     // Privacy and sharing
     isPrivate: boolean("is_private").default(false).notNull(),
-    sharedWith: jsonb("shared_with").$type<string[]>().default([]).notNull(), // user IDs
+    sharedWith: jsonb("shared_with").default(sql`'[]'::jsonb`).notNull(), // user IDs
 
     // Timestamps
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
@@ -574,11 +574,10 @@ export const savedCitations = pgTable(
     description: text("description"),
 
     // Type-safe JSON fields
-    citationData: jsonb("citation_data").$type<Citation>().notNull(),
-    tags: jsonb("tags").$type<string[]>().default([]).notNull(),
+    citationData: jsonb("citation_data").notNull(),
+    tags: jsonb("tags").default(sql`'[]'::jsonb`).notNull(),
     metadata: jsonb("metadata")
-      .$type<Record<string, unknown>>()
-      .default({})
+      .default(sql`'{}'::jsonb`)
       .notNull(),
 
     // Organization

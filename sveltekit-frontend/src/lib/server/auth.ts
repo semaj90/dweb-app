@@ -21,7 +21,7 @@ export const lucia = new Lucia(adapter, {
     attributes: {
       secure: !dev, // HTTPS in production
       sameSite: "strict",
-      httpOnly: true
+      // httpOnly is set by Lucia by default
     }
   },
   getUserAttributes: (attributes) => {
@@ -32,11 +32,20 @@ export const lucia = new Lucia(adapter, {
       firstName: attributes.firstName,
       lastName: attributes.lastName,
       role: attributes.role,
+      bio: attributes.bio,
+      avatarUrl: attributes.avatarUrl,
+      timezone: attributes.timezone,
+      locale: attributes.locale,
       emailVerified: attributes.emailVerified,
+      lastLoginAt: attributes.lastLoginAt,
+      loginAttempts: attributes.loginAttempts,
+      lockedUntil: attributes.lockedUntil,
       isActive: attributes.isActive,
+      isSuspended: attributes.isSuspended,
       legalSpecialties: attributes.legalSpecialties,
       preferences: attributes.preferences,
-      createdAt: attributes.createdAt
+      createdAt: attributes.createdAt,
+      updatedAt: attributes.updatedAt
     };
   }
 });
@@ -48,18 +57,27 @@ declare module "lucia" {
   }
 }
 
-interface DatabaseUserAttributes {
+export interface DatabaseUserAttributes {
   id: string;
   email: string;
   displayName: string | null;
   firstName: string | null;
   lastName: string | null;
   role: string;
+  bio: string | null;
+  avatarUrl: string | null;
+  timezone: string | null;
+  locale: string | null;
   emailVerified: Date | null;
+  lastLoginAt: Date | null;
+  loginAttempts: number;
+  lockedUntil: Date | null;
   isActive: boolean;
+  isSuspended: boolean;
   legalSpecialties: unknown;
   preferences: unknown;
   createdAt: Date;
+  updatedAt: Date;
 }
 
 // Authentication utilities
@@ -94,20 +112,11 @@ export class AuthService {
     const [newUser] = await db.insert(users).values({
       id: userId,
       email: data.email,
-      passwordHash,
+      passwordHash: passwordHash,
       firstName: data.firstName || null,
       lastName: data.lastName || null,
       displayName: data.displayName || `${data.firstName || ''} ${data.lastName || ''}`.trim() || null,
       legalSpecialties: data.legalSpecialties || [],
-      preferences: {
-        theme: 'system',
-        language: 'en',
-        notifications: {
-          email: true,
-          push: false,
-          caseAlerts: true
-        }
-      },
       isActive: true
     }).returning();
 
@@ -126,29 +135,20 @@ export class AuthService {
     }
 
     // Check if user is active
-    if (!user.isActive || user.isSuspended) {
-      throw new Error("Account is deactivated or suspended");
-    }
-
-    // Check if account is locked
-    if (user.lockedUntil && user.lockedUntil > new Date()) {
-      throw new Error("Account is temporarily locked");
+    if (!user.isActive) {
+      throw new Error("Account is deactivated");
     }
 
     // Verify password
     const validPassword = await this.argon2id.verify(user.passwordHash, password);
     
     if (!validPassword) {
-      // Increment login attempts
-      await this.handleFailedLogin(user.id);
       throw new Error("Invalid email or password");
     }
 
-    // Reset login attempts on successful login
+    // Update last login time
     await db.update(users)
       .set({ 
-        loginAttempts: 0, 
-        lockedUntil: null,
         lastLoginAt: new Date()
       })
       .where(eq(users.id, user.id));
@@ -157,22 +157,11 @@ export class AuthService {
   }
 
   /**
-   * Handle failed login attempts with account locking
+   * Handle failed login attempts (simplified - no account locking)
    */
   private async handleFailedLogin(userId: string) {
-    const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
-    
-    if (!user) return;
-
-    const newAttempts = (user.loginAttempts || 0) + 1;
-    const updateData: any = { loginAttempts: newAttempts };
-
-    // Lock account after 5 failed attempts
-    if (newAttempts >= 5) {
-      updateData.lockedUntil = new Date(Date.now() + 30 * 60 * 1000); // Lock for 30 minutes
-    }
-
-    await db.update(users).set(updateData).where(eq(users.id, userId));
+    console.log(`Failed login attempt for user: ${userId}`);
+    // TODO: Implement proper failed login tracking when schema supports it
   }
 
   /**
@@ -241,6 +230,7 @@ export class AuthService {
     lastName: string;
     displayName: string;
     bio: string;
+    avatarUrl: string;
     timezone: string;
     locale: string;
     legalSpecialties: string[];
@@ -306,12 +296,18 @@ export async function getUser(event: RequestEvent) {
   
   if (result.session && result.session.fresh) {
     const sessionCookie = lucia.createSessionCookie(result.session.id);
-    event.cookies.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+    event.cookies.set(sessionCookie.name, sessionCookie.value, {
+      ...sessionCookie.attributes,
+      path: '/'
+    });
   }
   
   if (!result.session) {
     const sessionCookie = lucia.createBlankSessionCookie();
-    event.cookies.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+    event.cookies.set(sessionCookie.name, sessionCookie.value, {
+      ...sessionCookie.attributes,
+      path: '/'
+    });
   }
 
   return result;

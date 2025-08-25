@@ -6,7 +6,7 @@ import { createMachine, assign, fromPromise, createActor } from 'xstate';
 import type { Actor, AnyMachineSnapshot } from 'xstate';
 import Loki from 'lokijs';
 import Fuse from 'fuse.js';
-import { fabric } from 'fabric';
+// Fabric will be loaded dynamically when needed
 import Redis from 'ioredis';
 import { publishToQueue, consumeFromQueue, setupQueues } from '$lib/server/rabbitmq';
 import { gemma3LegalService } from '$lib/services/ollama-gemma3-service';

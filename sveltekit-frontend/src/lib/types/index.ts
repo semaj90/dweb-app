@@ -78,3 +78,15 @@ export interface User {
   created_at?: string;
   last_login?: string;
 }
+
+// Enhanced type definitions for barrel store compatibility
+export * from './webgpu.d.ts';
+export * from './webassembly-enhanced.d.ts'; 
+export * from './drizzle-enhanced.d.ts';
+export * from './env-enhanced.d.ts';
+
+// Global type references for enhanced compatibility
+/// <reference path="./webgpu.d.ts" />
+/// <reference path="./webassembly-enhanced.d.ts" />
+/// <reference path="./drizzle-enhanced.d.ts" />
+/// <reference path="./env-enhanced.d.ts" />

@@ -10,6 +10,8 @@ const config = {
   compilerOptions: {
     // Enable dev mode for proper SvelteKit development behavior
     dev: process.env.NODE_ENV === 'development',
+    // Enable runes mode for Svelte 5
+    runes: true,
     // Reduce bundle size
     css: 'injected'
   },

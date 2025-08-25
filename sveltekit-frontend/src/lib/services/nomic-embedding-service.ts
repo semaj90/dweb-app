@@ -112,7 +112,7 @@ class NomicEmbeddingService {
     try {
       // Initialize Ollama embeddings with CUDA optimization
       this.embeddings = new OllamaEmbeddings({
-        baseUrl: import.meta.env.OLLAMA_BASE_URL || 'http://localhost:11434',
+        baseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
         model: this.config.model,
         requestOptions: {
           numGpu: this.config.enableGpuAcceleration ? 1 : 0,

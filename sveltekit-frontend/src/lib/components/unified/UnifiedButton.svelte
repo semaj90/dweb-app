@@ -11,7 +11,7 @@
 -->
 
 <script lang="ts">
-  import { createButton, melt } from '@melt-ui/svelte';
+  import { createButton, melt } from 'melt';
   import { fly, fade } from 'svelte/transition';
   import { spring } from 'svelte/motion';
   import { onMount } from 'svelte';

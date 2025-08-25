@@ -63,7 +63,7 @@ export async function redisRateLimit(opts: RedisRateLimitOptions) {
   }
   const now = Date.now();
   try {
-    const res: any = await client.evalsha(
+    const res: any = await (client as any).evalsha(
       sha!,
       1,
       `rate:${opts.key}`,

@@ -29,7 +29,7 @@ export class RedisVectorService {
       port: parseInt(import.meta.env.REDIS_PORT || "6379"),
       password: import.meta.env.REDIS_PASSWORD,
       db: parseInt(import.meta.env.REDIS_DB || "0"),
-      retryDelayOnFailover: 100,
+      // retryDelayOnFailover: 100, // removed - deprecated in ioredis v5+
       maxRetriesPerRequest: 3,
     };
 

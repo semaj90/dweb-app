@@ -5,7 +5,8 @@ https://svelte.dev/e/js_parse_error -->
   import { $derived } from 'svelte';
   import { onMount, onDestroy } from 'svelte';
   import { writable, derived } from 'svelte/store';
-  import { fabric } from 'fabric';
+  // import { fabric } from 'fabric'; // Dynamic import to avoid canvas.node issues
+  let fabric: any;
   import { createNeuralSpriteEngine, createPerformanceStores } from '$lib/engines/neural-sprite-engine';
   import { Play, Pause, Square, Zap, Cpu, HardDrive, Gamepad2, Brain, Gauge } from 'lucide-svelte';
 

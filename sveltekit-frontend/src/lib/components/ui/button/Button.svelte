@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { HTMLButtonAttributes } from 'svelte/elements';
   import type { ButtonVariant, ButtonSize } from '$lib/types';
+  import type { Snippet } from 'svelte';
 
   interface Props extends HTMLButtonAttributes {
     variant?: ButtonVariant;
@@ -10,6 +11,7 @@
     iconPosition?: 'left' | 'right';
     fullWidth?: boolean;
     class?: string;
+    children?: Snippet;
   }
 
   let {
@@ -20,6 +22,7 @@
     iconPosition = 'left',
     fullWidth = false,
     class: className = '',
+    children,
     ...restProps
   }: Props = $props();
 
@@ -45,7 +48,7 @@
   {#if loading}
     <span class="loader mr-2"></span>
   {/if}
-  <slot />
+  {@render children?.()}
   {#if icon && iconPosition === 'right'}
     <i class={icon} aria-hidden="true"></i>
   {/if}

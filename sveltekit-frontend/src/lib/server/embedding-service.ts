@@ -108,7 +108,7 @@ export class EmbeddingService {
 
       // Create profile text for embedding
       const profileParts = [
-        user.displayName,
+        user.name,
         user.bio,
         user.firstName,
         user.lastName,

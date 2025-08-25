@@ -1,15 +1,11 @@
 // Database schema for chat functionality with pgvector support
 import { pgTable, uuid, text, timestamp, jsonb, boolean, integer, decimal } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
 
 export const chatSessions = pgTable('chat_sessions', {
   id: uuid('id').primaryKey(),
   model: text('model').notNull().default('gemma3-legal'),
-  metadata: jsonb('metadata').$type<{
-    userAgent?: string;
-    context?: string;
-    tags?: string[];
-    [key: string]: unknown;
-  }>().default({}),
+  metadata: jsonb('metadata').default(sql`'{}'::jsonb`),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
   messageCount: integer('message_count').default(0).notNull(),
@@ -23,17 +19,7 @@ export const chatMessages = pgTable('chat_messages', {
   role: text('role').notNull(), // 'user' | 'assistant' | 'system'
   timestamp: timestamp('timestamp').defaultNow().notNull(),
   embedding: text('embedding'), // JSON string of embedding vector for pgvector
-  metadata: jsonb('metadata').$type<{
-    model?: string;
-    confidence?: number;
-    totalDuration?: number;
-    loadDuration?: number;
-    promptEvalCount?: number;
-    evalCount?: number;
-    sources?: string[];
-    processingTime?: number;
-    [key: string]: unknown;
-  }>().default({}),
+  metadata: jsonb('metadata').default(sql`'{}'::jsonb`),
   model: text('model'),
   confidence: decimal('confidence', { precision: 5, scale: 4 }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -51,20 +37,7 @@ export const legalDocuments = pgTable('legal_documents', {
   content: text('content'), // Full text content for search
   summary: text('summary'), // AI-generated summary
   embedding: text('embedding'), // JSON string of embedding vector
-  metadata: jsonb('metadata').$type<{
-    fileSize?: number;
-    mimeType?: string;
-    confidentialityLevel?: 'public' | 'confidential' | 'privileged';
-    aiAnalysis?: {
-      summary: string;
-      entities: string[];
-      sentiment: number;
-      topics: string[];
-    };
-    uploadedBy?: string;
-    tags?: string[];
-    [key: string]: unknown;
-  }>().default({}),
+  metadata: jsonb('metadata').default(sql`'{}'::jsonb`),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull()
 });
@@ -87,17 +60,7 @@ export const ragQueries = pgTable('rag_queries', {
   sessionId: uuid('session_id').references(() => chatSessions.id),
   query: text('query').notNull(),
   queryEmbedding: text('query_embedding'), // JSON string of query embedding
-  results: jsonb('results').$type<{
-    documents: Array<{
-      id: string;
-      title: string;
-      relevanceScore: number;
-      snippet: string;
-    }>;
-    totalResults: number;
-    processingTime: number;
-    model: string;
-  }>(),
+  results: jsonb('results'),
   metadata: jsonb('metadata').default({}),
   createdAt: timestamp('created_at').defaultNow().notNull()
 });

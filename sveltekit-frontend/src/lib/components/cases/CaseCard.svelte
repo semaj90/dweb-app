@@ -2,7 +2,7 @@
 
 <script lang="ts">
   import { fly, scale } from 'svelte/transition';
-  import { createDropdownMenu, melt } from '@melt-ui/svelte';
+  import { createDropdownMenu, melt } from 'melt';
   import {
     FileText,
     Users,

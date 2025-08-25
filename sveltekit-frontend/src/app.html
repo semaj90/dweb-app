@@ -3,7 +3,24 @@
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%sveltekit.assets%/favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    
+    <!-- Chrome Windows 3D Acceleration & GPU Optimization -->
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="theme-color" content="#ffd700" />
+    <meta name="msapplication-TileColor" content="#ffd700" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    
+    <!-- Performance Hints for Chrome -->
+    <meta name="renderer" content="webkit" />
+    <meta name="force-rendering" content="webkit" />
+    <meta name="prefetch-hints" content="on" />
+    <meta name="prerender-hints" content="on" />
+    
+    <!-- Hardware Acceleration Hints -->
+    <meta name="accelerated-compositing" content="enabled" />
+    <meta name="gpu-rasterization" content="enabled" />
+    <meta name="threaded-compositing" content="enabled" />
     <title>YoRHa Legal AI - Evidence Management System</title>
     <meta
       name="description"
@@ -15,6 +32,39 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@unocss/reset/tailwind.min.css"
     />
+
+    <!-- Browser Polyfills for better compatibility -->
+    <script>
+      // Essential polyfills for Bits UI and modern dependencies
+      if (typeof global === 'undefined') {
+        var global = globalThis;
+      }
+      
+      // Process polyfill for browser
+      if (typeof process === 'undefined') {
+        var process = {
+          env: { NODE_ENV: 'production', BROWSER: 'true' },
+          browser: true,
+          version: '',
+          versions: { node: '18.0.0' }
+        };
+      }
+      
+      // Buffer polyfill if needed
+      if (typeof Buffer === 'undefined' && typeof TextEncoder !== 'undefined') {
+        var Buffer = {
+          from: function(str, encoding) {
+            return new TextEncoder().encode(str);
+          },
+          isBuffer: function(obj) {
+            return obj instanceof Uint8Array;
+          },
+          alloc: function(size) {
+            return new Uint8Array(size);
+          }
+        };
+      }
+    </script>
 
     <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -86,6 +136,16 @@
         color: var(--yorha-text-primary);
         font-family: var(--yorha-font-ui);
         overflow-x: hidden;
+        
+        /* Chrome Windows GPU Acceleration */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeSpeed;
+        image-rendering: -webkit-optimize-contrast;
+        
+        /* Hardware acceleration for smooth scrolling */
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
       }
 
       body {
@@ -95,9 +155,18 @@
         background: transparent;
         font-family: var(--yorha-font-ui);
         line-height: 1.6;
+        
+        /* Chrome Windows 3D Acceleration */
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+        will-change: transform;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        -webkit-perspective: 1000;
+        perspective: 1000;
       }
       
-      /* YoRHa Terminal Grid Background */
+      /* YoRHa Terminal Grid Background - GPU Accelerated */
       body::before {
         content: '';
         position: fixed;
@@ -111,6 +180,13 @@
         background-size: 24px 24px;
         pointer-events: none;
         z-index: -1;
+        
+        /* GPU Acceleration for background pattern */
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+        will-change: transform;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
       }
 
       /* YoRHa Terminal Scrollbar */
@@ -182,11 +258,58 @@
         text-shadow: 0 0 4px currentColor;
         border-bottom: 1px solid currentColor;
       }
+
+      /* GPU Acceleration Utility Classes for Chrome Windows */
+      .gpu-accelerated {
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+        will-change: transform;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+      }
+      
+      .gpu-smooth-scroll {
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+      }
+      
+      .gpu-optimized-text {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeSpeed;
+      }
+      
+      /* 3D Transform Performance Optimizations */
+      .transform-3d {
+        -webkit-perspective: 1000px;
+        perspective: 1000px;
+        -webkit-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+      }
+      
+      /* Animation Performance Classes */
+      .animate-gpu {
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+        will-change: transform, opacity;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+      }
+      
+      /* Chrome Windows Specific Optimizations */
+      @media screen and (-webkit-min-device-pixel-ratio: 0) {
+        .chrome-optimized {
+          -webkit-font-feature-settings: 'liga';
+          font-feature-settings: 'liga';
+          -webkit-font-kerning: auto;
+          font-kerning: auto;
+        }
+      }
     </style>
 
     %sveltekit.head%
   </head>
-  <body data-sveltekit-preload-data="hover" class="min-h-screen antialiased">
+  <body data-sveltekit-preload-data="hover" class="min-h-screen antialiased gpu-accelerated gpu-optimized-text chrome-optimized">
     <div style="display: contents">%sveltekit.body%</div>
   </body>
 </html>

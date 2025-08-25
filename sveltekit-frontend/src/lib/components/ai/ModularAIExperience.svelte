@@ -268,7 +268,7 @@
             class="px-4 py-2 rounded-lg border transition-colors {currentModule === module 
               ? 'bg-blue-600 text-white border-blue-600' 
               : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'}"
-            on:click={() => switchModule(module)}
+            onclick={() => switchModule(module)}
           >
             {module.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
           </button>
@@ -346,7 +346,7 @@
       </div>
       
       <button 
-        on:click={processComputation}
+        onclick={processComputation}
         disabled={isProcessing}
         class="w-full mt-6 px-4 py-3 bg-blue-600 text-white rounded-lg font-semibold
                disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
@@ -393,7 +393,7 @@
                   <button
                     class="block w-full text-left p-2 text-sm bg-blue-50 hover:bg-blue-100 
                            rounded border border-blue-200 transition-colors"
-                    on:click={() => applyRecommendation(rec)}
+                    onclick={() => applyRecommendation(rec)}
                   >
                     {rec}
                   </button>
@@ -414,7 +414,7 @@
         <div class="recommendation-card bg-green-50 p-4 rounded-lg border border-green-200">
           <h4 class="font-semibold text-green-800 mb-2">🔄 Resume</h4>
           <button 
-            on:click={pickUpWhereLeftOff}
+            onclick={pickUpWhereLeftOff}
             class="text-sm text-green-700 hover:text-green-900 underline"
           >
             Pick up where you left off?
@@ -430,7 +430,7 @@
             {#each recommendations.didYouMean.slice(0, 3) as suggestion}
               <button 
                 class="block text-sm text-yellow-700 hover:text-yellow-900 underline"
-                on:click={() => applyRecommendation(suggestion)}
+                onclick={() => applyRecommendation(suggestion)}
               >
                 {suggestion}
               </button>

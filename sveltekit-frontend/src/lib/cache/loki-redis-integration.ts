@@ -9,7 +9,7 @@
  */
 
 import Loki from 'lokijs';
-import { createClient, RedisClientType } from 'redis';
+import { createClient, type RedisClientType } from 'redis';
 import { nesMemory, type LegalDocument } from '../memory/nes-memory-architecture.js';
 import { EventEmitter } from 'events';
 

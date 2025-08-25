@@ -1,16 +1,26 @@
 
-import { users } from "$lib/server/db/schema-postgres";
-// TODO: Fix import - // Orphaned content: import {  import { db } from "./index";
+import { users } from "$lib/server/db/schema-unified";
+import { db, eq } from "./index";
 
 export interface User {
   id: string;
   email: string;
-  name: string | null;
+  displayName: string | null;
   firstName: string | null;
   lastName: string | null;
   role: string;
-  isActive: boolean;
+  bio: string | null;
   avatarUrl: string | null;
+  timezone: string | null;
+  locale: string | null;
+  isActive: boolean;
+  isSuspended: boolean;
+  emailVerified: Date | null;
+  lastLoginAt: Date | null;
+  loginAttempts: number;
+  lockedUntil: Date | null;
+  legalSpecialties: unknown;
+  preferences: unknown;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -42,8 +52,8 @@ export async function getUserByEmail(email: string): Promise<User | null> {
 }
 export async function createUser(userData: {
   email: string;
-  hashedPassword: string;
-  name?: string;
+  passwordHash: string;
+  displayName?: string;
   firstName?: string;
   lastName?: string;
   role?: string;
@@ -53,11 +63,12 @@ export async function createUser(userData: {
       .insert(users)
       .values({
         email: userData.email,
-        hashedPassword: userData.hashedPassword,
-        name: userData.name,
+        passwordHash: userData.passwordHash,
+        displayName: userData.displayName,
         firstName: userData.firstName,
         lastName: userData.lastName,
-        role: userData.role || "prosecutor",
+        role: userData.role || "user",
+        isActive: true
       })
       .returning();
 

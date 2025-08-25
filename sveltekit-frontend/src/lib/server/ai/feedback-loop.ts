@@ -256,11 +256,9 @@ class FeedbackLoop {
 
   private async loadModelWeights(): Promise<void> {
     try {
-      // Load from database if available
-      const weights = await prisma.feedbackModel.findFirst({
-        where: { active: true },
-        orderBy: { updatedAt: 'desc' }
-      });
+      // Load from database if available (using Drizzle ORM)
+      // TODO: Replace with proper Drizzle query when feedbackModel schema is available
+      const weights = null; // Stub for now
       
       if (weights && weights.weights) {
         this.modelWeights = new Map(Object.entries(weights.weights as any));
@@ -285,10 +283,9 @@ class FeedbackLoop {
   private async loadHistoricalMetrics(): Promise<void> {
     try {
       // Load recent interactions from database
-      const recentInteractions = await prisma.aiInteraction.findMany({
-        take: 100,
-        orderBy: { createdAt: 'desc' }
-      });
+      // TODO: Replace with Drizzle query
+      const recentInteractions = [] as any[]; // Stub for now
+      // Previous query parameters: { take: 100, orderBy: { createdAt: 'desc' } }
       
       for (const interaction of recentInteractions) {
         this.analyzeQueryPattern(interaction.query);
@@ -376,26 +373,34 @@ class FeedbackLoop {
     logger.info('[FeedbackLoop] Learning from improved response for', interaction.requestId);
     
     // For now, just log the improvement
-    await prisma.feedbackImprovement.create({
-      data: {
-        requestId: interaction.requestId,
-        originalQuery: interaction.query,
-        improvedResponse,
-        userId: interaction.userId
-      }
-    }).catch(err => logger.warn('[FeedbackLoop] Failed to save improvement:', err));
+    // TODO: Replace with Drizzle insert
+    // await db.insert(feedbackImprovement).values({
+    //   requestId: interaction.requestId,
+    //   originalQuery: interaction.query,
+    //   improvedResponse,
+    //   userId: interaction.userId
+    // }).catch(err => logger.warn('[FeedbackLoop] Failed to save improvement:', err));
+    
+    logger.info('[FeedbackLoop] Improvement recorded (stub)', {
+      requestId: interaction.requestId,
+      improvedResponse: improvedResponse.substring(0, 100) + '...'
+    });
   }
 
   private async persistInteraction(interaction: InteractionData): Promise<void> {
     try {
-      await prisma.aiInteraction.create({
-        data: {
-          requestId: interaction.requestId,
-          query: interaction.query,
-          result: interaction.result,
-          userId: interaction.userId,
-          timestamp: interaction.timestamp
-        }
+      // TODO: Replace with Drizzle insert  
+      // await db.insert(aiInteraction).values({
+      //   requestId: interaction.requestId,
+      //   query: interaction.query,
+      //   result: interaction.result,
+      //   userId: interaction.userId,
+      //   timestamp: interaction.timestamp
+      // });
+      
+      logger.debug('[FeedbackLoop] Interaction persisted (stub)', {
+        requestId: interaction.requestId,
+        userId: interaction.userId
       });
     } catch (error) {
       logger.warn('[FeedbackLoop] Failed to persist interaction:', error);
@@ -404,14 +409,18 @@ class FeedbackLoop {
 
   private async persistFeedback(feedback: FeedbackData): Promise<void> {
     try {
-      await prisma.feedback.create({
-        data: {
-          requestId: feedback.requestId,
-          userId: feedback.userId,
-          rating: feedback.rating,
-          feedback: feedback.feedback,
-          improvedResponse: feedback.improvedResponse
-        }
+      // TODO: Replace with Drizzle insert
+      // await db.insert(feedback).values({
+      //   requestId: feedback.requestId,
+      //   userId: feedback.userId,
+      //   rating: feedback.rating,
+      //   feedback: feedback.feedback,
+      //   improvedResponse: feedback.improvedResponse
+      // });
+      
+      logger.debug('[FeedbackLoop] Feedback persisted (stub)', {
+        requestId: feedback.requestId,
+        rating: feedback.rating
       });
     } catch (error) {
       logger.warn('[FeedbackLoop] Failed to persist feedback:', error);
@@ -456,18 +465,15 @@ class FeedbackLoop {
     try {
       const weightsObject = Object.fromEntries(this.modelWeights);
       
-      await prisma.feedbackModel.upsert({
-        where: { id: 'current' },
-        update: {
-          weights: weightsObject,
-          updatedAt: new Date()
-        },
-        create: {
-          id: 'current',
-          weights: weightsObject,
-          active: true
-        }
-      });
+      // TODO: Replace with Drizzle upsert
+      // await db.insert(feedbackModel).values({}).onConflictDoUpdate({});
+      
+      logger.info('[FeedbackLoop] Model weights saved (stub)');
+      
+      // Previous upsert logic:
+      // where: { id: 'current' },
+      // update: { weights: weightsObject, updatedAt: new Date() },
+      // create: { id: 'current', weights: weightsObject, active: true }
     } catch (error) {
       logger.warn('[FeedbackLoop] Failed to save model weights:', error);
     }

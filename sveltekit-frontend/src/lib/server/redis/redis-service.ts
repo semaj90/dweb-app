@@ -4,8 +4,8 @@ import { createClient } from "redis";
 
 interface RedisConfig {
   url: string;
-  retryDelayOnFailover: number;
-  maxRetriesPerRequest: number;
+  // retryDelayOnFailover removed - deprecated in newer redis versions
+  maxRetriesPerRequest?: number;
 }
 class RedisService {
   private client: any;
@@ -21,7 +21,7 @@ class RedisService {
   private async initializeClients() {
     const config: RedisConfig = {
       url: import.meta.env.REDIS_URL || "redis://localhost:6379",
-      retryDelayOnFailover: 100,
+      // retryDelayOnFailover: 100, // removed - deprecated
       maxRetriesPerRequest: 3,
     };
 

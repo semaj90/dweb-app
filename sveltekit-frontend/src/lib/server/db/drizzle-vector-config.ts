@@ -76,7 +76,7 @@ export const cases = pgTable('cases', {
   
   // Metadata
   metadata: jsonb('metadata'),
-  tags: jsonb('tags').$type<string[]>(),
+  tags: jsonb('tags'),
   
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
@@ -144,7 +144,7 @@ export const evidence = pgTable('evidence', {
   // Evidence-specific fields
   relevanceScore: integer('relevance_score'), // 0-100
   confidenceLevel: varchar('confidence_level', { length: 50 }),
-  tags: jsonb('tags').$type<string[]>(),
+  tags: jsonb('tags'),
   metadata: jsonb('metadata'),
   
   createdAt: timestamp('created_at').defaultNow(),

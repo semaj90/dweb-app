@@ -360,7 +360,7 @@
 		<div class="flex flex-wrap gap-3">
 			<AnyButton
 				type="button"
-				on:click={handleSummarize}
+				onclick={handleSummarize}
 				aria-disabled={!canSummarize}
 				disabled={!canSummarize}
 				variant="default"
@@ -380,7 +380,7 @@
 			{#if allowSave}
 				<AnyButton
 					type="button"
-					on:click={handleSave}
+					onclick={handleSave}
 					aria-disabled={!canSave}
 					disabled={!canSave}
 					variant="outline"
@@ -399,7 +399,7 @@
 			{#if error && retryCount < 3}
 				<AnyButton
 					type="button"
-					on:click={handleRetry}
+					onclick={handleRetry}
 					variant="outline"
 					class="gap-2 text-orange-600 border-orange-600 hover:bg-orange-50"
 				>
@@ -411,7 +411,7 @@
 			{#if summary || error}
 				<AnyButton
 					type="button"
-					on:click={handleReset}
+					onclick={handleReset}
 					variant="ghost"
 					size="sm"
 					class="text-gray-500 hover:text-gray-700"

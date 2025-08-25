@@ -410,7 +410,7 @@ export async function createVectorJob(
 	operation: string,
 	data?: any,
 	priority: string = 'medium'
-): Promise<VectorJobActor> {
+): Promise<any> {
 	const { createActor } = await import('xstate');
 	
 	const actor = createActor(vectorJobMachine);

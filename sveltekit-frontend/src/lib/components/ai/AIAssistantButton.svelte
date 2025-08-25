@@ -1,7 +1,7 @@
 <script lang="ts">
   import { $props, $state, $derived } from 'svelte';
   import { goto } from '$app/navigation';
-  import { createTooltip, melt } from '@melt-ui/svelte';
+  import { createTooltip, melt } from 'melt';
   import { Brain, MessageSquare, Sparkles, Mic, MicOff, Settings } from 'lucide-svelte';
   import { cn } from '$lib/utils';
   import { Badge } from '$lib/components/ui/badge/index.js';

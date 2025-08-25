@@ -1,34 +1,128 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { goto } from '$app/navigation';
   import Button from '$lib/components/ui/Button.svelte';
   import Card from '$lib/components/ui/Card.svelte';
+  import UniversalSearchBar from '$lib/components/search/UniversalSearchBar.svelte';
+  import type { SearchResult } from '$lib/components/search/types.js';
 
-  export let data: {
-    userId: string | null;
-    sessionId: string | null;
-    email: string | null;
-    isAuthenticated: boolean;
-  };
+  let { data }: {
+    data: {
+      userId: string | null;
+      sessionId: string | null;
+      email: string | null;
+      isAuthenticated: boolean;
+    }
+  } = $props();
 
-  let systemInfo = {
-    uptime: '6 hours, 23 minutes',
-    activeServices: 7,
-    lastSync: '2 minutes ago'
-  };
+  // Modern website state
+  let currentSlide = $state(0);
+  let stats = $state({
+    cases: '2,847',
+    evidence: '18,592',
+    users: '324',
+    accuracy: '99.7%'
+  });
 
-  let showAuth = false;
-  let isLogin = true;
+  // Hero carousel slides
+  let heroSlides = $state([
+    {
+      title: 'AI-Powered Legal Research',
+      subtitle: 'Advanced case analysis with machine learning',
+      image: '/api/placeholder/800/400',
+      cta: 'Start Research'
+    },
+    {
+      title: 'Evidence Management',
+      subtitle: 'Secure chain of custody with blockchain technology',
+      image: '/api/placeholder/800/400',
+      cta: 'View Evidence'
+    },
+    {
+      title: 'Person of Interest Tracking',
+      subtitle: 'Comprehensive criminal database integration',
+      image: '/api/placeholder/800/400',
+      cta: 'Search POI'
+    }
+  ]);
+
+  // Featured services
+  let services = $state([
+    {
+      icon: '🔍',
+      title: 'Case Investigation',
+      description: 'AI-powered case analysis and evidence correlation',
+      link: '/cases'
+    },
+    {
+      icon: '👤',
+      title: 'Person Tracking',
+      description: 'Comprehensive person of interest database',
+      link: '/poi'
+    },
+    {
+      icon: '📄',
+      title: 'Document Analysis',
+      description: 'OCR and semantic analysis of legal documents',
+      link: '/documents'
+    },
+    {
+      icon: '⚖️',
+      title: 'Legal Research',
+      description: 'Access to precedents and legal databases',
+      link: '/research'
+    }
+  ]);
+
+  onMount(() => {
+    // Auto-advance hero carousel
+    setInterval(() => {
+      currentSlide = (currentSlide + 1) % heroSlides.length;
+    }, 5000);
+  });
+
+  function handleSearch(event: CustomEvent<{ query: string; results: SearchResult[] }>) {
+    const { query, results } = event.detail;
+    console.log('Search performed:', query, results.length, 'results');
+    // Could navigate to search results page
+  }
+
+  function handleSearchSelect(event: CustomEvent<{ result: SearchResult }>) {
+    const { result } = event.detail;
+    console.log('Selected result:', result);
+
+    // Navigate based on result type
+    switch (result.type) {
+      case 'case':
+        goto(`/cases/${result.id}`);
+        break;
+      case 'criminal':
+        goto(`/poi/${result.id}`);
+        break;
+      case 'evidence':
+        goto(`/evidence/${result.id}`);
+        break;
+      default:
+        goto(`/search?q=${encodeURIComponent(result.title)}`);
+    }
+  }
+
+  // Missing variables used in auth handler
   let email = '';
   let password = '';
   let firstName = '';
   let lastName = '';
   let loading = false;
-  let message = '';
   let error = '';
+  let message = '';
+  let isLogin = true;
 
-  onMount(() => {
-    console.log('YoRHa Legal AI Platform loaded');
-  });
+  // Missing systemInfo used in template
+  let systemInfo = {
+    uptime: '72h 14m',
+    activeServices: '8/9',
+    lastSync: '2m ago'
+  };
 
   async function handleAuth(event) {
     event.preventDefault();
@@ -43,7 +137,7 @@
 
     try {
       const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
-      const body = isLogin 
+      const body = isLogin
         ? { email, password }
         : { email, password, firstName, lastName };
 
@@ -78,770 +172,246 @@
 </script>
 
 <svelte:head>
-  <title>YoRHa Legal AI Platform</title>
+  <title>Legal AI Platform - Advanced Case Management & Evidence Analysis</title>
+  <meta name="description" content="Modern legal AI platform for case management, evidence analysis, and legal research with advanced AI-powered search capabilities." />
 </svelte:head>
 
-<div class="home-page">
-  <!-- Session Debug Panel -->
-  <div class="session-debug-panel">
-    <h2 class="debug-title">🔐 Session Debug Panel</h2>
-    
-    {#if data.isAuthenticated}
-      <div class="debug-info authenticated">
-        <p class="status-message">✅ Logged in as: <strong>{data.email}</strong></p>
-        <div class="session-details">
-          <p class="detail-item">
-            <span class="label">User ID:</span>
-            <code class="value">{data.userId}</code>
-          </p>
-          <p class="detail-item">
-            <span class="label">Session ID:</span>
-            <code class="value session-id">{data.sessionId}</code>
-          </p>
-        </div>
-        
-        <div class="session-actions">
-          <a href="/dashboard" class="action-btn dashboard">📊 Go to Dashboard</a>
-          <form method="post" style="display: inline;">
-            <button
-              type="submit"
-              formaction="?/logout"
-              class="action-btn logout"
-            >
-              🔓 Logout
-            </button>
-          </form>
-        </div>
-      </div>
-    {:else}
-      <div class="debug-info not-authenticated">
-        <p class="status-message">❌ Not logged in</p>
-        <div class="session-actions">
-          <a href="/auth/login" class="action-btn login">🔑 Login</a>
-          <a href="/auth/register" class="action-btn register">📝 Register</a>
-        </div>
-      </div>
-    {/if}
-  </div>
-
-  <div class="hero-section">
-    <h1>YoRHa Legal AI Platform</h1>
-    <p class="subtitle">Advanced evidence processing with AI-powered analysis</p>
-  </div>
-  <!-- Authentication Section -->
-  <div class="auth-section" style="text-align: center; margin: 2rem 0;">
-    <Button variant="legal" onclick={() => showAuth = !showAuth}>
-      {showAuth ? 'Hide' : 'Show'} Authentication
-    </Button>
-  </div>
-
-  {#if showAuth}
-    <Card class="max-w-md mx-auto">
-      <h2 class="text-xl font-bold mb-4">{isLogin ? 'Login' : 'Register'}</h2>
-      
-      <form onsubmit={handleAuth} class="space-y-4">
-        <div>
-          <label for="email" class="block text-sm font-medium mb-1">Email</label>
-          <input
-            id="email"
-            type="email"
-            bind:value={email}
-            required
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter your email"
-          />
-        </div>
-
-        <div>
-          <label for="password" class="block text-sm font-medium mb-1">Password</label>
-          <input
-            id="password"
-            type="password"
-            bind:value={password}
-            required
-            minlength="8"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter your password"
-          />
-        </div>
-
-        {#if !isLogin}
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label for="firstName" class="block text-sm font-medium mb-1">First Name</label>
-              <input
-                id="firstName"
-                type="text"
-                bind:value={firstName}
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="First name"
-              />
-            </div>
-            <div>
-              <label for="lastName" class="block text-sm font-medium mb-1">Last Name</label>
-              <input
-                id="lastName"
-                type="text"
-                bind:value={lastName}
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Last name"
-              />
-            </div>
+<!-- Modern Legal AI Platform Homepage -->
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+  <!-- Header -->
+  <header class="bg-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-6">
+        <div class="flex items-center">
+          <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center mr-4">
+            <span class="text-white font-bold text-lg">⚖️</span>
           </div>
-        {/if}
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">Legal AI Platform</h1>
+            <p class="text-sm text-gray-500">Advanced Legal Case Management</p>
+          </div>
+        </div>
 
-        {#if error}
-          <div class="text-red-600 text-sm">{error}</div>
-        {/if}
-
-        {#if message}
-          <div class="text-green-600 text-sm">{message}</div>
-        {/if}
-
-        <Button 
-          type="submit" 
-          variant="legal" 
-          class="w-full"
-          {loading}
-          loadingText={isLogin ? 'Signing in...' : 'Creating account...'}
-        >
-          {isLogin ? 'Sign In' : 'Create Account'}
-        </Button>
-      </form>
-
-      <div class="mt-4 text-center">
-        <button
-          type="button"
-          class="text-blue-600 hover:underline text-sm"
-          onclick={() => {
-            isLogin = !isLogin;
-            error = '';
-            message = '';
-          }}
-        >
-          {isLogin ? 'Need an account? Sign up' : 'Already have an account? Sign in'}
-        </button>
+        <nav class="hidden md:flex items-center space-x-8">
+          <a href="/cases" class="text-gray-700 hover:text-blue-600 font-medium">Cases</a>
+          <a href="/evidence" class="text-gray-700 hover:text-blue-600 font-medium">Evidence</a>
+          <a href="/poi" class="text-gray-700 hover:text-blue-600 font-medium">Person Tracking</a>
+          <a href="/research" class="text-gray-700 hover:text-blue-600 font-medium">Legal Research</a>
+          {#if data.isAuthenticated}
+            <a href="/dashboard" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Dashboard</a>
+          {:else}
+            <a href="/auth/login" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Sign In</a>
+          {/if}
+        </nav>
       </div>
-    </Card>
-  {/if}
+    </div>
+  </header>
 
-  <!-- Quick access CTA: All Routes -->
-  <div class="home-cta" style="text-align:center; margin: 1.5rem 0;">
-    <a href="/all-routes" class="primary-cta">📚 View All Routes</a>
-  </div>
+  <!-- Hero Section with Search -->
+  <section class="relative bg-white py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-5xl font-bold text-gray-900 mb-6">
+          AI-Powered Legal Intelligence
+        </h2>
+        <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+          Streamline case management, evidence analysis, and legal research with advanced artificial intelligence. Search across cases, persons of interest, and legal documents instantly.
+        </p>
 
-  <div class="quick-stats">
-    <div class="stat-card">
-      <h3>System Uptime</h3>
-      <p class="stat-value">{systemInfo.uptime}</p>
-    </div>
-    <div class="stat-card">
-      <h3>Active Services</h3>
-      <p class="stat-value">{systemInfo.activeServices}</p>
-    </div>
-    <div class="stat-card">
-      <h3>Last Sync</h3>
-      <p class="stat-value">{systemInfo.lastSync}</p>
-    </div>
-  </div>
+        <!-- Featured Search Bar -->
+        <div class="max-w-4xl mx-auto mb-8">
+          <UniversalSearchBar
+            placeholder="Search cases, persons of interest, evidence, or documents..."
+            showRecentSearches={true}
+            showTrendingSearches={true}
+            enableAISuggestions={true}
+            on:search={handleSearch}
+            on:select={handleSearchSelect}
+          />
+        </div>
 
-  <!-- Auth Section -->
-  <div class="auth-section">
-    <h2>Access Platform</h2>
-    <div class="auth-buttons">
-      <a href="/auth" class="auth-card unified">
-        <h3>🔐 Login / Register</h3>
-        <p>Unified authentication experience - login or create account</p>
-      </a>
+        <p class="text-sm text-gray-500">
+          Try searching: "fraud investigation", "John Smith", "contract analysis"
+        </p>
+      </div>
     </div>
-    <!-- Legacy buttons for testing -->
-    <div class="auth-buttons legacy">
-      <a href="/auth/login" class="auth-card login">
-        <h3>🔐 Login</h3>
-        <p>Access your account and continue your work</p>
-      </a>
-      <a href="/auth/register" class="auth-card register">
-        <h3>📝 Register</h3>
-        <p>Create a new account to get started</p>
-      </a>
-    </div>
-  </div>
+  </section>
 
-  <div class="action-grid">
-    <a href="/all-routes" class="action-card featured">
-      <h3>📚 All Routes</h3>
-      <p>Comprehensive navigation for all 80+ available routes</p>
-    </a>
-    <a href="/endpoints" class="action-card">
-      <h3>📊 Service Status</h3>
-      <p>Monitor backend services and API endpoints</p>
-    </a>
-    <a href="/demo/enhanced-rag-semantic" class="action-card">
-      <h3>🤖 Enhanced RAG Demo</h3>
-      <p>Test AI semantic search capabilities</p>
-    </a>
-    <a href="/evidence" class="action-card">
-      <h3>📁 Evidence Manager</h3>
-      <p>Upload and analyze legal documents</p>
-    </a>
-    <a href="/chat" class="action-card">
-      <h3>💬 AI Assistant</h3>
-      <p>Interactive legal AI chat interface</p>
-    </a>
-    <a href="/ai-assistant" class="action-card">
-      <h3>🎯 AI Assistant</h3>
-      <p>Advanced AI-powered legal analysis</p>
-    </a>
-  </div>
+  <!-- Services Grid -->
+  <section class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h3 class="text-3xl font-bold text-gray-900 mb-4">Comprehensive Legal Solutions</h3>
+        <p class="text-lg text-gray-600">Everything you need for modern legal case management</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {#each services as service}
+          <div class="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-100 hover:border-blue-200">
+            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+              <span class="text-2xl">{service.icon}</span>
+            </div>
+            <h4 class="text-xl font-semibold text-gray-900 mb-2">{service.title}</h4>
+            <p class="text-gray-600 mb-4">{service.description}</p>
+            <a
+              href={service.link}
+              class="text-blue-600 hover:text-blue-700 font-medium flex items-center"
+            >
+              Learn more →
+            </a>
+          </div>
+        {/each}
+      </div>
+    </div>
+  </section>
+
+  <!-- Statistics Section -->
+  <section class="py-16 bg-blue-600">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h3 class="text-3xl font-bold text-white mb-4">Trusted by Legal Professionals</h3>
+        <p class="text-xl text-blue-100">Our platform delivers results that matter</p>
+      </div>
+
+      <div class="grid md:grid-cols-4 gap-8">
+        <div class="text-center">
+          <div class="text-4xl font-bold text-white mb-2">{stats.cases}</div>
+          <div class="text-blue-100">Cases Managed</div>
+        </div>
+        <div class="text-center">
+          <div class="text-4xl font-bold text-white mb-2">{stats.evidence}</div>
+          <div class="text-blue-100">Evidence Files Processed</div>
+        </div>
+        <div class="text-center">
+          <div class="text-4xl font-bold text-white mb-2">{stats.users}</div>
+          <div class="text-blue-100">Legal Professionals</div>
+        </div>
+        <div class="text-center">
+          <div class="text-4xl font-bold text-white mb-2">{stats.accuracy}</div>
+          <div class="text-blue-100">AI Accuracy Rate</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hero Carousel -->
+  <section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl overflow-hidden shadow-2xl">
+        <div class="relative h-96">
+          {#each heroSlides as slide, index}
+            <div
+              class="absolute inset-0 transition-opacity duration-1000 {index === currentSlide ? 'opacity-100' : 'opacity-0'}"
+            >
+              <div class="flex h-full">
+                <div class="flex-1 flex items-center p-12 text-white">
+                  <div>
+                    <h3 class="text-4xl font-bold mb-4">{slide.title}</h3>
+                    <p class="text-xl mb-6 text-blue-100">{slide.subtitle}</p>
+                    <button
+                      class="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+                    >
+                      {slide.cta}
+                    </button>
+                  </div>
+                </div>
+                <div class="flex-1 flex items-center justify-center">
+                  <div class="w-80 h-48 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                    <span class="text-6xl text-white opacity-50">📊</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {/each}
+
+          <!-- Carousel Indicators -->
+          <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+            {#each heroSlides as _, index}
+              <button
+                class="w-3 h-3 rounded-full transition-all duration-300 {index === currentSlide ? 'bg-white' : 'bg-white bg-opacity-40'}"
+                on:click={() => currentSlide = index}
+                aria-label="Go to slide {index + 1}"
+              ></button>
+            {/each}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-16 bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h3 class="text-3xl font-bold text-white mb-4">Ready to Transform Your Legal Practice?</h3>
+      <p class="text-xl text-gray-300 mb-8">Join hundreds of legal professionals already using our platform</p>
+      <div class="flex justify-center space-x-4">
+        {#if data.isAuthenticated}
+          <a href="/dashboard" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+            Go to Dashboard
+          </a>
+        {:else}
+          <a href="/auth/register" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+            Start Free Trial
+          </a>
+          <a href="/auth/login" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-gray-900 transition-colors">
+            Sign In
+          </a>
+        {/if}
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-50 py-12 border-t border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid md:grid-cols-4 gap-8">
+        <div>
+          <div class="flex items-center mb-4">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
+              <span class="text-white font-bold">⚖️</span>
+            </div>
+            <span class="text-xl font-bold text-gray-900">Legal AI</span>
+          </div>
+          <p class="text-gray-600">Advanced legal technology for modern law practices.</p>
+        </div>
+
+        <div>
+          <h4 class="font-semibold text-gray-900 mb-4">Platform</h4>
+          <ul class="space-y-2">
+            <li><a href="/cases" class="text-gray-600 hover:text-blue-600">Case Management</a></li>
+            <li><a href="/evidence" class="text-gray-600 hover:text-blue-600">Evidence Analysis</a></li>
+            <li><a href="/poi" class="text-gray-600 hover:text-blue-600">Person Tracking</a></li>
+            <li><a href="/research" class="text-gray-600 hover:text-blue-600">Legal Research</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-semibold text-gray-900 mb-4">System</h4>
+          <ul class="space-y-2">
+            <li><a href="/all-routes" class="text-gray-600 hover:text-blue-600">All Features</a></li>
+            <li><a href="/yorha" class="text-gray-600 hover:text-blue-600">Advanced Interface</a></li>
+            <li><a href="/api-docs" class="text-gray-600 hover:text-blue-600">API Documentation</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-semibold text-gray-900 mb-4">System Status</h4>
+          <ul class="space-y-2 text-sm">
+            <li class="text-gray-600">Uptime: <span class="text-green-600 font-medium">{systemInfo.uptime}</span></li>
+            <li class="text-gray-600">Services: <span class="text-blue-600 font-medium">{systemInfo.activeServices}</span></li>
+            <li class="text-gray-600">Last Sync: <span class="text-gray-500">{systemInfo.lastSync}</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="border-t border-gray-200 mt-8 pt-8 text-center">
+        <p class="text-gray-500">&copy; 2024 Legal AI Platform. Advanced case management and evidence analysis.</p>
+      </div>
+    </div>
+  </footer>
 </div>
 
 <style>
-  .home-page {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-
-  .hero-section {
-    text-align: center;
-    margin-bottom: 3rem;
-  }
-
-  .hero-section h1 {
-    font-size: 2.5rem;
-    color: #ffd700;
-    margin-bottom: 1rem;
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-  }
-
-  .subtitle {
-    font-size: 1.2rem;
-    color: #b0b0b0;
-    margin-bottom: 2rem;
-  }
-
-  .session-status {
-    background: #2a2a2a;
-    border: 2px solid #444;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin: 1.5rem 0;
-    max-width: 500px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .session-status.authenticated {
-    border-color: #00ff41;
-    background: linear-gradient(135deg, rgba(0, 255, 65, 0.1) 0%, rgba(0, 255, 65, 0.05) 100%);
-  }
-
-  .session-status.not-authenticated {
-    border-color: #ff6b35;
-    background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(255, 107, 53, 0.05) 100%);
-  }
-
-  .session-status p {
-    margin: 0 0 1rem 0;
-    text-align: center;
-    font-size: 1.1rem;
-    color: #e0e0e0;
-  }
-
-  .session-links {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-
-  .session-link {
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
-  }
-
-  .session-link.dashboard {
-    background: #ffd700;
-    color: #1a1a1a;
-    border: 2px solid #ffd700;
-  }
-
-  .session-link.dashboard:hover {
-    background: #ffed4e;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
-  }
-
-  .session-link.login {
-    background: #00ff41;
-    color: #1a1a1a;
-    border: 2px solid #00ff41;
-  }
-
-  .session-link.login:hover {
-    background: #33ff66;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 255, 65, 0.3);
-  }
-
-  .session-link.register {
-    background: #ff6b35;
-    color: white;
-    border: 2px solid #ff6b35;
-  }
-
-  .session-link.register:hover {
-    background: #ff8555;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
-  }
-
-  .session-detail {
-    background: #1a1a1a;
-    border: 1px solid #444;
-    padding: 0.25rem 0.75rem;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    color: #b0b0b0;
-  }
-
-  .session-detail code {
-    color: #ffd700;
-    font-family: 'JetBrains Mono', monospace;
-  }
-
-  /* Session Debug Panel Styles */
-  .session-debug-panel {
-    background: #1a1a1a;
-    border: 2px solid #ffd700;
-    border-radius: 12px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
-  }
-
-  .debug-title {
-    color: #ffd700;
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin: 0 0 1.5rem 0;
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-  }
-
-  .debug-info {
-    background: #2a2a2a;
-    border-radius: 8px;
-    padding: 1.5rem;
-  }
-
-  .debug-info.authenticated {
-    border: 2px solid #00ff41;
-    background: linear-gradient(135deg, rgba(0, 255, 65, 0.1) 0%, rgba(0, 255, 65, 0.05) 100%);
-  }
-
-  .debug-info.not-authenticated {
-    border: 2px solid #ff6b35;
-    background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(255, 107, 53, 0.05) 100%);
-  }
-
-  .status-message {
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin: 0 0 1.5rem 0;
-    text-align: center;
-    color: #e0e0e0;
-  }
-
-  .session-details {
-    margin: 1rem 0;
-    padding: 1rem;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 6px;
-    border: 1px solid #444;
-  }
-
-  .detail-item {
-    margin: 0.5rem 0;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  .detail-item .label {
-    font-weight: bold;
-    color: #ffd700;
-    min-width: 80px;
-  }
-
-  .detail-item .value {
-    background: #1a1a1a;
-    color: #00ff41;
-    padding: 0.25rem 0.75rem;
-    border-radius: 4px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.9rem;
-    border: 1px solid #333;
-  }
-
-  .detail-item .session-id {
-    color: #ffd700;
-    font-size: 0.8rem;
-    word-break: break-all;
-  }
-
-  .session-actions {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-    margin-top: 1.5rem;
-  }
-
-  .action-btn {
-    padding: 0.75rem 1.5rem;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 0.9rem;
-    border: 2px solid;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    font-family: inherit;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .action-btn.dashboard {
-    background: #ffd700;
-    color: #1a1a1a;
-    border-color: #ffd700;
-  }
-
-  .action-btn.dashboard:hover {
-    background: #ffed4e;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
-  }
-
-  .action-btn.login {
-    background: #00ff41;
-    color: #1a1a1a;
-    border-color: #00ff41;
-  }
-
-  .action-btn.login:hover {
-    background: #33ff66;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 255, 65, 0.4);
-  }
-
-  .action-btn.register {
-    background: #ff6b35;
-    color: white;
-    border-color: #ff6b35;
-  }
-
-  .action-btn.register:hover {
-    background: #ff8555;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
-  }
-
-  .action-btn.logout {
-    background: #ff0041;
-    color: white;
-    border-color: #ff0041;
-  }
-
-  .action-btn.logout:hover {
-    background: #ff3366;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(255, 0, 65, 0.4);
-  }
-
-  .quick-stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-bottom: 3rem;
-  }
-
-  .stat-card {
-    background: #2a2a2a;
-    border: 1px solid #444;
-    border-radius: 8px;
-    padding: 1.5rem;
-    text-align: center;
-  }
-
-  .stat-card h3 {
-    margin: 0 0 0.5rem 0;
-    color: #ffd700;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  .stat-value {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #00ff41;
-    margin: 0;
-    font-family: 'JetBrains Mono', monospace;
-  }
-
-  .action-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .action-card {
-    background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
-    border: 1px solid #444;
-    border-radius: 8px;
-    padding: 2rem;
-    text-decoration: none;
-    color: inherit;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .action-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
-    transition: left 0.5s;
-  }
-
-  .action-card:hover::before {
-    left: 100%;
-  }
-
-  .action-card:hover {
-    border-color: #ffd700;
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
-    transform: translateY(-2px);
-  }
-
-  .action-card h3 {
-    margin: 0 0 1rem 0;
-    color: #ffd700;
-    font-size: 1.2rem;
-  }
-
-  .action-card p {
-    margin: 0;
-    color: #b0b0b0;
-    line-height: 1.5;
-  }
-
-  .action-card.featured {
-    background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
-    color: #1a1a1a;
-    border-color: #ffd700;
-    box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
-  }
-
-  .action-card.featured h3 {
-    color: #1a1a1a;
-    text-shadow: none;
-  }
-
-  .action-card.featured p {
-    color: #333;
-  }
-
-  /* Auth Section Styles with UnoCSS/PostCSS YoRHa Theme */
-  .auth-section {
-    margin-bottom: 3rem;
-    text-align: center;
-  }
-
-  .auth-section h2 {
-    color: #ffd700;
-    font-size: 2rem;
-    margin: 0 0 2rem 0;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-  }
-
-  .auth-buttons {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 2rem;
-    max-width: 800px;
-    margin: 0 auto;
-  }
-
-  .auth-card {
-    background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
-    border: 2px solid #444;
-    border-radius: 12px;
-    padding: 2.5rem;
-    text-decoration: none;
-    color: inherit;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-    min-height: 120px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .auth-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.15), transparent);
-    transition: left 0.6s;
-  }
-
-  .auth-card:hover::before {
-    left: 100%;
-  }
-
-  .auth-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 30px rgba(255, 215, 0, 0.25);
-  }
-
-  .auth-card.login:hover {
-    border-color: #00ff41;
-    box-shadow: 0 8px 30px rgba(0, 255, 65, 0.25);
-  }
-
-  .auth-card.register:hover {
-    border-color: #ff6b35;
-    box-shadow: 0 8px 30px rgba(255, 107, 53, 0.25);
-  }
-
-  .auth-card h3 {
-    margin: 0 0 1rem 0;
-    font-size: 1.5rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  .auth-card.login h3 {
-    color: #00ff41;
-    text-shadow: 0 0 8px rgba(0, 255, 65, 0.4);
-  }
-
-  .auth-card.register h3 {
-    color: #ff6b35;
-    text-shadow: 0 0 8px rgba(255, 107, 53, 0.4);
-  }
-
-  .auth-card p {
-    margin: 0;
-    color: #b0b0b0;
-    font-size: 1rem;
-    line-height: 1.4;
-    text-align: center;
-  }
-
-  .auth-card:hover p {
-    color: #e0e0e0;
-  }
-
-  /* Unified Auth Button Styling */
-  .auth-card.unified {
-    background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
-    color: #1a1a1a;
-    border-color: #ffd700;
-    box-shadow: 0 8px 30px rgba(255, 215, 0, 0.3);
-    min-height: 140px;
-    margin-bottom: 2rem;
-  }
-
-  .auth-card.unified h3 {
-    color: #1a1a1a !important;
-    text-shadow: none !important;
-    font-size: 1.8rem;
-  }
-
-  .auth-card.unified p {
-    color: #333 !important;
-    font-weight: 500;
-  }
-
-  .auth-card.unified:hover {
-    background: linear-gradient(135deg, #ffed4e 0%, #ff9a00 100%);
-    border-color: #ffed4e;
-    box-shadow: 0 12px 40px rgba(255, 215, 0, 0.4);
-    transform: translateY(-5px);
-  }
-
-  .auth-card.unified:hover p {
-    color: #222 !important;
-  }
-
-  /* Legacy buttons styling */
-  .auth-buttons.legacy {
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid #444;
-    opacity: 0.7;
-  }
-
-  .auth-buttons.legacy .auth-card {
-    min-height: 100px;
-    padding: 1.5rem;
-  }
-
-  .auth-buttons.legacy .auth-card h3 {
-    font-size: 1.2rem;
-  }
-
-  .auth-buttons.legacy .auth-card p {
-    font-size: 0.9rem;
-  }
-
-  /* Single column for unified button */
-  .auth-buttons:not(.legacy) {
-    grid-template-columns: 1fr;
-    max-width: 600px;
-  }
-
-  /* Home CTA Button */
-  .home-cta .primary-cta {
-    display: inline-block;
-    padding: 0.75rem 1.25rem;
-    background: linear-gradient(90deg, #ffd700, #ff8c00);
-    color: #1a1a1a;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 700;
-    box-shadow: 0 6px 18px rgba(255, 160, 0, 0.15);
-    transition: all 0.3s ease;
-  }
-
-  .home-cta .primary-cta:hover {
-    background: linear-gradient(90deg, #ffed4e, #ff9a00);
-    box-shadow: 0 8px 25px rgba(255, 160, 0, 0.3);
-    transform: translateY(-2px);
-  }
+  /* Modern website styling using Tailwind utilities */
+  /* Additional responsive behaviors handled by Tailwind classes in template */
 </style>

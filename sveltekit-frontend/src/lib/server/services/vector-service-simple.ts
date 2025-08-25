@@ -3,7 +3,8 @@
 // This is a temporary simple version to resolve TypeScript errors
 
 import { userEmbeddings } from "$lib/server/database/vector-schema-simple";
-// TODO: Fix import - // Orphaned content: import {  import { desc, eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
+import { db } from "$lib/database/schema";
 
 export interface EmbeddingOptions {
   contentType?: string;

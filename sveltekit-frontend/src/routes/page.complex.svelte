@@ -1,11 +1,10 @@
 <!-- Modern Dark YoRHa Legal AI Platform -->
 <script lang="ts">
-  import { $state } from 'svelte';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
-  import { 
-    FileText, 
-    Users, 
+  import {
+    FileText,
+    Users,
     Activity,
     AlertTriangle,
     CheckCircle2,
@@ -112,14 +111,14 @@
         </div>
       </div>
       <div class="flex items-center space-x-3">
-        <button 
+        <button
           class="yorha-btn yorha-btn-primary"
           onclick={handleNewCase}
         >
           <Plus class="w-4 h-4 mr-2" />
           NEW CASE
         </button>
-        <button 
+        <button
           class="yorha-btn yorha-btn-secondary"
           onclick={handleGlobalSearch}
         >
@@ -138,7 +137,7 @@
           <Database class="w-4 h-4" />
           <span>COMMAND CENTER</span>
         </div>
-        
+
         <a href="/cases" class="yorha-nav-item">
           <Folder class="w-4 h-4" />
           <span>ACTIVE CASES</span>
@@ -244,7 +243,7 @@
           <div class="yorha-card yorha-slide-in">
             <div class="yorha-card-header flex items-center justify-between">
               <h2 class="yorha-card-title">ACTIVE CASES</h2>
-              <button 
+              <button
                 class="yorha-btn yorha-btn-ghost text-sm"
                 onclick={handleViewAll}
               >
@@ -365,7 +364,7 @@
   .col-span-2 {
     grid-column: span 2;
   }
-  
+
   .justify-start {
     justify-content: flex-start;
   }

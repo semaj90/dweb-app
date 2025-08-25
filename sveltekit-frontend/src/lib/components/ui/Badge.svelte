@@ -1,15 +1,18 @@
 <script lang="ts">
-  // Svelte runes are provided by the compiler/runtime; don't import them.
+  import type { Snippet } from 'svelte';
+  
   interface Props {
     variant?: 'default' | 'secondary' | 'destructive' | 'outline';
     size?: 'default' | 'sm' | 'lg';
     class?: string;
+    children?: Snippet;
   }
 
   let {
     variant = 'default',
     size = 'default',
-    class: className = ''
+    class: className = '',
+    children
   }: Props = $props();
 
   const variants = {
@@ -25,14 +28,14 @@
     lg: 'px-3 py-1 text-sm'
   };
 
-  $: classes = [
+  let classes = $derived([
     'inline-flex items-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
     variants[variant],
     sizes[size],
     className
-  ].filter(Boolean).join(' ');
+  ].filter(Boolean).join(' '));
 </script>
 
 <span class={classes}>
-  <slot />
+  {@render children?.()}
 </span>

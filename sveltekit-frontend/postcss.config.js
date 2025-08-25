@@ -8,7 +8,8 @@ export default {
       },
       features: {
         'custom-properties': true,
-        'color-mod-function': { unresolved: 'warn' }
+        // Removed deprecated 'color-mod-function'
+        'color-function': false // Use modern color() function instead
       }
     }
   },

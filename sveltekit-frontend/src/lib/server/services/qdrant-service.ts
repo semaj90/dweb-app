@@ -32,8 +32,7 @@ class QdrantService {
 
   constructor() {
     this.client = new QdrantClient({
-      host: import.meta.env.QDRANT_HOST || "localhost",
-      port: parseInt(import.meta.env.QDRANT_PORT || "6333"),
+      url: `http://${import.meta.env.QDRANT_HOST || "localhost"}:${parseInt(import.meta.env.QDRANT_PORT || "6333")}`,
       apiKey: import.meta.env.QDRANT_API_KEY,
     });
   }
@@ -60,17 +59,17 @@ class QdrantService {
         });
 
         // Production indexes
-        await this.client.createPayloadIndex(this.collectionName, {
+        await this.client.createFieldIndex(this.collectionName, {
           field_name: "type",
-          field_schema: "keyword",
+          field_type: "keyword",
         });
-        await this.client.createPayloadIndex(this.collectionName, {
+        await this.client.createFieldIndex(this.collectionName, {
           field_name: "caseId", 
-          field_schema: "keyword",
+          field_type: "keyword",
         });
-        await this.client.createPayloadIndex(this.collectionName, {
+        await this.client.createFieldIndex(this.collectionName, {
           field_name: "aiSummaryScore",
-          field_schema: "integer",
+          field_type: "integer",
         });
       }
       this.isInitialized = true;

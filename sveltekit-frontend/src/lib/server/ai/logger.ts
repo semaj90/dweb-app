@@ -4,6 +4,6 @@ export const logger = {
   warn: (...args: any[]) => console.warn('[WARN]', ...args),
   error: (...args: any[]) => console.error('[ERROR]', ...args),
   debug: (...args: any[]) => {
-    if (import.meta.env.DEBUG) console.debug('[DEBUG]', ...args);
+    if (process.env.DEBUG) console.debug('[DEBUG]', ...args);
   },
 };

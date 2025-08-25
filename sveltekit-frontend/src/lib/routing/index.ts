@@ -4,6 +4,9 @@
  */
 
 import type { DynamicRouteConfig, GeneratedRoute } from './dynamic-route-generator';
+import type { RouteDefinition } from '$lib/data/routes-config';
+import { getAllDynamicRoutes } from './dynamic-route-generator';
+import { registerDynamicRoute, getRoute } from './route-registry';
 
 // Core route generation
 export {
@@ -195,6 +198,20 @@ export class RouteBuilder {
    * Build and register the route
    */
   build(): GeneratedRoute {
+    const route: GeneratedRoute = {
+      id: this.routeId,
+      path: this.routePath,
+      component: this.config.component || 'default',
+      params: this.config.params || {},
+      metadata: {
+        category: this.config.template || 'default',
+        status: 'active',
+        tags: [],
+        preload: this.config.preload || false,
+        ssr: this.config.ssr || true,
+        hydrate: this.config.hydrate || true
+      }
+    };
     return registerDynamicRoute(this.routeId, this.routePath, this.config);
   }
 
@@ -225,9 +242,10 @@ export function registerRoutes(routes: Array<{
   path: string;
   config?: Partial<DynamicRouteConfig>;
 }>): GeneratedRoute[] {
-  return routes.map(route => 
-    registerDynamicRoute(route.id, route.path, route.config)
-  );
+  return routes.map(route => {
+    const config = route.config || {};
+    return registerDynamicRoute(route.id, route.path, config);
+  });
 }
 
 /**
@@ -352,18 +370,18 @@ export function debugRoutes(): {
     status?: string;
   }>;
 } {
-  const allRoutes = getAllDynamicRoutes();
-  const staticRoutesFromRegistry = Array.from((routeRegistry.getState() as any).routes || new Map());
+  const dynamicRoutes = getAllDynamicRoutes();
+  const staticRoutesFromRegistry: Array<[string, RouteDefinition]> = [];
   
   const routeList = [
     ...staticRoutesFromRegistry.map(([id, route]) => ({
       id,
-      path: route.route,
+      path: route.route || '',
       type: 'static' as const,
       category: route.category,
       status: route.status
     })),
-    ...allRoutes.map(route => ({
+    ...dynamicRoutes.map(route => ({
       id: route.id,
       path: route.path,
       type: 'dynamic' as const,
@@ -375,7 +393,7 @@ export function debugRoutes(): {
   return {
     totalRoutes: routeList.length,
     staticRoutes: staticRoutesFromRegistry.length,
-    dynamicRoutes: allRoutes.length,
+    dynamicRoutes: dynamicRoutes.length,
     routeList
   };
 }

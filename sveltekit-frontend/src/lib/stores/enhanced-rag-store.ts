@@ -5,26 +5,12 @@
  */
 
 import { writable, derived } from "svelte/store";
+import type { RAGDocument } from '$lib/types/rag';
 
-// Type definitions
-export interface RAGDocument {
-  id: string;
-  title: string;
-  content: string;
-  type: 'legal' | 'case' | 'evidence' | 'research' | 'document';
-  metadata: {
-    source: string;
-    type: string;
-    jurisdiction: string;
-    practiceArea: string[];
-    confidentialityLevel: number;
-    lastModified: Date;
-    fileSize: number;
-    language: string;
-    tags: string[];
-  };
-  version: string;
-}
+// Type definitions - using shared RAGDocument type
+export type { RAGDocument } from '$lib/types/rag';
+
+// All other interfaces remain the same, using the shared RAGDocument type
 
 export interface SearchResult {
   id: string;

@@ -280,13 +280,14 @@ class MonitoringService extends EventEmitter {
 
     for (const [name, values] of this.metrics) {
       if (values.length > 0) {
+        const numericValues = values.filter((v): v is number => typeof v === 'number');
         metrics[name] = {
-          count: values.length,
-          min: Math.min(...values),
-          max: Math.max(...values),
-          mean: values.reduce((a, b) => a + b, 0) / values.length,
-          latest: values[values.length - 1],
-          trend: this.calculateTrend(values),
+          count: numericValues.length,
+          min: numericValues.length > 0 ? Math.min(...numericValues) : 0,
+          max: numericValues.length > 0 ? Math.max(...numericValues) : 0,
+          mean: numericValues.length > 0 ? numericValues.reduce((a, b) => a + b, 0) / numericValues.length : 0,
+          latest: numericValues[numericValues.length - 1] || 0,
+          trend: this.calculateTrend(numericValues),
         };
       }
     }
@@ -526,7 +527,15 @@ class MonitoringService extends EventEmitter {
       },
     };
 
-    this.metrics.push(data);
+    // Ensure metrics is typed as array, not Map
+    if (Array.isArray(this.metrics)) {
+      this.metrics.push(data);
+    } else {
+      // Handle case where metrics might be a Map
+      const metricsList = this.metrics.get(metric) || [];
+      metricsList.push(value);
+      this.metrics.set(metric, metricsList);
+    }
     this.emit('metric:recorded', data);
 
     logger.debug(`[Monitoring] Recorded metric ${metric}: ${value}`, labels);

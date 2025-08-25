@@ -398,10 +398,11 @@ describe('Evidence Operations Integration Tests', () => {
       expect(updatedEvidence.description).toBe('Updated description');
       expect(updatedEvidence.tags).toEqual(['updated', 'test']);
       expect(updatedEvidence.chainOfCustody).toBeInstanceOf(Array);
-      expect(updatedEvidence.chainOfCustody.length).toBeGreaterThan(0);
+      const chainOfCustody = updatedEvidence.chainOfCustody as any[];
+      expect(chainOfCustody.length).toBeGreaterThan(0);
 
       // Check chain of custody entry
-      const lastEntry = updatedEvidence.chainOfCustody[updatedEvidence.chainOfCustody.length - 1];
+      const lastEntry = chainOfCustody[chainOfCustody.length - 1];
       expect(lastEntry.action).toBe('updated');
       expect(lastEntry.updatedBy).toBe(testUser.id);
       expect(lastEntry.notes).toBe('Evidence updated for testing');

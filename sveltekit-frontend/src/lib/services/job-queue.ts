@@ -40,11 +40,11 @@ type JobData = DocumentExtractionJob | EmbeddingJob | TensorProcessingJob | Vect
 
 // Redis connection configuration
 const redisConfig = {
-  host: import.meta.env.REDIS_HOST || 'localhost',
-  port: parseInt(import.meta.env.REDIS_PORT || '6379'),
-  password: import.meta.env.REDIS_PASSWORD,
+  host: process.env.REDIS_HOST || 'localhost',
+  port: parseInt(process.env.REDIS_PORT || '6379'),
+  password: process.env.REDIS_PASSWORD,
   maxRetriesPerRequest: 3,
-  retryDelayOnFailover: 100,
+  // retryDelayOnFailover: 100, // removed - deprecated in ioredis v5+
   lazyConnect: true,
 };
 

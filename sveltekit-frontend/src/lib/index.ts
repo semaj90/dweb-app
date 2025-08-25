@@ -3,11 +3,24 @@
  * SvelteKit 2 + Svelte 5 + TypeScript
  * 
  * Centralized export file for all components, services, stores, and utilities
+ * "Wire it up" - TypeScript polyfills and WebAssembly/WebGPU fallbacks
  */
+
+// SvelteKit 2 Polyfills - Import first to ensure module availability
+import './polyfills.js';
+import { barrelStore } from './stores/barrel-functions.js';
+
+// Enhanced Type Definitions - Import to register module augmentations
+import './types/drizzle-enhanced.js';
+import './types/lokijs-enhanced.js';
 
 // ===== CORE UI COMPONENTS =====
 export { default as Button } from './components/ui/Button.svelte';
 export { default as Card } from './components/ui/Card.svelte';
+
+// ===== LAYOUT COMPONENTS =====
+export { default as PageLayout } from './components/layout/PageLayout.svelte';
+export { default as ContentSection } from './components/layout/ContentSection.svelte';
 
 // ===== UTILITIES & TYPES =====
 export { 
@@ -100,11 +113,101 @@ export const DEV_TOOLS = {
   SERVICE_COUNT: 12
 } as const;
 
+// ===== BARREL STORE - MISSING FUNCTIONS & METHODS =====
+export { 
+  barrelStore,
+  testingFramework,
+  cacheLayerMethods,
+  databaseEntityProperties,
+  webGPUExtendedMethods,
+  lokiCollectionMethods,
+  configurationProperties,
+  utilityFunctions
+} from './stores/barrel-functions.js';
+
+// ===== DATABASE COMPATIBILITY LAYER =====
+export {
+  default as drizzleCompatibilityFix,
+  drizzleCompatibilityLayer,
+  handleQueryResult,
+  safePropertyAccess,
+  vectorOperations,
+  ensureConnection,
+  enhanceResultWithTypes,
+  entityEnhancers,
+  createTypeSafeQuery
+} from './database/drizzle-compatibility-fix.js';
+
+// Make barrel store globally available
+if (typeof globalThis !== 'undefined') {
+  globalThis.barrelStore = barrelStore;
+}
+
+// ===== ENHANCED SERVICES & STORES =====
+
+// Global User Store with Svelte 5 Runes
+export { default as globalUserStore } from './stores/global-user-store.svelte.js';
+
+// Search Services with Fuse.js Integration
+export { 
+  searchService, 
+  globalSearch, 
+  searchServices, 
+  searchComponents, 
+  searchDocumentation, 
+  searchDemos 
+} from './services/search-service.js';
+
+// Hybrid Vector Operations
+export { 
+  hybridVectorService, 
+  hybridSearch, 
+  syncVectorData, 
+  getVectorSystemHealth 
+} from './services/hybrid-vector-operations.js';
+
+// Search Types
+export type {
+  SearchResult,
+  SearchCategory,
+  SearchOptions,
+  SearchFilter,
+  SearchState
+} from './types/search.types.js';
+
 // Default export for convenience
 export default {
   VERSION,
   BUILD_DATE,
   FRAMEWORK_INFO,
   FEATURES,
-  DEV_TOOLS
+  DEV_TOOLS,
+  barrelStore
+};
+
+// ===== TYPESCRIPT ERROR RESOLUTION UTILITIES =====
+export const typeScriptErrorResolution = {
+  // Utility to enhance objects with missing properties
+  enhanceWithMissingProperties: <T extends object>(obj: T, properties: Partial<T>): T => {
+    return { ...obj, ...properties };
+  },
+  
+  // Safe property access with type assertions
+  safeAccess: <T>(obj: any, path: string, defaultValue: T): T => {
+    const keys = path.split('.');
+    let current = obj;
+    for (const key of keys) {
+      if (current && typeof current === 'object' && key in current) {
+        current = current[key];
+      } else {
+        return defaultValue;
+      }
+    }
+    return current;
+  },
+  
+  // Type assertion with fallback
+  assertType: <T>(value: any, fallback: T): T => {
+    return value !== null && value !== undefined ? value : fallback;
+  }
 };

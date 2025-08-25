@@ -22,13 +22,9 @@ import type { InferSelectModel, InferInsertModel } from "drizzle-orm";
 import { 
   cases, 
   evidence, 
-  reports, 
-  users, 
-  criminals,
-  personsOfInterest,
-  legalDocuments,
-  notes
-} from './unified-schema';
+  users,
+  documentMetadata
+} from './schema-unified';
 
 // ===== CORE ENTITY TYPES =====
 
@@ -139,8 +135,8 @@ export type UserWithRelations = User & {
 export type CriminalWithRelations = Criminal & {
   cases?: Case[];
   evidence?: Evidence[];
-  timeline?: CaseTimeline[];
-  conflictChecks?: ConflictCheck[];
+  // timeline?: CaseTimeline[];  // Removed - table doesn't exist
+  // conflictChecks?: ConflictCheck[];  // Removed - table doesn't exist
 };
 
 /**
@@ -148,8 +144,8 @@ export type CriminalWithRelations = Criminal & {
  */
 export type PersonOfInterestWithRelations = PersonOfInterest & {
   cases?: Case[];
-  timeline?: CaseTimeline[];
-  conflictChecks?: ConflictCheck[];
+  // timeline?: CaseTimeline[];  // Removed - table doesn't exist
+  // conflictChecks?: ConflictCheck[];  // Removed - table doesn't exist
 };
 
 // ===== SPECIALIZED TYPES =====
@@ -383,19 +379,7 @@ export {
   criminals,
   personsOfInterest,
   legalDocuments,
-  notes,
-  caseAssignments,
-  evidenceChainOfCustody,
-  complianceAudits,
-  legalHolds,
-  courtFilings,
-  clientCommunications,
-  billableTime,
-  caseTimeline,
-  documentReviews,
-  privilegeLog,
-  conflictChecks,
-  caseCollaborations
+  notes
 } from './unified-schema';
 
 // ===== TYPE GUARDS =====
@@ -427,49 +411,12 @@ export function isPrivileged(entity: { confidentialityLevel?: string }): boolean
          entity.confidentialityLevel === 'privileged';
 }
 
-/**
- * Type guard for checking if entity has audit trail
- */
-export function hasAuditTrail(entity: any): entity is EntityWithAudit {
-  return entity && entity.id && entity.createdAt && entity.updatedAt;
-}
+// Duplicate function removed - already defined above
 
 // ===== DEFAULT EXPORTS =====
 
 export default {
-  // Core types
-  Case,
-  Evidence,
-  Report,
-  User,
-  Criminal,
-  PersonOfInterest,
-  LegalDocument,
-  Note,
-  
-  // Extended types - to be implemented
-  // CaseAssignment, EvidenceChainOfCustody, etc. - pending schema implementation
-  
-  // Relationship types
-  CaseWithRelations,
-  EvidenceWithRelations,
-  ReportWithRelations,
-  LegalDocumentWithRelations,
-  UserWithRelations,
-  CriminalWithRelations,
-  PersonOfInterestWithRelations,
-  
-  // Utility types
-  EntityWithTimestamps,
-  EntityWithAudit,
-  EntityWithCompliance,
-  SearchResult,
-  PaginatedResults,
-  LegalAnalysisResult,
-  DocumentClassification,
-  ChainOfCustodyEntry,
-  
-  // Type guards
+  // Type guards and utility functions only (types cannot be exported as values)
   hasLegalCompliance,
   hasAuditTrail,
   isPrivileged

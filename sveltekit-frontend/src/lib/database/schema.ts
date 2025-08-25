@@ -21,12 +21,7 @@ export const users = pgTable('users', {
   twoFactorSecret: text('two_factor_secret'),
   twoFactorEnabled: boolean('two_factor_enabled').default(false),
   profilePicture: text('profile_picture'),
-  preferences: json('preferences').$type<{
-    theme?: 'light' | 'dark' | 'system';
-    notifications?: boolean;
-    language?: string;
-    timezone?: string;
-  }>().default({}),
+  preferences: json('preferences').default(sql`'{}'::json`),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });
@@ -48,13 +43,7 @@ export const userAuditLogs = pgTable('user_audit_logs', {
   action: varchar('action', { length: 100 }).notNull(), // login, logout, password_change, profile_update, etc.
   ipAddress: varchar('ip_address', { length: 45 }),
   userAgent: text('user_agent'),
-  metadata: json('metadata').$type<{
-    previousValues?: Record<string, unknown>;
-    newValues?: Record<string, unknown>;
-    success?: boolean;
-    errorMessage?: string;
-    [key: string]: unknown;
-  }>(),
+  metadata: json('metadata'),
   createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -83,14 +72,8 @@ export const documents = pgTable('documents', {
   content: text('content'), // Extracted text content
   extractedText: text('extracted_text'), // Full extracted text for search
   embedding: vector('embedding', { dimensions: 1536 }), // OpenAI ada-002 or similar
-  metadata: json('metadata').$type<{
-    pageCount?: number;
-    extractionMethod?: string;
-    confidence?: number;
-    language?: string;
-    [key: string]: unknown;
-  }>(),
-  tags: json('tags').$type<string[]>().default([]),
+  metadata: json('metadata'),
+  tags: json('tags').default(sql`'[]'::json`),
   isIndexed: boolean('is_indexed').default(false),
   source: varchar('source', { length: 100 }).default('upload'), // upload, scan, email, etc.
   createdBy: uuid('created_by').references(() => users.id),
@@ -107,28 +90,11 @@ export const evidence = pgTable('evidence', {
   description: text('description'),
   evidenceType: varchar('evidence_type', { length: 50 }), // document, image, video, audio, physical
   hash: varchar('hash', { length: 256 }), // File integrity hash
-  chainOfCustody: json('chain_of_custody').$type<Array<{
-    timestamp: string;
-    handler: string;
-    action: string;
-    location: string;
-  }>>().default([]),
+  chainOfCustody: json('chain_of_custody').default(sql`'[]'::json`),
   isAdmissible: boolean('is_admissible'),
   admissibilityNotes: text('admissibility_notes'),
-  tags: json('tags').$type<string[]>().default([]),
-  aiAnalysis: json('ai_analysis').$type<{
-    summary?: string;
-    keyPoints?: string[];
-    relevance?: number;
-    confidence?: number;
-    recommendations?: string[];
-    risks?: string[];
-    extractedEntities?: Array<{
-      type: string;
-      value: string;
-      confidence: number;
-    }>;
-  }>(),
+  tags: json('tags').default(sql`'[]'::json`),
+  aiAnalysis: json('ai_analysis'),
   createdBy: uuid('created_by').references(() => users.id),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
@@ -146,21 +112,8 @@ export const aiInteractions = pgTable('ai_interactions', {
   tokensUsed: integer('tokens_used'),
   responseTime: integer('response_time'), // milliseconds
   confidence: integer('confidence'), // 0-100
-  feedback: json('feedback').$type<{
-    rating?: number; // 1-5
-    helpful?: boolean;
-    notes?: string;
-  }>(),
-  metadata: json('metadata').$type<{
-    temperature?: number;
-    maxTokens?: number;
-    sources?: Array<{
-      id: string;
-      title: string;
-      relevance: number;
-    }>;
-    [key: string]: unknown;
-  }>(),
+  feedback: json('feedback'),
+  metadata: json('metadata'),
   createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -171,12 +124,7 @@ export const searchIndex = pgTable('search_index', {
   entityId: uuid('entity_id').notNull(),
   content: text('content').notNull(),
   embedding: vector('embedding', { dimensions: 1536 }),
-  metadata: json('metadata').$type<{
-    title?: string;
-    tags?: string[];
-    relevanceScore?: number;
-    [key: string]: unknown;
-  }>(),
+  metadata: json('metadata'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });
@@ -245,3 +193,9 @@ export type NewAIInteraction = typeof aiInteractions.$inferInsert;
 
 export type SearchIndex = typeof searchIndex.$inferSelect;
 export type NewSearchIndex = typeof searchIndex.$inferInsert;
+
+// Re-export missing tables from additional-tables.ts
+export { embeddingCache } from '../server/db/additional-tables.js';
+
+// Database connection re-export
+export { db } from '../server/db/index.js';

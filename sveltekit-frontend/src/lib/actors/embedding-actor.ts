@@ -133,7 +133,8 @@ export const batchEmbeddingActor = fromPromise<EmbeddingOutput[], EmbeddingInput
         const batchPromises = batch.map(async (item, index) => {
           const actor = createActor(embeddingActor, { input: item });
           actor.start();
-          return actor.getSnapshot().output;
+          const snapshot = actor.getSnapshot();
+          return (snapshot as any).output || (snapshot as any).context || null;
         });
         
         const batchResults = await Promise.all(batchPromises);
@@ -157,7 +158,8 @@ export const batchEmbeddingActor = fromPromise<EmbeddingOutput[], EmbeddingInput
 export async function generateEmbedding(input: EmbeddingInput): Promise<EmbeddingOutput> {
   const actor = createActor(embeddingActor, { input });
   actor.start();
-  return actor.getSnapshot().output!;
+  const snapshot = actor.getSnapshot() as any;
+  return (snapshot as any).output || (snapshot as any).context || null;
 }
 
 /**
@@ -166,7 +168,8 @@ export async function generateEmbedding(input: EmbeddingInput): Promise<Embeddin
 export async function generateBatchEmbeddings(inputs: EmbeddingInput[]): Promise<EmbeddingOutput[]> {
   const actor = createActor(batchEmbeddingActor, { input: inputs });
   actor.start();
-  return actor.getSnapshot().output!;
+  const snapshot = actor.getSnapshot() as any;
+  return (snapshot as any).output || (snapshot as any).context || null;
 }
 
 /**

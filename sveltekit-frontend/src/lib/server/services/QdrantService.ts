@@ -326,9 +326,11 @@ export class QdrantService {
     collection: string = this.DEFAULT_COLLECTION
   ): Promise<void> {
     try {
-      await this.client.setPayload(collection, {
-        points: [id],
-        payload: { metadata },
+      await this.client.updatePoints(collection, {
+        points: [{
+          id: id,
+          payload: { metadata }
+        }],
         wait: true,
       });
       logger.info("Updated document metadata", { id });

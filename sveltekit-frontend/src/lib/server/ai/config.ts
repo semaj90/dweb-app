@@ -4,6 +4,7 @@
 import { z } from "zod";
 import crypto from "crypto";
 import type { RAGConfiguration } from './types.js';
+import { logger } from './logger.js';
 
 // === ENVIRONMENT VALIDATION ===
 

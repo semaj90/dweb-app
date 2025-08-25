@@ -33,16 +33,9 @@ export const enhancedEvidence = pgTable("enhanced_evidence", {
   jurisdiction: varchar("jurisdiction", { length: 50 }).default("federal"),
   
   // AI Analysis Results
-  entities: jsonb("entities").$type<{
-    parties: string[];
-    dates: string[];
-    monetary: string[];
-    clauses: string[];
-    jurisdictions: string[];
-    caseTypes: string[];
-  }>().default(sql`'{"parties":[],"dates":[],"monetary":[],"clauses":[],"jurisdictions":[],"caseTypes":[]}'::jsonb`),
+  entities: jsonb("entities").default(sql`'{"parties":[],"dates":[],"monetary":[],"clauses":[],"jurisdictions":[],"caseTypes":[]}'::jsonb`),
   
-  tags: jsonb("tags").$type<string[]>().default(sql`'[]'::jsonb`),
+  tags: jsonb("tags").default(sql`'[]'::jsonb`),
   riskScore: integer("risk_score").default(0), // 0-100
   confidenceScore: decimal("confidence_score", { precision: 3, scale: 2 }).default("0.75"),
   
@@ -139,14 +132,7 @@ export const qdrantVectorMetadata = pgTable("qdrant_vector_metadata", {
   vectorModel: varchar("vector_model", { length: 100 }).default("nomic-embed-text"),
   
   // Legal Metadata for Qdrant Payload
-  legalMetadata: jsonb("legal_metadata").$type<{
-    caseType: string;
-    jurisdiction: string;
-    riskScore: number;
-    entities: any;
-    tags: string[];
-    legalPrecedent: boolean;
-  }>().default(sql`'{"caseType":"","jurisdiction":"","riskScore":0,"entities":{},"tags":[],"legalPrecedent":false}'::jsonb`),
+  legalMetadata: jsonb("legal_metadata").default(sql`'{"caseType":"","jurisdiction":"","riskScore":0,"entities":{},"tags":[],"legalPrecedent":false}'::jsonb`),
   
   // Sync Status
   syncStatus: varchar("sync_status", { length: 50 }).default("synced"), // synced, pending, error
@@ -168,14 +154,7 @@ export const legalProcessingQueue = pgTable("legal_processing_queue", {
   priority: varchar("priority", { length: 20 }).default("medium"), // low, medium, high, urgent
   
   // Processing Options
-  processingOptions: jsonb("processing_options").$type<{
-    extractEntities: boolean;
-    generateSummary: boolean;
-    assessRisk: boolean;
-    generateEmbedding: boolean;
-    storeInQdrant: boolean;
-    useContext7: boolean;
-  }>().default(sql`'{"extractEntities":true,"generateSummary":true,"assessRisk":true,"generateEmbedding":true,"storeInQdrant":true,"useContext7":false}'::jsonb`),
+  processingOptions: jsonb("processing_options").default(sql`'{"extractEntities":true,"generateSummary":true,"assessRisk":true,"generateEmbedding":true,"storeInQdrant":true,"useContext7":false}'::jsonb`),
   
   // Progress Tracking
   progress: integer("progress").default(0), // 0-100
@@ -203,12 +182,7 @@ export const vectorSimilarityCache = pgTable("vector_similarity_cache", {
   
   // Query Parameters
   queryText: text("query_text").notNull(),
-  searchParams: jsonb("search_params").$type<{
-    jurisdiction?: string;
-    caseType?: string;
-    riskThreshold?: number;
-    requirePrecedent?: boolean;
-  }>().default({}),
+  searchParams: jsonb("search_params").default(sql`'{}'::jsonb`),
   
   // Cached Results
   results: jsonb("results").notNull(),
@@ -244,12 +218,7 @@ export const context7MCPLogs = pgTable("context7_mcp_logs", {
   errorMessage: text("error_message"),
   
   // Legal Context
-  legalContext: jsonb("legal_context").$type<{
-    caseId?: string;
-    evidenceId?: string;
-    jurisdiction?: string;
-    caseType?: string;
-  }>().default({}),
+  legalContext: jsonb("legal_context").default(sql`'{}'::jsonb`),
   
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
 });
@@ -266,7 +235,7 @@ export const legalSystemMetrics = pgTable("legal_system_metrics", {
   
   // Context
   context: jsonb("context").default(sql`'{}'::jsonb`),
-  tags: jsonb("tags").$type<string[]>().default(sql`'[]'::jsonb`),
+  tags: jsonb("tags").default(sql`'[]'::jsonb`),
   
   // Aggregation Support
   timeWindow: varchar("time_window", { length: 20 }).default("1min"), // 1min, 5min, 1hour, 1day

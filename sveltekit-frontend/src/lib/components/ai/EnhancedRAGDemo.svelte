@@ -1,7 +1,5 @@
 <!-- Enhanced RAG Demo Component with Semantic Analysis -->
 <script lang="ts">
-  import { $state, $effect } from 'svelte';
-
   import { onMount } from 'svelte';
   import {
     semanticAnalyzer,
@@ -13,7 +11,7 @@
     type RAGQuery,
     type RAGResponse,
   } from '$lib/services/enhanced-rag-semantic-analyzer';
-  import { Button } from '$lib/components/ui/Button.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
 
   // Reactive state using runes

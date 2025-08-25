@@ -1,4 +1,5 @@
-import * as fabric from "fabric";
+// import * as fabric from "fabric"; // Dynamic import to avoid canvas.node issues
+let fabric: any;
 
 /**
  * Neural Sprite Effects Library

@@ -44,9 +44,9 @@ const DEFAULT_STATE: ObservabilityState = {
     last_reset: new Date().toISOString()
   },
   daily_budgets: {
-    max_p99_breaches: parseInt(import.meta.env.DAILY_P99_BREACH_BUDGET || '10', 10),
-    max_error_spikes: parseInt(import.meta.env.DAILY_ERROR_SPIKE_BUDGET || '5', 10),
-    max_anomaly_spikes: parseInt(import.meta.env.DAILY_ANOMALY_SPIKE_BUDGET || '3', 10)
+    max_p99_breaches: parseInt(process.env.DAILY_P99_BREACH_BUDGET || '10', 10),
+    max_error_spikes: parseInt(process.env.DAILY_ERROR_SPIKE_BUDGET || '5', 10),
+    max_anomaly_spikes: parseInt(process.env.DAILY_ANOMALY_SPIKE_BUDGET || '3', 10)
   },
   metadata: {
     created_at: new Date().toISOString(),

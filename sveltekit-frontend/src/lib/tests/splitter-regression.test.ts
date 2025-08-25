@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+/// <reference types="vitest" />
 // TODO: Fix import - // Orphaned content: import {  import { loadBaseline, checkRegression } from '$text/perf-baseline';
 
 describe('Sentence splitter performance regression', () => {

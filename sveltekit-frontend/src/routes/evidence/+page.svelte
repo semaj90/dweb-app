@@ -5,6 +5,7 @@
   import EvidenceUploadModal from "$lib/components/modals/EvidenceUploadModal.svelte";
   import EvidenceValidationModal from "$lib/components/modals/EvidenceValidationModal.svelte";
   import { Button } from "$lib/components/ui/button";
+  import { Card } from "$lib/components/ui/card";
   import Tooltip from "$lib/components/ui/Tooltip.svelte";
   import AdvancedFileUpload from "$lib/components/upload/AdvancedFileUpload.svelte";
   import ThinkingStyleToggle from "$lib/components/ai/ThinkingStyleToggle.svelte";
@@ -583,96 +584,104 @@
   />
 </svelte:head>
 
-<div class="mx-auto px-4 max-w-7xl">
+<div class="container-nes-main">
   <!-- Header Section -->
-  <div
-    class="mx-auto px-4 max-w-7xl"
-  >
-    <div>
-      <h1 class="mx-auto px-4 max-w-7xl">Evidence Management</h1>
-      <p class="mx-auto px-4 max-w-7xl">
-        {#if caseId}
-          Evidence for Case #{caseId}
-        {:else}
-          All Evidence Files
-        {/if}
-        ({filteredEvidence.length} of {allEvidence.length} items)
-      </p>
-    </div>
-
-    <!-- Enhanced Action Buttons with AI Analysis -->
-    <div class="mx-auto px-4 max-w-7xl">
-      <!-- AI Analysis Toggle -->
-      <div class="mx-auto px-4 max-w-7xl">
-        <ThinkingStyleToggle 
-          bind:enabled={thinkingStyleEnabled}
-          premium={true}
-          size="sm"
-          ontoggle={handleThinkingToggle}
-        />
+  <div class="container-nes-panel mb-6">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div>
+        <h1 class="nes-text-pixelated text-3xl font-bold text-gray-900 dark:text-white">
+          Evidence Management
+        </h1>
+        <p class="text-gray-600 dark:text-gray-400 mt-2">
+          {#if caseId}
+            <span class="nes-legal-priority-high px-2 py-1 rounded">
+              Evidence for Case #{caseId}
+            </span>
+          {:else}
+            All Evidence Files
+          {/if}
+          <span class="badge ml-2">({filteredEvidence.length} of {allEvidence.length} items)</span>
+        </p>
       </div>
 
-      <Tooltip content="Refresh evidence list">
-        <Button
-          variant="outline"
-          size="sm"
-          onclick={() => refreshEvidence()}
-          disabled={loading}
-          aria-label="Refresh evidence"
-        >
-          <span class:animate-spin={loading}>
-            <RefreshCw class="mx-auto px-4 max-w-7xl" />
-          </span>
-        </Button>
-      </Tooltip>
+      <!-- Enhanced Action Buttons with AI Analysis -->
+      <div class="flex flex-wrap gap-2 items-center">
+        <!-- AI Analysis Toggle -->
+        <div class="neural-sprite-active">
+          <ThinkingStyleToggle 
+            bind:enabled={thinkingStyleEnabled}
+            premium={true}
+            size="sm"
+            ontoggle={handleThinkingToggle}
+          />
+        </div>
 
-      <Tooltip content="Toggle filters">
-        <Button
-          variant="outline"
-          size="sm"
-          onclick={() => (showFilters = !showFilters)}
-          class="mx-auto px-4 max-w-7xl"
-          aria-label="Toggle filters"
-          aria-expanded={showFilters}
-        >
-          <Filter class="mx-auto px-4 max-w-7xl" />
-          Filters
-        </Button>
-      </Tooltip>
+        <Tooltip content="Refresh evidence list">
+          <Button
+            variant="outline"
+            size="sm"
+            onclick={() => refreshEvidence()}
+            disabled={loading}
+            aria-label="Refresh evidence"
+          >
+            <span class:animate-spin={loading} class:neural-sprite-loading={loading}>
+              <RefreshCw class="w-4 h-4" />
+            </span>
+          </Button>
+        </Tooltip>
 
-      <Tooltip content="Toggle view mode">
-        <Button
-          variant="outline"
-          size="sm"
-          onclick={() => (viewMode = viewMode === "grid" ? "list" : "grid")}
-          aria-label="Toggle view mode"
-        >
-          {#if viewMode === "grid"}
-            <List class="mx-auto px-4 max-w-7xl" />
-          {:else}
-            <Grid class="mx-auto px-4 max-w-7xl" />
-          {/if}
-        </Button>
-      </Tooltip>
+        <Tooltip content="Toggle filters">
+          <Button
+            variant="outline"
+            size="sm"
+            onclick={() => (showFilters = !showFilters)}
+            class={showFilters ? 'nes-legal-priority-high' : ''}
+            aria-label="Toggle filters"
+            aria-expanded={showFilters}
+          >
+            <Filter class="w-4 h-4 mr-2" />
+            Filters
+          </Button>
+        </Tooltip>
 
-      <Tooltip content="Advanced file upload">
-        <Button
-          variant="outline"
-          size="sm"
-          onclick={() => handleAdvancedUpload()}
-          class="mx-auto px-4 max-w-7xl"
-        >
-          <Upload class="mx-auto px-4 max-w-7xl" />
-          Advanced Upload
-        </Button>
-      </Tooltip>
+        <Tooltip content="Toggle view mode">
+          <Button
+            variant="outline"
+            size="sm"
+            onclick={() => (viewMode = viewMode === "grid" ? "list" : "grid")}
+            aria-label="Toggle view mode"
+            class="yorha-3d-button"
+          >
+            {#if viewMode === "grid"}
+              <List class="w-4 h-4" />
+            {:else}
+              <Grid class="w-4 h-4" />
+            {/if}
+          </Button>
+        </Tooltip>
 
-      <Tooltip content="Standard evidence upload">
-        <Button onclick={() => openUploadModal()} class="mx-auto px-4 max-w-7xl">
-          <Plus class="mx-auto px-4 max-w-7xl" />
-          Upload Evidence
-        </Button>
-      </Tooltip>
+        <Tooltip content="Advanced file upload">
+          <Button
+            variant="outline"
+            size="sm"
+            onclick={() => handleAdvancedUpload()}
+            class="neural-sprite-cached"
+          >
+            <Upload class="w-4 h-4 mr-2" />
+            Advanced Upload
+          </Button>
+        </Tooltip>
+
+        <Tooltip content="Standard evidence upload">
+          <Button 
+            variant="evidence"
+            onclick={() => openUploadModal()}
+          >
+            <Plus class="w-4 h-4 mr-2" />
+            Upload Evidence
+          </Button>
+        </Tooltip>
+      </div>
     </div>
   </div>
 
@@ -998,180 +1007,134 @@
     </div>
 
     <!-- Enhanced Evidence Grid/List View with AI Analysis -->
-    <div class="mx-auto px-4 max-w-7xl">
+    <div class="space-y-6">
       {#if viewMode === "grid"}
-        <div class="mx-auto px-4 max-w-7xl">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {#each visibleEvidence as evidence}
-            <div
-              class="mx-auto px-4 max-w-7xl"
+            <Card 
+              variant="evidence" 
+              priority={evidence.isAdmissible ? "critical" : "medium"}
+              loading={analysisInProgress.has(evidence.id)}
+              interactive={true}
+              class="group hover:shadow-xl transition-all duration-300"
             >
-              <div class="mx-auto px-4 max-w-7xl">
-                <!-- Selection Checkbox -->
-                <div class="mx-auto px-4 max-w-7xl">
-                  <input
-                    type="checkbox"
-                    class="mx-auto px-4 max-w-7xl"
-                    checked={selectedEvidence.has(evidence.id)}
-                    onchange={() => toggleEvidenceSelection(evidence.id)}
-                    aria-label="Select evidence {evidence.title ||
-                      'Untitled Evidence'}"
-                  />
-
-                  <div class="mx-auto px-4 max-w-7xl">
-                    <Tooltip content="Evidence actions">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        tabindex={0}
-                        role="button"
-                        aria-label="Evidence actions menu"
-                      >
-                        <MoreHorizontal class="mx-auto px-4 max-w-7xl" />
-                      </Button>
-                    </Tooltip>
-                    <ul
-                      tabindex={0}
-                      role="menu"
-                      class="mx-auto px-4 max-w-7xl"
-                    >
-                      <li>
-                        <a href="/evidence/{evidence.id}" class="mx-auto px-4 max-w-7xl">
-                          <Eye class="mx-auto px-4 max-w-7xl" />
-                          View Details
-                        </a>
-                      </li>
-                      <li>
-                        <button 
-                          class="mx-auto px-4 max-w-7xl"
-                          onclick={() => analyzeEvidence(evidence)}
-                          disabled={analysisInProgress.has(evidence.id)}
-                        >
-                          {#if thinkingStyleEnabled}
-                            <Brain class="mx-auto px-4 max-w-7xl" />
-                            Analyze (Thinking)
-                          {:else}
-                            <Zap class="mx-auto px-4 max-w-7xl" />
-                            Quick Analyze
-                          {/if}
-                        </button>
-                      </li>
-                      <li>
-                        <a href="/evidence/{evidence.id}/edit" class="mx-auto px-4 max-w-7xl">
-                          <Edit class="mx-auto px-4 max-w-7xl" />
-                          Edit Evidence
-                        </a>
-                      </li>
-                      <li>
-                        <button class="mx-auto px-4 max-w-7xl">
-                          <Hash class="mx-auto px-4 max-w-7xl" />
-                          Verify Hash
-                        </button>
-                      </li>
-                      <li>
-                        <button class="mx-auto px-4 max-w-7xl">
-                          <Trash2 class="mx-auto px-4 max-w-7xl" />
-                          Delete
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
+              <!-- Card Header with Selection -->
+              <div class="flex justify-between items-start mb-4">
+                <input
+                  type="checkbox"
+                  class="input-nes-primary w-4 h-4"
+                  checked={selectedEvidence.has(evidence.id)}
+                  onchange={() => toggleEvidenceSelection(evidence.id)}
+                  aria-label="Select evidence {evidence.title || 'Untitled Evidence'}"
+                />
+                
+                <div class="dropdown dropdown-end">
+                  <Tooltip content="Evidence actions">
+                    <Button variant="ghost" size="sm" class="yorha-3d-button">
+                      <MoreHorizontal class="w-4 h-4" />
+                    </Button>
+                  </Tooltip>
                 </div>
+              </div>
 
-                <!-- Evidence Content -->
-                <div class="mx-auto px-4 max-w-7xl">
-                  <div class="mx-auto px-4 max-w-7xl">
-                    <svelte:component
-                      this={getEvidenceTypeIcon(evidence.evidenceType)}
-                      class="mx-auto px-4 max-w-7xl"
-                    />
-                    <h2 class="mx-auto px-4 max-w-7xl">
+              <!-- Evidence Content -->
+              <div class="space-y-4">
+                <!-- Header with Icon -->
+                <div class="flex items-center gap-3">
+                  <svelte:component
+                    this={getEvidenceTypeIcon(evidence.evidenceType)}
+                    class="w-8 h-8 text-blue-500 nes-memory-active"
+                  />
+                  <div>
+                    <h2 class="nes-text-pixelated font-bold text-lg line-clamp-2">
                       {evidence.title || "Untitled Evidence"}
                     </h2>
                   </div>
-
-                  <div class="mx-auto px-4 max-w-7xl">
-                    <div class="mx-auto px-4 max-w-7xl">
-                      {evidence.evidenceType || "Unknown"}
-                    </div>
-                    <div
-                      class="mx-auto px-4 max-w-7xl"
-                    >
-                      {evidence.isAdmissible ? "Admissible" : "Pending"}
-                    </div>
-                    {#if evidence.hash}
-                      <div class="mx-auto px-4 max-w-7xl">
-                        <Shield class="mx-auto px-4 max-w-7xl" />
-                        Verified
-                      </div>
-                    {/if}
-                    {#if evidence.aiAnalysis && Object.keys(evidence.aiAnalysis).length > 0}
-                      <div class="mx-auto px-4 max-w-7xl">
-                        <Brain class="mx-auto px-4 max-w-7xl" />
-                        AI Analyzed
-                      </div>
-                    {/if}
-                  </div>
-
-                  <p class="mx-auto px-4 max-w-7xl">
-                    {evidence.description
-                      ? evidence.description.length > 120
-                        ? evidence.description.substring(0, 120) + "..."
-                        : evidence.description
-                      : "No description available"}
-                  </p>
-
-                  <div class="mx-auto px-4 max-w-7xl">
-                    <div class="mx-auto px-4 max-w-7xl">
-                      <Calendar class="mx-auto px-4 max-w-7xl" />
-                      Collected: {evidence.uploadedAt
-                        ? new Date(evidence.uploadedAt).toLocaleDateString()
-                        : "Unknown"}
-                    </div>
-                    {#if evidence.collectedBy}
-                      <div class="mx-auto px-4 max-w-7xl">
-                        <User class="mx-auto px-4 max-w-7xl" />
-                        By: {evidence.collectedBy}
-                      </div>
-                    {/if}
-                    {#if evidence.fileSize}
-                      <div class="mx-auto px-4 max-w-7xl">
-                        <Activity class="mx-auto px-4 max-w-7xl" />
-                        Size: {(evidence.fileSize / 1024 / 1024).toFixed(2)} MB
-                      </div>
-                    {/if}
-                  </div>
                 </div>
 
-                <!-- Enhanced Actions with AI Analysis -->
-                <div class="mx-auto px-4 max-w-7xl">
-                  <Button 
-                    size="sm" 
-                    variant="outline"
-                    onclick={() => analyzeEvidence(evidence)}
-                    disabled={analysisInProgress.has(evidence.id)}
-                    class="mx-auto px-4 max-w-7xl"
-                  >
-                    {#if analysisInProgress.has(evidence.id)}
-                      <div class="mx-auto px-4 max-w-7xl"></div>
-                      Analyzing...
-                    {:else if thinkingStyleEnabled}
-                      <Brain class="mx-auto px-4 max-w-7xl" />
-                      Think
-                    {:else}
-                      <Zap class="mx-auto px-4 max-w-7xl" />
-                      Analyze
-                    {/if}
-                  </Button>
-                  
-                  <a href="/evidence/{evidence.id}" class="mx-auto px-4 max-w-7xl">
-                    <Button size="sm">
-                      <Eye class="mx-auto px-4 max-w-7xl" />
-                      View
-                    </Button>
-                  </a>
+                <!-- Status Badges -->
+                <div class="flex flex-wrap gap-2">
+                  <span class="badge bg-blue-100 text-blue-800">
+                    {evidence.evidenceType || "Unknown"}
+                  </span>
+                  <span class={evidence.isAdmissible ? 'nes-legal-priority-critical' : 'nes-legal-priority-medium'}>
+                    {evidence.isAdmissible ? "Admissible" : "Pending"}
+                  </span>
+                  {#if evidence.hash}
+                    <span class="nes-legal-priority-high flex items-center gap-1">
+                      <Shield class="w-3 h-3" />
+                      Verified
+                    </span>
+                  {/if}
+                  {#if evidence.aiAnalysis && Object.keys(evidence.aiAnalysis).length > 0}
+                    <span class="neural-sprite-active flex items-center gap-1">
+                      <Brain class="w-3 h-3" />
+                      AI Analyzed
+                    </span>
+                  {/if}
+                </div>
+
+                <!-- Description -->
+                <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-3">
+                  {evidence.description
+                    ? evidence.description.length > 120
+                      ? evidence.description.substring(0, 120) + "..."
+                      : evidence.description
+                    : "No description available"}
+                </p>
+
+                <!-- Metadata -->
+                <div class="grid grid-cols-1 gap-2 text-xs text-gray-500">
+                  <div class="flex items-center gap-1">
+                    <Calendar class="w-3 h-3" />
+                    Collected: {evidence.uploadedAt
+                      ? new Date(evidence.uploadedAt).toLocaleDateString()
+                      : "Unknown"}
+                  </div>
+                  {#if evidence.collectedBy}
+                    <div class="flex items-center gap-1">
+                      <User class="w-3 h-3" />
+                      By: {evidence.collectedBy}
+                    </div>
+                  {/if}
+                  {#if evidence.fileSize}
+                    <div class="flex items-center gap-1">
+                      <Activity class="w-3 h-3" />
+                      Size: {(evidence.fileSize / 1024 / 1024).toFixed(2)} MB
+                    </div>
+                  {/if}
                 </div>
               </div>
-            </div>
+
+              <!-- Enhanced Actions with AI Analysis -->
+              <div class="flex gap-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <Button 
+                  size="sm" 
+                  variant={thinkingStyleEnabled ? "neural" : "yorha"}
+                  onclick={() => analyzeEvidence(evidence)}
+                  disabled={analysisInProgress.has(evidence.id)}
+                  class="flex-1"
+                >
+                  {#if analysisInProgress.has(evidence.id)}
+                    <div class="neural-sprite-loading w-3 h-3"></div>
+                    Analyzing...
+                  {:else if thinkingStyleEnabled}
+                    <Brain class="w-3 h-3 mr-1" />
+                    Think
+                  {:else}
+                    <Zap class="w-3 h-3 mr-1" />
+                    Analyze
+                  {/if}
+                </Button>
+                
+                <a href="/evidence/{evidence.id}">
+                  <Button size="sm" variant="evidence" class="flex-1">
+                    <Eye class="w-3 h-3 mr-1" />
+                    View
+                  </Button>
+                </a>
+              </div>
+            </Card>
           {/each}
         </div>
       {:else}

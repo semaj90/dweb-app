@@ -225,11 +225,11 @@ class EnhancedAIPipeline {
 
   private setupGoMicroservice() {
     this.goMicroservice = {
-      baseUrl: import.meta.env.GO_MICROSERVICE_URL || "http://localhost:8080",
-      enabled: import.meta.env.USE_GO_MICROSERVICE === "true",
-      timeout: parseInt(import.meta.env.GO_MICROSERVICE_TIMEOUT || "30000"),
-      retryAttempts: parseInt(import.meta.env.GO_MICROSERVICE_RETRIES || "3"),
-      fallbackToLocal: import.meta.env.GO_MICROSERVICE_FALLBACK !== "false",
+      baseUrl: process.env.GO_MICROSERVICE_URL || "http://localhost:8080",
+      enabled: process.env.USE_GO_MICROSERVICE === "true",
+      timeout: parseInt(process.env.GO_MICROSERVICE_TIMEOUT || "30000"),
+      retryAttempts: parseInt(process.env.GO_MICROSERVICE_RETRIES || "3"),
+      fallbackToLocal: process.env.GO_MICROSERVICE_FALLBACK !== "false",
     };
 
     // Enable Go microservice by default for enhanced performance
@@ -246,25 +246,25 @@ class EnhancedAIPipeline {
   private setupGemmaLegalConfig() {
     this.gemmaConfig = {
       modelPath:
-        import.meta.env.GEMMA_LEGAL_MODEL_PATH ||
+        process.env.GEMMA_LEGAL_MODEL_PATH ||
         "C:\\AI\\Models\\gemma3-legal-8b-q4_k_m.gguf",
-      cudaDeviceId: parseInt(import.meta.env.CUDA_DEVICE_ID || "0"),
-      contextLength: parseInt(import.meta.env.CONTEXT_LENGTH || "8192"),
-      temperature: parseFloat(import.meta.env.TEMPERATURE || "0.1"),
-      topP: parseFloat(import.meta.env.TOP_P || "0.9"),
-      topK: parseInt(import.meta.env.TOP_K || "40"),
-      repeatPenalty: parseFloat(import.meta.env.REPEAT_PENALTY || "1.1"),
-      batchSize: parseInt(import.meta.env.BATCH_SIZE || "512"),
-      threads: parseInt(import.meta.env.THREADS || "8"),
-      gpuLayers: parseInt(import.meta.env.GPU_LAYERS || "33"),
+      cudaDeviceId: parseInt(process.env.CUDA_DEVICE_ID || "0"),
+      contextLength: parseInt(process.env.CONTEXT_LENGTH || "8192"),
+      temperature: parseFloat(process.env.TEMPERATURE || "0.1"),
+      topP: parseFloat(process.env.TOP_P || "0.9"),
+      topK: parseInt(process.env.TOP_K || "40"),
+      repeatPenalty: parseFloat(process.env.REPEAT_PENALTY || "1.1"),
+      batchSize: parseInt(process.env.BATCH_SIZE || "512"),
+      threads: parseInt(process.env.THREADS || "8"),
+      gpuLayers: parseInt(process.env.GPU_LAYERS || "33"),
     };
   }
 
   private setupRedisConnection() {
     this.redis = new Redis({
-      host: import.meta.env.REDIS_HOST || "localhost",
-      port: parseInt(import.meta.env.REDIS_PORT || "6379"),
-      password: import.meta.env.REDIS_PASSWORD,
+      host: process.env.REDIS_HOST || "localhost",
+      port: parseInt(process.env.REDIS_PORT || "6379"),
+      password: process.env.REDIS_PASSWORD,
       maxRetriesPerRequest: 3,
       lazyConnect: true,
       keyPrefix: "legal-ai:",
@@ -286,23 +286,23 @@ class EnhancedAIPipeline {
     try {
       // Initialize PostgreSQL connection
       this.pgPool = new Pool({
-        host: import.meta.env.DB_HOST || "localhost",
-        port: parseInt(import.meta.env.DB_PORT || "5432"),
-        database: import.meta.env.DB_NAME || "legal_ai_db",
-        user: import.meta.env.DB_USER || "postgres",
-        password: import.meta.env.DB_PASSWORD || "postgres",
+        host: process.env.DB_HOST || "localhost",
+        port: parseInt(process.env.DB_PORT || "5432"),
+        database: process.env.DB_NAME || "legal_ai_db",
+        user: process.env.DB_USER || "postgres",
+        password: process.env.DB_PASSWORD || "postgres",
         max: 20,
         idleTimeoutMillis: 30000,
         connectionTimeoutMillis: 2000,
       });
 
-      const connectionString = `postgresql://${import.meta.env.DB_USER || "postgres"}:${import.meta.env.DB_PASSWORD || "postgres"}@${import.meta.env.DB_HOST || "localhost"}:${import.meta.env.DB_PORT || "5432"}/${import.meta.env.DB_NAME || "legal_ai_db"}`;
+      const connectionString = `postgresql://${process.env.DB_USER || "postgres"}:${process.env.DB_PASSWORD || "postgres"}@${process.env.DB_HOST || "localhost"}:${process.env.DB_PORT || "5432"}/${process.env.DB_NAME || "legal_ai_db"}`;
       const client = postgres(connectionString);
       this.db = drizzle(client);
 
       // Initialize Ollama with Gemma3-Legal model
       this.ollama = new Ollama({
-        baseUrl: import.meta.env.OLLAMA_BASE_URL || "http://localhost:11434",
+        baseUrl: process.env.OLLAMA_BASE_URL || "http://localhost:11434",
         model: "gemma3-legal:8b",
         temperature: this.gemmaConfig.temperature,
         numCtx: this.gemmaConfig.contextLength,
@@ -316,7 +316,7 @@ class EnhancedAIPipeline {
 
       // Initialize embeddings model
       this.embeddings = new OllamaEmbeddings({
-        baseUrl: import.meta.env.OLLAMA_BASE_URL || "http://localhost:11434",
+        baseUrl: process.env.OLLAMA_BASE_URL || "http://localhost:11434",
         model: "nomic-embed-text:latest",
         requestOptions: {
           useMMap: true,
@@ -328,11 +328,11 @@ class EnhancedAIPipeline {
       // Initialize vector store
       this.vectorStore = await PGVectorStore.initialize(this.embeddings, {
         postgresConnectionOptions: {
-          host: import.meta.env.DB_HOST || "localhost",
-          port: parseInt(import.meta.env.DB_PORT || "5432"),
-          database: import.meta.env.DB_NAME || "legal_ai_db",
-          user: import.meta.env.DB_USER || "postgres",
-          password: import.meta.env.DB_PASSWORD || "postgres",
+          host: process.env.DB_HOST || "localhost",
+          port: parseInt(process.env.DB_PORT || "5432"),
+          database: process.env.DB_NAME || "legal_ai_db",
+          user: process.env.DB_USER || "postgres",
+          password: process.env.DB_PASSWORD || "postgres",
         },
         tableName: "legal_document_embeddings",
         columns: {
@@ -447,7 +447,7 @@ class EnhancedAIPipeline {
 
       // Cache results
       if (options.useCache !== false) {
-        await this.redis.setex(cacheKey, 300, JSON.stringify(results)); // 5 min cache
+        await this.redis.set(cacheKey, JSON.stringify(results), 'EX', 300); // 5 min cache
       }
 
       // Log performance metrics

@@ -4,8 +4,21 @@
  * Optimized for LangChain-Ollama workflows with nomic-embed-text
  */
 
-import { pgTable, text, timestamp, integer, boolean, json, uuid, varchar, real, index, customType } from "drizzle-orm/pg-core";
-import { sql } from "drizzle-orm";
+import { 
+  pgTable, 
+  text, 
+  timestamp, 
+  integer, 
+  boolean, 
+  json, 
+  uuid, 
+  varchar, 
+  real, 
+  index, 
+  customType,
+  type PgColumn
+} from "drizzle-orm/pg-core";
+import { sql, type SQL } from "drizzle-orm";
 import { relations } from "drizzle-orm";
 
 // Custom vector type for pgvector
@@ -59,17 +72,8 @@ export const documents = pgTable('documents', {
   extractedText: text('extracted_text'),
   // Using 768 dimensions for nomic-embed-text
   embedding: vector('embedding', { dimensions: 768 }),
-  metadata: json('metadata').$type<{
-    pageCount?: number;
-    extractionMethod?: string;
-    confidence?: number;
-    language?: string;
-    processingTime?: number;
-    chunkCount?: number;
-    avgChunkSize?: number;
-    [key: string]: unknown;
-  }>(),
-  tags: json('tags').$type<string[]>().default([]),
+  metadata: json('metadata'),
+  tags: json('tags').default(sql`'[]'::json`),
   isIndexed: boolean('is_indexed').default(false),
   source: varchar('source', { length: 100 }).default('upload'),
   createdBy: uuid('created_by').references(() => users.id),
@@ -93,17 +97,7 @@ export const documentChunks = pgTable('document_chunks', {
   startIndex: integer('start_index'),
   endIndex: integer('end_index'),
   tokenCount: integer('token_count'),
-  metadata: json('metadata').$type<{
-    chunkType?: 'paragraph' | 'section' | 'sentence';
-    importance?: number;
-    keywords?: string[];
-    namedEntities?: Array<{
-      text: string;
-      label: string;
-      confidence: number;
-    }>;
-    [key: string]: unknown;
-  }>(),
+  metadata: json('metadata'),
   createdAt: timestamp('created_at').defaultNow(),
 }, (table) => ({
   // Optimized vector search index
@@ -121,35 +115,12 @@ export const evidence = pgTable('evidence', {
   description: text('description'),
   evidenceType: varchar('evidence_type', { length: 50 }),
   hash: varchar('hash', { length: 256 }),
-  chainOfCustody: json('chain_of_custody').$type<Array<{
-    timestamp: string;
-    handler: string;
-    action: string;
-    location: string;
-  }>>().default([]),
+  chainOfCustody: json('chain_of_custody').default(sql`'[]'::json`),
   isAdmissible: boolean('is_admissible'),
   admissibilityNotes: text('admissibility_notes'),
-  tags: json('tags').$type<string[]>().default([]),
+  tags: json('tags').default(sql`'[]'::json`),
   // Enhanced AI analysis with embedding support
-  aiAnalysis: json('ai_analysis').$type<{
-    summary?: string;
-    keyPoints?: string[];
-    relevance?: number;
-    confidence?: number;
-    recommendations?: string[];
-    risks?: string[];
-    extractedEntities?: Array<{
-      type: string;
-      value: string;
-      confidence: number;
-    }>;
-    semanticAnalysis?: {
-      themes: string[];
-      sentiment: number;
-      complexity: number;
-    };
-    relatedEvidence?: string[];
-  }>(),
+  aiAnalysis: json('ai_analysis'),
   // Vector embedding for semantic search
   embedding: vector('embedding', { dimensions: 768 }),
   createdBy: uuid('created_by').references(() => users.id),
@@ -168,16 +139,7 @@ export const searchIndex = pgTable('search_index', {
   content: text('content').notNull(),
   // 768-dimensional embeddings for nomic-embed-text
   embedding: vector('embedding', { dimensions: 768 }).notNull(),
-  metadata: json('metadata').$type<{
-    title?: string;
-    tags?: string[];
-    relevanceScore?: number;
-    processingModel?: string;
-    processingTime?: number;
-    chunkIndex?: number;
-    totalChunks?: number;
-    [key: string]: unknown;
-  }>(),
+  metadata: json('metadata'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ({
@@ -201,25 +163,8 @@ export const aiInteractions = pgTable('ai_interactions', {
   confidence: real('confidence'),
   // Context embedding for conversation understanding
   contextEmbedding: vector('context_embedding', { dimensions: 768 }),
-  feedback: json('feedback').$type<{
-    rating?: number;
-    helpful?: boolean;
-    notes?: string;
-    corrected?: boolean;
-  }>(),
-  metadata: json('metadata').$type<{
-    temperature?: number;
-    maxTokens?: number;
-    sources?: Array<{
-      id: string;
-      title: string;
-      relevance: number;
-      type: string;
-    }>;
-    chainType?: string;
-    memoryUsed?: boolean;
-    [key: string]: unknown;
-  }>(),
+  feedback: json('feedback'),
+  metadata: json('metadata'),
   createdAt: timestamp('created_at').defaultNow(),
 }, (table) => ({
   contextEmbeddingIdx: index('ai_interactions_context_embedding_idx').using('ivfflat', table.contextEmbedding.op('vector_cosine_ops')),
@@ -232,13 +177,7 @@ export const vectorSimilarityCache = pgTable('vector_similarity_cache', {
   id: uuid('id').primaryKey().default(sql`gen_random_uuid()`),
   queryHash: varchar('query_hash', { length: 64 }).notNull().unique(),
   queryEmbedding: vector('query_embedding', { dimensions: 768 }).notNull(),
-  results: json('results').$type<Array<{
-    entityId: string;
-    entityType: string;
-    similarity: number;
-    content: string;
-    metadata: Record<string, any>;
-  }>>().notNull(),
+  results: json('results').notNull(),
   hitCount: integer('hit_count').default(1),
   lastAccessed: timestamp('last_accessed').defaultNow(),
   expiresAt: timestamp('expires_at'),
@@ -261,18 +200,7 @@ export const legalKnowledgeBase = pgTable('legal_knowledge_base', {
   citationFormat: text('citation_format'),
   // Semantic embedding for knowledge retrieval
   embedding: vector('embedding', { dimensions: 768 }),
-  metadata: json('metadata').$type<{
-    keywords?: string[];
-    relatedConcepts?: string[];
-    complexity?: number;
-    reliability?: number;
-    lastVerified?: string;
-    precedents?: Array<{
-      case: string;
-      citation: string;
-      relevance: number;
-    }>;
-  }>(),
+  metadata: json('metadata'),
   isVerified: boolean('is_verified').default(false),
   verifiedBy: uuid('verified_by').references(() => users.id),
   verifiedAt: timestamp('verified_at'),
@@ -298,14 +226,7 @@ export const embeddingJobs = pgTable('embedding_jobs', {
   retryCount: integer('retry_count').default(0),
   maxRetries: integer('max_retries').default(3),
   error: text('error'),
-  metadata: json('metadata').$type<{
-    totalChunks?: number;
-    processedChunks?: number;
-    estimatedTime?: number;
-    startedAt?: string;
-    completedAt?: string;
-    [key: string]: unknown;
-  }>(),
+  metadata: json('metadata'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ({

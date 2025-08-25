@@ -282,7 +282,7 @@ class ComprehensiveCachingService {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 
         const mod = await import('lokijs');
-        LokiRef = mod.default || mod;
+        LokiRef = (mod as any).default || (mod as any).LokiJS || mod;
       }
       this.lokiDB = new (LokiRef as LokiStatic)('cache.db', {
         autoload: true,
@@ -305,7 +305,7 @@ class ComprehensiveCachingService {
   private async initializeRedis(): Promise<void> {
     if (!this.config.enableRedis || browser) return;
     try {
-      const mod = await import('$lib/server/redis');
+      const mod = await import('../server/redis.js');
       this.redisClient = (mod as any).REDIS_CONNECTION as RedisLike;
       console.log('✅ Redis connection initialized');
     } catch (error) {
@@ -475,8 +475,8 @@ class ComprehensiveCachingService {
   public async clearByTags(tags: string[]): Promise<number> {
     let clearedCount = 0;
 
-    // Clear from memory cache
-    for (const [key, entry] of this.memoryCache) {
+    // Clear from memory cache (SvelteKit 2 polyfill for downlevelIteration)
+    for (const [key, entry] of Array.from(this.memoryCache.entries())) {
       if (entry.metadata.tags.some((tag) => tags.includes(tag))) {
         // Flatten metadata or use direct property access in queries
         this.memoryCache.delete(key);

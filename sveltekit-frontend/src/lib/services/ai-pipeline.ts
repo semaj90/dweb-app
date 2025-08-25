@@ -5,9 +5,11 @@ import crypto from "crypto";
 // Production-ready legal document processing
 
 import { OllamaEmbeddings } from "@langchain/community/embeddings/ollama";
+import { Ollama } from "@langchain/community/llms/ollama";
 import { PGVectorStore } from "@langchain/community/vectorstores/pgvector";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
+import { Pool } from "pg";
 import type { Document } from "@langchain/core/documents";
 import { userEmbeddings } from "../server/db/schema-postgres.js";
 import { OllamaService } from "./OllamaService";
