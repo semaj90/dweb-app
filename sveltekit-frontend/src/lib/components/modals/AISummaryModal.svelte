@@ -68,7 +68,7 @@ https://svelte.dev/e/js_parse_error -->
       <!-- Summary Content -->
       <div class="space-y-4">
         <div class="space-y-4">
-          <Button onclick={() => copyToClipboard()} variant="ghost" size="sm" aria-label="Copy summary to clipboard">
+          <Button on:click={() => copyToClipboard()} variant="ghost" size="sm" aria-label="Copy summary to clipboard">
             <Copy class="space-y-4" />
             <span class="space-y-4">Copy</span>
           </Button>
@@ -92,7 +92,7 @@ https://svelte.dev/e/js_parse_error -->
 
   <Dialog.Footer>
     <Dialog.Close asChild>
-      <Button onclick={() => closeModal()} variant="secondary" aria-label="Close summary modal">
+      <Button on:click={() => closeModal()} variant="secondary" aria-label="Close summary modal">
         <X class="space-y-4" />
         <span class="space-y-4">Close</span>
       </Button>

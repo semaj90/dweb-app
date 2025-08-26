@@ -1,7 +1,12 @@
 <script lang="ts">
+  import { page } from '$app/stores';
+  
   let { data, form } = $props();
   
   let isAutoLoggingIn = $state(false);
+  
+  // Check for registration success message
+  const showRegistrationSuccess = $derived($page.url.searchParams.get('registered') === 'true');
   
   // Auto-fill demo user credentials
   function autoLoginDemo() {
@@ -54,10 +59,28 @@
       <h1 class="text-3xl font-bold text-center text-yellow-400 mb-8">
         Legal AI Platform
       </h1>
+
+      {#if showRegistrationSuccess}
+        <div class="success-message bg-green-900/50 border border-green-500 text-green-200 px-4 py-3 rounded mb-4" data-testid="success-message">
+          Account registered successfully! You can now sign in.
+        </div>
+      {/if}
       
       {#if form?.error}
-        <div class="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded mb-4">
+        <div class="error-message bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded mb-4" data-testid="error-message">
           {form.error}
+        </div>
+      {/if}
+
+      {#if form?.errors?.email}
+        <div class="error-message bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded mb-4" data-testid="error-message">
+          Invalid email or password
+        </div>
+      {/if}
+
+      {#if form?.errors?.password}
+        <div class="error-message bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded mb-4" data-testid="error-message">
+          Invalid email or password
         </div>
       {/if}
 
@@ -102,7 +125,7 @@
       <div class="mt-4 space-y-2">
         <button
           type="button"
-          onclick={quickDemoLogin}
+          on:click={quickDemoLogin}
           disabled={isAutoLoggingIn}
           class="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-800 disabled:cursor-not-allowed text-white font-semibold py-2 px-4 rounded transition-colors flex items-center justify-center"
         >
@@ -119,7 +142,7 @@
         
         <button
           type="button"
-          onclick={autoLoginDemo}
+          on:click={autoLoginDemo}
           class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition-colors"
         >
           📝 Auto-fill Demo Credentials

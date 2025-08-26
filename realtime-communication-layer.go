@@ -1,3 +1,6 @@
+//go:build realtime
+// +build realtime
+
 package main
 
 import (
@@ -179,7 +182,7 @@ func (cl *CommunicationLayer) startGRPCServer() {
 
 	// Register services (implementations would be added here)
 	// pb.RegisterLegalAIServiceServer(cl.grpcServer, &legalAIService{cl})
-	
+
 	// Enable reflection for debugging
 	reflection.Register(cl.grpcServer)
 
@@ -382,7 +385,7 @@ func (wsc *WebSocketClient) writePump() {
 func (cl *CommunicationLayer) processMessages() {
 	for message := range cl.messageQueue {
 		start := time.Now()
-		
+
 		switch message.Type {
 		case MSG_CHAT_MESSAGE:
 			cl.handleChatMessage(message)
@@ -496,7 +499,7 @@ func (cl *CommunicationLayer) handleGPUMetrics(message *Message) {
 
 func (cl *CommunicationLayer) sendToClient(client *WebSocketClient, message *Message) {
 	messageBytes, _ := json.Marshal(message)
-	
+
 	select {
 	case client.Send <- messageBytes:
 	default:
@@ -508,7 +511,7 @@ func (cl *CommunicationLayer) sendToClient(client *WebSocketClient, message *Mes
 func (cl *CommunicationLayer) broadcastToCase(caseID string, message *Message) {
 	cl.clientsMutex.RLock()
 	defer cl.clientsMutex.RUnlock()
-	
+
 	for _, client := range cl.clients {
 		if client.CaseID == caseID && client.IsActive {
 			cl.sendToClient(client, message)
@@ -519,7 +522,7 @@ func (cl *CommunicationLayer) broadcastToCase(caseID string, message *Message) {
 func (cl *CommunicationLayer) broadcastToAll(message *Message) {
 	cl.clientsMutex.RLock()
 	defer cl.clientsMutex.RUnlock()
-	
+
 	for _, client := range cl.clients {
 		if client.IsActive {
 			cl.sendToClient(client, message)
@@ -687,7 +690,7 @@ func (cl *CommunicationLayer) Shutdown(ctx context.Context) error {
 
 func main() {
 	commLayer := NewCommunicationLayer()
-	
+
 	if err := commLayer.Start(); err != nil {
 		log.Fatalf("💥 Failed to start communication layer: %v", err)
 	}

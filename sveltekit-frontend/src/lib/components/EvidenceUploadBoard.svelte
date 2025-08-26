@@ -1,7 +1,5 @@
 <!-- Evidence Upload Board Component with AI Analysis -->
 <script lang="ts">
-  import { $state } from 'svelte';
-
   import { Button } from '$lib/components/ui/button';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
   import { Textarea } from '$lib/components/ui/textarea';

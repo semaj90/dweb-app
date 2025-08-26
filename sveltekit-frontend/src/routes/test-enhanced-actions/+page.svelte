@@ -7,7 +7,7 @@
   import { page } from '$app/stores';
   import type { PageData } from './$types';
 
-  export let data: PageData;
+  let { data = $bindable() } = $props(); // PageData;
 
   let isSubmitting = false;
 

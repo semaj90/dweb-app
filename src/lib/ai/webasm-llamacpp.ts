@@ -1,6 +1,8 @@
 // WebAssembly llama.cpp with WebGPU acceleration for client-side AI
 // Supports Gemma 3 Legal models in browser with hardware acceleration
 
+import '../types/index.js';
+
 interface WebLlamaConfig {
   modelUrl: string;
   wasmUrl: string;
@@ -194,7 +196,8 @@ class WebAssemblyLlamaService {
       const modelBytes = await modelResponse.arrayBuffer();
       
       // Initialize model in WASM
-      const success = this.module.instance.exports.llama_load_model(
+      const wasmModule = this.module as WebAssemblyInstantiateResult;
+      const success = wasmModule.instance.exports.llama_load_model(
         new Uint8Array(modelBytes),
         this.config.contextSize,
         this.config.threadsCount
@@ -293,7 +296,7 @@ class WebAssemblyLlamaService {
     const analysis = this.parseLegalAnalysisResponse(result.text);
     
     return {
-      ...analysis,
+      ...(analysis as Record<string, any>),
       processingTime: result.processingTime,
       method: 'WebAssembly llama.cpp + Gemma 3 Legal'
     };
@@ -335,7 +338,7 @@ class WebAssemblyLlamaService {
       env: {
         memory,
         // WebGPU device interface for hardware acceleration
-        webgpu_device: this.webgpuDevice,
+        webgpu_device: this.webgpuDevice as WebAssembly.ImportValue,
         
         // Threading support
         __pthread_create: (thread: number, attr: number, func: number, arg: number) => {
@@ -426,19 +429,21 @@ class WebAssemblyLlamaService {
 
   private async generateDirect(prompt: string, options: unknown): Promise<WebLlamaResponse> {
     // Direct WASM function calls
-    const maxTokens = options.maxTokens || 1024;
-    const temperature = options.temperature || this.config.temperature;
+    const opts = options as LlamaGenerationParams;
+    const maxTokens = opts.max_tokens || 1024;
+    const temperature = opts.temperature || this.config.temperature;
 
     // Encode prompt to bytes
     const promptBytes = new TextEncoder().encode(prompt);
     
     // Allocate memory for prompt
-    const promptPtr = this.module.instance.exports.malloc(promptBytes.length);
-    const memory = new Uint8Array(this.module.instance.exports.memory.buffer);
+    const wasmModule = this.module as WebAssemblyInstantiateResult;
+    const promptPtr = wasmModule.instance.exports.malloc(promptBytes.length);
+    const memory = new Uint8Array(wasmModule.instance.exports.memory.buffer);
     memory.set(promptBytes, promptPtr);
 
     // Call WASM inference function
-    const resultPtr = this.module.instance.exports.llama_generate(
+    const resultPtr = wasmModule.instance.exports.llama_generate(
       promptPtr,
       promptBytes.length,
       maxTokens,
@@ -447,13 +452,13 @@ class WebAssemblyLlamaService {
     );
 
     // Read result from WASM memory
-    const resultLength = this.module.instance.exports.get_result_length(resultPtr);
+    const resultLength = wasmModule.instance.exports.get_result_length(resultPtr);
     const resultBytes = memory.slice(resultPtr, resultPtr + resultLength);
     const resultText = new TextDecoder().decode(resultBytes);
 
     // Free allocated memory
-    this.module.instance.exports.free(promptPtr);
-    this.module.instance.exports.free(resultPtr);
+    wasmModule.instance.exports.free(promptPtr);
+    wasmModule.instance.exports.free(resultPtr);
 
     return {
       text: resultText,

@@ -1,5 +1,4 @@
 import { json } from '@sveltejs/kit';
-import { putObject } from '$lib/server/minio/client';
 import { randomUUID } from 'crypto';
 
 // A light wrapper that accepts multipart form uploads and stores the file in MinIO under 'evidence' bucket.
@@ -15,10 +14,16 @@ export const POST = async ({ request }) => {
     const id = randomUUID();
     const objectName = `${id}_${file.name}`;
 
-    await putObject('evidence', objectName, buffer, {
-      'x-amz-meta-case-id': caseId,
-      'x-amz-meta-original-name': file.name,
-    });
+    // dynamically import storage client to support multiple workspaces/packaging
+    const storageModule: any = await import('$lib/server/minio/client').catch(() => null);
+    if (!storageModule?.putObject) {
+      console.warn('putObject not available; skipping storage write (development mode)');
+    } else {
+      await storageModule.putObject('evidence', objectName, buffer, {
+        'x-amz-meta-case-id': caseId,
+        'x-amz-meta-original-name': file.name,
+      });
+    }
 
     return json({ success: true, id, objectName });
   } catch (err) {

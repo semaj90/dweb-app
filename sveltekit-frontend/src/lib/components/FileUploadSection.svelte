@@ -424,11 +424,11 @@
           </button>
         {/if}
       </div>
-      
+
       {#if docStatus}
         <div aria-live="polite">{docStatus}</div>
       {/if}
-      
+
       {#if docs}
         <details>
           <summary>Show Svelte 5 File Upload Docs (Context7.2)</summary>

@@ -34,7 +34,7 @@ declare global {
     RENDER_ATTACHMENT: number;
   };
 
-  interface GPUDevice {
+  interface GPUDevice extends EventTarget {
     createBuffer(descriptor: GPUBufferDescriptor): GPUBuffer;
     createBindGroup(descriptor: GPUBindGroupDescriptor): GPUBindGroup;
     createBindGroupLayout(descriptor: GPUBindGroupLayoutDescriptor): GPUBindGroupLayout;
@@ -43,6 +43,17 @@ declare global {
     createShaderModule(descriptor: GPUShaderModuleDescriptor): GPUShaderModule;
     createCommandEncoder(descriptor?: GPUCommandEncoderDescriptor): GPUCommandEncoder;
     queue: GPUQueue;
+    destroy(): void;
+    addEventListener(type: 'uncapturederror', listener: (event: GPUUncapturedErrorEvent) => void): void;
+    removeEventListener(type: 'uncapturederror', listener: (event: GPUUncapturedErrorEvent) => void): void;
+  }
+
+  interface GPUUncapturedErrorEvent extends Event {
+    error: GPUError;
+  }
+
+  interface GPUError {
+    message: string;
   }
 
   interface GPUBuffer {

@@ -44,11 +44,11 @@
   import type { Infer, SuperValidated } from "sveltekit-superforms";
 
   // Props
-  export let data: SuperValidated<Infer<typeof DocumentUploadSchema>>;
-  export let onSuccess: ((result: any) => void) | undefined = undefined;
-  export let onError: ((error: string) => void) | undefined = undefined;
-  export let caseId: string | undefined = undefined;
-  export let autoSave = true;
+  let { data = $bindable() } = $props(); // SuperValidated<Infer<typeof DocumentUploadSchema>>;
+  let { onSuccess = $bindable() } = $props(); // ((result: any) => void) | undefined = undefined;
+  let { onError = $bindable() } = $props(); // ((error: string) => void) | undefined = undefined;
+  let { caseId = $bindable() } = $props(); // string | undefined = undefined;
+  let { autoSave = $bindable() } = $props(); // true;
 
   // Form state management
   const formIntegration = createDocumentUploadForm(data, {
@@ -266,7 +266,7 @@
           <Button
             variant="ghost"
             size="sm"
-            onclick={handleSaveDraft}
+            on:click={handleSaveDraft}
             disabled={$isSubmitting}
           >
             <Save size={16} />
@@ -274,7 +274,7 @@
           <Button
             variant="ghost"
             size="sm"
-            onclick={handleReset}
+            on:click={handleReset}
             disabled={$isSubmitting}
           >
             <RotateCcw size={16} />
@@ -313,7 +313,7 @@
         ondragleave={handleDragLeave}
         role="button"
         tabindex="0"
-        onclick={() => fileInput?.click()}
+        on:click={() => fileInput?.click()}
         onkeydown={(e) => e.key === "Enter" && fileInput?.click()}
       >
         {#if selectedFile}
@@ -540,7 +540,7 @@
               <Button
                 variant="outline"
                 size="sm"
-                onclick={() => actor.send({ type: "RETRY" })}
+                on:click={() => actor.send({ type: "RETRY" })}
                 disabled={contextValue.retryCount >= contextValue.maxRetries}
               >
                 Retry ({contextValue.maxRetries - contextValue.retryCount} attempts
@@ -551,7 +551,7 @@
                 <Button
                   variant="ghost"
                   size="sm"
-                  onclick={() => actor.send({ type: "SKIP_PROCESSING" })}
+                  on:click={() => actor.send({ type: "SKIP_PROCESSING" })}
                   class="ml-2"
                 >
                   Skip AI Processing
@@ -593,7 +593,7 @@
       <div class="flex gap-3">
         <Button
           variant="outline"
-          onclick={handleReset}
+          on:click={handleReset}
           disabled={$isSubmitting}
         >
           Reset Form

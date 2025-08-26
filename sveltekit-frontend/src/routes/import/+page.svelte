@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { $state } from 'svelte';
   import { browser } from "$app/environment";
   import { Tooltip } from "$lib/components/ui";
   import { Button } from "$lib/components/ui/button";
@@ -321,7 +320,7 @@
                   <Button
                     variant="outline"
                     size="sm"
-                    onclick={() => clearImport()}
+                    on:click={() => clearImport()}
                   >
                     <X class="space-y-4" />
                     Remove
@@ -338,7 +337,7 @@
                 </p>
                 <p class="space-y-4">or click to browse</p>
               </div>
-              <Button variant="outline" onclick={() => fileInput?.click()}>
+              <Button variant="outline" on:click={() => fileInput?.click()}>
                 Select File
               </Button>
             </div>
@@ -498,7 +497,7 @@
         <div class="space-y-4">
           <div class="space-y-4">
             <Button
-              onclick={() => performImport()}
+              on:click={() => performImport()}
               disabled={isImporting}
               class="space-y-4"
             >
@@ -513,7 +512,7 @@
               {/if}
             </Button>
             <Tooltip content="Clear current import and start over">
-              <Button variant="outline" onclick={() => clearImport()}>
+              <Button variant="outline" on:click={() => clearImport()}>
                 <X class="space-y-4" />
                 Cancel
               </Button>
@@ -540,7 +539,7 @@
                 <Button
                   variant="outline"
                   size="sm"
-                  onclick={() => downloadExampleTemplate("cases", "json")}
+                  on:click={() => downloadExampleTemplate("cases", "json")}
                 >
                   JSON
                 </Button>
@@ -549,7 +548,7 @@
                 <Button
                   variant="outline"
                   size="sm"
-                  onclick={() => downloadExampleTemplate("cases", "csv")}
+                  on:click={() => downloadExampleTemplate("cases", "csv")}
                 >
                   CSV
                 </Button>
@@ -564,7 +563,7 @@
                 <Button
                   variant="outline"
                   size="sm"
-                  onclick={() => downloadExampleTemplate("evidence", "json")}
+                  on:click={() => downloadExampleTemplate("evidence", "json")}
                 >
                   JSON
                 </Button>
@@ -573,7 +572,7 @@
                 <Button
                   variant="outline"
                   size="sm"
-                  onclick={() => downloadExampleTemplate("evidence", "csv")}
+                  on:click={() => downloadExampleTemplate("evidence", "csv")}
                 >
                   CSV
                 </Button>

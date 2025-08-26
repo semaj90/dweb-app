@@ -9,7 +9,7 @@ https://svelte.dev/e/global_reference_invalid -->
     CardContent,
     CardHeader,
     CardTitle,
-  } from "$lib/components/ui/Card";
+  } from "$lib/components/ui/card";
   import * as ContextMenu from "$lib/components/ui/context-menu";
   import { onDestroy, onMount } from "svelte";
   import { dndzone } from "svelte-dnd-action";
@@ -244,7 +244,7 @@ https://svelte.dev/e/global_reference_invalid -->
 </script>
 
 <svelte:window
-  onclick={() => closeContextMenu()}
+  on:click={() => closeContextMenu()}
   onkeydown={handleGlobalKeydown}
 />
 
@@ -271,7 +271,7 @@ https://svelte.dev/e/global_reference_invalid -->
             <Button
               variant={viewMode === "columns" ? "default" : "outline"}
               size="sm"
-              onclick={() => switchViewMode("columns")}
+              on:click={() => switchViewMode("columns")}
             >
               <span class="mr-2">📋</span>
               Columns
@@ -279,7 +279,7 @@ https://svelte.dev/e/global_reference_invalid -->
             <Button
               variant={viewMode === "canvas" ? "default" : "outline"}
               size="sm"
-              onclick={() => switchViewMode("canvas")}
+              on:click={() => switchViewMode("canvas")}
             >
               <span class="mr-2">🎨</span>
               Canvas
@@ -540,10 +540,10 @@ https://svelte.dev/e/global_reference_invalid -->
               />
               <Button
                 size="sm"
-                onclick={runFindSearch}
+                on:click={runFindSearch}
                 disabled={findModal.loading}>Search</Button
               >
-              <Button size="sm" variant="outline" onclick={closeFindModal}
+              <Button size="sm" variant="outline" on:click={closeFindModal}
                 >Close</Button
               >
             </div>

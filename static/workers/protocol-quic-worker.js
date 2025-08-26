@@ -97,6 +97,12 @@ class QUICProtocolWorker {
         return await this.handleDocumentUpload(request, endpoint, options);
       case 'semantic_search':
         return await this.handleSemanticSearch(request, endpoint, options);
+      case 'gpu_process':
+        return await this.handleGPUProcess(request, endpoint, options);
+      case 'gpu_rotation':
+        return await this.handleGPURotation(request, endpoint, options);
+      case 'gpu_embedding':
+        return await this.handleGPUEmbedding(request, endpoint, options);
       default:
         throw new Error(`Unknown request type: ${type}`);
     }
@@ -199,6 +205,165 @@ class QUICProtocolWorker {
     }
 
     return await response.json();
+  }
+
+  async handleGPUProcess(request, endpoint, options) {
+    const startTime = Date.now();
+    
+    // Route to GPU orchestrator service
+    const gpuEndpoint = endpoint.replace(':8094', ':8231'); // GPU orchestrator port
+    
+    const response = await fetch(`${gpuEndpoint}/api/gpu/process`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Protocol': 'QUIC',
+        'X-Request-ID': `quic_gpu_${Date.now()}`,
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        jobId: `quic-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        type: request.operation || 'embedding',
+        data: request.data || [],
+        priority: 'high', // QUIC gets high priority
+        options: {
+          quicMode: true,
+          ...options
+        }
+      }),
+      signal: AbortSignal.timeout(options.timeout || 15000)
+    });
+
+    if (!response.ok) {
+      throw new Error(`QUIC GPU Process failed: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const processingTime = Date.now() - startTime;
+
+    return {
+      ...data,
+      metadata: {
+        ...data.metadata,
+        protocol: 'QUIC-GPU',
+        processingTime,
+        networkLatency: processingTime - (data.processingMs || 0)
+      }
+    };
+  }
+
+  async handleGPURotation(request, endpoint, options) {
+    const startTime = Date.now();
+    
+    // Validate quaternion and points data
+    if (!request.quaternion || !request.points) {
+      throw new Error('GPU rotation requires quaternion and points data');
+    }
+
+    const gpuEndpoint = endpoint.replace(':8094', ':8231');
+    
+    // Prepare data for rotation: [qw, qx, qy, qz, ...points]
+    const rotationData = [
+      request.quaternion.w || 1.0,
+      request.quaternion.x || 0.0,
+      request.quaternion.y || 0.0,
+      request.quaternion.z || 0.0,
+      ...request.points
+    ];
+
+    const response = await fetch(`${gpuEndpoint}/api/gpu/process`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Protocol': 'QUIC',
+        'X-Request-ID': `quic_rotation_${Date.now()}`,
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        jobId: `quic-rot-${Date.now()}`,
+        type: 'rotation',
+        data: rotationData,
+        priority: 'high',
+        options: {
+          quicMode: true,
+          operation: 'rotate_points'
+        }
+      }),
+      signal: AbortSignal.timeout(options.timeout || 10000)
+    });
+
+    if (!response.ok) {
+      throw new Error(`QUIC GPU Rotation failed: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const processingTime = Date.now() - startTime;
+
+    return {
+      operation: 'gpu-rotation',
+      rotatedPoints: data.result,
+      quaternion: request.quaternion,
+      originalPointCount: request.points.length / 3,
+      performance: {
+        processingTime,
+        gpuAccelerated: data.gpuUtilized,
+        workerType: data.workerType
+      },
+      metadata: {
+        protocol: 'QUIC-GPU-ROTATION',
+        jobId: data.jobId
+      }
+    };
+  }
+
+  async handleGPUEmbedding(request, endpoint, options) {
+    const startTime = Date.now();
+    
+    const gpuEndpoint = endpoint.replace(':8094', ':8231');
+    
+    const response = await fetch(`${gpuEndpoint}/api/gpu/process`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Protocol': 'QUIC',
+        'X-Request-ID': `quic_embed_${Date.now()}`,
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        jobId: `quic-embed-${Date.now()}`,
+        type: 'embedding',
+        data: request.vectors || request.data || [],
+        priority: 'high',
+        options: {
+          quicMode: true,
+          dimensions: request.dimensions || 384
+        }
+      }),
+      signal: AbortSignal.timeout(options.timeout || 8000)
+    });
+
+    if (!response.ok) {
+      throw new Error(`QUIC GPU Embedding failed: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const processingTime = Date.now() - startTime;
+
+    return {
+      operation: 'gpu-embedding',
+      embeddings: data.result,
+      dimensions: data.result ? data.result.length : 0,
+      performance: {
+        processingTime,
+        gpuAccelerated: data.gpuUtilized,
+        workerType: data.workerType,
+        throughput: `${data.result ? data.result.length : 0}/sec`
+      },
+      metadata: {
+        protocol: 'QUIC-GPU-EMBEDDING',
+        jobId: data.jobId
+      }
+    };
   }
 
   postError(requestId, message) {

@@ -81,7 +81,7 @@ export class PostgreSQLQdrantSyncService {
       if (!exists) {
         await this.qdrant.createCollection(this.config.collectionName, {
           vectors: {
-            size: 384, // nomic-embed-text dimensions
+            size: 768, // nomic-embed-text dimensions (corrected)
             distance: 'Cosine'
           },
           optimizers_config: {

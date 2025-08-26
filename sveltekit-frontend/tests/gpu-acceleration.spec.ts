@@ -71,7 +71,7 @@ test.describe('GPU Acceleration and NVIDIA CUDA', () => {
     const cpuResponse = await page.request.post('/api/ai/chat', {
       data: {
         messages: [{ role: 'user', content: testPrompt }],
-        model: 'llama3.2',
+        model: 'gemma3:legal-latest',
         options: {
           gpu_layers: 0 // Force CPU
         }
@@ -95,7 +95,7 @@ test.describe('GPU Acceleration and NVIDIA CUDA', () => {
       const gpuResponse = await page.request.post('/api/ai/chat', {
         data: {
           messages: [{ role: 'user', content: testPrompt }],
-          model: 'llama3.2',
+          model: 'gemma3:legal-latest',
           options: {
             gpu_layers: -1 // Use all available GPU layers
           }
@@ -123,7 +123,7 @@ test.describe('GPU Acceleration and NVIDIA CUDA', () => {
           cpu_time: cpuTime,
           gpu_time: gpuTime,
           speedup: cpuTime / gpuTime,
-          model: 'llama3.2',
+          model: 'gemma3:legal-latest',
           prompt_length: testPrompt.length
         }
       });
@@ -185,7 +185,7 @@ test.describe('GPU Acceleration and NVIDIA CUDA', () => {
     // Try to load a model that might exceed GPU memory
     const response = await page.request.post('/api/ai/load-model', {
       data: {
-        model: 'llama3.2:70b', // Large model
+        model: 'gemma3:legal-latest', // Large model
         gpu_layers: -1 // Try to load all layers on GPU
       }
     });

@@ -155,7 +155,7 @@ https://svelte.dev/e/js_parse_error -->
         <div class="flex gap-3 pt-4">
           <button
             type="button"
-            onclick={performAnalysis}
+            on:click={performAnalysis}
             disabled={loading || !prompt.trim()}
             class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -170,7 +170,7 @@ https://svelte.dev/e/js_parse_error -->
           </button>
           <button
             type="button"
-            onclick={closeDialog}
+            on:click={closeDialog}
             class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
           >
             Cancel
@@ -234,14 +234,14 @@ https://svelte.dev/e/js_parse_error -->
         <div class="flex gap-3 pt-4">
           <button
             type="button"
-            onclick={resetDialog}
+            on:click={resetDialog}
             class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
           >
             New Analysis
           </button>
           <button
             type="button"
-            onclick={closeDialog}
+            on:click={closeDialog}
             class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
           >
             Close

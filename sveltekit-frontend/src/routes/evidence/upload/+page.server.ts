@@ -52,7 +52,7 @@ export const actions: Actions = {
       const buffer = await file.arrayBuffer();
       const hash = crypto.createHash('sha256').update(Buffer.from(buffer)).digest('hex');
 
-      // Create upload directory if it doesn't exist  
+      // Create upload directory if it doesn't exist
       const caseId = String(form.data.caseId);
       const uploadPath = join(process.cwd(), UPLOAD_DIR, caseId);
       await mkdir(uploadPath, { recursive: true });
@@ -107,7 +107,7 @@ export const actions: Actions = {
           // Store document vectors
           for (const chunk of chunks) {
             await db.insert(documentEmbeddings).values({
-              evidenceId: newEvidence.id, // Using evidence ID 
+              evidenceId: newEvidence.id, // Using evidence ID
               chunkIndex: chunk.metadata?.chunkIndex || 0,
               content: chunk.content,
               embedding: chunk.embedding as any, // Type assertion for vector

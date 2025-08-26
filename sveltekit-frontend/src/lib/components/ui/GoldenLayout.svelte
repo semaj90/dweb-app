@@ -93,7 +93,7 @@
       {#if collapsible}
         <button
           class="container mx-auto px-4"
-          onclick={() => toggleSidebar()}
+          on:click={() => toggleSidebar()}
           title={collapsed
             ? "Expand sidebar (Ctrl+\\)"
             : "Collapse sidebar (Ctrl+\\)"}
@@ -126,7 +126,7 @@
       {#if collapsible}
         <button
           class="container mx-auto px-4"
-          onclick={() => toggleSidebar()}
+          on:click={() => toggleSidebar()}
           title={collapsed
             ? "Expand sidebar (Ctrl+\\)"
             : "Collapse sidebar (Ctrl+\\)"}

@@ -1,8 +1,6 @@
 <script lang="ts">
 
   import UploadArea from './UploadArea.svelte';
-  import { $state } from 'svelte';
-
   let uploadComponent: UploadArea = $state();
   let uploadStatus = $state('');
   let uploadedFiles: any[] = $state([]);
@@ -159,7 +157,7 @@
             type="button"
             class="space-y-4"
             aria-label="Clear status"
-            onclick={() => clearStatus()}
+            on:click={() => clearStatus()}
           ></button>
         </div>
       {/if}
@@ -173,7 +171,7 @@
             <button
               type="button"
               class="space-y-4"
-              onclick={() => clearStatus()}
+              on:click={() => clearStatus()}
             >
               Clear
             </button>

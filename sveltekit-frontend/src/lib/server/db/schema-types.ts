@@ -23,8 +23,13 @@ import {
   cases, 
   evidence, 
   users,
-  documentMetadata
-} from './schema-unified';
+  reports,
+  criminals,
+  personsOfInterest,
+  legalDocuments,
+  notes,
+  type DocumentMetadataExt
+} from './unified-schema';
 
 // ===== CORE ENTITY TYPES =====
 
@@ -379,7 +384,8 @@ export {
   criminals,
   personsOfInterest,
   legalDocuments,
-  notes
+  notes,
+  type DocumentMetadataExt
 } from './unified-schema';
 
 // ===== TYPE GUARDS =====

@@ -7,6 +7,57 @@
 import { legalRAG } from '../sveltekit-frontend/src/lib/ai/langchain-rag.js';
 import { context7Service } from '../sveltekit-frontend/src/lib/services/context7Service.js';
 
+// Interface definitions for cache and cluster managers
+export interface OllamaGemmaCacheInterface {
+  initialize(): Promise<void>;
+  getEmbedding(text: string, context?: string): Promise<number[]>;
+  querySimilar(query: CacheQuery): Promise<CacheResponse>;
+  getCacheStats(): { totalEntries: number; validEntries: number; hitRate: number };
+}
+
+export interface ClusterTaskData {
+  question?: string;
+  prompt?: string;
+  options?: RAGQueryOptions;
+  cacheResult?: CacheItem[];
+  useHybridMode?: boolean;
+}
+
+export interface ClusterResult {
+  success: boolean;
+  result?: any;
+  error?: string;
+  workerId?: number;
+}
+
+export interface ClusterManagerInterface {
+  initialize(): Promise<void>;
+  executeTask(task: WorkerTask): Promise<ClusterResult>;
+  getClusterStats(): { totalWorkers: number; activeWorkers: number; totalTasksProcessed: number; averageLoad: number };
+}
+
+export interface Context7AutoFixResult {
+  summary: { filesFixed: number; totalIssues: number };
+  fixes: { performance: any[] };
+  recommendations: string[];
+}
+
+export interface Context7Analysis {
+  recommendations: string[];
+  integration: string;
+}
+
+export interface RAGResult {
+  answer?: string;
+  result?: string;
+  confidence?: number;
+  sourceDocuments?: Array<{
+    pageContent?: string;
+    content?: string;
+    metadata?: Record<string, any>;
+  }>;
+}
+
 export interface CacheQuery {
   text: string;
   context?: string;
@@ -14,17 +65,23 @@ export interface CacheQuery {
   maxResults: number;
 }
 
+export interface CacheItem {
+  text: string;
+  similarity?: number;
+  metadata?: Record<string, any>;
+}
+
 export interface CacheResponse {
   found: boolean;
-  exact?: unknown;
-  similar: unknown[];
+  exact?: CacheItem;
+  similar: CacheItem[];
   confidence: number;
 }
 
 export interface WorkerTask {
   id: string;
   type: 'rag-query' | 'agent-orchestrate' | 'embed-cache' | 'auto-fix';
-  data: unknown;
+  data: ClusterTaskData;
   priority: 'low' | 'medium' | 'high' | 'urgent';
   timeout?: number;
 }
@@ -44,23 +101,27 @@ export interface RAGServiceConfig {
   enablePreCaching: boolean;
 }
 
+export interface RAGQueryOptions {
+  caseId?: string;
+  documentTypes?: string[];
+  maxResults?: number;
+  confidenceThreshold?: number;
+  includeContext7?: boolean;
+  autoFix?: boolean;
+  enableMemoryGraph?: boolean;
+  useCache?: boolean;
+  cacheKey?: string;
+  clusterId?: string;
+  priority?: 'low' | 'medium' | 'high' | 'urgent';
+  enableFallback?: boolean;
+  thinkingMode?: boolean;
+  verbose?: boolean;
+}
+
 export interface RAGQueryRequest {
   query: string;
-  context?: unknown;
-  options?: {
-    caseId?: string;
-    documentTypes?: string[];
-    maxResults?: number;
-    confidenceThreshold?: number;
-    includeContext7?: boolean;
-    autoFix?: boolean;
-    enableMemoryGraph?: boolean;
-    useCache?: boolean;
-    cacheKey?: string;
-    clusterId?: string;
-    priority?: 'low' | 'medium' | 'high' | 'urgent';
-    enableFallback?: boolean;
-  };
+  context?: Record<string, any>;
+  options?: RAGQueryOptions;
 }
 
 export interface RAGQueryResponse {
@@ -102,8 +163,8 @@ export class EnhancedRAGService {
     averageResponseTime: 0,
     clusterUtilization: 0
   };
-  private ollamaGemmaCache: unknown = null;
-  private clusterManager: unknown = null;
+  private ollamaGemmaCache: OllamaGemmaCacheInterface | null = null;
+  private clusterManager: ClusterManagerInterface | null = null;
 
   constructor(config: RAGServiceConfig) {
     this.config = config;
@@ -146,7 +207,7 @@ export class EnhancedRAGService {
           console.warn('Cluster not available, using direct processing');
           this.clusterManager = {
             initialize: async () => {},
-            executeTask: async (task: unknown) => {
+            executeTask: async (task: WorkerTask) => {
               // Direct execution fallback
               const { legalRAG } = await import('../sveltekit-frontend/src/lib/ai/langchain-rag.js');
               const result = await legalRAG.query(task.data.question || task.data.prompt, task.data.options);
@@ -253,7 +314,7 @@ Auto-Fix Performance Optimizations:
       }
 
       // Step 2: Process with cluster if enabled
-      let ragResult: unknown;
+      let ragResult: RAGResult;
 
       if (this.config.enableClustering && this.activeQueries.size < this.config.maxConcurrentQueries) {
         this.activeQueries.add(queryId);
@@ -316,7 +377,7 @@ Auto-Fix Performance Optimizations:
       const processingTime = Date.now() - startTime;
 
       // Transform RAG result to our response format
-      const sources = ragResult.sourceDocuments?.map((doc: unknown) => ({
+      const sources = ragResult.sourceDocuments?.map((doc) => ({
         content: doc.pageContent || doc.content || '',
         similarity: doc.metadata?.score || 0.8,
         metadata: {
@@ -452,7 +513,7 @@ Auto-Fix Performance Optimizations:
     }
   }
 
-  private calculateScore(ragResult: unknown, sourcesCount: number, processingTime: number): number {
+  private calculateScore(ragResult: RAGResult, sourcesCount: number, processingTime: number): number {
     let score = 0.5; // Base score
 
     // Quality indicators
@@ -467,7 +528,7 @@ Auto-Fix Performance Optimizations:
     return Math.min(1.0, score);
   }
 
-  private calculateConfidenceScore(sources: unknown[]): number {
+  private calculateConfidenceScore(sources: Array<{ similarity: number }>): number {
     if (sources.length === 0) return 0;
 
     const avgSimilarity = sources.reduce((sum, source) => sum + source.similarity, 0) / sources.length;
@@ -476,22 +537,22 @@ Auto-Fix Performance Optimizations:
 
   // Enhanced helper methods for caching and clustering
 
-  private async checkSemanticCache(question: string, options: unknown): Promise<CacheResponse> {
+  private async checkSemanticCache(question: string, options: RAGQueryOptions = {}): Promise<CacheResponse> {
     const cacheQuery: CacheQuery = {
       text: question,
-      context: `rag_${options?.documentTypes?.join('_') || 'general'}`,
+      context: `rag_${options.documentTypes?.join('_') || 'general'}`,
       similarityThreshold: this.config.cacheThreshold,
       maxResults: 3
     };
 
-    return await this.ollamaGemmaCache.querySimilar(cacheQuery);
+    return await this.ollamaGemmaCache!.querySimilar(cacheQuery);
   }
 
-  private async cacheRAGResult(question: string, result: unknown, options: unknown): Promise<void> {
-    const cacheContext = `rag_result_${options?.documentTypes?.join('_') || 'general'}`;
-    const cacheText = `Query: ${question}\nAnswer: ${result.answer || result.output}`;
+  private async cacheRAGResult(question: string, result: RAGResult, options: RAGQueryOptions = {}): Promise<void> {
+    const cacheContext = `rag_result_${options.documentTypes?.join('_') || 'general'}`;
+    const cacheText = `Query: ${question}\nAnswer: ${result.answer || result.result}`;
 
-    await this.ollamaGemmaCache.getEmbedding(cacheText, cacheContext);
+    await this.ollamaGemmaCache!.getEmbedding(cacheText, cacheContext);
   }
 
   private async startPreCaching(): Promise<void> {
@@ -507,7 +568,7 @@ Auto-Fix Performance Optimizations:
 
     for (const query of commonQueries) {
       try {
-        await this.ollamaGemmaCache.getEmbedding(query, 'legal_common_queries');
+        await this.ollamaGemmaCache!.getEmbedding(query, 'legal_common_queries');
       } catch (error) {
         console.warn(`Failed to pre-cache query: ${query}`, error);
       }
@@ -516,7 +577,7 @@ Auto-Fix Performance Optimizations:
     console.log('✅ RAG pre-caching complete');
   }
 
-  private async executeDirect(enhancedQuery: string, options: unknown): Promise<any> {
+  private async executeDirect(enhancedQuery: string, options: RAGQueryOptions = {}): Promise<RAGResult> {
     const ragOptions = {
       thinkingMode: true,
       verbose: false,
@@ -529,22 +590,22 @@ Auto-Fix Performance Optimizations:
     return await legalRAG.query(enhancedQuery, ragOptions);
   }
 
-  private generateCacheKey(question: string, options: unknown): string {
+  private generateCacheKey(question: string, options: RAGQueryOptions = {}): string {
     const keyData = {
       question: question.toLowerCase().trim(),
-      documentTypes: options?.documentTypes,
-      caseId: options?.caseId
+      documentTypes: options.documentTypes,
+      caseId: options.caseId
     };
 
     return `rag_${Buffer.from(JSON.stringify(keyData)).toString('base64').slice(0, 16)}`;
   }
 
-  private formatCacheResult(cacheResult: CacheResponse, startTime: number, enhancedData: unknown): RAGQueryResponse {
+  private formatCacheResult(cacheResult: CacheResponse, startTime: number, enhancedData: Partial<RAGQueryResponse['metadata']>): RAGQueryResponse {
     const processingTime = Date.now() - startTime;
 
     const sources = cacheResult.similar.map(item => ({
       content: item.text,
-      similarity: (item as any).similarity || 0.8,
+      similarity: item.similarity || 0.8,
       metadata: {
         ...item.metadata,
         retrievalTimestamp: new Date().toISOString(),
@@ -560,6 +621,11 @@ Auto-Fix Performance Optimizations:
         documentsRetrieved: sources.length,
         processingTime,
         confidenceScore: cacheResult.confidence,
+        context7Enhanced: false,
+        memoryGraphUsed: false,
+        cacheHit: true,
+        cacheConfidence: cacheResult.confidence,
+        processingMethod: 'cache' as const,
         ...enhancedData,
         enhancedMetadata: {
           semanticSimilarity: cacheResult.confidence,
@@ -628,8 +694,8 @@ Auto-Fix Performance Optimizations:
   getEnhancedStats() {
     return {
       performanceMetrics: this.performanceMetrics,
-      cacheStats: this.config.enableSemanticCaching ? this.ollamaGemmaCache.getCacheStats() : null,
-      clusterStats: this.config.enableClustering ? this.clusterManager.getClusterStats() : null,
+      cacheStats: this.config.enableSemanticCaching ? this.ollamaGemmaCache?.getCacheStats() : null,
+      clusterStats: this.config.enableClustering ? this.clusterManager?.getClusterStats() : null,
       activeQueries: this.activeQueries.size,
       queuedQueries: this.queryQueue.size,
       systemHealth: {
@@ -643,7 +709,7 @@ Auto-Fix Performance Optimizations:
 
 // Factory function for creating Enhanced RAG service instances
 export function createEnhancedRAGService(config?: Partial<RAGServiceConfig>): EnhancedRAGService {
-  const env = typeof process !== 'undefined' ? process.env : {};
+  const env: Record<string, string | undefined> = typeof process !== 'undefined' ? process.env : {};
 
   const defaultConfig: RAGServiceConfig = {
     qdrantUrl: env.QDRANT_URL || 'http://localhost:6333',

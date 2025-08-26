@@ -1,0 +1,175 @@
+syntax = "proto3";
+
+package vectorservice;
+
+option go_package = "./pb";
+
+// The core Vector Service for enterprise-grade vector processing
+service VectorService {
+  // High-performance vector operations
+  rpc ProcessRotation(VectorRequest) returns (VectorResponse);
+  rpc ProcessSimilarity(SimilarityRequest) returns (SimilarityResponse);
+  rpc ProcessEmbedding(EmbeddingRequest) returns (EmbeddingResponse);
+  rpc ProcessBatch(BatchRequest) returns (stream BatchResponse);
+  
+  // Health and monitoring
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+  rpc GetMetrics(MetricsRequest) returns (MetricsResponse);
+}
+
+// Vector processing request
+message VectorRequest {
+  string job_id = 1;
+  string owner_type = 2;
+  string owner_id = 3;
+  Quaternion quaternion = 4;
+  repeated float points = 5;
+  ProcessingOptions options = 6;
+}
+
+message VectorResponse {
+  string job_id = 1;
+  string status = 2;
+  repeated float rotated_points = 3;
+  GPUMetrics gpu_metrics = 4;
+  string error = 5;
+  int64 processing_time_ms = 6;
+}
+
+// Similarity processing request
+message SimilarityRequest {
+  string job_id = 1;
+  repeated float vector_a = 2;
+  repeated float vector_b = 3;
+  SimilarityType similarity_type = 4;
+  ProcessingOptions options = 5;
+}
+
+message SimilarityResponse {
+  string job_id = 1;
+  string status = 2;
+  float similarity_score = 3;
+  GPUMetrics gpu_metrics = 4;
+  string error = 5;
+  int64 processing_time_ms = 6;
+}
+
+// Embedding generation request
+message EmbeddingRequest {
+  string job_id = 1;
+  string text = 2;
+  string model_name = 3;
+  EmbeddingType embedding_type = 4;
+  ProcessingOptions options = 5;
+}
+
+message EmbeddingResponse {
+  string job_id = 1;
+  string status = 2;
+  repeated float embedding = 3;
+  int32 dimensions = 4;
+  GPUMetrics gpu_metrics = 5;
+  string error = 6;
+  int64 processing_time_ms = 7;
+}
+
+// Batch processing
+message BatchRequest {
+  repeated VectorRequest vector_requests = 1;
+  repeated SimilarityRequest similarity_requests = 2;
+  repeated EmbeddingRequest embedding_requests = 3;
+  BatchOptions batch_options = 4;
+}
+
+message BatchResponse {
+  string batch_id = 1;
+  int32 completed_count = 2;
+  int32 total_count = 3;
+  string status = 4;
+  repeated VectorResponse vector_results = 5;
+  repeated SimilarityResponse similarity_results = 6;
+  repeated EmbeddingResponse embedding_results = 7;
+}
+
+// Supporting types
+message Quaternion {
+  float w = 1;
+  float x = 2;
+  float y = 3;
+  float z = 4;
+}
+
+message ProcessingOptions {
+  bool use_cuda = 1;
+  bool use_cublas = 2;
+  int32 batch_size = 3;
+  float timeout_seconds = 4;
+  bool enable_caching = 5;
+}
+
+message BatchOptions {
+  int32 max_concurrent = 1;
+  bool preserve_order = 2;
+  float timeout_seconds = 3;
+}
+
+message GPUMetrics {
+  string gpu_name = 1;
+  int32 memory_mb = 2;
+  float processing_time_ms = 3;
+  float gpu_utilization = 4;
+  float memory_utilization = 5;
+}
+
+// Health check
+message HealthCheckRequest {}
+
+message HealthCheckResponse {
+  string status = 1;
+  GPUMetrics gpu_status = 2;
+  DatabaseStatus database_status = 3;
+  CacheStatus cache_status = 4;
+  int64 uptime_seconds = 5;
+}
+
+message DatabaseStatus {
+  bool connected = 1;
+  int32 active_connections = 2;
+  float avg_query_time_ms = 3;
+}
+
+message CacheStatus {
+  bool connected = 1;
+  int64 cache_hits = 2;
+  int64 cache_misses = 3;
+  float hit_ratio = 4;
+  int64 memory_usage_mb = 5;
+}
+
+// Metrics
+message MetricsRequest {}
+
+message MetricsResponse {
+  int64 total_requests = 1;
+  int64 successful_requests = 2;
+  int64 failed_requests = 3;
+  float avg_processing_time_ms = 4;
+  GPUMetrics gpu_metrics = 5;
+  DatabaseStatus database_metrics = 6;
+  CacheStatus cache_metrics = 7;
+}
+
+// Enums
+enum SimilarityType {
+  COSINE = 0;
+  DOT_PRODUCT = 1;
+  EUCLIDEAN = 2;
+  MANHATTAN = 3;
+}
+
+enum EmbeddingType {
+  LEGAL_BERT = 0;
+  NOMIC_EMBED = 1;
+  SENTENCE_TRANSFORMER = 2;
+  CUSTOM = 3;
+}

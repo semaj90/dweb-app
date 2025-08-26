@@ -347,7 +347,7 @@ test.describe('LokiJS Caching System', () => {
               .data();
             
             oldestEntries.forEach((entry: any) => {
-              cacheCollection.remove(entry);
+              (cacheCollection as any).remove(entry);
             });
           }
         }

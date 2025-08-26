@@ -107,7 +107,7 @@ Trigger glsl-cubic-filter blending in shader between LODs based on viewport focu
 - 🔁 Service Worker that prefetches layouts and assets
 - 🧵 Multithreaded fetch/embedding
 - `/api/ui/buffers/:id` with matrix stream support
-- Docker with RabbitMQ + PGVector + Redis + Neo4j
+#-local native windows service check our existing setup with RabbitMQ + PGVector + Redis + Neo4j
 - GitHub-ready SvelteKit 2 starter
 
 ---

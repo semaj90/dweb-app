@@ -84,7 +84,7 @@ test.describe('RAG (Retrieval-Augmented Generation) System', () => {
       data: {
         question: 'What are the legal requirements for forming a corporation?',
         use_context: true,
-        model: 'llama3.2'
+        model: 'gemma3:legal-latest'
       }
     });
 

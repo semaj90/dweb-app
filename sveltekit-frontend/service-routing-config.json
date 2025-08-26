@@ -1,0 +1,48 @@
+{
+  "gateway": {
+    "enhanced-rag": "http://localhost:8094",
+    "upload-service": "http://localhost:8093",
+    "vector-service": "http://localhost:8095",
+    "cluster-manager": "http://localhost:8213"
+  },
+  "protocols": {
+    "http": [
+      "8094",
+      "8093",
+      "8095",
+      "8213",
+      "8212",
+      "8220"
+    ],
+    "grpc": [
+      "50051",
+      "50052"
+    ],
+    "quic": [
+      "8216",
+      "8230",
+      "8231"
+    ],
+    "websocket": [
+      "8094",
+      "8095"
+    ]
+  },
+  "loadBalancer": {
+    "ai": [
+      "8094",
+      "8096",
+      "8097"
+    ],
+    "upload": [
+      "8093",
+      "8207",
+      "8208"
+    ],
+    "vector": [
+      "8095",
+      "8232",
+      "8233"
+    ]
+  }
+}

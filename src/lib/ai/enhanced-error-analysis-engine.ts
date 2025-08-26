@@ -165,7 +165,7 @@ export class EnhancedErrorAnalysisEngine extends EventEmitter {
             // Phase 5: Priority ranking and recommendations
             const recommendations = await this.generateRecommendations(
                 enhancedPatterns,
-                autoFixes.flat()
+                autoFixes.flat() as AutoFix[]
             );
             
             const processingTime = performance.now() - startTime;
@@ -177,7 +177,7 @@ export class EnhancedErrorAnalysisEngine extends EventEmitter {
                 workerStats: this.workerPool.getStats(),
                 gpuUtilization: this.gpuManager.getStats(),
                 recommendations,
-                priorityFixes: this.prioritizeFixes(autoFixes.flat())
+                priorityFixes: this.prioritizeFixes(autoFixes.flat() as AutoFix[])
             };
             
             this.metricsCollector.recordAnalysis(result);
@@ -232,7 +232,8 @@ export class EnhancedErrorAnalysisEngine extends EventEmitter {
     private consolidatePatterns(results: unknown[]): ErrorPattern[] {
         const patternMap = new Map<string, ErrorPattern>();
         
-        results.flat().forEach(pattern => {
+        results.flat().forEach(patternData => {
+            const pattern = patternData as ErrorPattern;
             const key = `${pattern.type}-${pattern.severity}`;
             if (patternMap.has(key)) {
                 const existing = patternMap.get(key)!;
@@ -601,18 +602,18 @@ class ContextManager {
     async getRecentErrors(): Promise<unknown[]> {
         // Get errors from the last 5 minutes
         const fiveMinutesAgo = Date.now() - (5 * 60 * 1000);
-        return this.recentErrors.filter(error => error.timestamp > fiveMinutesAgo);
+        return this.recentErrors.filter(error => (error as any).timestamp > fiveMinutesAgo);
     }
     
     addError(error: unknown): void {
         this.recentErrors.push({
-            ...error,
+            ...(error as Record<string, any>),
             timestamp: Date.now()
         });
         
         // Keep only recent errors (last hour)
         const oneHourAgo = Date.now() - (60 * 60 * 1000);
-        this.recentErrors = this.recentErrors.filter(e => e.timestamp > oneHourAgo);
+        this.recentErrors = this.recentErrors.filter(e => (e as any).timestamp > oneHourAgo);
     }
     
     private findRelatedFiles(pattern: ErrorPattern): string[] {
@@ -684,7 +685,7 @@ class AnalysisWorker {
     private preprocessErrors(data: unknown): unknown {
         // Preprocess error data for analysis
         return {
-            ...data,
+            ...(data as Record<string, any>),
             preprocessed: true,
             timestamp: Date.now()
         };
@@ -822,4 +823,4 @@ interface OverallStats {
     averageErrorsPerAnalysis: number;
 }
 
-export { EnhancedErrorAnalysisEngine };
+// Export already done above

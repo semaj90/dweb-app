@@ -91,5 +91,11 @@
   "legal-ai.useLocalServices": true,
   "legal-ai.postgresLocal": "localhost:5432",
   "legal-ai.ollamaLocal": "localhost:11434",
-  "terminal.integrated.suggest.enabled": true
+  "terminal.integrated.suggest.enabled": true,
+
+  // Debugger Configuration - Disable auto-attach
+  "debug.node.autoAttach": "disabled",
+  "debug.javascript.autoAttachFilter": "disabled",
+  "debug.allowBreakpointsEverywhere": false,
+  "debug.internalConsoleOptions": "neverOpen"
 }

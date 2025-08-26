@@ -156,7 +156,10 @@ export class ProductionLogger {
       message: `Database operation: ${operation}`,
       data,
       error,
-      performanceMetrics
+      performanceMetrics: performanceMetrics as LogEntry['performanceMetrics'] || {
+        duration: 0,
+        memoryUsage: process.memoryUsage().heapUsed
+      }
     });
   }
 
@@ -167,7 +170,10 @@ export class ProductionLogger {
       message: `OCR processing: ${fileName}`,
       data: result,
       error,
-      performanceMetrics
+      performanceMetrics: performanceMetrics as LogEntry['performanceMetrics'] || {
+        duration: 0,
+        memoryUsage: process.memoryUsage().heapUsed
+      }
     });
   }
 
@@ -176,7 +182,7 @@ export class ProductionLogger {
       level: error ? 'error' : 'info',
       service: 'vector',
       message: `Vector operation: ${operation}`,
-      data: { query, results: results ? { count: results.length, sample: results[0] } : null },
+      data: { query, results: results && Array.isArray(results) ? { count: results.length, sample: results[0] } : null },
       error
     });
   }
@@ -187,12 +193,15 @@ export class ProductionLogger {
       service: 'ai',
       message: `AI operation: ${model}`,
       data: {
-        prompt: prompt?.substring(0, 100) + '...',
-        responseLength: response?.length || 0,
-        tokenUsage: performanceMetrics?.tokens
+        prompt: typeof prompt === 'string' ? prompt.substring(0, 100) + '...' : 'No prompt',
+        responseLength: typeof response === 'string' ? response.length : Array.isArray(response) ? response.length : 0,
+        tokenUsage: (performanceMetrics as any)?.tokens || 0
       },
       error,
-      performanceMetrics
+      performanceMetrics: performanceMetrics as LogEntry['performanceMetrics'] || {
+        duration: 0,
+        memoryUsage: process.memoryUsage().heapUsed
+      }
     });
   }
 
@@ -204,7 +213,7 @@ export class ProductionLogger {
       data: { fileSize, caseId, result },
       error,
       caseId,
-      documentId: result?.documentId
+      documentId: (result as any)?.documentId
     });
   }
 

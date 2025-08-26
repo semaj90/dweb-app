@@ -90,7 +90,7 @@ export class WebAssemblyAccelerator {
     moduleId?: string
   ): Promise<WasmModule> {
     try {
-      const module = await WebAssembly.compile(wasmBytes);
+      const module = await WebAssembly.compile(wasmBytes.buffer as ArrayBuffer);
 
       // Set up memory and imports
       const memory = new WebAssembly.Memory({

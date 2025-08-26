@@ -1,6 +1,5 @@
 <!-- YoRHa Demos Single Page App with ScrollArea -->
 <script lang="ts">
-  import { $state, $derived } from 'svelte';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { Button } from 'bits-ui';
@@ -370,7 +369,7 @@
       <div class="yorha-nav-bar">
         <Button.Root 
           class="yorha-nav-btn"
-          onclick={goHome}
+          on:click={goHome}
         >
           <Home size={16} />
           HOME
@@ -413,7 +412,7 @@
         {#each demoCategories as category}
           <button 
             class="yorha-category-btn {selectedDemo === category.id ? 'active' : ''}"
-            onclick={() => scrollToCategory(category.id)}
+            on:click={() => scrollToCategory(category.id)}
           >
             <svelte:component this={category.icon} size={16} />
             {category.title}
@@ -442,7 +441,7 @@
 
         <div class="yorha-overview-grid">
           {#each allDemos as demo}
-            <div class="yorha-demo-card yorha-demo-card-overview" onclick={() => handleDemoNavigation(demo.path)}>
+            <div class="yorha-demo-card yorha-demo-card-overview" on:click={() => handleDemoNavigation(demo.path)}>
               <div class="yorha-demo-header">
                 <h3 class="yorha-demo-title">{demo.title}</h3>
                 <Badge class="{getStatusColor(demo.status)}">
@@ -477,7 +476,7 @@
 
           <div class="yorha-demos-grid">
             {#each category.demos as demo}
-              <div class="yorha-demo-card" onclick={() => handleDemoNavigation(demo.path)}>
+              <div class="yorha-demo-card" on:click={() => handleDemoNavigation(demo.path)}>
                 <div class="yorha-demo-header">
                   <h3 class="yorha-demo-title">{demo.title}</h3>
                   <Badge class="{getStatusColor(demo.status)}">
@@ -495,7 +494,7 @@
                   <div class="yorha-demo-actions">
                     <Button.Root 
                       class="yorha-demo-btn"
-                      onclick={(e) => {
+                      on:click={(e) => {
                         e.stopPropagation();
                         handleDemoNavigation(demo.path);
                       }}
@@ -542,7 +541,7 @@
           <div class="yorha-footer-actions">
             <Button.Root 
               class="yorha-btn yorha-btn-primary"
-              onclick={goHome}
+              on:click={goHome}
             >
               <ArrowLeft size={16} />
               RETURN TO HOMEPAGE

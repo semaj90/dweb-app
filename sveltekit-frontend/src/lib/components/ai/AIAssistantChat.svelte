@@ -175,7 +175,7 @@
           <Button 
             variant="ghost" 
             size="sm"
-            onclick={() => showSettingsDialog = true}
+            on:click={() => showSettingsDialog = true}
           >
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -188,7 +188,7 @@
           <Button 
             variant="ghost" 
             size="sm"
-            onclick={() => showExportDialog = true}
+            on:click={() => showExportDialog = true}
           >
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -259,7 +259,7 @@
             variant="outline" 
             size="sm" 
             class="mt-2"
-            onclick={retryLast}
+            on:click={retryLast}
           >
             Retry
           </Button>
@@ -298,7 +298,7 @@
         
         <div class="flex flex-col gap-1">
           <Button 
-            onclick={sendMessage}
+            on:click={sendMessage}
             disabled={!canSend}
             class="px-4"
           >
@@ -315,7 +315,7 @@
             <Button 
               variant="outline"
               size="sm"
-              onclick={stopGeneration}
+              on:click={stopGeneration}
             >
               <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <rect x="6" y="6" width="12" height="12" />
@@ -348,16 +348,16 @@
         <!-- Model Selection -->
         <div class="space-y-2">
           <label class="text-sm font-medium">Model</label>
-          <Select.Root bind:value={currentModel()}>
-            <Select.Trigger>
-              <Select.Value placeholder="Select model" />
-            </Select.Trigger>
-            <Select.Content>
+          <SelectRoot bind:value={currentModel()}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select model" />
+            </SelectTrigger>
+            <SelectContent>
               {#each availableModels as model}
-                <Select.Item value={model}>{model}</Select.Item>
+                <SelectItem value={model}>{model}</SelectItem>
               {/each}
-            </Select.Content>
-          </Select.Root>
+            </SelectContent>
+          </SelectRoot>
         </div>
 
         <!-- Temperature Slider -->
@@ -397,7 +397,7 @@
           <Button 
             variant="outline" 
             size="sm"
-            onclick={() => aiAssistantManager.checkClusterHealth()}
+            on:click={() => aiAssistantManager.checkClusterHealth()}
           >
             Refresh Health
           </Button>
@@ -407,12 +407,12 @@
       <div class="flex justify-between gap-2">
         <Button 
           variant="destructive"
-          onclick={clearConversation}
+          on:click={clearConversation}
           disabled={!hasConversation}
         >
           Clear Chat
         </Button>
-        <Button onclick={() => showSettingsDialog = false}>
+        <Button on:click={() => showSettingsDialog = false}>
           Close
         </Button>
       </div>
@@ -448,11 +448,11 @@
       <div class="flex justify-end gap-2">
         <Button 
           variant="outline"
-          onclick={() => showExportDialog = false}
+          on:click={() => showExportDialog = false}
         >
           Cancel
         </Button>
-        <Button onclick={() => {
+        <Button on:click={() => {
           exportConversation();
           showExportDialog = false;
         }}>

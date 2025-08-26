@@ -103,10 +103,11 @@ todolist_*/
 # Package files
 packages/
 
-# Auto-generated content  
+# Auto-generated content
 README-MODERNIZED.md
 README-WINDOWS-NATIVE.md
 DEPLOYMENT-*.md
 FIX-*.md
 ecosystem*.config.cjs
 ecosystem*.config.js
+Screenshot (10481).png

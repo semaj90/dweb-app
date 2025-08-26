@@ -1,0 +1,72 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - heading "YoRHa Legal AI" [level=1] [ref=e5]
+    - navigation [ref=e6]:
+      - link "Home" [ref=e7] [cursor=pointer]:
+        - /url: /
+      - link "YoRHa Command Center" [ref=e8] [cursor=pointer]:
+        - /url: /yorha-command-center
+      - link "Enhanced RAG Demo" [ref=e9] [cursor=pointer]:
+        - /url: /demo/enhanced-rag-semantic
+      - link "Endpoints" [ref=e10] [cursor=pointer]:
+        - /url: /endpoints
+      - generic [ref=e11]: 🟡 LOADING
+  - main [ref=e12]:
+    - generic [ref=e15]:
+      - heading "Legal AI Platform" [level=1] [ref=e16]
+      - heading "Create Account" [level=2] [ref=e17]
+      - generic [ref=e18]:
+        - generic [ref=e19]:
+          - generic [ref=e20]:
+            - generic [ref=e21]: First Name
+            - textbox "First Name" [ref=e22]
+          - generic [ref=e23]:
+            - generic [ref=e24]: Last Name
+            - textbox "Last Name" [ref=e25]
+        - generic [ref=e26]:
+          - generic [ref=e27]: Email Address
+          - textbox "Email Address" [ref=e28]: Aliza.Blanda6@gmail.com
+        - generic [ref=e29]:
+          - generic [ref=e30]:
+            - generic [ref=e31]: Role
+            - combobox "Role" [ref=e32]:
+              - option "Prosecutor" [selected]
+              - option "Investigator"
+              - option "Legal Analyst"
+              - option "Administrator"
+          - generic [ref=e33]:
+            - generic [ref=e34]: Badge/ID (Optional)
+            - textbox "Badge/ID (Optional)" [ref=e35]
+        - generic [ref=e36]:
+          - generic [ref=e37]:
+            - generic [ref=e38]: Department
+            - textbox "Department" [ref=e39]
+          - generic [ref=e40]:
+            - generic [ref=e41]: Jurisdiction
+            - textbox "Jurisdiction" [ref=e42]
+        - generic [ref=e43]:
+          - generic [ref=e44]:
+            - generic [ref=e45]: Password
+            - textbox "Password" [active] [ref=e46]: TestPassword123!
+          - generic [ref=e47]:
+            - generic [ref=e48]: Confirm Password
+            - textbox "Confirm Password" [ref=e49]
+        - generic [ref=e50]:
+          - checkbox "Show passwords" [ref=e51]
+          - generic [ref=e52]: Show passwords
+        - generic [ref=e53]:
+          - generic [ref=e54]:
+            - checkbox "I agree to the Terms of Service" [ref=e55]
+            - generic [ref=e56]: I agree to the Terms of Service
+          - generic [ref=e57]:
+            - checkbox "I agree to the Privacy Policy" [ref=e58]
+            - generic [ref=e59]: I agree to the Privacy Policy
+        - button "Create Account" [ref=e60] [cursor=pointer]
+      - paragraph [ref=e62]:
+        - text: Already have an account?
+        - link "Sign in here" [ref=e63] [cursor=pointer]:
+          - /url: /auth/login
+```

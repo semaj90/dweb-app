@@ -133,16 +133,28 @@ func (qc *QUICCoordinator) Start() error {
 	return nil
 }
 
-// acceptConnections handles incoming QUIC connections
+// acceptConnections handles incoming QUIC connections with proper context
 func (qc *QUICCoordinator) acceptConnections() {
 	for {
 		select {
 		case <-qc.shutdownChan:
 			return
 		default:
-			conn, err := qc.listener.Accept(context.Background())
+			// Create context with timeout for accepting connections
+			ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+			conn, err := qc.listener.Accept(ctx)
+			cancel() // Always cancel to free resources
+			
 			if err != nil {
+				// Check if it's a timeout or shutdown-related error
+				if ctx.Err() == context.DeadlineExceeded {
+					qc.logger.Log(log.LevelWarn, "msg", "Connection accept timeout")
+					continue
+				}
 				qc.logger.Log(log.LevelError, "msg", "Failed to accept connection", "error", err)
+				
+				// Add exponential backoff on errors to prevent tight error loops
+				time.Sleep(100 * time.Millisecond)
 				continue
 			}
 
@@ -176,21 +188,47 @@ func (qc *QUICCoordinator) handleConnection(conn quic.Connection) {
 	qc.logger.Log(log.LevelInfo, "msg", "QUIC connection closed", "client_id", clientID)
 }
 
-// handleStreams processes streams for a connection
+// handleStreams processes streams for a connection with proper timeout handling
 func (qc *QUICCoordinator) handleStreams(qconn *QUICConnection) {
 	for {
 		select {
 		case <-qconn.conn.Context().Done():
 			return
+		case <-qc.shutdownChan:
+			return
 		default:
-			stream, err := qconn.conn.AcceptStream(context.Background())
+			// Create context with timeout for stream acceptance
+			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+			stream, err := qconn.conn.AcceptStream(ctx)
+			cancel()
+			
 			if err != nil {
-				qc.logger.Log(log.LevelError, "msg", "Failed to accept stream", "error", err)
+				// Check for timeout or connection closed
+				if ctx.Err() == context.DeadlineExceeded {
+					continue // Timeout is expected, continue accepting
+				}
+				if qconn.conn.Context().Err() != nil {
+					return // Connection closed
+				}
+				
+				qc.logger.Log(log.LevelError, "msg", "Failed to accept stream", 
+					"client_id", qconn.clientID, "error", err)
+				
+				// Add backoff to prevent tight error loops
+				time.Sleep(50 * time.Millisecond)
 				continue
 			}
 
-			// Handle stream in goroutine
-			go qc.handleStream(stream, qconn)
+			// Handle stream in goroutine with proper error recovery
+			go func(s quic.Stream, conn *QUICConnection) {
+				defer func() {
+					if r := recover(); r != nil {
+						qc.logger.Log(log.LevelError, "msg", "Stream handler panic", 
+							"client_id", conn.clientID, "panic", r)
+					}
+				}()
+				qc.handleStream(s, conn)
+			}(stream, qconn)
 		}
 	}
 }
@@ -220,15 +258,30 @@ func (qc *QUICCoordinator) handleStream(stream quic.Stream, qconn *QUICConnectio
 
 	handler := handlerFunc.(StreamHandler)
 
-	// Execute handler with timeout
+	// Execute handler with timeout and proper error handling
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	err = handler(ctx, stream, qconn)
-	if err != nil {
-		qc.logger.Log(log.LevelError, "msg", "Stream handler error", "error", err)
+	// Create a channel to handle timeout vs completion race condition
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- handler(ctx, stream, qconn)
+	}()
+
+	select {
+	case err := <-errChan:
+		if err != nil {
+			qc.logger.Log(log.LevelError, "msg", "Stream handler error", 
+				"client_id", qconn.clientID, "message_type", msgType, "error", err)
+			qconn.metrics.ErrorCount++
+			qc.sendError(stream, err.Error())
+			return
+		}
+	case <-ctx.Done():
+		qc.logger.Log(log.LevelWarn, "msg", "Stream handler timeout", 
+			"client_id", qconn.clientID, "message_type", msgType)
 		qconn.metrics.ErrorCount++
-		qc.sendError(stream, err.Error())
+		qc.sendError(stream, "Request timeout")
 		return
 	}
 
@@ -527,34 +580,48 @@ func (qc *QUICCoordinator) handleMetricsRequest(ctx context.Context, stream quic
 // Utility methods
 
 func (qc *QUICCoordinator) readMessageType(stream quic.Stream) (string, error) {
-	// Read first 4 bytes for length
+	// Read first 4 bytes for length of message type
 	lengthBuf := make([]byte, 4)
 	if _, err := io.ReadFull(stream, lengthBuf); err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to read message type length: %w", err)
+	}
+
+	// Extract length from big-endian format
+	typeLength := int(lengthBuf[0])<<24 | int(lengthBuf[1])<<16 | int(lengthBuf[2])<<8 | int(lengthBuf[3])
+	
+	// Validate message type length (reasonable limits)
+	if typeLength <= 0 || typeLength > 256 {
+		return "", fmt.Errorf("invalid message type length: %d", typeLength)
 	}
 
 	// Read message type
-	msgType := make([]byte, int(lengthBuf[0]))
+	msgType := make([]byte, typeLength)
 	if _, err := io.ReadFull(stream, msgType); err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to read message type: %w", err)
 	}
 
 	return string(msgType), nil
 }
 
 func (qc *QUICCoordinator) readStreamData(stream quic.Stream) ([]byte, error) {
-	// Read length prefix (4 bytes)
+	// Read length prefix (4 bytes) with timeout
 	lengthBuf := make([]byte, 4)
 	if _, err := io.ReadFull(stream, lengthBuf); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to read length prefix: %w", err)
 	}
 
 	length := int(lengthBuf[0])<<24 | int(lengthBuf[1])<<16 | int(lengthBuf[2])<<8 | int(lengthBuf[3])
 
-	// Read data
+	// Validate message length to prevent DoS attacks
+	const maxMessageSize = 16 * 1024 * 1024 // 16MB max
+	if length <= 0 || length > maxMessageSize {
+		return nil, fmt.Errorf("invalid message length: %d (max: %d)", length, maxMessageSize)
+	}
+
+	// Read data with size validation
 	data := make([]byte, length)
 	if _, err := io.ReadFull(stream, data); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to read message data: %w", err)
 	}
 
 	return data, nil
@@ -611,6 +678,19 @@ func (qc *QUICCoordinator) generateTLSConfig() (*tls.Config, error) {
 		return &tls.Config{
 			Certificates: []tls.Certificate{cert},
 			NextProtos:   []string{"legal-ai-quic"},
+			MinVersion:   tls.VersionTLS13,
+			MaxVersion:   tls.VersionTLS13,
+			CipherSuites: []uint16{
+				tls.TLS_AES_256_GCM_SHA384,
+				tls.TLS_CHACHA20_POLY1305_SHA256,
+				tls.TLS_AES_128_GCM_SHA256,
+			},
+			CurvePreferences: []tls.CurveID{
+				tls.X25519,
+				tls.CurveP384,
+				tls.CurveP256,
+			},
+			PreferServerCipherSuites: true,
 		}, nil
 	}
 
@@ -620,10 +700,23 @@ func (qc *QUICCoordinator) generateTLSConfig() (*tls.Config, error) {
 
 func (qc *QUICCoordinator) generateSelfSignedTLS() (*tls.Config, error) {
 	// Simplified self-signed cert generation for development
-	// In production, use proper certificates
+	// In production, use proper certificates with CA validation
 	return &tls.Config{
-		InsecureSkipVerify: true,
-		NextProtos:        []string{"legal-ai-quic"},
+		InsecureSkipVerify: true, // Only for development
+		NextProtos:         []string{"legal-ai-quic"},
+		MinVersion:         tls.VersionTLS13,
+		MaxVersion:         tls.VersionTLS13,
+		CipherSuites: []uint16{
+			tls.TLS_AES_256_GCM_SHA384,
+			tls.TLS_CHACHA20_POLY1305_SHA256,
+			tls.TLS_AES_128_GCM_SHA256,
+		},
+		CurvePreferences: []tls.CurveID{
+			tls.X25519,
+			tls.CurveP384,
+			tls.CurveP256,
+		},
+		PreferServerCipherSuites: true,
 	}, nil
 }
 
@@ -679,13 +772,37 @@ func (qc *QUICCoordinator) startMetricsCollection() {
 	}
 }
 
-// Shutdown gracefully shuts down the QUIC coordinator
+// Shutdown gracefully shuts down the QUIC coordinator with proper cleanup
 func (qc *QUICCoordinator) Shutdown() error {
+	qc.logger.Log(log.LevelInfo, "msg", "Starting QUIC coordinator shutdown")
+	
+	// Signal shutdown to all goroutines
 	close(qc.shutdownChan)
 	
+	// Close all active connections gracefully
+	qc.connections.Range(func(key, value interface{}) bool {
+		conn := value.(*QUICConnection)
+		err := conn.conn.CloseWithError(0, "Server shutting down")
+		
+		if err != nil {
+			qc.logger.Log(log.LevelWarn, "msg", "Error closing connection", 
+				"client_id", conn.clientID, "error", err)
+		}
+		return true
+	})
+	
+	// Wait a moment for connections to close cleanly
+	time.Sleep(1 * time.Second)
+	
+	// Close the listener
 	if qc.listener != nil {
-		return qc.listener.Close()
+		err := qc.listener.Close()
+		if err != nil {
+			qc.logger.Log(log.LevelError, "msg", "Error closing QUIC listener", "error", err)
+			return err
+		}
 	}
 	
+	qc.logger.Log(log.LevelInfo, "msg", "QUIC coordinator shutdown complete")
 	return nil
 }

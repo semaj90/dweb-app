@@ -77,6 +77,47 @@ export class CacheLayerManager {
     return null;
   }
 
+  /**
+   * Parallel batch get operation for high-throughput scenarios
+   */
+  async batchGet(keys: string[], dataType: string): Promise<Map<string, any>> {
+    const results = new Map<string, any>();
+    const optimalLayers = this.selectOptimalLayers('', dataType);
+    
+    // Split keys into batches for parallel processing
+    const batchSize = 10;
+    const batches = [];
+    for (let i = 0; i < keys.length; i += batchSize) {
+      batches.push(keys.slice(i, i + batchSize));
+    }
+
+    // Process batches in parallel across cache layers
+    await Promise.allSettled(
+      batches.map(async (batch) => {
+        const batchResults = await Promise.allSettled(
+          batch.map(async (key) => {
+            for (const layer of optimalLayers) {
+              try {
+                const data = await this.getFromLayer(layer.name, key);
+                if (data !== null) {
+                  results.set(key, data);
+                  layer.hitRate = layer.hitRate * 0.9 + 1 * 0.1;
+                  return data;
+                }
+              } catch (error) {
+                console.warn(`Batch cache layer ${layer.name} failed for key ${key}:`, error);
+              }
+            }
+            return null;
+          })
+        );
+        return batchResults;
+      })
+    );
+
+    return results;
+  }
+
   async set(
     key: string,
     data: any,
@@ -91,6 +132,72 @@ export class CacheLayerManager {
       .map((layer) => this.setInLayer(layer.name, key, data, ttl));
 
     await Promise.allSettled(promises);
+  }
+
+  /**
+   * Parallel batch set operation for high-throughput scenarios
+   */
+  async batchSet(
+    keyDataMap: Map<string, any>, 
+    dataType: string, 
+    ttl?: number
+  ): Promise<void> {
+    const optimalLayers = this.selectOptimalLayers('', dataType);
+    const entries = Array.from(keyDataMap.entries());
+    
+    // Split entries into batches for parallel processing
+    const batchSize = 10;
+    const batches = [];
+    for (let i = 0; i < entries.length; i += batchSize) {
+      batches.push(entries.slice(i, i + batchSize));
+    }
+
+    // Process batches in parallel across top 2 layers for redundancy
+    const layersToUse = optimalLayers.slice(0, 2);
+    
+    await Promise.allSettled(
+      layersToUse.flatMap(layer =>
+        batches.map(async (batch) => {
+          const batchPromises = batch.map(([key, data]) => 
+            this.setInLayer(layer.name, key, data, ttl)
+          );
+          await Promise.allSettled(batchPromises);
+        })
+      )
+    );
+  }
+
+  /**
+   * Parallel cache warming - preload frequently accessed data
+   */
+  async warmCache(keys: string[], dataLoader: (key: string) => Promise<any>, dataType: string): Promise<void> {
+    const batchSize = 5;
+    const batches = [];
+    for (let i = 0; i < keys.length; i += batchSize) {
+      batches.push(keys.slice(i, i + batchSize));
+    }
+
+    await Promise.allSettled(
+      batches.map(async (batch) => {
+        const loadPromises = batch.map(async (key) => {
+          try {
+            // Check if already cached
+            const cached = await this.get(key, dataType);
+            if (cached !== null) return;
+
+            // Load and cache data
+            const data = await dataLoader(key);
+            if (data !== null && data !== undefined) {
+              await this.set(key, data, dataType, 3600); // 1 hour TTL for warmed data
+            }
+          } catch (error) {
+            console.warn(`Cache warming failed for key ${key}:`, error);
+          }
+        });
+        
+        await Promise.allSettled(loadPromises);
+      })
+    );
   }
 
   private selectOptimalLayers(key: string, dataType: string): CacheLayer[] {

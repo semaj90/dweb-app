@@ -34,6 +34,63 @@ export async function withTransaction<T>(
 
 // Enhanced Case Operations
 export class CaseOperations {
+  // Instance method for compatibility with existing code
+  async getCaseById(caseId: string, userId: string): Promise<Case | null> {
+    return CaseOperations.getById(caseId, userId);
+  }
+  
+  // Instance method for compatibility with existing code
+  async createCase(caseData: any): Promise<Case> {
+    return CaseOperations.create(caseData);
+  }
+  
+  // Instance method for compatibility with existing code
+  async searchCases(options: any): Promise<{ cases: Case[]; total: number; stats: any }> {
+    const result = await CaseOperations.search({
+      query: options.search,
+      status: options.status ? [options.status] : undefined,
+      priority: options.priority ? [options.priority] : undefined,
+      limit: options.limit,
+      offset: (options.page - 1) * options.limit
+    });
+    
+    // Calculate stats
+    const stats = {
+      total: result.total,
+      open: result.cases.filter(c => c.status === 'open').length,
+      investigating: result.cases.filter(c => c.status === 'investigating').length,
+      pending: result.cases.filter(c => c.status === 'pending').length,
+      closed: result.cases.filter(c => c.status === 'closed').length,
+      archived: result.cases.filter(c => c.status === 'archived').length,
+      high: result.cases.filter(c => c.priority === 'high').length,
+      critical: result.cases.filter(c => c.priority === 'critical').length,
+      medium: result.cases.filter(c => c.priority === 'medium').length,
+      low: result.cases.filter(c => c.priority === 'low').length
+    };
+    
+    return { ...result, stats };
+  }
+  
+  // Static method to get case by ID with user access check
+  static async getById(caseId: string, userId: string): Promise<Case | null> {
+    try {
+      const result = await db.select()
+        .from(cases)
+        .where(and(
+          eq(cases.id, caseId),
+          or(
+            eq(cases.createdBy, userId),
+            eq(cases.leadProsecutor, userId)
+          )
+        ))
+        .limit(1);
+      
+      return result[0] || null;
+    } catch (error) {
+      console.error('Failed to get case by ID:', error);
+      return null;
+    }
+  }
   // Create case with validation and audit trail
   static async create(
     caseData: {
@@ -254,7 +311,7 @@ export class CaseOperations {
       }
     });
 
-    return caseData || null;
+    return caseData as any || null;
   }
 }
 

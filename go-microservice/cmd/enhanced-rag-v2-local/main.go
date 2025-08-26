@@ -17,7 +17,7 @@ import (
 	"github.com/lib/pq"
 	_ "github.com/lib/pq"
 	"github.com/redis/go-redis/v9"
-	"github.com/streadway/amqp"
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 // ==========================================

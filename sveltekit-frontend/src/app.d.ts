@@ -11,6 +11,14 @@ interface SessionUser {
   isActive: boolean;
 }
 
+// Define Session interface for the session object
+interface UserSession {
+  id: string;
+  user: SessionUser;
+  expiresAt: Date;
+  fresh: boolean;
+}
+
 
 declare global {
   namespace App {
@@ -22,7 +30,13 @@ declare global {
 
     interface Locals {
       user: SessionUser | null;
-      session: string | null;
+      session: UserSession | null;
+      db?: any;
+      audit?: {
+        logAction: (action: string, userId: string, details?: any) => Promise<void>;
+        logAccess: (resource: string, userId: string) => Promise<void>;
+        logError: (error: string, userId: string, context?: any) => Promise<void>;
+      };
       featureFlags?: Record<string, boolean>;
       apiContext?: unknown;
       serviceHealth?: unknown;

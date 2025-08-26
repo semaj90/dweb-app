@@ -2,8 +2,7 @@
 https://svelte.dev/e/js_parse_error -->
 <!-- AI Pipeline Demo -->
 <script lang="ts">
-  import { $state, $derived } from 'svelte';
-	import { onMount } from 'svelte';
+  import { onMount } from 'svelte';
 	import { enhance } from '$app/forms';
 	import { writable } from 'svelte/store';
 	import { ragQuery, ragResults, ragLoading } from '$lib/services/enhancedRAGPipeline';
@@ -137,7 +136,7 @@ Termination requires 30 days notice from either party.`);
 			<h2 class="text-2xl font-semibold mb-4 flex items-center">
 				🔧 System Health
 				<button 
-					onclick={checkSystemHealth}
+					on:click={checkSystemHealth}
 					class="ml-4 px-3 py-1 text-sm bg-blue-600 hover:bg-blue-700 rounded transition-colors"
 				>
 					Refresh
@@ -187,7 +186,7 @@ Termination requires 30 days notice from either party.`);
 					></textarea>
 					
 					<button 
-						onclick={runAutoTagging}
+						on:click={runAutoTagging}
 						disabled={isProcessing}
 						class="mt-4 px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 rounded transition-all duration-200 transform hover:scale-105"
 					>
@@ -307,7 +306,7 @@ Termination requires 30 days notice from either party.`);
 					/>
 					
 					<button 
-						onclick={runRAGQuery}
+						on:click={runRAGQuery}
 						disabled={$ragLoading}
 						class="mt-4 px-6 py-2 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 disabled:opacity-50 rounded transition-all duration-200 transform hover:scale-105"
 					>
@@ -366,7 +365,7 @@ Termination requires 30 days notice from either party.`);
 			<h2 class="text-2xl font-semibold mb-4 flex items-center">
 				⚡ Performance Benchmark
 				<button 
-					onclick={runBenchmark}
+					on:click={runBenchmark}
 					class="ml-4 px-3 py-1 text-sm bg-purple-600 hover:bg-purple-700 rounded transition-colors"
 				>
 					Run Benchmark

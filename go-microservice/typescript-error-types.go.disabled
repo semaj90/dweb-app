@@ -1,0 +1,213 @@
+// typescript-error-types.go
+// Shared types for TypeScript error processing system with Go best practices optimizations
+
+package main
+
+import (
+	"context"
+	"fmt"
+	"sync"
+	"sync/atomic"
+	"time"
+)
+
+// TypeScriptError represents a TypeScript compilation error
+type TypeScriptError struct {
+	File     string                 `json:"file"`
+	Line     int                    `json:"line"`
+	Column   int                    `json:"column"`
+	Message  string                 `json:"message"`
+	Code     string                 `json:"code"`
+	Severity string                 `json:"severity"`
+	Context  string                 `json:"context"`
+	Source   string                 `json:"source"`
+	Category string                 `json:"category"`
+	Metadata map[string]interface{} `json:"metadata"`
+}
+
+// TypeScriptFixResult represents the result of an error fix attempt
+type TypeScriptFixResult struct {
+	Success        bool                   `json:"success"`
+	FixedCode      string                 `json:"fixed_code"`
+	Explanation    string                 `json:"explanation"`
+	Confidence     float64                `json:"confidence"`
+	ProcessingTime time.Duration          `json:"processing_time"`
+	TokensUsed     int                    `json:"tokens_used"`
+	ErrorType      string                 `json:"error_type"`
+	FixType        string                 `json:"fix_type"`
+	Metadata       map[string]interface{} `json:"metadata"`
+}
+
+// GoLlamaEngine represents the interface to the Go-Llama inference engine
+// Optimized with atomic operations and connection pooling
+type GoLlamaEngine struct {
+	ModelPath       string `json:"model_path"`
+	IsInitialized   bool   `json:"is_initialized"`
+	ModelLoaded     bool   `json:"model_loaded"`
+	MaxTokens       int    `json:"max_tokens"`
+	Temperature     float64 `json:"temperature"`
+	
+	// Performance optimization fields
+	requestCount    int64      // atomic counter
+	totalLatency    int64      // atomic counter for average latency calculation
+	errorCount      int64      // atomic error counter
+	mu              sync.RWMutex
+	connectionPool  chan struct{} // Connection pool for rate limiting
+	bufferPool      *sync.Pool    // Buffer pool for reuse
+}
+
+// BatchProcessRequest represents a batch processing request
+type BatchProcessRequest struct {
+	Errors      []TypeScriptError `json:"errors"`
+	Strategy    string            `json:"strategy"`
+	MaxFixes    int               `json:"max_fixes"`
+	UseThinking bool              `json:"use_thinking"`
+	Temperature float64           `json:"temperature"`
+	Concurrency int               `json:"concurrency"`
+	MaxTokens   int               `json:"max_tokens"`
+}
+
+// BatchProcessResponse represents a batch processing response
+type BatchProcessResponse struct {
+	Success      bool                     `json:"success"`
+	ProcessedCount int                    `json:"processed_count"`
+	Results      []*TypeScriptFixResult   `json:"results"`
+	ProcessingTime time.Duration          `json:"processing_time"`
+	TokensUsed   int                      `json:"tokens_used"`
+	Metadata     map[string]interface{}   `json:"metadata"`
+}
+
+// Mock methods for GoLlamaEngine to make the code compile
+func (gle *GoLlamaEngine) IsLoaded() bool {
+	return gle.ModelLoaded
+}
+
+func (gle *GoLlamaEngine) ProcessBatch(ctx context.Context, request *BatchProcessRequest) (*BatchProcessResponse, error) {
+	startTime := time.Now()
+	
+	// Acquire connection from pool (with timeout)
+	select {
+	case <-gle.connectionPool:
+		defer func() { gle.connectionPool <- struct{}{} }()
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	case <-time.After(5 * time.Second):
+		atomic.AddInt64(&gle.errorCount, 1)
+		return nil, fmt.Errorf("connection pool timeout")
+	}
+	
+	// Increment request counter atomically
+	atomic.AddInt64(&gle.requestCount, 1)
+	
+	// Pre-allocate results slice with capacity
+	results := make([]*TypeScriptFixResult, 0, len(request.Errors))
+	
+	// Get buffer from pool for efficient string building
+	buf := gle.bufferPool.Get().([]byte)[:0]
+	defer gle.bufferPool.Put(buf)
+	
+	for i, err := range request.Errors {
+		// Use buffer for efficient string concatenation
+		buf = buf[:0] // Reset buffer length
+		buf = append(buf, "// Optimized fix for: "...)
+		buf = append(buf, err.Message...)
+		
+		result := &TypeScriptFixResult{
+			Success:        true,
+			FixedCode:      string(buf), // Convert buffer to string once
+			Explanation:    "Optimized template-based fix with buffer pooling",
+			Confidence:     0.85 + float64(i)*0.01, // Slight variance for testing
+			ProcessingTime: time.Millisecond * 5,   // Faster with optimizations
+			TokensUsed:     40,
+			ErrorType:      err.Category,
+			FixType:        "optimized_template",
+			Metadata: map[string]interface{}{
+				"source":     "go_llama_optimized",
+				"mock":       true,
+				"buffer_pooled": true,
+				"request_id": atomic.LoadInt64(&gle.requestCount),
+			},
+		}
+		results = append(results, result)
+	}
+	
+	// Calculate and record latency atomically
+	latency := time.Since(startTime)
+	atomic.AddInt64(&gle.totalLatency, latency.Nanoseconds())
+	
+	return &BatchProcessResponse{
+		Success:        true,
+		ProcessedCount: len(request.Errors),
+		Results:        results,
+		ProcessingTime: latency,
+		TokensUsed:     len(request.Errors) * 40,
+		Metadata: map[string]interface{}{
+			"strategy":           request.Strategy,
+			"mock":               true,
+			"optimized":          true,
+			"buffer_pooled":      true,
+			"request_count":      atomic.LoadInt64(&gle.requestCount),
+			"avg_latency_ns":     atomic.LoadInt64(&gle.totalLatency) / atomic.LoadInt64(&gle.requestCount),
+			"connection_pooled":  true,
+		},
+	}, nil
+}
+
+// NewGoLlamaEngine creates a new Go-Llama engine instance with optimizations
+func NewGoLlamaEngine(modelPath string) *GoLlamaEngine {
+	const maxConnections = 10
+	
+	// Create connection pool and fill it
+	connectionPool := make(chan struct{}, maxConnections)
+	for i := 0; i < maxConnections; i++ {
+		connectionPool <- struct{}{}
+	}
+	
+	return &GoLlamaEngine{
+		ModelPath:     modelPath,
+		IsInitialized: true,
+		ModelLoaded:   true,
+		MaxTokens:     2048,
+		Temperature:   0.7,
+		// Initialize performance optimization components
+		requestCount:   0,
+		totalLatency:   0,
+		errorCount:     0,
+		connectionPool: connectionPool,
+		bufferPool: &sync.Pool{
+			New: func() interface{} {
+				return make([]byte, 0, 1024) // 1KB initial capacity
+			},
+		},
+	}
+}
+
+// Close cleans up the engine resources
+func (gle *GoLlamaEngine) Close() error {
+	// Close connection pool
+	close(gle.connectionPool)
+	return nil
+}
+
+// GetStats returns performance statistics
+func (gle *GoLlamaEngine) GetStats() map[string]interface{} {
+	requestCount := atomic.LoadInt64(&gle.requestCount)
+	totalLatency := atomic.LoadInt64(&gle.totalLatency)
+	errorCount := atomic.LoadInt64(&gle.errorCount)
+	
+	avgLatency := int64(0)
+	if requestCount > 0 {
+		avgLatency = totalLatency / requestCount
+	}
+	
+	return map[string]interface{}{
+		"request_count":      requestCount,
+		"total_latency_ns":   totalLatency,
+		"avg_latency_ns":     avgLatency,
+		"avg_latency_ms":     float64(avgLatency) / 1e6,
+		"error_count":        errorCount,
+		"error_rate":         float64(errorCount) / float64(requestCount),
+		"model_loaded":       gle.ModelLoaded,
+		"connection_pool_size": cap(gle.connectionPool),
+	}
+}

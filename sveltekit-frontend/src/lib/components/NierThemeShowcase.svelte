@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { $state } from 'svelte';
-
   import { Button } from 'bits-ui'
   import { createDialog, melt } from 'melt'
   import { fly, fade } from 'svelte/transition'
@@ -49,7 +47,7 @@
         <a href="#" class="nav-item">AI Assistant</a>
         
         <button
-          onclick={() => isDarkMode = !isDarkMode}
+          on:click={() => isDarkMode = !isDarkMode}
           class="nier-button-outline px-4 py-2 rounded-lg"
           class:dark={isDarkMode}
         >
@@ -75,7 +73,7 @@
     <div class="flex gap-2 border-b nier-divider">
       {#each ['overview', 'components', 'forms', 'cards'] as tab}
         <button
-          onclick={() => activeTab = tab}
+          on:click={() => activeTab = tab}
           class="px-6 py-3 font-medium capitalize nier-transition"
           class:text-harvard-crimson={activeTab === tab}
           class:dark:text-digital-green={activeTab === tab}

@@ -12,20 +12,31 @@ export interface CrewAIAgentConfig {
   taskTimeout: number;
 }
 
+export interface CrewAIContext {
+  caseData?: any;
+  evidence?: any[];
+  precedents?: any[];
+  [key: string]: any;
+}
+
+export interface CrewAIRoleDistribution {
+  researcher: number;
+  analyst: number;
+  reviewer: number;
+  coordinator: number;
+}
+
+export interface CrewAIOptions {
+  crewType?: 'legal_research' | 'case_analysis' | 'document_review' | 'evidence_processing';
+  roleDistribution?: CrewAIRoleDistribution;
+  includeContext7?: boolean;
+  autoFix?: boolean;
+}
+
 export interface CrewAIAgentRequest {
   prompt: string;
-  context?: unknown;
-  options?: {
-    crewType?: 'legal_research' | 'case_analysis' | 'document_review' | 'evidence_processing';
-    roleDistribution?: {
-      researcher: number;
-      analyst: number;
-      reviewer: number;
-      coordinator: number;
-    };
-    includeContext7?: boolean;
-    autoFix?: boolean;
-  };
+  context?: CrewAIContext;
+  options?: CrewAIOptions;
 }
 
 export interface CrewAIAgentResponse {
@@ -126,7 +137,7 @@ Auto-Fix Report:
     }
   }
 
-  private async simulateCrewExecution(prompt: string, options?: unknown): Promise<{
+  private async simulateCrewExecution(prompt: string, options?: CrewAIOptions): Promise<{
     finalOutput: string;
     crewSize: number;
     tasksCompleted: number;
@@ -220,7 +231,11 @@ Auto-Fix Report:
     }
   }
 
-  private calculateScore(result: unknown, processingTime: number): number {
+  private calculateScore(result: {
+    efficiency: number;
+    tasksCompleted: number;
+    collaborationRounds: number;
+  }, processingTime: number): number {
     let score = 0.5; // Base score
 
     // Efficiency bonus

@@ -13,9 +13,9 @@
   import { AlertCircle, CheckCircle, Eye, EyeOff, Info } from "lucide-svelte";
   import { createEventDispatcher } from "svelte";
 
-  export let name: string;
-  export let label: string;
-  export let type:
+  let { name = $bindable() } = $props(); // string;
+  let { label = $bindable() } = $props(); // string;
+  let { type = $bindable() } = $props(); //
     | "text"
     | "email"
     | "password"
@@ -24,24 +24,24 @@
     | "number"
     | "date"
     | "textarea" = "text";
-  export let value: string = "";
-  export let placeholder: string = "";
-  export let required: boolean = false;
-  export let disabled: boolean = false;
-  export let readonly: boolean = false;
-  export let autocomplete: string = "";
-  export let maxlength: number | undefined = undefined;
-  export let minlength: number | undefined = undefined;
-  export let pattern: string | undefined = undefined;
-  export let step: string | undefined = undefined;
-  export let min: string | undefined = undefined;
-  export let max: string | undefined = undefined;
-  export let rows: number = 3;
-  export let validator: FormValidator | null = null;
-  export let config: FormFieldConfig | null = null;
-  export let helpText: string = "";
-  export let showValidation: boolean = true;
-  export let showPasswordToggle: boolean = true;
+  let { value = $bindable() } = $props(); // string = "";
+  let { placeholder = $bindable() } = $props(); // string = "";
+  let { required = $bindable() } = $props(); // boolean = false;
+  let { disabled = $bindable() } = $props(); // boolean = false;
+  let { readonly = $bindable() } = $props(); // boolean = false;
+  let { autocomplete = $bindable() } = $props(); // string = "";
+  let { maxlength = $bindable() } = $props(); // number | undefined = undefined;
+  let { minlength = $bindable() } = $props(); // number | undefined = undefined;
+  let { pattern = $bindable() } = $props(); // string | undefined = undefined;
+  let { step = $bindable() } = $props(); // string | undefined = undefined;
+  let { min = $bindable() } = $props(); // string | undefined = undefined;
+  let { max = $bindable() } = $props(); // string | undefined = undefined;
+  let { rows = $bindable() } = $props(); // number = 3;
+  let { validator = $bindable() } = $props(); // FormValidator | null = null;
+  let { config = $bindable() } = $props(); // FormFieldConfig | null = null;
+  let { helpText = $bindable() } = $props(); // string = "";
+  let { showValidation = $bindable() } = $props(); // boolean = true;
+  let { showPasswordToggle = $bindable() } = $props(); // boolean = true;
 
   const dispatch = createEventDispatcher<{
     input: { value: string; validation: ValidationResult };
@@ -221,7 +221,7 @@
         <button
           type="button"
           class="container mx-auto px-4"
-          onclick={() => togglePasswordVisibility()}
+          on:click={() => togglePasswordVisibility()}
           aria-label={showPassword ? "Hide password" : "Show password"}
           tabindex={-1}
         >

@@ -21,9 +21,9 @@
   } from 'lucide-svelte';
   import { fly, fade } from 'svelte/transition';
 
-  export let caseId: string;
-  export let documents: CaseDocument[] = [];
-  export let evidenceReports: EvidenceReport[] = [];
+  let { caseId = $bindable() } = $props(); // string;
+  let { documents = $bindable() } = $props(); // CaseDocument[] = [];
+  let { evidenceReports = $bindable() } = $props(); // EvidenceReport[] = [];
 
   interface CaseDocument {
     id: string;
@@ -464,7 +464,7 @@ ${synthesis.nextSteps.map(step => `- ${step}`).join('\n')}
         
         {#if $state.context.synthesisResult}
           <button
-            onclick={exportSynthesis}
+            on:click={exportSynthesis}
             class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
           >
             <Download class="w-4 h-4" />
@@ -558,7 +558,7 @@ ${synthesis.nextSteps.map(step => `- ${step}`).join('\n')}
           {selectedCount} items selected for synthesis
         </div>
         <button
-          onclick={startSynthesis}
+          on:click={startSynthesis}
           disabled={selectedCount === 0}
           class="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
@@ -596,13 +596,13 @@ ${synthesis.nextSteps.map(step => `- ${step}`).join('\n')}
       </div>
       <div class="mt-4 flex gap-3">
         <button
-          onclick={() => send({ type: 'RETRY' })}
+          on:click={() => send({ type: 'RETRY' })}
           class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
         >
           Retry Synthesis
         </button>
         <button
-          onclick={() => send({ type: 'RESTART' })}
+          on:click={() => send({ type: 'RESTART' })}
           class="px-4 py-2 border border-red-300 text-red-700 rounded-md hover:bg-red-50 transition-colors"
         >
           Start Over
@@ -800,13 +800,13 @@ ${synthesis.nextSteps.map(step => `- ${step}`).join('\n')}
       <!-- Action Buttons -->
       <div class="flex gap-4">
         <button
-          onclick={() => send({ type: 'RESTART' })}
+          on:click={() => send({ type: 'RESTART' })}
           class="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
         >
           New Synthesis
         </button>
         <button
-          onclick={exportSynthesis}
+          on:click={exportSynthesis}
           class="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
         >
           <Download class="w-4 h-4" />

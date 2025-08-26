@@ -4,9 +4,9 @@
   import { $props, $derived } from 'svelte';
 	import { avatarStore } from "../stores/avatarStore";
 	
-	export let size: 'small' | 'medium' | 'large' = 'medium';
-	export let clickable = false;
-	export let showUploadButton = false;
+	let { size = $bindable() } = $props(); // 'small' | 'medium' | 'large' = 'medium';
+	let { clickable = $bindable() } = $props(); // false;
+	let { showUploadButton = $bindable() } = $props(); // false;
 	
 	let fileInput: HTMLInputElement;
 	let dragOver = false;
@@ -86,7 +86,7 @@
 	<div 
 		class="mx-auto px-4 max-w-7xl" 
 		style="width: {avatarSize}; height: {avatarSize};"
-		onclick={() => handleAvatarClick()}
+		on:click={() => handleAvatarClick()}
 		onkeydown={(e) => {
 			if (e.key === 'Enter' || e.key === ' ') {
 				e.preventDefault();
@@ -129,7 +129,7 @@
 			<button 
 				type="button" 
 				class="mx-auto px-4 max-w-7xl"
-				onclick={() => fileInput?.click()}
+				on:click={() => fileInput?.click()}
 				disabled={$avatarStore.isUploading}
 			>
 				{$avatarStore.isUploading ? 'Uploading...' : 'Change Avatar'}
@@ -139,7 +139,7 @@
 				<button 
 					type="button" 
 					class="mx-auto px-4 max-w-7xl"
-					onclick={() => handleRemoveAvatar()}
+					on:click={() => handleRemoveAvatar()}
 				>
 					Remove
 				</button>
@@ -150,7 +150,7 @@
 	{#if $avatarStore.error}
 		<div class="mx-auto px-4 max-w-7xl">
 			{$avatarStore.error}
-			<button type="button" onclick={() => avatarStore.clearError()} class="mx-auto px-4 max-w-7xl">×</button>
+			<button type="button" on:click={() => avatarStore.clearError()} class="mx-auto px-4 max-w-7xl">×</button>
 		</div>
 	{/if}
 </div>

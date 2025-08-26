@@ -6,10 +6,10 @@
   import { createEventDispatcher } from 'svelte';
 
   // Exported props (use Svelte-style exports instead of $props/$bindable)
-  export let open: boolean = false;
-  export let onOpenChange: ((open: boolean) => void) | undefined;
-  export let placeholder: string = 'Search cases, evidence, documents...';
-  export let className: string = '';
+  let { open = $bindable() } = $props(); // boolean = false;
+  let { onOpenChange = $bindable() } = $props(); // ((open: boolean) => void) | undefined;
+  let { placeholder = $bindable() } = $props(); // string = 'Search cases, evidence, documents...';
+  let { className = $bindable() } = $props(); // string = '';
 
   const dispatch = createEventDispatcher();
 

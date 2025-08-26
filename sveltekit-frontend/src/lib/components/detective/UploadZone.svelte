@@ -103,7 +103,7 @@ https://svelte.dev/e/js_parse_error -->
   <!-- Minimal Upload Button for Canvas -->
   <button
     class="space-y-4"
-    onclick={() => openFileDialog()}
+    on:click={() => openFileDialog()}
     title="Upload Evidence"
     aria-label="Upload Evidence"
     tabindex={0}
@@ -120,7 +120,7 @@ https://svelte.dev/e/js_parse_error -->
     role="button"
     tabindex={0}
     aria-label="Upload Evidence Dropzone"
-    onclick={() => openFileDialog()}
+    on:click={() => openFileDialog()}
     onkeydown={(e) => e.key === 'Enter' && openFileDialog()}
   >
     {#if isUploading}

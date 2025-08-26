@@ -12,11 +12,11 @@
   } from "lucide-svelte";
   import { createEventDispatcher } from "svelte";
 
-  export let caseId: string | undefined = undefined;
+  let { caseId = $bindable() } = $props(); // string | undefined = undefined;
   export const evidenceIds: string[] = []; // External reference for evidence context
-  export let placeholder = "Ask AI about this case...";
-  export let maxHeight = "400px";
-  export let showReferences = true;
+  let { placeholder = $bindable() } = $props(); // "Ask AI about this case...";
+  let { maxHeight = $bindable() } = $props(); // "400px";
+  let { showReferences = $bindable() } = $props(); // true;
 
   const dispatch = createEventDispatcher();
 
@@ -100,12 +100,12 @@ I can provide more specific guidance if you share additional details about your 
     <div class="container mx-auto px-4">
       <button
         class="container mx-auto px-4"
-        onclick={() => (showSettings = !showSettings)}
+        on:click={() => (showSettings = !showSettings)}
         title="Settings"
       >
         <Settings class="container mx-auto px-4" />
       </button>
-      <button class="container mx-auto px-4" onclick={() => clearMessages()} title="Clear">
+      <button class="container mx-auto px-4" on:click={() => clearMessages()} title="Clear">
         <Trash2 class="container mx-auto px-4" />
       </button>
     </div>
@@ -125,7 +125,7 @@ I can provide more specific guidance if you share additional details about your 
             {#each message.references as reference}
               <button
                 class="container mx-auto px-4"
-                onclick={() => handleReferenceClick(reference)}
+                on:click={() => handleReferenceClick(reference)}
               >
                 <Quote class="container mx-auto px-4" />
                 <span class="container mx-auto px-4">{reference.title}</span>
@@ -170,7 +170,7 @@ I can provide more specific guidance if you share additional details about your 
     <div class="container mx-auto px-4">
       <div class="container mx-auto px-4">
         <h4>Settings</h4>
-        <button class="container mx-auto px-4" onclick={() => (showSettings = false)}
+        <button class="container mx-auto px-4" on:click={() => (showSettings = false)}
           >×</button
         >
       </div>
@@ -231,7 +231,7 @@ I can provide more specific guidance if you share additional details about your 
       aria-modal="true"
       aria-labelledby="citation-dialog-title"
       tabindex={-1}
-      onclick={() => (showCitationDialog = false)}
+      on:click={() => (showCitationDialog = false)}
       onkeydown={(e) => e.key === "Escape" && (showCitationDialog = false)}
     >
       <div
@@ -255,12 +255,12 @@ I can provide more specific guidance if you share additional details about your 
           </div>
 
           <div class="container mx-auto px-4">
-            <button class="container mx-auto px-4" onclick={() => insertCitation()}>
+            <button class="container mx-auto px-4" on:click={() => insertCitation()}>
               Insert Citation
             </button>
             <button
               class="container mx-auto px-4"
-              onclick={() => navigator.clipboard.writeText(selectedCitation)}
+              on:click={() => navigator.clipboard.writeText(selectedCitation)}
             >
               Copy
             </button>
@@ -270,7 +270,7 @@ I can provide more specific guidance if you share additional details about your 
         <div class="container mx-auto px-4">
           <button
             class="container mx-auto px-4"
-            onclick={() => (showCitationDialog = false)}
+            on:click={() => (showCitationDialog = false)}
           >
             Close
           </button>

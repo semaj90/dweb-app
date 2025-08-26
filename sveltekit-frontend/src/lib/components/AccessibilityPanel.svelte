@@ -14,7 +14,7 @@
   } from "lucide-svelte";
   import { onMount } from "svelte";
 
-  export let showPanel = false;
+  let { showPanel = $bindable() } = $props(); // false;
 
   interface AccessibilityIssue {
     id: string;
@@ -478,7 +478,7 @@
 {#if showPanel}
   <div
     class="mx-auto px-4 max-w-7xl"
-    onclick={() => (showPanel = false)}
+    on:click={() => (showPanel = false)}
     onkeydown={(e) => e.key === 'Escape' && (showPanel = false)}
     role="dialog"
     aria-modal="true"
@@ -495,7 +495,7 @@
           <Button
             variant="ghost"
             size="sm"
-            onclick={() => (showPanel = false)}
+            on:click={() => (showPanel = false)}
             aria-label="Close accessibility panel"
           >
             ✕
@@ -565,7 +565,7 @@
             <h3 class="mx-auto px-4 max-w-7xl">Accessibility Audit</h3>
             <Button
               size="sm"
-              onclick={() => runAccessibilityAudit()}
+              on:click={() => runAccessibilityAudit()}
               disabled={isAuditing}
               class="mx-auto px-4 max-w-7xl"
             >
@@ -620,7 +620,7 @@
                 variant="outline"
                 size="sm"
                 class="mx-auto px-4 max-w-7xl"
-                onclick={() => exportAuditResults()}
+                on:click={() => exportAuditResults()}
               >
                 <Download class="mx-auto px-4 max-w-7xl" />
                 Export Report

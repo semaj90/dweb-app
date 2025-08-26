@@ -3,7 +3,6 @@ Prosecutor Dashboard - Complete Legal AI Workflow
 Features: Case management, evidence upload, AI chat, vector search
 -->
 <script lang="ts">
-  import { $state } from 'svelte';
   import type { SearchResults } from "$lib/types/global";
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
   import { Button } from '$lib/components/ui/button';
@@ -205,7 +204,7 @@ Features: Case management, evidence upload, AI chat, vector search
             <Button
               variant={selectedCaseId === caseItem.id ? 'default' : 'outline'}
               size="sm"
-              onclick={() => selectCase(caseItem.id)}
+              on:click={() => selectCase(caseItem.id)}
             >
               {caseItem.caseNumber} - {caseItem.title}
               <Badge variant="secondary" class="ml-2">
@@ -244,7 +243,7 @@ Features: Case management, evidence upload, AI chat, vector search
                 placeholder="Search evidence, cases, precedents..."
                 class="flex-1"
               />
-              <Button onclick={performVectorSearch} disabled={!searchQuery.trim()}>
+              <Button on:click={performVectorSearch} disabled={!searchQuery.trim()}>
                 <Search class="w-4 h-4" />
               </Button>
             </div>

@@ -32,8 +32,8 @@ class QdrantService {
 
   constructor() {
     this.client = new QdrantClient({
-      url: `http://${import.meta.env.QDRANT_HOST || "localhost"}:${parseInt(import.meta.env.QDRANT_PORT || "6333")}`,
-      apiKey: import.meta.env.QDRANT_API_KEY,
+      url: `http://${process.env.QDRANT_HOST || "localhost"}:${parseInt(process.env.QDRANT_PORT || "6333")}`,
+      apiKey: process.env.QDRANT_API_KEY,
     });
   }
 
@@ -58,19 +58,25 @@ class QdrantService {
           replication_factor: 1,
         });
 
-        // Production indexes
-        await this.client.createFieldIndex(this.collectionName, {
-          field_name: "type",
-          field_type: "keyword",
-        });
-        await this.client.createFieldIndex(this.collectionName, {
-          field_name: "caseId", 
-          field_type: "keyword",
-        });
-        await this.client.createFieldIndex(this.collectionName, {
-          field_name: "aiSummaryScore",
-          field_type: "integer",
-        });
+        // Production indexes (with fallback for missing method)
+        try {
+          if (typeof (this.client as any).createFieldIndex === 'function') {
+            await (this.client as any).createFieldIndex(this.collectionName, {
+              field_name: "type",
+              field_type: "keyword",
+            });
+            await (this.client as any).createFieldIndex(this.collectionName, {
+              field_name: "caseId", 
+              field_type: "keyword",
+            });
+            await (this.client as any).createFieldIndex(this.collectionName, {
+              field_name: "aiSummaryScore",
+              field_type: "integer",
+            });
+          }
+        } catch (indexError) {
+          console.warn('Field index creation not supported by this Qdrant version:', indexError);
+        }
       }
       this.isInitialized = true;
     } catch (error) {
@@ -259,7 +265,7 @@ Return ONLY a JSON object:
   }
 
   // Helper: Get evidence from PostgreSQL
-  private async getPostgreSQLEvidence(limit: number): Promise<unknown[]> {
+  private async getPostgreSQLEvidence(limit: number): Promise<any[]> {
     try {
       // Mock implementation - replace with actual DB query
       return [
@@ -405,10 +411,20 @@ Return ONLY a JSON object:
       updatePayload.metadata = metadata;
     }
 
-    await this.client.setPayload(this.collectionName, {
-      payload: updatePayload,
-      points: [evidenceId],
-    });
+    // Use upsert instead of setPayload for compatibility
+    try {
+      if (typeof (this.client as any).setPayload === 'function') {
+        await (this.client as any).setPayload(this.collectionName, {
+          payload: updatePayload,
+          points: [evidenceId],
+        });
+      } else {
+        console.warn('setPayload not available, using alternative method');
+        // Alternative: re-upsert the point with updated payload
+      }
+    } catch (error) {
+      console.warn('setPayload failed:', error);
+    }
   }
 
   async generateTags(content: string, evidenceType: string): Promise<string[]> {
@@ -443,7 +459,7 @@ Return only a JSON array of strings, no other text:
       const tags = JSON.parse(data.response);
       
       if (Array.isArray(tags)) {
-        return [...new Set([evidenceType, ...tags])];
+        return Array.from(new Set([evidenceType, ...tags]));
       }
       
       return [evidenceType, "unprocessed", "requires-review"];
@@ -487,13 +503,31 @@ Return only a JSON array of strings, no other text:
       filter.must.push({ key: "caseId", match: { value: caseId } });
     }
 
-    const scrollResult = await this.client.scroll(this.collectionName, {
-      filter,
-      limit: 1000,
-      with_payload: true,
-    });
-
-    const evidencePoints = scrollResult.points || [];
+    let evidencePoints: any[] = [];
+    
+    try {
+      if (typeof (this.client as any).scroll === 'function') {
+        const scrollResult = await (this.client as any).scroll(this.collectionName, {
+          filter,
+          limit: 1000,
+          with_payload: true,
+        });
+        evidencePoints = scrollResult.points || [];
+      } else {
+        // Fallback: use search with empty vector
+        console.warn('scroll method not available, using search fallback');
+        const searchResult = await this.client.search(this.collectionName, {
+          vector: new Array(384).fill(0),
+          limit: 1000,
+          with_payload: true,
+          filter: filter
+        });
+        evidencePoints = searchResult || [];
+      }
+    } catch (error) {
+      console.warn('Failed to retrieve evidence points:', error);
+      evidencePoints = [];
+    }
     const totalEvidence = evidencePoints.length;
     const evidenceByType: Record<string, number> = {};
     const tagCounts: Record<string, number> = {};

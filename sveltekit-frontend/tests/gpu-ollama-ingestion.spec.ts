@@ -43,9 +43,9 @@ test.describe('GPU-Enabled Ollama Ingestion Pipeline', () => {
     const modelsResponse = await page.request.get('/api/ollama/models');
     const models = await modelsResponse.json();
     
-    const requiredModels = ['llama3.2', 'nomic-embed-text'];
+    const requiredModels = ['gemma3:legal-latest', 'nomic-embed-text'];
     requiredModels.forEach((modelName: string) => {
-      const model = models.models.find((m: unknown) => m.name.includes(modelName));
+      const model = models.models.find((m: unknown) => (m as any).name.includes(modelName));
       expect(model).toBeDefined();
       if (model && model.details) {
         expect(model.details.gpu_layers).toBeGreaterThan(0);
@@ -262,7 +262,7 @@ test.describe('GPU-Enabled Ollama Ingestion Pipeline', () => {
     
     const searchResults = await searchResponse.json();
     const batchDocuments = searchResults.results.filter((r: unknown) => 
-      r.metadata.title && r.metadata.title.includes('Batch Document')
+      (r as any).metadata.title && (r as any).metadata.title.includes('Batch Document')
     );
     
     expect(batchDocuments.length).toBeGreaterThan(0);
@@ -346,7 +346,7 @@ test.describe('GPU-Enabled Ollama Ingestion Pipeline', () => {
     const models = await modelsResponse.json();
     
     const embeddingModels = models.models.filter((m: unknown) => 
-      m.name.includes('embed') || m.capabilities?.includes('embedding')
+      (m as any).name.includes('embed') || (m as any).capabilities?.includes('embedding')
     );
     
     expect(embeddingModels.length).toBeGreaterThan(0);

@@ -199,7 +199,7 @@ Timestamp: ${new Date().toISOString()}`;
               <Button
                 variant="ghost"
                 size="sm"
-                onclick={() => copyErrorDetails()}
+                on:click={() => copyErrorDetails()}
                 class="mx-auto px-4 max-w-7xl"
                 aria-label="Copy error details"
               >
@@ -220,7 +220,7 @@ Timestamp: ${new Date().toISOString()}`;
             size="sm"
             variant="outline"
             class={getButtonClass(currentError.severity)}
-            onclick={() => retryAction()}
+            on:click={() => retryAction()}
             disabled={retryInProgress}
             aria-label="Retry action"
           >
@@ -237,7 +237,7 @@ Timestamp: ${new Date().toISOString()}`;
           <Button
             size="sm"
             variant="ghost"
-            onclick={() => (showDetails = !showDetails)}
+            on:click={() => (showDetails = !showDetails)}
             aria-label="Toggle error details"
           >
             {#if showDetails}
@@ -251,7 +251,7 @@ Timestamp: ${new Date().toISOString()}`;
         <Button
           size="sm"
           variant="ghost"
-          onclick={() => clearError()}
+          on:click={() => clearError()}
           aria-label="Dismiss error"
         >
           <X class="mx-auto px-4 max-w-7xl" />
@@ -293,7 +293,7 @@ Timestamp: ${new Date().toISOString()}`;
                   <Button
                     variant="ghost"
                     size="sm"
-                    onclick={() => copyErrorDetails()}
+                    on:click={() => copyErrorDetails()}
                     class="mx-auto px-4 max-w-7xl"
                     aria-label="Copy error details"
                   >
@@ -316,7 +316,7 @@ Timestamp: ${new Date().toISOString()}`;
             <Button
               variant="outline"
               size="sm"
-              onclick={() => reportError()}
+              on:click={() => reportError()}
               class="mx-auto px-4 max-w-7xl"
             >
               <Bug class="mx-auto px-4 max-w-7xl" />
@@ -328,7 +328,7 @@ Timestamp: ${new Date().toISOString()}`;
             <Button
               variant="outline"
               size="sm"
-              onclick={() => (showDetails = !showDetails)}
+              on:click={() => (showDetails = !showDetails)}
               class="mx-auto px-4 max-w-7xl"
             >
               {#if showDetails}
@@ -344,7 +344,7 @@ Timestamp: ${new Date().toISOString()}`;
           {#if currentError.canRetry}
             <Button
               class={`gap-2 ${getButtonClass(currentError.severity)}`}
-              onclick={() => retryAction()}
+              on:click={() => retryAction()}
               disabled={retryInProgress}
             >
               {#if retryInProgress}
@@ -359,7 +359,7 @@ Timestamp: ${new Date().toISOString()}`;
 
           <Button
             variant={currentError.canRetry ? "outline" : "default"}
-            onclick={() => clearError()}
+            on:click={() => clearError()}
           >
             {currentError.canRetry ? "Cancel" : "Close"}
           </Button>

@@ -130,7 +130,6 @@ PS C:\Users\james\Desktop\deeds-web\deeds-web-app> pwsh -Command "try { Invoke-R
       "healthy": true,
       "models": [
         "nomic-embed-text:latest",
-        "gemma2:2b",
         "gemma3-legal:latest",
         "gemma3:latest"
       ],

@@ -81,7 +81,7 @@ export interface User {
 
 // Enhanced type definitions for barrel store compatibility
 export * from './webgpu.d.ts';
-export * from './webassembly-enhanced.d.ts'; 
+export * from './webassembly-enhanced.d.ts';
 export * from './drizzle-enhanced.d.ts';
 export * from './env-enhanced.d.ts';
 

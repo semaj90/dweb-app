@@ -150,7 +150,7 @@
             class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input {placeholder} bind:value={searchQuery} onkeydown={handleKeydown} class="pl-10" />
         </div>
-        <Button onclick={performSearch} disabled={isSearching || !searchQuery.trim()} size="sm">
+        <Button on:click={performSearch} disabled={isSearching || !searchQuery.trim()} size="sm">
           {#if isSearching}
             Searching...
           {:else}
@@ -295,7 +295,7 @@
             <Button
               variant="outline"
               size="sm"
-              onclick={() => {
+              on:click={() => {
                 searchQuery = suggestion;
                 performSearch();
               }}>

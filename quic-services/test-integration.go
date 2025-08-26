@@ -1,3 +1,6 @@
+//go:build quictests
+// +build quictests
+
 package main
 
 import (
@@ -19,16 +22,16 @@ func main() {
 		service string
 	}{
 		{"QUIC Legal Gateway", 8445, "Legal Gateway"},
-		{"QUIC Vector Proxy", 8545, "Vector Proxy"}, 
+		{"QUIC Vector Proxy", 8545, "Vector Proxy"},
 		{"QUIC AI Stream", 8546, "AI Stream"},
 	}
 
 	for _, test := range testPorts {
 		fmt.Printf("\n🔍 Testing %s on port %d\n", test.name, test.port)
-		
+
 		// Try with HTTPS (should work even if not HTTP/3)
 		url := fmt.Sprintf("https://localhost:%d/health", test.port)
-		
+
 		client := &http.Client{
 			Transport: &http.Transport{
 				TLSClientConfig: &tls.Config{
@@ -37,11 +40,11 @@ func main() {
 			},
 			Timeout: 3 * time.Second,
 		}
-		
+
 		resp, err := client.Get(url)
 		if err != nil {
 			fmt.Printf("❌ HTTPS Error: %v\n", err)
-			
+
 			// Try HTTP (fallback)
 			httpUrl := fmt.Sprintf("http://localhost:%d/health", test.port)
 			resp, err = http.Get(httpUrl)
@@ -50,7 +53,7 @@ func main() {
 				continue
 			}
 		}
-		
+
 		defer resp.Body.Close()
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
@@ -65,7 +68,7 @@ func main() {
 	// Test integration with main system
 	fmt.Println("\n🔗 Testing Integration with Main Legal AI System")
 	fmt.Println("================================================")
-	
+
 	// Check if main services are accessible
 	mainServices := []struct{
 		name string
@@ -79,7 +82,7 @@ func main() {
 
 	for _, service := range mainServices {
 		fmt.Printf("\n🔍 Testing %s\n", service.name)
-		
+
 		client := &http.Client{Timeout: 3 * time.Second}
 		resp, err := client.Get(service.url)
 		if err != nil {
@@ -87,7 +90,7 @@ func main() {
 			continue
 		}
 		defer resp.Body.Close()
-		
+
 		fmt.Printf("✅ Status: %s\n", resp.Status)
 		if resp.StatusCode == 200 {
 			fmt.Printf("✅ Service: Healthy\n")

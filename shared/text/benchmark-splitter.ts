@@ -8,7 +8,7 @@ function randomParagraph(words: number): string {
 }
 
 export function runSplitterBenchmark(iterations = 50) {
-  const splitter = getSharedLegalSentenceSplitter();
+  const splitter = getSharedLegalSentenceSplitter() as { split: (text: string) => string[] };
   const texts: string[] = [];
   for (let i = 0; i < iterations; i++) {
     texts.push(randomParagraph(80 + Math.floor(Math.random() * 40)));

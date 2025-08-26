@@ -344,7 +344,8 @@ export class DimensionalCacheEngine {
       let oldestTime = Date.now();
       let oldestKey = '';
       
-      for (const [key, entry] of this.cache.entries()) {
+      const entries = Array.from(this.cache.entries());
+      for (const [key, entry] of entries) {
         if (entry.dimensionalArray.metadata.lastAccessed < oldestTime) {
           oldestTime = entry.dimensionalArray.metadata.lastAccessed;
           oldestKey = key;

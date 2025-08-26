@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { $state } from 'svelte';
   import YoRHaTable from '$lib/components/yorha/YoRHaTable.svelte';
   import YoRHaDataGrid from '$lib/components/yorha/YoRHaDataGrid.svelte';
   import { 
@@ -180,26 +179,26 @@
       <button 
         class="yorha-control-btn" 
         class:active={selectedDemo === 'table'}
-        onclick={() => selectedDemo = 'table'}
+        on:click={() => selectedDemo = 'table'}
       >
         BASIC TABLE
       </button>
       <button 
         class="yorha-control-btn" 
         class:active={selectedDemo === 'grid'}
-        onclick={() => selectedDemo = 'grid'}
+        on:click={() => selectedDemo = 'grid'}
       >
         DATA GRID
       </button>
       <button 
         class="yorha-control-btn yorha-action"
-        onclick={() => toggleLoading(selectedDemo as 'table' | 'grid')}
+        on:click={() => toggleLoading(selectedDemo as 'table' | 'grid')}
       >
         TEST LOADING
       </button>
       <button 
         class="yorha-control-btn yorha-warning"
-        onclick={triggerGlitch}
+        on:click={triggerGlitch}
       >
         GLITCH EFFECT
       </button>
@@ -231,7 +230,7 @@
               
             <button 
               class="yorha-action-btn-sm" 
-              onclick={() => mockAIAnalysis(row)}
+              on:click={() => mockAIAnalysis(row)}
             >
               ANALYZE
             </button>
@@ -304,7 +303,7 @@
               
             <button 
               class="yorha-action-btn" 
-              onclick={() => mockAIAnalysis(row)}
+              on:click={() => mockAIAnalysis(row)}
             >
               ANALYZE
             </button>

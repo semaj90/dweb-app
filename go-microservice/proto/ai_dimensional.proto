@@ -1,0 +1,442 @@
+// Protocol Buffer Definitions for AI Modular System
+// Defines efficient serialization for dimensional arrays and AI computations
+
+syntax = "proto3";
+
+package ai.dimensional;
+option go_package = "./proto";
+
+import "google/protobuf/timestamp.proto";
+
+// Core dimensional array message
+message DimensionalArray {
+  repeated float data = 1;
+  repeated int32 shape = 2;
+  DataType dtype = 3;
+  repeated KernelAttentionSlice kernel_slices = 4;
+  repeated float attention_weights = 5;
+  ComputationMetadata metadata = 6;
+}
+
+// Data type enumeration
+enum DataType {
+  FLOAT32 = 0;
+  FLOAT64 = 1;
+  INT32 = 2;
+  INT64 = 3;
+  UINT32 = 4;
+  UINT64 = 5;
+}
+
+// Kernel attention slice for modular experiences
+message KernelAttentionSlice {
+  int32 start_index = 1;
+  int32 end_index = 2;
+  float attention_score = 3;
+  repeated float recommendation_vector = 4;
+  repeated float context_embedding = 5;
+  SliceMetadata metadata = 6;
+}
+
+// Slice metadata for tracking and optimization
+message SliceMetadata {
+  string slice_id = 1;
+  google.protobuf.Timestamp created_at = 2;
+  int32 access_count = 3;
+  float processing_time_ms = 4;
+  bool is_cached = 5;
+}
+
+// Computation metadata for caching and tracking
+message ComputationMetadata {
+  string computation_hash = 1;
+  google.protobuf.Timestamp created_at = 2;
+  google.protobuf.Timestamp last_accessed = 3;
+  string user_id = 4;
+  string session_id = 5;
+  ComputationType computation_type = 6;
+  CacheInfo cache_info = 7;
+}
+
+// Computation type classification
+enum ComputationType {
+  KERNEL_ATTENTION = 0;
+  T5_INFERENCE = 1;
+  DIMENSIONAL_TRANSFORM = 2;
+  VECTOR_SIMILARITY = 3;
+  RECOMMENDATION_ENGINE = 4;
+  BACKGROUND_PROCESSING = 5;
+}
+
+// Cache information
+message CacheInfo {
+  CachePriority priority = 1;
+  int64 ttl_seconds = 2;
+  int32 hit_count = 3;
+  float hit_ratio = 4;
+  string cache_key = 5;
+}
+
+// Cache priority levels
+enum CachePriority {
+  LOW = 0;
+  MEDIUM = 1;
+  HIGH = 2;
+  CRITICAL = 3;
+}
+
+// T5 transformer configuration
+message T5Configuration {
+  string model_size = 1;      // small, base, large, xl, xxl
+  int32 num_layers = 2;
+  int32 num_heads = 3;
+  int32 hidden_size = 4;
+  int32 vocab_size = 5;
+  int32 max_position_embeddings = 6;
+  float dropout_rate = 7;
+  bool use_gpu = 8;
+  int32 cuda_device_id = 9;
+  ModelWeights weights = 10;
+}
+
+// Model weights for T5
+message ModelWeights {
+  bytes encoder_weights = 1;
+  bytes decoder_weights = 2;
+  bytes embedding_weights = 3;
+  bytes attention_weights = 4;
+  string weights_hash = 5;
+  google.protobuf.Timestamp weights_timestamp = 6;
+}
+
+// Computation request message
+message ComputationRequest {
+  string request_id = 1;
+  string user_id = 2;
+  string session_id = 3;
+  ComputationType type = 4;
+  google.protobuf.Timestamp requested_at = 5;
+  RequestPriority priority = 6;
+  
+  // Request payload (one of the following)
+  oneof payload {
+    DimensionalArrayRequest dimensional_request = 10;
+    T5ProcessingRequest t5_request = 11;
+    RecommendationRequest recommendation_request = 12;
+    CacheRequest cache_request = 13;
+  }
+}
+
+// Request priority levels
+enum RequestPriority {
+  BACKGROUND = 0;
+  NORMAL = 1;
+  HIGH = 2;
+  URGENT = 3;
+  REAL_TIME = 4;
+}
+
+// Dimensional array processing request
+message DimensionalArrayRequest {
+  DimensionalArray array = 1;
+  repeated float attention_weights = 2;
+  int32 kernel_size = 3;
+  bool use_modular = 4;
+  ProcessingOptions options = 5;
+}
+
+// Processing options
+message ProcessingOptions {
+  bool use_gpu = 1;
+  bool enable_caching = 2;
+  bool generate_recommendations = 3;
+  int32 max_processing_time_ms = 4;
+  string preferred_device = 5;
+}
+
+// T5 processing request
+message T5ProcessingRequest {
+  string text = 1;
+  T5Task task = 2;
+  int32 max_length = 3;
+  T5Configuration config = 4;
+  ProcessingOptions options = 5;
+}
+
+// T5 task types
+enum T5Task {
+  SUMMARIZE = 0;
+  TRANSLATE = 1;
+  QUESTION_ANSWER = 2;
+  PARAPHRASE = 3;
+  CLASSIFICATION = 4;
+  GENERATION = 5;
+}
+
+// Recommendation request
+message RecommendationRequest {
+  string context = 1;
+  int32 limit = 2;
+  RecommendationType type = 3;
+  UserBehaviorPattern behavior_pattern = 4;
+}
+
+// Recommendation types
+enum RecommendationType {
+  SIMILAR_COMPUTATIONS = 0;
+  DID_YOU_MEAN = 1;
+  OTHERS_SEARCHED = 2;
+  PICK_UP_WHERE_LEFT_OFF = 3;
+  CUTTING_EDGE = 4;
+}
+
+// User behavior pattern
+message UserBehaviorPattern {
+  string pattern_id = 1;
+  repeated string recent_contexts = 2;
+  repeated ComputationType preferred_types = 3;
+  float average_session_duration = 4;
+  int32 computations_per_session = 5;
+  google.protobuf.Timestamp last_activity = 6;
+}
+
+// Cache request
+message CacheRequest {
+  string cache_key = 1;
+  CacheOperation operation = 2;
+  DimensionalArray data = 3;
+  int64 ttl_seconds = 4;
+  CachePriority priority = 5;
+}
+
+// Cache operations
+enum CacheOperation {
+  GET = 0;
+  SET = 1;
+  DELETE = 2;
+  CLEAR = 3;
+  STATS = 4;
+  WARM = 5;
+}
+
+// Computation response message
+message ComputationResponse {
+  string request_id = 1;
+  ResponseStatus status = 2;
+  google.protobuf.Timestamp processed_at = 3;
+  float processing_time_ms = 4;
+  
+  // Response payload (one of the following)
+  oneof payload {
+    DimensionalArrayResponse dimensional_response = 10;
+    T5ProcessingResponse t5_response = 11;
+    RecommendationResponse recommendation_response = 12;
+    CacheResponse cache_response = 13;
+    ErrorResponse error_response = 14;
+  }
+}
+
+// Response status
+enum ResponseStatus {
+  SUCCESS = 0;
+  QUEUED = 1;
+  PROCESSING = 2;
+  ERROR = 3;
+  TIMEOUT = 4;
+  CACHED = 5;
+}
+
+// Dimensional array processing response
+message DimensionalArrayResponse {
+  DimensionalArray result = 1;
+  int64 gpu_memory_used = 2;
+  ProcessingStats stats = 3;
+  repeated string recommendations = 4;
+}
+
+// Processing statistics
+message ProcessingStats {
+  float cpu_time_ms = 1;
+  float gpu_time_ms = 2;
+  int64 memory_used_bytes = 3;
+  int64 gpu_memory_used_bytes = 4;
+  int32 cache_hits = 5;
+  int32 cache_misses = 6;
+  string device_used = 7;
+}
+
+// T5 processing response
+message T5ProcessingResponse {
+  string result = 1;
+  T5Configuration model_config = 2;
+  ProcessingStats stats = 3;
+  repeated string recommendations = 4;
+  float confidence_score = 5;
+}
+
+// Recommendation response
+message RecommendationResponse {
+  repeated string recommendations = 1;
+  repeated string similar_computations = 2;
+  repeated string did_you_mean = 3;
+  repeated string others_searched = 4;
+  string pick_up_where_left_off = 5;
+  repeated string cutting_edge = 6;
+  UserBehaviorPattern updated_pattern = 7;
+}
+
+// Cache response
+message CacheResponse {
+  bool success = 1;
+  DimensionalArray data = 2;
+  CacheStats stats = 3;
+  string message = 4;
+}
+
+// Cache statistics
+message CacheStats {
+  int32 total_entries = 1;
+  int64 total_size_bytes = 2;
+  float hit_ratio = 3;
+  int32 evictions = 4;
+  google.protobuf.Timestamp last_cleanup = 5;
+  repeated CacheEntry recent_entries = 6;
+}
+
+// Cache entry information
+message CacheEntry {
+  string key = 1;
+  int64 size_bytes = 2;
+  google.protobuf.Timestamp created_at = 3;
+  google.protobuf.Timestamp last_accessed = 4;
+  int32 access_count = 5;
+  CachePriority priority = 6;
+}
+
+// Error response
+message ErrorResponse {
+  ErrorCode code = 1;
+  string message = 2;
+  string details = 3;
+  repeated string suggestions = 4;
+  google.protobuf.Timestamp timestamp = 5;
+}
+
+// Error codes
+enum ErrorCode {
+  UNKNOWN_ERROR = 0;
+  INVALID_INPUT = 1;
+  COMPUTATION_FAILED = 2;
+  GPU_ERROR = 3;
+  CACHE_ERROR = 4;
+  TIMEOUT_ERROR = 5;
+  MEMORY_ERROR = 6;
+  MODEL_ERROR = 7;
+  NETWORK_ERROR = 8;
+}
+
+// RabbitMQ message wrapper
+message QueueMessage {
+  string message_id = 1;
+  string correlation_id = 2;
+  MessageType type = 3;
+  MessagePriority priority = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  int32 retry_count = 6;
+  int32 max_retries = 7;
+  
+  // Message payload
+  oneof payload {
+    ComputationRequest computation_request = 10;
+    ComputationResponse computation_response = 11;
+    CacheRequest cache_request = 12;
+    HealthCheck health_check = 13;
+  }
+}
+
+// Message types for queue routing
+enum MessageType {
+  COMPUTATION_REQUEST = 0;
+  COMPUTATION_RESPONSE = 1;
+  CACHE_REQUEST = 2;
+  CACHE_RESPONSE = 3;
+  HEALTH_CHECK = 4;
+  SYSTEM_EVENT = 5;
+  USER_EVENT = 6;
+}
+
+// Message priority for queue management
+enum MessagePriority {
+  LOW_PRIORITY = 0;
+  NORMAL_PRIORITY = 1;
+  HIGH_PRIORITY = 2;
+  URGENT_PRIORITY = 3;
+}
+
+// Health check message
+message HealthCheck {
+  string service_name = 1;
+  ServiceStatus status = 2;
+  google.protobuf.Timestamp timestamp = 3;
+  repeated ServiceMetric metrics = 4;
+}
+
+// Service status
+enum ServiceStatus {
+  HEALTHY = 0;
+  DEGRADED = 1;
+  UNHEALTHY = 2;
+  OFFLINE = 3;
+}
+
+// Service metrics
+message ServiceMetric {
+  string name = 1;
+  MetricType type = 2;
+  double value = 3;
+  string unit = 4;
+  google.protobuf.Timestamp timestamp = 5;
+}
+
+// Metric types
+enum MetricType {
+  COUNTER = 0;
+  GAUGE = 1;
+  HISTOGRAM = 2;
+  TIMER = 3;
+}
+
+// Batch processing support
+message BatchComputationRequest {
+  string batch_id = 1;
+  repeated ComputationRequest requests = 2;
+  BatchProcessingOptions options = 3;
+  google.protobuf.Timestamp created_at = 4;
+}
+
+// Batch processing options
+message BatchProcessingOptions {
+  int32 max_parallel = 1;
+  int32 timeout_seconds = 2;
+  bool fail_fast = 3;
+  bool preserve_order = 4;
+  CachePriority cache_priority = 5;
+}
+
+// Batch processing response
+message BatchComputationResponse {
+  string batch_id = 1;
+  repeated ComputationResponse responses = 2;
+  BatchStats stats = 3;
+  google.protobuf.Timestamp completed_at = 4;
+}
+
+// Batch processing statistics
+message BatchStats {
+  int32 total_requests = 1;
+  int32 successful = 2;
+  int32 failed = 3;
+  int32 cached = 4;
+  float total_processing_time_ms = 5;
+  float average_processing_time_ms = 6;
+}

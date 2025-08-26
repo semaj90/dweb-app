@@ -18,10 +18,10 @@
     submitClass?: string;
   }
 
-  export let fields = [];
-  export let onSubmit = async (data) => {};
-  export let submitText = 'SUBMIT';
-  export let submitClass = '';
+  let { fields = $bindable() } = $props(); // [];
+  let { onSubmit = $bindable() } = $props(); // async (data) => {};
+  let { submitText = $bindable() } = $props(); // 'SUBMIT';
+  let { submitClass = $bindable() } = $props(); // '';
 
   let formData = {};
   let isSubmitting = false;

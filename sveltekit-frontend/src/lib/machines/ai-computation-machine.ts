@@ -4,7 +4,7 @@
  */
 
 import { createMachine, assign, fromPromise } from 'xstate';
-import { dimensionalCache, type DimensionalArray } from '$lib/ai/dimensional-cache-engine';
+import { dimensionalCache, type DimensionalArray } from '../ai/dimensional-cache-engine.js';
 
 export interface AIComputationContext {
   userId: string;

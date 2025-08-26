@@ -2,6 +2,9 @@
 // Eliminates head-of-line blocking for streaming LLM responses
 // Compatible with existing Go microservice architecture
 
+//go:build legacyquic
+// +build legacyquic
+
 package main
 
 import (
@@ -14,9 +17,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/quic-go/quic-go"
 	"github.com/quic-go/quic-go/http3"
-	"github.com/gin-gonic/gin"
 )
 
 // LegalAIService represents the legal AI service
@@ -116,14 +119,14 @@ func (qs *QUICServer) Start() error {
 	log.Printf("🚀 Starting QUIC/HTTP3 server on %s", qs.config.Address)
 	log.Printf("📡 Supporting %d concurrent streams", qs.config.MaxStreams)
 	log.Printf("⚡ Head-of-line blocking: ELIMINATED")
-	
+
 	return qs.server.Serve(qs.listener)
 }
 
 // Stop QUIC server gracefully
 func (qs *QUICServer) Stop(ctx context.Context) error {
 	log.Printf("🛑 Stopping QUIC/HTTP3 server...")
-	
+
 	// Close listener
 	if err := qs.listener.Close(); err != nil {
 		log.Printf("⚠️  Error closing QUIC listener: %v", err)
@@ -150,7 +153,7 @@ func (s *LegalAIService) streamingAnalysis(c *gin.Context) {
 
 	// Create response stream
 	streamID := fmt.Sprintf("stream_%d", time.Now().UnixNano())
-	
+
 	// Use ResponseWriter for streaming
 	flusher, ok := c.Writer.(http.Flusher)
 	if !ok {
@@ -160,7 +163,7 @@ func (s *LegalAIService) streamingAnalysis(c *gin.Context) {
 
 	// Start streaming response
 	c.Status(http.StatusOK)
-	
+
 	// Send initial response
 	initial := StreamingResponse{
 		ID:        streamID,
@@ -179,7 +182,7 @@ func (s *LegalAIService) streamingAnalysis(c *gin.Context) {
 	for i, chunk := range chunks {
 		// Process chunk
 		chunkAnalysis := s.processChunkStream(chunk, i, totalChunks)
-		
+
 		// Stream chunk result
 		response := StreamingResponse{
 			ID:        streamID,
@@ -234,10 +237,10 @@ func (s *LegalAIService) addQUICRoutes(router *gin.Engine) {
 	{
 		// Streaming analysis with no head-of-line blocking
 		quic.POST("/stream-analysis", s.streamingAnalysis)
-		
+
 		// Parallel tensor processing
 		quic.POST("/tensor-process", s.parallelTensorProcess)
-		
+
 		// Real-time vector search with streaming results
 		quic.GET("/stream-search", s.streamingVectorSearch)
 	}
@@ -257,7 +260,7 @@ func (s *LegalAIService) parallelTensorProcess(c *gin.Context) {
 		Tensors [][]float32 `json:"tensors"`
 		Operation string    `json:"operation"`
 	}
-	
+
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -265,7 +268,7 @@ func (s *LegalAIService) parallelTensorProcess(c *gin.Context) {
 
 	// Use QUIC's multiplexing for parallel processing
 	results := make([]interface{}, len(req.Tensors))
-	
+
 	// Process tensors in parallel (simulated)
 	for i, tensor := range req.Tensors {
 		results[i] = s.processTensorChunk(tensor, req.Operation)
@@ -301,7 +304,7 @@ func (s *LegalAIService) streamingVectorSearch(c *gin.Context) {
 	searchBatches := [][]SearchResult{
 		// Batch 1: High relevance
 		{{DocumentID: "doc1", Content: "High relevance result", Score: 0.95}},
-		// Batch 2: Medium relevance  
+		// Batch 2: Medium relevance
 		{{DocumentID: "doc2", Content: "Medium relevance result", Score: 0.75}},
 		// Batch 3: Lower relevance
 		{{DocumentID: "doc3", Content: "Lower relevance result", Score: 0.55}},
@@ -320,7 +323,7 @@ func (s *LegalAIService) streamingVectorSearch(c *gin.Context) {
 			Timestamp: time.Now(),
 			Finished:  batchIdx == len(searchBatches)-1,
 		}
-		
+
 		s.writeStreamChunk(c.Writer, response)
 		flusher.Flush()
 		time.Sleep(200 * time.Millisecond) // Simulate processing time
@@ -376,7 +379,7 @@ func main() {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
 	router.Use(gin.Recovery())
-	
+
 	// Add health check
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
@@ -385,15 +388,15 @@ func main() {
 			"timestamp": time.Now(),
 		})
 	})
-	
+
 	// Initialize Legal AI service
 	legalAI := NewLegalAIService()
 	legalAI.addQUICRoutes(router)
-	
+
 	// Start QUIC server
 	config := &Config{Port: "8443"}
 	startQUICServer(config, router)
-	
+
 	// Keep main thread alive
 	select {}
 }

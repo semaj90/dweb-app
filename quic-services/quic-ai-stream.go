@@ -1,3 +1,6 @@
+//go:build aistream
+// +build aistream
+
 // QUIC AI Stream - Port 8643/8546
 // High-performance HTTP/3 AI streaming service
 
@@ -227,7 +230,7 @@ func main() {
 
 	router.GET("/ai/models", func(c *gin.Context) {
 		c.Header("Alt-Svc", `h3=":8546"; ma=86400`)
-		
+
 		models := []map[string]interface{}{
 			{
 				"id": "gemma3-legal",
@@ -238,7 +241,7 @@ func main() {
 			},
 			{
 				"id": "legal-bert",
-				"object": "model", 
+				"object": "model",
 				"created": 1677610602,
 				"owned_by": "legal-ai",
 				"capabilities": []string{"entity-extraction", "classification", "similarity"},
@@ -259,9 +262,10 @@ func main() {
 		})
 	})
 
-	// Create TLS config for QUIC
+	// Create TLS config for QUIC using centralized dev certificate
+	devCert := loadDevCertificate()
 	tlsConfig := &tls.Config{
-		Certificates: generateSelfSignedCert(),
+		Certificates: []tls.Certificate{devCert},
 		NextProtos:   []string{"h3"},
 	}
 
@@ -290,35 +294,4 @@ func stringPtr(s string) *string {
 	return &s
 }
 
-func generateSelfSignedCert() []tls.Certificate {
-	// Reusing the same dev cert for simplicity
-	cert, _ := tls.X509KeyPair([]byte(devCert), []byte(devKey))
-	return []tls.Certificate{cert}
-}
-
-const devCert = `-----BEGIN CERTIFICATE-----
-MIIDXTCCAkWgAwIBAgIJAJC1HiIAZAiIMA0GCSqGSIb3DQEBBQUAMEUxCzAJBgNV
-BAYTAkFVMRMwEQYDVQQIDApTb21lLVN0YXRlMSEwHwYDVQQKDBhJbnRlcm5ldCBX
-aWRnaXRzIFB0eSBMdGQwHhcNMjMwMTAxMDAwMDAwWhcNMjQwMTAxMDAwMDAwWjBF
-MQswCQYDVQQGEwJBVTETMBEGA1UECAwKU29tZS1TdGF0ZTEhMB8GA1UECgwYSW50
-ZXJuZXQgV2lkZ2l0cyBQdHkgTHRkMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIB
-CgKCAQEA4f6wg4PiT9hFlfXAssVnH7k9k1YrHGGGfIgX+HSQQYgHhAyFzGHPFYyB
-PHKKgK6z8M/wHjCYQgz5tJPLJ9FWTiJAYR3fJQBcKPgKIUNPKh6T6F6MrK6YPUDn
-TxMm1HGKG6tGJ7J3ZmJhGm4l7vA9T7h2qFyH2G0u8YEHKcfyR6hHKcQ/RrJnFX8L
-XH5oZZjHBSI8wEwHsVA4NWpf6R4DLGQfwYzMfKi+cBp5HjA3sDQo2N4JfK8u7EzJ
-sB5q7t2PoYHKgj2h8jOlYzXfJ2J5t1q8JhcCRg5qYi0JsVGhKwIDfG4zJqRfzYAQ
-XqrKK8pMdKbKJ5TQI8iJKmhc4WOKOwIDAQABo1AwTjAdBgNVHQ4EFgQUhKdzBvhI
-daT1R6yIBfXLhvKS3lgwHwYDVR0jBBgwFoAUhKdzBvhIdaT1R6yIBfXLhvKS3lgw
-DAYDVR0TBAUwAwEB/zANBgkqhkiG9w0BAQUFAAOCAQEAg4Q8nDuIY3C7kd7PJoKn
-JUSL9z8UGJ5zQgEKUyOhMvQhQ6bLMfM5JVHyGJ3tE3ZvEn2OBz5ZgG4Bk8t9Fhov
-F7lXUfL/W8hcC6IeWrBhG7V5tOA1HzLuT8QZHhIXVjF2DdHzI7WrGpQ3M8T9K4Et
------END CERTIFICATE-----`
-
-const devKey = `-----BEGIN PRIVATE KEY-----
-MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDh/rCDg+JP2EWV
-9cCyxWcfuT2TViscYYZ8iBf4dJBBiAeEDIXMYc8VjIE8coqArrPwz/AeMJhCDPm0
-k8sn0VZOIkBhHd8lAFwo+AohQ08qHpPoXoysrpg9QOdPEybUcYobq0YnsndmYmEa
-biXu8D1PuHaoXIfYbS7xgQcpx/JHqEcpxD9GsmcVfwtcfmhlmMcFIjzATAexUDg1
-al/pHgMsZB/BjMx8qL5wGnkeMDewNCjY3gl8ry7sTMmwHmru3Y+hgcqCPaHyM6Vj
-Nd8nYnm3WrwmFwJGDmpiLQmxUaErAgMBAAECggEBAJGb8Z8v1tVjH8M+3fK8uLLn
------END PRIVATE KEY-----`
+// Removed duplicate generateSelfSignedCert and embedded dev cert constants (now centralized in devcert.go).

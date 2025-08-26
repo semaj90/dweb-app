@@ -1,8 +1,6 @@
 <script lang="ts">
 
   import { preventDefault } from 'svelte/legacy';
-  import { $state } from 'svelte';
-
   interface Props {
     onsuccess?: (event?: unknown) => void;
   }

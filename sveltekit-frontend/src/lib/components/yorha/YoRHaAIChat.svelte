@@ -400,7 +400,7 @@ ${error.message}
         class="flex-1 bg-yorha-dark border border-yorha-accent-warm/50 rounded px-4 py-3 text-yorha-light placeholder-yorha-muted/70 focus:outline-none focus:border-yorha-accent-warm focus:ring-1 focus:ring-yorha-accent-warm disabled:opacity-50"
       />
       <button
-        onclick={sendMessage}
+        on:click={sendMessage}
         disabled={$isLoading || !messageInput.trim()}
         class="px-6 py-3 bg-yorha-accent-warm text-yorha-dark font-bold rounded hover:bg-yorha-accent-warm/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
       >

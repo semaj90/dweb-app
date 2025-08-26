@@ -10,16 +10,17 @@ import {
   type DocumentCluster,
   type ClusterResult,
 } from "$lib/api/enhanced-rest-architecture";
-import { Redis } from "redis";
+import type IORedis from "ioredis";
+import { createRedisInstance } from "$lib/server/redis.js";
 
 export class LegalDocumentSOM extends SelfOrganizingMap {
   private neurons: number[][][]; // [x][y][dimensions]
-  private redis: Redis;
+  private redis: IORedis;
   private trained: boolean = false;
 
-  constructor(config: SOMConfig, redis: Redis) {
+  constructor(config: SOMConfig, redis?: IORedis) {
     super(config);
-    this.redis = redis;
+    this.redis = redis || createRedisInstance();
     this.initializeNeurons();
   }
 

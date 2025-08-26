@@ -90,7 +90,7 @@ const {
         <Button
           type="button"
           variant="ghost"
-          onclick={() => ($isMeltOpen = false)}
+          on:click={() => ($isMeltOpen = false)}
         >
           Cancel
         </Button>

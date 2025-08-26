@@ -31,7 +31,7 @@ export interface RegisterData {
 
 class EnhancedAuthStore {
   // Svelte 5 reactive state
-  private _state = $state<AuthState>({
+  private _state = browser ? $state<AuthState>({
     user: null,
     isAuthenticated: false,
     isLoading: true,
@@ -42,9 +42,20 @@ class EnhancedAuthStore {
       requireReauth: false,
       enable2FA: false
     }
-  });
+  }) : {
+    user: null,
+    isAuthenticated: false,
+    isLoading: false,
+    session: null,
+    lastActivity: null,
+    securitySettings: {
+      sessionTimeoutMinutes: 30,
+      requireReauth: false,
+      enable2FA: false
+    }
+  };
 
-  private _error = $state<string | null>(null);
+  private _error = browser ? $state<string | null>(null) : null;
   private _sessionCheckInterval: NodeJS.Timeout | null = null;
   private _activityTimeout: NodeJS.Timeout | null = null;
 

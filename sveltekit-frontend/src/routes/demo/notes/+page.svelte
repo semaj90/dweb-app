@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { $state, $effect } from 'svelte';
   import { page } from '$app/state';
   import { BookOpen, Plus, Search, Tag } from 'lucide-svelte';
   import { onMount } from 'svelte';
@@ -283,7 +282,7 @@ Priority: High
 
             <button
               type="button"
-              onclick={() => createNewNote()}
+              on:click={() => createNewNote()}
               class="space-y-4"
             >
               <Plus class="space-y-4" />
@@ -304,7 +303,7 @@ Priority: High
             {#each $filteredNotes as note (note.id)}
               <button
                 type="button"
-                onclick={() => viewNote(note)}
+                on:click={() => viewNote(note)}
                 class="space-y-4"
               >
                 <div class="space-y-4">

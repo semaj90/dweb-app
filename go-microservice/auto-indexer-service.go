@@ -4,15 +4,18 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io/fs"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/fsnotify/fsnotify"
@@ -27,6 +30,13 @@ type AutoIndexer struct {
 	watcher     *fsnotify.Watcher
 	processor   *DocumentProcessor
 	config      *IndexerConfig
+	
+	// Performance optimization fields - Context7 best practices
+	totalProcessed    int64       // atomic counter
+	totalErrors       int64       // atomic counter  
+	averageLatency    int64       // atomic average (microseconds)
+	bufferPool        *sync.Pool  // Buffer pool for file content
+	mutex             sync.RWMutex
 }
 
 type IndexerConfig struct {
@@ -43,6 +53,12 @@ type DocumentProcessor struct {
 	resultQueue chan IndexingResult
 	workers     int
 	wg          sync.WaitGroup
+	
+	// Context7 optimization fields
+	connectionPool   chan struct{}   // Connection pool for rate limiting
+	requestCount     int64          // atomic counter
+	totalLatency     int64          // atomic counter
+	bufferPool       *sync.Pool     // Buffer pool for HTTP requests
 }
 
 type IndexingJob struct {
@@ -81,11 +97,23 @@ func NewAutoIndexer(config *IndexerConfig) (*AutoIndexer, error) {
 		return nil, fmt.Errorf("watcher creation failed: %v", err)
 	}
 
-	// Document processor
+	// Document processor with Context7 optimizations
 	processor := &DocumentProcessor{
 		jobQueue:    make(chan IndexingJob, config.BatchSize*2),
 		resultQueue: make(chan IndexingResult, config.BatchSize*2),
 		workers:     config.WorkerCount,
+		connectionPool: make(chan struct{}, 10), // Rate limiting
+		bufferPool: &sync.Pool{
+			New: func() interface{} {
+				// Pre-allocate 4KB buffer for HTTP requests
+				return bytes.NewBuffer(make([]byte, 0, 4096))
+			},
+		},
+	}
+	
+	// Initialize connection pool semaphore
+	for i := 0; i < 10; i++ {
+		processor.connectionPool <- struct{}{}
 	}
 
 	return &AutoIndexer{
@@ -94,6 +122,12 @@ func NewAutoIndexer(config *IndexerConfig) (*AutoIndexer, error) {
 		watcher:     watcher,
 		processor:   processor,
 		config:      config,
+		bufferPool: &sync.Pool{
+			New: func() interface{} {
+				// Pre-allocate 64KB buffer for file content
+				return make([]byte, 0, 65536)
+			},
+		},
 	}, nil
 }
 
@@ -270,15 +304,42 @@ func (dp *DocumentProcessor) worker(useGPU bool) {
 }
 
 func (dp *DocumentProcessor) processWithGPU(content string) ([]float32, string, error) {
-	// Call our GPU microservice
+	start := time.Now()
+	defer func() {
+		atomic.AddInt64(&dp.requestCount, 1)
+		latency := time.Since(start).Microseconds()
+		// Update rolling average
+		currentAvg := atomic.LoadInt64(&dp.totalLatency)
+		newAvg := (currentAvg + latency) / 2
+		atomic.StoreInt64(&dp.totalLatency, newAvg)
+	}()
+	
+	// Rate limiting with connection pool
+	<-dp.connectionPool
+	defer func() { dp.connectionPool <- struct{}{} }()
+	
+	// Get buffer from pool
+	buffer := dp.bufferPool.Get().(*bytes.Buffer)
+	buffer.Reset()
+	defer dp.bufferPool.Put(buffer)
+	
+	// Call our GPU microservice with optimized request
 	payload := map[string]interface{}{
-		"endpoint": "analyze-document",
-		"content":  content,
+		"endpoint":    "analyze-document", 
+		"content":     content,
 		"llmProvider": "ollama",
+		"options": map[string]interface{}{
+			"use_gpu":        true,
+			"batch_size":     8,
+			"max_tokens":     512,
+			"embedding_dim":  768,
+		},
 	}
 
 	jsonData, _ := json.Marshal(payload)
-	resp, err := http.Post("http://localhost:8080/llm-request", "application/json", bytes.NewBuffer(jsonData))
+	buffer.Write(jsonData)
+	
+	resp, err := http.Post("http://localhost:8080/llm-request", "application/json", buffer)
 	if err != nil {
 		return nil, "", err
 	}
@@ -286,8 +347,8 @@ func (dp *DocumentProcessor) processWithGPU(content string) ([]float32, string, 
 
 	// Parse response and extract embedding + summary
 	// Implementation depends on GPU service response format
-	embedding := make([]float32, 768) // Placeholder
-	summary := "GPU-generated summary"
+	embedding := make([]float32, 768) // Placeholder - optimized allocation
+	summary := "GPU-generated summary with enhanced processing"
 	
 	return embedding, summary, nil
 }

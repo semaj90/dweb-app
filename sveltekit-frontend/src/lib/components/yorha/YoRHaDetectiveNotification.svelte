@@ -7,10 +7,10 @@
     duration?: number;
   }
 
-  export let message = '';
-  export let type = 'info';
-  export let show = false;
-  export let duration = 3000;
+  let { message = $bindable() } = $props(); // '';
+  let { type = $bindable() } = $props(); // 'info';
+  let { show = $bindable() } = $props(); // false;
+  let { duration = $bindable() } = $props(); // 3000;
 
   function getTypeStyles(notificationType: string): string {
     switch (notificationType) {

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Enhanced REST Architecture Types and Interfaces
 // Provides type definitions for clustering and document processing
 

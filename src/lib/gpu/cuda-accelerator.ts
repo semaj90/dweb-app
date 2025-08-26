@@ -1254,16 +1254,192 @@ class GPUProfiler {
     }
 }
 
-// Export singleton instance
-export const cudaAccelerator = new CUDAAccelerator({
-    deviceCount: 1,
-    memoryPoolSize: 4 * 1024 * 1024 * 1024, // 4GB
-    batchSize: 64,
-    maxConcurrentJobs: 8,
-    enableMemoryOptimization: true,
-    enableMultiGPU: false,
-    enableProfiling: true,
-    debugMode: false,
-    kernelOptimizations: true,
-    tensorCoreUtilization: true
-});
+/**
+ * GPU Orchestrator Client - TypeScript interface to unified GPU services
+ */
+export class GPUOrchestratorClient {
+    private baseUrl: string;
+    private isConnected: boolean = false;
+    private activeJobs: Map<string, Promise<any>> = new Map();
+
+    constructor(baseUrl: string = 'http://localhost:8231') {
+        this.baseUrl = baseUrl;
+    }
+
+    /**
+     * Initialize connection to GPU orchestrator
+     */
+    async initialize(): Promise<void> {
+        try {
+            const response = await fetch(`${this.baseUrl}/health`);
+            if (response.ok) {
+                const status = await response.json();
+                this.isConnected = true;
+                console.log('🚀 GPU Orchestrator connected:', status.service);
+            } else {
+                throw new Error(`GPU Orchestrator unavailable: ${response.status}`);
+            }
+        } catch (error) {
+            console.error('❌ GPU Orchestrator connection failed:', error);
+            this.isConnected = false;
+            throw error;
+        }
+    }
+
+    /**
+     * Execute GPU workload via orchestrator
+     */
+    async executeWorkload(workload: GPUWorkload): Promise<any> {
+        if (!this.isConnected) {
+            await this.initialize();
+        }
+
+        const jobId = `ts-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        
+        const request = {
+            jobId,
+            type: workload.type,
+            data: Array.isArray(workload.inputData) ? workload.inputData : [workload.inputData],
+            priority: workload.priority || 'normal',
+            options: workload.parameters || {}
+        };
+
+        const jobPromise = this.executeJob(request);
+        this.activeJobs.set(jobId, jobPromise);
+
+        try {
+            const result = await jobPromise;
+            return {
+                success: true,
+                jobId,
+                result: result.result,
+                executionTime: result.processingMs,
+                deviceId: 0,
+                memoryUsage: workload.memoryRequirement || 0,
+                performanceMetrics: {
+                    gpuUtilized: result.gpuUtilized,
+                    workerType: result.workerType
+                }
+            };
+        } finally {
+            this.activeJobs.delete(jobId);
+        }
+    }
+
+    /**
+     * Execute batch processing
+     */
+    async executeBatch(workloads: GPUWorkload[]): Promise<unknown[]> {
+        const promises = workloads.map(workload => this.executeWorkload(workload));
+        const results = await Promise.allSettled(promises);
+        
+        return results.map(result => 
+            result.status === 'fulfilled' ? result.value : { error: result.reason?.message }
+        );
+    }
+
+    /**
+     * Rotate 3D points using quaternion
+     */
+    async rotatePoints(points: number[], quaternion: { w: number; x: number; y: number; z: number }): Promise<number[]> {
+        const request = {
+            jobId: `rot-${Date.now()}`,
+            type: 'rotation',
+            data: [quaternion.w, quaternion.x, quaternion.y, quaternion.z, ...points],
+            priority: 'high'
+        };
+
+        const result = await this.executeJob(request);
+        return result.result || [];
+    }
+
+    /**
+     * Generate embeddings
+     */
+    async generateEmbeddings(data: number[]): Promise<number[]> {
+        const request = {
+            jobId: `embed-${Date.now()}`,
+            type: 'embedding',
+            data,
+            priority: 'normal'
+        };
+
+        const result = await this.executeJob(request);
+        return result.result || [];
+    }
+
+    /**
+     * Execute SOM clustering
+     */
+    async clusterSOM(data: number[], clusters: number, dimensions: number): Promise<number[]> {
+        const request = {
+            jobId: `som-${Date.now()}`,
+            type: 'som_train',
+            data: [clusters, dimensions, ...data],
+            priority: 'normal'
+        };
+
+        const result = await this.executeJob(request);
+        return result.result || [];
+    }
+
+    /**
+     * Get GPU system status
+     */
+    async getStatus(): Promise<any> {
+        const response = await fetch(`${this.baseUrl}/api/gpu/status`);
+        if (!response.ok) {
+            throw new Error(`Status request failed: ${response.status}`);
+        }
+        return response.json();
+    }
+
+    /**
+     * Execute individual GPU job
+     */
+    private async executeJob(request: any): Promise<any> {
+        const response = await fetch(`${this.baseUrl}/api/gpu/process`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Client': 'TypeScript-GPU-Client'
+            },
+            body: JSON.stringify(request)
+        });
+
+        if (!response.ok) {
+            throw new Error(`GPU job failed: ${response.status} ${response.statusText}`);
+        }
+
+        return response.json();
+    }
+
+    /**
+     * Cleanup resources
+     */
+    async shutdown(): Promise<void> {
+        // Wait for active jobs to complete
+        if (this.activeJobs.size > 0) {
+            console.log(`🔄 Waiting for ${this.activeJobs.size} active jobs to complete...`);
+            await Promise.allSettled(Array.from(this.activeJobs.values()));
+        }
+        
+        this.activeJobs.clear();
+        this.isConnected = false;
+        console.log('✅ GPU Orchestrator client shutdown complete');
+    }
+}
+
+// Export singleton instance configured for your RTX 3060 Ti setup
+export const cudaAccelerator = new GPUOrchestratorClient();
+
+// Legacy compatibility - initialize the new orchestrator client
+export const initializeGPUAcceleration = async () => {
+    try {
+        await cudaAccelerator.initialize();
+        return true;
+    } catch (error) {
+        console.error('GPU acceleration initialization failed:', error);
+        return false;
+    }
+};

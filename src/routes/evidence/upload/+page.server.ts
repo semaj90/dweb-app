@@ -81,14 +81,8 @@ export const actions: Actions = {
       if (form.data.aiAnalysis && extractedText) {
         try {
           // Generate embeddings for the content
-          const { chunks } = await ollamaService.embedDocument(
-            extractedText,
-            {
-              evidenceId: newEvidence.id,
-              type: form.data.type,
-              title: form.data.title
-            }
-          );
+          const embeddingResult: any = await ollamaService.embedDocument?.(extractedText /* options may be ignored by some implementations */);
+          const chunks = embeddingResult?.chunks || [];
 
           // Store document vectors
           for (const chunk of chunks) {
@@ -102,8 +96,8 @@ export const actions: Actions = {
           }
 
           // Generate AI summary
-          const summary = await ollamaService.analyzeDocument(extractedText, 'summary');
-          
+          const summary: any = await ollamaService.analyzeDocument?.(extractedText);
+
           // Update evidence with AI analysis
           await db.update(evidence)
             .set({

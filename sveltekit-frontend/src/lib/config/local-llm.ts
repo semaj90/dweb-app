@@ -33,9 +33,9 @@ export const LOCAL_LLM_PATHS = {
   // Local Gemma3 Q4_K_M model
   gemmaModel: {
     path: join(projectRoot, "gemma3Q4_K_M", "mohf16-Q4_K_M.gguf"),
-    name: "gemma3-legal", // Use the custom model we'll create
-    ollamaModel: "gemma3-legal", // Custom Ollama model name
-    fallbackModel: "gemma3:2b", // Fallback to existing model
+    name: "gemma3:legal-latest", // Use the custom model we'll create
+    ollamaModel: "gemma3:legal-latest", // Custom Ollama model name
+    fallbackModel: "gemma3:legal-latest", // Fallback to existing model
     format: "gguf",
     size: "2B", // Updated from filename mohf16-Q4_K_M.gguf
     quantization: "Q4_K_M", // Explicit quantization level
@@ -121,7 +121,7 @@ export const ENV_CONFIG = {
     import.meta.env.LLAMA_CPP_BASE_URL || LOCAL_LLM_PATHS.llamaCpp.baseUrl,
 
   // Model preferences
-  DEFAULT_MODEL: import.meta.env.DEFAULT_LLM_MODEL || "gemma3-legal",
+  DEFAULT_MODEL: import.meta.env.DEFAULT_LLM_MODEL || "gemma3:legal-latest",
   PREFERRED_PROVIDER:
     import.meta.env.PREFERRED_LLM_PROVIDER || getPreferredProvider(),
 

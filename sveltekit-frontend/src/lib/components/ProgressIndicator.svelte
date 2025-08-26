@@ -1,9 +1,9 @@
 <script lang="ts">
   import { $props, $derived } from 'svelte';
 
-  export let currentStep: number;
-  export let totalSteps: number;
-  export let stepLabels: string[] = [];
+  let { currentStep = $bindable() } = $props(); // number;
+  let { totalSteps = $bindable() } = $props(); // number;
+  let { stepLabels = $bindable() } = $props(); // string[] = [];
 
   function getStepStatus(stepIndex: number): 'completed' | 'current' | 'upcoming' {
     if (stepIndex < currentStep) return 'completed';

@@ -1,6 +1,5 @@
 <!-- Phase 3: Live Agent Integration Demo -->
 <script lang="ts">
-  import { $state } from 'svelte';
   import { onMount, onDestroy } from 'svelte';
   import { 
     liveAgentOrchestrator, 
@@ -14,7 +13,7 @@
   } from '$lib/services/live-agent-orchestrator.js';
 
   // Reactive state
-  let connectionStats = $state(liveAgentOrchestrator.getConnectionStats());
+  let connectionStats = $state(liveAgentOrchestrator.getConnectionStats(););
   let connectionStatus = $state('');
   let agentHealth = $state({});
   let activeRequests = $state([]);
@@ -237,7 +236,7 @@
             <div class="flex flex-wrap gap-2">
               {#each availableAgents as agent}
                 <button
-                  onclick={() => toggleAgent(agent.value)}
+                  on:click={() => toggleAgent(agent.value)}
                   class={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                     selectedAgents.includes(agent.value)
                       ? `${agent.color} text-white`
@@ -257,7 +256,7 @@
 
       <!-- Action Button -->
       <button
-        onclick={testAgentOrchestration}
+        on:click={testAgentOrchestration}
         disabled={isLoading || !testInput.trim() || selectedAgents.length === 0}
         class="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 disabled:from-gray-600 disabled:to-gray-600 text-white py-3 px-6 rounded-lg font-medium transition-colors"
       >

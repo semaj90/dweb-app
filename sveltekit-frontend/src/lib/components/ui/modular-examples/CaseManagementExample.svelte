@@ -101,7 +101,7 @@
     <div class="flex items-center gap-3">
       <!-- Global Search Button -->
       <button
-        onclick={() => showCommandPalette = true}
+        on:click={() => showCommandPalette = true}
         class="flex items-center gap-2 px-4 py-2 bg-yorha-bg-secondary border border-yorha-border rounded-md hover:bg-yorha-bg-hover transition-colors font-mono"
       >
         <Search class="h-4 w-4" />
@@ -111,7 +111,7 @@
       
       <!-- Create Case Button -->
       <button
-        onclick={createNewCase}
+        on:click={createNewCase}
         class="flex items-center gap-2 px-4 py-2 bg-yorha-accent text-yorha-text-accent border border-yorha-accent rounded-md hover:bg-yorha-accent/80 transition-colors font-mono"
       >
         <Plus class="h-4 w-4" />
@@ -123,7 +123,7 @@
   <!-- Quick Actions -->
   <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
     <button
-      onclick={() => showCommandPalette = true}
+      on:click={() => showCommandPalette = true}
       class="p-4 bg-yorha-bg-secondary border border-yorha-border rounded-md hover:bg-yorha-bg-hover transition-colors text-left"
     >
       <Search class="h-6 w-6 text-yorha-accent mb-2" />
@@ -132,7 +132,7 @@
     </button>
     
     <button
-      onclick={createNewCase}
+      on:click={createNewCase}
       class="p-4 bg-yorha-bg-secondary border border-yorha-border rounded-md hover:bg-yorha-bg-hover transition-colors text-left"
     >
       <Plus class="h-6 w-6 text-yorha-accent mb-2" />
@@ -247,13 +247,13 @@
         <!-- Quick Actions -->
         <div class="flex flex-wrap gap-2">
           <button
-            onclick={() => updateCase({ status: 'investigating' })}
+            on:click={() => updateCase({ status: 'investigating' })}
             class="px-3 py-1 text-sm bg-yorha-accent text-yorha-text-accent border border-yorha-accent rounded-md hover:bg-yorha-accent/80 transition-colors font-mono"
           >
             Start Investigation
           </button>
           <button
-            onclick={refresh}
+            on:click={refresh}
             class="px-3 py-1 text-sm bg-yorha-bg-secondary border border-yorha-border rounded-md hover:bg-yorha-bg-hover transition-colors font-mono"
           >
             Refresh Data
@@ -270,7 +270,7 @@
   {#snippet footer({ close })}
     <div class="flex justify-end gap-2">
       <button
-        onclick={close}
+        on:click={close}
         class="px-4 py-2 text-sm bg-yorha-bg-secondary border border-yorha-border rounded-md hover:bg-yorha-bg-hover transition-colors font-mono"
       >
         Close

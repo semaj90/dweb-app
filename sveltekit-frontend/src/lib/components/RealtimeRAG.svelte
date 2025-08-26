@@ -1,5 +1,5 @@
 <!-- Real-time RAG Interface Component -->
-<script>
+<script lang="ts">
   import { $props, $derived } from 'svelte';
 
   import { onMount, onDestroy } from 'svelte';
@@ -7,9 +7,9 @@
   import { createRealtimeRAGStore, ragQueryMachine, ragQueryServices } from '$lib/stores/realtime-rag.svelte.js';
   
   // Props for integration with existing components
-  export let selectedCaseId = null;
-  export let documentTypes = [];
-  export let onResultSelect = null;
+  let { selectedCaseId = $bindable() } = $props(); // null;
+  let { documentTypes = $bindable() } = $props(); // [];
+  let { onResultSelect = $bindable() } = $props(); // null;
 
   // Initialize real-time RAG store
   const ragStore = createRealtimeRAGStore();
@@ -132,7 +132,7 @@
       
       <button
         type="button"
-        onclick={handleQuerySubmit}
+        on:click={handleQuerySubmit}
         disabled={!query.trim() || machineState.matches('querying')}
         class="absolute bottom-3 right-3 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
       >
@@ -152,7 +152,7 @@
     <div class="flex items-center justify-between mt-3">
       <button
         type="button"
-        onclick={() => showAdvancedOptions = !showAdvancedOptions}
+        on:click={() => showAdvancedOptions = !showAdvancedOptions}
         class="text-sm text-blue-600 hover:text-blue-800"
       >
         {showAdvancedOptions ? 'Hide' : 'Show'} Advanced Options
@@ -161,7 +161,7 @@
       {#if machineState.matches('success') || machineState.matches('error')}
         <button
           type="button"
-          onclick={() => ragMachine.send({ type: 'CLEAR' })}
+          on:click={() => ragMachine.send({ type: 'CLEAR' })}
           class="text-sm text-gray-600 hover:text-gray-800"
         >
           Clear Results
@@ -247,7 +247,7 @@
             {#each machineContext.sources as source}
               <div 
                 class="source-card p-4 border border-gray-200 rounded-lg hover:border-blue-300 cursor-pointer transition-colors"
-                onclick={() => onResultSelect?.(source)}
+                on:click={() => onResultSelect?.(source)}
               >
                 <div class="flex items-start justify-between">
                   <div class="flex-1">
@@ -297,7 +297,7 @@
         </p>
         <button
           type="button"
-          onclick={() => ragMachine.send({ type: 'RETRY' })}
+          on:click={() => ragMachine.send({ type: 'RETRY' })}
           class="mt-3 px-4 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700"
         >
           Retry Query

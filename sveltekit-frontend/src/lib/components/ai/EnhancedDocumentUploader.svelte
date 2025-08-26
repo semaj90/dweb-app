@@ -447,7 +447,7 @@
     ondrop={handleDrop}
     role="button"
     tabindex="0"
-    onclick={() => fileInput?.click()}
+    on:click={() => fileInput?.click()}
     onkeydown={(e) => e.key === "Enter" && fileInput?.click()}
   >
     <div class="drop-zone-content">
@@ -565,7 +565,7 @@
                     <Button
                       variant="ghost"
                       size="sm"
-                      onclick={() => openMetadataDialog(file)}
+                      on:click={() => openMetadataDialog(file)}
                     >
                       Edit
                     </Button>
@@ -574,7 +574,7 @@
                   <Button
                     variant="ghost"
                     size="sm"
-                    onclick={() => removeFile(file.id)}
+                    on:click={() => removeFile(file.id)}
                     disabled={file.status === "uploading" ||
                       file.status === "processing"}
                   >
@@ -591,7 +591,7 @@
     <!-- Upload Actions -->
     <div class="upload-actions mt-6">
       <Button
-        onclick={uploadFiles}
+        on:click={uploadFiles}
         disabled={$isProcessing || $files.every((f) => f.status !== "pending")}
         class="mr-4"
       >
@@ -607,7 +607,7 @@
 
       <Button
         variant="outline"
-        onclick={() => files.set([])}
+        on:click={() => files.set([])}
         disabled={$isProcessing}
       >
         Clear All
@@ -686,11 +686,11 @@
           </div>
 
           <div class="dialog-actions">
-            <Button variant="outline" onclick={() => showMetadata.set(false)}>
+            <Button variant="outline" on:click={() => showMetadata.set(false)}>
               Cancel
             </Button>
             <Button
-              onclick={() => {
+              on:click={() => {
                 if ($selectedFile) {
                   updateFileMetadata($selectedFile.id, $selectedFile.metadata);
                 }

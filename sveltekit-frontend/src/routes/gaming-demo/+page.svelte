@@ -1,7 +1,6 @@
 <script lang="ts">
 	import GamingLayout from '$lib/components/gaming/GamingLayout.svelte';
-  import { $state } from 'svelte';
-	import GamingPanel from '$lib/components/gaming/GamingPanel.svelte';
+  import GamingPanel from '$lib/components/gaming/GamingPanel.svelte';
 	import GamingButton from '$lib/components/gaming/GamingButton.svelte';
 	
 	let currentCase = $state("CASE-2024-001");
@@ -164,7 +163,7 @@
 							size="lg" 
 							loading={isAnalyzing}
 							glowEffect={true}
-							onclick={startAnalysis}
+							on:click={startAnalysis}
 						>
 							{isAnalyzing ? 'Analyzing...' : 'Start Deep Analysis'}
 						</GamingButton>
@@ -172,7 +171,7 @@
 						<GamingButton 
 							variant="secondary" 
 							size="md"
-							onclick={generateReport}
+							on:click={generateReport}
 						>
 							Generate Report
 						</GamingButton>

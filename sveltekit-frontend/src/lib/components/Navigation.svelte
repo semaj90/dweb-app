@@ -6,14 +6,14 @@
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import { cn } from '$lib/utils';
-	import { 
-		Shield, 
-		Search, 
-		Database, 
-		Folder, 
-		Eye, 
-		Users, 
-		BarChart3, 
+	import {
+		Shield,
+		Search,
+		Database,
+		Folder,
+		Eye,
+		Users,
+		BarChart3,
 		Settings,
 		Terminal,
 		Brain,
@@ -37,7 +37,7 @@
 	];
 
 	let currentPath = $derived(browser && $page.url ? $page.url.pathname : '/');
-	
+
 	// Authentication state using the auth store
 	const auth = useAuth();
 	let showMobileMenu = $state(false);
@@ -115,7 +115,7 @@
 					<p class="nes-legal-subtitle">Investigation Interface</p>
 				</div>
 			</div>
-			
+
 			<nav class="nes-nav-section">
 				{#each navItems as item}
 					<a
@@ -166,14 +166,14 @@
 
 						<!-- User Avatar & Profile -->
 						<div class="user-profile-section">
-							<button 
+							<button
 								class="user-avatar-btn yorha-3d-button"
 								onclick={() => goto('/profile')}
 								title={`${auth.user?.firstName} ${auth.user?.lastName}`}
 							>
 								{#if userAvatarUrl}
-									<img 
-										src={userAvatarUrl} 
+									<img
+										src={userAvatarUrl}
 										alt="User Avatar"
 										class="user-avatar"
 										onerror={() => {
@@ -185,7 +185,7 @@
 									<User class="w-6 h-6 text-yellow-400" />
 								{/if}
 							</button>
-							
+
 							<div class="user-info hidden lg:block">
 								<span class="user-name text-yellow-400">
 									{auth.user?.firstName || auth.user?.email || 'User'}
@@ -246,7 +246,7 @@
 					<Brain class="w-4 h-4 neural-sprite-active" />
 					<span class="nes-legal-priority-critical">AI ACTIVE</span>
 				</div>
-				
+
 				<div class="nes-status-group">
 					<div class="neural-sprite-loading nes-status-online"></div>
 					<span class="nes-legal-priority-high">ONLINE</span>
@@ -264,7 +264,7 @@
 				<h3 class="text-lg font-bold text-yellow-400">
 					{auth.isAuthenticated ? 'Advanced Legal Search' : 'Public Search'}
 				</h3>
-				<button 
+				<button
 					class="close-btn"
 					onclick={() => showSearchModal = false}
 					aria-label="Close search"
@@ -272,11 +272,11 @@
 					×
 				</button>
 			</div>
-			
+
 			<div class="search-modal-content">
 				<UniversalSearchBar
-					placeholder={auth.isAuthenticated ? 
-						"Search cases, evidence, documents, precedents..." : 
+					placeholder={auth.isAuthenticated ?
+						"Search cases, evidence, documents, precedents..." :
 						"Search public documents and information..."
 					}
 					theme="yorha"
@@ -284,14 +284,14 @@
 					maxResults={auth.isAuthenticated ? 50 : 10}
 					onselect={handleSearchSelect}
 				/>
-				
+
 				{#if !auth.isAuthenticated}
 					<div class="auth-prompt">
 						<p class="text-sm opacity-70 mt-4">
 							Sign in for full access to cases, evidence, and advanced legal search features.
 						</p>
 						<div class="auth-buttons mt-3">
-							<button 
+							<button
 								class="nes-legal-priority-high yorha-3d-button"
 								onclick={() => { handleAuth('login'); showSearchModal = false; }}
 							>
@@ -314,20 +314,20 @@
 		padding: 0.75rem 1.5rem;
 		gap: 1rem;
 	}
-	
+
 	.nes-header-left {
 		display: flex;
 		align-items: center;
 		gap: 2rem;
 		flex: 1;
 	}
-	
+
 	.nes-header-center {
 		flex: 2;
 		max-width: 600px;
 		min-width: 0;
 	}
-	
+
 	.nes-header-right {
 		display: flex;
 		align-items: center;
@@ -486,7 +486,7 @@
 		.nes-header-center {
 			display: none;
 		}
-		
+
 		.system-status {
 			display: none;
 		}
@@ -496,20 +496,20 @@
 		.container-nes-main {
 			padding: 0.5rem 1rem;
 		}
-		
+
 		.nes-header-left {
 			gap: 1rem;
 		}
-		
+
 		.user-profile-section {
 			gap: 0.5rem;
 		}
-		
+
 		.search-modal {
 			width: 95%;
 			margin: 0 auto;
 		}
-		
+
 		.search-modal-content {
 			padding: 1rem;
 		}
@@ -524,7 +524,7 @@
 		top: 0;
 		z-index: 40;
 	}
-	
+
 	.header-title {
 		font-size: var(--text-lg);
 		font-weight: 700;
@@ -533,7 +533,7 @@
 		letter-spacing: 0.05em;
 		margin: 0;
 	}
-	
+
 	.header-subtitle {
 		font-size: var(--text-xs);
 		color: var(--yorha-text-secondary);
@@ -541,7 +541,7 @@
 		text-transform: uppercase;
 		letter-spacing: 0.025em;
 	}
-	
+
 	.nav-link {
 		display: flex;
 		align-items: center;
@@ -557,39 +557,39 @@
 		transition: all 200ms ease;
 		border: 1px solid transparent;
 	}
-	
+
 	.nav-link:hover {
 		background-color: var(--yorha-bg-hover);
 		color: var(--yorha-text-primary);
 		border-color: var(--yorha-border-primary);
 	}
-	
+
 	.nav-link-active {
 		background-color: var(--yorha-bg-tertiary);
 		color: var(--yorha-accent-gold);
 		border-color: var(--yorha-border-accent);
 	}
-	
+
 	.nav-link:focus-visible {
 		outline: 2px solid var(--yorha-accent-gold);
 		outline-offset: 2px;
 	}
-	
+
 	.status-indicator {
 		gap: var(--golden-xs);
 	}
-	
+
 	.status-info {
 		display: flex;
 		flex-direction: column;
 		gap: 2px;
 	}
-	
+
 	@media (max-width: 768px) {
 		.header-title {
 			font-size: var(--text-base);
 		}
-		
+
 		.header-subtitle {
 			display: none;
 		}

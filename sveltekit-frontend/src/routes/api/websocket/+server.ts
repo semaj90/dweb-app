@@ -1,13 +1,9 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { URL } from "url";
 
 // ======================================================================
 // REAL-TIME WEBSOCKET HANDLER FOR ENHANCED LEGAL AI SYSTEM
 // Supporting streaming updates, live processing results, and system monitoring
 // ======================================================================
-
-import type { RequestHandler } from "./$types.js";
-import { WebSocketServer } from "ws";
 
 // Enhanced WebSocket message types
 interface WebSocketMessage {
@@ -45,7 +41,7 @@ class EnhancedWebSocketManager {
     this.startHealthCheck();
   }
 
-  addClient(clientId: string, ws: any, metadata?: unknown) {
+  addClient(clientId: string, ws: any, metadata?: any) {
     const client: ConnectedClient = {
       id: clientId,
       ws,
@@ -349,10 +345,8 @@ export const GET: RequestHandler = async ({ request, url }) => {
         ],
         instructions: {
           connect: "ws://localhost:5173/api/websocket",
-          subscribe:
-            'Send: {"action": "subscribe", "types": ["processing", "ai_results"]}',
-          unsubscribe:
-            'Send: {"action": "unsubscribe", "types": ["processing"]}',
+          subscribe: 'Send: {"action": "subscribe", "types": ["processing", "ai_results"]}',
+          unsubscribe: 'Send: {"action": "unsubscribe", "types": ["processing"]}',
         },
       }),
       {

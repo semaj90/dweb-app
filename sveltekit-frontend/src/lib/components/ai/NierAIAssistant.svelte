@@ -58,7 +58,7 @@
       class="flex-1 bg-gray-900 border border-green-400 text-green-400 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-green-400"
     />
     <button
-      onclick={sendMessage}
+      on:click={sendMessage}
       class="bg-green-400 text-black px-4 py-2 rounded hover:bg-green-300 transition-colors"
     >
       SEND

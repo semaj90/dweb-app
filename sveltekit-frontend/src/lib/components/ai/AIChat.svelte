@@ -58,7 +58,7 @@ https://svelte.dev/e/js_parse_error -->
         {/if}
       </p>
     </div>
-    <Button variant="outline" size="sm" onclick={handleClear}>
+    <Button variant="outline" size="sm" on:click={handleClear}>
       Clear Chat
     </Button>
   </div>

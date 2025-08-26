@@ -1,7 +1,5 @@
 <!-- Observability Panel: Real-time alerts + sustained monitoring dashboard -->
 <script lang="ts">
-  import { $state, $derived } from 'svelte';
-
   import { onMount, onDestroy } from 'svelte';
   import type { ObservabilityState } from '$lib/services/observability-persistence';
   
@@ -191,7 +189,7 @@
         <span class="status-indicator {isConnected ? 'connected' : 'disconnected'}"></span>
         {isConnected ? 'Live' : 'Disconnected'}
       </div>
-      <button class="btn-toggle" onclick={() => showDetails = !showDetails}>
+      <button class="btn-toggle" on:click={() => showDetails = !showDetails}>
         {showDetails ? 'Hide' : 'Show'} Details
       </button>
     </div>
@@ -258,7 +256,7 @@
           <input type="checkbox" bind:checked={autoScroll} />
           Auto-scroll
         </label>
-        <button class="btn-clear" onclick={clearAlerts}>Clear</button>
+        <button class="btn-clear" on:click={clearAlerts}>Clear</button>
       </div>
     </div>
     

@@ -15,12 +15,12 @@
 	import { fade, fly, scale } from 'svelte/transition';
 	import { writable } from 'svelte/store';
 
-	export let title = "Smart Document Form";
-	export let description = "Upload a document for automatic field extraction and population";
-	export let formSchema: FormField[] = [];
-	export let enableOCR = true;
-	export let enableSmartSuggestions = true;
-	export let documentTypes: string[] = ['legal_document', 'contract', 'form'];
+	let { title = $bindable() } = $props(); // "Smart Document Form";
+	let { description = $bindable() } = $props(); // "Upload a document for automatic field extraction and population";
+	let { formSchema = $bindable() } = $props(); // FormField[] = [];
+	let { enableOCR = $bindable() } = $props(); // true;
+	let { enableSmartSuggestions = $bindable() } = $props(); // true;
+	let { documentTypes = $bindable() } = $props(); // string[] = ['legal_document', 'contract', 'form'];
 
 	const dispatch = createEventDispatcher<{
 		submit: { formData: Record<string, any>; extractedFields: ExtractedField[] };
@@ -294,7 +294,7 @@
 						<Button 
 							variant="outline" 
 							class="mt-4"
-							onclick={() => fileInput.click()}
+							on:click={() => fileInput.click()}
 						>
 							Browse Files
 						</Button>
@@ -408,7 +408,7 @@
 												variant="outline"
 												size="sm"
 												class="text-xs h-6 px-2"
-												onclick={() => applySuggestion(field.name, suggestion)}
+												on:click={() => applySuggestion(field.name, suggestion)}
 											>
 												{suggestion}
 											</Button>
@@ -445,7 +445,7 @@
 					<div class="flex items-center space-x-3">
 						<Button 
 							variant="outline"
-							onclick={() => {
+							on:click={() => {
 								populatedFields = populatedFields.map(f => ({ ...f, value: '' }));
 								formErrors.set({});
 							}}
@@ -476,7 +476,7 @@
 					<Button
 						variant="ghost"
 						size="sm"
-						onclick={() => showPreview = !showPreview}
+						on:click={() => showPreview = !showPreview}
 					>
 						{showPreview ? 'Hide' : 'Show'}
 					</Button>

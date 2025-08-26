@@ -79,9 +79,10 @@ func main() {
 		}
 	})
 
-	// Create TLS config for QUIC
+	// Create TLS config for QUIC (centralized dev certificate)
+	devCert := loadDevCertificate()
 	tlsConfig := &tls.Config{
-		Certificates: generateSelfSignedCertGateway(),
+		Certificates: []tls.Certificate{devCert},
 		NextProtos:   []string{"h3"},
 	}
 
@@ -101,8 +102,10 @@ func main() {
 	}
 }
 
+/*
+Deprecated duplicate certificate generator & embedded certs (replaced by loadDevCertificate in devcert.go).
+Kept commented for reference; remove once centralized cert approach validated across environments.
 func generateSelfSignedCertGateway() []tls.Certificate {
-	// For development only - use proper certs in production
 	cert, _ := tls.X509KeyPair([]byte(devCertGateway), []byte(devKeyGateway))
 	return []tls.Certificate{cert}
 }
@@ -156,3 +159,4 @@ M8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3
 LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N
 3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3L
 -----END PRIVATE KEY-----`
+*/

@@ -1,6 +1,5 @@
 <!-- AI Document Processing Demo Page -->
 <script lang="ts">
-  import { $state } from 'svelte';
   import DocumentUploadSimulator from '$lib/components/ai/DocumentUploadSimulator.svelte';
   import DemoNavigation from '$lib/components/navigation/DemoNavigation.svelte';
   import { onMount } from 'svelte';
@@ -124,7 +123,7 @@
       
       <button 
         class="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm transition-colors"
-        onclick={checkServices}
+        on:click={checkServices}
       >
         🔄 Refresh Status
       </button>

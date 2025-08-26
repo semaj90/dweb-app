@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { $state } from 'svelte';
-
   import { Button, Dialog, Select } from "bits-ui";
   import { onMount } from "svelte";
 
@@ -330,67 +328,67 @@
 
         <!-- Configuration -->
         <div class="grid grid-cols-2 gap-4 mb-4">
-          <Select.Root bind:selected={selectedDocumentType}>
-            <Select.Trigger
+          <SelectRoot bind:selected={selectedDocumentType}>
+            <SelectTrigger
               class="h-10 px-3 rounded-lg border border-slate-300 bg-white"
             >
-              <Select.Value placeholder="Document Type" />
-            </Select.Trigger>
-            <Select.Content
+              <SelectValue placeholder="Document Type" />
+            </SelectTrigger>
+            <SelectContent
               class="bg-white border border-slate-300 rounded-lg shadow-lg z-50"
             >
               {#each documentTypes as type}
-                <Select.Item
+                <SelectItem
                   value={type.value}
                   class="px-3 py-2 hover:bg-slate-100 cursor-pointer"
                 >
                   {type.label}
-                </Select.Item>
+                </SelectItem>
               {/each}
-            </Select.Content>
-          </Select.Root>
+            </SelectContent>
+          </SelectRoot>
 
-          <Select.Root bind:selected={selectedJurisdiction}>
-            <Select.Trigger
+          <SelectRoot bind:selected={selectedJurisdiction}>
+            <SelectTrigger
               class="h-10 px-3 rounded-lg border border-slate-300 bg-white"
             >
-              <Select.Value placeholder="Jurisdiction" />
-            </Select.Trigger>
-            <Select.Content
+              <SelectValue placeholder="Jurisdiction" />
+            </SelectTrigger>
+            <SelectContent
               class="bg-white border border-slate-300 rounded-lg shadow-lg z-50"
             >
               {#each jurisdictions as jurisdiction}
-                <Select.Item
+                <SelectItem
                   value={jurisdiction.value}
                   class="px-3 py-2 hover:bg-slate-100 cursor-pointer"
                 >
                   {jurisdiction.label}
-                </Select.Item>
+                </SelectItem>
               {/each}
-            </Select.Content>
-          </Select.Root>
+            </SelectContent>
+          </SelectRoot>
         </div>
 
         <div class="grid grid-cols-2 gap-4 mb-4">
-          <Select.Root bind:selected={selectedPracticeArea}>
-            <Select.Trigger
+          <SelectRoot bind:selected={selectedPracticeArea}>
+            <SelectTrigger
               class="h-10 px-3 rounded-lg border border-slate-300 bg-white"
             >
-              <Select.Value placeholder="Practice Area" />
-            </Select.Trigger>
-            <Select.Content
+              <SelectValue placeholder="Practice Area" />
+            </SelectTrigger>
+            <SelectContent
               class="bg-white border border-slate-300 rounded-lg shadow-lg z-50"
             >
               {#each practiceAreas as area}
-                <Select.Item
+                <SelectItem
                   value={area.value}
                   class="px-3 py-2 hover:bg-slate-100 cursor-pointer"
                 >
                   {area.label}
-                </Select.Item>
+                </SelectItem>
               {/each}
-            </Select.Content>
-          </Select.Root>
+            </SelectContent>
+          </SelectRoot>
 
           <label class="flex items-center gap-2 px-3 py-2">
             <input type="checkbox" bind:checked={useGPU} class="rounded" />
@@ -407,7 +405,7 @@
 
         <!-- Process Button -->
         <Button.Root
-          onclick={processDocument}
+          on:click={processDocument}
           disabled={processing || !serviceStatus.healthy}
           class="w-full mt-4 px-4 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 text-white font-semibold rounded-lg transition-colors"
         >
@@ -463,7 +461,7 @@
 
         <!-- Search Button -->
         <Button.Root
-          onclick={performVectorSearch}
+          on:click={performVectorSearch}
           disabled={searching || !serviceStatus.healthy}
           class="w-full mt-4 px-4 py-3 bg-green-600 hover:bg-green-700 disabled:bg-slate-400 text-white font-semibold rounded-lg transition-colors"
         >

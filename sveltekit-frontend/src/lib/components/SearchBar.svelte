@@ -6,10 +6,10 @@
 	
 	import { Filter, ArrowUpDown } from 'lucide-svelte';
 
-	export let placeholder = 'Search...';
-	export let value = '';
-	export let showFilters = true;
-	export let sortOptions = [
+	let { placeholder = $bindable() } = $props(); // 'Search...';
+	let { value = $bindable() } = $props(); // '';
+	let { showFilters = $bindable() } = $props(); // true;
+	let { sortOptions = $bindable() } = $props(); // [
 		{ id: 'relevance', label: 'Relevance' },
 		{ id: 'date', label: 'Date' },
 		{ id: 'name', label: 'Name' },
@@ -93,7 +93,7 @@
 			<button
 				class="container mx-auto px-4"
 				class:active={filtersOpen}
-				onclick={() => toggleFilters()}
+				on:click={() => toggleFilters()}
 				aria-label="Toggle filters"
 				title="Filters"
 			>
@@ -173,7 +173,7 @@
 			<button 
 				type="button" 
 				class="container mx-auto px-4"
-				onclick={() => {
+				on:click={() => {
 					selectedFileTypes = [];
 					dateRange = { from: '', to: '' };
 					dispatchFilters();

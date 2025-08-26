@@ -144,7 +144,7 @@
   <!-- Corrected Query Hint -->
   {#if correctedQuery && correctedQuery !== query}
     <div class="mt-2 text-sm text-gray-600">
-      Did you mean: <button class="text-blue-600 hover:underline" onclick={() => query = correctedQuery}>
+      Did you mean: <button class="text-blue-600 hover:underline" on:click={() => query = correctedQuery}>
         {correctedQuery}
       </button>?
     </div>
@@ -161,7 +161,7 @@
         <button
           use:melt={$option({ value: suggestion, label: suggestion.label })}
           class="w-full px-4 py-3 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none border-b border-gray-100 last:border-b-0"
-          onclick={() => handleSelection(suggestion)}
+          on:click={() => handleSelection(suggestion)}
         >
           <div class="flex items-center gap-3">
             <!-- Icon -->

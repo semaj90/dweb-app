@@ -3,7 +3,7 @@
   import { currentUser } from '$lib/auth/auth-store';
   import type { PageData } from './$types';
   
-  export let data: PageData;
+  let { data = $bindable() } = $props(); // PageData;
   
   // System metrics and status
   let systemMetrics = {

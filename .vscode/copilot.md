@@ -41,10 +41,10 @@ Search_Capabilities: SEMANTIC_VECTOR_ENABLED
 
 ```typescript
 // Copilot should suggest patterns based on this stack:
-Framework: "SvelteKit 2.16.0 + Svelte 5.0";
+Framework: "SvelteKit 2 + Svelte 5.0";
 Language: "TypeScript (strict mode)";
 Database: "Drizzle ORM + PostgreSQL + pg_vector";
-UI: "Melt UI + Bits UI + uno CSS + nier automata theme";
+UI: "Melt+ Bits UI + uno CSS + nier automata theme";
 AI: "Ollama + Gemma3 C:UsersjamesDesktopdeeds-webdeeds-web-appgemma3Q4_K_Mmo16.gguf + nomic-embed-text";
 Authentication: "Lucia Auth";
 State: "XState machines + Svelte stores";

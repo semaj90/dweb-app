@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { $state } from 'svelte';
-
   import Button from "$lib/components/ui/button/Button.svelte";
   import Input from "$lib/components/ui/Input.svelte";
   import Label from "$lib/components/ui/Label.svelte";
@@ -151,7 +149,7 @@
       </div>
     </div>
 
-    <Button onclick={handleUpload} disabled={isUploading} class="w-full">
+    <Button on:click={handleUpload} disabled={isUploading} class="w-full">
       {#if isUploading}
         <Loader2 class="mr-2 h-4 w-4 animate-spin" />
         Uploading...

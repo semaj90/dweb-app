@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { $state } from 'svelte';
   import { page } from '$app/stores';
   import VisualEvidenceEditor from '$lib/components/evidence-editor/VisualEvidenceEditor.svelte';
   import { UiButton as Button } from '$lib/components/ui';
@@ -37,7 +36,7 @@
       
       <div class="space-y-4">
         <Button 
-          onclick={toggleReadOnly}
+          on:click={toggleReadOnly}
           variant={readOnly ? "default" : "outline"}
           size="sm"
         >
@@ -74,7 +73,7 @@
   <Button 
     size="sm" 
     class="space-y-4"
-    onclick={() => {
+    on:click={() => {
       const helpOverlay = document.getElementById('help-overlay');
       if (helpOverlay) {
         helpOverlay.style.display = 'none';

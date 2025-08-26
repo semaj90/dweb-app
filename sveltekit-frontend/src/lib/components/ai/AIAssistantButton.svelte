@@ -127,7 +127,7 @@
 {#if variant === 'floating'}
   <button
     class={buttonClasses}
-    onclick={handleClick}
+    on:click={handleClick}
     {disabled}
     aria-label="Open AI Assistant"
   >
@@ -155,7 +155,7 @@
 {:else if variant === 'inline'}
   <button
     class={buttonClasses}
-    onclick={handleClick}
+    on:click={handleClick}
     {disabled}
   >
     <div class="flex items-center gap-3 px-4 py-3">
@@ -206,7 +206,7 @@
     <button
       use:melt={$trigger}
       class={buttonClasses}
-      onclick={handleClick}
+      on:click={handleClick}
       {disabled}
       aria-label="AI Assistant"
     >
@@ -223,7 +223,7 @@
   {:else}
     <button
       class={buttonClasses}
-      onclick={handleClick}
+      on:click={handleClick}
       {disabled}
       aria-label="AI Assistant"
     >
@@ -243,7 +243,7 @@
 {:else if variant === 'full'}
   <button
     class={buttonClasses}
-    onclick={handleClick}
+    on:click={handleClick}
     {disabled}
   >
     <div class="flex items-center justify-between w-full">

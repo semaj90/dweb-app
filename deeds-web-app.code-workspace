@@ -12,27 +12,27 @@
   "settings": {
     // Disable problematic extensions locally (not uninstall)
     "extensions.ignoreRecommendations": true,
-    
+
     // Disable specific extensions in this workspace only
     "eslint.enable": false,
     "prettier.enable": false,
     "vetur.validation.template": false,
     "vetur.validation.script": false,
     "vetur.validation.style": false,
-    
+
     // Svelte specific settings
     "svelte.enable-ts-plugin": true,
     "svelte.plugin.typescript.diagnostics.enable": true,
     "svelte.plugin.typescript.hover.enable": true,
     "svelte.plugin.typescript.completions.enable": true,
-    
+
     // TypeScript configuration
     "typescript.validate.enable": true,
     "typescript.suggest.autoImports": true,
     "typescript.preferences.importModuleSpecifier": "relative",
     "typescript.suggest.completeFunctionCalls": true,
     "javascript.suggest.completeFunctionCalls": true,
-    
+
     // Editor settings for better error visibility
     "editor.parameterHints.enabled": true,
     "editor.quickSuggestions": {
@@ -40,12 +40,12 @@
       "comments": false,
       "strings": true
     },
-    
+
     // File associations
     "files.associations": {
       "*.svelte": "svelte"
     },
-    
+
     // Hide problematic directories from search
     "files.exclude": {
       "**/node_modules": true,
@@ -54,7 +54,7 @@
       "**/dist": true,
       "**/.vscode": false
     },
-    
+
     // Search configuration
     "search.exclude": {
       "**/node_modules": true,
@@ -62,22 +62,23 @@
       "**/build": true,
       "**/dist": true
     },
-    
+
     // Problems panel configuration
     "problems.autoReveal": true,
     "problems.defaultViewMode": "list",
     "problems.showCurrentInStatus": true,
-    
+
     // Terminal configuration
-    "terminal.integrated.defaultProfile.windows": "PowerShell"
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
+    "debug.onTaskErrors": "showErrors"
   },
-  
+
   "extensions": {
     "recommendations": [
       "svelte.svelte-vscode",
       "ms-vscode.vscode-typescript-next"
     ],
-    
+
     // Disable these extensions in this workspace
     "unwantedRecommendations": [
       "ms-vscode.vscode-eslint",
@@ -87,7 +88,7 @@
       "undefined_publisher.mcp-context7-assistant"
     ]
   },
-  
+
   "launch": {
     "version": "0.2.0",
     "configurations": [
@@ -104,7 +105,7 @@
       }
     ]
   },
-  
+
   "tasks": {
     "version": "2.0.0",
     "tasks": [

@@ -712,11 +712,11 @@ export class EnhancedLegalRAGPipeline {
         password: this.config.database.password,
         max: this.config.database.max,
         idle_timeout: this.config.database.idle_timeout,
-        ssl: this.config.database.ssl,
+        ssl: typeof this.config.database.ssl === 'boolean' ? this.config.database.ssl : this.config.database.ssl === 'require' ? 'require' : false,
         prepare: true,
         connect_timeout: this.config.database.connect_timeout,
-        onnotice: (notice) => console.debug('[DB] Notice:', notice),
-        onparameter: (key, value) => console.debug(`[DB] Parameter ${key}:`, value),
+        onnotice: (notice: any) => console.debug('[DB] Notice:', notice),
+        onparameter: (key: string, value: any) => console.debug(`[DB] Parameter ${key}:`, value),
         onconnect: async () => {
           console.log('[DB] PostgreSQL connected successfully');
         }
@@ -1891,7 +1891,7 @@ Limit to 10 most relevant tags.
   async close(): Promise<void> {
     try {
       await Promise.allSettled([
-        this.redis ? new Promise(resolve => this.redis!.on('end', resolve)) : Promise.resolve(),
+        this.redis ? this.redis.quit() : Promise.resolve(),
         this.sql?.end(),
       ]);
       

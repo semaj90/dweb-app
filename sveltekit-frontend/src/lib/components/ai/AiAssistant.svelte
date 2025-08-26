@@ -88,13 +88,13 @@
 		try {
 			// Try multiple Enhanced RAG endpoints
 			let ragResult;
-			
+
 			// Try health check first
 			const healthRes = await fetch('http://localhost:8094/health');
 			if (!healthRes.ok) {
 				throw new Error('Enhanced RAG service not available');
 			}
-			
+
 			// Since direct GPU endpoint not available, use SvelteKit API proxy
 			const res = await fetch('/api/ai/analyze-evidence', {
 				method: 'POST',
@@ -105,7 +105,7 @@
 					forceReanalyze: true
 				})
 			});
-			
+
 			if (!res.ok) {
 				// Fallback to enhanced processing endpoint
 				const fallbackRes = await fetch('/api/ai/process-enhanced', {
@@ -121,7 +121,7 @@
 						}
 					})
 				});
-				
+
 				if (!fallbackRes.ok) {
 					throw new Error('All AI services unavailable');
 				}
@@ -129,7 +129,7 @@
 			} else {
 				ragResult = await res.json();
 			}
-			
+
 			return {
 				summary: ragResult.summary || ragResult.analysis || ragResult.result || 'Analysis completed',
 				sources: ragResult.sources || [],
@@ -262,7 +262,7 @@
 
 	function handleProcessEvidence() {
 		if (!user) return;
-		
+
 		// Track AI interaction for feedback
 		currentInteractionId = feedbackIntegration?.triggerFeedback({
 			query: `Analyze ${contextItems.length} evidence items`,

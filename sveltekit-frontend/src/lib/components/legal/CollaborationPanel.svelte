@@ -13,17 +13,17 @@ Real-time collaboration interface for multiple investigators working on evidence
   import { Users, MessageCircle, MapPin, Send, Eye, UserCheck } from 'lucide-svelte';
 
   // Props
-  export let collaborationSession: {
+  let { collaborationSession = $bindable() } = $props(); // {
     sessionId: string;
     participants: Array<{ userId: string; role: string; joinedAt: string }>;
     chatHistory: Array<{ userId: string; message: string; timestamp: string }>;
     annotations: Array<{ userId: string; content: string; position: any; timestamp: string }>;
   } | undefined;
-  export let activeCollaborators: string[];
-  export let userId: string;
-  export let evidenceId: string;
-  export let wsConnection: WebSocket | null;
-  export let onAddAnnotation: (content: string, position: any) => void;
+  let { activeCollaborators = $bindable() } = $props(); // string[];
+  let { userId = $bindable() } = $props(); // string;
+  let { evidenceId = $bindable() } = $props(); // string;
+  let { wsConnection = $bindable() } = $props(); // WebSocket | null;
+  let { onAddAnnotation = $bindable() } = $props(); // (content: string, position: any) => void;
 
   // Local state
   let newMessage = $state('');
@@ -300,7 +300,7 @@ Real-time collaboration interface for multiple investigators working on evidence
               }}
             />
             <Button 
-              onclick={sendMessage}
+              on:click={sendMessage}
               disabled={!newMessage.trim()}
               size="sm"
               class="self-end"
@@ -323,7 +323,7 @@ Real-time collaboration interface for multiple investigators working on evidence
           <Button
             variant="outline"
             size="sm"
-            onclick={() => showAnnotationInput = !showAnnotationInput}
+            on:click={() => showAnnotationInput = !showAnnotationInput}
           >
             Add Note
           </Button>
@@ -338,10 +338,10 @@ Real-time collaboration interface for multiple investigators working on evidence
               class="mb-3"
             />
             <div class="flex space-x-2">
-              <Button onclick={addAnnotation} size="sm" disabled={!newAnnotation.trim()}>
+              <Button on:click={addAnnotation} size="sm" disabled={!newAnnotation.trim()}>
                 Add Annotation
               </Button>
-              <Button onclick={() => showAnnotationInput = false} variant="outline" size="sm">
+              <Button on:click={() => showAnnotationInput = false} variant="outline" size="sm">
                 Cancel
               </Button>
             </div>

@@ -123,7 +123,7 @@
   ondragover={handleDragOver}
   ondragleave={handleDragLeave}
   ondrop={handleDrop}
-  onclick={() => openFileDialog()}
+  on:click={() => openFileDialog()}
   role="button"
   tabindex={0}
   onkeydown={(e) => e.key === 'Enter' && openFileDialog()}

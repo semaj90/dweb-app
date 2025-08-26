@@ -376,7 +376,7 @@
       <Button
         size="sm"
         variant="outline"
-        onclick={() => showHistory = !showHistory}
+        on:click={() => showHistory = !showHistory}
         data-testid="token-history-button"
       >
         <History class="h-4 w-4 mr-1" />
@@ -386,7 +386,7 @@
       <Button
         size="sm"
         variant="outline"
-        onclick={optimizeTokenUsage}
+        on:click={optimizeTokenUsage}
         disabled={!autoOptimize}
       >
         <Zap class="h-4 w-4 mr-1" />
@@ -396,7 +396,7 @@
       <Button
         size="sm"
         variant="outline"
-        onclick={resetSession}
+        on:click={resetSession}
       >
         Reset
       </Button>
@@ -404,7 +404,7 @@
       <Button
         size="sm"
         variant="outline"
-        onclick={exportUsageData}
+        on:click={exportUsageData}
       >
         Export
       </Button>

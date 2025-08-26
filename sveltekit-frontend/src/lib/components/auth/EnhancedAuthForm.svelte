@@ -428,7 +428,7 @@
             />
             <button
               type="button"
-              onclick={() => formState.showPassword = !formState.showPassword}
+              on:click={() => formState.showPassword = !formState.showPassword}
               class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
             >
               {#if formState.showPassword}
@@ -483,7 +483,7 @@
               />
               <button
                 type="button"
-                onclick={() => formState.showConfirmPassword = !formState.showConfirmPassword}
+                on:click={() => formState.showConfirmPassword = !formState.showConfirmPassword}
                 class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
               >
                 {#if formState.showConfirmPassword}
@@ -555,7 +555,7 @@
             type="button"
             variant="outline"
             class="w-full"
-            onclick={handleGuestLogin}
+            on:click={handleGuestLogin}
             disabled={formState.loading}
           >
             Continue as Guest
@@ -566,7 +566,7 @@
         <div class="text-center">
           <button 
             type="button"
-            onclick={toggleMode}
+            on:click={toggleMode}
             class="text-sm text-primary hover:underline"
             disabled={formState.loading}
           >

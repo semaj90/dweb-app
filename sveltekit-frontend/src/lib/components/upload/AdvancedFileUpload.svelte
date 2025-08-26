@@ -24,25 +24,25 @@
   const dispatch = createEventDispatcher();
 
   // Props
-  export let multiple = true;
-  export let accept = "*/*";
-  export let maxFileSize = 100 * 1024 * 1024; // 100MB
-  export let maxTotalSize = 500 * 1024 * 1024; // 500MB
-  export let maxFiles = 10;
-  export let allowedTypes: string[] = [];
-  export let uploadUrl = "/api/upload";
-  export let chunkSize = 1024 * 1024; // 1MB chunks for large files
-  export let enableChunking = true;
-  export let enablePreview = true;
+  let { multiple = $bindable() } = $props(); // true;
+  let { accept = $bindable() } = $props(); // "*/*";
+  let { maxFileSize = $bindable() } = $props(); // 100 * 1024 * 1024; // 100MB
+  let { maxTotalSize = $bindable() } = $props(); // 500 * 1024 * 1024; // 500MB
+  let { maxFiles = $bindable() } = $props(); // 10;
+  let { allowedTypes = $bindable() } = $props(); // string[] = [];
+  let { uploadUrl = $bindable() } = $props(); // "/api/upload";
+  let { chunkSize = $bindable() } = $props(); // 1024 * 1024; // 1MB chunks for large files
+  let { enableChunking = $bindable() } = $props(); // true;
+  let { enablePreview = $bindable() } = $props(); // true;
   export const enableDragDrop = true;
-  export let enablePasteUpload = true;
-  export let enableCameraCapture = false;
-  export let enableAudioRecording = false;
-  export let autoUpload = false;
-  export let compressionQuality = 0.8;
-  export let enableCompression = true;
-  export let showProgress = true;
-  export let disabled = false;
+  let { enablePasteUpload = $bindable() } = $props(); // true;
+  let { enableCameraCapture = $bindable() } = $props(); // false;
+  let { enableAudioRecording = $bindable() } = $props(); // false;
+  let { autoUpload = $bindable() } = $props(); // false;
+  let { compressionQuality = $bindable() } = $props(); // 0.8;
+  let { enableCompression = $bindable() } = $props(); // true;
+  let { showProgress = $bindable() } = $props(); // true;
+  let { disabled = $bindable() } = $props(); // false;
 
   // State
   let fileInput: HTMLInputElement;
@@ -531,7 +531,7 @@
     role="button"
     tabindex={0}
     aria-label="File upload area. Click to select files or drag and drop files here."
-    onclick={() => !disabled && fileInput.click()}
+    on:click={() => !disabled && fileInput.click()}
     onkeydown={(e) => {
       if ((e.key === "Enter" || e.key === " ") && !disabled) {
         e.preventDefault();
@@ -571,7 +571,7 @@
         {#if enableCameraCapture}
           <Button
             variant="secondary"
-            onclick={handleCameraCaptureClick}
+            on:click={handleCameraCaptureClick}
             {disabled}
           >
             <Camera class="container mx-auto px-4" />
@@ -582,7 +582,7 @@
         {#if enableAudioRecording}
           <Button
             variant="secondary"
-            onclick={handleAudioRecordingClick}
+            on:click={handleAudioRecordingClick}
             {disabled}
             class={isRecording ? "bg-red-100 text-red-700" : ""}
           >
@@ -618,7 +618,7 @@
           {#if !autoUpload && files.some((f) => f.status === "pending")}
             <Button
               size="sm"
-              onclick={() => uploadFiles()}
+              on:click={() => uploadFiles()}
               disabled={isUploading}
             >
               {#if isUploading}
@@ -633,7 +633,7 @@
           <Button
             variant="ghost"
             size="sm"
-            onclick={() => (files = [])}
+            on:click={() => (files = [])}
             disabled={isUploading}
           >
             Clear All
@@ -707,7 +707,7 @@
                 <Button
                   variant="ghost"
                   size="sm"
-                  onclick={() => window.open(file.url, "_blank")}
+                  on:click={() => window.open(file.url, "_blank")}
                   aria-label="View {file.name}"
                 >
                   <Eye class="container mx-auto px-4" />
@@ -718,7 +718,7 @@
                 <Button
                   variant="ghost"
                   size="sm"
-                  onclick={() => retryUpload(file.id)}
+                  on:click={() => retryUpload(file.id)}
                   aria-label="Retry upload of {file.name}"
                 >
                   <Upload class="container mx-auto px-4" />
@@ -728,7 +728,7 @@
               <Button
                 variant="ghost"
                 size="sm"
-                onclick={() => removeFile(file.id)}
+                on:click={() => removeFile(file.id)}
                 disabled={file.status === "uploading"}
                 aria-label="Remove {file.name}"
               >

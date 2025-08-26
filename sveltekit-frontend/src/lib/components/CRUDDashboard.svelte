@@ -1,7 +1,5 @@
 <!-- Comprehensive CRUD Dashboard showing all entities working together -->
 <script lang="ts">
-  import { $state } from 'svelte';
-
   import { notifications } from "$lib/stores/notification";
   import {
     Activity,
@@ -252,7 +250,7 @@
       <div class="space-y-4">
         <button
           class="space-y-4"
-          onclick={() => fetchAllData()}
+          on:click={() => fetchAllData()}
           disabled={refreshing}
           title="Refresh all data"
         >
@@ -329,7 +327,7 @@
               oninput={() => handleSearch("cases")}
             />
           </div>
-          <button class="space-y-4" onclick={() => createNew("cases")}>
+          <button class="space-y-4" on:click={() => createNew("cases")}>
             <Plus size={16} />
           </button>
         </div>
@@ -362,7 +360,7 @@
       </div>
 
       <div class="space-y-4">
-        <button class="space-y-4" onclick={() => viewAll("cases")}>
+        <button class="space-y-4" on:click={() => viewAll("cases")}>
           View All Cases
         </button>
       </div>
@@ -385,7 +383,7 @@
               oninput={() => handleSearch("evidence")}
             />
           </div>
-          <button class="space-y-4" onclick={() => createNew("evidence")}>
+          <button class="space-y-4" on:click={() => createNew("evidence")}>
             <Plus size={16} />
           </button>
         </div>
@@ -422,7 +420,7 @@
       </div>
 
       <div class="space-y-4">
-        <button class="space-y-4" onclick={() => viewAll("evidence")}>
+        <button class="space-y-4" on:click={() => viewAll("evidence")}>
           View All Evidence
         </button>
       </div>
@@ -445,7 +443,7 @@
               oninput={() => handleSearch("reports")}
             />
           </div>
-          <button class="space-y-4" onclick={() => createNew("reports")}>
+          <button class="space-y-4" on:click={() => createNew("reports")}>
             <Plus size={16} />
           </button>
         </div>
@@ -480,7 +478,7 @@
       </div>
 
       <div class="space-y-4">
-        <button class="space-y-4" onclick={() => viewAll("reports")}>
+        <button class="space-y-4" on:click={() => viewAll("reports")}>
           View All Reports
         </button>
       </div>
@@ -503,7 +501,7 @@
               oninput={() => handleSearch("activities")}
             />
           </div>
-          <button class="space-y-4" onclick={() => createNew("activities")}>
+          <button class="space-y-4" on:click={() => createNew("activities")}>
             <Plus size={16} />
           </button>
         </div>
@@ -536,7 +534,7 @@
       </div>
 
       <div class="space-y-4">
-        <button class="space-y-4" onclick={() => viewAll("activities")}>
+        <button class="space-y-4" on:click={() => viewAll("activities")}>
           View All Activities
         </button>
       </div>
@@ -552,22 +550,22 @@
       </div>
 
       <div class="space-y-4">
-        <button class="space-y-4" onclick={() => createNew("cases")}>
+        <button class="space-y-4" on:click={() => createNew("cases")}>
           <FileText size={24} />
           <span>New Case</span>
         </button>
 
-        <button class="space-y-4" onclick={() => createNew("evidence")}>
+        <button class="space-y-4" on:click={() => createNew("evidence")}>
           <Camera size={24} />
           <span>Add Evidence</span>
         </button>
 
-        <button class="space-y-4" onclick={() => createNew("reports")}>
+        <button class="space-y-4" on:click={() => createNew("reports")}>
           <FileText size={24} />
           <span>Create Report</span>
         </button>
 
-        <button class="space-y-4" onclick={() => viewAll("activities")}>
+        <button class="space-y-4" on:click={() => viewAll("activities")}>
           <Clock size={24} />
           <span>View Tasks</span>
         </button>

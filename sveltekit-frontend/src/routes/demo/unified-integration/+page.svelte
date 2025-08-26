@@ -1,5 +1,5 @@
 <!-- Unified GPU/WASM Integration Demo Page -->
-<script>
+<script lang="ts">
   import UnifiedIntegrationDemo from '$lib/components/UnifiedIntegrationDemo.svelte';
 </script>
 

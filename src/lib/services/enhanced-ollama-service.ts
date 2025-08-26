@@ -105,10 +105,10 @@ class EnhancedOllamaService {
 
       const data = await response.json();
       return (
-        data.models?.map((model: unknown) => ({
-          name: model.name,
-          size: this.formatSize(model.size),
-          modified: new Date(model.modified_at),
+        data.models?.map((model: any) => ({
+          name: model?.name ?? "unknown",
+          size: this.formatSize((model?.size as number) ?? 0),
+          modified: new Date(model?.modified_at ?? Date.now()),
         })) || []
       );
     }, "List models");
@@ -430,7 +430,8 @@ class EnhancedOllamaService {
   }
 
   // Update configuration
-  updateConfig(config: unknown) {
+  updateConfig(config: Partial<{ name: string; fallback: string; endpoint: string; primary: string }>) {
+    if (!config) return;
     if (config.name) this.currentModel = config.name;
     if (config.fallback) this.fallbackModel = config.fallback;
     if (config.endpoint) this.baseUrl = config.endpoint;

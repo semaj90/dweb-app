@@ -2,7 +2,6 @@
 https://svelte.dev/e/const_tag_invalid_placement -->
 <!-- AI Demo Page - SvelteKit 2.0 + Svelte 5 + Ollama Integration -->
 <script lang="ts">
-  import { $state, $derived } from 'svelte';
   import OllamaChatInterface from "$lib/components/OllamaChatInterface.svelte";
   import { Alert, AlertDescription } from "$lib/components/ui/alert";
   import { Badge } from "$lib/components/ui/badge";
@@ -204,7 +203,7 @@ https://svelte.dev/e/const_tag_invalid_placement -->
             <Badge
               variant={selectedModel === model ? "default" : "outline"}
               class="cursor-pointer"
-              onclick={() => (selectedModel = model)}
+              on:click={() => (selectedModel = model)}
             >
               {model}
             </Badge>
@@ -212,10 +211,10 @@ https://svelte.dev/e/const_tag_invalid_placement -->
         </div>
 
         <div class="mt-4 flex gap-2">
-          <Button onclick={testGeneration} variant="outline">
+          <Button on:click={testGeneration} variant="outline">
             Test Generation
           </Button>
-          <Button onclick={checkOllamaHealth} variant="outline">
+          <Button on:click={checkOllamaHealth} variant="outline">
             Refresh Status
           </Button>
         </div>

@@ -1,6 +1,9 @@
+//go:build cuda && cgo
+// +build cuda,cgo
+
 // gpu-memory-manager.go
-// Advanced GPU memory management and worker pool system
-// Optimized for RTX 3060 Ti with 8GB VRAM
+// Advanced GPU memory management and worker pool system (CUDA build)
+// Requires build tags: cuda,cgo. Excluded from default builds; a stub is provided otherwise.
 
 package main
 
@@ -12,6 +15,9 @@ package main
 #include <cublas_v2.h>
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 // GPU memory pool structure
 typedef struct {
@@ -38,41 +44,41 @@ typedef struct {
 GPUMemoryPool* init_gpu_memory_pool(int device_id, size_t pool_size_mb, int max_blocks) {
     GPUMemoryPool* pool = (GPUMemoryPool*)malloc(sizeof(GPUMemoryPool));
     if (!pool) return NULL;
-    
+
     // Set device
     cudaSetDevice(device_id);
-    
+
     // Initialize pool
     pool->blocks = (MemoryBlock*)calloc(max_blocks, sizeof(MemoryBlock));
     if (!pool->blocks) {
         free(pool);
         return NULL;
     }
-    
+
     pool->max_blocks = max_blocks;
     pool->used_blocks = 0;
     pool->total_allocated = 0;
     pool->total_free = pool_size_mb * 1024 * 1024; // Convert MB to bytes
     pool->device_id = device_id;
-    
+
     // Create CUDA stream for async operations
     cudaStreamCreate(&pool->stream);
-    
+
     // Create cuBLAS handle for optimized operations
     cublasCreate(&pool->cublas_handle);
     cublasSetStream(pool->cublas_handle, pool->stream);
-    
+
     return pool;
 }
 
 // Allocate GPU memory block
 void* gpu_memory_alloc(GPUMemoryPool* pool, size_t size) {
     if (!pool || size == 0) return NULL;
-    
+
     // Find free block or create new one
     for (int i = 0; i < pool->max_blocks; i++) {
         MemoryBlock* block = &pool->blocks[i];
-        
+
         if (!block->ptr && pool->used_blocks < pool->max_blocks) {
             // Allocate new block
             void* gpu_ptr;
@@ -80,21 +86,28 @@ void* gpu_memory_alloc(GPUMemoryPool* pool, size_t size) {
             if (err != cudaSuccess) {
                 return NULL;
             }
-            
+
             block->ptr = gpu_ptr;
             block->size = size;
             block->is_free = 0;
             block->pool_id = i;
-            
-            // Get current time (simplified)
-            struct timespec ts;
-            clock_gettime(CLOCK_MONOTONIC, &ts);
-            block->allocated_at = ts.tv_sec * 1000000000ULL + ts.tv_nsec;
-            
+
+			// Get current time (portable simplified). Use Windows API when CLOCK_MONOTONIC not available.
+#ifdef _WIN32
+			FILETIME ft;
+			GetSystemTimeAsFileTime(&ft); // 100-ns intervals since Jan 1 1601
+			unsigned long long t = ((unsigned long long)ft.dwHighDateTime << 32) | ft.dwLowDateTime;
+			block->allocated_at = t * 100; // convert 100ns units to ns
+#else
+			struct timespec ts;
+			clock_gettime(CLOCK_MONOTONIC, &ts);
+			block->allocated_at = ts.tv_sec * 1000000000ULL + ts.tv_nsec;
+#endif
+
             pool->used_blocks++;
             pool->total_allocated += size;
             pool->total_free -= size;
-            
+
             return gpu_ptr;
         }
         else if (block->ptr && block->is_free && block->size >= size) {
@@ -103,14 +116,14 @@ void* gpu_memory_alloc(GPUMemoryPool* pool, size_t size) {
             return block->ptr;
         }
     }
-    
+
     return NULL; // No available blocks
 }
 
 // Free GPU memory block
 int gpu_memory_free(GPUMemoryPool* pool, void* ptr) {
     if (!pool || !ptr) return -1;
-    
+
     for (int i = 0; i < pool->max_blocks; i++) {
         MemoryBlock* block = &pool->blocks[i];
         if (block->ptr == ptr) {
@@ -118,19 +131,19 @@ int gpu_memory_free(GPUMemoryPool* pool, void* ptr) {
             return 0;
         }
     }
-    
+
     return -1; // Block not found
 }
 
 // Get memory pool statistics
 void get_memory_pool_stats(GPUMemoryPool* pool, size_t* total_allocated, size_t* total_free, int* used_blocks, int* free_blocks) {
     if (!pool) return;
-    
+
     *total_allocated = pool->total_allocated;
     *total_free = pool->total_free;
     *used_blocks = 0;
     *free_blocks = 0;
-    
+
     for (int i = 0; i < pool->max_blocks; i++) {
         MemoryBlock* block = &pool->blocks[i];
         if (block->ptr) {
@@ -146,7 +159,7 @@ void get_memory_pool_stats(GPUMemoryPool* pool, size_t* total_allocated, size_t*
 // Cleanup memory pool
 void cleanup_gpu_memory_pool(GPUMemoryPool* pool) {
     if (!pool) return;
-    
+
     // Free all allocated blocks
     for (int i = 0; i < pool->max_blocks; i++) {
         MemoryBlock* block = &pool->blocks[i];
@@ -154,7 +167,7 @@ void cleanup_gpu_memory_pool(GPUMemoryPool* pool) {
             cudaFree(block->ptr);
         }
     }
-    
+
     // Cleanup CUDA resources
     if (pool->cublas_handle) {
         cublasDestroy(pool->cublas_handle);
@@ -162,7 +175,7 @@ void cleanup_gpu_memory_pool(GPUMemoryPool* pool) {
     if (pool->stream) {
         cudaStreamDestroy(pool->stream);
     }
-    
+
     free(pool->blocks);
     free(pool);
 }
@@ -170,14 +183,14 @@ void cleanup_gpu_memory_pool(GPUMemoryPool* pool) {
 // Async memory copy operations
 int gpu_memory_copy_async(GPUMemoryPool* pool, void* dst, const void* src, size_t size, int direction) {
     if (!pool) return -1;
-    
+
     cudaError_t err;
     if (direction == 0) { // Host to Device
         err = cudaMemcpyAsync(dst, src, size, cudaMemcpyHostToDevice, pool->stream);
     } else { // Device to Host
         err = cudaMemcpyAsync(dst, src, size, cudaMemcpyDeviceToHost, pool->stream);
     }
-    
+
     return (err == cudaSuccess) ? 0 : -1;
 }
 
@@ -197,6 +210,8 @@ import (
 	"sync/atomic"
 	"time"
 	"unsafe"
+
+	"github.com/gin-gonic/gin"
 )
 
 // GPUMemoryManager manages GPU memory allocation and worker pools
@@ -635,7 +650,7 @@ func (gmm *GPUMemoryManager) GetStats() *GPUMemoryStats {
 	gmm.stats.TotalFreeMB = int64(totalFree) / (1024 * 1024)
 	gmm.stats.UsedBlocks = int(usedBlocks)
 	gmm.stats.FreeBlocks = int(freeBlocks)
-	
+
 	// Calculate fragmentation rate
 	if gmm.stats.TotalAllocatedMB > 0 {
 		gmm.stats.FragmentationRate = float64(gmm.stats.FreeBlocks) / float64(gmm.stats.UsedBlocks + gmm.stats.FreeBlocks)
@@ -763,7 +778,7 @@ func (gmm *GPUMemoryManager) performCleanup() {
 	// Update statistics
 	gmm.stats.LastUpdated = time.Now()
 
-	log.Printf("🧹 GPU memory cleanup completed - Allocated: %d MB, Free: %d MB", 
+	log.Printf("🧹 GPU memory cleanup completed - Allocated: %d MB, Free: %d MB",
 		gmm.stats.TotalAllocatedMB, gmm.stats.TotalFreeMB)
 }
 

@@ -19,11 +19,11 @@
     Zap,
   } from "lucide-svelte";
 
-  export let conversationId: string = crypto.randomUUID();
-  export let userId: string;
-  export let caseId: string | null = null;
-  export let open: boolean = false;
-  export let title: string = "Legal AI Assistant";
+  let { conversationId = $bindable() } = $props(); // string = crypto.randomUUID();
+  let { userId = $bindable() } = $props(); // string;
+  let { caseId = $bindable() } = $props(); // string | null = null;
+  let { open = $bindable() } = $props(); // boolean = false;
+  let { title = $bindable() } = $props(); // string = "Legal AI Assistant";
 
   const dispatch = createEventDispatcher();
 
@@ -419,7 +419,7 @@
             <button
               class="mx-auto px-4 max-w-7xl"
               class:active={showModeSelector}
-              onclick={() => (showModeSelector = !showModeSelector)}
+              on:click={() => (showModeSelector = !showModeSelector)}
               title="Select AI mode"
             >
               {#each aiModes as mode}
@@ -439,7 +439,7 @@
                   <button
                     class="mx-auto px-4 max-w-7xl"
                     class:selected={mode.id === selectedMode}
-                    onclick={() => {
+                    on:click={() => {
                       selectedMode = mode.id;
                       showModeSelector = false;
                     "
@@ -460,7 +460,7 @@
         <div class="mx-auto px-4 max-w-7xl">
           <button
             class="mx-auto px-4 max-w-7xl"
-            onclick={() => clearConversation()}
+            on:click={() => clearConversation()}
             title="Clear conversation"
             disabled={isGenerating}
           >
@@ -468,7 +468,7 @@
           </button>
           <button
             class="mx-auto px-4 max-w-7xl"
-            onclick={() => closeChat()}
+            on:click={() => closeChat()}
             title="Close chat"
           >
             <X size={16} />
@@ -528,7 +528,7 @@
                     {#each message.actions as action}
                       <button
                         class="mx-auto px-4 max-w-7xl"
-                        onclick={() => handleActionClick(action)}
+                        on:click={() => handleActionClick(action)}
                         title={action.text}
                       >
                         {action.text}
@@ -564,7 +564,7 @@
             {#each quickActions as action}
               <button
                 class="mx-auto px-4 max-w-7xl"
-                onclick={() => handleQuickAction(action.text)}
+                on:click={() => handleQuickAction(action.text)}
                 disabled={isGenerating}
               >
                 <svelte:component this={action.icon} size={20} />
@@ -592,7 +592,7 @@
             class="mx-auto px-4 max-w-7xl"
             class:sending={isGenerating}
             disabled={!currentMessage.trim() || isGenerating}
-            onclick={() => sendMessage()}
+            on:click={() => sendMessage()}
             title="Send message"
           >
             {#if isGenerating}

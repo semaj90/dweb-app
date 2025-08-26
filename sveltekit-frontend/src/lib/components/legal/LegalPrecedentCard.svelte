@@ -302,7 +302,7 @@
       <!-- Expand/Collapse -->
       {#if expandable}
         <button
-          onclick={() => expanded = !expanded}
+          on:click={() => expanded = !expanded}
           class="text-xs font-mono text-yorha-primary hover:text-yorha-accent transition-colors"
         >
           {expanded ? 'Show Less' : 'Show More'}
@@ -339,7 +339,7 @@
 
         {#if onViewFull && interactive}
           <button
-            onclick={() => onViewFull?.(precedent)}
+            on:click={() => onViewFull?.(precedent)}
             class="px-2 py-1 text-xs font-mono bg-yorha-primary/10 text-yorha-primary border border-yorha-primary/20 rounded hover:bg-yorha-primary/20 transition-colors"
           >
             Full Details
@@ -348,7 +348,7 @@
 
         {#if onAddToCase && interactive && currentCaseId}
           <button
-            onclick={() => onAddToCase?.(precedent)}
+            on:click={() => onAddToCase?.(precedent)}
             class="px-2 py-1 text-xs font-mono bg-green-500/10 text-green-400 border border-green-500/20 rounded hover:bg-green-500/20 transition-colors"
           >
             Add to Case
@@ -366,7 +366,7 @@
         <div class="flex flex-wrap gap-2">
           {#each precedent.relatedCases.slice(0, 3) as relatedCase}
             <button
-              onclick={() => onViewRelated?.(relatedCase)}
+              on:click={() => onViewRelated?.(relatedCase)}
               class="text-xs font-mono text-yorha-primary hover:text-yorha-accent transition-colors underline"
             >
               {relatedCase}

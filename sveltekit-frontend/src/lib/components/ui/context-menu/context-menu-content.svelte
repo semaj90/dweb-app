@@ -2,7 +2,7 @@
   import { getContext, onDestroy, onMount } from 'svelte';
   import type { Writable } from 'svelte/store';
 <slots>
-  export let className: string = '';
+  let { className = $bindable() } = $props(); // string = '';
 
   const { isOpen, position, close } = getContext<{
     isOpen: Writable<boolean>;

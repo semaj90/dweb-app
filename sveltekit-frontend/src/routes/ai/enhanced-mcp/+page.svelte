@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { $state } from 'svelte';
-	/**
+  /**
 	 * Enhanced MCP Integration Demo Page
 	 * Demonstrates cluster system, MCP tools, and Context7 integration with SvelteKit
 	 */
@@ -306,10 +305,10 @@
 		</div>
 		
 		<div class="action-buttons">
-			<button onclick={runSystemDiagnostics} class="diagnostic-button">
+			<button on:click={runSystemDiagnostics} class="diagnostic-button">
 				🔬 Run System Diagnostics
 			</button>
-			<button onclick={clearLogs} class="clear-logs-button">
+			<button on:click={clearLogs} class="clear-logs-button">
 				🧹 Clear Logs
 			</button>
 		</div>

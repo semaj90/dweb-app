@@ -28,10 +28,10 @@
   import YoRHaNavCard from '$lib/components/yorha/YoRHaNavCard.svelte';
   import { ensureLocalIndex, localSearch, isLocalIndexReady, getLocalDocumentCount, wasLoadedFromCache, mergeResults } from '$lib/yorha/localSearch';
   import { initHybridLayer, reRankWithPgVector } from '$lib/yorha/hybridSearchManager';
-  import type { 
-    SystemMetrics, 
-    YoRHaModule, 
-    HolographicScene, 
+  import type {
+    SystemMetrics,
+    YoRHaModule,
+    HolographicScene,
     CommandResult,
     LegalAISession
   } from '$lib/types/yorha-interface';
@@ -295,10 +295,10 @@
             <span>PROC: {systemData.active_processes}</span>
           </div>
         </div>
-        
+
         <!-- YoRHa Control Panel -->
         <div class="yorha-control-panel">
-          <button 
+          <button
             class="yorha-control-btn {showCommandInterface ? 'active' : ''}"
             onclick={toggleCommandInterface}
             aria-label="Toggle command interface"
@@ -306,7 +306,7 @@
             <Terminal size={16} />
             TERMINAL
           </button>
-          <button 
+          <button
             class="yorha-control-btn {holographicMode ? 'active' : ''}"
             onclick={toggleHolographicMode}
             aria-label="Toggle holographic mode"
@@ -375,7 +375,7 @@
   <!-- YoRHa Command Interface (Toggle) -->
   {#if showCommandInterface}
     <section class="yorha-command-interface" transition:slide={{ duration: 300 }}>
-      <YoRHaCommandInterface 
+      <YoRHaCommandInterface
         {systemData}
         {legalSession}
         {holographicMode}
@@ -581,7 +581,7 @@
   /* Command Interface */
   .yorha-command-interface {
     @apply px-6 py-8 bg-gray-900 bg-opacity-50 border-y border-amber-400 border-opacity-30;
-    background-image: 
+    background-image:
       repeating-linear-gradient(
         0deg,
         transparent,

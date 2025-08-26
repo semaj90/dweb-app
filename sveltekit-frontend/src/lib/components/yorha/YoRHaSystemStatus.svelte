@@ -1,7 +1,5 @@
 <!-- YoRHa System Status Bar Component -->
 <script lang="ts">
-  import { $state, $derived } from 'svelte';
-
   import type { SystemStatus } from "$lib/types/global";
   import type { Props } from "$lib/types/global";
   import { onMount, onDestroy } from 'svelte';
@@ -24,7 +22,7 @@
   let diskUsage = $state(45);
   let activeConnections = $state(12);
   let uptime = $state(0);
-  let currentTime = $state(new Date());
+  let currentTime = $state(new Date(););
 
   // Status indicators
   let systemStatus = $derived(() => {

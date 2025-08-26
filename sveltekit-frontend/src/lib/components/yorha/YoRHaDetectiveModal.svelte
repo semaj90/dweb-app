@@ -2,9 +2,11 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  export let showModal = false;
-  export let title = '';
-  export let onClose = () => {};
+  let { showModal = false, title = '', onClose = () => {} } = $props<{
+    showModal?: boolean;
+    title?: string;
+    onClose?: () => void;
+  }>();
 
   // Handle escape key
   function handleKeydown(event: KeyboardEvent) {
@@ -21,7 +23,7 @@
   }
 
   onMount(() => {
-    const handleEscape = (e: KeyboardEvent) => handleKeydown(e);
+    const handleEscape = (e: CustomEvent<any>) => handleKeydown(e);
     document.addEventListener('keydown', handleEscape);
     
     return () => {
@@ -34,7 +36,7 @@
   <!-- Modal Backdrop -->
   <div 
     class="modal-backdrop" 
-    onclick={handleBackdrop}
+    on:click={handleBackdrop}
     role="dialog"
     aria-modal="true"
     aria-labelledby="modal-title"
@@ -44,7 +46,7 @@
       <!-- Header -->
       <div class="modal-header">
         <h2 id="modal-title" class="modal-title">{title}</h2>
-        <button class="modal-close" onclick={onClose} aria-label="Close modal">
+        <button class="modal-close" on:click={onClose} aria-label="Close modal">
           &times;
         </button>
       </div>

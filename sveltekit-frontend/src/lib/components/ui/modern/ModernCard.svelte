@@ -79,7 +79,7 @@
   class={cardClasses}
   role={clickable ? 'button' : undefined}
   tabindex={clickable ? 0 : undefined}
-  onclick={handleClick}
+  on:click={handleClick}
   onkeydown={(e) => {
     if (clickable && (e.key === 'Enter' || e.key === ' ')) {
       e.preventDefault();
@@ -93,7 +93,7 @@
   class={cardClasses}
   role={clickable ? 'button' : undefined}
   tabindex={clickable ? 0 : undefined}
-  onclick={handleClick}
+  on:click={handleClick}
   onkeydown={(e) => {
     if (clickable && (e.key === 'Enter' || e.key === ' ')) {
       e.preventDefault();

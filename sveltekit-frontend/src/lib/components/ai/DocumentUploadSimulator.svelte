@@ -2,8 +2,6 @@
 https://svelte.dev/e/expected_token -->
 <!-- Document Upload Simulator with AI Processing -->
 <script lang="ts">
-  import { $state } from 'svelte';
-
   import { onMount } from 'svelte';
   
   interface DocumentUpload {
@@ -268,7 +266,7 @@ https://svelte.dev/e/expected_token -->
     />
     <button 
       class="px-6 py-3 bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
-      onclick={() => fileInput.click()}
+      on:click={() => fileInput.click()}
     >
       Select Files
     </button>
@@ -295,7 +293,7 @@ https://svelte.dev/e/expected_token -->
         </div>
         <button 
           class="text-gray-400 hover:text-red-400 transition-colors"
-          onclick={() => removeUpload(upload.id)}
+          on:click={() => removeUpload(upload.id)}
         >
           ✕
         </button>
@@ -357,7 +355,7 @@ https://svelte.dev/e/expected_token -->
           <div class="flex space-x-3">
             <button 
               class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm transition-colors"
-              onclick={() => downloadProcessedData(upload)}
+              on:click={() => downloadProcessedData(upload)}
             >
               📥 Download JSON
             </button>

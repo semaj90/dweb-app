@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { $state } from 'svelte';
-
   import { user } from "$lib/stores/user";
   import { Button } from "$lib/components/ui/button";
   import Modal from "$lib/components/ui/Modal.svelte";
@@ -18,7 +16,7 @@
 }
 </script>
 
-<Button onclick={() => showModal = true}>Select Case</Button>
+<Button on:click={() => showModal = true}>Select Case</Button>
 
 <Modal bind:open={showModal} title="Select a Case">
   {#snippet description()}
@@ -29,7 +27,7 @@
 
   <div class="space-y-4">
     {#each cases as caseItem}
-      <Button onclick={() => selectCase(caseItem.id)} variant="secondary">
+      <Button on:click={() => selectCase(caseItem.id)} variant="secondary">
         {caseItem.name}
       </Button>
     {/each}

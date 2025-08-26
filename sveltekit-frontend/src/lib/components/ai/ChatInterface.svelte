@@ -382,7 +382,7 @@
           <Button 
             variant="outline" 
             size="sm" 
-            onclick={quickAnalyzeEvidence}
+            on:click={quickAnalyzeEvidence}
             disabled={$isLoading}
           >
             🔍 Quick Analysis
@@ -506,7 +506,7 @@
         variant="default"
         size="sm"
         class="mx-auto px-4 max-w-7xl"
-        onclick={() => sendMessage()}
+        on:click={() => sendMessage()}
         disabled={$isLoading || !messageInput.trim()}
       >
         {#if $isLoading}

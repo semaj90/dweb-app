@@ -26,12 +26,12 @@
   } from 'lucide-svelte';
 
   // Props
-  export let targetId: string;
-  export let targetType: 'case' | 'evidence' | 'legal_document' | 'cross_analysis' = 'case';
-  export let depth: 'quick' | 'comprehensive' | 'forensic' = 'comprehensive';
-  export let enableStreaming = true;
-  export let enableUserActivity = true;
-  export let enableRAG = true;
+  let { targetId = $bindable() } = $props(); // string;
+  let { targetType = $bindable() } = $props(); // 'case' | 'evidence' | 'legal_document' | 'cross_analysis' = 'case';
+  let { depth = $bindable() } = $props(); // 'quick' | 'comprehensive' | 'forensic' = 'comprehensive';
+  let { enableStreaming = $bindable() } = $props(); // true;
+  let { enableUserActivity = $bindable() } = $props(); // true;
+  let { enableRAG = $bindable() } = $props(); // true;
 
   // XState machine integration
   const { state, send, context } = useMachine(aiSummaryMachine);
@@ -437,7 +437,7 @@
       <button
         class="btn-advanced"
         class:active={showAdvancedOptions}
-        onclick={() => showAdvancedOptions = !showAdvancedOptions}
+        on:click={() => showAdvancedOptions = !showAdvancedOptions}
       >
         <Settings size="16" />
         Advanced
@@ -500,16 +500,16 @@
 
       <div class="processing-controls">
         {#if !isProcessing}
-          <button class="btn-primary" onclick={startComprehensiveSummary}>
+          <button class="btn-primary" on:click={startComprehensiveSummary}>
             <Play size="16" />
             Start Analysis
           </button>
         {:else}
-          <button class="btn-secondary" onclick={pauseProcessing}>
+          <button class="btn-secondary" on:click={pauseProcessing}>
             <Pause size="16" />
             Pause
           </button>
-          <button class="btn-danger" onclick={stopProcessing}>
+          <button class="btn-danger" on:click={stopProcessing}>
             <Square size="16" />
             Stop
           </button>
@@ -578,7 +578,7 @@
             <option value="json">JSON</option>
             <option value="txt">Text</option>
           </select>
-          <button class="btn-export" onclick={exportSummary} disabled={!canExport}>
+          <button class="btn-export" on:click={exportSummary} disabled={!canExport}>
             <Download size="16" />
             Export
           </button>

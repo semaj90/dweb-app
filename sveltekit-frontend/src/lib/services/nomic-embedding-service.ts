@@ -7,9 +7,10 @@
 
 import { OllamaEmbeddings } from "@langchain/ollama";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
+import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import type { VectorStore } from '@langchain/core/vectorstores';
-import { db } from "$lib/database";
-import { searchIndex, type NewSearchIndex } from "$lib/database/schema";
+import { db } from "$lib/server/db";
+import { evidence, cases, legalDocuments } from "$lib/server/db/unified-schema";
 import { eq, sql, desc, asc, and } from "drizzle-orm";
 
 // Import sentence transformer for enhanced analysis
@@ -442,23 +443,65 @@ class NomicEmbeddingService {
       // Generate query embedding
       const queryEmbedding = await this.generateEmbedding(query);
 
-      // Build where conditions
-      const conditions = [];
-      if (entityType) {
-        conditions.push(eq(searchIndex.entityType, entityType));
-      }
-      if (entityId) {
-        conditions.push(eq(searchIndex.entityId, entityId));
+      // Search across different entity types based on embeddings
+      let results: any[] = [];
+
+      if (!entityType || entityType === 'evidence') {
+        const evidenceResults = await db
+          .select({
+            id: evidence.id,
+            content: evidence.description,
+            embedding: evidence.titleEmbedding,
+            metadata: sql`json_build_object('type', 'evidence', 'title', ${evidence.title}, 'case_id', ${evidence.caseId})`
+          })
+          .from(evidence)
+          .where(sql`${evidence.titleEmbedding} IS NOT NULL`)
+          .limit(k);
+        
+        results.push(...evidenceResults.map(r => ({
+          ...r,
+          entityType: 'evidence',
+          entityId: r.id
+        })));
       }
 
-      // Search in database
-      const searchQuery = db
-        .select()
-        .from(searchIndex)
-        .where(conditions.length > 0 ? and(...conditions) : undefined)
-        .limit(k * 2); // Get more results to filter
+      if (!entityType || entityType === 'case') {
+        const caseResults = await db
+          .select({
+            id: cases.id,
+            content: cases.description,
+            embedding: cases.titleEmbedding,
+            metadata: sql`json_build_object('type', 'case', 'title', ${cases.title}, 'case_number', ${cases.caseNumber})`
+          })
+          .from(cases)
+          .where(sql`${cases.titleEmbedding} IS NOT NULL`)
+          .limit(k);
+        
+        results.push(...caseResults.map(r => ({
+          ...r,
+          entityType: 'case',
+          entityId: r.id
+        })));
+      }
 
-      const results = await searchQuery;
+      if (!entityType || entityType === 'legal_document') {
+        const legalDocResults = await db
+          .select({
+            id: legalDocuments.id,
+            content: legalDocuments.content,
+            embedding: legalDocuments.titleEmbedding,
+            metadata: sql`json_build_object('type', 'legal_document', 'title', ${legalDocuments.title}, 'document_type', ${legalDocuments.documentType})`
+          })
+          .from(legalDocuments)
+          .where(sql`${legalDocuments.titleEmbedding} IS NOT NULL`)
+          .limit(k);
+        
+        results.push(...legalDocResults.map(r => ({
+          ...r,
+          entityType: 'legal_document',
+          entityId: r.id
+        })));
+      }
 
       // Calculate similarities and filter
       const similarities: SimilaritySearchResult[] = [];
@@ -515,17 +558,42 @@ class NomicEmbeddingService {
     try {
       let insertedCount = 0;
 
+      // Store embeddings based on entity type
       for (const embedding of embeddings) {
-        const indexEntry: NewSearchIndex = {
-          entityType,
-          entityId,
-          content: embedding.content,
-          embedding: embedding.embedding,
-          metadata: embedding.metadata
-        };
-
-        await db.insert(searchIndex).values(indexEntry);
-        insertedCount++;
+        try {
+          if (entityType === 'evidence') {
+            // Update evidence record with embedding
+            await db
+              .update(evidence)
+              .set({
+                titleEmbedding: embedding.embedding,
+                updatedAt: new Date()
+              })
+              .where(eq(evidence.id, entityId));
+          } else if (entityType === 'case') {
+            // Update case record with embedding
+            await db
+              .update(cases)
+              .set({
+                titleEmbedding: embedding.embedding,
+                updatedAt: new Date()
+              })
+              .where(eq(cases.id, entityId));
+          } else if (entityType === 'legal_document') {
+            // Update legal document record with embedding
+            await db
+              .update(legalDocuments)
+              .set({
+                titleEmbedding: embedding.embedding,
+                updatedAt: new Date()
+              })
+              .where(eq(legalDocuments.id, entityId));
+          }
+          
+          insertedCount++;
+        } catch (updateError) {
+          console.warn(`Failed to update embedding for ${entityType}:${entityId}:`, updateError);
+        }
       }
 
       return insertedCount;

@@ -90,9 +90,9 @@ test.describe('Quick System Validation', () => {
       console.log('Available Models:', models.models?.length || 0);
       
       // Check for required models
-      const requiredModels = ['llama3.2', 'nomic-embed-text'];
+      const requiredModels = ['gemma3:latest', 'nomic-embed-text'];
       requiredModels.forEach((modelName: string) => {
-        const hasModel = models.models?.some((m: unknown) => m.name.includes(modelName));
+        const hasModel = models.models?.some((m: unknown) => (m as any).name.includes(modelName));
         console.log(`${modelName}: ${hasModel ? '✅' : '❌'}`);
       });
     }

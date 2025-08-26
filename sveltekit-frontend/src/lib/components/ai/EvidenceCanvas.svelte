@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { $state } from 'svelte';
   import { onMount } from "svelte";
   import { apiFetch } from "$lib/api/clients/api-client";
   import { concurrencyOrchestrator } from '$lib/services/concurrency-orchestrator';
@@ -129,7 +128,7 @@
 </script>
 
 <div class="toolbar">
-  <button onclick={analyzeCanvas} disabled={analyzing}
+  <button on:click={analyzeCanvas} disabled={analyzing}
     >{analyzing ? "Analyzing…" : "Analyze Canvas"}</button
   >
   <label

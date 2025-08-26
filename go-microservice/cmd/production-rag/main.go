@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"sync"
 	"time"
+	"unsafe"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -1009,5 +1010,4 @@ func main() {
 	}
 }
 
-// Additional imports needed
-import "unsafe"
+// Additional imports have been moved to the top import block

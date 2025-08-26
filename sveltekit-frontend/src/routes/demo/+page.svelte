@@ -3,7 +3,6 @@
   Comprehensive navigation for all demonstrations and testing interfaces
 -->
 <script lang="ts">
-  import { $state } from 'svelte';
   import { goto } from '$app/navigation';
   import * as Card from '$lib/components/ui/card';
   import { Button } from '$lib/components/ui/button';
@@ -398,7 +397,7 @@
           <Badge variant="outline" class="text-sm">
             {productionDemos} Production Ready
           </Badge>
-          <Button onclick={() => goto('/')} variant="outline">
+          <Button on:click={() => goto('/')} variant="outline">
             <ChevronRight class="h-4 w-4 mr-2 rotate-180" />
             Back to Home
           </Button>
@@ -434,14 +433,14 @@
           <Button
             variant={viewMode === 'grid' ? 'default' : 'ghost'}
             size="sm"
-            onclick={() => viewMode = 'grid'}
+            on:click={() => viewMode = 'grid'}
           >
             <Grid class="h-4 w-4" />
           </Button>
           <Button
             variant={viewMode === 'list' ? 'default' : 'ghost'}
             size="sm"
-            onclick={() => viewMode = 'list'}
+            on:click={() => viewMode = 'list'}
           >
             <List class="h-4 w-4" />
           </Button>
@@ -520,7 +519,7 @@
                       </div>
                       
                       <Button 
-                        onclick={() => navigateToDemo(demo.path)}
+                        on:click={() => navigateToDemo(demo.path)}
                         class="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
                         variant="outline"
                       >
@@ -561,7 +560,7 @@
                               </div>
                             </div>
                             <Button 
-                              onclick={() => navigateToDemo(demo.path)}
+                              on:click={() => navigateToDemo(demo.path)}
                               variant="outline"
                               size="sm"
                             >

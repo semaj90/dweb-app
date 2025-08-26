@@ -290,7 +290,7 @@
             <button
               type="button"
               class="absolute inset-y-0 right-0 pr-3 flex items-center"
-              onclick={togglePasswordVisibility}
+              on:click={togglePasswordVisibility}
               disabled={isLoading}
             >
               {#if showPassword}
@@ -375,7 +375,7 @@
     <div class="grid grid-cols-2 gap-4 mt-6">
       <Button 
         variant="outline" 
-        onclick={() => handleSocialLogin('google')}
+        on:click={() => handleSocialLogin('google')}
         disabled={isLoading}
       >
         <svg class="mr-2 h-4 w-4" viewBox="0 0 24 24">
@@ -389,7 +389,7 @@
       
       <Button 
         variant="outline" 
-        onclick={() => handleSocialLogin('github')}
+        on:click={() => handleSocialLogin('github')}
         disabled={isLoading}
       >
         <svg class="mr-2 h-4 w-4" fill="currentColor" viewBox="0 0 24 24">

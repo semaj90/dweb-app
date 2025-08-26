@@ -1,7 +1,5 @@
 <script lang="ts">
   import { run } from 'svelte/legacy';
-  import { $state, $derived } from 'svelte';
-
   import Badge from '$lib/components/ui/Badge.svelte';
   import { Button } from '$lib/components/ui/button';
   import { Card as CardRoot, CardContent, CardHeader } from '$lib/components/ui/card';
@@ -221,7 +219,7 @@
     </div>
 
     <div class="space-y-4">
-      <Button onclick={() => (showAddDialog = true)}>
+      <Button on:click={() => (showAddDialog = true)}>
         <Plus class="space-y-4" />
         Add Citation
       </Button>
@@ -244,21 +242,21 @@
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent {menu}>
-                  <DropdownMenuItem onclick={() => toggleFavorite(citation)}>
+                  <DropdownMenuItem on:click={() => toggleFavorite(citation)}>
                     <Star class="w-4 h-4 mr-2" />
                     {citation.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
                   </DropdownMenuItem>
-                  <DropdownMenuItem onclick={() => copyCitation(citation)}>
+                  <DropdownMenuItem on:click={() => copyCitation(citation)}>
                     <Copy class="w-4 h-4 mr-2" />
                     Copy citation
                   </DropdownMenuItem>
-                  <DropdownMenuItem onclick={() => editCitation(citation)}>
+                  <DropdownMenuItem on:click={() => editCitation(citation)}>
                     <Edit class="w-4 h-4 mr-2" />
                     Edit
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
-                    onclick={() => deleteCitation(citation.id)}
+                    on:click={() => deleteCitation(citation.id)}
                     class="text-destructive">
                     <Trash2 class="w-4 h-4 mr-2" />
                     Delete
@@ -325,7 +323,7 @@
             <p class="space-y-4">No citations match your current search criteria.</p>
             <Button
               variant="secondary"
-              onclick={() => {
+              on:click={() => {
                 searchQuery = '';
                 selectedCategory = 'all';
               }}>
@@ -337,7 +335,7 @@
               You haven't saved any citations yet. Start by adding citations from reports or create
               new ones.
             </p>
-            <Button onclick={() => (showAddDialog = true)}>
+            <Button on:click={() => (showAddDialog = true)}>
               <Plus class="space-y-4" />
               Add your first citation
             </Button>
@@ -403,8 +401,8 @@
     </div>
 
     <DialogFooter>
-      <Button variant="secondary" onclick={() => (showAddDialog = false)}>Cancel</Button>
-      <Button onclick={() => saveCitation()} disabled={!newCitation.title || !newCitation.content}>
+      <Button variant="secondary" on:click={() => (showAddDialog = false)}>Cancel</Button>
+      <Button on:click={() => saveCitation()} disabled={!newCitation.title || !newCitation.content}>
         Save Citation
       </Button>
     </DialogFooter>
@@ -458,8 +456,8 @@
       </div>
 
       <DialogFooter>
-        <Button variant="secondary" onclick={() => (editingCitation = null)}>Cancel</Button>
-        <Button onclick={() => updateCitation()}>Update Citation</Button>
+        <Button variant="secondary" on:click={() => (editingCitation = null)}>Cancel</Button>
+        <Button on:click={() => updateCitation()}>Update Citation</Button>
       </DialogFooter>
     </DialogContent>
   </DialogRoot>

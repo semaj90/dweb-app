@@ -36,11 +36,11 @@
   import { onDestroy, onMount } from "svelte";
   import { get, writable } from "svelte/store";
 
-  export let caseId: string;
-  export let canvasId: string = "";
-  export let width = 1200;
-  export let height = 800;
-  export let readOnly = false;
+  let { caseId = $bindable() } = $props(); // string;
+  let { canvasId = $bindable() } = $props(); // string = "";
+  let { width = $bindable() } = $props(); // 1200;
+  let { height = $bindable() } = $props(); // 800;
+  let { readOnly = $bindable() } = $props(); // false;
 
   let canvasElement: HTMLCanvasElement;
   let canvas: fabric.Canvas | null = null;
@@ -1059,14 +1059,14 @@
     <div class="mx-auto px-4 max-w-7xl">
       <button
         class="mx-auto px-4 max-w-7xl"
-        onclick={() => saveCanvas()}
+        on:click={() => saveCanvas()}
         title="Save Canvas"
       >
         <Save size="18" />
       </button>
       <button
         class="mx-auto px-4 max-w-7xl"
-        onclick={() => undo()}
+        on:click={() => undo()}
         disabled={!state.canUndo}
         title="Undo"
       >
@@ -1074,7 +1074,7 @@
       </button>
       <button
         class="mx-auto px-4 max-w-7xl"
-        onclick={() => redo()}
+        on:click={() => redo()}
         disabled={!state.canRedo}
         title="Redo"
       >
@@ -1090,7 +1090,7 @@
         <button
           class="mx-auto px-4 max-w-7xl"
           class:active={state.tool === tool.id}
-          onclick={() => setTool(tool.id)}
+          on:click={() => setTool(tool.id)}
           title={tool.label}
         >
           <svelte:component this={tool.icon} size="18" />
@@ -1102,18 +1102,18 @@
 
     <!-- Canvas Controls -->
     <div class="mx-auto px-4 max-w-7xl">
-      <button class="mx-auto px-4 max-w-7xl" onclick={() => zoomOut()} title="Zoom Out">
+      <button class="mx-auto px-4 max-w-7xl" on:click={() => zoomOut()} title="Zoom Out">
         <ZoomOut size="18" />
       </button>
       <span class="mx-auto px-4 max-w-7xl">{state.zoom}%</span>
-      <button class="mx-auto px-4 max-w-7xl" onclick={() => zoomIn()} title="Zoom In">
+      <button class="mx-auto px-4 max-w-7xl" on:click={() => zoomIn()} title="Zoom In">
         <ZoomIn size="18" />
       </button>
 
       <button
         class="mx-auto px-4 max-w-7xl"
         class:active={state.showGrid}
-        onclick={() => toggleGrid()}
+        on:click={() => toggleGrid()}
         title="Toggle Grid"
       >
         <Grid size="18" />
@@ -1124,13 +1124,13 @@
 
     <!-- Object Actions -->
     <div class="mx-auto px-4 max-w-7xl">
-      <button class="mx-auto px-4 max-w-7xl" onclick={() => copySelected()} title="Copy">
+      <button class="mx-auto px-4 max-w-7xl" on:click={() => copySelected()} title="Copy">
         <Copy size="18" />
       </button>
-      <button class="mx-auto px-4 max-w-7xl" onclick={() => pasteClipboard()} title="Paste">
+      <button class="mx-auto px-4 max-w-7xl" on:click={() => pasteClipboard()} title="Paste">
         <Copy size="18" />
       </button>
-      <button class="mx-auto px-4 max-w-7xl" onclick={() => deleteSelected()} title="Delete">
+      <button class="mx-auto px-4 max-w-7xl" on:click={() => deleteSelected()} title="Delete">
         <Trash2 size="18" />
       </button>
     </div>
@@ -1141,7 +1141,7 @@
     <div class="mx-auto px-4 max-w-7xl">
       <button
         class="mx-auto px-4 max-w-7xl"
-        onclick={() => generateAISummary()}
+        on:click={() => generateAISummary()}
         title="Generate AI Summary"
       >
         <FileText size="18" />
@@ -1156,9 +1156,9 @@
         <Download size="18" />
       </button>
       <div class="mx-auto px-4 max-w-7xl">
-        <button onclick={() => exportCanvas("png")}>Export as PNG</button>
-        <button onclick={() => exportCanvas("svg")}>Export as SVG</button>
-        <button onclick={() => exportCanvas("json")}>Export as JSON</button>
+        <button on:click={() => exportCanvas("png")}>Export as PNG</button>
+        <button on:click={() => exportCanvas("svg")}>Export as SVG</button>
+        <button on:click={() => exportCanvas("json")}>Export as JSON</button>
       </div>
     </div>
 
@@ -1192,7 +1192,7 @@
           {#each state.searchQuery ? searchResults : evidenceItems as evidence}
             <div
               class="mx-auto px-4 max-w-7xl"
-              onclick={() => addEvidenceToCanvas(evidence)}
+              on:click={() => addEvidenceToCanvas(evidence)}
               onkeydown={(e) =>
                 e.key === "Enter" && addEvidenceToCanvas(evidence)}
               role="button"
@@ -1210,28 +1210,28 @@
         <div class="mx-auto px-4 max-w-7xl">
           <button
             class="mx-auto px-4 max-w-7xl"
-            onclick={() => addTimelineToCanvas()}
+            on:click={() => addTimelineToCanvas()}
           >
             <Clock size="16" class="mx-auto px-4 max-w-7xl" />
             Timeline
           </button>
           <button
             class="mx-auto px-4 max-w-7xl"
-            onclick={() => addPersonToCanvas()}
+            on:click={() => addPersonToCanvas()}
           >
             <Users size="16" class="mx-auto px-4 max-w-7xl" />
             Person
           </button>
           <button
             class="mx-auto px-4 max-w-7xl"
-            onclick={() => addLocationToCanvas()}
+            on:click={() => addLocationToCanvas()}
           >
             <MapPin size="16" class="mx-auto px-4 max-w-7xl" />
             Location
           </button>
           <button
             class="mx-auto px-4 max-w-7xl"
-            onclick={() => setTool("note")}
+            on:click={() => setTool("note")}
           >
             <FileText size="16" class="mx-auto px-4 max-w-7xl" />
             Note

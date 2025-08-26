@@ -271,7 +271,7 @@ https://svelte.dev/e/store_invalid_scoped_subscription -->
       <h2 class="text-2xl font-bold text-yellow-400">Legal Case Form</h2>
       <button 
         class="yorha-button px-3 py-1 text-sm bg-blue-600 text-white"
-        onclick={requestAIHelp}
+        on:click={requestAIHelp}
       >
         AI Assistant
       </button>
@@ -333,7 +333,7 @@ https://svelte.dev/e/store_invalid_scoped_subscription -->
                   class="hidden"
                 />
                 <button 
-                  onclick={() => fileInput?.click()}
+                  on:click={() => fileInput?.click()}
                   class="yorha-button px-6 py-3 bg-blue-600 text-white"
                 >
                   Select Evidence Files
@@ -361,7 +361,7 @@ https://svelte.dev/e/store_invalid_scoped_subscription -->
               
               {#if $state.matches('evidenceUpload')}
                 <button 
-                  onclick={handleNextStep}
+                  on:click={handleNextStep}
                   disabled={$context.evidenceFiles.length === 0}
                   class="yorha-button px-6 py-2 bg-yellow-400 text-black disabled:opacity-50"
                 >
@@ -442,13 +442,13 @@ https://svelte.dev/e/store_invalid_scoped_subscription -->
               {#if $state.matches('caseDetails')}
                 <div class="flex gap-3">
                   <button 
-                    onclick={handleBackStep}
+                    on:click={handleBackStep}
                     class="yorha-button px-4 py-2 bg-gray-600 text-white"
                   >
                     Back
                   </button>
                   <button 
-                    onclick={handleNextStep}
+                    on:click={handleNextStep}
                     disabled={!caseTitle.trim() || !caseDescription.trim()}
                     class="yorha-button px-6 py-2 bg-yellow-400 text-black disabled:opacity-50"
                   >
@@ -505,13 +505,13 @@ https://svelte.dev/e/store_invalid_scoped_subscription -->
               {#if $state.matches('review')}
                 <div class="flex gap-3">
                   <button 
-                    onclick={handleBackStep}
+                    on:click={handleBackStep}
                     class="yorha-button px-4 py-2 bg-gray-600 text-white"
                   >
                     Back
                   </button>
                   <button 
-                    onclick={handleSubmit}
+                    on:click={handleSubmit}
                     class="yorha-button px-6 py-2 bg-green-600 text-white"
                   >
                     Submit Case
@@ -531,7 +531,7 @@ https://svelte.dev/e/store_invalid_scoped_subscription -->
                   <div class="text-green-400 text-4xl mb-4">✓</div>
                   <p class="text-green-400 text-lg">Case submitted successfully!</p>
                   <button 
-                    onclick={() => send({ type: 'RESET_FORM' })}
+                    on:click={() => send({ type: 'RESET_FORM' })}
                     class="yorha-button px-6 py-2 bg-blue-600 text-white mt-4"
                   >
                     Create New Case
@@ -545,7 +545,7 @@ https://svelte.dev/e/store_invalid_scoped_subscription -->
                   <p class="text-red-400 text-lg">Submission failed</p>
                   <p class="text-gray-400 text-sm">{$context.validationErrors.submit}</p>
                   <button 
-                    onclick={handleBackStep}
+                    on:click={handleBackStep}
                     class="yorha-button px-6 py-2 bg-yellow-400 text-black mt-4"
                   >
                     Try Again
@@ -588,7 +588,7 @@ https://svelte.dev/e/store_invalid_scoped_subscription -->
                   </div>
                   <p class="text-gray-300 text-xs mb-2">{rec.reasoning}</p>
                   <button 
-                    onclick={() => applyAIRecommendation(rec.nextAction)}
+                    on:click={() => applyAIRecommendation(rec.nextAction)}
                     class="yorha-button px-3 py-1 text-xs bg-yellow-400 text-black"
                   >
                     Apply

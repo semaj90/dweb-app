@@ -1,6 +1,5 @@
 <script lang="ts">
   import GPUAcceleratedChat from '$lib/components/GPUAcceleratedChat.svelte';
-  import { $state } from 'svelte';
   import { onMount } from 'svelte';
   
   let systemInfo = $state({

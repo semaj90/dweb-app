@@ -3,21 +3,21 @@
   import { onMount, onDestroy } from 'svelte';
   import { createMachine, interpret, type ActorRefFrom } from 'xstate';
   import { Upload, Check, X, Loader2, Database, Cpu, Cloud, Zap } from 'lucide-svelte';
-  
+
   // Store imports with TypeScript barrel exports
-  import { 
+  import {
     notificationStore,
     enhancedRAGStore,
     evidenceStore,
     lokiStore,
     aiAssistantManager
   } from '$lib/stores';
-  
+
   // Service imports
   import { qdrantService } from '$lib/services/qdrantService';
   import { vectorEmbeddingService } from '$lib/services/vector-embedding-service';
   import { comprehensiveCachingService } from '$lib/services/comprehensive-caching-service';
-  
+
   // Types
   interface Props {
     onUploadComplete?: (doc: any) => void;
@@ -173,13 +173,13 @@
   onMount(async () => {
     uploadMachine = interpret(fileUploadMachine).start();
     uploadMachine.send({ type: 'CHECK_SERVICES' });
-    
+
     try {
       const [ragStatus, systemHealth] = await Promise.all([
         fetch('/api/v1/rag/status').then(r => r.json()).catch(() => ({})),
         fetch('/api/v1/cluster/health').then(r => r.json()).catch(() => ({}))
       ]);
-      
+
       systemStatus = {
         services: {
           postgresql: ragStatus.postgresql || false,
@@ -237,16 +237,16 @@
   }
 
   function handleFiles(newFiles: File[]) {
-    uploadMachine?.send({ 
-      type: 'UPLOAD_FILES', 
-      files: newFiles 
+    uploadMachine?.send({
+      type: 'UPLOAD_FILES',
+      files: newFiles
     });
   }
 
   // Enhanced upload processing with full stack integration
   async function processEnhancedUpload(file: File): Promise<any> {
     const fileId = `${file.name}-${Date.now()}`;
-    
+
     // Initialize comprehensive upload state
     const initialState = {
       status: 'initializing',
@@ -363,7 +363,7 @@
 
     } catch (error) {
       console.error('Enhanced upload error:', error);
-      
+
       const errorState = uploadStates.get(fileId);
       if (errorState) {
         errorState.status = 'error';
@@ -403,10 +403,10 @@
     if (file.size > maxSize) {
       throw new Error(`File too large (max ${Math.round(maxSize / 1024 / 1024)}MB)`);
     }
-    
+
     const allowedTypes = accept.split(',').map(t => t.trim());
     const fileExt = '.' + file.name.split('.').pop()?.toLowerCase();
-    
+
     if (!allowedTypes.includes(fileExt) && !allowedTypes.includes(file.type)) {
       throw new Error(`File type not supported: ${file.type || fileExt}`);
     }
@@ -417,10 +417,10 @@
     formData.append('file', file);
     formData.append('fileId', fileId);
     formData.append('bucket', 'legal-documents');
-    
+
     // Try QUIC first, fallback to gRPC, then JSON
     const protocols = ['quic', 'grpc', 'json'];
-    
+
     for (const protocol of protocols) {
       try {
         const endpoint = `/api/v1/storage/${protocol}/upload`;
@@ -431,7 +431,7 @@
             'X-Upload-Protocol': protocol.toUpperCase()
           }
         });
-        
+
         if (response.ok) {
           return await response.json();
         }
@@ -439,7 +439,7 @@
         console.warn(`${protocol.toUpperCase()} upload failed, trying next protocol:`, error);
       }
     }
-    
+
     throw new Error('All upload protocols failed');
   }
 
@@ -485,7 +485,7 @@
     const formData = new FormData();
     formData.append('file', file);
     formData.append('fileId', fileId);
-    
+
     const response = await fetch('/api/v1/ocr/extract', {
       method: 'POST',
       body: formData
@@ -501,12 +501,12 @@
 
   async function generateEmbeddings(file: File, extractedText: string, fileId: string): Promise<any> {
     const content = extractedText || file.name;
-    
+
     // Use WebGPU if enabled and available
     if (enableWebGPU && systemStatus.services.webgpu) {
       return await generateWebGPUEmbeddings(content, fileId);
     }
-    
+
     // Fallback to Ollama embeddings
     const response = await fetch('/api/v1/ollama/embeddings', {
       method: 'POST',
@@ -581,7 +581,7 @@
 
   async function generateAutoTags(file: File, extractedText: string, fileId: string): Promise<string[]> {
     const content = extractedText || file.name;
-    
+
     const response = await fetch('/api/v1/ai/auto-tags', {
       method: 'POST',
       headers: {
@@ -679,14 +679,14 @@
           <Database class="w-5 h-5 text-blue-600" />
           Full-Stack System Status
         </h3>
-        <button 
+        <button
           class="text-sm bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-full border border-blue-200 transition-colors"
           onclick={() => uploadMachine?.send({ type: 'CHECK_SERVICES' })}
         >
           Refresh Status
         </button>
       </div>
-      
+
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         {#each Object.entries(systemStatus.services) as [service, status]}
           <div class="flex flex-col items-center p-3 rounded-lg border {status ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}">
@@ -786,7 +786,7 @@
         </h3>
         <span class="text-sm text-gray-500">{uploadStates.size} file{uploadStates.size !== 1 ? 's' : ''}</span>
       </div>
-      
+
       {#each Array.from(uploadStates.entries()) as [fileId, state]}
         <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
           <!-- File Header -->
@@ -865,7 +865,7 @@
               <span class="text-gray-600">{state.progress || 0}%</span>
             </div>
             <div class="w-full bg-gray-200 rounded-full h-2">
-              <div class="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-300" 
+              <div class="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-300"
                    style="width: {state.progress || 0}%"></div>
             </div>
           </div>
@@ -883,7 +883,7 @@
           <!-- Results Display -->
           {#if state.results}
             <div class="border-t pt-3">
-              <button 
+              <button
                 class="text-sm text-blue-600 hover:text-blue-700 font-medium"
                 onclick={() => {
                   const detailsEl = document.getElementById(`details-${fileId}`);

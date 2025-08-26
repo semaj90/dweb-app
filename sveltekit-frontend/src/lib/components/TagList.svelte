@@ -5,12 +5,12 @@
   import { createEventDispatcher } from "svelte";
   import { scale } from "svelte/transition";
 
-  export let tags: string[] = [];
-  export let availableTags: string[] = [];
-  export let placeholder = "Add tags...";
-  export let maxTags = 10;
-  export let allowCustomTags = true;
-  export let readonly = false;
+  let { tags = $bindable() } = $props(); // string[] = [];
+  let { availableTags = $bindable() } = $props(); // string[] = [];
+  let { placeholder = $bindable() } = $props(); // "Add tags...";
+  let { maxTags = $bindable() } = $props(); // 10;
+  let { allowCustomTags = $bindable() } = $props(); // true;
+  let { readonly = $bindable() } = $props(); // false;
 
   const dispatch = createEventDispatcher<{
     change: string[];
@@ -148,7 +148,7 @@
   }
 </script>
 
-<svelte:window onclick={handleClickOutside} />
+<svelte:window on:click={handleClickOutside} />
 
 <div class="mx-auto px-4 max-w-7xl" class:readonly>
   <div class="mx-auto px-4 max-w-7xl">
@@ -160,7 +160,7 @@
           <button
             type="button"
             class="mx-auto px-4 max-w-7xl"
-            onclick={() => removeTag(tag)}
+            on:click={() => removeTag(tag)}
             aria-label="Remove {tag} tag"
           >
             <X size={12} />
@@ -190,7 +190,7 @@
                 type="button"
                 class="mx-auto px-4 max-w-7xl"
                 class:active={index === activeIndex}
-                onclick={() => handleSuggestionClick(suggestion)}
+                on:click={() => handleSuggestionClick(suggestion)}
                 role="option"
                 aria-selected={index === activeIndex}
               >
@@ -207,7 +207,7 @@
       <button
         type="button"
         class="mx-auto px-4 max-w-7xl"
-        onclick={() => addTag(inputValue)}
+        on:click={() => addTag(inputValue)}
         aria-label="Add custom tag: {inputValue}"
       >
         <Plus size={14} />

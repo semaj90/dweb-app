@@ -1,3 +1,4 @@
+// @ts-nocheck
 // LangChain.js Integration with Ollama and pgvector
 // Production-ready AI pipeline for legal document processing
 

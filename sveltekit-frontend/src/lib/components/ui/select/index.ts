@@ -3,13 +3,12 @@ export { default as Select } from "./Select.svelte";
 export { default as SelectValue } from "./SelectValue.svelte";
 
 // Re-export common Bits UI components under expected names
-import { Select as BitsSelect } from "bits-ui";
-export const SelectContent = BitsSelect.Content;
-export const SelectItem = BitsSelect.Item;
-export const SelectTrigger = BitsSelect.Trigger;
-export const SelectPortal = BitsSelect.Content; // Portal is typically part of Content in Bits UI v2
-export const SelectGroup = BitsSelect.Group || BitsSelect.Content; // Group may be part of Content in v2
-export const SelectViewport = BitsSelect.Content; // Viewport is typically part of Content
+import { Select } from "bits-ui";
+export const SelectContent = Select.Content;
+export const SelectItem = Select.Item;
+export const SelectTrigger = Select.Trigger;
+// Note: Portal and Viewport may not exist in bits-ui Select
+export const SelectGroup = Select.Group;
 
 // TypeScript interface definition
 export interface SelectOption {

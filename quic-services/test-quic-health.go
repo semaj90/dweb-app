@@ -1,3 +1,6 @@
+//go:build quictests
+// +build quictests
+
 package main
 
 import (
@@ -33,7 +36,7 @@ func main() {
 
 	for _, endpoint := range endpoints {
 		fmt.Printf("\n🔍 Testing: %s\n", endpoint)
-		
+
 		resp, err := client.Get(endpoint)
 		if err != nil {
 			fmt.Printf("❌ Error: %v\n", err)

@@ -3,7 +3,6 @@
   Tests GPU accelerated authentication, XState integration, and Context7 documentation
 -->
 <script lang="ts">
-  import { $state } from 'svelte';
   import { onMount } from 'svelte';
   import { authStore } from '$lib/stores/auth-store';
   import { mcpGPUOrchestrator } from '$lib/services/mcp-gpu-orchestrator';
@@ -295,7 +294,7 @@
 
       <div class="flex gap-2">
         <Button 
-          onclick={runInitialTests} 
+          on:click={runInitialTests} 
           disabled={testRunning}
           variant="outline"
         >
@@ -336,7 +335,7 @@
           </Card.Header>
           <Card.Content class="space-y-4">
             <Button 
-              onclick={() => populateTestData('login')}
+              on:click={() => populateTestData('login')}
               variant="outline"
               size="sm"
             >
@@ -364,7 +363,7 @@
           </Card.Header>
           <Card.Content class="space-y-4">
             <Button 
-              onclick={() => populateTestData('register')}
+              on:click={() => populateTestData('register')}
               variant="outline"
               size="sm"
             >

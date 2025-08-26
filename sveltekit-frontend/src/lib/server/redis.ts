@@ -1,14 +1,26 @@
 
 import { createClient } from "redis";
-import { Redis } from "ioredis";
+import IORedis from "ioredis";
 
 let redisClient: any = null;
 
 // IORedis connection for high-performance operations
-export const REDIS_CONNECTION = new Redis({
+export const REDIS_CONNECTION = new IORedis({
   host: '127.0.0.1',
-  port: 6379
+  port: 6379,
+  retryDelayOnFailover: 100,
+  maxRetriesPerRequest: 3
 });
+
+// Redis client factory for backward compatibility
+export const createRedisInstance = () => {
+  return new IORedis({
+    host: '127.0.0.1',
+    port: 6379,
+    retryDelayOnFailover: 100,
+    maxRetriesPerRequest: 3
+  });
+};
 
 export async function createRedisClient() {
   if (redisClient) {

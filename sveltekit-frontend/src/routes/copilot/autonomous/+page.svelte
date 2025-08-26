@@ -3,7 +3,6 @@ Autonomous Engineering Page
 Comprehensive demo of Copilot self-prompting with multi-agent AI orchestration
 -->
 <script lang="ts">
-  import { $state } from 'svelte';
   import { onMount } from 'svelte';
   import { Button } from '$lib/components/ui/button';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
@@ -267,7 +266,7 @@ export function activate(context: vscode.ExtensionContext) {
             <Settings class="h-5 w-5" />
             System Architecture
           </span>
-          <Button variant="ghost" size="sm" onclick={() => showArchitecture = !showArchitecture}>
+          <Button variant="ghost" size="sm" on:click={() => showArchitecture = !showArchitecture}>
             {showArchitecture ? 'Hide' : 'Show'} Details
           </Button>
         </CardTitle>
@@ -315,7 +314,7 @@ export function activate(context: vscode.ExtensionContext) {
             <Code class="h-5 w-5" />
             VS Code Extension Integration
           </span>
-          <Button variant="ghost" size="sm" onclick={() => showIntegration = !showIntegration}>
+          <Button variant="ghost" size="sm" on:click={() => showIntegration = !showIntegration}>
             {showIntegration ? 'Hide' : 'Show'} Examples
           </Button>
         </CardTitle>

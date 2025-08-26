@@ -1,0 +1,19 @@
+# requirements.txt for Legal AI Embedding Microservice
+fastapi>=0.104.1
+uvicorn[standard]>=0.24.0
+pydantic>=2.5.0
+
+# Machine Learning & Embeddings
+torch>=2.1.0
+sentence-transformers>=2.2.2
+numpy>=1.24.0
+transformers>=4.35.0
+
+# Database connectivity
+psycopg2-binary>=2.9.7
+qdrant-client>=1.6.0
+
+# HTTP client for external services
+httpx>=0.25.0
+
+# Optional: GPU acceleration (install with pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118)

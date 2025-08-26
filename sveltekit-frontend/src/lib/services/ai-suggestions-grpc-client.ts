@@ -1,17 +1,26 @@
-// Server-side gRPC imports (with browser fallback)
-let credentials: any;
-let ServiceError: any;
-let ClientOptions: any;
+// gRPC imports with proper error handling
+import { browser } from '$app/environment';
 
-try {
-  // Try to import gRPC for server-side use
-  const grpcModule = await import('@grpc/grpc-js');
-  credentials = grpcModule.credentials;
-  ServiceError = grpcModule.ServiceError;
-  ClientOptions = grpcModule.ClientOptions;
-} catch (error) {
-  // Browser fallback - define interfaces only
-  console.warn('gRPC module not available in browser, using HTTP fallback');
+// Define types for browser compatibility
+export interface ServiceError extends Error {
+  code?: number;
+  details?: string;
+  metadata?: any;
+}
+
+export interface ClientOptions {
+  [key: string]: any;
+}
+
+// Server-side gRPC imports (with browser fallback)
+let grpc: any = null;
+
+if (!browser) {
+  try {
+    grpc = await import('@grpc/grpc-js');
+  } catch (error) {
+    console.warn('gRPC module not available, using fallback');
+  }
 }
 
 export interface ClientOptions {

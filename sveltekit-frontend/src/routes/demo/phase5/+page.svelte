@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { $state } from 'svelte';
   import { Button } from '$lib/components/ui/button';
   import Badge from '$lib/components/ui/Badge.svelte';
   import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '$lib/components/ui/card';
@@ -294,7 +293,7 @@
           <CardContent>
             <Button 
               class="w-full" 
-              onclick={() => activeTab = 'vector-demo'}
+              on:click={() => activeTab = 'vector-demo'}
             >
               <Search class="h-4 w-4 mr-2" />
               Launch Vector Demo
@@ -314,7 +313,7 @@
             <Button 
               variant="outline" 
               class="w-full"
-              onclick={() => activeTab = 'fabric-canvas'}
+              on:click={() => activeTab = 'fabric-canvas'}
             >
               <Canvas class="h-4 w-4 mr-2" />
               Open Canvas

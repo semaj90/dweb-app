@@ -45,7 +45,7 @@ export interface AuthState {
 }
 
 // Enhanced reactive auth store using Svelte stores + XState
-import { writable } from 'svelte/store';
+import { writable, type Writable } from 'svelte/store';
 
 const authState = writable<AuthState>({
   user: null,

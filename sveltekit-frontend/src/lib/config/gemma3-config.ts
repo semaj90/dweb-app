@@ -51,8 +51,8 @@ export const GEMMA3_MODELS: Gemma3ModelConfig[] = [
 {user_input}<end_of_turn>
 <start_of_turn>model
 `,
-    ollamaModel: "gemma3-legal",
-    fallbackModel: "gemma3:12b",
+    ollamaModel: "gemma3:legal-latest",
+    fallbackModel: "gemma3:legal-latest",
     format: "gguf",
     size: "8B",
   },

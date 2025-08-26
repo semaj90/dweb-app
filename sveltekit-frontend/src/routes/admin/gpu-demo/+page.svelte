@@ -2,7 +2,6 @@
 <!-- Real-time GPU-accelerated legal AI visualizations -->
 
 <script lang="ts">
-  import { $state } from 'svelte';
   import { onMount, onDestroy } from 'svelte';
   import { Button } from '$lib/components/ui/button';
   import { Card } from '$lib/components/ui/card';
@@ -610,7 +609,7 @@
         <!-- Visualization Controls -->
         <div class="grid grid-cols-2 gap-2">
           <Button
-            onclick={() => startVisualization('attentionHeatmap')}
+            on:click={() => startVisualization('attentionHeatmap')}
             disabled={!isInitialized}
             variant={activeVisualization === 'attentionHeatmap' ? 'default' : 'outline'}
             class="text-sm">
@@ -618,7 +617,7 @@
           </Button>
 
           <Button
-            onclick={() => startVisualization('documentNetwork')}
+            on:click={() => startVisualization('documentNetwork')}
             disabled={!isInitialized}
             variant={activeVisualization === 'documentNetwork' ? 'default' : 'outline'}
             class="text-sm">
@@ -626,7 +625,7 @@
           </Button>
 
           <Button
-            onclick={() => startVisualization('evidenceTimeline')}
+            on:click={() => startVisualization('evidenceTimeline')}
             disabled={!isInitialized}
             variant={activeVisualization === 'evidenceTimeline' ? 'default' : 'outline'}
             class="text-sm">
@@ -634,7 +633,7 @@
           </Button>
 
           <Button
-            onclick={() => startVisualization('textFlow')}
+            on:click={() => startVisualization('textFlow')}
             disabled={!isInitialized}
             variant={activeVisualization === 'textFlow' ? 'default' : 'outline'}
             class="text-sm">
@@ -645,13 +644,13 @@
         <!-- Render Controls -->
         <div class="flex gap-2">
           {#if isRendering}
-            <Button onclick={stopVisualization} class="bg-red-600 hover:bg-red-700">
+            <Button on:click={stopVisualization} class="bg-red-600 hover:bg-red-700">
               Stop Rendering
             </Button>
           {/if}
 
           <Button
-            onclick={executeGPUWorkload}
+            on:click={executeGPUWorkload}
             disabled={!isInitialized}
             variant="outline"
             class="text-white border-slate-600 hover:bg-slate-700">

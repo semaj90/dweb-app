@@ -14,10 +14,10 @@
   import { tick } from "svelte";
   import { fly } from "svelte/transition";
 
-  export let triggerText = "#";
-  export let placeholder = "Type a command...";
-  export let onInsert: (text: string) => void = () => {};
-  export let textareaElement: HTMLTextAreaElement | undefined = undefined;
+  let { triggerText = $bindable() } = $props(); // "#";
+  let { placeholder = $bindable() } = $props(); // "Type a command...";
+  let { onInsert = $bindable() } = $props(); // (text: string) => void = () => {};
+  let { textareaElement = $bindable() } = $props(); // HTMLTextAreaElement | undefined = undefined;
 
   // Command menu state
   let searchQuery = "";
@@ -244,7 +244,7 @@
             <button
               class="container mx-auto px-4"
               class:selected={globalIndex === selectedIndex}
-              onclick={() => executeCommand(command)}
+              on:click={() => executeCommand(command)}
               onmouseenter={() => (selectedIndex = globalIndex)}
             >
               <svelte:component this={command.icon} size={16} />

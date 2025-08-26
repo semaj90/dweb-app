@@ -291,7 +291,7 @@ ${caseId ? `I'm ready to assist with Case ${caseId}.` : 'Select a case to get st
             <Button 
               variant="outline" 
               size="sm"
-              onclick={() => useSelfPrompt(suggestion)}
+              on:click={() => useSelfPrompt(suggestion)}
               disabled={isTyping}
             >
               {suggestion}
@@ -404,7 +404,7 @@ ${caseId ? `I'm ready to assist with Case ${caseId}.` : 'Select a case to get st
           />
         </div>
         <Button 
-          onclick={sendMessage}
+          on:click={sendMessage}
           disabled={isTyping || !currentMessage.trim()}
         >
           <Send class="w-4 h-4" />

@@ -9,7 +9,7 @@
   import Card from '$lib/components/ui/Card.svelte';
   import Input from '$lib/components/ui/Input.svelte';
 
-  export let citations: Citation[] = [];
+  let { citations = $bindable() } = $props(); // Citation[] = [];
 
   const dispatch = createEventDispatcher();
 
@@ -107,7 +107,7 @@
               <Button
                 variant="ghost"
                 size="sm"
-                onclick={() => toggleFavorite(citation)}
+                on:click={() => toggleFavorite(citation)}
                 class="container mx-auto px-4"
               >
                 <Star class="container mx-auto px-4" />
@@ -116,7 +116,7 @@
               <Button
                 variant="ghost"
                 size="sm"
-                onclick={() => copyCitation(citation)}
+                on:click={() => copyCitation(citation)}
                 title="Copy citation"
               >
                 <Copy class="container mx-auto px-4" />
@@ -125,7 +125,7 @@
               <Button
                 variant="ghost"
                 size="sm"
-                onclick={() => deleteCitation(citation)}
+                on:click={() => deleteCitation(citation)}
                 title="Delete citation"
                 class="container mx-auto px-4"
               >
@@ -197,7 +197,7 @@
           <Button
             variant="secondary"
             size="sm"
-            onclick={() => {
+            on:click={() => {
               searchQuery = "";
               selectedCategory = "all";
             "

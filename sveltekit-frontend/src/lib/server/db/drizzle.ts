@@ -22,7 +22,7 @@ const connectionString =
 
 // Create pool - use mock during build or when DATABASE_URL indicates build environment
 const isBuilding =
-  process.env.NODE_ENV === "build" ||
+  process.env.NODE_ENV === "production" ||
   process.env.DATABASE_URL?.includes("build");
 
 export const pool = isBuilding

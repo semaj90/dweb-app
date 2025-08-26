@@ -31,7 +31,7 @@ async function getCachedHealthyLlmEndpoint(
     return cachedLlmEndpoint;
   }
   try {
-    const endpoint = await getHealthyLlmEndpoint();
+    const endpoint = await getHealthyLlmEndpoint() || 'http://localhost:11434';
     cachedLlmEndpoint = endpoint;
     endpointCacheTime = now;
     return endpoint;
@@ -41,10 +41,21 @@ async function getCachedHealthyLlmEndpoint(
   }
 }
 
+// Import missing dependencies
+import { getHealthyLlmEndpoint, CLIENT_ENV } from './utils/environment-service.js';
+
+// LLM Provider type definition
+interface LLMProvider {
+  name: string;
+  endpoint: string;
+  models: string[];
+  healthy: boolean;
+}
+
 // Client-safe configuration
 const AI_CONFIG = {
-  OLLAMA_URL: CLIENT_ENV.OLLAMA_URL,
-  OLLAMA_MODEL: "llama2",
+  OLLAMA_URL: 'http://localhost:11434',
+  OLLAMA_MODEL: "gemma3-legal",
   // Note: API keys should be handled server-side only
   OPENAI_API_KEY: null, // Will be passed from server
 } as const;

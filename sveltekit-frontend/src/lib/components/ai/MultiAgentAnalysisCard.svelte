@@ -10,7 +10,7 @@
   import { Button } from '$lib/components/ui/button';
   import { Separator } from '$lib/components/ui/separator/Separator.svelte';
   
-  export let analysisData: {
+  let { analysisData = $bindable() } = $props(); // {
     evidenceAnalysis?: unknown;
     personsData?: unknown;
     caseSynthesis?: unknown;
@@ -229,7 +229,7 @@
       <Button 
         variant="outline" 
         size="sm"
-        onclick={() => showDetails = !showDetails}
+        on:click={() => showDetails = !showDetails}
       >
         {showDetails ? 'Hide' : 'Show'} Full Analysis
       </Button>

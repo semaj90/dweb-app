@@ -15,7 +15,7 @@
   import type { PageData } from './$types';
   import type { CaseForm } from '$lib/schemas/forms';
 
-  export let data: PageData;
+  let { data = $bindable() } = $props(); // PageData;
   
   let isSubmitting = false;
   let showSuccess = false;
@@ -108,7 +108,7 @@
         <Button 
           variant="ghost" 
           size="sm"
-          onclick={() => goto('/cases')}
+          on:click={() => goto('/cases')}
           class="flex items-center space-x-2"
         >
           <ArrowLeft class="h-4 w-4" />
@@ -135,7 +135,7 @@
         {#if !data.editMode}
           <Button 
             variant="outline" 
-            onclick={() => goto('/cases/templates')}
+            on:click={() => goto('/cases/templates')}
             class="flex items-center space-x-2"
           >
             <Save class="h-4 w-4" />

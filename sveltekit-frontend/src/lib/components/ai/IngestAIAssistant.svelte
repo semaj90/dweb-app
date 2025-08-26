@@ -258,7 +258,7 @@
     <Alert variant="destructive" class="mb-4">
       <AlertDescription class="flex items-center justify-between">
         <span>{error.message}</span>
-        <Button variant="ghost" size="sm" onclick={() => dismissError(error.id)}>
+        <Button variant="ghost" size="sm" on:click={() => dismissError(error.id)}>
           ✕
         </Button>
       </AlertDescription>
@@ -317,7 +317,7 @@
               <Button
                 variant={selectedDocumentType === type.value ? 'default' : 'outline'}
                 size="sm"
-                onclick={() => selectedDocumentType = type.value}
+                on:click={() => selectedDocumentType = type.value}
                 disabled={$isProcessing}
                 class="justify-start"
               >
@@ -341,7 +341,7 @@
         
         <div class="flex space-x-2">
           <Button
-            onclick={ingestDocument}
+            on:click={ingestDocument}
             disabled={!$canIngest || $isProcessing}
             class="flex-1"
           >
@@ -350,7 +350,7 @@
           
           <Button
             variant="outline"
-            onclick={addToBatch}
+            on:click={addToBatch}
             disabled={!documentTitle.trim() || !documentContent.trim() || $isProcessing}
           >
             ➕ Add to Batch
@@ -388,7 +388,7 @@
                 <Button
                   variant="ghost"
                   size="sm"
-                  onclick={() => removeFromBatch(doc.id)}
+                  on:click={() => removeFromBatch(doc.id)}
                 >
                   ✕
                 </Button>
@@ -398,7 +398,7 @@
           
           <div class="space-y-2">
             <Button
-              onclick={processBatch}
+              on:click={processBatch}
               disabled={$isProcessing}
               class="w-full"
             >
@@ -406,7 +406,7 @@
             </Button>
             <Button
               variant="outline"
-              onclick={() => batchDocuments.set([])}
+              on:click={() => batchDocuments.set([])}
               disabled={$isProcessing}
               size="sm"
               class="w-full"

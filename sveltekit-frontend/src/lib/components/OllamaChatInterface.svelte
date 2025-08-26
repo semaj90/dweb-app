@@ -10,7 +10,7 @@
     CardContent,
     CardHeader,
     CardTitle,
-  } from "$lib/components/ui/Card";
+  } from "$lib/components/ui/card";
   import { Input } from "$lib/components/ui/input";
   import { ScrollArea } from "$lib/components/ui/scroll-area";
   import type { ChatRequest, ChatResponse } from "$routes/api/ai/chat/+server";
@@ -316,7 +316,7 @@
           <Button
             variant="ghost"
             size="sm"
-            onclick={() => (showSettings = !showSettings)}
+            on:click={() => (showSettings = !showSettings)}
           >
             <Settings class="w-4 h-4" />
           </Button>
@@ -325,7 +325,7 @@
           <Button
             variant="ghost"
             size="sm"
-            onclick={checkOllamaHealth}
+            on:click={checkOllamaHealth}
             disabled={isLoading}
           >
             <RefreshCw class="w-4 h-4" />
@@ -450,7 +450,7 @@
                   <Button
                     variant="outline"
                     size="sm"
-                    onclick={() => selectSuggestion(suggestion)}
+                    on:click={() => selectSuggestion(suggestion)}
                     class="text-xs"
                   >
                     {suggestion}
@@ -500,7 +500,7 @@
     </div>
 
     <Button
-      onclick={sendMessage}
+      on:click={sendMessage}
       disabled={!canSend || ollamaStatus !== "healthy"}
       class="px-3"
       data-testid="send-button"
@@ -515,7 +515,7 @@
     <!-- Additional Actions -->
     <Button
       variant="outline"
-      onclick={clearChat}
+      on:click={clearChat}
       disabled={chatHistory.length === 0}
     >
       Clear
@@ -523,7 +523,7 @@
 
     <Button
       variant="outline"
-      onclick={exportChat}
+      on:click={exportChat}
       disabled={chatHistory.length === 0}
     >
       Export

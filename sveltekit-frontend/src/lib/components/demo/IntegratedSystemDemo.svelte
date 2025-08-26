@@ -2,7 +2,6 @@
   // Integrated System Demo - All XState Machines Working Together
   // Demonstrates authentication, session management, AI assistant, and production services
   import { onMount } from 'svelte';
-  import { $state, $derived } from 'svelte';
   import { Button } from '$lib/components/ui/button/index.js';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card/index.js';
   import { Badge } from '$lib/components/ui/badge/index.js';
@@ -45,7 +44,7 @@
     overallHealth: 'unknown' as 'healthy' | 'partial' | 'down' | 'unknown'
   });
   let serviceMetrics = $state({
-    lastUpdate: new Date(),
+    lastUpdate: new Date();,
     authUptime: 0,
     sessionUptime: 0,
     aiResponseTime: 0,
@@ -357,13 +356,13 @@
             <div class="space-y-2">
               <h4 class="font-semibold">🎯 Demo Actions:</h4>
               <div class="space-y-2">
-                <Button onclick={demoLogin} disabled={authenticatedUser !== null}>
+                <Button on:click={demoLogin} disabled={authenticatedUser !== null}>
                   Demo Login
                 </Button>
-                <Button onclick={demoAIInteraction} disabled={!authenticatedUser}>
+                <Button on:click={demoAIInteraction} disabled={!authenticatedUser}>
                   Test AI Assistant
                 </Button>
-                <Button onclick={demoLogout} disabled={!authenticatedUser} variant="outline">
+                <Button on:click={demoLogout} disabled={!authenticatedUser} variant="outline">
                   Demo Logout
                 </Button>
               </div>
@@ -385,7 +384,7 @@
               <p class="text-gray-600">
                 Demonstrate the modern authentication system with Svelte 5 runes and XState integration.
               </p>
-              <Button onclick={() => showAuthDialog = true}>
+              <Button on:click={() => showAuthDialog = true}>
                 Open Authentication Dialog
               </Button>
             </div>
@@ -399,7 +398,7 @@
                   <p><strong>Status:</strong> {authenticatedUser.isActive ? 'Active' : 'Inactive'}</p>
                 </div>
               </div>
-              <Button onclick={demoLogout} variant="outline">
+              <Button on:click={demoLogout} variant="outline">
                 Logout
               </Button>
             </div>
@@ -439,13 +438,13 @@
               
               <div class="flex gap-2">
                 <Button 
-                  onclick={() => sessionManager.performSecurityCheck()} 
+                  on:click={() => sessionManager.performSecurityCheck()} 
                   size="sm"
                 >
                   Security Check
                 </Button>
                 <Button 
-                  onclick={() => sessionManager.refreshSession()} 
+                  on:click={() => sessionManager.refreshSession()} 
                   size="sm" 
                   variant="outline"
                 >
@@ -512,7 +511,7 @@
               </div>
             </div>
             
-            <Button onclick={checkSystemHealth}>
+            <Button on:click={checkSystemHealth}>
               Refresh System Health
             </Button>
           </div>

@@ -1,12 +1,10 @@
 <script lang="ts">
-  import { $props } from 'svelte';
-
   import { Select } from 'bits-ui';
 
   interface Props {
     value?: string;
     onValueChange?: (value: string) => void;
-    children?: unknown;
+    children?: any;
   }
 
   let { value = $bindable(), onValueChange, children, ...restProps }: Props = $props();

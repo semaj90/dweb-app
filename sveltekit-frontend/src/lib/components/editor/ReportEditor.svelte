@@ -161,7 +161,7 @@ https://svelte.dev/e/js_parse_error -->
   };
 
   // Keyboard shortcuts
-  const handleKeydown = (e: KeyboardEvent) => {
+  const handleKeydown = (e: CustomEvent<any>) => {
     if (e.ctrlKey || e.metaKey) {
       switch (e.key) {
         case "s":
@@ -213,7 +213,7 @@ https://svelte.dev/e/js_parse_error -->
           <div>
             <h3>Evidence Library</h3>
             <button
-              onclick={() => handleAddNewEvidence()}
+              on:click={() => handleAddNewEvidence()}
               title="Add new evidence"
             >
               <Plus size={16} />
@@ -304,7 +304,7 @@ https://svelte.dev/e/js_parse_error -->
         <div>
           {#if !$reportUI.sidebarOpen}
             <button
-              onclick={() => toggleSidebar()}
+              on:click={() => toggleSidebar()}
               title="Show sidebar"
             >
               <PanelLeftOpen size={20} />
@@ -321,7 +321,7 @@ https://svelte.dev/e/js_parse_error -->
 
         <div>
           <button
-            onclick={() => switchLayout()}
+            on:click={() => switchLayout()}
             title="Switch layout ({$report.settings.layout})"
           >
             {#if $report.settings.layout === "single"}
@@ -334,7 +334,7 @@ https://svelte.dev/e/js_parse_error -->
           </button>
 
           <button
-            onclick={() => toggleFullscreen()}
+            on:click={() => toggleFullscreen()}
             title="Toggle fullscreen"
           >
             {#if $reportUI.fullscreen}
@@ -345,7 +345,7 @@ https://svelte.dev/e/js_parse_error -->
           </button>
 
           <button
-            onclick={() => (showSettingsModal = true)}
+            on:click={() => (showSettingsModal = true)}
             title="Settings"
           >
             <Settings size={18} />
@@ -367,7 +367,7 @@ https://svelte.dev/e/js_parse_error -->
       >
         <div class="panel-header"></div>
           <h3>Evidence</h3>
-          <button class="add-evidence-btn" onclick={() => handleAddNewEvidence()}>
+          <button class="add-evidence-btn" on:click={() => handleAddNewEvidence()}>
             <Plus size={16} />
           </button>
         </div>

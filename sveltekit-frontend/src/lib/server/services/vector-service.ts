@@ -104,7 +104,7 @@ export class VectorService {
       metadata: {
         type: "evidence",
         evidenceId: evidence.evidenceId || evidence.id,
-        ...evidence.metadata,
+        ...(evidence.metadata as Record<string, any> || {}),
       },
     });
   }
@@ -128,7 +128,7 @@ export class VectorService {
       metadata: {
         type: "case",
         caseId: data.caseId,
-        ...data.metadata,
+        ...(data.metadata as Record<string, any> || {}),
       },
     });
   }

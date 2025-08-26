@@ -12,11 +12,11 @@
   } from "lucide-svelte";
   import { createEventDispatcher } from "svelte";
 
-  export let caseId: string | undefined = undefined;
+  let { caseId = $bindable() } = $props(); // string | undefined = undefined;
   export const evidenceIds: string[] = [];
-  export let placeholder = "Ask AI about this case...";
-  export let maxHeight = "400px";
-  export let showReferences = true;
+  let { placeholder = $bindable() } = $props(); // "Ask AI about this case...";
+  let { maxHeight = $bindable() } = $props(); // "400px";
+  let { showReferences = $bindable() } = $props(); // true;
   export const enableVoiceInput = false;
 
   const dispatch = createEventDispatcher();
@@ -108,14 +108,14 @@ Would you like me to elaborate on any of these aspects?`,
       <div class="container mx-auto px-4">
         <button
           class="container mx-auto px-4"
-          onclick={() => (showSettings = !showSettings)}
+          on:click={() => (showSettings = !showSettings)}
           title="Settings"
         >
           <Settings class="container mx-auto px-4" />
         </button>
         <button
           class="container mx-auto px-4"
-          onclick={() => clearMessages()}
+          on:click={() => clearMessages()}
           title="Clear conversation"
         >
           <Trash2 class="container mx-auto px-4" />
@@ -137,7 +137,7 @@ Would you like me to elaborate on any of these aspects?`,
               {#each message.references as reference}
                 <button
                   class="container mx-auto px-4"
-                  onclick={() => handleReferenceClick(reference)}
+                  on:click={() => handleReferenceClick(reference)}
                 >
                   <Quote class="container mx-auto px-4" />
                   <span class="container mx-auto px-4">{reference.title}</span>
@@ -185,7 +185,7 @@ Would you like me to elaborate on any of these aspects?`,
     <div class="container mx-auto px-4">
       <div class="container mx-auto px-4">
         <h4 class="container mx-auto px-4">AI Assistant Settings</h4>
-        <button class="container mx-auto px-4" onclick={() => (showSettings = false)}
+        <button class="container mx-auto px-4" on:click={() => (showSettings = false)}
           >×</button
         >
       </div>
@@ -244,7 +244,7 @@ Would you like me to elaborate on any of these aspects?`,
   {#if showCitationDialog}
     <div
       class="container mx-auto px-4"
-      onclick={() => (showCitationDialog = false)}
+      on:click={() => (showCitationDialog = false)}
       onkeydown={(e) => {
         if (e.key === "Escape") {
           showCitationDialog = false;
@@ -269,12 +269,12 @@ Would you like me to elaborate on any of these aspects?`,
           </div>
 
           <div class="container mx-auto px-4">
-            <button class="container mx-auto px-4" onclick={() => insertCitation()}>
+            <button class="container mx-auto px-4" on:click={() => insertCitation()}>
               Insert Citation
             </button>
             <button
               class="container mx-auto px-4"
-              onclick={() => navigator.clipboard.writeText(selectedCitation)}
+              on:click={() => navigator.clipboard.writeText(selectedCitation)}
             >
               Copy to Clipboard
             </button>
@@ -284,7 +284,7 @@ Would you like me to elaborate on any of these aspects?`,
         <div class="container mx-auto px-4">
           <button
             class="container mx-auto px-4"
-            onclick={() => (showCitationDialog = false)}
+            on:click={() => (showCitationDialog = false)}
           >
             Close
           </button>

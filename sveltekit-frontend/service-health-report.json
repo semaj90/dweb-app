@@ -1,0 +1,340 @@
+{
+  "timestamp": "2025-08-26T03:45:21.342Z",
+  "goErrors": true,
+  "redisSetup": true,
+  "servicesStarted": 7,
+  "totalServices": 31,
+  "healthResults": [
+    {
+      "name": "enhanced-rag",
+      "port": 8094,
+      "category": "core",
+      "protocols": [
+        "HTTP",
+        "gRPC",
+        "QUIC",
+        "WebSocket"
+      ],
+      "status": "running"
+    },
+    {
+      "name": "upload-service",
+      "port": 8093,
+      "category": "core",
+      "protocols": [
+        "HTTP"
+      ],
+      "status": "running"
+    },
+    {
+      "name": "simple-vector-service",
+      "port": 8095,
+      "category": "core",
+      "protocols": [
+        "HTTP",
+        "WebSocket"
+      ],
+      "status": "running"
+    },
+    {
+      "name": "grpc-server",
+      "port": 50051,
+      "category": "core",
+      "protocols": [
+        "gRPC"
+      ],
+      "status": "running"
+    },
+    {
+      "name": "rag-kratos",
+      "port": 50052,
+      "category": "core",
+      "protocols": [
+        "gRPC"
+      ],
+      "status": "stopped"
+    },
+    {
+      "name": "cluster-http",
+      "port": 8213,
+      "category": "core",
+      "protocols": [
+        "HTTP"
+      ],
+      "status": "stopped"
+    },
+    {
+      "name": "xstate-manager",
+      "port": 8212,
+      "category": "core",
+      "protocols": [
+        "HTTP"
+      ],
+      "status": "stopped"
+    },
+    {
+      "name": "gpu-indexer-service",
+      "port": 8220,
+      "category": "core",
+      "protocols": [
+        "HTTP"
+      ],
+      "status": "stopped"
+    },
+    {
+      "name": "cuda-ai-service",
+      "port": 8096,
+      "category": "performance",
+      "protocols": [
+        "HTTP"
+      ],
+      "status": "running"
+    },
+    {
+      "name": "advanced-cuda-service",
+      "port": 8097,
+      "category": "performance",
+      "protocols": [
+        "HTTP"
+      ],
+      "status": "stopped"
+    },
+    {
+      "name": "gpu-orchestrator-service",
+      "port": 8225,
+      "category": "performance",
+      "protocols": [
+        "HTTP"
+      ],
+      "status": "stopped"
+    },
+    {
+      "name": "load-balancer",
+      "port": 8224,
+      "category": "performance",
+      "protocols": [
+        "HTTP"
+      ],
+      "status": "stopped"
+    },
+    {
+      "name": "recommendation-service",
+      "port": 8223,
+      "category": "performance",
+      "protocols": [
+        "HTTP"
+      ],
+      "status": "stopped"
+    },
+    {
+      "name": "context7-error-pipeline",
+      "port": 8219,
+      "category": "performance",
+      "protocols": [
+        "HTTP"
+      ],
+      "status": "stopped"
+    },
+    {
+      "name": "simd-health",
+      "port": 8217,
+      "category": "performance",
+      "protocols": [
+        "HTTP"
+      ],
+      "status": "stopped"
+    },
+    {
+      "name": "simd-parser",
+      "port": 8218,
+      "category": "performance",
+      "protocols": [
+        "HTTP"
+      ],
+      "status": "stopped"
+    },
+    {
+      "name": "gin-upload",
+      "port": 8207,
+      "category": "processing",
+      "protocols": [
+        "HTTP"
+      ],
+      "status": "stopped"
+    },
+    {
+      "name": "summarizer-service",
+      "port": 8209,
+      "category": "processing",
+      "protocols": [
+        "HTTP"
+      ],
+      "status": "stopped"
+    },
+    {
+      "name": "summarizer-http",
+      "port": 8210,
+      "category": "processing",
+      "protocols": [
+        "HTTP"
+      ],
+      "status": "stopped"
+    },
+    {
+      "name": "simple-upload",
+      "port": 8208,
+      "category": "processing",
+      "protocols": [
+        "HTTP"
+      ],
+      "status": "stopped"
+    },
+    {
+      "name": "simple-upload-fixed",
+      "port": 8211,
+      "category": "processing",
+      "protocols": [
+        "HTTP"
+      ],
+      "status": "stopped"
+    },
+    {
+      "name": "quic-ai-stream",
+      "port": 8216,
+      "category": "protocol",
+      "protocols": [
+        "QUIC"
+      ],
+      "status": "stopped"
+    },
+    {
+      "name": "quic-gateway",
+      "port": 8230,
+      "category": "protocol",
+      "protocols": [
+        "QUIC"
+      ],
+      "status": "stopped"
+    },
+    {
+      "name": "quic-vector-proxy",
+      "port": 8231,
+      "category": "protocol",
+      "protocols": [
+        "QUIC"
+      ],
+      "status": "running"
+    },
+    {
+      "name": "vector-service",
+      "port": 8232,
+      "category": "protocol",
+      "protocols": [
+        "HTTP"
+      ],
+      "status": "stopped"
+    },
+    {
+      "name": "vector-redis-service",
+      "port": 8233,
+      "category": "protocol",
+      "protocols": [
+        "HTTP"
+      ],
+      "status": "stopped"
+    },
+    {
+      "name": "cuda-integration-service",
+      "port": 8098,
+      "category": "support",
+      "protocols": [
+        "HTTP"
+      ],
+      "status": "stopped"
+    },
+    {
+      "name": "cuda-service",
+      "port": 8099,
+      "category": "support",
+      "protocols": [
+        "HTTP"
+      ],
+      "status": "running"
+    },
+    {
+      "name": "enhanced-api-endpoints",
+      "port": 8201,
+      "category": "support",
+      "protocols": [
+        "HTTP"
+      ],
+      "status": "stopped"
+    },
+    {
+      "name": "simple-api-endpoints",
+      "port": 8226,
+      "category": "support",
+      "protocols": [
+        "HTTP"
+      ],
+      "status": "stopped"
+    },
+    {
+      "name": "main-service",
+      "port": 8227,
+      "category": "support",
+      "protocols": [
+        "HTTP"
+      ],
+      "status": "stopped"
+    }
+  ],
+  "routing": {
+    "gateway": {
+      "enhanced-rag": "http://localhost:8094",
+      "upload-service": "http://localhost:8093",
+      "vector-service": "http://localhost:8095",
+      "cluster-manager": "http://localhost:8213"
+    },
+    "protocols": {
+      "http": [
+        "8094",
+        "8093",
+        "8095",
+        "8213",
+        "8212",
+        "8220"
+      ],
+      "grpc": [
+        "50051",
+        "50052"
+      ],
+      "quic": [
+        "8216",
+        "8230",
+        "8231"
+      ],
+      "websocket": [
+        "8094",
+        "8095"
+      ]
+    },
+    "loadBalancer": {
+      "ai": [
+        "8094",
+        "8096",
+        "8097"
+      ],
+      "upload": [
+        "8093",
+        "8207",
+        "8208"
+      ],
+      "vector": [
+        "8095",
+        "8232",
+        "8233"
+      ]
+    }
+  }
+}

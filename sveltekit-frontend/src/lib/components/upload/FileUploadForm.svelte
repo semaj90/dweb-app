@@ -37,8 +37,8 @@
   import { superForm } from 'sveltekit-superforms';
   import { zodClient } from 'sveltekit-superforms/adapters';
 
-  export let data: { form: any };
-  export let caseId: string = '';
+  let { data = $bindable() } = $props(); // { form: any };
+  let { caseId = $bindable() } = $props(); // string = '';
   const { form, errors, enhance, submitting, delayed, message } = superForm(data.form, {
     validators: zodClient(fileUploadSchema),
     multipleSubmits: 'prevent',
@@ -178,7 +178,7 @@
             ondrop={handleDrop}
             ondragover={handleDragOver}
             ondragleave={handleDragLeave}
-            onclick={openFilePicker}
+            on:click={openFilePicker}
             onkeydown={onDropzoneKeydown}
             role="button"
             tabindex="0"
@@ -197,10 +197,10 @@
                     </div>
                   </div>
                   <div class="flex items-center gap-2">
-                    <Button type="button" variant="secondary" size="sm" onclick={(e) => { e.stopPropagation(); openFilePicker(); }}>
+                    <Button type="button" variant="secondary" size="sm" on:click={(e) => { e.stopPropagation(); openFilePicker(); }}>
                       Change
                     </Button>
-                    <Button type="button" variant="ghost" size="sm" onclick={(e) => { e.stopPropagation(); removeFile(); }} aria-label="Remove file">
+                    <Button type="button" variant="ghost" size="sm" on:click={(e) => { e.stopPropagation(); removeFile(); }} aria-label="Remove file">
                       <X class="h-4 w-4" />
                     </Button>
                   </div>

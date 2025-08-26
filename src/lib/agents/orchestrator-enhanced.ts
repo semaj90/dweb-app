@@ -18,6 +18,30 @@ export interface OrchestrationRequest {
 }
 
 /**
+ * Agent interface
+ */
+export interface Agent {
+  name: string;
+  confidence: number;
+  type: string;
+  specialties: string[];
+}
+
+/**
+ * Agent response interface
+ */
+export interface AgentResponse {
+  content: string;
+  confidence: number;
+  sources?: Array<{
+    type: string;
+    title: string;
+    content: string;
+    relevance: number;
+  }>;
+}
+
+/**
  * Orchestration response interface
  */
 export interface OrchestrationResponse {
@@ -55,7 +79,7 @@ export interface OrchestrationResponse {
 class EnhancedLegalOrchestrator {
   private sessions = new Map<string, any>();
   private processing = false;
-  private agents = new Map<string, any>();
+  private agents = new Map<string, Agent>();
 
   constructor() {
     this.initializeAgents();
@@ -91,7 +115,7 @@ class EnhancedLegalOrchestrator {
       const primaryResponse = await this.executeAgent(primaryAgent, request);
 
       // Execute secondary agents if multi-agent is enabled
-      let secondaryResponses: unknown[] = [];
+      let secondaryResponses: AgentResponse[] = [];
       if (request.requiresMultiAgent && selectedAgents.length > 1) {
         const secondaryPromises = selectedAgents.slice(1).map(agent => 
           this.executeAgent(agent, request)
@@ -151,7 +175,8 @@ class EnhancedLegalOrchestrator {
 
     } catch (error: unknown) {
       console.error('Orchestration error:', error);
-      throw new Error(`Orchestration failed: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Orchestration failed: ${errorMessage}`);
     } finally {
       this.processing = false;
     }
@@ -292,43 +317,47 @@ class EnhancedLegalOrchestrator {
   private initializeAgents(): void {
     this.agents.set('contract-analyzer', {
       name: 'Contract Analyzer',
+      type: 'contract-analyzer',
       specialties: ['contract', 'agreement'],
       confidence: 0.9
     });
 
     this.agents.set('case-law-researcher', {
       name: 'Case Law Researcher',
+      type: 'case-law-researcher',
       specialties: ['precedent', 'case-law'],
       confidence: 0.85
     });
 
     this.agents.set('legal-writer', {
       name: 'Legal Writer',
+      type: 'legal-writer',
       specialties: ['drafting', 'documentation'],
       confidence: 0.8
     });
 
     this.agents.set('risk-assessor', {
       name: 'Risk Assessor',
+      type: 'risk-assessor',
       specialties: ['risk', 'compliance'],
       confidence: 0.87
     });
   }
 
-  private selectAgents(request: OrchestrationRequest): unknown[] {
+  private selectAgents(request: OrchestrationRequest): Agent[] {
     const allAgents = Array.from(this.agents.values());
     
     // Simple selection logic - in real implementation this would be more sophisticated
     if (request.documentType === 'contract') {
       return allAgents.filter(agent => 
-        agent.specialties.includes('contract') || agent.specialties.includes('risk')
+        agent.specialties && (agent.specialties.includes('contract') || agent.specialties.includes('risk'))
       );
     }
 
     return allAgents.slice(0, request.requiresMultiAgent ? 2 : 1);
   }
 
-  private async executeAgent(agent: unknown, request: OrchestrationRequest): Promise<any> {
+  private async executeAgent(agent: Agent, request: OrchestrationRequest): Promise<AgentResponse> {
     // Mock agent execution
     await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 200));
 
@@ -347,8 +376,8 @@ class EnhancedLegalOrchestrator {
   }
 
   private synthesizeResponses(
-    primary: unknown, 
-    secondary: unknown[], 
+    primary: AgentResponse, 
+    secondary: AgentResponse[], 
     request: OrchestrationRequest
   ): string {
     let synthesis = `Based on comprehensive legal analysis of your query: "${request.query}"\n\n`;
@@ -368,7 +397,7 @@ class EnhancedLegalOrchestrator {
     return synthesis;
   }
 
-  private calculateConfidence(primary: unknown, secondary: unknown[]): number {
+  private calculateConfidence(primary: AgentResponse, secondary: AgentResponse[]): number {
     let totalConfidence = primary.confidence;
     let count = 1;
 

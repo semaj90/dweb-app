@@ -592,7 +592,8 @@ class OllamaService extends EventEmitter {
    * Embed a document (wrapper for generateEmbedding with document)
    */
   async embedDocument(document: LegalDocument): Promise<number[]> {
-    return this.generateEmbedding(document.content);
+    const embeddings = await this.generateEmbeddings(document.content);
+    return Array.isArray(embeddings) ? embeddings : [];
   }
 
   /**

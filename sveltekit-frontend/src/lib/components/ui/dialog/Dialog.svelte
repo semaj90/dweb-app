@@ -8,13 +8,13 @@
 
   const dispatch = createEventDispatcher();
 
-  export let open: boolean = false;
-  export let title: string = "";
-  export let description: string = "";
-  export let size: "sm" | "md" | "lg" | "xl" | "full" = "md";
-  export let showClose: boolean = true;
-  export let closeOnOutsideClick: boolean = true;
-  export let closeOnEscape: boolean = true;
+  let { open = $bindable() } = $props(); // boolean = false;
+  let { title = $bindable() } = $props(); // string = "";
+  let { description = $bindable() } = $props(); // string = "";
+  let { size = $bindable() } = $props(); // "sm" | "md" | "lg" | "xl" | "full" = "md";
+  let { showClose = $bindable() } = $props(); // boolean = true;
+  let { closeOnOutsideClick = $bindable() } = $props(); // boolean = true;
+  let { closeOnEscape = $bindable() } = $props(); // boolean = true;
 
   const sizeClasses = {
     sm: "max-w-sm",

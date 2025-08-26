@@ -87,7 +87,7 @@
   }
   
   // Paginated users
-  $: paginatedUsers = filteredUsers.slice(
+  let paginatedUsers = $derived(filteredUsers.slice();
     (currentPage - 1) * usersPerPage, 
     currentPage * usersPerPage
   );

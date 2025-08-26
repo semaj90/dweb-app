@@ -285,7 +285,7 @@
           Manage cases with AI-powered search and PostgreSQL vector storage
         </p>
       </div>
-      <Button onclick={() => createCaseDialogOpen = true} class="gap-2">
+      <Button on:click={() => createCaseDialogOpen = true} class="gap-2">
         <Plus class="h-4 w-4" />
         New Case
       </Button>
@@ -349,7 +349,7 @@
           <Button
             variant="outline"
             size="sm"
-            onclick={performVectorSearch}
+            on:click={performVectorSearch}
             disabled={!searchQuery.trim() || isSearching}
             class="gap-2"
           >
@@ -361,32 +361,32 @@
             AI Search
           </Button>
           
-          <Select.Root bind:selected={statusFilter}>
-            <Select.Trigger class="w-[140px]">
-              <Select.Value placeholder="Status" />
-            </Select.Trigger>
-            <Select.Content>
-              <Select.Item value="all">All Status</Select.Item>
-              <Select.Item value="open">Open</Select.Item>
-              <Select.Item value="investigating">Investigating</Select.Item>
-              <Select.Item value="pending">Pending</Select.Item>
-              <Select.Item value="closed">Closed</Select.Item>
-              <Select.Item value="archived">Archived</Select.Item>
-            </Select.Content>
-          </Select.Root>
+          <SelectRoot bind:selected={statusFilter}>
+            <SelectTrigger class="w-[140px]">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="open">Open</SelectItem>
+              <SelectItem value="investigating">Investigating</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="closed">Closed</SelectItem>
+              <SelectItem value="archived">Archived</SelectItem>
+            </SelectContent>
+          </SelectRoot>
 
-          <Select.Root bind:selected={priorityFilter}>
-            <Select.Trigger class="w-[140px]">
-              <Select.Value placeholder="Priority" />
-            </Select.Trigger>
-            <Select.Content>
-              <Select.Item value="all">All Priority</Select.Item>
-              <Select.Item value="low">Low</Select.Item>
-              <Select.Item value="medium">Medium</Select.Item>
-              <Select.Item value="high">High</Select.Item>
-              <Select.Item value="critical">Critical</Select.Item>
-            </Select.Content>
-          </Select.Root>
+          <SelectRoot bind:selected={priorityFilter}>
+            <SelectTrigger class="w-[140px]">
+              <SelectValue placeholder="Priority" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Priority</SelectItem>
+              <SelectItem value="low">Low</SelectItem>
+              <SelectItem value="medium">Medium</SelectItem>
+              <SelectItem value="high">High</SelectItem>
+              <SelectItem value="critical">Critical</SelectItem>
+            </SelectContent>
+          </SelectRoot>
         </div>
       </div>
     </div>
@@ -396,11 +396,11 @@
       <!-- Case Detail View -->
       <div class="space-y-6">
         <div class="flex items-center justify-between">
-          <Button variant="outline" onclick={() => goto('/cases')}>
+          <Button variant="outline" on:click={() => goto('/cases')}>
             ← Back to Cases
           </Button>
           <div class="flex gap-2">
-            <Button variant="outline" size="sm" onclick={() => addEvidenceDialogOpen = true}>
+            <Button variant="outline" size="sm" on:click={() => addEvidenceDialogOpen = true}>
               <Plus class="h-4 w-4 mr-2" />
               Add Evidence
             </Button>
@@ -448,7 +448,7 @@
               <Card.Content class="flex flex-col items-center justify-center py-12">
                 <FileText class="h-12 w-12 text-muted-foreground mb-4" />
                 <p class="text-muted-foreground mb-4">No evidence has been added to this case yet.</p>
-                <Button onclick={() => addEvidenceDialogOpen = true}>
+                <Button on:click={() => addEvidenceDialogOpen = true}>
                   <Plus class="h-4 w-4 mr-2" />
                   Add First Evidence
                 </Button>
@@ -469,7 +469,7 @@
                         <Button 
                           variant="ghost" 
                           size="sm" 
-                          onclick={() => confirmDeleteEvidence(evidence)}
+                          on:click={() => confirmDeleteEvidence(evidence)}
                         >
                           <Trash2 class="h-4 w-4" />
                         </Button>
@@ -505,7 +505,7 @@
         <Tabs.Content value="all-cases" class="space-y-4">
           <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {#each filteredCases as caseItem}
-              <Card.Root class="cursor-pointer transition-colors hover:bg-muted/50" onclick={() => viewCase(caseItem)}>
+              <Card.Root class="cursor-pointer transition-colors hover:bg-muted/50" on:click={() => viewCase(caseItem)}>
                 <Card.Header>
                   <div class="flex items-start justify-between">
                     <Card.Title class="text-lg line-clamp-2">{caseItem.title}</Card.Title>
@@ -547,7 +547,7 @@
                     <p class="text-muted-foreground mb-4">
                       {searchQuery.trim() ? 'No cases found matching your search.' : 'No cases found.'}
                     </p>
-                    <Button onclick={() => createCaseDialogOpen = true}>
+                    <Button on:click={() => createCaseDialogOpen = true}>
                       <Plus class="h-4 w-4 mr-2" />
                       Create Your First Case
                     </Button>
@@ -562,7 +562,7 @@
           {#if vectorSearchResults.length > 0}
             <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {#each vectorSearchResults as result}
-                <Card.Root class="cursor-pointer transition-colors hover:bg-muted/50" onclick={() => viewCase(result)}>
+                <Card.Root class="cursor-pointer transition-colors hover:bg-muted/50" on:click={() => viewCase(result)}>
                   <Card.Header>
                     <div class="flex items-start justify-between">
                       <Card.Title class="text-lg line-clamp-2">{result.title}</Card.Title>
@@ -693,31 +693,31 @@
         <div class="grid grid-cols-2 gap-4">
           <div class="grid gap-2">
             <Label for="case-priority">Priority</Label>
-            <Select.Root bind:selected={$createFormData.priority}>
-              <Select.Trigger>
-                <Select.Value placeholder="Select priority" />
-              </Select.Trigger>
-              <Select.Content>
-                <Select.Item value="low">Low</Select.Item>
-                <Select.Item value="medium">Medium</Select.Item>
-                <Select.Item value="high">High</Select.Item>
-                <Select.Item value="critical">Critical</Select.Item>
-              </Select.Content>
-            </Select.Root>
+            <SelectRoot bind:selected={$createFormData.priority}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select priority" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="medium">Medium</SelectItem>
+                <SelectItem value="high">High</SelectItem>
+                <SelectItem value="critical">Critical</SelectItem>
+              </SelectContent>
+            </SelectRoot>
             <input type="hidden" name="priority" value={$createFormData.priority} />
           </div>
           <div class="grid gap-2">
             <Label for="case-status">Status</Label>
-            <Select.Root bind:selected={$createFormData.status}>
-              <Select.Trigger>
-                <Select.Value placeholder="Select status" />
-              </Select.Trigger>
-              <Select.Content>
-                <Select.Item value="open">Open</Select.Item>
-                <Select.Item value="investigating">Investigating</Select.Item>
-                <Select.Item value="pending">Pending</Select.Item>
-              </Select.Content>
-            </Select.Root>
+            <SelectRoot bind:selected={$createFormData.status}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="open">Open</SelectItem>
+                <SelectItem value="investigating">Investigating</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+              </SelectContent>
+            </SelectRoot>
             <input type="hidden" name="status" value={$createFormData.status} />
           </div>
         </div>
@@ -752,7 +752,7 @@
         </div>
       </div>
       <Dialog.Footer>
-        <Button variant="outline" type="button" onclick={() => createCaseDialogOpen = false}>
+        <Button variant="outline" type="button" on:click={() => createCaseDialogOpen = false}>
           Cancel
         </Button>
         <Button type="submit" disabled={!$createFormData.title?.trim()}>
@@ -797,20 +797,20 @@
         </div>
         <div class="grid gap-2">
           <Label for="evidence-type">Evidence Type</Label>
-          <Select.Root bind:selected={$evidenceFormData.evidenceType}>
-            <Select.Trigger>
-              <Select.Value placeholder="Select type" />
-            </Select.Trigger>
-            <Select.Content>
-              <Select.Item value="document">Document</Select.Item>
-              <Select.Item value="photo">Photo</Select.Item>
-              <Select.Item value="video">Video</Select.Item>
-              <Select.Item value="audio">Audio</Select.Item>
-              <Select.Item value="physical">Physical Evidence</Select.Item>
-              <Select.Item value="digital">Digital Evidence</Select.Item>
-              <Select.Item value="testimony">Testimony</Select.Item>
-            </Select.Content>
-          </Select.Root>
+          <SelectRoot bind:selected={$evidenceFormData.evidenceType}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="document">Document</SelectItem>
+              <SelectItem value="photo">Photo</SelectItem>
+              <SelectItem value="video">Video</SelectItem>
+              <SelectItem value="audio">Audio</SelectItem>
+              <SelectItem value="physical">Physical Evidence</SelectItem>
+              <SelectItem value="digital">Digital Evidence</SelectItem>
+              <SelectItem value="testimony">Testimony</SelectItem>
+            </SelectContent>
+          </SelectRoot>
           <input type="hidden" name="evidenceType" value={$evidenceFormData.evidenceType} />
         </div>
         <div class="grid gap-2">
@@ -824,7 +824,7 @@
         </div>
       </div>
       <Dialog.Footer>
-        <Button variant="outline" type="button" onclick={() => addEvidenceDialogOpen = false}>
+        <Button variant="outline" type="button" on:click={() => addEvidenceDialogOpen = false}>
           Cancel
         </Button>
         <Button type="submit" disabled={!$evidenceFormData.title?.trim()}>
@@ -846,10 +846,10 @@
       </AlertDialog.Description>
     </AlertDialog.Header>
     <AlertDialog.Footer>
-      <Button variant="outline" onclick={() => deleteEvidenceDialogOpen = false}>
+      <Button variant="outline" on:click={() => deleteEvidenceDialogOpen = false}>
         Cancel
       </Button>
-      <Button variant="destructive" onclick={deleteEvidence}>
+      <Button variant="destructive" on:click={deleteEvidence}>
         Delete Evidence
       </Button>
     </AlertDialog.Footer>

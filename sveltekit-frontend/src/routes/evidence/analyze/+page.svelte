@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { $state, $derived } from 'svelte';
   import { goto } from '$app/navigation';
   import Badge from '$lib/components/ui/Badge.svelte';
   import Button from '$lib/components/ui/button/Button.svelte';
@@ -345,8 +344,8 @@
       </div>
 
       <div class="flex gap-2">
-        <Button variant="outline" onclick={resetForm} disabled={analyzing}>Reset</Button>
-        <Button onclick={startAnalysis} disabled={analyzing || !caseId || !evidenceContent}>
+        <Button variant="outline" on:click={resetForm} disabled={analyzing}>Reset</Button>
+        <Button on:click={startAnalysis} disabled={analyzing || !caseId || !evidenceContent}>
           {analyzing ? 'Analyzing...' : 'Start Analysis'}
         </Button>
       </div>
@@ -482,7 +481,7 @@
                   variant="outline"
                   size="sm"
                   class="mt-2"
-                  onclick={() => viewDetailedResults(data)}>
+                  on:click={() => viewDetailedResults(data)}>
                   View Details →
                 </Button>
               </CardContent>
@@ -491,8 +490,8 @@
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onclick={() => (showResults = false)}>Close</Button>
-          <Button onclick={() => goto(`/cases/${caseId}`)}>View Case Details</Button>
+          <Button variant="outline" on:click={() => (showResults = false)}>Close</Button>
+          <Button on:click={() => goto(`/cases/${caseId}`)}>View Case Details</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

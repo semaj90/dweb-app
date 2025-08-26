@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { $state, $derived } from 'svelte';
   import { createMachine, assign } from 'xstate';
   import { useMachine } from '@xstate/svelte';
   import { createToaster, melt } from 'melt';
@@ -224,7 +223,7 @@
     <div class="flex gap-2">
       <EnhancedButton 
         variant="legal" 
-        onclick={handleQuery} 
+        on:click={handleQuery} 
         disabled={!canSubmit}
         loading={isLoading}
         loadingText="Analyzing..."
@@ -237,7 +236,7 @@
       {#if snapshot.matches('error')}
         <EnhancedButton 
           variant="outline" 
-          onclick={handleRetry}
+          on:click={handleRetry}
           useMelt={true}
         >
           Retry
@@ -247,7 +246,7 @@
       {#if currentResponse}
         <EnhancedButton 
           variant="ghost" 
-          onclick={handleClear}
+          on:click={handleClear}
           useMelt={true}
         >
           Clear

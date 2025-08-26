@@ -2,11 +2,11 @@
 <script lang="ts">
   import { $props, $derived } from 'svelte';
 
-  export let isReady = false;
-  export let isLoading = false;
-  export let provider: "local" | "cloud" | "hybrid" | null = null;
-  export let model: string | null = null;
-  export let error: string | null = null;
+  let { isReady = $bindable() } = $props(); // false;
+  let { isLoading = $bindable() } = $props(); // false;
+  let { provider = $bindable() } = $props(); // "local" | "cloud" | "hybrid" | null = null;
+  let { model = $bindable() } = $props(); // string | null = null;
+  let { error = $bindable() } = $props(); // string | null = null;
 
   // Status computation
   let currentStatus = $derived(error

@@ -9,7 +9,7 @@
   import YoRHaNotificationManager from '$lib/components/yorha/YoRHaNotificationManager.svelte';
 
   // Props
-  export let data: PageData;
+  let { data = $bindable() } = $props(); // PageData;
 
   // State management
   let selectedSection = $state('command-center');
@@ -138,7 +138,7 @@
       <div class="flex items-center space-x-4">
         <button 
           class="px-4 py-2 bg-amber-600 bg-opacity-20 border border-amber-400 border-opacity-50 text-amber-300 hover:bg-opacity-30 transition-all duration-300"
-          onclick={() => showNewCaseModal = true}
+          on:click={() => showNewCaseModal = true}
         >
           + New Case
         </button>
@@ -163,7 +163,7 @@
         {#each navigationSections as section}
           <button
             class="nav-item w-full flex items-center space-x-3 p-3 text-left border border-transparent hover:border-amber-400 hover:border-opacity-30 hover:bg-amber-600 hover:bg-opacity-10 transition-all duration-300 {selectedSection === section.id ? 'border-amber-400 border-opacity-50 bg-amber-600 bg-opacity-20 text-amber-400' : 'text-amber-300'}"
-            onclick={() => navigateToSection(section.id)}
+            on:click={() => navigateToSection(section.id)}
           >
             <span class="text-lg">{section.icon}</span>
             <span class="font-medium">{section.name}</span>
@@ -239,21 +239,21 @@
               <div class="space-y-3">
                 <button 
                   class="action-button w-full p-3 border border-amber-400 border-opacity-30 text-amber-300 hover:border-opacity-50 hover:bg-amber-600 hover:bg-opacity-10 transition-all duration-300"
-                  onclick={() => goto('/evidence/upload')}
+                  on:click={() => goto('/evidence/upload')}
                 >
                   📤 Upload Evidence
                 </button>
                 
                 <button 
                   class="action-button w-full p-3 border border-amber-400 border-opacity-30 text-amber-300 hover:border-opacity-50 hover:bg-amber-600 hover:bg-opacity-10 transition-all duration-300"
-                  onclick={() => goto('/evidence/analyze')}
+                  on:click={() => goto('/evidence/analyze')}
                 >
                   🔍 Analyze Evidence
                 </button>
                 
                 <button 
                   class="action-button w-full p-3 border border-amber-400 border-opacity-30 text-amber-300 hover:border-opacity-50 hover:bg-amber-600 hover:bg-opacity-10 transition-all duration-300"
-                  onclick={() => goto('/evidence/search')}
+                  on:click={() => goto('/evidence/search')}
                 >
                   🔎 Search Evidence
                 </button>
@@ -285,7 +285,7 @@
               <div class="space-y-3">
                 {#each data.recentCases.slice(0, 5) as case_}
                   <div class="case-item p-3 border border-amber-400 border-opacity-20 hover:border-opacity-40 transition-all duration-300 cursor-pointer"
-                       onclick={() => goto(`/cases/${case_.id}`)}>
+                       on:click={() => goto(`/cases/${case_.id}`)}>
                     <div class="flex justify-between items-start">
                       <div>
                         <div class="font-medium text-amber-300">{case_.title}</div>
@@ -317,21 +317,21 @@
               <div class="space-y-3">
                 <button 
                   class="action-button w-full p-3 border border-amber-400 border-opacity-30 text-amber-300 hover:border-opacity-50 hover:bg-amber-600 hover:bg-opacity-10 transition-all duration-300"
-                  onclick={() => goto('/ai-assistant')}
+                  on:click={() => goto('/ai-assistant')}
                 >
                   🤖 AI Assistant
                 </button>
                 
                 <button 
                   class="action-button w-full p-3 border border-amber-400 border-opacity-30 text-amber-300 hover:border-opacity-50 hover:bg-amber-600 hover:bg-opacity-10 transition-all duration-300"
-                  onclick={() => goto('/detective/canvas')}
+                  on:click={() => goto('/detective/canvas')}
                 >
                   🎨 Evidence Canvas
                 </button>
                 
                 <button 
                   class="action-button w-full p-3 border border-amber-400 border-opacity-30 text-amber-300 hover:border-opacity-50 hover:bg-amber-600 hover:bg-opacity-10 transition-all duration-300"
-                  onclick={() => goto('/reports')}
+                  on:click={() => goto('/reports')}
                 >
                   📊 Generate Report
                 </button>
@@ -395,7 +395,7 @@
         <div class="flex justify-end space-x-3 pt-4">
           <button
             type="button"
-            onclick={cancelNewCase}
+            on:click={cancelNewCase}
             class="px-6 py-2 border border-amber-400 border-opacity-30 text-amber-300 hover:border-opacity-50 hover:bg-amber-600 hover:bg-opacity-10 transition-all duration-300"
           >
             Cancel

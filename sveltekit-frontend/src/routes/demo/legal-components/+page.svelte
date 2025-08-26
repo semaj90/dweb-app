@@ -6,8 +6,6 @@
     type DataTableColumn, type ComboboxOption
   } from '$lib/components/ui/bits';
   import { Calendar, FileText, Users, Scale, Shield, AlertTriangle } from 'lucide-svelte';
-  import { $state } from 'svelte';
-
   // Page state
   let activeTab = $state('data-table');
   let toastProvider: any;
@@ -324,7 +322,7 @@
         {#each tabs as tab}
           {@const IconComponent = tab.icon}
           <button
-            onclick={() => activeTab = tab.id}
+            on:click={() => activeTab = tab.id}
             class={`flex items-center gap-2 px-4 py-2 text-sm font-mono rounded transition-colors ${
               activeTab === tab.id
                 ? 'bg-yorha-primary text-yorha-bg-primary'

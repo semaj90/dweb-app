@@ -2,6 +2,7 @@ package server
 
 import (
 	"crypto/tls"
+	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/logging"
@@ -31,10 +32,22 @@ func NewGRPCServer(
 		),
 	}
 
-	// Configure TLS for production
+	// Configure TLS 1.3 for production with proper cipher suites
 	if c.Grpc.EnableTls {
 		tlsConfig := &tls.Config{
-			MinVersion: tls.VersionTLS12,
+			MinVersion: tls.VersionTLS13,
+			MaxVersion: tls.VersionTLS13,
+			CipherSuites: []uint16{
+				tls.TLS_AES_256_GCM_SHA384,
+				tls.TLS_CHACHA20_POLY1305_SHA256,
+				tls.TLS_AES_128_GCM_SHA256,
+			},
+			CurvePreferences: []tls.CurveID{
+				tls.X25519,
+				tls.CurveP384,
+				tls.CurveP256,
+			},
+			PreferServerCipherSuites: true,
 		}
 		opts = append(opts, grpc.TLSConfig(tlsConfig))
 	}
@@ -46,9 +59,16 @@ func NewGRPCServer(
 	if c.Grpc.Addr != "" {
 		opts = append(opts, grpc.Address(c.Grpc.Addr))
 	}
+	
+	// Add proper timeout handling
 	if c.Grpc.Timeout != nil {
 		opts = append(opts, grpc.Timeout(c.Grpc.Timeout.AsDuration()))
+	} else {
+		// Set default timeout of 30 seconds
+		opts = append(opts, grpc.Timeout(30*time.Second))
 	}
+
+	// Message size limits are set via server options in newer gRPC versions
 
 	srv := grpc.NewServer(opts...)
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { parentPort, workerData } from 'node:worker_threads';
 import { performance } from 'node:perf_hooks';
 

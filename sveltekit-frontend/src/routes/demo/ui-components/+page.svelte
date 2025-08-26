@@ -1,6 +1,5 @@
 <script lang="ts">
   import Button from '$lib/components/ui/Button.svelte';
-  import { createDialog } from 'bits-ui';
   import { createAccordion, melt } from 'melt';
   
   // Bits UI Dialog
@@ -46,7 +45,7 @@
         class="p-4 rounded-lg border-2 transition-all hover:shadow-md {selectedDemo === item.id 
           ? 'border-primary bg-primary/5 shadow-md' 
           : 'border-border hover:border-primary/50'}"
-        onclick={() => selectedDemo = item.id}
+        on:click={() => selectedDemo = item.id}
       >
         <h3 class="font-semibold">{item.label}</h3>
         <p class="text-sm text-muted-foreground mt-1">{item.description}</p>

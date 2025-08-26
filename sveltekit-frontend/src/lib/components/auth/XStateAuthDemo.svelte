@@ -4,7 +4,6 @@
   Uses Bits UI v2 + GPU orchestrator + Context7 documentation
 -->
 <script lang="ts">
-  import { $state } from 'svelte';
   import { onMount, onDestroy } from 'svelte';
   import * as Card from '$lib/components/ui/card';
   import { Button } from '$lib/components/ui/button';
@@ -254,7 +253,7 @@
             </div>
             
             <Button 
-              onclick={demonstrateLogin}
+              on:click={demonstrateLogin}
               disabled={isLoading || authenticated}
               class="w-full"
             >
@@ -286,23 +285,23 @@
           </Alert>
           
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Button onclick={demonstrateAI} variant="outline">
+            <Button on:click={demonstrateAI} variant="outline">
               <Brain class="h-4 w-4 mr-2" />
               Test AI Assistant
             </Button>
             
-            <Button onclick={demonstrateUpload} variant="outline">
+            <Button on:click={demonstrateUpload} variant="outline">
               <Zap class="h-4 w-4 mr-2" />
               Demo File Upload
             </Button>
             
-            <Button onclick={demonstrateSessionActivity} variant="outline">
+            <Button on:click={demonstrateSessionActivity} variant="outline">
               <Settings class="h-4 w-4 mr-2" />
               Record Activity
             </Button>
           </div>
           
-          <Button onclick={demonstrateLogout} variant="destructive" class="w-full">
+          <Button on:click={demonstrateLogout} variant="destructive" class="w-full">
             <LogOut class="h-4 w-4 mr-2" />
             Demonstrate Logout
           </Button>
@@ -351,10 +350,10 @@
             {/if}
             
             <div class="flex gap-2">
-              <Button onclick={() => demoStep = 'dashboard'} variant="outline">
+              <Button on:click={() => demoStep = 'dashboard'} variant="outline">
                 Back to Dashboard
               </Button>
-              <Button onclick={demonstrateLogout} variant="destructive">
+              <Button on:click={demonstrateLogout} variant="destructive">
                 <LogOut class="h-4 w-4 mr-2" />
                 Complete Demo
               </Button>

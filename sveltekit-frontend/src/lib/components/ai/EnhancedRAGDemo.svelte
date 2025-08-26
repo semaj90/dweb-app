@@ -18,7 +18,7 @@
   let sampleLegalText = $state(`
 MEMORANDUM OF UNDERSTANDING
 
-This Memorandum of Understanding ("MOU") is entered into on January 15, 2024, between TechCorp Inc., a Delaware corporation ("Company"), and John Smith, Esq., individually ("Consultant").
+This Memorandum of Understanding ("MOU"); is entered into on January 15, 2024, between TechCorp Inc., a Delaware corporation ("Company"), and John Smith, Esq., individually ("Consultant").
 
 WHEREAS, Company desires to engage Consultant to provide legal advisory services regarding intellectual property matters and contract negotiations;
 
@@ -166,14 +166,14 @@ IN WITNESS WHEREOF, the parties have executed this MOU as of the date first writ
       class="tab px-4 py-2 font-medium {activeTab === 'analyze'
         ? 'border-b-2 border-blue-500 text-blue-600'
         : 'text-gray-500 hover:text-gray-700'}"
-      onclick={() => (activeTab = 'analyze')}>
+      on:click={() => (activeTab = 'analyze')}>
       Document Analysis
     </button>
     <button
       class="tab px-4 py-2 font-medium {activeTab === 'query'
         ? 'border-b-2 border-blue-500 text-blue-600'
         : 'text-gray-500 hover:text-gray-700'}"
-      onclick={() => (activeTab = 'query')}>
+      on:click={() => (activeTab = 'query')}>
       Enhanced RAG Query
     </button>
   </div>
@@ -208,7 +208,7 @@ IN WITNESS WHEREOF, the parties have executed this MOU as of the date first writ
                 )} words
               </div>
               <Button
-                onclick={analyzeDocument}
+                on:click={analyzeDocument}
                 disabled={isAnalyzing || !sampleLegalText.trim()}
                 class="px-6">
                 {isAnalyzing ? 'Analyzing...' : 'Analyze Document'}
@@ -409,7 +409,7 @@ IN WITNESS WHEREOF, the parties have executed this MOU as of the date first writ
 
             <div class="flex justify-end">
               <Button
-                onclick={performRAGQuery}
+                on:click={performRAGQuery}
                 disabled={isAnalyzing || !queryText.trim()}
                 class="px-6">
                 {isAnalyzing ? 'Querying...' : 'Execute RAG Query'}

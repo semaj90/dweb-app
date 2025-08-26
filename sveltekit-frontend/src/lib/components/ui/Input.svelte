@@ -240,7 +240,7 @@
 			<button
 				type="button"
 				class="space-y-4"
-				onclick={handleClear}
+				on:click={handleClear}
 				tabindex={-1}
 				aria-label="Clear input"
 			>

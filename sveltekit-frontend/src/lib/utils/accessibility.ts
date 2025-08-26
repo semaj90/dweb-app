@@ -22,7 +22,7 @@ export class FocusManager {
     if (firstElement) {
       firstElement.focus();
     }
-    const handleTabKey = (e: KeyboardEvent) => {
+    const handleTabKey = (e: CustomEvent<any>) => {
       if (e.key !== "Tab") return;
 
       if (e.shiftKey) {
@@ -170,7 +170,7 @@ export class KeyboardNavigation {
       el.setAttribute("tabindex", index === 0 ? "0" : "-1");
     });
 
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handleKeyDown = (e: CustomEvent<any>) => {
       const target = e.target as HTMLElement;
       const index = elements.indexOf(target);
 

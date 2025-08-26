@@ -2,7 +2,31 @@
 // Production-grade error handling with detailed logging and monitoring capabilities
 
 import { browser } from '$app/environment';
-import { writable } from 'svelte/store';
+// svelte store ambient types
+// Minimal ambient declaration to satisfy TypeScript when svelte/store types aren't installed.
+
+declare module 'svelte/store' {
+  export type Unsubscriber = () => void;
+  export type Subscriber<T> = (value: T) => void;
+  export type StartStopNotifier<T> = (set: (value: T) => void) => void | Unsubscriber;
+
+  export interface Readable<T> {
+    subscribe(run: Subscriber<T>): Unsubscriber;
+  }
+
+  export interface Writable<T> extends Readable<T> {
+    set(value: T): void;
+    update(updater: (value: T) => T): void;
+  }
+
+  export function readable<T>(value: T, start?: StartStopNotifier<T>): Readable<T>;
+  export function writable<T>(value: T, start?: StartStopNotifier<T>): Writable<T>;
+  export function derived<S, T>(
+    stores: S | S[],
+    fn: (values: any, set: (value: T) => void) => T | void,
+    initial?: T
+  ): Readable<T>;
+}
 
 // Types
 export interface ErrorLog {
@@ -64,13 +88,13 @@ class ErrorMonitoringService {
   private userId?: string;
   private errorBuffer: ErrorLog[] = [];
   private performanceBuffer: PerformanceMetric[] = [];
-  private flushInterval: NodeJS.Timeout | null = null;
+  private flushInterval: ReturnType<typeof setInterval> | null = null;
   private maxBufferSize = 100;
   private flushIntervalMs = 30000; // 30 seconds
 
   constructor() {
     this.sessionId = this.generateSessionId();
-    
+
     if (browser) {
       this.initializeErrorHandlers();
       this.startPeriodicFlush();
@@ -152,7 +176,7 @@ class ErrorMonitoringService {
     };
 
     this.errorBuffer.push(errorLog);
-    
+
     // Update reactive store
     errorLogs.update(logs => [errorLog, ...logs].slice(0, 1000)); // Keep last 1000 errors
 
@@ -178,7 +202,7 @@ class ErrorMonitoringService {
     };
 
     this.performanceBuffer.push(performanceMetric);
-    
+
     // Update reactive store
     performanceMetrics.update(metrics => [performanceMetric, ...metrics].slice(0, 1000));
 
@@ -389,7 +413,7 @@ class ErrorMonitoringService {
       clearInterval(this.flushInterval);
       this.flushInterval = null;
     }
-    
+
     // Final flush
     this.flushBuffers();
   }
@@ -400,39 +424,40 @@ export const errorMonitoring = new ErrorMonitoringService();
 
 // Utility functions for common error patterns
 export const handleApiError = (error: unknown, context?: Record<string, any>) => {
+  const e: any = error as any;
   errorMonitoring.logError({
     level: 'error',
-    message: `API Error: ${error.message || 'Unknown API error'}`,
+    message: `API Error: ${e?.message || 'Unknown API error'}`,
     details: {
       type: 'api',
-      error: error,
-      status: error.status,
-      statusText: error.statusText
+      error: e,
+      status: e?.status,
+      statusText: e?.statusText
     },
-    stack: error.stack,
+    stack: e?.stack,
     context
   });
 };
-
 export const handleDatabaseError = (error: unknown, query?: string, context?: Record<string, any>) => {
+  const e: any = error as any;
   errorMonitoring.logDatabaseError({
-    message: error.message || 'Database operation failed',
+    message: e?.message || 'Database operation failed',
     query,
-    errorCode: error.code,
-    stack: error.stack,
+    errorCode: e?.code,
+    stack: e?.stack,
     context
   });
 };
-
 export const handleValidationError = (error: unknown, data?: unknown, context?: Record<string, any>) => {
+  const e: any = error as any;
   errorMonitoring.logError({
     level: 'warning',
-    message: `Validation Error: ${error.message || 'Invalid data'}`,
+    message: `Validation Error: ${e?.message || 'Invalid data'}`,
     details: {
       type: 'validation',
-      error: error,
+      error: e,
       data: data,
-      validationErrors: error.errors || error.issues
+      validationErrors: e?.errors || e?.issues
     },
     context
   });
@@ -486,28 +511,30 @@ export const withErrorBoundary = <T extends (...args: unknown[]) => any>(
   return ((...args: unknown[]) => {
     try {
       const result = fn(...args);
-      
+
       // Handle async functions
       if (result && typeof result.catch === 'function') {
-        return result.catch((error: unknown) => {
+        return result.catch((err: any) => {
+          const e: any = err;
           errorMonitoring.logError({
             level: 'error',
             message: `Error in ${fn.name || 'anonymous function'}`,
-            details: { error, args },
-            stack: error.stack,
+            details: { error: e, args },
+            stack: e?.stack,
             context
           });
           return fallback;
         });
       }
-      
+
       return result;
-    } catch (error) {
+    } catch (err: any) {
+      const e: any = err;
       errorMonitoring.logError({
         level: 'error',
         message: `Error in ${fn.name || 'anonymous function'}`,
-        details: { error, args },
-        stack: error instanceof Error ? error.stack : undefined,
+        details: { error: e, args },
+        stack: e?.stack,
         context
       });
       return fallback;

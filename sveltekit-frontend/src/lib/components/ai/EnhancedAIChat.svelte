@@ -553,7 +553,7 @@ https://svelte.dev/e/props_duplicate -->
                 variant="ghost"
                 size="sm"
                 class="h-8 w-8 p-0"
-                onclick={() => showAnalysisPanel = !showAnalysisPanel}
+                on:click={() => showAnalysisPanel = !showAnalysisPanel}
               >
                 <MagnifyingGlassIcon class="h-4 w-4" />
               </Button.Root>
@@ -564,7 +564,7 @@ https://svelte.dev/e/props_duplicate -->
           </Tooltip.Root>
 
           <!-- Generate Report -->
-          <Button.Root variant="outline" size="sm" onclick={generateReport}>
+          <Button.Root variant="outline" size="sm" on:click={generateReport}>
             <DocumentTextIcon class="mr-2 h-4 w-4" />
             Report
           </Button.Root>
@@ -598,7 +598,7 @@ https://svelte.dev/e/props_duplicate -->
               {message.role === 'user' 
                 ? 'bg-primary text-primary-foreground ml-auto' 
                 : 'bg-muted hover:bg-muted/80'}"
-            onclick={() => selectMessage(message)}
+            on:click={() => selectMessage(message)}
             role="button"
             tabindex="0"
             onkeydown={(e) => e.key === 'Enter' && selectMessage(message)}
@@ -682,7 +682,7 @@ https://svelte.dev/e/props_duplicate -->
                   variant="outline"
                   size="sm"
                   class="h-auto p-2 text-left"
-                  onclick={() => applyRecommendation(rec)}
+                  on:click={() => applyRecommendation(rec)}
                 >
                   <div>
                     <div class="font-medium text-xs">{rec.title}</div>
@@ -703,7 +703,7 @@ https://svelte.dev/e/props_duplicate -->
                 <Button.Root
                   variant="ghost"
                   size="sm"
-                  onclick={() => applyDidYouMean(suggestion)}
+                  on:click={() => applyDidYouMean(suggestion)}
                 >
                   "{suggestion}"
                 </Button.Root>
@@ -730,7 +730,7 @@ https://svelte.dev/e/props_duplicate -->
         <Button.Root
           size="sm"
           disabled={!inputText.trim() || $isLoading}
-          onclick={sendMessage}
+          on:click={sendMessage}
           class="h-10 w-10 p-0"
         >
           <PaperPlaneIcon class="h-4 w-4" />
@@ -987,7 +987,7 @@ https://svelte.dev/e/props_duplicate -->
       </div>
 
       <Dialog.Footer>
-        <Button.Root variant="outline" onclick={() => showAnalysisDetails = false}>
+        <Button.Root variant="outline" on:click={() => showAnalysisDetails = false}>
           Close
         </Button.Root>
       </Dialog.Footer>
@@ -1004,7 +1004,7 @@ https://svelte.dev/e/props_duplicate -->
       variant="ghost" 
       size="sm" 
       class="mt-2"
-      onclick={() => error.set(null)}
+      on:click={() => error.set(null)}
     >
       Dismiss
     </Button.Root>

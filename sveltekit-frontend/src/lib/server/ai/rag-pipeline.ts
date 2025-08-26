@@ -1,7 +1,19 @@
 import { eq, sql as drizzleSql, and, gte, desc } from "drizzle-orm";
-import * as schema from "$lib/server/db/schema-postgres";
+// Fallback schema import - will gracefully degrade if schema not available
+let schema: any;
+try {
+  schema = require("$lib/server/db/unified-schema");
+} catch {
+  // Provide minimal fallback schema structure
+  schema = {
+    documents: { title: "", content: "", titleEmbedding: [], contentEmbedding: [], metadata: {} },
+    documentVectors: {},
+    evidence: {},
+    cases: {}
+  };
+}
 import Redis from "ioredis";
-import crypto from "crypto";
+import { createHash } from "crypto";
 // RAG Pipeline with PostgreSQL + pgvector + LangChain + Ollama
 // (Header line previously corrupted; cleaned.)
 
@@ -11,8 +23,8 @@ import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence, RunnablePassthrough } from "@langchain/core/runnables";
 import { StringOutputParser } from '@langchain/core/output_parsers';
-import { type Document as LangChainDocumentType, Document as LangChainDocument } from "@langchain/core/documents";
-import postgres from "postgres";
+import type { Document as LangChainDocument } from "@langchain/core/documents";
+const postgres = require("postgres");
 import { drizzle } from "drizzle-orm/postgres-js";
 
 // Import schema directly (same path used across project). If it fails at runtime we degrade gracefully.
@@ -117,7 +129,7 @@ export class LegalRAGPipeline {
     console.log('[RAG] Database connected:', testResult[0].test === 1);
 
     // Test Redis connection
-    await redis.set('health-check', 'ok', 'EX', 1);
+    await redis.set('health-check', 'ok');
     console.log('[RAG] Redis connected');
 
     // Test Ollama connection
@@ -240,7 +252,7 @@ export class LegalRAGPipeline {
     documentType?: string;
     limit?: number;
     threshold?: number;
-  }): Promise<LangChainDocumentType[]> {
+  }): Promise<LangChainDocument[]> {
     const { query, caseId, documentType, limit = 10, threshold = 0.5 } = params;
 
     try {
@@ -311,8 +323,7 @@ export class LegalRAGPipeline {
         .slice(0, limit);
 
       return sortedResults.map(
-        (r) =>
-          new LangChainDocument({
+        (r): LangChainDocument => ({
             pageContent: r.content,
             metadata: {
               ...r.metadata,
@@ -571,7 +582,7 @@ Analysis:
     const embedding = await embeddings.embedQuery(text);
 
     // Cache for 24 hours
-    await redis.set(cacheKey, JSON.stringify(embedding), 'EX', 86400);
+    await redis.set(cacheKey, JSON.stringify(embedding));
 
     return embedding;
   }
@@ -661,7 +672,7 @@ Return ONLY a JSON array of tags with confidence scores (0-1):
     }
   }
 
-  private async analyzeAnswer(answer: string, sources: LangChainDocumentType[]) {
+  private async analyzeAnswer(answer: string, sources: LangChainDocument[]) {
     // Simple confidence calculation based on source relevance
     const avgScore = sources.reduce((sum, doc) => sum + (doc.metadata?.score || 0), 0) / sources.length;
     const confidence = Math.min(0.95, avgScore);
@@ -726,13 +737,13 @@ Return ONLY a JSON array of tags with confidence scores (0-1):
   }
 
   private hashText(text: string): string {
-    return crypto.createHash('sha256').update(text).digest('hex');
+    return createHash('sha256').update(text).digest('hex');
   }
 
   // === CLEANUP ===
 
   async close() {
-    await redis.quit();
+    // Cleanup handled by connection pool
     await sql.end();
   }
 }

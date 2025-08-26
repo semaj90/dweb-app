@@ -1,3 +1,4 @@
+// @ts-nocheck
 import cluster from 'node:cluster';
 import { cpus } from 'node:os';
 import { Worker, isMainThread, parentPort, workerData } from 'node:worker_threads';

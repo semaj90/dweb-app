@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { $state, $derived } from 'svelte';
   import { page } from "$app/state";
   import ChatInterface from "$lib/components/ai/ChatInterface.svelte";
   import { Button } from "$lib/components/ui/button";
@@ -116,7 +115,7 @@
               <Button
                 variant="outline"
                 size="sm"
-                onclick={() => startNewChat()}
+                on:click={() => startNewChat()}
               >
                 <Plus class="space-y-4" />
                 New
@@ -141,7 +140,7 @@
               {#each filteredHistory as conversation (conversation.id)}
                 <button
                   class="space-y-4"
-                  onclick={() => loadConversation(conversation.id)}
+                  on:click={() => loadConversation(conversation.id)}
                 >
                   <h3 class="space-y-4">
                     {conversation.title}
@@ -183,7 +182,7 @@
                 <Button
                   variant="outline"
                   size="sm"
-                  onclick={() => showHistoryPanel()}
+                  on:click={() => showHistoryPanel()}
                 >
                   <Clock class="space-y-4" />
                   History
@@ -207,7 +206,7 @@
                 <Button
                   variant="outline"
                   size="sm"
-                  onclick={() => chatActions.saveToStorage()}
+                  on:click={() => chatActions.saveToStorage()}
                 >
                   <Save class="space-y-4" />
                   Save
@@ -217,7 +216,7 @@
               <Button
                 variant="outline"
                 size="sm"
-                onclick={() => startNewChat()}
+                on:click={() => startNewChat()}
               >
                 <Plus class="space-y-4" />
                 New Chat
@@ -247,7 +246,7 @@
                 <Button
                   variant="outline"
                   class="space-y-4"
-                  onclick={() => {
+                  on:click={() => {
                     if (!$chatStore.currentConversation)
                       chatActions.newConversation();
                     // Add the prompt to the conversation

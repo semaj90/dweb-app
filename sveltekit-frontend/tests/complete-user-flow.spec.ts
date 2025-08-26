@@ -23,7 +23,7 @@ test.describe('Complete Legal AI User Flow', () => {
 
   test('User can login, create case, upload evidence, and get AI summary', async ({ page }) => {
     // Step 1: Navigate to login page
-    await page.goto('/login');
+    await page.goto('/auth/login');
     
     // Step 2: Login with demo credentials
     await page.fill('#email', 'admin@example.com');
@@ -95,7 +95,7 @@ test.describe('Complete Legal AI User Flow', () => {
 
   test('User can perform CRUD operations on cases', async ({ page }) => {
     // Login
-    await page.goto('/login');
+    await page.goto('/auth/login');
     await page.fill('#email', 'admin@example.com');
     await page.fill('#password', 'admin123');
     await page.click('button[type="submit"]');
@@ -124,7 +124,7 @@ test.describe('Complete Legal AI User Flow', () => {
     // This test verifies that data persists across page reloads
     
     // Login
-    await page.goto('/login');
+    await page.goto('/auth/login');
     await page.fill('#email', 'admin@example.com');
     await page.fill('#password', 'admin123');
     await page.click('button[type="submit"]');
@@ -207,7 +207,7 @@ test.describe('Complete Legal AI User Flow', () => {
 
 test.describe('Error Handling', () => {
   test('Handles invalid login gracefully', async ({ page }) => {
-    await page.goto('/login');
+    await page.goto('/auth/login');
     
     await page.fill('#email', 'invalid@example.com');
     await page.fill('#password', 'wrongpassword');
@@ -219,7 +219,7 @@ test.describe('Error Handling', () => {
 
   test('Handles file upload errors gracefully', async ({ page }) => {
     // Login first
-    await page.goto('/login');
+    await page.goto('/auth/login');
     await page.fill('#email', 'admin@example.com');
     await page.fill('#password', 'admin123');
     await page.click('button[type="submit"]');

@@ -439,7 +439,7 @@ How can I assist you with your legal needs today?`);
 				<button
 					type="button"
 					class="w-8 h-8 flex items-center justify-center border border-yorha-border text-yorha-text-secondary hover:border-yorha-primary hover:text-yorha-primary focus:border-yorha-primary focus:outline-none focus:ring-2 focus:ring-yorha-primary/50 transition-colors"
-					onclick={toggleSettings}
+					on:click={toggleSettings}
 					aria-label="{settingsOpen ? 'Close settings' : 'Open settings'}"
 					aria-expanded={settingsOpen}
 				>
@@ -453,7 +453,7 @@ How can I assist you with your legal needs today?`);
 				<button
 					type="button"
 					class="w-8 h-8 flex items-center justify-center border border-yorha-border text-yorha-text-secondary hover:border-yorha-primary hover:text-yorha-primary focus:border-yorha-primary focus:outline-none focus:ring-2 focus:ring-yorha-primary/50 transition-colors"
-					onclick={minimizeWindow}
+					on:click={minimizeWindow}
 					aria-label={minimized ? 'Restore window' : 'Minimize window'}
 				>
 					<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -469,7 +469,7 @@ How can I assist you with your legal needs today?`);
 				<button
 					type="button"
 					class="w-8 h-8 flex items-center justify-center border border-yorha-border text-yorha-text-secondary hover:border-red-500 hover:text-red-500 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-colors"
-					onclick={closeWindow}
+					on:click={closeWindow}
 					aria-label="Close chat window"
 				>
 					<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -507,10 +507,10 @@ How can I assist you with your legal needs today?`);
 
 						<!-- Buttons -->
 						<div class="flex space-x-2">
-							<button type="button" onclick={updateSettings} class="flex-1 bg-yorha-primary text-yorha-bg-primary text-xs p-2 hover:bg-yorha-secondary transition-colors">
+							<button type="button" on:click={updateSettings} class="flex-1 bg-yorha-primary text-yorha-bg-primary text-xs p-2 hover:bg-yorha-secondary transition-colors">
 								Apply
 							</button>
-							<button type="button" onclick={clearChat} class="flex-1 bg-yorha-error text-white text-xs p-2 hover:bg-red-600 transition-colors">
+							<button type="button" on:click={clearChat} class="flex-1 bg-yorha-error text-white text-xs p-2 hover:bg-red-600 transition-colors">
 								Clear
 							</button>
 						</div>
@@ -540,7 +540,7 @@ How can I assist you with your legal needs today?`);
 
 							{#if message.error}
 								<div class="mt-2 text-xs text-red-400" role="alert">
-									Failed to get response. <button onclick={sendMessage} class="underline hover:no-underline focus:outline-none focus:ring-2 focus:ring-red-400/50" aria-label="Retry sending message">Retry</button>
+									Failed to get response. <button on:click={sendMessage} class="underline hover:no-underline focus:outline-none focus:ring-2 focus:ring-red-400/50" aria-label="Retry sending message">Retry</button>
 								</div>
 							{/if}
 

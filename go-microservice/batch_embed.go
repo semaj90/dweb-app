@@ -11,12 +11,11 @@ import (
 	"net/http"
 	"strconv"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/minio/simdjson-go"
-
-	fastjson "legal-ai-production/internal/fastjson"
 )
 
 type BatchEmbedRequest struct {
@@ -48,7 +47,19 @@ type OllamaEmbedResponse struct {
 }
 
 var (
-	embedCache sync.Map
+	embedCache    sync.Map
+	// Context7 performance counters - atomic operations
+	totalRequests   int64
+	totalCacheHits  int64
+	totalProcessed  int64
+	averageLatency  int64
+
+	// Buffer pool for JSON operations
+	jsonBufferPool = sync.Pool{
+		New: func() interface{} {
+			return bytes.NewBuffer(make([]byte, 0, 4096))
+		},
+	}
 )
 
 func initBatchEmbed() {
@@ -58,6 +69,16 @@ func initBatchEmbed() {
 // BatchEmbedHandler processes batch embedding requests with SIMD optimization
 func BatchEmbedHandler(c *gin.Context) {
 	start := time.Now()
+
+	// Context7 performance tracking - atomic increments
+	atomic.AddInt64(&totalRequests, 1)
+	defer func() {
+		latency := time.Since(start).Microseconds()
+		// Update rolling average atomically
+		currentAvg := atomic.LoadInt64(&averageLatency)
+		newAvg := (currentAvg + latency) / 2
+		atomic.StoreInt64(&averageLatency, newAvg)
+	}()
 
 	// Read request body
 	body, err := io.ReadAll(c.Request.Body)
@@ -75,63 +96,74 @@ func BatchEmbedHandler(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
 			return
 		}
-		processBatchEmbed(c, req, start)
+		stream := c.Query("stream") == "1"
+		processBatchEmbed(c, req, start, stream)
 		return
 	}
 
 	// Extract fields using SIMD parser
 	req := BatchEmbedRequest{}
 
-	// Get docId
-	docIdIter, _ := parsed.Iter.Lookup("docId")
-	if docId, _ := docIdIter.StringCvt(); docId != "" {
-		req.DocID = docId
+	// Get docId using correct simdjson API
+	if docIdField, err := parsed.FindKey("docId"); err == nil {
+		if docId, err := docIdField.StringBytes(); err == nil {
+			req.DocID = string(docId)
+		}
 	}
 
-	// Get model (optional)
-	modelIter, _ := parsed.Iter.Lookup("model")
-	if model, _ := modelIter.StringCvt(); model != "" {
-		req.Model = model
+	// Get model (optional) using correct simdjson API
+	if modelField, err := parsed.FindKey("model"); err == nil {
+		if model, err := modelField.StringBytes(); err == nil {
+			req.Model = string(model)
+		}
 	} else {
 		req.Model = "nomic-embed-text" // Default model
 	}
 
-	// Get chunks array
-	chunksIter, _ := parsed.Iter.Lookup("chunks")
-	if chunksArray, err := chunksIter.Array(); err == nil {
-		req.Chunks = make([]string, 0)
-		iter := chunksArray.Iter()
-		for {
-			chunk, iterErr := iter.AdvanceIter()
-			if iterErr != nil {
-				break
-			}
-			if chunkStr, err := chunk.StringCvt(); err == nil {
-				req.Chunks = append(req.Chunks, chunkStr)
+	// Get chunks array with pre-allocated capacity using correct simdjson API
+	if chunksField, err := parsed.FindKey("chunks"); err == nil {
+		if chunksArray, err := chunksField.Array(); err == nil {
+			req.Chunks = make([]string, 0, 100) // Pre-allocate capacity
+			iter := chunksArray.Iter()
+			for {
+				chunk, err := iter.AdvanceIter()
+				if err != nil {
+					break
+				}
+				if chunkStr, err := chunk.StringBytes(); err == nil {
+					req.Chunks = append(req.Chunks, string(chunkStr))
+				}
 			}
 		}
 	}
 
-    stream := c.Query("stream") == "1"
+	stream := c.Query("stream") == "1"
 	processBatchEmbed(c, req, start, stream)
 }
 
 func processBatchEmbed(c *gin.Context, req BatchEmbedRequest, start time.Time, stream bool) {
-	// Check cache first
+	// Check cache first with atomic hit tracking
 	cacheKey := fmt.Sprintf("embed:%s", req.DocID)
 	if cached, exists := embedCache.Load(cacheKey); exists {
+		atomic.AddInt64(&totalCacheHits, 1)
+
 		if stream {
 			// For cached response in streaming mode just send full payload
 			c.Header("Content-Type", "application/json")
-			b, _ := fastjson.Marshal(cached)
-			c.Writer.Write(b)
+			// Use buffer pool for JSON encoding
+			buffer := jsonBufferPool.Get().(*bytes.Buffer)
+			buffer.Reset()
+			defer jsonBufferPool.Put(buffer)
+
+			json.NewEncoder(buffer).Encode(cached)
+			c.Writer.Write(buffer.Bytes())
 			return
 		}
 		c.JSON(http.StatusOK, cached)
 		return
 	}
 
-	// Process embeddings with parallel workers
+	// Process embeddings with parallel workers and atomic tracking
 	embeddings := make([][]float32, len(req.Chunks))
 	var wg sync.WaitGroup
 	semaphore := make(chan struct{}, 4) // Limit concurrent Ollama calls
@@ -141,7 +173,10 @@ func processBatchEmbed(c *gin.Context, req BatchEmbedRequest, start time.Time, s
 		go func(idx int, text string) {
 			defer wg.Done()
 			semaphore <- struct{}{}
-			defer func() { <-semaphore }()
+			defer func() {
+				<-semaphore
+				atomic.AddInt64(&totalProcessed, 1)  // Track processed chunks
+			}()
 
 			embedding, err := getOllamaEmbedding(text, req.Model)
 			if err != nil {
@@ -163,11 +198,14 @@ func processBatchEmbed(c *gin.Context, req BatchEmbedRequest, start time.Time, s
 	embedCache.Store(cacheKey, response)
 
 	if !stream {
-		// Use fastjson for encoding if possible
-		if buf, err := fastjson.EncodeToBuffer(response); err == nil {
+		// Use buffer pool for optimized JSON encoding
+		buffer := jsonBufferPool.Get().(*bytes.Buffer)
+		buffer.Reset()
+		defer jsonBufferPool.Put(buffer)
+
+		if err := json.NewEncoder(buffer).Encode(response); err == nil {
 			c.Header("Content-Type", "application/json")
-			c.Writer.Write(buf.Bytes())
-			fastjson.ReleaseBuffer(buf)
+			c.Writer.Write(buffer.Bytes())
 			return
 		}
 		c.JSON(http.StatusOK, response)
@@ -184,24 +222,33 @@ func processBatchEmbed(c *gin.Context, req BatchEmbedRequest, start time.Time, s
 		return
 	}
 
+	// Get buffer for streaming operations
+	buffer := jsonBufferPool.Get().(*bytes.Buffer)
+	buffer.Reset()
+	defer jsonBufferPool.Put(buffer)
+
 	// Begin stream with metadata (without embeddings)
-	metaOnly := map[string]any{"docId": req.DocID, "model": req.Model, "chunkCount": len(req.Chunks), "processedAt": time.Now().Format(time.RFC3339)}
-	if b, err := fastjson.Marshal(metaOnly); err == nil { c.Writer.Write(b); c.Writer.Write([]byte("\n")) } else { mb, _ := json.Marshal(metaOnly); c.Writer.Write(mb); c.Writer.Write([]byte("\n")) }
+	metaOnly := map[string]interface{}{"docId": req.DocID, "model": req.Model, "chunkCount": len(req.Chunks), "processedAt": time.Now().Format(time.RFC3339)}
+	json.NewEncoder(buffer).Encode(metaOnly)
+	c.Writer.Write(buffer.Bytes())
+	c.Writer.Write([]byte("\n"))
 	flusher.Flush()
 
 	// Stream each embedding
 	for i, emb := range embeddings {
-		item := map[string]any{"index": i, "embedding": emb}
-		b, err := fastjson.Marshal(item)
-		if err != nil { b, _ = json.Marshal(item) }
-		c.Writer.Write(b)
+		buffer.Reset()
+		item := map[string]interface{}{"index": i, "embedding": emb}
+		json.NewEncoder(buffer).Encode(item)
+		c.Writer.Write(buffer.Bytes())
 		c.Writer.Write([]byte("\n"))
 		flusher.Flush()
 	}
 
 	// Final summary line
-	summary := map[string]any{"complete": true, "docId": req.DocID, "total": len(embeddings), "processTimeMs": response.Metadata.ProcessTimeMs}
-	if b, err := fastjson.Marshal(summary); err == nil { c.Writer.Write(b) } else { sb, _ := json.Marshal(summary); c.Writer.Write(sb) }
+	buffer.Reset()
+	summary := map[string]interface{}{"complete": true, "docId": req.DocID, "total": len(embeddings), "processTimeMs": response.Metadata.ProcessTimeMs}
+	json.NewEncoder(buffer).Encode(summary)
+	c.Writer.Write(buffer.Bytes())
 	flusher.Flush()
 }
 
@@ -261,10 +308,19 @@ func RegisterBatchEmbedRoutes(router *gin.Engine) {
 		c.JSON(http.StatusOK, gin.H{"usage": "POST /batch-embed?stream=1 with {docId, chunks:[...], model?}"})
 	})
 	router.GET("/batch-embed/stats", func(c *gin.Context) {
-		stats := fastjson.GetStats()
-		c.Header("X-JSON-Codec", stats.CodecName)
-		c.Header("X-JSON-Encodes", strconv.FormatInt(stats.Encodes, 10))
-		c.Header("X-JSON-Bytes", strconv.FormatInt(stats.BytesProduced, 10))
+		// Context7 performance stats using atomic operations
+		stats := map[string]interface{}{
+			"total_requests":   atomic.LoadInt64(&totalRequests),
+			"cache_hits":       atomic.LoadInt64(&totalCacheHits),
+			"total_processed":  atomic.LoadInt64(&totalProcessed),
+			"average_latency_us": atomic.LoadInt64(&averageLatency),
+			"cache_hit_ratio":  float64(atomic.LoadInt64(&totalCacheHits)) / float64(atomic.LoadInt64(&totalRequests)),
+			"codec_name":       "standard_json_with_buffer_pool",
+		}
+
+		c.Header("X-Total-Requests", strconv.FormatInt(atomic.LoadInt64(&totalRequests), 10))
+		c.Header("X-Cache-Hits", strconv.FormatInt(atomic.LoadInt64(&totalCacheHits), 10))
+		c.Header("X-Average-Latency-Us", strconv.FormatInt(atomic.LoadInt64(&averageLatency), 10))
 		c.JSON(http.StatusOK, stats)
 	})
 }

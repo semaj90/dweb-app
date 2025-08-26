@@ -22,7 +22,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
-	"github.com/streadway/amqp"
+	amqp "github.com/rabbitmq/amqp091-go"
 	"gorgonia.org/gorgonia"
 	"gorgonia.org/tensor"
 	"golang.org/x/sys/cpu"

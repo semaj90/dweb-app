@@ -5,7 +5,6 @@ https://svelte.dev/e/bind_invalid_expression -->
   Demonstrates real-time AI-powered editing with comprehensive suggestion types
 -->
 <script lang="ts">
-  import { $state, $effect } from 'svelte';
   import { onMount } from 'svelte';
   import EnhancedInlineEditor from '$lib/components/ai/EnhancedInlineEditor.svelte';
   import { inlineSuggestionService, type SuggestionOptions } from '$lib/services/inlineSuggestionService';
@@ -16,7 +15,7 @@ https://svelte.dev/e/bind_invalid_expression -->
   import { Slider } from '$lib/components/ui/slider';
 
   // Demo content
-  let demoContent = $state(`In the matter of Smith v. Johnson (2024), the court found that the defendant's actions constituted a breach of contractual obligations. The plaintiff sought damages for lost profits and consequential losses arising from the breach.
+  let demoContent = $state(`In the matter of Smith v. Johnson (2024);, the court found that the defendant's actions constituted a breach of contractual obligations. The plaintiff sought damages for lost profits and consequential losses arising from the breach.
 
 The legal precedent established in Williams v. Davis (2019) provides guidance on calculating damages in commercial disputes. The court emphasized the importance of proving causation between the breach and the claimed losses.
 
@@ -184,7 +183,7 @@ Furthermore, the doctrine of mitigation requires that the injured party take rea
                 <Button
                   variant="outline"
                   size="sm"
-                  onclick={() => loadScenario(scenario)}
+                  on:click={() => loadScenario(scenario)}
                   class="justify-start text-left"
                 >
                   {scenario.title}
@@ -202,7 +201,7 @@ Furthermore, the doctrine of mitigation requires that the injured party take rea
                 <CardTitle>AI-Enhanced Legal Editor</CardTitle>
                 <CardDescription>Start typing to see intelligent suggestions appear</CardDescription>
               </div>
-              <Button onclick={resetDemo} variant="outline" size="sm">
+              <Button on:click={resetDemo} variant="outline" size="sm">
                 Reset Demo
               </Button>
             </div>

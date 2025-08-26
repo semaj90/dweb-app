@@ -4,15 +4,15 @@
 
     import { createEventDispatcher } from 'svelte';
 
-    export let steps: Array<{
+    let { steps = $bindable() } = $props(); // Array<{
         id: string;
         title: string;
         description: string;
         required: boolean;
         estimatedTime: number;
     }>;
-    export let currentStep: number;
-    export let validationResults: Record<number, {
+    let { currentStep = $bindable() } = $props(); // number;
+    let { validationResults = $bindable() } = $props(); // Record<number, {
         isValid: boolean;
         errors: string[];
         warnings: string[];
@@ -83,7 +83,7 @@
 
                     <li class="flex-1 min-w-0">
                         <button
-                            onclick={() => handleStepClick(index)}
+                            on:click={() => handleStepClick(index)}
                             disabled={!isClickable}
                             class="group flex items-center w-full text-left
                                    {isClickable ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700' : 'cursor-not-allowed'}

@@ -1,14 +1,12 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"runtime"
-	"strconv"
 	"sync"
 	"time"
 
@@ -479,7 +477,7 @@ func (gtp *GPUTensorProcessor) estimateGPUMemoryUsage(tensor MultiDimArray) int6
 
 func generateRouteHash(cacheKey string) string {
 	hash := 0
-	for i, char := range cacheKey {
+	for _, char := range cacheKey {
 		hash = ((hash << 5) - hash) + int(char)
 		hash = hash & hash // Convert to 32-bit integer
 	}

@@ -672,7 +672,7 @@
 	<!-- Trigger Button -->
 	<Button.Root
 		{...$trigger}
-		onclick={openDialog}
+		on:click={openDialog}
 		variant="default"
 		size="lg"
 		class={cn(
@@ -748,7 +748,7 @@
 							{...$close}
 							variant="ghost"
 							size="sm"
-							onclick={closeDialog}
+							on:click={closeDialog}
 							class="h-6 w-6 p-0"
 						>
 							<span class="sr-only">Close</span>
@@ -829,7 +829,7 @@
 												{#each message.metadata.suggestions as suggestion}
 													<button
 														class="text-xs text-blue-400 hover:text-blue-300 underline block"
-														onclick={() => {
+														on:click={() => {
 															currentMessage = suggestion;
 															sendMessage();
 														}}
@@ -890,7 +890,7 @@
 						/>
 						
 						<Button.Root
-							onclick={sendMessage}
+							on:click={sendMessage}
 							disabled={!canSendMessage}
 							variant="default"
 							size="sm"
@@ -915,7 +915,7 @@
 							<Button.Root
 								variant="ghost"
 								size="sm"
-								onclick={clearChat}
+								on:click={clearChat}
 								disabled={!hasMessages}
 								class="text-xs h-6 px-2"
 							>

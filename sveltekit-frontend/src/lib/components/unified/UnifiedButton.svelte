@@ -288,7 +288,7 @@
   }
 
   // Dynamic classes based on props
-  $: baseClasses = [
+  let baseClasses = $derived([);
     // Base button styles
     'relative inline-flex items-center justify-center',
     'font-medium transition-all duration-200',
@@ -326,8 +326,7 @@
   ].filter(Boolean).join(' ');
 
   // Legal confidence indicator
-  $: confidenceColor = 
-    $confidence > 0.8 ? 'text-green-500' :
+  let confidenceColor = $derived($confidence > 0.8 ? 'text-green-500' :);
     $confidence > 0.5 ? 'text-yellow-500' : 'text-red-500';
 </script>
 

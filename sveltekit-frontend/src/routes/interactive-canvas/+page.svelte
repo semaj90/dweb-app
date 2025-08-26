@@ -260,7 +260,7 @@
 									<span class="space-y-4">{upload.hash.substring(0, 12)}...{upload.hash.substring(-4)}</span>
 									<button
 										class="space-y-4"
-										onclick={() => window.open(`/evidence/hash?hash=${upload.hash}`, '_blank')}
+										on:click={() => window.open(`/evidence/hash?hash=${upload.hash}`, '_blank')}
 									>
 										🔍 Verify
 									</button>

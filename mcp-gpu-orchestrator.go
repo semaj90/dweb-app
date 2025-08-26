@@ -1,14 +1,18 @@
+//go:build orchestrator
+// +build orchestrator
+
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"log"
-	"net"
 	"net/http"
 	"os"
 	"runtime"
+	"strconv"
 	"sync"
 	"time"
 
@@ -16,8 +20,7 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/websocket"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/lucas-clemente/quic-go"
-	"github.com/lucas-clemente/quic-go/http3"
+	"github.com/quic-go/quic-go/http3"
 	"google.golang.org/grpc"
 )
 
@@ -31,21 +34,21 @@ type GPUOrchestrator struct {
 	grpcServer  *grpc.Server
 	quicServer  *http3.Server
 	wsUpgrader  websocket.Upgrader
-	
+
 	// GPU management
 	gpuWorkers  []GPUWorker
 	tensorQueue chan TensorTask
-	
+
 	// Service mesh
 	services    map[string]ServiceInstance
-	
+
 	// Configuration
 	config      OrchestratorConfig
-	
+
 	// Synchronization
 	mu          sync.RWMutex
 	workerPool  *WorkerPool
-	
+
 	// Performance metrics
 	metrics     PerformanceMetrics
 }
@@ -165,13 +168,13 @@ type Recommendation struct {
 
 func NewGPUOrchestrator() *GPUOrchestrator {
 	config := loadConfig()
-	
+
 	// Initialize worker pool
 	workerPool := &WorkerPool{
 		taskQueue:   make(chan TensorTask, 1000),
 		resultQueue: make(chan TaskResult, 1000),
 	}
-	
+
 	// Initialize GPU workers
 	numGPUs := detectGPUs()
 	gpuWorkers := make([]GPUWorker, numGPUs)
@@ -185,7 +188,7 @@ func NewGPUOrchestrator() *GPUOrchestrator {
 			Cancel:    cancel,
 		}
 	}
-	
+
 	return &GPUOrchestrator{
 		config:      config,
 		services:    make(map[string]ServiceInstance),
@@ -216,33 +219,33 @@ func loadConfig() OrchestratorConfig {
 
 func (o *GPUOrchestrator) Initialize() error {
 	log.Println("🚀 Initializing MCP GPU Orchestrator...")
-	
+
 	// Initialize database
 	var err error
 	o.db, err = pgxpool.New(context.Background(), o.config.DatabaseURL)
 	if err != nil {
 		return fmt.Errorf("database connection failed: %w", err)
 	}
-	
+
 	// Initialize Redis
 	opt, err := redis.ParseURL(o.config.RedisURL)
 	if err != nil {
 		return fmt.Errorf("redis URL parsing failed: %w", err)
 	}
 	o.redis = redis.NewClient(opt)
-	
+
 	// Start worker pool
 	o.startWorkerPool()
-	
+
 	// Register existing services
 	o.registerServices()
-	
+
 	// Start GPU monitoring
 	go o.monitorGPUs()
-	
+
 	// Start metrics collection
 	go o.collectMetrics()
-	
+
 	log.Println("✅ MCP GPU Orchestrator initialized")
 	return nil
 }
@@ -292,12 +295,12 @@ func (o *GPUOrchestrator) registerServices() {
 			},
 		},
 	}
-	
+
 	for _, service := range services {
 		service.LastCheck = time.Now()
 		o.services[service.Name] = service
 	}
-	
+
 	log.Printf("📋 Registered %d services", len(services))
 }
 
@@ -310,26 +313,26 @@ func (o *GPUOrchestrator) startWorkerPool() {
 			quit:     make(chan bool),
 		}
 		o.workerPool.workers = append(o.workerPool.workers, worker)
-		
+
 		o.workerPool.wg.Add(1)
 		go o.runWorker(worker)
 	}
-	
+
 	// Start task dispatcher
 	go o.dispatchTasks()
-	
+
 	log.Printf("👥 Started %d workers", o.config.MaxWorkers)
 }
 
 func (o *GPUOrchestrator) runWorker(worker Worker) {
 	defer o.workerPool.wg.Done()
-	
+
 	for {
 		select {
 		case task := <-worker.taskChan:
 			result := o.processTask(task, worker.id)
 			o.workerPool.resultQueue <- result
-			
+
 		case <-worker.quit:
 			return
 		}
@@ -338,18 +341,18 @@ func (o *GPUOrchestrator) runWorker(worker Worker) {
 
 func (o *GPUOrchestrator) processTask(task TensorTask, workerID int) TaskResult {
 	start := time.Now()
-	
+
 	result := TaskResult{
 		TaskID:   task.ID,
 		WorkerID: workerID,
 		Duration: 0,
 	}
-	
+
 	defer func() {
 		result.Duration = time.Since(start)
 		o.metrics.CompletedTasks++
 	}()
-	
+
 	switch task.Type {
 	case "embedding":
 		result.Result, result.Error = o.generateEmbedding(task.Input)
@@ -364,18 +367,18 @@ func (o *GPUOrchestrator) processTask(task TensorTask, workerID int) TaskResult 
 	default:
 		result.Error = fmt.Errorf("unknown task type: %s", task.Type)
 	}
-	
+
 	if result.Error != nil {
 		o.metrics.FailedTasks++
 	}
-	
+
 	return result
 }
 
 func (o *GPUOrchestrator) dispatchTasks() {
 	for task := range o.tensorQueue {
 		// Find available worker
-		for i, worker := range o.workerPool.workers {
+		for _, worker := range o.workerPool.workers {
 			select {
 			case worker.taskChan <- task:
 				goto dispatched
@@ -383,7 +386,7 @@ func (o *GPUOrchestrator) dispatchTasks() {
 				continue
 			}
 		}
-		
+
 		// If no worker available, wait a bit
 		time.Sleep(10 * time.Millisecond)
 		select {
@@ -391,7 +394,7 @@ func (o *GPUOrchestrator) dispatchTasks() {
 		default:
 			log.Printf("⚠️ Task queue full, dropping task %s", task.ID)
 		}
-		
+
 	dispatched:
 		o.metrics.TotalTasks++
 	}
@@ -400,13 +403,13 @@ func (o *GPUOrchestrator) dispatchTasks() {
 // Enhanced RAG with SOM and Attention
 func (o *GPUOrchestrator) HandleEnhancedRAG(c *gin.Context) {
 	start := time.Now()
-	
+
 	var req SOMAnalysisRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	// Create task for SOM clustering if enabled
 	var somTask *TensorTask
 	if req.EnableSOM {
@@ -421,7 +424,7 @@ func (o *GPUOrchestrator) HandleEnhancedRAG(c *gin.Context) {
 		}
 		o.tensorQueue <- *somTask
 	}
-	
+
 	// Create task for attention computation
 	var attentionTask *TensorTask
 	if req.EnableAttention {
@@ -436,14 +439,14 @@ func (o *GPUOrchestrator) HandleEnhancedRAG(c *gin.Context) {
 		}
 		o.tensorQueue <- *attentionTask
 	}
-	
+
 	// Call existing enhanced RAG service
 	ragResponse, err := o.callEnhancedRAGService(req.Query, req.Context)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	response := EnhancedRAGResponse{
 		Query:          req.Query,
 		Response:       ragResponse,
@@ -452,7 +455,7 @@ func (o *GPUOrchestrator) HandleEnhancedRAG(c *gin.Context) {
 		ProcessingTime: float64(time.Since(start).Nanoseconds()) / 1e6,
 		GPUAccelerated: req.EnableSOM || req.EnableAttention,
 	}
-	
+
 	// Collect SOM results if available
 	if somTask != nil {
 		select {
@@ -464,7 +467,7 @@ func (o *GPUOrchestrator) HandleEnhancedRAG(c *gin.Context) {
 			log.Println("⚠️ SOM clustering timeout")
 		}
 	}
-	
+
 	// Collect attention results if available
 	if attentionTask != nil {
 		select {
@@ -476,36 +479,37 @@ func (o *GPUOrchestrator) HandleEnhancedRAG(c *gin.Context) {
 			log.Println("⚠️ Attention computation timeout")
 		}
 	}
-	
+
 	// Generate recommendations based on analysis
 	response.Recommendations = o.generateRecommendations(response)
-	
+
 	c.JSON(http.StatusOK, response)
 }
 
 func (o *GPUOrchestrator) callEnhancedRAGService(query, context string) (string, error) {
 	url := "http://localhost:8094/api/rag/search"
-	
+
 	payload := map[string]interface{}{
 		"query": query,
 		"limit": 5,
 	}
-	
+
 	payloadBytes, _ := json.Marshal(payload)
-	
-	resp, err := http.Post(url, "application/json", string(payloadBytes))
+
+	// Use a reader for the JSON payload (string does not implement io.Reader)
+	resp, err := http.Post(url, "application/json", bytes.NewReader(payloadBytes))
 	if err != nil {
 		return "", err
 	}
 	defer resp.Body.Close()
-	
+
 	var result map[string]interface{}
 	json.NewDecoder(resp.Body).Decode(&result)
-	
+
 	if response, ok := result["response"].(string); ok {
 		return response, nil
 	}
-	
+
 	return "No response available", nil
 }
 
@@ -517,7 +521,7 @@ func (o *GPUOrchestrator) HandleWebSocket(c *gin.Context) {
 		return
 	}
 	defer conn.Close()
-	
+
 	// Send service status
 	for {
 		status := map[string]interface{}{
@@ -526,11 +530,11 @@ func (o *GPUOrchestrator) HandleWebSocket(c *gin.Context) {
 			"gpu_status":  o.getGPUStatus(),
 			"timestamp":   time.Now(),
 		}
-		
+
 		if err := conn.WriteJSON(status); err != nil {
 			break
 		}
-		
+
 		time.Sleep(1 * time.Second)
 	}
 }
@@ -545,7 +549,7 @@ func (o *GPUOrchestrator) HandleStatus(c *gin.Context) {
 		"queue_depth":  len(o.tensorQueue),
 		"timestamp":    time.Now(),
 	}
-	
+
 	c.JSON(http.StatusOK, status)
 }
 
@@ -553,13 +557,13 @@ func (o *GPUOrchestrator) HandleStatus(c *gin.Context) {
 func (o *GPUOrchestrator) monitorGPUs() {
 	ticker := time.NewTicker(5 * time.Second)
 	defer ticker.Stop()
-	
+
 	for range ticker.C {
 		for i := range o.gpuWorkers {
 			// Update GPU utilization (mock implementation)
 			o.gpuWorkers[i].Utilization = float64(i*10 + 20) // Mock values
 		}
-		
+
 		// Update metrics
 		totalUtil := 0.0
 		for _, gpu := range o.gpuWorkers {
@@ -572,16 +576,16 @@ func (o *GPUOrchestrator) monitorGPUs() {
 func (o *GPUOrchestrator) collectMetrics() {
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
-	
+
 	lastCompleted := o.metrics.CompletedTasks
-	
+
 	for range ticker.C {
 		currentCompleted := o.metrics.CompletedTasks
 		o.metrics.ThroughputPerSec = float64(currentCompleted - lastCompleted)
 		lastCompleted = currentCompleted
-		
+
 		o.metrics.QueueDepth = len(o.tensorQueue)
-		
+
 		// Update average latency (simplified)
 		if o.metrics.CompletedTasks > 0 {
 			o.metrics.AverageLatency = 150.0 // Mock average
@@ -634,7 +638,7 @@ func (o *GPUOrchestrator) processGPUTensor(input interface{}, requiresGPU bool) 
 		}
 		return nil, fmt.Errorf("no GPU available")
 	}
-	
+
 	return "CPU tensor processed", nil
 }
 
@@ -680,21 +684,21 @@ func (o *GPUOrchestrator) setupRoutes() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
 	router.Use(gin.Logger(), gin.Recovery())
-	
+
 	// CORS middleware
 	router.Use(func(c *gin.Context) {
 		c.Header("Access-Control-Allow-Origin", "*")
 		c.Header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		c.Header("Access-Control-Allow-Headers", "Content-Type")
-		
+
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
 			return
 		}
-		
+
 		c.Next()
 	})
-	
+
 	// API routes
 	api := router.Group("/api")
 	{
@@ -710,10 +714,10 @@ func (o *GPUOrchestrator) setupRoutes() *gin.Engine {
 			c.JSON(http.StatusOK, o.getGPUStatus())
 		})
 	}
-	
+
 	// WebSocket endpoint
 	router.GET("/ws", o.HandleWebSocket)
-	
+
 	// Root endpoint
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
@@ -729,7 +733,7 @@ func (o *GPUOrchestrator) setupRoutes() *gin.Engine {
 			},
 		})
 	})
-	
+
 	return router
 }
 
@@ -737,14 +741,14 @@ func (o *GPUOrchestrator) Run() error {
 	if err := o.Initialize(); err != nil {
 		return err
 	}
-	
+
 	router := o.setupRoutes()
-	
+
 	log.Printf("🚀 MCP GPU Orchestrator starting on port %s", o.config.HTTPPort)
 	log.Printf("📊 Metrics: %d workers, %d GPU cores", o.config.MaxWorkers, len(o.gpuWorkers))
 	log.Printf("🔗 WebSocket: ws://localhost:%s/ws", o.config.HTTPPort)
 	log.Printf("📡 Services integrated: %d", len(o.services))
-	
+
 	return router.Run(":" + o.config.HTTPPort)
 }
 
@@ -790,7 +794,7 @@ func detectGPUs() int {
 
 func main() {
 	orchestrator := NewGPUOrchestrator()
-	
+
 	if err := orchestrator.Run(); err != nil {
 		log.Fatalf("💥 Orchestrator failed: %v", err)
 	}

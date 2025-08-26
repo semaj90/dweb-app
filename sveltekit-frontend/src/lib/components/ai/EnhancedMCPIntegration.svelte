@@ -446,7 +446,7 @@
 					onkeydown={(e) => e.key === 'Enter' && executeQuery()}
 				/>
 				<button 
-					onclick={executeQuery}
+					on:click={executeQuery}
 					disabled={!queryInput.trim() || !selectedTool || isProcessing}
 					class="execute-button"
 				>
@@ -461,7 +461,7 @@
 				{#each $contextualSuggestions as suggestion}
 					<button 
 						class="suggestion-item suggestion-{suggestion.priority}"
-						onclick={suggestion.action}
+						on:click={suggestion.action}
 						disabled={isProcessing}
 					>
 						<div class="suggestion-title">{suggestion.title}</div>

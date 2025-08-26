@@ -13,12 +13,12 @@ This document tracks the implementation status, integration notes, and best prac
 - **WebGL2 Optimization**: Uses VAOs, buffer pooling, glsl-cubic-filter for LOD blending, gl-matrix for matrix transforms.
 - **Threading**: Embedding/parsing offloaded to Web Workers, layout caching/prefetching to Service Worker, SharedArrayBuffer for efficient data sharing.
 - **Error Handling**: SvelteKit error boundaries, XState guards, todo log for lost relevance/failed queries.
-- **Docker Monorepo**: All services containerized with GPU support, secrets managed via .env files.
+- ** Monorepo**: All services containerized with GPU support, secrets managed via .env files.
 
 ## Implementation Status
 
 - [x] **Architecture Blueprint**: Documented in PHASE8_CONTEXT7_ARCHITECTURE.md
-- [x] **Docker Compose**: Multi-service orchestration for Ollama, vLLM, PGVector, Neo4j, Redis, RabbitMQ
+- [x] *local native windows setup*: Multi-service orchestration for Ollama, vLLM, PGVector, Neo4j, Redis, RabbitMQ
 - [x] **Drizzle ORM**: Used in +server.ts for PostgreSQL/PGVector
 - [x] **RAG Pipeline**: langchain-rag.ts, +server.ts, PHASE8_CONTEXT7_ARCHITECTURE.md
 - [x] **Custom Reranker**: Blueprint and sample code in PHASE8_CONTEXT7_ARCHITECTURE.md
@@ -43,7 +43,7 @@ This document tracks the implementation status, integration notes, and best prac
 
 - Use only local LLMs (Ollama, vLLM) with NVIDIA CUDA toolchain.
 - Block outbound traffic from LLM containers to prevent remote calls.
-- Use Docker monorepo for all services, with GPU passthrough.
+- Use local native windows services for all services, with GPU passthrough.
 - Integrate GraphQL API above Drizzle ORM, PGVector, Neo4j, Redis.
 - Implement custom reranker as a server-only module.
 - Use UnoCSS atomic CSS, scoped mode, and preset configs.

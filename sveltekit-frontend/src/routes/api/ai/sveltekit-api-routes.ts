@@ -4,20 +4,20 @@
  */
 
 export interface ApiRoute {
-  path: string;
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
-  handler: string;
-  description: string;
-  params?: string[];
-  body?: Record<string, any>;
-  response?: Record<string, any>;
+  readonly path: string;
+  readonly method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  readonly handler: string;
+  readonly description: string;
+  readonly params?: readonly string[];
+  readonly body?: Record<string, unknown>;
+  readonly response?: Record<string, unknown>;
 }
 
 export interface ApiRouteGroup {
-  name: string;
-  description: string;
-  baseUrl: string;
-  routes: ApiRoute[];
+  readonly name: string;
+  readonly description: string;
+  readonly baseUrl: string;
+  readonly routes: readonly ApiRoute[];
 }
 
 /**
@@ -443,15 +443,17 @@ export function getRoutesByMethod(method: string): Array<ApiRoute & { group: str
   return getAllRoutes().filter(route => route.method === method);
 }
 
+export interface EndpointTestResult {
+  readonly available: boolean;
+  readonly responseTime: number;
+  readonly status?: number;
+  readonly error?: string;
+}
+
 /**
  * Test endpoint availability and return status
  */
-export async function testEndpoint(path: string, method: string = 'GET'): Promise<{
-  available: boolean;
-  responseTime?: number;
-  status?: number;
-  error?: string;
-}> {
+export async function testEndpoint(path: string, method: string = 'GET'): Promise<EndpointTestResult> {
   const startTime = Date.now();
   try {
     const response = await fetch(`http://localhost:5173${path}`, {
@@ -468,7 +470,7 @@ export async function testEndpoint(path: string, method: string = 'GET'): Promis
     return {
       available: false,
       responseTime: Date.now() - startTime,
-      error: (error as Error).message
+      error: error instanceof Error ? error.message : 'Unknown error'
     };
   }
 }

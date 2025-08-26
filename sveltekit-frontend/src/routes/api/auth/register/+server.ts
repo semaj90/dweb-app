@@ -1,113 +1,147 @@
-import type { RequestHandler } from '@sveltejs/kit';
-import { json } from "@sveltejs/kit";
-import { z } from "zod";
-import { authService } from "$lib/server/auth";
-import { embeddingService } from "$lib/server/embedding-service";
-import { isValidEmail } from "$lib/utils";
+/**
+ * User Registration API Endpoint
+ * POST /api/auth/register
+ */
 
+import { json, error, type RequestHandler } from '@sveltejs/kit';
+import { ExistingUserAuthService as UserAuthService } from '$lib/server/db/existing-user-operations.js';
+import { z } from 'zod';
+import { dev } from '$app/environment';
+
+// Registration request validation schema
 const registerSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-  firstName: z.string().optional(),
-  lastName: z.string().optional(),
-  displayName: z.string().optional(),
-  legalSpecialties: z.array(z.string()).optional()
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  firstName: z.string().min(1, 'First name is required').max(100),
+  lastName: z.string().min(1, 'Last name is required').max(100),
+  role: z.enum(['attorney', 'paralegal', 'investigator', 'user']).default('user'),
+  jurisdiction: z.string().optional(),
+  practiceAreas: z.array(z.string()).optional(),
+  
+  // Profile information
+  profileData: z.object({
+    phoneNumber: z.string().optional(),
+    licenseNumber: z.string().optional(),
+    yearsOfExperience: z.number().min(0).max(100).optional(),
+    specializations: z.array(z.string()).optional(),
+    firmName: z.string().optional(),
+    bio: z.string().max(1000).optional(),
+    preferences: z.object({
+      theme: z.enum(['light', 'dark', 'auto']).default('light'),
+      language: z.string().default('en'),
+      timezone: z.string().default('UTC'),
+      notifications: z.object({
+        email: z.boolean().default(true),
+        push: z.boolean().default(true),
+        sms: z.boolean().default(false),
+      }).default({}),
+      aiAssistance: z.object({
+        autoSummarize: z.boolean().default(true),
+        suggestCitations: z.boolean().default(true),
+        riskAnalysis: z.boolean().default(true),
+      }).default({}),
+    }).default({}),
+  }).optional(),
 });
 
-export const POST: RequestHandler = async ({ request, cookies }) => {
+export const POST: RequestHandler = async ({ request, getClientAddress }) => {
   try {
-    const body = await request.json();
-    console.log("📝 Registration attempt:", { email: body.email });
+    // Parse and validate request body
+    const body = await request.json().catch(() => ({}));
+    const validatedData = registerSchema.parse(body);
 
-    // Validate input
-    const validationResult = registerSchema.safeParse(body);
-    if (!validationResult.success) {
-      return json({
-        success: false,
-        error: "Invalid input data",
-        details: validationResult.error.flatten()
-      }, { status: 400 });
-    }
+    // Get client information for logging
+    const ipAddress = getClientAddress();
+    const userAgent = request.headers.get('user-agent') || undefined;
 
-    const { email, password, firstName, lastName, displayName, legalSpecialties } = validationResult.data;
-
-    // Additional email validation
-    if (!isValidEmail(email)) {
-      return json({
-        success: false,
-        error: "Invalid email format"
-      }, { status: 400 });
-    }
-
-    // Register user using our auth service
-    const user = await authService.register({
-      email: email.toLowerCase().trim(),
-      password,
-      firstName: firstName?.trim(),
-      lastName: lastName?.trim(),
-      displayName: displayName?.trim(),
-      legalSpecialties: legalSpecialties || []
+    // Register user with complete profile setup
+    const result = await UserAuthService.registerUser({
+      ...validatedData,
+      profileData: validatedData.profileData,
     });
 
-    // Generate embeddings for RAG functionality
-    try {
-      await Promise.all([
-        embeddingService.generateUserProfileEmbedding(user.id),
-        embeddingService.generateUserPreferenceEmbedding(user.id)
-      ]);
-    } catch (embeddingError) {
-      console.warn('Failed to generate user embeddings:', embeddingError);
-      // Don't fail registration if embeddings fail
+    if (!result.success) {
+      throw error(400, {
+        message: result.error || 'Registration failed',
+        code: 'REGISTRATION_FAILED'
+      });
     }
 
-    // Create session
-    const session = await authService.createSession(user.id);
-
-    // Set session cookie
-    cookies.set('session', session.id, {
-      path: '/',
-      httpOnly: true,
-      sameSite: 'strict',
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 60 * 60 * 24 * 30 // 30 days
-    });
-
-    console.log("✅ User registered successfully:", {
-      id: user.id,
-      email: user.email
-    });
-
+    // Remove sensitive information from response
+    const { passwordHash, ...userResponse } = result.user;
+    
+    // Return successful registration response
     return json({
       success: true,
-      message: "User registered successfully",
-      user: {
-        id: user.id,
-        email: user.email,
-        displayName: user.displayName,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        role: user.role,
-        legalSpecialties: user.legalSpecialties,
-        createdAt: user.createdAt
+      message: 'User registered successfully',
+      data: {
+        user: userResponse,
+        profile: result.profile,
+        hasProfile: !!result.profile,
+      },
+      meta: {
+        timestamp: new Date().toISOString(),
+        version: '1.0.0',
       }
-    }, { status: 201 });
-
-  } catch (error) {
-    console.error("❌ Registration error:", error);
-
-    // Handle specific errors
-    if (error instanceof Error) {
-      if (error.message === 'User already exists') {
-        return json({
-          success: false,
-          error: "An account with this email already exists"
-        }, { status: 409 });
+    }, {
+      status: 201,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(dev && { 'Access-Control-Allow-Origin': '*' }),
       }
+    });
+
+  } catch (err) {
+    console.error('Registration API error:', err);
+
+    // Handle validation errors
+    if (err instanceof z.ZodError) {
+      return json({
+        success: false,
+        message: 'Validation failed',
+        errors: err.errors.map(e => ({
+          field: e.path.join('.'),
+          message: e.message,
+          code: e.code,
+        })),
+        meta: {
+          timestamp: new Date().toISOString(),
+          version: '1.0.0',
+        }
+      }, { 
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
     }
+
+    // Handle other errors
+    const statusCode = err.status || 500;
+    const message = err.body?.message || err.message || 'Registration failed';
 
     return json({
       success: false,
-      error: "Registration failed. Please try again."
-    }, { status: 500 });
+      message,
+      code: err.body?.code || 'INTERNAL_SERVER_ERROR',
+      meta: {
+        timestamp: new Date().toISOString(),
+        version: '1.0.0',
+      }
+    }, { 
+      status: statusCode,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
+};
+
+// OPTIONS handler for CORS preflight requests
+export const OPTIONS: RequestHandler = async () => {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': dev ? '*' : 'https://yourdomain.com',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Max-Age': '86400', // 24 hours
+    }
+  });
 };

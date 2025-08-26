@@ -260,7 +260,7 @@ test.describe('System Health and Logging', () => {
     
     // Recent activities should include our actions
     const recentActivities = activityLogs.activities.slice(0, 5);
-    const activityTypes = recentActivities.map((a: unknown) => a.action);
+    const activityTypes = recentActivities.map((a: unknown) => (a as any).action);
     
     expect(activityTypes).toContain('login');
     expect(activityTypes).toContain('page_view');

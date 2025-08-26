@@ -1,7 +1,5 @@
 <script lang="ts">
-  import { $state } from 'svelte';
-
-import * as monaco from 'monaco-editor';
+  import * as monaco from 'monaco-editor';
 import { onDestroy, onMount } from 'svelte';
 let editorContainer: HTMLDivElement = $state();
 let editor: monaco.editor.IStandaloneCodeEditor;

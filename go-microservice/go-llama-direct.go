@@ -1,5 +1,6 @@
+//go:build ignore
+// +build ignore
+
 package main
 
-import (
-	"strings"
-)
+// Placeholder for future direct llama integration; ignored to avoid duplicate mains.

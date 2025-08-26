@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { $state } from 'svelte';
   import { page } from "$app/state";
   import Avatar from "$lib/components/Avatar.svelte";
   import { avatarStore } from "$lib/stores/avatarStore";

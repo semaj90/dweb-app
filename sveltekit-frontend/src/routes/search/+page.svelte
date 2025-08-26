@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { $state } from 'svelte';
   import { browser } from "$app/environment";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
@@ -253,7 +252,7 @@
               <Button
                 variant="outline"
                 type="button"
-                onclick={() => (showAdvancedFilters = !showAdvancedFilters)}
+                on:click={() => (showAdvancedFilters = !showAdvancedFilters)}
               >
                 <Filter class="space-y-4" />
                 Filters
@@ -265,7 +264,7 @@
                 <Button
                   variant="outline"
                   type="button"
-                  onclick={() => clearFilters()}
+                  on:click={() => clearFilters()}
                 >
                   Clear Filters
                 </Button>
@@ -395,7 +394,7 @@
                 {@const SvelteComponent = getResultIcon(result.type)}
                 <div
                   class="space-y-4"
-                  onclick={() => handleResultClick(result)}
+                  on:click={() => handleResultClick(result)}
                   onkeydown={(e) =>
                     e.key === "Enter" && handleResultClick(result)}
                   role="button"
@@ -482,7 +481,7 @@
               <button
                 type="button"
                 class="space-y-4"
-                onclick={() => selectQuickSearch(search)}
+                on:click={() => selectQuickSearch(search)}
               >
                 {search}
               </button>
@@ -503,7 +502,7 @@
               <button
                 type="button"
                 class="space-y-4"
-                onclick={() => selectQuickSearch(search)}
+                on:click={() => selectQuickSearch(search)}
               >
                 {search}
               </button>

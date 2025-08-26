@@ -8,6 +8,40 @@ import type { Worker } from 'cluster';
 import * as os from 'os';
 import { EventEmitter } from 'events';
 
+// Message interfaces for worker communication
+export interface WorkerMessage {
+  type: 'task' | 'stats-request' | 'worker-ready' | 'task-complete' | 'stats-update' | 'error' | 'shutdown';
+  task?: WorkerTask;
+  taskId?: string;
+  success?: boolean;
+  result?: any;
+  error?: string;
+  processingTime?: number;
+  workerId?: number;
+  stats?: WorkerStats;
+  timestamp?: number;
+}
+
+export interface AutoFixData {
+  files: string[];
+  dryRun: boolean;
+  area: string;
+}
+
+export interface AgentExecuteData {
+  agent?: string;
+  prompt?: string;
+  options?: any;
+}
+
+export interface TaskData {
+  question?: string;
+  prompt?: string;
+  options?: any;
+  text?: string;
+  agent?: string;
+}
+
 export interface ClusterConfig {
   workers: number;
   maxMemoryPerWorker: number;
@@ -19,7 +53,7 @@ export interface ClusterConfig {
 export interface WorkerTask {
   id: string;
   type: 'rag-query' | 'agent-orchestrate' | 'embed-cache' | 'auto-fix';
-  data: unknown;
+  data: TaskData;
   priority: 'low' | 'medium' | 'high' | 'urgent';
   timeout?: number;
 }
@@ -108,8 +142,8 @@ export class NodeClusterManager extends EventEmitter {
    */
   private async setupWorker(): Promise<void> {
     // Set up message handler for tasks
-    process.on('message', async (message: unknown) => {
-      if (message.type === 'task') {
+    process.on('message', async (message: WorkerMessage) => {
+      if (message.type === 'task' && message.task) {
         await this.executeWorkerTask(message.task);
       } else if (message.type === 'stats-request') {
         this.sendWorkerStats();
@@ -169,7 +203,7 @@ export class NodeClusterManager extends EventEmitter {
       }
 
       // Set up response handler
-      const responseHandler = (message: unknown) => {
+      const responseHandler = (message: WorkerMessage) => {
         if (message.type === 'task-complete' && message.taskId === task.id) {
           clearTimeout(timeoutId);
           worker.off('message', responseHandler);
@@ -183,10 +217,10 @@ export class NodeClusterManager extends EventEmitter {
 
           resolve({
             taskId: task.id,
-            success: message.success,
+            success: message.success ?? false,
             result: message.result,
             error: message.error,
-            processingTime: message.processingTime,
+            processingTime: message.processingTime ?? 0,
             workerId: worker.id
           });
         }
@@ -297,7 +331,13 @@ export class NodeClusterManager extends EventEmitter {
           // Import and execute auto-fix
           try {
             const { runAutoFix } = await import('../sveltekit-frontend/js_tests/sveltekit-best-practices-fix.mjs');
-            result = await runAutoFix(task.data);
+            const autoFixData: AutoFixData = {
+              files: [],
+              dryRun: false,
+              area: 'performance',
+              ...task.data as any
+            };
+            result = await runAutoFix(autoFixData);
           } catch (importError) {
             result = {
               summary: { filesFixed: 0, totalIssues: 0 },
@@ -311,7 +351,7 @@ export class NodeClusterManager extends EventEmitter {
           // Handle embedding caching
           result = {
             cached: true,
-            embeddings: task.data.text.length, // Mock embedding count
+            embeddings: task.data.text?.length || 0, // Mock embedding count
             similarity: 0.8
           };
           break;
@@ -365,14 +405,16 @@ export class NodeClusterManager extends EventEmitter {
   /**
    * Handle worker messages
    */
-  private handleWorkerMessage(worker: Worker, message: unknown): void {
+  private handleWorkerMessage(worker: Worker, message: WorkerMessage): void {
     switch (message.type) {
       case 'worker-ready':
         console.log(`Worker ${worker.id} is ready`);
         break;
       
       case 'stats-update':
-        this.workerStats.set(worker.id, message.stats);
+        if (message.stats) {
+          this.workerStats.set(worker.id, message.stats);
+        }
         break;
       
       case 'error':

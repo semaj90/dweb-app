@@ -150,14 +150,14 @@
     <div class="container mx-auto px-4">
       <button
         class="container mx-auto px-4"
-        onclick={() => (showSettings = !showSettings)}
+        on:click={() => (showSettings = !showSettings)}
         title="Settings"
       >
         <Settings class="container mx-auto px-4" />
       </button>
       <button
         class="container mx-auto px-4"
-        onclick={() => downloadChat()}
+        on:click={() => downloadChat()}
         title="Download chat"
         disabled={messages.length === 0}
       >
@@ -165,7 +165,7 @@
       </button>
       <button
         class="container mx-auto px-4"
-        onclick={() => clearChat()}
+        on:click={() => clearChat()}
         title="Clear chat"
         disabled={messages.length === 0}
       >
@@ -250,7 +250,7 @@
                 <li>
                   <button
                     class="container mx-auto px-4"
-                    onclick={() => showCitation(ref.citation)}
+                    on:click={() => showCitation(ref.citation)}
                   >
                     {ref.title}
                   </button>
@@ -286,7 +286,7 @@
       ></textarea>
       <button
         class="container mx-auto px-4"
-        onclick={() => handleSubmit()}
+        on:click={() => handleSubmit()}
         disabled={!query.trim() || isLoading}
       >
         {#if isLoading}
@@ -312,16 +312,16 @@
             <p>{selectedCitation}</p>
           </div>
           <div class="modal-actions">
-            <button class="btn-primary" onclick={() => insertCitation()}>
+            <button class="btn-primary" on:click={() => insertCitation()}>
               Insert Citation
             </button>
-            <button class="btn-secondary" onclick={() => navigator.clipboard.writeText(selectedCitation)}>
+            <button class="btn-secondary" on:click={() => navigator.clipboard.writeText(selectedCitation)}>
               Copy
             </button>
           </div>
         </div>
         <div class="modal-footer">
-          <button class="btn-close" onclick={() => (showCitationDialog = false)}>
+          <button class="btn-close" on:click={() => (showCitationDialog = false)}>
             Close
           </button>
         </div>

@@ -21,7 +21,7 @@ export interface DocumentChunk {
         page?: number;
         chunk_index: number;
         timestamp: string;
-        [key: string]: unknown;
+        [key: string]: any;
     };
 }
 
@@ -65,21 +65,21 @@ export class DocumentIngestionService {
             const filename = path.basename(filePath, ".pdf");
             const documentId = this.generateDocumentId(filePath);
 
-            const chunks = this.chunkText(pdfData.text, {
+            const chunks = this.chunkText(pdfData.text || "", {
                 source: filePath,
                 type: "pdf",
                 title: filename,
-                pages: pdfData.numpages,
+                pages: (pdfData as any).numpages,
             });
 
             const result: ParsedDocument = {
                 id: documentId,
                 title: filename,
-                content: pdfData.text,
+                content: pdfData.text || "",
                 metadata: {
                     source: filePath,
                     type: "pdf",
-                    pages: pdfData.numpages,
+                    pages: (pdfData as any).numpages,
                     fileSize: fileBuffer.length,
                     timestamp: new Date().toISOString(),
                 },
@@ -87,22 +87,19 @@ export class DocumentIngestionService {
             };
 
             console.log(
-                `✅ PDF parsed: ${chunks.length} chunks from ${pdfData.numpages} pages`
+                `✅ PDF parsed: ${chunks.length} chunks from ${(pdfData as any).numpages || 0} pages`
             );
             return result;
-        } catch (error) {
+        } catch (error: any) {
             console.error(`❌ Error parsing PDF ${filePath}:`, error);
-            throw new Error(`Failed to parse PDF: ${error.message}`);
+            throw new Error(`Failed to parse PDF: ${error?.message ?? String(error)}`);
         }
     }
 
     /**
      * Crawl web page and extract content
      */
-    async crawlWebPage(
-        url: string,
-        options: CrawlOptions = {}
-    ): Promise<ParsedDocument> {
+    async crawlWebPage(url: string, options: CrawlOptions = {}): Promise<ParsedDocument> {
         const browser = await chromium.launch({ headless: true });
 
         try {
@@ -131,14 +128,10 @@ export class DocumentIngestionService {
             const $ = cheerio.load(content);
 
             // Remove scripts, styles, and other non-content elements
-            $(
-                "script, style, nav, header, footer, aside, .ad, .advertisement"
-            ).remove();
+            $("script, style, nav, header, footer, aside, .ad, .advertisement").remove();
 
             // Extract text from specific selector if provided
-            const textContent = options.selector
-                ? $(options.selector).text()
-                : $("body").text();
+            const textContent = options.selector ? $(options.selector).text() : $("body").text();
 
             const cleanText = this.cleanText(textContent);
             const documentId = this.generateDocumentId(url);
@@ -158,16 +151,16 @@ export class DocumentIngestionService {
                     type: "web",
                     title,
                     crawlDate: new Date().toISOString(),
-                    wordCount: cleanText.split(/\s+/).length,
+                    wordCount: cleanText.split(/\s+/).filter(Boolean).length,
                 },
                 chunks,
             };
 
             console.log(`✅ Web page crawled: ${chunks.length} chunks from ${url}`);
             return result;
-        } catch (error) {
+        } catch (error: any) {
             console.error(`❌ Error crawling ${url}:`, error);
-            throw new Error(`Failed to crawl webpage: ${error.message}`);
+            throw new Error(`Failed to crawl webpage: ${error?.message ?? String(error)}`);
         } finally {
             await browser.close();
         }
@@ -176,10 +169,7 @@ export class DocumentIngestionService {
     /**
      * Crawl multiple pages from a website
      */
-    async crawlWebsite(
-        startUrl: string,
-        options: CrawlOptions = {}
-    ): Promise<ParsedDocument[]> {
+    async crawlWebsite(startUrl: string, options: CrawlOptions = {}): Promise<ParsedDocument[]> {
         const { maxPages = 10, followLinks = true, excludePatterns = [] } = options;
         const visited = new Set<string>();
         const toVisit = [startUrl];
@@ -190,7 +180,6 @@ export class DocumentIngestionService {
         try {
             while (toVisit.length > 0 && results.length < maxPages) {
                 const url = toVisit.shift()!;
-
                 if (visited.has(url)) continue;
                 visited.add(url);
 
@@ -220,7 +209,7 @@ export class DocumentIngestionService {
 
                         // Add new links to visit
                         links.forEach((link) => {
-                            if (!visited.has(link) && !toVisit.includes(link)) {
+                            if (link && !visited.has(link) && !toVisit.includes(link)) {
                                 toVisit.push(link);
                             }
                         });
@@ -263,39 +252,30 @@ export class DocumentIngestionService {
                     ttl: 7200, // 2 hours default TTL
                 });
             } catch (error) {
-                console.error(
-                    `❌ Error generating embedding for chunk ${chunk.id}:`,
-                    error
-                );
+                console.error(`❌ Error generating embedding for chunk ${chunk.id}:`, error);
             }
         }
 
         // Batch store all chunks
         if (vectorDocs.length > 0) {
             await redisVectorService.storeBatch(vectorDocs);
-            console.log(
-                `✅ Stored ${vectorDocs.length} chunks for document: ${document.title}`
-            );
+            console.log(`✅ Stored ${vectorDocs.length} chunks for document: ${document.title}`);
         }
     }
 
     /**
      * Chunk text into smaller pieces with overlap
      */
-    private chunkText(
-        text: string,
-        baseMetadata: Record<string, any>
-    ): DocumentChunk[] {
+    private chunkText(text: string, baseMetadata: Record<string, any>): DocumentChunk[] {
         const chunks: DocumentChunk[] = [];
-        const words = text.split(/\s+/);
+        const words = text.split(/\s+/).filter(Boolean);
 
-        let currentChunk = "";
         let currentWords: string[] = [];
         let chunkIndex = 0;
 
         for (let i = 0; i < words.length; i++) {
             currentWords.push(words[i]);
-            currentChunk = currentWords.join(" ");
+            const currentChunk = currentWords.join(" ");
 
             // Check if chunk is large enough
             if (currentChunk.length >= this.maxChunkSize || i === words.length - 1) {
@@ -323,10 +303,8 @@ export class DocumentIngestionService {
                     );
 
                     currentWords = currentWords.slice(-overlapWords);
-                    currentChunk = currentWords.join(" ");
                 } else {
                     currentWords = [];
-                    currentChunk = "";
                 }
             }
         }
@@ -339,6 +317,7 @@ export class DocumentIngestionService {
      */
     private cleanText(text: string): string {
         return text
+            .replace(/\r\n/g, "\n")
             .replace(/\s+/g, " ") // Normalize whitespace
             .replace(/\n\s*\n/g, "\n") // Remove empty lines
             .trim();
@@ -362,17 +341,23 @@ export class DocumentIngestionService {
      * Health check for the service
      */
     async healthCheck(): Promise<boolean> {
+        let browser;
         try {
             // Test Redis connection
             const redisHealthy = await redisVectorService.healthCheck();
 
             // Test browser availability
-            const browser = await chromium.launch({ headless: true });
+            browser = await chromium.launch({ headless: true });
             await browser.close();
 
-            return redisHealthy;
+            return !!redisHealthy;
         } catch (error) {
             console.error("Document ingestion service health check failed:", error);
+            try {
+                if (browser) await browser.close();
+            } catch {
+                /* ignore */
+            }
             return false;
         }
     }

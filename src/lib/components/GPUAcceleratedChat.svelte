@@ -34,9 +34,9 @@
   const health = writable<OrchestatorHealth | null>(null);
   const connectionStatus = writable<'connected' | 'disconnected' | 'connecting'>('disconnected');
 
-  // Configuration
-  const ORCHESTRATOR_URL = 'http://localhost:4001';
-  const WEBSOCKET_URL = 'ws://localhost:4001';
+  // Configuration - Updated for unified GPU orchestrator
+  const ORCHESTRATOR_URL = 'http://localhost:8231'; // GPU Orchestrator Service
+  const WEBSOCKET_URL = 'ws://localhost:8231/ws/gpu'; // GPU WebSocket endpoint
 
   let messageInput = '';
   let websocket: WebSocket | null = null;
@@ -172,14 +172,18 @@
     
     try {
       if (websocket && websocket.readyState === WebSocket.OPEN) {
-        // Send via WebSocket
+        // Send via WebSocket - Updated for GPU processing
         websocket.send(JSON.stringify({
-          type: 'chat',
-          content: messageToSend,
-          userId,
-          sessionId,
-          id: userMessage.id,
-          enableTTS: false
+          jobId: userMessage.id,
+          type: 'embedding', // Process user message as embedding first
+          data: messageToSend.split('').map(c => c.charCodeAt(0)), // Simple text vectorization
+          priority: 'high',
+          options: {
+            chat: true,
+            userId,
+            sessionId,
+            enableTTS: false
+          }
         }));
       } else {
         // Fallback to REST API

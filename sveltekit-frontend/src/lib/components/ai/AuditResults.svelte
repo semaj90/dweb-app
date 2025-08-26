@@ -2,8 +2,6 @@
 This Svelte component displays semantic audit results and TODOs from the backend.
 TODO: After initial test, wire up real Context7 audit API, agent triggers, and live updates. -->
 <script lang="ts">
-  import { $state } from 'svelte';
-
   import { onMount } from 'svelte';
   import type { SemanticAuditResult } from '$lib/ai/types';
 

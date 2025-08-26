@@ -255,7 +255,7 @@
                 variant="outline" 
                 size="sm" 
                 class="w-full justify-start text-left h-auto p-2"
-                onclick={() => testSearch(query)}
+                on:click={() => testSearch(query)}
               >
                 <div class="text-xs truncate">{query}</div>
               </Button>

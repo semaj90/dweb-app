@@ -10,12 +10,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math"
 	"net"
 	"net/http"
 	"os"
 	"os/exec"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -108,6 +110,32 @@ type StreamingResponse struct {
 	Metadata  map[string]interface{} `json:"metadata"`
 }
 
+// Self-Organizing Map (SOM) for intelligent message clustering
+type SOM struct {
+	Width        int         `json:"width"`
+	Height       int         `json:"height"`
+	LearningRate float64     `json:"learning_rate"`
+	Radius       float64     `json:"radius"`
+	Iterations   int         `json:"iterations"`
+	Nodes        [][]SOMNode `json:"nodes"`
+	
+	// Performance optimization fields
+	totalTraining    int64       // atomic counter
+	totalInference   int64       // atomic counter
+	averageLatency   int64       // atomic average (microseconds)
+	bufferPool       *sync.Pool  // Buffer pool for calculations
+	mutex            sync.RWMutex
+}
+
+// SOM Node represents a single neuron in the map
+type SOMNode struct {
+	Weights      []float32              `json:"weights"`
+	Activation   float64                `json:"activation"`
+	Position     [2]int                 `json:"position"` // [x, y]
+	Metadata     map[string]interface{} `json:"metadata"`
+	TrainingHits int64                  `json:"training_hits"` // atomic counter
+}
+
 // AI Chat Service
 type AIChatService struct {
 	db          *sql.DB
@@ -172,13 +200,19 @@ func NewAIChatService() *AIChatService {
 		repeatPenalty: 1.1,
 	}
 
-	// Initialize SOM for intent clustering
+	// Initialize SOM for intent clustering with Context7 optimizations
 	som := &SOM{
 		Width:        20,
 		Height:       20,
 		LearningRate: 0.1,
 		Radius:       5.0,
 		Iterations:   1000,
+		bufferPool: &sync.Pool{
+			New: func() interface{} {
+				// Pre-allocate 384-dimensional float32 slice
+				return make([]float32, 384)
+			},
+		},
 	}
 	som.initializeNodes(384) // 384-dimensional embeddings
 
@@ -422,9 +456,9 @@ func (r *EnhancedRAGEngine) generateEmbedding(text string) ([]float64, error) {
 }
 
 func (r *EnhancedRAGEngine) generateHighlights(content, query string) []string {
-	// Simple keyword highlighting
+	// Simple keyword highlighting  
 	words := strings.Fields(strings.ToLower(query))
-	contentLower := strings.ToLower(content)
+	_ = strings.ToLower(content) // Store for potential future use
 	
 	var highlights []string
 	sentences := strings.Split(content, ".")
@@ -1076,6 +1110,421 @@ func (s *AIChatService) handleAttentionTracking(sessionID string, message map[st
 	key := fmt.Sprintf("attention:%s:%d", sessionID, time.Now().Unix())
 	data, _ := json.Marshal(attentionData)
 	s.redis.Set(context.Background(), key, data, time.Hour)
+}
+
+// Missing handler methods implementation with Context7 best practices
+func (s *AIChatService) getChatSession(c *gin.Context) {
+	sessionID := c.Param("sessionId")
+	
+	// Try in-memory first (fast path)
+	s.sessionMux.RLock()
+	session, exists := s.sessions[sessionID]
+	s.sessionMux.RUnlock()
+	
+	if exists {
+		c.JSON(200, session)
+		return
+	}
+	
+	// Fallback to Redis
+	key := fmt.Sprintf("session:%s", sessionID)
+	sessionJSON, err := s.redis.Get(context.Background(), key).Result()
+	if err != nil {
+		c.JSON(404, gin.H{"error": "Session not found"})
+		return
+	}
+	
+	var redisSession ChatSession
+	if err := json.Unmarshal([]byte(sessionJSON), &redisSession); err != nil {
+		c.JSON(500, gin.H{"error": "Failed to parse session"})
+		return
+	}
+	
+	// Cache in memory for future requests
+	s.sessionMux.Lock()
+	s.sessions[sessionID] = &redisSession
+	s.sessionMux.Unlock()
+	
+	c.JSON(200, redisSession)
+}
+
+func (s *AIChatService) getChatHistory(c *gin.Context) {
+	sessionID := c.Param("sessionId")
+	limit := 50 // Default limit
+	
+	if limitStr := c.Query("limit"); limitStr != "" {
+		if parsedLimit, err := fmt.Sscanf(limitStr, "%d", &limit); err == nil && parsedLimit == 1 {
+			if limit > 100 {
+				limit = 100 // Cap at 100 messages
+			}
+		}
+	}
+	
+	query := `
+		SELECT id, session_id, user_id, case_id, role, content, timestamp, token_count, metadata
+		FROM chat_messages 
+		WHERE session_id = $1 
+		ORDER BY timestamp DESC 
+		LIMIT $2
+	`
+	
+	rows, err := s.db.Query(query, sessionID, limit)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to fetch chat history"})
+		return
+	}
+	defer rows.Close()
+	
+	var messages []ChatMessage
+	for rows.Next() {
+		var msg ChatMessage
+		var metadataJSON string
+		
+		err := rows.Scan(&msg.ID, &msg.SessionID, &msg.UserID, &msg.CaseID,
+			&msg.Role, &msg.Content, &msg.Timestamp, &msg.TokenCount, &metadataJSON)
+		if err != nil {
+			continue
+		}
+		
+		// Parse metadata JSON
+		if metadataJSON != "" {
+			json.Unmarshal([]byte(metadataJSON), &msg.Metadata)
+		}
+		
+		messages = append(messages, msg)
+	}
+	
+	c.JSON(200, gin.H{
+		"messages": messages,
+		"count":    len(messages),
+		"session_id": sessionID,
+	})
+}
+
+func (s *AIChatService) analyzeMessage(c *gin.Context) {
+	var req struct {
+		Content string `json:"content"`
+		Context map[string]interface{} `json:"context,omitempty"`
+	}
+	
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	
+	// Create temporary message for analysis
+	tempMessage := &ChatMessage{
+		Content:   req.Content,
+		Timestamp: time.Now(),
+		Metadata:  req.Context,
+	}
+	
+	analysis, err := s.analyzeUserMessage(tempMessage)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Analysis failed"})
+		return
+	}
+	
+	c.JSON(200, gin.H{
+		"analysis": analysis,
+		"content":  req.Content,
+		"timestamp": time.Now(),
+	})
+}
+
+func (s *AIChatService) getRecommendations(c *gin.Context) {
+	sessionID := c.Param("sessionId")
+	
+	// Get session context
+	session, exists := s.sessions[sessionID]
+	if !exists {
+		c.JSON(404, gin.H{"error": "Session not found"})
+		return
+	}
+	
+	// Get recent messages for context
+	recentMessages, err := s.getUserHistory(session.UserID, 5)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to get user history"})
+		return
+	}
+	
+	var recommendations []Recommendation
+	
+	// Generate context-aware recommendations
+	if len(recentMessages) > 0 {
+		lastMessage := &recentMessages[0]
+		
+		// Get relevant documents for context
+		relevantDocs, _ := s.ragEngine.SearchRelevantDocuments(lastMessage.Content, session.CaseID, session.UserID)
+		
+		// Generate recommendations
+		recommendations = s.generateRecommendations(lastMessage, relevantDocs, recentMessages)
+	} else {
+		// Default recommendations for new sessions
+		recommendations = []Recommendation{
+			{
+				Type:        "action",
+				Title:       "Getting Started",
+				Description: "Ask me anything about legal documents, cases, or get help with analysis",
+				Confidence:  1.0,
+				Action:      "help",
+			},
+		}
+	}
+	
+	c.JSON(200, gin.H{
+		"recommendations": recommendations,
+		"session_id":      sessionID,
+		"count":          len(recommendations),
+	})
+}
+
+func (s *AIChatService) generateReport(c *gin.Context) {
+	var req struct {
+		SessionID string `json:"session_id"`
+		UserID    string `json:"user_id"`
+		Type      string `json:"type"` // "session", "case", "user_activity"
+	}
+	
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	
+	switch req.Type {
+	case "session":
+		report, err := s.generateSessionReport(req.SessionID)
+		if err != nil {
+			c.JSON(500, gin.H{"error": "Failed to generate session report"})
+			return
+		}
+		c.JSON(200, report)
+		
+	case "user_activity":
+		report, err := s.generateUserActivityReport(req.UserID)
+		if err != nil {
+			c.JSON(500, gin.H{"error": "Failed to generate user activity report"})
+			return
+		}
+		c.JSON(200, report)
+		
+	default:
+		c.JSON(400, gin.H{"error": "Invalid report type"})
+	}
+}
+
+func (s *AIChatService) generateSessionReport(sessionID string) (map[string]interface{}, error) {
+	// Get session messages
+	messages, err := s.getUserHistory(sessionID, 1000) // High limit for comprehensive report
+	if err != nil {
+		return nil, err
+	}
+	
+	report := map[string]interface{}{
+		"session_id":     sessionID,
+		"message_count":  len(messages),
+		"generated_at":   time.Now(),
+		"summary": map[string]interface{}{
+			"total_tokens": 0,
+			"user_messages": 0,
+			"ai_responses": 0,
+			"topics_discussed": []string{},
+		},
+	}
+	
+	totalTokens := 0
+	userMessages := 0
+	aiResponses := 0
+	topicSet := make(map[string]bool)
+	
+	for _, msg := range messages {
+		totalTokens += msg.TokenCount
+		
+		if msg.Role == "user" {
+			userMessages++
+			if msg.Analysis != nil {
+				for _, topic := range msg.Analysis.Topics {
+					topicSet[topic] = true
+				}
+			}
+		} else if msg.Role == "assistant" {
+			aiResponses++
+		}
+	}
+	
+	// Convert topic set to slice
+	topics := make([]string, 0, len(topicSet))
+	for topic := range topicSet {
+		topics = append(topics, topic)
+	}
+	
+	summary := report["summary"].(map[string]interface{})
+	summary["total_tokens"] = totalTokens
+	summary["user_messages"] = userMessages
+	summary["ai_responses"] = aiResponses
+	summary["topics_discussed"] = topics
+	
+	return report, nil
+}
+
+func (s *AIChatService) generateUserActivityReport(userID string) (map[string]interface{}, error) {
+	// Get user's message history
+	messages, err := s.getUserHistory(userID, 1000)
+	if err != nil {
+		return nil, err
+	}
+	
+	report := map[string]interface{}{
+		"user_id":      userID,
+		"generated_at": time.Now(),
+		"activity": map[string]interface{}{
+			"total_messages": len(messages),
+			"total_tokens":   0,
+			"session_count":  0,
+			"topics":         []string{},
+			"most_active_hours": []int{},
+		},
+	}
+	
+	totalTokens := 0
+	sessionSet := make(map[string]bool)
+	topicSet := make(map[string]bool)
+	hourCount := make(map[int]int)
+	
+	for _, msg := range messages {
+		totalTokens += msg.TokenCount
+		sessionSet[msg.SessionID] = true
+		
+		// Track activity by hour
+		hour := msg.Timestamp.Hour()
+		hourCount[hour]++
+		
+		if msg.Analysis != nil {
+			for _, topic := range msg.Analysis.Topics {
+				topicSet[topic] = true
+			}
+		}
+	}
+	
+	// Find most active hours (top 3)
+	type hourActivity struct {
+		hour  int
+		count int
+	}
+	var hours []hourActivity
+	for h, count := range hourCount {
+		hours = append(hours, hourActivity{h, count})
+	}
+	
+	// Simple sorting by count (descending)
+	for i := 0; i < len(hours)-1; i++ {
+		for j := i + 1; j < len(hours); j++ {
+			if hours[i].count < hours[j].count {
+				hours[i], hours[j] = hours[j], hours[i]
+			}
+		}
+	}
+	
+	mostActiveHours := []int{}
+	for i := 0; i < 3 && i < len(hours); i++ {
+		mostActiveHours = append(mostActiveHours, hours[i].hour)
+	}
+	
+	topics := make([]string, 0, len(topicSet))
+	for topic := range topicSet {
+		topics = append(topics, topic)
+	}
+	
+	activity := report["activity"].(map[string]interface{})
+	activity["total_messages"] = len(messages)
+	activity["total_tokens"] = totalTokens
+	activity["session_count"] = len(sessionSet)
+	activity["topics"] = topics
+	activity["most_active_hours"] = mostActiveHours
+	
+	return report, nil
+}
+
+// SOM Methods Implementation with Context7 optimizations
+func (som *SOM) initializeNodes(dimensions int) {
+	start := time.Now()
+	defer func() {
+		atomic.AddInt64(&som.totalTraining, 1)
+		latency := time.Since(start).Microseconds()
+		atomic.StoreInt64(&som.averageLatency, latency)
+	}()
+	
+	som.mutex.Lock()
+	defer som.mutex.Unlock()
+	
+	// Pre-allocate 2D slice with proper capacity
+	som.Nodes = make([][]SOMNode, som.Height)
+	for i := range som.Nodes {
+		som.Nodes[i] = make([]SOMNode, som.Width)
+	}
+	
+	// Initialize each node with random weights
+	for y := 0; y < som.Height; y++ {
+		for x := 0; x < som.Width; x++ {
+			node := &som.Nodes[y][x]
+			node.Weights = make([]float32, dimensions)
+			node.Position = [2]int{x, y}
+			node.Metadata = make(map[string]interface{})
+			
+			// Initialize with small random values
+			for i := range node.Weights {
+				node.Weights[i] = (float32(time.Now().UnixNano()%100) - 50) / 1000.0
+			}
+		}
+	}
+}
+
+func (som *SOM) findBestMatchingUnit(input []float32) (int, float64) {
+	start := time.Now()
+	defer func() {
+		atomic.AddInt64(&som.totalInference, 1)
+		latency := time.Since(start).Microseconds()
+		// Update rolling average
+		currentAvg := atomic.LoadInt64(&som.averageLatency)
+		newAvg := (currentAvg + latency) / 2
+		atomic.StoreInt64(&som.averageLatency, newAvg)
+	}()
+	
+	som.mutex.RLock()
+	defer som.mutex.RUnlock()
+	
+	minDistance := math.MaxFloat64
+	bestNodeIndex := 0
+	
+	nodeIndex := 0
+	for y := 0; y < som.Height; y++ {
+		for x := 0; x < som.Width; x++ {
+			node := &som.Nodes[y][x]
+			
+			// Calculate Euclidean distance using optimized loop
+			distance := 0.0
+			for i := range input {
+				diff := float64(input[i] - node.Weights[i])
+				distance += diff * diff
+			}
+			distance = math.Sqrt(distance)
+			
+			if distance < minDistance {
+				minDistance = distance
+				bestNodeIndex = nodeIndex
+			}
+			
+			nodeIndex++
+		}
+	}
+	
+	// Update hit counter atomically
+	y := bestNodeIndex / som.Width
+	x := bestNodeIndex % som.Width
+	atomic.AddInt64(&som.Nodes[y][x].TrainingHits, 1)
+	
+	return bestNodeIndex, minDistance
 }
 
 func main() {

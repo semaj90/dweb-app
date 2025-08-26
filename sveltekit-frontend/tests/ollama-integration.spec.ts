@@ -28,8 +28,8 @@ test.describe('Ollama Integration', () => {
     expect(Array.isArray(data.models)).toBe(true);
     
     // Check if specific models are available
-    const modelNames = data.models.map((m: unknown) => m.name);
-    expect(modelNames).toContain('llama3.2');
+    const modelNames = data.models.map((m: unknown) => (m as any).name);
+    expect(modelNames).toContain('gemma3:legal-latest');
   });
 
   test('should interact with Ollama chat interface', async ({ page }) => {
@@ -128,7 +128,7 @@ test.describe('Ollama Integration', () => {
       return page.request.post('/api/ai/chat', {
         data: {
           messages: [{ role: 'user', content: question }],
-          model: 'llama3.2'
+          model: 'gemma3:legal-latest'
         }
       });
     });
@@ -157,7 +157,7 @@ test.describe('Ollama Integration', () => {
     const response = await page.request.post('/api/ai/chat', {
       data: {
         messages: [{ role: 'user', content: longPrompt }],
-        model: 'llama3.2',
+        model: 'gemma3:legal-latest',
         options: {
           max_tokens: 100
         }

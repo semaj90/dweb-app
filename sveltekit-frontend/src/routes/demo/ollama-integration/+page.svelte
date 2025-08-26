@@ -20,7 +20,7 @@
   } from '$lib/services/ollama-integration-layer';
   import { Button } from '$lib/components/ui/button';
   import { Badge } from '$lib/components/ui/badge';
-  import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/Card';
+  import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
   import { Textarea } from '$lib/components/ui/textarea';
   import { Input } from '$lib/components/ui/input';
   import { ScrollArea } from '$lib/components/ui/scroll-area';

@@ -1,7 +1,5 @@
 <!-- Enhanced Canvas Evidence Board with Fabric.js Integration -->
 <script lang="ts">
-  import { $state } from 'svelte';
-
   interface Props {
     onevidenceUpdated?: (event?: unknown) => void;
     onsave?: (event?: unknown) => void;
@@ -463,7 +461,7 @@
         <Button
           variant={selectedTool === "select" ? "primary" : "outline"}
           size="sm"
-          onclick={() => selectTool("select")}
+          on:click={() => selectTool("select")}
           disabled={readonly}
         >
           <Move class="space-y-4" />
@@ -471,7 +469,7 @@
         <Button
           variant={selectedTool === "draw" ? "primary" : "outline"}
           size="sm"
-          onclick={() => selectTool("draw")}
+          on:click={() => selectTool("draw")}
           disabled={readonly}
         >
           ✏️
@@ -479,7 +477,7 @@
         <Button
           variant={selectedTool === "text" ? "primary" : "outline"}
           size="sm"
-          onclick={() => selectTool("text")}
+          on:click={() => selectTool("text")}
           disabled={readonly}
         >
           <Type class="space-y-4" />
@@ -494,14 +492,14 @@
           <Button
             variant="outline"
             size="sm"
-            onclick={() => addShape("rectangle")}
+            on:click={() => addShape("rectangle")}
           >
             <Square class="space-y-4" />
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onclick={() => addShape("circle")}
+            on:click={() => addShape("circle")}
           >
             <Circle class="space-y-4" />
           </Button>
@@ -515,7 +513,7 @@
         <Button
           variant="outline"
           size="sm"
-          onclick={() => undo()}
+          on:click={() => undo()}
           disabled={readonly || historyIndex <= 0}
         >
           <Undo class="space-y-4" />
@@ -523,7 +521,7 @@
         <Button
           variant="outline"
           size="sm"
-          onclick={() => redo()}
+          on:click={() => redo()}
           disabled={readonly || historyIndex >= canvasHistory.length - 1}
         >
           <Redo class="space-y-4" />
@@ -532,16 +530,16 @@
 
       <!-- Zoom -->
       <div class="space-y-4">
-        <Button variant="outline" size="sm" onclick={() => zoomOut()}>
+        <Button variant="outline" size="sm" on:click={() => zoomOut()}>
           <ZoomOut class="space-y-4" />
         </Button>
         <span class="space-y-4"
           >{Math.round(zoom * 100)}%</span
         >
-        <Button variant="outline" size="sm" onclick={() => zoomIn()}>
+        <Button variant="outline" size="sm" on:click={() => zoomIn()}>
           <ZoomIn class="space-y-4" />
         </Button>
-        <Button variant="outline" size="sm" onclick={() => resetZoom()}
+        <Button variant="outline" size="sm" on:click={() => resetZoom()}
           >Reset</Button
         >
       </div>
@@ -550,15 +548,15 @@
     <!-- Actions -->
     <div class="space-y-4">
       {#if !readonly}
-        <Button variant="outline" size="sm" onclick={() => deleteSelected()}>
+        <Button variant="outline" size="sm" on:click={() => deleteSelected()}>
           <Trash2 class="space-y-4" />
         </Button>
-        <Button variant="outline" size="sm" onclick={() => saveCanvas()}>
+        <Button variant="outline" size="sm" on:click={() => saveCanvas()}>
           <Save class="space-y-4" />
           Save
         </Button>
       {/if}
-      <Button variant="outline" size="sm" onclick={() => exportCanvas()}>
+      <Button variant="outline" size="sm" on:click={() => exportCanvas()}>
         <Download class="space-y-4" />
         Export
       </Button>

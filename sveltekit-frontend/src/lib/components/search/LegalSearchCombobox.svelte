@@ -43,16 +43,16 @@
   }
   
   // Props
-  export let placeholder = "Search cases, precedents, statutes, evidence...";
-  export let value = "";
-  export let categories: SearchOptions['categories'] = ['cases', 'evidence', 'precedents', 'statutes'];
-  export let enableVectorSearch = true;
-  export let aiSuggestions = true;
-  export let maxResults = 20;
-  export let similarityThreshold = 0.7;
-  export let includeMetadata = true;
-  export let disabled = false;
-  export let className = "";
+  let { placeholder = $bindable() } = $props(); // "Search cases, precedents, statutes, evidence...";
+  let { value = $bindable() } = $props(); // "";
+  let { categories = $bindable() } = $props(); // SearchOptions['categories'] = ['cases', 'evidence', 'precedents', 'statutes'];
+  let { enableVectorSearch = $bindable() } = $props(); // true;
+  let { aiSuggestions = $bindable() } = $props(); // true;
+  let { maxResults = $bindable() } = $props(); // 20;
+  let { similarityThreshold = $bindable() } = $props(); // 0.7;
+  let { includeMetadata = $bindable() } = $props(); // true;
+  let { disabled = $bindable() } = $props(); // false;
+  let { className = $bindable() } = $props(); // "";
   
   // State
   let open = false;
@@ -208,7 +208,7 @@
   }
   
   // Get display results (includes recent searches when no query)
-  $: displayResults = inputValue.length < 2 
+  let displayResults = $derived(inputValue.length < 2 );
     ? recentSearches.map(search => ({
         id: `recent-${search}`,
         title: search,

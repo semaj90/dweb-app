@@ -102,7 +102,7 @@
         <button
           use:melt={$close}
           class="rounded-sm opacity-70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
-          onclick={handleClose}
+          on:click={handleClose}
         >
           <X class="w-4 h-4" />
         </button>
@@ -173,7 +173,7 @@
       <div class="flex justify-end mt-6 pt-4 border-t border-gray-200">
         <button
           class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-400"
-          onclick={handleClose}
+          on:click={handleClose}
         >
           Close
         </button>

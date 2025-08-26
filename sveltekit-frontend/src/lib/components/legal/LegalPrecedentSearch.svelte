@@ -212,7 +212,7 @@ https://svelte.dev/e/js_parse_error -->
       <div class="flex gap-3">
         <button
           type="button"
-          onclick={searchPrecedents}
+          on:click={searchPrecedents}
           disabled={loading || !searchFilters.query.trim()}
           class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -227,7 +227,7 @@ https://svelte.dev/e/js_parse_error -->
         </button>
         <button
           type="button"
-          onclick={clearFilters}
+          on:click={clearFilters}
           class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
         >
           Clear Filters
@@ -328,7 +328,7 @@ https://svelte.dev/e/js_parse_error -->
             <div class="flex gap-2">
               <button
                 type="button"
-                onclick={() => changePage(currentPage - 1)}
+                on:click={() => changePage(currentPage - 1)}
                 disabled={currentPage <= 1}
                 class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -336,7 +336,7 @@ https://svelte.dev/e/js_parse_error -->
               </button>
               <button
                 type="button"
-                onclick={() => changePage(currentPage + 1)}
+                on:click={() => changePage(currentPage + 1)}
                 disabled={currentPage >= totalPages}
                 class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >

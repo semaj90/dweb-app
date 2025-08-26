@@ -6,8 +6,8 @@
   
   const dispatch = createEventDispatcher();
   
-  export let selectedNode: any = null;
-  export let readOnly = false;
+  let { selectedNode = $bindable() } = $props(); // any = null;
+  let { readOnly = $bindable() } = $props(); // false;
   
   // Enhanced form fields with auto-population
   let formData = writable({
@@ -505,7 +505,7 @@
           {/if}
           
           <button 
-            onclick={reanalyzeWithAI}
+            on:click={reanalyzeWithAI}
             disabled={isLoading}
             class="container mx-auto px-4"
           >
@@ -663,7 +663,7 @@
                       {tag}
                       {#if !readOnly}
                         <button 
-                          onclick={() => removeCustomTag(tag)}
+                          on:click={() => removeCustomTag(tag)}
                           class="container mx-auto px-4"
                         >×</button>
                       {/if}
@@ -680,7 +680,7 @@
                       class="container mx-auto px-4"
                     />
                     <button 
-                      onclick={addCustomTag} 
+                      on:click={addCustomTag} 
                       class="container mx-auto px-4"
                     >Add</button>
                   </div>
@@ -712,7 +712,7 @@
                         👤 {person}
                         {#if !readOnly}
                           <button 
-                            onclick={() => removePerson(person)}
+                            on:click={() => removePerson(person)}
                             class="container mx-auto px-4"
                           >×</button>
                         {/if}
@@ -729,7 +729,7 @@
                         class="container mx-auto px-4"
                       />
                       <button 
-                        onclick={addCustomPerson} 
+                        on:click={addCustomPerson} 
                         class="container mx-auto px-4"
                       >Add</button>
                     </div>
@@ -755,7 +755,7 @@
                         📍 {location}
                         {#if !readOnly}
                           <button 
-                            onclick={() => removeLocation(location)}
+                            on:click={() => removeLocation(location)}
                             class="container mx-auto px-4"
                           >×</button>
                         {/if}
@@ -772,7 +772,7 @@
                         class="container mx-auto px-4"
                       />
                       <button 
-                        onclick={addCustomLocation} 
+                        on:click={addCustomLocation} 
                         class="container mx-auto px-4"
                       >Add</button>
                     </div>
@@ -798,7 +798,7 @@
                         🏢 {org}
                         {#if !readOnly}
                           <button 
-                            onclick={() => removeOrganization(org)}
+                            on:click={() => removeOrganization(org)}
                             class="container mx-auto px-4"
                           >×</button>
                         {/if}
@@ -815,7 +815,7 @@
                         class="container mx-auto px-4"
                       />
                       <button 
-                        onclick={addCustomOrganization} 
+                        on:click={addCustomOrganization} 
                         class="container mx-auto px-4"
                       >Add</button>
                     </div>
@@ -877,7 +877,7 @@
                         ⚡ {action}
                         {#if !readOnly}
                           <button 
-                            onclick={() => removeAction(action)}
+                            on:click={() => removeAction(action)}
                             class="container mx-auto px-4"
                           >×</button>
                         {/if}
@@ -894,7 +894,7 @@
                         class="container mx-auto px-4"
                       />
                       <button 
-                        onclick={addCustomAction} 
+                        on:click={addCustomAction} 
                         class="container mx-auto px-4"
                       >Add</button>
                     </div>
@@ -994,7 +994,7 @@
         {#if !readOnly}
           <div class="container mx-auto px-4">
             <button 
-              onclick={handleSave}
+              on:click={handleSave}
               disabled={isSaving || !hasUnsavedChanges}
               class="container mx-auto px-4"
             >

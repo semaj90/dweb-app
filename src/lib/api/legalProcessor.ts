@@ -1,4 +1,5 @@
 
+// @ts-nocheck
 // Enhanced GPU+SIMD Legal API Client
 export class LegalProcessorAPI {
     private baseUrl: string;

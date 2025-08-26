@@ -1,16 +1,63 @@
 // Authentication Service for YoRHa Interface
 import { db } from '../db';
 import { units, sessions, userActivity, passwordResetTokens } from '../db/schema';
-import { eq, and, gt, lt, sql } from 'drizzle-orm';
+import { eq, and, gt, lt } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 import { nanoid } from 'nanoid';
 import jwt from 'jsonwebtoken';
-import { env } from '$env/dynamic/private';
-import type { Unit, NewUnit, Session, NewSession, NewUserActivity } from '../db/schema';
+
+// Use process.env for environment variables to avoid SvelteKit-only module import
+
+// Local minimal type definitions to avoid depending on schema type exports
+// Adjust these shapes if your schema defines more fields
+type Unit = {
+  id: string;
+  unitId: string;
+  email: string;
+  passwordHash?: string;
+  name?: string;
+  unitType?: string;
+  emailVerificationToken?: string | null;
+  emailVerified?: boolean;
+  deletedAt?: Date | null;
+  lastLoginAt?: Date | null;
+};
+
+type NewUnit = Omit<Unit, 'id'>;
+
+type Session = {
+  id: string;
+  userId: string;
+  token: string;
+  userAgent?: string | null;
+  ipAddress?: string | null;
+  expiresAt: Date;
+  lastActivityAt?: Date | null;
+  user?: Unit;
+};
+
+type NewSession = Omit<Session, 'id' | 'lastActivityAt' | 'user'>;
+
+type NewUserActivity = {
+  userId: string;
+  activityType:
+  | 'login'
+  | 'logout'
+  | 'mission_start'
+  | 'mission_complete'
+  | 'level_up'
+  | 'achievement_unlock'
+  | 'equipment_change'
+  | 'profile_update'
+  | 'combat_action'
+  | 'system_sync';
+  description?: string | null;
+  sessionId?: string | null;
+  createdAt?: Date;
+};
 import { QueueService } from './queue.service';
 import { EnhancedVectorService } from './vector.service';
-
-const JWT_SECRET = env.JWT_SECRET || 'yorha-secret-key-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET || 'yorha-secret-key-change-in-production';
 const SESSION_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days
 const RESET_TOKEN_DURATION = 60 * 60 * 1000; // 1 hour
 
@@ -319,7 +366,7 @@ export class AuthService {
       }
 
       await db.update(units)
-        .set({ 
+        .set({
           emailVerified: true,
           emailVerificationToken: null
         })
@@ -348,9 +395,9 @@ export class AuthService {
   async enable2FA(userId: string): Promise<string> {
     try {
       const secret = nanoid(32);
-      
+
       await db.update(units)
-        .set({ 
+        .set({
           twoFactorEnabled: true,
           twoFactorSecret: secret
         })
@@ -373,7 +420,16 @@ export class AuthService {
   // Log user activity
   private async logActivity(data: NewUserActivity): Promise<void> {
     try {
-      await db.insert(userActivity).values(data);
+      // Ensure required DB fields are present and have correct non-undefined values
+      const activity = {
+        userId: data.userId,
+        activityType: data.activityType,
+        description: data.description ?? '', // provide default if schema requires non-null
+        sessionId: data.sessionId ?? null,
+        createdAt: data.createdAt ?? new Date()
+      };
+
+      await db.insert(userActivity).values(activity);
     } catch (error) {
       console.error('Activity logging error:', error);
       // Don't throw, just log the error
@@ -385,7 +441,7 @@ export class AuthService {
     try {
       const deleted = await db.delete(sessions)
         .where(lt(sessions.expiresAt, new Date()));
-      
+
       console.log(`Cleaned up ${deleted.length || 0} expired sessions`);
     } catch (error) {
       console.error('Session cleanup error:', error);

@@ -147,7 +147,7 @@ test.describe('Complete RAG Pipeline Integration', () => {
       data: {
         question: 'Compare the burden of proof in civil and criminal cases',
         case_id: testCaseId,
-        model: 'llama3.2',
+        model: 'gemma3:legal-latest',
         use_context: true,
         max_context_chunks: 5
       }
@@ -243,7 +243,7 @@ test.describe('Complete RAG Pipeline Integration', () => {
     
     const search1Results = await search1Response.json();
     const originalFound = search1Results.chunks.some(
-      (c: unknown) => c.document_id === document.id
+      (c: unknown) => (c as any).document_id === document.id
     );
     expect(originalFound).toBe(true);
     
@@ -269,7 +269,7 @@ test.describe('Complete RAG Pipeline Integration', () => {
     
     const search2Results = await search2Response.json();
     const updatedFound = search2Results.chunks.some(
-      (c: unknown) => c.document_id === document.id
+      (c: unknown) => (c as any).document_id === document.id
     );
     expect(updatedFound).toBe(true);
     
@@ -283,8 +283,8 @@ test.describe('Complete RAG Pipeline Integration', () => {
     
     const search3Results = await search3Response.json();
     const oldContentFound = search3Results.chunks.some(
-      (c: unknown) => c.document_id === document.id && 
-      c.content.includes('property')
+      (c: unknown) => (c as any).document_id === document.id && 
+      (c as any).content.includes('property')
     );
     expect(oldContentFound).toBe(false);
   });
@@ -437,10 +437,10 @@ test.describe('Complete RAG Pipeline Integration', () => {
     expect(exportData.sources_used.length).toBeGreaterThan(0);
     
     // Each message should have associated sources
-    const assistantMessages = exportData.messages.filter((m: unknown) => m.role === 'assistant');
+    const assistantMessages = exportData.messages.filter((m: unknown) => (m as any).role === 'assistant');
     assistantMessages.forEach((msg: unknown) => {
-      expect(msg.sources).toBeDefined();
-      expect(Array.isArray(msg.sources)).toBe(true);
+      expect((msg as any).sources).toBeDefined();
+      expect(Array.isArray((msg as any).sources)).toBe(true);
     });
   });
 });

@@ -13,9 +13,36 @@ export interface AutoGenAgentConfig {
   conversationTimeout: number;
 }
 
+export interface AutoGenContext {
+  context7Analysis?: {
+    recommendations: string[];
+    bestPractices?: string[];
+    integration: string;
+  };
+  autoFixResults?: {
+    filesFixed: number;
+    totalIssues: number;
+    improvements?: any[];
+  };
+  [key: string]: any;
+}
+
+export interface AutoGenAnalysisResult {
+  finalAnalysis: string;
+  confidence: number;
+  recommendations: string[];
+  sources: any[];
+  agentConversations: Array<{
+    agent?: string;
+    content: string;
+    role: "user" | "assistant" | "system";
+    timestamp: Date;
+  }>;
+}
+
 export interface AutoGenAgentRequest {
   prompt: string;
-  context?: unknown;
+  context?: AutoGenContext;
   options?: {
     analysisType?: 'case_review' | 'evidence_analysis' | 'legal_research' | 'prosecution_strategy';
     priority?: 'low' | 'medium' | 'high' | 'urgent';
@@ -56,7 +83,7 @@ export class AutoGenAgent {
     const startTime = Date.now();
     
     try {
-      let enhancedContext = request.context || {};
+      let enhancedContext: AutoGenContext = request.context || {};
       let context7Enhanced = false;
       let autoFixApplied = false;
 
@@ -96,7 +123,7 @@ export class AutoGenAgent {
       };
 
       // Execute multi-agent analysis
-      const result = await this.legalTeam.analyzeCase(analysisRequest);
+      const result: AutoGenAnalysisResult = await this.legalTeam.analyzeCase(analysisRequest);
       
       const processingTime = Date.now() - startTime;
 
@@ -132,7 +159,7 @@ export class AutoGenAgent {
     }
   }
 
-  private calculateScore(result: unknown): number {
+  private calculateScore(result: AutoGenAnalysisResult): number {
     let score = 0.5; // Base score
 
     // Confidence-based scoring
@@ -146,7 +173,7 @@ export class AutoGenAgent {
     return Math.min(1.0, score);
   }
 
-  private extractAgentCount(conversations: unknown[]): number { // TODO-AUTO: Replace unknown[] with proper Conversation interface - create type { agent: string, message: string, timestamp: Date }
+  private extractAgentCount(conversations: Array<{agent?: string; content: string; role: "user" | "assistant" | "system"; timestamp: Date}>): number {
     const agents = new Set();
     conversations.forEach(conv => {
       if (conv.agent) agents.add(conv.agent);

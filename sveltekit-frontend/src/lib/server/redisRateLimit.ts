@@ -58,7 +58,7 @@ export async function redisRateLimit(opts: RedisRateLimitOptions) {
       // Type cast to satisfy ioredis script overloads
       sha = await (client as any).script('LOAD', LUA_SCRIPT) as string;
     } catch {
-      /* ignore */
+    /* ignore */
     }
   }
   const now = Date.now();

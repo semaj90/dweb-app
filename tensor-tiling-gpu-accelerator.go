@@ -1,20 +1,23 @@
+//go:build ignore
+// +build ignore
+
+// Experimental GPU accelerator (requires unreconciled external deps). Excluded from
+// all builds with the 'ignore' tag to allow clean dependency tidying. Restore by
+// replacing the build tag with a concrete feature tag (e.g. "tensor") after
+// introducing proper module-compatible shims.
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"math"
 	"runtime"
 	"sync"
 	"time"
-	"unsafe"
 
-	"github.com/go-llama.cpp/go-llama.cpp"
-	"gorgonia.org/gorgonia"
-	"gorgonia.org/tensor"
 	"github.com/NVIDIA/go-nvml"
-	"github.com/klauspost/cpuid/v2"
+	"github.com/go-llama.cpp/go-llama.cpp"
+	"gorgonia.org/tensor"
 )
 
 // GPU-Accelerated Tensor Tiling System with cuBLAS Integration
@@ -24,26 +27,26 @@ type TensorTilingGPUAccelerator struct {
 	CuBLASHandle  uintptr
 	GPUBuffers    map[string]*GPUBuffer
 	StreamPool    []*CUDAStream
-	
+
 	// Go-Llama Integration
 	LlamaModel    *llama.LlamaModel
 	LlamaContext  *llama.LlamaContext
 	TokenBuffer   []llama.Token
-	
+
 	// Tensor Tiling Configuration
 	TileSize      int
 	TileOverlap   int
 	MaxTiles      int
 	TiledTensors  map[string]*TiledTensor
-	
+
 	// WebAssembly Optimization
 	WASMRuntime   *WASMRuntime
 	WASMModules   map[string]*WASMModule
-	
+
 	// Performance Metrics
 	Metrics       *PerformanceMetrics
 	ProfilerData  *ProfilerData
-	
+
 	// Synchronization
 	mutex         sync.RWMutex
 	tileChannel   chan *TileJob
@@ -216,7 +219,7 @@ type TileResult struct {
 // Initialize the GPU-accelerated tensor tiling system
 func NewTensorTilingGPUAccelerator() *TensorTilingGPUAccelerator {
 	log.Println("🚀 Initializing GPU-Accelerated Tensor Tiling System...")
-	
+
 	ttga := &TensorTilingGPUAccelerator{
 		TileSize:      256,  // Optimized for RTX 3060 Ti
 		TileOverlap:   16,   // Overlap for boundary conditions
@@ -234,22 +237,22 @@ func NewTensorTilingGPUAccelerator() *TensorTilingGPUAccelerator {
 			WASMCallCounts:  make(map[string]int),
 		},
 	}
-	
+
 	// Initialize GPU context
 	ttga.initializeGPUContext()
-	
+
 	// Initialize cuBLAS
 	ttga.initializeCuBLAS()
-	
+
 	// Initialize Go-Llama
 	ttga.initializeGoLlama()
-	
+
 	// Initialize WebAssembly runtime
 	ttga.initializeWASMRuntime()
-	
+
 	// Start tile processing workers
 	ttga.startTileWorkers()
-	
+
 	log.Println("✅ Tensor Tiling GPU Accelerator initialized with cuBLAS + WebAssembly + Go-Llama")
 	return ttga
 }
@@ -257,34 +260,34 @@ func NewTensorTilingGPUAccelerator() *TensorTilingGPUAccelerator {
 // Initialize GPU context and CUDA streams
 func (ttga *TensorTilingGPUAccelerator) initializeGPUContext() {
 	log.Println("🔧 Initializing GPU context with CUDA streams...")
-	
+
 	// Initialize NVML for GPU management
 	err := nvml.Init()
 	if err != nil {
 		log.Printf("NVML initialization failed: %v, falling back to CPU", err)
 		return
 	}
-	
+
 	// Get GPU device count
 	deviceCount, err := nvml.GetDeviceCount()
 	if err != nil || deviceCount == 0 {
 		log.Printf("No CUDA devices found: %v", err)
 		return
 	}
-	
+
 	// Get primary GPU device
 	device, err := nvml.NewDevice(0)
 	if err != nil {
 		log.Printf("Failed to get GPU device: %v", err)
 		return
 	}
-	
+
 	// Get memory info
 	memInfo, err := device.GetMemoryInfo()
 	if err != nil {
 		log.Printf("Failed to get GPU memory info: %v", err)
 	}
-	
+
 	// Get compute capability (simulated for RTX 3060 Ti)
 	computeCaps := GPUComputeCapability{
 		Major:           8, // Ampere architecture
@@ -294,7 +297,7 @@ func (ttga *TensorTilingGPUAccelerator) initializeGPUContext() {
 		WarpSize:        32,
 		TensorCores:     true,
 	}
-	
+
 	// Create CUDA streams
 	streamCount := runtime.NumCPU() * 2 // 2 streams per CPU core
 	streams := make([]*CUDAStream, streamCount)
@@ -306,7 +309,7 @@ func (ttga *TensorTilingGPUAccelerator) initializeGPUContext() {
 			InUse:    false,
 		}
 	}
-	
+
 	ttga.GPUContext = &GPUContext{
 		DeviceID:     0,
 		DeviceHandle: device,
@@ -315,18 +318,18 @@ func (ttga *TensorTilingGPUAccelerator) initializeGPUContext() {
 		StreamCount:  streamCount,
 		Streams:      streams,
 	}
-	
-	log.Printf("✅ GPU Context initialized: %d streams, %.1f GB memory", 
+
+	log.Printf("✅ GPU Context initialized: %d streams, %.1f GB memory",
 		streamCount, float64(memInfo.Total)/(1024*1024*1024))
 }
 
 // Initialize cuBLAS for optimized matrix operations
 func (ttga *TensorTilingGPUAccelerator) initializeCuBLAS() {
 	log.Println("🔢 Initializing cuBLAS for optimized matrix calculations...")
-	
+
 	// Simulated cuBLAS handle creation
 	ttga.CuBLASHandle = uintptr(0x2000)
-	
+
 	// Create optimized GPU buffers for matrix operations
 	bufferSizes := []int64{
 		1024 * 1024 * 1024,  // 1GB buffer for large matrices
@@ -334,23 +337,23 @@ func (ttga *TensorTilingGPUAccelerator) initializeCuBLAS() {
 		256 * 1024 * 1024,   // 256MB buffer for small matrices
 		128 * 1024 * 1024,   // 128MB buffer for vectors
 	}
-	
+
 	for i, size := range bufferSizes {
 		bufferName := fmt.Sprintf("cublas_buffer_%d", i)
 		ttga.createGPUBuffer(bufferName, size, 512) // 512-byte alignment
 	}
-	
+
 	log.Println("✅ cuBLAS initialized with optimized GPU buffers")
 }
 
 // Initialize Go-Llama for LLM integration
 func (ttga *TensorTilingGPUAccelerator) initializeGoLlama() {
 	log.Println("🦙 Initializing Go-Llama with GPU acceleration...")
-	
+
 	// Simulated Go-Llama initialization
 	// In real implementation, would load actual model
 	ttga.TokenBuffer = make([]llama.Token, 2048) // Context window
-	
+
 	// Configure for GPU acceleration
 	params := llama.NewContextParams()
 	params.SetNGpuLayers(35) // Use GPU layers for RTX 3060 Ti
@@ -358,14 +361,14 @@ func (ttga *TensorTilingGPUAccelerator) initializeGoLlama() {
 	params.SetNCtx(2048)     // Context size
 	params.SetNBatch(512)    // Batch size for parallel processing
 	params.SetF16KV(true)    // Use half precision for key-value cache
-	
+
 	log.Println("✅ Go-Llama configured with 35 GPU layers")
 }
 
 // Initialize WebAssembly runtime with LLVM optimizations
 func (ttga *TensorTilingGPUAccelerator) initializeWASMRuntime() {
 	log.Println("⚡ Initializing WebAssembly runtime with LLVM optimizations...")
-	
+
 	ttga.WASMRuntime = &WASMRuntime{
 		Instance:  uintptr(0x3000),
 		Memory:    make([]byte, 64*1024*1024), // 64MB WASM memory
@@ -377,7 +380,7 @@ func (ttga *TensorTilingGPUAccelerator) initializeWASMRuntime() {
 			WASMOptimizationInlining,
 		},
 	}
-	
+
 	// Load optimized WASM modules for tensor operations
 	modules := []string{
 		"tensor_multiply",
@@ -387,11 +390,11 @@ func (ttga *TensorTilingGPUAccelerator) initializeWASMRuntime() {
 		"activation_functions",
 		"attention_mechanism",
 	}
-	
+
 	for _, moduleName := range modules {
 		ttga.loadWASMModule(moduleName)
 	}
-	
+
 	log.Printf("✅ WASM runtime initialized with %d optimized modules", len(modules))
 }
 
@@ -399,7 +402,7 @@ func (ttga *TensorTilingGPUAccelerator) initializeWASMRuntime() {
 func (ttga *TensorTilingGPUAccelerator) createGPUBuffer(name string, size int64, alignment int) *GPUBuffer {
 	// Align size to boundary
 	alignedSize := (size + int64(alignment) - 1) & ^(int64(alignment) - 1)
-	
+
 	buffer := &GPUBuffer{
 		Ptr:        uintptr(0x10000000 + len(ttga.GPUBuffers)*0x1000000), // Simulated GPU pointer
 		Size:       alignedSize,
@@ -408,7 +411,7 @@ func (ttga *TensorTilingGPUAccelerator) createGPUBuffer(name string, size int64,
 		RefCount:   0,
 		LastAccess: time.Now(),
 	}
-	
+
 	ttga.GPUBuffers[name] = buffer
 	return buffer
 }
@@ -422,7 +425,7 @@ func (buffer *GPUBuffer) CreateSlice(offset, length int64, tileIndex int) *Buffe
 		TileIndex: tileIndex,
 		InUse:     false,
 	}
-	
+
 	buffer.Slices = append(buffer.Slices, slice)
 	return slice
 }
@@ -430,7 +433,7 @@ func (buffer *GPUBuffer) CreateSlice(offset, length int64, tileIndex int) *Buffe
 // Load WebAssembly module with LLVM optimizations
 func (ttga *TensorTilingGPUAccelerator) loadWASMModule(moduleName string) {
 	log.Printf("📦 Loading WASM module: %s", moduleName)
-	
+
 	// Simulated WASM module loading
 	module := &WASMModule{
 		Name:    moduleName,
@@ -443,7 +446,7 @@ func (ttga *TensorTilingGPUAccelerator) loadWASMModule(moduleName string) {
 			OptimizationLevel: 3,
 		},
 	}
-	
+
 	// Add function exports
 	exports := map[string]uintptr{
 		"tensor_multiply":     0x4000,
@@ -452,34 +455,34 @@ func (ttga *TensorTilingGPUAccelerator) loadWASMModule(moduleName string) {
 		"simd_add":           0x4003,
 		"vectorized_mult":    0x4004,
 	}
-	
+
 	for funcName, funcPtr := range exports {
 		module.Exports[funcName] = funcPtr
 		ttga.WASMRuntime.Functions[funcName] = funcPtr
 	}
-	
+
 	ttga.WASMModules[moduleName] = module
 }
 
 // Create tiled tensor for large matrix operations
 func (ttga *TensorTilingGPUAccelerator) CreateTiledTensor(name string, shape []int) *TiledTensor {
 	log.Printf("🧩 Creating tiled tensor: %s with shape %v", name, shape)
-	
+
 	// Calculate optimal tile configuration
 	tileShape := ttga.calculateOptimalTileShape(shape)
 	numTiles := ttga.calculateNumberOfTiles(shape, tileShape)
-	
+
 	// Create tiles
 	tiles := make([]*TensorTile, numTiles)
 	for i := 0; i < numTiles; i++ {
 		position := ttga.calculateTilePosition(i, shape, tileShape)
-		
+
 		// Create tensor data for tile
 		tileData := tensor.New(tensor.WithShape(tileShape...), tensor.Of(tensor.Float64))
-		
+
 		// Allocate GPU buffer slice
 		bufferSlice := ttga.allocateBufferSliceForTile(tileShape)
-		
+
 		tiles[i] = &TensorTile{
 			ID:           fmt.Sprintf("%s_tile_%d", name, i),
 			Data:         tileData,
@@ -489,10 +492,10 @@ func (ttga *TensorTilingGPUAccelerator) CreateTiledTensor(name string, shape []i
 			ComputeState: TileComputeStateIdle,
 		}
 	}
-	
+
 	// Establish neighbor relationships
 	ttga.establishTileNeighborships(tiles, shape, tileShape)
-	
+
 	tiledTensor := &TiledTensor{
 		OriginalShape: shape,
 		TileShape:     tileShape,
@@ -500,9 +503,9 @@ func (ttga *TensorTilingGPUAccelerator) CreateTiledTensor(name string, shape []i
 		Distribution:  TileDistributionGPU,
 		SyncState:     TileSyncStateClean,
 	}
-	
+
 	ttga.TiledTensors[name] = tiledTensor
-	
+
 	log.Printf("✅ Tiled tensor created: %d tiles of shape %v", numTiles, tileShape)
 	return tiledTensor
 }
@@ -513,9 +516,9 @@ func (ttga *TensorTilingGPUAccelerator) calculateOptimalTileShape(originalShape 
 	// - 38 SMs with 2048 threads each
 	// - 32 threads per warp
 	// - Tensor cores available
-	
+
 	tileShape := make([]int, len(originalShape))
-	
+
 	for i, dim := range originalShape {
 		if dim >= ttga.TileSize {
 			// Use optimal tile size
@@ -524,13 +527,13 @@ func (ttga *TensorTilingGPUAccelerator) calculateOptimalTileShape(originalShape 
 			// Use dimension size if smaller than tile size
 			tileShape[i] = dim
 		}
-		
+
 		// Ensure alignment for tensor cores (16x16 for mixed precision)
 		if tileShape[i]%16 != 0 && tileShape[i] > 16 {
 			tileShape[i] = (tileShape[i]/16 + 1) * 16
 		}
 	}
-	
+
 	return tileShape
 }
 
@@ -548,13 +551,13 @@ func (ttga *TensorTilingGPUAccelerator) calculateNumberOfTiles(originalShape, ti
 func (ttga *TensorTilingGPUAccelerator) calculateTilePosition(tileIndex int, originalShape, tileShape []int) []int {
 	position := make([]int, len(originalShape))
 	remaining := tileIndex
-	
+
 	for i := len(originalShape) - 1; i >= 0; i-- {
 		tilesInDim := (originalShape[i] + tileShape[i] - 1) / tileShape[i]
 		position[i] = (remaining % tilesInDim) * tileShape[i]
 		remaining /= tilesInDim
 	}
-	
+
 	return position
 }
 
@@ -566,7 +569,7 @@ func (ttga *TensorTilingGPUAccelerator) allocateBufferSliceForTile(tileShape []i
 		tileSize *= int64(dim)
 	}
 	tileSize *= 8 // 8 bytes per float64
-	
+
 	// Find suitable buffer
 	for _, buffer := range ttga.GPUBuffers {
 		if buffer.Size >= tileSize {
@@ -577,7 +580,7 @@ func (ttga *TensorTilingGPUAccelerator) allocateBufferSliceForTile(tileShape []i
 					return slice
 				}
 			}
-			
+
 			// Create new slice if buffer has space
 			usedSpace := int64(0)
 			for _, slice := range buffer.Slices {
@@ -585,7 +588,7 @@ func (ttga *TensorTilingGPUAccelerator) allocateBufferSliceForTile(tileShape []i
 					usedSpace += slice.Length
 				}
 			}
-			
+
 			if buffer.Size-usedSpace >= tileSize {
 				slice := buffer.CreateSlice(usedSpace, tileSize, len(buffer.Slices))
 				slice.InUse = true
@@ -593,13 +596,13 @@ func (ttga *TensorTilingGPUAccelerator) allocateBufferSliceForTile(tileShape []i
 			}
 		}
 	}
-	
+
 	// Create new buffer if needed
 	bufferName := fmt.Sprintf("tile_buffer_%d", len(ttga.GPUBuffers))
 	buffer := ttga.createGPUBuffer(bufferName, tileSize*2, 512)
 	slice := buffer.CreateSlice(0, tileSize, 0)
 	slice.InUse = true
-	
+
 	return slice
 }
 
@@ -613,34 +616,34 @@ func (ttga *TensorTilingGPUAccelerator) establishTileNeighborships(tiles []*Tens
 // Start tile processing workers
 func (ttga *TensorTilingGPUAccelerator) startTileWorkers() {
 	numWorkers := ttga.GPUContext.StreamCount
-	
+
 	for i := 0; i < numWorkers; i++ {
 		go ttga.tileWorker(i)
 	}
-	
+
 	log.Printf("🏃 Started %d tile processing workers", numWorkers)
 }
 
 // Tile worker for parallel processing
 func (ttga *TensorTilingGPUAccelerator) tileWorker(workerID int) {
 	stream := ttga.GPUContext.Streams[workerID]
-	
+
 	for job := range ttga.tileChannel {
 		startTime := time.Now()
-		
+
 		// Mark stream as in use
 		stream.InUse = true
 		stream.LastOperation = startTime
-		
+
 		// Process tile job
 		result := ttga.processTileJob(job, stream)
-		
+
 		// Mark stream as free
 		stream.InUse = false
-		
+
 		// Send result
 		ttga.resultChannel <- result
-		
+
 		// Update metrics
 		ttga.updateWorkerMetrics(workerID, time.Since(startTime))
 	}
@@ -649,7 +652,7 @@ func (ttga *TensorTilingGPUAccelerator) tileWorker(workerID int) {
 // Process individual tile job
 func (ttga *TensorTilingGPUAccelerator) processTileJob(job *TileJob, stream *CUDAStream) *TileResult {
 	startTime := time.Now()
-	
+
 	// Select processing method based on operation
 	var err error
 	switch job.Operation {
@@ -664,7 +667,7 @@ func (ttga *TensorTilingGPUAccelerator) processTileJob(job *TileJob, stream *CUD
 	default:
 		err = fmt.Errorf("unknown operation: %s", job.Operation)
 	}
-	
+
 	return &TileResult{
 		TileID:    job.TileID,
 		Success:   err == nil,
@@ -679,33 +682,33 @@ func (ttga *TensorTilingGPUAccelerator) processTileJob(job *TileJob, stream *CUD
 // Execute GPU-accelerated matrix multiply with cuBLAS
 func (ttga *TensorTilingGPUAccelerator) executeMatrixMultiplyGPU(job *TileJob, stream *CUDAStream) error {
 	log.Printf("🔢 Executing cuBLAS matrix multiply for tile %s", job.TileID)
-	
+
 	// Simulate cuBLAS GEMM operation
 	// In real implementation, would call:
 	// cublasDgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, m, n, k, &alpha, A, lda, B, ldb, &beta, C, ldc)
-	
+
 	// Update profiler data
 	ttga.ProfilerData.GPUKernelTimes["cublas_gemm"] += time.Millisecond * 5
 	ttga.ProfilerData.TileOperations["matrix_multiply"]++
-	
+
 	return nil
 }
 
 // Execute tensor convolution with optimized kernels
 func (ttga *TensorTilingGPUAccelerator) executeTensorConvolutionGPU(job *TileJob, stream *CUDAStream) error {
 	log.Printf("🧮 Executing tensor convolution for tile %s", job.TileID)
-	
+
 	// Simulate optimized convolution kernel
 	ttga.ProfilerData.GPUKernelTimes["tensor_conv2d"] += time.Millisecond * 3
 	ttga.ProfilerData.TileOperations["convolution"]++
-	
+
 	return nil
 }
 
 // Execute attention mechanism with tensor cores
 func (ttga *TensorTilingGPUAccelerator) executeAttentionMechanismGPU(job *TileJob, stream *CUDAStream) error {
 	log.Printf("🎯 Executing attention mechanism for tile %s", job.TileID)
-	
+
 	// Simulate tensor core accelerated attention
 	if ttga.GPUContext.ComputeCaps.TensorCores {
 		// Use mixed precision with tensor cores
@@ -714,7 +717,7 @@ func (ttga *TensorTilingGPUAccelerator) executeAttentionMechanismGPU(job *TileJo
 		// Fallback to CUDA cores
 		ttga.ProfilerData.GPUKernelTimes["attention_cuda_cores"] += time.Millisecond * 2
 	}
-	
+
 	ttga.ProfilerData.TileOperations["attention"]++
 	return nil
 }
@@ -722,31 +725,31 @@ func (ttga *TensorTilingGPUAccelerator) executeAttentionMechanismGPU(job *TileJo
 // Execute WebAssembly accelerated operations
 func (ttga *TensorTilingGPUAccelerator) executeWASMAccelerated(job *TileJob) error {
 	log.Printf("⚡ Executing WASM accelerated operation for tile %s", job.TileID)
-	
+
 	// Select appropriate WASM module
 	moduleName := "tensor_multiply" // Default
 	if operation, ok := job.Parameters["wasm_module"].(string); ok {
 		moduleName = operation
 	}
-	
+
 	module, exists := ttga.WASMModules[moduleName]
 	if !exists {
 		return fmt.Errorf("WASM module not found: %s", moduleName)
 	}
-	
+
 	// Simulate WASM execution with SIMD optimizations
 	startTime := time.Now()
-	
+
 	// Copy data to WASM memory
 	// Execute WASM function
 	// Copy result back
-	
+
 	executionTime := time.Since(startTime)
-	
+
 	// Update metrics
 	ttga.ProfilerData.WASMCallCounts[moduleName]++
 	ttga.Metrics.WASMExecutionTime += executionTime
-	
+
 	log.Printf("✅ WASM execution completed in %v", executionTime)
 	return nil
 }
@@ -755,18 +758,18 @@ func (ttga *TensorTilingGPUAccelerator) executeWASMAccelerated(job *TileJob) err
 func (ttga *TensorTilingGPUAccelerator) updateWorkerMetrics(workerID int, executionTime time.Duration) {
 	ttga.mutex.Lock()
 	defer ttga.mutex.Unlock()
-	
+
 	// Update performance metrics
 	ttga.Metrics.TileTransferTime = executionTime
-	
+
 	// Calculate operations per second
 	if executionTime > 0 {
 		ttga.Metrics.TensorOpsPerSec = 1.0 / executionTime.Seconds()
 	}
-	
+
 	// Simulate GPU utilization
 	ttga.Metrics.GPUUtilization = math.Min(100.0, float64(workerID+1)*12.5)
-	
+
 	// Simulate memory bandwidth utilization
 	ttga.Metrics.MemoryBandwidth = 450.0 + float64(workerID)*25.0 // GB/s for RTX 3060 Ti
 }
@@ -774,24 +777,24 @@ func (ttga *TensorTilingGPUAccelerator) updateWorkerMetrics(workerID int, execut
 // Perform matrix multiplication with tensor tiling
 func (ttga *TensorTilingGPUAccelerator) TiledMatrixMultiply(nameA, nameB, nameC string) error {
 	log.Printf("🔢 Performing tiled matrix multiplication: %s * %s = %s", nameA, nameB, nameC)
-	
+
 	tensorA, existsA := ttga.TiledTensors[nameA]
 	tensorB, existsB := ttga.TiledTensors[nameB]
-	
+
 	if !existsA || !existsB {
 		return fmt.Errorf("tensors not found: A=%v, B=%v", existsA, existsB)
 	}
-	
+
 	// Create result tensor
 	resultShape := []int{tensorA.OriginalShape[0], tensorB.OriginalShape[1]}
 	tensorC := ttga.CreateTiledTensor(nameC, resultShape)
-	
+
 	// Schedule tile operations
 	for i, tileC := range tensorC.Tiles {
 		// Find corresponding tiles from A and B
 		tilesA := ttga.findRelevantTiles(tensorA, i)
 		tilesB := ttga.findRelevantTiles(tensorB, i)
-		
+
 		job := &TileJob{
 			TileID:     fmt.Sprintf("matmul_%d", i),
 			Operation:  "matrix_multiply",
@@ -803,7 +806,7 @@ func (ttga *TensorTilingGPUAccelerator) TiledMatrixMultiply(nameA, nameB, nameC 
 			},
 			Priority: 1,
 		}
-		
+
 		select {
 		case ttga.tileChannel <- job:
 			// Job queued successfully
@@ -812,7 +815,7 @@ func (ttga *TensorTilingGPUAccelerator) TiledMatrixMultiply(nameA, nameB, nameC 
 			ttga.tileChannel <- job
 		}
 	}
-	
+
 	log.Printf("✅ Scheduled %d tile operations for matrix multiplication", len(tensorC.Tiles))
 	return nil
 }
@@ -821,25 +824,25 @@ func (ttga *TensorTilingGPUAccelerator) TiledMatrixMultiply(nameA, nameB, nameC 
 func (ttga *TensorTilingGPUAccelerator) findRelevantTiles(tensor *TiledTensor, outputTileIndex int) []*TensorTile {
 	// Simplified: return a subset of tiles based on output tile index
 	relevantTiles := make([]*TensorTile, 0)
-	
+
 	maxTiles := min(len(tensor.Tiles), 4) // Limit to 4 tiles for demonstration
 	for i := 0; i < maxTiles; i++ {
 		relevantTiles = append(relevantTiles, tensor.Tiles[i])
 	}
-	
+
 	return relevantTiles
 }
 
 // Go-Llama integration with tiled processing
 func (ttga *TensorTilingGPUAccelerator) ProcessLlamaWithTiles(prompt string) (string, error) {
 	log.Printf("🦙 Processing Llama inference with tiled tensors: %s", prompt)
-	
+
 	// Tokenize prompt
 	tokens := ttga.tokenizePrompt(prompt)
-	
+
 	// Create attention tiles for transformer processing
 	attentionTensor := ttga.CreateTiledTensor("attention_weights", []int{len(tokens), len(tokens)})
-	
+
 	// Schedule attention computation across tiles
 	for i, tile := range attentionTensor.Tiles {
 		job := &TileJob{
@@ -853,14 +856,14 @@ func (ttga *TensorTilingGPUAccelerator) ProcessLlamaWithTiles(prompt string) (st
 			},
 			Priority: 2,
 		}
-		
+
 		ttga.tileChannel <- job
 	}
-	
+
 	// Simulate inference result
-	result := fmt.Sprintf("Tiled inference result for: %s (processed %d tokens across %d tiles)", 
+	result := fmt.Sprintf("Tiled inference result for: %s (processed %d tokens across %d tiles)",
 		prompt, len(tokens), len(attentionTensor.Tiles))
-	
+
 	log.Printf("✅ Llama inference completed with %d attention tiles", len(attentionTensor.Tiles))
 	return result, nil
 }
@@ -870,11 +873,11 @@ func (ttga *TensorTilingGPUAccelerator) tokenizePrompt(prompt string) []llama.To
 	// Simplified tokenization
 	tokens := make([]llama.Token, 0)
 	words := len(prompt) / 4 // Rough approximation
-	
+
 	for i := 0; i < words; i++ {
 		tokens = append(tokens, llama.Token(i))
 	}
-	
+
 	return tokens
 }
 
@@ -882,17 +885,17 @@ func (ttga *TensorTilingGPUAccelerator) tokenizePrompt(prompt string) []llama.To
 func (ttga *TensorTilingGPUAccelerator) GetPerformanceMetrics() *PerformanceMetrics {
 	ttga.mutex.RLock()
 	defer ttga.mutex.RUnlock()
-	
+
 	// Calculate cuBLAS performance
 	totalKernelTime := time.Duration(0)
 	for _, kernelTime := range ttga.ProfilerData.GPUKernelTimes {
 		totalKernelTime += kernelTime
 	}
-	
+
 	if totalKernelTime > 0 {
 		ttga.Metrics.CuBLASPerformance = 1000.0 / totalKernelTime.Seconds() // Operations per second
 	}
-	
+
 	return ttga.Metrics
 }
 
@@ -900,17 +903,17 @@ func (ttga *TensorTilingGPUAccelerator) GetPerformanceMetrics() *PerformanceMetr
 func (ttga *TensorTilingGPUAccelerator) GetProfilerData() *ProfilerData {
 	ttga.mutex.RLock()
 	defer ttga.mutex.RUnlock()
-	
+
 	// Identify potential bottlenecks
 	ttga.ProfilerData.Bottlenecks = ttga.identifyBottlenecks()
-	
+
 	return ttga.ProfilerData
 }
 
 // Identify performance bottlenecks
 func (ttga *TensorTilingGPUAccelerator) identifyBottlenecks() []PerformanceBottleneck {
 	bottlenecks := make([]PerformanceBottleneck, 0)
-	
+
 	// Check GPU utilization
 	if ttga.Metrics.GPUUtilization < 80.0 {
 		bottlenecks = append(bottlenecks, PerformanceBottleneck{
@@ -920,7 +923,7 @@ func (ttga *TensorTilingGPUAccelerator) identifyBottlenecks() []PerformanceBottl
 			Suggestion: "Increase tile size or parallel streams",
 		})
 	}
-	
+
 	// Check memory bandwidth
 	maxBandwidth := 448.0 // RTX 3060 Ti theoretical max
 	if ttga.Metrics.MemoryBandwidth < maxBandwidth*0.8 {
@@ -931,33 +934,33 @@ func (ttga *TensorTilingGPUAccelerator) identifyBottlenecks() []PerformanceBottl
 			Suggestion: "Optimize memory access patterns or increase tile overlap",
 		})
 	}
-	
+
 	return bottlenecks
 }
 
 // Cleanup resources
 func (ttga *TensorTilingGPUAccelerator) Cleanup() {
 	log.Println("🧹 Cleaning up Tensor Tiling GPU Accelerator...")
-	
+
 	// Close channels
 	close(ttga.tileChannel)
 	close(ttga.resultChannel)
-	
+
 	// Release GPU buffers
 	for name, buffer := range ttga.GPUBuffers {
 		log.Printf("Releasing GPU buffer: %s", name)
 		// In real implementation, would call cudaFree(buffer.Ptr)
 		buffer.RefCount = 0
 	}
-	
+
 	// Cleanup WASM runtime
 	if ttga.WASMRuntime != nil {
 		log.Println("Cleaning up WASM runtime")
 	}
-	
+
 	// Cleanup NVML
 	nvml.Shutdown()
-	
+
 	log.Println("✅ Cleanup completed")
 }
 
@@ -977,7 +980,7 @@ func (ttga *TensorTilingGPUAccelerator) StartHTTPAPI() {
 	// - Tile status
 	// - GPU utilization
 	// - WASM module management
-	
+
 	log.Println("🌐 Starting HTTP API for Tensor Tiling GPU Accelerator on port 8096")
 	// http.ListenAndServe(":8096", router)
 }
@@ -985,26 +988,26 @@ func (ttga *TensorTilingGPUAccelerator) StartHTTPAPI() {
 // Demo function
 func main() {
 	log.Println("🚀 Starting Tensor Tiling GPU Accelerator Demo...")
-	
+
 	// Initialize accelerator
 	ttga := NewTensorTilingGPUAccelerator()
 	defer ttga.Cleanup()
-	
+
 	// Start HTTP API
 	go ttga.StartHTTPAPI()
-	
+
 	// Demo: Create large matrices for tiling
 	log.Println("📊 Demo: Creating large tiled tensors...")
 	ttga.CreateTiledTensor("matrix_A", []int{2048, 2048})
 	ttga.CreateTiledTensor("matrix_B", []int{2048, 2048})
-	
+
 	// Demo: Perform tiled matrix multiplication
 	log.Println("🔢 Demo: Performing tiled matrix multiplication...")
 	err := ttga.TiledMatrixMultiply("matrix_A", "matrix_B", "matrix_C")
 	if err != nil {
 		log.Printf("Error in matrix multiplication: %v", err)
 	}
-	
+
 	// Demo: Llama inference with tiling
 	log.Println("🦙 Demo: Llama inference with tensor tiling...")
 	result, err := ttga.ProcessLlamaWithTiles("Explain tensor tiling benefits for GPU acceleration")
@@ -1013,10 +1016,10 @@ func main() {
 	} else {
 		log.Printf("Llama result: %s", result)
 	}
-	
+
 	// Wait for processing to complete
 	time.Sleep(time.Second * 5)
-	
+
 	// Display performance metrics
 	metrics := ttga.GetPerformanceMetrics()
 	log.Printf("📈 Performance Metrics:")
@@ -1025,13 +1028,13 @@ func main() {
 	log.Printf("  Memory Bandwidth: %.1f GB/s", metrics.MemoryBandwidth)
 	log.Printf("  cuBLAS Performance: %.2f ops/sec", metrics.CuBLASPerformance)
 	log.Printf("  WASM Execution Time: %v", metrics.WASMExecutionTime)
-	
+
 	// Display profiler data
 	profiler := ttga.GetProfilerData()
 	log.Printf("🔍 Profiler Data:")
 	for kernel, time := range profiler.GPUKernelTimes {
 		log.Printf("  %s: %v", kernel, time)
 	}
-	
+
 	log.Println("✅ Tensor Tiling GPU Accelerator demo completed!")
 }

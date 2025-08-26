@@ -153,7 +153,7 @@
       {/if}
       
       {#if exportable}
-        <Button variant="outline" size="sm" onclick={handleExport}>
+        <Button variant="outline" size="sm" on:click={handleExport}>
           <Download class="w-4 h-4 mr-2" />
           Export
         </Button>
@@ -185,7 +185,7 @@
                   column.class
                 )}
                 style={column.width ? `width: ${column.width}` : undefined}
-                onclick={() => handleSort(column)}
+                on:click={() => handleSort(column)}
               >
                 <div class="flex items-center gap-1">
                   {column.label}
@@ -213,7 +213,7 @@
                 onRowClick && 'cursor-pointer',
                 selectedRows.has(index) && 'bg-yorha-primary/5'
               )}
-              onclick={() => onRowClick?.(row)}
+              on:click={() => onRowClick?.(row)}
             >
               {#if selectable}
                 <td class="p-3">
@@ -221,7 +221,7 @@
                     type="checkbox"
                     checked={selectedRows.has(index)}
                     onchange={() => toggleRowSelection(index)}
-                    onclick={(e) => e.stopPropagation()}
+                    on:click={(e) => e.stopPropagation()}
                     class="rounded border-yorha-border"
                   />
                 </td>
@@ -260,7 +260,7 @@
           variant="outline" 
           size="sm" 
           disabled={currentPage === 0}
-          onclick={() => currentPage = Math.max(0, currentPage - 1)}
+          on:click={() => currentPage = Math.max(0, currentPage - 1)}
         >
           Previous
         </Button>
@@ -273,7 +273,7 @@
           variant="outline" 
           size="sm" 
           disabled={currentPage >= totalPages - 1}
-          onclick={() => currentPage = Math.min(totalPages - 1, currentPage + 1)}
+          on:click={() => currentPage = Math.min(totalPages - 1, currentPage + 1)}
         >
           Next
         </Button>

@@ -4,8 +4,6 @@
 -->
 
 <script lang="ts">
-  import { $state } from 'svelte';
-
   import { onMount } from 'svelte';
   import { writable } from 'svelte/store';
 
@@ -97,11 +95,11 @@
     <div class="space-y-4">
       <button 
         class="space-y-4"
-        onclick={() => toggleAutoRefresh()}
+        on:click={() => toggleAutoRefresh()}
       >
         {autoRefresh ? '🔄 Auto Refresh On' : '⏸️ Auto Refresh Off'}
       </button>
-      <button class="space-y-4" onclick={() => loadMetrics()}>
+      <button class="space-y-4" on:click={() => loadMetrics()}>
         🔄 Refresh Now
       </button>
     </div>

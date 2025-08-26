@@ -8,7 +8,7 @@
   import EvidenceUploader from "$lib/components/EvidenceUploader.svelte";
   import { aiSummarizationService } from "$lib/services/aiSummarizationService";
 
-  export let data: PageData;
+  let { data = $bindable() } = $props(); // PageData;
 
   // Use correct SvelteKit param for caseId
   const caseId = data.case.id;
@@ -337,7 +337,7 @@
     <div class="container mx-auto px-4">
       <button
         class="container mx-auto px-4"
-        onclick={() => sidebarOpen.update((open) => !open)}
+        on:click={() => sidebarOpen.update((open) => !open)}
       >
         {$sidebarOpen ? "◀" : "▶"}
         {$sidebarOpen ? "Hide" : "Show"} Sidebar
@@ -345,7 +345,7 @@
 
       <button
         class="container mx-auto px-4"
-        onclick={() => generateCaseSummary()}
+        on:click={() => generateCaseSummary()}
         disabled={aiGenerating}
       >
         {#if aiGenerating}
@@ -358,7 +358,7 @@
 
       <button
         class="container mx-auto px-4"
-        onclick={() => generateProsecutionStrategy()}
+        on:click={() => generateProsecutionStrategy()}
         disabled={aiGenerating}
       >
         📋 Prosecution Strategy
@@ -389,7 +389,7 @@
         <button
           class="container mx-auto px-4"
           class:active={$activeTab === "evidence"}
-          onclick={() => activeTab.set("evidence")}
+          on:click={() => activeTab.set("evidence")}
           title="Evidence List (Ctrl/Cmd + 3)"
         >
           📁 Evidence
@@ -397,7 +397,7 @@
         <button
           class="container mx-auto px-4"
           class:active={$activeTab === "reports"}
-          onclick={() => activeTab.set("reports")}
+          on:click={() => activeTab.set("reports")}
           title="AI Reports (Ctrl/Cmd + 4)"
         >
           📊 AI Reports
@@ -454,7 +454,7 @@
                   </div>
                   <button
                     class="container mx-auto px-4"
-                    onclick={() => canvasEditor?.addEvidenceToCanvas(evidence)}
+                    on:click={() => canvasEditor?.addEvidenceToCanvas(evidence)}
                   >
                     ➕
                   </button>
@@ -483,7 +483,7 @@
                 </div>
                 <button
                   class="container mx-auto px-4"
-                  onclick={() =>
+                  on:click={() =>
                     reportEditor?.setContent(report.richTextContent)}
                 >
                   Load into Editor
@@ -508,7 +508,7 @@
         <button
           class="container mx-auto px-4"
           class:active={$activeTab === "canvas"}
-          onclick={() => activeTab.set("canvas")}
+          on:click={() => activeTab.set("canvas")}
           title="Interactive Canvas (Ctrl/Cmd + 1)"
         >
           🎨 Interactive Canvas
@@ -516,7 +516,7 @@
         <button
           class="container mx-auto px-4"
           class:active={$activeTab === "editor"}
-          onclick={() => activeTab.set("editor")}
+          on:click={() => activeTab.set("editor")}
           title="Report Editor (Ctrl/Cmd + 2)"
         >
           📝 Report Editor

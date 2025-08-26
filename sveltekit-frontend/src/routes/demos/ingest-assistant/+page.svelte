@@ -188,7 +188,7 @@
           is available at <code>$lib/components/ai/IngestAIAssistant.svelte</code>
         </p>
         <div class="space-y-2">
-          <Button onclick={() => window.open('/api/v1/ingest', '_blank')}>
+          <Button on:click={() => window.open('/api/v1/ingest', '_blank')}>
             Test API Directly
           </Button>
         </div>
@@ -296,10 +296,10 @@
       AI-powered processing and vector semantic search
     </p>
     <div class="flex justify-center space-x-4">
-      <Button variant="outline" size="sm" onclick={checkServiceHealth}>
+      <Button variant="outline" size="sm" on:click={checkServiceHealth}>
         🔄 Refresh Status
       </Button>
-      <Button variant="outline" size="sm" onclick={loadRecentIngests}>
+      <Button variant="outline" size="sm" on:click={loadRecentIngests}>
         📊 Load Recent
       </Button>
     </div>

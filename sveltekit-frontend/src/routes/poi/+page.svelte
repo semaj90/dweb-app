@@ -32,7 +32,7 @@
     }
   ];
 
-  $: filteredPersons = persons.filter(person => 
+  let filteredPersons = $derived(persons.filter(person => );
     person.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     person.alias.toLowerCase().includes(searchQuery.toLowerCase()) ||
     person.status.toLowerCase().includes(searchQuery.toLowerCase())
@@ -66,7 +66,7 @@
       <Button
         variant="outline"
         size="sm"
-        onclick={() => (showFilters = !showFilters)}
+        on:click={() => (showFilters = !showFilters)}
         class={showFilters ? 'bg-blue-50 border-blue-300' : ''}
       >
         <Filter class="w-4 h-4 mr-2" />
@@ -76,7 +76,7 @@
       <Button
         variant="outline"
         size="sm"
-        onclick={() => (viewMode = viewMode === 'grid' ? 'list' : 'grid')}
+        on:click={() => (viewMode = viewMode === 'grid' ? 'list' : 'grid')}
       >
         {#if viewMode === 'grid'}
           <List class="w-4 h-4" />

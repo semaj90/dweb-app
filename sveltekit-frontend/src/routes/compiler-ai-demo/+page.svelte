@@ -2,7 +2,6 @@
 <!-- Real-time demonstration of AI-driven development architecture -->
 
 <script lang="ts">
-  import { $state } from 'svelte';
   import { onMount, onDestroy } from 'svelte';
   import { Button } from '$lib/components/ui/button';
   import { Card } from '$lib/components/ui/card';
@@ -270,18 +269,18 @@
     <!-- Controls -->
     <div class="flex gap-4 mb-8 justify-center">
       <Button
-        onclick={startMonitoring}
+        on:click={startMonitoring}
         disabled={!systemInitialized || isMonitoring}
         class="bg-green-600 hover:bg-green-700">
         Start Monitoring
       </Button>
 
-      <Button onclick={stopMonitoring} disabled={!isMonitoring} class="bg-red-600 hover:bg-red-700">
+      <Button on:click={stopMonitoring} disabled={!isMonitoring} class="bg-red-600 hover:bg-red-700">
         Stop Monitoring
       </Button>
 
       <Button
-        onclick={addTestError}
+        on:click={addTestError}
         disabled={!systemInitialized}
         class="bg-orange-600 hover:bg-orange-700">
         Add Test Error
@@ -305,7 +304,7 @@
             <button
               type="button"
               class="w-full p-3 rounded-lg bg-slate-700/50 border border-slate-600 cursor-pointer hover:bg-slate-700 transition-colors text-left"
-              onclick={() => (selectedEvent = event)}
+              on:click={() => (selectedEvent = event)}
               onkeydown={(e) => e.key === 'Enter' && (selectedEvent = event)}
               class:ring-2={selectedEvent?.logs[0]?.id === event.logs[0]?.id}
               class:ring-blue-500={selectedEvent?.logs[0]?.id === event.logs[0]?.id}
@@ -355,7 +354,7 @@
             {@const IconComponent = getPatchIcon(patch)}
             <div
               class="p-3 rounded-lg bg-slate-700/50 border border-slate-600 cursor-pointer hover:bg-slate-700 transition-colors"
-              onclick={() => (selectedPatch = patch)}
+              on:click={() => (selectedPatch = patch)}
               class:ring-2={selectedPatch?.id === patch.id}
               class:ring-green-500={selectedPatch?.id === patch.id}>
               <div class="flex items-start gap-3">

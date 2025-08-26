@@ -68,61 +68,61 @@ const NES_MEMORY_MAP = {
   }
 } as const;
 
-interface LegalDocument {
-  id: string;
-  type: 'contract' | 'evidence' | 'brief' | 'citation' | 'precedent';
+export interface LegalDocument {
+  readonly id: string;
+  readonly type: 'contract' | 'evidence' | 'brief' | 'citation' | 'precedent';
   priority: number; // 0-255 (8-bit)
-  size: number;
+  readonly size: number;
   confidenceLevel: number; // 0.0-1.0
-  riskLevel: 'low' | 'medium' | 'high' | 'critical';
+  readonly riskLevel: 'low' | 'medium' | 'high' | 'critical';
   lastAccessed: number;
   bankId?: number; // For large documents requiring bank switching
-  compressed: boolean;
-  metadata: {
-    caseId?: string;
-    jurisdiction?: string;
-    documentClass?: string;
-    aiGenerated?: boolean;
-    vectorEmbedding?: Float32Array;
+  readonly compressed: boolean;
+  readonly metadata: {
+    readonly caseId?: string;
+    readonly jurisdiction?: string;
+    readonly documentClass?: string;
+    readonly aiGenerated?: boolean;
+    readonly vectorEmbedding?: Float32Array;
   };
 }
 
-interface MemoryBank {
-  id: number;
-  type: 'RAM' | 'CHR_ROM' | 'PRG_ROM' | 'SAVE_RAM' | 'EXPANSION_ROM';
-  startAddress: number;
-  endAddress: number;
-  size: number;
+export interface MemoryBank {
+  readonly id: number;
+  readonly type: 'RAM' | 'CHR_ROM' | 'PRG_ROM' | 'SAVE_RAM' | 'EXPANSION_ROM';
+  readonly startAddress: number;
+  readonly endAddress: number;
+  readonly size: number;
   used: number;
-  documents: Map<string, LegalDocument>;
+  readonly documents: Map<string, LegalDocument>;
   isActive: boolean;
   lastBankSwitch: number;
   compressionRatio: number;
 }
 
-interface MemoryStats {
-  totalRAM: number;
-  usedRAM: number;
-  totalCHR: number;
-  usedCHR: number;
-  totalPRG: number;
-  usedPRG: number;
-  bankSwitches: number;
-  garbageCollections: number;
-  compressionSavings: number;
-  documentCount: number;
-  averageAccessTime: number;
+export interface MemoryStats {
+  readonly totalRAM: number;
+  readonly usedRAM: number;
+  readonly totalCHR: number;
+  readonly usedCHR: number;
+  readonly totalPRG: number;
+  readonly usedPRG: number;
+  readonly bankSwitches: number;
+  readonly garbageCollections: number;
+  readonly compressionSavings: number;
+  readonly documentCount: number;
+  readonly averageAccessTime: number;
 }
 
 export class NESMemoryArchitecture {
-  private memoryBanks: Map<string, MemoryBank> = new Map();
+  private readonly memoryBanks: Map<string, MemoryBank> = new Map();
   private activeBank: string = 'INTERNAL_RAM';
   private bankSwitchCount = 0;
   private gcCount = 0;
   private compressionWorker: Worker | null = null;
   
   // NES-style memory management state
-  private memoryState = {
+  private readonly memoryState = {
     currentScanline: 0,
     vblankActive: false,
     ppu2000: 0, // PPU control register
@@ -132,7 +132,7 @@ export class NESMemoryArchitecture {
     ppuscroll: { x: 0, y: 0 }, // PPU scroll registers
     ppuaddr: 0, // PPU address register
     ppudata: 0  // PPU data register
-  };
+  } as const;
 
   // Legal AI priority scoring
   private readonly LEGAL_PRIORITIES = {
@@ -221,104 +221,45 @@ export class NESMemoryArchitecture {
     });
   }
 
-  private setupCompressionWorker() {
-    const workerCode = `
-      // Legal document compression with NES-style RLE encoding
-      self.onmessage = function(e) {
-        const { documentData, legalContext, compressionLevel } = e.data;
-        
-        try {
-          const compressed = compressLegalDocument(documentData, legalContext, compressionLevel);
-          
-          self.postMessage({
-            success: true,
-            compressedData: compressed.data,
-            compressionRatio: compressed.ratio,
-            originalSize: documentData.byteLength,
-            compressedSize: compressed.data.byteLength,
-            legalPriority: compressed.legalPriority
-          });
-        } catch (error) {
-          self.postMessage({ success: false, error: error.message });
-        }
-      };
-      
-      function compressLegalDocument(data, legalContext, level) {
-        const input = new Uint8Array(data);
-        const output = [];
-        let i = 0;
-        
-        // Legal context-aware compression
-        const priorityMultiplier = legalContext?.riskLevel === 'critical' ? 3 : 
-                                 legalContext?.riskLevel === 'high' ? 2 : 1;
-        const confidenceBoost = legalContext?.confidenceLevel > 0.8 ? 1.5 : 1.0;
-        
-        while (i < input.length) {
-          const value = input[i];
-          let count = 1;
-          
-          // NES-style RLE with legal document patterns
-          const maxRun = Math.min(255, 127 * priorityMultiplier * confidenceBoost);
-          while (i + count < input.length && input[i + count] === value && count < maxRun) {
-            count++;
-          }
-          
-          if (count > 3 || (legalContext?.type === 'contract' && count > 2)) {
-            // Use RLE for sequences (legal documents often have repetitive structure)
-            output.push(0xFF, count, value);
-          } else {
-            // Raw data for short sequences
-            for (let j = 0; j < count; j++) {
-              output.push(value);
-            }
-          }
-          
-          i += count;
-        }
-        
-        const compressed = new Uint8Array(output);
-        const ratio = input.length / compressed.length;
-        
-        // Calculate legal priority based on compression characteristics
-        let legalPriority = 128; // default medium priority
-        if (ratio > 3.0) legalPriority = 192; // highly structured document
-        if (ratio < 1.5) legalPriority = 64;  // complex/unique document
-        if (legalContext?.riskLevel === 'critical') legalPriority = 255;
-        
-        return {
-          data: compressed.buffer,
-          ratio: ratio,
-          legalPriority: legalPriority
-        };
+  private setupCompressionWorker(): void {
+    // Modern compression using browser APIs instead of inline worker
+    try {
+      // Check for compression support
+      if (typeof CompressionStream !== 'undefined') {
+        // Use modern Compression Stream API
+        console.log('Using modern CompressionStream API for legal document compression');
+      } else {
+        // Fallback to manual compression without worker to avoid CSP issues
+        console.log('Using fallback compression for legal documents');
       }
-    `;
-
-    const blob = new Blob([workerCode], { type: 'application/javascript' });
-    this.compressionWorker = new Worker(URL.createObjectURL(blob));
+    } catch (error) {
+      console.warn('Compression setup failed:', error);
+    }
   }
 
-  private startVBlankCycle() {
+  private startVBlankCycle(): void {
     // NES-style VBlank cycle for memory management (60Hz)
     setInterval(() => {
-      this.memoryState.vblankActive = true;
+      (this.memoryState as any).vblankActive = true;
       this.performVBlankOperations();
       
       setTimeout(() => {
-        this.memoryState.vblankActive = false;
+        (this.memoryState as any).vblankActive = false;
       }, 1350); // VBlank period (~1.35ms)
       
-      this.memoryState.currentScanline = (this.memoryState.currentScanline + 1) % 262;
+      (this.memoryState as any).currentScanline = ((this.memoryState as any).currentScanline + 1) % 262;
     }, 16.67); // ~60 FPS
   }
 
-  private performVBlankOperations() {
+  private performVBlankOperations(): void {
     // Use VBlank period for memory management operations
-    if (this.memoryState.currentScanline % 60 === 0) {
+    const currentScanline = (this.memoryState as any).currentScanline;
+    if (currentScanline % 60 === 0) {
       // Every second, check for garbage collection
       this.checkGarbageCollection();
     }
     
-    if (this.memoryState.currentScanline % 180 === 0) {
+    if (currentScanline % 180 === 0) {
       // Every 3 seconds, optimize memory layout
       this.optimizeMemoryLayout();
     }
@@ -715,31 +656,33 @@ export class NESMemoryArchitecture {
 
   // PPU-style register access for UI components
   writePPU(register: number, value: number): void {
+    const state = this.memoryState as any;
     switch (register) {
       case 0x2000: // PPU Control
-        this.memoryState.ppu2000 = value;
+        state.ppu2000 = value;
         break;
       case 0x2001: // PPU Mask
-        this.memoryState.ppu2001 = value;
+        state.ppu2001 = value;
         break;
       case 0x2005: // PPU Scroll
-        this.memoryState.ppuscroll.x = value;
+        state.ppuscroll.x = value;
         break;
       case 0x2006: // PPU Address
-        this.memoryState.ppuaddr = value;
+        state.ppuaddr = value;
         break;
       case 0x2007: // PPU Data
-        this.memoryState.ppudata = value;
+        state.ppudata = value;
         break;
     }
   }
 
   readPPU(register: number): number {
+    const state = this.memoryState as any;
     switch (register) {
       case 0x2002: // PPU Status
-        return this.memoryState.ppu2002 | (this.memoryState.vblankActive ? 0x80 : 0);
+        return state.ppu2002 | (state.vblankActive ? 0x80 : 0);
       case 0x2007: // PPU Data
-        return this.memoryState.ppudata;
+        return state.ppudata;
       default:
         return 0;
     }
@@ -773,5 +716,4 @@ export class NESMemoryArchitecture {
 // Export singleton instance
 export const nesMemory = new NESMemoryArchitecture();
 
-// Export types for use in other modules
-export type { LegalDocument, MemoryBank, MemoryStats };
+// Export types already declared above - no need to re-export

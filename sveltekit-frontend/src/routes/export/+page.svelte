@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { $state } from 'svelte';
   import { Button } from "$lib/components/ui/button";
   import Tooltip from "$lib/components/ui/Tooltip.svelte";
   import TooltipContent from "$lib/components/ui/TooltipContent.svelte";
@@ -159,7 +158,7 @@
                   <TooltipTrigger asChild>
                     <button
                       class="space-y-4"
-                      onclick={() =>
+                      on:click={() =>
                         (format = formatOption.value as "json" | "csv" | "xml")}
                     >
                       <div class="space-y-4">{formatOption.label}</div>
@@ -256,14 +255,14 @@
                 <Button
                   variant="outline"
                   size="sm"
-                  onclick={() => selectAllCases()}
+                  on:click={() => selectAllCases()}
                 >
                   Select All
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
-                  onclick={() => clearCaseSelection()}
+                  on:click={() => clearCaseSelection()}
                 >
                   Clear
                 </Button>
@@ -336,7 +335,7 @@
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                onclick={() => exportData()}
+                on:click={() => exportData()}
                 disabled={exportLoading || (!includeCases && !includeEvidence)}
                 class="space-y-4"
               >

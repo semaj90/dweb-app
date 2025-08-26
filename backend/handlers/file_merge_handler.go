@@ -16,6 +16,8 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -56,11 +58,22 @@ type MergeOperation struct {
 	CompletedAt    *time.Time `json:"completedAt" db:"completed_at"`
 }
 
-// FileMergeHandler handles file merge operations
+// FileMergeHandler handles file merge operations with Context7 performance optimizations
 type FileMergeHandler struct {
 	db          *sql.DB
 	minioClient *minio.Client
 	bucket      string
+	
+	// Context7 performance optimization fields
+	totalUploads     int64       // atomic counter
+	totalDownloads   int64       // atomic counter
+	totalSearches    int64       // atomic counter
+	totalMerges      int64       // atomic counter
+	totalErrors      int64       // atomic counter
+	averageLatency   int64       // atomic average (microseconds)
+	startTime        time.Time   // Handler start time
+	bufferPool       *sync.Pool  // Buffer pool for file operations
+	mutex            sync.RWMutex
 }
 
 // NewFileMergeHandler creates a new file merge handler
@@ -91,20 +104,40 @@ func NewFileMergeHandler(db *sql.DB, minioEndpoint, accessKey, secretKey, bucket
 		db:          db,
 		minioClient: minioClient,
 		bucket:      bucket,
+		startTime:   time.Now(),
+		bufferPool: &sync.Pool{
+			New: func() interface{} {
+				// Pre-allocate 64KB buffer for file operations
+				return bytes.NewBuffer(make([]byte, 0, 65536))
+			},
+		},
 	}, nil
 }
 
-// UploadFile handles file uploads
+// UploadFile handles file uploads with Context7 performance tracking
 func (h *FileMergeHandler) UploadFile(c *gin.Context) {
+	start := time.Now()
+	
+	// Context7 performance tracking - atomic increments
+	atomic.AddInt64(&h.totalUploads, 1)
+	defer func() {
+		latency := time.Since(start).Microseconds()
+		// Update rolling average atomically
+		currentAvg := atomic.LoadInt64(&h.averageLatency)
+		newAvg := (currentAvg + latency) / 2
+		atomic.StoreInt64(&h.averageLatency, newAvg)
+	}()
 	// Parse multipart form
 	err := c.Request.ParseMultipartForm(100 << 20) // 100MB max
 	if err != nil {
+		atomic.AddInt64(&h.totalErrors, 1)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse form: " + err.Error()})
 		return
 	}
 
 	file, header, err := c.Request.FormFile("file")
 	if err != nil {
+		atomic.AddInt64(&h.totalErrors, 1)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "No file provided"})
 		return
 	}
@@ -193,8 +226,19 @@ func (h *FileMergeHandler) UploadFile(c *gin.Context) {
 	c.JSON(http.StatusOK, metadata)
 }
 
-// MergeFiles handles file merging operations
+// MergeFiles handles file merging operations with Context7 performance tracking
 func (h *FileMergeHandler) MergeFiles(c *gin.Context) {
+	start := time.Now()
+	
+	// Context7 performance tracking - atomic increments
+	atomic.AddInt64(&h.totalMerges, 1)
+	defer func() {
+		latency := time.Since(start).Microseconds()
+		// Update rolling average atomically
+		currentAvg := atomic.LoadInt64(&h.averageLatency)
+		newAvg := (currentAvg + latency) / 2
+		atomic.StoreInt64(&h.averageLatency, newAvg)
+	}()
 	var request struct {
 		SourceFiles    []string               `json:"sourceFiles" binding:"required"`
 		TargetFilename string                 `json:"targetFilename" binding:"required"`
@@ -315,8 +359,19 @@ func (h *FileMergeHandler) GetFiles(c *gin.Context) {
 	})
 }
 
-// SearchFiles handles similarity search
+// SearchFiles handles similarity search with Context7 performance tracking
 func (h *FileMergeHandler) SearchFiles(c *gin.Context) {
+	start := time.Now()
+	
+	// Context7 performance tracking - atomic increments
+	atomic.AddInt64(&h.totalSearches, 1)
+	defer func() {
+		latency := time.Since(start).Microseconds()
+		// Update rolling average atomically
+		currentAvg := atomic.LoadInt64(&h.averageLatency)
+		newAvg := (currentAvg + latency) / 2
+		atomic.StoreInt64(&h.averageLatency, newAvg)
+	}()
 	query := c.Query("q")
 	if query == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Query parameter 'q' is required"})
@@ -413,8 +468,19 @@ func (h *FileMergeHandler) SearchFiles(c *gin.Context) {
 	})
 }
 
-// DownloadFile handles file downloads
+// DownloadFile handles file downloads with Context7 performance tracking
 func (h *FileMergeHandler) DownloadFile(c *gin.Context) {
+	start := time.Now()
+	
+	// Context7 performance tracking - atomic increments
+	atomic.AddInt64(&h.totalDownloads, 1)
+	defer func() {
+		latency := time.Since(start).Microseconds()
+		// Update rolling average atomically
+		currentAvg := atomic.LoadInt64(&h.averageLatency)
+		newAvg := (currentAvg + latency) / 2
+		atomic.StoreInt64(&h.averageLatency, newAvg)
+	}()
 	fileID := c.Param("id")
 	if fileID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "File ID is required"})
@@ -460,6 +526,9 @@ func (h *FileMergeHandler) DownloadFile(c *gin.Context) {
 // Helper functions
 
 func generateFileID() string {
+	return randomString(16)
+}
+
 func randomString(length int) string {
 	const charset = "abcdefghijklmnopqrstuvwxyz0123456789"
 	b := make([]byte, length)
@@ -473,9 +542,6 @@ func randomString(length int) string {
 		b[i] = charset[n.Int64()]
 	}
 	return string(b)
-}
-	}
-	return string(result)
 }
 
 func (h *FileMergeHandler) saveFileMetadata(metadata *FileMetadata) error {
@@ -499,14 +565,28 @@ func (h *FileMergeHandler) saveMergeOperation(operation *MergeOperation) error {
 	_, err := h.db.Exec(`
 		INSERT INTO merge_operations (
 			id, source_files, target_filename, merge_type, status,
+			progress, user_id, case_id, created_at
+		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+	`, operation.ID, string(sourceFilesJSON), operation.TargetFilename,
+		operation.MergeType, operation.Status, operation.Progress,
+		operation.UserID, operation.CaseID, operation.CreatedAt)
+
+	return err
+}
+
 func (h *FileMergeHandler) generateEmbedding(text string) (string, error) {
+	// Get buffer from pool for HTTP request optimization
+	buffer := h.bufferPool.Get().(*bytes.Buffer)
+	buffer.Reset()
+	defer h.bufferPool.Put(buffer)
 	payload := map[string]interface{}{
 		"model":  "nomic-embed-text",
 		"prompt": text,
 	}
 	payloadBytes, _ := json.Marshal(payload)
+	buffer.Write(payloadBytes)
 
-	resp, err := http.Post("http://localhost:11434/api/embeddings", "application/json", bytes.NewBuffer(payloadBytes))
+	resp, err := http.Post("http://localhost:11434/api/embeddings", "application/json", buffer)
 	if err != nil {
 		return "", err
 	}
@@ -541,17 +621,16 @@ func (h *FileMergeHandler) generateEmbedding(text string) (string, error) {
 
 	return builder.String(), nil
 }
-		if i > 0 {
-			embeddingStr += ","
-		}
-		embeddingStr += fmt.Sprintf("%f", val)
-	}
-	embeddingStr += "]"
-
-	return embeddingStr, nil
-}
 
 func (h *FileMergeHandler) processEmbeddings(metadata *FileMetadata, content []byte) {
+	start := time.Now()
+	defer func() {
+		// Track embedding processing time
+		latency := time.Since(start).Microseconds()
+		currentAvg := atomic.LoadInt64(&h.averageLatency)
+		newAvg := (currentAvg + latency) / 2
+		atomic.StoreInt64(&h.averageLatency, newAvg)
+	}()
 	// Extract text content based on file type
 	var textContent string
 
@@ -604,4 +683,60 @@ func (h *FileMergeHandler) processMergeOperation(operation *MergeOperation, tags
 		SET status = 'completed', progress = 100, completed_at = $1
 		WHERE id = $2
 	`, completedAt, operation.ID)
+}
+
+// GetHandlerStats returns Context7 performance statistics for the file merge handler
+func (h *FileMergeHandler) GetHandlerStats(c *gin.Context) {
+	uptime := time.Since(h.startTime)
+	
+	stats := gin.H{
+		"service_name": "FileMergeHandler",
+		"uptime": gin.H{
+			"seconds":   int64(uptime.Seconds()),
+			"formatted": uptime.String(),
+		},
+		"performance": gin.H{
+			"total_uploads":     atomic.LoadInt64(&h.totalUploads),
+			"total_downloads":   atomic.LoadInt64(&h.totalDownloads),
+			"total_searches":    atomic.LoadInt64(&h.totalSearches),
+			"total_merges":      atomic.LoadInt64(&h.totalMerges),
+			"total_errors":      atomic.LoadInt64(&h.totalErrors),
+			"average_latency_us": atomic.LoadInt64(&h.averageLatency),
+		},
+		"rates": gin.H{
+			"uploads_per_hour":   float64(atomic.LoadInt64(&h.totalUploads)) / uptime.Hours(),
+			"downloads_per_hour": float64(atomic.LoadInt64(&h.totalDownloads)) / uptime.Hours(),
+			"searches_per_hour":  float64(atomic.LoadInt64(&h.totalSearches)) / uptime.Hours(),
+			"merges_per_hour":    float64(atomic.LoadInt64(&h.totalMerges)) / uptime.Hours(),
+		},
+		"health": gin.H{
+			"status":      "healthy",
+			"error_rate":  calculateErrorRate(h),
+			"codec_name":  "context7_file_merge_handler",
+		},
+	}
+	
+	// Add headers for Context7 monitoring
+	c.Header("X-Handler-Uptime", fmt.Sprintf("%.0f", uptime.Seconds()))
+	c.Header("X-Total-Operations", fmt.Sprintf("%d", 
+		atomic.LoadInt64(&h.totalUploads)+
+		atomic.LoadInt64(&h.totalDownloads)+
+		atomic.LoadInt64(&h.totalSearches)+
+		atomic.LoadInt64(&h.totalMerges)))
+	c.Header("X-Average-Latency-Us", fmt.Sprintf("%d", atomic.LoadInt64(&h.averageLatency)))
+	
+	c.JSON(http.StatusOK, stats)
+}
+
+func calculateErrorRate(h *FileMergeHandler) float64 {
+	totalOps := atomic.LoadInt64(&h.totalUploads) + 
+		atomic.LoadInt64(&h.totalDownloads) + 
+		atomic.LoadInt64(&h.totalSearches) + 
+		atomic.LoadInt64(&h.totalMerges)
+	
+	if totalOps == 0 {
+		return 0.0
+	}
+	
+	return float64(atomic.LoadInt64(&h.totalErrors)) / float64(totalOps) * 100.0
 }

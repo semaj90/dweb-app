@@ -173,7 +173,7 @@
           
           <div class="space-y-4">
             <button 
-              onclick={() => currentView = 'board'}
+              on:click={() => currentView = 'board'}
               class="space-y-4"
             >
               <i class="space-y-4"></i>
@@ -181,7 +181,7 @@
             </button>
             
             <button 
-              onclick={() => currentView = 'create-case'}
+              on:click={() => currentView = 'create-case'}
               class="space-y-4"
             >
               <i class="space-y-4"></i>
@@ -189,7 +189,7 @@
             </button>
             
             <button 
-              onclick={() => currentView = 'auth-demo'}
+              on:click={() => currentView = 'auth-demo'}
               class="space-y-4"
             >
               <i class="space-y-4"></i>
@@ -197,7 +197,7 @@
             </button>
             
             <button 
-              onclick={() => simulateCollaboration()}
+              on:click={() => simulateCollaboration()}
               class="space-y-4"
             >
               <i class="space-y-4"></i>
@@ -217,7 +217,7 @@
             <div class="space-y-4">
               <span class="space-y-4">Welcome, {$auth.user?.name || $auth.user?.email}</span>
               <button 
-                onclick={() => auth.logout()}
+                on:click={() => auth.logout()}
                 class="space-y-4"
               >
                 Logout
@@ -265,7 +265,7 @@
               
               <div class="space-y-4">
                 <button 
-                  onclick={() => auth.login('test@example.com', 'password123')}
+                  on:click={() => auth.login('test@example.com', 'password123')}
                   class="space-y-4"
                   disabled={$auth.isLoading}
                 >
@@ -273,7 +273,7 @@
                 </button>
                 
                 <button 
-                  onclick={() => auth.logout()}
+                  on:click={() => auth.logout()}
                   class="space-y-4"
                   disabled={!$auth.isAuthenticated}
                 >
@@ -281,7 +281,7 @@
                 </button>
                 
                 <button 
-                  onclick={() => auth.checkAuth()}
+                  on:click={() => auth.checkAuth()}
                   class="space-y-4"
                   disabled={$auth.isLoading}
                 >

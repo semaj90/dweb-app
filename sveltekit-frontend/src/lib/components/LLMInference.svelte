@@ -1,7 +1,6 @@
 <script lang="ts">
 
   import { onMount } from 'svelte';
-  import { $state } from 'svelte';
   import { getAvailableModels, runInference } from "$lib/llm/tauri-llm";
 
   let models: string[] = $state([]);
@@ -48,7 +47,7 @@
     <label for="prompt">Prompt:</label>
     <textarea id="prompt" rows="4" bind:value={prompt} placeholder="Enter your prompt..."></textarea>
   </div>
-  <button class="space-y-4" onclick={() => handleInference()} disabled={loading || !selectedModel || !prompt.trim()}>
+  <button class="space-y-4" on:click={() => handleInference()} disabled={loading || !selectedModel || !prompt.trim()}>
     {loading ? 'Running...' : 'Run Inference'}
   </button>
   {#if error}

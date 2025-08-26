@@ -14,12 +14,12 @@
     Video,
   } from "lucide-svelte";
 
-  export let items: any[] = [];
-  export let itemType: "evidence" | "notes" | "canvas" = "evidence";
-  export let loadMoreThreshold = 100; // pixels from bottom
-  export let pageSize = 20;
-  export let isLoading = false;
-  export let selectedIndex: number = -1; // Index of selected item
+  let { items = $bindable() } = $props(); // any[] = [];
+  let { itemType = $bindable() } = $props(); // "evidence" | "notes" | "canvas" = "evidence";
+  let { loadMoreThreshold = $bindable() } = $props(); // 100; // pixels from bottom
+  let { pageSize = $bindable() } = $props(); // 20;
+  let { isLoading = $bindable() } = $props(); // false;
+  let { selectedIndex = $bindable() } = $props(); // number = -1; // Index of selected item
 
   const dispatch = createEventDispatcher();
 
@@ -122,7 +122,7 @@
         <div
           class="mx-auto px-4 max-w-7xl"
           transition:slide={{ duration: 300, easing: quintOut "
-          onclick={() => handleItemClick(item)}
+          on:click={() => handleItemClick(item)}
           onkeydown={(e) => e.key === "Enter" && handleItemClick(item)}
           role="option"
           tabindex={0}

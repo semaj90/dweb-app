@@ -264,7 +264,7 @@ class XStateIntegrationService {
       this.showNotification({
         type: 'success',
         title: 'Welcome!',
-        message: `Welcome back, ${authContext.user.firstName}!`
+        message: `Welcome back, ${authContext.user.firstName || authContext.user.name || 'User'}!`
       });
 
       // Load user-specific data

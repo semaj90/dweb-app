@@ -454,7 +454,7 @@ function formatTime(timestamp: number): string {
       <div>
         <button
           type="button"
-          onclick={() => (showAdvancedOptions = !showAdvancedOptions)}
+          on:click={() => (showAdvancedOptions = !showAdvancedOptions)}
         >
           Advanced
         </button>
@@ -462,7 +462,7 @@ function formatTime(timestamp: number): string {
         {#if conversation.length > 0}
           <button
             type="button"
-            onclick={() => clearConversation()}
+            on:click={() => clearConversation()}
           >
             Clear
           </button>
@@ -588,7 +588,7 @@ function formatTime(timestamp: number): string {
               <button
                 type="button"
                 aria-label="Listen to AI response"
-                onclick={() => speak(message.content)}
+                on:click={() => speak(message.content)}
                 disabled={ttsLoading}
               >
                 {#if ttsLoading}
@@ -609,7 +609,7 @@ function formatTime(timestamp: number): string {
                 {#each message.references as reference}
                   <button
                     type="button"
-                    onclick={() => handleReferenceClick(reference)}
+                    on:click={() => handleReferenceClick(reference)}
                   >
                     <span>{reference.type.toUpperCase()}:</span>
                     {reference.title}
@@ -667,7 +667,7 @@ function formatTime(timestamp: number): string {
             type="button"
             class:text-red-500={isListening}
             aria-label={isListening ? "Stop voice input" : "Start voice input"}
-            onclick={() => (isListening ? stopVoiceInput() : startVoiceInput())}
+            on:click={() => (isListening ? stopVoiceInput() : startVoiceInput())}
             disabled={isLoading}
           >
             🎤
@@ -677,7 +677,7 @@ function formatTime(timestamp: number): string {
 
       <button
         type="button"
-        onclick={() => askAI()}
+        on:click={() => askAI()}
         disabled={!query.trim() || isLoading}
         aria-label="Send question to AI"
       >
@@ -696,7 +696,7 @@ function formatTime(timestamp: number): string {
             type="button"
             class="container mx-auto px-4 {isListening ? 'text-red-500' : ''}"
             aria-label={isListening ? "Stop voice input" : "Start voice input"}
-            onclick={() => (isListening ? stopVoiceInput() : startVoiceInput())}
+            on:click={() => (isListening ? stopVoiceInput() : startVoiceInput())}
             disabled={isLoading}
           >
             🎤

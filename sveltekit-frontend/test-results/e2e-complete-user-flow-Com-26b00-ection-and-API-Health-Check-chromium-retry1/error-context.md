@@ -1,0 +1,127 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - heading "YoRHa Legal AI" [level=1] [ref=e5]
+    - navigation [ref=e6]:
+      - link "Home" [ref=e7] [cursor=pointer]:
+        - /url: /
+      - link "YoRHa Command Center" [ref=e8] [cursor=pointer]:
+        - /url: /yorha-command-center
+      - link "Enhanced RAG Demo" [ref=e9] [cursor=pointer]:
+        - /url: /demo/enhanced-rag-semantic
+      - link "Endpoints" [ref=e10] [cursor=pointer]:
+        - /url: /endpoints
+      - generic [ref=e11]: 🟡 LOADING
+  - main [ref=e12]:
+    - generic [ref=e14]:
+      - generic [ref=e15]:
+        - heading "Enhanced RAG System with Semantic Analysis" [level=1] [ref=e16]
+        - paragraph [ref=e17]: Discover how advanced semantic analysis, entity extraction, and vector embeddings revolutionize legal document understanding and retrieval.
+      - generic [ref=e18]:
+        - heading "System Status Checking..." [level=3] [ref=e20]:
+          - generic [ref=e21]: System Status
+          - button "Checking..." [disabled] [ref=e22]
+        - generic [ref=e23]:
+          - generic [ref=e24]:
+            - generic [ref=e25]:
+              - generic [ref=e27]: Enhanced RAG
+              - generic [ref=e28]: Port 8094
+              - generic [ref=e29]: Offline
+            - generic [ref=e30]:
+              - generic [ref=e32]: Qdrant Vector DB
+              - generic [ref=e33]: Port 6333
+              - generic [ref=e34]: Offline
+            - generic [ref=e35]:
+              - generic [ref=e37]: Ollama LLM
+              - generic [ref=e38]: Port 11434
+              - generic [ref=e39]: Offline
+            - generic [ref=e40]:
+              - generic [ref=e42]: Context7 MCP
+              - generic [ref=e43]: Port 40000+
+              - generic [ref=e44]: Offline
+          - generic [ref=e46]:
+            - strong [ref=e47]: ⚠️ Some services are offline.
+            - text: The demo will work with limited functionality. Start missing services using
+            - code [ref=e48]: START-LEGAL-AI.bat
+      - generic [ref=e49]:
+        - generic [ref=e50]:
+          - heading "🧠 Semantic Analysis" [level=3] [ref=e52]:
+            - generic [ref=e53]: 🧠
+            - generic [ref=e54]: Semantic Analysis
+          - list [ref=e56]:
+            - listitem [ref=e57]: • Named Entity Recognition for legal documents
+            - listitem [ref=e58]: • Legal concept mapping and relationship analysis
+            - listitem [ref=e59]: • Sentiment analysis for contract language
+            - listitem [ref=e60]: • Document complexity scoring
+            - listitem [ref=e61]: • 384-dimensional vector embeddings
+        - generic [ref=e62]:
+          - heading "🔍 Enhanced RAG" [level=3] [ref=e64]:
+            - generic [ref=e65]: 🔍
+            - generic [ref=e66]: Enhanced RAG
+          - list [ref=e68]:
+            - listitem [ref=e69]: • Vector similarity search with Qdrant
+            - listitem [ref=e70]: • Semantic query expansion
+            - listitem [ref=e71]: • Multi-modal search (keyword + vector)
+            - listitem [ref=e72]: • Context-aware result ranking
+            - listitem [ref=e73]: • Real-time relevance scoring
+        - generic [ref=e74]:
+          - heading "⚡ AI Integration" [level=3] [ref=e76]:
+            - generic [ref=e77]: ⚡
+            - generic [ref=e78]: AI Integration
+          - list [ref=e80]:
+            - listitem [ref=e81]: • Ollama local LLM integration
+            - listitem [ref=e82]: • Context7 MCP multi-core processing
+            - listitem [ref=e83]: • GPU-accelerated embeddings
+            - listitem [ref=e84]: • Real-time streaming responses
+            - listitem [ref=e85]: • Intelligent caching and indexing
+      - generic [ref=e86]:
+        - generic [ref=e87]:
+          - heading "Enhanced RAG System with Semantic Analysis" [level=1] [ref=e88]
+          - paragraph [ref=e89]: Demonstrate advanced semantic analysis, entity extraction, and intelligent querying for legal documents
+        - generic [ref=e90]:
+          - button "Document Analysis" [ref=e91] [cursor=pointer]
+          - button "Enhanced RAG Query" [ref=e92] [cursor=pointer]
+        - generic [ref=e94]:
+          - heading "Legal Document Input" [level=3] [ref=e96]
+          - generic [ref=e98]:
+            - generic [ref=e99]:
+              - generic [ref=e100]: Sample Legal Text (MOU)
+              - textbox "Sample Legal Text (MOU)" [ref=e101]: "MEMORANDUM OF UNDERSTANDING This Memorandum of Understanding (\"MOU\") is entered into on January 15, 2024, between TechCorp Inc., a Delaware corporation (\"Company\"), and John Smith, Esq., individually (\"Consultant\"). WHEREAS, Company desires to engage Consultant to provide legal advisory services regarding intellectual property matters and contract negotiations; WHEREAS, Consultant agrees to provide such services pursuant to the terms and conditions set forth herein; NOW, THEREFORE, in consideration of the mutual covenants contained herein, the parties agree as follows: 1. SERVICES. Consultant shall provide legal advisory services to Company, including but not limited to: a) Review and analysis of intellectual property portfolios b) Contract negotiation and drafting c) Legal research and compliance advisory 2. COMPENSATION. Company shall pay Consultant $350 per hour for services rendered, payable within 30 days of receipt of invoice. 3. CONFIDENTIALITY. Consultant acknowledges that during the course of engagement, Consultant may have access to confidential and proprietary information of Company. 4. LIABILITY. Company's total liability under this MOU shall not exceed $50,000 in aggregate. 5. BREACH. In the event of breach by either party, the non-breaching party may terminate this MOU upon written notice. This MOU shall be governed by Delaware law and shall remain in effect until December 31, 2024, unless terminated earlier in accordance with its terms. IN WITNESS WHEREOF, the parties have executed this MOU as of the date first written above."
+            - generic [ref=e102]:
+              - generic [ref=e103]: 1592 characters, ~229 words
+              - button "Analyze Document" [ref=e104] [cursor=pointer]
+      - generic [ref=e105]:
+        - heading "Technical Architecture" [level=3] [ref=e107]
+        - generic [ref=e109]:
+          - generic [ref=e110]:
+            - heading "Semantic Analysis Pipeline" [level=4] [ref=e111]
+            - generic [ref=e112]:
+              - generic [ref=e114]: Document ingestion and preprocessing
+              - generic [ref=e116]: Named Entity Recognition (NER) with legal patterns
+              - generic [ref=e118]: Legal concept mapping and classification
+              - generic [ref=e120]: Vector embedding generation (nomic-embed-text)
+              - generic [ref=e122]: Qdrant vector database storage and indexing
+          - generic [ref=e123]:
+            - heading "Enhanced RAG Query Flow" [level=4] [ref=e124]
+            - generic [ref=e125]:
+              - generic [ref=e127]: Query preprocessing and semantic expansion
+              - generic [ref=e129]: Parallel vector and keyword search
+              - generic [ref=e131]: Result fusion and relevance ranking
+              - generic [ref=e133]: Context-aware response generation
+              - generic [ref=e135]: Real-time streaming to client interface
+      - generic [ref=e136]:
+        - generic [ref=e138]:
+          - generic [ref=e139]: 384D
+          - generic [ref=e140]: Vector Embeddings
+        - generic [ref=e142]:
+          - generic [ref=e143]: <100ms
+          - generic [ref=e144]: Semantic Analysis
+        - generic [ref=e146]:
+          - generic [ref=e147]: 8 Types
+          - generic [ref=e148]: Legal Entities
+        - generic [ref=e150]:
+          - generic [ref=e151]: 95%
+          - generic [ref=e152]: Accuracy Rate
+```

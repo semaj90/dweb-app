@@ -141,7 +141,7 @@
       {#if closable}
         <button
           class="notification-close"
-          onclick={closeNotification}
+          on:click={closeNotification}
           aria-label="Close notification"
         >
           ✕

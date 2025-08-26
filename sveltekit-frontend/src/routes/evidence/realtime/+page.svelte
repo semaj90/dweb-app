@@ -1,6 +1,5 @@
 <!-- Real-time Evidence Management Demo Page -->
 <script lang="ts">
-  import { $state } from 'svelte';
   import MonacoEditor from "$lib/components/MonacoEditor.svelte";
   import RealTimeEvidenceGrid from "$lib/components/RealTimeEvidenceGrid.svelte";
   import { Button } from "$lib/components/ui/button";
@@ -194,13 +193,13 @@
 
         <div class="space-y-4">
           {#if !demoMode}
-            <Button onclick={() => startDemoMode()}>
+            <Button on:click={() => startDemoMode()}>
               <Activity class="space-y-4" />
               Start Demo
             </Button>
           {/if}
 
-          <Button variant="outline" onclick={() => clearAllEvidence()}>
+          <Button variant="outline" on:click={() => clearAllEvidence()}>
             <Database class="space-y-4" />
             Clear All
           </Button>
@@ -387,7 +386,7 @@
                 size="sm"
                 variant="outline"
                 class="space-y-4"
-                onclick={() => (selectedTypes = ["video", "image"])}
+                on:click={() => (selectedTypes = ["video", "image"])}
               >
                 Visual Evidence
               </Button>
@@ -395,7 +394,7 @@
                 size="sm"
                 variant="outline"
                 class="space-y-4"
-                onclick={() => (selectedTypes = ["testimony", "document"])}
+                on:click={() => (selectedTypes = ["testimony", "document"])}
               >
                 Testimonial
               </Button>
@@ -403,7 +402,7 @@
                 size="sm"
                 variant="outline"
                 class="space-y-4"
-                onclick={() => {
+                on:click={() => {
                   selectedTypes = [];
                   searchQuery = "";
                 }}

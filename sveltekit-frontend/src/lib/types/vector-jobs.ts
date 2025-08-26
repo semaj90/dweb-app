@@ -1,6 +1,8 @@
 // TypeScript types for Vector Job Processing System
 // Redis Streams + CUDA Worker + XState integration types
 
+/// <reference path="./webgpu.d.ts" />
+
 export interface VectorJob {
 	id: string;
 	ownerType: 'evidence' | 'report' | 'case' | 'document';
@@ -110,7 +112,7 @@ export interface VectorOutboxEntry {
 // WebGPU types
 export interface WebGPUDevice {
 	device: GPUDevice;
-	queue: GPUCommandQueue;
+	queue: GPUQueue;
 	adapter: GPUAdapter;
 	features: string[];
 	limits: Record<string, number>;

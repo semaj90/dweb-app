@@ -10,7 +10,7 @@
   import { Button } from '$lib/components/ui/button';
   // import { Avatar } from '$lib/components/ui/Avatar.svelte';
   
-  export let person: {
+  let { person = $bindable() } = $props(); // {
     name: string;
     role: 'suspect' | 'witness' | 'victim' | 'associate' | 'unknown';
     details?: {
@@ -24,7 +24,7 @@
     sourceContext?: string;
   };
 
-  export let relationships: Array<{
+  let { relationships = $bindable() } = $props(); // Array<{
     person1: string;
     person2: string;
     relationship: string;
@@ -207,7 +207,7 @@
         variant="outline" 
         size="sm" 
         class="flex-1 text-xs"
-        onclick={() => showFullDetails = !showFullDetails}
+        on:click={() => showFullDetails = !showFullDetails}
       >
         {showFullDetails ? 'Less' : 'More'} Info
       </Button>

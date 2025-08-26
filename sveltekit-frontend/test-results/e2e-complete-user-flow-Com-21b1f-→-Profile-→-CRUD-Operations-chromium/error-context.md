@@ -1,0 +1,192 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - heading "YoRHa Legal AI" [level=1] [ref=e5]
+    - navigation [ref=e6]:
+      - link "Home" [ref=e7] [cursor=pointer]:
+        - /url: /
+      - link "YoRHa Command Center" [ref=e8] [cursor=pointer]:
+        - /url: /yorha-command-center
+      - link "Enhanced RAG Demo" [ref=e9] [cursor=pointer]:
+        - /url: /demo/enhanced-rag-semantic
+      - link "Endpoints" [ref=e10] [cursor=pointer]:
+        - /url: /endpoints
+      - generic [ref=e11]: 🟡 LOADING
+  - main [ref=e12]:
+    - generic [ref=e13]:
+      - generic [ref=e16]:
+        - generic [ref=e17]:
+          - generic [ref=e19]: ⚖️
+          - generic [ref=e20]:
+            - heading "Legal AI Platform" [level=1] [ref=e21]
+            - paragraph [ref=e22]: Advanced Legal Case Management
+        - navigation [ref=e23]:
+          - link "Cases" [ref=e24] [cursor=pointer]:
+            - /url: /cases
+          - link "Evidence" [ref=e25] [cursor=pointer]:
+            - /url: /evidence
+          - link "Person Tracking" [ref=e26] [cursor=pointer]:
+            - /url: /poi
+          - link "Legal Research" [ref=e27] [cursor=pointer]:
+            - /url: /research
+          - link "Sign In" [ref=e28] [cursor=pointer]:
+            - /url: /auth/login
+      - generic [ref=e31]:
+        - heading "AI-Powered Legal Intelligence" [level=2] [ref=e32]
+        - paragraph [ref=e33]: Streamline case management, evidence analysis, and legal research with advanced artificial intelligence. Search across cases, persons of interest, and legal documents instantly.
+        - generic [ref=e36]:
+          - generic [ref=e37]:
+            - img [ref=e39]
+            - textbox "Search cases, persons of interest, evidence, or documents..." [ref=e41]
+            - button "Toggle search filters":
+              - img
+          - generic [ref=e44]:
+            - button "📁 Cases" [ref=e45] [cursor=pointer]:
+              - generic [ref=e46] [cursor=pointer]: 📁
+              - generic [ref=e47] [cursor=pointer]: Cases
+              - img [ref=e48] [cursor=pointer]
+            - button "👤 Persons of Interest" [ref=e50] [cursor=pointer]:
+              - generic [ref=e51] [cursor=pointer]: 👤
+              - generic [ref=e52] [cursor=pointer]: Persons of Interest
+            - button "🔍 Evidence" [ref=e53] [cursor=pointer]:
+              - generic [ref=e54] [cursor=pointer]: 🔍
+              - generic [ref=e55] [cursor=pointer]: Evidence
+              - img [ref=e56] [cursor=pointer]
+            - button "📄 Documents" [ref=e58] [cursor=pointer]:
+              - generic [ref=e59] [cursor=pointer]: 📄
+              - generic [ref=e60] [cursor=pointer]: Documents
+              - img [ref=e61] [cursor=pointer]
+            - button "⚖️ Precedents" [ref=e63] [cursor=pointer]:
+              - generic [ref=e64] [cursor=pointer]: ⚖️
+              - generic [ref=e65] [cursor=pointer]: Precedents
+            - button "📖 Statutes" [ref=e66] [cursor=pointer]:
+              - generic [ref=e67] [cursor=pointer]: 📖
+              - generic [ref=e68] [cursor=pointer]: Statutes
+        - paragraph [ref=e69]: "Try searching: \"fraud investigation\", \"John Smith\", \"contract analysis\""
+      - generic [ref=e71]:
+        - generic [ref=e72]:
+          - heading "Comprehensive Legal Solutions" [level=3] [ref=e73]
+          - paragraph [ref=e74]: Everything you need for modern legal case management
+        - generic [ref=e75]:
+          - generic [ref=e76]:
+            - generic [ref=e78]: 🔍
+            - heading "Case Investigation" [level=4] [ref=e79]
+            - paragraph [ref=e80]: AI-powered case analysis and evidence correlation
+            - link "Learn more →" [ref=e81] [cursor=pointer]:
+              - /url: /cases
+          - generic [ref=e82]:
+            - generic [ref=e84]: 👤
+            - heading "Person Tracking" [level=4] [ref=e85]
+            - paragraph [ref=e86]: Comprehensive person of interest database
+            - link "Learn more →" [ref=e87] [cursor=pointer]:
+              - /url: /poi
+          - generic [ref=e88]:
+            - generic [ref=e90]: 📄
+            - heading "Document Analysis" [level=4] [ref=e91]
+            - paragraph [ref=e92]: OCR and semantic analysis of legal documents
+            - link "Learn more →" [ref=e93] [cursor=pointer]:
+              - /url: /documents
+          - generic [ref=e94]:
+            - generic [ref=e96]: ⚖️
+            - heading "Legal Research" [level=4] [ref=e97]
+            - paragraph [ref=e98]: Access to precedents and legal databases
+            - link "Learn more →" [ref=e99] [cursor=pointer]:
+              - /url: /research
+      - generic [ref=e101]:
+        - generic [ref=e102]:
+          - heading "Trusted by Legal Professionals" [level=3] [ref=e103]
+          - paragraph [ref=e104]: Our platform delivers results that matter
+        - generic [ref=e105]:
+          - generic [ref=e106]:
+            - generic [ref=e107]: 2,847
+            - generic [ref=e108]: Cases Managed
+          - generic [ref=e109]:
+            - generic [ref=e110]: 18,592
+            - generic [ref=e111]: Evidence Files Processed
+          - generic [ref=e112]:
+            - generic [ref=e113]: "324"
+            - generic [ref=e114]: Legal Professionals
+          - generic [ref=e115]:
+            - generic [ref=e116]: 99.7%
+            - generic [ref=e117]: AI Accuracy Rate
+      - generic [ref=e121]:
+        - generic [ref=e123]:
+          - generic [ref=e125]:
+            - heading "AI-Powered Legal Research" [level=3] [ref=e126]
+            - paragraph [ref=e127]: Advanced case analysis with machine learning
+            - button "Start Research" [ref=e128] [cursor=pointer]
+          - generic [ref=e131]: 📊
+        - generic [ref=e133]:
+          - generic [ref=e135]:
+            - heading "Evidence Management" [level=3] [ref=e136]
+            - paragraph [ref=e137]: Secure chain of custody with blockchain technology
+            - button "View Evidence" [ref=e138] [cursor=pointer]
+          - generic [ref=e141]: 📊
+        - generic [ref=e143]:
+          - generic [ref=e145]:
+            - heading "Person of Interest Tracking" [level=3] [ref=e146]
+            - paragraph [ref=e147]: Comprehensive criminal database integration
+            - button "Search POI" [ref=e148] [cursor=pointer]
+          - generic [ref=e151]: 📊
+        - generic [ref=e152]:
+          - button "Go to slide 1"
+          - button "Go to slide 2"
+          - button "Go to slide 3"
+      - generic [ref=e154]:
+        - heading "Ready to Transform Your Legal Practice?" [level=3] [ref=e155]
+        - paragraph [ref=e156]: Join hundreds of legal professionals already using our platform
+        - generic [ref=e157]:
+          - link "Start Free Trial" [ref=e158] [cursor=pointer]:
+            - /url: /auth/register
+          - link "Sign In" [ref=e159] [cursor=pointer]:
+            - /url: /auth/login
+      - generic [ref=e161]:
+        - generic [ref=e162]:
+          - generic [ref=e163]:
+            - generic [ref=e164]:
+              - generic [ref=e166]: ⚖️
+              - generic [ref=e167]: Legal AI
+            - paragraph [ref=e168]: Advanced legal technology for modern law practices.
+          - generic [ref=e169]:
+            - heading "Platform" [level=4] [ref=e170]
+            - list [ref=e171]:
+              - listitem [ref=e172]:
+                - link "Case Management" [ref=e173] [cursor=pointer]:
+                  - /url: /cases
+              - listitem [ref=e174]:
+                - link "Evidence Analysis" [ref=e175] [cursor=pointer]:
+                  - /url: /evidence
+              - listitem [ref=e176]:
+                - link "Person Tracking" [ref=e177] [cursor=pointer]:
+                  - /url: /poi
+              - listitem [ref=e178]:
+                - link "Legal Research" [ref=e179] [cursor=pointer]:
+                  - /url: /research
+          - generic [ref=e180]:
+            - heading "System" [level=4] [ref=e181]
+            - list [ref=e182]:
+              - listitem [ref=e183]:
+                - link "All Features" [ref=e184] [cursor=pointer]:
+                  - /url: /all-routes
+              - listitem [ref=e185]:
+                - link "Advanced Interface" [ref=e186] [cursor=pointer]:
+                  - /url: /yorha
+              - listitem [ref=e187]:
+                - link "API Documentation" [ref=e188] [cursor=pointer]:
+                  - /url: /api-docs
+          - generic [ref=e189]:
+            - heading "System Status" [level=4] [ref=e190]
+            - list [ref=e191]:
+              - listitem [ref=e192]:
+                - text: "Uptime:"
+                - generic [ref=e193]: 72h 14m
+              - listitem [ref=e194]:
+                - text: "Services:"
+                - generic [ref=e195]: 8/9
+              - listitem [ref=e196]:
+                - text: "Last Sync:"
+                - generic [ref=e197]: 2m ago
+        - paragraph [ref=e199]: © 2024 Legal AI Platform. Advanced case management and evidence analysis.
+```

@@ -5,8 +5,6 @@
   import BitsInput from './input/BitsInput.svelte';
   import Button from './button/Button.svelte';
   import { Search, FileText, Users, Scale, Plus, Edit, Eye } from 'lucide-svelte';
-  import { $state } from 'svelte';
-
   // Demo state
   let showDialog = $state(false);
   let selectedCaseType = $state('');
@@ -114,7 +112,7 @@
     <Button
       variant="primary"
       size="md"
-      onclick={() => showDialog = true}
+      on:click={() => showDialog = true}
     >
       <Plus class="w-4 h-4 mr-2" />
       Create New Case
@@ -167,13 +165,13 @@
       {#snippet footer()}
         <Button
           variant="outline"
-          onclick={() => showDialog = false}
+          on:click={() => showDialog = false}
         >
           Cancel
         </Button>
         <Button
           variant="primary"
-          onclick={handleCreateCase}
+          on:click={handleCreateCase}
           disabled={!caseName || !clientName || !selectedCaseType}
         >
           Create Case

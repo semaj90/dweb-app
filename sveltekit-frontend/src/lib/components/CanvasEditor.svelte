@@ -22,14 +22,14 @@
 	// Note: Fabric.js needs to be imported dynamically in browser
 	let fabric: any;
 	
-	export let canvasState: CanvasState | null = null;
-	export let reportId: string;
-	export let evidence: Evidence[] = [];
-	export let citationPoints: CitationPoint[] = [];
-	export let onSave: (canvasState: CanvasState) => Promise<void> = async () => {};
-	export let readOnly = false;
-	export let width = 800;
-	export let height = 600;
+	let { canvasState = $bindable() } = $props(); // CanvasState | null = null;
+	let { reportId = $bindable() } = $props(); // string;
+	let { evidence = $bindable() } = $props(); // Evidence[] = [];
+	let { citationPoints = $bindable() } = $props(); // CitationPoint[] = [];
+	let { onSave = $bindable() } = $props(); // (canvasState: CanvasState) => Promise<void> = async () => {};
+	let { readOnly = $bindable() } = $props(); // false;
+	let { width = $bindable() } = $props(); // 800;
+	let { height = $bindable() } = $props(); // 600;
 
 	// Real-time evidence subscription
 	let realtimeEvidence: Evidence[] = [];
@@ -864,7 +864,7 @@
 					</div>
 					<button
 						class="mx-auto px-4 max-w-7xl"
-						onclick={() => addEvidenceMarker(item)}
+						on:click={() => addEvidenceMarker(item)}
 						disabled={readOnly}
 						title="Add evidence marker to canvas"
 					>
@@ -887,7 +887,7 @@
 					</div>
 					<button
 						class="mx-auto px-4 max-w-7xl"
-						onclick={() => addCitationMarker(citation)}
+						on:click={() => addCitationMarker(citation)}
 						disabled={readOnly}
 						title="Add citation marker to canvas"
 					>

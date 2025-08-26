@@ -105,7 +105,7 @@
   let dialogState = $state({
     animationPhase: 0,
     backgroundEffectIntensity: 0,
-    collaborationData: new Map(),
+    collaborationData: new Map();,
     lastRender: 0,
     memoryUsed: 0
   });
@@ -309,7 +309,7 @@
   }
 
   // Dynamic classes
-  $: dialogClasses = [
+  let dialogClasses = $derived([);
     'fixed inset-0 z-50 flex items-center justify-center p-4',
     
     // Size variants
@@ -322,7 +322,7 @@
     className
   ].filter(Boolean).join(' ');
 
-  $: contentClasses = [
+  let contentClasses = $derived([);
     'relative bg-white rounded-lg shadow-xl',
     'max-h-[90vh] overflow-hidden',
     

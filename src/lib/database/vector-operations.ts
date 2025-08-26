@@ -3,20 +3,21 @@
 
 import { db, queryClient } from './postgres-enhanced.js';
 import { legalDocuments, legalEntities } from './schema/legal-documents.js';
-import { sql, desc, asc, and, or, eq, ilike, inArray } from 'drizzle-orm';
+import { sql, desc, and, eq, inArray } from 'drizzle-orm';
 import type { LegalDocument, LegalEntity } from './schema/legal-documents.js';
 
 export interface VectorSearchOptions {
   limit?: number;
   threshold?: number;
   filter?: {
-    documentType?: string[];
-    jurisdiction?: string[];
-    practiceArea?: string[];
+    documentType?: string[] | readonly string[];
+    jurisdiction?: string[] | readonly string[];
+    practiceArea?: string[] | readonly string[];
     isConfidential?: boolean;
+    // Allow Date or ISO string for safer SQL parameterization and calling sites
     dateRange?: {
-      start: Date;
-      end: Date;
+      start: Date | string;
+      end: Date | string;
     };
   };
 }
@@ -39,31 +40,26 @@ export class VectorSearchService {
     queryEmbedding: number[],
     options: VectorSearchOptions = {}
   ): Promise<SearchResult<LegalDocument>[]> {
-    const {
-      limit = 10,
-      threshold = 0.7,
-      filter = {}
-    } = options;
+    const { limit = 10, threshold = 0.7 } = options;
+    const filter = options.filter ?? {};
+    const filterConditions: any[] = [];
 
-    // Build filter conditions
-    const filterConditions = [];
-    
     if (filter.documentType && filter.documentType.length > 0) {
       filterConditions.push(inArray(legalDocuments.documentType, filter.documentType));
     }
-    
+
     if (filter.jurisdiction && filter.jurisdiction.length > 0) {
       filterConditions.push(inArray(legalDocuments.jurisdiction, filter.jurisdiction));
     }
-    
+
     if (filter.practiceArea && filter.practiceArea.length > 0) {
       filterConditions.push(inArray(legalDocuments.practiceArea, filter.practiceArea));
     }
-    
+
     if (filter.isConfidential !== undefined) {
       filterConditions.push(eq(legalDocuments.isConfidential, filter.isConfidential));
     }
-    
+
     if (filter.dateRange) {
       filterConditions.push(
         and(
@@ -104,19 +100,14 @@ export class VectorSearchService {
     queryEmbedding: number[],
     options: VectorSearchOptions = {}
   ): Promise<SearchResult<LegalDocument>[]> {
-    const {
-      limit = 10,
-      threshold = 0.7,
-      filter = {}
-    } = options;
+    const { limit = 10, threshold = 0.7 } = options;
+    const filter = options.filter ?? {};
+    const filterConditions: any[] = [];
 
-    // Build filter conditions (same as above)
-    const filterConditions = [];
-    
     if (filter.documentType && filter.documentType.length > 0) {
       filterConditions.push(inArray(legalDocuments.documentType, filter.documentType));
     }
-    
+
     if (filter.jurisdiction && filter.jurisdiction.length > 0) {
       filterConditions.push(inArray(legalDocuments.jurisdiction, filter.jurisdiction));
     }
@@ -150,48 +141,55 @@ export class VectorSearchService {
   async hybridSearch(
     contentEmbedding: number[],
     titleEmbedding: number[],
-    options: VectorSearchOptions & { 
-      contentWeight?: number; 
+    options: VectorSearchOptions & {
+      contentWeight?: number;
       titleWeight?: number;
     } = {}
   ): Promise<SearchResult<LegalDocument>[]> {
-    const {
-      limit = 10,
-      threshold = 0.7,
-      contentWeight = 0.7,
-      titleWeight = 0.3,
-      filter = {}
-    } = options;
+    const { limit = 10, threshold = 0.7, contentWeight = 0.7, titleWeight = 0.3 } = options;
+    const filter = options.filter ?? {};
+    const filterConditions: any[] = [];
 
-    // Build filter conditions
-    const filterConditions = [];
-    
     if (filter.documentType && filter.documentType.length > 0) {
       filterConditions.push(inArray(legalDocuments.documentType, filter.documentType));
     }
+
+    if (filter.jurisdiction && filter.jurisdiction.length > 0) {
+      filterConditions.push(inArray(legalDocuments.jurisdiction, filter.jurisdiction));
+    }
+
+    if (filter.practiceArea && filter.practiceArea.length > 0) {
+      filterConditions.push(inArray(legalDocuments.practiceArea, filter.practiceArea));
+    }
+
+    if (filter.isConfidential !== undefined) {
+      filterConditions.push(eq(legalDocuments.isConfidential, filter.isConfidential));
+    }
+
+    const hybridExpr = sql`(${contentWeight} * (1 - (${legalDocuments.contentEmbedding} <=> ${JSON.stringify(contentEmbedding)}::vector)) + ${titleWeight} * (1 - (${legalDocuments.titleEmbedding} <=> ${JSON.stringify(titleEmbedding)}::vector)))`;
 
     const results = await db
       .select({
         document: legalDocuments,
         contentSimilarity: sql<number>`1 - (${legalDocuments.contentEmbedding} <=> ${JSON.stringify(contentEmbedding)}::vector)`.as('content_similarity'),
         titleSimilarity: sql<number>`1 - (${legalDocuments.titleEmbedding} <=> ${JSON.stringify(titleEmbedding)}::vector)`.as('title_similarity'),
-        hybridScore: sql<number>`(${contentWeight} * (1 - (${legalDocuments.contentEmbedding} <=> ${JSON.stringify(contentEmbedding)}::vector)) + ${titleWeight} * (1 - (${legalDocuments.titleEmbedding} <=> ${JSON.stringify(titleEmbedding)}::vector)))`.as('hybrid_score')
+        hybridScore: hybridExpr.as('hybrid_score')
       })
       .from(legalDocuments)
       .where(
         and(
           sql`${legalDocuments.contentEmbedding} IS NOT NULL`,
           sql`${legalDocuments.titleEmbedding} IS NOT NULL`,
-          sql`(${contentWeight} * (1 - (${legalDocuments.contentEmbedding} <=> ${JSON.stringify(contentEmbedding)}::vector)) + ${titleWeight} * (1 - (${legalDocuments.titleEmbedding} <=> ${JSON.stringify(titleEmbedding)}::vector))) >= ${threshold}`,
+          sql`${hybridExpr} >= ${threshold}`,
           ...(filterConditions.length > 0 ? [and(...filterConditions)] : [])
         )
       )
-      .orderBy(desc(sql`(${contentWeight} * (1 - (${legalDocuments.contentEmbedding} <=> ${JSON.stringify(contentEmbedding)}::vector)) + ${titleWeight} * (1 - (${legalDocuments.titleEmbedding} <=> ${JSON.stringify(titleEmbedding)}::vector)))`))
+      .orderBy(desc(hybridExpr))
       .limit(limit);
 
     return results.map((result, index) => ({
       item: result.document,
-      similarity: result.hybridScore,
+      similarity: (result as any).hybrid_score ?? (result as any).hybridScore ?? 0,
       rank: index + 1
     }));
   }
@@ -205,8 +203,8 @@ export class VectorSearchService {
   ): Promise<SearchResult<LegalEntity>[]> {
     const { limit = 10, threshold = 0.7, entityType = [] } = options;
 
-    const filterConditions = [];
-    if (entityType.length > 0) {
+    const filterConditions: any[] = [];
+    if (entityType && entityType.length > 0) {
       filterConditions.push(inArray(legalEntities.entityType, entityType));
     }
 
@@ -293,21 +291,21 @@ export class VectorSearchService {
     // Use transaction for batch updates
     await queryClient.begin(async (sql) => {
       for (const update of updates) {
-        const setClause: unknown = {};
-        
+        const setClause: any = {};
+
         if (update.contentEmbedding) {
-          setClause.contentEmbedding = JSON.stringify(update.contentEmbedding);
+          setClause.content_embedding = JSON.stringify(update.contentEmbedding);
         }
-        
+
         if (update.titleEmbedding) {
-          setClause.titleEmbedding = JSON.stringify(update.titleEmbedding);
+          setClause.title_embedding = JSON.stringify(update.titleEmbedding);
         }
 
         if (Object.keys(setClause).length > 0) {
-          setClause.updatedAt = new Date();
-          
+          setClause.updated_at = new Date();
+
           await sql`
-            UPDATE legal_documents 
+            UPDATE legal_documents
             SET ${sql(setClause)}
             WHERE id = ${update.id}
           `;
@@ -327,7 +325,7 @@ export class VectorSearchService {
     averageTitleEmbeddingNorm: number;
   }> {
     const stats = await queryClient`
-      SELECT 
+      SELECT
         COUNT(*) as total_documents,
         COUNT(content_embedding) as documents_with_content_embeddings,
         COUNT(title_embedding) as documents_with_title_embeddings,
@@ -337,19 +335,19 @@ export class VectorSearchService {
     `;
 
     const norms = await queryClient`
-      SELECT 
+      SELECT
         AVG(sqrt(array_dot(content_embedding::float[], content_embedding::float[]))) as avg_content_norm,
         AVG(sqrt(array_dot(title_embedding::float[], title_embedding::float[]))) as avg_title_norm
-      FROM legal_documents 
+      FROM legal_documents
       WHERE content_embedding IS NOT NULL AND title_embedding IS NOT NULL
     `;
 
     return {
-      totalDocuments: parseInt(stats[0].total_documents),
-      documentsWithContentEmbeddings: parseInt(stats[0].documents_with_content_embeddings),
-      documentsWithTitleEmbeddings: parseInt(stats[0].documents_with_title_embeddings),
-      averageContentEmbeddingNorm: parseFloat(norms[0]?.avg_content_norm || '0'),
-      averageTitleEmbeddingNorm: parseFloat(norms[0]?.avg_title_norm || '0')
+      totalDocuments: parseInt((stats as any)[0].total_documents, 10),
+      documentsWithContentEmbeddings: parseInt((stats as any)[0].documents_with_content_embeddings, 10),
+      documentsWithTitleEmbeddings: parseInt((stats as any)[0].documents_with_title_embeddings, 10),
+      averageContentEmbeddingNorm: parseFloat(((norms as any)[0]?.avg_content_norm) ?? '0'),
+      averageTitleEmbeddingNorm: parseFloat(((norms as any)[0]?.avg_title_norm) ?? '0')
     };
   }
 
@@ -360,20 +358,20 @@ export class VectorSearchService {
     try {
       // Create HNSW indexes for better performance
       await queryClient`
-        CREATE INDEX CONCURRENTLY IF NOT EXISTS legal_documents_content_embedding_hnsw_idx 
-        ON legal_documents USING hnsw (content_embedding vector_cosine_ops) 
+        CREATE INDEX CONCURRENTLY IF NOT EXISTS legal_documents_content_embedding_hnsw_idx
+        ON legal_documents USING hnsw (content_embedding vector_cosine_ops)
         WITH (m = 16, ef_construction = 64)
       `;
 
       await queryClient`
-        CREATE INDEX CONCURRENTLY IF NOT EXISTS legal_documents_title_embedding_hnsw_idx 
-        ON legal_documents USING hnsw (title_embedding vector_cosine_ops) 
+        CREATE INDEX CONCURRENTLY IF NOT EXISTS legal_documents_title_embedding_hnsw_idx
+        ON legal_documents USING hnsw (title_embedding vector_cosine_ops)
         WITH (m = 16, ef_construction = 64)
       `;
 
       await queryClient`
-        CREATE INDEX CONCURRENTLY IF NOT EXISTS legal_entities_name_embedding_hnsw_idx 
-        ON legal_entities USING hnsw (name_embedding vector_cosine_ops) 
+        CREATE INDEX CONCURRENTLY IF NOT EXISTS legal_entities_name_embedding_hnsw_idx
+        ON legal_entities USING hnsw (name_embedding vector_cosine_ops)
         WITH (m = 16, ef_construction = 64)
       `;
 
@@ -408,7 +406,8 @@ export const embeddingUtils = {
       normB += vecB[i] * vecB[i];
     }
 
-    return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+    const denom = Math.sqrt(normA) * Math.sqrt(normB);
+    return denom === 0 ? 0 : dotProduct / denom;
   },
 
   /**
@@ -423,8 +422,8 @@ export const embeddingUtils = {
    * Validate embedding dimensions
    */
   validateEmbedding(embedding: number[], expectedDim: number = 384): boolean {
-    return Array.isArray(embedding) && 
-           embedding.length === expectedDim && 
+    return Array.isArray(embedding) &&
+      embedding.length === expectedDim &&
            embedding.every(val => typeof val === 'number' && !isNaN(val));
   }
 };

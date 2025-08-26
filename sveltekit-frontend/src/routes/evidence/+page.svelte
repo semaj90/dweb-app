@@ -60,7 +60,7 @@
 
   import type { PageData } from "./$types";
   // ... other imports ...
-  export let data: PageData;
+  let { data = $bindable() } = $props(); // PageData;
 
   // State management
   let validationModal = {
@@ -620,7 +620,7 @@
           <Button
             variant="outline"
             size="sm"
-            onclick={() => refreshEvidence()}
+            on:click={() => refreshEvidence()}
             disabled={loading}
             aria-label="Refresh evidence"
           >
@@ -634,7 +634,7 @@
           <Button
             variant="outline"
             size="sm"
-            onclick={() => (showFilters = !showFilters)}
+            on:click={() => (showFilters = !showFilters)}
             class={showFilters ? 'nes-legal-priority-high' : ''}
             aria-label="Toggle filters"
             aria-expanded={showFilters}
@@ -648,7 +648,7 @@
           <Button
             variant="outline"
             size="sm"
-            onclick={() => (viewMode = viewMode === "grid" ? "list" : "grid")}
+            on:click={() => (viewMode = viewMode === "grid" ? "list" : "grid")}
             aria-label="Toggle view mode"
             class="yorha-3d-button"
           >
@@ -664,7 +664,7 @@
           <Button
             variant="outline"
             size="sm"
-            onclick={() => handleAdvancedUpload()}
+            on:click={() => handleAdvancedUpload()}
             class="neural-sprite-cached"
           >
             <Upload class="w-4 h-4 mr-2" />
@@ -675,7 +675,7 @@
         <Tooltip content="Standard evidence upload">
           <Button 
             variant="evidence"
-            onclick={() => openUploadModal()}
+            on:click={() => openUploadModal()}
           >
             <Plus class="w-4 h-4 mr-2" />
             Upload Evidence
@@ -719,7 +719,7 @@
         <Button
           variant="outline"
           size="sm"
-          onclick={() => (sortOrder = sortOrder === "asc" ? "desc" : "asc")}
+          on:click={() => (sortOrder = sortOrder === "asc" ? "desc" : "asc")}
           aria-label="Toggle sort order"
         >
           {#if sortOrder === "asc"}
@@ -812,7 +812,7 @@
         <Button
           variant="outline"
           size="sm"
-          onclick={() => {
+          on:click={() => {
             selectedType = "";
             selectedStatus = "";
             selectedCollector = "";
@@ -844,7 +844,7 @@
           <Button
             variant="outline"
             size="sm"
-            onclick={() => bulkOperation("analyze")}
+            on:click={() => bulkOperation("analyze")}
             disabled={bulkOperationLoading}
             class="mx-auto px-4 max-w-7xl"
           >
@@ -860,7 +860,7 @@
           <Button
             variant="outline"
             size="sm"
-            onclick={() => bulkOperation("verify")}
+            on:click={() => bulkOperation("verify")}
             disabled={bulkOperationLoading}
             class="mx-auto px-4 max-w-7xl"
           >
@@ -871,7 +871,7 @@
           <Button
             variant="outline"
             size="sm"
-            onclick={() => bulkOperation("archive")}
+            on:click={() => bulkOperation("archive")}
             disabled={bulkOperationLoading}
             class="mx-auto px-4 max-w-7xl"
           >
@@ -882,7 +882,7 @@
           <Button
             variant="outline"
             size="sm"
-            onclick={() => bulkOperation("export")}
+            on:click={() => bulkOperation("export")}
             disabled={bulkOperationLoading}
             class="mx-auto px-4 max-w-7xl"
           >
@@ -893,7 +893,7 @@
           <Button
             variant="outline"
             size="sm"
-            onclick={() => bulkOperation("delete")}
+            on:click={() => bulkOperation("delete")}
             disabled={bulkOperationLoading}
             class="mx-auto px-4 max-w-7xl"
           >
@@ -904,7 +904,7 @@
           <Button
             variant="outline"
             size="sm"
-            onclick={() => {
+            on:click={() => {
               selectedEvidence.clear();
               selectedEvidence = selectedEvidence;
               showBulkActions = false;
@@ -931,7 +931,7 @@
         <h3 class="mx-auto px-4 max-w-7xl">Error Loading Evidence</h3>
         <div class="mx-auto px-4 max-w-7xl">{error}</div>
       </div>
-      <Button variant="outline" size="sm" onclick={() => refreshEvidence()}>
+      <Button variant="outline" size="sm" on:click={() => refreshEvidence()}>
         <RefreshCw class="mx-auto px-4 max-w-7xl" />
         Retry
       </Button>
@@ -961,13 +961,13 @@
       </p>
       {#if !searchQuery && !selectedType && !selectedStatus && !selectedCollector && !dateFrom && !dateTo}
         <div class="mx-auto px-4 max-w-7xl">
-          <Button onclick={() => openUploadModal()} class="mx-auto px-4 max-w-7xl">
+          <Button on:click={() => openUploadModal()} class="mx-auto px-4 max-w-7xl">
             <Plus class="mx-auto px-4 max-w-7xl" />
             Upload Evidence
           </Button>
           <Button
             variant="outline"
-            onclick={() => handleAdvancedUpload()}
+            on:click={() => handleAdvancedUpload()}
             class="mx-auto px-4 max-w-7xl"
           >
             <Upload class="mx-auto px-4 max-w-7xl" />
@@ -991,7 +991,7 @@
           <Button
             variant="ghost"
             size="sm"
-            onclick={() => selectAllEvidence()}
+            on:click={() => selectAllEvidence()}
             class="mx-auto px-4 max-w-7xl"
             aria-label="Select all visible evidence"
           >
@@ -1111,7 +1111,7 @@
                 <Button 
                   size="sm" 
                   variant={thinkingStyleEnabled ? "neural" : "yorha"}
-                  onclick={() => analyzeEvidence(evidence)}
+                  on:click={() => analyzeEvidence(evidence)}
                   disabled={analysisInProgress.has(evidence.id)}
                   class="flex-1"
                 >
@@ -1222,7 +1222,7 @@
                   <Button 
                     size="sm" 
                     variant="outline"
-                    onclick={() => analyzeEvidence(evidence)}
+                    on:click={() => analyzeEvidence(evidence)}
                     disabled={analysisInProgress.has(evidence.id)}
                     class="mx-auto px-4 max-w-7xl"
                   >
@@ -1300,7 +1300,7 @@
             size="sm"
             class="mx-auto px-4 max-w-7xl"
             disabled={currentPage === 1}
-            onclick={() => (currentPage = Math.max(1, currentPage - 1))}
+            on:click={() => (currentPage = Math.max(1, currentPage - 1))}
             aria-label="Previous page"
           >
             Previous
@@ -1314,7 +1314,7 @@
               variant={page === currentPage ? "default" : "outline"}
               size="sm"
               class="mx-auto px-4 max-w-7xl"
-              onclick={() => (currentPage = page)}
+              on:click={() => (currentPage = page)}
               aria-label="Go to page {page}"
               aria-current={page === currentPage ? "page" : undefined}
             >
@@ -1327,7 +1327,7 @@
             size="sm"
             class="mx-auto px-4 max-w-7xl"
             disabled={currentPage === totalPages}
-            onclick={() =>
+            on:click={() =>
               (currentPage = Math.min(totalPages, currentPage + 1))}
             aria-label="Next page"
           >
@@ -1364,7 +1364,7 @@
           {/if}
           - {analysisModal.evidence.title}
         </h3>
-        <Button variant="ghost" size="sm" onclick={closeAnalysisModal}>
+        <Button variant="ghost" size="sm" on:click={closeAnalysisModal}>
           ✕
         </Button>
       </div>
@@ -1387,8 +1387,8 @@
       </div>
       
       <div class="mx-auto px-4 max-w-7xl">
-        <Button variant="outline" onclick={closeAnalysisModal}>Close</Button>
-        <Button onclick={() => {
+        <Button variant="outline" on:click={closeAnalysisModal}>Close</Button>
+        <Button on:click={() => {
           // Save analysis or perform other actions
           closeAnalysisModal();
         ">Save Analysis</Button>
@@ -1416,7 +1416,7 @@
       role="button"
       tabindex={0}
       aria-label="Close modal"
-      onclick={() => (showAdvancedUpload = false)}
+      on:click={() => (showAdvancedUpload = false)}
       onkeydown={(e) => e.key === "Escape" && (showAdvancedUpload = false)}
     ></div>
   </div>

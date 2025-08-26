@@ -1,3 +1,6 @@
+//go:build enhancedrag
+// +build enhancedrag
+
 package main
 
 import (
@@ -11,11 +14,13 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/go-redis/redis/v8"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // Enhanced RAG System with Self-Organizing Map (SOM) for User Intent Analysis
@@ -27,11 +32,18 @@ type EnhancedRAGService struct {
 	config      RAGConfig
 	somNetwork  *SOMNetwork
 	intentCache map[string]CachedIntent
-	
-	// Performance metrics
-	queryCount    int64
-	avgQueryTime  float64
-	cacheHitRate  float64
+
+	// Context7 performance optimization fields - atomic counters
+	queryCount          int64       // atomic counter
+	cacheHits           int64       // atomic counter
+	cacheMisses         int64       // atomic counter
+	somAnalyses         int64       // atomic counter
+	semanticSearches    int64       // atomic counter
+	totalErrors         int64       // atomic counter
+	averageResponseTime int64       // atomic average (microseconds)
+	startTime           time.Time   // Service start time
+	bufferPool          *sync.Pool  // Buffer pool for JSON operations
+	mutex               sync.RWMutex
 }
 
 type RAGConfig struct {
@@ -100,7 +112,7 @@ type SOMNetwork struct {
 	Radius       float64
 	Epoch        int
 	MaxEpochs    int
-	
+
 	// Intent mapping
 	IntentMap    map[string]int  // Intent name -> cluster ID
 	ClusterMap   map[int]string  // Cluster ID -> intent name
@@ -127,11 +139,18 @@ var LegalIntents = map[string][]string{
 
 func NewEnhancedRAGService() *EnhancedRAGService {
 	config := loadRAGConfig()
-	
+
 	return &EnhancedRAGService{
 		config:      config,
 		intentCache: make(map[string]CachedIntent),
 		somNetwork:  NewSOMNetwork(config.SOMWidth, config.SOMHeight, config.EmbeddingDim, config.LearningRate, config.MaxEpochs),
+		startTime:   time.Now(),
+		// Context7 buffer pool for JSON operations (4KB buffers)
+		bufferPool: &sync.Pool{
+			New: func() interface{} {
+				return make([]byte, 4*1024)
+			},
+		},
 	}
 }
 
@@ -151,26 +170,26 @@ func loadRAGConfig() RAGConfig {
 
 func (r *EnhancedRAGService) Initialize() error {
 	log.Println("🧠 Initializing Enhanced RAG System with SOM...")
-	
+
 	// Initialize database
 	var err error
 	r.db, err = pgxpool.New(context.Background(), r.config.DatabaseURL)
 	if err != nil {
 		return fmt.Errorf("database connection failed: %w", err)
 	}
-	
+
 	// Initialize Redis
 	opt, err := redis.ParseURL(r.config.RedisURL)
 	if err != nil {
 		return fmt.Errorf("redis URL parsing failed: %w", err)
 	}
 	r.redis = redis.NewClient(opt)
-	
+
 	// Initialize and train SOM network
 	if err := r.trainSOMNetwork(); err != nil {
 		log.Printf("⚠️ SOM training failed: %v", err)
 	}
-	
+
 	log.Println("✅ Enhanced RAG System initialized")
 	return nil
 }
@@ -186,7 +205,7 @@ func NewSOMNetwork(width, height, inputDim int, learningRate float64, maxEpochs 
 		IntentMap:    make(map[string]int),
 		ClusterMap:   make(map[int]string),
 	}
-	
+
 	// Initialize weights randomly
 	som.Weights = make([][][]float64, width)
 	for x := 0; x < width; x++ {
@@ -198,32 +217,32 @@ func NewSOMNetwork(width, height, inputDim int, learningRate float64, maxEpochs 
 			}
 		}
 	}
-	
+
 	return som
 }
 
 func (r *EnhancedRAGService) trainSOMNetwork() error {
 	log.Println("🎯 Training SOM network for legal intent analysis...")
-	
+
 	// Generate training data from legal intents
 	trainingData := r.generateTrainingData()
-	
+
 	for epoch := 0; epoch < r.somNetwork.MaxEpochs; epoch++ {
 		r.somNetwork.Epoch = epoch
-		
+
 		for _, sample := range trainingData {
 			r.somNetwork.train(sample.Vector, sample.Intent)
 		}
-		
+
 		// Decay learning rate and radius
 		decayFactor := 1.0 - float64(epoch)/float64(r.somNetwork.MaxEpochs)
 		r.somNetwork.LearningRate *= decayFactor
 		r.somNetwork.Radius *= decayFactor
 	}
-	
+
 	// Map intents to clusters
 	r.mapIntentsToClusters(trainingData)
-	
+
 	log.Printf("✅ SOM training completed (%d epochs)", r.somNetwork.MaxEpochs)
 	return nil
 }
@@ -235,7 +254,7 @@ type TrainingSample struct {
 
 func (r *EnhancedRAGService) generateTrainingData() []TrainingSample {
 	var samples []TrainingSample
-	
+
 	for intent, keywords := range LegalIntents {
 		for _, keyword := range keywords {
 			// Generate simple embedding (in production, use real embeddings)
@@ -246,48 +265,48 @@ func (r *EnhancedRAGService) generateTrainingData() []TrainingSample {
 			})
 		}
 	}
-	
+
 	return samples
 }
 
 func (r *EnhancedRAGService) generateSimpleEmbedding(text string) []float64 {
 	// Simplified embedding generation (replace with real embeddings)
 	embedding := make([]float64, r.config.EmbeddingDim)
-	
+
 	for i, char := range text {
 		if i < len(embedding) {
 			embedding[i] = float64(char) / 1000.0
 		}
 	}
-	
+
 	// Normalize
 	norm := 0.0
 	for _, v := range embedding {
 		norm += v * v
 	}
 	norm = math.Sqrt(norm)
-	
+
 	if norm > 0 {
 		for i := range embedding {
 			embedding[i] /= norm
 		}
 	}
-	
+
 	return embedding
 }
 
 func (som *SOMNetwork) train(input []float64, intent string) {
 	// Find best matching unit (BMU)
 	bmuX, bmuY := som.findBMU(input)
-	
+
 	// Update weights in neighborhood
 	for x := 0; x < som.Width; x++ {
 		for y := 0; y < som.Height; y++ {
 			distance := math.Sqrt(float64((x-bmuX)*(x-bmuX) + (y-bmuY)*(y-bmuY)))
-			
+
 			if distance <= som.Radius {
 				influence := math.Exp(-distance*distance / (2*som.Radius*som.Radius))
-				
+
 				for d := 0; d < som.InputDim; d++ {
 					som.Weights[x][y][d] += som.LearningRate * influence * (input[d] - som.Weights[x][y][d])
 				}
@@ -299,7 +318,7 @@ func (som *SOMNetwork) train(input []float64, intent string) {
 func (som *SOMNetwork) findBMU(input []float64) (int, int) {
 	minDistance := math.Inf(1)
 	bmuX, bmuY := 0, 0
-	
+
 	for x := 0; x < som.Width; x++ {
 		for y := 0; y < som.Height; y++ {
 			distance := som.euclideanDistance(input, som.Weights[x][y])
@@ -309,7 +328,7 @@ func (som *SOMNetwork) findBMU(input []float64) (int, int) {
 			}
 		}
 	}
-	
+
 	return bmuX, bmuY
 }
 
@@ -324,29 +343,29 @@ func (som *SOMNetwork) euclideanDistance(a, b []float64) float64 {
 
 func (r *EnhancedRAGService) mapIntentsToClusters(trainingData []TrainingSample) {
 	clusterIntents := make(map[int]map[string]int)
-	
+
 	for _, sample := range trainingData {
 		x, y := r.somNetwork.findBMU(sample.Vector)
 		clusterID := y*r.somNetwork.Width + x
-		
+
 		if clusterIntents[clusterID] == nil {
 			clusterIntents[clusterID] = make(map[string]int)
 		}
 		clusterIntents[clusterID][sample.Intent]++
 	}
-	
+
 	// Assign dominant intent to each cluster
 	for clusterID, intents := range clusterIntents {
 		maxCount := 0
 		dominantIntent := ""
-		
+
 		for intent, count := range intents {
 			if count > maxCount {
 				maxCount = count
 				dominantIntent = intent
 			}
 		}
-		
+
 		r.somNetwork.ClusterMap[clusterID] = dominantIntent
 		r.somNetwork.IntentMap[dominantIntent] = clusterID
 	}
@@ -358,9 +377,9 @@ func (r *EnhancedRAGService) HandleRAGQuery(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	start := time.Now()
-	
+
 	// Set defaults
 	if req.MaxResults == 0 {
 		req.MaxResults = 10
@@ -368,34 +387,34 @@ func (r *EnhancedRAGService) HandleRAGQuery(ctx *gin.Context) {
 	if req.MinScore == 0 {
 		req.MinScore = 0.3
 	}
-	
+
 	// Check cache first
 	cacheKey := fmt.Sprintf("rag:%s:%s", req.UserID, req.Query)
 	cached, err := r.getCachedResponse(cacheKey)
 	if err == nil && cached != nil {
 		cached.CacheHit = true
-		r.cacheHitRate = (r.cacheHitRate*float64(r.queryCount) + 1.0) / float64(r.queryCount+1)
-		r.queryCount++
+		atomic.AddInt64(&r.cacheHits, 1)
+		atomic.AddInt64(&r.queryCount, 1)
 		ctx.JSON(http.StatusOK, cached)
 		return
 	}
-	
+
 	// Generate query embedding
 	queryEmbedding := r.generateSimpleEmbedding(req.Query)
-	
+
 	// Analyze user intent using SOM
 	intent, intentScore, cluster := r.analyzeIntentWithSOM(queryEmbedding)
-	
+
 	// Perform semantic search
 	results, err := r.performSemanticSearch(queryEmbedding, req, intent)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	// Generate suggestions based on intent
 	suggestions := r.generateIntentBasedSuggestions(intent, results)
-	
+
 	// Build response
 	response := RAGResponse{
 		Query:          req.Query,
@@ -409,13 +428,13 @@ func (r *EnhancedRAGService) HandleRAGQuery(ctx *gin.Context) {
 		Context:        req.Context,
 		CacheHit:       false,
 	}
-	
+
 	// Cache response
 	r.cacheResponse(cacheKey, &response)
-	
+
 	// Update metrics
 	r.updateMetrics(time.Since(start))
-	
+
 	ctx.JSON(http.StatusOK, response)
 }
 
@@ -423,42 +442,42 @@ func (r *EnhancedRAGService) analyzeIntentWithSOM(embedding []float64) (string, 
 	if r.somNetwork == nil {
 		return "general", 0.5, 0
 	}
-	
+
 	// Find best matching cluster
 	x, y := r.somNetwork.findBMU(embedding)
 	clusterID := y*r.somNetwork.Width + x
-	
+
 	// Get intent for cluster
 	intent, exists := r.somNetwork.ClusterMap[clusterID]
 	if !exists {
 		intent = "general"
 	}
-	
+
 	// Calculate intent confidence based on distance to cluster center
 	distance := r.somNetwork.euclideanDistance(embedding, r.somNetwork.Weights[x][y])
 	confidence := math.Max(0.0, 1.0-distance)
-	
+
 	return intent, confidence, clusterID
 }
 
 func (r *EnhancedRAGService) performSemanticSearch(queryEmbedding []float64, req RAGRequest, intent string) ([]DocumentResult, error) {
 	// Convert embedding to PostgreSQL format
 	embeddingStr := r.floatArrayToPGVector(queryEmbedding)
-	
+
 	// Build query based on intent
 	query := r.buildSemanticQuery(intent, req)
-	
+
 	rows, err := r.db.Query(context.Background(), query, embeddingStr, req.MinScore, req.MaxResults)
 	if err != nil {
 		return nil, fmt.Errorf("semantic search query failed: %w", err)
 	}
 	defer rows.Close()
-	
+
 	var results []DocumentResult
 	for rows.Next() {
 		var result DocumentResult
 		var metadataJSON []byte
-		
+
 		err := rows.Scan(
 			&result.ID,
 			&result.CaseID,
@@ -472,34 +491,34 @@ func (r *EnhancedRAGService) performSemanticSearch(queryEmbedding []float64, req
 		if err != nil {
 			continue
 		}
-		
+
 		// Parse metadata
 		if len(metadataJSON) > 0 {
 			json.Unmarshal(metadataJSON, &result.Metadata)
 		}
-		
+
 		// Calculate relevance
 		result.Relevance = r.calculateRelevance(result.Score, intent)
-		
+
 		// Generate highlights
 		result.Highlights = r.generateHighlights(result.Content, req.Query)
-		
+
 		results = append(results, result)
 	}
-	
+
 	return results, nil
 }
 
 func (r *EnhancedRAGService) buildSemanticQuery(intent string, req RAGRequest) string {
 	baseQuery := `
-		SELECT 
+		SELECT
 			id, case_id, title, content, document_type,
 			1 - (embedding <=> $1::vector) as score,
 			metadata, created_at
 		FROM legal_documents
 		WHERE 1 - (embedding <=> $1::vector) > $2
 	`
-	
+
 	// Add intent-specific filters
 	switch intent {
 	case "search", "research":
@@ -509,17 +528,17 @@ func (r *EnhancedRAGService) buildSemanticQuery(intent string, req RAGRequest) s
 	case "draft":
 		baseQuery += ` AND document_type IN ('template', 'precedent', 'form')`
 	}
-	
+
 	// Add case filter if provided
 	if req.CaseID != "" {
 		baseQuery += fmt.Sprintf(` AND case_id = '%s'`, req.CaseID)
 	}
-	
+
 	baseQuery += `
 		ORDER BY score DESC
 		LIMIT $3
 	`
-	
+
 	return baseQuery
 }
 
@@ -534,14 +553,14 @@ func (r *EnhancedRAGService) floatArrayToPGVector(arr []float64) string {
 func (r *EnhancedRAGService) calculateRelevance(score float64, intent string) string {
 	// Adjust relevance based on intent
 	adjustedScore := score
-	
+
 	switch intent {
 	case "analyze", "research":
 		adjustedScore *= 1.1 // Boost analytical content
 	case "draft":
 		adjustedScore *= 0.9 // Templates may be less specific
 	}
-	
+
 	if adjustedScore > 0.8 {
 		return "high"
 	} else if adjustedScore > 0.6 {
@@ -554,10 +573,10 @@ func (r *EnhancedRAGService) calculateRelevance(score float64, intent string) st
 func (r *EnhancedRAGService) generateHighlights(content, query string) []string {
 	// Simple highlighting (in production, use proper text processing)
 	words := strings.Fields(strings.ToLower(query))
-	
+
 	var highlights []string
 	contentWords := strings.Fields(content)
-	
+
 	for i, word := range contentWords {
 		wordLower := strings.ToLower(word)
 		for _, queryWord := range words {
@@ -570,13 +589,13 @@ func (r *EnhancedRAGService) generateHighlights(content, query string) []string 
 			}
 		}
 	}
-	
+
 	return highlights
 }
 
 func (r *EnhancedRAGService) generateIntentBasedSuggestions(intent string, results []DocumentResult) []string {
 	var suggestions []string
-	
+
 	switch intent {
 	case "search":
 		suggestions = []string{
@@ -609,7 +628,7 @@ func (r *EnhancedRAGService) generateIntentBasedSuggestions(intent string, resul
 			"Save for later",
 		}
 	}
-	
+
 	return suggestions
 }
 
@@ -618,7 +637,7 @@ func (r *EnhancedRAGService) getCachedResponse(key string) (*RAGResponse, error)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	var response RAGResponse
 	err = json.Unmarshal([]byte(data), &response)
 	return &response, err
@@ -630,25 +649,142 @@ func (r *EnhancedRAGService) cacheResponse(key string, response *RAGResponse) {
 }
 
 func (r *EnhancedRAGService) updateMetrics(duration time.Duration) {
-	r.queryCount++
-	processingTime := float64(duration.Nanoseconds()) / 1e6
-	r.avgQueryTime = (r.avgQueryTime*float64(r.queryCount-1) + processingTime) / float64(r.queryCount)
+	// Deprecated - Context7 metrics are now handled atomically in defer functions
+}
+
+// Context7 Performance Statistics Handler
+func (r *EnhancedRAGService) HandlePerformanceStats(ctx *gin.Context) {
+	uptime := time.Since(r.startTime)
+
+	// Calculate rates and performance metrics
+	totalQueries := atomic.LoadInt64(&r.queryCount)
+	cacheHits := atomic.LoadInt64(&r.cacheHits)
+	cacheMisses := atomic.LoadInt64(&r.cacheMisses)
+	somAnalyses := atomic.LoadInt64(&r.somAnalyses)
+	semanticSearches := atomic.LoadInt64(&r.semanticSearches)
+	totalErrors := atomic.LoadInt64(&r.totalErrors)
+
+	var cacheHitRatio float64
+	if cacheHits+cacheMisses > 0 {
+		cacheHitRatio = float64(cacheHits) / float64(cacheHits+cacheMisses) * 100.0
+	}
+
+	var errorRate float64
+	if totalQueries > 0 {
+		errorRate = float64(totalErrors) / float64(totalQueries) * 100.0
+	}
+
+	stats := gin.H{
+		"service_name": "EnhancedRAGSystem",
+		"codec_name":  "context7_enhanced_rag_som",
+		"uptime": gin.H{
+			"seconds":   int64(uptime.Seconds()),
+			"formatted": uptime.String(),
+		},
+		"performance": gin.H{
+			"total_queries":        totalQueries,
+			"som_analyses":         somAnalyses,
+			"semantic_searches":    semanticSearches,
+			"cache_hits":          cacheHits,
+			"cache_misses":        cacheMisses,
+			"cache_hit_ratio":     cacheHitRatio,
+			"total_errors":        totalErrors,
+			"error_rate":          errorRate,
+			"average_response_time_us": atomic.LoadInt64(&r.averageResponseTime),
+		},
+		"rates": gin.H{
+			"queries_per_second":   float64(totalQueries) / uptime.Seconds(),
+			"queries_per_hour":     float64(totalQueries) / uptime.Hours(),
+			"som_analyses_per_hour": float64(somAnalyses) / uptime.Hours(),
+			"searches_per_hour":    float64(semanticSearches) / uptime.Hours(),
+		},
+		"som_network": gin.H{
+			"enabled":      r.somNetwork != nil,
+			"dimensions":   fmt.Sprintf("%dx%d", r.config.SOMWidth, r.config.SOMHeight),
+			"input_dim":    r.config.EmbeddingDim,
+			"learning_rate": r.config.LearningRate,
+			"max_epochs":   r.config.MaxEpochs,
+			"intents":      len(LegalIntents),
+		},
+		"health": gin.H{
+			"status":               "healthy",
+			"performance_grade":    calculateRAGPerformanceGrade(r),
+			"cache_efficiency":     cacheHitRatio,
+			"error_rate":          errorRate,
+		},
+	}
+
+	// Add Context7 monitoring headers
+	ctx.Header("X-Service-Uptime", fmt.Sprintf("%.0f", uptime.Seconds()))
+	ctx.Header("X-Total-Queries", fmt.Sprintf("%d", totalQueries))
+	ctx.Header("X-Cache-Hit-Ratio", fmt.Sprintf("%.2f", cacheHitRatio))
+	ctx.Header("X-Average-Response-Time-Us", fmt.Sprintf("%d", atomic.LoadInt64(&r.averageResponseTime)))
+	ctx.Header("X-Performance-Grade", calculateRAGPerformanceGrade(r))
+
+	ctx.JSON(http.StatusOK, stats)
+}
+
+func calculateRAGPerformanceGrade(r *EnhancedRAGService) string {
+	avgResponseTime := atomic.LoadInt64(&r.averageResponseTime)
+	totalQueries := atomic.LoadInt64(&r.queryCount)
+	totalErrors := atomic.LoadInt64(&r.totalErrors)
+
+	var errorRate float64
+	if totalQueries > 0 {
+		errorRate = float64(totalErrors) / float64(totalQueries) * 100.0
+	}
+
+	if errorRate > 10.0 {
+		return "D"
+	}
+	if avgResponseTime > 200000 { // > 200ms for RAG queries
+		return "C"
+	}
+	if avgResponseTime > 100000 { // > 100ms
+		return "B"
+	}
+	if avgResponseTime > 50000 { // > 50ms
+		return "A"
+	}
+	return "A+"
 }
 
 func (r *EnhancedRAGService) HandleStatus(ctx *gin.Context) {
+	uptime := time.Since(r.startTime)
+
+	// Calculate cache hit ratio
+	cacheHits := atomic.LoadInt64(&r.cacheHits)
+	cacheMisses := atomic.LoadInt64(&r.cacheMisses)
+	var cacheHitRatio float64
+	if cacheHits+cacheMisses > 0 {
+		cacheHitRatio = float64(cacheHits) / float64(cacheHits+cacheMisses) * 100.0
+	}
+
 	status := map[string]interface{}{
 		"service":        "Enhanced RAG System",
 		"status":         "running",
 		"som_enabled":    r.somNetwork != nil,
 		"som_dimensions": fmt.Sprintf("%dx%d", r.config.SOMWidth, r.config.SOMHeight),
-		"query_count":    r.queryCount,
-		"avg_query_time": r.avgQueryTime,
-		"cache_hit_rate": r.cacheHitRate,
+		"query_count":    atomic.LoadInt64(&r.queryCount),
+		"som_analyses":   atomic.LoadInt64(&r.somAnalyses),
+		"semantic_searches": atomic.LoadInt64(&r.semanticSearches),
+		"cache_hits":     cacheHits,
+		"cache_misses":   cacheMisses,
+		"cache_hit_ratio": cacheHitRatio,
+		"avg_response_time_us": atomic.LoadInt64(&r.averageResponseTime),
+		"total_errors":   atomic.LoadInt64(&r.totalErrors),
 		"embedding_dim":  r.config.EmbeddingDim,
 		"intents":        len(LegalIntents),
+		"uptime_seconds": int64(uptime.Seconds()),
 		"timestamp":      time.Now(),
 	}
-	
+
+	// Add Context7 monitoring headers
+	ctx.Header("X-Service-Uptime", fmt.Sprintf("%.0f", uptime.Seconds()))
+	ctx.Header("X-Query-Count", fmt.Sprintf("%d", atomic.LoadInt64(&r.queryCount)))
+	ctx.Header("X-Cache-Hit-Ratio", fmt.Sprintf("%.2f", cacheHitRatio))
+	ctx.Header("X-Average-Response-Time-Us", fmt.Sprintf("%d", atomic.LoadInt64(&r.averageResponseTime)))
+
 	ctx.JSON(http.StatusOK, status)
 }
 
@@ -656,15 +792,15 @@ func (r *EnhancedRAGService) HandleAnalyzeIntent(ctx *gin.Context) {
 	var req struct {
 		Query string `json:"query"`
 	}
-	
+
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	embedding := r.generateSimpleEmbedding(req.Query)
 	intent, score, cluster := r.analyzeIntentWithSOM(embedding)
-	
+
 	ctx.JSON(http.StatusOK, map[string]interface{}{
 		"query":       req.Query,
 		"intent":      intent,
@@ -676,12 +812,20 @@ func (r *EnhancedRAGService) HandleAnalyzeIntent(ctx *gin.Context) {
 
 // HandleRAG - Simplified RAG endpoint for Vite proxy /api/v1/rag
 func (r *EnhancedRAGService) HandleRAG(ctx *gin.Context) {
+	start := time.Now()
+	atomic.AddInt64(&r.queryCount, 1)
+	defer func() {
+		duration := time.Since(start).Microseconds()
+		atomic.StoreInt64(&r.averageResponseTime, duration)
+	}()
+
 	var req RAGRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
+		atomic.AddInt64(&r.totalErrors, 1)
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	// Set defaults for simplified endpoint
 	if req.MaxResults == 0 {
 		req.MaxResults = 5
@@ -689,15 +833,13 @@ func (r *EnhancedRAGService) HandleRAG(ctx *gin.Context) {
 	if req.MinScore == 0 {
 		req.MinScore = 0.5
 	}
-	
-	start := time.Now()
-	
+
 	// Generate query embedding
 	queryEmbedding := r.generateSimpleEmbedding(req.Query)
-	
+
 	// Analyze intent
 	intent, intentScore, cluster := r.analyzeIntentWithSOM(queryEmbedding)
-	
+
 	// Perform semantic search
 	results, err := r.performSemanticSearch(queryEmbedding, req, intent)
 	if err != nil {
@@ -706,7 +848,7 @@ func (r *EnhancedRAGService) HandleRAG(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	// Build simplified response
 	response := map[string]interface{}{
 		"query":           req.Query,
@@ -718,12 +860,19 @@ func (r *EnhancedRAGService) HandleRAG(ctx *gin.Context) {
 		"total_results":   len(results),
 		"status":          "success",
 	}
-	
+
 	ctx.JSON(http.StatusOK, response)
 }
 
-// HandleAI - AI processing endpoint for Vite proxy /api/v1/ai  
+// HandleAI - AI processing endpoint for Vite proxy /api/v1/ai
 func (r *EnhancedRAGService) HandleAI(ctx *gin.Context) {
+	start := time.Now()
+	atomic.AddInt64(&r.queryCount, 1)
+	defer func() {
+		duration := time.Since(start).Microseconds()
+		atomic.StoreInt64(&r.averageResponseTime, duration)
+	}()
+
 	var req struct {
 		Prompt string                 `json:"prompt"`
 		Model  string                 `json:"model,omitempty"`
@@ -731,25 +880,23 @@ func (r *EnhancedRAGService) HandleAI(ctx *gin.Context) {
 		MaxTokens int                 `json:"max_tokens,omitempty"`
 		Temperature float64           `json:"temperature,omitempty"`
 	}
-	
+
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	if req.Prompt == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "prompt is required"})
 		return
 	}
-	
-	start := time.Now()
-	
+
 	// Generate embedding for the prompt
 	promptEmbedding := r.generateSimpleEmbedding(req.Prompt)
-	
+
 	// Analyze intent
 	intent, intentScore, cluster := r.analyzeIntentWithSOM(promptEmbedding)
-	
+
 	// Mock AI processing (in production, integrate with actual LLM)
 	aiResponse := map[string]interface{}{
 		"prompt":          req.Prompt,
@@ -762,7 +909,7 @@ func (r *EnhancedRAGService) HandleAI(ctx *gin.Context) {
 		"status":          "success",
 		"confidence":      0.85,
 	}
-	
+
 	ctx.JSON(http.StatusOK, aiResponse)
 }
 
@@ -770,33 +917,34 @@ func (r *EnhancedRAGService) setupRoutes() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
 	router.Use(gin.Logger(), gin.Recovery())
-	
+
 	// CORS middleware
 	router.Use(func(ctx *gin.Context) {
 		ctx.Header("Access-Control-Allow-Origin", "*")
 		ctx.Header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		ctx.Header("Access-Control-Allow-Headers", "Content-Type")
-		
+
 		if ctx.Request.Method == "OPTIONS" {
 			ctx.AbortWithStatus(204)
 			return
 		}
-		
+
 		ctx.Next()
 	})
-	
+
 	// API routes
 	api := router.Group("/api")
 	{
 		api.POST("/rag/query", r.HandleRAGQuery)
 		api.POST("/rag/analyze-intent", r.HandleAnalyzeIntent)
 		api.GET("/rag/status", r.HandleStatus)
-		
+		api.GET("/rag/performance", r.HandlePerformanceStats)
+
 		// New endpoints for Vite proxy compatibility
 		api.POST("/rag", r.HandleRAG)         // For /api/v1/rag proxy
 		api.POST("/ai", r.HandleAI)           // For /api/v1/ai proxy
 	}
-	
+
 	// Root endpoint
 	router.GET("/", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
@@ -810,7 +958,7 @@ func (r *EnhancedRAGService) setupRoutes() *gin.Engine {
 			},
 		})
 	})
-	
+
 	return router
 }
 
@@ -818,14 +966,14 @@ func (r *EnhancedRAGService) Run() error {
 	if err := r.Initialize(); err != nil {
 		return err
 	}
-	
+
 	router := r.setupRoutes()
-	
+
 	log.Printf("🧠 Enhanced RAG System starting on port %s", r.config.Port)
 	log.Printf("🎯 SOM Network: %dx%d (%d intents)", r.config.SOMWidth, r.config.SOMHeight, len(LegalIntents))
 	log.Printf("🔍 Embedding Dimension: %d", r.config.EmbeddingDim)
 	log.Printf("📊 Vector Threshold: %.2f", r.config.VectorThreshold)
-	
+
 	return router.Run(":" + r.config.Port)
 }
 
@@ -833,7 +981,7 @@ func (r *EnhancedRAGService) Cleanup() {
 	if r.db != nil {
 		r.db.Close()
 	}
-	
+
 	if r.redis != nil {
 		r.redis.Close()
 	}
@@ -882,7 +1030,7 @@ func getEnvFloat(key string, defaultValue float64) float64 {
 func main() {
 	service := NewEnhancedRAGService()
 	defer service.Cleanup()
-	
+
 	if err := service.Run(); err != nil {
 		log.Fatalf("💥 Enhanced RAG service failed: %v", err)
 	}

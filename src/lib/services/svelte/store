@@ -1,0 +1,23 @@
+// Minimal shim for svelte/store types to satisfy TypeScript when full Svelte types aren't installed.
+declare module "svelte/store" {
+  export type Unsubscriber = () => void;
+  export type Subscriber<T> = (value: T) => void;
+  export type StartStopNotifier<T> = (set: Subscriber<T>) => void | Unsubscriber;
+
+  export interface Readable<T> {
+    subscribe(run: Subscriber<T>): Unsubscriber;
+  }
+
+  export interface Writable<T> extends Readable<T> {
+    set(value: T): void;
+    update(updater: (value: T) => T): void;
+  }
+
+  export function writable<T>(value: T, start?: StartStopNotifier<T>): Writable<T>;
+  export function readable<T>(value: T, start?: StartStopNotifier<T>): Readable<T>;
+  export function derived<S, T>(
+    stores: S | S[],
+    fn: (values: any, set: (value: T) => void) => T | void,
+    initial?: T
+  ): Readable<T>;
+}

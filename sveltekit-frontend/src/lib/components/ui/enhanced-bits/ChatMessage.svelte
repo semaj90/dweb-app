@@ -43,8 +43,8 @@
 </div>
 <!-- Chat Message: Svelte 5, Bits UI, UnoCSS, analytics logging -->
   import { User, Bot, AlertTriangle } from 'lucide-svelte';
-  export let message: { role: 'user' | 'assistant' | 'error', content: string, timestamp?: string };
-  export let analyticsLog: (event: any) => void = () => {};
+  let { message = $bindable() } = $props(); // { role: 'user' | 'assistant' | 'error', content: string, timestamp?: string };
+  let { analyticsLog = $bindable() } = $props(); // (event: any) => void = () => {};
 
   $: if (message && message.content) {
     analyticsLog({ event: 'chat_message_rendered', role: message.role, timestamp: Date.now() });

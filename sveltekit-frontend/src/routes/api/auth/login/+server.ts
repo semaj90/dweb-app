@@ -1,84 +1,136 @@
-import type { RequestHandler } from '@sveltejs/kit';
-import { json } from "@sveltejs/kit";
-import { authService } from "$lib/server/auth";
-import { isValidEmail } from "$lib/utils";
+/**
+ * User Login API Endpoint
+ * POST /api/auth/login
+ */
 
-export const POST: RequestHandler = async ({ request, cookies }) => {
+import { json, error, type RequestHandler } from '@sveltejs/kit';
+import { ExistingUserAuthService as UserAuthService } from '$lib/server/db/existing-user-operations.js';
+import { z } from 'zod';
+import { dev } from '$app/environment';
+
+// Login request validation schema
+const loginSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(1, 'Password is required'),
+  rememberMe: z.boolean().optional().default(false),
+});
+
+export const POST: RequestHandler = async ({ request, getClientAddress, cookies }) => {
   try {
-    const body = await request.json();
-    const { email, password } = body;
-    
-    console.log("🔐 Login attempt for:", email);
+    // Parse and validate request body
+    const body = await request.json().catch(() => ({}));
+    const validatedData = loginSchema.parse(body);
 
-    // Validate input
-    if (!email || !password) {
-      return json(
-        { error: "Email and password are required" },
-        { status: 400 }
-      );
+    // Get client information for logging
+    const ipAddress = getClientAddress();
+    const userAgent = request.headers.get('user-agent') || undefined;
+
+    // Authenticate user
+    const result = await UserAuthService.loginUser({
+      email: validatedData.email,
+      password: validatedData.password,
+      ipAddress,
+      userAgent,
+      rememberMe: validatedData.rememberMe,
+    });
+
+    if (!result.success) {
+      // Don't reveal whether email exists or not (security best practice)
+      throw error(401, {
+        message: 'Invalid email or password',
+        code: 'AUTHENTICATION_FAILED'
+      });
     }
-
-    if (typeof email !== "string" || typeof password !== "string") {
-      return json({ error: "Invalid input format" }, { status: 400 });
-    }
-
-    if (!isValidEmail(email)) {
-      return json({ error: "Invalid email format" }, { status: 400 });
-    }
-
-    // Login user using our auth service
-    const user = await authService.login(email.toLowerCase().trim(), password);
-
-    // Create session
-    const session = await authService.createSession(user.id);
 
     // Set session cookie
-    cookies.set('session', session.id, {
+    const cookieOptions = {
       path: '/',
       httpOnly: true,
-      sameSite: 'strict',
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 60 * 60 * 24 * 30 // 30 days
-    });
+      secure: !dev, // Only secure in production
+      sameSite: 'strict' as const,
+      maxAge: validatedData.rememberMe ? 60 * 60 * 24 * 30 : 60 * 60 * 24, // 30 days or 1 day
+    };
 
-    console.log("✅ Login successful for:", user.email);
+    cookies.set('session_id', result.session!.sessionId, cookieOptions);
 
-    // Return user info (excluding sensitive data)
+    // Remove sensitive information from response
+    const { passwordHash, ...userResponse } = result.user!;
+    
+    // Return successful login response
     return json({
       success: true,
-      message: "Login successful",
-      user: {
-        id: user.id,
-        email: user.email,
-        displayName: user.displayName,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        role: user.role,
-        legalSpecialties: user.legalSpecialties,
-        preferences: user.preferences,
-        emailVerified: user.emailVerified,
-        createdAt: user.createdAt
+      message: 'Login successful',
+      data: {
+        user: userResponse,
+        session: {
+          id: result.session!.sessionId,
+          expiresAt: result.session!.expiresAt,
+        },
+        profile: result.profile || null,
+      },
+      meta: {
+        timestamp: new Date().toISOString(),
+        version: '1.0.0',
+      }
+    }, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(dev && { 'Access-Control-Allow-Origin': '*' }),
       }
     });
 
-  } catch (error) {
-    console.error("❌ Login error:", error);
+  } catch (err) {
+    console.error('Login API error:', err);
 
-    // Handle specific errors
-    if (error instanceof Error) {
-      if (error.message.includes('Invalid email or password') || 
-          error.message.includes('Account is deactivated') ||
-          error.message.includes('Account is temporarily locked')) {
-        return json(
-          { error: error.message },
-          { status: 401 }
-        );
-      }
+    // Handle validation errors
+    if (err instanceof z.ZodError) {
+      return json({
+        success: false,
+        message: 'Validation failed',
+        errors: err.errors.map(e => ({
+          field: e.path.join('.'),
+          message: e.message,
+          code: e.code,
+        })),
+        meta: {
+          timestamp: new Date().toISOString(),
+          version: '1.0.0',
+        }
+      }, { 
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
     }
 
-    return json(
-      { error: "An error occurred during login" },
-      { status: 500 }
-    );
+    // Handle authentication errors
+    const statusCode = err.status || 500;
+    const message = err.body?.message || err.message || 'Login failed';
+
+    return json({
+      success: false,
+      message,
+      code: err.body?.code || 'INTERNAL_SERVER_ERROR',
+      meta: {
+        timestamp: new Date().toISOString(),
+        version: '1.0.0',
+      }
+    }, { 
+      status: statusCode,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
+};
+
+// OPTIONS handler for CORS preflight requests
+export const OPTIONS: RequestHandler = async () => {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': dev ? '*' : 'https://yourdomain.com',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Max-Age': '86400', // 24 hours
+    }
+  });
 };

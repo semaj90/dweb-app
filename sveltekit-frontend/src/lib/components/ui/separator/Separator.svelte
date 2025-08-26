@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { $props } from 'svelte';
-
   interface Props {
     orientation?: 'horizontal' | 'vertical';
     decorative?: boolean;

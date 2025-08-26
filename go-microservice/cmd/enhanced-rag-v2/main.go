@@ -8,7 +8,6 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -24,7 +23,7 @@ import (
 	"gorm.io/gorm"
 	"github.com/google/uuid"
 	"github.com/nats-io/nats.go"
-	"github.com/streadway/amqp"
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 // ============================================================================
@@ -380,7 +379,8 @@ func (gpu *AdvancedGPUProcessor) executeGPUTask(task *GPUTask) (map[string]inter
 	case "json_tensor_parsing":
 		return gpu.executeJSONTensorParsing(task.InputData)
 	case "kmeans_clustering":
-		return gpu.executeKMeansClustering(task.InputData)
+		// TODO: Implement executeKMeansClustering method
+		return map[string]interface{}{"error": "kmeans_clustering not implemented"}, fmt.Errorf("kmeans_clustering method not implemented")
 	default:
 		return nil, fmt.Errorf("unknown GPU task type: %s", task.Type)
 	}
@@ -1102,9 +1102,11 @@ func (engine *AdvancedAnalyticsEngine) processAnalyticsTask(processor *Analytics
 	case "sentiment_analysis":
 		return engine.processSentimentAnalysis(task.Data)
 	case "risk_analysis":
-		return engine.processRiskAnalysis(task.Data)
+		// TODO: Implement processRiskAnalysis method
+		return map[string]interface{}{"error": "risk_analysis not implemented"}
 	case "relevance_scoring":
-		return engine.processRelevanceScoring(task.Data)
+		// TODO: Implement processRelevanceScoring method
+		return map[string]interface{}{"error": "relevance_scoring not implemented"}
 	default:
 		return map[string]interface{}{"error": "unknown processor type"}
 	}
@@ -1205,8 +1207,8 @@ func (service *EnhancedRAGV2Service) Start() error {
 	// Start HTTP server
 	go service.startHTTPServer()
 	
-	// Start WebSocket server
-	go service.startWebSocketServer()
+	// TODO: Start WebSocket server (method not implemented)
+	// go service.startWebSocketServer()
 	
 	log.Printf("🌟 Enhanced RAG V2 Service started on ports %s (HTTP) and %s (WS)", 
 		service.config.HTTPPort, service.config.WSPort)

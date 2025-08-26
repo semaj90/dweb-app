@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { $state } from 'svelte';
   import { Badge } from '$lib/components/ui/badge';
   import { Button } from '$lib/components/ui/button';
   import {
@@ -157,7 +156,7 @@
             placeholder="Enter your legal search query..."
             class="flex-1"
             onkeydown={(e) => e.key === 'Enter' && performSearch()} />
-          <Button onclick={performSearch} disabled={searching || !query.trim()}>
+          <Button on:click={performSearch} disabled={searching || !query.trim()}>
             {#if searching}
               <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
               Searching...

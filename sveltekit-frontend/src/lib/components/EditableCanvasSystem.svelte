@@ -302,7 +302,7 @@
       <button 
         type="button"
         disabled={readonly}
-        onclick={resetCanvas}
+        on:click={resetCanvas}
         aria-label="Create new canvas"
       >
         New Canvas
@@ -332,7 +332,7 @@
       role="img"
       aria-label="Interactive canvas for creating and editing nodes"
       tabindex={readonly ? -1 : 0}
-      onclick={handleCanvasClick}
+      on:click={handleCanvasClick}
       ondrop={handleFileDrop}
       ondragover={handleDragOver}
     ></canvas>

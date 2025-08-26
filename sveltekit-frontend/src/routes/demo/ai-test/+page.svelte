@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { $state } from 'svelte';
   import { OllamaService } from '$lib/services/ollamaService';
   import { multiLayerCache } from '$lib/services/multiLayerCache';
   
@@ -113,7 +112,7 @@
 
   <div class="mb-6">
     <button 
-      onclick={runAITests}
+      on:click={runAITests}
       disabled={isRunning}
       class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
     >

@@ -279,13 +279,13 @@
 
     <ContextMenu.Content class="container mx-auto px-4">
       <ContextMenu.Item
-        onclick={() => createNewReport(contextMenuState.x, contextMenuState.y)}
+        on:click={() => createNewReport(contextMenuState.x, contextMenuState.y)}
       >
         <FileText class="container mx-auto px-4" />
         New Report
       </ContextMenu.Item>
       <ContextMenu.Item
-        onclick={() =>
+        on:click={() =>
           createNewEvidence(contextMenuState.x, contextMenuState.y)}
       >
         <Image class="container mx-auto px-4" />
@@ -293,28 +293,28 @@
       </ContextMenu.Item>
       <ContextMenu.Separator />
       <ContextMenu.Item
-        onclick={() =>
+        on:click={() =>
           createNewPOI(contextMenuState.x, contextMenuState.y, "suspect")}
       >
         <UserIcon class="container mx-auto px-4" />
         Add Suspect
       </ContextMenu.Item>
       <ContextMenu.Item
-        onclick={() =>
+        on:click={() =>
           createNewPOI(contextMenuState.x, contextMenuState.y, "witness")}
       >
         <UserIcon class="container mx-auto px-4" />
         Add Witness
       </ContextMenu.Item>
       <ContextMenu.Item
-        onclick={() =>
+        on:click={() =>
           createNewPOI(contextMenuState.x, contextMenuState.y, "victim")}
       >
         <UserIcon class="container mx-auto px-4" />
         Add Victim
       </ContextMenu.Item>
       <ContextMenu.Item
-        onclick={() =>
+        on:click={() =>
           createNewPOI(
             contextMenuState.x,
             contextMenuState.y,
@@ -325,14 +325,14 @@
         Add Co-conspirator
       </ContextMenu.Item>
       <ContextMenu.Item
-        onclick={() =>
+        on:click={() =>
           createNewPOI(contextMenuState.x, contextMenuState.y, "informant")}
       >
         <UserIcon class="container mx-auto px-4" />
         Add Informant
       </ContextMenu.Item>
       <ContextMenu.Item
-        onclick={() => createNewPOI(contextMenuState.x, contextMenuState.y)}
+        on:click={() => createNewPOI(contextMenuState.x, contextMenuState.y)}
       >
         <UserIcon class="container mx-auto px-4" />
         Add Other POI
@@ -343,24 +343,24 @@
   <!-- Toolbar -->
   <div class="container mx-auto px-4">
     <div class="container mx-auto px-4">
-      <Button variant="secondary" onclick={() => createNewReport(100, 100)}>
+      <Button variant="secondary" on:click={() => createNewReport(100, 100)}>
         <FileText class="container mx-auto px-4" />
         New Report
       </Button>
 
-      <Button variant="secondary" onclick={() => createNewEvidence(200, 100)}>
+      <Button variant="secondary" on:click={() => createNewEvidence(200, 100)}>
         <Image class="container mx-auto px-4" />
         New Evidence
       </Button>
 
-      <Button variant="secondary" onclick={() => createNewPOI(300, 100)}>
+      <Button variant="secondary" on:click={() => createNewPOI(300, 100)}>
         <UserIcon class="container mx-auto px-4" />
         New POI
       </Button>
     </div>
 
     <div class="container mx-auto px-4">
-      <Button variant="secondary" onclick={() => caseService.saveAll()}>
+      <Button variant="secondary" on:click={() => caseService.saveAll()}>
         Save All
       </Button>
     </div>

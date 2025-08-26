@@ -1,7 +1,5 @@
 <!-- YoRHa Navigation Sidebar Component -->
 <script lang="ts">
-  import { $state, $derived, $effect } from 'svelte';
-
   import type { Props } from "$lib/types/global";
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
@@ -18,7 +16,7 @@
   }>();
 
   // Navigation state
-  let expandedSections = $state(new Set(['main', 'demo', 'admin']));
+  let expandedSections = $state(new Set(['main', 'demo', 'admin']););
   let searchQuery = $state('');
   let filteredRoutes = $state(routes);
   let hoveredRoute = $state<string | null>(null);
@@ -127,7 +125,7 @@
         {#each filteredRoutes as route}
           <button
             class="nes-nav-item nes-legal-priority-medium yorha-3d-button w-full text-left {isRouteActive(route.route) ? 'nes-legal-priority-high neural-sprite-active' : ''}"
-            onclick={() => navigateToRoute(route.route)}
+            on:click={() => navigateToRoute(route.route)}
             onmouseenter={() => hoveredRoute = route.id}
             onmouseleave={() => hoveredRoute = null}
           >
@@ -149,7 +147,7 @@
             <!-- Section Header -->
             <button
               class="section-header w-full flex items-center justify-between p-2 rounded hover:bg-yorha-accent-warm/10 transition-colors duration-200"
-              onclick={() => toggleSection(sectionId)}
+              on:click={() => toggleSection(sectionId)}
             >
               <div class="flex items-center gap-2">
                 <span class="text-lg">{getSectionIcon(sectionId)}</span>
@@ -172,7 +170,7 @@
                 {#each sectionRoutes as route}
                   <button
                     class="nav-item w-full text-left p-3 mb-1 rounded border border-transparent hover:border-yorha-accent-warm/50 hover:bg-yorha-accent-warm/10 transition-all duration-200 {isRouteActive(route.route) ? 'active bg-yorha-accent-warm/20 border-yorha-accent-warm text-yorha-accent-warm' : 'text-yorha-light'}"
-                    onclick={() => navigateToRoute(route.route)}
+                    on:click={() => navigateToRoute(route.route)}
                     onmouseenter={() => hoveredRoute = route.id}
                     onmouseleave={() => hoveredRoute = null}
                     title={collapsed ? route.label : ''}

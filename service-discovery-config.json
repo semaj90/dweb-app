@@ -1,0 +1,589 @@
+{
+  "serviceDiscovery": {
+    "version": "2.0.0",
+    "environment": "production",
+    "timestamp": "2025-01-01T00:00:00Z",
+    "description": "Complete Legal AI Platform - Service Registry & Discovery Configuration",
+    "totalServices": 42,
+    "architecture": "native-windows-microservices"
+  },
+
+  "infrastructure": {
+    "databases": {
+      "postgresql": {
+        "id": "postgresql-primary",
+        "name": "PostgreSQL Primary",
+        "host": "localhost",
+        "port": 5432,
+        "protocol": "postgresql",
+        "database": "legal_ai_db",
+        "user": "legal_admin", 
+        "features": ["pgvector", "full-text-search", "vector-similarity"],
+        "healthCheck": "SELECT version();",
+        "status": "required",
+        "tier": 1
+      },
+      "redis": {
+        "id": "redis-primary",
+        "name": "Redis Cache & Streams",
+        "host": "localhost",
+        "port": 6379,
+        "protocol": "redis",
+        "features": ["caching", "streams", "pub-sub", "sessions"],
+        "healthCheck": "ping",
+        "status": "required",
+        "tier": 1
+      },
+      "neo4j": {
+        "id": "neo4j-knowledge-graph",
+        "name": "Neo4j Knowledge Graph",
+        "host": "localhost",
+        "port": 7474,
+        "protocol": "http",
+        "database": "legal_graph",
+        "features": ["graph-database", "cypher-queries", "relationships"],
+        "healthCheck": "/db/data/",
+        "status": "optional",
+        "tier": 2
+      },
+      "qdrant": {
+        "id": "qdrant-vector-db", 
+        "name": "Qdrant Vector Database",
+        "host": "localhost",
+        "port": 6333,
+        "protocol": "http",
+        "features": ["vector-search", "similarity", "collections"],
+        "healthCheck": "/collections",
+        "status": "optional",
+        "tier": 2
+      }
+    },
+
+    "messaging": {
+      "nats": {
+        "id": "nats-server",
+        "name": "NATS Messaging Server",
+        "host": "localhost", 
+        "port": 4222,
+        "httpPort": 8222,
+        "protocol": "nats",
+        "features": ["pub-sub", "request-reply", "streaming", "jetstream"],
+        "subjects": [
+          "legal.case.*",
+          "legal.document.*", 
+          "legal.ai.*",
+          "legal.search.*",
+          "legal.chat.*",
+          "system.*"
+        ],
+        "healthCheck": "/",
+        "status": "optional",
+        "tier": 2
+      }
+    },
+
+    "storage": {
+      "minio": {
+        "id": "minio-object-storage",
+        "name": "MinIO Object Storage",
+        "host": "localhost",
+        "port": 9000,
+        "consolePort": 9001,
+        "protocol": "s3",
+        "features": ["object-storage", "file-upload", "document-storage"],
+        "healthCheck": "/minio/health/ready",
+        "status": "optional",
+        "tier": 2
+      }
+    }
+  },
+
+  "aiServices": {
+    "ollama": {
+      "primary": {
+        "id": "ollama-primary",
+        "name": "Ollama Primary Instance",
+        "host": "localhost",
+        "port": 11434,
+        "protocol": "http",
+        "models": ["gemma3-legal", "nomic-embed-text", "llama3.1"],
+        "features": ["text-generation", "embeddings", "chat"],
+        "healthCheck": "/api/tags",
+        "status": "required",
+        "tier": 1
+      },
+      "secondary": {
+        "id": "ollama-secondary", 
+        "name": "Ollama Secondary Instance",
+        "host": "localhost",
+        "port": 11435,
+        "protocol": "http",
+        "models": ["gemma3-legal"],
+        "features": ["text-generation", "backup"],
+        "healthCheck": "/api/tags",
+        "status": "optional",
+        "tier": 2
+      },
+      "embeddings": {
+        "id": "ollama-embeddings",
+        "name": "Ollama Embeddings Instance", 
+        "host": "localhost",
+        "port": 11436,
+        "protocol": "http",
+        "models": ["nomic-embed-text"],
+        "features": ["embeddings", "vector-generation"],
+        "healthCheck": "/api/tags",
+        "status": "optional",
+        "tier": 2
+      }
+    }
+  },
+
+  "vectorProcessingPipeline": {
+    "embeddingService": {
+      "id": "python-embedding-service",
+      "name": "Python Embedding Service",
+      "host": "localhost", 
+      "port": 8097,
+      "protocol": "http",
+      "language": "python",
+      "framework": "fastapi",
+      "features": ["sentence-transformers", "batch-processing", "gpu-acceleration"],
+      "healthCheck": "/health",
+      "status": "optional",
+      "tier": 2
+    },
+    "vectorService": {
+      "id": "go-vector-service",
+      "name": "Go Vector Service",
+      "host": "localhost",
+      "port": 8095,
+      "protocol": "http", 
+      "language": "go",
+      "features": ["redis-streams", "vector-operations", "postgresql-integration"],
+      "healthCheck": "/health",
+      "status": "optional",
+      "tier": 2
+    },
+    "integrationOrchestrator": {
+      "id": "integration-orchestrator",
+      "name": "Integration Orchestrator",
+      "host": "localhost",
+      "port": 8096,
+      "protocol": "http",
+      "language": "go", 
+      "features": ["service-coordination", "nats-integration", "health-monitoring"],
+      "healthCheck": "/status",
+      "status": "optional",
+      "tier": 2
+    }
+  },
+
+  "goMicroservices": {
+    "core": {
+      "enhancedRAG": {
+        "id": "enhanced-rag-service",
+        "name": "Enhanced RAG Service",
+        "host": "localhost",
+        "port": 8094,
+        "protocol": "http",
+        "features": ["rag", "ai-generation", "vector-search", "context7"],
+        "healthCheck": "/health",
+        "status": "required",
+        "tier": 1
+      },
+      "uploadService": {
+        "id": "upload-service",
+        "name": "Upload Service", 
+        "host": "localhost",
+        "port": 8093,
+        "protocol": "http",
+        "features": ["file-upload", "metadata-extraction", "minio-integration"],
+        "healthCheck": "/health",
+        "status": "required", 
+        "tier": 1
+      }
+    },
+
+    "aiProcessing": {
+      "aiEnhanced": {
+        "id": "ai-enhanced-service",
+        "name": "AI Enhanced Service",
+        "host": "localhost", 
+        "port": 8098,
+        "protocol": "http",
+        "features": ["ai-summary", "document-analysis", "legal-processing"],
+        "healthCheck": "/health",
+        "status": "optional",
+        "tier": 2
+      },
+      "aiEnhancedFinal": {
+        "id": "ai-enhanced-final-service",
+        "name": "AI Enhanced Final Service",
+        "host": "localhost",
+        "port": 8099,
+        "protocol": "http", 
+        "features": ["finalized-processing", "quality-assurance"],
+        "healthCheck": "/health", 
+        "status": "optional",
+        "tier": 3
+      },
+      "liveAgent": {
+        "id": "live-agent-enhanced",
+        "name": "Live Agent Enhanced",
+        "host": "localhost",
+        "port": 8200,
+        "protocol": "websocket",
+        "features": ["real-time-ai", "chat", "streaming"],
+        "healthCheck": "/health",
+        "status": "optional",
+        "tier": 2
+      }
+    },
+
+    "legalServices": {
+      "enhancedLegalAI": {
+        "id": "enhanced-legal-ai",
+        "name": "Enhanced Legal AI",
+        "host": "localhost",
+        "port": 8202,
+        "protocol": "http",
+        "features": ["legal-analysis", "document-processing", "precedent-search"],
+        "healthCheck": "/health",
+        "status": "optional",
+        "tier": 2
+      },
+      "enhancedLegalAIClean": {
+        "id": "enhanced-legal-ai-clean", 
+        "name": "Enhanced Legal AI Clean",
+        "host": "localhost",
+        "port": 8203,
+        "protocol": "http",
+        "features": ["optimized-legal-ai", "clean-processing"],
+        "healthCheck": "/health",
+        "status": "optional",
+        "tier": 3
+      },
+      "enhancedLegalAIFixed": {
+        "id": "enhanced-legal-ai-fixed",
+        "name": "Enhanced Legal AI Fixed",
+        "host": "localhost", 
+        "port": 8204,
+        "protocol": "http",
+        "features": ["patched-legal-ai", "bug-fixes"],
+        "healthCheck": "/health",
+        "status": "optional",
+        "tier": 3
+      }
+    },
+
+    "protocol": {
+      "grpcServer": {
+        "id": "grpc-server",
+        "name": "gRPC Server",
+        "host": "localhost",
+        "port": 50051,
+        "protocol": "grpc",
+        "features": ["high-performance-rpc", "binary-protocol"],
+        "healthCheck": "/health",
+        "status": "optional",
+        "tier": 2
+      },
+      "ragKratos": {
+        "id": "rag-kratos-grpc",
+        "name": "RAG Kratos gRPC",
+        "host": "localhost",
+        "port": 50052,
+        "protocol": "grpc", 
+        "features": ["kratos-integration", "grpc-rag"],
+        "healthCheck": "/health",
+        "status": "optional",
+        "tier": 2
+      },
+      "quicProxy": {
+        "id": "rag-quic-proxy",
+        "name": "RAG QUIC Proxy", 
+        "host": "localhost",
+        "port": 8216,
+        "protocol": "quic",
+        "features": ["ultra-fast-transport", "low-latency"],
+        "healthCheck": "/health",
+        "status": "optional",
+        "tier": 2
+      }
+    },
+
+    "orchestration": {
+      "clusterManager": {
+        "id": "cluster-http-service",
+        "name": "Cluster HTTP Service",
+        "host": "localhost",
+        "port": 8213,
+        "protocol": "http",
+        "features": ["cluster-coordination", "service-management"],
+        "healthCheck": "/health",
+        "status": "optional",
+        "tier": 2
+      },
+      "modularCluster": {
+        "id": "modular-cluster-service",
+        "name": "Modular Cluster Service", 
+        "host": "localhost",
+        "port": 8214,
+        "protocol": "http",
+        "features": ["modular-architecture", "scalability"],
+        "healthCheck": "/health",
+        "status": "optional",
+        "tier": 3
+      },
+      "xstateManager": {
+        "id": "xstate-manager",
+        "name": "XState Manager",
+        "host": "localhost",
+        "port": 8212,
+        "protocol": "http",
+        "features": ["state-machines", "workflow-management"],
+        "healthCheck": "/health", 
+        "status": "optional",
+        "tier": 2
+      }
+    },
+
+    "infrastructure": {
+      "loadBalancer": {
+        "id": "load-balancer-service",
+        "name": "Load Balancer Service",
+        "host": "localhost",
+        "port": 8222,
+        "protocol": "http",
+        "features": ["traffic-distribution", "health-monitoring"],
+        "healthCheck": "/health",
+        "status": "optional",
+        "tier": 2
+      },
+      "gpuIndexer": {
+        "id": "gpu-indexer-service",
+        "name": "GPU Indexer Service",
+        "host": "localhost", 
+        "port": 8220,
+        "protocol": "http",
+        "features": ["gpu-acceleration", "indexing", "cuda"],
+        "healthCheck": "/health",
+        "status": "optional",
+        "tier": 2
+      },
+      "asyncIndexer": {
+        "id": "async-indexer-service",
+        "name": "Async Indexer Service",
+        "host": "localhost",
+        "port": 8221,
+        "protocol": "http",
+        "features": ["asynchronous-indexing", "background-processing"],
+        "healthCheck": "/health",
+        "status": "optional",
+        "tier": 3
+      }
+    },
+
+    "monitoring": {
+      "simdHealth": {
+        "id": "simd-health-service",
+        "name": "SIMD Health Service",
+        "host": "localhost",
+        "port": 8217,
+        "protocol": "http",
+        "features": ["simd-monitoring", "performance-tracking"],
+        "healthCheck": "/health",
+        "status": "optional",
+        "tier": 3
+      },
+      "context7ErrorPipeline": {
+        "id": "context7-error-pipeline",
+        "name": "Context7 Error Pipeline",
+        "host": "localhost",
+        "port": 8219,
+        "protocol": "http",
+        "features": ["error-handling", "context7-integration"],
+        "healthCheck": "/health",
+        "status": "optional",
+        "tier": 3
+      }
+    },
+
+    "development": {
+      "simpleServer": {
+        "id": "simple-server",
+        "name": "Simple Server",
+        "host": "localhost",
+        "port": 8224,
+        "protocol": "http",
+        "features": ["development", "testing"],
+        "healthCheck": "/health",
+        "status": "development",
+        "tier": 4
+      },
+      "testServer": {
+        "id": "test-server",
+        "name": "Test Server", 
+        "host": "localhost",
+        "port": 8225,
+        "protocol": "http",
+        "features": ["testing", "validation"],
+        "healthCheck": "/health",
+        "status": "development",
+        "tier": 4
+      }
+    }
+  },
+
+  "frontend": {
+    "sveltekit": {
+      "id": "sveltekit-frontend",
+      "name": "SvelteKit Frontend with YoRHa Interface",
+      "host": "localhost",
+      "port": 5173,
+      "protocol": "http",
+      "framework": "sveltekit",
+      "version": "2.0",
+      "features": ["ssr", "yorha-ui", "svelte-5", "typescript", "3d-components"],
+      "healthCheck": "/",
+      "status": "required",
+      "tier": 1
+    },
+    "nodeClusterManager": {
+      "id": "node-cluster-manager",
+      "name": "Node Cluster Manager",
+      "host": "localhost",
+      "port": 3050,
+      "protocol": "http",
+      "features": ["cluster-management", "worker-orchestration"],
+      "healthCheck": "/health",
+      "status": "optional",
+      "tier": 2
+    }
+  },
+
+  "serviceTiers": {
+    "tier1": {
+      "name": "Critical Services",
+      "description": "Must start first - core functionality",
+      "services": ["postgresql-primary", "redis-primary", "ollama-primary", "enhanced-rag-service", "upload-service", "sveltekit-frontend"],
+      "startupOrder": 1,
+      "healthCheckRequired": true
+    },
+    "tier2": {
+      "name": "Enhanced Services", 
+      "description": "Performance and feature enhancement layer",
+      "services": ["qdrant-vector-db", "nats-server", "grpc-server", "cluster-http-service", "python-embedding-service", "go-vector-service", "integration-orchestrator"],
+      "startupOrder": 2,
+      "healthCheckRequired": true
+    },
+    "tier3": {
+      "name": "Specialized Services",
+      "description": "Feature-specific and optimization services",
+      "services": ["enhanced-legal-ai", "live-agent-enhanced", "xstate-manager", "load-balancer-service"],
+      "startupOrder": 3,
+      "healthCheckRequired": false
+    },
+    "tier4": {
+      "name": "Development & Testing",
+      "description": "Development, testing, and optional services",
+      "services": ["simple-server", "test-server"],
+      "startupOrder": 4,
+      "healthCheckRequired": false
+    }
+  },
+
+  "protocolMatrix": {
+    "http": {
+      "description": "Standard HTTP/JSON APIs",
+      "latency": "50ms",
+      "compatibility": "universal",
+      "services": ["enhanced-rag-service", "upload-service", "sveltekit-frontend"]
+    },
+    "grpc": {
+      "description": "High-performance RPC", 
+      "latency": "15ms",
+      "compatibility": "specialized",
+      "services": ["grpc-server", "rag-kratos-grpc"]
+    },
+    "quic": {
+      "description": "Ultra-fast transport protocol",
+      "latency": "5ms", 
+      "compatibility": "modern",
+      "services": ["rag-quic-proxy"]
+    },
+    "websocket": {
+      "description": "Real-time bidirectional communication",
+      "latency": "1ms",
+      "compatibility": "real-time",
+      "services": ["live-agent-enhanced", "sveltekit-frontend"]
+    },
+    "nats": {
+      "description": "High-performance messaging",
+      "latency": "2ms",
+      "compatibility": "messaging",
+      "services": ["nats-server", "integration-orchestrator"]
+    }
+  },
+
+  "healthChecks": {
+    "enabled": true,
+    "interval": "30s",
+    "timeout": "10s",
+    "retries": 3,
+    "endpoints": [
+      {"service": "postgresql-primary", "url": "psql -c 'SELECT 1'"},
+      {"service": "redis-primary", "url": "redis-cli ping"},
+      {"service": "ollama-primary", "url": "http://localhost:11434/api/tags"},
+      {"service": "enhanced-rag-service", "url": "http://localhost:8094/health"},
+      {"service": "upload-service", "url": "http://localhost:8093/health"},
+      {"service": "sveltekit-frontend", "url": "http://localhost:5173"},
+      {"service": "qdrant-vector-db", "url": "http://localhost:6333/collections"},
+      {"service": "python-embedding-service", "url": "http://localhost:8097/health"},
+      {"service": "go-vector-service", "url": "http://localhost:8095/health"},
+      {"service": "integration-orchestrator", "url": "http://localhost:8096/status"},
+      {"service": "nats-server", "url": "http://localhost:8222"}
+    ]
+  },
+
+  "deploymentOptions": {
+    "startup": {
+      "complete": "START-COMPLETE-INTEGRATED-SYSTEM.bat",
+      "standard": "START-LEGAL-AI.bat",
+      "npm": "npm run dev:full"
+    },
+    "management": {
+      "healthCheck": "curl http://localhost:8096/status",
+      "services": "curl http://localhost:8213/services",
+      "metrics": "curl http://localhost:8222"
+    }
+  },
+
+  "integrationFeatures": {
+    "vectorProcessing": {
+      "enabled": true,
+      "redisStreams": "vec:requests", 
+      "postgresqlTriggers": true,
+      "qdrantIntegration": true,
+      "gpuAcceleration": "RTX 3060 Ti"
+    },
+    "multiProtocol": {
+      "enabled": true,
+      "protocols": ["http", "grpc", "quic", "websocket", "nats"],
+      "fallbackStrategy": "graceful-degradation"
+    },
+    "realTimeMessaging": {
+      "enabled": true,
+      "natsSubjects": 17,
+      "webSocketSupport": true,
+      "streamingCapabilities": true
+    },
+    "aiProcessing": {
+      "multiCoreOllama": true,
+      "gpuAcceleration": true,
+      "modelLoadBalancing": true,
+      "embeddingGeneration": true
+    }
+  }
+}

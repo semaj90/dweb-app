@@ -2,11 +2,11 @@
   import { createEventDispatcher } from "svelte";
   import { X } from "lucide-svelte";
 
-  export let open = false;
-  export let title = "";
-  export let description = "";
-  export let side: "left" | "right" | "top" | "bottom" = "right";
-  export let size: "sm" | "md" | "lg" | "xl" = "md";
+  let { open = $bindable() } = $props(); // false;
+  let { title = $bindable() } = $props(); // "";
+  let { description = $bindable() } = $props(); // "";
+  let { side = $bindable() } = $props(); // "left" | "right" | "top" | "bottom" = "right";
+  let { size = $bindable() } = $props(); // "sm" | "md" | "lg" | "xl" = "md";
 
   const dispatch = createEventDispatcher();
 

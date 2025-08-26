@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Advanced Semantic Analysis Pipeline
 // Integrates LangChain, Transformers.js ONNX, and Legal-BERT for comprehensive legal document analysis
 

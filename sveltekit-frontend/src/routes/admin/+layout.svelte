@@ -6,7 +6,7 @@
   import { AccessControl } from '$lib/auth/roles';
   import type { LayoutData } from './$types';
   
-  export let data: LayoutData;
+  let { data = $bindable() } = $props(); // LayoutData;
   
   let isLoading = true;
   let hasAdminAccess = false;
@@ -93,7 +93,7 @@
   ];
   
   // Filter nav items based on user permissions
-  $: visibleNavItems = navItems.filter(item => {
+  let visibleNavItems = $derived(navItems.filter(item => {);
     const user = $currentUser;
     return user && AccessControl.hasPermission(user.role, item.permission);
   });

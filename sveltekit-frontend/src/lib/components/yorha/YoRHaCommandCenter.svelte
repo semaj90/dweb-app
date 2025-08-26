@@ -279,7 +279,7 @@
         </span>
       </div>
     </div>
-    
+
     <div class="search-panel bg-yorha-darker border border-yorha-accent-warm/30 rounded-lg p-6">
       <RealTimeLegalSearch
         placeholder="Search cases, evidence, precedents, statutes..."

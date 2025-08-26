@@ -77,17 +77,17 @@ const aiAssistantState = $state<AIAssistantState>({
 });
 
 // Create XState actor for AI assistant
-const aiAssistantActor = createActor(aiAssistantMachine, {
+const aiAssistantActor = browser ? createActor(aiAssistantMachine, {
   services: aiAssistantServices,
   actions: aiAssistantActions
-});
+}) : null;
 
 export class AIAssistantManager {
   private actor = aiAssistantActor;
   private healthCheckInterval: number | null = null;
 
   constructor() {
-    if (browser) {
+    if (browser && this.actor) {
       this.initialize();
     }
   }
@@ -99,6 +99,8 @@ export class AIAssistantManager {
 
   // Initialize AI assistant manager
   private initialize() {
+    if (!this.actor) return;
+    
     // Start the XState actor
     this.actor.start();
 
@@ -144,6 +146,10 @@ export class AIAssistantManager {
       throw new Error('Message cannot be empty');
     }
 
+    if (!this.actor) {
+      throw new Error('AI Assistant actor not initialized');
+    }
+
     try {
       // Set model and temperature if provided
       if (options?.model) {
@@ -169,6 +175,10 @@ export class AIAssistantManager {
 
   // Set the AI model
   setModel(model: string) {
+    if (!this.actor) {
+      throw new Error('AI Assistant actor not initialized');
+    }
+
     const validModels = [
       'gemma3-legal',
       'nomic-embed-text',
@@ -189,6 +199,10 @@ export class AIAssistantManager {
 
   // Set temperature for response generation
   setTemperature(temperature: number) {
+    if (!this.actor) {
+      throw new Error('AI Assistant actor not initialized');
+    }
+
     if (temperature < 0 || temperature > 2) {
       throw new Error('Temperature must be between 0 and 2');
     }
@@ -201,30 +215,33 @@ export class AIAssistantManager {
 
   // Clear conversation history
   clearConversation() {
+    if (!this.actor) return;
     this.actor.send({ type: 'CLEAR_CONVERSATION' });
     console.log('Conversation cleared');
   }
 
   // Retry the last failed query
   retryLast() {
-    if (aiAssistantState.error) {
-      this.actor.send({ type: 'RETRY_LAST' });
-      console.log('Retrying last query');
-    }
+    if (!this.actor || !aiAssistantState.error) return;
+    this.actor.send({ type: 'RETRY_LAST' });
+    console.log('Retrying last query');
   }
 
   // Stop current generation
   stopGeneration() {
-    if (aiAssistantState.isProcessing) {
-      this.actor.send({ type: 'STOP_GENERATION' });
-      console.log('Generation stopped');
-    }
+    if (!this.actor || !aiAssistantState.isProcessing) return;
+    this.actor.send({ type: 'STOP_GENERATION' });
+    console.log('Generation stopped');
   }
 
   // Start streaming mode
   startStreaming(message: string) {
     if (!message.trim()) {
       throw new Error('Message cannot be empty');
+    }
+
+    if (!this.actor) {
+      throw new Error('AI Assistant actor not initialized');
     }
 
     this.actor.send({
@@ -237,6 +254,8 @@ export class AIAssistantManager {
 
   // Check Ollama cluster health
   async checkClusterHealth() {
+    if (!this.actor) return;
+    
     try {
       this.actor.send({ type: 'CHECK_CLUSTER_HEALTH' });
       console.log('Cluster health check initiated');
@@ -247,6 +266,10 @@ export class AIAssistantManager {
 
   // Analyze query with Context7
   async analyzeWithContext7(topic: string) {
+    if (!this.actor) {
+      throw new Error('AI Assistant actor not initialized');
+    }
+    
     try {
       this.actor.send({
         type: 'ANALYZE_WITH_CONTEXT7',
@@ -387,7 +410,9 @@ export class AIAssistantManager {
 
   // Clean up on destroy
   destroy() {
-    this.actor.stop();
+    if (this.actor) {
+      this.actor.stop();
+    }
     this.stopHealthChecks();
   }
 }

@@ -13,7 +13,7 @@
     triggerChar?: string;
     onCommandSelect?: (command: string) => void;
     onInput?: (data: { value: string; target: HTMLTextAreaElement }) => void;
-    onKeydown?: (e: KeyboardEvent) => void;
+    onKeydown?: (e: CustomEvent<any>) => void;
     onCommandInsert?: (data: { text: string }) => void;
     onBlur?: (e: FocusEvent) => void;
     onFocus?: (e: FocusEvent) => void;

@@ -409,7 +409,7 @@ Document:\n${document}`;
       
       if (result) {
         // Parse structured output if needed
-        if (options?.format === 'json') {
+        if ((options as any)?.format === 'json') {
           try {
             return JSON.parse(result.response);
           } catch {

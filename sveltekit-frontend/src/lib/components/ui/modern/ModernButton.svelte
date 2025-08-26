@@ -84,7 +84,7 @@
       target={external ? '_blank' : undefined}
       rel={external ? 'noopener noreferrer' : undefined}
       use:melt={$trigger}
-      onclick={handleClick}
+      on:click={handleClick}
     >
       <span class="button-content">
         {#if loading}
@@ -108,7 +108,7 @@
       class={buttonClasses}
       target={external ? '_blank' : undefined}
       rel={external ? 'noopener noreferrer' : undefined}
-      onclick={handleClick}
+      on:click={handleClick}
     >
       <span class="button-content">
         {#if loading}
@@ -133,7 +133,7 @@
       {type}
       {disabled}
       class={buttonClasses}
-      onclick={handleClick}
+      on:click={handleClick}
       use:melt={$trigger}
     >
       <span class="button-content">
@@ -157,7 +157,7 @@
       {type}
       {disabled}
       class={buttonClasses}
-      onclick={handleClick}
+      on:click={handleClick}
     >
       <span class="button-content">
         {#if loading}

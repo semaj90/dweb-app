@@ -1,3 +1,10 @@
+//go:build ignore
+// +build ignore
+
+// Utility to (re)generate development self-signed certs.
+// Not part of normal builds. Run manually with:
+//   go run generate-certs.go
+
 package main
 
 import (

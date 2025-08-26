@@ -6,21 +6,44 @@ import { sequence } from '@sveltejs/kit/hooks';
 // Authentication hook
 const authentication: Handle = async ({ event, resolve }) => {
   const sessionToken = event.cookies.get('yorha_session');
-  
+
   if (sessionToken) {
     const authService = new AuthService();
     const sessionData = await authService.validateSession(sessionToken);
-    
+
     if (sessionData) {
-      // Add user to locals
-      event.locals.user = sessionData.unit;
-      event.locals.session = sessionData.session;
+      // Normalize unit and session shapes and provide safe defaults so assigning to locals
+      // satisfies the application's expected types (fill missing fields as needed).
+      const rawUnit: any = sessionData.unit ?? {};
+      const rawSession: any = sessionData.session ?? {};
+
+      const normalizedUser = {
+        // Copy whatever exists and ensure commonly-required fields have defaults
+        ...rawUnit,
+        bio: rawUnit.bio ?? '',
+        avatarUrl: rawUnit.avatarUrl ?? '',
+        level: typeof rawUnit.level === 'number' ? rawUnit.level : 1,
+        xp: typeof rawUnit.xp === 'number' ? rawUnit.xp : 0,
+        // generic timestamps/defaults to satisfy strict typings if required elsewhere
+        createdAt: rawUnit.createdAt ?? new Date(),
+        updatedAt: rawUnit.updatedAt ?? new Date(),
+        deletedAt: rawUnit.deletedAt ?? null
+      } as any;
+
+      const normalizedSession = {
+        ...rawSession,
+        createdAt: rawSession.createdAt ?? new Date()
+      } as any;
+
+      // Assign the normalized objects to locals (cast to any to avoid strict mismatch)
+      event.locals.user = normalizedUser;
+      event.locals.session = normalizedSession;
     } else {
       // Invalid session, clear cookie
       event.cookies.delete('yorha_session', { path: '/' });
     }
   }
-  
+
   return resolve(event);
 };
 
@@ -33,22 +56,22 @@ const routeProtection: Handle = async ({ event, resolve }) => {
     '/equipment',
     '/settings'
   ];
-  
+
   const authRequiredApiRoutes = [
     '/api/user',
     '/api/missions',
     '/api/equipment',
     '/api/achievements'
   ];
-  
-  const isProtectedRoute = protectedRoutes.some(route => 
+
+  const isProtectedRoute = protectedRoutes.some(route =>
     event.url.pathname.startsWith(route)
   );
-  
-  const isProtectedApiRoute = authRequiredApiRoutes.some(route => 
+
+  const isProtectedApiRoute = authRequiredApiRoutes.some(route =>
     event.url.pathname.startsWith(route)
   );
-  
+
   if ((isProtectedRoute || isProtectedApiRoute) && !event.locals.user) {
     if (isProtectedApiRoute) {
       return new Response(JSON.stringify({
@@ -61,7 +84,7 @@ const routeProtection: Handle = async ({ event, resolve }) => {
         }
       });
     }
-    
+
     // Redirect to login for web routes
     return new Response(null, {
       status: 302,
@@ -70,19 +93,19 @@ const routeProtection: Handle = async ({ event, resolve }) => {
       }
     });
   }
-  
+
   return resolve(event);
 };
 
 // Activity logging hook
 const activityLogging: Handle = async ({ event, resolve }) => {
   const response = await resolve(event);
-  
+
   // Log API activity for authenticated users
   if (event.locals.user && event.url.pathname.startsWith('/api/')) {
     const { db } = await import('$lib/yorha/db');
     const { userActivity } = await import('$lib/yorha/db/schema');
-    
+
     try {
       await db.insert(userActivity).values({
         userId: event.locals.user.id,
@@ -103,14 +126,14 @@ const activityLogging: Handle = async ({ event, resolve }) => {
       console.error('Activity logging error:', error);
     }
   }
-  
+
   return response;
 };
 
 // Security headers hook
 const securityHeaders: Handle = async ({ event, resolve }) => {
   const response = await resolve(event);
-  
+
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('X-XSS-Protection', '1; mode=block');
@@ -119,14 +142,14 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
     'Permissions-Policy',
     'camera=(), microphone=(), geolocation=()'
   );
-  
+
   if (event.url.protocol === 'https:') {
     response.headers.set(
       'Strict-Transport-Security',
       'max-age=31536000; includeSubDomains; preload'
     );
   }
-  
+
   return response;
 };
 

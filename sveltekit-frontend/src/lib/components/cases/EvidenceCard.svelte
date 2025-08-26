@@ -20,8 +20,8 @@
   } from "lucide-svelte";
   import { createEventDispatcher } from "svelte";
 
-  export let evidence: any;
-  export let disabled = false;
+  let { evidence = $bindable() } = $props(); // any;
+  let { disabled = $bindable() } = $props(); // false;
 
   const dispatch = createEventDispatcher();
 
@@ -134,7 +134,7 @@
     <!-- Actions -->
     <div class="flex-shrink-0 flex items-center gap-1">
       <button
-        onclick={() => handleView()}
+        on:click={() => handleView()}
         class="p-1 text-gray-400 hover:text-gray-600 rounded"
         title="View evidence"
         {disabled}
@@ -143,7 +143,7 @@
       </button>
 
       <button
-        onclick={() => handleEdit()}
+        on:click={() => handleEdit()}
         class="p-1 text-gray-400 hover:text-gray-600 rounded"
         title="Edit evidence"
         {disabled}
@@ -152,7 +152,7 @@
       </button>
 
       <button
-        onclick={() => handleDownload()}
+        on:click={() => handleDownload()}
         class="p-1 text-gray-400 hover:text-gray-600 rounded"
         title="Download evidence"
         {disabled}
@@ -161,7 +161,7 @@
       </button>
 
       <button
-        onclick={() => handleDelete()}
+        on:click={() => handleDelete()}
         class="p-1 text-red-400 hover:text-red-600 rounded"
         title="Delete evidence"
         {disabled}

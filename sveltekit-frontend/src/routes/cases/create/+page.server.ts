@@ -1,5 +1,14 @@
 import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
+import { superValidate, message } from 'sveltekit-superforms/server';
+import { zod } from 'sveltekit-superforms/adapters';
+import { z } from 'zod';
+
+const caseFormSchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  description: z.string().min(1, 'Description is required'),
+  priority: z.enum(['low', 'medium', 'high'])
+});
 
 export const load: PageServerLoad = async ({ locals, url }) => {
   // Simple form data for testing SuperForms + Enhanced Actions
@@ -296,7 +305,7 @@ export const actions: Actions = {
       return fail(400, { message: 'Case ID is required' });
     }
 
-    const form = await superValidate(request, zod(testCaseSchema));
+    const form = await superValidate(request, zod(caseFormSchema));
 
     if (!form.valid) {
       return fail(400, { form });

@@ -5,6 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
+	"os"
+	"strconv"
+	"sync/atomic"
 	"time"
 
 	"github.com/nats-io/nats.go"
@@ -43,13 +47,13 @@ type NATSCoordinator struct {
 	clusterID  string
 	clientID   string
 	logger     *log.Logger
-	
+
 	// Service registry
 	services   map[string]*ServiceInfo
-	
+
 	// Message handlers
 	handlers   map[MessageType]MessageHandler
-	
+
 	// Performance metrics
 	metrics    *CoordinatorMetrics
 }
@@ -77,7 +81,7 @@ type CoordinatorMetrics struct {
 // NewNATSCoordinator creates a new message coordinator
 func NewNATSCoordinator(natsURL, clusterID, clientID string) (*NATSCoordinator, error) {
 	// Connect to NATS
-	nc, err := nats.Connect(natsURL, 
+	nc, err := nats.Connect(natsURL,
 		nats.ReconnectWait(time.Second),
 		nats.MaxReconnects(-1),
 		nats.PingInterval(30*time.Second),
@@ -122,7 +126,7 @@ func (nc *NATSCoordinator) setupDefaultHandlers() {
 	// Document processing handler
 	nc.RegisterHandler(DocumentProcessing, func(ctx context.Context, msg *LegalAIMessage) error {
 		nc.logger.Printf("Processing document: %s", msg.Payload["document_id"])
-		
+
 		// Route to appropriate service based on document type
 		docType, ok := msg.Payload["type"].(string)
 		if !ok {
@@ -146,7 +150,7 @@ func (nc *NATSCoordinator) setupDefaultHandlers() {
 	// Vector indexing handler
 	nc.RegisterHandler(VectorIndexing, func(ctx context.Context, msg *LegalAIMessage) error {
 		nc.logger.Printf("Indexing vectors for: %s", msg.Payload["document_id"])
-		
+
 		// Route to vector service
 		return nc.ForwardMessage(msg, "qdrant-vector-service")
 	})
@@ -154,7 +158,7 @@ func (nc *NATSCoordinator) setupDefaultHandlers() {
 	// AI analysis handler
 	nc.RegisterHandler(AIAnalysis, func(ctx context.Context, msg *LegalAIMessage) error {
 		nc.logger.Printf("Running AI analysis: %s", msg.Payload["analysis_type"])
-		
+
 		// Distribute load across AI services
 		service := nc.selectBestService("ai-analysis")
 		if service == nil {
@@ -167,13 +171,8 @@ func (nc *NATSCoordinator) setupDefaultHandlers() {
 	// System alert handler
 	nc.RegisterHandler(SystemAlert, func(ctx context.Context, msg *LegalAIMessage) error {
 		priority := msg.Priority
-		nc.logger.Printf("System alert (priority %d): %s", priority, msg.Payload["message"])
-		
-		// High priority alerts go to monitoring system
-		if priority >= 8 {
-			return nc.ForwardToMonitoring(msg)
-		}
-		
+	nc.logger.Printf("System alert (priority %d): %s", priority, msg.Payload["message"])
+		// Placeholder for forwarding to monitoring (e.g., webhook) when priority high
 		return nil
 	})
 
@@ -181,7 +180,7 @@ func (nc *NATSCoordinator) setupDefaultHandlers() {
 	nc.RegisterHandler(MemoryManagement, func(ctx context.Context, msg *LegalAIMessage) error {
 		action := msg.Payload["action"].(string)
 		nc.logger.Printf("Memory management action: %s", action)
-		
+
 		switch action {
 		case "cleanup":
 			return nc.BroadcastMemoryCleanup()
@@ -201,21 +200,21 @@ func (nc *NATSCoordinator) RegisterHandler(msgType MessageType, handler MessageH
 // PublishMessage publishes a message to the coordination system
 func (nc *NATSCoordinator) PublishMessage(msg *LegalAIMessage) error {
 	msg.Timestamp = time.Now()
-	
+
 	data, err := json.Marshal(msg)
 	if err != nil {
 		return fmt.Errorf("failed to marshal message: %w", err)
 	}
 
 	subject := fmt.Sprintf("legal.%s", msg.Type)
-	
+
 	// Use NATS Streaming for persistence
-	_, err = nc.sc.Publish(subject, data)
+	err = nc.sc.Publish(subject, data)
 	if err != nil {
 		return fmt.Errorf("failed to publish message: %w", err)
 	}
 
-	nc.metrics.MessagesProcessed++
+	atomic.AddInt64(&nc.metrics.MessagesProcessed, 1)
 	return nil
 }
 
@@ -223,11 +222,11 @@ func (nc *NATSCoordinator) PublishMessage(msg *LegalAIMessage) error {
 func (nc *NATSCoordinator) Subscribe() error {
 	for msgType := range nc.handlers {
 		subject := fmt.Sprintf("legal.%s", msgType)
-		
+
 		_, err := nc.sc.Subscribe(subject, func(msg *stan.Msg) {
 			nc.handleMessage(msg.Data)
 		}, stan.DurableName(fmt.Sprintf("%s-durable", nc.clientID)))
-		
+
 		if err != nil {
 			return fmt.Errorf("failed to subscribe to %s: %w", subject, err)
 		}
@@ -244,7 +243,7 @@ func (nc *NATSCoordinator) Subscribe() error {
 // handleMessage processes incoming messages
 func (nc *NATSCoordinator) handleMessage(data []byte) {
 	var msg LegalAIMessage
-	if err := json.Unmarshal(data, &msg); err != nil {
+	if err := json.Unmarshal(data, &msg); err != nil { // keep stdlib for now; consider fast path later
 		nc.logger.Printf("Failed to unmarshal message: %v", err)
 		return
 	}
@@ -265,7 +264,7 @@ func (nc *NATSCoordinator) handleMessage(data []byte) {
 	if err != nil {
 		nc.logger.Printf("Handler error for %s: %v", msg.Type, err)
 		nc.retryMessage(&msg)
-		nc.metrics.ErrorCount++
+		atomic.AddInt64(&nc.metrics.ErrorCount, 1)
 	}
 
 	// Update metrics
@@ -280,7 +279,7 @@ func (nc *NATSCoordinator) retryMessage(msg *LegalAIMessage) {
 	}
 
 	msg.RetryCount++
-	
+
 	// Exponential backoff
 	delay := time.Duration(1<<msg.RetryCount) * time.Second
 	time.AfterFunc(delay, func() {
@@ -291,7 +290,7 @@ func (nc *NATSCoordinator) retryMessage(msg *LegalAIMessage) {
 // ForwardMessage forwards a message to a specific service
 func (nc *NATSCoordinator) ForwardMessage(msg *LegalAIMessage, serviceName string) error {
 	subject := fmt.Sprintf("legal.service.%s", serviceName)
-	
+
 	data, err := json.Marshal(msg)
 	if err != nil {
 		return err
@@ -385,6 +384,35 @@ func (nc *NATSCoordinator) GetMetrics() *CoordinatorMetrics {
 	return nc.metrics
 }
 
+// startHTTPMetrics optionally starts a lightweight HTTP server for metrics & health
+func (nc *NATSCoordinator) startHTTPMetrics() {
+	port := os.Getenv("NATS_COORDINATOR_METRICS_PORT")
+	if port == "" { return }
+	go func() {
+		mux := http.NewServeMux()
+		mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			resp := map[string]any{"status": "ok", "time": time.Now().Format(time.RFC3339), "services": nc.metrics.ActiveServices}
+			json.NewEncoder(w).Encode(resp)
+		})
+		mux.HandleFunc("/metrics", func(w http.ResponseWriter, r *http.Request) {
+			m := nc.GetMetrics()
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(m)
+		})
+		mux.HandleFunc("/publish/test", func(w http.ResponseWriter, r *http.Request) {
+			id := strconv.FormatInt(time.Now().UnixNano(), 10)
+			msg := &LegalAIMessage{ID: id, Type: SystemAlert, Source: "metrics-endpoint", Target: "coordinator", Priority: 1, Payload: map[string]interface{}{"message": "test"}, MaxRetries: 2}
+			if err := nc.PublishMessage(msg); err != nil { http.Error(w, err.Error(), 500); return }
+			w.WriteHeader(202)
+			w.Write([]byte("queued"))
+		})
+		addr := ":" + port
+		nc.logger.Printf("Metrics HTTP server on %s", addr)
+		if err := http.ListenAndServe(addr, mux); err != nil { nc.logger.Printf("metrics server error: %v", err) }
+	}()
+}
+
 // Close gracefully shuts down the coordinator
 func (nc *NATSCoordinator) Close() error {
 	if nc.sc != nil {
@@ -398,15 +426,22 @@ func (nc *NATSCoordinator) Close() error {
 
 // Main entry point for NATS coordinator service
 func main() {
-	coordinator, err := NewNATSCoordinator(
-		"nats://localhost:4222",
-		"legal-ai-cluster",
-		"coordinator-001",
-	)
+	// Allow env override
+	natsURL := os.Getenv("NATS_URL")
+	if natsURL == "" { natsURL = "nats://localhost:4222" }
+	clusterID := os.Getenv("NATS_CLUSTER_ID")
+	if clusterID == "" { clusterID = "legal-ai-cluster" }
+	clientID := os.Getenv("NATS_CLIENT_ID")
+	if clientID == "" { clientID = "coordinator-001" }
+
+	coordinator, err := NewNATSCoordinator(natsURL, clusterID, clientID)
 	if err != nil {
 		log.Fatal("Failed to create coordinator:", err)
 	}
 	defer coordinator.Close()
+
+	// Optional metrics HTTP
+	coordinator.startHTTPMetrics()
 
 	// Start subscription
 	if err := coordinator.Subscribe(); err != nil {

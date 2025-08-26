@@ -22,18 +22,76 @@
  */
 
 import { EventEmitter } from 'events';
-import type {
-    CacheEntry,
-    CacheStrategy,
-    CacheMetrics,
-    CacheConfiguration,
-    CacheLayer,
-    CacheKey,
-    CacheValue,
-    CachePolicy,
-    CacheStats,
-    CacheAnalytics
-} from '$lib/ai/types';
+
+// Cache Type Definitions
+export interface CacheEntry {
+    key: string;
+    value: any;
+    ttl?: number;
+    createdAt: number;
+    accessedAt: number;
+    hits: number;
+}
+
+export interface CacheStrategy {
+    name: string;
+    maxSize: number;
+    ttl: number;
+    evictionPolicy: 'lru' | 'fifo' | 'lfu';
+}
+
+export interface CacheMetrics {
+    hits: number;
+    misses: number;
+    hitRate: number;
+    averageOperationTime: number;
+    totalOperations: number;
+}
+
+export interface CacheConfiguration {
+    layers: CacheLayerConfig[];
+    defaultTtl: number;
+    maxMemoryUsage: number;
+    enableCompression: boolean;
+}
+
+export interface CacheLayerConfig {
+    name: string;
+    priority: number;
+    capacity: number;
+    ttl: number;
+    enabled: boolean;
+}
+
+export type CacheKey = string;
+export type CacheValue = any;
+
+export interface CachePolicy {
+    name: string;
+    rules: any[];
+    enabled: boolean;
+}
+
+export interface CacheStats {
+    totalSize: number;
+    hitRate: number;
+    averageOperationTime: number;
+    layer: string;
+}
+
+export interface CacheAnalytics {
+    patterns: any[];
+    predictions: any[];
+    optimization: any[];
+}
+
+export interface CacheLayer {
+    name: string;
+    priority: number;
+    capacity: number;
+    ttl: number;
+    enabled: boolean;
+}
 
 export interface CacheLayerInterface {
     name: string;

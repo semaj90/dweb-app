@@ -1,3 +1,6 @@
+//go:build tensor
+// +build tensor
+
 package main
 
 import (
@@ -219,7 +222,6 @@ func (s *SOM) initializeNodes(inputDim int) {
 		}
 	}
 }
-}
 
 func (s *SOM) findBestMatchingUnit(input []float32) (int, float64) {
 	s.mu.RLock()
@@ -373,7 +375,6 @@ func generateTLSConfig() *tls.Config {
 		},
 		NextProtos: []string{http3.NextProtoH3},
 	}
-}
 }
 
 func main() {

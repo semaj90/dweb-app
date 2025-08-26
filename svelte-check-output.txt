@@ -1,0 +1,10 @@
+Loading svelte-check in workspace: c:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend
+Getting Svelte diagnostics...
+
+c:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend\[32mtsconfig.frontend.json[39m:1:1
+[31mError[39m: Cannot read file 'c:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/.svelte-kit/tsconfig.json'. 
+[36m[39m
+
+====================================
+[31msvelte-check found 1 error and 0 warnings in 1 file
+[39m

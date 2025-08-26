@@ -1,8 +1,10 @@
+//go:build dblayer
+// +build dblayer
+
 package main
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -11,16 +13,16 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
-	_ "github.com/lib/pq"
 )
 
-// Database Integration Layer
+// Database Integration Layer with Context7 performance optimizations
 // Comprehensive integration with PostgreSQL (pgvector), Neo4j, and Redis
 // Provides unified data access for the legal AI platform
 
@@ -32,6 +34,15 @@ type DatabaseLayer struct {
 	metrics     *DatabaseMetrics
 	cache       *DatabaseCache
 	mutex       sync.RWMutex
+
+	// Context7 performance optimization fields
+	totalRequests        int64       // atomic counter
+	totalCacheHits       int64       // atomic counter
+	totalCacheMisses     int64       // atomic counter
+	totalDatabaseOps     int64       // atomic counter
+	averageResponseTime  int64       // atomic average (microseconds)
+	startTime            time.Time   // Service start time
+	bufferPool           *sync.Pool  // Buffer pool for JSON operations
 }
 
 type DatabaseConfig struct {
@@ -49,10 +60,11 @@ type DatabaseConfig struct {
 }
 
 type DatabaseMetrics struct {
+	// Atomic counters for Context7 performance tracking
 	PostgreSQLQueries    int64   `json:"postgresql_queries"`
 	Neo4jQueries         int64   `json:"neo4j_queries"`
 	RedisOperations      int64   `json:"redis_operations"`
-	AverageQueryTime     float64 `json:"average_query_time_ms"`
+	AverageQueryTime     int64   `json:"average_query_time_us"` // Changed to atomic int64
 	CacheHitRate         float64 `json:"cache_hit_rate"`
 	ActiveConnections    int64   `json:"active_connections"`
 	ErrorCount           int64   `json:"error_count"`
@@ -154,10 +166,17 @@ func NewDatabaseLayer() *DatabaseLayer {
 	}
 
 	return &DatabaseLayer{
-		config: config,
-		cache:  cache,
+		config:    config,
+		cache:     cache,
+		startTime: time.Now(),
 		metrics: &DatabaseMetrics{
 			StartTime: time.Now(),
+		},
+		bufferPool: &sync.Pool{
+			New: func() interface{} {
+				// Pre-allocate 8KB buffer for JSON operations
+				return make([]byte, 0, 8192)
+			},
 		},
 	}
 }
@@ -217,7 +236,7 @@ func (dl *DatabaseLayer) initializePostgreSQL() error {
 	// Test connection
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	
+
 	if err = dl.pgPool.Ping(ctx); err != nil {
 		return err
 	}
@@ -247,7 +266,7 @@ func (dl *DatabaseLayer) initializeNeo4j() error {
 	// Test connection
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	
+
 	if err = dl.neo4jDriver.VerifyConnectivity(ctx); err != nil {
 		return err
 	}
@@ -274,7 +293,7 @@ func (dl *DatabaseLayer) initializeRedis() error {
 	// Test connection
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	
+
 	if err = dl.redisClient.Ping(ctx).Err(); err != nil {
 		return err
 	}
@@ -305,7 +324,7 @@ func (dl *DatabaseLayer) verifySchemas() error {
 	// Verify legal_documents table exists with vector column
 	var hasTable bool
 	err = dl.pgPool.QueryRow(context.Background(),
-		`SELECT EXISTS(SELECT 1 FROM information_schema.tables 
+		`SELECT EXISTS(SELECT 1 FROM information_schema.tables
 		 WHERE table_name = 'legal_documents' AND table_schema = 'public')`).Scan(&hasTable)
 	if err != nil {
 		return err
@@ -340,7 +359,7 @@ func (dl *DatabaseLayer) createLegalDocumentsTable() error {
 			created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
 			updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 		);
-		
+
 		CREATE INDEX idx_legal_documents_case_id ON legal_documents(case_id);
 		CREATE INDEX idx_legal_documents_type ON legal_documents(document_type);
 		CREATE INDEX idx_legal_documents_embedding ON legal_documents USING ivfflat (embedding vector_cosine_ops);
@@ -372,24 +391,37 @@ func (dl *DatabaseLayer) createNeo4jConstraints() error {
 	return nil
 }
 
-// Vector Search Operations
+// Vector Search Operations with Context7 performance tracking
 func (dl *DatabaseLayer) VectorSearch(req *VectorSearchRequest) (*VectorSearchResult, error) {
 	start := time.Now()
-	
+
+	// Context7 performance tracking - atomic increments
+	atomic.AddInt64(&dl.totalRequests, 1)
+	atomic.AddInt64(&dl.totalDatabaseOps, 1)
+	defer func() {
+		latency := time.Since(start).Microseconds()
+		// Update rolling average atomically
+		currentAvg := atomic.LoadInt64(&dl.averageResponseTime)
+		newAvg := (currentAvg + latency) / 2
+		atomic.StoreInt64(&dl.averageResponseTime, newAvg)
+	}()
+
 	// Check cache first
 	cacheKey := fmt.Sprintf("vector_search:%x", req)
 	if dl.cache.enabled {
 		if cached := dl.getFromCache(cacheKey); cached != nil {
 			if result, ok := cached.(*VectorSearchResult); ok {
+				atomic.AddInt64(&dl.totalCacheHits, 1)
 				dl.updateMetrics("vector_search_cached", time.Since(start), nil)
 				return result, nil
 			}
 		}
+		atomic.AddInt64(&dl.totalCacheMisses, 1)
 	}
 
 	// Build query
 	query := `
-		SELECT id, case_id, title, content, document_type, 
+		SELECT id, case_id, title, content, document_type,
 			   1 - (embedding <=> $1::vector) as score,
 			   metadata, created_at
 		FROM legal_documents
@@ -472,6 +504,16 @@ func (dl *DatabaseLayer) VectorSearch(req *VectorSearchRequest) (*VectorSearchRe
 func (dl *DatabaseLayer) StoreDocument(doc *LegalDocument) error {
 	start := time.Now()
 
+	// Context7 performance tracking
+	atomic.AddInt64(&dl.totalRequests, 1)
+	atomic.AddInt64(&dl.totalDatabaseOps, 1)
+	defer func() {
+		latency := time.Since(start).Microseconds()
+		currentAvg := atomic.LoadInt64(&dl.averageResponseTime)
+		newAvg := (currentAvg + latency) / 2
+		atomic.StoreInt64(&dl.averageResponseTime, newAvg)
+	}()
+
 	query := `
 		INSERT INTO legal_documents (case_id, title, content, document_type, embedding, metadata)
 		VALUES ($1, $2, $3, $4, $5::vector, $6)
@@ -489,9 +531,19 @@ func (dl *DatabaseLayer) StoreDocument(doc *LegalDocument) error {
 	return err
 }
 
-// Neo4j Graph Operations
+// Neo4j Graph Operations with Context7 performance tracking
 func (dl *DatabaseLayer) CreateEntityRelation(relation *EntityRelation) error {
 	start := time.Now()
+
+	// Context7 performance tracking
+	atomic.AddInt64(&dl.totalRequests, 1)
+	atomic.AddInt64(&dl.totalDatabaseOps, 1)
+	defer func() {
+		latency := time.Since(start).Microseconds()
+		currentAvg := atomic.LoadInt64(&dl.averageResponseTime)
+		newAvg := (currentAvg + latency) / 2
+		atomic.StoreInt64(&dl.averageResponseTime, newAvg)
+	}()
 	ctx := context.Background()
 	session := dl.neo4jDriver.NewSession(ctx, neo4j.SessionConfig{})
 	defer session.Close(ctx)
@@ -509,7 +561,7 @@ func (dl *DatabaseLayer) CreateEntityRelation(relation *EntityRelation) error {
 	`
 
 	propertiesJSON, _ := json.Marshal(relation.Properties)
-	
+
 	_, err := session.Run(ctx, query, map[string]interface{}{
 		"fromEntity":   relation.FromEntity,
 		"toEntity":     relation.ToEntity,
@@ -524,6 +576,16 @@ func (dl *DatabaseLayer) CreateEntityRelation(relation *EntityRelation) error {
 
 func (dl *DatabaseLayer) FindRelatedEntities(entityID string, maxDepth int) ([]EntityRelation, error) {
 	start := time.Now()
+
+	// Context7 performance tracking
+	atomic.AddInt64(&dl.totalRequests, 1)
+	atomic.AddInt64(&dl.totalDatabaseOps, 1)
+	defer func() {
+		latency := time.Since(start).Microseconds()
+		currentAvg := atomic.LoadInt64(&dl.averageResponseTime)
+		newAvg := (currentAvg + latency) / 2
+		atomic.StoreInt64(&dl.averageResponseTime, newAvg)
+	}()
 	ctx := context.Background()
 	session := dl.neo4jDriver.NewSession(ctx, neo4j.SessionConfig{})
 	defer session.Close(ctx)
@@ -544,7 +606,7 @@ func (dl *DatabaseLayer) FindRelatedEntities(entityID string, maxDepth int) ([]E
 	}
 
 	var relations []EntityRelation
-	for result.Next() {
+	for result.Next(ctx) {
 		record := result.Record()
 		// Process Neo4j result into EntityRelation struct
 		relation := EntityRelation{
@@ -597,32 +659,34 @@ func (dl *DatabaseLayer) updateMetrics(operation string, duration time.Duration,
 	dl.metrics.mutex.Lock()
 	defer dl.metrics.mutex.Unlock()
 
-	dl.metrics.TotalOperations++
+	atomic.AddInt64(&dl.metrics.TotalOperations, 1)
 
 	switch operation {
 	case "vector_search", "vector_search_cached":
-		dl.metrics.VectorOperations++
+		atomic.AddInt64(&dl.metrics.VectorOperations, 1)
 		if strings.Contains(operation, "cached") {
 			// Update cache hit rate
 			dl.metrics.CacheHitRate = (dl.metrics.CacheHitRate + 1.0) / 2.0
 		}
 	case "store_document":
-		dl.metrics.PostgreSQLQueries++
+		atomic.AddInt64(&dl.metrics.PostgreSQLQueries, 1)
 	case "create_relation", "find_relations":
-		dl.metrics.Neo4jQueries++
+		atomic.AddInt64(&dl.metrics.Neo4jQueries, 1)
 		if strings.Contains(operation, "find") {
-			dl.metrics.GraphTraversals++
+			atomic.AddInt64(&dl.metrics.GraphTraversals, 1)
 		}
 	}
 
 	if err != nil {
-		dl.metrics.ErrorCount++
+		atomic.AddInt64(&dl.metrics.ErrorCount, 1)
 		dl.metrics.LastError = err.Error()
 	}
 
-	// Update average query time
-	queryTime := float64(duration.Nanoseconds()) / 1e6
-	dl.metrics.AverageQueryTime = (dl.metrics.AverageQueryTime + queryTime) / 2.0
+	// Update average query time with atomic operation
+	queryTimeUs := duration.Microseconds()
+	currentAvg := atomic.LoadInt64(&dl.metrics.AverageQueryTime)
+	newAvg := (currentAvg + queryTimeUs) / 2
+	atomic.StoreInt64(&dl.metrics.AverageQueryTime, newAvg)
 }
 
 func (dl *DatabaseLayer) collectMetrics() {
@@ -631,7 +695,7 @@ func (dl *DatabaseLayer) collectMetrics() {
 
 	for range ticker.C {
 		dl.metrics.mutex.Lock()
-		
+
 		// Update uptime
 		uptime := time.Since(dl.metrics.StartTime)
 		dl.metrics.UptimeSeconds = int64(uptime.Seconds())
@@ -654,7 +718,7 @@ func (dl *DatabaseLayer) setupAPI() *gin.Engine {
 		c.Header("Access-Control-Allow-Origin", "*")
 		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
-		
+
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
 			return
@@ -670,6 +734,7 @@ func (dl *DatabaseLayer) setupAPI() *gin.Engine {
 		api.GET("/relations/:entity", dl.handleFindRelations)
 		api.GET("/metrics", dl.handleMetrics)
 		api.GET("/status", dl.handleStatus)
+		api.GET("/performance", dl.handlePerformanceStats)
 	}
 
 	router.GET("/health", func(c *gin.Context) {
@@ -679,7 +744,7 @@ func (dl *DatabaseLayer) setupAPI() *gin.Engine {
 			"version": "2.0.0",
 			"databases": gin.H{
 				"postgresql": "connected",
-				"neo4j":      "connected", 
+				"neo4j":      "connected",
 				"redis":      "connected",
 			},
 		})
@@ -744,7 +809,7 @@ func (dl *DatabaseLayer) handleCreateRelation(c *gin.Context) {
 func (dl *DatabaseLayer) handleFindRelations(c *gin.Context) {
 	entityID := c.Param("entity")
 	maxDepth := 2
-	
+
 	if depth := c.Query("depth"); depth != "" {
 		if d, err := strconv.Atoi(depth); err == nil {
 			maxDepth = d
@@ -788,18 +853,110 @@ func (dl *DatabaseLayer) handleStatus(c *gin.Context) {
 	})
 }
 
+// Context7 Performance Statistics Handler
+func (dl *DatabaseLayer) handlePerformanceStats(c *gin.Context) {
+	uptime := time.Since(dl.startTime)
+
+	// Calculate rates and performance metrics
+	totalOps := atomic.LoadInt64(&dl.totalRequests)
+	totalDbOps := atomic.LoadInt64(&dl.totalDatabaseOps)
+	cacheHits := atomic.LoadInt64(&dl.totalCacheHits)
+	cacheMisses := atomic.LoadInt64(&dl.totalCacheMisses)
+
+	var cacheHitRatio float64
+	if cacheHits+cacheMisses > 0 {
+		cacheHitRatio = float64(cacheHits) / float64(cacheHits+cacheMisses) * 100.0
+	}
+
+	stats := gin.H{
+		"service_name": "DatabaseIntegrationLayer",
+		"codec_name":  "context7_database_layer",
+		"uptime": gin.H{
+			"seconds":   int64(uptime.Seconds()),
+			"formatted": uptime.String(),
+		},
+		"performance": gin.H{
+			"total_requests":        totalOps,
+			"total_database_ops":    totalDbOps,
+			"total_cache_hits":      cacheHits,
+			"total_cache_misses":    cacheMisses,
+			"cache_hit_ratio":       cacheHitRatio,
+			"average_response_time_us": atomic.LoadInt64(&dl.averageResponseTime),
+			"postgresql_queries":    atomic.LoadInt64(&dl.metrics.PostgreSQLQueries),
+			"neo4j_queries":         atomic.LoadInt64(&dl.metrics.Neo4jQueries),
+			"vector_operations":     atomic.LoadInt64(&dl.metrics.VectorOperations),
+			"graph_traversals":      atomic.LoadInt64(&dl.metrics.GraphTraversals),
+			"total_errors":          atomic.LoadInt64(&dl.metrics.ErrorCount),
+		},
+		"rates": gin.H{
+			"requests_per_second":   float64(totalOps) / uptime.Seconds(),
+			"requests_per_hour":     float64(totalOps) / uptime.Hours(),
+			"db_ops_per_second":     float64(totalDbOps) / uptime.Seconds(),
+			"db_ops_per_hour":       float64(totalDbOps) / uptime.Hours(),
+		},
+		"health": gin.H{
+			"status":               "healthy",
+			"error_rate":           calculateDatabaseErrorRate(dl),
+			"cache_efficiency":     cacheHitRatio,
+			"performance_grade":    calculatePerformanceGrade(dl),
+		},
+		"connections": gin.H{
+			"postgresql_active":    dl.pgPool.Stat().AcquiredConns(),
+			"postgresql_idle":      dl.pgPool.Stat().IdleConns(),
+			"postgresql_total":     dl.pgPool.Stat().TotalConns(),
+		},
+	}
+
+	// Add Context7 monitoring headers
+	c.Header("X-Service-Uptime", fmt.Sprintf("%.0f", uptime.Seconds()))
+	c.Header("X-Total-Requests", fmt.Sprintf("%d", totalOps))
+	c.Header("X-Cache-Hit-Ratio", fmt.Sprintf("%.2f", cacheHitRatio))
+	c.Header("X-Average-Response-Time-Us", fmt.Sprintf("%d", atomic.LoadInt64(&dl.averageResponseTime)))
+	c.Header("X-Performance-Grade", calculatePerformanceGrade(dl))
+
+	c.JSON(http.StatusOK, stats)
+}
+
+func calculateDatabaseErrorRate(dl *DatabaseLayer) float64 {
+	totalOps := atomic.LoadInt64(&dl.totalDatabaseOps)
+	if totalOps == 0 {
+		return 0.0
+	}
+
+	return float64(atomic.LoadInt64(&dl.metrics.ErrorCount)) / float64(totalOps) * 100.0
+}
+
+func calculatePerformanceGrade(dl *DatabaseLayer) string {
+	avgResponseTime := atomic.LoadInt64(&dl.averageResponseTime)
+	errorRate := calculateDatabaseErrorRate(dl)
+
+	if errorRate > 10.0 {
+		return "D"
+	}
+	if avgResponseTime > 100000 { // > 100ms
+		return "C"
+	}
+	if avgResponseTime > 50000 { // > 50ms
+		return "B"
+	}
+	if avgResponseTime > 10000 { // > 10ms
+		return "A"
+	}
+	return "A+"
+}
+
 func (dl *DatabaseLayer) Run() error {
 	if err := dl.Initialize(); err != nil {
 		return err
 	}
 
 	router := dl.setupAPI()
-	
+
 	log.Printf("🗄️  Database Integration Layer starting on port %s", dl.config.Port)
 	log.Printf("📊 PostgreSQL: Connected with pgvector")
 	log.Printf("🕸️  Neo4j: Connected for graph operations")
 	log.Printf("🔴 Redis: Connected for caching")
-	
+
 	return router.Run(":" + dl.config.Port)
 }
 

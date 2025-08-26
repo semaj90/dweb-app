@@ -1,9 +1,8 @@
 <!-- AI Chat Test Page - Showcasing Svelte 5 + bits-ui + Docker Ollama Integration -->
 <script lang="ts">
-  import { $state } from 'svelte';
   import { onMount } from 'svelte';
   import Button from '$lib/components/ui/button/Button.svelte';
-  import { Card } from '$lib/components/ui/Card';
+  import { Card } from "$lib/components/ui/card";
   import Badge from '$lib/components/ui/Badge.svelte';
   import EnhancedAIChatTest from '$lib/components/ai/EnhancedAIChatTest.svelte';
   import {
@@ -308,7 +307,7 @@
 
     <!-- Refresh Button -->
     <div class="text-center mt-8">
-      <Button variant="outline" onclick={checkSystemStatus} disabled={isLoading} class="gap-2">
+      <Button variant="outline" on:click={checkSystemStatus} disabled={isLoading} class="gap-2">
         {#if isLoading}
           <Loader2 class="h-4 w-4 animate-spin" />
         {:else}

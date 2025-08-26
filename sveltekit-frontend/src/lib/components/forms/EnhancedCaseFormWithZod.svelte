@@ -33,11 +33,11 @@
   import { createCaseCreationForm } from '$lib/forms/superforms-xstate-integration';
   import type { SuperValidated } from 'sveltekit-superforms';
 
-  export let data: SuperValidated<CaseForm>;
-  export let submitAction: string = '?/createCase';
-  export let editMode: boolean = false;
-  export let enableAutoSave: boolean = true;
-  export let enableRealTimeValidation: boolean = true;
+  let { data = $bindable() } = $props(); // SuperValidated<CaseForm>;
+  let { submitAction = $bindable() } = $props(); // string = '?/createCase';
+  let { editMode = $bindable() } = $props(); // boolean = false;
+  let { enableAutoSave = $bindable() } = $props(); // boolean = true;
+  let { enableRealTimeValidation = $bindable() } = $props(); // boolean = true;
 
   const dispatch = createEventDispatcher<{
     submit: { data: CaseForm };
@@ -261,18 +261,18 @@
             <AlertCircle class="h-4 w-4" />
             <span>Priority Level *</span>
           </Label>
-          <Select.Root bind:selected={$form.priority} name="priority">
-            <Select.Trigger class={$errors.priority ? 'border-destructive' : ''}>
-              <Select.Value placeholder="Select priority" />
-            </Select.Trigger>
-            <Select.Content>
+          <SelectRoot bind:selected={$form.priority} name="priority">
+            <SelectTrigger class={$errors.priority ? 'border-destructive' : ''}>
+              <SelectValue placeholder="Select priority" />
+            </SelectTrigger>
+            <SelectContent>
               {#each priorityLevels as priority}
-                <Select.Item value={priority.value} class={priority.color}>
+                <SelectItem value={priority.value} class={priority.color}>
                   {priority.label}
-                </Select.Item>
+                </SelectItem>
               {/each}
-            </Select.Content>
-          </Select.Root>
+            </SelectContent>
+          </SelectRoot>
           {#if $errors.priority}
             <p class="text-sm text-destructive">{$errors.priority[0]}</p>
           {/if}
@@ -320,7 +320,7 @@
         <Button
           type="button"
           variant="ghost"
-          onclick={() => showAdvanced = !showAdvanced}
+          on:click={() => showAdvanced = !showAdvanced}
           class="mb-4"
         >
           {showAdvanced ? 'Hide' : 'Show'} Advanced Options
@@ -333,21 +333,21 @@
               <!-- Status -->
               <div class="space-y-2">
                 <Label for="status">Case Status</Label>
-                <Select.Root bind:selected={$form.status} name="status">
-                  <Select.Trigger>
-                    <Select.Value placeholder="Select status" />
-                  </Select.Trigger>
-                  <Select.Content>
+                <SelectRoot bind:selected={$form.status} name="status">
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
                     {#each statusOptions as status}
-                      <Select.Item value={status.value}>
+                      <SelectItem value={status.value}>
                         <div>
                           <div class="font-medium">{status.label}</div>
                           <div class="text-sm text-muted-foreground">{status.description}</div>
                         </div>
-                      </Select.Item>
+                      </SelectItem>
                     {/each}
-                  </Select.Content>
-                </Select.Root>
+                  </SelectContent>
+                </SelectRoot>
               </div>
 
               <!-- Due Date -->
@@ -458,7 +458,7 @@
                       type="button"
                       variant="ghost"
                       size="sm"
-                      onclick={() => removeFile(index)}
+                      on:click={() => removeFile(index)}
                     >
                       Remove
                     </Button>
@@ -474,7 +474,7 @@
       <div class="flex items-center justify-between pt-6 border-t">
         <div class="flex items-center space-x-4">
           {#if enableAutoSave && !editMode}
-            <Button type="button" variant="outline" onclick={() => dispatch('draft', { data: $form })}>
+            <Button type="button" variant="outline" on:click={() => dispatch('draft', { data: $form })}>
               Save as Draft
             </Button>
           {/if}

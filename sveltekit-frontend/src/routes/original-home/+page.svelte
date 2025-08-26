@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { $state } from 'svelte';
   import Typewriter from "$lib/components/Typewriter.svelte";
   import UploadArea from "$lib/components/UploadArea.svelte";
   import { browser } from '$app/environment';

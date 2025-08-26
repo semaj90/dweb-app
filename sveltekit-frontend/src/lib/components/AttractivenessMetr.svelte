@@ -3,11 +3,11 @@
   import { createEventDispatcher } from 'svelte';
   import { $props, $derived } from 'svelte';
   
-  export let score: number = 5; // Current attractiveness score (1-10)
-  export let label: string = 'Attractiveness Rating';
-  export let readOnly: boolean = false;
-  export let showDescription: boolean = true;
-  export let size: 'sm' | 'md' | 'lg' = 'md';
+  let { score = $bindable() } = $props(); // number = 5; // Current attractiveness score (1-10)
+  let { label = $bindable() } = $props(); // string = 'Attractiveness Rating';
+  let { readOnly = $bindable() } = $props(); // boolean = false;
+  let { showDescription = $bindable() } = $props(); // boolean = true;
+  let { size = $bindable() } = $props(); // 'sm' | 'md' | 'lg' = 'md';
   
   const dispatch = createEventDispatcher();
   
@@ -72,7 +72,7 @@
         class:active={isActive}
         class:hovered={isHovered}
         disabled={readOnly}
-        onclick={() => handleRatingClick(rating)}
+        on:click={() => handleRatingClick(rating)}
         onmouseenter={() => handleMouseEnter(rating)}
         onmouseleave={handleMouseLeave}
         aria-label="Rate {rating} out of 10"

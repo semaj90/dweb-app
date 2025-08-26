@@ -83,7 +83,7 @@
         {#each demoUsers as demoUser}
           <Button
             variant="outline"
-            onclick={() => quickLogin(demoUser)}
+            on:click={() => quickLogin(demoUser)}
             class="demo-user-button w-full justify-start"
             title="Click to login as {demoUser.name}"
           >
@@ -99,7 +99,7 @@
       <div class="auth-mode-toggle">
         <Button 
           variant="ghost" 
-          onclick={() => { authMode = authMode === 'login' ? 'register' : 'login'; showAuthDialog = true; }}
+          on:click={() => { authMode = authMode === 'login' ? 'register' : 'login'; showAuthDialog = true; }}
         >
           {authMode === 'login' ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
         </Button>

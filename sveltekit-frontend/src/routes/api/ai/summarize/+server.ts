@@ -137,10 +137,10 @@ export const GET: RequestHandler = async () => {
 
 export const POST: RequestHandler = async ({ request }) => {
   let raw: SummarizeRequest;
-  try { 
-    raw = await request.json() as SummarizeRequest; 
-  } catch { 
-    return json({ success: false, error: 'Invalid JSON body' } as SummarizeResponse, { status: 400 }); 
+  try {
+    raw = await request.json() as SummarizeRequest;
+  } catch {
+    return json({ success: false, error: 'Invalid JSON body' } as SummarizeResponse, { status: 400 });
   }
   try {
     const { text, type = 'legal', options = {} as SummarizeOptions } = raw;

@@ -4,7 +4,7 @@
  * Supports real-time caching, background persistence, and intelligent eviction
  */
 
-import Loki from 'lokijs';
+import * as Loki from 'lokijs';
 import { EventEmitter } from 'events';
 import path from 'path';
 import fs from 'fs/promises';
@@ -38,13 +38,13 @@ interface CacheStats {
 }
 
 export class CacheManager extends EventEmitter {
-  private db: Loki;
+  private db: any;
   private collections: {
-    aiResults: Collection<CacheEntry>;
-    userSessions: Collection<any>;
-    recommendations: Collection<any>;
-    semanticTokens: Collection<any>;
-    analytics: Collection<any>;
+    aiResults: any;
+    userSessions: any;
+    recommendations: any;
+    semanticTokens: any;
+    analytics: any;
   };
   private dbPath: string;
   private saveInterval: NodeJS.Timeout;
@@ -73,7 +73,7 @@ export class CacheManager extends EventEmitter {
     this.initializeDatabase();
     this.setupAutoSave(options.autoSaveInterval || 30000); // 30 seconds
     this.setupCleanup(options.cleanupInterval || 300000); // 5 minutes
-    
+
     console.log('📦 Advanced LokiJS Cache Manager initialized');
   }
 
@@ -81,8 +81,8 @@ export class CacheManager extends EventEmitter {
     // Ensure cache directory exists
     await fs.mkdir(path.dirname(this.dbPath), { recursive: true });
 
-    this.db = new Loki(this.dbPath, {
-      adapter: new Loki.LokiFsAdapter(),
+    this.db = new (Loki as any).default(this.dbPath, {
+      adapter: new (Loki as any).default.LokiFsAdapter(),
       autoload: true,
       autoloadCallback: () => {
         this.setupCollections();
@@ -96,32 +96,32 @@ export class CacheManager extends EventEmitter {
   private setupCollections() {
     // AI Results cache - primary cache for processed results
     this.collections = {
-      aiResults: this.db.getCollection('aiResults') || 
+      aiResults: this.db.getCollection('aiResults') ||
                  this.db.addCollection('aiResults', {
-                   indices: ['key', 'metadata.sessionId', 'metadata.userId', 'metadata.contentType'],
+                   indices: ['key', 'id'],
                    unique: ['id']
                  }),
 
       // User sessions for continuity
-      userSessions: this.db.getCollection('userSessions') || 
+      userSessions: this.db.getCollection('userSessions') ||
                    this.db.addCollection('userSessions', {
                      indices: ['userId', 'sessionId', 'lastActivity']
                    }),
 
       // Cached recommendations
-      recommendations: this.db.getCollection('recommendations') || 
+      recommendations: this.db.getCollection('recommendations') ||
                       this.db.addCollection('recommendations', {
                         indices: ['userId', 'contentType', 'confidence']
                       }),
 
       // Semantic tokens cache
-      semanticTokens: this.db.getCollection('semanticTokens') || 
+      semanticTokens: this.db.getCollection('semanticTokens') ||
                      this.db.addCollection('semanticTokens', {
                        indices: ['content', 'tokenizer', 'language']
                      }),
 
       // Analytics data cache
-      analytics: this.db.getCollection('analytics') || 
+      analytics: this.db.getCollection('analytics') ||
                 this.db.addCollection('analytics', {
                   indices: ['userId', 'eventType', 'timestamp']
                 })
@@ -164,7 +164,7 @@ export class CacheManager extends EventEmitter {
 
     // Add new entry
     this.collections.aiResults.insert(entry);
-    
+
     this.updateStats();
     this.emit('cache-set', { key, contentType: entry.metadata.contentType });
 
@@ -173,7 +173,7 @@ export class CacheManager extends EventEmitter {
 
   public async get(key: string): Promise<any> {
     const entry = this.collections.aiResults.findOne({ key });
-    
+
     if (!entry) {
       this.stats.totalMisses++;
       this.updateStats();
@@ -202,26 +202,30 @@ export class CacheManager extends EventEmitter {
 
   // Advanced query methods
   public async getByUser(userId: string, limit: number = 50): Promise<CacheEntry[]> {
-    return this.collections.aiResults
+    const results = this.collections.aiResults
       .chain()
-      .find({ 'metadata.userId': userId })
-      .simplesort('metadata.lastAccessed', true)
-      .limit(limit)
+      .find((obj: CacheEntry) => obj.metadata && obj.metadata.userId === userId)
       .data();
+
+    return results
+      .sort((a, b) => (b.metadata.lastAccessed ?? 0) - (a.metadata.lastAccessed ?? 0))
+      .slice(0, limit);
   }
 
   public async getBySession(sessionId: string): Promise<CacheEntry[]> {
     return this.collections.aiResults
-      .find({ 'metadata.sessionId': sessionId });
+      .find((obj: CacheEntry) => obj.metadata && obj.metadata.sessionId === sessionId);
   }
 
   public async getByContentType(contentType: string, limit: number = 100): Promise<CacheEntry[]> {
-    return this.collections.aiResults
+    const results = this.collections.aiResults
       .chain()
-      .find({ 'metadata.contentType': contentType })
-      .simplesort('metadata.confidence', true)
-      .limit(limit)
+      .find((obj: CacheEntry) => obj.metadata && obj.metadata.contentType === contentType)
       .data();
+
+    return results
+      .sort((a, b) => (b.metadata.confidence ?? 0) - (a.metadata.confidence ?? 0))
+      .slice(0, limit);
   }
 
   public async getByTags(tags: string[], matchAll: boolean = false): Promise<CacheEntry[]> {
@@ -241,22 +245,24 @@ export class CacheManager extends EventEmitter {
   public async semanticSearch(query: string, limit: number = 10): Promise<CacheEntry[]> {
     // Simple text-based search - in production you'd use embeddings
     const searchTerms = query.toLowerCase().split(' ');
-    
-    return this.collections.aiResults
+
+    const results = this.collections.aiResults
       .chain()
       .where((entry) => {
         const searchableText = JSON.stringify(entry.data).toLowerCase();
         return searchTerms.some(term => searchableText.includes(term));
       })
-      .simplesort('metadata.confidence', true)
-      .limit(limit)
       .data();
+
+    return results
+      .sort((a, b) => (b.metadata.confidence ?? 0) - (a.metadata.confidence ?? 0))
+      .slice(0, limit);
   }
 
   // User session management
   public async setUserSession(userId: string, sessionData: unknown): Promise<void> {
     const existingSession = this.collections.userSessions.findOne({ userId });
-    
+
     if (existingSession) {
       existingSession.data = sessionData;
       existingSession.lastActivity = Date.now();
@@ -279,8 +285,8 @@ export class CacheManager extends EventEmitter {
 
   // Recommendation caching
   public async setRecommendations(
-    userId: string, 
-    recommendations: unknown[], 
+    userId: string,
+    recommendations: unknown[],
     contentType: string,
     confidence: number = 0.8
   ): Promise<void> {
@@ -301,7 +307,7 @@ export class CacheManager extends EventEmitter {
   }
 
   public async getRecommendations(userId: string, contentType?: string): Promise<unknown[]> {
-    const query: unknown = { userId };
+    const query: any = { userId };
     if (contentType) query.contentType = contentType;
 
     const results = this.collections.recommendations.find(query);
@@ -310,8 +316,8 @@ export class CacheManager extends EventEmitter {
 
   // Analytics caching
   public async logAnalytics(
-    userId: string, 
-    eventType: string, 
+    userId: string,
+    eventType: string,
     data: unknown
   ): Promise<void> {
     this.collections.analytics.insert({
@@ -324,24 +330,25 @@ export class CacheManager extends EventEmitter {
   }
 
   public async getAnalytics(
-    userId?: string, 
-    eventType?: string, 
+    userId?: string,
+    eventType?: string,
     timeRange?: { start: number; end: number }
   ): Promise<unknown[]> {
-    let query: unknown = {};
-    
+    let query: any = {};
+
     if (userId) query.userId = userId;
     if (eventType) query.eventType = eventType;
-    
+
     let chain = this.collections.analytics.chain().find(query);
-    
+
     if (timeRange) {
-      chain = chain.where((entry) => 
+      chain = chain.where((entry) =>
         entry.timestamp >= timeRange.start && entry.timestamp <= timeRange.end
       );
     }
-    
-    return chain.simplesort('timestamp', true).data();
+
+    const results = chain.data();
+    return results.sort((a: any, b: any) => (b.timestamp ?? 0) - (a.timestamp ?? 0));
   }
 
   // Cleanup and maintenance
@@ -376,7 +383,7 @@ export class CacheManager extends EventEmitter {
     // Remove low-access old entries (older than 7 days, accessed < 3 times)
     const sevenDaysAgo = now - (7 * 24 * 60 * 60 * 1000);
     const lowAccess = this.collections.aiResults.findAndRemove(
-      (entry: CacheEntry) => 
+      (entry: CacheEntry) =>
         entry.metadata.created < sevenDaysAgo && entry.metadata.accessCount < 3
     );
     removed.lowAccess = lowAccess.length;
@@ -404,7 +411,7 @@ export class CacheManager extends EventEmitter {
     const entries = this.collections.aiResults.data;
     this.stats.totalEntries = entries.length;
     this.stats.hitRate = this.stats.totalHits / (this.stats.totalHits + this.stats.totalMisses) * 100;
-    
+
     if (entries.length > 0) {
       this.stats.averageProcessingTime = entries.reduce(
         (sum, entry) => sum + entry.metadata.processingTime, 0
@@ -432,14 +439,14 @@ export class CacheManager extends EventEmitter {
 
   public async clear(pattern?: string): Promise<number> {
     let removed = 0;
-    
+
     if (pattern) {
       // Clear entries matching pattern
       const toRemove = this.collections.aiResults.find(
         (entry: CacheEntry) => entry.key.includes(pattern)
       );
       removed = toRemove.length;
-      this.collections.aiResults.remove(toRemove);
+      toRemove.forEach(item => this.collections.aiResults.remove(item));
     } else {
       // Clear all
       removed = this.collections.aiResults.count();
@@ -473,22 +480,22 @@ export class CacheManager extends EventEmitter {
       const entries = this.collections.aiResults.data;
       const csv = [
         'id,key,contentType,confidence,accessCount,created,lastAccessed',
-        ...entries.map(entry => 
+        ...entries.map(entry =>
           `${entry.id},${entry.key},${entry.metadata.contentType},${entry.metadata.confidence},${entry.metadata.accessCount},${entry.metadata.created},${entry.metadata.lastAccessed}`
         )
       ].join('\n');
-      
+
       return csv;
     }
   }
 
   public async shutdown(): Promise<void> {
     console.log('🔄 Shutting down Cache Manager...');
-    
+
     // Clear intervals
     if (this.saveInterval) clearInterval(this.saveInterval);
     if (this.cleanupInterval) clearInterval(this.cleanupInterval);
-    
+
     // Final save
     await new Promise<void>((resolve) => {
       this.db.saveDatabase(() => {
@@ -496,7 +503,7 @@ export class CacheManager extends EventEmitter {
         resolve();
       });
     });
-    
+
     console.log('✅ Cache Manager shutdown complete');
   }
 }

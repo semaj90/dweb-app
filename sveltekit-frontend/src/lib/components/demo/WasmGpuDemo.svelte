@@ -4,8 +4,6 @@
 -->
 
 <script lang="ts">
-  import { $state } from 'svelte';
-
   import { onMount } from 'svelte';
   import { createWasmGpuService, WasmGpuHelpers } from '$lib/wasm/gpu-wasm-init';
   
@@ -401,7 +399,7 @@
       
       <div class="flex gap-4">
         <button
-          onclick={runLegalScenario}
+          on:click={runLegalScenario}
           disabled={!$isReady || benchmarkRunning}
           class="px-6 py-2 bg-yellow-600 hover:bg-yellow-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg transition-colors"
         >
@@ -413,7 +411,7 @@
         </button>
         
         <button
-          onclick={runBenchmark}
+          on:click={runBenchmark}
           disabled={!$isReady || benchmarkRunning}
           class="px-6 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg transition-colors"
         >

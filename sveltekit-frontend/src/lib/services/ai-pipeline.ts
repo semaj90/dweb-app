@@ -12,7 +12,7 @@ import postgres from "postgres";
 import { Pool } from "pg";
 import type { Document } from "@langchain/core/documents";
 import { userEmbeddings } from "../server/db/schema-postgres.js";
-import { OllamaService } from "./OllamaService";
+import { OllamaService } from "./ollamaService";
 
 export interface SemanticSearchOptions {
   limit?: number;
@@ -70,7 +70,7 @@ export class EnhancedAIPipeline {
     // Initialize Ollama LLM
     this.llm = new Ollama({
       baseUrl: import.meta.env.OLLAMA_BASE_URL || "http://localhost:11434",
-      model: "gemma2:2b", // Fast model for legal analysis
+      model: "gemma3:legal-latest", // Fast model for legal analysis
     });
 
     // PostgreSQL connection
@@ -104,17 +104,35 @@ export class EnhancedAIPipeline {
       await this.pgPool.query("CREATE EXTENSION IF NOT EXISTS vector");
       console.log("✅ pgvector extension enabled");
 
-      // Initialize PGVectorStore
-      this.vectorStore = await PGVectorStore.initialize(this.embeddings, {
-        pool: this.pgPool,
-        tableName: "legal_document_embeddings",
-        columns: {
-          idColumnName: "id",
-          vectorColumnName: "embedding",
-          contentColumnName: "content",
-          metadataColumnName: "metadata",
-        },
-      });
+      // Initialize PGVectorStore with proper configuration
+      try {
+        this.vectorStore = new PGVectorStore(this.embeddings, {
+          pool: this.pgPool,
+          tableName: "legal_document_embeddings",
+          columns: {
+            idColumnName: "id",
+            vectorColumnName: "embedding",
+            contentColumnName: "content",
+            metadataColumnName: "metadata",
+          },
+        });
+        
+        // Ensure table exists
+        await this.vectorStore.ensureTableInDatabase();
+      } catch (pgError) {
+        // Fallback initialization if the above fails
+        console.warn("PGVectorStore direct initialization failed, trying alternative method:", pgError);
+        this.vectorStore = await (PGVectorStore as any).initialize(this.embeddings, {
+          pool: this.pgPool,
+          tableName: "legal_document_embeddings",
+          columns: {
+            idColumnName: "id",
+            vectorColumnName: "embedding",
+            contentColumnName: "content",
+            metadataColumnName: "metadata",
+          },
+        });
+      }
       console.log("✅ PGVectorStore initialized");
 
       // Test Ollama connection

@@ -1,7 +1,5 @@
 <!-- WebGPU Client-Side Acceleration Demo -->
 <script lang="ts">
-  import { $state } from 'svelte';
-
   import { onMount } from 'svelte';
   import { webGPUAccelerator, type WebGPUCapabilities } from '$lib/services/webgpu-accelerator';
   import { Button } from '$lib/components/ui/Button.svelte';
@@ -430,7 +428,7 @@
             </div>
 
             <Button
-              onclick={runSimilarityDemo}
+              on:click={runSimilarityDemo}
               disabled={isProcessing || activeDemo === 'similarity'}
               class="w-full">
               {isProcessing && activeDemo === 'similarity' ? 'Computing...' : 'Run Similarity Test'}
@@ -481,7 +479,7 @@
             </div>
 
             <Button
-              onclick={runClusteringDemo}
+              on:click={runClusteringDemo}
               disabled={isProcessing || activeDemo === 'clustering'}
               class="w-full">
               {isProcessing && activeDemo === 'clustering' ? 'Clustering...' : 'Run Clustering'}
@@ -517,7 +515,7 @@
             </div>
 
             <Button
-              onclick={runMatrixDemo}
+              on:click={runMatrixDemo}
               disabled={isProcessing || activeDemo === 'matrix'}
               class="w-full">
               {isProcessing && activeDemo === 'matrix' ? 'Computing...' : 'Run Matrix Multiply'}

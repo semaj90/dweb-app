@@ -1,7 +1,6 @@
 <script lang="ts">
 
   import { onMount, onDestroy } from 'svelte';
-  import { $state } from 'svelte';
   import { writable } from 'svelte/store';
   import type { GPUChatMessage, GPUProcessingStatus } from '$lib/types/search';
   
@@ -543,11 +542,11 @@ Type your legal question or upload a document to begin!`,
       </label>
       
       {#if !currentRoom}
-        <button onclick={() => joinRoom('legal-team')} class="join-room-btn">
+        <button on:click={() => joinRoom('legal-team')} class="join-room-btn">
           Join Room
         </button>
       {:else}
-        <button onclick={leaveRoom} class="leave-room-btn">
+        <button on:click={leaveRoom} class="leave-room-btn">
           Leave Room
         </button>
       {/if}
@@ -630,7 +629,7 @@ Type your legal question or upload a document to begin!`,
           {i + 1}. {item}
         </div>
       {/each}
-      <button onclick={processBatch} class="process-batch-btn">
+      <button on:click={processBatch} class="process-batch-btn">
         Process Batch
       </button>
     </div>
@@ -660,13 +659,13 @@ Type your legal question or upload a document to begin!`,
     
     <div class="input-actions">
       {#if batchMode}
-        <button onclick={addToBatch} class="add-batch-btn">
+        <button on:click={addToBatch} class="add-batch-btn">
           ➕ Add to Batch
         </button>
       {/if}
       
       <button
-        onclick={sendMessage}
+        on:click={sendMessage}
         disabled={!inputMessage.trim() || !isConnected}
         class="send-button"
       >

@@ -9,13 +9,57 @@ import type {
   AITask,
   AIResponse,
   WorkerMessage,
-  WorkerStatus,
-  WorkerPool,
-  AIServiceWorkerManager,
-  TaskResult,
-  ProcessingMetrics,
-  WorkerConfiguration,
-} from "$lib/types";
+  WorkerStatus
+} from "$lib/services/types/service-types.js";
+
+// Additional types specific to worker management
+export interface WorkerPool {
+  workers: Worker[];
+  taskDistribution: 'round-robin' | 'least-loaded' | 'priority-based';
+  maxWorkers: number;
+  currentLoad: number[];
+  totalTasks: number;
+  completedTasks: number;
+  failedTasks: number;
+}
+
+export interface TaskResult {
+  taskId: string;
+  status: 'completed' | 'failed' | 'cancelled';
+  response?: AIResponse;
+  error?: Error;
+  metrics?: ProcessingMetrics;
+}
+
+export interface ProcessingMetrics {
+  taskId: string;
+  startTime: number;
+  endTime?: number;
+  processingTime?: number;
+  queueTime: number;
+  retries: number;
+  provider?: string;
+  model?: string;
+  tokensProcessed: number;
+  success: boolean;
+  error?: string;
+}
+
+export interface WorkerConfiguration {
+  maxConcurrentTasks: number;
+  defaultTimeout: number;
+  retryAttempts: number;
+  enableMetrics: boolean;
+  enableLogging: boolean;
+  providers: any[];
+}
+
+export interface AIServiceWorkerManager {
+  submitTask(task: AITask): Promise<string>;
+  cancelTask(taskId: string): Promise<void>;
+  getStatus(): Promise<WorkerStatus>;
+  shutdown(): Promise<void>;
+}
 
 export class AIWorkerManager implements AIServiceWorkerManager {
   private workerPool: WorkerPool;
@@ -137,10 +181,9 @@ export class AIWorkerManager implements AIServiceWorkerManager {
       await this.initialize();
     }
 
-    const taskId = task.taskId || crypto.randomUUID();
+    const taskId = (task as any).taskId || crypto.randomUUID();
     const enhancedTask: AITask = {
       ...task,
-      taskId,
       timestamp: Date.now(),
     };
 
@@ -431,7 +474,7 @@ export class AIWorkerManager implements AIServiceWorkerManager {
         retries: 0,
         provider: "unknown",
         model: "unknown",
-        tokensProcessed: response?.tokensUsed || 0,
+        tokensProcessed: (response as any)?.tokensUsed || 0,
         success,
         error,
       };
@@ -441,7 +484,7 @@ export class AIWorkerManager implements AIServiceWorkerManager {
       ...existing,
       endTime: Date.now(),
       processingTime: Date.now() - existing.startTime,
-      tokensProcessed: response?.tokensUsed || 0,
+      tokensProcessed: (response as any)?.tokensUsed || 0,
       success,
       error,
     };

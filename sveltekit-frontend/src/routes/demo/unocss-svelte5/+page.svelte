@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { preventDefault } from 'svelte/legacy';
-  import { $state } from 'svelte';
-
-	import { Button, Card, Input } from '$lib/components/ui/enhanced';
+  import { Button, Card, Input } from '$lib/components/ui/enhanced';
 	import { nierClasses, animationClasses } from '$lib/components/ui/enhanced';
 
 	let name = $state('');

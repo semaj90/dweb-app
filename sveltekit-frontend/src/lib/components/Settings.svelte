@@ -13,8 +13,8 @@
     fontSize: string;
   }
 
-  export let isOpen: boolean = false;
-  export let settings: Settings = {
+  let { isOpen = $bindable() } = $props(); // boolean = false;
+  let { settings = $bindable() } = $props(); // Settings = {
     theme: 'light',
     language: 'en',
     ttsEngine: 'default',

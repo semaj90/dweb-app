@@ -30,11 +30,11 @@
     cpuHistory: [],
     memoryHistory: [],
     networkHistory: [],
-    timestamp: Date.now()
+    timestamp: Date.now();
   });
 
   let isLoading = $state(!data.initialLoad);
-  let lastUpdate = $state(new Date(data.timestamp));
+  let lastUpdate = $state(new Date(data.timestamp););
 
   // Data update intervals
   let metricsInterval: ReturnType<typeof setInterval>;

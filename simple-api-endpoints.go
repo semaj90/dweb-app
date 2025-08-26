@@ -1,3 +1,6 @@
+//go:build simpleapi
+// +build simpleapi
+
 package main
 
 import (
@@ -32,35 +35,35 @@ type AIRequest struct {
 func main() {
 	// Set Gin to release mode
 	gin.SetMode(gin.ReleaseMode)
-	
+
 	router := gin.New()
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
-	
+
 	// CORS configuration
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true
 	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
 	config.AllowHeaders = []string{"Origin", "Content-Type", "Accept", "Authorization"}
 	router.Use(cors.New(config))
-	
+
 	// API routes
 	api := router.Group("/api")
 	{
 		// Health check
 		api.GET("/health", handleHealth)
-		
+
 		// RAG endpoint for /api/v1/rag proxy
 		api.POST("/rag", handleRAG)
-		
+
 		// AI endpoint for /api/v1/ai proxy
 		api.POST("/ai", handleAI)
-		
+
 		// Original endpoints for compatibility
 		api.POST("/rag/query", handleRAGQuery)
 		api.GET("/rag/status", handleStatus)
 	}
-	
+
 	// Root endpoint
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
@@ -69,23 +72,23 @@ func main() {
 			"status":     "running",
 			"port":       8094,
 			"endpoints": []string{
-				"/api/health", "/api/rag", "/api/ai", 
+				"/api/health", "/api/rag", "/api/ai",
 				"/api/rag/query", "/api/rag/status",
 			},
 			"message":    "Providing missing REST API endpoints for Vite proxy",
 			"timestamp":  time.Now(),
 		})
 	})
-	
+
 	port := "8094"
 	log.Printf("🚀 Simple API Endpoints service starting on port %s", port)
 	log.Printf("📡 Endpoints available:")
 	log.Printf("   - POST /api/rag")
-	log.Printf("   - POST /api/ai") 
+	log.Printf("   - POST /api/ai")
 	log.Printf("   - GET  /api/health")
 	log.Printf("   - GET  /api/rag/status")
 	log.Printf("✅ Ready to handle Vite proxy requests")
-	
+
 	if err := router.Run(":" + port); err != nil {
 		log.Fatalf("💥 Failed to start service: %v", err)
 	}
@@ -106,12 +109,12 @@ func handleRAG(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	if req.Query == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "query is required"})
 		return
 	}
-	
+
 	// Mock RAG response
 	response := gin.H{
 		"query":       req.Query,
@@ -130,7 +133,7 @@ func handleRAG(c *gin.Context) {
 				"title":       "Legal Precedent",
 				"content":     fmt.Sprintf("Legal precedent for: %s", req.Query),
 				"score":       0.72,
-				"relevance":   "medium", 
+				"relevance":   "medium",
 				"document_type": "case_law",
 			},
 		},
@@ -139,7 +142,7 @@ func handleRAG(c *gin.Context) {
 		"timestamp":       time.Now(),
 		"service":         "simple-api-endpoints",
 	}
-	
+
 	log.Printf("📡 RAG request processed: %s", req.Query)
 	c.JSON(http.StatusOK, response)
 }
@@ -150,12 +153,12 @@ func handleAI(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	if req.Prompt == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "prompt is required"})
 		return
 	}
-	
+
 	// Mock AI response
 	response := gin.H{
 		"prompt":   req.Prompt,
@@ -172,7 +175,7 @@ func handleAI(c *gin.Context) {
 			"total":  len(req.Prompt) + 85,
 		},
 	}
-	
+
 	log.Printf("🤖 AI request processed: %s", req.Prompt[:min(50, len(req.Prompt))])
 	c.JSON(http.StatusOK, response)
 }

@@ -1,29 +1,29 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
-  
+
   // Layout Components
   import PageLayout from '$lib/components/layout/PageLayout.svelte';
   import ContentSection from '$lib/components/layout/ContentSection.svelte';
   import Card from '$lib/components/ui/card/Card.svelte';
   import Button from '$lib/components/ui/Button.svelte';
-  
+
   // Feedback Integration
   import FeedbackIntegration from '$lib/components/feedback/FeedbackIntegration.svelte';
-  
+
   export let data: {
     userId: string | null;
     sessionId: string | null;
     email: string | null;
     isAuthenticated: boolean;
   };
-  
+
   let loading = false;
   let welcomeMessage = "Welcome to the Legal AI Dashboard";
-  
+
   // Feedback integration reference
   let dashboardFeedback: any;
-  
+
   // Simulate loading demo data
   onMount(() => {
     loading = true;
@@ -42,12 +42,12 @@
   <title>Dashboard - Legal AI Platform</title>
 </svelte:head>
 
-<PageLayout 
-  title="Legal AI Dashboard" 
+<PageLayout
+  title="Legal AI Dashboard"
   subtitle="Complete system overview and session management"
-  variant="dashboard" 
-  maxWidth="xl" 
-  padding="lg" 
+  variant="dashboard"
+  maxWidth="xl"
+  padding="lg"
   gap="lg"
 >
   <!-- Session Management Panel -->
@@ -67,7 +67,7 @@
             </div>
           </div>
         </div>
-        
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div class="nes-legal-priority-medium p-4 rounded">
             <h4 class="text-yellow-400 font-bold mb-2">User ID</h4>
@@ -78,7 +78,7 @@
             <code class="text-white font-mono">{data.sessionId}</code>
           </div>
         </div>
-        
+
         <div class="flex flex-wrap gap-4">
           <a href="/">
             <Button variant="yorha" class="yorha-3d-button">
@@ -214,7 +214,7 @@
             variant="success"
             class="yorha-3d-button group-hover:scale-105 transition-transform"
             onclick={() => {
-              dashboardFeedback?.feedback.featureUsed('start_ai_analysis', { 
+              dashboardFeedback?.feedback.featureUsed('start_ai_analysis', {
                 dashboardWidget: 'ai_analysis',
                 accuracyRate: '89%'
               });
@@ -301,7 +301,7 @@
   .animate-spin {
     animation: spin 1s linear infinite;
   }
-  
+
   @keyframes spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
@@ -456,7 +456,7 @@
   interactionType="dashboard_usage"
   ratingType="ui_experience"
   priority="medium"
-  context={{ 
+  context={{
     page: 'dashboard',
     isAuthenticated: data.isAuthenticated,
     userId: data.userId,

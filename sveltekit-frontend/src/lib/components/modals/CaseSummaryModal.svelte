@@ -23,9 +23,9 @@
     Users,
   } from "lucide-svelte";
 
-  export let open: boolean = false;
+  let { open = $bindable() } = $props(); // boolean = false;
   // SSR-compatible: all dates as strings
-  export let caseData: {
+  let { caseData = $bindable() } = $props(); // {
     id: string;
     title: string;
     description: string;
@@ -66,7 +66,7 @@
     };
   } | null = null;
 
-  export let useDrawer: boolean = false;
+  let { useDrawer = $bindable() } = $props(); // boolean = false;
 
   const dispatch = createEventDispatcher();
 
@@ -182,7 +182,7 @@
           <div class="space-y-4">
             <div class="flex justify-between items-center">
               <h3 class="text-lg font-semibold">Overview</h3>
-              <Button onclick={generateSummary} disabled={isGeneratingSummary} size="sm" variant="outline">
+              <Button on:click={generateSummary} disabled={isGeneratingSummary} size="sm" variant="outline">
                 <Sparkles class="w-4 h-4 mr-2" /> Regenerate
               </Button>
             </div>
@@ -242,7 +242,7 @@
           <div class="flex flex-col items-center justify-center h-48 text-muted-foreground">
             <Brain class="w-16 h-16 mb-4 opacity-50" />
             <p>No AI summary available for this case.</p>
-            <Button onclick={generateSummary} disabled={isGeneratingSummary} class="mt-4">
+            <Button on:click={generateSummary} disabled={isGeneratingSummary} class="mt-4">
               <Sparkles class="w-4 h-4 mr-2" /> Generate Summary
             </Button>
           </div>

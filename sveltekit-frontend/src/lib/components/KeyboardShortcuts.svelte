@@ -165,7 +165,7 @@
 {#if showShortcuts}
   <div
     class="mx-auto px-4 max-w-7xl"
-    onclick={() => (showShortcuts = false)}
+    on:click={() => (showShortcuts = false)}
     onkeydown={(e) => e.key === "Escape" && (showShortcuts = false)}
     role="dialog"
     aria-modal="true"
@@ -183,7 +183,7 @@
         </h3>
         <button
           class="mx-auto px-4 max-w-7xl"
-          onclick={() => (showShortcuts = false)}
+          on:click={() => (showShortcuts = false)}
           aria-label="Close shortcuts dialog"
         >
           <svg class="mx-auto px-4 max-w-7xl" fill="currentColor" viewBox="0 0 20 20">
@@ -229,7 +229,7 @@
       variant="outline"
       size="sm"
       class="mx-auto px-4 max-w-7xl"
-      onclick={() => (showAccessibilityPanel = !showAccessibilityPanel)}
+      on:click={() => (showAccessibilityPanel = !showAccessibilityPanel)}
       aria-label="Toggle accessibility panel"
     >
       <Accessibility class="mx-auto px-4 max-w-7xl" />
@@ -242,7 +242,7 @@
       variant="outline"
       size="sm"
       class="mx-auto px-4 max-w-7xl"
-      onclick={() => (showShortcuts = !showShortcuts)}
+      on:click={() => (showShortcuts = !showShortcuts)}
       aria-label="Show keyboard shortcuts"
     >
       <Keyboard class="mx-auto px-4 max-w-7xl" />
@@ -258,7 +258,7 @@
       variant="outline"
       size="sm"
       class="mx-auto px-4 max-w-7xl"
-      onclick={() => toggleFullscreen()}
+      on:click={() => toggleFullscreen()}
       aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
     >
       {#if isFullscreen}

@@ -1,0 +1,56 @@
+{
+  "timestamp": "2025-08-26T04:00:27.827Z",
+  "mode": "core",
+  "totalServices": 6,
+  "runningServices": 4,
+  "uptime": 5736236,
+  "healthPercentage": 67,
+  "services": [
+    {
+      "name": "enhanced-rag",
+      "port": 8094,
+      "status": "starting",
+      "priority": "essential",
+      "startTime": 1756175091806
+    },
+    {
+      "name": "upload-service",
+      "port": 8093,
+      "status": "running",
+      "priority": "essential",
+      "startTime": 1756175091863
+    },
+    {
+      "name": "simple-vector-service",
+      "port": 8095,
+      "status": "starting",
+      "priority": "essential",
+      "startTime": 1756175091932
+    },
+    {
+      "name": "gpu-indexer-service",
+      "port": 8220,
+      "status": "running",
+      "priority": "essential",
+      "startTime": 1756175094825
+    },
+    {
+      "name": "xstate-manager",
+      "port": 8212,
+      "status": "running",
+      "priority": "essential",
+      "startTime": 1756175094889
+    },
+    {
+      "name": "sveltekit",
+      "port": 5173,
+      "status": "running",
+      "startTime": 1756175096415
+    }
+  ],
+  "optimization": {
+    "servicesReduced": 28,
+    "estimatedRAMSaved": "1680MB",
+    "startupTimeReduced": "56s"
+  }
+}

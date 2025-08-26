@@ -17,7 +17,7 @@ test.describe('PostgreSQL and pgvector Operations', () => {
     expect(response.status()).toBe(200);
     
     const extensions = await response.json();
-    const pgvector = extensions.find((ext: unknown) => ext.name === 'vector');
+    const pgvector = extensions.find((ext: unknown) => (ext as any).name === 'vector');
     
     expect(pgvector).toBeDefined();
     expect(pgvector.installed).toBe(true);

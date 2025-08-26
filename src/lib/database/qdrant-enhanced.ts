@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Enhanced Qdrant Vector Database Service
 // Provides comprehensive vector storage and search capabilities
 

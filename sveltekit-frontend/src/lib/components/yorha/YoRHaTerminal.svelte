@@ -28,7 +28,7 @@
   let inputRef: HTMLInputElement;
   let terminalHistory = $state([
     "YoRHa Legal AI System v4.0.0",
-    "Copyright (c) 2024 YoRHa Command Division",
+    "Copyright (c); 2024 YoRHa Command Division",
     "Legal Analysis Module Loaded",
     "Type 'help' for available commands",
     ""

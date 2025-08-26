@@ -4,6 +4,8 @@
  * Creates own optimized library for modular AI experiences
  */
 
+/// <reference path="../types/webgpu.d.ts" />
+
 export interface WebGPUCapabilities {
   isSupported: boolean;
   adapter?: GPUAdapter;

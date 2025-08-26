@@ -144,7 +144,7 @@
     <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
       <button
         class="flex items-center justify-center w-7 h-7 rounded text-gray-500 hover:bg-gray-100 hover:text-blue-600"
-        onclick={() => onView(evidence as Evidence)}
+        on:click={() => onView(evidence as Evidence)}
         title="View evidence"
       >
         <Eye size={14} />
@@ -153,7 +153,7 @@
       {#if evidence.url || evidence.file}
         <button
           class="flex items-center justify-center w-7 h-7 rounded text-gray-500 hover:bg-gray-100 hover:text-indigo-600"
-          onclick={() => onDownload(evidence as Evidence)}
+          on:click={() => onDownload(evidence as Evidence)}
           title="Download"
         >
           <Download size={14} />
@@ -162,7 +162,7 @@
 
       <button
         class="flex items-center justify-center w-7 h-7 rounded text-gray-500 hover:bg-gray-100 hover:text-green-600"
-        onclick={() => onEdit(evidence as Evidence)}
+        on:click={() => onEdit(evidence as Evidence)}
         title="Edit evidence"
       >
         <PenLine size={14} />
@@ -170,7 +170,7 @@
 
       <button
         class="flex items-center justify-center w-7 h-7 rounded text-gray-500 hover:bg-gray-100 hover:text-red-600"
-        onclick={() => onDelete(evidence as Evidence)}
+        on:click={() => onDelete(evidence as Evidence)}
         title="Delete evidence"
       >
         <Trash2 size={14} />

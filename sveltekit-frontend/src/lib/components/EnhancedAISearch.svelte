@@ -183,7 +183,7 @@
       </h2>
 
       <Button.Root
-        onclick={() => (showAdvanced = !showAdvanced)}
+        on:click={() => (showAdvanced = !showAdvanced)}
         class="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
       >
         <span class="i-tabler-settings w-4 h-4"></span>
@@ -215,7 +215,7 @@
       </div>
 
       <Button.Root
-        onclick={performSearch}
+        on:click={performSearch}
         disabled={loading || !query.trim()}
         class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg
                disabled:opacity-50 disabled:cursor-not-allowed
@@ -237,25 +237,25 @@
           >
             Practice Area
           </label>
-          <Select.Root bind:value={selectedPracticeArea}>
-            <Select.Trigger
+          <SelectRoot bind:value={selectedPracticeArea}>
+            <SelectTrigger
               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
             >
               <span>{getPracticeAreaLabel(selectedPracticeArea)}</span>
-            </Select.Trigger>
-            <Select.Content
+            </SelectTrigger>
+            <SelectContent
               class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg"
             >
               {#each practiceAreas as area}
-                <Select.Item
+                <SelectItem
                   value={area.value}
                   class="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
                   {area.label}
-                </Select.Item>
+                </SelectItem>
               {/each}
-            </Select.Content>
-          </Select.Root>
+            </SelectContent>
+          </SelectRoot>
         </div>
 
         <div>
@@ -264,25 +264,25 @@
           >
             Jurisdiction
           </label>
-          <Select.Root bind:value={selectedJurisdiction}>
-            <Select.Trigger
+          <SelectRoot bind:value={selectedJurisdiction}>
+            <SelectTrigger
               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
             >
               <span>{getJurisdictionLabel(selectedJurisdiction)}</span>
-            </Select.Trigger>
-            <Select.Content
+            </SelectTrigger>
+            <SelectContent
               class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg"
             >
               {#each jurisdictions as jurisdiction}
-                <Select.Item
+                <SelectItem
                   value={jurisdiction.value}
                   class="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
                   {jurisdiction.label}
-                </Select.Item>
+                </SelectItem>
               {/each}
-            </Select.Content>
-          </Select.Root>
+            </SelectContent>
+          </SelectRoot>
         </div>
 
         <div>
@@ -291,25 +291,25 @@
           >
             RAG Mode
           </label>
-          <Select.Root bind:value={searchOptions.ragMode}>
-            <Select.Trigger
+          <SelectRoot bind:value={searchOptions.ragMode}>
+            <SelectTrigger
               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
             >
               <span>{getRagModeLabel(searchOptions.ragMode || "enhanced")}</span>
-            </Select.Trigger>
-            <Select.Content
+            </SelectTrigger>
+            <SelectContent
               class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg"
             >
               {#each ragModes as mode}
-                <Select.Item
+                <SelectItem
                   value={mode.value}
                   class="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
                   {mode.label}
-                </Select.Item>
+                </SelectItem>
               {/each}
-            </Select.Content>
-          </Select.Root>
+            </SelectContent>
+          </SelectRoot>
         </div>
       </div>
     {/if}

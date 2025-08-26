@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { $state } from 'svelte';
   import { page } from "$app/state";
   import CanvasEditor from '$lib/components/CanvasEditor.svelte';
   import EvidencePanel from '$lib/components/EvidencePanel.svelte';

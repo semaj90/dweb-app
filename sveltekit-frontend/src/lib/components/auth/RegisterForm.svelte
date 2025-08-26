@@ -391,21 +391,21 @@
         <Form.Field {form} name="role">
           <Form.Control let:attrs>
             <Label for="role">Professional Role</Label>
-            <Select.Root bind:selected={$form.role}>
-              <Select.Trigger class="mt-1">
-                <Select.Value placeholder="Select your role" />
-              </Select.Trigger>
-              <Select.Content>
+            <SelectRoot bind:selected={$form.role}>
+              <SelectTrigger class="mt-1">
+                <SelectValue placeholder="Select your role" />
+              </SelectTrigger>
+              <SelectContent>
                 {#each roleOptions as option}
-                  <Select.Item value={option.value}>
+                  <SelectItem value={option.value}>
                     <div class="flex items-center gap-2">
                       <svelte:component this={option.icon} class="h-4 w-4" />
                       {option.label}
                     </div>
-                  </Select.Item>
+                  </SelectItem>
                 {/each}
-              </Select.Content>
-            </Select.Root>
+              </SelectContent>
+            </SelectRoot>
           </Form.Control>
           <Form.FieldErrors />
         </Form.Field>
@@ -482,7 +482,7 @@
               <button
                 type="button"
                 class="absolute inset-y-0 right-0 pr-3 flex items-center"
-                onclick={togglePasswordVisibility}
+                on:click={togglePasswordVisibility}
                 disabled={isLoading}
               >
                 {#if showPassword}
@@ -528,7 +528,7 @@
               <button
                 type="button"
                 class="absolute inset-y-0 right-0 pr-3 flex items-center"
-                onclick={toggleConfirmPasswordVisibility}
+                on:click={toggleConfirmPasswordVisibility}
                 disabled={isLoading}
               >
                 {#if showConfirmPassword}

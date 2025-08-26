@@ -355,3 +355,8 @@ The Legal AI Platform is **100% complete** and ready for immediate production de
       experimental: { async: true }
     }
   };
+- ☒ Fix debugger auto-attach in VS Code settings
+     ☐ Fix TypeScript syntax errors in schema files
+     ☐ Fix TypeScript syntax errors in service files
+     ☐ Fix TypeScript syntax errors in test files
+     ☐ Test npm run check after fixes

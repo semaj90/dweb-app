@@ -165,11 +165,11 @@ class FeedbackLoop {
     
     // Adjust based on query patterns
     const queryFeatures = this.extractQueryFeatures(query);
-    if (queryFeatures.isComplexLegal) {
+    if ((queryFeatures as any).isComplexLegal) {
       weights.set('authority', 0.35);
       weights.set('relevance', 0.35);
     }
-    if (queryFeatures.isResearch) {
+    if ((queryFeatures as any).isResearch) {
       weights.set('diversity', 0.35);
     }
     

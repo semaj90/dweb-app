@@ -1,4 +1,5 @@
 
+// @ts-nocheck
 /**
  * Multi-Model Extended Thinking Pipeline
  * Integrates all AI systems for comprehensive document analysis

@@ -197,7 +197,7 @@
         "-ExecutionPolicy",
         "Bypass",
         "-Command",
-        "$env:OLLAMA_GPU_LAYERS='999'; $s=Get-Date; $r=ollama run gemma3-legal 'Summarize indemnification obligations in 150 tokens'; $e=Get-Date; $d=($e-$s).TotalSeconds; Write-Host ('⏱ Duration: ' + [math]::Round($d,2) + 's'); Write-Host $r;"
+        "$env:OLLAMA_GPU_LAYERS='999'; $s=Get-Date; $r=ollama run gemma3-legal 'Summarize indemnification obligations in 150 tokens'; $e=Get-Date; $d=($e-$s).TotalSeconds; Write-Host ('Duration: ' + [math]::Round($d,2) + 's'); Write-Host $r;"
       ],
       "group": "test",
       "presentation": {

@@ -80,43 +80,43 @@
   <div class="mx-auto px-4 max-w-7xl">
     <h3 class="mx-auto px-4 max-w-7xl">Melt-UI Notifications Demo</h3>
     <div class="mx-auto px-4 max-w-7xl">
-      <button class="mx-auto px-4 max-w-7xl" onclick={() => showSuccessNotification()}>
+      <button class="mx-auto px-4 max-w-7xl" on:click={() => showSuccessNotification()}>
         Success Notification
       </button>
-      <button class="mx-auto px-4 max-w-7xl" onclick={() => showWarningNotification()}>
+      <button class="mx-auto px-4 max-w-7xl" on:click={() => showWarningNotification()}>
         Warning Notification
       </button>
-      <button class="mx-auto px-4 max-w-7xl" onclick={() => showErrorNotification()}>
+      <button class="mx-auto px-4 max-w-7xl" on:click={() => showErrorNotification()}>
         Error Notification
       </button>
-      <button class="mx-auto px-4 max-w-7xl" onclick={() => showInfoNotification()}>
+      <button class="mx-auto px-4 max-w-7xl" on:click={() => showInfoNotification()}>
         Info Notification
       </button>
     </div>
   </div>
   
   <!-- Bits UI Button -->
-  <Button.Root class="mx-auto px-4 max-w-7xl" onclick={showSuccessNotification}>
+  <Button.Root class="mx-auto px-4 max-w-7xl" on:click={showSuccessNotification}>
     Create New Case
   </Button.Root>
   
   <!-- Bits UI Select -->
   <div class="mx-auto px-4 max-w-7xl">
     <label class="mx-auto px-4 max-w-7xl" for="practice-area-select">Legal Practice Area</label>
-    <Select.Root type="single" onvaluechange={() => showWarningNotification()}>
-      <Select.Trigger class="mx-auto px-4 max-w-7xl" id="practice-area-select">
+    <SelectRoot type="single" onvaluechange={() => showWarningNotification()}>
+      <SelectTrigger class="mx-auto px-4 max-w-7xl" id="practice-area-select">
         Select practice area...
-      </Select.Trigger>
+      </SelectTrigger>
       <Select.Portal>
-        <Select.Content class="mx-auto px-4 max-w-7xl">
+        <SelectContent class="mx-auto px-4 max-w-7xl">
           {#each caseTypes as type}
-            <Select.Item value={type.value} class="mx-auto px-4 max-w-7xl">
+            <SelectItem value={type.value} class="mx-auto px-4 max-w-7xl">
               {type.label}
-            </Select.Item>
+            </SelectItem>
           {/each}
-        </Select.Content>
+        </SelectContent>
       </Select.Portal>
-    </Select.Root>
+    </SelectRoot>
   </div>
   
   <!-- Bits UI Dialog -->
@@ -181,7 +181,7 @@
           <AlertDialog.Cancel class="mx-auto px-4 max-w-7xl">
             Cancel
           </AlertDialog.Cancel>
-          <AlertDialog.Action class="mx-auto px-4 max-w-7xl" onclick={showErrorNotification}>
+          <AlertDialog.Action class="mx-auto px-4 max-w-7xl" on:click={showErrorNotification}>
             Delete Permanently
           </AlertDialog.Action>
         </div>

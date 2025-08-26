@@ -37,17 +37,17 @@ func (k KMeansCPU) Cluster(data [][]float64, params Params) ([]int, [][]float64,
 	
 	n := len(data)
 	dim := len(data[0])
-	k := params.K
+	numClusters := params.K
 	
-	if k > n {
-		k = n
+	if numClusters > n {
+		numClusters = n
 	}
 	
 	assignments := make([]int, n)
-	centroids := make([][]float64, k)
+	centroids := make([][]float64, numClusters)
 	
 	// Initialize centroids randomly
-	for i := 0; i < k; i++ {
+	for i := 0; i < numClusters; i++ {
 		centroids[i] = make([]float64, dim)
 		idx := rand.Intn(n)
 		copy(centroids[i], data[idx])

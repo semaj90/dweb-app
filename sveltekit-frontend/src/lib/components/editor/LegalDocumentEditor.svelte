@@ -28,12 +28,12 @@
   import { fade } from "svelte/transition";
 
   // Props
-  export let caseId: string | undefined = undefined;
-  export let documentId: string | undefined = undefined;
-  export let documentType: "brief" | "contract" | "motion" | "evidence" =
+  let { caseId = $bindable() } = $props(); // string | undefined = undefined;
+  let { documentId = $bindable() } = $props(); // string | undefined = undefined;
+  let { documentType = $bindable() } = $props(); // "brief" | "contract" | "motion" | "evidence" =
     "brief";
-  export let title = "Legal Document";
-  export let readonly = false;
+  let { title = $bindable() } = $props(); // "Legal Document";
+  let { readonly = $bindable() } = $props(); // false;
 
   // Component state
   let content = "";
@@ -422,7 +422,7 @@
           </button>
 
           <button
-            onclick={() => manualSaveDocument()}
+            on:click={() => manualSaveDocument()}
             class="container mx-auto px-4"
             disabled={readonly || loadingDocument || isSaving}
           >
@@ -504,7 +504,7 @@
                     <p class="container mx-auto px-4">{documentLoadError}</p>
                     <button
                       class="container mx-auto px-4"
-                      onclick={() => loadDocument()}
+                      on:click={() => loadDocument()}
                     >
                       Try Again
                     </button>
@@ -555,7 +555,7 @@
 
               <button
                 class="container mx-auto px-4"
-                onclick={() =>
+                on:click={() =>
                   insertCitation({
                     id: Math.random().toString(),
                     text: "Sample Citation",
@@ -675,7 +675,7 @@
               Cancel
             </button>
             <button
-              onclick={() => handleAIRequest()}
+              on:click={() => handleAIRequest()}
               class="container mx-auto px-4"
               disabled={!query.trim() || isProcessingAI}
             >

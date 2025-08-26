@@ -61,11 +61,11 @@ export class EnhancedSentenceSplitter {
     let processed = text;
     
     if (this.options.preserveAbbreviations) {
-      for (const abbr of this.abbreviations) {
+      this.abbreviations.forEach(abbr => {
         const escaped = abbr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const regex = new RegExp(`\\b${escaped}`, 'gi');
         processed = processed.replace(regex, abbr.replace('.', '||DOT||'));
-      }
+      });
     }
     
     return processed;
@@ -118,10 +118,14 @@ export class EnhancedSentenceSplitter {
     
     // Don't split on abbreviations
     const before = text.substring(Math.max(0, position - 10), position + 1);
-    for (const abbr of this.abbreviations) {
+    let isAbbreviation = false;
+    this.abbreviations.forEach(abbr => {
       if (before.toLowerCase().endsWith(abbr.replace('.', '||DOT||').toLowerCase())) {
-        return false;
+        isAbbreviation = true;
       }
+    });
+    if (isAbbreviation) {
+      return false;
     }
     
     // Don't split on decimal numbers

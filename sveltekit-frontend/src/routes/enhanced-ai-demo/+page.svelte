@@ -4,7 +4,6 @@
 <!-- ====================================================================== -->
 
 <script lang="ts">
-  import { $state } from 'svelte';
   import { onMount } from 'svelte';
   import { Button } from '$lib/components/ui/button';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
@@ -157,7 +156,7 @@
           <!-- Action Buttons -->
           <div class="flex gap-4">
             <Button
-              onclick={handleAnalyze}
+              on:click={handleAnalyze}
               disabled={!testQuery.trim() ||
                 processingStatus === 'processing' ||
                 !systemInitialized}
@@ -167,7 +166,7 @@
 
             <Button
               variant="outline"
-              onclick={handleClear}
+              on:click={handleClear}
               disabled={processingStatus === 'processing'}>
               Clear
             </Button>

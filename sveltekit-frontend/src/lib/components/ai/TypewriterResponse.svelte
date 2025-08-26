@@ -7,14 +7,14 @@
 	import { advancedCache } from '$lib/services/advanced-cache-manager';
 
 	// Props
-	export let text: string = '';
-	export let speed: number = 50; // milliseconds per character
-	export let showCursor: boolean = true;
-	export let cursorChar: string = '▋';
-	export let cacheKey: string = '';
-	export let userActivity: UserActivity[] = [];
-	export let enableThinking: boolean = true;
-	export let autoStart: boolean = true;
+	let { text = $bindable() } = $props(); // string = '';
+	let { speed = $bindable() } = $props(); // number = 50; // milliseconds per character
+	let { showCursor = $bindable() } = $props(); // boolean = true;
+	let { cursorChar = $bindable() } = $props(); // string = '▋';
+	let { cacheKey = $bindable() } = $props(); // string = '';
+	let { userActivity = $bindable() } = $props(); // UserActivity[] = [];
+	let { enableThinking = $bindable() } = $props(); // boolean = true;
+	let { autoStart = $bindable() } = $props(); // boolean = true;
 
 	// Types
 	interface UserActivity {
@@ -412,10 +412,10 @@
 <!-- Advanced Controls (for development/debugging) -->
 {#if $$props.showControls}
 	<div class="typewriter-controls" in:fade={{ delay: 500 }}>
-		<button onclick={pause} disabled={!isTyping || isPaused}>Pause</button>
-		<button onclick={resume} disabled={!isPaused}>Resume</button>
-		<button onclick={restart}>Restart</button>
-		<button onclick={stop}>Stop</button>
+		<button on:click={pause} disabled={!isTyping || isPaused}>Pause</button>
+		<button on:click={resume} disabled={!isPaused}>Resume</button>
+		<button on:click={restart}>Restart</button>
+		<button on:click={stop}>Stop</button>
 		
 		<div class="speed-controls">
 			<label>

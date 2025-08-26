@@ -147,7 +147,7 @@
 				{loading ? 'animate-pulse' : ''}
 			"
 			{disabled}
-			onclick={handleClick}
+			on:click={handleClick}
 			onkeydown={handleKeydown}
 			onmouseenter={showTooltipHandler}
 			onmouseleave={hideTooltipHandler}

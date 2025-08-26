@@ -12,8 +12,8 @@
   // Access state from snapshot
   let state = $derived($snapshot);
 
-  export let caseId: string | null = null;
-  export let readOnly = false;
+  let { caseId = $bindable() } = $props(); // string | null = null;
+  let { readOnly = $bindable() } = $props(); // false;
 
   let canvas: HTMLCanvasElement;
   let ctx: CanvasRenderingContext2D;
@@ -759,7 +759,7 @@
     class="container mx-auto px-4"
     ondrop={handleDrop}
     ondragover={handleDragOver}
-    onclick={handleCanvasClick}
+    on:click={handleCanvasClick}
     onmousedown={handleMouseDown}
     onmousemove={handleMouseMove}
     onmouseup={handleMouseUp}

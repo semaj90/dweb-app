@@ -18,14 +18,14 @@ import type {
 // Map of sessionId -> messages
 export type SessionMap = Map<string, ChatMessage[]>;
 
-// Core state
-export let sessions = $state<ChatSession[]>([]);
+// Core state - exported reactive state for external consumption
+export const sessions = $state<ChatSession[]>([]);
 export const sessionMessages = $state<SessionMap>(new Map());
-export let currentSessionId = $state<string | null>(null);
-export let connectionStatus = $state<ConnectionStatus>("disconnected");
+export const currentSessionId = $state<string | null>(null);
+export const connectionStatus = $state<ConnectionStatus>("disconnected");
 export const isTyping = $state(false);
-export let userActivity = $state<UserActivity[]>([]);
-export let recommendations = $state<Recommendation[]>([]);
+export const userActivity = $state<UserActivity[]>([]);
+export const recommendations = $state<Recommendation[]>([]);
 
 // Deriveds
 export const currentSession = $derived(

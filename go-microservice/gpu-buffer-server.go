@@ -1,5 +1,5 @@
-//go:build legacy
-// +build legacy
+//go:build legacy && legacygpu
+// +build legacy,legacygpu
 
 package main
 
@@ -10,14 +10,13 @@ import (
 	"log"
 	"net/http"
 	"runtime"
-	"strconv"
 	"sync"
 	"time"
 	"unsafe"
 
+	"github.com/NVIDIA/go-nvml/pkg/nvml"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
-	"github.com/NVIDIA/go-nvml/pkg/nvml"
 )
 
 /*
@@ -213,7 +212,7 @@ func (gm *GPUBufferManager) AllocateBuffer(req GPUBufferRequest) (*GPUBufferResp
 		buffer.LastAccess = time.Now()
 		buffer.RefCount++
 		gm.metrics.GPUCacheHits++
-		
+
 		return &GPUBufferResponse{
 			BufferID:     buffer.ID,
 			Success:      true,
@@ -228,7 +227,7 @@ func (gm *GPUBufferManager) AllocateBuffer(req GPUBufferRequest) (*GPUBufferResp
 	// Check Redis cache (2ms response time)
 	if cachedBuffer, err := gm.getCachedBuffer(req.CacheKey); err == nil {
 		gm.metrics.RedisCacheHits++
-		
+
 		return &GPUBufferResponse{
 			BufferID:     cachedBuffer.ID,
 			Success:      true,
@@ -275,7 +274,7 @@ func (gm *GPUBufferManager) createGPUBuffer(size int) (*GPUBuffer, error) {
 	// Use C API to create CUDA buffer
 	var cBuffer C.GPUBuffer
 	result := C.createGPUBuffer(&cBuffer, C.int(size))
-	
+
 	if result != C.cudaSuccess {
 		return nil, fmt.Errorf("CUDA buffer allocation failed: %d", result)
 	}
@@ -327,11 +326,11 @@ func (sc *ShaderCache) GetCompiledShader(shaderID string) (*CompiledShader, erro
 	if err == nil {
 		var shader CompiledShader
 		json.Unmarshal([]byte(cached), &shader)
-		
+
 		sc.mu.Lock()
 		sc.shaders[shaderID] = &shader
 		sc.mu.Unlock()
-		
+
 		return &shader, nil
 	}
 
@@ -389,7 +388,7 @@ func (ai *AIPredictor) UpdatePattern(bufferID string, size int) {
 	if len(pattern.AccessTimes) > 1 {
 		totalTime := pattern.AccessTimes[len(pattern.AccessTimes)-1].Sub(pattern.AccessTimes[0])
 		pattern.Frequency = float64(len(pattern.AccessTimes)) / totalTime.Seconds()
-		
+
 		// Simple prediction: average interval
 		if len(pattern.AccessTimes) >= 2 {
 			avgInterval := totalTime / time.Duration(len(pattern.AccessTimes)-1)
@@ -489,7 +488,7 @@ func compileShaderHandler(c *gin.Context) {
 
 func getPredictionsHandler(c *gin.Context) {
 	predictions := aiPredictor.PredictBufferNeeds()
-	
+
 	c.JSON(http.StatusOK, gin.H{
 		"predictions": predictions,
 		"timestamp":   time.Now(),
@@ -535,12 +534,12 @@ func main() {
 		c.Header("Access-Control-Allow-Origin", "*")
 		c.Header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		c.Header("Access-Control-Allow-Headers", "Content-Type")
-		
+
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
 			return
 		}
-		
+
 		c.Next()
 	})
 
@@ -576,7 +575,7 @@ func main() {
 	log.Printf("🚀 GPU Buffer Streaming Server starting on port %s", port)
 	log.Printf("📊 Features: CUDA GPU buffers, Redis caching, AI prediction")
 	log.Printf("⚡ Performance: 0.1ms GPU cache, 2ms Redis cache")
-	
+
 	if err := r.Run(":" + port); err != nil {
 		log.Fatal("Failed to start server:", err)
 	}
@@ -585,7 +584,7 @@ func main() {
 // Cleanup function for graceful shutdown
 func cleanup() {
 	log.Println("Shutting down GPU Buffer Streaming Server...")
-	
+
 	// Free GPU buffers
 	gpuManager.mu.Lock()
 	for _, buffer := range gpuManager.buffers {
@@ -602,6 +601,6 @@ func cleanup() {
 
 	// Shutdown NVML
 	nvml.Shutdown()
-	
+
 	log.Println("Cleanup completed")
 }

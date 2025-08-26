@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { $state, $derived } from 'svelte';
   import { Button } from '$lib/components/ui/button/index.js';
   import { Input } from '$lib/components/ui/input/index.js';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
@@ -361,7 +360,7 @@
 
           <!-- Processing Controls -->
           <div class="flex space-x-2">
-            <Button onclick={processLegalDocuments} disabled={!canProcess} class="flex-1">
+            <Button on:click={processLegalDocuments} disabled={!canProcess} class="flex-1">
               {#if isProcessing}
                 <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                 Processing...
@@ -424,7 +423,7 @@
 
           <!-- Query Controls -->
           <div class="flex space-x-2">
-            <Button onclick={executeRAGQuery} disabled={!ragQuery.trim()} class="flex-1">
+            <Button on:click={executeRAGQuery} disabled={!ragQuery.trim()} class="flex-1">
               <Brain class="h-4 w-4 mr-2" />
               Query Enhanced RAG
             </Button>
@@ -546,7 +545,7 @@
           <AlertCircle class="h-5 w-5" />
           <span>Real-time System Logs</span>
         </CardTitle>
-        <Button variant="outline" size="sm" onclick={clearLogs}>Clear Logs</Button>
+        <Button variant="outline" size="sm" on:click={clearLogs}>Clear Logs</Button>
       </CardHeader>
       <CardContent>
         <div

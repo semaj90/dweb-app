@@ -429,11 +429,11 @@ export class OllamaGemmaCacheManager {
       }
 
       const data = await response.json();
-      const hasEmbeddingModel = data.models?.some((m: unknown) => m.name === this.config.embeddingModel);
+      const hasEmbeddingModel = data.models?.some((m: any) => m.name === this.config.embeddingModel);
       
       if (!hasEmbeddingModel) {
         console.warn(`Embedding model ${this.config.embeddingModel} not found. Available models:`, 
-          data.models?.map((m: unknown) => m.name));
+          data.models?.map((m: any) => m.name));
       }
 
     } catch (error) {

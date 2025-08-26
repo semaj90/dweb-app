@@ -13,8 +13,8 @@ export const LOCAL_LLM_CONFIG = {
   // Local Ollama configuration
   OLLAMA_BASE_URL: "http://localhost:11434",
   OLLAMA_MODELS: {
-    LEGAL_DETAILED: "gemma2-legal",
-    GENERAL: "llama3.2",
+    LEGAL_DETAILED: "gemma3:legal-latest",
+    GENERAL: "gemma3:legal-latest",
     EMBEDDINGS: "nomic-embed-text",
   },
 

@@ -1,64 +1,90 @@
-import type { RequestHandler } from '@sveltejs/kit';
+/**
+ * User Logout API Endpoint
+ * POST /api/auth/logout
+ */
 
-// Logout API endpoint using Lucia v3
-import { json, redirect } from "@sveltejs/kit";
-import { lucia } from "$lib/auth/session";
+import { json, type RequestHandler } from '@sveltejs/kit';
+import { ExistingUserAuthService as UserAuthService } from '$lib/server/db/existing-user-operations.js';
+import { dev } from '$app/environment';
 
-export const POST: RequestHandler = async ({ cookies, locals }) => {
+export const POST: RequestHandler = async ({ cookies, getClientAddress }) => {
   try {
-    // Get the current session
-    if (!locals.session) {
-      // Already logged out
-      return json({ success: true, message: "Already logged out" });
+    // Get session ID from cookie
+    const sessionId = cookies.get('session_id');
+    
+    if (sessionId) {
+      // Get client information for logging
+      const ipAddress = getClientAddress();
+      
+      // Logout user (invalidate session)
+      const result = await UserAuthService.logoutUser(sessionId, ipAddress);
+      
+      if (!result.success) {
+        console.warn('Session logout failed:', result.error);
+        // Continue with cookie deletion even if session invalidation failed
+      }
     }
-    // Invalidate the session in the database
-    await lucia.invalidateSession(locals.session);
-
-    // Create a blank session cookie to clear the existing one
-    const sessionCookie = lucia.createBlankSessionCookie();
-    cookies.set(sessionCookie.name, sessionCookie.value, {
-      path: ".",
-      ...sessionCookie.attributes,
+    
+    // Clear session cookie
+    cookies.delete('session_id', {
+      path: '/',
+      httpOnly: true,
+      secure: !dev,
+      sameSite: 'strict',
     });
-
+    
+    // Return successful logout response
     return json({
       success: true,
-      message: "Logout successful",
+      message: 'Logout successful',
+      data: null,
+      meta: {
+        timestamp: new Date().toISOString(),
+        version: '1.0.0',
+      }
+    }, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(dev && { 'Access-Control-Allow-Origin': '*' }),
+      }
     });
+
   } catch (err) {
-    console.error("Logout error:", err);
+    console.error('Logout API error:', err);
 
-    // Even if there's an error, try to clear the cookie
-    const sessionCookie = lucia.createBlankSessionCookie();
-    cookies.set(sessionCookie.name, sessionCookie.value, {
-      path: ".",
-      ...sessionCookie.attributes,
+    // Even if there's an error, clear the cookie for security
+    cookies.delete('session_id', {
+      path: '/',
+      httpOnly: true,
+      secure: !dev,
+      sameSite: 'strict',
     });
 
     return json({
-      success: true,
-      message: "Logout completed",
+      success: false,
+      message: 'Logout completed with warnings',
+      code: 'LOGOUT_WARNING',
+      meta: {
+        timestamp: new Date().toISOString(),
+        version: '1.0.0',
+      }
+    }, { 
+      status: 200, // Still return success as cookie is cleared
+      headers: { 'Content-Type': 'application/json' }
     });
   }
 };
 
-export const GET: RequestHandler = async ({ cookies, locals }) => {
-  try {
-    // Get the current session
-    if (locals.session) {
-      // Invalidate the session in the database
-      await lucia.invalidateSession(locals.session);
+// OPTIONS handler for CORS preflight requests
+export const OPTIONS: RequestHandler = async () => {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': dev ? '*' : 'https://yourdomain.com',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Max-Age': '86400', // 24 hours
     }
-    // Create a blank session cookie to clear the existing one
-    const sessionCookie = lucia.createBlankSessionCookie();
-    cookies.set(sessionCookie.name, sessionCookie.value, {
-      path: ".",
-      ...sessionCookie.attributes,
-    });
-
-    throw redirect(302, "/login");
-  } catch (error) {
-    console.error("Logout error:", error);
-    throw redirect(302, "/login");
-  }
+  });
 };

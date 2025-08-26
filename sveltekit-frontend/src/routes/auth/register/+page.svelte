@@ -32,7 +32,7 @@
       </h2>
       
       {#if form?.error}
-        <div class="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded mb-4">
+        <div class="error-message bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded mb-4" data-testid="error-message">
           {form.error}
         </div>
       {/if}

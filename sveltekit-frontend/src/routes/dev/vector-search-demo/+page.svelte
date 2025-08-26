@@ -1,7 +1,6 @@
-<!-- @migration-task Error while migrating Svelte code: A component can have a single top-level `<script>` element and/or a single top-level `<script module>` element
+<!-- @migration-task Error while migrating Svelte code: A component can have a single top-level `<script lang="ts">` element and/or a single top-level `<script module>` element
 https://svelte.dev/e/script_duplicate -->
 <script lang="ts">
-  import { $state } from 'svelte';
   import { onMount } from 'svelte'
   let query = 'contract liability terms'
   let results: any[] = []
@@ -28,7 +27,7 @@ https://svelte.dev/e/script_duplicate -->
 <h1>Vector Search Demo</h1>
 <div class="row">
   <input bind:value={query} placeholder="Enter query" />
-  <button onclick={runSearch}>Search</button>
+  <button on:click={runSearch}>Search</button>
 </div>
 
 <p>Log: {wsMsg}</p>
@@ -260,7 +259,7 @@ https://svelte.dev/e/script_duplicate -->
 
       <div class="form-actions">
         <button
-          onclick={performSearch}
+          on:click={performSearch}
           disabled={isSearching || !query.trim()}
           class="search-button"
         >
@@ -268,7 +267,7 @@ https://svelte.dev/e/script_duplicate -->
         </button>
 
         <button
-          onclick={indexSampleDocument}
+          on:click={indexSampleDocument}
           class="index-button"
         >
           📄 Index Sample Document

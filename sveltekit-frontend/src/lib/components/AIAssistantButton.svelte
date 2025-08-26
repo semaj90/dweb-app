@@ -1,7 +1,7 @@
 // Production AI Assistant Component - bits-ui Implementation
 // File: AIAssistantButton.svelte
 
-<script>
+<script lang="ts">
 
   import { createEventDispatcher } from 'svelte';
   import { $props } from 'svelte';
@@ -9,10 +9,10 @@
   import { Badge } from 'bits-ui';
   import { Loader2, Brain, Zap, AlertTriangle } from 'lucide-svelte';
   
-  export let query = '';
-  export let isProcessing = false;
-  export let systemStatus = 'unknown';
-  export let responseTime = 0;
+  let { query = $bindable() } = $props(); // '';
+  let { isProcessing = $bindable() } = $props(); // false;
+  let { systemStatus = $bindable() } = $props(); // 'unknown';
+  let { responseTime = $bindable() } = $props(); // 0;
   
   const dispatch = createEventDispatcher();
   
@@ -176,7 +176,7 @@
   <!-- Action Buttons -->
   <div class="grid grid-cols-3 gap-3">
     <Button.Root
-      onclick={testGemma3}
+      on:click={testGemma3}
       disabled={isProcessing}
       class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
     >
@@ -189,7 +189,7 @@
     </Button.Root>
 
     <Button.Root
-      onclick={testSynthesis}
+      on:click={testSynthesis}
       disabled={isProcessing}
       class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white"
     >
@@ -202,7 +202,7 @@
     </Button.Root>
 
     <Button.Root
-      onclick={testRAG}
+      on:click={testRAG}
       disabled={isProcessing}
       class="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white"
     >

@@ -559,7 +559,7 @@ ${caseId ? `• **Case Context:** ${caseId}` : ''}
           </div>
 
           <!-- Settings Toggle -->
-          <Button variant="ghost" size="sm" onclick={() => (showSettings = !showSettings)}>
+          <Button variant="ghost" size="sm" on:click={() => (showSettings = !showSettings)}>
             <Settings class="w-4 h-4" />
           </Button>
         </div>
@@ -720,7 +720,7 @@ ${caseId ? `• **Case Context:** ${caseId}` : ''}
 
           <!-- Message Actions -->
           <div class="flex-shrink-0 flex flex-col gap-1">
-            <Button variant="ghost" size="sm" onclick={() => copyToClipboard(message.content)}>
+            <Button variant="ghost" size="sm" on:click={() => copyToClipboard(message.content)}>
               <FileText class="w-3 h-3" />
             </Button>
           </div>
@@ -747,7 +747,7 @@ ${caseId ? `• **Case Context:** ${caseId}` : ''}
       onkeydown={handleKeyDown}
       disabled={isProcessing}
       class="flex-1" />
-    <Button onclick={sendMessage} disabled={!currentInput.trim() || isProcessing}>
+    <Button on:click={sendMessage} disabled={!currentInput.trim() || isProcessing}>
       {#if isProcessing}
         <Loader2 class="w-4 h-4 animate-spin" />
       {:else}
@@ -762,7 +762,7 @@ ${caseId ? `• **Case Context:** ${caseId}` : ''}
       <CardHeader>
         <CardTitle class="flex items-center justify-between">
           Detailed Analysis
-          <Button variant="ghost" size="sm" onclick={() => (showAdvancedAnalysis = false)}>
+          <Button variant="ghost" size="sm" on:click={() => (showAdvancedAnalysis = false)}>
             ×
           </Button>
         </CardTitle>

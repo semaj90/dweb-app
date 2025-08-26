@@ -5,7 +5,7 @@
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { PGVectorStore } from "@langchain/community/vectorstores/pgvector";
 import type { DistanceStrategy } from "@langchain/community/vectorstores/pgvector";
-import { Document as LangChainDocument, type Document as LangChainDocumentType } from "@langchain/core/documents";
+import type { Document as LangChainDocumentType } from "@langchain/core/documents";
 import { Embeddings } from "@langchain/core/embeddings";
 import { OllamaEmbeddings } from "@langchain/ollama";
 import { db, sql, eq, and, or, desc, asc } from "../db/index.js";
@@ -154,7 +154,7 @@ export class EnhancedLegalSearchService {
   private async initializeMemoryVectorStore() {
     try {
       const legalDocuments = await initializeLegalDocuments;
-      const documents = legalDocuments.map(doc => new LangChainDocument({
+      const documents = legalDocuments.map(doc => ({
         pageContent: `${doc.title}\n\n${doc.description}\n\n${doc.content}`,
         metadata: {
           id: doc.id,
@@ -196,8 +196,8 @@ export class EnhancedLegalSearchService {
           distanceStrategy: "cosine" as any,
         };
 
-        // Initialize PGVector store using fromExistingIndex
-        this.pgVectorStore = await PGVectorStore.fromExistingIndex(this.embeddings, pgConfig);
+        // Initialize PGVector store
+        this.pgVectorStore = new (PGVectorStore as any)(this.embeddings, pgConfig);
 
         console.log("✅ PGVector store initialized");
       }

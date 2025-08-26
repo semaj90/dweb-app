@@ -2,8 +2,6 @@
 <script lang="ts">
   import { Toast } from 'bits-ui';
   import BitsToast, { type ToastProps } from './BitsToast.svelte';
-  import { $state } from 'svelte';
-  
   interface ToastWithId extends ToastProps {
     id: string;
   }

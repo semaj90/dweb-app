@@ -1,7 +1,5 @@
 <!-- Updated AI Chat for GPU Ollama -->
 <script lang="ts">
-  import { $state } from 'svelte';
-
   import { Button } from '$lib/components/ui/button';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
   import { Input } from '$lib/components/ui/input';
@@ -62,7 +60,7 @@
     </div>
     <div class="flex space-x-2">
       <Input bind:value={input} placeholder="Legal question..." onkeydown={(e) => e.key === 'Enter' && sendMessage()} />
-      <Button onclick={sendMessage} disabled={isLoading}>Send</Button>
+      <Button on:click={sendMessage} disabled={isLoading}>Send</Button>
     </div>
   </CardContent>
 </Card>

@@ -6,7 +6,7 @@
   import { Search, File, Briefcase, User as UserIcon, Settings, Command } from "lucide-svelte";
   import { cn } from '$lib/utils';
   
-  export let open = false;
+  let { open = $bindable() } = $props(); // false;
   
   // Define the command item type
   interface CommandItem {
@@ -163,7 +163,7 @@
   <!-- Backdrop -->
   <div 
     class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
-    onclick={close}
+    on:click={close}
     role="button"
     tabindex="0"
     onkeydown={(e) => e.key === 'Enter' && close()}
@@ -222,7 +222,7 @@
                         ? "bg-harvard-crimson text-white shadow-nier-glow"
                         : "hover:bg-nier-surface-light text-foreground"
                     )}
-                    onclick={() => selectItem(item)}
+                    on:click={() => selectItem(item)}
                     onmouseenter={() => selectedIndex = globalIndex}
                   >
                     <div class="flex items-center">

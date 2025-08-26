@@ -226,7 +226,7 @@
           <!-- Refresh button -->
           {#if entityType && entityId}
             <button
-              onclick={refresh}
+              on:click={refresh}
               disabled={isLoading}
               class="p-1 rounded-sm opacity-70 hover:opacity-100 transition-opacity disabled:opacity-50 mr-2"
               title="Refresh data"
@@ -270,7 +270,7 @@
                   <p class="font-mono text-xs text-muted-foreground mt-1">{errorMessage}</p>
                 </div>
                 <button
-                  onclick={refresh}
+                  on:click={refresh}
                   class="px-3 py-1 text-xs bg-muted hover:bg-muted/80 rounded-md font-mono transition-colors"
                 >
                   Try Again
