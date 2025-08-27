@@ -34,7 +34,9 @@ export async function verifyPassword(
 // --- Session Management ---
 export async function createUserSession(
   userId: string,
-  days = 30
+  days = 30,
+  ipAddress?: string,
+  userAgent?: string
 ): Promise<{ sessionId: string; expiresAt: Date }> {
   const sessionId = generateId(40);
   const expiresAt = createDate({ days });
@@ -42,6 +44,9 @@ export async function createUserSession(
     id: sessionId,
     userId,
     expiresAt,
+    ipAddress,
+    userAgent,
+    sessionContext: {},
   });
   return { sessionId, expiresAt };
 }
@@ -56,12 +61,14 @@ export async function validateSession(sessionId: string) {
         columns: {
           id: true,
           email: true,
-          // Add more columns as needed
+          firstName: true,
+          lastName: true,
+          role: true,
         },
       },
     },
   });
-  return session && session.user ? session.user : null;
+  return session && session.user ? { session, user: session.user } : { session: null, user: null };
 }
 
 export async function invalidateSession(sessionId: string): Promise<void> {
@@ -78,13 +85,26 @@ export function setSessionCookie(
   sessionId: string,
   expiresAt: Date
 ) {
-  cookies.set("session_id", sessionId, {
+  const options = {
     path: "/",
     httpOnly: true,
-    secure: import.meta.env.NODE_ENV === "production",
+    secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     expires: expiresAt,
-  });
+  } as const;
+
+  // Primary cookie name (used by newer code)
+  cookies.set("session_id", sessionId, options);
+
+  // Also set legacy/compat cookie name so older code or examples that
+  // read `session` continue to work during local development.
+  // This avoids silent failures on localhost when different cookie names
+  // are expected across the codebase.
+  try {
+    cookies.set("session", sessionId, options);
+  } catch (e) {
+    // ignore - some runtimes may restrict duplicate cookie writes
+  }
 }
 
 export function clearSessionCookie(cookies: any) {

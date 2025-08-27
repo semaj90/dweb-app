@@ -1,7 +1,7 @@
 // Enhanced SSR Load Functions for SvelteKit 2
 // Production-optimized server-side rendering with caching
 
-import type { PageServerLoad, LayoutServerLoad } from '@sveltejs/kit';
+import type { ServerLoad } from '@sveltejs/kit';
 import { CaseOperations, EvidenceOperations, checkDatabaseHealth } from '../db/enhanced-operations';
 import { CommonErrors } from '../api/response';
 import type { User, Case, Evidence } from '../db/schema-postgres';

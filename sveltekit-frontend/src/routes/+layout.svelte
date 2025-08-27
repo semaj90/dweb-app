@@ -9,10 +9,12 @@
   import FeedbackWidget from '$lib/components/feedback/FeedbackWidget.svelte';
   import type { FeedbackTrigger } from '$lib/types/feedback';
 
-  let startupStatus: StartupStatus | null = null;
-  let showStartupLog = false;
-  let currentFeedbackTrigger: FeedbackTrigger | null = null;
-  let showFeedback = false;
+  let { children }: { children: any } = $props();
+
+  let startupStatus: StartupStatus | null = $state(null);
+  let showStartupLog = $state(false);
+  let currentFeedbackTrigger: FeedbackTrigger | null = $state(null);
+  let showFeedback = $state(false);
 
   // Create and set feedback store context
   const store = createFeedbackStore();
@@ -68,19 +70,19 @@
       store.trackInteraction('platform_error', { error: (error as Error)?.message ?? String(error) });
     }
 
-    // Listen for feedback triggers
-    const feedbackInterval = setInterval(() => {
-      if (!store.isCollecting && !showFeedback) {
-        const trigger = store.showNextFeedback();
-        if (trigger) {
-          currentFeedbackTrigger = trigger;
-          showFeedback = true;
-        }
-      }
-    }, 1000);
+    // Listen for feedback triggers (temporarily disabled to prevent reloading)
+    // const feedbackInterval = setInterval(() => {
+    //   if (!store.isCollecting && !showFeedback) {
+    //     const trigger = store.showNextFeedback();
+    //     if (trigger) {
+    //       currentFeedbackTrigger = trigger;
+    //       showFeedback = true;
+    //     }
+    //   }
+    // }, 1000);
 
     return () => {
-      clearInterval(feedbackInterval);
+      // clearInterval(feedbackInterval); // disabled with feedback system
       store.clearSession();
     };
   });
@@ -148,6 +150,10 @@
       <a href="/yorha-command-center" class="nes-legal-priority-high yorha-3d-button">YoRHa Command Center</a>
       <a href="/demo/enhanced-rag-semantic" class="nes-legal-priority-medium yorha-3d-button">Enhanced RAG Demo</a>
       <a href="/endpoints" class="nes-legal-priority-low yorha-3d-button">Endpoints</a>
+      <div class="auth-buttons">
+        <a href="/auth/login" class="nes-legal-priority-medium yorha-3d-button auth-btn">Login</a>
+        <a href="/auth/register" class="nes-legal-priority-medium yorha-3d-button auth-btn">Register</a>
+      </div>
       {#if startupStatus?.initialized}
         <span class="nes-legal-priority-critical neural-sprite-active">🟢 INTEGRATED</span>
       {:else}
@@ -156,7 +162,7 @@
     </nav>
   </header>
   <main class="nes-main-content">
-    <slot />
+    {@render children()}
   </main>
 </div>
 
@@ -247,6 +253,41 @@
       transform: translateX(0);
       opacity: 1;
     }
+  }
+
+  /* Auth Buttons Styles */
+  .auth-buttons {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-left: auto;
+  }
+
+  .auth-btn {
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%) !important;
+    color: #1a1a1a !important;
+    padding: 0.5rem 1rem !important;
+    text-decoration: none !important;
+    border-radius: 4px !important;
+    font-weight: bold !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    transition: all 0.2s ease !important;
+    border: 1px solid #ffd700 !important;
+  }
+
+  .auth-btn:hover {
+    background: linear-gradient(135deg, #ffed4e 0%, #ffd700 100%) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 8px rgba(255, 215, 0, 0.3) !important;
+  }
+
+  /* Responsive navigation */
+  .nes-nav-main {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
   }
 
   /* These styles are handled by global CSS classes that are actually used in the template */

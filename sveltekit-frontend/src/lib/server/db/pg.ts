@@ -15,9 +15,9 @@ export function getPostgreSQLDatabase() {
   if (_db) return _db;
 
   const databaseUrl =
-    import.meta.env.DATABASE_URL ||
+    process.env.DATABASE_URL ||
     "postgresql://legal_admin:123456@localhost:5432/legal_ai_db";
-  const nodeEnv = import.meta.env.NODE_ENV || "development";
+  const nodeEnv = process.env.NODE_ENV || "development";
 
   console.log("🐘 Connecting to PostgreSQL database:", databaseUrl);
 
@@ -27,8 +27,8 @@ export function getPostgreSQLDatabase() {
 
   _db = drizzle(_pool, { schema });
 
-  // Run migrations (skip in testing environment)
-  if (nodeEnv !== "testing") {
+  // Run migrations (skip in test environment)
+  if (nodeEnv !== "test") {
     try {
       // migrate(_db, { migrationsFolder: './drizzle' });
       console.log(

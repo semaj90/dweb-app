@@ -29,54 +29,40 @@ import { relations } from 'drizzle-orm';
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
   email: varchar('email', { length: 255 }).notNull().unique(),
-  passwordHash: varchar('password_hash', { length: 255 }),
+  passwordHash: varchar('hashed_password', { length: 255 }),
+  username: varchar('username', { length: 100 }),
+  firstName: varchar('first_name', { length: 100 }),
+  lastName: varchar('last_name', { length: 100 }),
   role: varchar('role', { length: 50 }).default('user').notNull(),
-  displayName: varchar('display_name', { length: 255 }),
-  firstName: varchar('first_name', { length: 255 }),
-  lastName: varchar('last_name', { length: 255 }),
-  
-  // Profile information
-  bio: text('bio'),
-  avatarUrl: varchar('avatar_url', { length: 512 }),
-  timezone: varchar('timezone', { length: 100 }).default('UTC'),
-  locale: varchar('locale', { length: 10 }).default('en'),
-  
-  // Authentication fields
-  emailVerified: timestamp('email_verified', { mode: 'date' }),
-  lastLoginAt: timestamp('last_login_at', { mode: 'date' }),
-  loginAttempts: integer('login_attempts').default(0),
-  lockedUntil: timestamp('locked_until', { mode: 'date' }),
-  
-  // Account status
-  isActive: boolean('is_active').default(true),
-  isSuspended: boolean('is_suspended').default(false),
-  
-  // Legal AI specific fields
-  legalSpecialties: jsonb('legal_specialties').default([]).notNull(),
-  preferences: jsonb('preferences').default({}).notNull(),
-  
-  // Vector embeddings for RAG and personalization
+  department: varchar('department', { length: 100 }),
+  jurisdiction: varchar('jurisdiction', { length: 100 }),
+  permissions: jsonb('permissions').default([]).notNull(),
+  isActive: boolean('is_active').default(true).notNull(),
+  emailVerified: boolean('email_verified').default(false).notNull(),
+  avatarUrl: varchar('avatar_url', { length: 500 }),
+  lastLoginAt: timestamp('last_login_at', { withTimezone: true, mode: 'date' }),
+  practiceAreas: jsonb('practice_areas').default([]),
+  barNumber: varchar('bar_number', { length: 50 }),
+  firmName: varchar('firm_name', { length: 200 }),
   profileEmbedding: vector('profile_embedding', { dimensions: 384 }),
-  preferenceEmbedding: vector('preference_embedding', { dimensions: 384 }),
-  
-  // Audit fields
-  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
-  updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
+  metadata: jsonb('metadata').default({}),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true, mode: 'date' }),
 }, (table) => ({
   // Indexes for performance
   emailIdx: index('users_email_idx').on(table.email),
+  usernameIdx: index('users_username_idx').on(table.username),
   roleIdx: index('users_role_idx').on(table.role),
   activeIdx: index('users_active_idx').on(table.isActive),
-  createdAtIdx: index('users_created_at_idx').on(table.createdAt),
   // Vector similarity indexes
-  profileEmbeddingIdx: index('users_profile_embedding_idx').using('hnsw', table.profileEmbedding.op('vector_cosine_ops')),
-  preferenceEmbeddingIdx: index('users_preference_embedding_idx').using('hnsw', table.preferenceEmbedding.op('vector_cosine_ops')),
+  profileEmbeddingIdx: index('users_profile_embedding_hnsw_idx').using('hnsw', table.profileEmbedding.op('vector_cosine_ops')),
 }));
 
 // === LUCIA v3 AUTHENTICATION ===
 
 export const sessions = pgTable("sessions", {
-  id: text("id").primaryKey(),
+  id: varchar("id", { length: 255 }).primaryKey(),
   userId: uuid("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
@@ -84,6 +70,13 @@ export const sessions = pgTable("sessions", {
     withTimezone: true,
     mode: "date",
   }).notNull(),
+  ipAddress: varchar("ip_address", { length: 45 }),
+  userAgent: text("user_agent"),
+  sessionContext: jsonb("session_context").default({}),
+  createdAt: timestamp("created_at", {
+    withTimezone: true,
+    mode: "date",
+  }).defaultNow().notNull(),
 });
 
 export const emailVerificationCodes = pgTable("email_verification_codes", {

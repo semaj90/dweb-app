@@ -1,5 +1,5 @@
 
-import { db } from "$lib/server/db/drizzle";
+import { db } from "$lib/server/db";
 
 // This function stores the log and its embedding in PostgreSQL
 export async function storeLogInVectorDB(data: { log: any; embedding: number[] }) {

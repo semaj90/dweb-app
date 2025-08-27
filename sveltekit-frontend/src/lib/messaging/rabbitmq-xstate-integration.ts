@@ -277,7 +277,7 @@ export const selfPromptingMachine = createMachine({
           ...context.performanceMetrics,
           successRate: total > 0 ? completed.length / total : 1.0,
           averageResponseTime: completed.length > 0 
-            ? completed.reduce((sum, task) => sum + (task.completedAt - task.timestamp), 0) / completed.length
+            ? completed.reduce((sum, task) => sum + ((task as any).completedAt - task.timestamp), 0) / completed.length
             : context.performanceMetrics.averageResponseTime
         };
       }

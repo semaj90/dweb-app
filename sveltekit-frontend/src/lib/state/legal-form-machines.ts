@@ -169,7 +169,7 @@ export const documentUploadMachine = createMachine({
         onError: {
           target: 'invalid',
           actions: assign({
-            validationErrors: ({ event }) => event.error
+            validationErrors: ({ event }) => ((event as any)?.error ?? {})
           })
         }
       }
@@ -204,14 +204,14 @@ export const documentUploadMachine = createMachine({
         onDone: {
           target: 'uploaded',
           actions: assign({
-            uploadedFile: ({ event }) => event.output,
+            uploadedFile: ({ event }) => (event.output as any) ?? null,
             uploadProgress: () => 100
           })
         },
         onError: {
           target: 'uploadError',
           actions: assign({
-            error: ({ event }) => event.error.message
+            error: ({ event }) => ((event as any)?.error?.message ?? String((event as any)?.error))
           })
         }
       },
@@ -227,8 +227,8 @@ export const documentUploadMachine = createMachine({
       always: [
         {
           target: 'processing',
-          guard: ({ context }) => context.formData?.aiProcessing.generateSummary || 
-                                  context.formData?.aiProcessing.extractEntities || 
+          guard: ({ context }) => context.formData?.aiProcessing.generateSummary ||
+            context.formData?.aiProcessing.extractEntities ||
                                   context.formData?.aiProcessing.riskAssessment
         },
         { target: 'completed' }
@@ -245,14 +245,14 @@ export const documentUploadMachine = createMachine({
         onDone: {
           target: 'completed',
           actions: assign({
-            aiResults: ({ event }) => event.output,
+            aiResults: ({ event }) => (event.output as any) ?? null,
             processingProgress: () => 100
           })
         },
         onError: {
           target: 'processingError',
           actions: assign({
-            error: ({ event }) => event.error.message
+            error: ({ event }) => ((event as any)?.error?.message ?? String((event as any)?.error))
           })
         }
       },
@@ -680,7 +680,7 @@ export const searchMachine = createMachine({
       }
 
       const data = await response.json();
-      
+
       // Save to history
       const history = JSON.parse(localStorage.getItem('search-history') || '[]');
       const updatedHistory = [input.query, ...history.filter((q: string) => q !== input.query)].slice(0, 10);
@@ -804,7 +804,7 @@ export const aiAnalysisMachine = createMachine({
     },
     performAnalysis: async ({ input }) => {
       const startTime = Date.now();
-      
+
       const response = await fetch('/api/ai/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -816,7 +816,7 @@ export const aiAnalysisMachine = createMachine({
       }
 
       const data = await response.json();
-      
+
       return {
         ...data,
         processingTime: Date.now() - startTime

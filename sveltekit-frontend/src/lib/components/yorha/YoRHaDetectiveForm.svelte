@@ -18,13 +18,15 @@
     submitClass?: string;
   }
 
-  let { fields = $bindable() } = $props(); // [];
-  let { onSubmit = $bindable() } = $props(); // async (data) => {};
-  let { submitText = $bindable() } = $props(); // 'SUBMIT';
-  let { submitClass = $bindable() } = $props(); // '';
+  let { 
+    fields = $bindable(),
+    onSubmit = $bindable(), 
+    submitText = $bindable(),
+    submitClass = $bindable()
+  } = $props();
 
-  let formData = {};
-  let isSubmitting = false;
+  let formData = $state({});
+  let isSubmitting = $state(false);
 
   // Initialize form data with default values
   fields.forEach(field => {

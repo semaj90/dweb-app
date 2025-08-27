@@ -3,7 +3,6 @@
   import { Dialog } from 'bits-ui';
   import { X } from 'lucide-svelte';
   import { cn } from '$lib/utils';
-  import { $props } from 'svelte';
 
   interface Props {
     open?: boolean;

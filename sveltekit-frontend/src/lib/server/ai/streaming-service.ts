@@ -173,7 +173,7 @@ class StreamingService extends EventEmitter {
         
         options.onStage?.('ranking', { 
           status: 'complete',
-          topSources: ranked.slice(0, 3).map(s => s.title)
+          topSources: ranked.slice(0, 3).map(s => (s as any)?.title || 'Unknown')
         });
         
         return ranked;

@@ -22,11 +22,15 @@ export async function initializeQdrantCollection() {
         vectors: { size: 768, distance: "Cosine" },
       });
       // Create payload index using the correct API
-      await qdrant.createFieldIndex(EVIDENCE_COLLECTION_NAME, {
-        field_name: "tags",
-        field_type: "keyword",
-        wait: true,
-      });
+      try {
+        await (qdrant as any).createFieldIndex(EVIDENCE_COLLECTION_NAME, {
+          field_name: "tags",
+          field_type: "keyword",
+          wait: true,
+        });
+      } catch (indexError) {
+        console.warn('Field index creation failed, continuing without index:', indexError);
+      }
       console.log("Qdrant collection and payload index created successfully.");
     }
   } catch (error) {

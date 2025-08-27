@@ -8,11 +8,13 @@
   interface Props {
     value: any;
     class_?: string;
+    children?: import('svelte').Snippet;
   }
   
   let {
     value,
-    class_ = ""
+    class_ = "",
+    children
   }: Props = $props();
 
   const context =
@@ -37,11 +39,13 @@
   class="space-y-4 {class_}"
   role="option"
   aria-selected={isSelected ? "true" : "false"}
-  on:click={() => handleClick()}
+  onclick={() => handleClick()}
   onkeydown={(e) => e.key === "Enter" && handleClick()}
   tabindex={0}
 >
-  <slot></slot>
+  {#if children}
+    {@render children()}
+  {/if}
 </div>
 
 <style>

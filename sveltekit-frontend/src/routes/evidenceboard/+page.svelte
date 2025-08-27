@@ -3,14 +3,9 @@
   import { $state, $derived, $effect } from 'svelte';
   import { writable } from 'svelte/store';
   import { page } from "$app/state";
-  // Dropzone and Superforms fallback for SvelteKit 2/Svelte 5
-  // If Bits UI and Superforms are unavailable, use SvelteKit's built-in file input and Zod validation
-  import { z } from 'zod';
-  import { Button } from "$lib/components/ui/button/index";
-  import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
-  import { Badge } from "$lib/components/ui/badge/index";
-  import { Input } from "$lib/components/ui/input/index";
-  import { Textarea } from "$lib/components/ui/textarea/index";
+  // Use modular components for file upload
+  import { Button, Card, Badge, Input } from '$lib/components/ui/modular';
+  import FileUploadSection from '$lib/components/FileUploadSection.svelte';
   import GoldenRatioLoader from '$lib/components/ui/enhanced-bits/GoldenRatioLoader.svelte';
   import {
     Upload,
@@ -41,42 +36,8 @@
   let semanticSearchResults = $state([]);
   let ragEnhanced = $state(true);
 
-  // Zod schema for evidence upload
-  const evidenceSchema = z
-    .object({
-      files: z.any().refine((val) => val instanceof FileList && val.length > 0, {
-        message: 'Please select at least one file.',
-      }),
-      context7Enabled: z.boolean(),
-      ragEnhanced: z.boolean(),
-      summarizeWithAI: z.boolean(),
-      summaryType: z.enum(['key_points', 'narrative', 'prosecutorial']).optional(),
-    })
-    .refine(
-      (data) => {
-        if (!data.summarizeWithAI) return true;
-        return !!data.summaryType;
-      },
-      { message: 'Select a summary type', path: ['summaryType'] }
-    );
-
-  // Fallback form state
-  let formErrors = $state<{ files?: string; summaryType?: string } | null>(null);
-  let generateSummary = $state(false);
-  let summaryType = $state('key_points');
-
-
-  // Dialog components removed - not used in this component
-
-  // Fallback file input state
-  let dropzoneFiles = $state<FileList | null>(null);
-  let isDragover = $state(false);
-  let formFields = $state({
-    context7Enabled: true,
-    ragEnhanced: true,
-  summarizeWithAI: true,
-  summaryType: 'narrative' as 'key_points' | 'narrative' | 'prosecutorial',
-  });
+  // File upload state (handled by FileUploadSection component)
+  let uploadedFiles = $state([]);
 
   // ...existing code...
 
@@ -114,83 +75,6 @@
     }
   }
 
-  // Superforms submit handler for evidence upload
-  async function handleEvidenceSubmit(event) {
-    event.preventDefault();
-    isUploading = true;
-    uploadProgress = 0;
-    processingStatus = 'loading';
-
-    // Validate with Zod
-    const result = evidenceSchema.safeParse({
-      files: dropzoneFiles,
-      context7Enabled: formFields.context7Enabled,
-      ragEnhanced: formFields.ragEnhanced,
-      summarizeWithAI: formFields.summarizeWithAI,
-      summaryType: formFields.summaryType,
-    });
-    if (!result.success) {
-      // Zod error output is string[]; join for display
-      const fieldErrors = result.error.formErrors.fieldErrors;
-      formErrors = {
-        files: Array.isArray(fieldErrors.files) ? fieldErrors.files.join(', ') : fieldErrors.files,
-        summaryType: Array.isArray(fieldErrors.summaryType)
-          ? fieldErrors.summaryType.join(', ')
-          : fieldErrors.summaryType,
-      };
-      isUploading = false;
-      return;
-    }
-    formErrors = null;
-
-    const formData = new FormData();
-    if (dropzoneFiles) {
-      Array.from(dropzoneFiles).forEach((file) => {
-        formData.append('files', file);
-      });
-    }
-    formData.append('context7Enabled', formFields.context7Enabled ? 'true' : 'false');
-    formData.append('ragEnhanced', formFields.ragEnhanced ? 'true' : 'false');
-    formData.append('extractEntities', 'true');
-    formData.append('generateSummary', formFields.summarizeWithAI ? 'true' : 'false');
-    if (formFields.summarizeWithAI) {
-      formData.append('summaryType', formFields.summaryType);
-    }
-
-    try {
-      let response: Response;
-        try {
-          response = await fetch('/api/evidence/upload', {
-        method: 'POST',
-        body: formData,
-      });
-          if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-          }
-        } catch (error) {
-          console.error('Fetch failed:', error);
-          throw error;
-        }
-
-      if (response.ok) {
-        const result = await response.json();
-        evidenceItems = [...evidenceItems, ...result.evidence];
-        filterEvidence();
-        processingStatus = 'success';
-        if (context7Enabled) {
-          await triggerContext7Analysis(result.evidence);
-        }
-      } else {
-        throw new Error('Upload failed');
-      }
-    } catch (error) {
-      console.error('Upload error:', error);
-      processingStatus = 'error';
-    } finally {
-      isUploading = false;
-      uploadProgress = 0;
-    }
-  }
 
   async function triggerContext7Analysis(newEvidence: EvidenceItem[]) {
     try {
@@ -385,6 +269,63 @@
         return { label: summaryType, color: 'bg-slate-100 text-slate-700 border-slate-200' };
     }
   }
+
+  // Handler functions for FileUploadSection integration
+  async function handleFileUpload(data: { files: File[]; tags: string[] }) {
+    isUploading = true;
+    processingStatus = 'processing';
+
+    try {
+      const formData = new FormData();
+      data.files.forEach((file) => {
+        formData.append('files', file);
+      });
+      
+      // Add tags if provided
+      if (data.tags.length > 0) {
+        formData.append('tags', JSON.stringify(data.tags));
+      }
+
+      formData.append('context7Enabled', 'true');
+      formData.append('ragEnhanced', 'true');
+      formData.append('extractEntities', 'true');
+      formData.append('generateSummary', 'true');
+      formData.append('summaryType', 'narrative');
+
+      const response = await fetch('/api/evidence/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        evidenceItems = [...evidenceItems, ...result.evidence];
+        filterEvidence();
+        processingStatus = 'success';
+        
+        if (context7Enabled) {
+          await triggerContext7Analysis(result.evidence);
+        }
+      } else {
+        throw new Error('Upload failed');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      processingStatus = 'error';
+    } finally {
+      isUploading = false;
+    }
+  }
+
+  function handleFilesChanged(files: any[]) {
+    // Files changed in the upload component
+    console.log('Files changed:', files);
+  }
+
+  function handleUploadError(error: string) {
+    console.error('Upload error:', error);
+    processingStatus = 'error';
+  }
 </script>
 
 <svelte:head>
@@ -406,175 +347,75 @@
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-      <Card>
-        <CardHeader class="pb-2">
-          <CardTitle class="text-sm font-medium">Total Evidence</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div class="text-2xl font-bold text-blue-600">{totalEvidence}</div>
-        </CardContent>
+      <Card variant="default" class="text-center">
+        {#snippet header()}
+          <div class="text-sm font-medium text-muted-foreground">Total Evidence</div>
+        {/snippet}
+        <div class="text-2xl font-bold text-blue-600">{totalEvidence}</div>
       </Card>
 
-      <Card>
-        <CardHeader class="pb-2">
-          <CardTitle class="text-sm font-medium">Processing</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div class="text-2xl font-bold text-yellow-600">{processingCount}</div>
-        </CardContent>
+      <Card variant="default" class="text-center">
+        {#snippet header()}
+          <div class="text-sm font-medium text-muted-foreground">Processing</div>
+        {/snippet}
+        <div class="text-2xl font-bold text-yellow-600">{processingCount}</div>
       </Card>
 
-      <Card>
-        <CardHeader class="pb-2">
-          <CardTitle class="text-sm font-medium">Ready</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div class="text-2xl font-bold text-green-600">{readyCount}</div>
-        </CardContent>
+      <Card variant="default" class="text-center">
+        {#snippet header()}
+          <div class="text-sm font-medium text-muted-foreground">Ready</div>
+        {/snippet}
+        <div class="text-2xl font-bold text-green-600">{readyCount}</div>
       </Card>
 
-      <Card>
-        <CardHeader class="pb-2">
-          <CardTitle class="text-sm font-medium">Context7 AI</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div class="flex items-center space-x-2">
-            <div class="w-3 h-3 {context7Enabled ? 'bg-green-500' : 'bg-gray-400'} rounded-full">
-            </div>
-            <span class="text-sm font-medium">{context7Enabled ? 'Enabled' : 'Disabled'}</span>
+      <Card variant="default" class="text-center">
+        {#snippet header()}
+          <div class="text-sm font-medium text-muted-foreground">Context7 AI</div>
+        {/snippet}
+        <div class="flex items-center justify-center space-x-2">
+          <div class="w-3 h-3 {context7Enabled ? 'bg-green-500' : 'bg-gray-400'} rounded-full">
           </div>
-        </CardContent>
+          <span class="text-sm font-medium">{context7Enabled ? 'Enabled' : 'Disabled'}</span>
+        </div>
       </Card>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Upload Section -->
       <div class="lg:col-span-2">
-        <Card>
-          <CardHeader>
-            <CardTitle class="flex items-center space-x-2">
-              <Upload class="h-5 w-5" />
-              <span>Upload Evidence</span>
-            </CardTitle>
-          </CardHeader>
-
-          <CardContent>
-            <!-- Fallback Evidence Upload Form -->
-            <form onsubmit={handleEvidenceSubmit} enctype="multipart/form-data" class="space-y-6">
-              <div
-                class="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center transition-colors duration-200 {isDragover
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'hover:border-slate-400'}"
-                role="region"
-                aria-label="File dropzone"
-                ondragover={() => (isDragover = true)}
-                ondragleave={() => (isDragover = false)}>
-                <input
-                  type="file"
-                  name="files"
-                  multiple
-                  accept="application/pdf,image/*,.doc,.docx"
-                  onchange={(e) => (dropzoneFiles = (e.target as HTMLInputElement).files)}
-                  class="mb-4" />
-                <Upload class="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                <p class="text-lg font-medium text-slate-700 mb-2">
-                  Drop files here or click to upload
-                </p>
-                <p class="text-sm text-slate-500">
-                  Supports PDF, images, and documents. Max 50MB per file.
-                </p>
-              </div>
-
-              <!-- Zod validation error -->
-              {#if formErrors?.files}
-                <p class="text-red-500 text-sm">{formErrors.files}</p>
-              {/if}
-
-              <!-- Upload Options -->
-              <div class="flex flex-wrap gap-4">
-                <label class="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    name="context7Enabled"
-                    bind:checked={formFields.context7Enabled}
-                    class="rounded" />
-                  <span class="text-sm">Enable Context7 AI Analysis</span>
-                </label>
-                <label class="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    name="ragEnhanced"
-                    bind:checked={formFields.ragEnhanced}
-                    class="rounded" />
-                  <span class="text-sm">Enhanced RAG Processing</span>
-                </label>
-                <label class="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    name="summarizeWithAI"
-                    bind:checked={formFields.summarizeWithAI}
-                    class="rounded" />
-                  <span class="text-sm">Summarize with AI</span>
-                </label>
-              </div>
-
-              {#if formFields.summarizeWithAI}
-                <div class="mt-4 w-full max-w-xs">
-                  <label class="block text-sm font-medium text-slate-700 mb-1">Summary Type</label>
-                  <select
-                    bind:value={formFields.summaryType}
-                    class="w-full px-3 py-2 border border-slate-300 rounded-md text-sm bg-white">
-                    <option value="key_points">Key Points</option>
-                    <option value="narrative">Narrative Summary</option>
-                    <option value="prosecutorial">Prosecutorial Analysis</option>
-                  </select>
-                  {#if formErrors?.summaryType}
-                    <p class="text-red-500 text-xs mt-1">{formErrors.summaryType}</p>
-                  {/if}
-                </div>
-              {/if}
-
-              <Button type="submit" class="mt-4 w-full" disabled={isUploading}>
-                <Upload class="h-4 w-4 mr-2" />
-                {isUploading ? 'Uploading...' : 'Upload Evidence'}
-              </Button>
-
-              <!-- Upload Progress -->
-              {#if isUploading}
-                <div class="mt-6">
-                  <GoldenRatioLoader
-                    bind:status={processingStatus}
-                    bind:progress={uploadProgress}
-                    loadingText="Uploading and processing evidence..."
-                    aiOutput="Evidence successfully processed and added to your board." />
-                </div>
-              {/if}
-            </form>
-          </CardContent>
-        </Card>
+        <FileUploadSection
+          reportId="evidenceboard"
+          acceptedTypes={['.pdf', '.jpg', '.jpeg', '.png', '.gif', '.txt', '.doc', '.docx']}
+          maxFileSize={50 * 1024 * 1024}
+          maxFiles={10}
+          multiple={true}
+          onupload={handleFileUpload}
+          onfilesChanged={handleFilesChanged}
+          onerror={handleUploadError}
+        />
 
         <!-- Evidence Grid -->
-        <Card class="mt-6">
-          <CardHeader>
-            <CardTitle>Evidence Collection ({filteredEvidence.length})</CardTitle>
+        <Card variant="default" class="mt-6">
+          {#snippet header()}
+            <div class="space-y-4">
+              <h3 class="text-lg font-semibold">Evidence Collection ({filteredEvidence.length})</h3>
 
-            <!-- Search and Filter -->
-            <div class="flex flex-col sm:flex-row gap-4 mt-4">
-              <div class="flex-1">
-                <Input bind:value={searchQuery} placeholder="Search evidence..." class="w-full" />
+              <!-- Search and Filter -->
+              <div class="flex flex-col sm:flex-row gap-4">
+                <div class="flex-1">
+                  <Input bind:value={searchQuery} placeholder="Search evidence..." variant="default" />
+                </div>
+                <select
+                  bind:value={selectedFilter}
+                  class="px-3 py-2 border border-border rounded-md bg-background text-foreground">
+                  <option value="all">All Types</option>
+                  <option value="pdf">PDFs</option>
+                  <option value="image">Images</option>
+                  <option value="document">Documents</option>
+                </select>
               </div>
-              <select
-                bind:value={selectedFilter}
-                class="px-3 py-2 border border-slate-300 rounded-md">
-                <option value="all">All Types</option>
-                <option value="pdf">PDFs</option>
-                <option value="image">Images</option>
-                <option value="document">Documents</option>
-              </select>
             </div>
-          </CardHeader>
-
-          <CardContent>
+          {/snippet}
             {#if filteredEvidence.length === 0}
               <div class="text-center py-12">
                 <FileText class="h-16 w-16 text-slate-300 mx-auto mb-4" />
@@ -669,21 +510,19 @@
                 {/each}
               </div>
             {/if}
-          </CardContent>
         </Card>
       </div>
 
       <!-- AI Insights Panel -->
       <div class="space-y-6">
         <!-- Context7 Analysis -->
-        <Card>
-          <CardHeader>
-            <CardTitle class="flex items-center space-x-2">
+        <Card variant="default">
+          {#snippet header()}
+            <div class="flex items-center space-x-2">
               <Brain class="h-5 w-5" />
-              <span>AI Insights</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+              <span class="text-lg font-semibold">AI Insights</span>
+            </div>
+          {/snippet}
             {#if context7Enabled}
               <div class="space-y-4">
                 <div class="flex items-center space-x-2">
@@ -708,19 +547,17 @@
                 <p class="text-sm text-slate-500">Enable Context7 for AI insights</p>
               </div>
             {/if}
-          </CardContent>
         </Card>
 
         <!-- Semantic Search Results -->
         {#if semanticSearchResults.length > 0}
-          <Card>
-            <CardHeader>
-              <CardTitle class="flex items-center space-x-2">
+          <Card variant="default">
+            {#snippet header()}
+              <div class="flex items-center space-x-2">
                 <Search class="h-5 w-5" />
-                <span>Semantic Search</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+                <span class="text-lg font-semibold">Semantic Search</span>
+              </div>
+            {/snippet}
               <div class="space-y-3">
                 {#each semanticSearchResults.slice(0, 5) as result}
                   <div class="p-3 bg-slate-50 rounded-md">
@@ -736,16 +573,14 @@
                   </div>
                 {/each}
               </div>
-            </CardContent>
           </Card>
         {/if}
 
         <!-- Quick Actions -->
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <Card variant="default">
+          {#snippet header()}
+            <div class="text-lg font-semibold">Quick Actions</div>
+          {/snippet}
             <div class="space-y-3">
               <Button class="w-full justify-start">
                 <Brain class="h-4 w-4 mr-2" />
@@ -760,7 +595,6 @@
                 Export Evidence Report
               </Button>
             </div>
-          </CardContent>
         </Card>
       </div>
     </div>

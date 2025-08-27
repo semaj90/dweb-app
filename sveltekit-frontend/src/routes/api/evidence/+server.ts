@@ -4,11 +4,11 @@
 
 import { json, type RequestHandler } from '@sveltejs/kit';
 import { z } from 'zod';
-import { withApiHandler, parseRequestBody, CommonErrors, createPagination } from '$lib/server/api/response';
-import { db } from "$lib/server/db/drizzle";
+import { withApiHandler, parseRequestBody, CommonErrors, createPagination } from '../../../lib/server/api/response.js';
+import { db } from "../../../lib/server/db/index.js";
 import { eq, and, or, ilike, count, desc, asc, sql } from "drizzle-orm";
-import { evidence, cases } from '$lib/server/db/schema-postgres';
-import type { Evidence } from '$lib/server/db/schema-postgres';
+import { evidence, cases } from '../../../lib/server/db/schema-postgres.js';
+import type { Evidence } from '../../../lib/server/db/schema-types.js';
 import { randomUUID } from 'crypto';
 
 // Enhanced AI analysis service
@@ -45,15 +45,19 @@ export interface AIAnalysis {
 export interface EvidenceData {
   id?: string;
   caseId?: string;
+  userId?: string;
   title: string;
   description?: string | null;
   evidenceType?: string;
+  subType?: string;
   tags?: string[];
-  fileType?: string;
   location?: any;
   collectedBy?: string;
   fileName?: string;
+  fileSize?: number;
   mimeType?: string;
+  hash?: string;
+  boardPosition?: any;
   [k: string]: any;
 }
 
@@ -61,7 +65,7 @@ export interface EvidenceData {
  * Lightweight fallback analysis used when a real AI backend is not available.
  * Keeps types satisfied and provides predictable default values.
  */
-export const createFallbackAnalysis = (
+const createFallbackAnalysis = (
   evidence: EvidenceData,
   options: { useGPUAcceleration?: boolean } = {}
 ): AIAnalysis => ({
@@ -291,58 +295,29 @@ export const GET: RequestHandler = async ({ url }) => {
       );
     }
 
-    // Get evidence with pagination
+    // Get evidence with pagination - simplified query to avoid schema issues
     const evidenceQuery = db
-      .select({
-        id: evidence.id,
-        caseId: evidence.caseId,
-        criminalId: evidence.criminalId,
-        title: evidence.title,
-        description: evidence.description,
-        evidenceType: evidence.evidenceType,
-        fileType: evidence.fileType,
-        subType: evidence.subType,
-        fileUrl: evidence.fileUrl,
-        fileName: evidence.fileName,
-        fileSize: evidence.fileSize,
-        mimeType: evidence.mimeType,
-        hash: evidence.hash,
-        tags: evidence.tags,
-        chainOfCustody: evidence.chainOfCustody,
-        collectedAt: evidence.collectedAt,
-        collectedBy: evidence.collectedBy,
-        location: evidence.location,
-        labAnalysis: evidence.labAnalysis,
-        aiAnalysis: evidence.aiAnalysis,
-        aiTags: evidence.aiTags,
-        aiSummary: evidence.aiSummary,
-        summary: evidence.summary,
-        isAdmissible: evidence.isAdmissible,
-        confidentialityLevel: evidence.confidentialityLevel,
-        canvasPosition: evidence.canvasPosition,
-        uploadedBy: evidence.uploadedBy,
-        uploadedAt: evidence.uploadedAt,
-        updatedAt: evidence.updatedAt
-      })
+      .select()
       .from(evidence)
-      .orderBy(desc(evidence.uploadedAt))
+      .orderBy(desc(evidence.created_at))
       .limit(limit)
       .offset(offset);
 
     // Add where conditions if any
+    let finalEvidenceQuery = evidenceQuery;
     if (whereConditions.length > 0) {
-      evidenceQuery.where(and(...whereConditions));
+      finalEvidenceQuery = evidenceQuery.where(and(...whereConditions));
     }
 
-    const evidenceResults = await evidenceQuery;
+    const evidenceResults = await finalEvidenceQuery;
 
     // Get total count for pagination
-    const totalQuery = db
+    let totalQuery = db
       .select({ count: count() })
       .from(evidence);
 
     if (whereConditions.length > 0) {
-      totalQuery.where(and(...whereConditions));
+      totalQuery = totalQuery.where(and(...whereConditions));
     }
 
     const [{ count: totalCount }] = await totalQuery;
@@ -369,13 +344,11 @@ export const POST: RequestHandler = async ({ request }) => {
     const data = await request.json();
     const {
       caseId,
-      criminalId,
+      userId,
       title,
       description,
       evidenceType,
-      fileType,
       subType,
-      fileUrl,
       fileName,
       fileSize,
       mimeType,
@@ -385,15 +358,14 @@ export const POST: RequestHandler = async ({ request }) => {
       collectedAt,
       collectedBy,
       location,
-      labAnalysis = {},
       aiAnalysis = {},
       aiTags = [],
       aiSummary,
       summary,
+      summaryType,
       isAdmissible = true,
-      confidentialityLevel = 'standard',
-      canvasPosition = {},
-      uploadedBy
+      confidentialityLevel = 'internal',
+      boardPosition = {}
     } = data;
 
     if (!caseId || !title || !evidenceType) {
@@ -422,13 +394,11 @@ export const POST: RequestHandler = async ({ request }) => {
       .insert(evidence)
       .values({
         caseId,
-        criminalId,
+        userId,
         title,
         description,
         evidenceType,
-        fileType,
         subType,
-        fileUrl,
         fileName,
         fileSize,
         mimeType,
@@ -438,15 +408,14 @@ export const POST: RequestHandler = async ({ request }) => {
         collectedAt: collectedAt ? new Date(collectedAt) : null,
         collectedBy,
         location,
-        labAnalysis,
         aiAnalysis,
         aiTags,
         aiSummary,
         summary,
+        summaryType,
         isAdmissible,
         confidentialityLevel,
-        canvasPosition,
-        uploadedBy
+        boardPosition
       })
       .returning();
 

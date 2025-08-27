@@ -25,7 +25,7 @@ const vector = customType<{
   notNull: boolean;
   default: boolean;
 }>({
-  dataType(config) {
+  dataType(config: { dimensions?: number } = {}) {
     return `vector(${config?.dimensions || 384})`;
   },
   toDriver(value: number[]): string {

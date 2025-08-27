@@ -1,13 +1,33 @@
 
 import { json } from '@sveltejs/kit';
-import { getEmbeddingRepository } from '$lib/server/embedding/embedding-repository';
+import { getEmbeddingRepository } from '../../../../lib/server/embedding/embedding-repository.js';
 
 // Minimal vector search endpoint leveraging pgvector embedding repository
 export async function POST({ request }) {
   try {
-    const { query, limit = 8, model } = await request.json();
-    if (!query || typeof query !== 'string') return json({ error: 'query required' }, { status: 400 });
-    const repo = getEmbeddingRepository();
+    const contentType = request.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      return json({ error: 'Content-Type must be application/json' }, { status: 400 });
+    }
+
+    const body = await request.text();
+    if (!body || body.trim() === '') {
+      return json({ error: 'Request body cannot be empty' }, { status: 400 });
+    }
+
+    let data;
+    try {
+      data = JSON.parse(body);
+    } catch (parseError) {
+      return json({ error: 'Invalid JSON in request body' }, { status: 400 });
+    }
+
+    const { query, limit = 8, model } = data;
+    if (!query || typeof query !== 'string') {
+      return json({ error: 'query required and must be a string' }, { status: 400 });
+    }
+
+    const repo = await getEmbeddingRepository();
     const results = await repo.querySimilar(query, { limit, model });
     return json({ results, count: results.length });
   } catch (e) {

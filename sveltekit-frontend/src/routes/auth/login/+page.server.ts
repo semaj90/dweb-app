@@ -2,7 +2,8 @@ import { fail, redirect } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms/server';
 import { zod } from 'sveltekit-superforms/adapters';
 import { z } from 'zod';
-import { relayAuthService } from '$lib/server/services/relay-auth-service';
+import { simpleAuthService } from '$lib/server/auth-simple';
+import { lucia } from '$lib/server/auth';
 import type { PageServerLoad, Actions } from './$types';
 
 const loginSchema = z.object({
@@ -30,80 +31,40 @@ export const actions: Actions = {
     const userAgent = request.headers.get('user-agent') || '';
 
     try {
-      // Use relay auth service instead of direct database calls
-      console.log('🔄 Using RelayAuthService for login authentication...');
+      // Use simple authentication with PostgreSQL
+      console.log('🔄 Using simple authentication with PostgreSQL...');
       
-      const user = await relayAuthService.getUserByEmail(email.toLowerCase());
+      // Login user using simpleAuthService
+      const user = await simpleAuthService.login(email.toLowerCase(), password);
+      
+      console.log('✅ User authenticated successfully:', user.email);
 
-      if (!user) {
-        console.log('❌ User not found via relay service:', email);
-        return fail(400, {
-          form: {
-            ...form,
-            errors: { email: ['Invalid email or password'] }
-          }
-        });
-      }
-
-      // Check if account is active
-      if (!user.is_active) {
-        console.log('❌ Account disabled via relay service:', email);
-        return fail(400, {
-          form: {
-            ...form,
-            errors: { email: ['Account is disabled. Please contact support.'] }
-          }
-        });
-      }
-
-      // Verify password using relay auth service
-      const validPassword = await relayAuthService.validatePassword(user, password);
-
-      if (!validPassword) {
-        console.log('❌ Invalid password via relay service:', email);
-        return fail(400, {
-          form: {
-            ...form,
-            errors: { password: ['Invalid email or password'] }
-          }
-        });
-      }
-
-      console.log('✅ Password verified via relay service:', email);
-
-      // Skip two-factor for demo (relay service doesn't handle 2FA yet)
-      // Future enhancement: add 2FA support to relay service
-
-      // Create session using relay auth service
-      const session = await relayAuthService.createSession(user.id, {
-        ipAddress: clientIP,
-        userAgent,
-        deviceInfo: {
-          platform: request.headers.get('sec-ch-ua-platform') || 'unknown',
-          mobile: request.headers.get('sec-ch-ua-mobile') === '?1'
-        }
+      // Create session using simple auth service
+      const session = await simpleAuthService.createSession(user.id);
+      
+      // Set session cookie
+      const sessionCookie = lucia.createSessionCookie(session.id);
+      cookies.set(sessionCookie.name, sessionCookie.value, {
+        ...sessionCookie.attributes,
+        path: '/'
       });
 
-      // Create session cookie manually to avoid Lucia's database connection
-      const cookieName = 'auth-session';
-      const cookieValue = session.id;
-      const isSecure = false; // dev mode
-      
-      cookies.set(cookieName, cookieValue, {
-        path: '/',
-        httpOnly: true,
-        secure: isSecure,
-        sameSite: 'strict',
-        maxAge: 60 * 60 * 24 * 7 // 7 days
-      });
-
-      // Skip database updates for now - relay service handles this
-      // Future enhancement: add login tracking to relay service
-      
-      console.log('✅ Session created via relay service for:', email);
+      console.log('✅ Session created successfully for:', user.email);
 
     } catch (error) {
-      console.error('Login error via relay service:', error);
+      console.error('Login error with PostgreSQL auth:', error);
+
+      // Handle specific error messages
+      const errorMessage = (error as Error).message;
+      
+      if (errorMessage.includes('Invalid email or password') || errorMessage.includes('Account is deactivated')) {
+        return fail(400, {
+          form: {
+            ...form,
+            errors: { email: [errorMessage] }
+          }
+        });
+      }
 
       return fail(500, {
         form: {

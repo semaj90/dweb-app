@@ -5,8 +5,40 @@
 
 import { pgTable, text, timestamp, boolean, serial, varchar, jsonb, vector, index, uniqueIndex } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
-import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
+// import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
+
+// ============================================================================
+// ZOD VALIDATION SCHEMAS
+// ============================================================================
+
+export const insertUserSchema = z.object({
+  email: z.string().email(),
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+  passwordHash: z.string(),
+  role: z.string().default('user'),
+  isActive: z.boolean().default(true),
+  isVerified: z.boolean().default(false),
+  jurisdiction: z.string().optional(),
+  practiceAreas: z.any().optional(),
+  barNumber: z.string().optional(),
+  firmName: z.string().optional(),
+  metadata: z.any().default({})
+});
+
+export const updateUserSchema = insertUserSchema.partial();
+
+export const insertProfileSchema = z.object({
+  userId: z.number(),
+  bio: z.string().optional(),
+  preferences: z.any().default({}),
+  specializations: z.array(z.string()).default([]),
+  experienceLevel: z.string().optional(),
+  visibility: z.string().default('private')
+});
+
+export const updateProfileSchema = insertProfileSchema.partial();
 
 // ============================================================================
 // USER ACCOUNTS TABLE
@@ -24,7 +56,7 @@ export const users = pgTable('users', {
   
   // Legal AI specific fields
   jurisdiction: varchar('jurisdiction', { length: 100 }),
-  practiceAreas: jsonb('practice_areas').$type<string[]>(),
+  practiceAreas: jsonb('practice_areas'),
   barNumber: varchar('bar_number', { length: 50 }),
   firmName: varchar('firm_name', { length: 200 }),
   
@@ -32,7 +64,7 @@ export const users = pgTable('users', {
   profileEmbedding: vector('profile_embedding', { dimensions: 384 }),
   
   // Metadata and timestamps
-  metadata: jsonb('metadata').$type<Record<string, any>>().default({}),
+  metadata: jsonb('metadata').default({}),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
   lastLoginAt: timestamp('last_login_at'),
@@ -66,12 +98,7 @@ export const userSessions = pgTable('user_sessions', {
   isActive: boolean('is_active').notNull().default(true),
   
   // Session context for legal work
-  sessionContext: jsonb('session_context').$type<{
-    caseIds?: string[];
-    documentIds?: string[];
-    searchHistory?: string[];
-    activeWorkspace?: string;
-  }>().default({}),
+  sessionContext: jsonb('session_context').default({}),
   
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
@@ -92,40 +119,16 @@ export const userProfiles = pgTable('user_profiles', {
   
   // Personal information
   phoneNumber: varchar('phone_number', { length: 20 }),
-  address: jsonb('address').$type<{
-    street?: string;
-    city?: string;
-    state?: string;
-    zipCode?: string;
-    country?: string;
-  }>(),
+  address: jsonb('address'),
   
   // Professional information
   licenseNumber: varchar('license_number', { length: 50 }),
   yearsOfExperience: serial('years_of_experience'),
-  specializations: jsonb('specializations').$type<string[]>().default([]),
-  education: jsonb('education').$type<Array<{
-    degree: string;
-    institution: string;
-    graduationYear: number;
-  }>>().default([]),
+  specializations: jsonb('specializations').default([]),
+  education: jsonb('education').default([]),
   
   // Preferences and settings
-  preferences: jsonb('preferences').$type<{
-    theme?: 'light' | 'dark' | 'auto';
-    language?: string;
-    timezone?: string;
-    notifications?: {
-      email?: boolean;
-      push?: boolean;
-      sms?: boolean;
-    };
-    aiAssistance?: {
-      autoSummarize?: boolean;
-      suggestCitations?: boolean;
-      riskAnalysis?: boolean;
-    };
-  }>().default({}),
+  preferences: jsonb('preferences').default({}),
   
   // Avatar and profile image
   avatarUrl: varchar('avatar_url', { length: 500 }),
@@ -156,7 +159,7 @@ export const userActivityLog = pgTable('user_activity_log', {
   userAgent: text('user_agent'),
   
   // Activity context
-  context: jsonb('context').$type<Record<string, any>>().default({}),
+  context: jsonb('context').default({}),
   
   // Results
   success: boolean('success').notNull().default(true),
@@ -176,29 +179,29 @@ export const userActivityLog = pgTable('user_activity_log', {
 // ZONT SCHEMAS FOR VALIDATION
 // ============================================================================
 
-// User insert/update schemas
-export const insertUserSchema = createInsertSchema(users, {
-  email: z.string().email(),
-  firstName: z.string().min(1).max(100),
-  lastName: z.string().min(1).max(100),
-  role: z.enum(['admin', 'attorney', 'paralegal', 'investigator', 'user']),
-  practiceAreas: z.array(z.string()).optional(),
-});
+// User insert/update schemas (commented out until drizzle-zod is available)
+// export const insertUserSchema = createInsertSchema(users, {
+//   email: z.string().email(),
+//   firstName: z.string().min(1).max(100),
+//   lastName: z.string().min(1).max(100),
+//   role: z.enum(['admin', 'attorney', 'paralegal', 'investigator', 'user']),
+//   practiceAreas: z.array(z.string()).optional(),
+// });
 
-export const selectUserSchema = createSelectSchema(users);
-export const updateUserSchema = insertUserSchema.partial();
+// export const selectUserSchema = createSelectSchema(users);
+// export const updateUserSchema = insertUserSchema.partial();
 
-// Session schemas
-export const insertSessionSchema = createInsertSchema(userSessions);
-export const selectSessionSchema = createSelectSchema(userSessions);
+// // Session schemas
+// export const insertSessionSchema = createInsertSchema(userSessions);
+// export const selectSessionSchema = createSelectSchema(userSessions);
 
-// Profile schemas
-export const insertProfileSchema = createInsertSchema(userProfiles);
-export const selectProfileSchema = createSelectSchema(userProfiles);
-export const updateProfileSchema = insertProfileSchema.partial();
+// // Profile schemas
+// export const insertProfileSchema = createInsertSchema(userProfiles);
+// export const selectProfileSchema = createSelectSchema(userProfiles);
+// export const updateProfileSchema = insertProfileSchema.partial();
 
-// Activity log schema
-export const insertActivitySchema = createInsertSchema(userActivityLog);
+// // Activity log schema
+// export const insertActivitySchema = createInsertSchema(userActivityLog);
 
 // ============================================================================
 // TYPESCRIPT TYPES

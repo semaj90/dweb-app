@@ -2,416 +2,462 @@
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import Button from '$lib/components/ui/Button.svelte';
-  import Card from '$lib/components/ui/Card.svelte';
-  import UniversalSearchBar from '$lib/components/search/UniversalSearchBar.svelte';
-  import type { SearchResult } from '$lib/components/search/types.js';
+  // Simple modal implementation instead of problematic Dialog components
 
-  let { data }: {
-    data: {
-      userId: string | null;
-      sessionId: string | null;
-      email: string | null;
-      isAuthenticated: boolean;
-    }
-  } = $props();
+  // YoRHa Detective Interface State
+  let currentTime = $state(new Date().toLocaleString());
+  let activeSection = $state('command-center');
+  let isNewCaseModalOpen = $state(false);
+  let notification = $state({ show: false, message: '' });
 
-  // Modern website state
-  let currentSlide = $state(0);
+  // Live statistics from database
   let stats = $state({
-    cases: '2,847',
-    evidence: '18,592',
-    users: '324',
-    accuracy: '99.7%'
+    activeCases: 0,
+    evidenceItems: 0,
+    personsOfInterest: 0,
+    recentActivity: 0,
+    loading: true
   });
 
-  // Hero carousel slides
-  let heroSlides = $state([
-    {
-      title: 'AI-Powered Legal Research',
-      subtitle: 'Advanced case analysis with machine learning',
-      image: '/api/placeholder/800/400',
-      cta: 'Start Research'
-    },
-    {
-      title: 'Evidence Management',
-      subtitle: 'Secure chain of custody with blockchain technology',
-      image: '/api/placeholder/800/400',
-      cta: 'View Evidence'
-    },
-    {
-      title: 'Person of Interest Tracking',
-      subtitle: 'Comprehensive criminal database integration',
-      image: '/api/placeholder/800/400',
-      cta: 'Search POI'
-    }
-  ]);
+  // Active cases from database
+  let activeCases = $state([]);
+  let loadingCases = $state(true);
 
-  // Featured services
-  let services = $state([
-    {
-      icon: '🔍',
-      title: 'Case Investigation',
-      description: 'AI-powered case analysis and evidence correlation',
-      link: '/cases'
-    },
-    {
-      icon: '👤',
-      title: 'Person Tracking',
-      description: 'Comprehensive person of interest database',
-      link: '/poi'
-    },
-    {
-      icon: '📄',
-      title: 'Document Analysis',
-      description: 'OCR and semantic analysis of legal documents',
-      link: '/documents'
-    },
-    {
-      icon: '⚖️',
-      title: 'Legal Research',
-      description: 'Access to precedents and legal databases',
-      link: '/research'
-    }
-  ]);
-
-  onMount(() => {
-    // Auto-advance hero carousel
-    setInterval(() => {
-      currentSlide = (currentSlide + 1) % heroSlides.length;
-    }, 5000);
-  });
-
-  function handleSearch(event: CustomEvent<{ query: string; results: SearchResult[] }>) {
-    const { query, results } = event.detail;
-    console.log('Search performed:', query, results.length, 'results');
-    // Could navigate to search results page
-  }
-
-  function handleSearchSelect(event: CustomEvent<{ result: SearchResult }>) {
-    const { result } = event.detail;
-    console.log('Selected result:', result);
-
-    // Navigate based on result type
-    switch (result.type) {
-      case 'case':
-        goto(`/cases/${result.id}`);
-        break;
-      case 'criminal':
-        goto(`/poi/${result.id}`);
-        break;
-      case 'evidence':
-        goto(`/evidence/${result.id}`);
-        break;
-      default:
-        goto(`/search?q=${encodeURIComponent(result.title)}`);
-    }
-  }
-
-  // Missing variables used in auth handler
-  let email = '';
-  let password = '';
-  let firstName = '';
-  let lastName = '';
-  let loading = false;
-  let error = '';
-  let message = '';
-  let isLogin = true;
-
-  // Missing systemInfo used in template
-  let systemInfo = {
+  // System status
+  let systemStatus = $state({
     uptime: '72h 14m',
-    activeServices: '8/9',
-    lastSync: '2m ago'
-  };
+    services: '8/9 ONLINE',
+    lastSync: 'NOW',
+    status: 'OPERATIONAL'
+  });
 
-  async function handleAuth(event) {
+  // Recent activity feed
+  let recentActivity = $state([
+    { time: '12:47:33', action: 'Evidence uploaded', details: 'Financial records - Case #2847' },
+    { time: '12:45:10', action: 'Case updated', details: 'Corporate Espionage Investigation' },
+    { time: '12:42:18', action: 'POI identified', details: 'Sarah Chen - Missing Person Case' },
+    { time: '12:40:05', action: 'Analysis complete', details: 'Document classification completed' }
+  ]);
+
+  // New case form state
+  let newCaseForm = $state({
+    title: '',
+    description: '',
+    priority: 'medium',
+    loading: false
+  });
+
+  // Priority options for select
+  const priorityOptions = [
+    { value: 'low', label: 'Low' },
+    { value: 'medium', label: 'Medium' },
+    { value: 'high', label: 'High' },
+    { value: 'critical', label: 'Critical' }
+  ];
+
+  onMount(async () => {
+    // Update current time every second
+    const timeInterval = setInterval(() => {
+      currentTime = new Date().toLocaleString();
+    }, 1000);
+
+    // Load dashboard data
+    await loadDashboardData();
+
+    return () => clearInterval(timeInterval);
+  });
+
+  async function loadDashboardData() {
+    try {
+      // Load statistics
+      const statsResponse = await fetch('/api/dashboard/stats');
+      if (statsResponse.ok) {
+        const statsData = await statsResponse.json();
+        stats = { ...statsData, loading: false };
+      }
+
+      // Load active cases
+      const casesResponse = await fetch('/api/cases?status=active&limit=5');
+      if (casesResponse.ok) {
+        const casesData = await casesResponse.json();
+        activeCases = casesData.cases || [];
+      }
+    } catch (error) {
+      console.error('Failed to load dashboard data:', error);
+    } finally {
+      stats.loading = false;
+      loadingCases = false;
+    }
+  }
+
+  async function handleCreateCase(event) {
     event.preventDefault();
-    if (!email || !password) {
-      error = 'Email and password are required';
+    
+    if (!newCaseForm.title.trim() || !newCaseForm.description.trim()) {
+      showNotification('Please fill in all required fields');
       return;
     }
 
-    loading = true;
-    error = '';
-    message = '';
-
+    newCaseForm.loading = true;
+    
     try {
-      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
-      const body = isLogin
-        ? { email, password }
-        : { email, password, firstName, lastName };
-
-      const response = await fetch(endpoint, {
+      const response = await fetch('/api/cases', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
+        body: JSON.stringify({
+          title: newCaseForm.title,
+          description: newCaseForm.description,
+          priority: newCaseForm.priority,
+          status: 'active'
+        })
       });
 
-      const result = await response.json();
-
-      if (result.success) {
-        message = result.message;
-        if (!isLogin) {
-          // Switch to login after successful registration
-          isLogin = true;
-          message = 'Registration successful! You can now login.';
-        } else {
-          // Redirect after successful login
-          window.location.href = '/dashboard';
-        }
+      if (response.ok) {
+        const result = await response.json();
+        showNotification('Case created successfully!');
+        isNewCaseModalOpen = false;
+        newCaseForm = { title: '', description: '', priority: 'medium', loading: false };
+        await loadDashboardData(); // Refresh data
       } else {
-        error = result.error || 'An error occurred';
+        const error = await response.json();
+        showNotification(`Error: ${error.message || 'Failed to create case'}`);
       }
-    } catch (err) {
-      error = 'Network error occurred';
-      console.error(err);
+    } catch (error) {
+      console.error('Error creating case:', error);
+      showNotification('Network error occurred');
+    } finally {
+      newCaseForm.loading = false;
     }
+  }
 
-    loading = false;
+  function showNotification(message: string) {
+    notification = { show: true, message };
+    setTimeout(() => {
+      notification = { show: false, message: '' };
+    }, 3000);
+  }
+
+  function closeModal() {
+    isNewCaseModalOpen = false;
+  }
+
+  function handleNavigation(section: string) {
+    activeSection = section;
+    switch (section) {
+      case 'evidence':
+        goto('/evidence');
+        break;
+      case 'poi':
+        goto('/poi');
+        break;
+      case 'analysis':
+        goto('/analysis');
+        break;
+      case 'search':
+        goto('/search');
+        break;
+      case 'terminal':
+        goto('/terminal');
+        break;
+      default:
+        // Stay on command center
+        break;
+    }
   }
 </script>
 
 <svelte:head>
-  <title>Legal AI Platform - Advanced Case Management & Evidence Analysis</title>
-  <meta name="description" content="Modern legal AI platform for case management, evidence analysis, and legal research with advanced AI-powered search capabilities." />
+  <title>YoRHa Detective - Command Center</title>
+  <meta name="description" content="YoRHa Detective Command Center - Advanced case management and investigation platform" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 </svelte:head>
 
-<!-- Modern Legal AI Platform Homepage -->
-<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+<!-- YoRHa Detective Interface -->
+<div class="min-h-screen bg-[#EAE8E1] font-mono text-[#3D3D3D]">
   <!-- Header -->
-  <header class="bg-white shadow-lg">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center py-6">
-        <div class="flex items-center">
-          <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center mr-4">
-            <span class="text-white font-bold text-lg">⚖️</span>
-          </div>
-          <div>
-            <h1 class="text-2xl font-bold text-gray-900">Legal AI Platform</h1>
-            <p class="text-sm text-gray-500">Advanced Legal Case Management</p>
-          </div>
-        </div>
-
-        <nav class="hidden md:flex items-center space-x-8">
-          <a href="/cases" class="text-gray-700 hover:text-blue-600 font-medium">Cases</a>
-          <a href="/evidence" class="text-gray-700 hover:text-blue-600 font-medium">Evidence</a>
-          <a href="/poi" class="text-gray-700 hover:text-blue-600 font-medium">Person Tracking</a>
-          <a href="/research" class="text-gray-700 hover:text-blue-600 font-medium">Legal Research</a>
-          {#if data.isAuthenticated}
-            <a href="/dashboard" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Dashboard</a>
-          {:else}
-            <a href="/auth/login" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Sign In</a>
-          {/if}
-        </nav>
-      </div>
+  <header class="flex justify-between items-center mb-6 p-4 lg:p-6">
+    <div>
+      <h1 class="text-2xl font-bold tracking-wider">COMMAND CENTER</h1>
+      <p class="text-sm opacity-75">YoRHa Detective Interface - {currentTime}</p>
+    </div>
+    <div class="flex items-center gap-4">
+      <Button 
+        variant="default" 
+        class="bg-[#F7F6F2] border border-[#D1CFC7] text-[#3D3D3D] hover:bg-[#EAE8E1] font-bold px-4 py-2 flex items-center gap-2"
+        onclick={() => isNewCaseModalOpen = true}
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+        </svg>
+        NEW CASE
+      </Button>
+      <Button 
+        variant="default"
+        class="bg-[#F7F6F2] border border-[#D1CFC7] text-[#3D3D3D] hover:bg-[#EAE8E1] font-bold px-4 py-2 flex items-center gap-2"
+        onclick={() => handleNavigation('search')}
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        GLOBAL SEARCH
+      </Button>
     </div>
   </header>
 
-  <!-- Hero Section with Search -->
-  <section class="relative bg-white py-20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-12">
-        <h2 class="text-5xl font-bold text-gray-900 mb-6">
-          AI-Powered Legal Intelligence
-        </h2>
-        <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-          Streamline case management, evidence analysis, and legal research with advanced artificial intelligence. Search across cases, persons of interest, and legal documents instantly.
-        </p>
+  <!-- Main Content -->
+  <main class="grid grid-cols-1 lg:grid-cols-4 gap-6 px-4 lg:px-6">
+    <!-- Sidebar -->
+    <aside class="lg:col-span-1 bg-[#F7F6F2] border border-[#D1CFC7] p-4">
+      <h2 class="font-bold mb-4 text-center">YORHA DETECTIVE</h2>
+      <nav class="space-y-2">
+        <button 
+          class="w-full px-4 py-2 text-left font-bold transition-colors border {activeSection === 'command-center' ? 'bg-[#3D3D3D] text-[#F7F6F2] border-[#3D3D3D]' : 'border-transparent hover:border-[#3D3D3D] hover:bg-white'}"
+          onclick={() => handleNavigation('command-center')}
+        >
+          COMMAND CENTER
+        </button>
+        <button 
+          class="w-full px-4 py-2 text-left font-bold transition-colors border {activeSection === 'evidence' ? 'bg-[#3D3D3D] text-[#F7F6F2] border-[#3D3D3D]' : 'border-transparent hover:border-[#3D3D3D] hover:bg-white'}"
+          onclick={() => handleNavigation('evidence')}
+        >
+          EVIDENCE
+        </button>
+        <button 
+          class="w-full px-4 py-2 text-left font-bold transition-colors border {activeSection === 'poi' ? 'bg-[#3D3D3D] text-[#F7F6F2] border-[#3D3D3D]' : 'border-transparent hover:border-[#3D3D3D] hover:bg-white'}"
+          onclick={() => handleNavigation('poi')}
+        >
+          PERSONS OF INTEREST
+        </button>
+        <button 
+          class="w-full px-4 py-2 text-left font-bold transition-colors border {activeSection === 'analysis' ? 'bg-[#3D3D3D] text-[#F7F6F2] border-[#3D3D3D]' : 'border-transparent hover:border-[#3D3D3D] hover:bg-white'}"
+          onclick={() => handleNavigation('analysis')}
+        >
+          ANALYSIS
+        </button>
+        <button 
+          class="w-full px-4 py-2 text-left font-bold transition-colors border {activeSection === 'search' ? 'bg-[#3D3D3D] text-[#F7F6F2] border-[#3D3D3D]' : 'border-transparent hover:border-[#3D3D3D] hover:bg-white'}"
+          onclick={() => handleNavigation('search')}
+        >
+          GLOBAL SEARCH
+        </button>
+        <button 
+          class="w-full px-4 py-2 text-left font-bold transition-colors border {activeSection === 'terminal' ? 'bg-[#3D3D3D] text-[#F7F6F2] border-[#3D3D3D]' : 'border-transparent hover:border-[#3D3D3D] hover:bg-white'}"
+          onclick={() => handleNavigation('terminal')}
+        >
+          TERMINAL
+        </button>
+      </nav>
+    </aside>
 
-        <!-- Featured Search Bar -->
-        <div class="max-w-4xl mx-auto mb-8">
-          <UniversalSearchBar
-            placeholder="Search cases, persons of interest, evidence, or documents..."
-            showRecentSearches={true}
-            showTrendingSearches={true}
-            enableAISuggestions={true}
-            on:search={handleSearch}
-            on:select={handleSearchSelect}
-          />
-        </div>
-
-        <p class="text-sm text-gray-500">
-          Try searching: "fraud investigation", "John Smith", "contract analysis"
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Services Grid -->
-  <section class="py-16 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-12">
-        <h3 class="text-3xl font-bold text-gray-900 mb-4">Comprehensive Legal Solutions</h3>
-        <p class="text-lg text-gray-600">Everything you need for modern legal case management</p>
-      </div>
-
-      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-        {#each services as service}
-          <div class="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-100 hover:border-blue-200">
-            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-              <span class="text-2xl">{service.icon}</span>
-            </div>
-            <h4 class="text-xl font-semibold text-gray-900 mb-2">{service.title}</h4>
-            <p class="text-gray-600 mb-4">{service.description}</p>
-            <a
-              href={service.link}
-              class="text-blue-600 hover:text-blue-700 font-medium flex items-center"
-            >
-              Learn more →
-            </a>
+    <!-- Dashboard Content -->
+    <div class="lg:col-span-3 space-y-6">
+      <!-- Statistics Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-[#F7F6F2] border border-[#D1CFC7] p-4">
+          <h3 class="font-bold text-sm mb-2">ACTIVE CASES</h3>
+          <div class="text-2xl font-bold">
+            {stats.loading ? '...' : stats.activeCases}
           </div>
-        {/each}
-      </div>
-    </div>
-  </section>
-
-  <!-- Statistics Section -->
-  <section class="py-16 bg-blue-600">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-12">
-        <h3 class="text-3xl font-bold text-white mb-4">Trusted by Legal Professionals</h3>
-        <p class="text-xl text-blue-100">Our platform delivers results that matter</p>
-      </div>
-
-      <div class="grid md:grid-cols-4 gap-8">
-        <div class="text-center">
-          <div class="text-4xl font-bold text-white mb-2">{stats.cases}</div>
-          <div class="text-blue-100">Cases Managed</div>
         </div>
-        <div class="text-center">
-          <div class="text-4xl font-bold text-white mb-2">{stats.evidence}</div>
-          <div class="text-blue-100">Evidence Files Processed</div>
+        <div class="bg-[#F7F6F2] border border-[#D1CFC7] p-4">
+          <h3 class="font-bold text-sm mb-2">EVIDENCE ITEMS</h3>
+          <div class="text-2xl font-bold">
+            {stats.loading ? '...' : stats.evidenceItems}
+          </div>
         </div>
-        <div class="text-center">
-          <div class="text-4xl font-bold text-white mb-2">{stats.users}</div>
-          <div class="text-blue-100">Legal Professionals</div>
+        <div class="bg-[#F7F6F2] border border-[#D1CFC7] p-4">
+          <h3 class="font-bold text-sm mb-2">PERSONS OF INTEREST</h3>
+          <div class="text-2xl font-bold">
+            {stats.loading ? '...' : stats.personsOfInterest}
+          </div>
         </div>
-        <div class="text-center">
-          <div class="text-4xl font-bold text-white mb-2">{stats.accuracy}</div>
-          <div class="text-blue-100">AI Accuracy Rate</div>
+        <div class="bg-[#F7F6F2] border border-[#D1CFC7] p-4">
+          <h3 class="font-bold text-sm mb-2">RECENT ACTIVITY</h3>
+          <div class="text-2xl font-bold">
+            {stats.loading ? '...' : stats.recentActivity}
+          </div>
         </div>
       </div>
-    </div>
-  </section>
 
-  <!-- Hero Carousel -->
-  <section class="py-16 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl overflow-hidden shadow-2xl">
-        <div class="relative h-96">
-          {#each heroSlides as slide, index}
-            <div
-              class="absolute inset-0 transition-opacity duration-1000 {index === currentSlide ? 'opacity-100' : 'opacity-0'}"
-            >
-              <div class="flex h-full">
-                <div class="flex-1 flex items-center p-12 text-white">
-                  <div>
-                    <h3 class="text-4xl font-bold mb-4">{slide.title}</h3>
-                    <p class="text-xl mb-6 text-blue-100">{slide.subtitle}</p>
-                    <button
-                      class="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
-                    >
-                      {slide.cta}
-                    </button>
-                  </div>
+      <!-- Main Dashboard Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Active Cases Panel -->
+        <div class="bg-[#F7F6F2] border border-[#D1CFC7] p-6">
+          <h2 class="text-xl font-bold mb-4">ACTIVE CASES</h2>
+          <div class="space-y-3">
+            {#if loadingCases}
+              <div class="text-gray-500">Loading cases...</div>
+            {:else if activeCases.length === 0}
+              <div class="text-gray-500">No active cases found.</div>
+            {:else}
+              {#each activeCases.slice(0, 5) as caseItem}
+                <div class="border-b border-[#D1CFC7] pb-2 last:border-b-0">
+                  <div class="font-bold text-sm">{caseItem.title}</div>
+                  <div class="text-xs opacity-75">{caseItem.status} • Priority: {caseItem.priority}</div>
                 </div>
-                <div class="flex-1 flex items-center justify-center">
-                  <div class="w-80 h-48 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
-                    <span class="text-6xl text-white opacity-50">📊</span>
-                  </div>
+              {/each}
+            {/if}
+          </div>
+        </div>
+
+        <!-- System Status Panel -->
+        <div class="bg-[#F7F6F2] border border-[#D1CFC7] p-6">
+          <h2 class="text-xl font-bold mb-4">SYSTEM STATUS</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between">
+              <span class="font-medium">UPTIME:</span>
+              <span class="text-green-600 font-bold">{systemStatus.uptime}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-medium">SERVICES:</span>
+              <span class="text-blue-600 font-bold">{systemStatus.services}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-medium">LAST SYNC:</span>
+              <span class="font-bold">{systemStatus.lastSync}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-medium">STATUS:</span>
+              <span class="text-green-600 font-bold">{systemStatus.status}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity Panel -->
+        <div class="lg:col-span-2 bg-[#F7F6F2] border border-[#D1CFC7] p-6">
+          <h2 class="text-xl font-bold mb-4">RECENT ACTIVITY</h2>
+          <div class="space-y-2">
+            {#each recentActivity as activity}
+              <div class="flex items-start gap-4 text-sm">
+                <span class="font-mono text-xs bg-[#3D3D3D] text-[#F7F6F2] px-2 py-1 rounded">
+                  {activity.time}
+                </span>
+                <div>
+                  <span class="font-bold">{activity.action}:</span>
+                  <span class="opacity-75">{activity.details}</span>
                 </div>
               </div>
-            </div>
-          {/each}
-
-          <!-- Carousel Indicators -->
-          <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-            {#each heroSlides as _, index}
-              <button
-                class="w-3 h-3 rounded-full transition-all duration-300 {index === currentSlide ? 'bg-white' : 'bg-white bg-opacity-40'}"
-                on:click={() => currentSlide = index}
-                aria-label="Go to slide {index + 1}"
-              ></button>
             {/each}
           </div>
         </div>
       </div>
-    </div>
-  </section>
 
-  <!-- CTA Section -->
-  <section class="py-16 bg-gray-900">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h3 class="text-3xl font-bold text-white mb-4">Ready to Transform Your Legal Practice?</h3>
-      <p class="text-xl text-gray-300 mb-8">Join hundreds of legal professionals already using our platform</p>
-      <div class="flex justify-center space-x-4">
-        {#if data.isAuthenticated}
-          <a href="/dashboard" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-            Go to Dashboard
-          </a>
-        {:else}
-          <a href="/auth/register" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-            Start Free Trial
-          </a>
-          <a href="/auth/login" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-gray-900 transition-colors">
-            Sign In
-          </a>
-        {/if}
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="bg-gray-50 py-12 border-t border-gray-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid md:grid-cols-4 gap-8">
-        <div>
-          <div class="flex items-center mb-4">
-            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
-              <span class="text-white font-bold">⚖️</span>
-            </div>
-            <span class="text-xl font-bold text-gray-900">Legal AI</span>
-          </div>
-          <p class="text-gray-600">Advanced legal technology for modern law practices.</p>
-        </div>
-
-        <div>
-          <h4 class="font-semibold text-gray-900 mb-4">Platform</h4>
-          <ul class="space-y-2">
-            <li><a href="/cases" class="text-gray-600 hover:text-blue-600">Case Management</a></li>
-            <li><a href="/evidence" class="text-gray-600 hover:text-blue-600">Evidence Analysis</a></li>
-            <li><a href="/poi" class="text-gray-600 hover:text-blue-600">Person Tracking</a></li>
-            <li><a href="/research" class="text-gray-600 hover:text-blue-600">Legal Research</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 class="font-semibold text-gray-900 mb-4">System</h4>
-          <ul class="space-y-2">
-            <li><a href="/all-routes" class="text-gray-600 hover:text-blue-600">All Features</a></li>
-            <li><a href="/yorha" class="text-gray-600 hover:text-blue-600">Advanced Interface</a></li>
-            <li><a href="/api-docs" class="text-gray-600 hover:text-blue-600">API Documentation</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 class="font-semibold text-gray-900 mb-4">System Status</h4>
-          <ul class="space-y-2 text-sm">
-            <li class="text-gray-600">Uptime: <span class="text-green-600 font-medium">{systemInfo.uptime}</span></li>
-            <li class="text-gray-600">Services: <span class="text-blue-600 font-medium">{systemInfo.activeServices}</span></li>
-            <li class="text-gray-600">Last Sync: <span class="text-gray-500">{systemInfo.lastSync}</span></li>
-          </ul>
+      <!-- Quick Actions Panel -->
+      <div class="bg-[#F7F6F2] border border-[#D1CFC7] p-6">
+        <h2 class="text-xl font-bold mb-4">QUICK ACTIONS</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Button 
+            variant="default"
+            class="bg-[#EAE8E1] border border-[#D1CFC7] text-[#3D3D3D] hover:bg-white font-bold p-4 h-auto flex flex-col items-center gap-2"
+            onclick={() => isNewCaseModalOpen = true}
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            CREATE CASE
+          </Button>
+          <Button 
+            variant="default"
+            class="bg-[#EAE8E1] border border-[#D1CFC7] text-[#3D3D3D] hover:bg-white font-bold p-4 h-auto flex flex-col items-center gap-2"
+            onclick={() => handleNavigation('evidence')}
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            VIEW EVIDENCE
+          </Button>
+          <Button 
+            variant="default"
+            class="bg-[#EAE8E1] border border-[#D1CFC7] text-[#3D3D3D] hover:bg-white font-bold p-4 h-auto flex flex-col items-center gap-2"
+            onclick={() => handleNavigation('poi')}
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+            SEARCH POI
+          </Button>
+          <Button 
+            variant="default"
+            class="bg-[#EAE8E1] border border-[#D1CFC7] text-[#3D3D3D] hover:bg-white font-bold p-4 h-auto flex flex-col items-center gap-2"
+            onclick={() => handleNavigation('analysis')}
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+            RUN ANALYSIS
+          </Button>
         </div>
       </div>
-
-      <div class="border-t border-gray-200 mt-8 pt-8 text-center">
-        <p class="text-gray-500">&copy; 2024 Legal AI Platform. Advanced case management and evidence analysis.</p>
-      </div>
     </div>
-  </footer>
+  </main>
 </div>
 
-<style>
-  /* Modern website styling using Tailwind utilities */
-  /* Additional responsive behaviors handled by Tailwind classes in template */
-</style>
+<!-- New Case Modal - Simple HTML Modal -->
+{#if isNewCaseModalOpen}
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onclick={closeModal}>
+    <div class="w-full max-w-2xl bg-[#F7F6F2] border border-[#D1CFC7] p-8 font-mono" onclick={(e) => e.stopPropagation()}>
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold">CREATE NEW CASE FILE</h2>
+        <button onclick={() => isNewCaseModalOpen = false} class="text-gray-500 hover:text-black text-2xl">&times;</button>
+      </div>
+      
+      <form onsubmit={handleCreateCase} class="space-y-6">
+        <div>
+          <label for="case-title" class="block text-sm font-bold mb-2">CASE TITLE</label>
+          <input 
+            type="text" 
+            id="case-title" 
+            bind:value={newCaseForm.title}
+            required 
+            class="w-full px-4 py-3 bg-white border border-[#D1CFC7] focus:outline-none focus:border-[#3D3D3D] focus:ring-2 focus:ring-[#3D3D3D]/20"
+            placeholder="e.g., Corporate Espionage Investigation"
+          />
+        </div>
+        
+        <div>
+          <label for="case-description" class="block text-sm font-bold mb-2">CASE DESCRIPTION / SYNOPSIS</label>
+          <textarea 
+            id="case-description" 
+            bind:value={newCaseForm.description}
+            rows="4" 
+            required 
+            class="w-full px-4 py-3 bg-white border border-[#D1CFC7] focus:outline-none focus:border-[#3D3D3D] focus:ring-2 focus:ring-[#3D3D3D]/20"
+            placeholder="Initial details of the investigation..."
+          ></textarea>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-bold mb-2">PRIORITY LEVEL</label>
+          <select 
+            bind:value={newCaseForm.priority}
+            class="w-full px-4 py-3 bg-white border border-[#D1CFC7] focus:outline-none focus:border-[#3D3D3D] focus:ring-2 focus:ring-[#3D3D3D]/20 font-bold"
+          >
+            <option value="low">Low Priority</option>
+            <option value="medium" selected>Medium Priority</option>
+            <option value="high">High Priority</option>
+            <option value="critical">Critical Priority</option>
+          </select>
+        </div>
+        
+        <div class="flex justify-end">
+          <Button 
+            type="submit"
+            disabled={newCaseForm.loading}
+            class="bg-green-600/10 text-green-800 border border-green-700/50 hover:bg-green-600/20 font-bold px-6 py-3"
+          >
+            {newCaseForm.loading ? 'SAVING...' : 'SAVE TO DATABASE'}
+          </Button>
+        </div>
+      </form>
+    </div>
+  </div>
+{/if}
+
+<!-- Notification -->
+{#if notification.show}
+  <div class="fixed bottom-5 right-5 bg-[#F7F6F2] border border-[#D1CFC7] p-4 max-w-sm font-mono shadow-lg transform transition-all duration-300">
+    <p class="font-bold">{notification.message}</p>
+  </div>
+{/if}

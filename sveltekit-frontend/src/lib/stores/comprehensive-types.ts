@@ -177,8 +177,8 @@ export interface DatabaseConnection {
 
 // Enhanced Postgres connection type to fix import issues
 export interface PostgresConnection {
-  (options?: PostgresOptions): Sql<{}>;
-  (url: string, options?: PostgresOptions): Sql<{}>;
+  (options?: PostgresOptions): SQL<{}>;
+  (url: string, options?: PostgresOptions): SQL<{}>;
 }
 
 export interface PostgresOptions {
@@ -634,15 +634,6 @@ declare global {
     interface ProcessEnv extends EnvironmentConfig {
       [key: string]: string | undefined;
     }
-    
-    interface Process {
-      env: ProcessEnv;
-      versions: {
-        node: string;
-        v8: string;
-        [key: string]: string;
-      };
-    }
   }
 
   // WebGPU interface enhancements
@@ -653,41 +644,7 @@ declare global {
     dispatchEvent?(event: Event): boolean;
   }
 
-  // WebAssembly enhancements
-  namespace WebAssembly {
-    interface ImportValue {
-      (): any;
-    }
-    
-    interface Imports {
-      [key: string]: any;
-    }
-  }
+  // WebAssembly enhancements are built-in
 }
 
-// Re-export all types for convenience
-export type {
-  // Svelte 5 types
-  StateRune, DerivedRune, EffectRune, PropsRune, BindableRune,
-  
-  // SvelteKit 2 types
-  LoadEvent, PageStore, NavigatingStore, UpdatedStore,
-  
-  // Cache types
-  CacheConfiguration, CacheLayerConfig, CacheEntry, CacheMetrics, 
-  CacheAnalytics, CacheStats, CacheStrategy, CachePolicy,
-  
-  // AI/ML types
-  OllamaGenerateRequest, OllamaGenerateResponse, OllamaEmbeddingRequest, 
-  OllamaEmbeddingResponse, OllamaModel, RAGDocument, RAGQuery, RAGResponse,
-  
-  // Testing types
-  TestContext, ExpectationResult, MockFunction,
-  
-  // Environment types
-  EnvironmentConfig,
-  
-  // Utility types
-  DeepPartial, RequiredBy, OptionalBy, Nullable, AsyncFunction, 
-  EventHandler, ClassValue
-};
+// Note: Types are already exported above via interface/type declarations

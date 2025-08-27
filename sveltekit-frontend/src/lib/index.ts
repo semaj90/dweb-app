@@ -14,13 +14,8 @@ import { barrelStore } from './stores/barrel-functions.js';
 import './types/drizzle-enhanced.js';
 import './types/lokijs-enhanced.js';
 
-// ===== CORE UI COMPONENTS =====
-export { default as Button } from './components/ui/Button.svelte';
-export { default as Card } from './components/ui/Card.svelte';
-
-// ===== LAYOUT COMPONENTS =====
-export { default as PageLayout } from './components/layout/PageLayout.svelte';
-export { default as ContentSection } from './components/layout/ContentSection.svelte';
+// ===== ALL COMPONENTS (COMPREHENSIVE BARREL EXPORT) =====
+export * from './components/index.js';
 
 // ===== UTILITIES & TYPES =====
 export { 

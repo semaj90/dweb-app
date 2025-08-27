@@ -5,7 +5,7 @@
   import { browser } from '$app/environment';
   
   // Page data and state
-  let systemData = {
+  let systemData = $state({
     activeCases: 12,
     evidenceItems: 247,
     personsOfInterest: 8,
@@ -14,7 +14,7 @@
     gpuUtilization: 67,
     memoryUsage: 42,
     networkLatency: 23
-  };
+  });
 
   let currentUser = {
     id: 'user_001',

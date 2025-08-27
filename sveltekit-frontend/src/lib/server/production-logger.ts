@@ -3,9 +3,9 @@
  * Enhanced logging with Windows support, structured logging, and performance monitoring
  */
 
-import { dev } from '$app/environment';
-import { getConfig } from '$lib/config/unified-config';
-import type { LoggingConfig } from '$lib/config/unified-config';
+const dev = process.env.NODE_ENV === 'development';
+import { getConfig } from '../config/unified-config.js';
+import type { LoggingConfig } from '../config/unified-config.js';
 
 // Log levels in order of severity
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
@@ -623,5 +623,6 @@ export const logSecurity = (event: string, context?: LogContext, metadata?: Reco
 export const logPerformance = (operation: string, duration: number, context?: LogContext) =>
   logger.performance(operation, duration, context);
 
-// Default export
+// Named and default exports
+export const productionLogger = logger;
 export default logger;

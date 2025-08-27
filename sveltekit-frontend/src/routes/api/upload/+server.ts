@@ -1,13 +1,11 @@
 import type { RequestHandler } from '@sveltejs/kit';
-
-import type { RequestHandler } from "@sveltejs/kit";
 import { json } from "@sveltejs/kit";
 import { randomUUID } from "crypto";
 import { existsSync, createReadStream } from "fs";
 import { mkdir, writeFile, readFile } from "fs/promises";
-import path from "path";
-import { db } from "$lib/server/db";
-import { evidence } from "$lib/server/db/schema";
+import * as path from "path";
+import { db } from "../../../lib/server/db/index.js";
+import { evidence } from "../../../lib/server/db/schema-postgres.js";
 
 // Ensure upload directory exists
 const UPLOAD_DIR = "./uploads";

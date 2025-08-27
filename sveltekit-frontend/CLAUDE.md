@@ -806,3 +806,11 @@ Action: I will read the top 5 noisiest components from the new error log and pre
   search times and real-time GPU visualization. The
   technical decisions show deep understanding of when and     
    why to use each tool!
+- How to Fix It
+
+Here’s the mapping:
+
+Legacy Svelte 3/4    New Svelte 5 Runes Equivalent
+let cou= 0; $: doubled = count * 2;    let count = $state; let doubled = $derived(count * 2);
+$: console.log(count);    $effect(() => { console.log(count); }$: if (count > 10) alert("too big!");    $effect((> { if (count > 10) alert("too big!"); });) =);
+(0)nt

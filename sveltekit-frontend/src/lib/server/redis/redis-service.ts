@@ -20,7 +20,7 @@ class RedisService {
   }
   private async initializeClients() {
     const config: RedisConfig = {
-      url: import.meta.env.REDIS_URL || "redis://localhost:6379",
+      url: process.env.REDIS_URL || "redis://localhost:6379",
       // retryDelayOnFailover: 100, // removed - deprecated
       maxRetriesPerRequest: 3,
     };

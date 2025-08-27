@@ -4,9 +4,9 @@ import type { RequestHandler } from '@sveltejs/kit';
 // SvelteKit 2.0 + Svelte 5 + Direct Ollama integration
 
 import { json, error } from "@sveltejs/kit";
-import { ollamaService } from "$lib/server/services/OllamaService";
-import { logger } from "$lib/server/logger";
-import { dev } from "$app/environment";
+import { ollamaService } from "../../../../lib/server/services/OllamaService.js";
+import { logger } from "../../../../lib/server/production-logger.js";
+const dev = process.env.NODE_ENV === 'development';
 
 export interface ChatRequest {
   message: string;

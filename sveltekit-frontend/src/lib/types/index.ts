@@ -80,6 +80,10 @@ export interface User {
 }
 
 // Enhanced type definitions for barrel store compatibility
+// Re-export all types from other files
+export * from './api.ts';
+export * from '../services/types/service-types.ts';
+export * from './scoring.ts';
 export * from './webgpu.d.ts';
 export * from './webassembly-enhanced.d.ts';
 export * from './drizzle-enhanced.d.ts';

@@ -25,11 +25,11 @@ class RealTimeServer {
     try {
       // Create Redis clients
       this.redisClient = createClient({
-        url: import.meta.env.REDIS_URL || "redis://localhost:6379",
+        url: process.env.REDIS_URL || "redis://localhost:6379",
       });
 
       this.redisSub = createClient({
-        url: import.meta.env.REDIS_URL || "redis://localhost:6379",
+        url: process.env.REDIS_URL || "redis://localhost:6379",
       });
 
       // Connect Redis clients

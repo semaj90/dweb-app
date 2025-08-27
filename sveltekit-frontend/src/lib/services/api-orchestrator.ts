@@ -4,17 +4,87 @@
  * Windows-native deployment with intelligent routing and failover
  */
 
-import type { 
-  ServiceEndpoints, 
-  ServiceTier,
-  ProtocolEndpoint,
-  DatabaseEndpoint,
-  MessagingEndpoint,
-  FrontendEndpoint,
-  HealthCheckResult,
-  APIRequestContext,
-  MultiProtocolRequestOptions
-} from '$lib/types/api.js';
+// Service endpoint configuration interfaces
+interface ServiceEndpoints {
+  [serviceName: string]: ServiceEndpoint;
+}
+
+interface ServiceEndpoint {
+  http?: string;
+  grpc?: string;
+  quic?: string;
+  websocket?: string;
+  health: string;
+  tier: ServiceTier;
+  status: 'active' | 'experimental' | 'disabled';
+  timeout?: number;
+  retries?: number;
+  metadata?: Record<string, any>;
+}
+
+enum ServiceTier {
+  QUIC = 'quic',
+  GRPC = 'grpc', 
+  HTTP = 'http',
+  WEBSOCKET = 'websocket',
+  ULTRA_FAST = 'ultra_fast',
+  HIGH_PERF = 'high_perf',
+  REALTIME = 'realtime',
+  STANDARD = 'standard'
+}
+
+interface ProtocolEndpoint {
+  protocol: ServiceTier;
+  host: string;
+  port: number;
+  path: string;
+  timeout: number;
+  monitor?: {
+    enabled?: boolean;
+    interval?: number;
+    [key: string]: any;
+  };
+}
+
+interface DatabaseEndpoint extends ProtocolEndpoint {}
+interface MessagingEndpoint extends ProtocolEndpoint {}
+interface FrontendEndpoint extends ProtocolEndpoint {}
+
+interface HealthCheckResult {
+  healthy: boolean;
+  status: string;
+  timestamp: Date;
+  details?: any;
+  error?: string;
+  responseTime?: number;
+  lastCheck?: Date;
+  endpoint?: string;
+}
+
+interface APIRequestContext {
+  userId?: string;
+  requestId?: string;
+  timestamp?: number;
+  userAgent?: string;
+  ipAddress?: string;
+  sessionId?: string;
+  traceId?: string;
+  metadata?: Record<string, any>;
+}
+
+interface MultiProtocolRequestOptions {
+  timeout?: number;
+  retries?: number;
+  fallbackProtocol?: ServiceTier;
+  priority?: 'low' | 'medium' | 'high' | 'critical';
+  enableFallback?: boolean;
+  circuitBreaker?: boolean;
+  cacheResponse?: boolean;
+  validateResponse?: boolean;
+  headers?: Record<string, string>;
+  body?: any;
+  context?: APIRequestContext;
+}
 
 export class APIOrchestrator {
   private static instance: APIOrchestrator;
@@ -527,7 +597,7 @@ export class APIOrchestrator {
   getMetrics(): Record<string, any> {
     const metrics: Record<string, any> = {};
     
-    for (const [service, stats] of this.requestMetrics.entries()) {
+    for (const [service, stats] of Array.from(this.requestMetrics.entries())) {
       metrics[service] = {
         requestCount: stats.count,
         averageResponseTime: stats.count > 0 ? Math.round(stats.totalTime / stats.count) : 0,

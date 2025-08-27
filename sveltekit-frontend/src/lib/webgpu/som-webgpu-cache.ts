@@ -33,6 +33,15 @@ export interface IntelligentTodo {
   metadata: Record<string, any>;
 }
 
+// Respect environment flag to enable/disable WebGPU features in dev
+const ENABLE_GPU = (() => {
+  try {
+    const v = process?.env?.ENABLE_GPU;
+    if (typeof v === 'string') return v.toLowerCase() !== 'false' && v !== '0';
+  } catch (e) { }
+  return true;
+})();
+
 export class WebGPUSOMCache {
   private device: GPUDevice | null = null;
   private lokiDB: Loki;

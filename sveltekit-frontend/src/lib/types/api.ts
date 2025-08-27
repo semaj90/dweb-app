@@ -1,4 +1,4 @@
-import type { User } from "$lib/types/user";
+import type { User } from "./user.js";
 
 
 // Evidence AI Analysis Type
@@ -1024,7 +1024,7 @@ export type EnhancedAPIHandler<TRequest = any, TResponse = APIResponse> = (
 ) => Promise<TResponse>;
 
 // Multi-Protocol Request Options
-export interface MultiProtocolRequestOptions extends RequestInit {
+export interface MultiProtocolRequestOptions extends Omit<RequestInit, 'cache' | 'priority'> {
   protocol?: 'auto' | 'http' | 'grpc' | 'quic' | 'websocket';
   timeout?: number;
   retries?: number;

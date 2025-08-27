@@ -3,6 +3,59 @@ import { z } from "zod";
 import { withApiHandler, parseRequestBody, apiSuccess, validationError, createPagination, CommonErrors } from '$lib/server/api/response';
 import { CaseOperations } from '$lib/server/db/enhanced-operations';
 import type { Case } from '$lib/server/db/schema-postgres';
+import { createClient } from 'redis';
+
+// Redis client for worker communication
+let redisClient: ReturnType<typeof createClient> | null = null;
+
+async function getRedisClient() {
+  if (!redisClient) {
+    redisClient = createClient({
+      url: process.env.REDIS_URL || 'redis://localhost:6379',
+      socket: { connectTimeout: 5000 }
+    });
+    await redisClient.connect();
+  }
+  return redisClient;
+}
+
+// Worker trigger function
+async function triggerWorkerProcessing(caseId: string, options: {
+  priority: string;
+  caseType: string;
+  userId: string;
+  trigger: string;
+  metadata?: any;
+}) {
+  const redis = await getRedisClient();
+  const correlationId = `case-${caseId}-${Date.now()}`;
+  
+  // Create Redis stream event for worker
+  const eventData = {
+    id: correlationId,
+    type: 'case_created',
+    action: 'process',
+    caseId: caseId,
+    evidenceId: '',
+    documentId: '',
+    metadata: JSON.stringify({
+      priority: options.priority,
+      caseType: options.caseType,
+      userId: options.userId,
+      trigger: options.trigger,
+      timestamp: new Date().toISOString(),
+      ...options.metadata
+    }),
+    retry: '0',
+    timestamp: Date.now().toString()
+  };
+  
+  // Add to Redis stream for worker consumption
+  const streamName = 'autotag:requests';
+  await redis.xAdd(streamName, '*', eventData);
+  
+  console.log(`📡 Worker event sent: ${streamName} -> ${correlationId}`);
+}
 
 // Enhanced case schemas with comprehensive validation
 const createCaseSchema = z.object({
@@ -108,9 +161,34 @@ export const POST: RequestHandler = async (event) => {
 
       console.log(`✅ Case created successfully: ${newCase.caseNumber} by user ${user.id}`);
 
+      // Trigger PostgreSQL-first worker for auto-tagging and processing
+      try {
+        await triggerWorkerProcessing(newCase.id, {
+          priority: caseData.priority,
+          caseType: 'civil', // Default case type, could be enhanced
+          userId: user.id,
+          trigger: 'api-case-creation',
+          metadata: {
+            caseNumber: newCase.caseNumber,
+            title: caseData.title,
+            status: caseData.status,
+            location: caseData.location,
+            jurisdiction: caseData.jurisdiction
+          }
+        });
+        console.log(`🚀 Worker processing triggered for case: ${newCase.id}`);
+      } catch (workerError) {
+        console.warn(`⚠️ Worker trigger failed for case ${newCase.id}:`, workerError);
+        // Don't fail the case creation if worker trigger fails
+      }
+
       return {
         case: newCase,
-        message: `Case ${newCase.caseNumber} created successfully`
+        message: `Case ${newCase.caseNumber} created successfully`,
+        metadata: {
+          workerTriggered: true,
+          timestamp: new Date().toISOString()
+        }
       };
     } catch (error) {
       if (error instanceof Error && error.message.includes('duplicate')) {

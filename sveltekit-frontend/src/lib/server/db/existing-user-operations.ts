@@ -215,7 +215,7 @@ export class ExistingUserAuthService {
       const profileResult = await sql`
         SELECT * FROM user_profiles WHERE user_id = ${user.id}
       `;
-      const profile = profileResult[0] || null;
+      const profile = (profileResult[0] as ExistingUserProfile) || null;
 
       // Remove password from response
       delete user.hashed_password;
@@ -408,7 +408,7 @@ export class ExistingUserProfileService {
 
       return {
         success: true,
-        profile: result[0]
+        profile: result[0] as ExistingUserProfile
       };
 
     } catch (error) {

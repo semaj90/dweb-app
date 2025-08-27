@@ -68,7 +68,7 @@ export class RabbitMQLegalQueue {
   private isConnected = false;
   private reconnectAttempts = 0;
   private readonly maxReconnectAttempts = 10;
-  private reconnectTimeout: number | null = null;
+  private reconnectTimeout: NodeJS.Timeout | null = null;
   
   // Queue management
   private messageHandlers: Map<string, (message: LegalDocumentMessage) => Promise<void>> = new Map();

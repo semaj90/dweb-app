@@ -44,8 +44,8 @@ async function getCachedHealthyLlmEndpoint(
 // Import missing dependencies
 import { getHealthyLlmEndpoint, CLIENT_ENV } from './utils/environment-service.js';
 
-// LLM Provider type definition
-interface LLMProvider {
+// LLM Provider interface definition
+interface LLMProviderConfig {
   name: string;
   endpoint: string;
   models: string[];

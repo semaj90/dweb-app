@@ -406,7 +406,8 @@ Answer:
         new StringOutputParser(),
       ]);
 
-      const answer = await chain.invoke(question);
+      const chainResult = await chain.invoke(question);
+      const answer = typeof chainResult === 'string' ? chainResult : chainResult.parse || '';
 
       // 5. Extract confidence and key points
       const analysis = await this.analyzeAnswer(answer, relevantDocs);
@@ -505,7 +506,8 @@ Provide specific clause references where applicable.
 
     const chain = RunnableSequence.from([contractPrompt, llm, new StringOutputParser()]);
 
-    const analysis = await chain.invoke({ contract: contractText });
+    const chainResult = await chain.invoke({ contract: contractText });
+    const analysis = typeof chainResult === 'string' ? chainResult : chainResult.parse || '';
     return this.parseContractAnalysis(analysis);
   }
 
@@ -654,10 +656,12 @@ Return ONLY a JSON array of tags with confidence scores (0-1):
     const chain = RunnableSequence.from([tagPrompt, llm, new StringOutputParser()]);
 
     try {
-      const response = await chain.invoke({
+      const chainResult = await chain.invoke({
         documentType,
         content: content.substring(0, 3000), // Use first 3000 chars for tagging
       });
+
+      const response = typeof chainResult === 'string' ? chainResult : chainResult.parse || '';
 
       // Extract JSON from response
       const jsonMatch = response.match(/\[[\s\S]*\]/);

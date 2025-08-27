@@ -1,10 +1,10 @@
 
 // PgVector-backed implementation of EmbeddingRepository.
-import { db } from '$lib/db/drizzle';
-import { documentChunks } from '$lib/db/schema-postgres';
+import { db } from '$lib/server/db/index.js';
+import { legal_documents, documentChunks } from '$lib/server/db/schema-postgres.js';
 import { sql } from 'drizzle-orm';
 import { splitText } from './text-splitter';
-import { getEmbedding } from '$lib/ai/embedding-service';
+import { getEmbedding } from '$lib/server/services/embedding-service';
 import type { EmbeddingRepository, IngestionJobRequest, SimilarityQueryOptions, SimilarityResult, IngestionJobStatus } from './embedding-repository';
 import { enqueue, processNext as queueProcessNext, getStatus } from './ingestion-queue';
 
@@ -24,16 +24,16 @@ async function processNextJob(): Promise<IngestionJobStatus | null> {
   return queueProcessNext(async (payload, update) => {
     const { evidenceId, textContent, model = DEFAULT_MODEL, chunkSize, chunkOverlap } = payload;
     if (!textContent) throw new Error('Missing textContent');
-    const chunks = splitText(textContent, { maxWords: chunkSize || 220, overlap: chunkOverlap ?? 30 });
+    const chunks = splitText(textContent, { chunkSize: chunkSize || 220, overlap: chunkOverlap ?? 30 });
     update({ totalChunks: chunks.length });
     let processed = 0;
-    for (const { content, index } of chunks) {
-      const embedding = await embedContent(content, model);
+    for (const { text, index } of chunks) {
+      const embedding = await embedContent(text, model);
       await db.insert(documentChunks).values({
         documentId: evidenceId, // reuse evidenceId as document linkage for now
         documentType: 'evidence',
         chunkIndex: index,
-        content,
+        content: text,
         embedding
       });
       processed++;

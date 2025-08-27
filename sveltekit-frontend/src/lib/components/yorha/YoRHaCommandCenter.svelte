@@ -8,6 +8,7 @@
   import { Badge } from '$lib/components/ui/badge/index.js';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card/index.js';
   import RealTimeLegalSearch from '$lib/components/search/RealTimeLegalSearch.svelte';
+  import YoRHaCaseForm from './YoRHaCaseForm.svelte';
   import { useRealTimeSearch } from '$lib/services/real-time-search.js';
 
   // Props interface
@@ -37,6 +38,7 @@
   // Dashboard state using Svelte 5 runes
   let selectedCard = $state<string | null>(null);
   let animationPhase = $state(0);
+  let showCaseModal = $state(false);
   let recentActivity = $state([
     { id: 1, action: 'Case Analysis Completed', target: 'CASE-2024-087', time: '2 minutes ago', type: 'success' },
     { id: 2, action: 'Evidence Upload', target: 'Digital Forensics Report', time: '5 minutes ago', type: 'info' },
@@ -50,7 +52,7 @@
 
   // Quick actions
   const quickActions = [
-    { id: 'new-case', label: 'Create New Case', icon: '📁', route: '/cases', color: 'blue' },
+    { id: 'new-case', label: 'Create New Case', icon: '📁', action: 'modal', color: 'blue' },
     { id: 'upload-evidence', label: 'Upload Evidence', icon: '🔍', route: '/evidence/upload', color: 'green' },
     { id: 'ai-analysis', label: 'AI Analysis', icon: '🤖', route: '/ai-assistant', color: 'purple' },
     { id: 'ai-assistant-3d', label: '3D AI Assistant', icon: '🎮', route: '/ai-assistant-demo', color: 'pink' },
@@ -78,9 +80,57 @@
 
   function handleQuickAction(action: any) {
     selectedCard = action?.id ?? null;
-    setTimeout(() => {
-      if (action?.route) goto(action.route);
-    }, 300);
+    
+    if (action?.action === 'modal' && action?.id === 'new-case') {
+      showCaseModal = true;
+    } else if (action?.route) {
+      setTimeout(() => {
+        goto(action.route);
+      }, 300);
+    }
+  }
+
+  function handleCaseCreated(event: any) {
+    const newCase = event.detail.case;
+    showCaseModal = false;
+    
+    // Update recent activity
+    recentActivity = [
+      {
+        id: Date.now(),
+        action: 'New Case Created',
+        target: newCase.title || `Case ${newCase.caseNumber}`,
+        time: 'just now',
+        type: 'success'
+      },
+      ...recentActivity.slice(0, 4)
+    ];
+    
+    // Update system data
+    systemData = {
+      ...systemData,
+      activeCases: systemData.activeCases + 1
+    };
+  }
+
+  function handleCaseError(event: any) {
+    console.error('Case creation error:', event.detail.message);
+    // You could add a notification system here
+  }
+
+  // Modal event handlers for superforms integration
+  function handleCaseCreationSuccess(event: any) {
+    return handleCaseCreated(event);
+  }
+
+  function handleCaseCreationError(event: any) {
+    return handleCaseError(event);
+  }
+
+  function handleModalBackdropClick(event: any) {
+    if (event.target === event.currentTarget) {
+      showCaseModal = false;
+    }
   }
 
   function getActivityIcon(type: string): string {
@@ -330,6 +380,20 @@
   /> -->
 </div>
 
+<!-- YoRHa Case Creation Modal -->
+{#if showCaseModal}
+  <div class="modal-backdrop fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" 
+       onclick={handleModalBackdropClick}>
+    <div class="modal-content max-w-4xl w-full" onclick={(e) => e.stopPropagation()}>
+      <YoRHaCaseForm 
+        onsuccess={handleCaseCreationSuccess}
+        onerror={handleCaseCreationError}
+        onclose={() => showCaseModal = false}
+      />
+    </div>
+  </div>
+{/if}
+
 <style>
   .yorha-command-center {
     --yorha-primary: #c4b49a;
@@ -388,6 +452,32 @@
     animation: pulse-glow 2s infinite;
   }
 
+  /* Modal styling */
+  .modal-backdrop {
+    backdrop-filter: blur(10px);
+    animation: fadeIn 0.2s ease-in-out;
+  }
+
+  .modal-content {
+    animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideIn {
+    from { 
+      opacity: 0; 
+      transform: translateY(-20px) scale(0.95); 
+    }
+    to { 
+      opacity: 1; 
+      transform: translateY(0) scale(1); 
+    }
+  }
+
   /* Responsive adjustments */
   @media (max-width: 768px) {
     .yorha-command-center {
@@ -400,6 +490,11 @@
 
     .actions-grid {
       grid-template-columns: repeat(2, 1fr);
+    }
+
+    .modal-content {
+      max-width: 95%;
+      margin: 16px;
     }
   }
 </style>

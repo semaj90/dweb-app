@@ -5,7 +5,7 @@ import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { Pool } from "pg";
 
 async function runMigrations() {
-  const databaseUrl = process.env.DATABASE_URL || import.meta.env?.DATABASE_URL;
+  const databaseUrl = process.env.DATABASE_URL || process.env?.DATABASE_URL;
   if (!databaseUrl) {
     throw new Error("DATABASE_URL environment variable is not set.");
   }
@@ -15,7 +15,7 @@ async function runMigrations() {
   console.log("⏳ Running database migrations...");
   console.log(
     "📍 Database URL:",
-    import.meta.env.DATABASE_URL.replace(/\/\/[^:]+:[^@]+@/, "//***:***@"),
+    process.env.DATABASE_URL.replace(/\/\/[^:]+:[^@]+@/, "//***:***@"),
   );
 
   try {

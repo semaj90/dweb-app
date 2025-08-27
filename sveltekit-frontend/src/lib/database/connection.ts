@@ -9,7 +9,7 @@ const env = {
 
 // Create PostgreSQL connection pool
 const pool = new Pool({
-  connectionString: env.DATABASE_URL || 'postgresql://legal_admin:LegalSecure2024!@localhost:5432/legal_ai_db',
+  connectionString: env.DATABASE_URL || 'postgresql://legal_admin:123456@localhost:5432/legal_ai_db',
   max: 10,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000,

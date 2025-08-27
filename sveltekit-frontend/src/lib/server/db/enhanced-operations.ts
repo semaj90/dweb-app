@@ -5,8 +5,8 @@ import { db, sql } from './index';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { eq, and, or, desc, asc, ilike, count, isNull, isNotNull, sql as sqlRaw, gte, lte } from 'drizzle-orm';
 import {
-  cases, evidence, users, documentMetadata
-} from './schema-unified.js';
+  cases, evidence, users, legal_documents
+} from './schema-postgres.js';
 import {
   ragSessions, ragMessages, userAiQueries, embeddingCache,
   documentChunks, caseEmbeddings, evidenceVectors, legalPrecedents,
@@ -72,15 +72,15 @@ export class CaseOperations {
   }
   
   // Static method to get case by ID with user access check
-  static async getById(caseId: string, userId: string): Promise<Case | null> {
+  static async getById(caseId: string, userId: string): Promise<any> {
     try {
       const result = await db.select()
         .from(cases)
         .where(and(
           eq(cases.id, caseId),
           or(
-            eq(cases.createdBy, userId),
-            eq(cases.leadProsecutor, userId)
+            eq(cases.userId, userId),
+            eq(cases.userId, userId)
           )
         ))
         .limit(1);
@@ -161,7 +161,7 @@ export class CaseOperations {
       conditions.push(sqlRaw`priority = ANY(${priority})`);
     }
     if (assignedTo) {
-      conditions.push(eq(cases.leadProsecutor, assignedTo));
+      conditions.push(eq(cases.userId, assignedTo));
     }
     if (dateRange) {
       conditions.push(
@@ -208,7 +208,7 @@ export class CaseOperations {
         or(
           ilike(cases.title, `%${query}%`),
           ilike(cases.description, `%${query}%`),
-          ilike(cases.caseNumber, `%${query}%`)
+          ilike(cases.title, `%${query}%`)
         )
       );
     }
@@ -218,18 +218,18 @@ export class CaseOperations {
     const [results, totalCount] = await Promise.all([
       db.select({
         id: cases.id,
-        caseNumber: cases.caseNumber,
+        caseNumber: cases.title,
         title: cases.title,
         description: cases.description,
         status: cases.status,
         priority: cases.priority,
-        incidentDate: cases.incidentDate,
-        location: cases.location,
-        jurisdiction: cases.jurisdiction,
-        leadProsecutor: cases.leadProsecutor,
+        incidentDate: cases.createdAt,
+        location: cases.description,
+        jurisdiction: cases.caseType,
+        leadProsecutor: cases.userId,
         createdAt: cases.createdAt,
         updatedAt: cases.updatedAt,
-        closedAt: cases.closedAt
+        closedAt: cases.updatedAt
       })
       .from(cases)
       .where(whereClause)
@@ -305,9 +305,7 @@ export class CaseOperations {
         evidence: {
           orderBy: [desc(evidence.collectedAt)],
           limit: 50
-        },
-        createdBy: true,
-        leadProsecutor: true
+        }
       }
     });
 
@@ -386,7 +384,7 @@ export class EvidenceOperations {
       offset?: number;
       useVectorSearch?: boolean;
     }
-  ): Promise<{ evidence: Evidence[]; total: number }> {
+  ): Promise<{ evidence: any[]; total: number }> {
     const { query, caseId, evidenceTypes, tags, dateRange, limit = 50, offset = 0, useVectorSearch = true } = params;
 
     let conditions = [];
@@ -599,7 +597,7 @@ export class LegalDocumentOperations {
         .where(
           and(
             or(
-              ilike(legalPrecedents.caseTitle, `%${query}%`),
+              ilike(legalPrecedents.title, `%${query}%`),
               ilike(legalPrecedents.summary, `%${query}%`)
             ),
             jurisdiction ? eq(legalPrecedents.jurisdiction, jurisdiction) : sqlRaw`1=1`

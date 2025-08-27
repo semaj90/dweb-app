@@ -126,13 +126,13 @@ let qdrantClient: QdrantClient | null = null;
 
 // Initialize Qdrant client (legacy support)
 function getQdrantClient(): QdrantClient | null {
-  if (!import.meta.env.QDRANT_URL) {
+  if (!process.env.QDRANT_URL) {
     return null;
   }
   if (!qdrantClient) {
     qdrantClient = new QdrantClient({
-      url: import.meta.env.QDRANT_URL,
-      apiKey: import.meta.env.QDRANT_API_KEY || undefined,
+      url: process.env.QDRANT_URL,
+      apiKey: process.env.QDRANT_API_KEY || undefined,
     });
   }
   return qdrantClient;

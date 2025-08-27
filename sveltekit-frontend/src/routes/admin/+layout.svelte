@@ -6,7 +6,7 @@
   import { AccessControl } from '$lib/auth/roles';
   import type { LayoutData } from './$types';
   
-  let { data = $bindable() } = $props(); // LayoutData;
+  let { data = $bindable(), children } = $props(); // LayoutData;
   
   let isLoading = true;
   let hasAdminAccess = false;
@@ -93,10 +93,10 @@
   ];
   
   // Filter nav items based on user permissions
-  let visibleNavItems = $derived(navItems.filter(item => {);
+  let visibleNavItems = $derived(navItems.filter(item => {
     const user = $currentUser;
     return user && AccessControl.hasPermission(user.role, item.permission);
-  });
+  }));
   
   // Check if current path is active
   function isActivePath(itemPath: string): boolean {
@@ -208,7 +208,7 @@
         
         <!-- Page Content -->
         <div class="bg-[#111111] border border-[#333333] p-6 rounded-none min-h-[calc(100%-100px)]">
-          <slot />
+          {@render children()}
         </div>
       </main>
     </div>

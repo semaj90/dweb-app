@@ -1,25 +1,25 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
-<!-- Grid Item Component -->
-<script lang="ts" context="module">
+<!-- Grid Layout Component with svelte-brics inspired design -->
+<script lang="ts">
   import { $props, $derived } from 'svelte';
+  import { cn } from '$lib/utils';
 
   interface Props {
-    columns: number ;
-    gap: "none" | "sm" | "md" | "lg" | "xl" ;
-    responsive: boolean ;
-    minHeight: string ;
-    maxHeight: string ;
+    columns?: number;
+    gap?: "none" | "sm" | "md" | "lg" | "xl";
+    responsive?: boolean;
+    minHeight?: string;
+    maxHeight?: string;
+    children?: import('svelte').Snippet;
   }
+  
   let {
     columns = 12,
     gap = "md",
     responsive = true,
     minHeight = "auto",
-    maxHeight = "none"
+    maxHeight = "none",
+    children
   }: Props = $props();
-
-
 
   export interface GridItemProps {
     colSpan?: number;
@@ -28,14 +28,9 @@ https://svelte.dev/e/js_parse_error -->
     rowStart?: number;
     responsive?: boolean;
     class?: string;
-}
-</script>
+  }
 
-<!-- Grid Layout Component with svelte-brics inspired design -->
-<script lang="ts">
-  import { cn } from '$lib/utils';
-
-        export const resizable: boolean = false;
+  export const resizable: boolean = false;
     
   const gapClasses = {
     none: "gap-0",
@@ -57,5 +52,7 @@ https://svelte.dev/e/js_parse_error -->
   style:min-height={minHeight}
   style:max-height={maxHeight}
 >
-  <slot></slot>
+  {#if children}
+    {@render children()}
+  {/if}
 </div>

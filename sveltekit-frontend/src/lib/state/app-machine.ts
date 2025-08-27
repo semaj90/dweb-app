@@ -216,8 +216,8 @@ const isOnline = ({ context }: { context: AppContext }) => {
 const setUser = assign({
   user: ({ event }: { event: any }) => event.output?.user,
   session: ({ event }: { event: any }) => ({
-    id: event.output?.sessionId,
-    expiresAt: new Date(event.output?.expiresAt),
+    id: event.output?.sessionId || crypto.randomUUID(),
+    expiresAt: new Date(event.output?.expiresAt || Date.now() + 24 * 60 * 60 * 1000),
     isActive: true
   })
 });
@@ -228,27 +228,32 @@ const clearUser = assign({
 });
 
 const setTheme = assign({
-  theme: ({ event }: { event: any }) => event.theme
+  theme: ({ event }: { event: AppEvents }) => 
+    'theme' in event ? event.theme : 'light'
 });
 
 const setLayout = assign({
-  layout: ({ event }: { event: any }) => event.layout
+  layout: ({ event }: { event: AppEvents }) => 
+    'layout' in event ? event.layout : 'desktop'
 });
 
 const addNotification = assign({
-  notifications: ({ context, event }: { context: AppContext; event: any }) => [
+  notifications: ({ context, event }: { context: AppContext; event: AppEvents }) => [
     ...context.notifications,
     {
       id: crypto.randomUUID(),
       timestamp: new Date(),
-      ...event.notification
+      type: 'info' as const,
+      title: '',
+      message: '',
+      ...('notification' in event ? event.notification : {})
     }
   ]
 });
 
 const dismissNotification = assign({
-  notifications: ({ context, event }: { context: AppContext; event: any }) =>
-    context.notifications.filter((n: any) => n.id !== event.id)
+  notifications: ({ context, event }: { context: AppContext; event: AppEvents }) =>
+    context.notifications.filter((n) => n.id !== ('id' in event ? event.id : ''))
 });
 
 const clearNotifications = assign({
@@ -256,7 +261,8 @@ const clearNotifications = assign({
 });
 
 const setError = assign({
-  error: ({ event }: { event: any }) => event.error,
+  error: ({ event }: { event: AppEvents }) => 
+    'error' in event ? event.error : null,
   globalLoading: false
 });
 
@@ -266,7 +272,8 @@ const clearError = assign({
 
 const setGlobalLoading = assign({
   globalLoading: true,
-  loadingMessage: ({ event }: { event: any }) => event.message
+  loadingMessage: ({ event }: { event: AppEvents }) => 
+    'message' in event ? event.message : undefined
 });
 
 const clearGlobalLoading = assign({
@@ -275,9 +282,9 @@ const clearGlobalLoading = assign({
 });
 
 const updateSettings = assign({
-  settings: ({ context, event }: { context: AppContext; event: any }) => ({
+  settings: ({ context, event }: { context: AppContext; event: AppEvents }) => ({
     ...context.settings,
-    ...event.settings
+    ...('settings' in event ? event.settings : {})
   })
 });
 
@@ -290,9 +297,9 @@ const setOffline = assign({
 });
 
 const connectWebSocket = assign({
-  websocket: ({ event }: { event: any }) => ({
+  websocket: ({ event }: { event: AppEvents }) => ({
     connected: true,
-    connectionId: event.connectionId,
+    connectionId: 'connectionId' in event ? event.connectionId : null,
     lastActivity: new Date()
   })
 });
@@ -321,10 +328,12 @@ const destroyLegalCaseMachine = assign({
 });
 
 const navigate = assign({
-  currentRoute: ({ event }: { event: any }) => event.path,
-  breadcrumbs: ({ event }: { event: any }) => {
+  currentRoute: ({ event }: { event: AppEvents }) => 
+    'path' in event ? event.path : '/',
+  breadcrumbs: ({ event }: { event: AppEvents }) => {
     // Generate breadcrumbs based on path
-    const segments = event.path.split('/').filter(Boolean);
+    const path = 'path' in event ? event.path : '/';
+    const segments = path.split('/').filter(Boolean);
     return segments.map((segment, index) => ({
       label: segment.charAt(0).toUpperCase() + segment.slice(1),
       path: '/' + segments.slice(0, index + 1).join('/')

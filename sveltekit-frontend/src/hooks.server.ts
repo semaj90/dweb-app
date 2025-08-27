@@ -14,6 +14,25 @@ import { workflowOrchestrator } from '$lib/machines/workflow-machine';
 let servicesInitialized = false;
 let initializationPromise: Promise<void> | null = null;
 
+// Dev-only global log buffer
+if (process.env.NODE_ENV === 'development') {
+  (globalThis as any)._devLogs = (globalThis as any)._devLogs || [] as string[];
+}
+
+function devLog(...parts: any[]) {
+  const msg = parts.map(p => typeof p === 'string' ? p : JSON.stringify(p)).join(' ');
+  try {
+    if (process.env.NODE_ENV === 'development') {
+      (globalThis as any)._devLogs.unshift(`${new Date().toISOString()} ${msg}`);
+      // keep last 200 entries
+      if ((globalThis as any)._devLogs.length > 200) (globalThis as any)._devLogs.length = 200;
+    }
+  } catch (e) {
+    // no-op
+  }
+  console.log(...parts);
+}
+
 // Request tracking
 const requestMetrics = {
   totalRequests: 0,
@@ -25,15 +44,15 @@ const requestMetrics = {
 // Initialize all services with graceful fallback
 async function initializeServices(): Promise<void> {
   if (servicesInitialized) return;
-  
+
   if (initializationPromise) {
     await initializationPromise;
     return;
   }
 
   initializationPromise = (async () => {
-    console.log('🚀 Initializing optional services...');
-    
+    devLog('🚀 Initializing optional services...');
+
     // Initialize services with timeout and graceful failure handling
     const initResults = await Promise.allSettled([
       Promise.race([
@@ -52,18 +71,18 @@ async function initializeServices(): Promise<void> {
 
     const services = ['Redis', 'MinIO', 'RabbitMQ'];
     let successCount = 0;
-    
+
     initResults.forEach((result, index) => {
       if (result.status === 'fulfilled' && result.value) {
-        console.log(`✅ ${services[index]} connected successfully`);
+        devLog(`✅ ${services[index]} connected successfully`);
         successCount++;
       } else {
-        console.log(`ℹ️  ${services[index]} not available - running in degraded mode`);
+        devLog(`ℹ️  ${services[index]} not available - running in degraded mode`);
       }
     });
 
     servicesInitialized = true;
-    console.log(`✅ Service initialization completed (${successCount}/3 services available)`);
+    devLog(`✅ Service initialization completed (${successCount}/3 services available)`);
   })();
 
   await initializationPromise;
@@ -91,29 +110,39 @@ const loggingHandle: Handle = async ({ event, resolve }) => {
   const startTime = Date.now();
   const { method, url } = event.request;
   const userAgent = event.request.headers.get('user-agent') || 'unknown';
-  const ip = event.getClientAddress();
+  
+  // Safe client address retrieval with fallback
+  let ip: string;
+  try {
+    ip = event.getClientAddress();
+  } catch (error) {
+    // Fallback for development environment where client address might not be available
+    ip = event.request.headers.get('x-forwarded-for') || 
+         event.request.headers.get('x-real-ip') || 
+         'localhost';
+  }
 
   // Generate request ID
   const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  
+
   // Inject request metadata
   (event.locals as any).requestId = requestId;
   (event.locals as any).startTime = startTime;
 
-  console.log(`🌐 [${new Date().toISOString()}] ${method} ${new URL(event.request.url).pathname} - ${ip} - ${requestId}`);
+  devLog(`🌐 [${new Date().toISOString()}] ${method} ${new URL(event.request.url).pathname} - ${ip} - ${requestId}`);
 
   try {
     const response = await resolve(event);
     const responseTime = Date.now() - startTime;
-    
+
     // Update metrics
     requestMetrics.totalRequests++;
-    requestMetrics.averageResponseTime = 
+    requestMetrics.averageResponseTime =
       (requestMetrics.averageResponseTime + responseTime) / 2;
     requestMetrics.lastRequestTime = Date.now();
 
     // Log successful request
-    console.log(`✅ [${requestId}] ${response.status} - ${responseTime}ms`);
+    devLog(`✅ [${requestId}] ${response.status} - ${responseTime}ms`);
 
     // Add performance headers
     response.headers.set('X-Request-ID', requestId);
@@ -125,8 +154,8 @@ const loggingHandle: Handle = async ({ event, resolve }) => {
   } catch (error) {
     const responseTime = Date.now() - startTime;
     requestMetrics.errorCount++;
-    
-    console.error(`❌ [${requestId}] Error after ${responseTime}ms:`, error);
+
+    devLog(`❌ [${requestId}] Error after ${responseTime}ms: ${error?.message || error}`);
     throw error;
   }
 };
@@ -160,7 +189,7 @@ const securityHandle: Handle = async ({ event, resolve }) => {
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  
+
   // Add CORS headers for API routes
   if (event.url.pathname.startsWith('/api/')) {
     response.headers.set('Access-Control-Allow-Origin', '*');
@@ -192,23 +221,58 @@ const cacheHandle: Handle = async ({ event, resolve }) => {
 
 // Session and auth handle
 const sessionHandle: Handle = async ({ event, resolve }) => {
-  const sessionId = event.cookies.get('session_id');
-  
-  if (sessionId && servicesInitialized) {
-    try {
-      const sessionData = await redis.getSession(sessionId);
-      if (sessionData) {
-        (event.locals as any).session = sessionData;
-        (event.locals as any).user = {
-          id: sessionData.userId,
-          email: sessionData.email || '',
-          name: sessionData.name || null,
-          role: sessionData.role || 'user',
-          isActive: true
+  // Ensure locals has a predictable default shape
+  (event.locals as any).user = (event.locals as any).user ?? null;
+  (event.locals as any).session = (event.locals as any).session ?? null;
+
+  // Use corrected session validation
+  try {
+    const { validateSession } = await import('$lib/server/lucia');
+    const sessionId = event.cookies.get('session_id') || event.cookies.get('session');
+    
+    if (sessionId) {
+      const { session, user } = await validateSession(sessionId);
+      
+      if (user && session) {
+        (event.locals as any).user = user;
+        (event.locals as any).session = { 
+          id: session.id, 
+          user: user,
+          userId: user.id 
         };
+        devLog('[hooks] Session found for user:', user.email);
+      } else {
+        devLog('[hooks] No valid session found');
       }
-    } catch (error) {
-      console.warn('Session lookup failed:', error);
+    } else {
+      devLog('[hooks] No session ID in cookies');
+    }
+  } catch (error) {
+    console.warn('[hooks] Lucia session validation failed:', error?.message || error);
+    // Fallback to Redis session lookup for backward compatibility
+    const sessionId =
+      event.cookies.get('session_id') ||
+      event.cookies.get('session') ||
+      event.cookies.get('yorha_session') ||
+      null;
+
+    if (sessionId) {
+      try {
+        const sessionData = await redis.getSession(sessionId);
+        if (sessionData) {
+          (event.locals as any).session = sessionData;
+          (event.locals as any).user = {
+            id: sessionData.userId,
+            email: sessionData.email || '',
+            name: sessionData.name || null,
+            role: sessionData.role || 'user',
+            isActive: true,
+          };
+          devLog('[hooks] Redis fallback session populated for user:', (event.locals as any).user.email);
+        }
+      } catch (redisError) {
+        console.warn('[hooks] Redis session lookup also failed:', redisError?.message || redisError);
+      }
     }
   }
 
@@ -218,7 +282,8 @@ const sessionHandle: Handle = async ({ event, resolve }) => {
 // Enhanced error handler
 const enhancedErrorHandler: HandleServerError = ({ error, event, status, message }) => {
   const errorId = `err_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  
+
+  devLog(`❌ [${errorId}] Server Error:`, (error as Error)?.message || 'Unknown error');
   console.error(`❌ [${errorId}] Server Error:`, {
     error: (error as Error)?.message || 'Unknown error',
     stack: (error as Error)?.stack,
@@ -237,8 +302,8 @@ const enhancedErrorHandler: HandleServerError = ({ error, event, status, message
   }
 
   return {
-    message: process.env.NODE_ENV === 'development' ? 
-      (error as Error)?.message || message : 
+    message: process.env.NODE_ENV === 'development' ?
+      (error as Error)?.message || message :
       'An error occurred',
     code: status?.toString() || 'INTERNAL_SERVER_ERROR',
     errorId
@@ -253,21 +318,21 @@ const customFetch: HandleFetch = async ({ request, fetch, event }) => {
     headers.set('X-Request-ID', (event.locals as any).requestId || 'unknown');
     headers.set('X-User-ID', (event.locals as any).user?.id?.toString() || 'anonymous');
     headers.set('X-Session-ID', event.cookies.get('session_id') || 'none');
-    
+
     request = new Request(request, { headers });
   }
 
   const startTime = Date.now();
-  
+
   try {
     const response = await fetch(request);
     const responseTime = Date.now() - startTime;
-    
+
     // Log slow requests
     if (responseTime > 5000) {
       console.warn(`🐌 Slow fetch detected: ${request.url} took ${responseTime}ms`);
     }
-    
+
     return response;
   } catch (error) {
     console.error(`❌ Fetch error for ${request.url}:`, error);

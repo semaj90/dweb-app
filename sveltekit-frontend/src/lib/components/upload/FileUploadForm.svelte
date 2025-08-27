@@ -1,18 +1,11 @@
 <script lang="ts">
   import { $props } from 'svelte';
 
+  // Use modular components
+  import { Button, Card, Input, Form, Progress, Badge, FileUpload } from '$lib/components/ui/modular';
+  import type { UploadFile } from '$lib/components/ui/modular/types';
   import { Alert, AlertDescription } from '$lib/components/ui/alert';
-  import { Button } from '$lib/components/ui/button';
-  import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-  } from '$lib/components/ui/card';
-  import { Input } from '$lib/components/ui/input';
   import { Label } from '$lib/components/ui/label';
-  import { Progress } from '$lib/components/ui/progress';
   import {
     Select,
     SelectContent,
@@ -44,16 +37,13 @@
     multipleSubmits: 'prevent',
     onSubmit: ({ formData }) => {
       // Set the file in formData
-      if (selectedFile) {
-        formData.set('file', selectedFile);
+      if (uploadFiles.length > 0) {
+        formData.set('file', uploadFiles[0].file);
       }
     },
   });
-  let selectedFile: File | null = null;
-  let dragActive = false;
+  let uploadFiles: UploadFile[] = $state([]);
   let uploadProgress = 0;
-  let previewUrl: string | null = null;
-  let fileInputEl: HTMLInputElement | null = null;
   // Initialize form with caseId if provided
   $: if (caseId) {
     $form.caseId = caseId;
@@ -69,83 +59,71 @@
     digital: Binary,
   };
 
-  // Handle file selection
-  function handleFileSelect(event: Event) {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (file) {
-      selectFile(file);
+  // Handle file changes from FileUpload component
+  function handleFilesChange(files: UploadFile[]) {
+    uploadFiles = files;
+    
+    if (files.length > 0) {
+      const file = files[0];
+      
+      // Auto-detect file type
+      if (file.type.startsWith('image/')) {
+        $form.type = 'image';
+      } else if (file.type.startsWith('video/')) {
+        $form.type = 'video';
+      } else if (file.type.startsWith('audio/')) {
+        $form.type = 'audio';
+      } else if (
+        file.type.includes('pdf') ||
+        file.type.includes('document') ||
+        file.type.includes('text')
+      ) {
+        $form.type = 'document';
+      } else {
+        $form.type = 'digital';
+      }
+
+      // Set default title from filename
+      if (!$form.title) {
+        $form.title = file.name.replace(/\.[^/.]+$/, '');
+      }
     }
   }
 
-  // Handle drag and drop
-  function handleDrop(event: DragEvent) {
-    event.preventDefault();
-    dragActive = false;
-    const file = event.dataTransfer?.files[0];
-    if (file) {
-      selectFile(file);
+  // Handle file upload progress
+  async function handleFileUpload(file: UploadFile): Promise<void> {
+    // Simulate upload progress
+    const simulateProgress = () => {
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 10;
+        file.progress = progress;
+        uploadFiles = [...uploadFiles]; // Trigger reactivity
+        
+        if (progress >= 100) {
+          clearInterval(interval);
+          file.status = 'completed';
+          uploadFiles = [...uploadFiles];
+        }
+      }, 100);
+    };
+
+    file.status = 'uploading';
+    file.progress = 0;
+    uploadFiles = [...uploadFiles];
+    
+    try {
+      simulateProgress();
+    } catch (error) {
+      file.status = 'error';
+      file.error = 'Upload failed';
+      uploadFiles = [...uploadFiles];
     }
   }
 
-  function handleDragOver(event: DragEvent) {
-    event.preventDefault();
-    dragActive = true;
-  }
-
-  function handleDragLeave() {
-    dragActive = false;
-  }
-
-  // Select and preview file
-  function selectFile(file: File) {
-    selectedFile = file;
-
-    // Auto-detect file type
-    if (file.type.startsWith('image/')) {
-      $form.type = 'image';
-      // Create preview for images
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        previewUrl = e.target?.result as string;
-      };
-      reader.readAsDataURL(file);
-    } else if (file.type.startsWith('video/')) {
-      $form.type = 'video';
-    } else if (file.type.startsWith('audio/')) {
-      $form.type = 'audio';
-    } else if (
-      file.type.includes('pdf') ||
-      file.type.includes('document') ||
-      file.type.includes('text')
-    ) {
-      $form.type = 'document';
-    } else {
-      $form.type = 'digital';
-    }
-
-    // Set default title from filename
-    if (!$form.title) {
-      $form.title = file.name.replace(/\.[^/.]+$/, '');
-    }
-  }
-
-  // Remove selected file
-  function removeFile() {
-    selectedFile = null;
-    previewUrl = null;
-    uploadProgress = 0;
-  }
-
-  function openFilePicker() {
-    fileInputEl?.click();
-  }
-
-  function onDropzoneKeydown(e: KeyboardEvent) {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      openFilePicker();
-    }
+  // Handle file removal
+  function handleFileRemove(fileId: string) {
+    uploadFiles = uploadFiles.filter(f => f.id !== fileId);
   }
 
   // Format file size
@@ -158,99 +136,51 @@
   }
 </script>
 
-<Card class="w-full max-w-2xl">
-  <CardHeader>
-    <CardTitle>Upload Evidence</CardTitle>
-    <CardDescription>
-      Upload documents, images, videos, or other evidence files for AI analysis
-    </CardDescription>
-  </CardHeader>
-  <CardContent>
-    <form method="POST" enctype="multipart/form-data" use:enhance>
-      <div class="space-y-6">
-        <!-- File Upload Area -->
-        <div class="space-y-2">
-          <Label for="file">File</Label>
-          <div
-            class={`relative border-2 border-dashed rounded-lg p-6 transition-colors ` +
-              `${dragActive ? 'border-primary bg-primary bg-opacity-5' : 'border-muted-foreground border-opacity-25'} ` +
-              `${selectedFile ? 'bg-muted/30' : ''}`}
-            ondrop={handleDrop}
-            ondragover={handleDragOver}
-            ondragleave={handleDragLeave}
-            on:click={openFilePicker}
-            onkeydown={onDropzoneKeydown}
-            role="button"
-            tabindex="0"
-            aria-label={selectedFile ? `Change file ${selectedFile.name}` : 'Upload a file by clicking or dragging'}>
-            {#if selectedFile}
-              {@const SvelteComponent = fileTypeIcons[$form.type] ?? FileText}
-              <div class="space-y-4">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-3">
-                    <SvelteComponent class="h-8 w-8 text-muted-foreground" />
-                    <div>
-                      <p class="font-medium">{selectedFile.name}</p>
-                      <p class="text-sm text-muted-foreground">
-                        {formatFileSize(selectedFile.size)} • {selectedFile.type}
-                      </p>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <Button type="button" variant="secondary" size="sm" on:click={(e) => { e.stopPropagation(); openFilePicker(); }}>
-                      Change
-                    </Button>
-                    <Button type="button" variant="ghost" size="sm" on:click={(e) => { e.stopPropagation(); removeFile(); }} aria-label="Remove file">
-                      <X class="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
+<Card variant="legal" class="w-full max-w-2xl">
+  {#snippet header()}
+    <div class="space-y-2">
+      <h3 class="text-xl font-semibold">Upload Evidence</h3>
+      <p class="text-muted-foreground">
+        Upload documents, images, videos, or other evidence files for AI analysis
+      </p>
+    </div>
+  {/snippet}
 
-                {#if previewUrl && $form.type === 'image'}
-                  <img src={previewUrl} alt="Preview" class="max-h-48 rounded-md mx-auto" />
-                {/if}
-                {#if uploadProgress > 0}
-                  <Progress value={uploadProgress} class="h-2" />
-                {/if}
-              </div>
-            {:else}
-              <div class="text-center">
-                <Upload class="mx-auto h-12 w-12 text-muted-foreground" />
-                <p class="mt-2 text-sm text-muted-foreground">
-                  Drag and drop a file here, or click to select
-                </p>
-                <p class="text-xs text-muted-foreground mt-1">
-                  Max size: 50MB • Supported: PDF, Word, Images, Video, Audio
-                </p>
-              </div>
-            {/if}
-          </div>
-          <!-- Hidden input to allow programmatic open when a file is already selected -->
-          <input
-            bind:this={fileInputEl}
-            type="file"
-            class="hidden"
-            onchange={handleFileSelect}
-            accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.mp4,.mp3,.wav"
-          />
-          {#if $errors.file}
-            <span class="text-sm text-destructive">{$errors.file}</span>
-          {/if}
-        </div>
+  <Form method="POST" enctype="multipart/form-data" onsubmit={enhance} variant="legal">
+    <!-- File Upload Component -->
+    <div class="space-y-2">
+      <Label for="file">File</Label>
+      <FileUpload
+        variant="evidence"
+        multiple={false}
+        maxFiles={1}
+        maxSize={50 * 1024 * 1024}
+        accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.mp4,.mp3,.wav"
+        bind:files={uploadFiles}
+        onfileschange={handleFilesChange}
+        onupload={handleFileUpload}
+        onremove={handleFileRemove}
+        dragDropText="Drop evidence files here or click to browse"
+        browseText="Browse Evidence Files"
+        supportedFormats={['PDF', 'Word', 'Images', 'Video', 'Audio']}
+      />
+      {#if $errors.file}
+        <span class="text-sm text-destructive">{$errors.file}</span>
+      {/if}
+    </div>
 
         <!-- Title -->
-        <div class="space-y-2">
-          <Label for="title">Title</Label>
-          <Input
-            id="title"
-            name="title"
-            bind:value={$form.title}
-            placeholder="Enter evidence title"
-            class={$errors.title ? 'border-destructive' : ''} />
-          {#if $errors.title}
-            <span class="text-sm text-destructive">{$errors.title}</span>
-          {/if}
-        </div>
+        <Input
+          id="title"
+          name="title"
+          bind:value={$form.title}
+          variant="legal"
+          label="Title"
+          placeholder="Enter evidence title"
+          state={$errors.title ? 'error' : 'default'}
+          errorMessage={$errors.title}
+          required
+        />
 
         <!-- Description -->
         <div class="space-y-2">
@@ -288,18 +218,17 @@
 
         <!-- Case ID (hidden if provided) -->
         {#if !caseId}
-          <div class="space-y-2">
-            <Label for="caseId">Case ID</Label>
-            <Input
-              id="caseId"
-              name="caseId"
-              bind:value={$form.caseId}
-              placeholder="Enter case ID"
-              class={$errors.caseId ? 'border-destructive' : ''} />
-            {#if $errors.caseId}
-              <span class="text-sm text-destructive">{$errors.caseId}</span>
-            {/if}
-          </div>
+          <Input
+            id="caseId"
+            name="caseId"
+            bind:value={$form.caseId}
+            variant="legal"
+            label="Case ID"
+            placeholder="Enter case ID"
+            state={$errors.caseId ? 'error' : 'default'}
+            errorMessage={$errors.caseId}
+            required
+          />
         {:else}
           <input type="hidden" name="caseId" value={caseId} />
         {/if}
@@ -340,20 +269,24 @@
         {/if}
 
         <!-- Submit Button -->
-        <Button type="submit" disabled={$submitting || !selectedFile} class="w-full">
-          {#if $submitting}
-            <div class="flex items-center gap-2">
-              <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-              Uploading...
-            </div>
-          {:else}
-            <Upload class="mr-2 h-4 w-4" />
-            Upload Evidence
-          {/if}
+        <Button 
+          type="submit" 
+          disabled={$submitting || uploadFiles.length === 0} 
+          variant="evidence" 
+          size="lg"
+          class="w-full"
+          loading={$submitting}
+        >
+          {#snippet children()}
+            {#if $submitting}
+              Uploading Evidence...
+            {:else}
+              <Upload class="mr-2 h-4 w-4" />
+              Upload Evidence
+            {/if}
+          {/snippet}
         </Button>
-      </div>
-    </form>
-  </CardContent>
+  </Form>
 </Card>
 
 <!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

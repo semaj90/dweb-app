@@ -2,7 +2,7 @@
 // Predictive Analytics & Self-Prompting AI Chat History
 
 import { db } from '../db/index';
-import { userAiQueries, ragSessions, ragMessages, cases, evidence, users } from '../db/additional-tables';
+import { cases, evidence, users } from '../db/schema-unified';
 import { eq, and, desc, sql, count } from 'drizzle-orm';
 import type { User } from '../db/schema-types';
 

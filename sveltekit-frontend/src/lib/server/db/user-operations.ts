@@ -55,7 +55,7 @@ const queryClient = postgres(connectionString, {
   },
 });
 
-export const db = drizzle(queryClient);
+const userDb = drizzle(queryClient);
 
 // ============================================================================
 // USER AUTHENTICATION OPERATIONS
@@ -99,7 +99,7 @@ export class UserAuthService {
       }
 
       // Create user with transaction
-      const result = await db.transaction(async (tx) => {
+      const result = await userDb.transaction(async (tx) => {
         // Insert user
         const [newUser] = await tx.insert(users).values(validatedUser).returning();
 
@@ -176,7 +176,7 @@ export class UserAuthService {
       const passwordValid = await bcrypt.compare(password, user.passwordHash);
       if (!passwordValid) {
         // Log failed login attempt
-        await db.insert(userActivityLog).values({
+        await userDb.insert(userActivityLog).values({
           userId: user.id,
           action: 'login_failed',
           resource: 'auth',
@@ -193,7 +193,7 @@ export class UserAuthService {
       const sessionId = nanoid(32);
       const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
-      const [session] = await db.insert(userSessions).values({
+      const [session] = await userDb.insert(userSessions).values({
         userId: user.id,
         sessionId,
         expiresAt,
@@ -209,7 +209,7 @@ export class UserAuthService {
         .where(eq(users.id, user.id));
 
       // Log successful login
-      await db.insert(userActivityLog).values({
+      await userDb.insert(userActivityLog).values({
         userId: user.id,
         action: 'login_success',
         resource: 'auth',
@@ -357,7 +357,7 @@ export class UserProfileService {
     updates: Partial<NewUser & NewUserProfile>
   ): Promise<{ user?: User; profile?: UserProfile; success: boolean; error?: string }> {
     try {
-      const result = await db.transaction(async (tx) => {
+      const result = await userDb.transaction(async (tx) => {
         let updatedUser: User | undefined;
         let updatedProfile: UserProfile | undefined;
 
@@ -460,7 +460,7 @@ export class UserProfileService {
    */
   static async deleteUser(userId: number): Promise<{ success: boolean; error?: string }> {
     try {
-      await db.transaction(async (tx) => {
+      await userDb.transaction(async (tx) => {
         // Soft delete user
         await tx
           .update(users)
@@ -546,7 +546,7 @@ export class UserActivityService {
    */
   static async logActivity(activity: NewUserActivity): Promise<void> {
     try {
-      await db.insert(userActivityLog).values({
+      await userDb.insert(userActivityLog).values({
         ...activity,
         timestamp: new Date(),
       });
@@ -646,7 +646,7 @@ export class UserActivityService {
 // EXPORTS
 // ============================================================================
 
-export { db };
+export { userDb as db };
 export default {
   UserAuthService,
   UserProfileService,

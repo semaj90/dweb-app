@@ -11,15 +11,17 @@
   // Feedback Integration
   import FeedbackIntegration from '$lib/components/feedback/FeedbackIntegration.svelte';
 
-  export let data: {
-    userId: string | null;
-    sessionId: string | null;
-    email: string | null;
-    isAuthenticated: boolean;
-  };
+  let { data }: {
+    data: {
+      userId: string | null;
+      sessionId: string | null;
+      email: string | null;
+      isAuthenticated: boolean;
+    }
+  } = $props();
 
-  let loading = false;
-  let welcomeMessage = "Welcome to the Legal AI Dashboard";
+  let loading = $state(false);
+  let welcomeMessage = $state("Welcome to the Legal AI Dashboard");
 
   // Feedback integration reference
   let dashboardFeedback: any;

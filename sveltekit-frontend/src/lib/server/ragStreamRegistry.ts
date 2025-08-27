@@ -25,8 +25,8 @@ let redis: Redis | null = null;
 const redisUrl = (process as any).env.RAG_REDIS_URL;
 if (redisUrl) {
   try {
-    redis = new Redis(redisUrl, { lazyConnect: true });
-    redis.connect().catch(() => (redis = null));
+    redis = new Redis(redisUrl);
+    // ioredis connects automatically
   } catch {
     redis = null;
   }
@@ -105,7 +105,7 @@ export async function cachedSummary(text: string, maxSentences = 3): Promise<str
     mem.set(key, summary);
     if (redis) {
       try {
-        await redis.set(key, summary, 'EX', 3600);
+        await (redis as any).set(key, summary, 'EX', 3600);
       } catch {}
     }
   }

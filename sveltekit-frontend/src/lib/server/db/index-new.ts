@@ -10,7 +10,7 @@ import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { initializeQdrantCollection } from "$lib/qdrant/collection-seeder";
 
 // Load environment-specific variables
-const envFile = `.env.${import.meta.env.NODE_ENV || "development"}`;
+const envFile = `.env.${process.env.NODE_ENV || "development"}`;
 dotenv.config({ path: envFile });
 
 let _db: NodePgDatabase<typeof schema> | null = null;
@@ -26,9 +26,9 @@ function initializeDatabase(): NodePgDatabase<typeof schema> | null {
 
   // Use PostgreSQL for all environments
   const databaseUrl =
-    import.meta.env.DATABASE_URL ||
+    process.env.DATABASE_URL ||
     "postgresql://postgres:postgres@localhost:5432/prosecutor_db";
-  const nodeEnv = import.meta.env.NODE_ENV || "development";
+  const nodeEnv = process.env.NODE_ENV || "development";
 
   console.log("🔧 Database Configuration:");
   console.log("  NODE_ENV:", nodeEnv);
@@ -43,8 +43,8 @@ function initializeDatabase(): NodePgDatabase<typeof schema> | null {
 
   _db = drizzle(_pool, { schema });
 
-  // Skip migrations in testing environment
-  if (nodeEnv !== "testing") {
+  // Skip migrations in test environment
+  if (nodeEnv !== "test") {
     try {
       console.log("Running PostgreSQL migrations...");
       migrate(_db, { migrationsFolder: "./drizzle" });

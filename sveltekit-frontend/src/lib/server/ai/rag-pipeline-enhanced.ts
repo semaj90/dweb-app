@@ -716,10 +716,7 @@ export class EnhancedLegalRAGPipeline {
         prepare: true,
         connect_timeout: this.config.database.connect_timeout,
         onnotice: (notice: any) => console.debug('[DB] Notice:', notice),
-        onparameter: (key: string, value: any) => console.debug(`[DB] Parameter ${key}:`, value),
-        onconnect: async () => {
-          console.log('[DB] PostgreSQL connected successfully');
-        }
+        onparameter: (key: string, value: any) => console.debug(`[DB] Parameter ${key}:`, value)
       });
 
       this.db = drizzle(this.sql, { schema });
@@ -1891,7 +1888,7 @@ Limit to 10 most relevant tags.
   async close(): Promise<void> {
     try {
       await Promise.allSettled([
-        this.redis ? this.redis.quit() : Promise.resolve(),
+        this.redis ? (this.redis as any).quit() : Promise.resolve(),
         this.sql?.end(),
       ]);
       

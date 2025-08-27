@@ -7,10 +7,12 @@
 
   interface Props {
     class_?: string;
+    children?: import('svelte').Snippet;
   }
   
   let {
-    class_ = ""
+    class_ = "",
+    children
   }: Props = $props();
 
   const context =
@@ -26,7 +28,9 @@
 
 {#if $open}
   <div class="space-y-4" role="listbox">
-    <slot></slot>
+    {#if children}
+      {@render children()}
+    {/if}
   </div>
 {/if}
 

@@ -1,4 +1,5 @@
-import { relayAuthService } from '$lib/server/services/relay-auth-service';
+import { simpleAuthService } from '$lib/server/auth-simple';
+import { lucia } from '$lib/server/auth';
 import type { RequestHandler } from './$types';
 
 /**
@@ -11,48 +12,23 @@ export const POST: RequestHandler = async ({ cookies, getClientAddress, request 
   const userAgent = request.headers.get('user-agent') || '';
 
   try {
-    // Use relay authentication service instead of direct database calls
-    console.log('🔄 Using RelayAuthService for demo authentication...');
+    // Use simple authentication with direct PostgreSQL queries
+    console.log('🔄 Using simple authentication for demo user...');
     
-    const authResult = await relayAuthService.authenticateDemoUser();
+    // Login with demo credentials
+    const user = await simpleAuthService.authenticateDemoUser();
     
-    if (!authResult) {
-      return new Response(JSON.stringify({ 
-        error: 'Demo authentication failed through relay service.' 
-      }), { 
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
+    console.log('✅ Demo user authenticated:', user.email);
 
-    const { user, session } = authResult;
-
-    // Check if account is active
-    if (!user.is_active) {
-      return new Response(JSON.stringify({ 
-        error: 'Demo account is disabled.' 
-      }), { 
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
-    console.log('✅ Demo user authenticated via relay service:', user.email);
-
-    // Create session cookie manually to avoid Lucia's database connection
-    const cookieName = 'auth-session';
-    const cookieValue = session.id;
-    const isSecure = false; // dev mode
+    // Create session using Lucia
+    const session = await simpleAuthService.createSession(user.id);
     
-    cookies.set(cookieName, cookieValue, {
-      path: '/',
-      httpOnly: true,
-      secure: isSecure,
-      sameSite: 'strict',
-      maxAge: 60 * 60 * 24 * 7 // 7 days
+    // Set session cookie
+    const sessionCookie = lucia.createSessionCookie(session.id);
+    cookies.set(sessionCookie.name, sessionCookie.value, {
+      ...sessionCookie.attributes,
+      path: '/'
     });
-
-    console.log('✅ Session cookie set manually:', cookieName, '=', cookieValue);
 
     console.log('✅ Demo user auto-login successful:', user.email);
 
@@ -62,7 +38,7 @@ export const POST: RequestHandler = async ({ cookies, getClientAddress, request 
       user: {
         id: user.id,
         email: user.email,
-        name: user.name,
+        name: `${user.first_name || ''} ${user.last_name || ''}`.trim(),
         role: user.role
       },
       redirectTo: '/dashboard'

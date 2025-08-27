@@ -3,7 +3,6 @@
   YoRHa-themed comprehensive route listing
 -->
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import Button from '$lib/components/ui/button/Button.svelte';
@@ -17,17 +16,15 @@
   const modules = import.meta.glob('/src/routes/**/+page.svelte');
 
   // State management
-  let searchValue = '';
-  let categoryValue = 'all';
-  let sortValue: 'name' | 'category' | 'status' = 'name';
+  let searchValue = $state('');
+  let categoryValue = $state('all');
+  let sortValue = $state<'name' | 'category' | 'status'>('name');
 
   // Build discovered routes from file system
-  let discoveredRoutes: string[] = [];
-  let allAvailableRoutes: any[] = [];
-  let filteredRoutes: any[] = [];
+  let filteredRoutes = $state<any[]>([]);
 
   // Update discovered routes
-  $: discoveredRoutes = Object.keys(modules)
+  const discoveredRoutes = $derived(Object.keys(modules)
     .map((path) => {
       let route = path
         .replace('/src/routes', '')
@@ -44,10 +41,10 @@
     })
     .filter((r, i, arr) => arr.indexOf(r) === i) // unique
     .filter(r => r !== '/+error') // filter out error pages
-    .sort();
+    .sort());
 
   // Combine configured routes with discovered routes
-  $: allAvailableRoutes = [
+  const allAvailableRoutes = $derived([
     ...allRoutes.map(route => ({
       ...route,
       type: 'configured',
@@ -67,10 +64,10 @@
         type: 'discovered',
         available: true
       }))
-  ];
+  ]);
 
   // Filter and sort routes
-  $: filteredRoutes = allAvailableRoutes
+  const filteredRoutesComputed = $derived(allAvailableRoutes
     .filter(route => {
       // Search filter
       if (searchValue) {
@@ -101,7 +98,12 @@
         default:
           return a.label.localeCompare(b.label);
       }
-    });
+    }));
+
+  // Update filteredRoutes reactively
+  $effect(() => {
+    filteredRoutes = filteredRoutesComputed;
+  });
 
   function formatRouteLabel(route: string): string {
     if (route === '/') return 'Home';
@@ -168,7 +170,8 @@
     }
   }
 
-  onMount(() => {
+  // Log derived values when they change
+  $effect(() => {
     console.log('Discovered routes:', discoveredRoutes);
     console.log('All available routes:', allAvailableRoutes);
   });

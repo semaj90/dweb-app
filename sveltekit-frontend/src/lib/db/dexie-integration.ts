@@ -5,8 +5,7 @@
  * Provides reactive Svelte stores for real-time UI updates
  */
 
-import Dexie, { type Table } from 'dexie';
-import { liveQuery } from 'dexie';
+import Dexie, { type Table, liveQuery } from 'dexie';
 
 // ============================================================================
 // DATABASE SCHEMA DEFINITIONS

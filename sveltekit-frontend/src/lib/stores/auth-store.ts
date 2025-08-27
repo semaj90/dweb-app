@@ -4,8 +4,8 @@
  */
 
 import { browser } from '$app/environment';
-import { createActor, type ActorRefFrom } from 'xstate';
-import { authMachine, type AuthContext } from '$lib/machines/auth-machine';
+import { type ActorRefFrom } from 'xstate';
+import { authMachine, authActor as machineActor } from '$lib/machines/auth-machine';
 import { mcpGPUOrchestrator } from '$lib/services/mcp-gpu-orchestrator';
 
 export interface User {
@@ -45,7 +45,7 @@ export interface AuthState {
 }
 
 // Enhanced reactive auth store using Svelte stores + XState
-import { writable, type Writable } from 'svelte/store';
+import { writable, get, type Writable } from 'svelte/store';
 
 const authState = writable<AuthState>({
   user: null,
@@ -64,18 +64,18 @@ let authActor: ActorRefFrom<typeof authMachine> | null = null;
 
 // Initialize XState machine in browser
 if (browser) {
-  authActor = createActor(authMachine);
+  authActor = machineActor;
   
   // Subscribe to machine state changes
   authActor.subscribe((state) => {
     authState.update(currentState => ({
       ...currentState,
-      machineState: state.value as string,
-      user: state.context.user as User | null,
-      session: state.context.session as Session | null,
+      machineState: typeof state.value === 'string' ? state.value : JSON.stringify(state.value),
+      user: state.context.user,
+      session: state.context.session,
       isAuthenticated: state.context.user !== null,
       isLoading: state.context.isLoading,
-      error: state.context.error || null,
+      error: state.context.error,
       twoFactorRequired: state.context.twoFactorRequired,
       loginAttempts: state.context.loginAttempts,
       lockoutUntil: state.context.lockoutUntil
@@ -154,39 +154,40 @@ export const authStore = {
   },
   
   get user() {
-    return authState.user;
+    return get(authState).user;
   },
   
   get session() {
-    return authState.session;
+    return get(authState).session;
   },
   
   get isAuthenticated() {
-    return authState.isAuthenticated;
+    return get(authState).isAuthenticated;
   },
   
   get isLoading() {
-    return authState.isLoading;
+    return get(authState).isLoading;
   },
   
   get error() {
-    return authState.error;
+    return get(authState).error;
   },
   
   get twoFactorRequired() {
-    return authState.twoFactorRequired;
+    return get(authState).twoFactorRequired;
   },
   
   get machineState() {
-    return authState.machineState;
+    return get(authState).machineState;
   },
   
   get loginAttempts() {
-    return authState.loginAttempts;
+    return get(authState).loginAttempts;
   },
   
   get isLocked() {
-    return authState.lockoutUntil ? new Date() < authState.lockoutUntil : false;
+    const state = get(authState);
+    return state.lockoutUntil ? new Date() < state.lockoutUntil : false;
   },
   
   // Enhanced login with GPU security analysis
@@ -230,7 +231,7 @@ export const authStore = {
         });
         
         if (securityCheck.riskScore && securityCheck.riskScore > 0.8) {
-          authState.error = 'Security verification failed. Please try again.';
+          authState.update(state => ({ ...state, error: 'Security verification failed. Please try again.' }));
           return;
         }
       } catch (error) {
@@ -305,12 +306,12 @@ export const authStore = {
         });
         
         if (validationCheck.riskScore && validationCheck.riskScore > 0.9) {
-          authState.error = 'Registration validation failed. Please verify your information.';
+          authState.update(state => ({ ...state, error: 'Registration validation failed. Please verify your information.' }));
           return;
         }
         
         if (validationCheck.legalVerification && !validationCheck.legalVerification.verified) {
-          authState.error = 'Unable to verify legal professional credentials. Please contact support.';
+          authState.update(state => ({ ...state, error: 'Unable to verify legal professional credentials. Please contact support.' }));
           return;
         }
       } catch (error) {
@@ -330,11 +331,14 @@ export const authStore = {
   logout: async () => {
     if (!authActor) {
       // Fallback for when machine is not initialized
-      authState.user = null;
-      authState.session = null;
-      authState.isAuthenticated = false;
-      authState.error = null;
-      authState.twoFactorRequired = false;
+      authState.update(state => ({
+        ...state,
+        user: null,
+        session: null,
+        isAuthenticated: false,
+        error: null,
+        twoFactorRequired: false
+      }));
       if (browser) {
         localStorage.removeItem('legal_ai_session');
       }
@@ -366,12 +370,12 @@ export const authStore = {
   },
   
   clearError: () => {
-    authState.error = null;
+    authState.update(state => ({ ...state, error: null }));
   },
   
   // Session management utilities
   refreshSession: async () => {
-    if (!browser || !authState.isAuthenticated) return;
+    if (!browser || !get(authState).isAuthenticated) return;
     
     try {
       const response = await fetch('/api/auth/refresh', {
@@ -401,13 +405,15 @@ export const authStore = {
   },
   
   isSessionExpired: () => {
-    if (!authState.session?.expiresAt) return true;
-    return new Date() > new Date(authState.session.expiresAt);
+    const session = get(authState).session;
+    if (!session?.expiresAt) return true;
+    return new Date() > new Date(session.expiresAt);
   },
   
   getSessionTimeRemaining: () => {
-    if (!authState.session?.expiresAt) return 0;
-    return Math.max(0, new Date(authState.session.expiresAt).getTime() - Date.now());
+    const session = get(authState).session;
+    if (!session?.expiresAt) return 0;
+    return Math.max(0, new Date(session.expiresAt).getTime() - Date.now());
   },
   
   formatSessionExpiry: () => {
@@ -425,7 +431,7 @@ export const authStore = {
 // Auto-refresh session every 15 minutes
 if (browser) {
   setInterval(() => {
-    if (authState.isAuthenticated && !authStore.isSessionExpired()) {
+    if (get(authState).isAuthenticated && !authStore.isSessionExpired()) {
       authStore.refreshSession().catch(console.error);
     }
   }, 15 * 60 * 1000); // 15 minutes

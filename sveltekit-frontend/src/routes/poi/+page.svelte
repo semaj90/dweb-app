@@ -32,11 +32,11 @@
     }
   ];
 
-  let filteredPersons = $derived(persons.filter(person => );
+  let filteredPersons = $derived(persons.filter(person => 
     person.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     person.alias.toLowerCase().includes(searchQuery.toLowerCase()) ||
     person.status.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  ));
 
   onMount(() => {
     // Load persons data

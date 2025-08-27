@@ -1,7 +1,7 @@
 
 // Minimal ingestion queue (Redis LIST if available else in-memory) + status store.
 
-import { cache } from '$lib/cache/redis';
+import { cache } from '$lib/server/cache/redis';
 import { randomUUID } from 'crypto';
 import type { IngestionJobRequest, IngestionJobStatus } from './embedding-repository';
 

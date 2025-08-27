@@ -13,7 +13,7 @@
 
 import { sql } from 'drizzle-orm';
 import { pgTable, text, integer, timestamp, jsonb, vector, uuid, boolean, real } from 'drizzle-orm/pg-core';
-import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
+// import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
 // ============================================================================
@@ -135,7 +135,7 @@ export const legalDocumentsJsonb = pgTable('legal_documents_jsonb', {
   content: text('content').notNull(),
   
   // JSONB metadata with optimized schema
-  metadata: jsonb('metadata').$type<z.infer<typeof LegalMetadataSchema>>().notNull(),
+  metadata: jsonb('metadata').notNull(),
   
   // Vector embeddings for semantic search
   titleEmbedding: vector('title_embedding', { dimensions: 384 }),
@@ -151,8 +151,8 @@ export const legalDocumentsJsonb = pgTable('legal_documents_jsonb', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
   
-  // Full-text search
-  searchVector: sql`to_tsvector('english', title || ' ' || content)`,
+  // Full-text search vector (generated column)
+  // searchVector: sql`to_tsvector('english', title || ' ' || content)`, // Commented out - needs proper column syntax
 });
 
 export const casesJsonb = pgTable('cases_jsonb', {
@@ -161,7 +161,7 @@ export const casesJsonb = pgTable('cases_jsonb', {
   description: text('description'),
   
   // Case-specific JSONB metadata
-  metadata: jsonb('metadata').$type<z.infer<typeof CaseMetadataSchema>>().notNull(),
+  metadata: jsonb('metadata').notNull(),
   
   // Computed fields
   caseNumber: text('case_number').generatedAlwaysAs(sql`(metadata->>'caseNumber')`),
@@ -183,7 +183,7 @@ export const evidenceJsonb = pgTable('evidence_jsonb', {
   description: text('description'),
   
   // Evidence-specific metadata
-  metadata: jsonb('metadata').$type<z.infer<typeof EvidenceMetadataSchema>>().notNull(),
+  metadata: jsonb('metadata').notNull(),
   
   // File information
   filePath: text('file_path'),
@@ -208,15 +208,7 @@ export const documentRelationshipsJsonb = pgTable('document_relationships_jsonb'
   sourceId: uuid('source_id').notNull(),
   targetId: uuid('target_id').notNull(),
   
-  relationshipMetadata: jsonb('relationship_metadata').$type<{
-    type: 'citation' | 'reference' | 'precedent' | 'contradiction' | 'support' | 'supersedes';
-    strength: number; // 0-1 confidence score
-    context: string;
-    extractedAt: string;
-    verifiedBy?: string;
-    semanticSimilarity?: number;
-    graphDistance?: number;
-  }>().notNull(),
+  relationshipMetadata: jsonb('relationship_metadata').notNull(),
   
   // Computed fields for fast queries
   relationshipType: text('relationship_type').generatedAlwaysAs(sql`(relationship_metadata->>'type')`),
@@ -440,23 +432,24 @@ export class LegalJsonbOperations {
 // VALIDATION SCHEMAS
 // ============================================================================
 
-export const insertLegalDocumentSchema = createInsertSchema(legalDocumentsJsonb, {
-  metadata: LegalMetadataSchema,
-});
+// Schema validation (commented out until drizzle-zod is available)
+// export const insertLegalDocumentSchema = createInsertSchema(legalDocumentsJsonb, {
+//   metadata: LegalMetadataSchema,
+// });
 
-export const selectLegalDocumentSchema = createSelectSchema(legalDocumentsJsonb);
+// export const selectLegalDocumentSchema = createSelectSchema(legalDocumentsJsonb);
 
-export const insertCaseSchema = createInsertSchema(casesJsonb, {
-  metadata: CaseMetadataSchema,
-});
+// export const insertCaseSchema = createInsertSchema(casesJsonb, {
+//   metadata: CaseMetadataSchema,
+// });
 
-export const selectCaseSchema = createSelectSchema(casesJsonb);
+// export const selectCaseSchema = createSelectSchema(casesJsonb);
 
-export const insertEvidenceSchema = createInsertSchema(evidenceJsonb, {
-  metadata: EvidenceMetadataSchema,
-});
+// export const insertEvidenceSchema = createInsertSchema(evidenceJsonb, {
+//   metadata: EvidenceMetadataSchema,
+// });
 
-export const selectEvidenceSchema = createSelectSchema(evidenceJsonb);
+// export const selectEvidenceSchema = createSelectSchema(evidenceJsonb);
 
 // ============================================================================
 // TYPE EXPORTS

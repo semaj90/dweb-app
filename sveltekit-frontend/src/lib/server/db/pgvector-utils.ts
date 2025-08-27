@@ -428,7 +428,7 @@ export async function pgvectorHealthCheck(): Promise<{
 
     return {
       available: true,
-      version: extensionCheck[0]?.version,
+      version: (extensionCheck[0]?.version as string) || 'unknown',
       functions: availableFunctions
     };
   } catch (error) {

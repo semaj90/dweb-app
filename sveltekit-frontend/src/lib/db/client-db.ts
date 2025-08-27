@@ -11,7 +11,8 @@
  * Complements your server-side "tricubic tensor" PostgreSQL system
  */
 
-import Dexie, { type Table } from 'dexie';
+import Dexie from 'dexie';
+import type { Table } from 'dexie';
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -205,16 +206,16 @@ export interface UserPreferences {
 // ============================================================================
 
 export class LegalAIClientDB extends Dexie {
-  // Table declarations
-  chatHistory!: Table<ChatMessage>;
-  documentCache!: Table<DocumentCache>;
-  searchHistory!: Table<SearchHistory>;
-  vectorSearchCache!: Table<VectorSearchCache>;
-  userAnnotations!: Table<UserAnnotation>;
-  legalEntities!: Table<LegalEntity>;
-  graphVisualizationData!: Table<GraphVisualizationData>;
-  aiAnalysisCache!: Table<AIAnalysisCache>;
-  userPreferences!: Table<UserPreferences>;
+  // Table declarations with proper Dexie typing
+  chatHistory!: Dexie.Table<ChatMessage, number>;
+  documentCache!: Dexie.Table<DocumentCache, number>;
+  searchHistory!: Dexie.Table<SearchHistory, number>;
+  vectorSearchCache!: Dexie.Table<VectorSearchCache, number>;
+  userAnnotations!: Dexie.Table<UserAnnotation, number>;
+  legalEntities!: Dexie.Table<LegalEntity, number>;
+  graphVisualizationData!: Dexie.Table<GraphVisualizationData, number>;
+  aiAnalysisCache!: Dexie.Table<AIAnalysisCache, number>;
+  userPreferences!: Dexie.Table<UserPreferences, number>;
 
   constructor() {
     super('LegalAIClientDB');

@@ -69,12 +69,12 @@ async function fallbackTextSearch(queryEmbedding: number[], limit: number): Prom
   
   const results = await db
     .select({
-      id: legalDocuments.id,
-      title: legalDocuments.title,
-      content: legalDocuments.content,
-      metadata: legalDocuments.metadata,
+      id: documentMetadata.id,
+      title: documentMetadata.originalFilename,
+      content: documentMetadata.extractedText,
+      metadata: documentMetadata.metadata,
     })
-    .from(legalDocuments)
+    .from(documentMetadata)
     .limit(limit);
 
   return results.map((doc, index) => ({
@@ -104,7 +104,7 @@ export async function storeAiQueryWithEmbedding(
       caseId,
       query,
       response,
-      embedding: arrayToPgVector(embedding),
+      embedding: arrayToPgVector(embedding) as any,
       metadata,
       isSuccessful: true,
     });
@@ -122,7 +122,7 @@ export async function cacheEmbedding(
   try {
     await db.insert(embeddingCache).values({
       textHash,
-      embedding: arrayToPgVector(embedding),
+      embedding: arrayToPgVector(embedding) as any,
       model,
     });
   } catch (error) {
@@ -143,7 +143,7 @@ export async function getCachedEmbedding(textHash: string): Promise<number[] | n
       // Parse pgvector format back to array
       const vectorString = result[0].embedding;
       if (typeof vectorString === 'string') {
-        return vectorString.replace(/^\[|\]$/g, '').split(',').map((n: string) => parseFloat(n));
+        return (vectorString as string).replace(/^\[|\]$/g, '').split(',').map((n: string) => parseFloat(n));
       }
     }
     return null;

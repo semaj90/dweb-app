@@ -38,10 +38,10 @@
   }: Props = $props();
 
   // State
-  let activeTab = 'dashboard';
-  let showNewCaseModal = false;
-  let currentTime = new Date();
-  let notification = { show: false, message: '', type: 'info' };
+  let activeTab = $state('dashboard');
+  let showNewCaseModal = $state(false);
+  let currentTime = $state(new Date());
+  let notification = $state({ show: false, message: '', type: 'info' });
 
   // Navigation items
   const navigationItems = [
@@ -54,11 +54,11 @@
   ];
 
   // Active cases data (mock)
-  let activeCases = [
+  let activeCases = $state([
     { id: 'CASE-2024-087', title: 'Corporate Espionage Investigation', status: 'active', priority: 'high', lastUpdate: '2 hours ago' },
     { id: 'CASE-2024-088', title: 'Missing Person: Dr. Sarah Chen', status: 'active', priority: 'medium', lastUpdate: '4 hours ago' },
     { id: 'CASE-2024-089', title: 'Financial Fraud Analysis', status: 'pending', priority: 'low', lastUpdate: '1 day ago' }
-  ];
+  ]);
 
   // Form fields for new case
   const newCaseFormFields = [

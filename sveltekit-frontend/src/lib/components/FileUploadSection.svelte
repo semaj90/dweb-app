@@ -1,5 +1,8 @@
 <script lang="ts">
-
+  // Use modular components and types
+  import { FileUpload, Button, Badge, Progress, Card } from '$lib/components/ui/modular';
+  import type { UploadFile } from '$lib/components/ui/modular/types';
+  import FileUploadProgress from './upload/FileUploadProgress.svelte';
 
   interface FileUpload {
     id: string;
@@ -56,9 +59,7 @@
   import TagList from './TagList.svelte';
 
 
-  let fileInput: HTMLInputElement;
-  let dragActive = false;
-  let uploads: FileUpload[] = [];
+  let uploadFiles: UploadFile[] = $state([]);
   let aiSystem: ComprehensiveAISystemIntegration;
   let docStatus: string = '';
   let docs: any = null;
@@ -137,526 +138,175 @@
 			reader.readAsDataURL(file);
 		});
 	}
-	async function processFiles(files: FileList | globalThis.File[]) {
-		const fileArray = Array.from(files);
+  // Handle files change from modular FileUpload component
+  function handleFilesChange(files: UploadFile[]) {
+    uploadFiles = files;
+    
+    // Convert to legacy FileUpload format for compatibility
+    const legacyUploads = files.map(file => ({
+      id: file.id,
+      file: file.file,
+      preview: file.preview,
+      tags: [], // Initialize empty tags
+      progress: file.progress || 0,
+      status: file.status === 'pending' ? 'pending' as const :
+              file.status === 'uploading' ? 'uploading' as const :
+              file.status === 'completed' ? 'success' as const :
+              'error' as const,
+      error: file.error,
+      hash: undefined
+    }));
+    
+    onfilesChanged?.(legacyUploads);
+  }
 
-		// Check total file limit
-		if (uploads.length + fileArray.length > maxFiles) {
-			onerror?.(`Maximum ${maxFiles} files allowed`);
-			return;
-		}
-		for (const file of fileArray) {
-			const validation = isFileValid(file);
+  // Handle file upload progress and processing
+  async function handleFileUpload(file: UploadFile): Promise<void> {
+    try {
+      file.status = 'uploading';
+      file.progress = 0;
+      uploadFiles = [...uploadFiles];
 
-			if (!validation.valid) {
-				onerror?.(validation.error!);
-				continue;
-			}
-			const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-			const preview = await createFilePreview(file);
-
-			const upload: FileUpload = {
-				id,
-				file,
-				preview,
-				tags: [],
-				progress: 0,
-				status: 'pending'
-			};
-
-			uploads = [...uploads, upload];
-		}
-		onfilesChanged?.(uploads);
-	}
-	function handleFileSelect(event: Event) {
-		const target = event.target as HTMLInputElement;
-		if (target.files && target.files.length > 0) {
-			processFiles(target.files);
-		}
-		// Reset input value to allow selecting the same file again
-		target.value = '';
-	}
-	function handleDragOver(event: DragEvent) {
-		event.preventDefault();
-		dragActive = true;
-	}
-	function handleDragLeave(event: DragEvent) {
-		event.preventDefault();
-		dragActive = false;
-	}
-	async function handleDrop(event: DragEvent) {
-		event.preventDefault();
-		dragActive = false;
-
-		const files = event.dataTransfer?.files;
-		if (files && files.length > 0) {
-			await processFiles(files);
-		}
-	}
-	function removeFile(id: string) {
-		uploads = uploads.filter(upload => upload.id !== id);
-		onfilesChanged?.(uploads);
-	}
-	function updateFileTags(id: string, tags: string[]) {
-		uploads = uploads.map(upload =>
-			upload.id === id ? { ...upload, tags } : upload
-		);
-		onfilesChanged?.(uploads);
-	}
-	async function uploadFiles() {
-		const pendingUploads = uploads.filter(u => u.status === 'pending');
-
-		if (pendingUploads.length === 0) {
-			onerror?.('No files to upload');
-			return;
-		}
-		// Start uploading files
-    for (const upload of pendingUploads) {
-      upload.status = 'uploading';
-      uploads = [...uploads];
-      try {
-        // Prepare DocumentWorkflow
-        const workflow = {
-          documentId: upload.id,
+      // Prepare DocumentWorkflow
+      const workflow = {
+        documentId: file.id,
+        caseId: reportId,
+        userId: 'current-user', // TODO: get from auth context
+        filename: file.name,
+        content: await file.file.arrayBuffer(),
+        metadata: {
+          filename: file.name,
+          mimeType: file.type,
+          fileSize: file.size,
+          uploadDate: new Date(),
           caseId: reportId,
-          userId: 'current-user', // TODO: get from auth context
-          filename: upload.file.name,
-          content: await upload.file.arrayBuffer(),
-          metadata: {
-            filename: upload.file.name,
-            mimeType: upload.file.type,
-            fileSize: upload.file.size,
-            uploadDate: new Date(),
-            caseId: reportId,
-            userId: 'current-user',
-            tags: upload.tags,
-            classification: 'evidence',
-            confidentialityLevel: 'internal',
-            retentionPolicy: 'standard',
-            customFields: {}
-          },
-          stages: [],
-          currentStage: 0,
-          startTime: new Date(),
-          status: 'pending'
-        };
-        // Process workflow (MinIO, Neo4j, pgvector)
-        await processDocumentWorkflow(workflow);
-        // Trigger AI/ML analysis
-        if (aiSystem) {
-          await aiSystem.processDocument(upload.id, upload.file.name, { tags: upload.tags });
+          userId: 'current-user',
+          tags: [], // Will be updated later
+          classification: 'evidence',
+          confidentialityLevel: 'internal',
+          retentionPolicy: 'standard',
+          customFields: {}
+        },
+        stages: [],
+        currentStage: 0,
+        startTime: new Date(),
+        status: 'pending'
+      };
+
+      // Simulate upload progress
+      const progressInterval = setInterval(() => {
+        if (file.progress! < 90) {
+          file.progress = (file.progress || 0) + 10;
+          uploadFiles = [...uploadFiles];
         }
-        upload.status = 'success';
-        upload.progress = 100;
-        docStatus = 'Upload and analysis complete.';
-      } catch (error) {
-        upload.status = 'error';
-        upload.error = error instanceof Error ? error.message : 'Upload failed';
-        docStatus = 'Error: ' + upload.error;
+      }, 100);
+
+      // Process workflow (MinIO, Neo4j, pgvector)
+      await processDocumentWorkflow(workflow);
+      
+      // Trigger AI/ML analysis
+      if (aiSystem) {
+        await aiSystem.processDocument(file.id, file.name, { tags: [] });
       }
-    }
-    uploads = [...uploads];
-    // Notify parent component
-    const successfulFiles = uploads
-      .filter(u => u.status === 'success')
-      .map(u => u.file);
-    if (successfulFiles.length > 0) {
-      const allTags = uploads
-        .filter(u => u.status === 'success')
-        .flatMap(u => u.tags);
-      onupload?.({ files: successfulFiles, tags: [...new Set(allTags)] });
+
+      clearInterval(progressInterval);
+      file.status = 'completed';
+      file.progress = 100;
+      uploadFiles = [...uploadFiles];
+      docStatus = 'Upload and analysis complete.';
+
+    } catch (error) {
+      file.status = 'error';
+      file.error = error instanceof Error ? error.message : 'Upload failed';
+      uploadFiles = [...uploadFiles];
+      docStatus = 'Error: ' + file.error;
     }
   }
-	function clearCompleted() {
-		uploads = uploads.filter(u => u.status !== 'success');
-		onfilesChanged?.(uploads);
-	}
-	function triggerFileSelect() {
-		fileInput?.click();
-	}
+
+  // Handle file removal
+  function handleFileRemove(fileId: string) {
+    uploadFiles = uploadFiles.filter(f => f.id !== fileId);
+    
+    // Also notify parent of successful uploads for final callback
+    const successfulFiles = uploadFiles
+      .filter(f => f.status === 'completed')
+      .map(f => f.file);
+    
+    if (successfulFiles.length > 0) {
+      onupload?.({ files: successfulFiles, tags: [] });
+    }
+  }
 </script>
 
-<div class="space-y-4">
-  <input
-    bind:this={fileInput}
-    type="file"
-    {multiple}
-    accept={acceptedTypes.join(',')}
-    onchange={handleFileSelect}
-    class="hidden"
-    aria-label="Select files for upload" />
-
-  <!-- Drop Zone -->
-  <div
-    class="drop-zone"
-    class:drag-active={dragActive}
-    class:has-files={uploads.length > 0}
-    ondragover={handleDragOver}
-    ondragleave={handleDragLeave}
-    ondrop={handleDrop}
-    role="button"
-    tabindex={0}
-    onclick={triggerFileSelect}
-    onkeydown={(e) => e.key === 'Enter' && triggerFileSelect()}>
-    {#if uploads.length === 0}
-      <div class="drop-zone-content">
-        <Upload size={48} />
-        <h3 class="drop-title">Upload Evidence Files</h3>
-        <p class="drop-description">Drag and drop files here, or click to browse</p>
-        <p class="drop-details">
-          Supports: {acceptedTypes.join(', ')} • Max {formatFileSize(maxFileSize)} per file • Up to {maxFiles}
-          files
-        </p>
-      </div>
-    {:else}
-      <div class="upload-summary">
-        <CloudUpload size={24} />
-        <span>{uploads.length} file{uploads.length !== 1 ? 's' : ''} ready</span>
-        <button
-          type="button"
-          class="btn-link"
-          onclick={(e) => {
-            e.stopPropagation();
-            triggerFileSelect();
-          }}>
-          Add more
-        </button>
-      </div>
-    {/if}
-  </div>
-
-  <!-- File List -->
-  {#if uploads.length > 0}
-    <div class="file-upload-section">
-      <div>
-        <label>Summary Type
-          <select bind:value={summaryType} aria-label="Select summary type">
-            <option value="key_points">Key Points</option>
-            <option value="narrative">Narrative Summary</option>
-            <option value="prosecutorial">Prosecutorial Analysis</option>
-          </select>
-        </label>
-      </div>
-      <div class="file-list">
-        {#each uploads as upload (upload.id)}
-          <div class="file-item" class:uploading={upload.status === 'uploading'}>
-            <div class="file-info">
-              <div class="file-icon-wrapper">
-                {#if upload.preview}
-                  <img src={upload.preview} alt="File preview" class="file-preview" />
-                {:else}
-                  <svelte:component this={getFileIcon(upload.file)} size={24} />
-                {/if}
-              </div>
-
-              <div class="file-details">
-                <div class="file-name">{upload.file.name}</div>
-                <div class="file-meta">
-                  {formatFileSize(upload.file.size)}
-                  {#if upload.status === 'uploading'}
-                    • Uploading... {upload.progress}%
-                  {:else if upload.status === 'success'}
-                    • Uploaded
-                  {:else if upload.status === 'error'}
-                    • Error: {upload.error}
-                  {/if}
-                </div>
-              </div>
-
-              <div class="file-status">
-                {#if upload.status === 'uploading'}
-                  <div class="progress-ring">
-                    <div class="progress-fill" style="--progress: {upload.progress}%"></div>
-                  </div>
-                {:else if upload.status === 'success'}
-                  <CheckCircle size={20} class="status-icon success" />
-                {:else if upload.status === 'error'}
-                  <AlertCircle size={20} class="status-icon error" />
-                {/if}
-              </div>
-
-              {#if upload.status !== 'uploading'}
-                <button
-                  type="button"
-                  class="remove-file"
-                  onclick={() => removeFile(upload.id)}
-                  aria-label="Remove {upload.file.name}">
-                  <X size={16} />
-                </button>
-              {/if}
-            </div>
-
-            {#if upload.status === 'pending' || upload.status === 'error'}
-              <div class="file-tags">
-                <TagList bind:tags={upload.tags}
-                         {availableTags}
-                         placeholder="Add tags for this file..."
-                         maxTags={5}
-                         onchange={(e) => updateFileTags(upload.id, e.detail)} />
-              </div>
-            {/if}
-
-            {#if upload.status === 'uploading'}
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: {upload.progress}%"></div>
-              </div>
-            {/if}
-          </div>
-        {/each}
-      </div>
+<Card variant="evidence" class="space-y-6">
+  {#snippet header()}
+    <div class="space-y-2">
+      <h3 class="text-lg font-semibold flex items-center gap-2">
+        <CloudUpload class="w-5 h-5" />
+        Evidence File Upload
+      </h3>
+      <p class="text-sm text-muted-foreground">
+        Upload documents, images, videos, or other evidence files for comprehensive AI analysis
+      </p>
     </div>
+  {/snippet}
 
-      <!-- Upload Actions -->
-      <div class="upload-actions">
-        <button
-          type="button"
-          class="btn btn-primary"
-          onclick={() => uploadFiles()}
-          disabled={uploads.every((u) => u.status !== 'pending')}>
-          Upload Files
-          {#if uploads.filter((u) => u.status === 'pending').length > 0}
-            ({uploads.filter((u) => u.status === 'pending').length})
-          {/if}
-        </button>
-        {#if uploads.some((u) => u.status === 'success')}
-          <button type="button" class="btn btn-secondary" onclick={() => clearCompleted()}>
-            Clear Completed
-          </button>
-        {/if}
+  <!-- Modular File Upload Component -->
+  <FileUpload
+    variant="evidence"
+    {multiple}
+    maxFiles={maxFiles}
+    maxSize={maxFileSize}
+    accept={acceptedTypes.join(',')}
+    bind:files={uploadFiles}
+    onfileschange={handleFilesChange}
+    onupload={handleFileUpload}
+    onremove={handleFileRemove}
+    dragDropText="Drop evidence files here or click to browse"
+    browseText="Browse Evidence Files"
+    supportedFormats={acceptedTypes.map(type => type.replace('.', '').toUpperCase())}
+  />
+
+  <!-- Analysis Controls -->
+  {#if uploadFiles.length > 0}
+    <div class="space-y-4">
+      <!-- Summary Type Selection -->
+      <div class="space-y-2">
+        <label class="text-sm font-medium">Analysis Type</label>
+        <select 
+          bind:value={summaryType} 
+          class="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+          aria-label="Select analysis type"
+        >
+          <option value="key_points">Key Points Analysis</option>
+          <option value="narrative">Narrative Summary</option>
+          <option value="prosecutorial">Prosecutorial Analysis</option>
+        </select>
       </div>
 
+      <!-- Processing Status -->
       {#if docStatus}
-        <div aria-live="polite">{docStatus}</div>
+        <div class="p-3 rounded-md" class:bg-green-50={docStatus.includes('complete')} class:bg-red-50={docStatus.includes('Error')} class:bg-blue-50={!docStatus.includes('complete') && !docStatus.includes('Error')}>
+          <Badge variant={docStatus.includes('complete') ? 'success' : docStatus.includes('Error') ? 'destructive' : 'info'}>
+            {docStatus}
+          </Badge>
+        </div>
       {/if}
 
+      <!-- Context7.2 Documentation (Optional) -->
       {#if docs}
-        <details>
-          <summary>Show Svelte 5 File Upload Docs (Context7.2)</summary>
-          <pre>{docs.content}</pre>
+        <details class="mt-6">
+          <summary class="text-sm font-medium cursor-pointer hover:text-orange-600 transition-colors">
+            📚 Show Svelte 5 File Upload Documentation (Context7.2)
+          </summary>
+          <div class="mt-2 p-4 bg-gray-50 rounded-md text-xs font-mono overflow-auto max-h-64">
+            <pre>{docs.content}</pre>
+          </div>
         </details>
       {/if}
+    </div>
   {/if}
-</div>
+</Card>
 
-<style>
-  /* @unocss-include */
-  .file-upload-section {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  .hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-  }
-  .drop-zone {
-    border: 2px dashed #d1d5db;
-    border-radius: 0.5rem;
-    padding: 1.5rem;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    background-color: white;
-  }
-  .drop-zone:hover {
-    border-color: #60a5fa;
-    background-color: rgba(239, 246, 255, 0.5);
-  }
-  .drop-zone:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px #3b82f6;
-  }
-  .drop-zone.drag-active {
-    border-color: #3b82f6;
-    background-color: #eff6ff;
-  }
-  .drop-zone.has-files {
-    padding: 1rem;
-  }
-  .drop-zone-content {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  .drop-title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: #111827;
-  }
-  .drop-description {
-    color: #4b5563;
-  }
-  .drop-details {
-    font-size: 0.875rem;
-    color: #6b7280;
-  }
-  .upload-summary {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    color: #374151;
-  }
-  .btn-link {
-    color: #2563eb;
-    text-decoration: underline;
-    font-weight: 500;
-    border-radius: 0.25rem;
-    padding: 0.25rem;
-  }
-  .btn-link:hover {
-    color: #1d4ed8;
-  }
-  .btn-link:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px #3b82f6;
-  }
-  .file-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    max-height: 24rem;
-    overflow-y: auto;
-  }
-  .file-item {
-    background-color: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.5rem;
-    padding: 1rem;
-    transition: all 0.2s;
-  }
-  .file-item.uploading {
-    background-color: #eff6ff;
-    border-color: #bfdbfe;
-  }
-  .file-info {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-  .file-icon-wrapper {
-    flex-shrink: 0;
-  }
-  .file-preview {
-    width: 3rem;
-    height: 3rem;
-    object-fit: cover;
-    border-radius: 0.25rem;
-    border: 1px solid #e5e7eb;
-  }
-  .file-details {
-    flex: 1;
-    min-width: 0;
-  }
-  .file-name {
-    font-weight: 500;
-    color: #111827;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .file-meta {
-    font-size: 0.875rem;
-    color: #6b7280;
-  }
-  .file-status {
-    flex-shrink: 0;
-  }
-  .progress-ring {
-    width: 1.25rem;
-    height: 1.25rem;
-    position: relative;
-  }
-  .progress-fill {
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    border: 2px solid #3b82f6;
-    background: conic-gradient(#3b82f6 var(--progress), #e5e7eb var(--progress));
-  }
-  :global(.status-icon.success) {
-    color: #059669;
-  }
-  :global(.status-icon.error) {
-    color: #dc2626;
-  }
-  .remove-file {
-    flex-shrink: 0;
-    padding: 0.25rem;
-    color: #9ca3af;
-    border-radius: 0.25rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    transition: color 0.15s;
-  }
-  .remove-file:hover {
-    color: #dc2626;
-  }
-  .remove-file:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px #ef4444;
-  }
-  .file-tags {
-    margin-top: 0.75rem;
-    padding-top: 0.75rem;
-    border-top: 1px solid #e5e7eb;
-  }
-  .progress-bar {
-    margin-top: 0.5rem;
-    width: 100%;
-    background-color: #e5e7eb;
-    border-radius: 9999px;
-    height: 0.5rem;
-    overflow: hidden;
-  }
-  .progress-bar .progress-fill {
-    height: 100%;
-    background-color: #3b82f6;
-    transition: all 0.3s;
-  }
-  .upload-actions {
-    display: flex;
-    gap: 0.5rem;
-    justify-content: flex-end;
-  }
-  .btn {
-    padding: 1rem 1rem;
-    border-radius: 0.375rem;
-    font-weight: 500;
-    border: none;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .btn:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
-  }
-  .btn-primary {
-    background-color: #2563eb;
-    color: white;
-  }
-  .btn-primary:hover {
-    background-color: #1d4ed8;
-  }
-  .btn-primary:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-  .btn-secondary {
-    background-color: #e5e7eb;
-    color: #111827;
-  }
-  .btn-secondary:hover {
-    background-color: #d1d5db;
-  }
-</style>
+<!-- Styles are now handled by modular components and UnoCSS -->
 

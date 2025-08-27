@@ -43,6 +43,9 @@
   }
 </script>
 
+<!-- keyboard handling on window for accessibility -->
+<svelte:window on:keydown={handleKeydown} />
+
 <!-- optional trigger -->
 <slot name="trigger" />
 
@@ -54,8 +57,6 @@
     on:click={handleOutsideClick}
     role="presentation"
   >
-    <!-- keyboard handling on window for accessibility -->
-    <svelte:window on:keydown={handleKeydown} />
     <melt>  <slot name="window-handle-keydown" /></melt>
     <!-- dialog content -->
     <div

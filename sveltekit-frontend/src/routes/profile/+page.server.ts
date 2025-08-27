@@ -3,7 +3,7 @@ import { cases, criminals, evidence } from "$lib/server/db/schema-postgres";
 import { count, eq } from "drizzle-orm";
 import type { PageServerLoad } from "./$types";
 import { redirect } from '@sveltejs/kit';
-import { db } from '$lib/server/db';
+import { db } from '$lib/server/db/index';
 
 export const load: PageServerLoad = async (event) => {
   const { locals } = event;

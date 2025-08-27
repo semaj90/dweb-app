@@ -2,22 +2,25 @@
 <!-- Cases, POI, Evidence, Documents, and more -->
 
 <script lang="ts">
-  import { onMount, createEventDispatcher } from 'svelte';
+  import { onMount } from 'svelte';
   import { globalSearch, searchServices } from '$lib/services/search-service.js';
   import { hybridSearch } from '$lib/services/hybrid-vector-operations.js';
   import { optimizeComponent, optimizeForAnimations } from '$lib/utils/browser-performance.js';
   import type { SearchResult as ServiceSearchResult } from '$lib/types/search.types.js';
   import type { SearchResult, SearchOptions, SearchSuggestion } from './types.js';
-  
+
   // Component props
   let {
     placeholder = "Search cases, persons of interest, evidence...",
     showFilters = true,
     showSuggestions = true,
     maxResults = 20,
-    theme = 'light' as 'light' | 'dark' | 'yorha'
+    theme = 'light' as 'light' | 'dark' | 'yorha',
+    onsearch = undefined as ((event: CustomEvent<{ query: string; results: SearchResult[] }>) => void) | undefined,
+    onselect = undefined as ((event: CustomEvent<{ result: SearchResult }>) => void) | undefined,
+    onclear = undefined as ((event: CustomEvent<void>) => void) | undefined
   } = $props();
-  
+
   // Component state
   let searchInput = $state('');
   let isSearching = $state(false);
@@ -26,7 +29,7 @@
   let suggestions: SearchSuggestion[] = $state([]);
   let selectedCategories = $state(['cases', 'evidence', 'documents']);
   let recentSearches: string[] = $state([]);
-  
+
   // Search configuration
   let searchOptions: SearchOptions = $state({
     categories: ['cases', 'evidence', 'precedents', 'statutes', 'criminals', 'documents'],
@@ -36,13 +39,9 @@
     similarityThreshold: 0.7,
     includeMetadata: true
   });
-  
-  const dispatch = createEventDispatcher<{
-    search: { query: string; results: SearchResult[] };
-    select: { result: SearchResult };
-    clear: void;
-  }>();
-  
+
+  // Modern Svelte 5 event handling - props instead of dispatcher
+
   // Available search categories
   const searchCategories = [
     { id: 'cases', label: 'Cases', icon: '📁', color: 'blue' },
@@ -52,19 +51,19 @@
     { id: 'precedents', label: 'Precedents', icon: '⚖️', color: 'yellow' },
     { id: 'statutes', label: 'Statutes', icon: '📖', color: 'indigo' }
   ];
-  
+
   // Recent searches and suggestions
   let trendingSearches = [
     'fraud investigation',
-    'corporate embezzlement', 
+    'corporate embezzlement',
     'witness testimony',
     'financial crimes',
     'evidence chain custody'
   ];
-  
+
   // Debounced search
   let searchTimeout: NodeJS.Timeout;
-  
+
   $effect(() => {
     if (searchInput) {
       clearTimeout(searchTimeout);
@@ -74,7 +73,7 @@
       showResults = false;
     }
   });
-  
+
   // Load recent searches from localStorage and optimize component
   onMount(() => {
     if (typeof window !== 'undefined') {
@@ -88,7 +87,7 @@
       if (searchContainer) {
         optimizeComponent(searchContainer);
       }
-      
+
       // Optimize search results container for animations
       const resultsContainer = document.querySelector('.search-results-dropdown') as HTMLElement;
       if (resultsContainer) {
@@ -96,13 +95,13 @@
       }
     }
   });
-  
+
   async function performSearch() {
     if (!searchInput.trim() || isSearching) return;
-    
+
     isSearching = true;
     showResults = true;
-    
+
     try {
       // Use the new unified search API endpoint with Loki.js fuzzy search
       const response = await fetch('/api/search/unified', {
@@ -126,7 +125,7 @@
       }
 
       const searchData = await response.json();
-      
+
       if (searchData.success) {
         // Transform API results to component format
         results = searchData.results.map(result => ({
@@ -151,12 +150,14 @@
         console.error('Search API returned error:', searchData.error);
         results = [];
       }
-      
+
       // Save to recent searches
       saveRecentSearch(searchInput);
-      
-      dispatch('search', { query: searchInput, results });
-      
+
+      if (onsearch) {
+        onsearch(new CustomEvent('search', { detail: { query: searchInput, results } }));
+      }
+
     } catch (error) {
       console.error('Search failed:', error);
       // Fallback to old search method if new API fails
@@ -165,7 +166,7 @@
           globalSearch(searchInput, { limit: Math.floor(maxResults / 2) }),
           searchForLegalEntities(searchInput)
         ]);
-        
+
         results = [
           ...transformServiceResults(serviceResults),
           ...vectorResults
@@ -178,7 +179,7 @@
       isSearching = false;
     }
   }
-  
+
   async function searchForLegalEntities(query: string): Promise<SearchResult[]> {
     try {
       // Mock legal entity search - would integrate with actual API
@@ -198,7 +199,7 @@
           }
         },
         {
-          id: 'poi-001', 
+          id: 'poi-001',
           title: `Person of Interest: Related to ${query}`,
           type: 'criminal',
           content: `Individual connected to ${query} case with documented criminal history.`,
@@ -210,9 +211,9 @@
           }
         }
       ];
-      
-      return mockResults.filter(result => 
-        selectedCategories.includes(result.type) || 
+
+      return mockResults.filter(result =>
+        selectedCategories.includes(result.type) ||
         selectedCategories.includes('criminals' as any)
       );
     } catch (error) {
@@ -220,7 +221,7 @@
       return [];
     }
   }
-  
+
   function transformServiceResults(serviceResults: ServiceSearchResult[]): SearchResult[] {
     return serviceResults.map(result => ({
       id: result.id,
@@ -235,18 +236,18 @@
       }
     }));
   }
-  
+
   function mapCategoryToType(category: string): SearchResult['type'] {
     const mapping: Record<string, SearchResult['type']> = {
       'service': 'document',
-      'component': 'document', 
+      'component': 'document',
       'api': 'document',
       'demo': 'document',
       'documentation': 'document'
     };
     return mapping[category] || 'document';
   }
-  
+
   async function generateSearchSuggestions(query: string): Promise<SearchSuggestion[]> {
     // Generate contextual suggestions based on query
     const baseSuggestions = [
@@ -255,59 +256,63 @@
       { text: `${query} related persons`, category: 'criminals', score: 0.7 },
       { text: `${query} legal precedents`, category: 'precedents', score: 0.6 }
     ];
-    
+
     return baseSuggestions.filter(s => s.text !== query);
   }
-  
+
   function saveRecentSearch(query: string) {
     if (typeof window !== 'undefined') {
       recentSearches = [query, ...recentSearches.filter(s => s !== query)].slice(0, 10);
       localStorage.setItem('recentSearches', JSON.stringify(recentSearches));
     }
   }
-  
+
   function selectResult(result: SearchResult) {
-    dispatch('select', { result });
+    if (onselect) {
+      onselect(new CustomEvent('select', { detail: { result } }));
+    }
     showResults = false;
     searchInput = '';
   }
-  
+
   function clearSearch() {
     searchInput = '';
     results = [];
     showResults = false;
-    dispatch('clear');
+    if (onclear) {
+      onclear(new CustomEvent('clear'));
+    }
   }
-  
+
   function toggleCategory(categoryId: string) {
     if (selectedCategories.includes(categoryId)) {
       selectedCategories = selectedCategories.filter(c => c !== categoryId);
     } else {
       selectedCategories = [...selectedCategories, categoryId];
     }
-    
+
     if (searchInput) {
       performSearch();
     }
   }
-  
+
   function selectSuggestion(suggestion: SearchSuggestion) {
     searchInput = suggestion.text;
     performSearch();
   }
-  
+
   function selectTrendingSearch(trending: string) {
     searchInput = trending;
     performSearch();
   }
-  
+
   // Theme classes
   let themeClasses = $derived({
     light: 'bg-white text-gray-900 border-gray-300',
     dark: 'bg-gray-800 text-white border-gray-600',
     yorha: 'bg-black/90 text-yellow-400 border-yellow-400/50 shadow-[0_0_10px_rgba(255,255,0,0.3)]'
   }[theme]);
-  
+
   let inputClasses = $derived({
     light: 'bg-white text-gray-900 border-gray-300 focus:border-blue-500',
     dark: 'bg-gray-700 text-white border-gray-600 focus:border-blue-400',
@@ -329,7 +334,7 @@
           </svg>
         {/if}
       </div>
-      
+
       <!-- Search Input -->
       <input
         bind:value={searchInput}
@@ -343,11 +348,11 @@
           }
         }}
       />
-      
+
       <!-- Clear Button -->
       {#if searchInput}
         <button
-          on:click={clearSearch}
+          onclick={clearSearch}
           class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
           aria-label="Clear search"
         >
@@ -356,21 +361,21 @@
           </svg>
         </button>
       {/if}
-      
+
       <!-- Filters Toggle -->
       {#if showFilters}
-        <button
-          class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-          on:click={() => {/* Toggle filters panel */}}
-          aria-label="Toggle search filters"
-        >
+            <button
+              class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+              onclick={() => {/* Toggle filters panel */}}
+              aria-label="Toggle search filters"
+            >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"></path>
           </svg>
         </button>
       {/if}
     </div>
-    
+
     <!-- Category Filters -->
     {#if showFilters}
       <div class="border-t border-current/20 p-3">
@@ -389,7 +394,7 @@
               class:bg-gray-700={!selectedCategories.includes(category.id) && theme === 'dark'}
               class:bg-black={!selectedCategories.includes(category.id) && theme === 'yorha'}
               class:bg-opacity-50={!selectedCategories.includes(category.id) && theme === 'yorha'}
-              on:click={() => toggleCategory(category.id)}
+              onclick={() => toggleCategory(category.id)}
             >
               <span>{category.icon}</span>
               <span>{category.label}</span>
@@ -404,11 +409,11 @@
       </div>
     {/if}
   </div>
-  
+
   <!-- Search Results / Suggestions -->
   {#if showResults}
     <div class="search-dropdown absolute top-full left-0 right-0 mt-2 {themeClasses} rounded-lg shadow-xl border z-50 max-h-96 overflow-y-auto">
-      
+
       <!-- Recent Searches (shown when no input) -->
       {#if !searchInput && recentSearches.length > 0}
         <div class="p-4">
@@ -417,7 +422,7 @@
             {#each recentSearches.slice(0, 5) as recent}
               <button
                 class="w-full text-left p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded flex items-center gap-2"
-                on:click={() => { searchInput = recent; performSearch(); }}
+                onclick={() => { searchInput = recent; performSearch(); }}
               >
                 <svg class="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -428,7 +433,7 @@
           </div>
         </div>
       {/if}
-      
+
       <!-- Trending Searches -->
       {#if !searchInput && trendingSearches.length > 0}
         <div class="p-4 border-t border-current/20">
@@ -437,7 +442,7 @@
             {#each trendingSearches as trending}
               <button
                 class="px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full text-sm"
-                on:click={() => selectTrendingSearch(trending)}
+                onclick={() => selectTrendingSearch(trending)}
               >
                 {trending}
               </button>
@@ -445,7 +450,7 @@
           </div>
         </div>
       {/if}
-      
+
       <!-- Search Results -->
       {#if results.length > 0}
         <div class="p-2">
@@ -455,7 +460,7 @@
           {#each results as result}
             <button
               class="w-full text-left p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg border-b border-current/10 last:border-b-0 transition-colors"
-              on:click={() => selectResult(result)}
+              onclick={() => selectResult(result)}
             >
               <div class="flex items-start gap-3">
                 <!-- Result Type Icon -->
@@ -468,12 +473,12 @@
                   {:else}📄
                   {/if}
                 </div>
-                
+
                 <!-- Result Content -->
                 <div class="flex-1 min-w-0">
                   <h4 class="font-medium truncate">{result.title}</h4>
                   <p class="text-sm opacity-70 line-clamp-2 mt-1">{result.content}</p>
-                  
+
                   <!-- Result Metadata -->
                   <div class="flex items-center gap-2 mt-2 text-xs opacity-50">
                     <span class="bg-current/20 px-2 py-1 rounded">{result.type}</span>
@@ -491,7 +496,7 @@
           {/each}
         </div>
       {/if}
-      
+
       <!-- AI Suggestions -->
       {#if suggestions.length > 0}
         <div class="border-t border-current/20 p-4">
@@ -500,7 +505,7 @@
             {#each suggestions as suggestion}
               <button
                 class="w-full text-left p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded flex items-center gap-2"
-                on:click={() => selectSuggestion(suggestion)}
+                onclick={() => selectSuggestion(suggestion)}
               >
                 <svg class="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
@@ -512,7 +517,7 @@
           </div>
         </div>
       {/if}
-      
+
       <!-- No Results -->
       {#if searchInput && !isSearching && results.length === 0}
         <div class="p-6 text-center">
@@ -534,15 +539,15 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  
+
   .category-chip {
     transition: all 0.2s ease-in-out;
   }
-  
+
   .category-chip:hover {
     transform: translateY(-1px);
   }
-  
+
   .search-dropdown {
     backdrop-filter: blur(8px);
   }

@@ -12,22 +12,15 @@ let subscriber: Redis | null = null;
 
 export async function initializeWsBroker(): Promise<void> {
   try {
-    const redisUrl = import.meta.env.REDIS_URL || 'redis://localhost:6379';
+    const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
     
     // Publisher redis connection
-    redis = new Redis(redisUrl, {
-      maxRetriesPerRequest: 3,
-      lazyConnect: true
-    });
+    redis = new Redis(redisUrl);
     
     // Subscriber redis connection (separate connection required for pub/sub)
-    subscriber = new Redis(redisUrl, {
-      maxRetriesPerRequest: 3,
-      lazyConnect: true
-    });
+    subscriber = new Redis(redisUrl);
     
-    await redis.connect();
-    await subscriber.connect();
+    // ioredis connects automatically, no need to call connect()
     
     // Subscribe to progress messages channel
     await subscriber.subscribe('evidence:progress');

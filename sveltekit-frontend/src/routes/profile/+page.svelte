@@ -5,6 +5,7 @@
   import { onMount } from "svelte";
 
   let user = $state(page.data.user);
+  let userStats = $state(page.data.userStats);
   let profileForm = $state({
     name: "",
     email: "",
@@ -23,7 +24,7 @@
         firstName: "", // Not available in SessionUser
         lastName: "", // Not available in SessionUser
       };
-}
+    }
     // Load avatar
     avatarStore.loadAvatar();
   });
@@ -48,12 +49,13 @@
         user = data.user;
       } else {
         updateMessage = data.error || "Update failed";
-}
+      }
     } catch (error) {
       updateMessage = "Network error occurred";
     } finally {
       isUpdating = false;
-}}
+    }
+  }
 </script>
 
 <svelte:head>
@@ -165,26 +167,30 @@
       <!-- Account Stats -->
       <div class="space-y-4">
         <h2>Account Statistics</h2>
-        <div class="space-y-4">
-          <div class="space-y-4">
-            <div class="space-y-4">--</div>
-            <div class="space-y-4">Cases Created</div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value">{userStats?.totalCases || 0}</div>
+            <div class="stat-label">Total Cases</div>
           </div>
-          <div class="space-y-4">
-            <div class="space-y-4">--</div>
-            <div class="space-y-4">Evidence Files</div>
+          <div class="stat-card">
+            <div class="stat-value">{userStats?.openCases || 0}</div>
+            <div class="stat-label">Open Cases</div>
           </div>
-          <div class="space-y-4">
-            <div class="space-y-4">{user?.role || "User"}</div>
-            <div class="space-y-4">Role</div>
+          <div class="stat-card">
+            <div class="stat-value">{userStats?.closedCases || 0}</div>
+            <div class="stat-label">Closed Cases</div>
           </div>
-          <div class="space-y-4">
-            <div class="space-y-4">
-              {(user as any)?.createdAt
-                ? new Date((user as any).createdAt).toLocaleDateString()
-                : "--"}
-            </div>
-            <div class="space-y-4">Member Since</div>
+          <div class="stat-card">
+            <div class="stat-value">{userStats?.totalEvidence || 0}</div>
+            <div class="stat-label">Evidence Files</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">{userStats?.totalCriminals || 0}</div>
+            <div class="stat-label">Persons of Interest</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">{user?.role || "User"}</div>
+            <div class="stat-label">Role</div>
           </div>
         </div>
       </div>
@@ -216,18 +222,42 @@
   .profile-header p {
     color: var(--text-secondary, #6b7280);
     font-size: 16px;
-}
-.stat-value {
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  .stat-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .stat-value {
     font-size: 24px;
     font-weight: 700;
     color: var(--text-primary, #111827);
     margin-bottom: 4px;
-}
+  }
+
   .stat-label {
     font-size: 14px;
     color: var(--text-secondary, #6b7280);
     font-weight: 500;
-}
+  }
   .alert {
     background: #fef3cd;
     border: 1px solid #facc15;

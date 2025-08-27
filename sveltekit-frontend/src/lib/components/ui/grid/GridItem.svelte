@@ -5,12 +5,13 @@ https://svelte.dev/e/js_parse_error -->
   import { $props, $derived } from 'svelte';
 
   interface Props {
-    colSpan: number ;
-    rowSpan: number ;
-    colStart: number | undefined ;
-    rowStart: number | undefined ;
-    responsive: boolean ;
-    class: string ;
+    colSpan: number;
+    rowSpan: number;
+    colStart: number | undefined;
+    rowStart: number | undefined;
+    responsive: boolean;
+    class: string;
+    children?: import('svelte').Snippet;
   }
   let {
     colSpan = 1,
@@ -18,7 +19,8 @@ https://svelte.dev/e/js_parse_error -->
     colStart = undefined,
     rowStart = undefined,
     responsive = true,
-    class = ''
+    class = '',
+    children
   }: Props = $props();
 
 
@@ -48,5 +50,7 @@ https://svelte.dev/e/js_parse_error -->
     class
   )}
 >
-  <slot></slot>
+  {#if children}
+    {@render children()}
+  {/if}
 </div>

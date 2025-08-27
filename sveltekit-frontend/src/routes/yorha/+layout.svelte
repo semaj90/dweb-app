@@ -1,5 +1,7 @@
 <!-- YoRHa Interface Layout -->
 <script lang="ts">
+  let { children } = $props();
+  
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { yorhaAPI } from '$lib/components/three/yorha-ui/api/YoRHaAPIClient';
@@ -214,7 +216,7 @@
 
   <!-- Main Content Area -->
   <main class="yorha-main" class:yorha-main-sidebar-open={sidebarOpen}>
-    <slot />
+    {@render children()}
   </main>
 
   <!-- Sidebar Overlay -->

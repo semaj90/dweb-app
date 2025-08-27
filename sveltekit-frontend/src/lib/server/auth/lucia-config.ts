@@ -1,7 +1,7 @@
 import { Lucia } from "lucia";
 import { DrizzlePostgreSQLAdapter } from "@lucia-auth/adapter-drizzle";
 import { db } from "../db/index.js";
-import { sessions, users } from "../db/schema-unified.js";
+import { sessions, users } from "../db/schema-postgres.js";
 import { dev } from "$app/environment";
 import type { DatabaseUserAttributes } from "../auth.js";
 
@@ -19,24 +19,23 @@ export const lucia = new Lucia(adapter, {
     return {
       id: attributes.id,
       email: attributes.email,
-      firstName: attributes.firstName,
-      lastName: attributes.lastName,
-      displayName: attributes.displayName,
+      username: attributes.username,
+      firstName: attributes.first_name,
+      lastName: attributes.last_name,
+      displayName: `${attributes.first_name || ''} ${attributes.last_name || ''}`.trim() || attributes.username || attributes.email,
       role: attributes.role,
-      bio: attributes.bio,
-      avatarUrl: attributes.avatarUrl,
-      timezone: attributes.timezone,
-      locale: attributes.locale,
-      isActive: attributes.isActive,
-      isSuspended: attributes.isSuspended,
-      emailVerified: attributes.emailVerified,
-      lastLoginAt: attributes.lastLoginAt,
-      loginAttempts: attributes.loginAttempts,
-      lockedUntil: attributes.lockedUntil,
-      legalSpecialties: attributes.legalSpecialties,
-      preferences: attributes.preferences,
-      createdAt: attributes.createdAt,
-      updatedAt: attributes.updatedAt
+      department: attributes.department,
+      jurisdiction: attributes.jurisdiction,
+      avatarUrl: attributes.avatar_url,
+      isActive: attributes.is_active,
+      emailVerified: attributes.email_verified,
+      lastLoginAt: attributes.last_login_at,
+      practiceAreas: attributes.practice_areas,
+      barNumber: attributes.bar_number,
+      firmName: attributes.firm_name,
+      metadata: attributes.metadata,
+      createdAt: attributes.created_at,
+      updatedAt: attributes.updated_at
     };
   }
 });

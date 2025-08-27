@@ -213,7 +213,7 @@
 		disabled={isDisabled}
 		class={buttonClass}
 		data-testid="button"
-		on:click={handleClick}
+		onclick={handleClick}
 		{...restProps}
 	>
 		{#if loading}

@@ -8,14 +8,16 @@
   import { aiRecommendationEngine } from '$lib/services/ai-recommendation-engine';
 
   // Props
-  let { interactionType = $bindable() } = $props(); // string;
-  let { context = $bindable() } = $props(); // Record<string, any> = {};
-  let { autoTrigger = $bindable() } = $props(); // boolean = true;
-  let { delay = $bindable() } = $props(); // number = 0;
-  let { priority = $bindable() } = $props(); // 'low' | 'medium' | 'high' = 'medium';
-  let { trackOnMount = $bindable() } = $props(); // boolean = false;
-  let { trackOnVisible = $bindable() } = $props(); // boolean = false;
-  let { ratingType = $bindable() } = $props(); // 'response_quality' | 'search_relevance' | 'ui_experience' | 'ai_accuracy' | 'performance' = 'response_quality';
+  let { 
+    interactionType = $bindable(),
+    context = $bindable(),
+    autoTrigger = $bindable(),
+    delay = $bindable(),
+    priority = $bindable(),
+    trackOnMount = $bindable(),
+    trackOnVisible = $bindable(),
+    ratingType = $bindable()
+  } = $props();
 
   // Get feedback store
   const store = getFeedbackStore();

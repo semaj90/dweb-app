@@ -121,6 +121,14 @@ export const cacheMetrics = writable({
 });
 
 // === SvelteKit GPU Cache Integration ===
+const ENABLE_GPU = (() => {
+  try {
+    const v = process?.env?.ENABLE_GPU;
+    if (typeof v === 'string') return v.toLowerCase() !== 'false' && v !== '0';
+  } catch (e) { }
+  return true;
+})();
+
 export class SvelteKitGPUCacheIntegration {
   private config: ClientCacheConfig;
   private rpcClient: GPUCacheRPCClient;
@@ -128,12 +136,12 @@ export class SvelteKitGPUCacheIntegration {
   private lokiJS: any = null; // LokiJS instance
   private prefetchWorker: Worker | null = null;
   private isInitialized = false;
-  
+
   // Client-side caches
   private memoryCache = new Map<string, ClientCacheEntry>();
   private userHistory = new Map<string, any[]>();
   private prefetchQueue = new Set<string>();
-  
+
   // Performance tracking
   private metrics = {
     hits: { server: 0, client: 0, indexeddb: 0, memory: 0 },
@@ -154,28 +162,28 @@ export class SvelteKitGPUCacheIntegration {
 
     try {
       console.log('🚀 Initializing SvelteKit GPU Cache Integration');
-      
+
       // Initialize server connection
       await this.initializeServerConnection();
-      
+
       if (browser) {
         // Initialize client-side caches
         await this.initializeIndexedDB();
         await this.initializeLokiJS();
         await this.initializePrefetchWorker();
-        
+
         // Start periodic sync
         this.startPeriodicSync();
-        
+
         // Setup SSR hydration
         await this.hydrateFromSSR();
       }
-      
+
       this.isInitialized = true;
       this.updateCacheState();
-      
+
       console.log('✅ SvelteKit GPU Cache Integration initialized');
-      
+
     } catch (error) {
       console.error('❌ Failed to initialize cache integration:', error);
       throw error;
@@ -191,16 +199,16 @@ export class SvelteKitGPUCacheIntegration {
         console.log(`📡 SSR cache hit: ${key}`);
         return cached.data;
       }
-      
+
       // Fetch fresh data
       console.log(`🔄 SSR cache miss, fetching: ${key}`);
       const data = await fetcher();
-      
+
       // Store in server cache for future requests
       await this.rpcClient.store(key, data, { userId });
-      
+
       return data;
-      
+
     } catch (error) {
       console.error(`SSR data fetch error for ${key}:`, error);
       // Fallback to direct fetch
@@ -210,7 +218,7 @@ export class SvelteKitGPUCacheIntegration {
 
   async preloadCriticalData(routes: string[], userId?: string): Promise<void> {
     console.log('🚀 Preloading critical data for SSR');
-    
+
     const preloadPromises = routes.map(async (route) => {
       try {
         const response = await fetch(`/api/v1/gpu-cache/preload?route=${encodeURIComponent(route)}&userId=${userId || ''}`);
@@ -223,7 +231,7 @@ export class SvelteKitGPUCacheIntegration {
         console.warn(`⚠️ Failed to preload route ${route}:`, error);
       }
     });
-    
+
     await Promise.allSettled(preloadPromises);
   }
 
@@ -235,7 +243,7 @@ export class SvelteKitGPUCacheIntegration {
     priority?: 'high' | 'normal' | 'low';
   } = {}): Promise<any> {
     const startTime = performance.now();
-    
+
     try {
       // 1. Check memory cache first (fastest)
       const memoryEntry = this.memoryCache.get(key);
@@ -243,14 +251,14 @@ export class SvelteKitGPUCacheIntegration {
         memoryEntry.metadata.hitCount++;
         memoryEntry.metadata.lastAccessed = Date.now();
         this.metrics.hits.memory++;
-        
+
         const latency = performance.now() - startTime;
         this.updateLatencyMetrics('client', latency);
-        
+
         console.log(`💾 Memory cache hit: ${key} (${latency.toFixed(2)}ms)`);
         return memoryEntry.data;
       }
-      
+
       // 2. Check IndexedDB (client storage)
       if (browser) {
         const indexedDBEntry = await this.getFromIndexedDB(key);
@@ -258,15 +266,15 @@ export class SvelteKitGPUCacheIntegration {
           // Promote to memory cache
           this.memoryCache.set(key, indexedDBEntry);
           this.metrics.hits.indexeddb++;
-          
+
           const latency = performance.now() - startTime;
           this.updateLatencyMetrics('client', latency);
-          
+
           console.log(`🗃️ IndexedDB cache hit: ${key} (${latency.toFixed(2)}ms)`);
           return indexedDBEntry.data;
         }
       }
-      
+
       // 3. Check server GPU cache
       if (options.useGPUCache !== false) {
         const serverEntry = await this.rpcClient.retrieve(key, {
@@ -274,10 +282,10 @@ export class SvelteKitGPUCacheIntegration {
           enhanceWithPageRank: true,
           applyReinforcementLearning: true
         });
-        
+
         if (serverEntry) {
           this.metrics.hits.server++;
-          
+
           // Store in client caches for future use
           const clientEntry: ClientCacheEntry = {
             id: key,
@@ -299,32 +307,32 @@ export class SvelteKitGPUCacheIntegration {
               preferences: {}
             } : undefined
           };
-          
+
           this.memoryCache.set(key, clientEntry);
           if (browser) {
             await this.storeInIndexedDB(key, clientEntry);
           }
-          
+
           const latency = performance.now() - startTime;
           this.updateLatencyMetrics('server', latency);
-          
+
           console.log(`📡 Server cache hit: ${key} (${latency.toFixed(2)}ms)`);
           return serverEntry.data;
         }
       }
-      
+
       // 4. Cache miss - trigger prefetch for related items
       this.metrics.misses++;
-      
+
       if (options.enablePrefetch && browser) {
         this.schedulePrefetch(key, options.userId);
       }
-      
+
       const latency = performance.now() - startTime;
       console.log(`❌ Cache miss: ${key} (${latency.toFixed(2)}ms)`);
-      
+
       return null;
-      
+
     } catch (error) {
       console.error(`Cache get error for ${key}:`, error);
       return null;
@@ -343,7 +351,7 @@ export class SvelteKitGPUCacheIntegration {
   } = {}): Promise<void> {
     try {
       const size = JSON.stringify(data).length;
-      
+
       // Create client cache entry
       const clientEntry: ClientCacheEntry = {
         id: key,
@@ -364,15 +372,15 @@ export class SvelteKitGPUCacheIntegration {
           preferences: {}
         } : undefined
       };
-      
+
       // Store in memory cache
       this.memoryCache.set(key, clientEntry);
-      
+
       // Store in IndexedDB (client persistence)
       if (browser) {
         await this.storeInIndexedDB(key, clientEntry);
       }
-      
+
       // Store on server if requested
       if (options.storeOnServer) {
         await this.rpcClient.store(key, data, {
@@ -381,14 +389,14 @@ export class SvelteKitGPUCacheIntegration {
           compressionLevel: options.compression ? 6 : undefined
         });
       }
-      
+
       // Update user history
       if (options.userId) {
         this.updateUserHistory(options.userId, 'set', { key, size, tags: options.tags });
       }
-      
+
       console.log(`💾 Stored in cache: ${key} (${size} bytes)`);
-      
+
     } catch (error) {
       console.error(`Cache set error for ${key}:`, error);
       throw error;
@@ -400,20 +408,20 @@ export class SvelteKitGPUCacheIntegration {
   // === Predictive Prefetch ===
   private async schedulePrefetch(relatedKey: string, userId?: string): Promise<void> {
     if (!this.config.prefetch.enabled || this.prefetchQueue.has(relatedKey)) return;
-    
+
     try {
       // Use RL optimizer to predict what should be prefetched
       const predictions = await reinforcementLearningCacheOptimizer.predictOptimalActions(
         await this.getCurrentCacheState(), 3
       );
-      
+
       for (const prediction of predictions) {
         if (prediction.type === 'prefetch') {
           const prefetchKey = prediction.target;
-          
+
           if (!this.prefetchQueue.has(prefetchKey) && !this.memoryCache.has(prefetchKey)) {
             this.prefetchQueue.add(prefetchKey);
-            
+
             // Schedule prefetch with priority
             setTimeout(async () => {
               await this.executePrefetch(prefetchKey, userId);
@@ -421,7 +429,7 @@ export class SvelteKitGPUCacheIntegration {
           }
         }
       }
-      
+
     } catch (error) {
       console.error('Prefetch scheduling error:', error);
     }
@@ -430,13 +438,13 @@ export class SvelteKitGPUCacheIntegration {
   private async executePrefetch(key: string, userId?: string): Promise<void> {
     try {
       console.log(`🔮 Executing prefetch for: ${key}`);
-      
+
       // Attempt to fetch from server
       const serverEntry = await this.rpcClient.retrieve(key, {
         userId,
         enhanceWithPageRank: true
       });
-      
+
       if (serverEntry) {
         // Store in client cache
         const clientEntry: ClientCacheEntry = {
@@ -454,17 +462,17 @@ export class SvelteKitGPUCacheIntegration {
           tags: serverEntry.tags || ['prefetch'],
           embedding: serverEntry.embedding
         };
-        
+
         this.memoryCache.set(key, clientEntry);
-        
+
         if (browser) {
           await this.storeInIndexedDB(key, clientEntry);
         }
-        
+
         this.metrics.prefetchHits++;
         console.log(`✅ Prefetch successful: ${key}`);
       }
-      
+
     } catch (error) {
       console.warn(`⚠️ Prefetch failed for ${key}:`, error);
     } finally {
@@ -475,11 +483,11 @@ export class SvelteKitGPUCacheIntegration {
   // === User History & Analytics ===
   private updateUserHistory(userId: string, action: string, data: any): void {
     if (!this.config.userHistory.trackingEnabled) return;
-    
+
     if (!this.userHistory.has(userId)) {
       this.userHistory.set(userId, []);
     }
-    
+
     const history = this.userHistory.get(userId)!;
     history.push({
       action,
@@ -487,12 +495,12 @@ export class SvelteKitGPUCacheIntegration {
       timestamp: Date.now(),
       sessionId: this.generateSessionId()
     });
-    
+
     // Keep history size limited
     if (history.length > this.config.userHistory.maxEntriesPerUser) {
       history.splice(0, history.length - this.config.userHistory.maxEntriesPerUser);
     }
-    
+
     // Sync with server periodically
     if (history.length % 10 === 0) {
       this.syncUserHistoryWithServer(userId);
@@ -503,10 +511,10 @@ export class SvelteKitGPUCacheIntegration {
     try {
       const history = this.userHistory.get(userId);
       if (!history || history.length === 0) return;
-      
+
       await this.rpcClient.updateUserHistory(userId, 'bulk_sync', history);
       console.log(`📊 Synced user history for ${userId}: ${history.length} entries`);
-      
+
     } catch (error) {
       console.error('User history sync error:', error);
     }
@@ -515,20 +523,20 @@ export class SvelteKitGPUCacheIntegration {
   // === IndexedDB Operations ===
   private async initializeIndexedDB(): Promise<void> {
     if (!browser) return;
-    
+
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(this.config.indexedDB.dbName, this.config.indexedDB.version);
-      
+
       request.onerror = () => reject(request.error);
       request.onsuccess = () => {
         this.indexedDB = request.result;
         console.log('✅ IndexedDB initialized');
         resolve();
       };
-      
+
       request.onupgradeneeded = (event) => {
         const db = (event.target as IDBOpenDBRequest).result;
-        
+
         // Cache entries store
         if (!db.objectStoreNames.contains('cache_entries')) {
           const cacheStore = db.createObjectStore('cache_entries', { keyPath: 'key' });
@@ -536,14 +544,14 @@ export class SvelteKitGPUCacheIntegration {
           cacheStore.createIndex('tags', 'tags', { multiEntry: true });
           cacheStore.createIndex('userId', 'userId');
         }
-        
+
         // User history store
         if (!db.objectStoreNames.contains('user_history')) {
           const historyStore = db.createObjectStore('user_history', { keyPath: 'id' });
           historyStore.createIndex('userId', 'userId');
           historyStore.createIndex('lastSync', 'lastSync');
         }
-        
+
         // Prefetch queue store
         if (!db.objectStoreNames.contains('prefetch_queue')) {
           const prefetchStore = db.createObjectStore('prefetch_queue', { keyPath: 'id' });
@@ -556,12 +564,12 @@ export class SvelteKitGPUCacheIntegration {
 
   private async getFromIndexedDB(key: string): Promise<ClientCacheEntry | null> {
     if (!this.indexedDB) return null;
-    
+
     return new Promise((resolve, reject) => {
       const transaction = this.indexedDB!.transaction(['cache_entries'], 'readonly');
       const store = transaction.objectStore('cache_entries');
       const request = store.get(key);
-      
+
       request.onerror = () => reject(request.error);
       request.onsuccess = () => {
         const result = request.result;
@@ -572,11 +580,11 @@ export class SvelteKitGPUCacheIntegration {
 
   private async storeInIndexedDB(key: string, entry: ClientCacheEntry): Promise<void> {
     if (!this.indexedDB) return;
-    
+
     return new Promise((resolve, reject) => {
       const transaction = this.indexedDB!.transaction(['cache_entries'], 'readwrite');
       const store = transaction.objectStore('cache_entries');
-      
+
       const dbEntry = {
         key,
         value: entry,
@@ -584,9 +592,9 @@ export class SvelteKitGPUCacheIntegration {
         tags: entry.tags,
         userId: entry.userContext?.userId
       };
-      
+
       const request = store.put(dbEntry);
-      
+
       request.onerror = () => reject(request.error);
       request.onsuccess = () => resolve();
     });
@@ -595,7 +603,7 @@ export class SvelteKitGPUCacheIntegration {
   // === LokiJS Operations ===
   private async initializeLokiJS(): Promise<void> {
     if (!browser || !this.config.lokiJS.enableMemoryCache) return;
-    
+
     // LokiJS would be initialized here
     console.log('✅ LokiJS memory cache initialized');
   }
@@ -612,14 +620,14 @@ export class SvelteKitGPUCacheIntegration {
 
   private initializePrefetchWorker(): void {
     if (!browser || !this.config.prefetch.enabled) return;
-    
+
     // Web Worker for prefetch operations would be initialized here
     console.log('🔮 Prefetch worker initialized');
   }
 
   private startPeriodicSync(): void {
     if (!browser) return;
-    
+
     setInterval(() => {
       this.performMaintenanceTasks();
     }, this.config.userHistory.syncInterval);
@@ -629,17 +637,17 @@ export class SvelteKitGPUCacheIntegration {
     try {
       // Cleanup expired entries
       await this.cleanupExpiredEntries();
-      
+
       // Sync user histories
       for (const userId of this.userHistory.keys()) {
         await this.syncUserHistoryWithServer(userId);
       }
-      
+
       // Update cache metrics
       this.updateCacheMetrics();
-      
+
       console.log('🧹 Maintenance tasks completed');
-      
+
     } catch (error) {
       console.error('Maintenance task error:', error);
     }
@@ -648,20 +656,20 @@ export class SvelteKitGPUCacheIntegration {
   private async cleanupExpiredEntries(): Promise<void> {
     const now = Date.now();
     const expiredKeys = [];
-    
+
     for (const [key, entry] of this.memoryCache.entries()) {
       const age = now - entry.metadata.timestamp;
       const ttl = 24 * 60 * 60 * 1000; // 24 hours default TTL
-      
+
       if (age > ttl) {
         expiredKeys.push(key);
       }
     }
-    
+
     for (const key of expiredKeys) {
       this.memoryCache.delete(key);
     }
-    
+
     if (expiredKeys.length > 0) {
       console.log(`🗑️ Cleaned up ${expiredKeys.length} expired cache entries`);
     }
@@ -669,7 +677,7 @@ export class SvelteKitGPUCacheIntegration {
 
   private async hydrateFromSSR(): Promise<void> {
     if (!this.config.ssr.hydrateFromCache) return;
-    
+
     try {
       // Look for SSR data in page data
       const ssrData = (window as any).__SSR_CACHE_DATA__;
@@ -682,7 +690,7 @@ export class SvelteKitGPUCacheIntegration {
         }
         console.log(`🚀 Hydrated ${Object.keys(ssrData).length} entries from SSR`);
       }
-      
+
     } catch (error) {
       console.error('SSR hydration error:', error);
     }
@@ -691,7 +699,7 @@ export class SvelteKitGPUCacheIntegration {
   private async getCurrentCacheState(): Promise<any> {
     return {
       cacheUtilization: this.memoryCache.size / 1000, // Normalize
-      hitRatio: this.metrics.hits.server + this.metrics.hits.client / 
+      hitRatio: this.metrics.hits.server + this.metrics.hits.client /
                 (this.metrics.hits.server + this.metrics.hits.client + this.metrics.misses) || 0,
       averageRetrievalTime: this.metrics.averageLatency.total,
       gpuMemoryUsage: 0.5, // Would be retrieved from GPU cache
@@ -711,9 +719,9 @@ export class SvelteKitGPUCacheIntegration {
   }
 
   private updateLatencyMetrics(type: 'server' | 'client', latency: number): void {
-    this.metrics.averageLatency[type] = 
+    this.metrics.averageLatency[type] =
       (this.metrics.averageLatency[type] + latency) / 2;
-    this.metrics.averageLatency.total = 
+    this.metrics.averageLatency.total =
       (this.metrics.averageLatency.server + this.metrics.averageLatency.client) / 2;
   }
 
@@ -789,7 +797,7 @@ export class SvelteKitGPUCacheIntegration {
       this.memoryCache.clear();
       console.log('🗑️ Cleared all cache entries');
     }
-    
+
     this.updateCacheState();
   }
 
@@ -798,15 +806,15 @@ export class SvelteKitGPUCacheIntegration {
       if (this.prefetchWorker) {
         this.prefetchWorker.terminate();
       }
-      
+
       if (this.indexedDB) {
         this.indexedDB.close();
       }
-      
+
       await this.rpcClient.disconnect();
-      
+
       console.log('🛑 SvelteKit GPU Cache Integration shut down');
-      
+
     } catch (error) {
       console.error('Shutdown error:', error);
     }
@@ -864,16 +872,16 @@ export const cacheLoader = derived([page], ([$page]) => {
         useGPUCache: true,
         enablePrefetch: true
       });
-      
+
       if (cached) return cached;
-      
+
       const data = await fetcher();
       await svelteKitGPUCache.set(key, data, {
         userId: $page.data?.user?.id,
         storeOnServer: true,
         compression: true
       });
-      
+
       return data;
     }
   };

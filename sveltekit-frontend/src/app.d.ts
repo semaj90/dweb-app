@@ -1,3 +1,35 @@
+// SvelteKit ambient type augmentation for runtime-injected Locals
+import type { RequestEvent } from '@sveltejs/kit';
+
+declare module '@sveltejs/kit' {
+  interface Locals {
+    user?: {
+      id: string;
+      email?: string;
+      name?: string;
+      roles?: string[];
+      [key: string]: any;
+    } | null;
+
+    session?: {
+      id: string;
+      user?: { id: string; email?: string };
+      expires?: string | Date;
+      [key: string]: any;
+    } | null;
+
+    db?: any;
+
+    audit?: {
+      log: (entry: { timestamp?: string | Date; action?: string; details?: any }) => Promise<void>;
+    } | null;
+
+    [key: string]: any;
+  }
+}
+
+}
+export { };
 /// <reference types="@sveltejs/kit" />
 /// <reference types="svelte" />
 /// <reference types="vite/client" />
@@ -89,7 +121,7 @@ declare global {
     __MATRIX_UI__: Record<string, unknown>;
     __TAURI__?: Record<string, unknown>;
     electronAPI?: Record<string, unknown>;
-    
+
     // Testing framework globals
     describe?: (name: string, fn: () => void) => void;
     it?: (name: string, fn: () => void | Promise<void>) => void;
@@ -99,10 +131,10 @@ declare global {
     afterEach?: (fn: () => void | Promise<void>) => void;
     beforeAll?: (fn: () => void | Promise<void>) => void;
     afterAll?: (fn: () => void | Promise<void>) => void;
-    
+
     // Barrel store for missing functions
     barrelStore?: any;
-    
+
     // WebGPU polyfill
     GPU?: any;
   }
@@ -123,25 +155,25 @@ declare global {
   const afterEach: (fn: () => void | Promise<void>) => void;
   const beforeAll: (fn: () => void | Promise<void>) => void;
   const afterAll: (fn: () => void | Promise<void>) => void;
-  
+
   // Enhanced GPUDevice interface
   interface GPUDevice {
     destroy?(): void;
     addEventListener?(type: string, listener: (event: any) => void): void;
     removeEventListener?(type: string, listener: (event: any) => void): void;
   }
-  
+
   // GPU error event interfaces
   interface GPUUncapturedErrorEvent {
     type: 'uncapturederror';
     error: any;
     timestamp: number;
   }
-  
+
   interface GPUError {
     message: string;
   }
-  
+
   // Loki.js enhanced interfaces
   namespace Loki {
     interface Collection<T = any> {
@@ -150,11 +182,11 @@ declare global {
       data: T[];
       name: string;
     }
-    
+
     interface LokiConstructor {
       LokiMemoryAdapter?: new () => any;
     }
-    
+
     interface Database {
       removeCollection?(name: string): void;
     }

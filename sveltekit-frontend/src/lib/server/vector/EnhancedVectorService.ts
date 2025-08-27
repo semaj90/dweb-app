@@ -21,12 +21,12 @@ export class EnhancedVectorService {
 
   constructor() {
     this.qdrant = new QdrantClient({
-      url: import.meta.env.QDRANT_URL || "http://localhost:6333",
+      url: process.env.QDRANT_URL || "http://localhost:6333",
     });
 
     this.redis = new Redis({
-      host: import.meta.env.REDIS_HOST || "localhost",
-      port: parseInt(import.meta.env.REDIS_PORT || "6379"),
+      host: process.env.REDIS_HOST || "localhost",
+      port: parseInt(process.env.REDIS_PORT || "6379"),
       maxRetriesPerRequest: 3,
     });
   }

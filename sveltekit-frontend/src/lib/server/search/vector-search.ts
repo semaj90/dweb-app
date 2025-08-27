@@ -1,9 +1,9 @@
 
 // Complete Vector Search Service - Production Ready
 // Combines PostgreSQL pgvector + Qdrant + Local caching + Loki.js + Fuse.js
-import { browser } from "$app/environment";
-import { db, isPostgreSQL } from "$lib/server/db/index.js";
-import { ollamaService } from "$lib/server/services/OllamaService";
+const browser = false; // Server-side only
+import { db, isPostgreSQL } from "../db/index.js";
+import { ollamaService } from "../services/OllamaService.js";
 import {
   and,
   eq,
@@ -19,41 +19,42 @@ let Fuse: any = null;
 
 // Conditional imports for server-side only
 if (!browser) {
-  try {
-    const qdrantModule = await import("../../../lib/server/vector/qdrant.js");
-    qdrant = qdrantModule.qdrant;
-  } catch (error) {
-    console.warn("Qdrant not available:", error);
-  }
-  try {
-    const embeddingsModule = await import(
-      "../../../lib/server/ai/embeddings-simple.js"
-    );
-    generateEmbedding = embeddingsModule.generateEmbedding;
-  } catch (error) {
-    console.warn("Embeddings service not available:", error);
-  }
-  try {
-    const cacheModule = await import("../../../lib/server/cache/redis.js");
-    cache = cacheModule.cache;
-  } catch (error) {
-    console.warn("Redis cache not available:", error);
-    cache = { get: async () => null, set: async () => {} };
-  }
-  try {
-    // Import Loki.js for local database
-    const lokiModule = await import("lokijs");
-    loki = lokiModule.default || lokiModule;
-  } catch (error) {
-    console.warn("Loki.js not available:", error);
-  }
-  try {
-    // Import Fuse.js for fuzzy search
-    const fuseModule = await import("fuse.js");
-    Fuse = fuseModule.default || fuseModule;
-  } catch (error) {
-    console.warn("Fuse.js not available:", error);
-  }
+  // Use dynamic import wrapper to avoid top-level await
+  Promise.resolve().then(async () => {
+    try {
+      const qdrantModule = await import("../vector/qdrant.js");
+      qdrant = qdrantModule.qdrant;
+    } catch (error) {
+      console.warn("Qdrant not available:", error);
+    }
+    try {
+      const embeddingsModule = await import("../ai/embeddings-simple.js");
+      generateEmbedding = embeddingsModule.generateEmbedding;
+    } catch (error) {
+      console.warn("Embeddings service not available:", error);
+    }
+    try {
+      const cacheModule = await import("../cache/redis.js");
+      cache = cacheModule.cache;
+    } catch (error) {
+      console.warn("Redis cache not available:", error);
+      cache = { get: async () => null, set: async () => {} };
+    }
+    try {
+      // Import Loki.js for local database
+      const lokiModule = await import("lokijs");
+      loki = (lokiModule as any).default || lokiModule;
+    } catch (error) {
+      console.warn("Loki.js not available:", error);
+    }
+    try {
+      // Import Fuse.js for fuzzy search
+      const fuseModule = await import("fuse.js");
+      Fuse = (fuseModule as any).default || fuseModule;
+    } catch (error) {
+      console.warn("Fuse.js not available:", error);
+    }
+  }).catch(console.warn);
 }
 // Vector search result interface
 export interface VectorSearchResult {
@@ -117,7 +118,7 @@ function arrayToPgVector(embedding: number[]): string {
 
 // Ensure embedding has expected dimension; default to DB schema (384) with env override
 const TARGET_DIM = (() => {
-  const v = parseInt(import.meta.env.EMBEDDING_DIMENSIONS || "384", 10);
+  const v = parseInt(process.env.EMBEDDING_DIMENSIONS || "384", 10);
   return Number.isFinite(v) && v > 0 ? v : 384;
 })();
 
@@ -134,16 +135,16 @@ export async function getQueryEmbeddingLegal(
   query: string
 ): Promise<number[] | null> {
   const modelListEnv =
-    import.meta.env.EMBED_MODEL_LIST ||
-    import.meta.env.EMBED_MODEL ||
+    process.env.EMBED_MODEL_LIST ||
+    process.env.EMBED_MODEL ||
     "nomic-embed-text,all-minilm";
   const candidates = modelListEnv
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
   const ragUrl =
-    import.meta.env.RAG_URL ||
-    `http://localhost:${import.meta.env.RAG_HTTP_PORT || "8093"}`;
+    process.env.RAG_URL ||
+    `http://localhost:${process.env.RAG_HTTP_PORT || "8093"}`;
 
   // 1) Try Ollama for each candidate model
   for (const model of candidates) {
@@ -186,7 +187,7 @@ export async function getQueryEmbeddingLegal(
 
   // 4) OpenAI fallback if configured
   try {
-    if (typeof generateEmbedding === "function" && import.meta.env.OPENAI_API_KEY) {
+    if (typeof generateEmbedding === "function" && process.env.OPENAI_API_KEY) {
       const arr = await generateEmbedding(query, { model: "openai" });
       if (Array.isArray(arr) && arr.length > 0)
         return adjustToDim(arr, TARGET_DIM);
@@ -271,7 +272,7 @@ export async function searchLegalDocumentsText(
       content: row.content || "",
       score: 0.5,
       metadata: {},
-      source: "text",
+      source: "pgvector",
       type: "document",
     }));
   } catch (e) {
@@ -565,37 +566,69 @@ async function searchWithPgVector(
   }
   const vectorString = `[${queryEmbedding.join(",")}]`;
   // Import schema dynamically to avoid issues
-  const { cases, evidence } = await import("../../../lib/database/schema.js");
+  const { cases, evidence } = await import("../db/schema-postgres.js");
 
   const results: VectorSearchResult[] = [];
 
   try {
-    // Search in search_index table which has embeddings
-    const { searchIndex } = await import("../../../lib/database/schema.js");
-
-    const searchResults = await db
-      .select({
-        id: searchIndex.entityId,
-        entityType: searchIndex.entityType,
-        content: searchIndex.content,
-        title: sql<string>`COALESCE(${searchIndex.metadata}->>'title', 'Untitled')`,
-        score: sql<number>`1 - (${searchIndex.embedding} <=> ${vectorString}::vector)`,
-        metadata: searchIndex.metadata,
-      })
-      .from(searchIndex)
-      .where(
-        and(
-          sql`${searchIndex.embedding} IS NOT NULL`,
-          sql`1 - (${searchIndex.embedding} <=> ${vectorString}::vector) > ${threshold}`,
-          filters.entityType
-            ? eq(searchIndex.entityType, filters.entityType)
-            : undefined
-        )
-      )
-      .orderBy(
-        sql`1 - (${searchIndex.embedding} <=> ${vectorString}::vector) DESC`
-      )
-      .limit(limit);
+    // Use raw SQL query since searchIndex table might not be in schema
+    const sqlQuery = sql`
+      SELECT
+        id,
+        title,
+        content || '' as content,
+        description,
+        1 - (embedding <=> ${sql.raw(vectorString)}::vector) as score
+      FROM cases
+      WHERE embedding IS NOT NULL
+        AND 1 - (embedding <=> ${sql.raw(vectorString)}::vector) > ${threshold}
+      ORDER BY embedding <=> ${sql.raw(vectorString)}::vector
+      LIMIT ${limit}
+    `;
+    
+    const searchResults: any = await db.execute(sqlQuery);
+    const rows: any[] = Array.isArray(searchResults) ? searchResults : ((searchResults as any)?.rows ?? []);
+    
+    rows.forEach((row: any) => {
+      results.push({
+        id: row.id,
+        title: row.title || '',
+        content: row.content || row.description || '',
+        score: typeof row.score === 'number' ? row.score : parseFloat(String(row.score ?? 0)),
+        metadata: { type: 'case' },
+        source: 'pgvector',
+        type: 'case',
+      });
+    });
+    
+    // Also search evidence table
+    const evidenceSqlQuery = sql`
+      SELECT
+        id,
+        title,
+        description as content,
+        1 - (embedding <=> ${sql.raw(vectorString)}::vector) as score
+      FROM evidence
+      WHERE embedding IS NOT NULL
+        AND 1 - (embedding <=> ${sql.raw(vectorString)}::vector) > ${threshold}
+      ORDER BY embedding <=> ${sql.raw(vectorString)}::vector
+      LIMIT ${limit}
+    `;
+    
+    const evidenceResults: any = await db.execute(evidenceSqlQuery);
+    const evidenceRows: any[] = Array.isArray(evidenceResults) ? evidenceResults : ((evidenceResults as any)?.rows ?? []);
+    
+    evidenceRows.forEach((row: any) => {
+      results.push({
+        id: row.id,
+        title: row.title || '',
+        content: row.content || '',
+        score: typeof row.score === 'number' ? row.score : parseFloat(String(row.score ?? 0)),
+        metadata: { type: 'evidence' },
+        source: 'pgvector',
+        type: 'evidence',
+      });
+    });
 
     // Sort by score descending
     results.sort((a, b) => b.score - a.score);
@@ -670,7 +703,7 @@ async function searchWithTextFallback(
 
   try {
     // Import correct schema
-    const { cases, evidence } = await import("../../../lib/database/schema.js");
+    const { cases, evidence } = await import("../db/schema-postgres.js");
 
     const searchTerm = `%${query}%`;
 

@@ -4,8 +4,8 @@
  * Supports Windows-native deployment with environment-based configuration
  */
 
-import { dev } from '$app/environment';
-import { browser } from '$app/environment';
+const dev = process.env.NODE_ENV === 'development';
+const browser = false; // Server-side config
 
 // Configuration interfaces for type safety
 export interface DatabaseConfig {
@@ -354,13 +354,8 @@ class ConfigManager {
   }
 
   private getEnvironmentVariables(): Record<string, string> {
-    if (browser) {
-      // Browser environment - use import.meta.env
-      return import.meta.env as any;
-    } else {
-      // Node.js environment - use process.env
-      return process.env as any;
-    }
+    // Always use process.env in server-side config
+    return process.env as any;
   }
 
   private getCPUCores(): number {

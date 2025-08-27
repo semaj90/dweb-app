@@ -388,14 +388,14 @@ export class RedisService {
       const responseTime = Date.now() - start;
       
       const info = await this.redis.info();
-      const memory = await this.redis.memory('usage');
+      const memoryInfo = await this.redis.info('memory');
       
       return {
         status: 'healthy',
         details: {
           connectionStatus: this.connectionStatus,
           responseTime,
-          memory,
+          memoryInfo,
           subscriberCount: this.subscribers.size,
           version: info.split('\r\n').find(line => line.startsWith('redis_version:'))?.split(':')[1]
         }

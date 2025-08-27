@@ -3,7 +3,8 @@
  * Production-ready messaging system for async task processing
  */
 
-import amqp, { type Connection, type Channel, type Message } from 'amqplib';
+import * as amqp from 'amqplib';
+import type { Connection, Channel, Message } from 'amqplib';
 
 // RabbitMQ configuration
 const RABBITMQ_CONFIG = {
@@ -32,8 +33,8 @@ export interface MessageHandler {
 
 export class RabbitMQService {
   private static instance: RabbitMQService;
-  private connection: Connection | null = null;
-  private channel: Channel | null = null;
+  private connection: any = null;
+  private channel: any = null;
   private isConnected = false;
 
   static getInstance(): RabbitMQService {
@@ -46,7 +47,7 @@ export class RabbitMQService {
   async connect(): Promise<boolean> {
     try {
       this.connection = await amqp.connect(RABBITMQ_CONFIG.url);
-      this.channel = await this.connection.createChannel();
+      this.channel = await (this.connection as any).createChannel();
       
       await this.setupQueues();
       
@@ -115,8 +116,8 @@ export class RabbitMQService {
   }
 
   async disconnect(): Promise<void> {
-    if (this.channel) await this.channel.close();
-    if (this.connection) await this.connection.close();
+    if (this.channel) await (this.channel as any).close();
+    if (this.connection) await (this.connection as any).close();
     this.isConnected = false;
     console.log('👋 RabbitMQ disconnected');
   }

@@ -1,7 +1,11 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import { superForm } from 'sveltekit-superforms/client';
   
   let { data, form } = $props();
+  
+  // Initialize SuperForm
+  const { form: formData, enhance } = superForm(data.form);
   
   let isAutoLoggingIn = $state(false);
   
@@ -10,18 +14,22 @@
   
   // Auto-fill demo user credentials
   function autoLoginDemo() {
-    const emailInput = document.getElementById('email') as HTMLInputElement;
-    const passwordInput = document.getElementById('password') as HTMLInputElement;
+    console.log('🔧 Auto-fill demo credentials clicked');
     
-    emailInput.value = 'demo@legalai.gov';
-    passwordInput.value = 'demo123456';
+    // Update SuperForm data directly
+    $formData.email = 'demo@legalai.gov';
+    $formData.password = 'demo123456';
+    
+    console.log('✅ Demo credentials filled');
   }
   
   // Auto-login with demo user (skip form submission)
   async function quickDemoLogin() {
+    console.log('⚡ Quick demo login clicked');
     isAutoLoggingIn = true;
     
     try {
+      console.log('📡 Calling auto-login endpoint...');
       const response = await fetch('/auth/login/auto', {
         method: 'POST',
         headers: {
@@ -30,17 +38,19 @@
       });
       
       const result = await response.json();
+      console.log('📨 Auto-login response:', result);
       
       if (result.success) {
+        console.log('✅ Auto-login successful, redirecting...');
         // Redirect to dashboard
         window.location.href = result.redirectTo || '/dashboard';
       } else {
         // Fall back to auto-fill if auto-login fails
-        console.warn('Auto-login failed, falling back to auto-fill:', result.error);
+        console.warn('⚠️ Auto-login failed, falling back to auto-fill:', result.error);
         autoLoginDemo();
       }
     } catch (error) {
-      console.error('Quick demo login failed:', error);
+      console.error('❌ Quick demo login failed:', error);
       // Fall back to auto-fill
       autoLoginDemo();
     } finally {
@@ -84,7 +94,7 @@
         </div>
       {/if}
 
-      <form method="POST" class="space-y-6">
+      <form method="POST" action="?/login" use:enhance class="space-y-6">
         <div>
           <label for="email" class="block text-sm font-medium text-gray-300 mb-2">
             Email
@@ -94,6 +104,7 @@
             name="email"
             id="email"
             required
+            bind:value={$formData.email}
             class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-yellow-400"
             placeholder="Enter your email"
           />
@@ -108,6 +119,7 @@
             name="password"
             id="password"
             required
+            bind:value={$formData.password}
             class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-yellow-400"
             placeholder="Enter your password"
           />
@@ -125,7 +137,7 @@
       <div class="mt-4 space-y-2">
         <button
           type="button"
-          on:click={quickDemoLogin}
+          onclick={quickDemoLogin}
           disabled={isAutoLoggingIn}
           class="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-800 disabled:cursor-not-allowed text-white font-semibold py-2 px-4 rounded transition-colors flex items-center justify-center"
         >
@@ -142,7 +154,7 @@
         
         <button
           type="button"
-          on:click={autoLoginDemo}
+          onclick={autoLoginDemo}
           class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition-colors"
         >
           📝 Auto-fill Demo Credentials

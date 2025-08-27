@@ -36,7 +36,7 @@ export const relayAuthService = {
           id: 'demo-user-001',
           email: 'demo@legalai.gov',
           name: 'Demo Prosecutor',
-          passwordHash: await bcrypt.hash('demo123', 12),
+          passwordHash: await bcrypt.hash('demo123456', 12),
           role: 'prosecutor',
           is_active: true
         };

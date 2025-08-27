@@ -1,7 +1,7 @@
 // Central DB export surface - re-export canonical schema and selected auth artifacts
-export * from './schema-unified';
+export * from './schema-postgres';
 
-import * as schema from "./schema-unified";
+import * as schema from "./schema-postgres";
 // Database connection and schema exports
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
@@ -24,6 +24,10 @@ const connectionString = process.env.DATABASE_URL || 'postgresql://legal_admin:1
 // For query purposes
 const queryClient = postgres(connectionString);
 export const db = drizzle(queryClient, { schema: fullSchema });
+
+// Export drizzle constructor for client-side imports
+export { drizzle };
+export type Database = typeof db;
 
 // For migrations
 const migrationClient = postgres(connectionString, { max: 1 });

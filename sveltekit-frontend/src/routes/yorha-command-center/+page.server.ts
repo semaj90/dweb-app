@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
-import { db } from '$lib/database/connection';
-import { cases, evidence, users } from '$lib/db/schema';
+import { db } from '$lib/server/db/index';
+import { cases, evidence, users } from '$lib/server/db/schema-postgres';
 import { count, eq, desc } from 'drizzle-orm';
 import { yorhaDetectiveService } from '$lib/services/yorha-detective-service';
 
@@ -117,7 +117,7 @@ async function getCasesData() {
     const activeCasesCount = await db
       .select({ count: count() })
       .from(cases)
-      .where(eq(cases.status, 'active'))
+      .where(eq(cases.status, 'open'))
       .limit(1);
 
     const totalCases = await db
@@ -167,19 +167,19 @@ async function getRecentActivity() {
         id: cases.id,
         title: cases.title,
         status: cases.status,
-        updatedAt: cases.updatedAt
+        updated_at: cases.updated_at
       })
       .from(cases)
-      .orderBy(desc(cases.updatedAt))
+      .orderBy(desc(cases.updated_at))
       .limit(5);
 
     // Transform to activity format
     return recentCases.map((case_, index) => ({
       id: index + 1,
-      action: `Case ${case_.status === 'active' ? 'Updated' : 'Status Changed'}`,
+      action: `Case ${case_.status === 'open' ? 'Updated' : 'Status Changed'}`,
       target: case_.title,
-      time: getRelativeTime(case_.updatedAt),
-      type: case_.status === 'active' ? 'success' : 'info'
+      time: getRelativeTime(case_.updated_at),
+      type: case_.status === 'open' ? 'success' : 'info'
     }));
 
   } catch (error) {

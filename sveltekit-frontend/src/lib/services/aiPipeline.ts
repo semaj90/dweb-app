@@ -2,12 +2,9 @@
 import { db } from "$lib/server/db";
 import { 
   evidence, 
-  documentVectors, 
-  evidenceVectors, 
-  caseSummaryVectors,
-  knowledgeNodes,
-  knowledgeEdges
-} from "$lib/server/db/schema";
+  vectorMetadata,
+  embeddingCache
+} from "$lib/server/db/schema-postgres-enhanced";
 import { ollamaService } from "./ollamaService";
 import { eq, sql } from "drizzle-orm";
 import type { DocumentProcessingOptions } from '$lib/schemas/upload';

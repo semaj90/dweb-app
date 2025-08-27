@@ -52,11 +52,11 @@ export interface EmbeddingRepository {
 
 // Factory loader (lazy to avoid circular imports in SvelteKit runtime)
 let _repo: EmbeddingRepository | null = null;
-export function getEmbeddingRepository(): EmbeddingRepository {
+export async function getEmbeddingRepository(): Promise<EmbeddingRepository> {
   if (_repo) return _repo;
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   
-  const impl = require('./pgvector-embedding-repository');
+  const impl = await import('./pgvector-embedding-repository');
   _repo = impl.pgvectorEmbeddingRepository as EmbeddingRepository;
   return _repo!;
 }
