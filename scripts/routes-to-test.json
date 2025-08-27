@@ -1,0 +1,9 @@
+[
+  { "url": "<HOST>/", "method": "GET" },
+  { "url": "<HOST>/login", "method": "GET" },
+  { "url": "<HOST>/register", "method": "GET" },
+  { "url": "<HOST>/dashboard", "method": "GET" },
+  { "url": "<HOST>/api/debug/session", "method": "GET" },
+  { "url": "<HOST>/api/debug/logs", "method": "GET" },
+  { "url": "<HOST>/api/ai/vector-search", "method": "POST" }
+]

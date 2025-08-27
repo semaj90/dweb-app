@@ -293,10 +293,15 @@ class WebAssemblyLlamaService {
       useCache: true
     });
 
-    const analysis = this.parseLegalAnalysisResponse(result.text);
+    const analysis = this.parseLegalAnalysisResponse(result.text) as any;
     
     return {
-      ...(analysis as Record<string, any>),
+      summary: analysis?.summary || '',
+      keyTerms: analysis?.keyTerms || [],
+      entities: analysis?.entities || [],
+      risks: analysis?.risks || [],
+      recommendations: analysis?.recommendations || [],
+      confidence: analysis?.confidence || 0,
       processingTime: result.processingTime,
       method: 'WebAssembly llama.cpp + Gemma 3 Legal'
     };
@@ -338,7 +343,7 @@ class WebAssemblyLlamaService {
       env: {
         memory,
         // WebGPU device interface for hardware acceleration
-        webgpu_device: this.webgpuDevice as WebAssembly.ImportValue,
+        webgpu_device: this.webgpuDevice as unknown as WebAssembly.ImportValue,
         
         // Threading support
         __pthread_create: (thread: number, attr: number, func: number, arg: number) => {

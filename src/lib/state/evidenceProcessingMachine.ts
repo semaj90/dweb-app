@@ -9,11 +9,6 @@ import { ollamaService } from "./services/ollamaService";
 import { bullmqService } from "./services/bullmqService";
 import { multiLayerCache } from "./services/multiLayerCache";
 import { langChainService } from "./ai/langchain-ollama-service";
-import type {
-  DocumentProcessingJob,
-  EmbeddingGenerationJob,
-  AIAnalysisJob,
-} from "./services/bullmqService";
 
 // Types for the state machine
 export interface EvidenceProcessingContext {

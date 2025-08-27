@@ -613,9 +613,52 @@ export class GPUCacheOrchestrator extends EventEmitter {
     return size;
   }
 
+  // === Concurrent Memory Management for RTX 3060 Ti ===
+  private gpuMemoryPool: Map<string, number> = new Map();
+  private memoryAllocationMutex: Promise<void> = Promise.resolve();
+  private gpuMemoryUsed: number = 0;
+  private readonly MAX_CONCURRENT_ALLOCATIONS = 8; // RTX 3060 Ti optimization
+  private activeAllocations: Set<string> = new Set();
+
   private async allocateGPUMemory(key: string, bytes: number): Promise<boolean> {
-    // GPU memory allocation check (placeholder)
-    return bytes < this.config.maxMemoryMB * 1024 * 1024;
+    // Serialize memory allocations to prevent race conditions
+    this.memoryAllocationMutex = this.memoryAllocationMutex.then(async () => {
+      return this.performConcurrentAllocation(key, bytes);
+    });
+    
+    return this.memoryAllocationMutex;
+  }
+
+  private async performConcurrentAllocation(key: string, bytes: number): Promise<boolean> {
+    const maxMemoryBytes = this.config.maxMemoryMB * 1024 * 1024;
+    const memoryThreshold = maxMemoryBytes * 0.85; // Leave 15% buffer
+    
+    // Check if we have enough free memory
+    if (this.gpuMemoryUsed + bytes > memoryThreshold) {
+      console.warn(`⚠️ GPU memory threshold exceeded: ${this.gpuMemoryUsed + bytes} bytes > ${memoryThreshold} bytes`);
+      
+      // Try to free memory by removing least recently used entries
+      await this.performMemoryCompaction();
+      
+      // Recheck after compaction
+      if (this.gpuMemoryUsed + bytes > memoryThreshold) {
+        return false;
+      }
+    }
+
+    // Check concurrent allocation limit
+    if (this.activeAllocations.size >= this.MAX_CONCURRENT_ALLOCATIONS) {
+      console.warn(`⚠️ Maximum concurrent allocations reached: ${this.activeAllocations.size}`);
+      return false;
+    }
+
+    // Allocate memory
+    this.gpuMemoryPool.set(key, bytes);
+    this.gpuMemoryUsed += bytes;
+    this.activeAllocations.add(key);
+    
+    console.log(`🎮 GPU memory allocated: ${key} -> ${bytes} bytes (Total: ${this.gpuMemoryUsed}/${maxMemoryBytes})`);
+    return true;
   }
 
   // === Public API ===
@@ -630,8 +673,7 @@ export class GPUCacheOrchestrator extends EventEmitter {
   }
 
   private calculateGPUMemoryUsage(): number {
-    return Array.from(this.cache.values())
-      .reduce((sum, entry) => sum + entry.metadata.gpuMemoryBytes, 0);
+    return this.gpuMemoryUsed;
   }
 
   async shutdown(): Promise<void> {
@@ -644,6 +686,52 @@ export class GPUCacheOrchestrator extends EventEmitter {
     await this.flashProcessor.shutdown?.();
     
     console.log('🛑 GPU Cache Orchestrator shut down');
+  }
+
+  private async performMemoryCompaction(): Promise<void> {
+    console.log('🗜️ Performing GPU memory compaction...');
+    
+    // Sort cache entries by last access time and hit count (LRU + LFU hybrid)
+    const sortedEntries = Array.from(this.cache.entries())
+      .sort(([, a], [, b]) => {
+        const aScore = a.metadata.timestamp + (a.metadata.hitCount * 1000);
+        const bScore = b.metadata.timestamp + (b.metadata.hitCount * 1000);
+        return aScore - bScore; // Ascending: oldest/least accessed first
+      });
+    
+    const targetFreeBytes = (this.config.maxMemoryMB * 1024 * 1024) * 0.3; // Free 30%
+    let freedBytes = 0;
+    
+    for (const [key, entry] of sortedEntries) {
+      if (freedBytes >= targetFreeBytes) break;
+      
+      const entryBytes = this.gpuMemoryPool.get(key) || 0;
+      if (entryBytes > 0) {
+        // Remove from GPU memory
+        this.gpuMemoryPool.delete(key);
+        this.gpuMemoryUsed -= entryBytes;
+        this.activeAllocations.delete(key);
+        
+        // Remove from cache
+        this.cache.delete(key);
+        await this.nesCache.clearSprite(key);
+        
+        freedBytes += entryBytes;
+        console.log(`🗑️ Freed GPU memory: ${key} -> ${entryBytes} bytes`);
+      }
+    }
+    
+    console.log(`✅ Memory compaction completed: freed ${freedBytes} bytes`);
+  }
+
+  private deallocateGPUMemory(key: string): void {
+    const bytes = this.gpuMemoryPool.get(key);
+    if (bytes) {
+      this.gpuMemoryPool.delete(key);
+      this.gpuMemoryUsed -= bytes;
+      this.activeAllocations.delete(key);
+      console.log(`🎮 GPU memory deallocated: ${key} -> ${bytes} bytes`);
+    }
   }
 
   // Placeholder methods for missing implementations

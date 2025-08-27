@@ -110,7 +110,8 @@ export type AgentType =
     | 'ml-reasoning' 
     | 'synthesis'
     | 'validation'
-    | 'optimization';
+    | 'optimization'
+    | 'webasm-inference';
 
 export type AgentStatus = 
     | 'pending' 
@@ -901,6 +902,9 @@ export class XStateAgentOrchestrator extends EventEmitter {
             case 'optimization':
                 return this.runOptimizationAgent(prompt, contextData);
                 
+            case 'webasm-inference':
+                return this.runWebASMInferenceAgent(prompt, contextData, options);
+                
             default:
                 throw new Error(`Unknown agent type: ${agentType}`);
         }
@@ -972,6 +976,76 @@ export class XStateAgentOrchestrator extends EventEmitter {
         return { type: 'optimization', result: 'Optimization complete', confidence: 0.84 };
     }
     
+    private async runWebASMInferenceAgent(prompt: string, context: ContextData, options: OrchestrationOptions): Promise<any> {
+        // WebAssembly inference agent implementation
+        try {
+            const { WASMInferenceRAGService } = await import('../../sveltekit-frontend/src/lib/services/webasm-inference-rag.js');
+            
+            // Create WebAssembly inference request
+            const request = {
+                id: `wasm_${Date.now()}_${Math.random().toString(36).slice(2)}`,
+                prompt,
+                maxTokens: 2048,
+                temperature: 0.7,
+                enableRAG: true,
+                priority: options.priority,
+                systemMessage: 'You are a legal AI assistant specializing in document analysis and case law research.'
+            };
+            
+            // Process inference with RAG integration
+            const result = await WASMInferenceRAGService.processInferenceWithRAG(request, {
+                config: {
+                    modelPath: '/models/gemma3-legal-q4.wasm',
+                    threads: 8,
+                    contextLength: 4096,
+                    enableGPU: options.enableGPU,
+                    batchSize: 4,
+                    quantization: 'q4_0'
+                }
+            } as any);
+            
+            return {
+                type: 'webasm-inference',
+                result: result.text,
+                confidence: 0.92,
+                metadata: {
+                    tokens: result.tokens,
+                    processingTime: result.processingTime,
+                    memoryUsage: result.memoryUsage,
+                    ragContext: result.ragContext,
+                    wasmMetadata: result.metadata
+                },
+                recommendations: [
+                    'Consider using WebAssembly inference for production deployment',
+                    'Monitor memory usage during long inference sessions',
+                    'Cache frequently used RAG contexts for better performance'
+                ],
+                nextSteps: [
+                    'Implement WebAssembly model caching',
+                    'Add WebAssembly inference metrics tracking',
+                    'Optimize WebAssembly memory allocation'
+                ]
+            };
+            
+        } catch (error) {
+            console.error('WebASM inference agent error:', error);
+            
+            // Fallback to simplified response
+            return {
+                type: 'webasm-inference',
+                result: `WebAssembly inference processing: ${prompt}`,
+                confidence: 0.75,
+                error: error.message,
+                fallback: true,
+                recommendations: [
+                    'Initialize WebAssembly module properly',
+                    'Check WebAssembly model availability',
+                    'Verify system WebAssembly support'
+                ]
+            };
+        }
+    }
+    
     // Context analysis methods (simplified)
     private async analyzeCodebaseContext(prompt: string): Promise<CodebaseContext> {
         return { files: [], languages: [], frameworks: [], recentChanges: [] };
@@ -1007,6 +1081,14 @@ export class XStateAgentOrchestrator extends EventEmitter {
         if (prompt.toLowerCase().includes('performance')) agents.push('performance');
         if (context.codebaseContext.files.length > 0) agents.push('codebase');
         
+        // Add WebAssembly inference for AI-related requests
+        if (prompt.toLowerCase().includes('ai') || 
+            prompt.toLowerCase().includes('inference') || 
+            prompt.toLowerCase().includes('generate') ||
+            prompt.toLowerCase().includes('analyze')) {
+            agents.push('webasm-inference');
+        }
+        
         return [...new Set(agents)];
     }
     
@@ -1023,7 +1105,8 @@ export class XStateAgentOrchestrator extends EventEmitter {
             'legal': ['context7'],
             'performance': [],
             'codebase': [],
-            'ml-reasoning': ['semantic', 'memory']
+            'ml-reasoning': ['semantic', 'memory'],
+            'webasm-inference': ['memory', 'semantic']
         };
         
         return dependencies[agentType]?.filter(dep => allAgents.includes(dep)) || [];
@@ -1038,6 +1121,7 @@ export class XStateAgentOrchestrator extends EventEmitter {
             'codebase': 3,
             'legal': 4,
             'performance': 4,
+            'webasm-inference': 5,
             'ml-reasoning': 5,
             'synthesis': 6,
             'validation': 7,

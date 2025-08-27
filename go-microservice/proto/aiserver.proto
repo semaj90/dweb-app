@@ -4,7 +4,7 @@ syntax = "proto3";
 
 package aiserver;
 
-option go_package = "./pb";
+option go_package = "github.com/semaj90/dweb-app/go-microservice/proto/aiserver;aiserver";
 
 // The core vector processing service definition
 service VectorService {

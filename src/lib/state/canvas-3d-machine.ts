@@ -48,7 +48,7 @@ interface UserInteraction {
 }
 
 export function createCanvas3DMachine() {
-  return createMachine<Canvas3DContext, Canvas3DEvents>({
+  return createMachine({
     id: 'canvas3D',
     initial: 'idle',
     context: {
@@ -111,7 +111,7 @@ export function createCanvas3DMachine() {
           }
         }
       },
-      
+
       documentSelected: {
         entry: ['highlightSelectedDocument', 'triggerDocumentAnalysis'],
         on: {
@@ -136,7 +136,7 @@ export function createCanvas3DMachine() {
           }
         }
       },
-      
+
       documentHovered: {
         entry: ['showDocumentPreview'],
         on: {
@@ -159,7 +159,7 @@ export function createCanvas3DMachine() {
           }
         }
       },
-      
+
       documentSelectedAndHovered: {
         entry: ['highlightSelectedDocument', 'showDocumentPreview'],
         on: {
@@ -183,7 +183,7 @@ export function createCanvas3DMachine() {
           }
         }
       },
-      
+
       gpuProcessing: {
         entry: ['startGPUComputeShader'],
         on: {
@@ -208,7 +208,7 @@ export function createCanvas3DMachine() {
         }
       }
     },
-    
+
     on: {
       SOM_UPDATE: {
         actions: assign({
@@ -237,32 +237,32 @@ export function createCanvas3DMachine() {
         console.log('Highlighting document:', context.selectedDocumentId);
         // This would trigger Three.js material changes
       },
-      
+
       showDocumentPreview: ({ context }) => {
         console.log('Showing preview for:', context.hoveredDocumentId);
         // This would show a tooltip or preview panel
       },
-      
+
       triggerDocumentAnalysis: ({ context }) => {
         console.log('Triggering analysis for:', context.selectedDocumentId);
         // This would send the document to the AI analysis pipeline
       },
-      
+
       startGPUComputeShader: () => {
         console.log('Starting GPU compute shader for SOM update');
         // This would trigger WebGPU compute shader execution
       },
-      
+
       updateSOMVisualization: ({ event }) => {
         console.log('Updating SOM visualization with result:', event);
         // This would update the Three.js SOM grid mesh
       },
-      
+
       handleGPUError: ({ event }) => {
         console.error('GPU processing error:', event);
         // This would handle GPU fallback to CPU processing
       },
-      
+
       resetCameraView: () => {
         console.log('Resetting camera to default view');
         // This would animate camera back to default position

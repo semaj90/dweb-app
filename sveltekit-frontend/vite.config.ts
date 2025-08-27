@@ -3,6 +3,37 @@ import { defineConfig } from "vite";
 import UnoCSS from "unocss/vite";
 import { resolve } from "path";
 
+// Plugin to fix SuperForms SuperDebug compatibility with Svelte 5
+function superFormsCompat() {
+  return {
+    name: 'superforms-svelte5-compat',
+    resolveId(id: string) {
+      if (id.includes('SuperDebug.svelte') || id.includes('sveltekit-superforms/dist/client/SuperDebug.svelte')) {
+        // Return a virtual module that provides a Svelte 5 compatible SuperDebug
+        return 'virtual:superdebug-compat';
+      }
+    },
+    load(id: string) {
+      if (id === 'virtual:superdebug-compat') {
+        // Return a minimal Svelte 5 compatible SuperDebug component
+        return `
+<script lang="ts">
+  // Svelte 5 runes mode compatible props
+  let { data = {} } = $props();
+</script>
+
+<div class="superdebug-placeholder" style="display: none;">
+  <details>
+    <summary>SuperDebug (Svelte 5 Compatible)</summary>
+    <pre>{JSON.stringify(data, null, 2)}</pre>
+  </details>
+</div>
+        `;
+      }
+    }
+  };
+}
+
 // Smart port discovery utility
 async function findAvailablePort(startPort: number, maxAttempts: number = 10): Promise<number> {
   const net = await import('net');
@@ -67,7 +98,8 @@ export default defineConfig(async ({ mode }) => {
 
   return {
   plugins: [
-      UnoCSS(),
+    superFormsCompat(),
+    UnoCSS(),
     sveltekit()
   ],
 
@@ -264,17 +296,20 @@ export default defineConfig(async ({ mode }) => {
     include: [
       'svelte',
       '@sveltejs/kit',
-      'melt',
-      'bits-ui'
+      'melt-ui',
+      'bits-ui',
+      'camelcase',
+      'decamelize'
     ],
     exclude: [
       '@langchain/community',
-      '@langchain/anthropic',
+      '@langchain/anthropic', 
       '@langchain/google-genai',
       'ioredis',
       'drizzle-orm',
       'postgres',
-      '@qdrant/js-client-rest'
+      '@qdrant/js-client-rest',
+      'sveltekit-superforms/dist/client/SuperDebug.svelte'
     ],
 
     // Force pre-bundling for better performance
@@ -292,7 +327,9 @@ export default defineConfig(async ({ mode }) => {
       $agents: resolve('./src/lib/agents'),
   $legal: resolve('./src/lib/legal'),
   '@shared': resolve('../shared'),
-  '@text': resolve('../shared/text')
+  '@text': resolve('../shared/text'),
+      // Fix camelcase version conflict for LangChain compatibility
+      'camelcase': resolve('./node_modules/camelcase/index.js')
     }
   },
 

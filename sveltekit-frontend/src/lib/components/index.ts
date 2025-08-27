@@ -13,8 +13,8 @@ export * from './ui/layout/index.js';
 
 // ===== ENHANCED UI COMPONENTS =====
 // Note: Using selective exports to avoid conflicts with base UI components
-export { EnhancedButton, EnhancedCard, EnhancedInput } from './ui/enhanced/index.js';
-export { SelectOption as EnhancedSelectOption, DropdownContent } from './ui/enhanced-bits/index.js';
+export { Button as EnhancedButton, Card as EnhancedCard, Input as EnhancedInput } from './ui/enhanced/index.js';
+export { SelectOption as EnhancedSelectOption } from './ui/enhanced-bits/index.js';
 export * from './ui/modern/index.js';
 
 // ===== FORM COMPONENTS =====

@@ -263,16 +263,19 @@ func (s *EnhancedLegalAIService) handleXStateEventWS(conn *WSConnection, message
 		Data: payloadMap,
 	}
 	_ = machineID // TODO: Use machine ID in state processing
-	newState := s.stateManager.ProcessEvent(event)
+	err := s.stateManager.ProcessEvent(event)
 	
 	response := map[string]interface{}{
 		"type": "xstate_event_response",
-		"success": true,
+		"success": err == nil,
 	}
 	
-	// State transition completed
-	response["new_state"] = newState
-	response["timestamp"] = time.Now().UTC()
+	if err != nil {
+		response["error"] = err.Error()
+	} else {
+		// State transition completed
+		response["timestamp"] = time.Now().UTC()
+	}
 
 	s.sendWebSocketMessage(conn, response)
 }

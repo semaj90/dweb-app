@@ -216,7 +216,7 @@ class EnhancedLegalOrchestrator {
 
     } catch (error: unknown) {
       console.error('Document analysis error:', error);
-      throw new Error(`Analysis failed: ${error.message}`);
+      throw new Error(`Analysis failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -308,7 +308,7 @@ class EnhancedLegalOrchestrator {
 
     } catch (error: unknown) {
       console.error('Document generation error:', error);
-      throw new Error(`Document generation failed: ${error.message}`);
+      throw new Error(`Document generation failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 

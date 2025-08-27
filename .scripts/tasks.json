@@ -1,0 +1,464 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Dev: SvelteKit (tee logs)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",s
+        "Set-Location 'C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend'; if (!(Test-Path .\\logs)) { New-Item -ItemType Directory -Path .\\logs | Out-Null }; npm run dev 2>&1 | Tee-Object -FilePath .\\logs\\vite.log"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "Dev: Full Stack (dev:full, tee logs)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "Set-Location 'C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app'; if (!(Test-Path .\\logs)) { New-Item -ItemType Directory -Path .\\logs | Out-Null }; npm run dev:full 2>&1 | Tee-Object -FilePath .\\logs\\dev-full.log"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "🧠 Autosolve EventLoop: Start Multi-Core Solver (tee logs)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "Set-Location 'C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app'; if (!(Test-Path .\\logs)) { New-Item -ItemType Directory -Path .\\logs | Out-Null }; node vscode-auto-solver/core/multi-core-solver.js 2>&1 | Tee-Object -FilePath .\\logs\\autosolve.log"
+      ],
+      "options": {
+        "env": {
+          "ENABLE_CLUSTERING": "true",
+          "ENABLE_GPU": "false",
+          "VS_CODE_DEBUG": "true",
+          "SEMANTIC_BATCH_SIZE": "64"
+        }
+      },
+      "group": "build",
+      "isBackground": true,
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "detail": "Launch multi-core semantic autosolve event loop and tee logs to ./logs/autosolve.log"
+    },
+    {
+      "label": "🚀 Dev Full Stack: Build & Start All Services",
+      "type": "shell",
+      "command": "echo",
+      "args": ["Starting complete Legal AI development environment..."],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "Build: All Go Services",
+        "Build: QUIC Services",
+        "Start: Complete Dev Environment"
+      ],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new"
+      },
+      "detail": "Build all Go binaries and start complete development environment with proper wiring"
+    },
+    {
+      "label": "Build: All Go Services",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "Write-Host '🔨 Building Go microservices...' -ForegroundColor Cyan;",
+        "cd go-microservice;",
+        "if (!(Test-Path bin)) { New-Item -ItemType Directory -Path bin | Out-Null };",
+        "go mod tidy;",
+        "Write-Host '  Building enhanced-rag service...' -ForegroundColor Yellow;",
+        "go build -o ./bin/enhanced-rag.exe ./cmd/enhanced-rag;",
+        "Write-Host '  Building upload service...' -ForegroundColor Yellow;",
+        "go build -o ./bin/upload-service.exe ./cmd/upload-service;",
+        "Write-Host '  Building grpc server...' -ForegroundColor Yellow;",
+        "go build -o ./bin/grpc-server.exe ./cmd/grpc-server;",
+        "Write-Host '  Building load balancer...' -ForegroundColor Yellow;",
+        "go build -o ./bin/load-balancer.exe ./load-balancer.go;",
+        "Write-Host '  Building rag-kratos service...' -ForegroundColor Yellow;",
+        "go build -o ./bin/rag-kratos.exe ./legal-ai-server.go;",
+        "Write-Host '  Building cluster service...' -ForegroundColor Yellow;",
+        "go build -o ./bin/cluster-http.exe ./cmd/cluster-service;",
+        "Write-Host '  Building summarizer service...' -ForegroundColor Yellow;",
+        "go build -o ./bin/summarizer-http.exe ./cmd/summarizer-service;",
+        "Write-Host '  Building vector service...' -ForegroundColor Yellow;",
+        "go build -o ./bin/vector-service.exe ./cmd/vector-service;",
+        "Write-Host '  Building ingest service...' -ForegroundColor Yellow;",
+        "go build -o ./bin/ingest-service.exe ./cmd/ingest-service;",
+        "Write-Host '✅ All Go services built successfully' -ForegroundColor Green"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": "$go",
+      "detail": "Build all required Go microservices including missing binaries"
+    },
+    {
+      "label": "Build: QUIC Services",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "Write-Host '🌐 Building QUIC services...' -ForegroundColor Cyan;",
+        "cd quic-services;",
+        "go mod tidy;",
+        "Write-Host '  Building QUIC gateway...' -ForegroundColor Yellow;",
+        "go build -o ../go-microservice/bin/quic-gateway.exe ./quic-gateway.go;",
+        "Write-Host '  Building QUIC vector proxy...' -ForegroundColor Yellow;",
+        "go build -o ../go-microservice/bin/quic-vector-proxy.exe ./quic-vector-proxy.go;",
+        "Write-Host '  Building QUIC AI stream...' -ForegroundColor Yellow;",
+        "go build -o ../go-microservice/bin/quic-ai-stream.exe ./quic-ai-stream.go;",
+  "Write-Host '  Building RAG QUIC proxy...' -ForegroundColor Yellow;",
+  "# If rag-quic-proxy.go was moved to go-microservice/cmd/rag-quic-proxy, build from that path; otherwise try local file",
+  "if (Test-Path './rag-quic-proxy.go') { go build -o ../go-microservice/bin/rag-quic-proxy.exe ./rag-quic-proxy.go } else { go build -o ../go-microservice/bin/rag-quic-proxy.exe ../go-microservice/cmd/rag-quic-proxy }",
+        "Write-Host '✅ QUIC services built successfully' -ForegroundColor Green"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": "$go",
+      "detail": "Build QUIC protocol services and place in bin directory"
+    },
+    {
+      "label": "Start: Complete Dev Environment",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "dev:full"],
+      "group": "build",
+      "isBackground": true,
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new"
+      },
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*starting.*$",
+          "endsPattern": "^.*ready.*$"
+        }
+      },
+      "detail": "Start npm run dev:full after building all Go services"
+    },
+    {
+      "label": "Health: Check All Services",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "$services = @(",
+        "  @{Name='PostgreSQL'; Port=5432},",
+        "  @{Name='Redis'; Port=6379},",
+        "  @{Name='Ollama'; Port=11434},",
+        "  @{Name='MinIO'; Port=9000},",
+        "  @{Name='Qdrant'; Port=6333},",
+        "  @{Name='SvelteKit'; Port=5173},",
+        "  @{Name='Enhanced RAG'; Port=8094},",
+        "  @{Name='Upload Service'; Port=8093},",
+        "  @{Name='gRPC Server'; Port=8084},",
+        "  @{Name='Load Balancer'; Port=8099},",
+        "  @{Name='Cluster Manager'; Port=3000}",
+        ");",
+        "Write-Host '🔍 Checking service health...' -ForegroundColor Cyan;",
+        "foreach ($svc in $services) {",
+        "  try {",
+        "    $result = Test-NetConnection -ComputerName localhost -Port $svc.Port -WarningAction SilentlyContinue;",
+        "    if ($result.TcpTestSucceeded) {",
+        "      Write-Host \"✅ $($svc.Name) (port $($svc.Port)): Running\" -ForegroundColor Green",
+        "    } else {",
+        "      Write-Host \"❌ $($svc.Name) (port $($svc.Port)): Not accessible\" -ForegroundColor Red",
+        "    }",
+        "  } catch {",
+        "    Write-Host \"❌ $($svc.Name) (port $($svc.Port)): Error checking\" -ForegroundColor Red",
+        "  }",
+        "}"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "detail": "Check health status of all Legal AI platform services"
+    },
+    {
+      "label": "Start MCP Servers",
+      "type": "shell",
+      "command": "echo",
+      "args": ["Starting MCP servers..."],
+      "group": "build",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "MCP: Context7 Server",
+        "MCP: Memory Server",
+        "MCP: Postgres Server"
+      ]
+    },
+    {
+      "label": "MCP: Context7 Server",
+      "type": "shell",
+      "command": "node",
+      "args": ["${workspaceFolder}/mcp-servers/context7-server.js"],
+      "options": {
+        "env": {
+          "STACK_CONFIG": "${workspaceFolder}/context7-docs/context7-mcp-config.json",
+          "DOC_SOURCES": "${workspaceFolder}/context7-docs",
+          "ENABLE_VLLM": "false",
+          "SERVER_PORT": "4000"
+        }
+      },
+      "group": "build",
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*Context7 server starting.*$",
+          "endsPattern": "^.*Context7 server ready.*$"
+        }
+      }
+    },
+    {
+      "label": "MCP: Memory Server",
+      "type": "shell",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "group": "build",
+      "isBackground": true
+    },
+    {
+      "label": "MCP: Postgres Server",
+      "type": "shell",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres"],
+      "options": {
+        "env": {
+          "POSTGRES_CONNECTION_STRING": "postgresql://postgres:postgres@localhost:5432/legal_ai_db"
+        }
+      },
+      "group": "build",
+      "isBackground": true
+    },
+    {
+      "label": "🧪 Vector Search Demo",
+      "type": "shell",
+      "command": "node",
+      "args": ["-e", "console.log('Navigate to: http://localhost:5173/dev/vector-search-demo')"],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "🧠 Test Vector Search",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-X", "POST",
+        "-H", "Content-Type: application/json",
+        "-d", "{\"query\": \"contract liability terms\", \"model\": \"claude\", \"limit\": 5}",
+        "http://localhost:5173/api/ai/vector-search"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Quick Fix TypeScript Errors",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "check"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "problemMatcher": "$tsc"
+    },
+    {
+      "label": "🚀 Quick Check - Ultra Fast",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "check:ultra-fast"],
+      "options": {
+        "cwd": "${workspaceFolder}/sveltekit-frontend"
+      },
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "detail": "Ultra-fast TypeScript and Svelte check"
+    },
+    {
+      "label": "Stop: All Services",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "Write-Host '🛑 Stopping all services...' -ForegroundColor Red;",
+        "Write-Host '  Stopping Node.js processes...' -ForegroundColor Yellow;",
+        "Get-Process -Name 'node' -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -eq 'node' } | Stop-Process -Force;",
+        "Write-Host '  Stopping Go processes...' -ForegroundColor Yellow;",
+        "$goProcesses = @('enhanced-rag', 'upload-service', 'grpc-server', 'load-balancer', 'rag-kratos', 'quic-gateway');",
+        "foreach ($proc in $goProcesses) {",
+        "  Get-Process -Name $proc -ErrorAction SilentlyContinue | Stop-Process -Force",
+        "}",
+        "Write-Host '  Cleaning up cluster manager lock...' -ForegroundColor Yellow;",
+        "if (Test-Path '.cluster-manager.pid') { Remove-Item '.cluster-manager.pid' -Force };",
+        "Write-Host '✅ All services stopped' -ForegroundColor Green"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "detail": "Stop all running Legal AI platform services"
+    },
+    {
+      "label": "🧠 Autosolve EventLoop: Force Cycle",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-X",
+        "POST",
+        "-H",
+        "Content-Type: application/json",
+        "-d",
+        "{\"action\":\"trigger\"}",
+        "http://localhost:5173/api/context7-autosolve"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "detail": "Manually trigger an autosolve cycle via API"
+    },
+    {
+      "label": "🔄 Auto-Solve: Maintenance Cycle",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "cd sveltekit-frontend; $env:AUTOSOLVE_THRESHOLD='5'; npm run maintenance:cycle"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "detail": "Run maintenance cycle with conditional autosolve"
+    },
+    {
+      "label": "🚀 Start All - Native Quickstart with MinIO",
+      "type": "shell",
+      "command": "${workspaceFolder}/QUICK-START-NATIVE.bat",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new"
+      },
+      "problemMatcher": [],
+      "detail": "Complete native Windows quickstart with all services including MinIO"
+    }
+  ]
+}

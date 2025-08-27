@@ -1,6 +1,8 @@
 syntax = "proto3";
 package embed;
 
+option go_package = "github.com/yourorg/deeds-web-app/proto/embed;embed";
+
 service Embedder {
   rpc Embed(EmbedRequest) returns (EmbedResponse);
   rpc BatchEmbed(BatchEmbedRequest) returns (BatchEmbedResponse);

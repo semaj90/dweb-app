@@ -2,7 +2,7 @@
  * Database Connection Module
  * Centralized database access point for the Legal AI Platform
  */
-export { drizzle } from '$lib/server/db/index.js';
+export { drizzle, db } from '$lib/server/db/index.js';
 export type { Database } from '$lib/server/db/index.js';
 
 // Re-export commonly used database utilities
@@ -23,5 +23,4 @@ export {
 // Re-export schema types and tables
 export * from '$lib/server/db/schema-postgres-enhanced.js';
 
-// Default export for convenience
-export { drizzle as db } from '$lib/server/db/index.js';
+// Default export for convenience - db is already exported above

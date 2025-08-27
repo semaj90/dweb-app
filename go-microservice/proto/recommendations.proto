@@ -1,6 +1,6 @@
 syntax = "proto3";
 package recsys.v1;
-option go_package = "github.com/deeds/recsys/gen;recsysv1";
+option go_package = "github.com/semaj90/dweb-app/go-microservice/proto/recommendations;recommendations";
 
 // Legal AI Recommendations Service - integrates with existing YoRHa architecture
 service Recommend {

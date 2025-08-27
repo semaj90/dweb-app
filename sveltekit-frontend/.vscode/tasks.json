@@ -303,6 +303,211 @@
         "focus": true,
         "panel": "dedicated"
       }
+    },
+    {
+      "label": "🚀 START-LEGAL-AI.bat - Complete System",
+      "type": "shell",
+      "command": "cmd",
+      "args": ["/c", "cd ../../deeds-web-app && START-LEGAL-AI.bat"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "🏗️ Infrastructure: Start All Services",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "dev:ultra"],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated"
+      },
+      "dependsOn": [
+        "PostgreSQL: Start Database",
+        "Redis: Start Cache",
+        "Qdrant: Start Vector DB",
+        "MinIO: Start Object Storage",
+        "Neo4j: Start Graph DB"
+      ]
+    },
+    {
+      "label": "🐘 PostgreSQL: Start Database",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-Command",
+        "Write-Host '🐘 Starting PostgreSQL Database...' -ForegroundColor Cyan; try { Start-Service postgresql-x64-16 -ErrorAction Stop; Write-Host '✅ PostgreSQL started successfully' -ForegroundColor Green; } catch { Write-Host '⚠️ PostgreSQL may already be running or needs manual start' -ForegroundColor Yellow; }"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "🔴 Redis: Start Cache",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "redis:start"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "isBackground": true
+    },
+    {
+      "label": "🔍 Qdrant: Start Vector DB",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-Command",
+        "Write-Host '🔍 Starting Qdrant Vector Database...' -ForegroundColor Cyan; cd '../../deeds-web-app/qdrant-extracted'; Start-Process -FilePath '.\\qdrant.exe' -WindowStyle Hidden; Start-Sleep 3; Write-Host '✅ Qdrant started in background' -ForegroundColor Green;"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "🗃️ MinIO: Start Object Storage",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-Command",
+        "Write-Host '🗃️ Starting MinIO Object Storage...' -ForegroundColor Cyan; cd '../../deeds-web-app'; if (Test-Path 'minio.exe') { Start-Process -FilePath '.\\minio.exe' -ArgumentList 'server', '--address', ':9000', '--console-address', ':9001', 'data' -WindowStyle Hidden; Write-Host '✅ MinIO started on :9000 (console :9001)' -ForegroundColor Green; } else { Write-Host '⚠️ MinIO not found, please install MinIO' -ForegroundColor Yellow; }"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "🕸️ Neo4j: Start Graph DB",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "neo4j:start"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "🐰 RabbitMQ: Start Message Queue",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "rabbitmq:start"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "🤖 Ollama: Start LLM Service",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "ollama:start"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "isBackground": true
+    },
+    {
+      "label": "🚀 Full Stack: Complete Startup",
+      "type": "shell",
+      "command": "cmd",
+      "args": ["/c", "cd ../../deeds-web-app && START-LEGAL-AI.bat"],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "🔧 Go Services: Build All",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-Command",
+        "Write-Host '🔧 Building Go Services...' -ForegroundColor Cyan; cd '../../deeds-web-app'; Write-Host 'Building enhanced RAG service...' -ForegroundColor Yellow; cd go-microservice; go build -o ../bin/enhanced-rag.exe .; cd ..; Write-Host 'Building upload service...' -ForegroundColor Yellow; cd go-services; go build -o ../bin/upload-service.exe .; cd ..; Write-Host '✅ Go services built successfully' -ForegroundColor Green;"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "📊 System Health: Check All Services",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-Command",
+        "$services = @('PostgreSQL (5432)', 'Redis (6379)', 'Qdrant (6333)', 'MinIO (9000)', 'Neo4j (7474)', 'Ollama (11434)'); Write-Host '📊 Checking System Health...' -ForegroundColor Cyan; ForEach ($service in $services) { $port = ($service -split '\\(')[1] -replace '\\)', ''; try { $connection = Test-NetConnection -ComputerName localhost -Port $port -InformationLevel Quiet -WarningAction SilentlyContinue; if ($connection) { Write-Host \"✅ $service - Running\" -ForegroundColor Green; } else { Write-Host \"❌ $service - Not responding\" -ForegroundColor Red; } } catch { Write-Host \"❌ $service - Error checking\" -ForegroundColor Red; } }"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "🛑 Infrastructure: Stop All Services",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-Command",
+        "Write-Host '🛑 Stopping all infrastructure services...' -ForegroundColor Yellow; Write-Host 'Stopping PostgreSQL...' -ForegroundColor Cyan; try { Stop-Service postgresql-x64-16 -Force -ErrorAction SilentlyContinue } catch {}; Write-Host 'Stopping Redis...' -ForegroundColor Cyan; Get-Process redis-server -ErrorAction SilentlyContinue | Stop-Process -Force; Write-Host 'Stopping Qdrant...' -ForegroundColor Cyan; Get-Process qdrant -ErrorAction SilentlyContinue | Stop-Process -Force; Write-Host 'Stopping MinIO...' -ForegroundColor Cyan; Get-Process minio -ErrorAction SilentlyContinue | Stop-Process -Force; Write-Host 'Stopping Neo4j...' -ForegroundColor Cyan; npm run neo4j:stop; Write-Host 'Stopping RabbitMQ...' -ForegroundColor Cyan; npm run rabbitmq:stop; Write-Host 'Stopping Ollama...' -ForegroundColor Cyan; Get-Process ollama -ErrorAction SilentlyContinue | Stop-Process -Force; Write-Host '✅ All services stopped' -ForegroundColor Green;"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated"
+      }
     }
   ]
 }

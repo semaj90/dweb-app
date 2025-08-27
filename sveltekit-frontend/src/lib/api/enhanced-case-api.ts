@@ -112,16 +112,17 @@ export class EnhancedCaseAPI {
         action: 'process',
         metadata: {
           priority: formData.priority,
-          caseType: formData.caseType || 'civil',
+          caseType: 'civil', // Static value since it's not in CaseForm schema
           tags: formData.tags || [],
           trigger: 'yorha-case-form',
           userId: formData.metadata?.userId,
           sessionId: formData.metadata?.sessionId,
           timestamp: new Date().toISOString(),
           formMetadata: {
-            location: formData.location,
-            jurisdiction: formData.jurisdiction,
-            clientName: formData.clientName,
+            // These fields are not in the CaseForm schema, using defaults
+            location: 'not_specified',
+            jurisdiction: 'not_specified',
+            clientName: 'not_specified',
             assignedTo: formData.assignedTo
           }
         }

@@ -1,7 +1,14 @@
 
 import { drizzle } from 'drizzle-orm/postgres-js';
+import { eq, sql as drizzleSql } from 'drizzle-orm';
 import postgres from 'postgres';
-import { env } from '$env/dynamic/private';
+// Use fallbacks if env is not available
+const env = {
+  DATABASE_URL: process.env.DATABASE_URL || 'postgresql://legal_admin:123456@localhost:5432/legal_ai_db',
+  DATABASE_POOL_SIZE: process.env.DATABASE_POOL_SIZE || '20',
+  DATABASE_POOL_TIMEOUT: process.env.DATABASE_POOL_TIMEOUT || '30000',
+  NODE_ENV: process.env.NODE_ENV || 'development'
+};
 import * as schema from './schema/legal-documents.js';
 
 /**
@@ -20,8 +27,8 @@ const sql = postgres(connectionString, {
   types: {
     // Custom type for pgvector
     vector: {
-      to: 1000,
-      from: 1000,
+      to: [1000],
+      from: [1000],
       serialize: (x: number[]) => `[${x.join(',')}]`,
       parse: (x: string) => x.slice(1, -1).split(',').map(Number),
     },
@@ -44,15 +51,15 @@ export class LegalDatabaseManager {
   async initializeDatabase(): Promise<void> {
     try {
       // Enable pgvector extension
-      await sql`CREATE EXTENSION IF NOT EXISTS vector`;
+      await drizzleSql`CREATE EXTENSION IF NOT EXISTS vector`;
       
       // Enable other useful extensions
-      await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
-      await sql`CREATE EXTENSION IF NOT EXISTS "pg_trgm"`;
-      await sql`CREATE EXTENSION IF NOT EXISTS "btree_gin"`;
+      await drizzleSql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+      await drizzleSql`CREATE EXTENSION IF NOT EXISTS "pg_trgm"`;
+      await drizzleSql`CREATE EXTENSION IF NOT EXISTS "btree_gin"`;
       
       // Create custom vector similarity functions
-      await sql`
+      await drizzleSql`
         CREATE OR REPLACE FUNCTION cosine_similarity(a vector, b vector)
         RETURNS float8 AS $$
         BEGIN
@@ -62,18 +69,18 @@ export class LegalDatabaseManager {
       `;
       
       // Create optimized indexes for legal document search
-      await sql`
+      await drizzleSql`
         CREATE INDEX CONCURRENTLY IF NOT EXISTS legal_documents_content_gin_idx 
         ON legal_documents USING GIN (to_tsvector('english', content));
       `;
       
-      await sql`
+      await drizzleSql`
         CREATE INDEX CONCURRENTLY IF NOT EXISTS legal_documents_title_gin_idx 
         ON legal_documents USING GIN (to_tsvector('english', title));
       `;
       
       // Set optimal vector index parameters
-      await sql`SET ivfflat.probes = 10`;
+      await drizzleSql`SET ivfflat.probes = 10`;
       
       console.log('✅ Database initialized successfully with pgvector support');
     } catch (error) {
@@ -95,7 +102,7 @@ export class LegalDatabaseManager {
     try {
       const embeddingVector = `[${embedding.join(',')}]`;
       
-      let query = sql`
+      let query = drizzleSql`
         SELECT *, 
                cosine_similarity(content_embedding, ${embeddingVector}::vector) as similarity
         FROM legal_documents 
@@ -105,21 +112,21 @@ export class LegalDatabaseManager {
       
       // Add filters if provided
       if (documentType) {
-        query = sql`${query} AND document_type = ${documentType}`;
+        query = drizzleSql`${query} AND document_type = ${documentType}`;
       }
       
       if (jurisdiction) {
-        query = sql`${query} AND jurisdiction = ${jurisdiction}`;
+        query = drizzleSql`${query} AND jurisdiction = ${jurisdiction}`;
       }
       
-      query = sql`
+      query = drizzleSql`
         ${query} 
         ORDER BY cosine_similarity(content_embedding, ${embeddingVector}::vector) DESC 
         LIMIT ${limit}
       `;
       
       const results = await query;
-      return results as Array<schema.LegalDocument & { similarity: number }>;
+      return results as unknown as Array<schema.LegalDocument & { similarity: number }>;
     } catch (error) {
       console.error('Vector similarity search failed:', error);
       throw error;
@@ -153,7 +160,7 @@ export class LegalDatabaseManager {
     try {
       const embeddingVector = `[${embedding.join(',')}]`;
       
-      let searchQuery = sql`
+      let searchQuery = drizzleSql`
         SELECT *,
                (
                  ${vectorWeight} * cosine_similarity(content_embedding, ${embeddingVector}::vector) +
@@ -169,25 +176,25 @@ export class LegalDatabaseManager {
       
       // Add filters
       if (documentType) {
-        searchQuery = sql`${searchQuery} AND document_type = ${documentType}`;
+        searchQuery = drizzleSql`${searchQuery} AND document_type = ${documentType}`;
       }
       
       if (jurisdiction) {
-        searchQuery = sql`${searchQuery} AND jurisdiction = ${jurisdiction}`;
+        searchQuery = drizzleSql`${searchQuery} AND jurisdiction = ${jurisdiction}`;
       }
       
       if (practiceArea) {
-        searchQuery = sql`${searchQuery} AND practice_area = ${practiceArea}`;
+        searchQuery = drizzleSql`${searchQuery} AND practice_area = ${practiceArea}`;
       }
       
-      searchQuery = sql`
+      searchQuery = drizzleSql`
         ${searchQuery}
         ORDER BY combined_score DESC
         LIMIT ${limit}
       `;
       
       const results = await searchQuery;
-      return results as Array<schema.LegalDocument & { combinedScore: number }>;
+      return results as unknown as Array<schema.LegalDocument & { combinedScore: number }>;
     } catch (error) {
       console.error('Hybrid search failed:', error);
       throw error;
@@ -205,7 +212,7 @@ export class LegalDatabaseManager {
     try {
       const embeddingVector = `[${embedding.join(',')}]`;
       
-      const precedentsQuery = sql`
+      const precedentsQuery = drizzleSql`
         WITH case_documents AS (
           SELECT ld.*
           FROM legal_documents ld
@@ -234,7 +241,7 @@ export class LegalDatabaseManager {
       `;
       
       const results = await precedentsQuery;
-      return results as Array<schema.LegalCase & { relevanceScore: number }>;
+      return results as unknown as Array<schema.LegalCase & { relevanceScore: number }>;
     } catch (error) {
       console.error('Precedent search failed:', error);
       throw error;
@@ -277,7 +284,7 @@ export class LegalDatabaseManager {
       
       await db.update(schema.legalDocuments)
         .set(updateData)
-        .where(sql`id = ${documentId}`);
+        .where(eq(schema.legalDocuments.id, documentId));
     } catch (error) {
       console.error('Embedding update failed:', error);
       throw error;
@@ -296,12 +303,16 @@ export class LegalDatabaseManager {
     vectorIndexStats: unknown;
   }> {
     try {
-      const [documentCount] = await sql`SELECT COUNT(*) as count FROM legal_documents`;
-      const [caseCount] = await sql`SELECT COUNT(*) as count FROM legal_cases`;
-      const [entityCount] = await sql`SELECT COUNT(*) as count FROM legal_entities`;
+      const documentCountResult = await drizzleSql`SELECT COUNT(*) as count FROM legal_documents`;
+      const caseCountResult = await drizzleSql`SELECT COUNT(*) as count FROM legal_cases`;
+      const entityCountResult = await drizzleSql`SELECT COUNT(*) as count FROM legal_entities`;
+      
+      const documentCount = (documentCountResult as any)[0]?.count || 0;
+      const caseCount = (caseCountResult as any)[0]?.count || 0;
+      const entityCount = (entityCountResult as any)[0]?.count || 0;
       
       // Get vector index statistics
-      const vectorStats = await sql`
+      const vectorStats = await drizzleSql`
         SELECT schemaname, tablename, indexname, idx_tup_read, idx_tup_fetch
         FROM pg_stat_user_indexes 
         WHERE indexname LIKE '%embedding%'
@@ -327,7 +338,7 @@ export class LegalDatabaseManager {
   async cleanupExpiredCache(): Promise<number> {
     try {
       const result = await db.delete(schema.agentAnalysisCache)
-        .where(sql`expires_at < NOW()`)
+        .where(drizzleSql`expires_at < NOW()`)
         .returning({ id: schema.agentAnalysisCache.id });
       
       return result.length;
@@ -342,14 +353,14 @@ export class LegalDatabaseManager {
    */
   async optimizeDatabase(): Promise<void> {
     try {
-      await sql`VACUUM ANALYZE legal_documents`;
-      await sql`VACUUM ANALYZE legal_cases`;
-      await sql`VACUUM ANALYZE legal_entities`;
-      await sql`VACUUM ANALYZE agent_analysis_cache`;
+      await drizzleSql`VACUUM ANALYZE legal_documents`;
+      await drizzleSql`VACUUM ANALYZE legal_cases`;
+      await drizzleSql`VACUUM ANALYZE legal_entities`;
+      await drizzleSql`VACUUM ANALYZE agent_analysis_cache`;
       
       // Reindex vector indexes
-      await sql`REINDEX INDEX CONCURRENTLY legal_documents_content_embedding_idx`;
-      await sql`REINDEX INDEX CONCURRENTLY legal_documents_title_embedding_idx`;
+      await drizzleSql`REINDEX INDEX CONCURRENTLY legal_documents_content_embedding_idx`;
+      await drizzleSql`REINDEX INDEX CONCURRENTLY legal_documents_title_embedding_idx`;
       
       console.log('✅ Database optimization completed');
     } catch (error) {
@@ -365,7 +376,7 @@ export const dbManager = new LegalDatabaseManager();
 // Health check function
 export async function checkPostgresHealth(): Promise<boolean> {
   try {
-    await sql`SELECT 1`;
+    await drizzleSql`SELECT 1`;
     return true;
   } catch {
     return false;

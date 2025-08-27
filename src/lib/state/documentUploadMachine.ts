@@ -4,8 +4,7 @@
  * Handles file upload, validation, processing, and search indexing
  */
 
-import { createMachine, assign, fromPromise  } from "xstate";
-import { evidenceProcessingMachine } from './evidenceProcessingMachine';
+import { createMachine, assign, fromPromise } from "xstate";
 import type { EvidenceProcessingContext } from './evidenceProcessingMachine';
 
 // Types for document upload
@@ -16,30 +15,42 @@ export interface DocumentUploadContext {
   fileSize: number;
   mimeType: string;
   fileHash?: string;
-  
+
   // Upload details
   caseId: string;
   userId: string;
   title: string;
   description?: string;
   tags: string[];
-  
+
   // Processing state
   uploadProgress: number;
   validationErrors: string[];
   extractedText?: string;
   documentId?: string;
   evidenceId?: string;
-  
-  // Child machine state
+  // Child machine state (evidence processing) + SSR API support for sveltekit-frontend
+  evidenceProcessingContext?: EvidenceProcessingContext;
+  evidenceProcessingActorId?: string; // optional reference id for a spawned child actor
+
+  ssr?: {
+    // where the data came from (used by SvelteKit frontend / SSR pipeline)
+    source?: 'sveltekit-api' | 'server' | 'client';
+    // raw payload returned from the API used during SSR (keep unknown to avoid strict coupling)
+    apiResponse?: unknown;
+    // optional pre-rendered HTML returned by an SSR endpoint
+    renderedHtml?: string;
+    // timestamp when SSR data was fetched
+    fetchedAt?: number;
+  };// Child machine state
   evidenceProcessingState?: unknown;
-  
+
   // Timestamps and metrics
   uploadStartTime: number;
   uploadEndTime?: number;
   processingStartTime?: number;
   processingEndTime?: number;
-  
+
   // Error handling
   error?: string;
   retryCount: number;
@@ -77,41 +88,40 @@ const ALLOWED_MIME_TYPES = [
 // Service implementations
 const validateFileService = fromPromise(async ({ input }: { input: DocumentUploadContext }) => {
   const errors: string[] = [];
-  
+
   if (!input.file) {
     errors.push('No file selected');
     return { valid: false, errors };
   }
-  
+
   // Check file size
   if (input.file.size > MAX_FILE_SIZE) {
     errors.push(`File size (${Math.round(input.file.size / 1024 / 1024)}MB) exceeds maximum allowed size (${MAX_FILE_SIZE / 1024 / 1024}MB)`);
   }
-  
+
   // Check MIME type
   if (!ALLOWED_MIME_TYPES.includes(input.file.type)) {
     errors.push(`File type '${input.file.type}' is not supported. Allowed types: ${ALLOWED_MIME_TYPES.join(', ')}`);
   }
-  
+
   // Check filename
   if (!input.filename || input.filename.trim().length === 0) {
     errors.push('Filename is required');
   }
-  
+
   // Check case ID and user ID
   if (!input.caseId || !input.userId) {
     errors.push('Case ID and User ID are required');
   }
-  
+
+  // Additional security checks
   // Additional security checks
   const suspiciousExtensions = ['.exe', '.bat', '.cmd', '.scr', '.com', '.pif'];
-  const hassuspicious = suspiciousExtensions.some((ext: unknown) => input.filename.toLowerCase().endsWith(ext)
-  );
-  
+  const hassuspicious = suspiciousExtensions.some((ext: string) => input.filename.toLowerCase().endsWith(ext));
+
   if (hassuspicious) {
     errors.push('File type appears to be executable and is not allowed');
   }
-  
   return {
     valid: errors.length === 0,
     errors
@@ -122,12 +132,12 @@ const calculateFileHashService = fromPromise(async ({ input }: { input: Document
   if (!input.file) {
     throw new Error('No file to hash');
   }
-  
+
   const buffer = await input.file.arrayBuffer();
   const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashHex = hashArray.map((b: unknown) => b.toString(16).padStart(2, '0')).join('');
-  
+  const hashHex = hashArray.map((b: number) => b.toString(16).padStart(2, '0')).join('');
+
   return hashHex;
 });
 
@@ -135,11 +145,10 @@ const uploadFileService = fromPromise(async ({ input }: { input: DocumentUploadC
   if (!input.file) {
     throw new Error('No file to upload');
   }
-  
+
   // Create unique upload ID for tracking
-  const uploadId = `upload_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  
-  // Setup multipart upload with progress tracking
+  // Create unique upload ID for tracking
+  const uploadId = `upload_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
   const formData = new FormData();
   formData.append('file', input.file);
   formData.append('caseId', input.caseId);
@@ -149,7 +158,7 @@ const uploadFileService = fromPromise(async ({ input }: { input: DocumentUploadC
   formData.append('tags', JSON.stringify(input.tags));
   formData.append('fileHash', input.fileHash || '');
   formData.append('uploadId', uploadId);
-  
+
   // Upload to MCP upload service (localhost:8093)
   let response: Response;
         try {
@@ -169,14 +178,14 @@ const uploadFileService = fromPromise(async ({ input }: { input: DocumentUploadC
           console.error('MCP Upload service failed:', error);
           throw error;
         }
-  
+
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(`Upload failed: ${response.status} ${errorText}`);
   }
-  
+
   const result = await response.json();
-  
+
   // If upload successful, trigger processing pipeline via MCP endpoints
   if (result.success && result.documentId) {
     try {
@@ -193,7 +202,7 @@ const uploadFileService = fromPromise(async ({ input }: { input: DocumentUploadC
           caseId: input.caseId
         })
       });
-      
+
       // Trigger processing pipeline via Enhanced RAG service
       await fetch('http://localhost:8094/process', {
         method: 'POST',
@@ -213,7 +222,7 @@ const uploadFileService = fromPromise(async ({ input }: { input: DocumentUploadC
       // Don't fail the upload if pipeline fails
     }
   }
-  
+
   return {
     documentId: result.documentId,
     evidenceId: result.evidenceId,
@@ -227,10 +236,10 @@ const extractTextService = fromPromise(async ({ input }: { input: DocumentUpload
   if (!input.file) {
     throw new Error('No file to extract text from');
   }
-  
+
   // Simple text extraction based on file type
   let extractedText = '';
-  
+
   if (input.file.type === 'text/plain') {
     extractedText = await input.file.text();
   } else if (input.file.type === 'application/pdf') {
@@ -244,7 +253,7 @@ const extractTextService = fromPromise(async ({ input }: { input: DocumentUpload
     // For other documents, use appropriate parsers
     extractedText = `[Extracted content from ${input.filename}]`;
   }
-  
+
   return extractedText;
 });
 
@@ -594,32 +603,32 @@ export const createDocumentUploadActor = () => {
   return documentUploadMachine;
 };
 
-export const isUploading = (state: unknown): boolean => {
-  return ['uploading', 'processing'].includes(state.value);
+export const isUploading = (state: DocumentUploadState): boolean => {
+  return ['uploading', 'processing'].includes(state.value as string);
 };
 
-export const isValidating = (state: unknown): boolean => {
-  return ['validating', 'calculatingHash', 'extractingText'].includes(state.value);
+export const isValidating = (state: DocumentUploadState): boolean => {
+  return ['validating', 'calculatingHash', 'extractingText'].includes(state.value as string);
 };
 
-export const hasValidationErrors = (state: unknown): boolean => {
-  return state.context.validationErrors && state.context.validationErrors.length > 0;
+export const hasValidationErrors = (state: DocumentUploadState): boolean => {
+  return !!(state.context.validationErrors && state.context.validationErrors.length > 0);
 };
 
-export const getValidationErrors = (state: unknown): string[] => {
+export const getValidationErrors = (state: DocumentUploadState): string[] => {
   return state.context.validationErrors || [];
 };
 
-export const getUploadProgress = (state: unknown): number => {
+export const getUploadProgress = (state: DocumentUploadState): number => {
   return state.context.uploadProgress || 0;
 };
 
-export const canRetryUpload = (state: unknown): boolean => {
-  return ['uploadError', 'processingError'].includes(state.value) && 
+export const canRetryUpload = (state: DocumentUploadState): boolean => {
+  return ['uploadError', 'processingError'].includes(state.value as string) &&
          state.context.retryCount < state.context.maxRetries;
 };
 
-export const getUploadMetrics = (state: unknown) => {
+export const getUploadMetrics = (state: DocumentUploadState) => {
   const context = state.context;
   return {
     uploadTime: context.uploadEndTime ? context.uploadEndTime - context.uploadStartTime : 0,
@@ -628,12 +637,10 @@ export const getUploadMetrics = (state: unknown) => {
     fileSize: context.fileSize,
     filename: context.filename
   };
-};
-
-// Enhanced XState typing helpers
-export type DocumentUploadStateValue = 
+  };
+export type DocumentUploadStateValue =
   | 'idle'
-  | 'validating' 
+    | 'validating'
   | 'calculatingHash'
   | 'uploading'
   | 'extractingText'
@@ -643,16 +650,16 @@ export type DocumentUploadStateValue =
   | 'uploadFailed'
   | 'validationError';
 
-export const getStateValue = (state: unknown): DocumentUploadStateValue => {
+export const getStateValue = (state: DocumentUploadState): DocumentUploadStateValue => {
   return state.value as DocumentUploadStateValue;
 };
 
-export const isInErrorState = (state: unknown): boolean => {
+export const isInErrorState = (state: DocumentUploadState): boolean => {
   const value = getStateValue(state);
   return value === 'uploadError' || value === 'uploadFailed' || value === 'validationError';
 };
 
-export const isInProcessingState = (state: unknown): boolean => {
+export const isInProcessingState = (state: DocumentUploadState): boolean => {
   const value = getStateValue(state);
   return value === 'uploading' || value === 'processing' || value === 'extractingText';
 };

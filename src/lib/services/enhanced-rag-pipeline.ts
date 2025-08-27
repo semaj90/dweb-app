@@ -8,35 +8,35 @@ import { aiService } from './unified-ai-service.js';
  */
 export class EnhancedRAGPipeline {
   private initialized: boolean = false;
-  private config: unknown;
+  private config: any;
   private cache: Map<string, any> = new Map();
-  private performanceMetrics: unknown = {};
+  private performanceMetrics: any = {};
 
-  constructor(config: unknown = {}) {
+  constructor(config: any = {}) {
     this.config = {
       // Embedding configuration
       embeddingModel: config.embeddingModel || 'nomic-embed-text',
       embeddingDimensions: config.embeddingDimensions || 384,
-      
+
       // Retrieval configuration
       maxRetrievalResults: config.maxRetrievalResults || 20,
       defaultTopK: config.defaultTopK || 5,
       hybridWeight: config.hybridWeight || { text: 0.4, vector: 0.6 },
-      
+
       // Chunking configuration
       chunkSize: config.chunkSize || 512,
       chunkOverlap: config.chunkOverlap || 50,
-      
+
       // Performance configuration
       cacheEnabled: config.cacheEnabled ?? true,
       cacheTTL: config.cacheTTL || 3600,
       compressionEnabled: config.compressionEnabled ?? true,
-      
+
       // Advanced features
       selfOrganizing: config.selfOrganizing ?? true,
       feedbackLoopEnabled: config.feedbackLoopEnabled ?? true,
       realTimeUpdates: config.realTimeUpdates ?? true,
-      
+
       ...config
     };
   }
@@ -45,24 +45,24 @@ export class EnhancedRAGPipeline {
     try {
       await db.initialize();
       await aiService.initialize();
-      
+
       // Initialize vector collection if needed
       await this.initializeVectorCollection();
-      
+
       // Start performance monitoring
       this.startPerformanceMonitoring();
-      
+
       this.initialized = true;
       console.log('✓ Enhanced RAG Pipeline initialized');
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('RAG Pipeline initialization failed:', error);
       return false;
     }
   }
 
   // ============ Document Ingestion ============
-  async ingestDocuments(documents: unknown[]): Promise<any> {
+  async ingestDocuments(documents: any[]): Promise<any> {
     const results = {
       processed: 0,
       failed: 0,
@@ -88,7 +88,7 @@ export class EnhancedRAGPipeline {
         results.chunks += processed.chunks?.length || 0;
         results.embeddings += processed.embeddings?.length || 0;
 
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Failed to process document ${doc.id}:`, error);
         results.failed++;
       }
@@ -96,11 +96,11 @@ export class EnhancedRAGPipeline {
 
     // Update performance metrics
     this.updateMetrics('ingestion', results);
-    
+
     return results;
   }
 
-  async createKnowledgeRelationships(document: unknown): Promise<void> {
+  async createKnowledgeRelationships(document: any): Promise<void> {
     // Extract entities and create relationships in Neo4j
     if (document.analysis && document.analysis.entities) {
       // Create document node
@@ -136,9 +136,9 @@ export class EnhancedRAGPipeline {
   }
 
   // ============ Enhanced Query Processing ============
-  async query(query: string, options: unknown = {}): Promise<any> {
-    const startTime = performance.now();
-    
+  async query(query: string, options: any = {}): Promise<any> {
+    const startTime = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+
     // Check cache first
     const cacheKey = this.generateCacheKey(query, options);
     if (this.config.cacheEnabled && this.cache.has(cacheKey)) {
@@ -149,23 +149,23 @@ export class EnhancedRAGPipeline {
 
     // Phase 1: Multi-modal retrieval
     const retrievalResults = await this.performRetrievalPhase(query, options);
-    
+
     // Phase 2: Intelligent ranking and fusion
     const rankedResults = await this.performRankingPhase(query, retrievalResults, options);
-    
+
     // Phase 3: Context building and compression
     const contextData = await this.buildOptimizedContext(rankedResults, options);
-    
+
     // Phase 4: Response generation with feedback loop
     const response = await this.generateEnhancedResponse(query, contextData, options);
-    
+
     // Phase 5: Self-organizing feedback
     if (this.config.feedbackLoopEnabled) {
       await this.processFeedbackLoop(query, response, options);
     }
 
-    const processingTime = performance.now() - startTime;
-    
+    const processingTime = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - startTime;
+
     const result = {
       ...response,
       metadata: {
@@ -183,12 +183,12 @@ export class EnhancedRAGPipeline {
     }
 
     this.updateMetrics('query_processed', { processingTime });
-    
+
     return result;
   }
 
-  private async performRetrievalPhase(query: string, options: unknown): Promise<any> {
-    const retrievalMethods = [];
+  private async performRetrievalPhase(query: string, options: any): Promise<any> {
+    const retrievalMethods: any[] = [];
 
     // 1. Semantic vector search
     const queryEmbedding = await aiService.embedSingle(query);
@@ -216,18 +216,18 @@ export class EnhancedRAGPipeline {
 
     return {
       vector,
-      text, 
+      text,
       graph,
       fuzzy,
       queryEmbedding
     };
   }
 
-  private async performGraphTraversal(query: string, options: unknown): Promise<unknown[]> {
+  private async performGraphTraversal(query: string, options: any): Promise<any[]> {
     try {
       // Extract key terms from query
-      const keyTerms = query.toLowerCase().split(/\s+/).filter(term => term.length > 3);
-      
+      const keyTerms = query.toLowerCase().split(/\s+/).filter((term: string) => term.length > 3);
+
       // Traverse knowledge graph for related documents
       const graphQuery = `
         MATCH (d:Document)-[:MENTIONS]->(e:Entity)
@@ -238,31 +238,31 @@ export class EnhancedRAGPipeline {
         MATCH (d)-[:BELONGS_TO]->(c:Case)
         RETURN d, e, c, relevance
       `;
-      
+
       const results = await db.runCypher(graphQuery, { terms: keyTerms });
-      
-      return results.map(record => ({
+
+      return results.map((record: any) => ({
         document: record.get('d').properties,
         entity: record.get('e').properties,
         case: record.get('c')?.properties,
         relevance: record.get('relevance').toNumber(),
         source: 'graph'
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Graph traversal error:', error);
       return [];
     }
   }
 
-  private async performFuzzySearch(query: string, options: unknown): Promise<unknown[]> {
+  private async performFuzzySearch(query: string, options: any): Promise<any[]> {
     // Implement fuzzy string matching for legal terms
     // This would integrate with a legal terminology database
     return [];
   }
 
-  private async performRankingPhase(query: string, retrievalResults: unknown, options: unknown): Promise<unknown[]> {
+  private async performRankingPhase(query: string, retrievalResults: any, options: any): Promise<any[]> {
     const allResults = new Map<string, any>();
-    
+
     // Combine results from all retrieval methods
     this.combineRetrievalResults(allResults, retrievalResults.vector, 'vector');
     this.combineRetrievalResults(allResults, retrievalResults.text, 'text');
@@ -271,19 +271,19 @@ export class EnhancedRAGPipeline {
 
     // Apply advanced ranking algorithms
     const rankedResults = Array.from(allResults.values())
-      .map(result => this.calculateAdvancedScore(result, query, retrievalResults.queryEmbedding))
-      .sort((a, b) => b.finalScore - a.finalScore);
+      .map((result: any) => this.calculateAdvancedScore(result, query, retrievalResults.queryEmbedding))
+      .sort((a: any, b: any) => b.finalScore - a.finalScore);
 
     // Apply diversity and novelty filters
     const diversifiedResults = this.applyDiversityFiltering(rankedResults, options);
-    
+
     return diversifiedResults.slice(0, options.topK || this.config.defaultTopK);
   }
 
-  private combineRetrievalResults(map: Map<string, any>, results: unknown[], source: string): void {
-    results.forEach((result, index) => {
+  private combineRetrievalResults(map: Map<string, any>, results: any[], source: string): void {
+    results.forEach((result: any, index: number) => {
       const id = result.id || result.document?.id || `${source}_${index}`;
-      
+
       if (map.has(id)) {
         const existing = map.get(id);
         existing.sources.push(source);
@@ -299,7 +299,7 @@ export class EnhancedRAGPipeline {
     });
   }
 
-  private normalizeScore(result: unknown, source: string): number {
+  private normalizeScore(result: any, source: string): number {
     switch (source) {
       case 'vector':
         return result.score || 0;
@@ -314,7 +314,7 @@ export class EnhancedRAGPipeline {
     }
   }
 
-  private calculateAdvancedScore(result: unknown, query: string, queryEmbedding: number[]): unknown {
+  private calculateAdvancedScore(result: any, query: string, queryEmbedding: number[]): any {
     const scores = result.scores;
     const weights = {
       vector: this.config.hybridWeight.vector,
@@ -328,8 +328,8 @@ export class EnhancedRAGPipeline {
     let totalWeight = 0;
 
     for (const [source, score] of Object.entries(scores)) {
-      const weight = weights[source as keyof typeof weights] || 0.1;
-      weightedScore += score * weight;
+      const weight = (weights as any)[source] || 0.1;
+      weightedScore += (score as number) * weight;
       totalWeight += weight;
     }
 
@@ -347,8 +347,8 @@ export class EnhancedRAGPipeline {
     };
   }
 
-  private calculateBoostFactors(result: unknown, query: string): unknown {
-    const factors = {
+  private calculateBoostFactors(result: any, query: string): any {
+    const factors: any = {
       recency: 1.0,
       authority: 1.0,
       completeness: 1.0,
@@ -380,13 +380,13 @@ export class EnhancedRAGPipeline {
     return factors;
   }
 
-  private applyDiversityFiltering(results: unknown[], options: unknown): unknown[] {
+  private applyDiversityFiltering(results: any[], options: any): any[] {
     const diversityThreshold = options.diversityThreshold || 0.8;
-    const filtered = [];
-    
+    const filtered: any[] = [];
+
     for (const candidate of results) {
       let tooSimilar = false;
-      
+
       for (const existing of filtered) {
         const similarity = this.calculateContentSimilarity(candidate, existing);
         if (similarity > diversityThreshold) {
@@ -394,35 +394,35 @@ export class EnhancedRAGPipeline {
           break;
         }
       }
-      
+
       if (!tooSimilar) {
         filtered.push(candidate);
       }
     }
-    
+
     return filtered;
   }
 
-  private calculateContentSimilarity(doc1: unknown, doc2: unknown): number {
+  private calculateContentSimilarity(doc1: any, doc2: any): number {
     // Implement content similarity calculation
     // This is a simplified version - in practice you'd use more sophisticated methods
     const content1 = doc1.content || doc1.document?.content || '';
     const content2 = doc2.content || doc2.document?.content || '';
-    
+
     const words1 = new Set(content1.toLowerCase().split(/\s+/));
     const words2 = new Set(content2.toLowerCase().split(/\s+/));
-    
-    const intersection = new Set([...words1].filter(word => words2.has(word)));
+
+    const intersection = new Set([...words1].filter((word: string) => words2.has(word)));
     const union = new Set([...words1, ...words2]);
-    
+
     return union.size > 0 ? intersection.size / union.size : 0;
   }
 
-  private async buildOptimizedContext(results: unknown[], options: unknown): Promise<any> {
+  private async buildOptimizedContext(results: any[], options: any): Promise<any> {
     const maxContextLength = options.maxContextLength || 4000;
     let currentLength = 0;
-    const contextPieces = [];
-    
+    const contextPieces: any[] = [];
+
     for (const result of results) {
       const content = result.content || result.document?.content || '';
       const piece = {
@@ -432,18 +432,18 @@ export class EnhancedRAGPipeline {
         source: result.sources,
         title: result.title || result.document?.title
       };
-      
+
       contextPieces.push(piece);
       currentLength += piece.content.length;
-      
+
       if (currentLength >= maxContextLength) break;
     }
-    
+
     // Apply context compression if enabled
     if (this.config.compressionEnabled && contextPieces.length > 3) {
       return await this.compressContext(contextPieces, options);
     }
-    
+
     return {
       pieces: contextPieces,
       totalLength: currentLength,
@@ -451,67 +451,69 @@ export class EnhancedRAGPipeline {
     };
   }
 
-  private async compressContext(contextPieces: unknown[], options: unknown): Promise<any> {
+  private async compressContext(contextPieces: any[], options: any): Promise<any> {
     // Implement intelligent context compression
     // This could use extractive summarization or key sentence extraction
-    
-    const compressedPieces = [];
-    
+
+    const compressedPieces: any[] = [];
+
     for (const piece of contextPieces) {
       // Extract key sentences using simple scoring
-      const sentences = piece.content.match(/[^.!?]+[.!?]+/g) || [];
+      const sentences = (piece.content || '').match(/[^.!?]+[.!?]+/g) || [];
       const keySentences = sentences
-        .map(sentence => ({
+        .map((sentence: string) => ({
           sentence,
           score: this.scoreSentenceImportance(sentence, piece.score)
         }))
-        .sort((a, b) => b.score - a.score)
+        .sort((a: any, b: any) => b.score - a.score)
         .slice(0, Math.max(1, Math.floor(sentences.length / 3)))
-        .map(item => item.sentence);
-      
+        .map((item: any) => item.sentence);
+
       compressedPieces.push({
         ...piece,
         content: keySentences.join(' '),
         compression: 'extractive'
       });
     }
-    
+
+    const origTotal = contextPieces.reduce((sum: number, p: any) => sum + (p.content?.length || 0), 0);
+    const compTotal = compressedPieces.reduce((sum: number, p: any) => sum + (p.content?.length || 0), 0);
+
     return {
       pieces: compressedPieces,
-      totalLength: compressedPieces.reduce((sum, p) => sum + p.content.length, 0),
+      totalLength: compTotal,
       compression: 'extractive',
-      compressionRatio: compressedPieces.reduce((sum, p) => sum + p.content.length, 0) / 
-                       contextPieces.reduce((sum, p) => sum + p.content.length, 0)
+      compressionRatio: origTotal > 0 ? compTotal / origTotal : 1
     };
   }
 
   private scoreSentenceImportance(sentence: string, baseScore: number): number {
     let score = baseScore;
-    
+
     // Boost sentences with legal keywords
     const legalKeywords = ['defendant', 'plaintiff', 'court', 'evidence', 'witness', 'statute', 'precedent'];
-    const keywordMatches = legalKeywords.filter(keyword => 
+    const keywordMatches = legalKeywords.filter(keyword =>
       sentence.toLowerCase().includes(keyword)
     ).length;
     score += keywordMatches * 0.1;
-    
+
     // Boost sentences with numbers/dates (often important in legal contexts)
     const numberMatches = sentence.match(/\d+/g);
     if (numberMatches) {
       score += numberMatches.length * 0.05;
     }
-    
+
     // Penalize very short sentences
     if (sentence.split(' ').length < 5) {
       score *= 0.8;
     }
-    
+
     return score;
   }
 
-  private async generateEnhancedResponse(query: string, contextData: unknown, options: unknown): Promise<any> {
+  private async generateEnhancedResponse(query: string, contextData: any, options: any): Promise<any> {
     const enhancedPrompt = this.buildEnhancedPrompt(query, contextData, options);
-    
+
     // Use streaming if requested
     if (options.stream) {
       return {
@@ -523,20 +525,20 @@ export class EnhancedRAGPipeline {
         contextMetadata: contextData
       };
     }
-    
+
     // Standard response generation
     const response = await aiService.ragQuery(query, {
       ...options,
       context: contextData
     });
-    
+
     return {
       answer: response.answer,
-      sources: contextData.pieces.map(piece => ({
+      sources: contextData.pieces.map((piece: any) => ({
         id: piece.id,
         title: piece.title,
         score: piece.score,
-        snippet: piece.content.substring(0, 200) + '...',
+        snippet: (piece.content || '').substring(0, 200) + '...',
         sources: piece.source
       })),
       contextMetadata: contextData,
@@ -544,13 +546,13 @@ export class EnhancedRAGPipeline {
     };
   }
 
-  private buildEnhancedPrompt(query: string, contextData: unknown, options: unknown): string {
-    const context = contextData.pieces
-      .map((piece, index) => `[${index + 1}] ${piece.title || 'Document'}: ${piece.content}`)
+  private buildEnhancedPrompt(query: string, contextData: any, options: any): string {
+    const context = (contextData.pieces || [])
+      .map((piece: any, index: number) => `[${index + 1}] ${piece.title || 'Document'}: ${piece.content}`)
       .join('\n\n');
 
     return `
-You are an expert legal AI assistant with access to a comprehensive legal knowledge base. 
+You are an expert legal AI assistant with access to a comprehensive legal knowledge base.
 Analyze the query and provide accurate, well-reasoned legal guidance based on the provided context.
 
 Context Documents:
@@ -572,7 +574,7 @@ ${options.specialInstructions || ''}
 Response:`;
   }
 
-  private async processFeedbackLoop(query: string, response: unknown, options: unknown): Promise<void> {
+  private async processFeedbackLoop(query: string, response: any, options: any): Promise<void> {
     // Implement self-organizing feedback system
     try {
       // Store query-response pair for learning
@@ -594,7 +596,7 @@ Response:`;
         await this.updateQueryPatterns(query, response);
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Feedback loop error:', error);
     }
   }
@@ -602,10 +604,10 @@ Response:`;
   private async updateSourceQualityScore(sourceId: string, processingTime?: number): Promise<void> {
     const key = `source_quality:${sourceId}`;
     const existing = await db.getCached(key) || { score: 0.5, usageCount: 0 };
-    
+
     // Update based on successful usage (simple approach)
     const newScore = existing.score * 0.9 + 0.1; // Slight boost for being used
-    
+
     await db.setCached(key, {
       score: Math.min(1.0, newScore),
       usageCount: existing.usageCount + 1,
@@ -614,7 +616,7 @@ Response:`;
     }, 86400 * 7); // Keep for a week
   }
 
-  private async updateQueryPatterns(query: string, response: unknown): Promise<void> {
+  private async updateQueryPatterns(query: string, response: any): Promise<void> {
     // Implement query pattern learning for optimization
     const key = `query_patterns:${this.hashString(query)}`;
     const pattern = {
@@ -624,37 +626,37 @@ Response:`;
       success: true, // Could be determined by user feedback
       timestamp: Date.now()
     };
-    
+
     await db.setCached(key, pattern, 86400 * 7);
   }
 
   // ============ Recommendation Engine ============
-  async getRecommendations(userId: string, context: unknown = {}): Promise<unknown[]> {
+  async getRecommendations(userId: string, context: any = {}): Promise<any[]> {
     try {
       // Get user's query history
       const userHistory = await this.getUserQueryHistory(userId);
-      
+
       // Build user profile from history
       const userProfile = await this.buildUserProfile(userHistory);
-      
+
       // Generate recommendations based on profile and current context
       const recommendations = await this.generateRecommendations(userProfile, context);
-      
+
       return recommendations;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Recommendation error:', error);
       return [];
     }
   }
 
-  private async getUserQueryHistory(userId: string): Promise<unknown[]> {
+  private async getUserQueryHistory(userId: string): Promise<any[]> {
     // Get recent queries for the user
     const pattern = `user_query:${userId}:*`;
     // This would need to be implemented based on your user tracking system
     return [];
   }
 
-  private async buildUserProfile(history: unknown[]): Promise<any> {
+  private async buildUserProfile(history: any[]): Promise<any> {
     // Build user interest profile from query history
     return {
       interests: [],
@@ -664,7 +666,7 @@ Response:`;
     };
   }
 
-  private async generateRecommendations(profile: unknown, context: unknown): Promise<unknown[]> {
+  private async generateRecommendations(profile: any, context: any): Promise<any[]> {
     // Generate personalized recommendations
     return [];
   }
@@ -676,7 +678,7 @@ Response:`;
     }, 60000); // Log every minute
   }
 
-  private updateMetrics(operation: string, data?: unknown): void {
+  private updateMetrics(operation: string, data?: any): void {
     if (!this.performanceMetrics[operation]) {
       this.performanceMetrics[operation] = {
         count: 0,
@@ -685,11 +687,11 @@ Response:`;
         lastOperation: null
       };
     }
-    
+
     const metric = this.performanceMetrics[operation];
     metric.count++;
     metric.lastOperation = Date.now();
-    
+
     if (data?.processingTime) {
       metric.totalTime += data.processingTime;
       metric.avgTime = metric.totalTime / metric.count;
@@ -710,7 +712,7 @@ Response:`;
       const response = await fetch(`${process.env.QDRANT_URL || 'http://localhost:6333'}/collections/legal_documents`, {
         method: 'GET'
       });
-      
+
       if (!response.ok) {
         // Create collection if it doesn't exist
         await fetch(`${process.env.QDRANT_URL || 'http://localhost:6333'}/collections/legal_documents`, {
@@ -725,12 +727,12 @@ Response:`;
         });
         console.log('✓ Qdrant collection created');
       }
-    } catch (error) {
-      console.warn('Qdrant initialization warning:', error.message);
+    } catch (error: any) {
+      console.warn('Qdrant initialization warning:', error.message || error);
     }
   }
 
-  private generateCacheKey(query: string, options: unknown): string {
+  private generateCacheKey(query: string, options: any): string {
     const keyData = {
       query: query.toLowerCase().trim(),
       caseId: options.caseId,

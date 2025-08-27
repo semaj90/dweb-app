@@ -134,7 +134,7 @@ const defaultContext: SearchContext = {
 const searchServices = {
   performSearch: async (context: SearchContext, event: unknown) => {
     const startTime = performance.now();
-    
+
     try {
       const searchOptions = {
         query: context.query,
@@ -151,7 +151,7 @@ const searchServices = {
 
       // Route search through multi-protocol system
       const searchResult = await routerHelpers.search(searchOptions);
-      
+
       const processingTime = performance.now() - startTime;
 
       return {
@@ -172,7 +172,7 @@ const searchServices = {
 
   performLocalSearch: async (context: SearchContext) => {
     const startTime = performance.now();
-    
+
     try {
       // Implement local search fallback
       const results = await performLocalDocumentSearch(context.query, {
@@ -193,8 +193,10 @@ const searchServices = {
         cached: false
       };
 
-    } catch (error) {
-      throw new Error(`Local search failed: ${error.message}`);
+    } catch (error: any) {
+      // Safe error handling when error may not be an Error instance
+      const msg = (error && (error as Error).message) || String(error);
+      throw new Error(`Local search failed: ${msg}`);
     }
   },
 
@@ -218,13 +220,13 @@ const searchServices = {
     }
   },
 
-  exportResults: async (context: SearchContext, event: unknown) => {
+  exportResults: async (context: SearchContext, event: { format: 'json' | 'csv' | 'pdf' }) => {
     const { format } = event;
-    const selectedResults = context.results.filter(r => 
+    const selectedResults = context.results.filter(r =>
       context.selectedResults.includes(r.id)
     );
 
-    const exportData = {
+    const exportData: any = {
       query: context.query,
       searchType: context.searchType,
       filters: context.filters,
@@ -234,16 +236,22 @@ const searchServices = {
       format
     };
 
+    // Perform the download synchronously; return a simple result for the invoker
     switch (format) {
       case 'json':
-        return downloadJSON(exportData, `search_results_${Date.now()}.json`);
+        downloadJSON(exportData, `search_results_${Date.now()}.json`);
+        break;
       case 'csv':
-        return downloadCSV(exportData.results, `search_results_${Date.now()}.csv`);
+        downloadCSV(exportData.results, `search_results_${Date.now()}.csv`);
+        break;
       case 'pdf':
-        return downloadPDF(exportData, `search_results_${Date.now()}.pdf`);
+        downloadPDF(exportData, `search_results_${Date.now()}.pdf`);
+        break;
       default:
         throw new Error(`Unsupported export format: ${format}`);
     }
+
+    return { success: true, format };
   }
 };
 
@@ -276,38 +284,43 @@ function downloadCSV(results: SearchResult[], filename: string) {
     r.id,
     r.title,
     r.type,
-    r.score,
+    String(r.score),
     r.metadata.createdAt ? new Date(r.metadata.createdAt).toISOString() : '',
     r.metadata.caseId || ''
   ]);
 
-  const csvContent = [headers, ...rows]
-    .map(row => row.map(cell => `"${cell}"`).join(','))
-    .join('\n');
-
-  const blob = new Blob([csvContent], { type: 'text/csv' });
+  const csv = [headers, ...rows].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
   downloadBlob(blob, filename);
 }
 
-function downloadPDF(data: unknown, filename: string) {
+function downloadPDF(data: any, filename: string) {
   // Simplified PDF generation - in practice you'd use a proper PDF library
-  const textContent = `
-Search Results Export
+  const query = data?.query ?? '';
+  const searchType = data?.searchType ?? '';
+  const totalResults = data?.totalResults ?? 0;
+  const exportedAt = data?.exportedAt ?? '';
+  const results: SearchResult[] = Array.isArray(data?.results) ? data.results : [];
 
-Query: ${data.query}
-Search Type: ${data.searchType}
-Total Results: ${data.totalResults}
-Exported: ${data.exportedAt}
-
-Results:
-${data.results.map((r: SearchResult, i: number) => `
+  const resultsText = results.map((r: SearchResult, i: number) => `
 ${i + 1}. ${r.title}
    Type: ${r.type}
    Score: ${r.score}
    Content: ${r.snippet}
-`).join('\n')}
-  `;
+`).join('\n');
 
+  const textContent = `Search Results Export
+
+Query: ${query}
+Search Type: ${searchType}
+Total Results: ${totalResults}
+Exported: ${exportedAt}
+
+Results:
+${resultsText}
+`;
+
+  // For now write as plain text and use .txt extension to avoid bogus PDFs in browser without library
   const blob = new Blob([textContent], { type: 'text/plain' });
   downloadBlob(blob, filename.replace('.pdf', '.txt'));
 }
@@ -317,7 +330,10 @@ function downloadBlob(blob: Blob, filename: string) {
   const a = document.createElement('a');
   a.href = url;
   a.download = filename;
+  // Append and click to support Firefox
+  document.body.appendChild(a);
   a.click();
+  a.remove();
   URL.revokeObjectURL(url);
 }
 
@@ -500,20 +516,12 @@ export const searchMachine = createMachine({
         } catch {
           return [];
         }
-      },
-      recentQueries: () => {
-        try {
-          const saved = localStorage.getItem('recent_queries');
-          return saved ? JSON.parse(saved) : [];
-        } catch {
-          return [];
-        }
       }
     }),
 
     updateQuery: assign({
-      query: (_, event) => event.query,
-      currentPage: 1
+      query: (_context, event: any) => event.query,
+      currentPage: () => 1
     }),
 
     generateSuggestions: assign({
@@ -536,24 +544,24 @@ export const searchMachine = createMachine({
           context.query,
           ...context.recentQueries.filter(q => q !== context.query)
         ].slice(0, 10);
-        
+
         localStorage.setItem('recent_queries', JSON.stringify(updated));
         return updated;
       }
     }),
 
     setSearchResults: assign({
-      results: (_, event) => event.data.results,
-      totalResults: (_, event) => event.data.totalResults,
-      suggestions: (_, event) => event.data.suggestions,
-      isSearching: false
+      results: (_, event: any) => event.data.results,
+      totalResults: (_, event: any) => event.data.totalResults,
+      suggestions: (_, event: any) => event.data.suggestions,
+      isSearching: () => false
     }),
 
     updatePerformanceMetrics: assign({
-      performance: (context, event) => {
+      performance: (context, event: any) => {
         const { processingTime, protocol, cached } = event.data;
         const perf = context.performance;
-        
+
         return {
           lastSearchTime: processingTime,
           averageSearchTime: ((perf.averageSearchTime * perf.totalSearches) + processingTime) / (perf.totalSearches + 1),
@@ -568,7 +576,7 @@ export const searchMachine = createMachine({
     }),
 
     recordSearchHistory: assign({
-      searchHistory: (context, event) => {
+      searchHistory: (context, event: any) => {
         const entry = {
           query: context.query,
           timestamp: Date.now(),
@@ -583,30 +591,30 @@ export const searchMachine = createMachine({
     }),
 
     clearSearch: assign({
-      query: '',
-      results: [],
-      totalResults: 0,
-      currentPage: 1,
-      selectedResults: [],
-      isSearching: false
+      query: () => '',
+      results: () => [],
+      totalResults: () => 0,
+      currentPage: () => 1,
+      selectedResults: () => [],
+      isSearching: () => false
     }),
 
     applyFilters: assign({
-      filters: (context, event) => ({
+      filters: (context, event: any) => ({
         ...context.filters,
         ...event.filters
       }),
-      currentPage: 1
+      currentPage: () => 1
     }),
 
     clearFilters: assign({
-      filters: {},
-      currentPage: 1
+      filters: () => ({} as SearchFilter),
+      currentPage: () => 1
     }),
 
     changeSearchType: assign({
-      searchType: (_, event) => event.searchType,
-      currentPage: 1
+      searchType: (_context, event: any) => event.searchType,
+      currentPage: () => 1
     }),
 
     incrementPage: assign({
@@ -614,16 +622,16 @@ export const searchMachine = createMachine({
     }),
 
     appendResults: assign({
-      results: (context, event) => [...context.results, ...event.data.results],
-      isSearching: false
+      results: (context, event: any) => [...context.results, ...event.data.results],
+      isSearching: () => false
     }),
 
     sortResults: assign({
-      results: (context, event) => {
+      results: (context, event: any) => {
         const { sortBy, order = 'desc' } = event;
         const sorted = [...context.results].sort((a, b) => {
-          let aVal: unknown, bVal: unknown;
-          
+          let aVal: any, bVal: any;
+
           switch (sortBy) {
             case 'relevance':
               aVal = a.score;
@@ -640,7 +648,7 @@ export const searchMachine = createMachine({
             default:
               return 0;
           }
-          
+
           if (order === 'asc') {
             return aVal > bVal ? 1 : -1;
           } else {
@@ -650,12 +658,12 @@ export const searchMachine = createMachine({
 
         return sorted;
       },
-      sortBy: (_, event) => event.sortBy,
-      sortOrder: (_, event) => event.order || 'desc'
+      sortBy: (_context, event: any) => event.sortBy,
+      sortOrder: (_context, event: any) => event.order || 'desc'
     }),
 
     selectResult: assign({
-      selectedResults: (context, event) => {
+      selectedResults: (context, event: any) => {
         if (context.selectedResults.includes(event.resultId)) {
           return context.selectedResults;
         }
@@ -664,7 +672,7 @@ export const searchMachine = createMachine({
     }),
 
     deselectResult: assign({
-      selectedResults: (context, event) => 
+      selectedResults: (context, event: any) =>
         context.selectedResults.filter(id => id !== event.resultId)
     }),
 
@@ -673,48 +681,48 @@ export const searchMachine = createMachine({
     }),
 
     clearSelection: assign({
-      selectedResults: []
+      selectedResults: () => []
     }),
 
-    saveQuery: (context, event) => {
+    saveQuery: (_context, event: any) => {
       const savedQueries = JSON.parse(localStorage.getItem('saved_queries') || '[]');
       const query = {
-        name: event.name || context.query,
-        query: context.query,
-        filters: context.filters,
-        searchType: context.searchType,
+        name: event.name || _context.query,
+        query: _context.query,
+        filters: _context.filters,
+        searchType: _context.searchType,
         savedAt: Date.now()
       };
-      
+
       savedQueries.push(query);
       localStorage.setItem('saved_queries', JSON.stringify(savedQueries));
     },
 
     loadSavedQuery: assign({
-      query: (_, event) => event.query,
-      currentPage: 1
+      query: (_context, event: any) => event.query,
+      currentPage: () => 1
     }),
 
     updateSettings: assign({
-      settings: (context, event) => ({
+      settings: (context, event: any) => ({
         ...context.settings,
         ...event.settings
       })
     }),
 
     setSearchError: assign({
-      isSearching: false
+      isSearching: () => false
     }),
 
     setResultsState: assign({
-      isSearching: false
+      isSearching: () => false
     }),
 
     showEmptyQueryError: () => {
       console.warn('Cannot search with empty query');
     },
 
-    handleLoadMoreError: (context, event) => {
+    handleLoadMoreError: (_context, event: any) => {
       console.error('Load more failed:', event.data);
     },
 
@@ -722,7 +730,7 @@ export const searchMachine = createMachine({
       console.log('Export completed successfully');
     },
 
-    handleExportError: (context, event) => {
+    handleExportError: (_context, event: any) => {
       console.error('Export failed:', event.data);
     }
   }
@@ -779,8 +787,8 @@ export const searchActions = {
 
 // Selectors for derived state
 export const searchSelectors = {
-  isIdle: (state: unknown) => state.matches('idle'),
-  isSearching: (state: unknown) => state.matches('searching') || state.matches('loading_more'),
+  isIdle: (state: any) => state.matches && state.matches('idle'),
+  isSearching: (state: any) => state.matches && (state.matches('searching') || state.matches('loading_more')),
   hasResults: (context: SearchContext) => context.results.length > 0,
   hasSelection: (context: SearchContext) => context.selectedResults.length > 0,
   canLoadMore: (context: SearchContext) => {
@@ -792,8 +800,8 @@ export const searchSelectors = {
     currentPage: context.currentPage,
     totalPages: Math.ceil(context.totalResults / context.pageSize),
     selectedCount: context.selectedResults.length,
-    averageScore: context.results.length > 0 
-      ? context.results.reduce((sum, r) => sum + r.score, 0) / context.results.length 
+    averageScore: context.results.length > 0
+      ? context.results.reduce((sum, r) => sum + r.score, 0) / context.results.length
       : 0
   })
 };

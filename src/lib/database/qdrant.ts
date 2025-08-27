@@ -1,5 +1,11 @@
 import { QdrantClient } from '@qdrant/js-client-rest';
-import { env } from '$env/dynamic/private';
+// Use fallbacks if env is not available
+const env = {
+  QDRANT_URL: process.env.QDRANT_URL || 'http://localhost:6333',
+  QDRANT_API_KEY: process.env.QDRANT_API_KEY || '',
+  QDRANT_COLLECTION_NAME: process.env.QDRANT_COLLECTION_NAME || 'legal_documents',
+  VECTOR_DIMENSIONS: process.env.VECTOR_DIMENSIONS || '384'
+};
 import { cacheManager } from './redis.js';
 
 /**
@@ -250,7 +256,7 @@ export class QdrantManager {
     } = {},
     options: SearchOptions = {}
   ): Promise<SearchResult[]> {
-    const filter: unknown = {
+    const filter: any = {
       must: [],
     };
 
@@ -309,7 +315,7 @@ export class QdrantManager {
 
     return this.searchSimilar(queryVector, {
       ...options,
-      filter: filter.must.length > 0 || filter.must_not ? filter : undefined,
+      filter: filter.must?.length > 0 || filter.must_not ? filter : undefined,
     });
   }
 
@@ -348,7 +354,7 @@ export class QdrantManager {
   ): Promise<SearchResult[]> {
     const { documentTypes, jurisdiction, ...searchOptions } = options;
 
-    const filters: unknown = {};
+    const filters: any = {};
     if (documentTypes?.length) {
       filters.documentTypes = documentTypes;
     }

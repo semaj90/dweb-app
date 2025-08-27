@@ -1,0 +1,397 @@
+// Legal AI Protobuf Definitions
+// Optimized for JSONB transfers using QUIC/gRPC/Redis
+// Version: 2.0.0
+
+syntax = "proto3";
+
+package legal.ai;
+
+option go_package = "github.com/legal-ai/proto;legal_ai";
+
+// ============================================================================
+// CORE DATA TYPES
+// ============================================================================
+
+// Legal document metadata with JSONB optimization
+message LegalMetadata {
+  string case_id = 1;
+  string document_type = 2; // contract, brief, motion, pleading, evidence
+  string jurisdiction = 3;
+  repeated string practice_areas = 4;
+  double confidence_score = 5;
+  string risk_level = 6; // low, medium, high, critical
+  map<string, string> custom_fields = 7; // Extensible JSONB fields
+  int64 timestamp = 8;
+  string version = 9;
+}
+
+// Multi-dimensional embedding with compression support
+message EmbeddingData {
+  repeated float values = 1; // Raw embedding values
+  int32 dimensions = 2; // 384, 768, 1536, 3072
+  string model = 3; // nomic-embed, gemma3-legal, legal-bert
+  string compression_type = 4; // lz4, custom_bit_encoding
+  bytes compressed_data = 5; // Bit-encoded compressed embedding
+  double compression_ratio = 6;
+  LegalMetadata metadata = 7;
+}
+
+// Graph node for WebGPU texture layout
+message GraphNode {
+  string node_id = 1;
+  repeated float position = 2; // x, y, z coordinates
+  EmbeddingData embedding = 3;
+  repeated string neighbor_ids = 4;
+  double confidence = 5;
+  LegalMetadata metadata = 6;
+  repeated float ranking_matrix = 7; // 4x4 matrix flattened (16 values)
+  repeated float variance_matrix = 8; // 4x4 variance matrix (16 values)
+}
+
+// ============================================================================
+// REQUEST/RESPONSE TYPES
+// ============================================================================
+
+// Embedding processing request
+message EmbeddingRequest {
+  string text = 1;
+  string model = 2; // Model to use for embedding generation
+  bool use_cache = 3;
+  bool enable_compression = 4;
+  LegalMetadata metadata = 5;
+  
+  // Processing options
+  message Options {
+    int32 dimensions = 1;
+    bool normalize = 2;
+    bool preserve_semantics = 3;
+    string domain = 4; // legal, general
+    double compression_target = 5; // Target compression ratio
+  }
+  Options options = 6;
+}
+
+message EmbeddingResponse {
+  bool success = 1;
+  EmbeddingData embedding = 2;
+  bool from_cache = 3;
+  double processing_time_ms = 4;
+  string error = 5;
+  
+  message Performance {
+    double compression_ratio = 1;
+    double cache_hit_rate = 2;
+    int64 memory_used = 3;
+    double gpu_utilization = 4;
+  }
+  Performance performance = 6;
+}
+
+// Legal document inference request
+message InferenceRequest {
+  string prompt = 1;
+  string model = 2; // gemma3-legal, legal-bert
+  repeated string context_documents = 3;
+  LegalMetadata metadata = 4;
+  
+  message Options {
+    int32 max_tokens = 1;
+    double temperature = 2;
+    double top_p = 3;
+    string priority = 4; // low, medium, high, urgent
+    bool use_nvidia = 5; // Force NVIDIA inference
+    bool enable_streaming = 6;
+  }
+  Options options = 5;
+}
+
+message InferenceResponse {
+  bool success = 1;
+  string generated_text = 2;
+  int32 tokens_generated = 3;
+  double processing_time_ms = 4;
+  string inference_engine = 5; // webassembly, nvidia, hybrid
+  string error = 6;
+  
+  message Analysis {
+    repeated string key_concepts = 1;
+    repeated string legal_citations = 2;
+    double confidence_score = 3;
+    string risk_assessment = 4;
+  }
+  Analysis legal_analysis = 7;
+}
+
+// Graph traversal and similarity search
+message SimilaritySearchRequest {
+  EmbeddingData query_embedding = 1;
+  double threshold = 2; // Similarity threshold (0.0 - 1.0)
+  int32 max_results = 3;
+  bool enable_graph_traversal = 4;
+  bool spatial_optimization = 5;
+  string domain = 6; // legal domain filter
+  
+  message GraphOptions {
+    int32 max_depth = 1; // BFS traversal depth
+    bool use_webgpu = 2; // Enable WebGPU acceleration
+    bool memory_coalescing = 3; // GPU memory optimization
+    int32 batch_size = 4; // WebGPU batch processing size
+  }
+  GraphOptions graph_options = 7;
+}
+
+message SimilaritySearchResponse {
+  bool success = 1;
+  repeated SearchResult results = 2;
+  double search_time_ms = 3;
+  int32 total_searched = 4;
+  string search_method = 5; // standard, webgpu_traversal, hybrid
+  string error = 6;
+}
+
+message SearchResult {
+  double similarity = 1;
+  string node_id = 2;
+  GraphNode node_data = 3;
+  int32 path_length = 4; // Graph traversal path length
+  double confidence = 5;
+  string result_source = 6; // cache, database, compute
+}
+
+// Cache operations for Redis integration
+message CacheRequest {
+  enum Operation {
+    STORE = 0;
+    RETRIEVE = 1;
+    DELETE = 2;
+    CLEAR = 3;
+    STATS = 4;
+  }
+  
+  Operation operation = 1;
+  string cache_key = 2;
+  bytes data = 3; // Serialized data for STORE
+  string domain = 4; // Cache domain/namespace
+  int64 ttl_seconds = 5; // Time to live
+  
+  message CompressionOptions {
+    bool enable_compression = 1;
+    string compression_type = 2; // lz4, custom_bit_encoding
+    double target_ratio = 3;
+  }
+  CompressionOptions compression = 6;
+}
+
+message CacheResponse {
+  bool success = 1;
+  bytes data = 2; // Retrieved data
+  bool cache_hit = 3;
+  double operation_time_ms = 4;
+  string error = 5;
+  
+  message CacheStats {
+    int64 total_entries = 1;
+    int64 memory_used = 2;
+    double hit_rate = 3;
+    double compression_ratio = 4;
+    int64 evictions = 5;
+  }
+  CacheStats stats = 6;
+}
+
+// ============================================================================
+// BATCH PROCESSING
+// ============================================================================
+
+// Batch processing for multiple operations
+message BatchRequest {
+  repeated EmbeddingRequest embedding_requests = 1;
+  repeated InferenceRequest inference_requests = 2;
+  repeated SimilaritySearchRequest search_requests = 3;
+  
+  message ProcessingOptions {
+    int32 max_parallel = 1; // Maximum parallel operations
+    bool preserve_order = 2; // Maintain request order in results
+    double timeout_seconds = 3;
+    string priority = 4; // batch, realtime, background
+  }
+  ProcessingOptions options = 4;
+}
+
+message BatchResponse {
+  bool success = 1;
+  repeated EmbeddingResponse embedding_responses = 2;
+  repeated InferenceResponse inference_responses = 3;
+  repeated SimilaritySearchResponse search_responses = 4;
+  double total_processing_time_ms = 5;
+  int32 successful_operations = 6;
+  int32 failed_operations = 7;
+  repeated string errors = 8;
+}
+
+// ============================================================================
+// STREAMING OPERATIONS
+// ============================================================================
+
+// Streaming request for real-time processing
+message StreamingRequest {
+  oneof request_type {
+    EmbeddingRequest embedding_request = 1;
+    InferenceRequest inference_request = 2;
+    SimilaritySearchRequest search_request = 3;
+  }
+  
+  string session_id = 4;
+  int32 sequence_number = 5;
+  bool is_final = 6; // Last message in stream
+}
+
+message StreamingResponse {
+  oneof response_type {
+    EmbeddingResponse embedding_response = 1;
+    InferenceResponse inference_response = 2;
+    SimilaritySearchResponse search_response = 3;
+  }
+  
+  string session_id = 4;
+  int32 sequence_number = 5;
+  bool is_partial = 6; // Partial result (more coming)
+  double progress = 7; // Progress percentage (0.0 - 1.0)
+}
+
+// ============================================================================
+// SYSTEM MONITORING & HEALTH
+// ============================================================================
+
+message HealthCheckRequest {
+  bool include_details = 1;
+  repeated string service_names = 2; // Specific services to check
+}
+
+message HealthCheckResponse {
+  enum Status {
+    HEALTHY = 0;
+    DEGRADED = 1;
+    UNHEALTHY = 2;
+    UNKNOWN = 3;
+  }
+  
+  Status overall_status = 1;
+  map<string, Status> service_status = 2;
+  
+  message ServiceDetails {
+    string version = 1;
+    double uptime_seconds = 2;
+    int64 memory_used = 3;
+    double cpu_usage = 4;
+    int64 requests_handled = 5;
+    double average_latency_ms = 6;
+  }
+  map<string, ServiceDetails> service_details = 3;
+}
+
+message MetricsRequest {
+  int64 start_timestamp = 1;
+  int64 end_timestamp = 2;
+  repeated string metric_names = 3;
+  string aggregation = 4; // avg, sum, max, min
+}
+
+message MetricsResponse {
+  bool success = 1;
+  
+  message MetricData {
+    string name = 1;
+    repeated double values = 2;
+    repeated int64 timestamps = 3;
+    string unit = 4;
+  }
+  repeated MetricData metrics = 2;
+}
+
+// ============================================================================
+// SERVICE DEFINITIONS
+// ============================================================================
+
+// Legal AI Service - Main gRPC service
+service LegalAIService {
+  // Embedding operations
+  rpc ProcessEmbedding(EmbeddingRequest) returns (EmbeddingResponse);
+  rpc BatchProcessEmbeddings(BatchRequest) returns (BatchResponse);
+  rpc StreamEmbeddings(stream StreamingRequest) returns (stream StreamingResponse);
+  
+  // Inference operations
+  rpc RunInference(InferenceRequest) returns (InferenceResponse);
+  rpc StreamInference(stream StreamingRequest) returns (stream StreamingResponse);
+  
+  // Search and traversal
+  rpc SimilaritySearch(SimilaritySearchRequest) returns (SimilaritySearchResponse);
+  rpc GraphTraversal(SimilaritySearchRequest) returns (SimilaritySearchResponse);
+  
+  // Cache operations
+  rpc CacheOperation(CacheRequest) returns (CacheResponse);
+  
+  // Batch processing
+  rpc BatchProcess(BatchRequest) returns (BatchResponse);
+  
+  // Health and monitoring
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+  rpc GetMetrics(MetricsRequest) returns (MetricsResponse);
+}
+
+// Cache Service - Redis integration
+service CacheService {
+  rpc Store(CacheRequest) returns (CacheResponse);
+  rpc Retrieve(CacheRequest) returns (CacheResponse);
+  rpc Delete(CacheRequest) returns (CacheResponse);
+  rpc Clear(CacheRequest) returns (CacheResponse);
+  rpc GetStats(CacheRequest) returns (CacheResponse);
+  
+  // Streaming cache operations
+  rpc StreamingStore(stream CacheRequest) returns (stream CacheResponse);
+  rpc StreamingRetrieve(stream CacheRequest) returns (stream CacheResponse);
+}
+
+// Graph Service - WebGPU graph traversal
+service GraphService {
+  rpc LoadGraphData(GraphNode) returns (HealthCheckResponse);
+  rpc TraverseGraph(SimilaritySearchRequest) returns (SimilaritySearchResponse);
+  rpc UpdateGraphLayout(GraphNode) returns (HealthCheckResponse);
+  rpc GetGraphStats(HealthCheckRequest) returns (MetricsResponse);
+}
+
+// ============================================================================
+// EXTENSIONS FOR FUTURE ENHANCEMENTS
+// ============================================================================
+
+// Extension point for custom legal AI operations
+message CustomOperation {
+  string operation_type = 1;
+  map<string, string> parameters = 2;
+  bytes custom_data = 3;
+  LegalMetadata metadata = 4;
+}
+
+message CustomOperationResponse {
+  bool success = 1;
+  bytes result_data = 2;
+  string result_type = 3;
+  string error = 4;
+}
+
+// Legal domain-specific extensions
+message LegalDomainExtension {
+  enum LegalDomain {
+    CONTRACT_LAW = 0;
+    CRIMINAL_LAW = 1;
+    CORPORATE_LAW = 2;
+    INTELLECTUAL_PROPERTY = 3;
+    LITIGATION = 4;
+    REGULATORY = 5;
+    FAMILY_LAW = 6;
+  }
+  
+  LegalDomain domain = 1;
+  repeated string specialized_models = 2;
+  map<string, double> domain_weights = 3;
+}

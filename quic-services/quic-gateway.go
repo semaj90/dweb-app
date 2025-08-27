@@ -1,162 +1,153 @@
-// QUIC Legal Gateway - Port 8443/8444
-// High-performance HTTP/3 gateway for legal document processing
-
 package main
 
 import (
+	"crypto/rand"
+	"crypto/rsa"
 	"crypto/tls"
+	"crypto/x509"
+	"crypto/x509/pkix"
+	"encoding/pem"
 	"fmt"
 	"log"
+	"math/big"
+	"net"
 	"net/http"
+	"net/http/httputil"
+	"net/url"
 	"os"
+	"strings"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/quic-go/quic-go/http3"
 )
 
-func getenvDefault(key, def string) string {
-	if v := os.Getenv(key); v != "" { return v }
-	return def
+func env(key, defaultValue string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return defaultValue
 }
 
-func incrementPort(port string, delta int) string {
-	// naive parse
-	var p int
-	_, err := fmt.Sscan(port, &p)
-	if err != nil { return port }
-	return fmt.Sprintf("%d", p+delta)
+// loadDevCertificate generates a self-signed certificate for development
+func loadDevCertificate() *tls.Config {
+	// Generate RSA key
+	key, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		log.Fatalf("Failed to generate RSA key: %v", err)
+	}
+
+	// Create certificate template
+	template := &x509.Certificate{
+		SerialNumber: big.NewInt(time.Now().UnixNano()),
+		Subject: pkix.Name{
+			Organization:  []string{"Legal AI Platform"},
+			Country:       []string{"US"},
+			Province:      []string{""},
+			Locality:      []string{"Local"},
+			StreetAddress: []string{""},
+			PostalCode:    []string{""},
+			CommonName:    "localhost",
+		},
+		NotBefore:             time.Now().Add(-time.Hour),
+		NotAfter:              time.Now().Add(365 * 24 * time.Hour),
+		KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
+		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
+		IPAddresses:           []net.IP{net.IPv4(127, 0, 0, 1), net.IPv6loopback},
+		DNSNames:              []string{"localhost"},
+		BasicConstraintsValid: true,
+	}
+
+	// Create the certificate
+	certDER, err := x509.CreateCertificate(rand.Reader, template, template, &key.PublicKey, key)
+	if err != nil {
+		log.Fatalf("Failed to create certificate: %v", err)
+	}
+
+	// PEM encode
+	certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: certDER})
+	keyPEM := pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(key)})
+
+	// Create TLS certificate
+	cert, err := tls.X509KeyPair(certPEM, keyPEM)
+	if err != nil {
+		log.Fatalf("Failed to create TLS certificate: %v", err)
+	}
+
+	return &tls.Config{
+		Certificates: []tls.Certificate{cert},
+		NextProtos:   []string{"h3", "http/1.1"},
+		ServerName:   "localhost",
+	}
 }
 
-// mainGateway separated from other mains to avoid collision during multi-file builds.
 func main() {
-	// Resolve ports with environment overrides to avoid conflicts
-	quicPort := getenvDefault("QUIC_PORT", "8443")
-	http3Port := getenvDefault("QUIC_HTTP3_PORT", "8445")
+	// Configuration from environment
+	listenAddr := ":" + env("QUIC_GATEWAY_PORT", "8443")
+	backendURL := env("BACKEND_URL", "http://localhost:5173")
+	enableHTTPFallback := strings.ToLower(env("ENABLE_HTTP_FALLBACK", "true")) == "true"
+	httpFallbackAddr := ":" + env("HTTP_FALLBACK_PORT", "8444")
 
-	if quicPort == http3Port {
-		log.Printf("⚠️  QUIC_PORT (%s) == QUIC_HTTP3_PORT (%s); shifting HTTP/3 port +2", quicPort, http3Port)
-		// naive shift
-		http3Port = incrementPort(http3Port, 2)
+	// Parse backend URL
+	target, err := url.Parse(backendURL)
+	if err != nil {
+		log.Fatalf("Invalid backend URL: %v", err)
 	}
 
-	// Initialize Gin router
-	gin.SetMode(gin.ReleaseMode)
-	router := gin.New()
-	router.Use(gin.Recovery())
-
-	// Legal Gateway routes
-	router.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"service": "QUIC Legal Gateway",
-			"quic_port": quicPort,
-			"http3_port": http3Port,
-			"status": "healthy",
-			"protocol": "HTTP/3",
-			"performance": "80% faster streaming",
-			"timestamp": time.Now(),
-		})
-	})
-
-	router.POST("/legal/analyze", func(c *gin.Context) {
-		c.Header("Alt-Svc", fmt.Sprintf("h3=\":%s\"; ma=86400", http3Port))
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Legal document analysis via QUIC",
-			"latency_improvement": "80%",
-			"zero_rtt": true,
-		})
-	})
-
-	router.GET("/legal/stream/:id", func(c *gin.Context) {
-		c.Header("Content-Type", "text/plain; charset=utf-8")
-		c.Header("Cache-Control", "no-cache")
-
-		// Simulate streaming legal analysis
-		for i := 0; i < 5; i++ {
-			c.Writer.WriteString("data: Legal analysis chunk " + string(rune(i+'1')) + "\n\n")
-			c.Writer.Flush()
-			time.Sleep(500 * time.Millisecond)
-		}
-	})
-
-	// Create TLS config for QUIC (centralized dev certificate)
-	devCert := loadDevCertificate()
-	tlsConfig := &tls.Config{
-		Certificates: []tls.Certificate{devCert},
-		NextProtos:   []string{"h3"},
+	// Create reverse proxy
+	proxy := httputil.NewSingleHostReverseProxy(target)
+	proxy.Director = func(req *http.Request) {
+		req.URL.Scheme = target.Scheme
+		req.URL.Host = target.Host
+		req.Host = target.Host
+		req.Header.Set("X-Forwarded-Proto", "h3")
+		req.Header.Set("X-Forwarded-For", req.RemoteAddr)
 	}
 
-	// Start HTTP/3 server on configurable port
+	// Create HTTP handler
+	mux := http.NewServeMux()
+
+	// Health check endpoint
+	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, `{"status":"ok","service":"quic-gateway","protocol":"http3"}`)
+	})
+
+	// Proxy all other requests
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		// Add QUIC-specific headers
+		w.Header().Set("Alt-Svc", "h3=\":"+env("QUIC_GATEWAY_PORT", "8443")+"\"; ma=86400")
+		proxy.ServeHTTP(w, r)
+	})
+
+	// Generate TLS config
+	tlsConfig := loadDevCertificate()
+
+	// Start HTTP/3 server
 	server := &http3.Server{
-		Handler:   router,
+		Handler:   mux,
+		Addr:      listenAddr,
 		TLSConfig: tlsConfig,
-		Addr:      ":" + http3Port,
 	}
 
-	log.Printf("🚀 QUIC Legal Gateway starting (QUIC handshake port %s, HTTP/3 port %s)", quicPort, http3Port)
-	log.Printf("📄 Legal document processing with 80%% faster streaming")
-	log.Printf("🔗 Health check: https://localhost:%s/health", http3Port)
+	// Optional HTTP/2 fallback
+	if enableHTTPFallback {
+		go func() {
+			log.Printf("🔁 HTTP/2 fallback listening on http://localhost%s", httpFallbackAddr)
+			fallbackServer := &http.Server{
+				Addr:      httpFallbackAddr,
+				Handler:   mux,
+				TLSConfig: tlsConfig,
+			}
+			if err := fallbackServer.ListenAndServeTLS("", ""); err != nil && err != http.ErrServerClosed {
+				log.Printf("HTTP/2 fallback error: %v", err)
+			}
+		}()
+	}
 
+	// Start QUIC server
+	log.Printf("🌐 QUIC Gateway listening on https://localhost%s (HTTP/3) -> %s", listenAddr, backendURL)
 	if err := server.ListenAndServe(); err != nil {
-		log.Fatalf("QUIC Legal Gateway failed: %v", err)
+		log.Fatalf("QUIC gateway error: %v", err)
 	}
 }
-
-/*
-Deprecated duplicate certificate generator & embedded certs (replaced by loadDevCertificate in devcert.go).
-Kept commented for reference; remove once centralized cert approach validated across environments.
-func generateSelfSignedCertGateway() []tls.Certificate {
-	cert, _ := tls.X509KeyPair([]byte(devCertGateway), []byte(devKeyGateway))
-	return []tls.Certificate{cert}
-}
-
-const devCertGateway = `-----BEGIN CERTIFICATE-----
-MIIDXTCCAkWgAwIBAgIJAJC1HiIAZAiIMA0GCSqGSIb3DQEBBQUAMEUxCzAJBgNV
-BAYTAkFVMRMwEQYDVQQIDApTb21lLVN0YXRlMSEwHwYDVQQKDBhJbnRlcm5ldCBX
-aWRnaXRzIFB0eSBMdGQwHhcNMjMwMTAxMDAwMDAwWhcNMjQwMTAxMDAwMDAwWjBF
-MQswCQYDVQQGEwJBVTETMBEGA1UECAwKU29tZS1TdGF0ZTEhMB8GA1UECgwYSW50
-ZXJuZXQgV2lkZ2l0cyBQdHkgTHRkMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIB
-CgKCAQEA4f6wg4PiT9hFlfXAssVnH7k9k1YrHGGGfIgX+HSQQYgHhAyFzGHPFYyB
-PHKKgK6z8M/wHjCYQgz5tJPLJ9FWTiJAYR3fJQBcKPgKIUNPKh6T6F6MrK6YPUDn
-TxMm1HGKG6tGJ7J3ZmJhGm4l7vA9T7h2qFyH2G0u8YEHKcfyR6hHKcQ/RrJnFX8L
-XH5oZZjHBSI8wEwHsVA4NWpf6R4DLGQfwYzMfKi+cBp5HjA3sDQo2N4JfK8u7EzJ
-sB5q7t2PoYHKgj2h8jOlYzXfJ2J5t1q8JhcCRg5qYi0JsVGhKwIDfG4zJqRfzYAQ
-XqrKK8pMdKbKJ5TQI8iJKmhc4WOKOwIDAQABo1AwTjAdBgNVHQ4EFgQUhKdzBvhI
-daT1R6yIBfXLhvKS3lgwHwYDVR0jBBgwFoAUhKdzBvhIdaT1R6yIBfXLhvKS3lgw
-DAYDVR0TBAUwAwEB/zANBgkqhkiG9w0BAQUFAAOCAQEAg4Q8nDuIY3C7kd7PJoKn
-JUSL9z8UGJ5zQgEKUyOhMvQhQ6bLMfM5JVHyGJ3tE3ZvEn2OBz5ZgG4Bk8t9Fhov
-F7lXUfL/W8hcC6IeWrBhG7V5tOA1HzLuT8QZHhIXVjF2DdHzI7WrGpQ3M8T9K4Et
------END CERTIFICATE-----`
-
-const devKeyGateway = `-----BEGIN PRIVATE KEY-----
-MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDh/rCDg+JP2EWV
-9cCyxWcfuT2TViscYYZ8iBf4dJBBiAeEDIXMYc8VjIE8coqArrPwz/AeMJhCDPm0
-k8sn0VZOIkBhHd8lAFwo+AohQ08qHpPoXoysrpg9QOdPEybUcYobq0YnsndmYmEa
-biXu8D1PuHaoXIfYbS7xgQcpx/JHqEcpxD9GsmcVfwtcfmhlmMcFIjzATAexUDg1
-al/pHgMsZB/BjMx8qL5wGnkeMDewNCjY3gl8ry7sTMmwHmru3Y+hgcqCPaHyM6Vj
-Nd8nYnm3WrwmFwJGDmpiLQmxUaErAgMBAAECggEBAJGb8Z8v1tVjH8M+3fK8uLLn
-kHKjGr6GHaFzVh/F6mHKr7I/kGk7dLWJr3B8rKgQjwgGo8Q3x5EjH1Q8FGFnQyWy
-tBp8K6RgFoYuAOYdF8XQ1q2J5rH8kZFqTqxUGFiD9r2KdFkLhF2HV5HQoRj2Nw3L
-AgMBAAECggEBAJGb8Z8v1tVjH8M+3fK8uLLnkHKjGr6GHaFzVh/F6mHKr7I/kGk7
-dLWJr3B8rKgQjwgGo8Q3x5EjH1Q8FGFnQyWytBp8K6RgFoYuAOYdF8XQ1q2J5rH8
-kZFqTqxUGFiD9r2KdFkLhF2HV5HQoRj2Nw3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8
-r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM
-8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3L
-M8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3
-LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N
-3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2
-N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh
-2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KG
-h2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5K
-Gh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5
-KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J
-5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1
-J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r
-1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8
-r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM
-8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3L
-M8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3
-LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N
-3LM8r1J5KGh2N3LM8r1J5KGh2N3LM8r1J5KGh2N3L
------END PRIVATE KEY-----`
-*/

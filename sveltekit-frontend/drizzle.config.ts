@@ -21,12 +21,9 @@ if (!databaseUrl) {
 export default defineConfig({
   // ===== SCHEMA DISCOVERY - BEST PRACTICES =====
 
-  // Multi-schema support with proper precedence order
+  // Use only the enhanced schema for clean generation
   schema: [
-    './src/lib/server/db/unified-schema.ts',       // Primary schema
-    './src/lib/server/db/additional-tables.ts',   // Extended tables
-    './src/lib/server/db/schema-types.ts',        // Type definitions
-    './src/lib/db/schema.ts'                      // Legacy fallback
+    './src/lib/server/db/enhanced-unified-schema.ts', // Enhanced schema with Qdrant
   ],
 
   // Output directory for migrations and introspection

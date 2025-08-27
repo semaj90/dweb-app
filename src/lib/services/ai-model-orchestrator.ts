@@ -149,7 +149,7 @@ export class AIModelOrchestrator {
       }
 
       // Step 4: Update model performance metrics
-      this.updateModelMetrics(selectedModel, true, Date.now() - result.responseTime);
+      this.updateModelMetrics(selectedModel, true, result.responseTime);
 
       return result;
 
@@ -357,6 +357,8 @@ Please analyze this document considering the OCR extraction results.
     const startTime = Date.now();
 
     try {
+      const { controller, clear } = this.createAbortController(this.config.timeout);
+
       const response = await fetch('http://localhost:11434/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -374,8 +376,10 @@ Please analyze this document considering the OCR extraction results.
           ],
           stream: false
         }),
-        signal: AbortSignal.timeout(this.config.timeout)
+        signal: controller.signal
       });
+
+      clear();
 
       if (!response.ok) {
         throw new Error(`Model API error: ${response.statusText}`);
@@ -499,15 +503,21 @@ Provide thorough, accurate legal guidance across all practice areas.`;
 
     return `${basePrompt} legal document analysis and general legal assistance.`;
   }
+  private createAbortController(timeout: number): { controller: AbortController; clear: () => void } {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    return { controller, clear: () => clearTimeout(id) };
+  }
 
-  /**
-   * Health monitoring and model management
-   */
   private async checkOllamaModel(modelName: string): Promise<boolean> {
     try {
+      const { controller, clear } = this.createAbortController(5000);
+
       const response = await fetch('http://localhost:11434/api/tags', {
-        signal: AbortSignal.timeout(5000)
+        signal: controller.signal
       });
+
+      clear();
 
       if (!response.ok) return false;
 

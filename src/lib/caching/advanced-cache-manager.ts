@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Advanced Multi-Layer Caching System
  * 

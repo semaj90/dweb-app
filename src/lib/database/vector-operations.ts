@@ -45,7 +45,7 @@ export class VectorSearchService {
     const filterConditions: any[] = [];
 
     if (filter.documentType && filter.documentType.length > 0) {
-      filterConditions.push(inArray(legalDocuments.documentType, filter.documentType));
+      filterConditions.push(inArray(legalDocuments.documentType, filter.documentType as any));
     }
 
     if (filter.jurisdiction && filter.jurisdiction.length > 0) {
@@ -53,7 +53,7 @@ export class VectorSearchService {
     }
 
     if (filter.practiceArea && filter.practiceArea.length > 0) {
-      filterConditions.push(inArray(legalDocuments.practiceArea, filter.practiceArea));
+      filterConditions.push(inArray(legalDocuments.practiceArea, filter.practiceArea as any));
     }
 
     if (filter.isConfidential !== undefined) {
@@ -105,7 +105,7 @@ export class VectorSearchService {
     const filterConditions: any[] = [];
 
     if (filter.documentType && filter.documentType.length > 0) {
-      filterConditions.push(inArray(legalDocuments.documentType, filter.documentType));
+      filterConditions.push(inArray(legalDocuments.documentType, filter.documentType as any));
     }
 
     if (filter.jurisdiction && filter.jurisdiction.length > 0) {
@@ -151,7 +151,7 @@ export class VectorSearchService {
     const filterConditions: any[] = [];
 
     if (filter.documentType && filter.documentType.length > 0) {
-      filterConditions.push(inArray(legalDocuments.documentType, filter.documentType));
+      filterConditions.push(inArray(legalDocuments.documentType, filter.documentType as any));
     }
 
     if (filter.jurisdiction && filter.jurisdiction.length > 0) {
@@ -159,7 +159,7 @@ export class VectorSearchService {
     }
 
     if (filter.practiceArea && filter.practiceArea.length > 0) {
-      filterConditions.push(inArray(legalDocuments.practiceArea, filter.practiceArea));
+      filterConditions.push(inArray(legalDocuments.practiceArea, filter.practiceArea as any));
     }
 
     if (filter.isConfidential !== undefined) {

@@ -1,0 +1,81 @@
+{
+  "name": "wsl-legal-ai-vector-server",
+  "version": "2.0.0",
+  "description": "Advanced WSL Node.js server with multi-dimensional embeddings cache, gRPC, QUIC, and custom bit-encoding",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "build": "npm run build:proto && npm run compile:binary-encoders",
+    "build:proto": "node scripts/compile-protobuf.js",
+    "compile:binary-encoders": "node scripts/compile-binary-encoders.js",
+    "test": "vitest",
+    "test:performance": "node tests/performance-benchmarks.js",
+    "benchmark:encoding": "node benchmarks/encoding-performance.js",
+    "docs:generate": "node scripts/generate-docs.js",
+    "wsl:setup": "bash scripts/wsl-setup.sh",
+    "clean": "rm -rf dist cache proto-compiled",
+    "health": "curl -s http://localhost:8230/health | jq ."
+  },
+  "dependencies": {
+    "@grpc/grpc-js": "^1.10.1",
+    "@grpc/proto-loader": "^0.7.10",
+    "fastify": "^4.24.3",
+    "fastify-cors": "^6.1.0",
+    "fastify-websocket": "^10.0.1",
+    "@fastify/multipart": "^8.0.0",
+    "quic": "^1.0.0",
+    "protobufjs": "^7.2.5",
+    "msgpack-lite": "^0.1.26",
+    "lz4": "^0.6.5",
+    "xxhash-wasm": "^1.0.2",
+    "node-datachannel": "^0.7.0",
+    "ws": "^8.14.2",
+    "ioredis": "^5.3.2",
+    "postgres": "^3.4.3",
+    "pg-vector": "^0.1.8",
+    "sharp": "^0.33.0",
+    "worker_threads": "*",
+    "cluster": "*",
+    "os": "*",
+    "crypto": "*",
+    "path": "*",
+    "fs": "*",
+    "zlib": "*"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "vitest": "^1.0.4",
+    "autocannon": "^7.12.0",
+    "clinic": "^12.0.0",
+    "0x": "^5.5.0",
+    "@types/node": "^20.10.0",
+    "jsdoc": "^4.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "wsl",
+    "nodejs",
+    "grpc",
+    "quic",
+    "protobuf",
+    "embeddings",
+    "vector-cache",
+    "legal-ai",
+    "binary-encoding",
+    "multi-dimensional"
+  ],
+  "author": "Legal AI Platform",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/legal-ai/wsl-vector-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/legal-ai/wsl-vector-server/issues"
+  },
+  "homepage": "https://github.com/legal-ai/wsl-vector-server#readme"
+}

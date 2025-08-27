@@ -4,7 +4,7 @@
 syntax = "proto3";
 
 package ai.dimensional;
-option go_package = "./proto";
+option go_package = "github.com/semaj90/dweb-app/go-microservice/proto/aidimensional;aidimensional";
 
 import "google/protobuf/timestamp.proto";
 
@@ -79,10 +79,10 @@ message CacheInfo {
 
 // Cache priority levels
 enum CachePriority {
-  LOW = 0;
-  MEDIUM = 1;
-  HIGH = 2;
-  CRITICAL = 3;
+  CACHE_LOW = 0;
+  CACHE_MEDIUM = 1;
+  CACHE_HIGH = 2;
+  CACHE_CRITICAL = 3;
 }
 
 // T5 transformer configuration
@@ -117,7 +117,7 @@ message ComputationRequest {
   ComputationType type = 4;
   google.protobuf.Timestamp requested_at = 5;
   RequestPriority priority = 6;
-  
+
   // Request payload (one of the following)
   oneof payload {
     DimensionalArrayRequest dimensional_request = 10;
@@ -129,11 +129,11 @@ message ComputationRequest {
 
 // Request priority levels
 enum RequestPriority {
-  BACKGROUND = 0;
-  NORMAL = 1;
-  HIGH = 2;
-  URGENT = 3;
-  REAL_TIME = 4;
+  REQ_BACKGROUND = 0;
+  REQ_NORMAL = 1;
+  REQ_HIGH = 2;
+  REQ_URGENT = 3;
+  REQ_REAL_TIME = 4;
 }
 
 // Dimensional array processing request
@@ -225,7 +225,7 @@ message ComputationResponse {
   ResponseStatus status = 2;
   google.protobuf.Timestamp processed_at = 3;
   float processing_time_ms = 4;
-  
+
   // Response payload (one of the following)
   oneof payload {
     DimensionalArrayResponse dimensional_response = 10;
@@ -344,7 +344,7 @@ message QueueMessage {
   google.protobuf.Timestamp timestamp = 5;
   int32 retry_count = 6;
   int32 max_retries = 7;
-  
+
   // Message payload
   oneof payload {
     ComputationRequest computation_request = 10;

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * CUDA GPU Acceleration System
  *

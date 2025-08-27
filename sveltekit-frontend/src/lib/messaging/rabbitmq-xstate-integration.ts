@@ -17,7 +17,7 @@ interface RabbitMQConfig {
   heartbeat: number;
 }
 
-// Legal AI message types
+// Legal AI message types (enhanced for WebAssembly inference)
 export type LegalAIMessageType = 
   | 'document_ingestion'
   | 'vector_search'
@@ -27,6 +27,13 @@ export type LegalAIMessageType =
   | 'cache_invalidation'
   | 'gpu_task'
   | 'wasm_compilation'
+  | 'wasm_inference'           // NEW: WebAssembly inference requests
+  | 'wasm_inference_result'    // NEW: WebAssembly inference results
+  | 'wasm_model_load'          // NEW: WebAssembly model loading
+  | 'wasm_model_unload'        // NEW: WebAssembly model cleanup
+  | 'wasm_batch_inference'     // NEW: Batch WebAssembly inference
+  | 'wasm_stream_inference'    // NEW: Streaming WebAssembly inference
+  | 'wasm_health_check'        // NEW: WebAssembly service health
   | 'error_recovery';
 
 export interface LegalAIMessage {
@@ -324,7 +331,7 @@ export class RabbitMQXStateIntegration {
     heartbeat: 60
   };
   
-  // Legal AI queues
+  // Legal AI queues (enhanced for WebAssembly inference)
   private static queues = {
     HIGH_PRIORITY: 'legal_ai_high_priority',
     NORMAL_PRIORITY: 'legal_ai_normal',
@@ -332,7 +339,11 @@ export class RabbitMQXStateIntegration {
     SELF_PROMPTING: 'legal_ai_self_prompting',
     USER_HISTORY: 'legal_ai_user_history',
     GPU_TASKS: 'legal_ai_gpu_tasks',
-    CACHE_UPDATES: 'legal_ai_cache_updates'
+    CACHE_UPDATES: 'legal_ai_cache_updates',
+    WASM_INFERENCE: 'legal_ai_wasm_inference',           // NEW: WebAssembly inference queue
+    WASM_BATCH: 'legal_ai_wasm_batch',                   // NEW: WebAssembly batch processing
+    WASM_STREAMING: 'legal_ai_wasm_streaming',           // NEW: WebAssembly streaming queue
+    WASM_MODEL_MANAGEMENT: 'legal_ai_wasm_models'        // NEW: WebAssembly model operations
   };
 
   /**
@@ -434,7 +445,7 @@ export class RabbitMQXStateIntegration {
       ...message
     };
 
-    const queueName = this.selectQueue(message.priority || 5);
+    const queueName = this.selectQueue(message.priority || 5, message.type);
     
     if (browser && this.connection) {
       // Browser STOMP publish
@@ -488,6 +499,27 @@ export class RabbitMQXStateIntegration {
           
         case 'wasm_compilation':
           return await this.processWASMCompilation(message.payload);
+          
+        case 'wasm_inference':
+          return await this.processWASMInference(message.payload);
+          
+        case 'wasm_inference_result':
+          return await this.processWASMInferenceResult(message.payload);
+          
+        case 'wasm_model_load':
+          return await this.processWASMModelLoad(message.payload);
+          
+        case 'wasm_model_unload':
+          return await this.processWASMModelUnload(message.payload);
+          
+        case 'wasm_batch_inference':
+          return await this.processWASMBatchInference(message.payload);
+          
+        case 'wasm_stream_inference':
+          return await this.processWASMStreamInference(message.payload);
+          
+        case 'wasm_health_check':
+          return await this.processWASMHealthCheck(message.payload);
           
         case 'cache_invalidation':
           return await this.processCacheInvalidation(message.payload);
@@ -557,6 +589,49 @@ export class RabbitMQXStateIntegration {
       });
     }
     
+    // Pattern: WebAssembly optimization opportunities
+    if (patterns.wasmInferenceFrequency > 5 && patterns.averageWasmLatency > 1000) {
+      recommendations.push({
+        type: 'wasm_model_load' as LegalAIMessageType,
+        payload: {
+          action: 'preload_model',
+          modelPath: '/models/gemma3-legal-q4.wasm',
+          optimization: 'latency_focused',
+          reason: 'frequent_usage_detected'
+        },
+        priority: 7,
+        correlationId: context.activeSession
+      });
+    }
+    
+    // Pattern: WebAssembly batch opportunities
+    if (patterns.concurrentWasmRequests > 3) {
+      recommendations.push({
+        type: 'wasm_batch_inference' as LegalAIMessageType,
+        payload: {
+          action: 'suggest_batching',
+          batchSize: Math.min(patterns.concurrentWasmRequests, 8),
+          reason: 'concurrent_requests_detected'
+        },
+        priority: 6,
+        correlationId: context.activeSession
+      });
+    }
+    
+    // Pattern: WebAssembly health monitoring
+    if (patterns.wasmErrors > 2) {
+      recommendations.push({
+        type: 'wasm_health_check' as LegalAIMessageType,
+        payload: {
+          action: 'health_check',
+          focus: 'error_investigation',
+          reason: 'error_threshold_exceeded'
+        },
+        priority: 8,
+        correlationId: context.activeSession
+      });
+    }
+    
     return {
       recommendedActions: recommendations.map(rec => ({
         ...rec,
@@ -568,7 +643,7 @@ export class RabbitMQXStateIntegration {
   }
 
   /**
-   * Analyze user behavior patterns for self-prompting
+   * Analyze user behavior patterns for self-prompting (enhanced for WebAssembly)
    */
   private static analyzeUserPatterns(userHistory: any[]): any {
     const recentHistory = userHistory.slice(-50); // Last 50 actions
@@ -579,7 +654,14 @@ export class RabbitMQXStateIntegration {
       recentDocuments: this.extractRecentDocuments(recentHistory),
       sessionDuration: this.calculateSessionDuration(recentHistory),
       mostUsedFeatures: this.extractMostUsedFeatures(recentHistory),
-      timePatterns: this.analyzeTimePatterns(recentHistory)
+      timePatterns: this.analyzeTimePatterns(recentHistory),
+      // WebAssembly-specific patterns
+      wasmInferenceFrequency: recentHistory.filter(h => h.action === 'wasm_inference').length,
+      averageWasmLatency: this.calculateAverageWasmLatency(recentHistory),
+      concurrentWasmRequests: this.countConcurrentWasmRequests(recentHistory),
+      wasmErrors: recentHistory.filter(h => h.action === 'wasm_error').length,
+      wasmModelUsage: this.analyzeWasmModelUsage(recentHistory),
+      wasmBatchOpportunities: this.identifyWasmBatchOpportunities(recentHistory)
     };
   }
 
@@ -624,8 +706,340 @@ export class RabbitMQXStateIntegration {
     return { invalidated: true, cacheKeys: payload.keys?.length || 0 };
   }
 
+  /**
+   * Process WebAssembly inference request
+   */
+  private static async processWASMInference(payload: any): Promise<any> {
+    try {
+      console.log('🧠 Processing WASM inference request:', payload.id);
+      
+      // Import WebAssembly inference service dynamically
+      const { WASMInferenceRAGService } = await import('../services/webasm-inference-rag.js');
+      
+      // Validate payload
+      if (!payload.prompt) {
+        throw new Error('Missing prompt in WASM inference request');
+      }
+      
+      // Create inference request
+      const request = {
+        id: payload.id || this.generateId(),
+        prompt: payload.prompt,
+        maxTokens: payload.maxTokens || 2048,
+        temperature: payload.temperature || 0.7,
+        enableRAG: payload.enableRAG !== false,
+        priority: payload.priority || 'medium',
+        systemMessage: payload.systemMessage,
+        contextDocuments: payload.contextDocuments,
+        stopSequences: payload.stopSequences
+      };
+      
+      // Process inference with RAG context
+      const result = await WASMInferenceRAGService.processInferenceWithRAG(request, {
+        wasmModule: null,
+        wasmInstance: null,
+        isInitialized: false,
+        config: {
+          modelPath: payload.modelPath || '/models/gemma3-legal-q4.wasm',
+          threads: payload.threads || 8,
+          contextLength: payload.contextLength || 4096,
+          enableGPU: payload.enableGPU !== false,
+          batchSize: payload.batchSize || 4,
+          quantization: payload.quantization || 'q4_0'
+        },
+        activeRequests: new Map(),
+        results: new Map(),
+        performanceMetrics: {
+          totalInferences: 0,
+          averageLatency: 0,
+          cacheHitRate: 0,
+          memoryPeak: 0
+        },
+        error: null
+      });
+      
+      // Publish result back to RabbitMQ
+      await this.publishMessage({
+        type: 'wasm_inference_result',
+        payload: {
+          originalRequestId: payload.id,
+          result,
+          success: true,
+          processingTime: Date.now() - (payload.startTime || Date.now())
+        },
+        priority: payload.priority === 'critical' ? 9 : 7,
+        correlationId: payload.correlationId,
+        replyTo: payload.replyTo
+      });
+      
+      return {
+        status: 'completed',
+        inferenceId: result.id,
+        text: result.text,
+        tokens: result.tokens,
+        processingTime: result.processingTime,
+        ragContext: result.ragContext
+      };
+      
+    } catch (error) {
+      console.error('❌ WASM inference processing failed:', error);
+      
+      // Publish error result
+      await this.publishMessage({
+        type: 'wasm_inference_result',
+        payload: {
+          originalRequestId: payload.id,
+          error: error.message,
+          success: false
+        },
+        priority: 8,
+        correlationId: payload.correlationId
+      });
+      
+      throw error;
+    }
+  }
+
+  /**
+   * Process WebAssembly inference result
+   */
+  private static async processWASMInferenceResult(payload: any): Promise<any> {
+    console.log('📤 Processing WASM inference result:', payload.originalRequestId);
+    
+    // Store result for client retrieval or trigger callbacks
+    if (payload.success) {
+      console.log(`✅ WASM inference completed: ${payload.result?.text?.slice(0, 100)}...`);
+    } else {
+      console.error(`❌ WASM inference failed: ${payload.error}`);
+    }
+    
+    return {
+      processed: true,
+      success: payload.success,
+      originalRequestId: payload.originalRequestId
+    };
+  }
+
+  /**
+   * Process WebAssembly model loading
+   */
+  private static async processWASMModelLoad(payload: any): Promise<any> {
+    try {
+      console.log('📥 Loading WASM model:', payload.modelPath);
+      
+      const { WASMInferenceRAGService } = await import('../services/webasm-inference-rag.js');
+      
+      const config = {
+        modelPath: payload.modelPath,
+        threads: payload.threads || 8,
+        contextLength: payload.contextLength || 4096,
+        enableGPU: payload.enableGPU !== false,
+        batchSize: payload.batchSize || 4,
+        quantization: payload.quantization || 'q4_0'
+      };
+      
+      const result = await WASMInferenceRAGService.initialize(config);
+      
+      return {
+        status: 'loaded',
+        modelPath: payload.modelPath,
+        moduleSize: result.module ? 'loaded' : 'mock',
+        instanceCreated: !!result.instance,
+        config
+      };
+      
+    } catch (error) {
+      console.error('❌ WASM model loading failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Process WebAssembly model unloading
+   */
+  private static async processWASMModelUnload(payload: any): Promise<any> {
+    try {
+      console.log('📤 Unloading WASM model:', payload.modelPath);
+      
+      const { WASMInferenceRAGService } = await import('../services/webasm-inference-rag.js');
+      await WASMInferenceRAGService.cleanup();
+      
+      return {
+        status: 'unloaded',
+        modelPath: payload.modelPath,
+        cleanupCompleted: true
+      };
+      
+    } catch (error) {
+      console.error('❌ WASM model unloading failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Process WebAssembly batch inference
+   */
+  private static async processWASMBatchInference(payload: any): Promise<any> {
+    try {
+      console.log('🔄 Processing WASM batch inference:', payload.requests?.length || 0, 'requests');
+      
+      const { WASMInferenceRAGService } = await import('../services/webasm-inference-rag.js');
+      const results = [];
+      
+      // Process each request in the batch
+      for (const request of payload.requests || []) {
+        try {
+          const result = await WASMInferenceRAGService.processInferenceWithRAG(request, payload.context);
+          results.push({
+            requestId: request.id,
+            result,
+            success: true
+          });
+        } catch (error) {
+          results.push({
+            requestId: request.id,
+            error: error.message,
+            success: false
+          });
+        }
+      }
+      
+      return {
+        status: 'batch_completed',
+        batchId: payload.batchId,
+        totalRequests: payload.requests?.length || 0,
+        successfulResults: results.filter(r => r.success).length,
+        failedResults: results.filter(r => !r.success).length,
+        results
+      };
+      
+    } catch (error) {
+      console.error('❌ WASM batch inference failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Process WebAssembly streaming inference
+   */
+  private static async processWASMStreamInference(payload: any): Promise<any> {
+    try {
+      console.log('🌊 Processing WASM streaming inference:', payload.id);
+      
+      const { WASMInferenceRAGService } = await import('../services/webasm-inference-rag.js');
+      
+      // For streaming, we would set up a series of partial results
+      // This is a simplified implementation
+      const request = {
+        ...payload.request,
+        maxTokens: Math.min(payload.request.maxTokens || 2048, 512), // Smaller chunks for streaming
+      };
+      
+      const result = await WASMInferenceRAGService.processInferenceWithRAG(request, payload.context);
+      
+      // In a real streaming implementation, we would send multiple messages
+      // with partial results. For now, we simulate streaming behavior.
+      const chunks = this.chunkText(result.text, 50); // Split into ~50 char chunks
+      
+      for (let i = 0; i < chunks.length; i++) {
+        await this.publishMessage({
+          type: 'wasm_inference_result',
+          payload: {
+            originalRequestId: payload.id,
+            chunk: chunks[i],
+            chunkIndex: i,
+            totalChunks: chunks.length,
+            isComplete: i === chunks.length - 1,
+            success: true
+          },
+          priority: 7,
+          correlationId: payload.correlationId
+        });
+        
+        // Small delay to simulate streaming
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+      
+      return {
+        status: 'streaming_completed',
+        streamId: payload.id,
+        totalChunks: chunks.length
+      };
+      
+    } catch (error) {
+      console.error('❌ WASM streaming inference failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Process WebAssembly health check
+   */
+  private static async processWASMHealthCheck(payload: any): Promise<any> {
+    try {
+      console.log('🏥 Performing WASM health check');
+      
+      const { WASMInferenceRAGService } = await import('../services/webasm-inference-rag.js');
+      const healthStatus = WASMInferenceRAGService.getHealthStatus();
+      
+      return {
+        status: 'health_check_completed',
+        timestamp: Date.now(),
+        health: healthStatus,
+        uptime: Date.now() - (payload.startTime || Date.now()),
+        version: '1.0.0'
+      };
+      
+    } catch (error) {
+      console.error('❌ WASM health check failed:', error);
+      return {
+        status: 'health_check_failed',
+        timestamp: Date.now(),
+        error: error.message,
+        health: {
+          status: 'unhealthy',
+          wasm: false,
+          rag: false,
+          messaging: false
+        }
+      };
+    }
+  }
+
+  /**
+   * Helper method to chunk text for streaming
+   */
+  private static chunkText(text: string, chunkSize: number = 50): string[] {
+    const chunks: string[] = [];
+    for (let i = 0; i < text.length; i += chunkSize) {
+      chunks.push(text.slice(i, i + chunkSize));
+    }
+    return chunks;
+  }
+
   // Utility methods
-  private static selectQueue(priority: number): string {
+  private static selectQueue(priority: number, messageType?: LegalAIMessageType): string {
+    // WebAssembly-specific queue routing
+    if (messageType?.startsWith('wasm_')) {
+      switch (messageType) {
+        case 'wasm_inference':
+        case 'wasm_inference_result':
+          return this.queues.WASM_INFERENCE;
+        case 'wasm_batch_inference':
+          return this.queues.WASM_BATCH;
+        case 'wasm_stream_inference':
+          return this.queues.WASM_STREAMING;
+        case 'wasm_model_load':
+        case 'wasm_model_unload':
+        case 'wasm_health_check':
+          return this.queues.WASM_MODEL_MANAGEMENT;
+        default:
+          // Fall through to priority-based routing
+          break;
+      }
+    }
+    
+    // Priority-based queue selection for non-WASM messages
     if (priority >= 8) return this.queues.HIGH_PRIORITY;
     if (priority >= 5) return this.queues.NORMAL_PRIORITY;
     return this.queues.LOW_PRIORITY;
@@ -679,6 +1093,101 @@ export class RabbitMQXStateIntegration {
         hourCounts[a] > hourCounts[b] ? a : b
       ),
       activityDistribution: hourCounts
+    };
+  }
+
+  /**
+   * Calculate average WebAssembly inference latency
+   */
+  private static calculateAverageWasmLatency(history: any[]): number {
+    const wasmInferences = history.filter(h => h.action === 'wasm_inference' && h.data?.latency);
+    if (wasmInferences.length === 0) return 0;
+    
+    const totalLatency = wasmInferences.reduce((sum, h) => sum + (h.data?.latency || 0), 0);
+    return totalLatency / wasmInferences.length;
+  }
+
+  /**
+   * Count concurrent WebAssembly requests
+   */
+  private static countConcurrentWasmRequests(history: any[]): number {
+    const wasmRequests = history.filter(h => h.action === 'wasm_inference');
+    if (wasmRequests.length <= 1) return 0;
+    
+    // Find overlapping time windows (simplified heuristic)
+    let maxConcurrent = 0;
+    const timeWindow = 5000; // 5 seconds
+    
+    wasmRequests.forEach((request, i) => {
+      const concurrent = wasmRequests.filter(other => 
+        Math.abs(other.timestamp - request.timestamp) < timeWindow
+      ).length;
+      maxConcurrent = Math.max(maxConcurrent, concurrent);
+    });
+    
+    return maxConcurrent;
+  }
+
+  /**
+   * Analyze WebAssembly model usage patterns
+   */
+  private static analyzeWasmModelUsage(history: any[]): any {
+    const modelActions = history.filter(h => h.action?.includes('wasm_model') || h.action === 'wasm_inference');
+    
+    const modelUsage: Record<string, number> = {};
+    modelActions.forEach(h => {
+      const modelPath = h.data?.modelPath || h.data?.config?.modelPath || 'unknown';
+      modelUsage[modelPath] = (modelUsage[modelPath] || 0) + 1;
+    });
+    
+    return {
+      totalModelActions: modelActions.length,
+      modelUsageBreakdown: modelUsage,
+      mostUsedModel: Object.keys(modelUsage).reduce((a, b) => 
+        modelUsage[a] > modelUsage[b] ? a : b, 'none'
+      )
+    };
+  }
+
+  /**
+   * Identify WebAssembly batch processing opportunities
+   */
+  private static identifyWasmBatchOpportunities(history: any[]): any {
+    const wasmInferences = history.filter(h => h.action === 'wasm_inference');
+    const timeWindow = 10000; // 10 seconds
+    
+    const batches = [];
+    let currentBatch = [];
+    let lastTimestamp = 0;
+    
+    wasmInferences.forEach(inference => {
+      if (inference.timestamp - lastTimestamp < timeWindow && currentBatch.length > 0) {
+        currentBatch.push(inference);
+      } else {
+        if (currentBatch.length > 1) {
+          batches.push(currentBatch);
+        }
+        currentBatch = [inference];
+      }
+      lastTimestamp = inference.timestamp;
+    });
+    
+    // Don't forget the last batch
+    if (currentBatch.length > 1) {
+      batches.push(currentBatch);
+    }
+    
+    return {
+      totalBatchOpportunities: batches.length,
+      averageBatchSize: batches.length > 0 
+        ? batches.reduce((sum, batch) => sum + batch.length, 0) / batches.length 
+        : 0,
+      largestBatchSize: batches.length > 0 
+        ? Math.max(...batches.map(batch => batch.length)) 
+        : 0,
+      potentialLatencySavings: batches.length > 0 
+        ? batches.reduce((sum, batch) => sum + (batch.length - 1) * 200, 0) // Est. 200ms saved per batched request
+        : 0
     };
   }
 

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package vectorservice;
 
-option go_package = "./pb";
+option go_package = "github.com/semaj90/dweb-app/go-microservice/proto/vectorservice;vectorservice";
 
 // The core Vector Service for enterprise-grade vector processing
 service VectorService {

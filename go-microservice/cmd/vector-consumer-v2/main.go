@@ -17,7 +17,7 @@ import (
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
 
-	pb "legal-ai-production/proto"
+	pb "legal-ai-production/proto/aidimensional"
 	"legal-ai-production/internal/auth"
 	"legal-ai-production/internal/cache"
 	"legal-ai-production/internal/observability"

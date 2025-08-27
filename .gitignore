@@ -111,3 +111,6 @@ FIX-*.md
 ecosystem*.config.cjs
 ecosystem*.config.js
 Screenshot (10481).png
+
+*storybook.log
+storybook-static

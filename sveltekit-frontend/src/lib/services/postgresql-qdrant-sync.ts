@@ -19,6 +19,10 @@ export interface SyncConfig {
   batchSize?: number;
   enableFullRebuild?: boolean;
   logProgress?: boolean;
+  // WebAssembly-specific configuration
+  wasmEmbeddingModel?: string;
+  wasmOptimizedRetrieval?: boolean;
+  wasmCacheSize?: number;
 }
 
 export interface SyncStats {
@@ -30,12 +34,19 @@ export interface SyncStats {
   startTime: Date;
   endTime?: Date;
   durationMs?: number;
+  // WebAssembly-specific stats
+  wasmOptimizedItems?: number;
+  wasmCacheHits?: number;
+  wasmCacheMisses?: number;
+  averageRetrievalTime?: number;
 }
 
 export class PostgreSQLQdrantSyncService {
   private qdrant: QdrantClient;
   private config: Required<SyncConfig>;
   private stats: SyncStats;
+  // WebAssembly-specific cache for optimized retrieval
+  private wasmRetrievalCache: Map<string, { embedding: number[]; metadata: any; timestamp: number }> = new Map();
 
   constructor(config: SyncConfig = {}) {
     this.config = {
@@ -43,7 +54,11 @@ export class PostgreSQLQdrantSyncService {
       collectionName: config.collectionName || 'legal_documents',
       batchSize: config.batchSize || 50,
       enableFullRebuild: config.enableFullRebuild ?? true,
-      logProgress: config.logProgress ?? true
+      logProgress: config.logProgress ?? true,
+      // WebAssembly-specific defaults
+      wasmEmbeddingModel: config.wasmEmbeddingModel || 'nomic-embed-text',
+      wasmOptimizedRetrieval: config.wasmOptimizedRetrieval ?? true,
+      wasmCacheSize: config.wasmCacheSize || 1000
     };
 
     this.qdrant = new QdrantClient({ 
@@ -60,7 +75,12 @@ export class PostgreSQLQdrantSyncService {
       syncedToQdrant: 0,
       skippedNoEmbedding: 0,
       errors: 0,
-      startTime: new Date()
+      startTime: new Date(),
+      // WebAssembly-specific stats
+      wasmOptimizedItems: 0,
+      wasmCacheHits: 0,
+      wasmCacheMisses: 0,
+      averageRetrievalTime: 0
     };
   }
 
@@ -551,6 +571,310 @@ export class PostgreSQLQdrantSyncService {
     }
 
     return health;
+  }
+
+  /**
+   * WebAssembly-optimized vector search for RAG inference
+   * Integrates directly with WebAssembly inference pipeline
+   */
+  async searchForWASMInference(
+    queryEmbedding: number[], 
+    limit: number = 5,
+    scoreThreshold: number = 0.7,
+    filters?: Record<string, any>
+  ): Promise<Array<{
+    id: string;
+    content: string;
+    score: number;
+    metadata: any;
+  }>> {
+    const startTime = Date.now();
+
+    try {
+      this.log(`🧠 Performing WASM-optimized vector search (limit: ${limit}, threshold: ${scoreThreshold})`);
+
+      // Check cache first if enabled
+      const cacheKey = this.generateCacheKey(queryEmbedding, limit, filters);
+      if (this.config.wasmOptimizedRetrieval && this.wasmRetrievalCache.has(cacheKey)) {
+        const cached = this.wasmRetrievalCache.get(cacheKey)!;
+        const cacheAge = Date.now() - cached.timestamp;
+        
+        // Cache valid for 5 minutes
+        if (cacheAge < 5 * 60 * 1000) {
+          this.stats.wasmCacheHits = (this.stats.wasmCacheHits || 0) + 1;
+          this.log(`✅ WASM cache hit (age: ${Math.round(cacheAge / 1000)}s)`);
+          return cached.metadata as any[];
+        }
+      }
+
+      // Perform Qdrant search with WASM-optimized parameters
+      const searchResponse = await this.qdrant.search(this.config.collectionName, {
+        vector: queryEmbedding,
+        limit: limit * 2, // Over-fetch to allow for filtering
+        score_threshold: scoreThreshold,
+        with_payload: true,
+        with_vector: false, // Don't return vectors to save bandwidth
+        ...(filters && { filter: this.buildQdrantFilter(filters) })
+      });
+
+      // Process and optimize results for WASM inference
+      const results = searchResponse
+        .filter(hit => hit.score >= scoreThreshold)
+        .slice(0, limit)
+        .map(hit => ({
+          id: hit.id as string,
+          content: hit.payload?.content as string || '',
+          score: hit.score,
+          metadata: {
+            type: hit.payload?.type,
+            title: hit.payload?.title,
+            tags: hit.payload?.tags || [],
+            evidenceId: hit.payload?.evidenceId,
+            documentId: hit.payload?.documentId,
+            caseId: hit.payload?.caseId,
+            retrievedAt: new Date().toISOString(),
+            retrievalMethod: 'wasm_optimized',
+            embeddingModel: this.config.wasmEmbeddingModel
+          }
+        }));
+
+      // Cache results if enabled
+      if (this.config.wasmOptimizedRetrieval) {
+        this.wasmRetrievalCache.set(cacheKey, {
+          embedding: queryEmbedding,
+          metadata: results,
+          timestamp: Date.now()
+        });
+
+        // Cleanup old cache entries
+        this.cleanupWASMCache();
+      }
+
+      const retrievalTime = Date.now() - startTime;
+      this.stats.wasmCacheMisses = (this.stats.wasmCacheMisses || 0) + 1;
+      this.stats.averageRetrievalTime = this.updateAverageRetrievalTime(retrievalTime);
+      
+      this.log(`🔍 WASM search completed: ${results.length} results in ${retrievalTime}ms`);
+      return results;
+
+    } catch (error) {
+      this.log(`❌ WASM-optimized search failed: ${error.message}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Batch vector search optimized for WebAssembly inference
+   */
+  async batchSearchForWASMInference(
+    queries: Array<{
+      embedding: number[];
+      id: string;
+      limit?: number;
+      filters?: Record<string, any>;
+    }>,
+    scoreThreshold: number = 0.7
+  ): Promise<Record<string, Array<{
+    id: string;
+    content: string;
+    score: number;
+    metadata: any;
+  }>>> {
+    const startTime = Date.now();
+    const results: Record<string, any[]> = {};
+
+    try {
+      this.log(`🔄 Performing WASM batch search for ${queries.length} queries`);
+
+      // Process queries in parallel for better performance
+      const searchPromises = queries.map(async (query) => {
+        const queryResults = await this.searchForWASMInference(
+          query.embedding,
+          query.limit || 5,
+          scoreThreshold,
+          query.filters
+        );
+        return { id: query.id, results: queryResults };
+      });
+
+      const allResults = await Promise.all(searchPromises);
+      
+      // Organize results by query ID
+      allResults.forEach(({ id, results: queryResults }) => {
+        results[id] = queryResults;
+      });
+
+      const totalTime = Date.now() - startTime;
+      this.log(`✅ WASM batch search completed: ${queries.length} queries in ${totalTime}ms`);
+
+      return results;
+
+    } catch (error) {
+      this.log(`❌ WASM batch search failed: ${error.message}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Store WebAssembly inference result for future RAG improvements
+   */
+  async storeWASMInferenceResult(
+    queryEmbedding: number[],
+    retrievedDocuments: string[],
+    inferenceResult: string,
+    metadata: {
+      inferenceId: string;
+      model: string;
+      processingTime: number;
+      ragContext?: any;
+    }
+  ): Promise<void> {
+    try {
+      // Store the inference result as a new document in Qdrant for future retrieval
+      const resultId = `wasm_inference_${metadata.inferenceId}`;
+      
+      await this.qdrant.upsert(this.config.collectionName, {
+        wait: false,
+        points: [{
+          id: resultId,
+          vector: queryEmbedding,
+          payload: {
+            type: 'wasm_inference_result',
+            inferenceId: metadata.inferenceId,
+            content: inferenceResult,
+            retrievedDocuments,
+            metadata: {
+              model: metadata.model,
+              processingTime: metadata.processingTime,
+              ragContext: metadata.ragContext,
+              createdAt: new Date().toISOString(),
+              source: 'wasm_inference',
+              embeddingModel: this.config.wasmEmbeddingModel
+            }
+          }
+        }]
+      });
+
+      this.log(`📝 Stored WASM inference result: ${metadata.inferenceId}`);
+
+    } catch (error) {
+      this.log(`❌ Failed to store WASM inference result: ${error.message}`);
+    }
+  }
+
+  /**
+   * Clean up old WebAssembly cache entries
+   */
+  private cleanupWASMCache(): void {
+    const maxAge = 10 * 60 * 1000; // 10 minutes
+    const now = Date.now();
+    
+    let cleanedCount = 0;
+    for (const [key, entry] of this.wasmRetrievalCache.entries()) {
+      if (now - entry.timestamp > maxAge) {
+        this.wasmRetrievalCache.delete(key);
+        cleanedCount++;
+      }
+    }
+
+    // Also enforce cache size limit
+    if (this.wasmRetrievalCache.size > this.config.wasmCacheSize) {
+      // Remove oldest entries
+      const entries = Array.from(this.wasmRetrievalCache.entries())
+        .sort(([,a], [,b]) => a.timestamp - b.timestamp);
+      
+      const toRemove = entries.slice(0, this.wasmRetrievalCache.size - this.config.wasmCacheSize);
+      toRemove.forEach(([key]) => this.wasmRetrievalCache.delete(key));
+      cleanedCount += toRemove.length;
+    }
+
+    if (cleanedCount > 0) {
+      this.log(`🧹 Cleaned ${cleanedCount} WASM cache entries`);
+    }
+  }
+
+  /**
+   * Generate cache key for WASM retrieval
+   */
+  private generateCacheKey(
+    embedding: number[],
+    limit: number,
+    filters?: Record<string, any>
+  ): string {
+    // Create a hash from embedding (use first few dimensions for speed)
+    const embeddingHash = embedding.slice(0, 10).join(',');
+    const filtersHash = filters ? JSON.stringify(filters) : '';
+    return `wasm_${embeddingHash}_${limit}_${filtersHash}`;
+  }
+
+  /**
+   * Build Qdrant filter from generic filters object
+   */
+  private buildQdrantFilter(filters: Record<string, any>): any {
+    const qdrantFilter: any = {
+      must: []
+    };
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        qdrantFilter.must.push({
+          key: `payload.${key}`,
+          match: { any: value }
+        });
+      } else {
+        qdrantFilter.must.push({
+          key: `payload.${key}`,
+          match: { value }
+        });
+      }
+    });
+
+    return qdrantFilter;
+  }
+
+  /**
+   * Update average retrieval time
+   */
+  private updateAverageRetrievalTime(newTime: number): number {
+    const currentAvg = this.stats.averageRetrievalTime || 0;
+    const totalQueries = (this.stats.wasmCacheMisses || 0) + (this.stats.wasmCacheHits || 0);
+    
+    if (totalQueries <= 1) {
+      return newTime;
+    }
+    
+    return ((currentAvg * (totalQueries - 1)) + newTime) / totalQueries;
+  }
+
+  /**
+   * Get WebAssembly-specific statistics
+   */
+  getWASMStats(): {
+    cacheSize: number;
+    cacheHits: number;
+    cacheMisses: number;
+    averageRetrievalTime: number;
+    cacheHitRate: number;
+  } {
+    const hits = this.stats.wasmCacheHits || 0;
+    const misses = this.stats.wasmCacheMisses || 0;
+    const total = hits + misses;
+
+    return {
+      cacheSize: this.wasmRetrievalCache.size,
+      cacheHits: hits,
+      cacheMisses: misses,
+      averageRetrievalTime: this.stats.averageRetrievalTime || 0,
+      cacheHitRate: total > 0 ? hits / total : 0
+    };
+  }
+
+  /**
+   * Clear WebAssembly cache
+   */
+  clearWASMCache(): void {
+    this.wasmRetrievalCache.clear();
+    this.log('🧹 Cleared WASM retrieval cache');
   }
 }
 

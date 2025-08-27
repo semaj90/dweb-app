@@ -28,6 +28,97 @@ import (
 )
 
 // ============================================================================
+// AI PROCESSOR TYPE DEFINITION - MOVED TO ai_processor.go
+// ============================================================================
+
+type AIModel struct {
+	ID           string                 `json:"id"`
+	Name         string                 `json:"name"`
+	Type         string                 `json:"type"`
+	Parameters   map[string]interface{} `json:"parameters"`
+	Loaded       bool                   `json:"loaded"`
+	LastUsed     time.Time              `json:"last_used"`
+	MemoryUsage  int64                  `json:"memory_usage"`
+}
+
+type ProcessingTask struct {
+	ID        string                 `json:"id"`
+	Type      string                 `json:"type"`
+	Input     interface{}            `json:"input"`
+	Options   map[string]interface{} `json:"options"`
+	Result    chan interface{}       `json:"-"`
+	Error     chan error             `json:"-"`
+	Created   time.Time              `json:"created"`
+	Timeout   time.Duration          `json:"timeout"`
+}
+
+type ResultCache struct {
+	cache map[string]*CacheEntry
+	mutex sync.RWMutex
+}
+
+type CacheEntry struct {
+	Data      interface{} `json:"data"`
+	Created   time.Time   `json:"created"`
+	Accessed  time.Time   `json:"accessed"`
+	HitCount  int         `json:"hit_count"`
+	TTL       time.Duration `json:"ttl"`
+}
+
+type ProcessingMetrics struct {
+	TotalTasks     int64         `json:"total_tasks"`
+	CompletedTasks int64         `json:"completed_tasks"`
+	FailedTasks    int64         `json:"failed_tasks"`
+	AverageTime    time.Duration `json:"average_time"`
+	CacheHits      int64         `json:"cache_hits"`
+	CacheMisses    int64         `json:"cache_misses"`
+	mutex          sync.RWMutex
+}
+
+// NewAIProcessor function moved to ai_processor.go
+
+func NewResultCache() *ResultCache {
+	return &ResultCache{
+		cache: make(map[string]*CacheEntry),
+	}
+}
+
+// AIProcessor methods moved to ai_processor.go
+
+func (rc *ResultCache) Get(key string) interface{} {
+	rc.mutex.RLock()
+	defer rc.mutex.RUnlock()
+
+	entry, exists := rc.cache[key]
+	if !exists {
+		return nil
+	}
+
+	// Check if expired
+	if time.Since(entry.Created) > entry.TTL {
+		delete(rc.cache, key)
+		return nil
+	}
+
+	entry.Accessed = time.Now()
+	entry.HitCount++
+	return entry.Data
+}
+
+func (rc *ResultCache) Set(key string, data interface{}, ttl time.Duration) {
+	rc.mutex.Lock()
+	defer rc.mutex.Unlock()
+
+	rc.cache[key] = &CacheEntry{
+		Data:     data,
+		Created:  time.Now(),
+		Accessed: time.Now(),
+		HitCount: 0,
+		TTL:      ttl,
+	}
+}
+
+// ============================================================================
 // CORE SERVICE STRUCTURE
 // ============================================================================
 
@@ -1125,6 +1216,8 @@ func (service *EnhancedLegalAIService) broadcastToSubscribers(channel string, me
 	})
 }
 
+// WebSocket handler methods moved to service_methods.go to avoid duplication
+
 // ============================================================================
 // MAIN SERVICE ORCHESTRATION
 // ============================================================================
@@ -1149,6 +1242,9 @@ func NewEnhancedLegalAIService(config *ServiceConfig) (*EnhancedLegalAIService, 
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to RabbitMQ: %v", err)
 	}
+
+	// AI Processor
+	service.aiProcessor = NewAIProcessor()
 
 	// GPU Manager
 	service.gpuManager = NewGPUManager(config.GPUEnabled, 0)
@@ -1207,7 +1303,9 @@ func (service *EnhancedLegalAIService) Start() error {
 	}()
 
 	// Setup message consumers
-	service.setupMessageConsumers()
+	if err := service.setupMessageConsumers(); err != nil {
+		log.Printf("Warning: Failed to setup message consumers: %v", err)
+	}
 
 	log.Printf("🚀 Enhanced Legal AI Service started with full integration")
 	log.Printf("📡 HTTP: :%s, gRPC: :%s, QUIC: :%s",
@@ -1250,6 +1348,10 @@ func (service *EnhancedLegalAIService) startHTTPServer() error {
 	service.httpServer = server
 	return server.ListenAndServe()
 }
+
+// startGRPCServer implementation moved to service_methods.go
+
+// setupMessageConsumers implementation moved to service_methods.go
 
 func main() {
 	// Read from environment variables with fallback to defaults
