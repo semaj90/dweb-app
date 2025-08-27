@@ -114,3 +114,10 @@ Screenshot (10481).png
 
 *storybook.log
 storybook-static
+
+# Local large artifacts / binaries
+# Avoid committing installer files, compiled binaries or extracted database storage
+sveltekit-frontend/go*.msi
+go-microservice/bin/
+qdrant-extracted/
+storage/

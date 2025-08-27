@@ -1,0 +1,22 @@
+name: Block Large Files
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check-size:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Find files > 50MB
+        run: |
+          set -e
+          find . -type f -size +50M -print > /tmp/large-files.txt || true
+          if [ -s /tmp/large-files.txt ]; then
+            echo "Found files larger than 50MB:"; cat /tmp/large-files.txt
+            echo "Please remove large files or use Git LFS / Releases for binaries.";
+            exit 1
+          else
+            echo "No oversized files found.";
+          fi
