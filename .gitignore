@@ -121,3 +121,65 @@ sveltekit-frontend/go*.msi
 go-microservice/bin/
 qdrant-extracted/
 storage/
+
+# Auto-ignore large binaries added by assistant
+*.exe
+
+# Auto-ignore large binaries added by assistant
+*.zip
+
+# Auto-ignore large binaries added by assistant
+*.jar
+
+# Auto-ignore large binaries added by assistant
+*.dll
+
+# Explicit local large artifacts (keep locally, don't commit)
+neo4j-community-*.zip
+minio.exe
+qdrant-extracted/
+qdrant-windows/
+services/
+sveltekit-frontend/go*.msi
+go-microservice/rag-kratos.exe
+go-microservice/enhanced-rag.exe
+
+# Explicitly ignore large installer archives and local extracted binaries
+/neo4j-community-*.zip
+/minio.exe
+/qdrant-extracted/
+/qdrant-windows/
+/services/neo4j.zip
+/sveltekit-frontend/go1*.windows-*.msi
+
+# Ignore large per-repo built executables
+/go-microservice/rag-kratos.exe
+/go-microservice/enhanced-rag.exe
+
+
+# keep locally: neo4j-community-5.21.2-windows.zip
+neo4j-community-5.21.2-windows.zip
+
+# keep locally: neo4j-community-5.23.0-windows.zip
+neo4j-community-5.23.0-windows.zip
+
+# keep locally: minio.exe
+minio.exe
+
+# keep locally: qdrant-extracted\qdrant.exe
+qdrant-extracted\qdrant.exe
+
+# keep locally: qdrant-windows\qdrant.exe
+qdrant-windows\qdrant.exe
+
+# keep locally: services\neo4j.zip
+services\neo4j.zip
+
+# keep locally: sveltekit-frontend\go1.25.0.windows-amd64.msi
+sveltekit-frontend\go1.25.0.windows-amd64.msi
+
+# keep locally: go-microservice\rag-kratos.exe
+go-microservice\rag-kratos.exe
+
+# keep locally: go-microservice\enhanced-rag.exe
+go-microservice\enhanced-rag.exe
