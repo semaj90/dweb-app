@@ -3,8 +3,8 @@
  * Supports CBOR, MessagePack, and JSON encoding with performance optimization
  */
 
-import CBOR from 'cbor';
-import { pack as msgpackPack, unpack as msgpackUnpack } from '@msgpack/msgpack';
+import { encode as cborEncode, decode as cborDecode } from 'cbor';
+import { encode as msgpackPack, decode as msgpackUnpack } from '@msgpack/msgpack';
 import type { RequestEvent } from '@sveltejs/kit';
 
 export type EncodingFormat = 'cbor' | 'msgpack' | 'json';
@@ -65,7 +65,7 @@ export class BinaryEncodingService {
    * Encode data using specified format
    */
   async encode(data: unknown, format?: EncodingFormat): Promise<{
-    encoded: ArrayBuffer | string;
+    encoded: ArrayBuffer | Uint8Array | Buffer | string;
     format: EncodingFormat;
     metrics: EncodingMetrics;
   }> {
@@ -73,19 +73,21 @@ export class BinaryEncodingService {
     const targetFormat = format || this.detectOptimalFormat(data);
     const originalSize = new TextEncoder().encode(JSON.stringify(data)).length;
 
-    let encoded: ArrayBuffer | string;
+    let encoded: ArrayBuffer | Uint8Array | Buffer | string;
     let encodedSize: number;
 
     try {
       switch (targetFormat) {
         case 'cbor':
-          encoded = CBOR.encode(data);
-          encodedSize = encoded.byteLength;
+          const cborBuffer = cborEncode(data);
+          encoded = cborBuffer;
+          encodedSize = Buffer.isBuffer(cborBuffer) ? cborBuffer.length : 0;
           break;
           
         case 'msgpack':
-          encoded = msgpackPack(data);
-          encodedSize = encoded.byteLength;
+          const msgpackData = msgpackPack(data);
+          encoded = msgpackData;
+          encodedSize = msgpackData.byteLength;
           break;
           
         case 'json':
@@ -123,7 +125,7 @@ export class BinaryEncodingService {
   /**
    * Decode data using specified format
    */
-  async decode(data: ArrayBuffer | string, format: EncodingFormat): Promise<{
+  async decode(data: ArrayBuffer | Uint8Array | Buffer | string, format: EncodingFormat): Promise<{
     decoded: unknown;
     metrics: EncodingMetrics;
   }> {
@@ -133,11 +135,11 @@ export class BinaryEncodingService {
     try {
       switch (format) {
         case 'cbor':
-          decoded = CBOR.decode(data as ArrayBuffer);
+          decoded = cborDecode(Buffer.from(data as ArrayBuffer));
           break;
           
         case 'msgpack':
-          decoded = msgpackUnpack(data as ArrayBuffer);
+          decoded = msgpackUnpack(new Uint8Array(data as ArrayBuffer));
           break;
           
         case 'json':
@@ -150,7 +152,10 @@ export class BinaryEncodingService {
       const metrics: EncodingMetrics = {
         format,
         originalSize: 0,
-        encodedSize: data instanceof ArrayBuffer ? data.byteLength : new TextEncoder().encode(data).length,
+        encodedSize: data instanceof ArrayBuffer ? data.byteLength : 
+                    Buffer.isBuffer(data) ? data.length :
+                    data instanceof Uint8Array ? data.byteLength :
+                    new TextEncoder().encode(data as string).length,
         compressionRatio: 1,
         encodeTime: 0,
         decodeTime
@@ -227,7 +232,12 @@ export class BinaryEncodingService {
                            format === 'msgpack' ? 'application/msgpack' : 
                            'application/json';
 
-        return new Response(encoded, {
+        const responseBody = typeof encoded === 'string' ? encoded : 
+                            Buffer.isBuffer(encoded) ? encoded.buffer.slice(encoded.byteOffset, encoded.byteOffset + encoded.byteLength) :
+                            encoded instanceof Uint8Array ? encoded.buffer.slice(encoded.byteOffset, encoded.byteOffset + encoded.byteLength) :
+                            encoded;
+        
+        return new Response(responseBody as BodyInit, {
           status: response.status,
           statusText: response.statusText,
           headers: {
