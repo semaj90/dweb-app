@@ -1,5 +1,5 @@
 import { registerSchema } from "$lib/schemas/auth";
-import { users } from "$lib/server/db/schema-postgres";
+import { users } from "$lib/server/db";
 import { db } from "$lib/server/db";
 import { eq } from "drizzle-orm";
 import { hashPassword } from "$lib/server/lucia";
@@ -82,12 +82,11 @@ export const actions: Actions = {
         .insert(users)
         .values({
           email: form.data.email,
-          hashedPassword,
-          name: form.data.name,
-          firstName: nameValue.split(" ")[0] || "",
-          lastName: nameValue.split(" ").slice(1).join(" ") || "",
+          hashed_password: hashedPassword,
+          first_name: nameValue.split(" ")[0] || "",
+          last_name: nameValue.split(" ").slice(1).join(" ") || "",
           role: form.data.role,
-          isActive: true,
+          is_active: true,
         })
         .returning();
 

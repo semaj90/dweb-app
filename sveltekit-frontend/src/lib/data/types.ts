@@ -6,7 +6,7 @@ import {
   reports,
   statutes,
   users,
-} from "$lib/server/db/schema-postgres";
+} from "../server/db/schema-postgres";
 import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 
 // Core database types

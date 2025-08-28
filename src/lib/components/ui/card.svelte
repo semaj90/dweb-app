@@ -1,6 +1,11 @@
 <script>
-  export let variant = 'default';
-  export let className = '';
+  let { 
+    variant = 'default',
+    className = '',
+    header,
+    children,
+    footer 
+  } = $props();
   
   const variants = {
     default: 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700',
@@ -9,23 +14,25 @@
     filled: 'bg-gray-100 dark:bg-gray-900'
   };
   
-  $: variantClass = variants[variant] || variants.default;
+  let variantClass = $derived(variants[variant] || variants.default);
 </script>
 
 <div class="rounded-lg p-6 {variantClass} {className}">
-  {#if $$slots.header}
+  {#if header}
     <div class="card-header mb-4">
-      <slot name="header" />
+      {@render header()}
     </div>
   {/if}
   
   <div class="card-content">
-    <slot />
+    {#if children}
+      {@render children()}
+    {/if}
   </div>
   
-  {#if $$slots.footer}
+  {#if footer}
     <div class="card-footer mt-4">
-      <slot name="footer" />
+      {@render footer()}
     </div>
   {/if}
 </div>

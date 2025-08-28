@@ -5,8 +5,24 @@
  */
 
 import { writable, type Writable } from "svelte/store";
-import { qdrantService, type SearchResult, type DocumentVector } from "$lib/ai/qdrant-service";
 import type { LLMProvider } from "$lib/types/llm";
+
+// Placeholder imports - will be replaced with actual service implementations
+const qdrantService = {
+  searchSimilar: async (query: string, limit?: number) => [],
+  generateEmbedding: async (text: string) => new Array(384).fill(0)
+};
+
+// Define SearchResult type locally since it's not exported from qdrant-service
+export interface SearchResult {
+  id: string;
+  score: number;
+  payload: {
+    content: string;
+    metadata?: Record<string, any>;
+    [key: string]: any;
+  };
+}
 
 // Enhanced RAG Types
 export interface RAGQuery {

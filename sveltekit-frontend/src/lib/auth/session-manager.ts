@@ -2,10 +2,11 @@
 // Handles secure session storage, management, and cleanup
 
 import { dev } from '$app/environment';
-import { createClient, type RedisClientType } from 'redis';
+import { redis } from '$lib/server/cache/redis-service';
 import { randomBytes, createHash } from 'crypto';
 import type { AuthUser, AuthSession } from './auth-store';
 import type { UserRole } from './roles';
+import type { Redis as IORedisClient } from 'ioredis';
 
 export interface SessionData {
   id: string;
@@ -40,7 +41,7 @@ const DEFAULT_CONFIG: SessionConfig = {
 
 export class SessionManager {
   private static instance: SessionManager | null = null;
-  private redisClient: RedisClientType | null = null;
+  private redisClient: any = null;
   private config: SessionConfig;
   private cleanupTimer: NodeJS.Timeout | null = null;
   private isInitialized = false;
@@ -63,18 +64,9 @@ export class SessionManager {
     if (this.isInitialized) return;
 
     try {
-      // Get Redis configuration from environment
-      const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
-      const redisPassword = process.env.REDIS_PASSWORD;
-      
-      // Create Redis client
-      this.redisClient = createClient({
-        url: redisUrl,
-        password: redisPassword,
-        socket: {
-          connectTimeout: 5000,
-        },
-      });
+      // Use centralized Redis service
+      this.redisClient = redis;
+      await this.redisClient.connect();
 
       // Setup error handling
       this.redisClient.on('error', (err) => {

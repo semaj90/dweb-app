@@ -6,7 +6,7 @@ import { analyzeCurrentErrors } from "../../context7-multicore-error-analysis.js
  */
 
 import { phase13Integration, initializePhase13, getSystemHealth } from "./phase13-full-integration.js";
-import { flashAttention2Service } from "../services/flash-attention2-service";
+import flashAttention2Service from "../services/flash-attention2-service";
 
 export interface SystemOrchestrationConfig {
   enableFlashAttention: boolean;

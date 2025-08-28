@@ -153,9 +153,16 @@ export const actions: Actions = {
 
     try {
       const caseOps = new CaseOperations();
+      // Generate unique case number
+      const year = new Date().getFullYear();
+      const caseNumber = `CR-${year}-${Date.now()}`;
+
       const newCaseData = {
         id: cuid(),
+        caseNumber,
         userId: user.id,
+        createdBy: user.id,
+        assignedTo: user.id, // Initially assign to creator
         title: form.data.title,
         description: form.data.description || null,
         priority: form.data.priority,
@@ -163,8 +170,9 @@ export const actions: Actions = {
         incidentDate: form.data.incidentDate || null,
         location: form.data.location || null,
         jurisdiction: form.data.jurisdiction || null,
-        createdAt: new Date(),
-        updatedAt: new Date()
+        metadata: {},
+        created_at: new Date(),
+        updated_at: new Date()
       };
 
       const newCase = await caseOps.createCase(newCaseData);
@@ -223,13 +231,18 @@ export const actions: Actions = {
       const evidenceData = {
         id: cuid(),
         caseId: form.data.caseId,
+        case_id: form.data.caseId, // alias for database field
         title: form.data.title,
         description: form.data.description || null,
         evidenceType: form.data.evidenceType,
-        tags: form.data.tags || null,
+        evidence_type: form.data.evidenceType, // alias for database field
+        type: form.data.evidenceType, // another alias
+        tags: form.data.tags ? form.data.tags.split(',').map(t => t.trim()) : [],
+        createdBy: user.id,
+        metadata: {},
         collectedAt: new Date(),
-        createdAt: new Date(),
-        updatedAt: new Date()
+        created_at: new Date(),
+        updated_at: new Date()
       };
 
       const newEvidence = await db

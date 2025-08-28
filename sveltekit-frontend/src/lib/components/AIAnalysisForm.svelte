@@ -2,7 +2,7 @@
 
   import { createEventDispatcher } from 'svelte';
   import { $props } from 'svelte';
-  import { Button } from 'bits-ui';
+  import Button from '$lib/components/ui/MeltButton.svelte';
   import { fade, slide } from 'svelte/transition';
   import { writable } from 'svelte/store';
 

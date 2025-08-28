@@ -1,7 +1,7 @@
 // AI Analysis State Machine - XState v5 compatible
 // Manages AI-powered legal document analysis and recommendations
 
-import { createMachine, assign } from 'xstate';
+import { createMachine, assign, fromPromise } from 'xstate';
 
 export interface AIAnalysisContext {
   prompt: string;
@@ -87,9 +87,11 @@ export const aiAnalysisMachine = createMachine({
     validating: {
       invoke: {
         id: 'validateAnalysisRequest',
-        src: async ({ context }) => {
+        input: ({ context }) => context,
+        src: fromPromise(async ({ input }) => {
           const errors: Record<string, string[]> = {};
           
+          const context = input as AIAnalysisContext;
           if (!context.prompt?.trim()) {
             errors.prompt = ['Analysis prompt is required'];
           }
@@ -115,7 +117,7 @@ export const aiAnalysisMachine = createMachine({
           }
           
           return context;
-        },
+        }),
         onDone: {
           target: 'analyzing',
           actions: assign({
@@ -126,7 +128,10 @@ export const aiAnalysisMachine = createMachine({
         onError: {
           target: 'idle',
           actions: assign({
-            validationErrors: ({ event }) => event.error?.validationErrors || {},
+            validationErrors: ({ event }) => {
+              const error = event.error as any;
+              return error?.validationErrors || {};
+            },
             error: 'Validation failed'
           })
         }
@@ -140,7 +145,9 @@ export const aiAnalysisMachine = createMachine({
       }),
       invoke: {
         id: 'performAIAnalysis',
-        src: async ({ context }) => {
+        input: ({ context }) => context,
+        src: fromPromise(async ({ input }) => {
+          const context = input as AIAnalysisContext;
           const startTime = Date.now();
           
           // Prepare analysis request
@@ -207,7 +214,7 @@ export const aiAnalysisMachine = createMachine({
             tokensUsed,
             confidence: (analysisResults as any)?.confidence || 0.8
           };
-        },
+        }),
         onDone: {
           target: 'completed',
           actions: assign({
@@ -222,7 +229,10 @@ export const aiAnalysisMachine = createMachine({
         onError: {
           target: 'error',
           actions: assign({
-            error: ({ event }) => event.error?.message || 'Analysis failed',
+            error: ({ event }) => {
+              const error = event.error as any;
+              return error?.message || 'Analysis failed';
+            },
             isStreaming: false
           })
         }
@@ -233,7 +243,7 @@ export const aiAnalysisMachine = createMachine({
             // Handle streaming chunks if needed
             analysisResults: ({ context, event }) => ({
               ...context.analysisResults,
-              streamingText: (context.analysisResults.streamingText || '') + event.chunk
+              streamingText: ((context.analysisResults as any).streamingText || '') + (event as any).chunk
             })
           })
         }

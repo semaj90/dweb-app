@@ -1,18 +1,22 @@
 <script lang="ts">
   import type { HTMLAttributes } from 'svelte/elements';
+  import type { Snippet } from 'svelte';
   
   interface Props extends HTMLAttributes<HTMLLabelElement> {
     className?: string;
     for?: string;
+    children?: Snippet;
   }
   
-  export let className: string = '';
-  export let htmlFor: string | undefined = undefined;
+  let { className = '', htmlFor, children, ...restProps }: Props = $props();
 </script>
 
 <label
   for={htmlFor}
   class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 {className}"
+  {...restProps}
 >
-  <slot />
+  {#if children}
+    {@render children()}
+  {/if}
 </label>

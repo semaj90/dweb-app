@@ -29,6 +29,7 @@ export const users = pgTable("users", {
 // Cases table
 export const cases = pgTable("cases", {
   id: uuid("id").primaryKey().defaultRandom(),
+  caseNumber: text("case_number"), // Added case number field
   title: text("title").notNull(),
   description: text("description"),
   status: text("status").notNull().default("active"), // active, closed, archived
@@ -37,6 +38,7 @@ export const cases = pgTable("cases", {
   createdBy: uuid("created_by")
     .references(() => users.id)
     .notNull(),
+  userId: uuid("created_by").references(() => users.id), // alias for createdBy
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   metadata: jsonb("metadata"),
@@ -49,9 +51,10 @@ export const evidence = pgTable("evidence", {
     .references(() => cases.id)
     .notNull(),
   title: text("title").notNull(),
+  content: text("content"), // Extracted text content
   description: text("description"),
   type: text("type").notNull(), // document, image, video, audio, physical, digital
-  content: text("content"), // Extracted text content
+  evidenceType: text("type"), // alias for type field
   filePath: text("file_path"), // Path to uploaded file
   fileSize: integer("file_size"), // File size in bytes
   mimeType: text("mime_type"), // MIME type of file

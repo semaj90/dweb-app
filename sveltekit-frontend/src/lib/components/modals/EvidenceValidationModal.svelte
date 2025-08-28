@@ -19,7 +19,7 @@ https://svelte.dev/e/js_parse_error -->
 
 
   import Button from "$lib/components/ui/Button.svelte";
-  import { Dialog as DialogPrimitive } from "bits-ui";
+  import Dialog from '$lib/components/ui/MeltDialog.svelte';
   import {
     AlertTriangle,
     CheckCircle,

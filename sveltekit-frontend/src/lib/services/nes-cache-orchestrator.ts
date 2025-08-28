@@ -5,7 +5,7 @@ import { AdvancedCacheManager } from '$lib/caching/advanced-cache-manager';
 import type { CacheConfiguration, CacheLayerInterface } from '$lib/caching/advanced-cache-manager';
 import { gpuAnimations } from '$lib/animations/gpu-animations';
 import { cachingService } from '$lib/services/caching-service';
-import type { CanvasState } from '$lib/stores/canvas-states';
+import type { InteractiveCanvasState } from '$lib/types/canvas';
 import { dev } from '$app/environment';
 
 // NES-inspired memory constraints for cache management
@@ -88,6 +88,11 @@ export class NESCacheOrchestrator {
     this.setupEventListeners();
   }
 
+  initialize() {
+    console.log('🚀 NES Cache Orchestrator initialize called');
+    return true;
+  }
+
   private initializeNESMemoryRegions(): void {
     Object.keys(NES_CACHE_CONSTRAINTS).forEach(region => {
       if (region !== 'TOTAL_BUDGET') {
@@ -143,7 +148,7 @@ export class NESCacheOrchestrator {
 
   async cacheCanvasStateAsSprite(
     animationName: string, 
-    states: CanvasState[], 
+    states: InteractiveCanvasState[], 
     options: {
       priority?: number;
       compression?: boolean;
@@ -196,7 +201,7 @@ export class NESCacheOrchestrator {
     return spriteKey;
   }
 
-  async loadSpriteSheet(spriteKey: string): Promise<CanvasState[] | null> {
+  async loadSpriteSheet(spriteKey: string): Promise<InteractiveCanvasState[] | null> {
     // Try NES memory first (fastest)
     const cached = this.spritesheetCache.get(spriteKey);
     if (cached) {
@@ -505,7 +510,7 @@ export class NESCacheOrchestrator {
   // SIZE ESTIMATION METHODS
   // =============================================================================
 
-  private estimateCanvasStatesSize(states: CanvasState[]): number {
+  private estimateCanvasStatesSize(states: InteractiveCanvasState[]): number {
     return states.reduce((total, state) => {
       return total + JSON.stringify(state.fabricJSON).length * 2; // UTF-16
     }, 0);

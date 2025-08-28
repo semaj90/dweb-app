@@ -42,43 +42,43 @@ type LogEntry struct {
 	Service      string      `json:"service"`
 	Version      string      `json:"version"`
 	Environment  string      `json:"environment"`
-	
+
 	// Request context
 	TraceID      string      `json:"trace_id,omitempty"`
 	SpanID       string      `json:"span_id,omitempty"`
 	RequestID    string      `json:"request_id,omitempty"`
 	UserID       string      `json:"user_id,omitempty"`
 	SessionID    string      `json:"session_id,omitempty"`
-	
+
 	// gRPC specific fields
 	GRPCMethod   string      `json:"grpc_method,omitempty"`
 	GRPCCode     codes.Code  `json:"grpc_code,omitempty"`
 	GRPCMessage  string      `json:"grpc_message,omitempty"`
-	
+
 	// HTTP/Network fields
 	ClientIP     string      `json:"client_ip,omitempty"`
 	UserAgent    string      `json:"user_agent,omitempty"`
 	Duration     float64     `json:"duration_ms,omitempty"`
-	
+
 	// Performance metrics
 	CPUUsage     float64     `json:"cpu_usage_percent,omitempty"`
 	MemoryUsage  int64       `json:"memory_usage_bytes,omitempty"`
 	GPUUsage     float64     `json:"gpu_usage_percent,omitempty"`
 	GPUMemory    int64       `json:"gpu_memory_bytes,omitempty"`
-	
+
 	// Error details
 	ErrorType    string      `json:"error_type,omitempty"`
 	ErrorCode    string      `json:"error_code,omitempty"`
 	StackTrace   string      `json:"stack_trace,omitempty"`
-	
+
 	// Business logic fields
 	JobID        string      `json:"job_id,omitempty"`
 	JobType      string      `json:"job_type,omitempty"`
 	DocumentID   string      `json:"document_id,omitempty"`
-	
+
 	// Custom fields
 	Fields       map[string]interface{} `json:"fields,omitempty"`
-	
+
 	// Metadata
 	Host         string      `json:"host"`
 	PID          int         `json:"pid"`
@@ -97,19 +97,22 @@ type ELKLoggerConfig struct {
 	LogFilePath     string    `json:"log_file_path"`
 	EnableMetrics   bool      `json:"enable_metrics"`
 	EnableTracing   bool      `json:"enable_tracing"`
-	
+
 	// ELK specific configuration
 	ElasticsearchURL    string `json:"elasticsearch_url"`
 	ElasticsearchIndex  string `json:"elasticsearch_index"`
 	LogstashURL         string `json:"logstash_url"`
 	EnableDirectES      bool   `json:"enable_direct_es"`  // Send logs directly to Elasticsearch
 	EnableLogstash      bool   `json:"enable_logstash"`   // Send logs via Logstash
-	
+
 	// Performance tuning
 	BufferSize          int           `json:"buffer_size"`
 	FlushInterval       time.Duration `json:"flush_interval"`
 	MaxConcurrentWrites int           `json:"max_concurrent_writes"`
 }
+
+// Backwards-compatibility: some callers expect ELKConfig name
+type ELKConfig = ELKLoggerConfig
 
 // ELKLogger provides enterprise-grade structured logging for ELK Stack
 type ELKLogger struct {
@@ -117,11 +120,11 @@ type ELKLogger struct {
 	logger    zerolog.Logger
 	hostname  string
 	pid       int
-	
+
 	// Performance monitoring
 	stats     LoggerStats
 	statsLock sync.RWMutex
-	
+
 	// Buffer for batch processing
 	logBuffer chan LogEntry
 	wg        sync.WaitGroup
@@ -140,7 +143,7 @@ type LoggerStats struct {
 func NewELKLogger(config ELKLoggerConfig) (*ELKLogger, error) {
 	// Set up zerolog
 	var logger zerolog.Logger
-	
+
 	// Configure output
 	if config.EnableConsole {
 		consoleWriter := zerolog.ConsoleWriter{
@@ -151,7 +154,7 @@ func NewELKLogger(config ELKLoggerConfig) (*ELKLogger, error) {
 	} else {
 		logger = zerolog.New(os.Stdout)
 	}
-	
+
 	// Set log level
 	switch config.LogLevel {
 	case LogLevelTrace:
@@ -171,15 +174,15 @@ func NewELKLogger(config ELKLoggerConfig) (*ELKLogger, error) {
 	default:
 		logger = logger.Level(zerolog.InfoLevel)
 	}
-	
+
 	logger = logger.With().Timestamp().Caller().Logger()
-	
+
 	// Get hostname
 	hostname, err := os.Hostname()
 	if err != nil {
 		hostname = "unknown"
 	}
-	
+
 	elkLogger := &ELKLogger{
 		config:    config,
 		logger:    logger,
@@ -190,16 +193,16 @@ func NewELKLogger(config ELKLoggerConfig) (*ELKLogger, error) {
 			LogsByLevel: make(map[LogLevel]int64),
 		},
 	}
-	
+
 	// Start background log processing
 	elkLogger.startLogProcessor()
-	
+
 	log.Info().
 		Str("service", config.ServiceName).
 		Str("version", config.ServiceVersion).
 		Str("environment", config.Environment).
 		Msg("ELK Logger initialized")
-	
+
 	return elkLogger, nil
 }
 
@@ -288,7 +291,7 @@ func (b *LogEntryBuilder) Error(err error) *LogEntryBuilder {
 	if err != nil {
 		b.entry.ErrorType = fmt.Sprintf("%T", err)
 		b.entry.Fields["error"] = err.Error()
-		
+
 		// Extract stack trace if available
 		if b.logger.config.LogLevel == LogLevelTrace || b.logger.config.LogLevel == LogLevelDebug {
 			b.entry.StackTrace = getStackTrace()
@@ -320,6 +323,22 @@ func (b *LogEntryBuilder) Field(key string, value interface{}) *LogEntryBuilder 
 	return b
 }
 
+// Compatibility fluent helpers used by older code
+func (b *LogEntryBuilder) WithString(key, v string) *LogEntryBuilder { return b.Field(key, v) }
+func (b *LogEntryBuilder) WithInt(key string, v int) *LogEntryBuilder { return b.Field(key, v) }
+func (b *LogEntryBuilder) WithBool(key string, v bool) *LogEntryBuilder { return b.Field(key, v) }
+func (b *LogEntryBuilder) WithError(err error) *LogEntryBuilder { return b.Error(err) }
+func (b *LogEntryBuilder) WithDuration(key string, d time.Duration) *LogEntryBuilder {
+	// store duration in milliseconds and keep original duration
+	b.Duration(d)
+	return b.Field(key, d)
+}
+func (b *LogEntryBuilder) WithFloat32(key string, v float32) *LogEntryBuilder { return b.Field(key, v) }
+func (b *LogEntryBuilder) WithStringSlice(key string, s []string) *LogEntryBuilder { return b.Field(key, s) }
+
+// Log is a compatibility alias for Send()
+func (b *LogEntryBuilder) Log() { b.Send() }
+
 func (b *LogEntryBuilder) Fields(fields map[string]interface{}) *LogEntryBuilder {
 	if b.entry.Fields == nil {
 		b.entry.Fields = make(map[string]interface{})
@@ -341,7 +360,7 @@ func (b *LogEntryBuilder) PerformanceMetrics(cpuUsage float64, memoryUsage int64
 // Send finalizes and sends the log entry
 func (b *LogEntryBuilder) Send() {
 	start := time.Now()
-	
+
 	// Send to buffer for processing
 	select {
 	case b.logger.logBuffer <- b.entry:
@@ -350,7 +369,7 @@ func (b *LogEntryBuilder) Send() {
 		// Buffer is full, log synchronously
 		b.logger.processLogEntry(b.entry)
 	}
-	
+
 	// Update statistics
 	b.logger.updateStats(b.entry.Level, time.Since(start))
 }
@@ -359,7 +378,7 @@ func (b *LogEntryBuilder) Send() {
 func (e *ELKLogger) processLogEntry(entry LogEntry) {
 	// Log to zerolog first (for local debugging and monitoring)
 	var zerologEvent *zerolog.Event
-	
+
 	switch entry.Level {
 	case LogLevelTrace:
 		zerologEvent = e.logger.Trace()
@@ -378,13 +397,13 @@ func (e *ELKLogger) processLogEntry(entry LogEntry) {
 	default:
 		zerologEvent = e.logger.Info()
 	}
-	
+
 	// Add structured fields
 	zerologEvent = zerologEvent.
 		Str("service", entry.Service).
 		Str("version", entry.Version).
 		Str("environment", entry.Environment)
-	
+
 	if entry.TraceID != "" {
 		zerologEvent = zerologEvent.Str("trace_id", entry.TraceID)
 	}
@@ -400,14 +419,14 @@ func (e *ELKLogger) processLogEntry(entry LogEntry) {
 	if entry.JobID != "" {
 		zerologEvent = zerologEvent.Str("job_id", entry.JobID)
 	}
-	
+
 	// Add custom fields
 	for key, value := range entry.Fields {
 		zerologEvent = zerologEvent.Interface(key, value)
 	}
-	
+
 	zerologEvent.Msg(entry.Message)
-	
+
 	// Send to external systems (Elasticsearch, Logstash) if configured
 	if e.config.EnableDirectES || e.config.EnableLogstash {
 		go e.sendToExternalSystems(entry)
@@ -418,21 +437,21 @@ func (e *ELKLogger) processLogEntry(entry LogEntry) {
 func (e *ELKLogger) sendToExternalSystems(entry LogEntry) {
 	// This would be implemented to send logs to Elasticsearch or Logstash
 	// For brevity, this is a placeholder implementation
-	
+
 	// Convert to JSON
 	jsonData, err := json.Marshal(entry)
 	if err != nil {
 		e.logger.Error().Err(err).Msg("Failed to marshal log entry for external systems")
 		return
 	}
-	
+
 	// Send to Elasticsearch directly (if enabled)
 	if e.config.EnableDirectES && e.config.ElasticsearchURL != "" {
 		// Implementation would use Elasticsearch client to send data
 		// This is a placeholder
 		fmt.Printf("Would send to Elasticsearch: %s\n", string(jsonData))
 	}
-	
+
 	// Send to Logstash (if enabled)
 	if e.config.EnableLogstash && e.config.LogstashURL != "" {
 		// Implementation would use HTTP client to send data to Logstash
@@ -457,19 +476,19 @@ func (e *ELKLogger) startLogProcessor() {
 func (e *ELKLogger) updateStats(level LogLevel, latency time.Duration) {
 	e.statsLock.Lock()
 	defer e.statsLock.Unlock()
-	
+
 	e.stats.TotalLogs++
 	e.stats.LogsByLevel[level]++
 	e.stats.LastLogTime = time.Now()
-	
+
 	if level == LogLevelError || level == LogLevelFatal || level == LogLevelPanic {
 		e.stats.ErrorsLogged++
 	}
-	
+
 	// Update average latency (simple moving average)
 	latencyMs := float64(latency.Nanoseconds()) / 1e6
 	e.stats.AverageLatency = (e.stats.AverageLatency*float64(e.stats.TotalLogs-1) + latencyMs) / float64(e.stats.TotalLogs)
-	
+
 	// Update buffer utilization
 	e.stats.BufferUtilization = float64(len(e.logBuffer)) / float64(cap(e.logBuffer)) * 100
 }
@@ -490,37 +509,37 @@ func (e *ELKLogger) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 		handler grpc.UnaryHandler,
 	) (interface{}, error) {
 		start := time.Now()
-		
+
 		// Extract metadata
 		traceID := e.extractTraceID(ctx)
 		userID := e.extractUserID(ctx)
 		clientIP := e.extractClientIP(ctx)
-		
+
 		// Call the handler
 		resp, err := handler(ctx, req)
-		
+
 		duration := time.Since(start)
-		
+
 		// Build log entry
 		logBuilder := e.Info("gRPC request completed").
 			GRPCMethod(info.FullMethod).
 			Duration(duration).
 			ClientIP(clientIP)
-		
+
 		if traceID != "" {
 			logBuilder = logBuilder.TraceID(traceID)
 		}
 		if userID != "" {
 			logBuilder = logBuilder.UserID(userID)
 		}
-		
+
 		if err != nil {
 			st := status.Convert(err)
 			logBuilder = logBuilder.
 				GRPCStatus(st.Code(), st.Message()).
 				Error(err).
 				Field("grpc_details", st.Details())
-			
+
 			if st.Code() != codes.OK {
 				logBuilder = e.Error("gRPC request failed").
 					GRPCMethod(info.FullMethod).
@@ -530,9 +549,9 @@ func (e *ELKLogger) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 		} else {
 			logBuilder = logBuilder.GRPCStatus(codes.OK, "OK")
 		}
-		
+
 		logBuilder.Send()
-		
+
 		return resp, err
 	}
 }

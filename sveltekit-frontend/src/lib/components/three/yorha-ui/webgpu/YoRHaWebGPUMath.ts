@@ -3,6 +3,9 @@
  * Lightweight vector/matrix/tensor utilities with optional WebGPU acceleration.
  */
 
+// Import WebGPU types
+/// <reference path="../../../../types/webgpu.d.ts" />
+
 export interface WebGPUMathConfig {
   preferWebGPU: boolean;
   fallbackToWebGL: boolean;

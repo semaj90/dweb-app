@@ -9,8 +9,8 @@
   import { derived } from 'svelte/store';
   import { debounce } from 'lodash-es';
   
-  // bits-ui v2 components - optimized for Svelte 5
-  import { Combobox } from 'bits-ui';
+  // TODO: Replace with melt-ui equivalent when available
+  // import { Combobox } from 'bits-ui';
   import * as Command from '$lib/components/ui/command/index.js';
   
   // Real-time search service

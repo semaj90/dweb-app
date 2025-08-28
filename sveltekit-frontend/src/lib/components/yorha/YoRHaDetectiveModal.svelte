@@ -1,11 +1,18 @@
 <!-- YoRHa Detective Modal Component -->
 <script lang="ts">
   import { onMount } from 'svelte';
+  import type { Snippet } from 'svelte';
 
-  let { showModal = false, title = '', onClose = () => {} } = $props<{
+  let { 
+    showModal = false, 
+    title = '', 
+    onClose = () => {},
+    children 
+  } = $props<{
     showModal?: boolean;
     title?: string;
     onClose?: () => void;
+    children?: Snippet;
   }>();
 
   // Handle escape key
@@ -36,24 +43,28 @@
   <!-- Modal Backdrop -->
   <div 
     class="modal-backdrop" 
-    on:click={handleBackdrop}
+    onclick={handleBackdrop}
+    onkeydown={handleKeydown}
     role="dialog"
     aria-modal="true"
     aria-labelledby="modal-title"
+    tabindex="-1"
   >
     <!-- Modal Panel -->
     <div class="modal-panel">
       <!-- Header -->
       <div class="modal-header">
         <h2 id="modal-title" class="modal-title">{title}</h2>
-        <button class="modal-close" on:click={onClose} aria-label="Close modal">
+        <button class="modal-close" onclick={onClose} aria-label="Close modal">
           &times;
         </button>
       </div>
       
       <!-- Content -->
       <div class="modal-content">
-        <slot />
+        {#if children}
+          {@render children()}
+        {/if}
       </div>
     </div>
   </div>

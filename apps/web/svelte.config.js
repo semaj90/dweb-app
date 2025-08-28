@@ -27,7 +27,7 @@ const config = {
 			}
 		},
 		serviceWorker: {
-			register: false // Disable for real-time features
+			register: false // we'll need it enhaanced rag quic nats work? Disable for real-time features
 		}
 	}
 };

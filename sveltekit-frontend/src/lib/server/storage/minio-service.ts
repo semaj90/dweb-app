@@ -7,14 +7,18 @@ import { Client as MinIOClient, type BucketItem, type ItemBucketMetadata } from 
 import { extname } from 'path';
 import { randomUUID } from 'crypto';
 
-// MinIO configuration
+// MinIO configuration - following Redis client pattern for authentication
 const MINIO_CONFIG = {
   endPoint: process.env.MINIO_ENDPOINT || 'localhost',
   port: parseInt(process.env.MINIO_PORT || '9000'),
   useSSL: process.env.MINIO_USE_SSL === 'true' || process.env.NODE_ENV === 'production',
   accessKey: process.env.MINIO_ACCESS_KEY || 'minioadmin',
-  secretKey: process.env.MINIO_SECRET_KEY || 'minioadmin123',
-  region: process.env.MINIO_REGION || 'us-east-1'
+  secretKey: process.env.MINIO_SECRET_KEY || 'minioadmin',
+  region: process.env.MINIO_REGION || 'us-east-1',
+  // Additional connection options following Redis client patterns
+  requestTimeout: 30000, // 30 second timeout
+  transportTimeout: 15000, // 15 second transport timeout
+  partSize: 64 * 1024 * 1024 // 64MB part size for multipart uploads
 };
 
 // Bucket configurations
@@ -60,7 +64,21 @@ export class MinIOService {
   private isInitialized = false;
 
   constructor() {
-    this.client = new MinIOClient(MINIO_CONFIG);
+    // Initialize MinIO client with robust error handling following Redis patterns
+    try {
+      this.client = new MinIOClient({
+        endPoint: MINIO_CONFIG.endPoint,
+        port: MINIO_CONFIG.port,
+        useSSL: MINIO_CONFIG.useSSL,
+        accessKey: MINIO_CONFIG.accessKey,
+        secretKey: MINIO_CONFIG.secretKey,
+        region: MINIO_CONFIG.region
+      });
+      console.log('📦 MinIO client initialized with endpoint:', `${MINIO_CONFIG.useSSL ? 'https' : 'http'}://${MINIO_CONFIG.endPoint}:${MINIO_CONFIG.port}`);
+    } catch (error) {
+      console.error('❌ MinIO client initialization failed:', error);
+      throw error;
+    }
   }
 
   static getInstance(): MinIOService {
@@ -72,13 +90,36 @@ export class MinIOService {
 
   async initialize(): Promise<boolean> {
     try {
-      await this.client.listBuckets();
+      // Test connection with authentication validation (similar to Redis client pattern)
+      console.log('🔄 Testing MinIO connection and authentication...');
+      
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('MinIO connection timeout after 5 seconds')), 5000);
+      });
+      
+      // Test basic connectivity and credentials
+      const buckets = await Promise.race([this.client.listBuckets(), timeoutPromise]);
+      const bucketsArray = Array.isArray(buckets) ? buckets : [];
+      console.log('✅ MinIO authentication successful, found', bucketsArray.length, 'buckets');
+      
       await this.createBuckets();
       this.isInitialized = true;
-      console.log('✅ MinIO service initialized');
+      console.log('✅ MinIO service fully initialized with', bucketsArray.length, 'buckets');
       return true;
     } catch (error) {
-      console.error('❌ MinIO initialization failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      
+      // Enhanced error diagnosis
+      if (errorMessage.includes('signature') || errorMessage.includes('InvalidAccessKeyId')) {
+        console.error('🔐 MinIO authentication failed - check ACCESS_KEY and SECRET_KEY');
+        console.error('   Current config: accessKey="' + MINIO_CONFIG.accessKey + '", endpoint=' + MINIO_CONFIG.endPoint + ':' + MINIO_CONFIG.port);
+      } else if (errorMessage.includes('timeout') || errorMessage.includes('ECONNREFUSED')) {
+        console.error('🌐 MinIO connection failed - check if MinIO server is running on', MINIO_CONFIG.endPoint + ':' + MINIO_CONFIG.port);
+      } else {
+        console.error('❌ MinIO initialization failed:', errorMessage);
+      }
+      
+      console.warn('⚠️ MinIO not available - file storage disabled');
       return false;
     }
   }

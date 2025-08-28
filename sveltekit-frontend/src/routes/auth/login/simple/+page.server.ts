@@ -4,8 +4,8 @@ import { zod } from 'sveltekit-superforms/adapters';
 import { z } from 'zod';
 import { simpleAuthService } from '$lib/server/auth-simple';
 import { createUserSession, setSessionCookie, verifyPassword } from '$lib/server/lucia';
-import { db } from '$lib/server/db/index';
-import { users } from '$lib/server/db/schema-postgres';
+import { db } from '$lib/server/db';
+import { users } from '$lib/server/db';
 import { eq } from 'drizzle-orm';
 import type { PageServerLoad, Actions } from './$types';
 

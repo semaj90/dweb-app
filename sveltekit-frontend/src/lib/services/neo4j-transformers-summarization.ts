@@ -23,7 +23,7 @@ export interface LegalEntity {
   id: string;
   type: 'person' | 'organization' | 'case' | 'statute' | 'precedent' | 'contract';
   name: string;
-  attributes: Record<string, any>;
+  attributes: any;
   confidence: number;
 }
 
@@ -32,13 +32,13 @@ export interface Relationship {
   to: string;
   type: string;
   strength: number;
-  metadata: Record<string, any>;
+  metadata: any;
 }
 
 export interface GraphNode {
   id: string;
   labels: string[];
-  properties: Record<string, any>;
+  properties: any;
   embedding?: number[];
 }
 
@@ -191,7 +191,7 @@ export class Neo4jTransformersSummarization {
     documentId: string,
     title: string,
     content: string,
-    metadata: Record<string, any> = {}
+    metadata: any = {}
   ): Promise<DocumentSummary> {
     await this.initialize();
 
@@ -619,7 +619,7 @@ export class Neo4jTransformersSummarization {
     documentId: string,
     documentEmbedding: number[],
     summaryEmbedding: number[],
-    metadata: Record<string, any>
+    metadata: any
   ): Promise<void> {
     try {
       // Store document embedding
@@ -945,7 +945,7 @@ export class Neo4jTransformersSummarization {
       id: string;
       title: string;
       content: string;
-      metadata?: Record<string, any>;
+      metadata?: any;
     }>,
     batchSize = 3
   ): Promise<DocumentSummary[]> {
@@ -1143,7 +1143,7 @@ export class LegalGraphOperations {
   ): Promise<{
     citations: string[];
     precedentAnalysis: string;
-    relevanceScores: Record<string, number>;
+    relevanceScores: any;
   }> {
     // Extract citations using regex
     const citations = documentContent.match(/\d+\s+[A-Z][a-z]+\.?\s*\d+/g) || [];
@@ -1154,7 +1154,7 @@ export class LegalGraphOperations {
     );
 
     // Mock relevance scores (future: implement citation analysis)
-    const relevanceScores: Record<string, number> = {};
+    const relevanceScores: any = {};
     citations.forEach(citation => {
       relevanceScores[citation] = Math.random() * 0.5 + 0.5; // 0.5-1.0 range
     });
@@ -1167,4 +1167,4 @@ export class LegalGraphOperations {
   }
 }
 
-export { LegalGraphOperations };
+// LegalGraphOperations already exported above

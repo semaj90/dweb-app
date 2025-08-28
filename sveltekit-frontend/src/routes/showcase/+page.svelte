@@ -6,7 +6,11 @@
 -->
 
 <script lang="ts">
-  import { Dialog, DropdownMenu } from 'bits-ui';
+  // Updated to use melt-ui components
+  import Dialog from '$lib/components/ui/MeltDialog.svelte';
+  
+  // TODO: Replace with melt-ui equivalent when available
+  // import { DropdownMenu } from 'bits-ui';
   import { onMount, tick } from 'svelte';
   import type { Case, Evidence, Report, CanvasState } from '$lib/data/types';
   import type { ChatMessage } from '$lib/types/chat';

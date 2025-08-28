@@ -5,7 +5,7 @@
  */
 
 import { QdrantClient } from '@qdrant/js-client-rest';
-import type { PointStruct, ScoredPoint, SearchParams } from '@qdrant/js-client-rest/dist/types';
+import type { PointStruct, ScoredPoint, SearchParams } from '@qdrant/js-client-rest';
 import { LegalDocumentSOM } from './som-clustering';
 import { NESCacheOrchestrator } from './nes-cache-orchestrator';
 import { db } from '$lib/server/db/index.js';
@@ -72,8 +72,7 @@ export class OptimizedQdrantService {
 
     this.client = new QdrantClient({
       url: this.config.url,
-      apiKey: this.config.apiKey || undefined,
-      timeout: this.config.timeout
+      apiKey: this.config.apiKey || undefined
     });
 
     this.initializeEnhancedFeatures();

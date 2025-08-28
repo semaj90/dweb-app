@@ -15,17 +15,17 @@ export const legalDocuments = pgTable('legal_documents', {
   documentType: text('document_type').notNull().$type<'contract' | 'motion' | 'evidence' | 'correspondence' | 'brief' | 'regulation' | 'case_law'>(),
   jurisdiction: text('jurisdiction').notNull().default('federal'),
   practiceArea: text('practice_area').$type<'corporate' | 'litigation' | 'intellectual_property' | 'employment' | 'real_estate' | 'criminal' | 'family' | 'tax' | 'immigration' | 'environmental'>(),
-  
+
   // Metadata
   fileHash: text('file_hash').unique(),
   fileName: text('file_name'),
   fileSize: integer('file_size'),
   mimeType: text('mime_type'),
-  
+
   // Vector embeddings (384-dimensional for nomic-embed-text)
   contentEmbedding: vector('content_embedding', { dimensions: 384 }),
   titleEmbedding: vector('title_embedding', { dimensions: 384 }),
-  
+
   // Document analysis results
   analysisResults: jsonb('analysis_results').$type<{
     entities: { type: string; value: string; confidence: number }[];
@@ -39,7 +39,7 @@ export const legalDocuments = pgTable('legal_documents', {
     obligations: string[];
     risks: { type: string; severity: 'low' | 'medium' | 'high'; description: string }[];
   }>(),
-  
+
   // Legal classification
   legalCategories: text('legal_categories').array(),
   citations: jsonb('citations').$type<{
@@ -49,12 +49,12 @@ export const legalDocuments = pgTable('legal_documents', {
     judges?: string[];
     precedentLevel: 'binding' | 'persuasive' | 'informational';
   }[]>(),
-  
+
   // Status tracking
   processingStatus: text('processing_status').notNull().default('pending').$type<'pending' | 'processing' | 'completed' | 'error'>(),
   isConfidential: boolean('is_confidential').notNull().default(false),
   retentionDate: timestamp('retention_date'),
-  
+
   // Audit trail
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
@@ -68,11 +68,11 @@ export const legalDocuments = pgTable('legal_documents', {
   statusIdx: index('legal_documents_status_idx').on(table.processingStatus),
   createdAtIdx: index('legal_documents_created_at_idx').on(table.createdAt),
   confidentialIdx: index('legal_documents_confidential_idx').on(table.isConfidential),
-  
+
   // Vector similarity search indexes
   contentEmbeddingIdx: index('legal_documents_content_embedding_idx').using('ivfflat', table.contentEmbedding),
   titleEmbeddingIdx: index('legal_documents_title_embedding_idx').using('ivfflat', table.titleEmbedding),
-  
+
   // Unique constraints
   fileHashUnique: uniqueIndex('legal_documents_file_hash_unique').on(table.fileHash),
 }));
@@ -83,31 +83,31 @@ export const legalCases = pgTable('legal_cases', {
   caseNumber: text('case_number').notNull().unique(),
   title: text('title').notNull(),
   description: text('description'),
-  
+
   // Case details
   clientName: text('client_name').notNull(),
   opposingParty: text('opposing_party'),
   jurisdiction: text('jurisdiction').notNull(),
   courtName: text('court_name'),
   judgeAssigned: text('judge_assigned'),
-  
+
   // Case classification
   caseType: text('case_type').notNull().$type<'civil' | 'criminal' | 'administrative' | 'appellate' | 'arbitration'>(),
   practiceArea: text('practice_area').notNull(),
   priority: text('priority').notNull().default('medium').$type<'low' | 'medium' | 'high' | 'critical'>(),
-  
+
   // Status and dates
   status: text('status').notNull().default('active').$type<'active' | 'pending' | 'closed' | 'archived' | 'on_hold'>(),
   filingDate: timestamp('filing_date'),
   trialDate: timestamp('trial_date'),
   closeDate: timestamp('close_date'),
-  
+
   // Financial tracking
   estimatedValue: integer('estimated_value'),
   actualValue: integer('actual_value'),
   billingRate: integer('billing_rate'),
   totalBilled: integer('total_billed').default(0),
-  
+
   // Case summary and strategy
   caseSummary: text('case_summary'),
   legalStrategy: text('legal_strategy'),
@@ -118,7 +118,7 @@ export const legalCases = pgTable('legal_cases', {
     relevance: 'high' | 'medium' | 'low';
     summary: string;
   }[]>(),
-  
+
   // Audit trail
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
@@ -148,7 +148,7 @@ export const caseDocuments = pgTable('case_documents', {
   documentIdIdx: index('case_documents_document_id_idx').on(table.documentId),
   relationshipIdx: index('case_documents_relationship_idx').on(table.relationship),
   importanceIdx: index('case_documents_importance_idx').on(table.importance),
-  
+
   // Unique constraint to prevent duplicate document-case relationships
   uniqueCaseDocument: uniqueIndex('case_documents_unique').on(table.caseId, table.documentId),
 }));
@@ -158,7 +158,7 @@ export const legalEntities = pgTable('legal_entities', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: text('name').notNull(),
   entityType: text('entity_type').notNull().$type<'person' | 'corporation' | 'partnership' | 'llc' | 'government' | 'nonprofit' | 'trust' | 'estate'>(),
-  
+
   // Contact information
   primaryEmail: text('primary_email'),
   primaryPhone: text('primary_phone'),
@@ -169,22 +169,22 @@ export const legalEntities = pgTable('legal_entities', {
     zipCode: string;
     country: string;
   }>(),
-  
+
   // Legal details
   jurisdiction: text('jurisdiction'),
   taxId: text('tax_id'),
   incorporationDate: timestamp('incorporation_date'),
-  
+
   // Relationships
   parentEntity: uuid('parent_entity').references(() => legalEntities.id),
   aliases: text('aliases').array(),
-  
+
   // Vector embedding for entity matching
   nameEmbedding: vector('name_embedding', { dimensions: 384 }),
-  
+
   // Status
   isActive: boolean('is_active').notNull().default(true),
-  
+
   // Audit trail
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
@@ -194,7 +194,7 @@ export const legalEntities = pgTable('legal_entities', {
   jurisdictionIdx: index('legal_entities_jurisdiction_idx').on(table.jurisdiction),
   emailIdx: index('legal_entities_email_idx').on(table.primaryEmail),
   activeIdx: index('legal_entities_active_idx').on(table.isActive),
-  
+
   // Vector similarity index
   nameEmbeddingIdx: index('legal_entities_name_embedding_idx').using('ivfflat', table.nameEmbedding),
 }));
@@ -205,12 +205,12 @@ export const agentAnalysisCache = pgTable('agent_analysis_cache', {
   cacheKey: text('cache_key').notNull().unique(),
   documentId: uuid('document_id').references(() => legalDocuments.id),
   caseId: uuid('case_id').references(() => legalCases.id),
-  
+
   // Analysis metadata
   agentName: text('agent_name').notNull(),
   analysisType: text('analysis_type').notNull().$type<'document_analysis' | 'contract_review' | 'risk_assessment' | 'precedent_search' | 'compliance_check'>(),
   prompt: text('prompt').notNull(),
-  
+
   // Results
   response: text('response').notNull(),
   confidence: integer('confidence').notNull(), // 1-10 scale
@@ -220,12 +220,12 @@ export const agentAnalysisCache = pgTable('agent_analysis_cache', {
     completion: number;
     total: number;
   }>(),
-  
+
   // Cache management
   expiresAt: timestamp('expires_at').notNull(),
   accessCount: integer('access_count').notNull().default(0),
   lastAccessed: timestamp('last_accessed').notNull().defaultNow(),
-  
+
   createdAt: timestamp('created_at').notNull().defaultNow(),
 }, (table) => ({
   cacheKeyIdx: index('agent_analysis_cache_key_idx').on(table.cacheKey),

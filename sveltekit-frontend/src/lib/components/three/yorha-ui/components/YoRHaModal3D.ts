@@ -6,7 +6,7 @@
 import * as THREE from 'three';
 import { YoRHa3DComponent, type YoRHaStyle, YORHA_COLORS } from '../YoRHaUI3D';
 
-export interface YoRHaModal3DOptions extends YoRHaStyle {
+export interface YoRHaModal3DOptions extends Omit<YoRHaStyle, 'variant'> {
   title?: string;
   variant?: 'default' | 'alert' | 'confirm' | 'fullscreen' | 'terminal';
   size?: 'small' | 'medium' | 'large' | 'fullscreen';

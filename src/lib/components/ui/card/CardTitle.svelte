@@ -1,15 +1,20 @@
 <script lang="ts">
   import type { HTMLAttributes } from 'svelte/elements';
+  import type { Snippet } from 'svelte';
   
   interface Props extends HTMLAttributes<HTMLHeadingElement> {
     className?: string;
+    children?: Snippet;
   }
   
-  export let className: string = '';
+  let { className = '', children, ...restProps }: Props = $props();
 </script>
 
 <h3
   class="text-2xl font-semibold leading-none tracking-tight {className}"
+  {...restProps}
 >
-  <slot />
+  {#if children}
+    {@render children()}
+  {/if}
 </h3>

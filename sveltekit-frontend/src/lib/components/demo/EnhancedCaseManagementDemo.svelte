@@ -1,0 +1,431 @@
+<!--
+  Enhanced Case Management Demo Component
+  Demonstrates XState + Database + Cognitive Cache Integration
+-->
+
+<script lang="ts">
+  import { createActor } from 'xstate';
+  import { onMount, onDestroy } from 'svelte';
+  import { enhancedCaseManagementMachine, type EnhancedCaseManagementContext } from '../../machines/enhanced-case-machine-with-cognitive-cache';
+  import Button from '../ui/Button.svelte';
+  import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+
+  // Machine actor
+  const actor = createActor(enhancedCaseManagementMachine);
+  
+  // Reactive state
+  let machineState = $state(actor.getSnapshot());
+  let isConnected = $state(false);
+
+  // Form data for case creation
+  let newCaseData = $state({
+    title: '',
+    description: '',
+    priority: 'medium' as const,
+    status: 'open' as const
+  });
+
+  let searchQuery = $state('');
+  let userId = $state('demo-user-123');
+
+  // Subscribe to state changes
+  onMount(() => {
+    const subscription = actor.subscribe((snapshot) => {
+      machineState = snapshot;
+    });
+
+    // Start the machine
+    actor.start();
+    
+    // Initialize the system
+    actor.send({ type: 'INITIALIZE_SYSTEM', userId });
+    
+    isConnected = true;
+
+    return () => {
+      subscription.unsubscribe();
+      actor.stop();
+    };
+  });
+
+  // Reactive getters for easier template access
+  const context = $derived(machineState.context as EnhancedCaseManagementContext);
+  const isLoading = $derived(context.isLoading);
+  const currentState = $derived(machineState.value);
+  const error = $derived(context.error);
+  const databaseHealth = $derived(context.databaseHealth);
+  const cacheMetrics = $derived(context.cacheMetrics);
+
+  // Actions
+  function loadCase(caseId: string, withPrediction = false) {
+    if (withPrediction) {
+      actor.send({ type: 'LOAD_CASE_WITH_PREDICTION', caseId, predictNext: true });
+    } else {
+      actor.send({ type: 'LOAD_CASE', caseId, enableCache: true });
+    }
+  }
+
+  function createCase() {
+    if (!newCaseData.title || !newCaseData.description) {
+      return;
+    }
+
+    actor.send({
+      type: 'CREATE_CASE',
+      caseData: {
+        ...newCaseData,
+        createdBy: userId
+      }
+    });
+
+    // Reset form
+    newCaseData = {
+      title: '',
+      description: '',
+      priority: 'medium',
+      status: 'open'
+    };
+  }
+
+  function searchCases() {
+    if (searchQuery.trim()) {
+      actor.send({
+        type: 'SEARCH_CASES_COGNITIVE',
+        query: searchQuery,
+        useML: true
+      });
+    }
+  }
+
+  function refreshHealth() {
+    actor.send({ type: 'CHECK_DATABASE_HEALTH' });
+  }
+
+  function refreshMetrics() {
+    actor.send({ type: 'REFRESH_CACHE_METRICS' });
+  }
+
+  // Health status colors
+  const healthColor = $derived(
+    databaseHealth.overall === 'healthy' ? 'text-green-600' :
+    databaseHealth.overall === 'degraded' ? 'text-yellow-600' :
+    'text-red-600'
+  );
+</script>
+
+<div class="max-w-6xl mx-auto p-6 space-y-6">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold">Enhanced Case Management Demo</h1>
+      <p class="text-gray-600 mt-2">
+        XState + Database + Cognitive Cache Integration
+      </p>
+    </div>
+    
+    <!-- Status Indicators -->
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2">
+        <div class="w-2 h-2 rounded-full {isConnected ? 'bg-green-500' : 'bg-red-500'}"></div>
+        <span class="text-sm">XState: {isConnected ? 'Connected' : 'Disconnected'}</span>
+      </div>
+      
+      <div class="flex items-center gap-2">
+        <div class="w-2 h-2 rounded-full {databaseHealth.overall === 'healthy' ? 'bg-green-500' : 'bg-red-500'}"></div>
+        <span class="text-sm {healthColor}">DB: {databaseHealth.overall}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- System Status Dashboard -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- Machine State -->
+    <Card>
+      <CardHeader>
+        <CardTitle>Machine State</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div class="space-y-2">
+          <div class="flex justify-between">
+            <span>Current State:</span>
+            <code class="bg-gray-100 px-2 py-1 rounded text-sm">{currentState}</code>
+          </div>
+          <div class="flex justify-between">
+            <span>Workflow Step:</span>
+            <code class="bg-gray-100 px-2 py-1 rounded text-sm">{context.workflowStep}</code>
+          </div>
+          <div class="flex justify-between">
+            <span>Loading:</span>
+            <span class="{isLoading ? 'text-orange-600' : 'text-green-600'}">
+              {isLoading ? 'Yes' : 'No'}
+            </span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+
+    <!-- Database Health -->
+    <Card>
+      <CardHeader class="flex flex-row items-center justify-between">
+        <CardTitle>Database Health</CardTitle>
+        <Button variant="outline" size="sm" onclick={refreshHealth}>
+          Refresh
+        </Button>
+      </CardHeader>
+      <CardContent>
+        <div class="space-y-2">
+          <div class="flex justify-between">
+            <span>PostgreSQL:</span>
+            <span class="{databaseHealth.postgres ? 'text-green-600' : 'text-red-600'}">
+              {databaseHealth.postgres ? '✓ Connected' : '✗ Disconnected'}
+            </span>
+          </div>
+          <div class="flex justify-between">
+            <span>Qdrant:</span>
+            <span class="{databaseHealth.qdrant ? 'text-green-600' : 'text-red-600'}">
+              {databaseHealth.qdrant ? '✓ Connected' : '✗ Disconnected'}
+            </span>
+          </div>
+          <div class="flex justify-between">
+            <span>Overall:</span>
+            <span class="{healthColor}">{databaseHealth.overall.toUpperCase()}</span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+
+    <!-- Cache Metrics -->
+    <Card>
+      <CardHeader class="flex flex-row items-center justify-between">
+        <CardTitle>Cache Metrics</CardTitle>
+        <Button variant="outline" size="sm" onclick={refreshMetrics}>
+          Refresh
+        </Button>
+      </CardHeader>
+      <CardContent>
+        <div class="space-y-2">
+          <div class="flex justify-between">
+            <span>Hit Rate:</span>
+            <span class="font-mono">{(cacheMetrics.hitRate * 100).toFixed(1)}%</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Avg Latency:</span>
+            <span class="font-mono">{cacheMetrics.averageLatency.toFixed(0)}ms</span>
+          </div>
+          <div class="flex justify-between">
+            <span>ML Accuracy:</span>
+            <span class="font-mono">{(cacheMetrics.cognitiveAccuracy * 100).toFixed(1)}%</span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  </div>
+
+  <!-- Error Display -->
+  {#if error}
+    <Card class="border-red-200 bg-red-50">
+      <CardContent>
+        <div class="flex items-center gap-2 text-red-600">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+          </svg>
+          <span class="font-medium">{error}</span>
+        </div>
+      </CardContent>
+    </Card>
+  {/if}
+
+  <!-- Case Operations -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Create Case -->
+    <Card>
+      <CardHeader>
+        <CardTitle>Create New Case</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">Title</label>
+            <input 
+              type="text" 
+              bind:value={newCaseData.title}
+              placeholder="Enter case title..."
+              class="w-full p-2 border rounded-md"
+            />
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium mb-1">Description</label>
+            <textarea 
+              bind:value={newCaseData.description}
+              placeholder="Enter case description..."
+              rows="3"
+              class="w-full p-2 border rounded-md"
+            ></textarea>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-1">Priority</label>
+              <select bind:value={newCaseData.priority} class="w-full p-2 border rounded-md">
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium mb-1">Status</label>
+              <select bind:value={newCaseData.status} class="w-full p-2 border rounded-md">
+                <option value="open">Open</option>
+                <option value="active">Active</option>
+                <option value="closed">Closed</option>
+              </select>
+            </div>
+          </div>
+          
+          <Button 
+            onclick={createCase}
+            disabled={isLoading || !newCaseData.title || !newCaseData.description}
+            class="w-full"
+          >
+            {isLoading && currentState === 'creatingCase' ? 'Creating...' : 'Create Case'}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+
+    <!-- Search Cases -->
+    <Card>
+      <CardHeader>
+        <CardTitle>Cognitive Search</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">Search Query</label>
+            <input 
+              type="text" 
+              bind:value={searchQuery}
+              placeholder="Search with ML-powered cognition..."
+              class="w-full p-2 border rounded-md"
+              onkeydown={(e) => e.key === 'Enter' && searchCases()}
+            />
+          </div>
+          
+          <Button 
+            onclick={searchCases}
+            disabled={isLoading || !searchQuery.trim()}
+            class="w-full"
+          >
+            {isLoading && currentState === 'searchingWithCognition' ? 'Searching...' : 'Search with AI'}
+          </Button>
+          
+          {#if context.searchResults.length > 0}
+            <div class="mt-4">
+              <h4 class="font-medium mb-2">Search Results ({context.searchResults.length})</h4>
+              <div class="space-y-2 max-h-40 overflow-y-auto">
+                {#each context.searchResults as result}
+                  <div class="p-2 bg-gray-50 rounded text-sm">
+                    <div class="font-medium">{result.title}</div>
+                    <div class="text-gray-600 truncate">{result.description}</div>
+                  </div>
+                {/each}
+              </div>
+            </div>
+          {/if}
+        </div>
+      </CardContent>
+    </Card>
+  </div>
+
+  <!-- Case Loading Demo -->
+  <Card>
+    <CardHeader>
+      <CardTitle>Case Loading Demo</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <div class="space-y-4">
+        <p class="text-sm text-gray-600">
+          Demonstrate different case loading strategies with cognitive caching
+        </p>
+        
+        <div class="flex flex-wrap gap-2">
+          <Button 
+            variant="outline" 
+            onclick={() => loadCase('demo-case-001')}
+            disabled={isLoading}
+          >
+            Load Case (Standard)
+          </Button>
+          
+          <Button 
+            variant="outline" 
+            onclick={() => loadCase('demo-case-002', true)}
+            disabled={isLoading}
+          >
+            Load Case (With Prediction)
+          </Button>
+          
+          <Button 
+            variant="outline" 
+            onclick={() => loadCase('demo-case-003')}
+            disabled={isLoading}
+          >
+            Load Case (Cache Priority)
+          </Button>
+        </div>
+        
+        {#if context.currentCase}
+          <div class="mt-4 p-4 bg-gray-50 rounded">
+            <h4 class="font-medium mb-2">Current Case</h4>
+            <div class="space-y-1 text-sm">
+              <div><span class="font-medium">ID:</span> {context.currentCase.id}</div>
+              <div><span class="font-medium">Title:</span> {context.currentCase.title}</div>
+              <div><span class="font-medium">Status:</span> {context.currentCase.status}</div>
+              <div><span class="font-medium">Priority:</span> {context.currentCase.priority}</div>
+              {#if context.currentCase.description}
+                <div><span class="font-medium">Description:</span> {context.currentCase.description}</div>
+              {/if}
+            </div>
+          </div>
+        {/if}
+      </div>
+    </CardContent>
+  </Card>
+
+  <!-- Integration Info -->
+  <Card class="border-blue-200 bg-blue-50">
+    <CardHeader>
+      <CardTitle class="text-blue-800">Integration Architecture</CardTitle>
+    </CardHeader>
+    <CardContent class="text-sm text-blue-700">
+      <div class="space-y-2">
+        <div><strong>XState Machine:</strong> Manages application state and workflow</div>
+        <div><strong>Database Layer:</strong> PostgreSQL + pgvector for data persistence</div>
+        <div><strong>Cognitive Cache:</strong> ML-driven caching with reinforcement learning</div>
+        <div><strong>MCP Tools:</strong> Clean abstractions for database operations</div>
+        <div><strong>API Integration:</strong> RESTful endpoints for external communication</div>
+      </div>
+    </CardContent>
+  </Card>
+</div>
+
+<style>
+  /* Component-specific styles */
+  :global(.card) {
+    @apply border border-gray-200 rounded-lg shadow-sm;
+  }
+  
+  :global(.card-header) {
+    @apply p-4 pb-2;
+  }
+  
+  :global(.card-content) {
+    @apply p-4 pt-0;
+  }
+  
+  :global(.card-title) {
+    @apply text-lg font-semibold;
+  }
+</style>

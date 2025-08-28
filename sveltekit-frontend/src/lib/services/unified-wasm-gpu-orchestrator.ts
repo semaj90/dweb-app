@@ -4,8 +4,31 @@
  * Production-ready orchestration layer with multi-tier fallbacks and performance optimization
  */
 
-import type { CanvasState } from '$lib/stores/canvas-states';
-import type { MultiDimArray, GPUProcessingStats } from '$lib/workers/gpu-tensor-worker';
+// Commented out problematic imports due to module resolution issues
+// import type { CanvasState } from '$lib/stores/canvas-states';
+// import type { MultiDimArray, GPUProcessingStats } from '$lib/workers/gpu-tensor-worker';
+
+// Define interfaces locally
+interface CanvasState {
+  width: number;
+  height: number;
+  data?: Uint8ClampedArray;
+  pixels?: number[][];
+  format?: string;
+}
+
+interface MultiDimArray {
+  data: Float32Array | Uint8Array | Int32Array;
+  shape: number[];
+  dtype: string;
+}
+
+interface GPUProcessingStats {
+  totalProcessingTime: number;
+  gpuUtilization: number;
+  memoryUsage: number;
+  operationsCompleted: number;
+}
 import { NESStyleGPUBridge } from './nes-gpu-bridge';
 import { LlamaCppOllamaService, createLlamaCppOllamaService } from './llamacpp-ollama-integration';
 import { gpuServiceIntegration } from './gpu-service-integration';
@@ -40,6 +63,9 @@ export interface WASMGPUTask {
     sessionId?: string;
     documentType?: string;
     expectedDuration?: number;
+    modelType?: string;
+    inputSize?: number;
+    operation?: string;
   };
 }
 
@@ -135,7 +161,7 @@ export class UnifiedWASMGPUOrchestrator {
   /**
    * Initialize all integrated services
    */
-  private async initialize(): Promise<void> {
+  async initialize(): Promise<void> {
     if (!browser) {
       console.warn('⚠️ WASM-GPU Orchestrator: Running in non-browser environment');
       return;
@@ -704,7 +730,7 @@ export class UnifiedWASMGPUOrchestrator {
   /**
    * Select optimal service for task
    */
-  private selectOptimalService(task: WASMGPUTask): string {
+  private selectOptimalService(task: WASMGPUTask): 'gpu_compute' | 'nes_bridge' | 'ollama_llama' | 'yorha_neural' | 'quic_gateway' | 'auto' {
     switch (task.type) {
       case 'document_processing':
         return this.ollamaService ? 'ollama_llama' : 'yorha_neural';
@@ -866,11 +892,4 @@ if (browser) {
   unifiedWASMGPUOrchestrator.initialize().catch(console.warn);
 }
 
-// Export types
-export type { 
-  UnifiedWASMGPUConfig, 
-  WASMGPUTask, 
-  WASMGPUResult, 
-  ServiceStatus, 
-  UnifiedPerformanceMetrics 
-};
+// Types already exported above via export interface declarations

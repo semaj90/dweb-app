@@ -1,9 +1,15 @@
+/**
+ * Documents API Endpoint
+ * Enhanced with PostgreSQL + pgvector + Drizzle + Cognitive Cache
+ */
+
 import { json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
-import { db } from "$lib/database/postgres-enhanced.js";
-import { legalDocuments, legalCases, caseDocuments } from "$lib/database/schema/legal-documents.js";
-import { vectorSearchService } from "$lib/database/vector-operations.js";
+import { db } from "$lib/server/db";
+import { legal_documents, cases, evidence } from "$lib/server/db/schema-postgres";
 import { sql, desc, asc, and, or, eq, ilike, inArray, count, isNotNull } from "drizzle-orm";
+import { cognitiveCacheManager } from '$lib/services/cognitive-cache-integration';
+import { getDatabaseHealth } from '../../../lib/database';
 import { z } from 'zod';
 
 // Query parameters schema for GET requests
@@ -61,38 +67,38 @@ export const GET: RequestHandler = async ({ url }) => {
     const filterConditions = [];
 
     if (listParams.documentType) {
-      filterConditions.push(eq(legalDocuments.documentType, listParams.documentType));
+      filterConditions.push(eq(legal_documents.document_type, listParams.documentType));
     }
 
     if (listParams.jurisdiction) {
-      filterConditions.push(eq(legalDocuments.jurisdiction, listParams.jurisdiction));
+      filterConditions.push(eq(legal_documents.jurisdiction, listParams.jurisdiction));
     }
 
     if (listParams.practiceArea) {
-      filterConditions.push(eq(legalDocuments.practiceArea, listParams.practiceArea));
+      filterConditions.push(eq(legal_documents.practice_area, listParams.practiceArea));
     }
 
     if (listParams.status) {
-      filterConditions.push(eq(legalDocuments.processingStatus, listParams.status));
+      filterConditions.push(eq(legal_documents.processing_status, listParams.status));
     }
 
     if (listParams.isConfidential !== undefined) {
-      filterConditions.push(eq(legalDocuments.isConfidential, listParams.isConfidential));
+      filterConditions.push(eq(legal_documents.is_confidential, listParams.isConfidential));
     }
 
     if (listParams.hasEmbeddings !== undefined) {
       if (listParams.hasEmbeddings) {
         filterConditions.push(
           and(
-            isNotNull(legalDocuments.contentEmbedding),
-            isNotNull(legalDocuments.titleEmbedding)
+            isNotNull(legal_documents.content_embedding),
+            isNotNull(legal_documents.title_embedding)
           )
         );
       } else {
         filterConditions.push(
           or(
-            sql`${legalDocuments.contentEmbedding} IS NULL`,
-            sql`${legalDocuments.titleEmbedding} IS NULL`
+            sql`${legal_documents.content_embedding} IS NULL`,
+            sql`${legal_documents.title_embedding} IS NULL`
           )
         );
       }
@@ -101,8 +107,8 @@ export const GET: RequestHandler = async ({ url }) => {
     if (listParams.search) {
       filterConditions.push(
         or(
-          ilike(legalDocuments.title, `%${listParams.search}%`),
-          ilike(legalDocuments.content, `%${listParams.search}%`)
+          ilike(legal_documents.title, `%${listParams.search}%`),
+          ilike(legal_documents.content, `%${listParams.search}%`)
         )
       );
     }

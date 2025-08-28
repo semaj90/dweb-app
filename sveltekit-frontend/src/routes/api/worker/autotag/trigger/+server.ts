@@ -5,7 +5,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { createClient } from 'redis';
+import { redis } from '$lib/server/cache/redis-service';
 import { z } from 'zod';
 import { db } from '$lib/server/db/index';
 import { cases } from '$lib/server/db/schema-postgres';
@@ -32,18 +32,9 @@ const WorkerTriggerSchema = z.object({
 
 type WorkerTriggerData = z.infer<typeof WorkerTriggerSchema>;
 
-// Redis client for worker communication
-let redisClient: ReturnType<typeof createClient> | null = null;
-
 async function getRedisClient() {
-  if (!redisClient) {
-    redisClient = createClient({
-      url: process.env.REDIS_URL || 'redis://localhost:6379',
-      socket: { connectTimeout: 5000 }
-    });
-    await redisClient.connect();
-  }
-  return redisClient;
+  await redis.connect();
+  return redis;
 }
 
 /**

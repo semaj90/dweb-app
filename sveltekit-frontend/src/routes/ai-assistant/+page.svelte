@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button } from 'bits-ui';
+  import Button from '$lib/components/ui/MeltButton.svelte';
 import { onMount } from 'svelte';
 
 let response = $state('');

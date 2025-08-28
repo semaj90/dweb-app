@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package gpu_rag_system;
 
-option go_package = "github.com/yourorg/deeds-web-app/proto/gpu;gpu";
+option go_package = "legal-ai-production/proto/gpu;gpu";
 
 // Core data types for embeddings and chunks
 message EmbeddingVector {
@@ -153,17 +153,17 @@ enum RecommendationType {
 service GPUProcessingService {
   // Bidirectional streaming for real-time processing
   rpc ProcessStream(stream DataChunk) returns (stream ProcessingResult);
-  
+
   // Semantic operations
   rpc ProcessSemantic(SemanticRequest) returns (ProcessingResult);
-  
+
   // Enhanced RAG pipeline
   rpc QueryRAG(RAGRequest) returns (RAGResponse);
   rpc StreamRAG(RAGRequest) returns (stream RAGResponse);
-  
+
   // Recommendation system
   rpc GetRecommendations(RecommendationRequest) returns (RecommendationResponse);
-  
+
   // System health and metrics
   rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
   rpc GetMetrics(MetricsRequest) returns (MetricsResponse);

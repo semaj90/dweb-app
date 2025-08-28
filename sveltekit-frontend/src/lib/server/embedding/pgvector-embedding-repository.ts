@@ -1,7 +1,7 @@
 
 // PgVector-backed implementation of EmbeddingRepository.
-import { db } from '$lib/server/db/index.js';
-import { legal_documents, documentChunks } from '$lib/server/db/schema-postgres.js';
+import { db } from '../db/index';
+import { legal_documents, documentChunks } from '../db/schema-postgres';
 import { sql } from 'drizzle-orm';
 import { splitText } from './text-splitter';
 import { getEmbedding } from '$lib/server/services/embedding-service';

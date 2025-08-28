@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Dialog } from 'bits-ui';
+  import Dialog from '$lib/components/ui/MeltDialog.svelte';
   import { Search, Sparkles, FileText, Users, Calendar, Zap, Brain, Target } from 'lucide-svelte';
   import { createEventDispatcher, onMount } from 'svelte';
   import { fade, fly, scale } from 'svelte/transition';

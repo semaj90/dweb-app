@@ -14,7 +14,7 @@ export * from './ui/layout/index.js';
 // ===== ENHANCED UI COMPONENTS =====
 // Note: Using selective exports to avoid conflicts with base UI components
 export { Button as EnhancedButton, Card as EnhancedCard, Input as EnhancedInput } from './ui/enhanced/index.js';
-export { SelectOption as EnhancedSelectOption } from './ui/enhanced-bits/index.js';
+// export { SelectOption as EnhancedSelectOption } from './ui/enhanced-bits/index.js'; // Disabled: empty file
 export * from './ui/modern/index.js';
 
 // ===== FORM COMPONENTS =====
@@ -30,7 +30,7 @@ export * from './ui/slider/index.js';
 // ===== NAVIGATION & INTERACTION =====
 export * from './ui/tabs/index.js';
 // Context menu exports handled selectively to avoid conflicts
-export { ContextMenuTrigger, ContextMenuContent, ContextMenuItem } from './ui/context-menu/index.js';
+export { Trigger as ContextMenuTrigger, Content as ContextMenuContent, Item as ContextMenuItem } from './ui/context-menu/index.js';
 export * from './ui/dialog/index.js';
 // Tooltip exports - conditional based on availability
 // export * from './ui/tooltip/index.js';

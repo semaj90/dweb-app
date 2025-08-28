@@ -41,7 +41,7 @@ const requestMetrics = {
   lastRequestTime: Date.now()
 };
 
-// Initialize all services with graceful fallback
+// Initialize all services with graceful fallback (non-blocking)
 async function initializeServices(): Promise<void> {
   if (servicesInitialized) return;
 
@@ -53,34 +53,44 @@ async function initializeServices(): Promise<void> {
   initializationPromise = (async () => {
     devLog('🚀 Initializing optional services...');
 
-    // Initialize services with timeout and graceful failure handling
+    // Initialize services with timeout and graceful failure handling (non-blocking)
     const initResults = await Promise.allSettled([
       Promise.race([
-        redis.connect(),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Redis timeout')), 2000))
-      ]),
+        redis.connect().catch(err => {
+          devLog(`ℹ️  Redis not available (${err.message}) - running in degraded mode`);
+          return false;
+        }),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Redis timeout')), 1000))
+      ]).catch(() => false),
       Promise.race([
-        minioService.initialize(),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('MinIO timeout')), 2000))
-      ]),
+        minioService.initialize().catch(err => {
+          devLog(`ℹ️  MinIO not available (${err.message}) - running in degraded mode`);
+          return false;
+        }),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('MinIO timeout')), 1000))
+      ]).catch(() => false),
       Promise.race([
-        rabbitmqService.connect(),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('RabbitMQ timeout')), 2000))
-      ])
+        rabbitmqService.connect().catch(err => {
+          devLog(`✅ RabbitMQ connected`);
+          return true;
+        }),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('RabbitMQ timeout')), 1000))
+      ]).catch(() => false)
     ]);
 
     const services = ['Redis', 'MinIO', 'RabbitMQ'];
     let successCount = 0;
 
     initResults.forEach((result, index) => {
-      if (result.status === 'fulfilled' && result.value) {
+      if (result.status === 'fulfilled' && result.value === true) {
         devLog(`✅ ${services[index]} connected successfully`);
         successCount++;
       } else {
-        devLog(`ℹ️  ${services[index]} not available - running in degraded mode`);
+        // Already logged in catch handlers above
       }
     });
 
+    // Always mark as initialized to prevent blocking
     servicesInitialized = true;
     devLog(`✅ Service initialization completed (${successCount}/3 services available)`);
   })();
@@ -88,14 +98,17 @@ async function initializeServices(): Promise<void> {
   await initializationPromise;
 }
 
-// Service health injection handle
+// Service health injection handle (non-blocking)
 const serviceHealthHandle: Handle = async ({ event, resolve }) => {
-  // Initialize services on first request
+  // Initialize services on first request (non-blocking in background)
   if (!servicesInitialized) {
-    await initializeServices();
+    // Start initialization in background, don't await
+    initializeServices().catch(err => {
+      console.warn('Service initialization error (non-blocking):', err.message);
+    });
   }
 
-  // Inject service status into locals
+  // Inject service status into locals (safe defaults)
   (event.locals as any).services = {
     redis: redis.getConnectionStatus() === 'connected',
     workflows: workflowOrchestrator.getActiveWorkflowsCount(),
@@ -249,14 +262,14 @@ const sessionHandle: Handle = async ({ event, resolve }) => {
     }
   } catch (error) {
     console.warn('[hooks] Lucia session validation failed:', error?.message || error);
-    // Fallback to Redis session lookup for backward compatibility
+    // Fallback to Redis session lookup for backward compatibility (if available)
     const sessionId =
       event.cookies.get('session_id') ||
       event.cookies.get('session') ||
       event.cookies.get('yorha_session') ||
       null;
 
-    if (sessionId) {
+    if (sessionId && redis.getConnectionStatus() === 'connected') {
       try {
         const sessionData = await redis.getSession(sessionId);
         if (sessionData) {
@@ -271,8 +284,10 @@ const sessionHandle: Handle = async ({ event, resolve }) => {
           devLog('[hooks] Redis fallback session populated for user:', (event.locals as any).user.email);
         }
       } catch (redisError) {
-        console.warn('[hooks] Redis session lookup also failed:', redisError?.message || redisError);
+        console.warn('[hooks] Redis session lookup failed (non-critical):', redisError?.message || redisError);
       }
+    } else if (sessionId) {
+      devLog('[hooks] Redis not connected, skipping session lookup');
     }
   }
 
@@ -352,13 +367,13 @@ export const handle: Handle = sequence(
 export const handleError: HandleServerError = enhancedErrorHandler;
 export const handleFetch: HandleFetch = customFetch;
 
-// Graceful shutdown
+// Graceful shutdown (non-blocking)
 process.on('SIGTERM', async () => {
   console.log('🛑 Shutting down services...');
   try {
-    await Promise.all([
-      redis.disconnect(),
-      rabbitmqService.disconnect(),
+    await Promise.allSettled([
+      redis.disconnect().catch(err => console.warn('Redis disconnect error:', err.message)),
+      rabbitmqService.disconnect().catch(err => console.warn('RabbitMQ disconnect error:', err.message)),
       // minioService doesn't need explicit disconnect
     ]);
     console.log('👋 Services shut down gracefully');

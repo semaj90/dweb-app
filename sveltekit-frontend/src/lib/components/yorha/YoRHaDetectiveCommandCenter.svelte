@@ -40,13 +40,14 @@
   // State
   let activeTab = $state('dashboard');
   let showNewCaseModal = $state(false);
+  let showAIAssistant = $state(false);
   let currentTime = $state(new Date());
   let notification = $state({ show: false, message: '', type: 'info' });
 
   // Navigation items
   const navigationItems = [
     { id: 'dashboard', label: 'COMMAND CENTER', icon: '⌘', active: true },
-    { id: 'evidence', label: 'EVIDENCE', icon: '🔍', route: '/yorha/evidence' },
+    { id: 'evidence', label: 'EVIDENCE', icon: '🔍', route: '/evidenceboard' },
     { id: 'persons', label: 'PERSONS OF INTEREST', icon: '👤', route: '/yorha/persons' },
     { id: 'analysis', label: 'ANALYSIS', icon: '📊', route: '/yorha/analysis' },
     { id: 'search', label: 'GLOBAL SEARCH', icon: '🔎', route: '/yorha/search' },
@@ -202,18 +203,25 @@
       </div>
       
       <div class="header-actions">
-        <button class="header-btn" on:click={openNewCaseModal}>
+        <button class="header-btn" onclick={openNewCaseModal}>
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
           </svg>
           NEW CASE
         </button>
         
-        <button class="header-btn" on:click={handleGlobalSearch}>
+        <button class="header-btn" onclick={handleGlobalSearch}>
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
           </svg>
           GLOBAL SEARCH
+        </button>
+        
+        <button class="header-btn ai-assistant" onclick={() => showAIAssistant = true}>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          AI ASSISTANT
         </button>
       </div>
     </div>
@@ -229,7 +237,7 @@
         {#each navigationItems as item}
           <button 
             class="sidebar-link {activeTab === item.id ? 'active' : ''}"
-            on:click={() => handleNavigation(item)}
+            onclick={() => handleNavigation(item)}
           >
             <span class="nav-icon">{item.icon}</span>
             {item.label}
@@ -374,6 +382,58 @@
     submitText="SAVE TO DATABASE"
     submitClass="yorha-btn-success"
   />
+</YoRHaDetectiveModal>
+{/if}
+
+<!-- AI Assistant Modal -->
+{#if showAIAssistant}
+<YoRHaDetectiveModal
+  showModal={showAIAssistant}
+  title="AI ASSISTANT"
+  onClose={() => showAIAssistant = false}
+>
+  <div class="ai-assistant-content">
+    <div class="ai-status-section">
+      <div class="ai-status-indicator active"></div>
+      <span class="ai-status-text">Neural Network Status: ACTIVE</span>
+    </div>
+    
+    <div class="ai-capabilities">
+      <div class="ai-capability">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <span>Evidence Pattern Analysis</span>
+      </div>
+      <div class="ai-capability">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+        </svg>
+        <span>Case Correlation Engine</span>
+      </div>
+      <div class="ai-capability">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+        </svg>
+        <span>Legal Precedent Search</span>
+      </div>
+    </div>
+    
+    <div class="ai-query-section">
+      <label class="ai-query-label">QUERY INPUT</label>
+      <textarea 
+        class="ai-query-input"
+        placeholder="Enter legal query or case analysis request..."
+        rows="4"
+      ></textarea>
+    </div>
+    
+    <div class="ai-actions">
+      <button class="yorha-btn">Analyze Current Case</button>
+      <button class="yorha-btn">Evidence Summary</button>
+      <button class="yorha-btn yorha-btn-primary">EXECUTE QUERY</button>
+    </div>
+  </div>
 </YoRHaDetectiveModal>
 {/if}
 
@@ -743,6 +803,124 @@
     .yorha-sidebar {
       position: static;
     }
+  }
+
+  /* AI Assistant Styles */
+  .header-btn.ai-assistant {
+    background: linear-gradient(135deg, #2E8B57 0%, #3CB371 100%) !important;
+    color: white !important;
+    border-color: #2E8B57 !important;
+    font-weight: bold !important;
+    box-shadow: 0 0 10px rgba(46, 139, 87, 0.3) !important;
+    animation: ai-pulse 2s infinite;
+  }
+
+  .header-btn.ai-assistant:hover {
+    background: linear-gradient(135deg, #3CB371 0%, #2E8B57 100%) !important;
+    box-shadow: 0 0 15px rgba(46, 139, 87, 0.5) !important;
+  }
+
+  @keyframes ai-pulse {
+    0% { box-shadow: 0 0 10px rgba(46, 139, 87, 0.3); }
+    50% { box-shadow: 0 0 20px rgba(46, 139, 87, 0.6); }
+    100% { box-shadow: 0 0 10px rgba(46, 139, 87, 0.3); }
+  }
+
+  .ai-assistant-content {
+    padding: 1.5rem;
+  }
+
+  .ai-status-section {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: #F7F6F2;
+    border: 1px solid #2E8B57;
+    margin-bottom: 1rem;
+  }
+
+  .ai-status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #FF6B6B;
+  }
+
+  .ai-status-indicator.active {
+    background: #2E8B57;
+    box-shadow: 0 0 8px #2E8B57;
+    animation: ai-blink 1.5s infinite;
+  }
+
+  .ai-status-text {
+    font-weight: bold;
+    color: #3D3D3D;
+  }
+
+  @keyframes ai-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .ai-capabilities {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .ai-capability {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: #F7F6F2;
+    border: 1px solid #D1CFC7;
+    font-size: 0.875rem;
+    color: #3D3D3D;
+  }
+
+  .ai-query-section {
+    margin-bottom: 1rem;
+  }
+
+  .ai-query-label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #3D3D3D;
+    font-size: 0.875rem;
+  }
+
+  .ai-query-input {
+    width: 100%;
+    padding: 0.75rem;
+    background: white;
+    border: 1px solid #D1CFC7;
+    color: #3D3D3D;
+    font-family: inherit;
+    font-size: 0.875rem;
+    resize: vertical;
+  }
+
+  .ai-query-input:focus {
+    outline: none;
+    border-color: #2E8B57;
+    box-shadow: 0 0 0 3px rgba(46, 139, 87, 0.2);
+  }
+
+  .ai-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .ai-actions .yorha-btn-primary {
+    grid-column: span 2;
+    background: #2E8B57 !important;
+    color: white !important;
+    border-color: #2E8B57 !important;
   }
 
   @media (max-width: 768px) {

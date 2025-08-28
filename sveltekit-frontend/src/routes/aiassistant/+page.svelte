@@ -41,7 +41,11 @@
   import { onMount, tick } from 'svelte';
   import { writable } from 'svelte/store';
   import { createMachine, interpret } from 'xstate';
-  import { Dialog, Tabs } from 'bits-ui';
+  // Updated to use melt-ui components
+  import Dialog from '$lib/components/ui/MeltDialog.svelte';
+  
+  // TODO: Replace with melt-ui equivalent when available
+  // import { Tabs } from 'bits-ui';
   import { Button } from '$lib/components/ui/button/index.js';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card/index.js';
   import { Badge } from '$lib/components/ui/badge/index.js';

@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
-import { db } from '$lib/server/db/index';
-import { cases, evidence, users } from '$lib/server/db/schema-postgres';
+import { db } from '$lib/server/db';
+import { cases, evidence, users } from '$lib/server/db';
 import { count, eq, desc } from 'drizzle-orm';
 import { yorhaDetectiveService } from '$lib/services/yorha-detective-service';
 

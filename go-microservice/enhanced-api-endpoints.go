@@ -375,30 +375,30 @@ func NewEnhancedAPIEndpoints() *EnhancedAPIEndpoints {
 	if port == "" {
 		port = "8094"
 	}
-	
+
 	log.Printf("🚀 Initializing Enhanced API Endpoints with Go-Llama integration...")
-	
+
 	// Initialize Go-Llama engine
 	modelPath := os.Getenv("LLAMA_MODEL_PATH")
 	if modelPath == "" {
 		// Default model path - adjust based on your setup
 		modelPath = "./models/gemma3-legal-4b-q4_0.gguf"
 	}
-	
+
 	gpuLayers := 35 // RTX 3060 Ti optimized
 	goLlamaEngine, err := NewGoLlamaEngine(modelPath, gpuLayers)
 	isLlamaEnabled := err == nil
-	
+
 	if err != nil {
 		log.Printf("⚠️ Go-Llama engine initialization failed: %v (continuing without direct llama)", err)
 	} else {
 		log.Printf("✅ Go-Llama engine initialized successfully")
 	}
-	
+
 	// Initialize TypeScript error optimizer
 	var tsOptimizer *TypeScriptErrorOptimizer
 	isGPUEnabled := false
-	
+
 	tsOptimizer, err = NewTypeScriptErrorOptimizer()
 	if err != nil {
 		log.Printf("⚠️ TypeScript optimizer initialization failed: %v", err)
@@ -406,7 +406,7 @@ func NewEnhancedAPIEndpoints() *EnhancedAPIEndpoints {
 		isGPUEnabled = true
 		log.Printf("✅ TypeScript Error Optimizer initialized")
 	}
-	
+
 	// Initialize AI processor
 	aiProcessor, err := NewAIProcessor()
 	if err != nil {
@@ -414,7 +414,7 @@ func NewEnhancedAPIEndpoints() *EnhancedAPIEndpoints {
 	} else {
 		log.Printf("✅ AI Processor initialized")
 	}
-	
+
 	return &EnhancedAPIEndpoints{
 		aiProcessor:   aiProcessor,
 		goLlamaEngine: goLlamaEngine,
@@ -453,23 +453,23 @@ func (s *EnhancedAPIEndpoints) StartEnhancedServer() error {
 	// Original auto-solver endpoints (enhanced with go-llama)
 	r.POST("/api/auto-solve", s.handleAutoSolve)
 	r.POST("/api/typescript-fix", s.handleTypeScriptFix)
-	
+
 	// Go-Llama direct integration endpoints
 	r.POST("/api/go-llama/fix", s.handleGoLlamaFix)
 	r.POST("/api/go-llama/batch", s.handleGoLlamaBatch)
 	r.GET("/api/go-llama/status", s.handleGoLlamaStatus)
 	r.GET("/api/go-llama/stats", s.handleGoLlamaStats)
-	
+
 	// GPU-accelerated processing endpoints
 	r.POST("/api/gpu/typescript-fix", s.handleGPUTypescriptFix)
 	r.POST("/api/gpu/batch-process", s.handleGPUBatchProcess)
 	r.GET("/api/gpu/status", s.handleGPUStatus)
-	
+
 	// Optimized auto-solver endpoints
 	r.POST("/api/optimized/auto-solve", s.handleOptimizedAutoSolve)
 	r.POST("/api/optimized/batch-fix", s.handleOptimizedBatchFix)
 	r.GET("/api/optimized/performance", s.handleOptimizedPerformance)
-	
+
 	// Performance benchmarking endpoints
 	r.POST("/api/benchmark/speed", s.handleSpeedBenchmark)
 	r.POST("/api/benchmark/quality", s.handleQualityBenchmark)
@@ -554,7 +554,7 @@ func (s *EnhancedAPIEndpoints) handleHealth(c *gin.Context) {
 			}(),
 		},
 	}
-	
+
 	c.JSON(http.StatusOK, healthStatus)
 }
 
@@ -737,27 +737,27 @@ func (s *EnhancedAPIEndpoints) handleGoLlamaFix(c *gin.Context) {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Go-Llama engine not available"})
 		return
 	}
-	
+
 	var tsError TypeScriptError
 	if err := c.ShouldBindJSON(&tsError); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	startTime := time.Now()
-	
+
 	// Build optimized prompt
 	prompt := s.buildTypescriptFixPrompt(tsError, false)
-	
+
 	// Generate fix using direct go-llama
 	fixedCode, err := s.goLlamaEngine.generateFix(prompt, 512)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	processingTime := time.Since(startTime)
-	
+
 	c.JSON(http.StatusOK, gin.H{
 		"success":         true,
 		"fixed_code":      fixedCode,
@@ -775,19 +775,19 @@ func (s *EnhancedAPIEndpoints) handleGoLlamaBatch(c *gin.Context) {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Go-Llama engine not available"})
 		return
 	}
-	
+
 	var request BatchProcessRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	response, err := s.goLlamaEngine.ProcessBatch(context.Background(), &request)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, response)
 }
 
@@ -800,13 +800,13 @@ func (s *EnhancedAPIEndpoints) handleGoLlamaStatus(c *gin.Context) {
 		})
 		return
 	}
-	
+
 	modelInfo, err := s.goLlamaEngine.GetModelInfo()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, gin.H{
 		"available":   true,
 		"loaded":      s.goLlamaEngine.IsLoaded(),
@@ -822,7 +822,7 @@ func (s *EnhancedAPIEndpoints) handleGoLlamaStats(c *gin.Context) {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Go-Llama engine not available"})
 		return
 	}
-	
+
 	stats := s.goLlamaEngine.GetStats()
 	c.JSON(http.StatusOK, stats)
 }
@@ -833,13 +833,13 @@ func (s *EnhancedAPIEndpoints) handleGPUTypescriptFix(c *gin.Context) {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "GPU acceleration not available"})
 		return
 	}
-	
+
 	var tsError TypeScriptError
 	if err := c.ShouldBindJSON(&tsError); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	// Process single error with GPU optimization
 	request := &OptimizedFixRequest{
 		Errors:           []TypeScriptError{tsError},
@@ -851,13 +851,13 @@ func (s *EnhancedAPIEndpoints) handleGPUTypescriptFix(c *gin.Context) {
 		TargetLatency:    5 * time.Millisecond,
 		QualityThreshold: 0.7,
 	}
-	
+
 	response, err := s.tsOptimizer.ProcessOptimized(context.Background(), request)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, response)
 }
 
@@ -867,24 +867,24 @@ func (s *EnhancedAPIEndpoints) handleGPUBatchProcess(c *gin.Context) {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "GPU acceleration not available"})
 		return
 	}
-	
+
 	var request OptimizedFixRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	// Force GPU usage for batch processing
 	request.UseGPU = true
 	request.UseLlama = false // GPU-only for maximum speed
 	request.UseCache = true
-	
+
 	response, err := s.tsOptimizer.ProcessOptimized(context.Background(), &request)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, response)
 }
 
@@ -907,13 +907,13 @@ func (s *EnhancedAPIEndpoints) handleOptimizedAutoSolve(c *gin.Context) {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Optimizer not available"})
 		return
 	}
-	
+
 	var autoSolveRequest AutoSolveRequest
 	if err := c.ShouldBindJSON(&autoSolveRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	// Convert to optimized request
 	request := &OptimizedFixRequest{
 		Errors:           autoSolveRequest.Errors,
@@ -925,13 +925,13 @@ func (s *EnhancedAPIEndpoints) handleOptimizedAutoSolve(c *gin.Context) {
 		TargetLatency:    10 * time.Millisecond,
 		QualityThreshold: 0.8,
 	}
-	
+
 	response, err := s.tsOptimizer.ProcessOptimized(context.Background(), request)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	// Convert to AutoSolveResponse format for compatibility
 	autoResponse := &AutoSolveResponse{
 		Success:         response.Success,
@@ -949,7 +949,7 @@ func (s *EnhancedAPIEndpoints) handleOptimizedAutoSolve(c *gin.Context) {
 			"optimization_meta":   response.OptimizationMeta,
 		},
 	}
-	
+
 	c.JSON(http.StatusOK, autoResponse)
 }
 
@@ -959,26 +959,26 @@ func (s *EnhancedAPIEndpoints) handleOptimizedBatchFix(c *gin.Context) {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Optimizer not available"})
 		return
 	}
-	
+
 	var request OptimizedFixRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	// Auto-configure optimal settings
 	errorCount := len(request.Errors)
 	request.UseGPU = s.isGPUEnabled && errorCount >= 10
 	request.UseLlama = s.isLlamaEnabled && errorCount < 50 // Llama for smaller, complex batches
 	request.UseCache = true
 	request.MaxConcurrency = min(errorCount, 8)
-	
+
 	response, err := s.tsOptimizer.ProcessOptimized(context.Background(), &request)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, response)
 }
 
@@ -988,7 +988,7 @@ func (s *EnhancedAPIEndpoints) handleOptimizedPerformance(c *gin.Context) {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Optimizer not available"})
 		return
 	}
-	
+
 	stats := s.tsOptimizer.GetStats()
 	c.JSON(http.StatusOK, gin.H{
 		"optimizer_stats": stats,
@@ -1014,20 +1014,20 @@ func (s *EnhancedAPIEndpoints) handleSpeedBenchmark(c *gin.Context) {
 		Strategy   string `json:"strategy"`
 		Iterations int    `json:"iterations"`
 	}
-	
+
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	// Generate sample errors for benchmarking
 	sampleErrors := s.generateSampleErrors(request.ErrorCount)
-	
+
 	results := make([]gin.H, 0)
-	
+
 	for i := 0; i < request.Iterations; i++ {
 		startTime := time.Now()
-		
+
 		if s.tsOptimizer != nil {
 			optimizedRequest := &OptimizedFixRequest{
 				Errors:         sampleErrors,
@@ -1037,7 +1037,7 @@ func (s *EnhancedAPIEndpoints) handleSpeedBenchmark(c *gin.Context) {
 				UseCache:       true,
 				MaxConcurrency: 8,
 			}
-			
+
 			_, err := s.tsOptimizer.ProcessOptimized(context.Background(), optimizedRequest)
 			if err == nil {
 				duration := time.Since(startTime)
@@ -1050,7 +1050,7 @@ func (s *EnhancedAPIEndpoints) handleSpeedBenchmark(c *gin.Context) {
 			}
 		}
 	}
-	
+
 	c.JSON(http.StatusOK, gin.H{
 		"benchmark_type": "speed",
 		"results":        results,
@@ -1083,7 +1083,7 @@ func (s *EnhancedAPIEndpoints) generateTypescriptFix(tsError TypeScriptError, us
 	if s.isLlamaEnabled {
 		return s.generateTypescriptFixWithGoLlama(tsError, useThinking)
 	}
-	
+
 	// Fallback to original AI processor
 	return s.generateTypescriptFixWithAI(tsError, useThinking)
 }
@@ -1091,16 +1091,16 @@ func (s *EnhancedAPIEndpoints) generateTypescriptFix(tsError TypeScriptError, us
 // generateTypescriptFixWithGoLlama generates fix using direct go-llama
 func (s *EnhancedAPIEndpoints) generateTypescriptFixWithGoLlama(tsError TypeScriptError, useThinking bool) (*TypeScriptFix, error) {
 	prompt := s.buildTypescriptFixPrompt(tsError, useThinking)
-	
+
 	fixedCode, err := s.goLlamaEngine.generateFix(prompt, 512)
 	if err != nil {
 		return nil, fmt.Errorf("Go-Llama processing failed: %w", err)
 	}
-	
+
 	// Parse response to extract code and explanation
 	fixCode, explanation := s.goLlamaEngine.parseFixResponse(fixedCode)
 	confidence := s.goLlamaEngine.calculateConfidence(tsError, fixCode)
-	
+
 	fix := &TypeScriptFix{
 		File:         tsError.File,
 		Line:         tsError.Line,
@@ -1110,7 +1110,7 @@ func (s *EnhancedAPIEndpoints) generateTypescriptFixWithGoLlama(tsError TypeScri
 		Explanation:  explanation,
 		Confidence:   confidence,
 	}
-	
+
 	return fix, nil
 }
 
@@ -1332,9 +1332,9 @@ func generateGenericFix(tsError TypeScriptError) string {
 // Main function for the enhanced API service
 func main() {
 	log.Printf("🚀 Starting Enhanced API Endpoints with Go-Llama Direct Integration...")
-	
+
 	service := NewEnhancedAPIEndpoints()
-	
+
 	// Cleanup on shutdown
 	defer func() {
 		if service.goLlamaEngine != nil {
@@ -1344,7 +1344,7 @@ func main() {
 			service.tsOptimizer.Close()
 		}
 	}()
-	
+
 	if err := service.StartEnhancedServer(); err != nil {
 		log.Fatal("Failed to start enhanced server:", err)
 	}

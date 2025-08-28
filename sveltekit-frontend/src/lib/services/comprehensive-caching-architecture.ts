@@ -434,15 +434,17 @@ export class ComprehensiveCachingArchitecture {
       });
 
       // Create indexes for legal metadata
-      await this.qdrantClient.createIndex(this.config.qdrant.collection, {
-        field_name: 'confidentiality_level',
-        field_type: 'keyword'
-      });
+      try {
+        await this.qdrantClient.createPayloadIndex(this.config.qdrant.collection, 'confidentiality_level');
+      } catch (error) {
+        console.log("Index for 'confidentiality_level' may already exist");
+      }
 
-      await this.qdrantClient.createIndex(this.config.qdrant.collection, {
-        field_name: 'case_id',
-        field_type: 'keyword'
-      });
+      try {
+        await this.qdrantClient.createPayloadIndex(this.config.qdrant.collection, 'case_id');
+      } catch (error) {
+        console.log("Index for 'case_id' may already exist");
+      }
 
       console.log('📐 Qdrant legal vector collection created');
     } catch (error) {
@@ -1222,11 +1224,8 @@ export class ComprehensiveCachingArchitecture {
 
   private async getFromQdrant<T>(key: string, context?: LegalCacheContext): Promise<CacheEntry<T> | null> {
     try {
-      const result = await this.qdrantClient.retrieve(this.config.qdrant.collection, {
-        ids: [key],
-        with_payload: true,
-        with_vector: true
-      });
+      const response = await this.qdrantClient.retrieve(this.config.qdrant.collection, [key]);
+      const result = response.points;
 
       if (result.length > 0) {
         const point = result[0];

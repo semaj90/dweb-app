@@ -2,7 +2,7 @@
 // Predictive Analytics & Self-Prompting AI Chat History
 
 import { db } from '../db/index';
-import { cases, evidence, users } from '../db/schema-unified';
+import { cases, evidence, users, userAiQueries, ragMessages, ragSessions } from '../db/schema-postgres';
 import { eq, and, desc, sql, count } from 'drizzle-orm';
 import type { User } from '../db/schema-types';
 
@@ -63,7 +63,7 @@ export class UserRecommendationService {
       // Store in userAiQueries for analytics
       await db.insert(userAiQueries).values({
         id: queryId,
-        userId: params.userId,
+        user_id: params.userId,
         caseId: params.caseId || null,
         query: params.query,
         response: params.response,
@@ -82,21 +82,21 @@ export class UserRecommendationService {
         await Promise.all([
           // User message
           db.insert(ragMessages).values({
-            sessionId: params.sessionId,
+            session_id: params.sessionId,
             role: 'user',
             content: params.query,
             embedding: params.embedding ? this.arrayToPgVector(params.embedding) : null,
-            createdAt: new Date(),
+            created_at: new Date(),
           }),
           // Assistant response
           db.insert(ragMessages).values({
-            sessionId: params.sessionId,
+            session_id: params.sessionId,
             role: 'assistant',
             content: params.response,
             sources: params.metadata?.sources || [],
             confidence: params.metadata?.confidence || null,
             processingTimeMs: params.processingTimeMs || null,
-            createdAt: new Date(),
+            created_at: new Date(),
           })
         ]);
 
@@ -130,7 +130,7 @@ export class UserRecommendationService {
       
       await db.insert(ragSessions).values({
         id: sessionId,
-        userId: params.userId,
+        user_id: params.userId,
         caseId: params.caseId || null,
         sessionName: params.sessionName || `Session ${new Date().toISOString()}`,
         startedAt: new Date(),
@@ -263,8 +263,8 @@ export class UserRecommendationService {
         metadata: userAiQueries.metadata
       })
       .from(userAiQueries)
-      .where(eq(userAiQueries.userId, userId))
-      .orderBy(desc(userAiQueries.createdAt))
+      .where(eq(userAiQueries.user_id, userId))
+      .orderBy(desc(userAiQueries.created_at))
       .limit(100);
 
     const queryTexts = queries.map(q => q.query.toLowerCase());
@@ -281,8 +281,8 @@ export class UserRecommendationService {
     const sessions = await db
       .select()
       .from(ragSessions)
-      .where(eq(ragSessions.userId, userId))
-      .orderBy(desc(ragSessions.createdAt))
+      .where(eq(ragSessions.user_id, userId))
+      .orderBy(desc(ragSessions.created_at))
       .limit(50);
 
     const activeHours = this.extractActiveHours(sessions);
@@ -304,7 +304,7 @@ export class UserRecommendationService {
     const queries = await db
       .select({ query: userAiQueries.query })
       .from(userAiQueries)
-      .where(eq(userAiQueries.userId, userId))
+      .where(eq(userAiQueries.user_id, userId))
       .limit(200);
 
     const topics = this.extractTopicsFromQueries(queries.map(q => q.query));
@@ -343,7 +343,7 @@ export class UserRecommendationService {
     const queries = await db
       .select({ query: userAiQueries.query })
       .from(userAiQueries)
-      .where(eq(userAiQueries.userId, userId))
+      .where(eq(userAiQueries.user_id, userId))
       .limit(500);
 
     const topicCounts = new Map<string, number>();

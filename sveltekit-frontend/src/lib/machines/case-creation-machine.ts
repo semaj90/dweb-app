@@ -1,7 +1,7 @@
 // Case Creation State Machine - XState v5 compatible
 // Orchestrates legal case creation workflow with validation and API calls
 
-import { createMachine, assign } from 'xstate';
+import { createMachine, assign, fromPromise } from 'xstate';
 
 export interface CaseCreationContext {
   formData: {
@@ -102,7 +102,7 @@ export const caseCreationMachine = createMachine({
         onError: {
           target: 'editing',
           actions: assign({
-            validationErrors: ({ event }) => event.error?.validationErrors || {},
+            validationErrors: ({ event }) => (event as any).error?.validationErrors || {},
             error: 'Validation failed'
           })
         }
@@ -114,13 +114,13 @@ export const caseCreationMachine = createMachine({
       }),
       invoke: {
         id: 'submitCase',
-        src: async ({ context }) => {
+        src: fromPromise(async ({ input }: { input: CaseCreationContext }) => {
           const response = await fetch('/api/cases', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify(context.formData)
+            body: JSON.stringify(input.formData)
           });
           
           if (!response.ok) {
@@ -129,7 +129,8 @@ export const caseCreationMachine = createMachine({
           }
           
           return response.json();
-        },
+        }),
+        input: ({ context }) => context,
         onDone: {
           target: 'completed',
           actions: assign({
@@ -143,13 +144,13 @@ export const caseCreationMachine = createMachine({
             guard: ({ context }) => context.retryCount < 3,
             target: 'retrying',
             actions: assign({
-              error: ({ event }) => event.error?.message || 'Submission failed'
+              error: ({ event }) => (event as any).error?.message || 'Submission failed'
             })
           },
           {
             target: 'failed',
             actions: assign({
-              error: ({ event }) => event.error?.message || 'Submission failed after retries'
+              error: ({ event }) => (event as any).error?.message || 'Submission failed after retries'
             })
           }
         ]
@@ -199,6 +200,26 @@ export const caseCreationMachine = createMachine({
         }
       }
     }
+  }
+}, {
+  actors: {
+    validateCaseData: fromPromise(async ({ input }: { input: CaseCreationContext }) => {
+      const errors: Record<string, string[]> = {};
+      
+      if (!input.formData.title?.trim()) {
+        errors.title = ['Title is required'];
+      }
+      
+      if (!input.formData.description?.trim()) {
+        errors.description = ['Description is required'];
+      }
+      
+      if (Object.keys(errors).length > 0) {
+        throw { validationErrors: errors };
+      }
+      
+      return { valid: true };
+    })
   }
 });
 

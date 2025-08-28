@@ -1,7 +1,7 @@
 // Search State Machine - XState v5 compatible
 // Manages legal document and case search with history and analytics
 
-import { createMachine, assign } from 'xstate';
+import { createMachine, assign, fromPromise } from 'xstate';
 
 export interface SearchContext {
   query: string;
@@ -80,7 +80,7 @@ export const searchMachine = createMachine({
     loadingHistory: {
       invoke: {
         id: 'loadSearchHistory',
-        src: async () => {
+        src: fromPromise(async () => {
           // Load search history from localStorage or API
           try {
             const stored = localStorage.getItem('legal-ai:search-history');
@@ -88,7 +88,7 @@ export const searchMachine = createMachine({
           } catch {
             return [];
           }
-        },
+        }),
         onDone: {
           target: 'idle',
           actions: assign({
@@ -106,21 +106,21 @@ export const searchMachine = createMachine({
     validating: {
       invoke: {
         id: 'validateSearch',
-        src: async ({ context }) => {
+        src: fromPromise(async ({ input }: { input: SearchContext }) => {
           const errors: Record<string, string[]> = {};
           
-          if (!context.query?.trim() && !Object.keys(context.filters).length) {
+          if (!input.query?.trim() && !Object.keys(input.filters).length) {
             errors.query = ['Please enter a search query or select filters'];
           }
           
-          if (context.query && context.query.length > 200) {
+          if (input.query && input.query.length > 200) {
             errors.query = ['Search query too long (max 200 characters)'];
           }
           
           // Validate date range
-          if (context.filters.dateRange?.from && context.filters.dateRange?.to) {
-            const fromDate = new Date(context.filters.dateRange.from);
-            const toDate = new Date(context.filters.dateRange.to);
+          if (input.filters.dateRange?.from && input.filters.dateRange?.to) {
+            const fromDate = new Date(input.filters.dateRange.from);
+            const toDate = new Date(input.filters.dateRange.to);
             
             if (fromDate > toDate) {
               errors.dateRange = ['Start date must be before end date'];
@@ -131,8 +131,9 @@ export const searchMachine = createMachine({
             throw { validationErrors: errors };
           }
           
-          return { query: context.query, filters: context.filters };
-        },
+          return { query: input.query, filters: input.filters };
+        }),
+        input: ({ context }) => context,
         onDone: {
           target: 'searching',
           actions: assign({
@@ -143,7 +144,7 @@ export const searchMachine = createMachine({
         onError: {
           target: 'idle',
           actions: assign({
-            validationErrors: ({ event }) => event.error?.validationErrors || {},
+            validationErrors: ({ event }) => (event as any).error?.validationErrors || {},
             error: 'Search validation failed'
           })
         }
@@ -153,22 +154,22 @@ export const searchMachine = createMachine({
       entry: assign({ isLoading: true }),
       invoke: {
         id: 'performSearch',
-        src: async ({ context }) => {
+        src: fromPromise(async ({ input }: { input: SearchContext }) => {
           const startTime = Date.now();
           
           // Build search parameters
           const searchParams = new URLSearchParams();
-          if (context.query) searchParams.append('query', context.query);
+          if (input.query) searchParams.append('query', input.query);
           
           // Add filters
-          Object.entries(context.filters).forEach(([key, value]) => {
+          Object.entries(input.filters).forEach(([key, value]) => {
             if (Array.isArray(value)) {
               searchParams.append(key, value.join(','));
             } else if (typeof value === 'object' && value !== null) {
               // Handle date range
               if (key === 'dateRange') {
-                if (value.from) searchParams.append('dateStart', value.from);
-                if (value.to) searchParams.append('dateEnd', value.to);
+                if ((value as any).from) searchParams.append('dateStart', (value as any).from);
+                if ((value as any).to) searchParams.append('dateEnd', (value as any).to);
               }
             } else if (value) {
               searchParams.append(key, String(value));
@@ -199,7 +200,8 @@ export const searchMachine = createMachine({
               relevanceScore: data.averageRelevance || 0
             }
           };
-        },
+        }),
+        input: ({ context }) => context,
         onDone: {
           target: 'results',
           actions: [
@@ -225,7 +227,7 @@ export const searchMachine = createMachine({
         onError: {
           target: 'error',
           actions: assign({
-            error: ({ event }) => event.error?.message || 'Search failed',
+            error: ({ event }) => (event as any).error?.message || 'Search failed',
             isLoading: false
           })
         }

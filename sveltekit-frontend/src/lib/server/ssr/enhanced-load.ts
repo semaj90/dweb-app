@@ -4,7 +4,11 @@
 import type { ServerLoad } from '@sveltejs/kit';
 import { CaseOperations, EvidenceOperations, checkDatabaseHealth } from '../db/enhanced-operations';
 import { CommonErrors } from '../api/response';
-import type { User, Case, Evidence } from '../db/schema-postgres';
+import type { User } from '../db/schema-postgres';
+import { cases, evidence } from '../db/schema-postgres';
+
+type Case = typeof cases.$inferSelect;
+type Evidence = typeof evidence.$inferSelect;
 
 // Performance monitoring for SSR
 interface SSRMetrics {

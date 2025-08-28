@@ -1,14 +1,14 @@
 // src/lib/server/wsBroker.ts
 import WebSocket from 'ws';
-import Redis from 'ioredis';
+import Redis, { type Redis as IORedisClient } from 'ioredis';
 import type { ProgressMsg } from '$lib/types/progress';
 
 // In-memory session registry
 const sessions = new Map<string, Set<WebSocket>>();
 
 // Redis client for pub/sub across instances
-let redis: Redis | null = null;
-let subscriber: Redis | null = null;
+let redis: IORedisClient | null = null;
+let subscriber: IORedisClient | null = null;
 
 export async function initializeWsBroker(): Promise<void> {
   try {

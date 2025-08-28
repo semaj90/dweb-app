@@ -2,7 +2,7 @@
 // Legal AI Form State Machines with XState
 // Advanced state management for legal document processing workflows
 
-import { createMachine, assign, type ActorRefFrom } from "xstate";
+import { createMachine, assign, fromPromise, type ActorRefFrom } from "xstate";
 import { z } from "zod";
 
 // ============================================================================
@@ -311,7 +311,7 @@ export const documentUploadMachine = createMachine({
   }
 }, {
   actors: {
-    validateDocumentForm: async ({ input }) => {
+    validateDocumentForm: fromPromise(async ({ input }) => {
       try {
         DocumentUploadSchema.parse(input);
         return true;
@@ -321,8 +321,8 @@ export const documentUploadMachine = createMachine({
         }
         throw error;
       }
-    },
-    uploadDocument: async ({ input }) => {
+    }),
+    uploadDocument: fromPromise(async ({ input }) => {
       // Mock upload implementation
       const formData = new FormData();
       Object.entries(input || {}).forEach(([key, value]) => {
@@ -345,8 +345,8 @@ export const documentUploadMachine = createMachine({
       }
 
       return await response.json();
-    },
-    processDocument: async ({ input }) => {
+    }),
+    processDocument: fromPromise(async ({ input }) => {
       const response = await fetch('/api/ai/process-document', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -358,7 +358,7 @@ export const documentUploadMachine = createMachine({
       }
 
       return await response.json();
-    }
+    })
   }
 });
 
@@ -488,17 +488,17 @@ export const caseCreationMachine = createMachine({
   }
 }, {
   actors: {
-    loadDraft: async () => {
+    loadDraft: fromPromise(async () => {
       // Load draft from localStorage or API
       const draft = localStorage.getItem('case-draft');
       return draft ? JSON.parse(draft) : null;
-    },
-    autoSave: async ({ input }) => {
+    }),
+    autoSave: fromPromise(async ({ input }) => {
       // Auto-save to localStorage
       localStorage.setItem('case-draft', JSON.stringify(input));
       return true;
-    },
-    validateCase: async ({ input }) => {
+    }),
+    validateCase: fromPromise(async ({ input }) => {
       try {
         CaseCreationSchema.parse(input);
         return true;
@@ -508,8 +508,8 @@ export const caseCreationMachine = createMachine({
         }
         throw error;
       }
-    },
-    createCase: async ({ input }) => {
+    }),
+    createCase: fromPromise(async ({ input }) => {
       const response = await fetch('/api/cases', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -521,7 +521,7 @@ export const caseCreationMachine = createMachine({
       }
 
       return await response.json();
-    }
+    })
   }
 });
 
@@ -653,11 +653,11 @@ export const searchMachine = createMachine({
   }
 }, {
   actors: {
-    loadSearchHistory: async () => {
+    loadSearchHistory: fromPromise(async () => {
       const history = localStorage.getItem('search-history');
       return history ? JSON.parse(history) : [];
-    },
-    validateSearch: async ({ input }) => {
+    }),
+    validateSearch: fromPromise(async ({ input }) => {
       try {
         SearchQuerySchema.parse(input);
         return true;
@@ -667,8 +667,8 @@ export const searchMachine = createMachine({
         }
         throw error;
       }
-    },
-    performSearch: async ({ input }) => {
+    }),
+    performSearch: fromPromise(async ({ input }) => {
       const response = await fetch('/api/search/vector', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -687,8 +687,8 @@ export const searchMachine = createMachine({
       localStorage.setItem('search-history', JSON.stringify(updatedHistory));
 
       return data;
-    },
-    loadMoreResults: async ({ input }) => {
+    }),
+    loadMoreResults: fromPromise(async ({ input }) => {
       const response = await fetch('/api/search/vector', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -703,7 +703,7 @@ export const searchMachine = createMachine({
       }
 
       return await response.json();
-    }
+    })
   }
 });
 
@@ -791,7 +791,7 @@ export const aiAnalysisMachine = createMachine({
   }
 }, {
   actors: {
-    validateAnalysis: async ({ input }) => {
+    validateAnalysis: fromPromise(async ({ input }) => {
       try {
         AIAnalysisSchema.parse(input);
         return true;
@@ -801,8 +801,8 @@ export const aiAnalysisMachine = createMachine({
         }
         throw error;
       }
-    },
-    performAnalysis: async ({ input }) => {
+    }),
+    performAnalysis: fromPromise(async ({ input }) => {
       const startTime = Date.now();
 
       const response = await fetch('/api/ai/analyze', {
@@ -821,7 +821,7 @@ export const aiAnalysisMachine = createMachine({
         ...data,
         processingTime: Date.now() - startTime
       };
-    }
+    })
   }
 });
 

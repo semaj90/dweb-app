@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button as ButtonPrimitive } from 'bits-ui';
+  import Button from '$lib/components/ui/MeltButton.svelte';
 </script>
 
 <svelte:head>
@@ -8,6 +8,6 @@
 
 <h1>Button Test Page</h1>
 
-<ButtonPrimitive.Root class="bg-blue-500 text-white px-4 py-2 rounded">
+<Button class="bg-blue-500 text-white px-4 py-2 rounded">
   Test Button
-</ButtonPrimitive.Root>
+</Button>

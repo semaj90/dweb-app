@@ -1,6 +1,6 @@
 <script lang="ts">
   import { $state } from 'svelte';
-  import { Dialog } from "bits-ui";
+  import Dialog from '$lib/components/ui/MeltDialog.svelte';
   import { createDialog } from "melt";
   import Button from '$lib/components/ui/Button.svelte';
 

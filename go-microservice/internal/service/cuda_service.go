@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"math"
 	"sync"
 	"time"
 
@@ -56,7 +57,7 @@ type CudaWorkerService struct {
 	logger       *observability.ELKLogger
 	initialized  bool
 	mutex        sync.RWMutex
-	
+
 	// Performance tracking
 	operationsCount int64
 	totalTime       time.Duration
@@ -71,19 +72,19 @@ func NewCudaWorkerService(config *CudaConfig) (*CudaWorkerService, error) {
 
 	if config.Enabled {
 		if err := service.initializeCUDA(); err != nil {
-			config.Logger.Warning("CUDA initialization failed, falling back to CPU").
-				WithError(err).
-				WithBool("cuda_enabled", false).
-				Log()
+			config.Logger.Warn("CUDA initialization failed, falling back to CPU").
+				Error(err).
+				Field("cuda_enabled", false).
+				Send()
 			config.Enabled = false
 		}
 	}
 
 	config.Logger.Info("CUDA Worker Service initialized").
-		WithBool("cuda_enabled", config.Enabled).
-		WithInt("device_id", config.DeviceID).
-		WithInt("max_memory_gb", config.MaxMemoryGB).
-		Log()
+		Field("cuda_enabled", config.Enabled).
+		Field("device_id", config.DeviceID).
+		Field("max_memory_gb", config.MaxMemoryGB).
+		Send()
 
 	return service, nil
 }
@@ -96,19 +97,19 @@ func (c *CudaWorkerService) initializeCUDA() error {
 	// For native Windows deployment, we'd initialize CUDA here
 	// This would call into the enhanced CUDA worker we built
 	c.logger.Info("Initializing CUDA for native Windows deployment").
-		WithInt("device_id", c.config.DeviceID).
-		WithInt("max_memory_gb", c.config.MaxMemoryGB).
-		Log()
+		Field("device_id", c.config.DeviceID).
+		Field("max_memory_gb", c.config.MaxMemoryGB).
+		Send()
 
 	// Simulate CUDA initialization
 	time.Sleep(100 * time.Millisecond)
-	
+
 	c.initialized = true
 	c.logger.Info("CUDA initialization completed successfully").
-		WithString("cuda_version", "12.0").
-		WithString("cublas_version", "12.0").
-		WithString("deployment_type", "native_windows").
-		Log()
+		Field("cuda_version", "12.0").
+		Field("cublas_version", "12.0").
+		Field("deployment_type", "native_windows").
+		Send()
 
 	return nil
 }
@@ -116,12 +117,12 @@ func (c *CudaWorkerService) initializeCUDA() error {
 // ProcessVectorRotation processes vector rotation with CUDA acceleration
 func (c *CudaWorkerService) ProcessVectorRotation(ctx context.Context, req *VectorRotationRequest) ([]float32, error) {
 	startTime := time.Now()
-	
+
 	c.logger.Debug("Processing vector rotation").
-		WithInt("vector_size", len(req.Vector)).
-		WithInt("rotation_matrix_size", len(req.RotationMatrix)).
-		WithString("precision", c.precisionString(req.Precision)).
-		Log()
+		Field("vector_size", len(req.Vector)).
+		Field("rotation_matrix_size", len(req.RotationMatrix)).
+		Field("precision", c.precisionString(req.Precision)).
+		Send()
 
 	if !c.config.Enabled || !c.initialized {
 		// CPU fallback for native Windows
@@ -130,7 +131,7 @@ func (c *CudaWorkerService) ProcessVectorRotation(ctx context.Context, req *Vect
 
 	// Simulate CUDA processing
 	result := make([]float32, len(req.Vector))
-	
+
 	// Enhanced rotation using cuBLAS precision
 	for i, v := range req.Vector {
 		switch req.Precision {
@@ -150,10 +151,10 @@ func (c *CudaWorkerService) ProcessVectorRotation(ctx context.Context, req *Vect
 	c.updateStats(duration)
 
 	c.logger.Debug("Vector rotation completed").
-		WithDuration("processing_time", duration).
-		WithString("method", "cuda_cublas").
-		WithInt("output_size", len(result)).
-		Log()
+		Duration(duration).
+		Field("method", "cuda_cublas").
+		Field("output_size", len(result)).
+		Send()
 
 	return result, nil
 }
@@ -167,10 +168,10 @@ func (c *CudaWorkerService) ComputeSimilarity(ctx context.Context, req *Similari
 	}
 
 	c.logger.Debug("Computing vector similarity").
-		WithInt("vector_size", len(req.VectorA)).
-		WithString("similarity_type", c.similarityTypeString(req.SimilarityType)).
-		WithBool("use_cublas", req.UseCuBLAS).
-		Log()
+		Field("vector_size", len(req.VectorA)).
+		Field("similarity_type", c.similarityTypeString(req.SimilarityType)).
+		Field("use_cublas", req.UseCuBLAS).
+		Send()
 
 	var score float32
 	var err error
@@ -196,10 +197,10 @@ func (c *CudaWorkerService) ComputeSimilarity(ctx context.Context, req *Similari
 	}
 
 	c.logger.Debug("Similarity computation completed").
-		WithFloat32("similarity_score", score).
-		WithDuration("processing_time", duration).
-		WithString("method", method).
-		Log()
+		Field("similarity_score", score).
+		Duration(duration).
+		Field("method", method).
+		Send()
 
 	return score, nil
 }
@@ -222,21 +223,21 @@ func (c *CudaWorkerService) computeCUDASimilarity(vectorA, vectorB []float32, si
 func (c *CudaWorkerService) cudaCosineSimilarity(a, b []float32) float32 {
 	// Simulate cuBLAS dot product and norms
 	var dotProduct, normA, normB float32
-	
+
 	for i := range a {
 		dotProduct += a[i] * b[i]
 		normA += a[i] * a[i]
 		normB += b[i] * b[i]
 	}
-	
+
 	if normA == 0 || normB == 0 {
 		return 0
 	}
-	
+
 	// cuBLAS provides higher precision
 	normA = float32(math.Sqrt(float64(normA)))
 	normB = float32(math.Sqrt(float64(normB)))
-	
+
 	return dotProduct / (normA * normB)
 }
 

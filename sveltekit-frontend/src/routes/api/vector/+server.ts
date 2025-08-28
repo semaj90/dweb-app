@@ -1,4 +1,4 @@
-import type { RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler } from '$lib/types/server';
 
 // API endpoint for vector search operations
 import VectorService from "$lib/server/services/vector-service";

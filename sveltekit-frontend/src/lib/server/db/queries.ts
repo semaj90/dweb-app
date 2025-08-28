@@ -1,5 +1,5 @@
 
-import { users } from "$lib/server/db/schema-postgres";
+import { users } from "./schema-postgres";
 import { db, eq } from "./index";
 
 export interface User {

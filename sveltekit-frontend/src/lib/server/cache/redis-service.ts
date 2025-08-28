@@ -4,7 +4,7 @@
  */
 
 import { Redis, type RedisOptions } from 'ioredis';
-import { dev } from '$app/environment';
+const dev = process.env.NODE_ENV === 'development';
 
 // Redis configuration
 const REDIS_CONFIG: RedisOptions = {
@@ -23,13 +23,13 @@ const REDIS_CONFIG: RedisOptions = {
   keepAlive: 30000,
   family: 4,
   
-  // Reconnection strategy - stop after 3 attempts to avoid spam
+  // Reconnection strategy - stop after 2 attempts to avoid spam
   retryStrategy: (times: number) => {
-    if (times > 3) {
+    if (times > 2) {
       console.log('Redis: Max reconnection attempts reached, stopping retries');
       return null; // Stop retrying
     }
-    const delay = Math.min(times * 1000, 3000);
+    const delay = Math.min(times * 500, 1500);
     return delay;
   },
   
@@ -109,12 +109,38 @@ export class RedisService {
 
   async connect(): Promise<boolean> {
     try {
-      await this.redis.ping();
+      // Following Redis client pattern for connection establishment
+      console.log('🔄 Establishing Redis connection...');
+      
+      // Ensure connection is established first (since lazyConnect: true)
+      if (this.connectionStatus === 'disconnected') {
+        this.connectionStatus = 'connecting';
+        await this.redis.connect();
+      }
+      
+      // Test the connection with ping
+      const result = await this.redis.ping();
+      console.log('🏓 Redis ping response:', result);
+      
       this.connectionStatus = 'connected';
+      console.log('✅ Redis connection established successfully');
       return true;
+      
     } catch (error) {
       this.connectionStatus = 'error';
-      console.error('❌ Redis connection failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      
+      // Enhanced error diagnosis following Redis client patterns
+      if (errorMessage.includes('ECONNREFUSED')) {
+        console.error('🌐 Redis connection refused - check if Redis server is running on localhost:6379');
+      } else if (errorMessage.includes('timeout')) {
+        console.error('⏱️ Redis connection timeout - server may be overloaded');
+      } else if (errorMessage.includes('auth')) {
+        console.error('🔐 Redis authentication failed - check password configuration');
+      } else {
+        console.error('❌ Redis connection failed:', errorMessage);
+      }
+      
       return false;
     }
   }
@@ -425,7 +451,7 @@ export class RedisService {
 
   async disconnect(): Promise<void> {
     // Close all subscribers
-    for (const [channel, subscriber] of this.subscribers) {
+    for (const [channel, subscriber] of Array.from(this.subscribers.entries())) {
       await subscriber.disconnect();
     }
     this.subscribers.clear();

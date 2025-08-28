@@ -8,7 +8,7 @@ import { YoRHa3DComponent, type YoRHaStyle, YORHA_COLORS } from '../YoRHaUI3D';
 
 export interface YoRHaPanel3DOptions extends YoRHaStyle {
   title?: string;
-  variant?: 'default' | 'outlined' | 'filled' | 'glass' | 'terminal';
+  variant?: 'default' | 'primary' | 'secondary' | 'quantum' | 'consciousness' | 'reality' | 'glass' | 'ghost' | 'danger' | 'accent' | 'outlined' | 'filled' | 'terminal' | 'alert' | 'confirm' | 'fullscreen';
   headerHeight?: number;
   showCloseButton?: boolean;
   resizable?: boolean;

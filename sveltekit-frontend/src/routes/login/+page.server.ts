@@ -4,8 +4,8 @@ import {
   setSessionCookie
 } from "$lib/server/lucia";
 import { loginSchema } from "$lib/schemas/auth";
-import { db } from "$lib/server/db/index";
-import { users } from "$lib/server/db/schema-postgres";
+import { db } from "$lib/server/db";
+import { users } from "$lib/server/db";
 import { fail, redirect } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 import type { JSONSchema7 } from "json-schema";
@@ -58,19 +58,19 @@ export const actions: Actions = {
         .where(eq(users.email, email as string))
         .limit(1);
 
-      if (!existingUser.length || !existingUser[0].hashedPassword) {
+      if (!existingUser.length || !existingUser[0].hashed_password) {
         return fail(400, { error: "Incorrect email or password" });
       }
 
       const user = existingUser[0];
 
       // Check if user is active
-      if (!user.isActive) {
+      if (!user.is_active) {
         return fail(403, { error: "Account is deactivated" });
       }
 
       // Verify password using custom lucia
-      const validPassword = await verifyPassword(user.hashedPassword!, password as string);
+      const validPassword = await verifyPassword(user.hashed_password!, password as string);
 
       if (!validPassword) {
         console.log(`[Login] Password verification failed for ${user.email}`);

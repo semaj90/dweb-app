@@ -3,7 +3,7 @@ import { setup, createActor, assign, fromPromise } from "xstate";
 import type {
   CanvasNode,
   CanvasConnection,
-  CanvasState,
+  InteractiveCanvasState,
 } from "$lib/types/canvas";
 
 interface CanvasContext {
@@ -11,7 +11,7 @@ interface CanvasContext {
   connections: CanvasConnection[];
   selectedNode: string | null;
   draggedNode: string | null;
-  canvasState: CanvasState;
+  canvasState: InteractiveCanvasState;
   error: string | null;
 }
 
@@ -110,7 +110,7 @@ export const canvasSystemMachine = setup({
   },
   actors: {
     saveState: fromPromise(async ({ input }: { input: CanvasContext }) => {
-      const state: CanvasState = {
+      const state: InteractiveCanvasState = {
         nodes: input.nodes,
         connections: input.connections,
         viewport: { x: 0, y: 0, zoom: 1 },
@@ -169,14 +169,6 @@ export const canvasSystemMachine = setup({
         },
         LOAD_STATE: {
           actions: assign({
-            nodes: ({ event }) => {
-              if (event.type !== "LOAD_STATE") return [];
-              return event.state.nodes;
-            },
-            connections: ({ event }) => {
-              if (event.type !== "LOAD_STATE") return [];
-              return event.state.connections;
-            },
             canvasState: ({ event }) => {
               if (event.type !== "LOAD_STATE") {
                 return {

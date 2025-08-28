@@ -83,6 +83,9 @@ export interface YoRHaStyle {
   hover?: Partial<YoRHaStyle>;
   active?: Partial<YoRHaStyle>;
   disabled?: Partial<YoRHaStyle>;
+
+  // Component variants
+  variant?: 'default' | 'primary' | 'secondary' | 'quantum' | 'consciousness' | 'reality' | 'glass' | 'ghost' | 'danger' | 'accent' | 'outlined' | 'filled' | 'terminal' | 'alert' | 'confirm' | 'fullscreen';
 }
 
 export interface YoRHaPadding {
@@ -752,5 +755,11 @@ export abstract class YoRHa3DComponent extends THREE.Group {
     this.customAnimations.forEach(animationFunction => {
       animationFunction(deltaTime);
     });
+  }
+
+  // Initialize method for async setup
+  public async initialize(): Promise<void> {
+    // Base initialization - can be overridden in subclasses
+    return Promise.resolve();
   }
 }

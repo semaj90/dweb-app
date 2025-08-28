@@ -18,7 +18,8 @@ export interface CanvasConnection {
   strength: number;
 }
 
-export interface CanvasState {
+export interface InteractiveCanvasState {
+  id?: string;
   nodes: CanvasNode[];
   connections: CanvasConnection[];
   viewport: {
@@ -26,4 +27,8 @@ export interface CanvasState {
     y: number;
     zoom: number;
   };
+  animation?: string;
+  frame?: number;
+  fabricJSON?: string;
+  metadata?: Record<string, any>;
 }

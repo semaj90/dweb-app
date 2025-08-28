@@ -1,5 +1,6 @@
 import { setup, assign, createActor, fromPromise } from 'xstate';
 import { writable } from 'svelte/store';
+import { productionServiceClient } from '$lib/services/production-service-client.js';
 
 // Legal AI Application State Machine - XState v5
 export interface Case {
@@ -204,41 +205,117 @@ export const legalAIMachine = setup({
   },
   actors: {
     checkSystemStatus: fromPromise(async () => {
-      // Mock system status check
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      return {
-        connected: true,
-        services: { database: true, redis: true, ollama: true, gpu: true },
-        metrics: { errorCount: 0, performanceScore: 95, uptime: Date.now() }
-      };
+      try {
+        const clusterStatus = await productionServiceClient.getClusterStatus();
+        const serviceHealth = await productionServiceClient.getServiceHealth();
+        
+        // Calculate overall health metrics
+        const totalServices = clusterStatus.totalServices;
+        const healthyServices = clusterStatus.healthyServices;
+        const performanceScore = totalServices > 0 
+          ? Math.round((healthyServices / totalServices) * 100) 
+          : 0;
+
+        return {
+          connected: healthyServices > 0,
+          services: {
+            database: serviceHealth.some(s => s.service.includes('postgres') && s.status === 'healthy'),
+            redis: serviceHealth.some(s => s.service.includes('redis') && s.status === 'healthy'),
+            ollama: serviceHealth.some(s => s.service.includes('ollama') && s.status === 'healthy'),
+            gpu: serviceHealth.some(s => s.service.includes('gpu') && s.status === 'healthy'),
+            pgvector: serviceHealth.some(s => s.service.includes('pgvector') && s.status === 'healthy'),
+            qdrant: serviceHealth.some(s => s.service.includes('qdrant') && s.status === 'healthy'),
+            neo4j: serviceHealth.some(s => s.service.includes('neo4j') && s.status === 'healthy')
+          },
+          metrics: {
+            errorCount: serviceHealth.reduce((acc, s) => acc + s.errorCount, 0),
+            performanceScore,
+            uptime: Date.now()
+          }
+        };
+      } catch (error) {
+        console.error('System status check failed:', error);
+        return {
+          connected: false,
+          services: { database: false, redis: false, ollama: false, gpu: false, pgvector: false, qdrant: false, neo4j: false },
+          metrics: { errorCount: 1, performanceScore: 0, uptime: 0 }
+        };
+      }
     }),
     authenticateUser: fromPromise(async ({ input }: { input: any }) => {
-      // Mock authentication
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      return {
-        id: '1',
-        email: input.credentials?.email || 'user@example.com',
-        role: 'legal_professional',
-        permissions: ['read:cases', 'write:cases', 'ai:query']
-      };
+      try {
+        const response = await productionServiceClient.callService('/api/auth/login', input.credentials, {
+          timeout: 15000,
+          priority: 'reliability'
+        });
+
+        if (response.success && response.data) {
+          return {
+            id: response.data.id || response.data.user?.id,
+            email: response.data.email || input.credentials?.email,
+            role: response.data.role || 'legal_professional',
+            permissions: response.data.permissions || ['read:cases', 'write:cases', 'ai:query']
+          };
+        } else {
+          throw new Error(response.error || 'Authentication failed');
+        }
+      } catch (error) {
+        console.error('Authentication error:', error);
+        throw new Error('Authentication service unavailable');
+      }
     }),
     loadCases: fromPromise(async ({ input }: { input: any }) => {
-      // Mock case loading
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      return [
-        { id: '1', title: 'Corporate Fraud Case', status: 'active', priority: 'high', category: 'criminal' },
-        { id: '2', title: 'Contract Dispute', status: 'pending', priority: 'medium', category: 'civil' }
-      ];
+      try {
+        const response = await productionServiceClient.callService('/api/cases', input?.filters, {
+          timeout: 10000,
+          priority: 'performance'
+        });
+
+        if (response.success && response.data) {
+          // Ensure returned data is array of cases
+          const cases = Array.isArray(response.data) ? response.data : response.data.cases || [];
+          return cases.map((caseData: any) => ({
+            id: caseData.id,
+            title: caseData.title,
+            status: caseData.status || 'pending',
+            priority: caseData.priority || 'medium', 
+            category: caseData.category || 'general',
+            createdAt: caseData.created_at || caseData.createdAt,
+            updatedAt: caseData.updated_at || caseData.updatedAt,
+            description: caseData.description,
+            assignedTo: caseData.assigned_to || caseData.assignedTo
+          }));
+        } else {
+          console.warn('Failed to load cases:', response.error);
+          return [];
+        }
+      } catch (error) {
+        console.error('Error loading cases:', error);
+        return [];
+      }
     }),
     processAIQuery: fromPromise(async ({ input }: { input: any }) => {
-      // Mock AI processing
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      return {
-        response: `AI analysis for: "${input.prompt}"`,
-        confidence: 0.95,
-        sources: ['case_law_1', 'statute_2'],
-        timestamp: new Date().toISOString()
-      };
+      try {
+        const response = await productionServiceClient.queryRAG(input.prompt, input.context);
+
+        if (response.success && response.data) {
+          return {
+            response: response.data.response || response.data.answer,
+            confidence: response.data.confidence || 0.85,
+            sources: response.data.sources || response.data.references || [],
+            timestamp: new Date().toISOString(),
+            model: response.data.model || 'gemma3-legal',
+            protocol: response.protocol,
+            latency: response.latency,
+            metadata: response.data.metadata || {}
+          };
+        } else {
+          throw new Error(response.error || 'AI query failed');
+        }
+      } catch (error) {
+        console.error('AI query error:', error);
+        throw new Error('AI service unavailable');
+      }
     })
   }
 }).createMachine({

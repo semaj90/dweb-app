@@ -82,10 +82,16 @@ export const sessions = pgTable("sessions", {
 
 export const cases = pgTable('cases', {
   id: uuid('id').primaryKey().defaultRandom(),
+  caseNumber: varchar('case_number', { length: 100 }),
   title: varchar('title', { length: 255 }).notNull(),
   description: text('description'),
   status: varchar('status', { length: 50 }).default('open').notNull(),
+  priority: varchar('priority', { length: 20 }).default('medium').notNull(),
   assigned_attorney: uuid('assigned_attorney').references(() => users.id),
+  createdBy: uuid('created_by').references(() => users.id),
+  userId: uuid('created_by').references(() => users.id), // alias for createdBy
+  assignedTo: uuid('assigned_to').references(() => users.id),
+  metadata: jsonb('metadata').default({}),
   created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
   updated_at: timestamp('updated_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
 });
@@ -93,9 +99,15 @@ export const cases = pgTable('cases', {
 export const evidence = pgTable('evidence', {
   id: uuid('id').primaryKey().defaultRandom(),
   case_id: uuid('case_id').references(() => cases.id, { onDelete: 'cascade' }),
+  caseId: uuid('case_id').references(() => cases.id, { onDelete: 'cascade' }), // alias for compatibility
   title: varchar('title', { length: 255 }).notNull(),
+  content: text('content'), // evidence content
   description: text('description'),
   evidence_type: varchar('evidence_type', { length: 100 }).notNull(),
+  evidenceType: varchar('evidence_type', { length: 100 }), // alias for evidence_type
+  type: varchar('type', { length: 100 }), // alias for evidence_type
+  createdBy: uuid('created_by').references(() => users.id),
+  metadata: jsonb('metadata').default({}),
   created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
   updated_at: timestamp('updated_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
 });
@@ -149,3 +161,137 @@ export const evidenceRelations = relations(evidence, ({ one }) => ({
     references: [cases.id],
   }),
 }));
+
+// Type exports for Lucia auth compatibility
+// Additional missing tables that are referenced in errors
+export const userProfiles = pgTable('user_profiles', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  user_id: uuid('user_id').references(() => users.id),
+  created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
+});
+
+export const reports = pgTable('reports', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  title: varchar('title', { length: 255 }).notNull(),
+  status: varchar('status', { length: 50 }).default('draft').notNull(),
+  created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
+});
+
+export const statutes = pgTable('statutes', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  title: varchar('title', { length: 255 }).notNull(),
+  content: text('content'),
+  created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
+});
+
+export const legalAnalysisSessions = pgTable('legal_analysis_sessions', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  user_id: uuid('user_id').references(() => users.id),
+  session_data: jsonb('session_data').default({}),
+  created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
+});
+
+export const userAiQueries = pgTable('user_ai_queries', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  user_id: uuid('user_id').references(() => users.id),
+  query: text('query').notNull(),
+  response: text('response'),
+  created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
+});
+
+export const autoTags = pgTable('auto_tags', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: varchar('name', { length: 100 }).notNull(),
+  category: varchar('category', { length: 50 }),
+  created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
+});
+
+export const caseScores = pgTable('case_scores', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  case_id: uuid('case_id').references(() => cases.id),
+  score: text('score').notNull(),
+  created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
+});
+
+export const ragSessions = pgTable('rag_sessions', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  user_id: uuid('user_id').references(() => users.id),
+  session_data: jsonb('session_data').default({}),
+  created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
+});
+
+export const ragMessages = pgTable('rag_messages', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  session_id: uuid('session_id').references(() => ragSessions.id),
+  message: text('message').notNull(),
+  created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
+});
+
+export const vectorMetadata = pgTable('vector_metadata', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  document_id: uuid('document_id').notNull(),
+  vector_id: varchar('vector_id', { length: 255 }),
+  embedding: vector('embedding', { dimensions: 384 }),
+  metadata: jsonb('metadata').default({}),
+  created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
+}, (table) => ({
+  documentIdIdx: index('vector_metadata_document_id_idx').on(table.document_id),
+  embeddingIdx: index('vector_metadata_embedding_hnsw_idx').using('hnsw', table.embedding.op('vector_cosine_ops'))
+}));
+
+export const criminals = pgTable('criminals', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: varchar('name', { length: 255 }).notNull(),
+  aliases: jsonb('aliases').default([]),
+  description: text('description'),
+  case_ids: jsonb('case_ids').default([]),
+  risk_level: varchar('risk_level', { length: 50 }).default('medium'),
+  status: varchar('status', { length: 50 }).default('active'),
+  metadata: jsonb('metadata').default({}),
+  created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
+  updated_at: timestamp('updated_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
+});
+
+export const personsOfInterest = pgTable('persons_of_interest', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: varchar('name', { length: 255 }).notNull(),
+  aliases: jsonb('aliases').default([]),
+  description: text('description'),
+  case_ids: jsonb('case_ids').default([]),
+  risk_level: varchar('risk_level', { length: 50 }).default('low'),
+  status: varchar('status', { length: 50 }).default('active'),
+  metadata: jsonb('metadata').default({}),
+  created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
+  updated_at: timestamp('updated_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
+});
+
+export const canvasStates = pgTable('canvas_states', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  user_id: uuid('user_id').references(() => users.id),
+  case_id: uuid('case_id').references(() => cases.id),
+  name: varchar('name', { length: 255 }),
+  canvas_data: jsonb('canvas_data').default({}),
+  metadata: jsonb('metadata').default({}),
+  created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
+  updated_at: timestamp('updated_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
+});
+
+export const embeddingCache = pgTable('embedding_cache', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  content_hash: varchar('content_hash', { length: 255 }).notNull().unique(),
+  embedding: vector('embedding', { dimensions: 384 }),
+  model_name: varchar('model_name', { length: 100 }).notNull(),
+  metadata: jsonb('metadata').default({}),
+  created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
+  expires_at: timestamp('expires_at', { withTimezone: true, mode: 'date' })
+}, (table) => ({
+  contentHashIdx: index('embedding_cache_content_hash_idx').on(table.content_hash),
+  embeddingIdx: index('embedding_cache_embedding_hnsw_idx').using('hnsw', table.embedding.op('vector_cosine_ops'))
+}));
+
+export type User = typeof users.$inferSelect;
+export type Session = typeof sessions.$inferSelect;
+export type DatabaseUserAttributes = Omit<User, 'id'>;
+export type NewUserAiQuery = typeof userAiQueries.$inferInsert;
+export type NewAutoTag = typeof autoTags.$inferInsert;
+export type NewDocumentChunk = typeof documentChunks.$inferInsert;

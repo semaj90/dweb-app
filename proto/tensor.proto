@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package tensor;
 
-option go_package = "github.com/enhanced-rag/tensor/pb";
+option go_package = "legal-ai-production/proto/tensor;tensor";
 
 // Tensor operation request
 message TensorRequest {
@@ -96,17 +96,17 @@ message StreamTensorRequest {
 service TensorService {
   // Single operation
   rpc ProcessTensor(TensorRequest) returns (TensorResponse);
-  
+
   // Batch operations
   rpc ProcessBatch(BatchTensorRequest) returns (BatchTensorResponse);
-  
+
   // Streaming operations
   rpc StreamProcess(stream StreamTensorRequest) returns (stream TensorResponse);
-  
+
   // Cache management
   rpc GetCacheStats(CacheStatsRequest) returns (CacheStats);
   rpc PreloadCache(PreloadRequest) returns (PreloadResponse);
-  
+
   // Vertex buffer operations
   rpc StoreVertexBuffer(VertexBuffer) returns (StoreResponse);
   rpc GetVertexBuffer(GetVertexRequest) returns (VertexBuffer);

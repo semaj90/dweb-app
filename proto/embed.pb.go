@@ -7,11 +7,12 @@
 package embed
 
 import (
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
+
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
 
 const (
@@ -275,7 +276,7 @@ const file_embed_proto_rawDesc = "" +
 	"\bEmbedder\x122\n" +
 	"\x05Embed\x12\x13.embed.EmbedRequest\x1a\x14.embed.EmbedResponse\x12A\n" +
 	"\n" +
-	"BatchEmbed\x12\x18.embed.BatchEmbedRequest\x1a\x19.embed.BatchEmbedResponseB4Z2github.com/yourorg/deeds-web-app/proto/embed;embedb\x06proto3"
+	"BatchEmbed\x12\x18.embed.BatchEmbedRequest\x1a\x19.embed.BatchEmbedResponseB4Z2legal-ai-production/proto/embed;embedb\x06proto3"
 
 var (
 	file_embed_proto_rawDescOnce sync.Once

@@ -100,7 +100,7 @@ export async function deleteCollection(name: string) {
   }
   
   try {
-    const result = await client.deleteCollection(name);
+    const result = await client.deleteCollection({ collection_name: name });
     logger.warn(`Deleted collection ${name}`, {
       component: 'QdrantService',
       service: 'qdrant'

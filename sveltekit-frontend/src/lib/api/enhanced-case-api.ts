@@ -2,9 +2,22 @@
 // Integrates REST architecture with PostgreSQL-first workers and clustering
 
 import { restClient, type APIResponse } from './enhanced-rest-architecture';
-import type { CaseForm } from '$lib/schemas/forms';
+import type { CaseForm } from '../schemas/forms';
 
-export interface CaseCreationRequest extends CaseForm {
+export interface CaseCreationRequest {
+  // Core case fields from CaseForm
+  caseNumber: string;
+  title: string;
+  description?: string;
+  priority: 'low' | 'medium' | 'high';
+  status?: 'draft' | 'active' | 'pending' | 'closed';
+  assignedTo?: string;
+  dueDate?: string;
+  tags?: string[];
+  isConfidential?: boolean;
+  notifyAssignee?: boolean;
+  
+  // Additional metadata
   metadata?: {
     createdVia?: string;
     formVersion?: string;

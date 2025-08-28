@@ -17,11 +17,12 @@ import (
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
 
-	pb "legal-ai-production/proto/aidimensional"
 	"legal-ai-production/internal/auth"
 	"legal-ai-production/internal/cache"
 	"legal-ai-production/internal/observability"
 	"legal-ai-production/internal/service"
+	pb "legal-ai-production/proto/aiserver"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/redis/go-redis/v9"
 )
@@ -41,14 +42,14 @@ type Config struct {
 type EnterpriseVectorServer struct {
 	pb.UnimplementedVectorServiceServer
 	pb.UnimplementedAsyncJobServiceServer
-	
+
 	config    *Config
 	cache     *cache.MultiLayerCache
 	auth      *auth.KratosAuthInterceptor
 	logger    *observability.ELKLogger
 	cudaWorker *service.CudaWorkerService
 	dbService *service.DatabaseService
-	
+
 	// Performance monitoring
 	requestCounter *observability.RequestCounter
 	healthChecker  *observability.HealthChecker
@@ -60,7 +61,7 @@ func NewEnterpriseVectorServer(config *Config) (*EnterpriseVectorServer, error) 
 	logger, err := observability.NewELKLogger(&observability.ELKConfig{
 		ServiceName: "vector-consumer-v2",
 		Environment: "production",
-		LogLevel:    config.LogLevel,
+		LogLevel:    observability.LogLevel(config.LogLevel),
 		ElasticsearchEndpoint: "http://localhost:9200",
 		EnableMetrics: true,
 	})
@@ -190,10 +191,15 @@ func (s *EnterpriseVectorServer) ProcessRotation(ctx context.Context, req *pb.Ve
 	s.requestCounter.IncrementRequest("ProcessRotation")
 
 	// Create structured log entry
+	clientID := ""
+	if req.GetMetadata() != nil {
+		clientID = req.GetMetadata().GetClientVersion()
+	}
+
 	logEntry := s.logger.Info("Processing vector rotation request").
-		WithString("request_id", req.RequestId).
-		WithString("client_id", req.ClientId).
-		WithInt("vector_size", len(req.Vector)).
+		WithString("job_id", req.GetJobId()).
+		WithString("client_id", clientID).
+		WithInt("vector_size", len(req.GetPoints())).
 		WithString("method", "ProcessRotation")
 
 	// Authenticate and authorize request
@@ -208,23 +214,23 @@ func (s *EnterpriseVectorServer) ProcessRotation(ctx context.Context, req *pb.Ve
 		WithStringSlice("user_roles", identity.Roles)
 
 	// Check cache first
-	cacheKey := fmt.Sprintf("rotation:%s:%s", req.RequestId, req.RotationMatrix)
-	if cachedResult, found := s.cache.Get(ctx, cacheKey); found {
+	cacheKey := fmt.Sprintf("rotation:%s", req.GetJobId())
+	if cachedResult, found := s.cache.Get(ctx, "vector", cacheKey); found {
 		logEntry.WithString("cache_status", "hit").
 			WithDuration("duration", time.Since(startTime)).
 			WithString("status", "success").Log()
-		
-		s.requestCounter.IncrementSuccess("ProcessRotation")
-		return cachedResult.(*pb.VectorResponse), nil
+
+	s.requestCounter.IncrementSuccess("ProcessRotation")
+	return cachedResult.(*pb.VectorResponse), nil
 	}
 
 	// Process with CUDA if available
 	var result []float32
 	if s.config.CUDAEnabled {
 		result, err = s.cudaWorker.ProcessVectorRotation(ctx, &service.VectorRotationRequest{
-			Vector:         req.Vector,
-			RotationMatrix: req.RotationMatrix,
-			Precision:      service.PrecisionHigh, // Use cuBLAS for high precision
+			Vector:         req.GetPoints(),
+			RotationMatrix: nil,
+			Precision:      service.PrecisionHigh,
 		})
 		if err != nil {
 			logEntry.WithError(err).WithString("status", "cuda_error").Log()
@@ -245,34 +251,34 @@ func (s *EnterpriseVectorServer) ProcessRotation(ctx context.Context, req *pb.Ve
 
 	// Create response
 	response := &pb.VectorResponse{
-		RequestId:    req.RequestId,
-		Success:      true,
-		ResultVector: result,
-		ProcessingTimeMs: int64(time.Since(startTime).Milliseconds()),
-		Metadata: map[string]string{
-			"processing_method": "cuda_cublas",
-			"precision":         "high",
-			"cache_status":      "miss",
+		JobId:          req.GetJobId(),
+		Status:         "success",
+		RotatedPoints:  result,
+		ProcessingTimeMs: float32(time.Since(startTime).Milliseconds()),
+		GpuInfo:        "",
+		Metadata: &pb.ResponseMetadata{
+			ServerVersion: "v2.0",
+			Timestamp:     time.Now().Unix(),
 		},
 	}
 
-	// Store in cache
-	s.cache.Set(ctx, cacheKey, response, 5*time.Minute)
+	// Store in cache (namespace "vector")
+	_ = s.cache.Set(ctx, "vector", cacheKey, response, int(5*time.Minute.Seconds()))
 
 	// Store processing record in database
 	if err := s.dbService.RecordVectorOperation(ctx, &service.VectorOperationRecord{
-		RequestID:        req.RequestId,
-		UserID:          identity.ID,
-		Operation:       "rotation",
-		InputDimensions: len(req.Vector),
+		RequestID:        req.GetJobId(),
+		UserID:           identity.ID,
+		Operation:        "rotation",
+		InputDimensions:  len(req.GetPoints()),
 		OutputDimensions: len(result),
-		ProcessingTimeMs: response.ProcessingTimeMs,
-		Success:         true,
+		ProcessingTimeMs: int64(time.Since(startTime).Milliseconds()),
+		Success:          true,
 	}); err != nil {
 		// Log error but don't fail the request
 		s.logger.Warning("Failed to record vector operation").
 			WithError(err).
-			WithString("request_id", req.RequestId).
+			WithString("job_id", req.GetJobId()).
 			Log()
 	}
 
@@ -350,7 +356,7 @@ func (s *EnterpriseVectorServer) ProcessSimilarity(ctx context.Context, req *pb.
 	}
 
 	// Cache result
-	s.cache.Set(ctx, cacheKey, response, 10*time.Minute)
+	_ = s.cache.Set(ctx, "vector", fmt.Sprintf("similarity:%s:%s", req.GetJobId(), req.GetSimilarityType().String()), response, int(10*time.Minute.Seconds()))
 
 	logEntry.WithFloat32("similarity_score", score).
 		WithString("cache_status", "miss").
@@ -428,7 +434,7 @@ func (s *EnterpriseVectorServer) processCPURotation(vector []float32, rotationMa
 	if len(vector) == 0 {
 		return nil, fmt.Errorf("empty vector")
 	}
-	
+
 	result := make([]float32, len(vector))
 	// Simplified rotation - in production this would be a full matrix multiplication
 	for i, v := range vector {
@@ -519,7 +525,7 @@ func main() {
 	// Register services
 	pb.RegisterVectorServiceServer(grpcServer, server)
 	pb.RegisterAsyncJobServiceServer(grpcServer, server)
-	
+
 	// Register health check service
 	healthServer := health.NewServer()
 	healthServer.SetServingStatus("", grpc_health_v1.HealthCheckResponse_SERVING)

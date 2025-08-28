@@ -9,10 +9,10 @@
  * 5. Qdrant: Search index only (rebuildable from PostgreSQL)
  */
 
-import { createClient } from 'redis';
-import { db } from '$lib/server/db/index';
-import { evidence, documentMetadata, documentEmbeddings } from '$lib/server/db/schema-unified';
-import { embeddingCache } from '$lib/server/db/schema-postgres';
+import { redis } from '../lib/server/cache/redis-service.js';
+import { db } from '../lib/server/db/index.js';
+import { evidence, documentMetadata, documentEmbeddings } from '../lib/server/db/schema-unified.js';
+import { embeddingCache } from '../lib/server/db/schema-postgres.js';
 import { eq, and, isNull, sql, desc } from 'drizzle-orm';
 import { QdrantClient } from '@qdrant/js-client-rest';
 
@@ -50,7 +50,7 @@ interface EvidenceUpdatePayload {
 }
 
 export class PostgreSQLFirstWorker {
-  private redis: ReturnType<typeof createClient>;
+  private redis: any;
   private qdrant: QdrantClient;
   private isRunning = false;
   private streamName = 'autotag:requests';
@@ -59,10 +59,7 @@ export class PostgreSQLFirstWorker {
   private processedEvents = new Set<string>(); // Deduplication
 
   constructor() {
-    this.redis = createClient({
-      url: process.env.REDIS_URL || 'redis://localhost:6379',
-      socket: { connectTimeout: 5000 }
-    });
+    this.redis = redis;
 
     this.qdrant = new QdrantClient({
       url: process.env.QDRANT_URL || 'http://localhost:6333'

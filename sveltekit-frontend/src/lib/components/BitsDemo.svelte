@@ -1,18 +1,34 @@
 <script lang="ts">
   import { $props } from 'svelte';
+  import type { BitsDemoProps } from '$lib/types/component-props.js';
 
+  // Component library choice - toggle between bits-ui and melt-ui
   import { Dialog, Button, Select, AlertDialog } from 'bits-ui';
+  import MeltButton from '$lib/components/ui/MeltButton.svelte';
+  import MeltDialog from '$lib/components/ui/MeltDialog.svelte';
+  import MeltSelect from '$lib/components/ui/MeltSelect.svelte';
   import { fade } from 'svelte/transition';
   import { createToaster, melt } from 'melt';
   import { flip } from 'svelte/animate';
   import { fly } from 'svelte/transition';
   
-  let { caseTypes = [
-    { value: 'criminal', label: 'Criminal Cases' },
-    { value: 'civil', label: 'Civil Cases' },
-    { value: 'family', label: 'Family Law' },
-    { value: 'corporate', label: 'Corporate Law' }
-  ] } = $props();
+  let { 
+    caseTypes = [
+      { value: 'criminal', label: 'Criminal Cases' },
+      { value: 'civil', label: 'Civil Cases' },
+      { value: 'family', label: 'Family Law' },
+      { value: 'corporate', label: 'Corporate Law' }
+    ],
+    useLibrary = 'melt-ui',
+    class: className,
+    id,
+    'data-testid': testId
+  }: BitsDemoProps = $props();
+  
+  // Component selection based on library choice
+  let SelectedButton = $derived(useLibrary === 'melt-ui' ? MeltButton : Button);
+  let SelectedDialog = $derived(useLibrary === 'melt-ui' ? MeltDialog : Dialog);
+  let SelectedSelect = $derived(useLibrary === 'melt-ui' ? MeltSelect : Select);
   
   interface ToastData {
     title?: string;
@@ -31,45 +47,131 @@
     actions: { portal }
   } = createToaster<ToastData>();
   
-  // Notification functions
-  function showSuccessNotification() {
-    addToast({
-      data: {
-        title: 'Case Created Successfully',
-        description: 'Your new case has been created and is ready for evidence submission.',
-        color: 'success',
-      },
-    });
+  // Notification functions with actual API calls
+  async function showSuccessNotification() {
+    try {
+      const response = await fetch('/api/cases', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: 'Demo Case ' + Date.now(),
+          description: 'Demonstration case created from BitsDemo component',
+          priority: 'medium',
+          status: 'open'
+        })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        addToast({
+          data: {
+            title: 'Case Created Successfully',
+            description: `Case ${result.case?.caseNumber} created and saved to database.`,
+            color: 'success',
+          },
+        });
+      } else {
+        throw new Error('Failed to create case');
+      }
+    } catch (error) {
+      addToast({
+        data: {
+          title: 'Case Creation Failed',
+          description: 'Unable to create case via API. Check backend connection.',
+          color: 'error',
+        },
+      });
+    }
   }
 
-  function showWarningNotification() {
-    addToast({
-      data: {
-        title: 'Practice Area Selected',
-        description: 'Remember to review case requirements for this practice area.',
-        color: 'warning',
-      },
-    });
+  async function showWarningNotification() {
+    try {
+      const response = await fetch('/api/comprehensive-integration', {
+        method: 'GET'
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        addToast({
+          data: {
+            title: 'System Status Check',
+            description: `Services: ${result.system_overview?.healthy_services || 0}/${result.system_overview?.total_services || 0} healthy`,
+            color: 'warning',
+          },
+        });
+      } else {
+        throw new Error('Health check failed');
+      }
+    } catch (error) {
+      addToast({
+        data: {
+          title: 'Health Check Failed',
+          description: 'Unable to check system health. Backend may be down.',
+          color: 'error',
+        },
+      });
+    }
   }
 
-  function showErrorNotification() {
-    addToast({
-      data: {
-        title: 'Case Deletion Failed',
-        description: 'Unable to delete case. Please check your permissions and try again.',
-        color: 'error',
-      },
-    });
+  async function showErrorNotification() {
+    try {
+      const response = await fetch('/api/v1/upload?action=health');
+      
+      if (response.ok) {
+        addToast({
+          data: {
+            title: 'Upload Service Test',
+            description: 'Upload service is healthy and responding.',
+            color: 'success',
+          },
+        });
+      } else {
+        throw new Error('Upload service unhealthy');
+      }
+    } catch (error) {
+      addToast({
+        data: {
+          title: 'Upload Service Error',
+          description: 'Upload service is not responding. Check backend services.',
+          color: 'error',
+        },
+      });
+    }
   }
 
-  function showInfoNotification() {
-    addToast({
-      data: {
-        title: 'Dialog Opened',
-        description: 'Case management options are now available.',
-        color: 'info',
-      },
-    });
+  async function showInfoNotification() {
+    try {
+      const response = await fetch('/api/v1/quic/metrics', {
+        method: 'GET'
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        addToast({
+          data: {
+            title: 'Multi-Protocol Check',
+            description: `QUIC metrics available. P99: ${result.p99 || 'N/A'}ms`,
+            color: 'info',
+          },
+        });
+      } else {
+        addToast({
+          data: {
+            title: 'Multi-Protocol Test',
+            description: 'Testing REST, gRPC, QUIC protocol integration.',
+            color: 'info',
+          },
+        });
+      }
+    } catch (error) {
+      addToast({
+        data: {
+          title: 'Protocol Integration Test',
+          description: 'Testing multi-protocol backend integration.',
+          color: 'info',
+        },
+      });
+    }
   }
 </script>
 

@@ -85,13 +85,13 @@ type GPUOrchestrator struct {
 	taskQueue   chan *GPUTask
 	workers     []*WorkerStatus
 	workerMutex sync.RWMutex
-	metrics     *GPUMetrics
+	metrics     *OrchestratorMetrics
 	healthStatus map[string]bool
 	healthMutex  sync.RWMutex
 }
 
-// GPU Performance Metrics
-type GPUMetrics struct {
+// GPU Performance Metrics (orchestrator-local to avoid name collisions)
+type OrchestratorMetrics struct {
 	TotalTasks        int64         `json:"total_tasks"`
 	CompletedTasks    int64         `json:"completed_tasks"`
 	FailedTasks       int64         `json:"failed_tasks"`
@@ -104,12 +104,12 @@ type GPUMetrics struct {
 	LastUpdate        time.Time     `json:"last_update"`
 }
 
-// Service Registry for all 37 Go binaries
+// Service Registry for all 37 Go binaries (orchestrator-local types to avoid collisions)
 type ServiceRegistry struct {
-	Services map[string]ServiceInfo `json:"services"`
+	Services map[string]OrchestratorServiceInfo `json:"services"`
 }
 
-type ServiceInfo struct {
+type OrchestratorServiceInfo struct {
 	Name         string   `json:"name"`
 	Port         int      `json:"port"`
 	Type         string   `json:"type"`
@@ -122,17 +122,17 @@ type ServiceInfo struct {
 // Initialize GPU Orchestrator
 func NewGPUOrchestrator() (*GPUOrchestrator, error) {
 	config := &GPUOrchestratorConfig{
-		Port:              getEnv("GPU_ORCHESTRATOR_PORT", "8231"),
-		RedisAddr:         getEnv("REDIS_ADDR", "localhost:6379"),
-		CudaWorkerPath:    getEnv("CUDA_WORKER_PATH", "../cuda-worker/cuda-worker.exe"),
-		MaxCudaWorkers:    getEnvInt("MAX_CUDA_WORKERS", 8),
-		WorkerPoolSize:    getEnvInt("WORKER_POOL_SIZE", 4),
-		HealthCheckInterval: time.Duration(getEnvInt("HEALTH_CHECK_INTERVAL_SEC", 30)) * time.Second,
-		LoadBalancerEnabled: getEnvBool("LOAD_BALANCER_ENABLED", true),
+		Port:              getEnvOrchestrator("GPU_ORCHESTRATOR_PORT", "8231"),
+		RedisAddr:         getEnvOrchestrator("REDIS_ADDR", "localhost:6379"),
+		CudaWorkerPath:    getEnvOrchestrator("CUDA_WORKER_PATH", "../cuda-worker/cuda-worker.exe"),
+		MaxCudaWorkers:    getEnvIntOrchestrator("MAX_CUDA_WORKERS", 8),
+		WorkerPoolSize:    getEnvIntOrchestrator("WORKER_POOL_SIZE", 4),
+		HealthCheckInterval: time.Duration(getEnvIntOrchestrator("HEALTH_CHECK_INTERVAL_SEC", 30)) * time.Second,
+		LoadBalancerEnabled: getEnvBoolOrchestrator("LOAD_BALANCER_ENABLED", true),
 	}
 
 	ctx := context.Background()
-	
+
 	// Initialize Redis
 	rdb := redis.NewClient(&redis.Options{
 		Addr: config.RedisAddr,
@@ -150,7 +150,7 @@ func NewGPUOrchestrator() (*GPUOrchestrator, error) {
 		ctx:         ctx,
 		taskQueue:   make(chan *GPUTask, 1000),
 		workers:     make([]*WorkerStatus, config.WorkerPoolSize),
-		metrics:     &GPUMetrics{StartTime: time.Now()},
+		metrics:     &OrchestratorMetrics{StartTime: time.Now()},
 		healthStatus: make(map[string]bool),
 	}
 
@@ -171,13 +171,13 @@ func NewGPUOrchestrator() (*GPUOrchestrator, error) {
 func (g *GPUOrchestrator) Start() error {
 	// Start worker pool
 	go g.startWorkerPool()
-	
+
 	// Start health monitoring
 	go g.startHealthMonitoring()
-	
+
 	// Start metrics collection
 	go g.startMetricsCollection()
-	
+
 	// Start HTTP server
 	return g.startHTTPServer()
 }
@@ -192,7 +192,7 @@ func (g *GPUOrchestrator) startWorkerPool() {
 // Individual Worker
 func (g *GPUOrchestrator) worker(workerID int) {
 	log.Printf("🔧 GPU Worker %d started", workerID)
-	
+
 	for task := range g.taskQueue {
 		g.workerMutex.Lock()
 		g.workers[workerID].Busy = true
@@ -202,7 +202,7 @@ func (g *GPUOrchestrator) worker(workerID int) {
 
 		// Process task
 		result := g.processTask(task, workerID)
-		
+
 		// Send result back
 		select {
 		case task.ResultChan <- result:
@@ -226,7 +226,7 @@ func (g *GPUOrchestrator) worker(workerID int) {
 // Process GPU Task
 func (g *GPUOrchestrator) processTask(task *GPUTask, workerID int) GPUResult {
 	start := time.Now()
-	
+
 	log.Printf("🎯 Worker %d processing task %s (type: %s)", workerID, task.ID, task.Type)
 
 	// Create JSON input for CUDA worker
@@ -239,28 +239,35 @@ func (g *GPUOrchestrator) processTask(task *GPUTask, workerID int) GPUResult {
 	jsonInput, err := json.Marshal(input)
 	if err != nil {
 		return GPUResult{
-			TaskID:    task.ID,
-			Type:      task.Type,
-			Status:    "error",
-			Error:     fmt.Sprintf("JSON marshal error: %v", err),
+			TaskID:      task.ID,
+			Type:        task.Type,
+			Status:      "error",
+			Error:       fmt.Sprintf("JSON marshal error: %v", err),
 			ProcessTime: time.Since(start),
-			Timestamp: time.Now(),
+			Timestamp:   time.Now(),
 		}
 	}
 
-	// Execute CUDA worker
-	cmd := exec.Command(g.config.CudaWorkerPath)
+	// Execute CUDA worker with timeout and capture combined output
+	ctxCmd, cancel := context.WithTimeout(g.ctx, 25*time.Second)
+	defer cancel()
+
+	cmd := exec.CommandContext(ctxCmd, g.config.CudaWorkerPath)
 	cmd.Stdin = strings.NewReader(string(jsonInput))
-	
-	output, err := cmd.Output()
+
+	output, err := cmd.CombinedOutput()
 	if err != nil {
+		outStr := strings.TrimSpace(string(output))
+		if outStr == "" {
+			outStr = err.Error()
+		}
 		return GPUResult{
-			TaskID:    task.ID,
-			Type:      task.Type,
-			Status:    "error",
-			Error:     fmt.Sprintf("CUDA execution error: %v", err),
+			TaskID:      task.ID,
+			Type:        task.Type,
+			Status:      "error",
+			Error:       fmt.Sprintf("CUDA execution error: %v - %s", err, outStr),
 			ProcessTime: time.Since(start),
-			Timestamp: time.Now(),
+			Timestamp:   time.Now(),
 		}
 	}
 
@@ -275,39 +282,40 @@ func (g *GPUOrchestrator) processTask(task *GPUTask, workerID int) GPUResult {
 
 	if err := json.Unmarshal(output, &cudaResult); err != nil {
 		return GPUResult{
-			TaskID:    task.ID,
-			Type:      task.Type,
-			Status:    "error",
-			Error:     fmt.Sprintf("Result parse error: %v", err),
+			TaskID:      task.ID,
+			Type:        task.Type,
+			Status:      "error",
+			Error:       fmt.Sprintf("Result parse error: %v; output: %s", err, strings.TrimSpace(string(output))),
 			ProcessTime: time.Since(start),
-			Timestamp: time.Now(),
+			Timestamp:   time.Now(),
 		}
 	}
 
 	processTime := time.Since(start)
-	
+
 	// Cache result in Redis
 	resultKey := fmt.Sprintf("gpu:result:%s", task.ID)
 	resultJson, _ := json.Marshal(GPUResult{
-		TaskID:    task.ID,
-		Type:      task.Type,
-		Result:    cudaResult.Vector,
-		Status:    cudaResult.Status,
+		TaskID:      task.ID,
+		Type:        task.Type,
+		Result:      cudaResult.Vector,
+		Status:      cudaResult.Status,
 		ProcessTime: processTime,
-		Timestamp: time.Now(),
+		Timestamp:   time.Now(),
 	})
-	g.redis.Set(g.ctx, resultKey, resultJson, 1*time.Hour)
+	// Best effort cache; don't fail the task if Redis is unavailable
+	_ = g.redis.Set(g.ctx, resultKey, resultJson, 1*time.Hour).Err()
 
 	log.Printf("✅ Task %s completed in %v", task.ID, processTime)
 
 	return GPUResult{
-		TaskID:    task.ID,
-		Type:      task.Type,
-		Result:    cudaResult.Vector,
-		Status:    cudaResult.Status,
-		Error:     cudaResult.Error,
+		TaskID:      task.ID,
+		Type:        task.Type,
+		Result:      cudaResult.Vector,
+		Status:      cudaResult.Status,
+		Error:       cudaResult.Error,
 		ProcessTime: processTime,
-		Timestamp: time.Now(),
+		Timestamp:   time.Now(),
 	}
 }
 
@@ -472,10 +480,13 @@ func (g *GPUOrchestrator) healthCheck(c *gin.Context) {
 func (g *GPUOrchestrator) getActiveWorkers() int {
 	g.workerMutex.RLock()
 	defer g.workerMutex.RUnlock()
-	
+
 	active := 0
-	for _, worker := range g.workers {
-		if worker.Busy {
+	for _, w := range g.workers {
+		if w == nil {
+			continue
+		}
+		if w.Busy {
 			active++
 		}
 	}
@@ -483,17 +494,25 @@ func (g *GPUOrchestrator) getActiveWorkers() int {
 }
 
 func (g *GPUOrchestrator) checkCudaAvailability() bool {
-	// Simple check by trying to execute cuda-worker with test data
-	cmd := exec.Command(g.config.CudaWorkerPath)
+	// Run the cuda-worker with a short timeout and parse the response safely
+	ctxCmd, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	cmd := exec.CommandContext(ctxCmd, g.config.CudaWorkerPath)
 	cmd.Stdin = strings.NewReader(`{"jobId":"health","type":"embedding","data":[1.0,2.0,3.0]}`)
-	
-	output, err := cmd.Output()
+
+	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return false
 	}
 
 	var result map[string]interface{}
-	return json.Unmarshal(output, &result) == nil && result["status"] == "success"
+	if err := json.Unmarshal(output, &result); err != nil {
+		return false
+	}
+
+	status, ok := result["status"].(string)
+	return ok && (status == "success" || status == "ok")
 }
 
 func (g *GPUOrchestrator) checkRedis() string {
@@ -516,29 +535,29 @@ func (g *GPUOrchestrator) startHealthMonitoring() {
 func (g *GPUOrchestrator) performHealthChecks() {
 	// Check all registered services
 	services := g.getRegisteredServices()
-	
+
 	g.healthMutex.Lock()
 	defer g.healthMutex.Unlock()
-	
+
 	for serviceName, serviceInfo := range services {
 		healthy := g.checkServiceHealth(serviceInfo)
 		g.healthStatus[serviceName] = healthy
-		
+
 		if !healthy {
 			log.Printf("⚠️ Service %s health check failed", serviceName)
 		}
 	}
 }
 
-// Environment helpers
-func getEnv(key, defaultValue string) string {
+// Environment helpers (orchestrator-local names to avoid collisions)
+func getEnvOrchestrator(key, defaultValue string) string {
 	if value := os.Getenv(key); value != "" {
 		return value
 	}
 	return defaultValue
 }
 
-func getEnvInt(key string, defaultValue int) int {
+func getEnvIntOrchestrator(key string, defaultValue int) int {
 	if value := os.Getenv(key); value != "" {
 		if intValue, err := strconv.Atoi(value); err == nil {
 			return intValue
@@ -547,7 +566,7 @@ func getEnvInt(key string, defaultValue int) int {
 	return defaultValue
 }
 
-func getEnvBool(key string, defaultValue bool) bool {
+func getEnvBoolOrchestrator(key string, defaultValue bool) bool {
 	if value := os.Getenv(key); value != "" {
 		if boolValue, err := strconv.ParseBool(value); err == nil {
 			return boolValue
@@ -565,12 +584,12 @@ func (g *GPUOrchestrator) getServiceRegistry(c *gin.Context) {
 func (g *GPUOrchestrator) getServicesHealth(c *gin.Context) {
 	g.healthMutex.RLock()
 	defer g.healthMutex.RUnlock()
-	
+
 	c.JSON(http.StatusOK, gin.H{"health_status": g.healthStatus})
 }
 
 func (g *GPUOrchestrator) registerService(c *gin.Context) {
-	var service ServiceInfo
+	var service OrchestratorServiceInfo
 	if err := c.ShouldBindJSON(&service); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -587,7 +606,7 @@ func (g *GPUOrchestrator) registerService(c *gin.Context) {
 func (g *GPUOrchestrator) getWorkerStatus(c *gin.Context) {
 	g.workerMutex.RLock()
 	defer g.workerMutex.RUnlock()
-	
+
 	c.JSON(http.StatusOK, gin.H{"workers": g.workers})
 }
 
@@ -643,7 +662,7 @@ func (g *GPUOrchestrator) updateMetrics() {
 	g.metrics.QueueLength = len(g.taskQueue)
 	g.metrics.ActiveWorkers = g.getActiveWorkers()
 	g.metrics.LastUpdate = time.Now()
-	
+
 	// Update average process time if we have completed tasks
 	if g.metrics.CompletedTasks > 0 {
 		// This is a simplified calculation - in production you'd track individual times
@@ -652,9 +671,9 @@ func (g *GPUOrchestrator) updateMetrics() {
 }
 
 // Helper functions for service management
-func (g *GPUOrchestrator) getRegisteredServices() map[string]ServiceInfo {
-	services := make(map[string]ServiceInfo)
-	
+func (g *GPUOrchestrator) getRegisteredServices() map[string]OrchestratorServiceInfo {
+	services := make(map[string]OrchestratorServiceInfo)
+
 	// Get services from Redis
 	keys, err := g.redis.Keys(g.ctx, "gpu:services:*").Result()
 	if err != nil {
@@ -668,7 +687,7 @@ func (g *GPUOrchestrator) getRegisteredServices() map[string]ServiceInfo {
 			continue
 		}
 
-		var service ServiceInfo
+		var service OrchestratorServiceInfo
 		if err := json.Unmarshal([]byte(serviceJson), &service); err != nil {
 			continue
 		}
@@ -685,8 +704,8 @@ func (g *GPUOrchestrator) getRegisteredServices() map[string]ServiceInfo {
 	return services
 }
 
-func (g *GPUOrchestrator) getDefaultServiceCatalog() map[string]ServiceInfo {
-	return map[string]ServiceInfo{
+func (g *GPUOrchestrator) getDefaultServiceCatalog() map[string]OrchestratorServiceInfo {
+	return map[string]OrchestratorServiceInfo{
 		"enhanced-rag": {
 			Name: "enhanced-rag", Port: 8094, Type: "AI/RAG", GPUEnabled: true,
 			Status: "running", Protocols: []string{"http", "websocket"},
@@ -714,10 +733,10 @@ func (g *GPUOrchestrator) getDefaultServiceCatalog() map[string]ServiceInfo {
 	}
 }
 
-func (g *GPUOrchestrator) checkServiceHealth(service ServiceInfo) bool {
+func (g *GPUOrchestrator) checkServiceHealth(service OrchestratorServiceInfo) bool {
 	// Simple HTTP health check
 	client := &http.Client{Timeout: 5 * time.Second}
-	
+
 	for _, protocol := range service.Protocols {
 		var url string
 		switch protocol {
@@ -746,15 +765,15 @@ func (g *GPUOrchestrator) checkServiceHealth(service ServiceInfo) bool {
 	return false
 }
 
-// Main function
-func main() {
+// Entrypoint moved to a non-main function to avoid multiple main definitions in the package.
+func RunOrchestrator() {
 	orchestrator, err := NewGPUOrchestrator()
 	if err != nil {
 		log.Fatalf("❌ Failed to initialize GPU Orchestrator: %v", err)
 	}
 
 	log.Printf("🚀 Starting GPU Orchestrator for Legal AI Platform...")
-	
+
 	if err := orchestrator.Start(); err != nil {
 		log.Fatalf("❌ Failed to start GPU Orchestrator: %v", err)
 	}

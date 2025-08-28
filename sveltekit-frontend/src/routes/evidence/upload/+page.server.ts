@@ -13,6 +13,7 @@ import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 
 import { ollamaService } from '$lib/server/ai/ollama-service';
+import { cuid } from '$lib/utils/cuid';
 import type { PageServerLoad, Actions } from './$types';
 
 const fileUploadSchema = z.object({
@@ -72,37 +73,44 @@ export const actions: Actions = {
 
       // Create evidence record
       const [newEvidence] = await db.insert(evidence).values({
+        id: cuid(),
         caseId: form.data.caseId,
+        case_id: form.data.caseId, // alias for database field
         title: form.data.title,
         description: form.data.description,
         evidenceType: form.data.type,
-        hash: hash,
+        evidence_type: form.data.type, // alias for database field
+        type: form.data.type, // another alias
+        content: extractedText,
         createdBy: locals.user?.id || null,
         tags: form.data.tags || [],
-        aiAnalysis: {
-          summary: extractedText || form.data.description || '',
+        metadata: {
+          hash: hash,
           originalName: file.name,
           fileSize: file.size,
           mimeType: file.type,
           uploadPath: filePath,
           extractedText: extractedText,
           isPrivate: form.data.isPrivate
-        }
+        },
+        created_at: new Date(),
+        updated_at: new Date()
       }).returning();
 
       // Run AI analysis if enabled
       if (form.data.aiAnalysis && extractedText) {
         try {
           // Generate embeddings for the content
-          const embeddingResult = await ollamaService.embedDocument?.(
-            extractedText,
-            {
-              evidenceId: newEvidence.id,
-              type: form.data.type,
-              title: form.data.title
+          let chunks = [];
+          try {
+            if (ollamaService.embedDocument) {
+              const embeddingResult = await ollamaService.embedDocument(extractedText);
+              chunks = embeddingResult || [];
             }
-          );
-          const chunks = embeddingResult?.chunks || [];
+          } catch (embedError) {
+            console.error('Embedding generation failed:', embedError);
+            chunks = [];
+          }
 
           // Store document vectors
           for (const chunk of chunks) {
@@ -116,7 +124,16 @@ export const actions: Actions = {
           }
 
           // Generate AI summary
-          const summary = await ollamaService.analyzeDocument?.(extractedText, 'summary');
+          let summary = '';
+          try {
+            if (ollamaService.analyzeDocument) {
+              const result = await ollamaService.analyzeDocument(extractedText);
+              summary = typeof result === 'string' ? result : (result as any)?.summary || '';
+            }
+          } catch (summaryError) {
+            console.error('AI summary generation failed:', summaryError);
+            summary = '';
+          }
 
           // Update evidence with AI analysis
           await db.update(evidence)

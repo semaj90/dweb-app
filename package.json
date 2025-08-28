@@ -27,7 +27,7 @@
     "solve:svelte:concurrent": "zx scripts/solve-svelte-concurrent.mjs",
     "cluster:orchestrate": "zx scripts/orchestrate-cluster.mjs",
     "dev": "cd sveltekit-frontend && npm run dev",
-    "dev:full": "zx scripts/dev-full-concurrent.mjs",
+    "dev:full": "cd sveltekit-frontend && node scripts/start-coordinated-full-stack.mjs",
     "dev:full:batch": "START-LEGAL-AI.bat",
     "dev:complete": "START-COMPLETE-INTEGRATED-SYSTEM.bat",
     "test:integration": "TEST-INTEGRATED-SYSTEM.bat",

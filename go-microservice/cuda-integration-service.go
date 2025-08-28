@@ -6,9 +6,11 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
+	"math"
 	"net/http"
 	"os"
 	"os/exec"
@@ -69,15 +71,17 @@ type LegalSimilarityRequest struct {
 	Threshold   float64     `json:"threshold"`
 }
 
+type SimilarityMatch struct {
+	CaseID     string  `json:"case_id"`
+	Score      float64 `json:"score"`
+	Confidence float64 `json:"confidence"`
+}
+
 type LegalSimilarityResponse struct {
-	Matches []struct {
-		CaseID     string  `json:"case_id"`
-		Score      float64 `json:"score"`
-		Confidence float64 `json:"confidence"`
-	} `json:"matches"`
-	ProcessingTime int64   `json:"processing_time_ms"`
-	GPUAccelerated bool    `json:"gpu_accelerated"`
-	TotalPairs     int     `json:"total_pairs_processed"`
+	Matches        []SimilarityMatch `json:"matches"`
+	ProcessingTime int64             `json:"processing_time_ms"`
+	GPUAccelerated bool              `json:"gpu_accelerated"`
+	TotalPairs     int               `json:"total_pairs_processed"`
 }
 
 // CUDA Integration Service
@@ -91,13 +95,13 @@ type CUDAIntegrationService struct {
 }
 
 type GPUStats struct {
-	TotalJobs     int64         `json:"total_jobs"`
-	SuccessfulJobs int64        `json:"successful_jobs"`
-	FailedJobs     int64        `json:"failed_jobs"`
-	AverageLatency time.Duration `json:"average_latency_ms"`
-	GPUModel       string        `json:"gpu_model"`
-	VRAMUsage      string        `json:"vram_usage"`
-	Utilization    float64       `json:"gpu_utilization_percent"`
+	TotalJobs      int64   `json:"total_jobs"`
+	SuccessfulJobs int64   `json:"successful_jobs"`
+	FailedJobs     int64   `json:"failed_jobs"`
+	AverageLatency int64   `json:"average_latency_ms"` // stored as milliseconds
+	GPUModel       string  `json:"gpu_model"`
+	VRAMUsage      string  `json:"vram_usage"`
+	Utilization    float64 `json:"gpu_utilization_percent"`
 }
 
 func NewCUDAIntegrationService() *CUDAIntegrationService {
@@ -107,7 +111,7 @@ func NewCUDAIntegrationService() *CUDAIntegrationService {
 		// Try relative path from go-microservice directory
 		cudaPath = "../cuda-worker/cuda-worker.exe"
 		if _, err := os.Stat(cudaPath); os.IsNotExist(err) {
-			log.Printf("⚠️ CUDA worker not found at %s or %s", "./cuda-worker.exe", cudaPath)
+			log.Printf("CUDA worker not found at %s or %s", "./cuda-worker.exe", cudaPath)
 			cudaPath = ""
 		}
 	}
@@ -123,10 +127,10 @@ func NewCUDAIntegrationService() *CUDAIntegrationService {
 	}
 
 	if service.gpuAvailable {
-		log.Printf("🔥 CUDA Integration Service initialized - GPU acceleration available")
+		log.Printf("CUDA Integration Service initialized - GPU acceleration available")
 		service.testCUDAWorker()
 	} else {
-		log.Printf("⚠️ CUDA Integration Service initialized - GPU acceleration disabled (worker not found)")
+		log.Printf("CUDA Integration Service initialized - GPU acceleration disabled (worker not found)")
 	}
 
 	return service
@@ -142,20 +146,19 @@ func (s *CUDAIntegrationService) testCUDAWorker() {
 
 	response, err := s.executeCUDAJob(testRequest)
 	if err != nil {
-		log.Printf("❌ CUDA worker health check failed: %v", err)
+		log.Printf("CUDA worker health check failed: %v", err)
 		s.gpuAvailable = false
 		return
 	}
 
 	if response.Status == "success" {
-		log.Printf("✅ CUDA worker health check passed - GPU ready for processing")
+		log.Printf("CUDA worker health check passed - GPU ready for processing")
 		s.gpuStats.Utilization = 85.0 // Estimated utilization
 	} else {
-		log.Printf("❌ CUDA worker returned error: %s", response.Error)
+		log.Printf("CUDA worker returned error: %s", response.Error)
 		s.gpuAvailable = false
 	}
 }
-
 // Execute CUDA job with error handling and timeout
 func (s *CUDAIntegrationService) executeCUDAJob(request CUDARequest) (*CUDAResponse, error) {
 	if !s.gpuAvailable {
@@ -170,33 +173,29 @@ func (s *CUDAIntegrationService) executeCUDAJob(request CUDARequest) (*CUDARespo
 		return nil, fmt.Errorf("failed to marshal CUDA request: %v", err)
 	}
 
-	// Execute CUDA worker process
-	cmd := exec.Command(s.cudaWorkerPath)
+	// Create a context with timeout so the command is killed automatically on timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	// Prepare command with context
+	cmd := exec.CommandContext(ctx, s.cudaWorkerPath)
 	cmd.Stdin = bytes.NewReader(jsonData)
 
-	// Set working directory to CUDA worker location
-	cmd.Dir = filepath.Dir(s.cudaWorkerPath)
+	// Set working directory to CUDA worker location if provided
+	if s.cudaWorkerPath != "" {
+		cmd.Dir = filepath.Dir(s.cudaWorkerPath)
+	}
 
-	// Execute with timeout
-	done := make(chan error, 1)
-	var output []byte
-
-	go func() {
-		var err error
-		output, err = cmd.Output()
-		done <- err
-	}()
-
-	select {
-	case err := <-done:
-		if err != nil {
+	// Run and capture combined output
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		// Distinguish timeout from other errors
+		if ctx.Err() == context.DeadlineExceeded {
 			s.gpuStats.FailedJobs++
-			return nil, fmt.Errorf("CUDA execution error: %v", err)
+			return nil, fmt.Errorf("CUDA operation timeout")
 		}
-	case <-time.After(30 * time.Second):
-		cmd.Process.Kill()
 		s.gpuStats.FailedJobs++
-		return nil, fmt.Errorf("CUDA operation timeout")
+		return nil, fmt.Errorf("CUDA execution error: %v - output: %s", err, string(output))
 	}
 
 	// Parse CUDA response
@@ -208,13 +207,20 @@ func (s *CUDAIntegrationService) executeCUDAJob(request CUDARequest) (*CUDARespo
 
 	// Update statistics
 	processingTime := time.Since(startTime)
+	processingMs := processingTime.Milliseconds()
 	s.gpuStats.TotalJobs++
 	s.gpuStats.SuccessfulJobs++
-	s.gpuStats.AverageLatency = time.Duration(
-		(int64(s.gpuStats.AverageLatency)*s.gpuStats.SuccessfulJobs + int64(processingTime)) / (s.gpuStats.SuccessfulJobs + 1),
-	)
+	// compute new average latency safely using previous successes (in ms)
+	prevSuccesses := s.gpuStats.SuccessfulJobs - 1
+	if prevSuccesses < 0 {
+		prevSuccesses = 0
+	}
+	if s.gpuStats.SuccessfulJobs > 0 {
+		avgMs := ((s.gpuStats.AverageLatency * prevSuccesses) + processingMs) / s.gpuStats.SuccessfulJobs
+		s.gpuStats.AverageLatency = avgMs
+	}
 
-	log.Printf("🚀 CUDA job completed: %s (%s) in %v", request.JobID, request.Type, processingTime)
+	log.Printf("CUDA job completed: %s (%s) in %v", request.JobID, request.Type, processingTime)
 	return &response, nil
 }
 
@@ -298,18 +304,16 @@ func (s *CUDAIntegrationService) handleLegalSimilarity(c *gin.Context) {
 	}
 
 	startTime := time.Now()
-	var matches []struct {
-		CaseID     string  `json:"case_id"`
-		Score      float64 `json:"score"`
-		Confidence float64 `json:"confidence"`
-	}
+	var matches []SimilarityMatch
 
 	totalPairs := len(request.CaseVectors)
 
 	// Process similarity for each case vector
 	for i, caseVector := range request.CaseVectors {
-		// Combine query and case vectors for CUDA similarity processing
-		combinedData := append(request.QueryVector, caseVector...)
+		// Safely combine query and case vectors for CUDA similarity processing
+		combinedData := make([]float64, 0, len(request.QueryVector)+len(caseVector))
+		combinedData = append(combinedData, request.QueryVector...)
+		combinedData = append(combinedData, caseVector...)
 
 		cudaRequest := CUDARequest{
 			JobID: s.generateJobID(),
@@ -327,14 +331,10 @@ func (s *CUDAIntegrationService) handleLegalSimilarity(c *gin.Context) {
 		if len(response.Vector) > 0 {
 			score := calculateSimilarityScore(response.Vector)
 			if score >= request.Threshold {
-				matches = append(matches, struct {
-					CaseID     string  `json:"case_id"`
-					Score      float64 `json:"score"`
-					Confidence float64 `json:"confidence"`
-				}{
+				matches = append(matches, SimilarityMatch{
 					CaseID:     fmt.Sprintf("case-%d", i),
 					Score:      score,
-					Confidence: min(score*1.2, 1.0), // Confidence based on score
+					Confidence: math.Min(score*1.2, 1.0), // Confidence based on score
 				})
 			}
 		}
@@ -345,7 +345,7 @@ func (s *CUDAIntegrationService) handleLegalSimilarity(c *gin.Context) {
 	c.JSON(http.StatusOK, LegalSimilarityResponse{
 		Matches:        matches,
 		ProcessingTime: processingTime.Milliseconds(),
-		GPUAccelerated: true,
+		GPUAccelerated: s.gpuAvailable,
 		TotalPairs:     totalPairs,
 	})
 }
@@ -382,7 +382,6 @@ func (s *CUDAIntegrationService) handleGPUStatus(c *gin.Context) {
 }
 
 // Helper functions
-
 func calculateSimilarityScore(vector []float64) float64 {
 	if len(vector) == 0 {
 		return 0.0
@@ -393,24 +392,10 @@ func calculateSimilarityScore(vector []float64) float64 {
 	for _, val := range vector {
 		sum += val
 	}
-	
-	// Normalize to 0-1 range
+
+	// Normalize to 0-1 range, clamp using math functions
 	normalized := sum / float64(len(vector))
-	return min(max(normalized, 0.0), 1.0)
-}
-
-func min(a, b float64) float64 {
-	if a < b {
-		return a
-	}
-	return b
-}
-
-func max(a, b float64) float64 {
-	if a > b {
-		return a
-	}
-	return b
+	return math.Min(math.Max(normalized, 0.0), 1.0)
 }
 
 // Main service setup
@@ -419,7 +404,9 @@ func main() {
 	cudaService := NewCUDAIntegrationService()
 
 	// Setup Gin router
-	r := gin.Default()
+	r := gin.New()
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
 
 	// Enable CORS for SvelteKit integration
 	r.Use(func(c *gin.Context) {
@@ -455,9 +442,9 @@ func main() {
 		port = "8231" // Default port for CUDA integration service
 	}
 
-	log.Printf("🚀 CUDA Integration Service starting on port %s", port)
-	log.Printf("🔗 GPU Status: http://localhost:%s/api/gpu/status", port)
-	log.Printf("🔗 Health Check: http://localhost:%s/health", port)
+	log.Printf("CUDA Integration Service starting on port %s", port)
+	log.Printf("GPU Status: http://localhost:%s/api/gpu/status", port)
+	log.Printf("Health Check: http://localhost:%s/health", port)
 
 	log.Fatal(r.Run(":" + port))
 }

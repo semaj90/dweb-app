@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package vectorservice;
 
-option go_package = "github.com/semaj90/dweb-app/go-microservice/proto/vectorservice;vectorservice";
+option go_package = "legal-ai-production/go-microservice/proto/vectorservice;vectorservice";
 
 // The core Vector Service for enterprise-grade vector processing
 service VectorService {
@@ -11,7 +11,7 @@ service VectorService {
   rpc ProcessSimilarity(SimilarityRequest) returns (SimilarityResponse);
   rpc ProcessEmbedding(EmbeddingRequest) returns (EmbeddingResponse);
   rpc ProcessBatch(BatchRequest) returns (stream BatchResponse);
-  
+
   // Health and monitoring
   rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
   rpc GetMetrics(MetricsRequest) returns (MetricsResponse);

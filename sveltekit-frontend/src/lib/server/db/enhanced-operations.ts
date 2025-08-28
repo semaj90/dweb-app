@@ -116,8 +116,8 @@ export class CaseOperations {
         caseNumber,
         priority: caseData.priority || 'medium',
         status: caseData.status || 'open',
-        createdAt: new Date(),
-        updatedAt: new Date()
+        created_at: new Date(),
+        updated_at: new Date()
       }).returning();
 
       // Generate AI summary if description exists
@@ -166,8 +166,8 @@ export class CaseOperations {
     if (dateRange) {
       conditions.push(
         and(
-          gte(cases.createdAt, dateRange.start),
-          lte(cases.createdAt, dateRange.end)
+          gte(cases.created_at, dateRange.start),
+          lte(cases.created_at, dateRange.end)
         )
       );
     }
@@ -223,17 +223,17 @@ export class CaseOperations {
         description: cases.description,
         status: cases.status,
         priority: cases.priority,
-        incidentDate: cases.createdAt,
+        incidentDate: cases.created_at,
         location: cases.description,
-        jurisdiction: cases.caseType,
+        jurisdiction: cases.title, // Use title since caseType doesn't exist in schema
         leadProsecutor: cases.userId,
-        createdAt: cases.createdAt,
-        updatedAt: cases.updatedAt,
-        closedAt: cases.updatedAt
+        createdAt: cases.created_at,
+        updatedAt: cases.updated_at,
+        closedAt: cases.updated_at
       })
       .from(cases)
       .where(whereClause)
-      .orderBy(desc(cases.createdAt))
+      .orderBy(desc(cases.created_at))
       .limit(limit)
       .offset(offset),
       
@@ -258,7 +258,7 @@ export class CaseOperations {
       const [updatedCase] = await tx.update(cases)
         .set({
           ...updates,
-          updatedAt: new Date(),
+          updated_at: new Date(),
           ...(updates.status === 'closed' && { closedAt: new Date() })
         })
         .where(eq(cases.id, caseId))
@@ -284,7 +284,7 @@ export class CaseOperations {
             embedding: arrayToPgVector(embedding),
             embeddingType: updates.description ? 'description' : 'title',
             sourceField: updates.description ? 'description' : 'title',
-            updatedAt: new Date()
+            updated_at: new Date()
           }
         });
       }
@@ -303,7 +303,7 @@ export class CaseOperations {
       where: eq(cases.id, caseId),
       with: {
         evidence: {
-          orderBy: [desc(evidence.collectedAt)],
+          orderBy: [desc(evidence.created_at)],
           limit: 50
         }
       }
@@ -347,7 +347,7 @@ export class EvidenceOperations {
         confidentialityLevel: 'standard',
         canvasPosition: {},
         uploadedAt: new Date(),
-        updatedAt: new Date()
+        updated_at: new Date()
       }).returning();
 
       // Generate vector embeddings for AI search
@@ -401,8 +401,8 @@ export class EvidenceOperations {
     if (dateRange) {
       conditions.push(
         and(
-          gte(evidence.collectedAt, dateRange.start),
-          lte(evidence.collectedAt, dateRange.end)
+          gte(evidence.created_at, dateRange.start),
+          lte(evidence.created_at, dateRange.end)
         )
       );
     }
@@ -443,7 +443,7 @@ export class EvidenceOperations {
         or(
           ilike(evidence.title, `%${query}%`),
           ilike(evidence.description, `%${query}%`),
-          ilike(evidence.fileName, `%${query}%`)
+          ilike(evidence.title, `%${query}%`) // Use title instead of fileName
         )
       );
     }
@@ -454,7 +454,7 @@ export class EvidenceOperations {
       db.select()
       .from(evidence)
       .where(whereClause)
-      .orderBy(desc(evidence.collectedAt))
+      .orderBy(desc(evidence.created_at))
       .limit(limit)
       .offset(offset),
       
@@ -498,7 +498,7 @@ export class EvidenceOperations {
         .set({
           ...updates,
           chainOfCustody: updatedChainOfCustody,
-          updatedAt: new Date()
+          updated_at: new Date()
         })
         .where(eq(evidence.id, evidenceId))
         .returning();
@@ -518,7 +518,7 @@ export class EvidenceOperations {
             caseId: updatedEvidence.caseId,
             tags: updatedEvidence.tags,
             updatedBy,
-            updatedAt: new Date().toISOString()
+            updated_at: new Date().toISOString()
           }
         }).onConflictDoUpdate({
           target: [evidenceVectors.evidenceId],
@@ -531,7 +531,7 @@ export class EvidenceOperations {
               caseId: updatedEvidence.caseId,
               tags: updatedEvidence.tags,
               updatedBy,
-              updatedAt: new Date().toISOString()
+              updated_at: new Date().toISOString()
             }
           }
         });

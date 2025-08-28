@@ -1,14 +1,27 @@
-import crypto from "crypto";
+// import crypto from "crypto"; // Commented out due to default export issues
+import { randomBytes } from "crypto";
 
 /**
  * Vector Intelligence Service - Phase 4 Implementation
  * Advanced recommendation engine with vector search and semantic analysis
  */
 
-import type { AITask } from "$lib/types/ai-worker.js";
-// Orphaned content: import type { AIResponse
-import {
-aiWorkerManager } from "./ai-worker-manager.js";
+// import type { AITask } from "$lib/types/ai-worker.js"; // Commented out due to module resolution
+// import { aiWorkerManager } from "./ai-worker-manager.js"; // Commented out due to module resolution
+
+// Define interfaces locally
+interface AITask {
+  id: string;
+  type: string;
+  data: any;
+  priority?: number;
+}
+
+interface DocumentRecord {
+  id: string;
+  content: string;
+  metadata: any;
+}
 
 export interface VectorSearchOptions {
   query: string;
@@ -246,7 +259,7 @@ class VectorIntelligenceService {
       console.log("🔬 Performing semantic analysis...");
 
       const analysisTask: AITask = {
-        taskId: crypto.randomUUID(),
+        taskId: randomBytes(16).toString('hex'),
         type: "analyze",
         providerId: "ollama",
         model: "gemma3-legal",
@@ -383,7 +396,7 @@ class VectorIntelligenceService {
     try {
       // Use AI service to generate embeddings
       const embeddingTask: AITask = {
-        taskId: crypto.randomUUID(),
+        taskId: randomBytes(16).toString('hex'),
         type: "embed",
         providerId: "ollama",
         model: "nomic-embed-text",
@@ -668,7 +681,7 @@ ${content.substring(0, 2000)}...
   private async createVectorCollection(): Promise<void> {
     /* Implementation */
   }
-  private async fetchExistingDocuments(): Promise<unknown[]> {
+  private async fetchExistingDocuments(): Promise<DocumentRecord[]> {
     return [];
   }
   private async storeVector(

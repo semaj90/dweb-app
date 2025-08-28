@@ -1,4 +1,4 @@
-import type { RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler } from '$lib/types/server';
 import { json } from '@sveltejs/kit';
 import { withApiHandler } from '$lib/server/api/response';
 import { checkDatabaseHealth } from '$lib/server/db/enhanced-operations';
@@ -63,24 +63,24 @@ export const GET: RequestHandler = async () => {
     pgOpen,
     redisOpen,
     neo4jHealth,
-    
+
     // Vector/Search services
     qdrantHealth,
-    
+
     // AI/ML services
     ollamaVersion,
     enhancedRAGHealth,
     uploadServiceHealth,
     vectorServiceHealth,
-    
+
     // Cluster management
     clusterHealth,
     summarizerHealth,
-    
+
     // GPU services
     gpuStatusHealth,
     cudaStatusHealth,
-    
+
     // System services
     minioHealth,
   ] = await Promise.all([
@@ -88,24 +88,24 @@ export const GET: RequestHandler = async () => {
     tcpCheck("127.0.0.1", 5432), // PostgreSQL
     tcpCheck("127.0.0.1", 6379), // Redis
     httpCheck("http://localhost:7474"), // Neo4j
-    
+
     // Vector/Search layer
     httpCheck("http://localhost:6333/collections"), // Qdrant
-    
+
     // AI/ML layer
     httpCheck("http://localhost:11434/api/version"), // Ollama
     httpCheck("http://localhost:8094/health"), // Enhanced RAG
     httpCheck("http://localhost:8093/health"), // Upload Service
     httpCheck("http://localhost:8095/health"), // Vector Service v2.0
-    
+
     // Cluster management
     httpCheck("http://localhost:8090/health"), // Cluster
     httpCheck("http://localhost:8091/health"), // Summarizer
-    
+
     // GPU acceleration
     httpCheck("http://localhost:8230/health"), // GPU Status
     httpCheck("http://localhost:8094/cuda-status"), // CUDA Status
-    
+
     // Storage services
     httpCheck("http://localhost:9000"), // MinIO
   ]);
@@ -114,7 +114,7 @@ export const GET: RequestHandler = async () => {
   const memoryUsage = process.memoryUsage();
   const systemUptime = process.uptime();
   const cpuUsage = process.cpuUsage();
-  
+
   // Service status summary
   const services = {
     // Core Infrastructure
@@ -124,7 +124,7 @@ export const GET: RequestHandler = async () => {
       neo4j: { host: "127.0.0.1", port: 7474, status: neo4jHealth.ok ? "healthy" : "failed" },
       qdrant: { host: "127.0.0.1", port: 6333, status: qdrantHealth.ok ? "healthy" : "failed" },
     },
-    
+
     // AI/ML Services
     aiServices: {
       ollama: { host: "127.0.0.1", port: 11434, status: ollamaVersion.ok ? "healthy" : "failed" },
@@ -132,20 +132,20 @@ export const GET: RequestHandler = async () => {
       vectorService: { host: "127.0.0.1", port: 8095, status: vectorServiceHealth.ok ? "healthy" : "failed" },
       uploadService: { host: "127.0.0.1", port: 8093, status: uploadServiceHealth.ok ? "healthy" : "failed" },
     },
-    
+
     // GPU Acceleration
     gpuServices: {
       gpuStatus: { host: "127.0.0.1", port: 8230, status: gpuStatusHealth.ok ? "healthy" : "failed" },
       cudaWorker: { status: cudaStatusHealth.ok ? "healthy" : "failed" },
       rtx3060Ti: { vram: "8GB", status: "ready" }, // Based on architecture docs
     },
-    
+
     // Cluster Management
     orchestration: {
       clusterManager: { host: "127.0.0.1", port: 8090, status: clusterHealth.ok ? "healthy" : "failed" },
       summarizer: { host: "127.0.0.1", port: 8091, status: summarizerHealth.ok ? "healthy" : "failed" },
     },
-    
+
     // Storage
     storage: {
       minio: { host: "127.0.0.1", port: 9000, status: minioHealth.ok ? "healthy" : "failed" },
@@ -196,7 +196,7 @@ export const GET: RequestHandler = async () => {
   const healthyServices = Object.values(services)
     .flatMap(category => Object.values(category))
     .filter(service => service.status === "healthy").length;
-  
+
   const totalServices = Object.values(services)
     .flatMap(category => Object.values(category)).length;
 
@@ -215,7 +215,7 @@ export const GET: RequestHandler = async () => {
     caching: cachingLayers,
     performance,
     architecture,
-    
+
     // Compatibility with existing consumers
     ok: overallStatus === "healthy",
     postgres: services.databases.postgres,
@@ -224,7 +224,7 @@ export const GET: RequestHandler = async () => {
     qdrant: services.databases.qdrant,
   } as const;
 
-  return json(status, { 
+  return json(status, {
     status: overallStatus === "healthy" ? 200 : overallStatus === "degraded" ? 206 : 503,
     headers: {
       'X-Health-Score': healthScore.toString(),

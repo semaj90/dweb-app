@@ -1,5 +1,34 @@
 
-// Core types stub for frontend services
+// === DATABASE TYPES ===
+// Re-export Drizzle database types for clean imports
+export type {
+  // Table Select Types
+  SelectUser,
+  SelectSession,
+  SelectCase,
+  SelectEvidence, 
+  SelectLegalDocument,
+  SelectDocumentChunk,
+  
+  // Table Insert Types
+  InsertUser,
+  InsertSession,
+  InsertCase,
+  InsertEvidence,
+  InsertLegalDocument,
+  InsertDocumentChunk,
+  
+  // Database Utilities
+  QueryResult,
+  DatabaseConfig,
+  UserRole,
+  CaseStatus,
+  EvidenceType,
+  DocumentType,
+  TableName
+} from '$lib/server/db/index.js';
+
+// Legacy interfaces for compatibility
 export interface Database {
   [key: string]: unknown;
 }
@@ -8,7 +37,6 @@ export interface API {
   [key: string]: unknown;
 }
 
-// Additional types can be added here as needed
 export interface Config {
   [key: string]: unknown;
 }
@@ -61,33 +89,27 @@ export interface Report {
   metadata?: Record<string, any>;
 }
 
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  firstName: string;
-  lastName: string;
-  role: 'admin' | 'prosecutor' | 'detective' | 'user';
-  createdAt: string; // ISO string
-  updatedAt: string; // ISO string
-  avatarUrl?: string;
-  isActive: boolean;
-  emailVerified: boolean;
-  preferences?: Record<string, any>;
-  // Optional legacy / alternate casing fields encountered in some sources
-  created_at?: string;
-  last_login?: string;
-}
+// User interface moved to ./user.ts for centralized management
 
 // Enhanced type definitions for barrel store compatibility
-// Re-export all types from other files
-export * from './api.ts';
-export * from '../services/types/service-types.ts';
-export * from './scoring.ts';
-export * from './webgpu.d.ts';
-export * from './webassembly-enhanced.d.ts';
-export * from './drizzle-enhanced.d.ts';
-export * from './env-enhanced.d.ts';
+// Re-export all types from organized type files
+
+// Core Domain Types - Safe exports without conflicts
+export { User, UserSession } from './user.js';
+export { Case, CaseForm, CaseFormState, CaseMetrics } from './case.js';
+
+// Export Evidence interface defined above
+export type { Evidence };
+
+// Component Props (Svelte 5 runes compatible)
+export * from './component-props.js';
+
+// XState Types - Centralized state management types
+export type { AIAssistantEvent, AIAssistantContext, ConversationEntry } from './xstate.js';
+
+// AI & ML Types - Safe exports
+export { type AIAnalysisResult, type AIModelConfig, type VectorSearchOptions } from './ai-types.js';
+export { type ChatMessage, type ChatSession, type StreamingResponse } from './ai-chat.js';
 
 // Global type references for enhanced compatibility
 /// <reference path="./webgpu.d.ts" />

@@ -1,7 +1,7 @@
 syntax = "proto3";
 package ingest;
 
-option go_package = "github.com/yourorg/deeds-web-app/proto/ingest;ingest";
+option go_package = "legal-ai-production/proto/ingest;ingest";
 
 service Ingestion {
   rpc StreamChunks(stream IngestChunk) returns (IngestAck);

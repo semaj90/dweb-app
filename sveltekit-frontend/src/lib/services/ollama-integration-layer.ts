@@ -26,6 +26,10 @@ import type { ChatRequest, ChatResponse } from '$routes/api/ai/chat/+server';
 
 export interface IntegratedChatRequest extends ChatRequest {
   // Extended properties for enhanced functionality
+  message?: string;
+  model?: string;
+  caseId?: string;
+  useRAG?: boolean;
   documentContext?: {
     type: 'document' | 'case' | 'evidence' | 'legal-brief' | 'contract';
     content?: string;
@@ -47,6 +51,8 @@ export interface IntegratedChatRequest extends ChatRequest {
 
 export interface IntegratedChatResponse extends ChatResponse {
   // Enhanced response with summarization
+  response?: string;
+  streaming?: boolean;
   summary?: ComprehensiveSummaryResponse;
   integration?: {
     servicesUsed: string[];
@@ -385,7 +391,7 @@ class OllamaIntegrationLayer {
       for await (const partialSummary of streamGenerator) {
         yield {
           response: partialSummary.summary || '',
-          summary: partialSummary,
+          summary: { ...partialSummary, summary: partialSummary.summary || '' } as ComprehensiveSummaryResponse,
           streaming: { active: true }
         };
       }
@@ -494,11 +500,4 @@ Please answer the question using the provided context.`;
 
 export const ollamaIntegrationLayer = new OllamaIntegrationLayer();
 
-// Re-export types for easy import
-export type {
-  IntegratedChatRequest,
-  IntegratedChatResponse,
-  OllamaServiceStatus,
-  ComprehensiveSummaryRequest,
-  ComprehensiveSummaryResponse
-};
+// Types already exported above via export interface declarations

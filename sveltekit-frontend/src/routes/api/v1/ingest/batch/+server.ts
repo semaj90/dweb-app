@@ -1,4 +1,4 @@
-import type { RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler } from '$lib/types/server';
 import { json } from '@sveltejs/kit';
 // import { INGEST_SERVICE_URL, MAX_BATCH_SIZE } from '$env/static/private';
 
@@ -8,7 +8,7 @@ import { json } from '@sveltejs/kit';
  * Integrates with Go ingest service on port 8227
  */
 
-const SERVICE_URL = 'http://localhost:8227'; // INGEST_SERVICE_URL || 
+const SERVICE_URL = 'http://localhost:8227'; // INGEST_SERVICE_URL ||
 const TIMEOUT = 120000; // 2 minutes for batch processing
 const BATCH_SIZE_LIMIT = parseInt('10'); // MAX_BATCH_SIZE ||
 
@@ -38,10 +38,10 @@ interface BatchIngestResponse {
 
 export const POST: RequestHandler = async ({ request, fetch }) => {
   const startTime = Date.now();
-  
+
   try {
     const requestData: BatchIngestRequest = await request.json();
-    
+
     // Validate request structure
     if (!requestData.documents || !Array.isArray(requestData.documents)) {
       return json(
@@ -53,7 +53,7 @@ export const POST: RequestHandler = async ({ request, fetch }) => {
     // Validate batch size
     if (requestData.documents.length > BATCH_SIZE_LIMIT) {
       return json(
-        { 
+        {
           error: `Batch size ${requestData.documents.length} exceeds maximum of ${BATCH_SIZE_LIMIT}`,
           max_batch_size: BATCH_SIZE_LIMIT
         },
@@ -74,7 +74,7 @@ export const POST: RequestHandler = async ({ request, fetch }) => {
 
     if (validationErrors.length > 0) {
       return json(
-        { 
+        {
           error: 'Document validation failed',
           validation_errors: validationErrors
         },
@@ -121,7 +121,7 @@ export const POST: RequestHandler = async ({ request, fetch }) => {
       if (!response.ok) {
         const errorText = await response.text();
         return json(
-          { 
+          {
             error: `Batch ingest service error: ${response.status} - ${errorText}`,
             service: 'ingest-service',
             port: '8227',
@@ -140,10 +140,10 @@ export const POST: RequestHandler = async ({ request, fetch }) => {
         // Performance metrics following your patterns
         performance: {
           total_processing_time_ms: processingTime,
-          average_document_time_ms: result.results.length > 0 
+          average_document_time_ms: result.results.length > 0
             ? result.results.reduce((sum, r) => sum + r.process_time_ms, 0) / result.results.length
             : 0,
-          documents_per_second: result.processed > 0 
+          documents_per_second: result.processed > 0
             ? (result.processed / (processingTime / 1000)).toFixed(2)
             : 0
         },
@@ -161,7 +161,7 @@ export const POST: RequestHandler = async ({ request, fetch }) => {
           requested: requestData.documents.length,
           processed: result.processed,
           failed: (result.errors?.length || 0),
-          success_rate: result.processed > 0 
+          success_rate: result.processed > 0
             ? ((result.processed / requestData.documents.length) * 100).toFixed(1) + '%'
             : '0%'
         }
@@ -169,10 +169,10 @@ export const POST: RequestHandler = async ({ request, fetch }) => {
 
     } catch (fetchError) {
       clearTimeout(timeoutId);
-      
+
       if (fetchError.name === 'AbortError') {
         return json(
-          { 
+          {
             error: 'Batch processing timeout',
             message: `Processing ${requestData.documents.length} documents took longer than ${TIMEOUT/1000} seconds`,
             batch_size: requestData.documents.length,
@@ -181,15 +181,15 @@ export const POST: RequestHandler = async ({ request, fetch }) => {
           { status: 504 }
         );
       }
-      
+
       throw fetchError;
     }
 
   } catch (error) {
     const processingTime = Date.now() - startTime;
-    
+
     console.error('Batch ingest API error:', error);
-    
+
     return json(
       {
         error: 'Internal server error during batch processing',
@@ -205,7 +205,7 @@ export const POST: RequestHandler = async ({ request, fetch }) => {
 // Batch status endpoint
 export const GET: RequestHandler = async ({ url, fetch }) => {
   const batchId = url.searchParams.get('batch_id');
-  
+
   if (!batchId) {
     return json({
       service: 'batch-ingest',

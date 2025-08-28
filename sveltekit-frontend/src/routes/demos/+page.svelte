@@ -2,7 +2,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
-  import { Button } from 'bits-ui';
+  import Button from '$lib/components/ui/MeltButton.svelte';
   import { ScrollArea } from '$lib/components/ui/scrollarea';
   import { Badge } from '$lib/components/ui/badge';
   import { 

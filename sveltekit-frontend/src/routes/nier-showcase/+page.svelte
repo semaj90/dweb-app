@@ -4,7 +4,7 @@
   import CaseCard from '$lib/components/cases/CaseCard.svelte'
   import NierAIAssistant from '$lib/components/ai/NierAIAssistant.svelte'
   import AIAssistant from '$lib/components/AIAssistant.svelte'
-  import { Button } from 'bits-ui'
+  import Button from '$lib/components/ui/MeltButton.svelte'
   import type { User } from '$lib/types/index'
 
   let isDarkMode = $state(false);

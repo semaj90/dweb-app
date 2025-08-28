@@ -1,4 +1,4 @@
-import type { RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler } from '$lib/types/server';
 import { json } from "@sveltejs/kit";
 
 const GO_MICROSERVICE_URL = "http://localhost:8080";

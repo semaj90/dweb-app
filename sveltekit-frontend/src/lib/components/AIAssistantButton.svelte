@@ -5,8 +5,8 @@
 
   import { createEventDispatcher } from 'svelte';
   import { $props } from 'svelte';
-  import { Button } from 'bits-ui';
-  import { Badge } from 'bits-ui';
+  import Button from '$lib/components/ui/MeltButton.svelte';
+  // Badge component to be created later
   import { Loader2, Brain, Zap, AlertTriangle } from 'lucide-svelte';
   
   let { query = $bindable() } = $props(); // '';

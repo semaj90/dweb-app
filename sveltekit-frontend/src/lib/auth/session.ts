@@ -32,11 +32,11 @@ export const lucia = new Lucia(adapter, {
     return {
       id: attributes.id,
       email: attributes.email,
-      firstName: attributes.firstName,
-      lastName: attributes.lastName,
+      firstName: attributes.first_name,
+      lastName: attributes.last_name,
       role: attributes.role,
-      isActive: attributes.isActive,
-      emailVerified: attributes.emailVerified,
+      isActive: attributes.is_active,
+      emailVerified: attributes.email_verified,
     };
   },
 });

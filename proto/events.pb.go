@@ -7,11 +7,12 @@
 package wire
 
 import (
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
+
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
 
 const (
@@ -280,7 +281,7 @@ const file_events_proto_rawDesc = "" +
 	"\ttelemetry\x18\x01 \x01(\v2\x0f.wire.TelemetryH\x00R\ttelemetry\x120\n" +
 	"\bprefetch\x18\x02 \x01(\v2\x12.wire.PrefetchPlanH\x00R\bprefetch\x12%\n" +
 	"\rsummary_delta\x18\x03 \x01(\fH\x00R\fsummaryDeltaB\x06\n" +
-	"\x04kindB2Z0github.com/yourorg/deeds-web-app/proto/wire;wireb\x06proto3"
+	"\x04kindB2Z0legal-ai-production/proto/wire;wireb\x06proto3"
 
 var (
 	file_events_proto_rawDescOnce sync.Once

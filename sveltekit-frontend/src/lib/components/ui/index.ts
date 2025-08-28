@@ -1,6 +1,18 @@
 
-// Comprehensive UI Component Exports - Bits UI v2 (Svelte 5 Compatible)
+// Comprehensive UI Component Exports - Multi-Library Support
+// Support for both bits-ui and melt-ui v0.39.0 (Svelte 5 Compatible)
 // Auto-generated barrel file for all UI components
+
+// === MELT UI V0.39.0 COMPONENTS (SVELTE 5 NATIVE) ===
+// NEW: Melt UI components for Svelte 5 compatibility
+export { default as MeltButton } from './MeltButton.svelte';
+export { default as MeltDialog } from './MeltDialog.svelte';
+export { default as MeltSelect } from './MeltSelect.svelte';
+export { default as MeltCard } from './MeltCard.svelte';
+export { default as MeltInput } from './MeltInput.svelte';
+export { default as MeltTextarea } from './MeltTextarea.svelte';
+export { default as MeltCheckbox } from './MeltCheckbox.svelte';
+export { default as MeltBadge } from './MeltBadge.svelte';
 
 // === BITS UI V2 COMPONENTS (SVELTE 5 COMPATIBLE) ===
 // Primary exports - Production ready components
@@ -87,3 +99,34 @@ export const preloadComponent = async (loader: () => Promise<any>) => {
     return null;
   }
 };
+
+// === COMPONENT LIBRARY CHOICE SYSTEM ===
+export type ComponentLibrary = 'bits-ui' | 'melt-ui';
+
+export interface ComponentChoice {
+  library: ComponentLibrary;
+  reason?: string;
+}
+
+// Helper function to choose component library
+export function selectComponentLibrary(choice: ComponentLibrary = 'melt-ui'): ComponentChoice {
+  return {
+    library: choice,
+    reason: choice === 'melt-ui' 
+      ? 'Using melt-ui v0.39.0 for Svelte 5 compatibility'
+      : 'Using bits-ui for legacy compatibility'
+  };
+}
+
+// Re-export bits-ui for direct access
+export * as BitsUI from 'bits-ui';
+
+// Default component mappings (prefer melt-ui for Svelte 5)
+export { default as Button } from './MeltButton.svelte';
+export { default as Dialog } from './MeltDialog.svelte';
+export { default as Select } from './MeltSelect.svelte';
+export { default as Card } from './MeltCard.svelte';
+export { default as Input } from './MeltInput.svelte';
+export { default as Textarea } from './MeltTextarea.svelte';
+export { default as Checkbox } from './MeltCheckbox.svelte';
+export { default as Badge } from './MeltBadge.svelte';

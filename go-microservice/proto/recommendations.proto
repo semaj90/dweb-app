@@ -1,18 +1,18 @@
 syntax = "proto3";
 package recsys.v1;
-option go_package = "github.com/semaj90/dweb-app/go-microservice/proto/recommendations;recommendations";
+option go_package = "legal-ai-production/go-microservice/proto/recommendations;recommendations";
 
 // Legal AI Recommendations Service - integrates with existing YoRHa architecture
 service Recommend {
   // Friend-of-a-friend recommendations for legal professionals
   rpc FOAF(FOAFRequest) returns (FOAFResponse) {}
-  
+
   // "Did you mean?" suggestions with legal context
   rpc Suggest(SuggestRequest) returns (SuggestResponse) {}
-  
+
   // Legal document summarization with LangChain + Legal-BERT
   rpc Summarize(SummarizeRequest) returns (SummarizeResponse) {}
-  
+
   // Health check for service monitoring
   rpc Health(HealthRequest) returns (HealthResponse) {}
 }

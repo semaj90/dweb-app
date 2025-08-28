@@ -1,9 +1,9 @@
-import { cases, evidence, users, sessions } from "$lib/server/db/schema-postgres";
+import { cases, evidence, users, sessions } from "./schema-postgres";
 
 // This file re-exports everything from the unified schema for backward compatibility
 // Simplified to avoid TypeScript compilation errors
 
-export * from "$lib/server/db/schema-postgres";
+export * from "./schema-postgres";
 
 // For any legacy imports that might be needed
 

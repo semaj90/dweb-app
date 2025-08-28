@@ -3,13 +3,17 @@
   import { $props, $derived } from 'svelte';
 
 	import { createEventDispatcher, onMount } from 'svelte';
-	import { Button } from 'bits-ui';
-	import { Card, CardContent, CardHeader, CardTitle } from 'bits-ui';
-	import { Badge } from 'bits-ui';
-	import { Progress } from 'bits-ui';
-	import { Input } from 'bits-ui';
-	import { Textarea } from 'bits-ui';
-	import { Label } from 'bits-ui';
+	// Updated to use melt-ui components
+	import Button from '$lib/components/ui/MeltButton.svelte';
+	import Card from '$lib/components/ui/MeltCard.svelte';
+	
+	// TODO: Replace with melt-ui equivalents when available
+	// import { CardContent, CardHeader, CardTitle } from 'bits-ui';
+	// import { Badge } from 'bits-ui';
+	// import { Progress } from 'bits-ui';
+	// import { Input } from 'bits-ui';
+	// import { Textarea } from 'bits-ui';
+	// import { Label } from 'bits-ui';
 	import { ocrService, type ExtractedField, type FormField, type FieldType } from '$lib/services/ocrService';
 	import { enhancedRAG } from '$lib/services/enhancedRAG';
 	import { fade, fly, scale } from 'svelte/transition';

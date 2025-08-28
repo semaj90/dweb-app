@@ -1,9 +1,10 @@
 import { json, error } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
-import { db } from "$lib/database/postgres-enhanced.js";
-import { legalDocuments, insertLegalDocumentSchema } from "$lib/database/schema/legal-documents.js";
-import { vectorSearchService } from "$lib/database/vector-operations.js";
+import { db } from "$lib/server/db";
+import { legal_documents, insertLegalDocumentSchema } from "$lib/server/db/schema-postgres";
+import { cognitiveCacheManager } from "$lib/services/cognitive-cache-integration";
 import { eq } from "drizzle-orm";
+import { getDatabaseHealth } from "$lib/server/db";
 import crypto from 'crypto';
 import { z } from 'zod';
 
@@ -68,14 +69,43 @@ export const POST: RequestHandler = async ({ request }) => {
     const fileBuffer = await file.arrayBuffer();
     const fileHash = crypto.createHash('sha256').update(new Uint8Array(fileBuffer)).digest('hex');
 
-    // Check for duplicate files
+    // Check cognitive cache for recent uploads
+    const cacheKey = `document_upload_${fileHash}`;
+    const cacheRequest = {
+      key: cacheKey,
+      type: 'legal-data' as const,
+      context: {
+        action: 'duplicate-check',
+        fileHash,
+        workflowStep: 'upload-validation',
+        priority: 'high' as const
+      }
+    };
+
+    const cachedResult = await cognitiveCacheManager.get(cacheRequest);
+    if (cachedResult && cachedResult.confidence > 0.9) {
+      return json({
+        success: false,
+        error: "Document already exists (cached)",
+        duplicateId: cachedResult.data.id,
+        duplicateTitle: cachedResult.data.title
+      }, { status: 409 });
+    }
+
+    // Check for duplicate files in database
     const existingDoc = await db
-      .select({ id: legalDocuments.id, title: legalDocuments.title })
-      .from(legalDocuments)
-      .where(eq(legalDocuments.fileHash, fileHash))
+      .select({ id: legal_documents.id, title: legal_documents.title })
+      .from(legal_documents)
+      .where(eq(legal_documents.file_hash, fileHash))
       .limit(1);
 
     if (existingDoc.length > 0) {
+      // Cache the duplicate result for future requests
+      await cognitiveCacheManager.set(cacheRequest, {
+        id: existingDoc[0].id,
+        title: existingDoc[0].title
+      }, { distributeAcrossCaches: true, cognitiveValue: 0.95 });
+
       return json({
         success: false,
         error: "Document already exists",
@@ -96,34 +126,47 @@ export const POST: RequestHandler = async ({ request }) => {
     // Generate title if not provided
     const documentTitle = uploadData.title || generateTitleFromContent(textContent, file.name);
 
-    // Create initial document record
+    // Check database health before insertion
+    const dbHealth = await getDatabaseHealth();
+    if (dbHealth.overall !== 'healthy') {
+      return json({
+        success: false,
+        error: "Database temporarily unavailable",
+        healthStatus: dbHealth
+      }, { status: 503 });
+    }
+
+    // Create initial document record with proper schema mapping
     const documentData = {
       title: documentTitle,
       content: textContent,
-      documentType: uploadData.documentType,
+      document_type: uploadData.documentType,
       jurisdiction: uploadData.jurisdiction,
-      practiceArea: uploadData.practiceArea,
-      fileName: file.name,
-      fileSize: file.size,
-      mimeType: file.type,
-      fileHash,
-      isConfidential: uploadData.isConfidential,
-      processingStatus: 'processing' as const,
-      createdBy: null, // TODO: Add user authentication
+      practice_area: uploadData.practiceArea,
+      file_name: file.name,
+      file_size: file.size,
+      mime_type: file.type,
+      file_hash: fileHash,
+      is_confidential: uploadData.isConfidential,
+      processing_status: 'processing' as const,
+      created_by: null, // TODO: Add user authentication
+      created_at: new Date(),
+      updated_at: new Date()
     };
 
     // Insert document into database
     const [insertedDoc] = await db
-      .insert(legalDocuments)
+      .insert(legal_documents)
       .values(documentData)
-      .returning({ id: legalDocuments.id });
+      .returning({ id: legal_documents.id });
 
     // Process embeddings and analysis in background if requested
     if (uploadData.includeEmbeddings || uploadData.generateAnalysis) {
       processDocumentAsync(insertedDoc.id, textContent, uploadData);
     }
 
-    return json({
+    // Cache successful upload result
+    const responseData = {
       success: true,
       document: {
         id: insertedDoc.id,
@@ -136,7 +179,26 @@ export const POST: RequestHandler = async ({ request }) => {
       },
       message: "Document uploaded successfully",
       processingInBackground: uploadData.includeEmbeddings || uploadData.generateAnalysis,
-    });
+      meta: {
+        timestamp: new Date().toISOString(),
+        databaseHealth: dbHealth.overall,
+        cached: false
+      }
+    };
+
+    // Cache the upload result for monitoring and analytics
+    await cognitiveCacheManager.set({
+      key: `document_created_${insertedDoc.id}`,
+      type: 'legal-data' as const,
+      context: {
+        userId: null, // TODO: Add user ID when auth is implemented
+        action: 'document-upload-success',
+        documentType: uploadData.documentType,
+        priority: 'medium' as const
+      }
+    }, responseData, { distributeAcrossCaches: true, cognitiveValue: 0.8 });
+
+    return json(responseData);
 
   } catch (error: unknown) {
     console.error("Document upload error:", error);
@@ -274,26 +336,33 @@ async function processDocumentAsync(
       updates.analysisResults = analysis;
     }
 
-    // Update document with processing results
-    updates.processingStatus = 'completed';
-    updates.updatedAt = new Date();
+    // Update document with processing results using proper schema
+    updates.processing_status = 'completed';
+    updates.updated_at = new Date();
 
     await db
-      .update(legalDocuments)
+      .update(legal_documents)
       .set(updates)
-      .where(eq(legalDocuments.id, documentId));
+      .where(eq(legal_documents.id, documentId));
+
+    // Clear relevant caches after successful processing
+    await cognitiveCacheManager.set({
+      key: `document_processed_${documentId}`,
+      type: 'legal-data' as const,
+      context: { action: 'processing-complete', documentId }
+    }, { processingCompleted: true, timestamp: new Date().toISOString() });
 
   } catch (error) {
     console.error('Background processing error:', error);
     
-    // Mark as error status
+    // Mark as error status using proper schema
     await db
-      .update(legalDocuments)
+      .update(legal_documents)
       .set({ 
-        processingStatus: 'error',
-        updatedAt: new Date()
+        processing_status: 'error',
+        updated_at: new Date()
       })
-      .where(eq(legalDocuments.id, documentId));
+      .where(eq(legal_documents.id, documentId));
   }
 }
 
@@ -336,38 +405,63 @@ export const GET: RequestHandler = async ({ url }) => {
       return json({ error: "Document ID required" }, { status: 400 });
     }
 
+    // Check cognitive cache first
+    const docCacheRequest = {
+      key: `document_${documentId}`,
+      type: 'legal-data' as const,
+      context: { action: 'document-retrieval', documentId }
+    };
+
+    const cachedDoc = await cognitiveCacheManager.get(docCacheRequest);
+    if (cachedDoc && cachedDoc.confidence > 0.8) {
+      return json({
+        success: true,
+        document: cachedDoc.data,
+        meta: { loadSource: 'cache', cached: true }
+      });
+    }
+
     // Get document from database
     const [document] = await db
       .select()
-      .from(legalDocuments)
-      .where(eq(legalDocuments.id, documentId))
+      .from(legal_documents)
+      .where(eq(legal_documents.id, documentId))
       .limit(1);
 
     if (!document) {
       return json({ error: "Document not found" }, { status: 404 });
     }
 
-    return json({
+    const responseData = {
       success: true,
       document: {
         id: document.id,
         title: document.title,
-        documentType: document.documentType,
+        documentType: document.document_type,
         jurisdiction: document.jurisdiction,
-        practiceArea: document.practiceArea,
-        fileName: document.fileName,
-        fileSize: document.fileSize,
-        mimeType: document.mimeType,
-        processingStatus: document.processingStatus,
-        isConfidential: document.isConfidential,
-        hasEmbeddings: !!(document.contentEmbedding && document.titleEmbedding),
-        hasAnalysis: !!document.analysisResults,
-        createdAt: document.createdAt,
-        updatedAt: document.updatedAt,
+        practiceArea: document.practice_area,
+        fileName: document.file_name,
+        fileSize: document.file_size,
+        mimeType: document.mime_type,
+        processingStatus: document.processing_status,
+        isConfidential: document.is_confidential,
+        hasEmbeddings: !!(document.content_embedding && document.title_embedding),
+        hasAnalysis: !!document.analysis_results,
+        createdAt: document.created_at,
+        updatedAt: document.updated_at,
         // Include analysis results if available and not confidential
-        analysisResults: !document.isConfidential ? document.analysisResults : null,
+        analysisResults: !document.is_confidential ? document.analysis_results : null,
       },
+      meta: { loadSource: 'database', cached: false }
+    };
+
+    // Cache the document for future requests
+    await cognitiveCacheManager.set(docCacheRequest, responseData.document, {
+      distributeAcrossCaches: true,
+      cognitiveValue: 0.85
     });
+
+    return json(responseData);
   } catch (error: unknown) {
     console.error("Document status check error:", error);
 
@@ -392,9 +486,9 @@ export const DELETE: RequestHandler = async ({ url }) => {
 
     // Check if document exists
     const [document] = await db
-      .select({ id: legalDocuments.id, title: legalDocuments.title })
-      .from(legalDocuments)
-      .where(eq(legalDocuments.id, documentId))
+      .select({ id: legal_documents.id, title: legal_documents.title })
+      .from(legal_documents)
+      .where(eq(legal_documents.id, documentId))
       .limit(1);
 
     if (!document) {
@@ -403,8 +497,24 @@ export const DELETE: RequestHandler = async ({ url }) => {
 
     // Delete the document (cascade will handle related records)
     await db
-      .delete(legalDocuments)
-      .where(eq(legalDocuments.id, documentId));
+      .delete(legal_documents)
+      .where(eq(legal_documents.id, documentId));
+
+    // Clear all cached data for this document
+    const cacheKeys = [
+      `document_${documentId}`,
+      `document_upload_${documentId}`,
+      `document_created_${documentId}`,
+      `document_processed_${documentId}`
+    ];
+    
+    for (const key of cacheKeys) {
+      await cognitiveCacheManager.set({
+        key,
+        type: 'legal-data' as const,
+        context: { action: 'document-deleted', documentId }
+      }, null); // Clear cache entry
+    }
 
     return json({
       success: true,

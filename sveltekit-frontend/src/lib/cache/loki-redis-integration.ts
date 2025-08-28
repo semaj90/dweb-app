@@ -9,9 +9,10 @@
  */
 
 import Loki from 'lokijs';
-import { createClient, type RedisClientType } from 'redis';
+import { redis } from '$lib/server/cache/redis-service';
 import { nesMemory, type LegalDocument } from '../memory/nes-memory-architecture.js';
 import { EventEmitter } from 'events';
+import type { Redis as IORedisClient } from 'ioredis';
 
 // Cache configuration optimized for legal AI workloads
 const CACHE_CONFIG = {
@@ -95,8 +96,8 @@ interface CacheStats {
 
 export class LokiRedisCache extends EventEmitter {
   private loki: Loki | null = null;
-  private redis: RedisClientType | null = null;
-  private subscriber: RedisClientType | null = null;
+  private redis: IORedisClient | null = null;
+  private subscriber: IORedisClient | null = null;
   
   // Loki collections by document type
   private collections: Map<string, Collection<CachedDocument>> = new Map();
@@ -176,28 +177,13 @@ export class LokiRedisCache extends EventEmitter {
 
   private async initializeRedis(): Promise<void> {
     try {
-      // Main Redis client
-      this.redis = createClient({
-        socket: {
-          host: CACHE_CONFIG.redis.host,
-          port: CACHE_CONFIG.redis.port
-        },
-        database: CACHE_CONFIG.redis.db
-      });
+      // Use centralized Redis service
+      this.redis = redis;
+      
+      // Use centralized Redis service for subscriber as well
+      this.subscriber = redis;
 
-      // Subscriber client for real-time sync
-      this.subscriber = createClient({
-        socket: {
-          host: CACHE_CONFIG.redis.host,
-          port: CACHE_CONFIG.redis.port
-        },
-        database: CACHE_CONFIG.redis.db
-      });
-
-      await Promise.all([
-        this.redis.connect(),
-        this.subscriber.connect()
-      ]);
+      // Redis service handles connection management
 
       this.stats.redis.connected = true;
       
@@ -212,13 +198,17 @@ export class LokiRedisCache extends EventEmitter {
     if (!this.subscriber) return;
 
     // Subscribe to document change events
-    await this.subscriber.subscribe('legal_ai:document:*', (message, channel) => {
+    await this.subscriber.psubscribe('legal_ai:document:*');
+    this.subscriber.on('pmessage', (pattern: string, channel: string, message: string) => {
       this.handleRedisMessage(message, channel);
     });
 
     // Subscribe to search invalidation events
-    await this.subscriber.subscribe('legal_ai:search:invalidate', (message) => {
-      this.invalidateSearchCache(JSON.parse(message) as any);
+    await this.subscriber.subscribe('legal_ai:search:invalidate');
+    this.subscriber.on('message', (channel: string, message: string) => {
+      if (channel === 'legal_ai:search:invalidate') {
+        this.invalidateSearchCache(JSON.parse(message) as any);
+      }
     });
   }
 
@@ -311,7 +301,7 @@ export class LokiRedisCache extends EventEmitter {
       data: data ? Array.from(new Uint8Array(data)) : null
     });
 
-    await this.redis.setEx(key, CACHE_CONFIG.redis.ttl.documents, value);
+    await this.redis.setex(key, CACHE_CONFIG.redis.ttl.documents, value);
     this.stats.redis.operations++;
 
     // Publish change event
@@ -604,7 +594,7 @@ export class LokiRedisCache extends EventEmitter {
 
     try {
       const key = `${CACHE_CONFIG.redis.keyPrefix}${cacheKey}`;
-      await this.redis.setEx(key, CACHE_CONFIG.redis.ttl.searches, JSON.stringify(results));
+      await this.redis.setex(key, CACHE_CONFIG.redis.ttl.searches, JSON.stringify(results));
     } catch (error) {
       console.error('❌ Search cache storage failed:', error);
     }

@@ -44,8 +44,8 @@ export interface DialogProps extends BaseProps {
   closeOnOutsideClick?: boolean;
 }
 
-// Input component props
-export interface InputProps extends HTMLInputAttributes, BaseProps {
+// Input component props  
+export interface InputProps extends Omit<HTMLInputAttributes, 'size'>, BaseProps {
   variant?: 'default' | 'outlined' | 'filled' | 'ghost' | 'yorha' | 'legal';
   size?: 'sm' | 'default' | 'lg';
   state?: 'default' | 'error' | 'warning' | 'success';

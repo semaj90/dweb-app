@@ -1,0 +1,19 @@
+syntax = "proto3";
+package yorha.feedback;
+
+option go_package = "legal-ai-production/go-microservice/proto/feedback;feedback";
+
+message FeedbackEvent {
+  string id = 1;               // uuid
+  string user_id = 2;
+  string job_id = 3;           // inference job id
+  int64 ts_unix_ms = 4;
+  string action = 5;           // "accept"|"reject"|"flag"
+  float reward = 6;            // optional numeric reward
+  repeated float vector = 7;   // flattened tensor (float32)
+  map<string,string> meta = 8; // e.g., {"path":"file1.md","route":"search"}
+}
+
+message FeedbackBatch {
+  repeated FeedbackEvent events = 1;
+}

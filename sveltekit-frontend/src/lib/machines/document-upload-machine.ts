@@ -1,7 +1,7 @@
 // Document Upload State Machine - XState v5 compatible
 // Manages file upload workflow with progress tracking and AI processing
 
-import { createMachine, assign } from 'xstate';
+import { createMachine, assign, fromPromise } from 'xstate';
 
 export interface DocumentUploadContext {
   files: File[];
@@ -52,10 +52,10 @@ export const documentUploadMachine = createMachine({
     validating: {
       invoke: {
         id: 'validateFiles',
-        src: async ({ context }) => {
+        src: fromPromise(async ({ input }: { input: DocumentUploadContext }) => {
           const errors: Record<string, string[]> = {};
           
-          if (context.files.length === 0) {
+          if (input.files.length === 0) {
             errors.files = ['Please select at least one file'];
           }
           
@@ -63,7 +63,7 @@ export const documentUploadMachine = createMachine({
           const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'text/plain'];
           const maxSize = 10 * 1024 * 1024; // 10MB
           
-          for (const file of context.files) {
+          for (const file of input.files) {
             if (!allowedTypes.includes(file.type)) {
               errors.files = errors.files || [];
               errors.files.push(`${file.name}: File type not allowed`);
@@ -79,8 +79,9 @@ export const documentUploadMachine = createMachine({
             throw { validationErrors: errors };
           }
           
-          return context.files;
-        },
+          return input.files;
+        }),
+        input: ({ context }) => context,
         onDone: {
           target: 'validated',
           actions: assign({
@@ -91,7 +92,7 @@ export const documentUploadMachine = createMachine({
         onError: {
           target: 'idle',
           actions: assign({
-            validationErrors: ({ event }) => event.error?.validationErrors || {},
+            validationErrors: ({ event }) => (event as any).error?.validationErrors || {},
             error: 'File validation failed'
           })
         }
@@ -115,10 +116,10 @@ export const documentUploadMachine = createMachine({
       }),
       invoke: {
         id: 'uploadFiles',
-        src: async ({ context }) => {
+        src: fromPromise(async ({ input }: { input: DocumentUploadContext }) => {
           const formData = new FormData();
           
-          context.files.forEach((file, index) => {
+          input.files.forEach((file, index) => {
             formData.append(`file_${index}`, file);
           });
           
@@ -145,7 +146,8 @@ export const documentUploadMachine = createMachine({
             clearInterval(progressInterval);
             throw error;
           }
-        },
+        }),
+        input: ({ context }) => context,
         onDone: {
           target: 'processing',
           actions: assign({
@@ -159,13 +161,13 @@ export const documentUploadMachine = createMachine({
             guard: ({ context }) => context.retryCount < 3,
             target: 'retrying',
             actions: assign({
-              error: ({ event }) => event.error?.message || 'Upload failed'
+              error: ({ event }) => (event as any).error?.message || 'Upload failed'
             })
           },
           {
             target: 'failed',
             actions: assign({
-              error: ({ event }) => event.error?.message || 'Upload failed after retries'
+              error: ({ event }) => (event as any).error?.message || 'Upload failed after retries'
             })
           }
         ]
@@ -175,12 +177,12 @@ export const documentUploadMachine = createMachine({
       entry: assign({ processingProgress: 0 }),
       invoke: {
         id: 'processFiles',
-        src: async ({ context }) => {
+        src: fromPromise(async ({ input }: { input: DocumentUploadContext }) => {
           // Process uploaded files with AI
           const processingResults = [];
           
-          for (let i = 0; i < context.uploadedFiles.length; i++) {
-            const file = context.uploadedFiles[i];
+          for (let i = 0; i < input.uploadedFiles.length; i++) {
+            const file = input.uploadedFiles[i];
             
             // Simulate AI processing
             const response = await fetch('/api/ai/process-document', {
@@ -208,12 +210,13 @@ export const documentUploadMachine = createMachine({
           return {
             processedFiles: processingResults,
             summary: {
-              totalFiles: context.uploadedFiles.length,
+              totalFiles: input.uploadedFiles.length,
               successfulProcessing: processingResults.length,
               extractedText: processingResults.reduce((acc, r) => acc + (r.extractedText?.length || 0), 0)
             }
           };
-        },
+        }),
+        input: ({ context }) => context,
         onDone: {
           target: 'completed',
           actions: assign({
@@ -225,7 +228,7 @@ export const documentUploadMachine = createMachine({
         onError: {
           target: 'failed',
           actions: assign({
-            error: ({ event }) => event.error?.message || 'Processing failed'
+            error: ({ event }) => (event as any).error?.message || 'Processing failed'
           })
         }
       }

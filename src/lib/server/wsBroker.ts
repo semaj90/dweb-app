@@ -45,7 +45,7 @@ export function registerWsConnection(sessionId: string, ws: WebSocket) {
   ws.addEventListener('close', () => {
     const set = sessions.get(sessionId);
     if (!set) return;
-    
+
     set.delete(ws);
     if (set.size === 0) {
       sessions.delete(sessionId);
@@ -158,7 +158,7 @@ export function startHeartbeat() {
   const interval = setInterval(() => {
     for (const [sessionId, connections] of sessions.entries()) {
       const deadConnections: WebSocket[] = [];
-      
+
       for (const ws of connections) {
         try {
           if (ws.readyState === WebSocket.OPEN) {

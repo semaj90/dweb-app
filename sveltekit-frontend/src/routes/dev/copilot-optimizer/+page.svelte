@@ -9,7 +9,7 @@ https://svelte.dev/e/js_parse_error -->
   import { $props, $state } from 'svelte';
   import { onMount } from 'svelte';
   import { page } from '$app/state';
-  import { Dialog } from 'bits-ui';
+  import Dialog from '$lib/components/ui/MeltDialog.svelte';
 
   // Component state
   let optimizationStatus = $state('idle');

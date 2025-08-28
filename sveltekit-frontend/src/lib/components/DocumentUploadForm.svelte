@@ -1,19 +1,32 @@
 <script lang="ts">
-
   import { createEventDispatcher } from 'svelte';
   import { $props } from 'svelte';
-  import { Button } from 'bits-ui';
+  import Button from '$lib/components/ui/MeltButton.svelte';
   import { fade, slide } from 'svelte/transition';
   import { writable } from 'svelte/store';
   import type { OCRResult } from '$lib/services/ocr-processor';
+  import type { DocumentUploadFormProps } from '$lib/types/component-props.js';
 
   const dispatch = createEventDispatcher();
 
-  let { formData = $bindable() } = $props(); // {
-    uploaded_files: File[];
-    ocr_results: OCRResult[];
-    processing_status: 'pending' | 'processing' | 'completed' | 'error';
-  };
+  let { 
+    caseId,
+    allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'],
+    maxFileSize = 10 * 1024 * 1024, // 10MB
+    maxFiles = 10,
+    onUploadComplete,
+    onUploadError,
+    class: className,
+    id,
+    'data-testid': testId,
+    formData = $bindable()
+  }: DocumentUploadFormProps & {
+    formData?: {
+      uploaded_files: File[];
+      ocr_results: OCRResult[];
+      processing_status: 'pending' | 'processing' | 'completed' | 'error';
+    };
+  } = $props();
 
   let dragActive = false;
   let fileInput: HTMLInputElement;

@@ -3,7 +3,7 @@
 
 import { writable, derived, get } from 'svelte/store';
 import { browser } from '$app/environment';
-import type { User } from '$lib/server/db/schema-postgres';
+import type { User } from '../server/db/schema-postgres';
 import { AccessControl, type UserRole, type Permission } from './roles';
 
 export interface AuthUser extends Partial<User> {

@@ -74,7 +74,7 @@ test.describe('Global Store and State Management', () => {
     await page.waitForFunction(
       (selector: string) => {
         const el = document.querySelector(selector);
-        return !el || el.textContent === '0' || el.style.display === 'none';
+        return !el || el.textContent === '0' || (el as HTMLElement).style.display === 'none';
       },
       '[data-testid="notification-badge"]'
     );

@@ -1,22 +1,32 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <!-- Ollama Agent Shell - Real-time Terminal Modal with Streaming Support -->
 <script lang="ts">
   import { $props, $state, $derived } from 'svelte';
+  import type { OllamaAgentShellProps } from '$lib/types/component-props.js';
 
   import { agentShellMachine } from "$lib/machines/agentShellMachine";
   import { cn } from "$lib/utils";
   import { useMachine } from "@xstate/svelte";
-  import * as Dialog from "bits-ui/dialog";
+  import Dialog from '$lib/components/ui/MeltDialog.svelte';
   import { Bot, Check, Copy, Send, Terminal, User, X } from "lucide-svelte";
   import { onDestroy, onMount } from "svelte";
 
-  // Props with Svelte 5 runes
+  // Props with Svelte 5 runes and centralized types
   let {
+    modelName = 'gemma3-legal',
+    endpoint = 'http://localhost:11434',
+    systemPrompt = '',
+    temperature = 0.7,
+    maxTokens = 2048,
+    onResponse,
+    onError,
+    class: className,
+    id,
+    'data-testid': testId,
+    // Legacy props for compatibility
     open = $bindable(false),
     docId = null,
     initialPrompt = "",
-  }: {
+  }: OllamaAgentShellProps & {
     open?: boolean;
     docId?: string | null;
     initialPrompt?: string;

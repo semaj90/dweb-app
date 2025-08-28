@@ -1,5 +1,7 @@
 <script lang="ts">
   import '../app.css';
+  // Import NES.css for retro 8-bit styling
+  import 'nes.css/css/nes.min.css';
   import { onMount } from 'svelte';
   import { browser } from '$app/environment';
   import { performanceMonitor, errorHandler, optimizeComponent } from '$lib/utils/browser-performance';
@@ -148,6 +150,7 @@
     <nav class="nes-nav-main">
       <a href="/" class="nes-legal-priority-medium yorha-3d-button">Home</a>
       <a href="/yorha-command-center" class="nes-legal-priority-high yorha-3d-button">YoRHa Command Center</a>
+      <a href="/evidenceboard" class="nes-legal-priority-high yorha-3d-button">Evidence Board</a>
       <a href="/demo/enhanced-rag-semantic" class="nes-legal-priority-medium yorha-3d-button">Enhanced RAG Demo</a>
       <a href="/endpoints" class="nes-legal-priority-low yorha-3d-button">Endpoints</a>
       <div class="auth-buttons">

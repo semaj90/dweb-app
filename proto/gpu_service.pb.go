@@ -7,11 +7,12 @@
 package gpu
 
 import (
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
+
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
 
 const (
@@ -1919,7 +1920,7 @@ const file_gpu_service_proto_rawDesc = "" +
 	"\x12GetRecommendations\x12%.gpu_rag_system.RecommendationRequest\x1a&.gpu_rag_system.RecommendationResponse\x12V\n" +
 	"\vHealthCheck\x12\".gpu_rag_system.HealthCheckRequest\x1a#.gpu_rag_system.HealthCheckResponse\x12M\n" +
 	"\n" +
-	"GetMetrics\x12\x1e.gpu_rag_system.MetricsRequest\x1a\x1f.gpu_rag_system.MetricsResponseB0Z.github.com/yourorg/deeds-web-app/proto/gpu;gpub\x06proto3"
+	"GetMetrics\x12\x1e.gpu_rag_system.MetricsRequest\x1a\x1f.gpu_rag_system.MetricsResponseB0Z.legal-ai-production/proto/gpu;gpub\x06proto3"
 
 var (
 	file_gpu_service_proto_rawDescOnce sync.Once

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { $props, $state, $derived, $effect } from 'svelte';
   import { enhance } from '$app/forms';
-  import { Dialog } from 'bits-ui';
+  import Dialog from '$lib/components/ui/MeltDialog.svelte';
   import { Button } from '$lib/components/ui/button/index.js';
   import { Input } from '$lib/components/ui/input/index.js';
   import { Label } from '$lib/components/ui/label/index.js';
@@ -12,22 +12,19 @@
   import { mcpGPUOrchestrator } from '$lib/services/mcp-gpu-orchestrator.js';
   import { scale, fade } from 'svelte/transition';
   import { quartOut } from 'svelte/easing';
-  
-  interface Props {
-    mode?: 'login' | 'register';
-    open?: boolean;
-    onOpenChange?: (open: boolean) => void;
-    onSuccess?: (user: any) => void;
-    allowGuestMode?: boolean;
-  }
+  import type { EnhancedAuthFormProps } from '$lib/types/component-props.js';
 
   let { 
     mode = $bindable('login'),
     open = $bindable(false),
     onOpenChange,
     onSuccess,
-    allowGuestMode = false
-  }: Props = $props();
+    allowGuestMode = false,
+    loading = false,
+    class: className,
+    id,
+    'data-testid': testId
+  }: EnhancedAuthFormProps = $props();
 
   // Enhanced Svelte 5 reactive state
   let formData = $state({

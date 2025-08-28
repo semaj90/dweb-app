@@ -1,28 +1,26 @@
 import type { RequestHandler } from '@sveltejs/kit';
-// Real Document Search API with PostgreSQL, pgvector, and hybrid search
-import { db, documents, embeddings, initializeDatabase, searchSessions } from '$lib/server/database';
-import { sql } from "drizzle-orm";
-
-// Redis client for caching search results
-import { createRedisConnection } from "$lib/utils/redis-helper";
-
-// ... other imports ...
-
-const redis = createRedisConnection();
+import { json, error } from '@sveltejs/kit';
+// Enhanced Document Search API with PostgreSQL + pgvector + Cognitive Cache
+import { db, getDatabaseHealth } from '$lib/server/db';
+import { legal_documents, evidence, cases } from '$lib/server/db/schema-postgres';
+import { cognitiveCacheManager } from '$lib/services/cognitive-cache-integration';
+import { sql, eq, and, or, gte, lte } from "drizzle-orm";
 
 // Ensure database is initialized
 let dbInitialized = false;
 
 export const POST: RequestHandler = async ({ request }) => {
   try {
-    console.log('[Search] Processing real search request...');
+    console.log('[Search] Processing document search request...');
 
-    // Initialize database if not already done
-    if (!dbInitialized) {
-      dbInitialized = await initializeDatabase();
-      if (!dbInitialized) {
-        console.warn('[Search] Database initialization failed, proceeding anyway');
-      }
+    // Check database health before proceeding
+    const dbHealth = await getDatabaseHealth();
+    if (dbHealth.overall !== 'healthy') {
+      return json({
+        success: false,
+        error: 'Database temporarily unavailable',
+        healthStatus: dbHealth
+      }, { status: 503 });
     }
 
     const body = await request.json();
@@ -41,17 +39,25 @@ export const POST: RequestHandler = async ({ request }) => {
 
     console.log(`[Search] Performing ${searchType} search for: "${query}"`);
 
-    // Check cache for search results
-    const cacheKey = `search:${searchType}:${Buffer.from(JSON.stringify({ query, filters, limit, threshold })).toString('base64').substring(0, 50)}`;
-    try {
-      const cached = await redis.get(cacheKey);
-      if (cached) {
-        console.log('[Search] Cache hit');
-        const cachedResult = JSON.parse(cached);
-        return json({ ...cachedResult, cached: true });
+    // Check cognitive cache for search results
+    const cacheKey = `document_search_${searchType}_${Buffer.from(JSON.stringify({ query, filters, limit, threshold })).toString('base64').substring(0, 32)}`;
+    const cacheRequest = {
+      key: cacheKey,
+      type: 'legal-data' as const,
+      context: {
+        action: 'document-search',
+        searchType,
+        query: query?.substring(0, 50) || 'embedding-search',
+        workflowStep: 'search-execution',
+        priority: 'medium' as const,
+        semanticTags: ['document-search', 'legal-ai', searchType]
       }
-    } catch (err) {
-      console.warn('[Search] Redis cache unavailable:', err);
+    };
+
+    const cachedResult = await cognitiveCacheManager.get(cacheRequest);
+    if (cachedResult && cachedResult.confidence > 0.75) {
+      console.log('[Search] Cognitive cache hit');
+      return json({ ...cachedResult.data, cached: true, cacheConfidence: cachedResult.confidence });
     }
 
     let results: any[] = [];
@@ -115,17 +121,8 @@ export const POST: RequestHandler = async ({ request }) => {
         throw error(400, 'Invalid search type');
     }
 
-    // Log search session
-    try {
-      await db.insert(searchSessions).values({
-        query: query || 'embedding-only',
-        queryEmbedding: queryEmbedding,
-        searchType,
-        resultCount: results.length,
-      });
-    } catch (logError) {
-      console.warn('[Search] Failed to log search session:', logError);
-    }
+    // Log search session (simplified - could be extended to user activity table)
+    console.log(`[Search] Query: "${query || 'embedding-only'}", Type: ${searchType}, Results: ${results.length}`);
 
     const finalResult = {
       success: true,
@@ -138,13 +135,13 @@ export const POST: RequestHandler = async ({ request }) => {
       timestamp: new Date().toISOString(),
     };
 
-    // Cache search results for 5 minutes
-    try {
-      await redis.setex(cacheKey, 300, JSON.stringify(finalResult));
-      console.log('[Search] Results cached successfully');
-    } catch (err) {
-      console.warn('[Search] Failed to cache results:', err);
-    }
+    // Cache search results with cognitive cache
+    await cognitiveCacheManager.set(cacheRequest, finalResult, {
+      distributeAcrossCaches: true,
+      cognitiveValue: results.length > 0 ? 0.8 : 0.6,
+      ttl: 300 // 5 minutes
+    });
+    console.log('[Search] Results cached with cognitive cache');
 
     console.log(`[Search] Found ${results.length} results using ${searchMethod}`);
     return json(finalResult);
@@ -170,54 +167,68 @@ async function vectorSearch(
   filters: any
 ): Promise<unknown[]> {
   try {
-    console.log('[Search] Performing vector similarity search');
+    console.log('[Search] Performing pgvector similarity search');
 
-    // Build dynamic query with filters
-    let whereClause = sql`1 - (e.embedding <=> ${JSON.stringify(embedding)}::vector) > ${threshold}`;
+    // Build conditions array for better type safety
+    const conditions = [
+      sql`1 - (${legal_documents.content_embedding} <=> ${JSON.stringify(embedding)}::vector) > ${threshold}`
+    ];
 
     if (filters.documentType) {
-      whereClause = sql`${whereClause} AND d.metadata->>'documentType' = ${filters.documentType}`;
+      conditions.push(eq(legal_documents.document_type, filters.documentType));
     }
     if (filters.jurisdiction) {
-      whereClause = sql`${whereClause} AND d.metadata->>'jurisdiction' = ${filters.jurisdiction}`;
+      conditions.push(eq(legal_documents.jurisdiction, filters.jurisdiction));
+    }
+    if (filters.practiceArea) {
+      conditions.push(eq(legal_documents.practice_area, filters.practiceArea));
     }
     if (filters.dateFrom) {
-      whereClause = sql`${whereClause} AND d.created_at >= ${filters.dateFrom}`;
+      conditions.push(gte(legal_documents.created_at, new Date(filters.dateFrom)));
     }
     if (filters.dateTo) {
-      whereClause = sql`${whereClause} AND d.created_at <= ${filters.dateTo}`;
+      conditions.push(lte(legal_documents.created_at, new Date(filters.dateTo)));
+    }
+    if (filters.isConfidential !== undefined) {
+      conditions.push(eq(legal_documents.is_confidential, filters.isConfidential));
     }
 
-    const query = sql`
-      SELECT
-        d.id,
-        d.filename,
-        d.content,
-        d.metadata,
-        d.created_at,
-        d.legal_analysis,
-        1 - (e.embedding <=> ${JSON.stringify(embedding)}::vector) AS similarity,
-        'vector' as search_type
-      FROM documents d
-      JOIN legal_embeddings e ON d.id = e.document_id
-      WHERE ${whereClause}
-      ORDER BY similarity DESC
-      LIMIT ${limit}
-    `;
+    const results = await db
+      .select({
+        id: legal_documents.id,
+        title: legal_documents.title,
+        filename: legal_documents.file_name,
+        content: legal_documents.content,
+        documentType: legal_documents.document_type,
+        jurisdiction: legal_documents.jurisdiction,
+        practiceArea: legal_documents.practice_area,
+        createdAt: legal_documents.created_at,
+        analysisResults: legal_documents.analysis_results,
+        isConfidential: legal_documents.is_confidential,
+        similarity: sql<number>`1 - (${legal_documents.content_embedding} <=> ${JSON.stringify(embedding)}::vector)`
+      })
+      .from(legal_documents)
+      .where(
+        legal_documents.content_embedding.isNotNull()
+          ? and(...conditions)
+          : sql`false` // Skip if no embeddings
+      )
+      .orderBy(sql`similarity DESC`)
+      .limit(limit);
 
-    const results = await db.execute(query);
-
-    const rowArray: any[] = (results as any)?.rows || (Array.isArray(results) ? results : []);
-    return rowArray.map((row) => ({
+    return results.map((row) => ({
       id: row.id,
       filename: row.filename,
-      title: row.filename,
+      title: row.title || row.filename,
       content: row.content,
-      excerpt: row.content.substring(0, 200) + '...',
-      metadata: row.metadata,
-      similarity: parseFloat(row.similarity),
-      createdAt: row.created_at,
-      legalAnalysis: row.legal_analysis,
+      excerpt: row.content ? row.content.substring(0, 200) + '...' : '',
+      documentType: row.documentType,
+      jurisdiction: row.jurisdiction,
+      practiceArea: row.practiceArea,
+      similarity: parseFloat(row.similarity?.toString() || '0'),
+      createdAt: row.createdAt,
+      legalAnalysis: row.analysisResults,
+      isConfidential: row.isConfidential,
       searchType: 'vector',
     }));
   } catch (err) {
@@ -229,50 +240,58 @@ async function vectorSearch(
 // Full-text keyword search
 async function keywordSearch(query: string, limit: number, filters: any): Promise<unknown[]> {
   try {
-    console.log('[Search] Performing full-text search');
+    console.log('[Search] Performing PostgreSQL full-text search');
 
-    // Build dynamic query with filters
-    let whereClause = sql`to_tsvector('english', d.content) @@ plainto_tsquery('english', ${query})`;
+    // Build conditions for full-text search
+    const conditions = [
+      sql`to_tsvector('english', ${legal_documents.content}) @@ plainto_tsquery('english', ${query})`
+    ];
 
     if (filters.documentType) {
-      whereClause = sql`${whereClause} AND d.metadata->>'documentType' = ${filters.documentType}`;
+      conditions.push(eq(legal_documents.document_type, filters.documentType));
     }
     if (filters.jurisdiction) {
-      whereClause = sql`${whereClause} AND d.metadata->>'jurisdiction' = ${filters.jurisdiction}`;
+      conditions.push(eq(legal_documents.jurisdiction, filters.jurisdiction));
+    }
+    if (filters.practiceArea) {
+      conditions.push(eq(legal_documents.practice_area, filters.practiceArea));
+    }
+    if (filters.isConfidential !== undefined) {
+      conditions.push(eq(legal_documents.is_confidential, filters.isConfidential));
     }
 
-    const searchQuery = sql`
-      SELECT
-        d.id,
-        d.filename,
-        d.content,
-        d.metadata,
-        d.created_at,
-        d.legal_analysis,
-        ts_rank(
-          to_tsvector('english', d.content),
-          plainto_tsquery('english', ${query})
-        ) AS rank,
-        'keyword' as search_type
-      FROM documents d
-      WHERE ${whereClause}
-      ORDER BY rank DESC
-      LIMIT ${limit}
-    `;
+    const results = await db
+      .select({
+        id: legal_documents.id,
+        title: legal_documents.title,
+        filename: legal_documents.file_name,
+        content: legal_documents.content,
+        documentType: legal_documents.document_type,
+        jurisdiction: legal_documents.jurisdiction,
+        practiceArea: legal_documents.practice_area,
+        createdAt: legal_documents.created_at,
+        analysisResults: legal_documents.analysis_results,
+        isConfidential: legal_documents.is_confidential,
+        rank: sql<number>`ts_rank(to_tsvector('english', ${legal_documents.content}), plainto_tsquery('english', ${query}))`
+      })
+      .from(legal_documents)
+      .where(and(...conditions))
+      .orderBy(sql`rank DESC`)
+      .limit(limit);
 
-    const results = await db.execute(searchQuery);
-
-    const rowArray: any[] = (results as any)?.rows || (Array.isArray(results) ? results : []);
-    return rowArray.map((row) => ({
+    return results.map((row) => ({
       id: row.id,
       filename: row.filename,
-      title: row.filename,
+      title: row.title || row.filename,
       content: row.content,
-      excerpt: extractExcerpt(row.content, query),
-      metadata: row.metadata,
-      similarity: parseFloat(row.rank),
-      createdAt: row.created_at,
-      legalAnalysis: row.legal_analysis,
+      excerpt: extractExcerpt(row.content || '', query),
+      documentType: row.documentType,
+      jurisdiction: row.jurisdiction,
+      practiceArea: row.practiceArea,
+      similarity: parseFloat(row.rank?.toString() || '0'),
+      createdAt: row.createdAt,
+      legalAnalysis: row.analysisResults,
+      isConfidential: row.isConfidential,
       searchType: 'keyword',
     }));
   } catch (err) {
@@ -428,131 +447,69 @@ function calculateLegalRelevance(query: string, legalAnalysis: any): number {
 }
 
 // Store document endpoint (renamed to avoid duplicate POST export)
-// Store document function (internal use)
-async function handleStoreDocument(request: Request, url: URL) {
-  if (url.pathname.endsWith('/store')) {
-    try {
-      console.log('[Search] Storing document...');
-
-      const body = await request.json();
-      const { content, embedding, metadata = {}, filename, originalContent, legalAnalysis } = body;
-
-      if (!content) {
-        throw error(400, 'Content is required');
-      }
-
-      // Store document
-      const documentResult = await db
-        .insert(documents)
-        .values({
-          filename: filename || 'untitled',
-          content,
-          originalContent,
-          metadata: JSON.stringify(metadata),
-          legalAnalysis: legalAnalysis ? JSON.stringify(legalAnalysis) : null,
-          confidence: metadata.confidence || null,
-        })
-        .returning();
-
-      const documentId = documentResult[0].id;
-
-      // Store embedding if provided
-      if (embedding && embedding.length > 0) {
-        await db.insert(embeddings).values({
-          documentId,
-          content,
-          embedding: embedding,
-          metadata: {
-            ...metadata,
-            stored_at: new Date().toISOString(),
-          },
-        });
-      }
-
-      console.log(`[Search] Document stored with ID: ${documentId}`);
-
-      return json({
-        success: true,
-        documentId,
-        message: 'Document stored successfully',
-      });
-    } catch (err: any) {
-      console.error('[Search] Storage error:', err);
-
-      return json(
-        {
-          success: false,
-          error: err.message || 'Storage failed',
-        },
-        { status: err.status || 500 }
-      );
-    }
-  }
-
-  // Default to search
-  return json({ error: 'Invalid operation' }, { status: 400 });
-}
+// Note: Document storage is handled by the dedicated /api/documents/upload endpoint
+// This search endpoint focuses on querying existing documents
 
 // Health check endpoint
 export const GET: RequestHandler = async () => {
   try {
-    // Test database connection
-    let dbStatus = false;
-    let dbInfo = '';
-    try {
-      const result = await sql`SELECT version()`;
-      dbStatus = true;
-      dbInfo = result[0]?.version || 'Connected';
-    } catch (err) {
-      dbInfo = err.message;
-    }
-
-    // Test Redis connection
-    let redisStatus = false;
-    try {
-      const pong = await redis.ping();
-      redisStatus = pong === 'PONG';
-    } catch (err) {
-      console.warn('[Search] Redis health check failed:', err);
-    }
-
-    // Count documents and embeddings
+    // Get comprehensive database health status
+    const dbHealth = await getDatabaseHealth();
+    
+    // Count documents with embeddings
     let documentCount = 0;
     let embeddingCount = 0;
     try {
-      const docResult = await db.execute(sql`SELECT COUNT(*) as count FROM documents`);
-      const docRows: any[] = (docResult as any)?.rows || docResult || [];
-      documentCount = parseInt(docRows[0]?.count || '0');
+      const [docResult] = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(legal_documents);
+      documentCount = docResult?.count || 0;
 
-      const embResult = await db.execute(sql`SELECT COUNT(*) as count FROM legal_embeddings`);
-      const embRows: any[] = (embResult as any)?.rows || embResult || [];
-      embeddingCount = parseInt(embRows[0]?.count || '0');
+      const [embResult] = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(legal_documents)
+        .where(legal_documents.content_embedding.isNotNull());
+      embeddingCount = embResult?.count || 0;
     } catch (err) {
       console.warn('[Search] Failed to count documents:', err);
     }
 
+    // Test cognitive cache
+    let cacheStatus = false;
+    try {
+      await cognitiveCacheManager.get({ key: 'health_check', type: 'legal-data', context: { action: 'health-test' } });
+      cacheStatus = true;
+    } catch (err) {
+      console.warn('[Search] Cognitive cache health check failed:', err);
+    }
+
     return json({
-      status: dbStatus ? 'healthy' : 'unhealthy',
-      service: 'Real Document Search & Storage',
+      status: dbHealth.overall === 'healthy' ? 'healthy' : 'unhealthy',
+      service: 'Enhanced Legal Document Search',
       features: {
-        vectorSearch: dbStatus,
-        keywordSearch: dbStatus,
-        hybridSearch: dbStatus,
-        semanticSearch: dbStatus,
-        caching: redisStatus,
-        documentStorage: dbStatus,
+        vectorSearch: dbHealth.overall === 'healthy',
+        keywordSearch: dbHealth.overall === 'healthy',
+        hybridSearch: dbHealth.overall === 'healthy',
+        semanticSearch: dbHealth.overall === 'healthy',
+        cognitiveCaching: cacheStatus,
+        documentStorage: dbHealth.overall === 'healthy',
+        pgvectorIntegration: dbHealth.postgres.connected,
+        qdrantIntegration: dbHealth.qdrant?.connected || false
       },
       database: {
-        connected: dbStatus,
-        info: dbInfo,
+        postgres: dbHealth.postgres,
+        qdrant: dbHealth.qdrant,
+        overall: dbHealth.overall,
         documents: documentCount,
         embeddings: embeddingCount,
+        embeddingCoverage: documentCount > 0 ? (embeddingCount / documentCount * 100).toFixed(1) + '%' : '0%'
       },
       cache: {
-        connected: redisStatus,
+        cognitive: cacheStatus,
+        type: 'ML-driven cognitive cache'
       },
       timestamp: new Date().toISOString(),
-      version: '2.0.0',
+      version: '3.0.0'
     });
   } catch (err: any) {
     return json(

@@ -4,7 +4,7 @@
 
   import { browser } from '$app/environment';
   import { onMount, tick } from 'svelte';
-  import { Dialog } from 'bits-ui';
+  import Dialog from '$lib/components/ui/MeltDialog.svelte';
   import { Button } from '$lib/components/ui/button';
   import Input from '$lib/components/ui/Input.svelte';
   import Badge from '$lib/components/ui/Badge.svelte';

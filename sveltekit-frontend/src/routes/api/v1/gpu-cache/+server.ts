@@ -1,22 +1,52 @@
 /**
- * GPU Cache API Endpoint - SvelteKit Integration
- * Provides RESTful interface to GPU Cache Orchestrator with multi-database sync
- * Integrates: PostgreSQL+pgvector, Qdrant, Neo4j, IndexedDB
+ * Enhanced GPU Cache API Endpoint - Full Stack Integration
+ * Provides RESTful interface with Binary Encoding + NES Cache + WebGPU + SOM Clustering
+ * Integrates: Binary encoding, NES cache orchestrator, WebGPU RAG, SOM clustering, PostgreSQL+pgvector, Qdrant, Neo4j
  */
 
 import { json, type RequestHandler } from '@sveltejs/kit';
 import { gpuCacheOrchestrator, type GPUCacheConfig } from '$lib/services/gpu-cache-orchestrator';
+import gpuShaderCacheOrchestrator from '$lib/services/gpu-shader-cache-orchestrator';
+import { binaryGPUShaderCache } from '$lib/services/gpu-shader-cache-binary-extension';
+import { nesCacheOrchestrator } from '$lib/services/nes-cache-orchestrator';
+import { webgpuRAGService } from '$lib/webgpu/webgpu-rag-service';
+import { binaryEncoder } from '$lib/middleware/binary-encoding';
 import { dev } from '$app/environment';
 
 // === GPU Cache API Handlers ===
 
-// POST /api/v1/gpu-cache/store
+// POST /api/v1/gpu-cache/store - Enhanced with Binary Encoding + NES Cache
 export const POST: RequestHandler = async ({ request, url }) => {
   try {
     await gpuCacheOrchestrator.initialize();
+    await nesCacheOrchestrator.start();
     
-    const body = await request.json();
-    const { key, data, options = {} } = body;
+    // Auto-detect request encoding format
+    const contentType = request.headers.get('content-type') || '';
+    let body: any;
+
+    if (contentType.includes('application/cbor')) {
+      const buffer = await request.arrayBuffer();
+      const { decoded } = await binaryEncoder.decode(buffer, 'cbor');
+      body = decoded;
+    } else if (contentType.includes('application/msgpack')) {
+      const buffer = await request.arrayBuffer();
+      const { decoded } = await binaryEncoder.decode(buffer, 'msgpack');
+      body = decoded;
+    } else {
+      body = await request.json();
+    }
+    
+    const { 
+      key, 
+      data, 
+      options = {},
+      shaderData = null,
+      workflowType = null,
+      enableBinaryEncoding = true,
+      enableNESCache = true,
+      enableWebGPU = true
+    } = body;
     
     if (!key || !data) {
       return json({ error: 'Missing required fields: key, data' }, { status: 400 });
@@ -32,26 +62,145 @@ export const POST: RequestHandler = async ({ request, url }) => {
       options.embedding = new Float32Array(options.embedding);
     }
 
+    // Store in original GPU cache orchestrator
     const result = await gpuCacheOrchestrator.store(key, data, options);
+    
+    // Enhanced integrations
+    let binaryOptimization = null;
+    let nesIntegration = null;
+    let webgpuIntegration = null;
+    let shaderCacheResult = null;
+
+    // Binary shader cache integration
+    if (shaderData && enableBinaryEncoding) {
+      try {
+        shaderCacheResult = await binaryGPUShaderCache.storeShader({
+          sourceCode: shaderData.sourceCode || JSON.stringify(data),
+          compiledBinary: shaderData.compiledBinary || new ArrayBuffer(1024),
+          metadata: {
+            cacheKey: key,
+            workflowType,
+            originalData: typeof data === 'object' ? JSON.stringify(data).substring(0, 200) : data,
+            timestamp: Date.now()
+          }
+        });
+
+        // Get workflow optimization
+        if (workflowType) {
+          const workflowOpt = await binaryGPUShaderCache.optimizeForLegalWorkflow(workflowType);
+          binaryOptimization = {
+            format: shaderCacheResult.encodingFormat,
+            compressionRatio: shaderCacheResult.compressionRatio,
+            workflowOptimization: workflowOpt
+          };
+        }
+      } catch (error) {
+        console.warn('Binary shader cache failed:', error);
+      }
+    }
+
+    // NES cache orchestrator integration  
+    if (enableNESCache) {
+      try {
+        // Cache as YoRHa component if applicable
+        if (options.isYoRHaComponent) {
+          await nesCacheOrchestrator.cacheYoRHaComponent({
+            name: key,
+            props: data.props || {},
+            styles: data.styles || {},
+            animations: data.animations || [],
+            webgpuShaders: shaderData ? [shaderData.sourceCode] : []
+          });
+        } 
+        // Cache as GPU animation if applicable
+        else if (options.isAnimation && shaderData) {
+          await nesCacheOrchestrator.cacheGPUAnimation({
+            id: key,
+            type: options.animationType || 'legal-ui',
+            shaderCode: shaderData.sourceCode,
+            uniforms: shaderData.uniforms || {},
+            duration: options.duration || 1000,
+            legalContext: workflowType
+          });
+        }
+        
+        nesIntegration = {
+          cached: true,
+          memoryStats: nesCacheOrchestrator.getMemoryStats()
+        };
+      } catch (error) {
+        nesIntegration = {
+          cached: false,
+          error: error instanceof Error ? error.message : 'NES cache failed'
+        };
+      }
+    }
+
+    // WebGPU RAG service integration
+    if (enableWebGPU) {
+      try {
+        const webgpuResult = await webgpuRAGService.processQuery(
+          `cache-store:${key}`,
+          [{ data, options, metadata: result }]
+        );
+        webgpuIntegration = {
+          processed: webgpuResult.processed,
+          performance: webgpuResult.performance,
+          results: webgpuResult.results?.length || 0
+        };
+      } catch (error) {
+        webgpuIntegration = {
+          processed: false,
+          error: error instanceof Error ? error.message : 'WebGPU failed'
+        };
+      }
+    }
     
     // Convert Float32Arrays back to regular arrays for JSON response
     const response = {
-      ...result,
-      vertexBuffers: result.vertexBuffers?.map(vb => Array.from(vb)),
-      embedding: result.embedding ? Array.from(result.embedding) : undefined
+      success: true,
+      entry: {
+        ...result,
+        vertexBuffers: result.vertexBuffers?.map(vb => Array.from(vb)),
+        embedding: result.embedding ? Array.from(result.embedding) : undefined
+      },
+      integrations: {
+        binaryOptimization,
+        nesCache: nesIntegration,
+        webgpu: webgpuIntegration,
+        shaderCache: shaderCacheResult ? {
+          id: shaderCacheResult.id,
+          cacheKey: shaderCacheResult.cacheKey,
+          encodingFormat: shaderCacheResult.encodingFormat,
+          compressionRatio: shaderCacheResult.compressionRatio
+        } : null
+      },
+      timestamp: Date.now()
     };
 
-    return json({
-      success: true,
-      entry: response,
-      timestamp: Date.now()
-    });
+    // Encode response if client requests binary format
+    const acceptHeader = request.headers.get('accept') || '';
+    if (acceptHeader.includes('application/cbor')) {
+      const { encoded } = await binaryEncoder.encode(response, 'cbor');
+      return new Response(encoded, {
+        status: 200,
+        headers: { 'content-type': 'application/cbor' }
+      });
+    } else if (acceptHeader.includes('application/msgpack')) {
+      const { encoded } = await binaryEncoder.encode(response, 'msgpack');
+      return new Response(encoded, {
+        status: 200,
+        headers: { 'content-type': 'application/msgpack' }
+      });
+    }
+
+    return json(response);
 
   } catch (error) {
-    console.error('GPU Cache store error:', error);
+    console.error('Enhanced GPU Cache store error:', error);
     return json({
-      error: 'Failed to store in GPU cache',
-      details: dev ? error.message : undefined
+      error: 'Failed to store in enhanced GPU cache',
+      details: dev ? error instanceof Error ? error.message : error : undefined
     }, { status: 500 });
   }
 };
@@ -106,8 +255,8 @@ export const GET: RequestHandler = async ({ params, url }) => {
   }
 };
 
-// PUT /api/v1/gpu-cache/analyze-image
-export const PUT: RequestHandler = async ({ request }) => {
+// PATCH /api/v1/gpu-cache/analyze-image
+export const PATCH: RequestHandler = async ({ request }) => {
   try {
     await gpuCacheOrchestrator.initialize();
     
@@ -220,6 +369,90 @@ export const PATCH: RequestHandler = async ({ request }) => {
   }
 };
 
+// === Shader Cache Endpoints (NEW) ===
+
+// DELETE /api/v1/gpu-cache/shaders (Handles shader cache operations)
+export const DELETE: RequestHandler = async ({ request }) => {
+  try {
+    const body = await request.json();
+    const { action, shaderKey, networkUrl, context, query } = body;
+    
+    switch (action) {
+      case 'get': {
+        const shader = await gpuShaderCacheOrchestrator.getShader(shaderKey, networkUrl, context);
+        if (!shader) {
+          return json({ error: 'Shader not found' }, { status: 404 });
+        }
+        
+        return json({
+          success: true,
+          shader: {
+            key: shader.key,
+            sourceCode: shader.sourceCode,
+            compiledBinary: shader.compiledBinary ? Array.from(shader.compiledBinary) : undefined,
+            metadata: {
+              ...shader.metadata,
+              embedding: Array.from(shader.metadata.embedding)
+            },
+            dependencies: shader.dependencies,
+            minioPath: shader.minioPath
+          },
+          fromCache: true,
+          timestamp: Date.now()
+        });
+      }
+      
+      case 'search': {
+        const results = await gpuShaderCacheOrchestrator.multiDimensionalSearch(query);
+        return json({
+          success: true,
+          shaders: results.map(shader => ({
+            key: shader.key,
+            sourceCode: shader.sourceCode,
+            metadata: {
+              ...shader.metadata,
+              embedding: Array.from(shader.metadata.embedding)
+            }
+          })),
+          count: results.length,
+          timestamp: Date.now()
+        });
+      }
+      
+      case 'preload': {
+        if (context) {
+          await gpuShaderCacheOrchestrator.analyzeAndPreload(context);
+          return json({
+            success: true,
+            message: 'Predictive preloading triggered',
+            timestamp: Date.now()
+          });
+        }
+        return json({ error: 'Context required for preloading' }, { status: 400 });
+      }
+      
+      case 'clear': {
+        await gpuShaderCacheOrchestrator.clearCache(shaderKey);
+        return json({
+          success: true,
+          message: shaderKey ? `Cleared shader ${shaderKey}` : 'Cleared all shaders',
+          timestamp: Date.now()
+        });
+      }
+      
+      default:
+        return json({ error: 'Invalid action. Use: get, search, preload, clear' }, { status: 400 });
+    }
+    
+  } catch (error) {
+    console.error('Shader cache operation error:', error);
+    return json({
+      error: 'Shader cache operation failed',
+      details: dev ? error.message : undefined
+    }, { status: 500 });
+  }
+};
+
 // === Analytics & Metrics Endpoints ===
 
 // GET /api/v1/gpu-cache/metrics
@@ -231,6 +464,7 @@ export const OPTIONS: RequestHandler = async ({ url }) => {
     const includePerformance = url.searchParams.get('performance') === 'true';
     
     const metrics = gpuCacheOrchestrator.getMetrics();
+    const shaderMetrics = gpuShaderCacheOrchestrator.getMetrics();
     
     const response: any = {
       cache: {
@@ -244,9 +478,20 @@ export const OPTIONS: RequestHandler = async ({ url }) => {
         operationsCount: metrics.gpuOperations,
         compressionSavings: metrics.compressionSavings
       },
+      shaderCache: {
+        hits: shaderMetrics.cacheHits,
+        misses: shaderMetrics.cacheMisses,
+        hitRatio: shaderMetrics.cacheHits / (shaderMetrics.cacheHits + shaderMetrics.cacheMisses) || 0,
+        preloadSuccesses: shaderMetrics.preloadSuccesses,
+        preloadFailures: shaderMetrics.preloadFailures,
+        compilationCount: shaderMetrics.compilationCount,
+        averageRetrievalMs: shaderMetrics.averageRetrievalMs,
+        gpuMemoryUsageMB: Math.round(shaderMetrics.gpuMemoryUsage / (1024 * 1024))
+      },
       reinforcement: {
-        accuracy: metrics.reinforcementAccuracy,
-        enabled: true
+        accuracy: shaderMetrics.reinforcementAccuracy,
+        enabled: true,
+        cacheAccuracy: metrics.reinforcementAccuracy
       }
     };
 
@@ -316,8 +561,8 @@ export const HEAD: RequestHandler = async ({ params, url }) => {
 
 // === Bulk Operations ===
 
-// POST /api/v1/gpu-cache/bulk
-export const DELETE: RequestHandler = async ({ request }) => {
+// PUT /api/v1/gpu-cache/bulk
+export const PUT: RequestHandler = async ({ request }) => {
   try {
     await gpuCacheOrchestrator.initialize();
     

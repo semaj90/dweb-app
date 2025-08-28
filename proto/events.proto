@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package wire;
 
-option go_package = "github.com/yourorg/deeds-web-app/proto/wire;wire";
+option go_package = "legal-ai-production/proto/wire;wire";
 
 // Lightweight telemetry from client to server
 message Telemetry {

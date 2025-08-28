@@ -9,7 +9,7 @@
         "-NoProfile",
         "-ExecutionPolicy",
         "Bypass",
-        "-Command",s
+        "-Command",
         "Set-Location 'C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend'; if (!(Test-Path .\\logs)) { New-Item -ItemType Directory -Path .\\logs | Out-Null }; npm run dev 2>&1 | Tee-Object -FilePath .\\logs\\vite.log"
       ],
       "group": {
@@ -98,33 +98,10 @@
       "type": "shell",
       "command": "powershell",
       "args": [
-        "-NoProfile",
         "-ExecutionPolicy",
-        "Bypass",
-        "-Command",
-        "Write-Host '🔨 Building Go microservices...' -ForegroundColor Cyan;",
-        "cd go-microservice;",
-        "if (!(Test-Path bin)) { New-Item -ItemType Directory -Path bin | Out-Null };",
-        "go mod tidy;",
-        "Write-Host '  Building enhanced-rag service...' -ForegroundColor Yellow;",
-        "go build -o ./bin/enhanced-rag.exe ./cmd/enhanced-rag;",
-        "Write-Host '  Building upload service...' -ForegroundColor Yellow;",
-        "go build -o ./bin/upload-service.exe ./cmd/upload-service;",
-        "Write-Host '  Building grpc server...' -ForegroundColor Yellow;",
-        "go build -o ./bin/grpc-server.exe ./cmd/grpc-server;",
-        "Write-Host '  Building load balancer...' -ForegroundColor Yellow;",
-        "go build -o ./bin/load-balancer.exe ./load-balancer.go;",
-        "Write-Host '  Building rag-kratos service...' -ForegroundColor Yellow;",
-        "go build -o ./bin/rag-kratos.exe ./legal-ai-server.go;",
-        "Write-Host '  Building cluster service...' -ForegroundColor Yellow;",
-        "go build -o ./bin/cluster-http.exe ./cmd/cluster-service;",
-        "Write-Host '  Building summarizer service...' -ForegroundColor Yellow;",
-        "go build -o ./bin/summarizer-http.exe ./cmd/summarizer-service;",
-        "Write-Host '  Building vector service...' -ForegroundColor Yellow;",
-        "go build -o ./bin/vector-service.exe ./cmd/vector-service;",
-        "Write-Host '  Building ingest service...' -ForegroundColor Yellow;",
-        "go build -o ./bin/ingest-service.exe ./cmd/ingest-service;",
-        "Write-Host '✅ All Go services built successfully' -ForegroundColor Green"
+        "Bypass", 
+        "-File",
+        "build-go-services.ps1"
       ],
       "group": "build",
       "presentation": {
@@ -134,40 +111,7 @@
         "panel": "shared"
       },
       "problemMatcher": "$go",
-      "detail": "Build all required Go microservices including missing binaries"
-    },
-    {
-      "label": "Build: QUIC Services",
-      "type": "shell",
-      "command": "powershell",
-      "args": [
-        "-NoProfile",
-        "-ExecutionPolicy",
-        "Bypass",
-        "-Command",
-        "Write-Host '🌐 Building QUIC services...' -ForegroundColor Cyan;",
-        "cd quic-services;",
-        "go mod tidy;",
-        "Write-Host '  Building QUIC gateway...' -ForegroundColor Yellow;",
-        "go build -o ../go-microservice/bin/quic-gateway.exe ./quic-gateway.go;",
-        "Write-Host '  Building QUIC vector proxy...' -ForegroundColor Yellow;",
-        "go build -o ../go-microservice/bin/quic-vector-proxy.exe ./quic-vector-proxy.go;",
-        "Write-Host '  Building QUIC AI stream...' -ForegroundColor Yellow;",
-        "go build -o ../go-microservice/bin/quic-ai-stream.exe ./quic-ai-stream.go;",
-  "Write-Host '  Building RAG QUIC proxy...' -ForegroundColor Yellow;",
-  "# If rag-quic-proxy.go was moved to go-microservice/cmd/rag-quic-proxy, build from that path; otherwise try local file",
-  "if (Test-Path './rag-quic-proxy.go') { go build -o ../go-microservice/bin/rag-quic-proxy.exe ./rag-quic-proxy.go } else { go build -o ../go-microservice/bin/rag-quic-proxy.exe ../go-microservice/cmd/rag-quic-proxy }",
-        "Write-Host '✅ QUIC services built successfully' -ForegroundColor Green"
-      ],
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
-      },
-      "problemMatcher": "$go",
-      "detail": "Build QUIC protocol services and place in bin directory"
+      "detail": "Build all Go microservices and QUIC services using the fixed build script"
     },
     {
       "label": "Start: Complete Dev Environment",

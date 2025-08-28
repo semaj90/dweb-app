@@ -1,4 +1,4 @@
-import type { RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler } from '$lib/types/server';
 import type { RequestHandler } from "@sveltejs/kit";
 import { updateQUICMetrics, getQUICMetrics, getAggregateAnomaliesLast5m, noteQuicP99Breach, notePipelineAnomalySpike } from "drizzle-orm";
 import { routeAlerts, maybeTriggerAutosolve, getSustainedP99Info } from '$lib/services/alert-center';

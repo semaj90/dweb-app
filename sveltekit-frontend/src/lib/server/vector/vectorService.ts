@@ -1,7 +1,7 @@
 
 // src/lib/server/vector/vectorService.ts (continued)
 import { QdrantClient } from "@qdrant/js-client-rest";
-import Redis from "ioredis";
+import Redis, { type Redis as IORedisClient } from "ioredis";
 import {
   embeddingCache,
   vectorMetadata,
@@ -28,7 +28,7 @@ export interface EmbeddingResult {
 
 export class VectorService {
   private qdrant: QdrantClient;
-  private redis: Redis;
+  private redis: IORedisClient;
   private collectionName: string;
 
   constructor() {
@@ -69,15 +69,17 @@ export class VectorService {
         });
 
         // Create index for better performance
-        await this.qdrant.createPayloadIndex(this.collectionName, {
-          field_name: "type",
-          field_schema: "keyword",
-        });
+        try {
+          await this.qdrant.createPayloadIndex(this.collectionName, "type");
+        } catch (error) {
+          console.log("Index for 'type' may already exist");
+        }
 
-        await this.qdrant.createPayloadIndex(this.collectionName, {
-          field_name: "case_id",
-          field_schema: "keyword",
-        });
+        try {
+          await this.qdrant.createPayloadIndex(this.collectionName, "case_id");
+        } catch (error) {
+          console.log("Index for 'case_id' may already exist");
+        }
 
         console.log(`Created Qdrant collection: ${this.collectionName}`);
       }
@@ -475,11 +477,8 @@ export class VectorService {
   ): Promise<EmbeddingResult[]> {
     try {
       // Get the document
-      const point = await this.qdrant.retrieve(this.collectionName, {
-        ids: [documentId],
-        with_payload: true,
-        with_vector: true,
-      });
+      const response = await this.qdrant.retrieve(this.collectionName, [documentId]);
+      const point = response.points;
 
       if (point.length === 0) {
         throw new Error(`Document ${documentId} not found`);

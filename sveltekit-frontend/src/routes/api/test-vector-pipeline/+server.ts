@@ -2,9 +2,11 @@
 // End-to-End Vector Pipeline Test
 // Tests: Document Upload → Embedding → Search → Results
 
-import { type RequestHandler,  json, error } from '@sveltejs/kit';
-import { db } from "$lib/server/database";
-import { eq, sql } from "drizzle-orm";
+import { type RequestHandler, json, error } from '@sveltejs/kit';
+import { db } from '$lib/server/db';
+import { users, cases, documents, documentVectors } from '$lib/server/db/schema-postgres';
+import { eq, sql, desc } from 'drizzle-orm';
+import { OllamaEmbeddings } from '@langchain/community/embeddings/ollama';
 
 // ============================================================================
 // TEST CONFIGURATION
@@ -134,10 +136,7 @@ class VectorPipelineTest {
         name: 'Vector Pipeline Test User',
         role: 'prosecutor',
         passwordHash: 'test-hash-not-real'
-      }).onConflictDoUpdate({
-        target: users.email,
-        set: { name: 'Vector Pipeline Test User (Updated)' }
-      }).returning();
+      }).onConflictDoNothing().returning();
 
       // Create test cases
       const testCases = [];

@@ -1,14 +1,17 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
+  import type { Snippet } from 'svelte';
 
-  export let show: boolean = false;
-  export let title: string = '';
+  interface Props {
+    show?: boolean;
+    title?: string;
+    children?: Snippet;
+    onClose?: () => void;
+  }
 
-  const dispatch = createEventDispatcher();
+  let { show = false, title = '', children, onClose }: Props = $props();
 
   function close() {
-    show = false;
-    dispatch('close');
+    onClose?.();
   }
 </script>
 
@@ -21,7 +24,9 @@
         <button type="button" class="btn-close" aria-label="Close" onclick={close}></button>
       </div>
       <div class="modal-body">
-        <slot></slot>
+        {#if children}
+          {@render children()}
+        {/if}
       </div>
     </div>
   </div>

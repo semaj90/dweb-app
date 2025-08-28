@@ -1,7 +1,7 @@
 import { and, eq, gte } from "drizzle-orm";
 // Modern server-managed session authentication utilities (no Lucia)
 import { db } from "$lib/server/db/index";
-import { sessions } from "$lib/server/db/schema-postgres";
+import { sessions } from "./db/schema-postgres";
 import bcrypt from "bcryptjs";
 import { randomBytes } from "crypto";
 

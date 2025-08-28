@@ -280,7 +280,7 @@ func (s *GPUOrchestratorService) handleGPUProcess(c *gin.Context) {
 		} else {
 			err = fmt.Errorf("insufficient data for rotation (need quat + points)")
 		}
-	
+
 	case "embedding", "similarity", "som_train", "autoindex":
 		basicReq := RotationRequest{
 			JobID:      request.JobID,
@@ -351,6 +351,9 @@ func (s *GPUOrchestratorService) handleWebSocket(c *gin.Context) {
 
 	log.Printf("🔗 GPU WebSocket client connected")
 
+	// Per-connection write mutex to avoid concurrent writes to the websocket
+	var writeMutex sync.Mutex
+
 	for {
 		var request GPUJobRequest
 		err := conn.ReadJSON(&request)
@@ -367,7 +370,8 @@ func (s *GPUOrchestratorService) handleWebSocket(c *gin.Context) {
 		go func(req GPUJobRequest) {
 			// Similar processing logic as HTTP handler
 			var response *GPUJobResponse
-			
+			var execErr error
+
 			if req.Type == "rotation" && len(req.Data) >= 7 {
 				rotReq := RotationRequest{
 					JobID: req.JobID,
@@ -378,7 +382,7 @@ func (s *GPUOrchestratorService) handleWebSocket(c *gin.Context) {
 					},
 					Points: req.Data[4:],
 				}
-				response, err = s.executeCUDAJob(rotReq)
+				response, execErr = s.executeCUDAJob(rotReq)
 			} else {
 				basicReq := RotationRequest{
 					JobID:      req.JobID,
@@ -386,20 +390,28 @@ func (s *GPUOrchestratorService) handleWebSocket(c *gin.Context) {
 					Quaternion: Quaternion{W: 1.0, X: 0.0, Y: 0.0, Z: 0.0},
 					Points:     req.Data,
 				}
-				response, err = s.executeCUDAJob(basicReq)
+				response, execErr = s.executeCUDAJob(basicReq)
 			}
 
-			if err != nil {
+			if execErr != nil {
 				response = &GPUJobResponse{
-					JobID:   req.JobID,
-					Status:  "error",
-					Error:   err.Error(),
+					JobID:      req.JobID,
+					Type:       req.Type,
+					Status:     "error",
+					Error:      execErr.Error(),
+					ProcessingMS: 0,
+					GPUUtilized: false,
 					WorkerType: "error",
+					Timestamp:  time.Now().Unix(),
 				}
 			}
 
-			// Send response back via WebSocket
-			conn.WriteJSON(response)
+			// Send response back via WebSocket (protected by write mutex)
+			writeMutex.Lock()
+			defer writeMutex.Unlock()
+			if writeErr := conn.WriteJSON(response); writeErr != nil {
+				log.Printf("WebSocket write error for job %s: %v", req.JobID, writeErr)
+			}
 		}(request)
 	}
 }
@@ -424,7 +436,7 @@ func checkWASMSupport() bool {
 		"../wasm/gpu-compute.wasm",
 		"./static/wasm/gpu-compute.wasm",
 	}
-	
+
 	for _, path := range wasmPaths {
 		if _, err := os.Stat(path); err == nil {
 			return true

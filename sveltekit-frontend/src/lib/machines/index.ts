@@ -7,11 +7,11 @@ export { default as searchMachine } from './search-machine';
 export { default as aiAnalysisMachine } from './ai-analysis-machine';
 
 // Re-export existing machines
-export { default as agentShellMachine } from './agentShellMachine';
-export { default as legalAIMachine } from './legalAIMachine';
-export { default as authMachine } from './auth-machine';
-export { default as uploadMachine } from './uploadMachine';
-export { default as sessionMachine } from './sessionMachine';
+export { agentShellMachine } from './agentShellMachine';
+export { legalAIMachine } from './legalAIMachine';
+export { authMachine } from './auth-machine';
+export { uploadMachine } from './uploadMachine';
+export { sessionMachine } from './sessionMachine';
 
 // Export types
 export type { DocumentUploadContext } from './document-upload-machine';

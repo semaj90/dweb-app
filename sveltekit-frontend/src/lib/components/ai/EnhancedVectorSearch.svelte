@@ -4,31 +4,34 @@ https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
   import { $props } from 'svelte';
 
-  import {
-    Badge,
-    Button,
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-    Checkbox,
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    Input,
-    Progress,
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-    Slider,
-    Tabs,
-    TabsContent,
-    TabsList,
-    TabsTrigger,
-  } from "bits-ui";
+  // Updated to use melt-ui components
+  import Button from '$lib/components/ui/MeltButton.svelte';
+  import Dialog from '$lib/components/ui/MeltDialog.svelte';
+  import Select from '$lib/components/ui/MeltSelect.svelte';
+  import Card from '$lib/components/ui/MeltCard.svelte';
+  
+  // TODO: Replace with melt-ui equivalents when available
+  // import {
+  //   Badge,
+  //   CardContent,
+  //   CardHeader,
+  //   CardTitle,
+  //   Checkbox,
+  //   DialogContent,
+  //   DialogHeader,
+  //   DialogTitle,
+  //   Input,
+  //   Progress,
+  //   SelectContent,
+  //   SelectItem,
+  //   SelectTrigger,
+  //   SelectValue,
+  //   Slider,
+  //   Tabs,
+  //   TabsContent,
+  //   TabsList,
+  //   TabsTrigger,
+  // } from "bits-ui";
   import {
     BarChart3,
     Brain,

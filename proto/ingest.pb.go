@@ -7,11 +7,12 @@
 package ingest
 
 import (
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
+
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
 
 const (
@@ -231,7 +232,7 @@ const file_ingest_proto_rawDesc = "" +
 	"\x06status\x18\x04 \x01(\tR\x06status\x12\x18\n" +
 	"\amessage\x18\x05 \x01(\tR\amessage2E\n" +
 	"\tIngestion\x128\n" +
-	"\fStreamChunks\x12\x13.ingest.IngestChunk\x1a\x11.ingest.IngestAck(\x01B6Z4github.com/yourorg/deeds-web-app/proto/ingest;ingestb\x06proto3"
+	"\fStreamChunks\x12\x13.ingest.IngestChunk\x1a\x11.ingest.IngestAck(\x01B6Z4legal-ai-production/proto/ingest;ingestb\x06proto3"
 
 var (
 	file_ingest_proto_rawDescOnce sync.Once

@@ -1,59 +1,39 @@
-<!-- @migration-task Error while migrating Svelte code: Identifier 'selectedProvider' has already been declared
-https://svelte.dev/e/js_parse_error -->
-<!-- LLM Provider Selector with Bits UI v2 and Real-time Status -->
+<!-- LLM Provider Selector with Melt UI and Real-time Status -->
 <script lang="ts">
   import { $props, $effect } from 'svelte';
+  import type { 
+    LLMProviderSelectorProps, 
+    LLMProvider, 
+    LLMModel, 
+    LLMStatus, 
+    PerformanceMetrics 
+  } from '$lib/types/component-props.js';
 
 	import { createSelect, melt } from 'melt';
-	import { Badge } from 'bits-ui';
-	import { Card, CardContent } from 'bits-ui';
+	// Updated to use melt-ui components
+	import Card from '$lib/components/ui/MeltCard.svelte';
+	
+	// TODO: Replace with melt-ui equivalents when available
+	// import { Badge } from 'bits-ui';
+	// import { CardContent } from 'bits-ui';
 	import { writable, derived, type Writable } from 'svelte/store';
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
 
-	interface Props {
-		selectedProvider?: LLMProvider | null;
-		disabled?: boolean;
-	}
-
 	let { 
-		selectedProvider = $bindable(null),
-		disabled = $bindable(false)
-	}: Props = $props();
+		selectedProvider = $bindable(''),
+		onProviderChange,
+		availableProviders = [],
+		disabled = false,
+		class: className,
+		id,
+		'data-testid': testId
+	}: LLMProviderSelectorProps = $props();
 
 	const dispatch = createEventDispatcher<{
 		providerSelected: { provider: LLMProvider };
 		statusChanged: { provider: LLMProvider; status: LLMStatus };
 	}>();
-
-	// LLM Provider Types based on your architecture
-	interface LLMProvider {
-		id: string;
-		name: string;
-		type: 'ollama' | 'vllm' | 'autogen' | 'crewai';
-		endpoint: string;
-		models: LLMModel[];
-		capabilities: string[];
-		status: LLMStatus;
-		performance?: PerformanceMetrics;
-	}
-
-	interface LLMModel {
-		id: string;
-		name: string;
-		size: string;
-		specialization: 'general' | 'legal' | 'code' | 'reasoning';
-		performance: PerformanceMetrics;
-	}
-
-	interface PerformanceMetrics {
-		avgResponseTime: number;
-		tokensPerSecond: number;
-		memoryUsage: string;
-		uptime: number;
-	}
-
-	type LLMStatus = 'online' | 'offline' | 'busy' | 'loading';
 
 	// Mock providers - replace with real API calls
 	const providers: Writable<LLMProvider[]> = writable([

@@ -5,10 +5,14 @@ https://svelte.dev/e/js_parse_error -->
   import { $derived } from 'svelte';
 
 	import { onMount, onDestroy } from 'svelte';
-	import { Badge } from 'bits-ui';
-	import { Card, CardContent, CardHeader, CardTitle } from 'bits-ui';
-	import { Button } from 'bits-ui';
-	import { Progress } from 'bits-ui';
+	// Updated to use melt-ui components
+	import Button from '$lib/components/ui/MeltButton.svelte';
+	import Card from '$lib/components/ui/MeltCard.svelte';
+	
+	// TODO: Replace with melt-ui equivalents when available
+	// import { Badge } from 'bits-ui';
+	// import { CardContent, CardHeader, CardTitle } from 'bits-ui';
+	// import { Progress } from 'bits-ui';
 	import LLMProviderSelector from './LLMProviderSelector.svelte';
 	import { aiServiceWorkerManager, type AITask, type AITaskResult } from '$lib/services/aiServiceWorkerManager';
 	import type { LLMProvider } from '$lib/types/llm';

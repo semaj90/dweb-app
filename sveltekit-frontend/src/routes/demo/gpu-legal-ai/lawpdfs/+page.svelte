@@ -34,9 +34,13 @@ https://svelte.dev/e/expected_token -->
     }
   }
 
+  // Check AI ready on component mount (run once)
+  let hasCheckedAI = false;
   $effect(() => {
-    // Check once on load
-    checkAiReady();
+    if (!hasCheckedAI) {
+      hasCheckedAI = true;
+      checkAiReady();
+    }
   });
 
   // File upload handling
@@ -396,7 +400,7 @@ https://svelte.dev/e/expected_token -->
       <p class="text-gray-300 mb-4">Generate comprehensive Playwright tests for this processing pipeline</p>
 
       <button
-        on:click={generatePlaywrightTests}
+        onclick={generatePlaywrightTests}
         disabled={!ocrResults.length || isProcessing}
         class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg transition-colors"
       >
@@ -409,11 +413,11 @@ https://svelte.dev/e/expected_token -->
       <h3 class="text-xl font-semibold mb-4 text-pink-400">> PostgreSQL pgai Extension</h3>
       <p class="text-gray-300 mb-4">Test AI summarization capabilities with the uploaded documents</p>
       {#if aiReady === false}
-        <AiSetupBanner {data}={aiStatus} autoFetch={false} />
+        <AiSetupBanner data={aiStatus} autoFetch={false} />
       {/if}
 
       <button
-        on:click={async () => {
+        onclick={async () => {
           if (!jsonOutput) return;
           if (aiReady === false) return;
 

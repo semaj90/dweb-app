@@ -2,6 +2,36 @@
 export * from './schema-postgres';
 
 import * as schema from "./schema-postgres";
+
+// === INFERRED TABLE TYPES ===
+// Clean TypeScript types derived from Drizzle table definitions
+import type { 
+  users, 
+  sessions, 
+  cases, 
+  evidence, 
+  legal_documents, 
+  documentChunks,
+  embeddingCache 
+} from './schema-postgres';
+
+// Select types (for reading data from database)
+export type SelectUser = typeof users.$inferSelect;
+export type SelectSession = typeof sessions.$inferSelect;
+export type SelectCase = typeof cases.$inferSelect;
+export type SelectEvidence = typeof evidence.$inferSelect;
+export type SelectLegalDocument = typeof legal_documents.$inferSelect;
+export type SelectDocumentChunk = typeof documentChunks.$inferSelect;
+export type SelectEmbeddingCache = typeof embeddingCache.$inferSelect;
+
+// Insert types (for creating new database records)
+export type InsertUser = typeof users.$inferInsert;
+export type InsertSession = typeof sessions.$inferInsert;
+export type InsertCase = typeof cases.$inferInsert;
+export type InsertEvidence = typeof evidence.$inferInsert;
+export type InsertLegalDocument = typeof legal_documents.$inferInsert;
+export type InsertDocumentChunk = typeof documentChunks.$inferInsert;
+export type InsertEmbeddingCache = typeof embeddingCache.$inferInsert;
 // Database connection and schema exports
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
@@ -97,3 +127,45 @@ export async function healthCheck() {
     };
   }
 }
+
+// === DATABASE UTILITIES ===
+// Commonly used enum types and constants
+export type UserRole = 'user' | 'prosecutor' | 'investigator' | 'admin' | 'attorney' | 'paralegal';
+export type CaseStatus = 'open' | 'active' | 'under_review' | 'closed' | 'archived' | 'draft';
+export type EvidenceType = 'document' | 'image' | 'video' | 'audio' | 'physical' | 'digital';
+export type DocumentType = 'evidence' | 'case_file' | 'report' | 'transcript' | 'correspondence' | 'legal_brief';
+
+// Table name constants for dynamic queries
+export const TABLE_NAMES = {
+  USERS: 'users',
+  SESSIONS: 'sessions', 
+  CASES: 'cases',
+  EVIDENCE: 'evidence',
+  LEGAL_DOCUMENTS: 'legal_documents',
+  DOCUMENT_CHUNKS: 'document_chunks',
+  EMBEDDING_CACHE: 'embedding_cache'
+} as const;
+
+export type TableName = typeof TABLE_NAMES[keyof typeof TABLE_NAMES];
+
+// Query result wrapper interface
+export interface QueryResult<T = any> {
+  data: T[];
+  count: number;
+  error?: string;
+  success: boolean;
+}
+
+// Database configuration interface
+export interface DatabaseConfig {
+  connectionString: string;
+  maxConnections?: number;
+  idleTimeout?: number;
+  ssl?: boolean;
+}
+
+// Re-export Drizzle type utilities for external use
+export type {
+  InferSelectModel,
+  InferInsertModel
+} from 'drizzle-orm';

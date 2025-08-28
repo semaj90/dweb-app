@@ -1,4 +1,4 @@
-import type { RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler } from '$lib/types/server';
 import { json } from "@sveltejs/kit";
 import { randomUUID } from "crypto";
 import { existsSync, createReadStream } from "fs";
@@ -15,7 +15,7 @@ export const POST: RequestHandler = async ({ request }) => {
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
-    
+
     if (!file) {
       return json({ error: 'No file provided' }, { status: 400 });
     }
@@ -23,16 +23,16 @@ export const POST: RequestHandler = async ({ request }) => {
     const fileId = randomUUID();
     const fileName = `${fileId}_${file.name}`;
     const filePath = path.join(UPLOAD_DIR, fileName);
-    
+
     // Ensure upload directory exists
     if (!existsSync(UPLOAD_DIR)) {
       await mkdir(UPLOAD_DIR, { recursive: true });
     }
-    
+
     // Save file
     const buffer = Buffer.from(await file.arrayBuffer());
     await writeFile(filePath, buffer);
-    
+
     return json({
       success: true,
       fileId,
@@ -40,7 +40,7 @@ export const POST: RequestHandler = async ({ request }) => {
       filePath,
       size: file.size
     });
-    
+
   } catch (error) {
     console.error('Upload error:', error);
     return json({ error: 'Upload failed' }, { status: 500 });

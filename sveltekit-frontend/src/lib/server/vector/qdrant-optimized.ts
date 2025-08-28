@@ -160,8 +160,7 @@ class OptimizedQdrantService {
         
       this.client = new QdrantClient({
         url: qdrantUrl,
-        apiKey: qdrantApiKey || undefined,
-        timeout: this.config.performance.searchTimeout
+        apiKey: qdrantApiKey || undefined
       });
 
       logger.info('Optimized Qdrant client initialized', {

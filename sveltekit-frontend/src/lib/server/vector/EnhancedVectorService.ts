@@ -4,7 +4,7 @@
 // Features detected: hasOllama, hasQdrant, hasRedis, hasPgVector, hasEmbeddings
 
 import { QdrantClient } from "@qdrant/js-client-rest";
-import Redis from "ioredis";
+import Redis, { type Redis as IORedisClient } from "ioredis";
 import {
   cases,
   evidence,
@@ -16,7 +16,7 @@ import { eq, sql } from "drizzle-orm";
 
 export class EnhancedVectorService {
   private qdrant: QdrantClient;
-  private redis: Redis;
+  private redis: IORedisClient;
   private collectionName = "legal_documents";
 
   constructor() {
@@ -43,10 +43,11 @@ export class EnhancedVectorService {
         optimizers_config: { default_segment_number: 2 },
       });
 
-      await this.qdrant.createPayloadIndex(this.collectionName, {
-        field_name: "type",
-        field_schema: "keyword",
-      });
+      try {
+        await this.qdrant.createPayloadIndex(this.collectionName, "type");
+      } catch (error) {
+        console.log("Index for 'type' may already exist");
+      }
     }
   }
 

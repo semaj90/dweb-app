@@ -10,7 +10,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/uuid"
 	kratos "github.com/ory/kratos-client-go"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -48,10 +47,10 @@ type KratosAuthInterceptor struct {
 	config      AuthInterceptorConfig
 	kratosPublic *kratos.APIClient
 	kratosAdmin  *kratos.APIClient
-	
+
 	// Session cache for performance
 	sessionCache map[string]*cachedSession
-	
+
 	// RBAC configuration
 	rolePermissions map[string][]string // role -> permissions mapping
 	methodRoles     map[string][]string // method -> required roles mapping
@@ -70,30 +69,30 @@ func NewKratosAuthInterceptor(config AuthInterceptorConfig) *KratosAuthIntercept
 		{URL: config.KratosPublicURL},
 	}
 	kratosPublic := kratos.NewAPIClient(publicConfig)
-	
+
 	// Initialize Kratos admin API client
 	adminConfig := kratos.NewConfiguration()
 	adminConfig.Servers = []kratos.ServerConfiguration{
 		{URL: config.KratosAdminURL},
 	}
 	kratosAdmin := kratos.NewAPIClient(adminConfig)
-	
+
 	interceptor := &KratosAuthInterceptor{
 		config:       config,
 		kratosPublic: kratosPublic,
 		kratosAdmin:  kratosAdmin,
 		sessionCache: make(map[string]*cachedSession),
 	}
-	
+
 	// Initialize RBAC configuration
 	interceptor.initializeRBAC()
-	
+
 	// Start cache cleanup routine
 	go interceptor.startCacheCleanup()
-	
-	log.Printf("✅ Kratos Auth Interceptor initialized - Public: %s, Admin: %s", 
+
+	log.Printf("✅ Kratos Auth Interceptor initialized - Public: %s, Admin: %s",
 		config.KratosPublicURL, config.KratosAdminURL)
-	
+
 	return interceptor
 }
 
@@ -109,19 +108,19 @@ func (k *KratosAuthInterceptor) UnaryServerInterceptor() grpc.UnaryServerInterce
 		if !k.requiresAuth(info.FullMethod) {
 			return handler(ctx, req)
 		}
-		
+
 		// Extract and validate session
 		identity, err := k.validateRequest(ctx, info.FullMethod)
 		if err != nil {
 			return nil, err
 		}
-		
+
 		// Add user identity to context
 		ctx = k.addIdentityToContext(ctx, identity)
-		
+
 		// Log authentication event
 		log.Printf("✅ Authenticated request: user=%s method=%s", identity.ID, info.FullMethod)
-		
+
 		return handler(ctx, req)
 	}
 }
@@ -138,22 +137,22 @@ func (k *KratosAuthInterceptor) StreamServerInterceptor() grpc.StreamServerInter
 		if !k.requiresAuth(info.FullMethod) {
 			return handler(srv, stream)
 		}
-		
+
 		// Extract and validate session
 		ctx := stream.Context()
 		identity, err := k.validateRequest(ctx, info.FullMethod)
 		if err != nil {
 			return err
 		}
-		
+
 		// Create new stream with authenticated context
 		wrappedStream := &authenticatedStream{
 			ServerStream: stream,
 			ctx:          k.addIdentityToContext(ctx, identity),
 		}
-		
+
 		log.Printf("✅ Authenticated stream: user=%s method=%s", identity.ID, info.FullMethod)
-		
+
 		return handler(srv, wrappedStream)
 	}
 }
@@ -174,7 +173,7 @@ func (k *KratosAuthInterceptor) validateRequest(ctx context.Context, method stri
 	if err != nil {
 		return nil, status.Errorf(codes.Unauthenticated, "Authentication required: %v", err)
 	}
-	
+
 	// Check session cache first
 	if cachedSession := k.getFromCache(sessionToken); cachedSession != nil {
 		// Validate cached session is still valid
@@ -188,21 +187,21 @@ func (k *KratosAuthInterceptor) validateRequest(ctx context.Context, method stri
 		// Remove expired cache entry
 		delete(k.sessionCache, sessionToken)
 	}
-	
+
 	// Validate session with Kratos
 	identity, err := k.validateSessionWithKratos(ctx, sessionToken)
 	if err != nil {
 		return nil, status.Errorf(codes.Unauthenticated, "Invalid session: %v", err)
 	}
-	
+
 	// Check authorization
 	if err := k.checkAuthorization(identity, method); err != nil {
 		return nil, err
 	}
-	
+
 	// Cache the session
 	k.cacheSession(sessionToken, identity)
-	
+
 	return identity, nil
 }
 
@@ -212,10 +211,10 @@ func (k *KratosAuthInterceptor) extractSessionToken(ctx context.Context) (string
 	if !ok {
 		return "", fmt.Errorf("metadata not provided")
 	}
-	
+
 	// Try to get session token from various headers
 	var sessionToken string
-	
+
 	// Method 1: Authorization header (Bearer token)
 	if values := md.Get("authorization"); len(values) > 0 {
 		auth := values[0]
@@ -223,14 +222,14 @@ func (k *KratosAuthInterceptor) extractSessionToken(ctx context.Context) (string
 			sessionToken = strings.TrimPrefix(auth, "Bearer ")
 		}
 	}
-	
+
 	// Method 2: X-Session-Token header
 	if sessionToken == "" {
 		if values := md.Get("x-session-token"); len(values) > 0 {
 			sessionToken = values[0]
 		}
 	}
-	
+
 	// Method 3: Cookie header (for web clients)
 	if sessionToken == "" {
 		if values := md.Get("cookie"); len(values) > 0 {
@@ -241,11 +240,11 @@ func (k *KratosAuthInterceptor) extractSessionToken(ctx context.Context) (string
 			}
 		}
 	}
-	
+
 	if sessionToken == "" {
 		return "", fmt.Errorf("session token not found in request")
 	}
-	
+
 	return sessionToken, nil
 }
 
@@ -265,44 +264,47 @@ func (k *KratosAuthInterceptor) extractSessionFromCookies(cookies string) string
 // validateSessionWithKratos validates the session with Kratos backend
 func (k *KratosAuthInterceptor) validateSessionWithKratos(ctx context.Context, sessionToken string) (*UserIdentity, error) {
 	// Create HTTP request context with cookie
-	req := k.kratosPublic.FrontendApi.ToSession(ctx)
-	
+	// Use the generated client field FrontendAPI (note capitalization)
+	req := k.kratosPublic.FrontendAPI.ToSession(ctx)
+
 	// Add session cookie
 	cookieHeader := fmt.Sprintf("ory_kratos_session=%s", sessionToken)
 	req = req.Cookie(cookieHeader)
-	
+
 	// Execute session validation
 	session, httpResp, err := req.Execute()
 	if err != nil {
 		return nil, fmt.Errorf("kratos session validation failed: %w", err)
 	}
-	
+
 	if httpResp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("kratos session validation returned status %d", httpResp.StatusCode)
 	}
-	
+
 	if session == nil || !*session.Active {
 		return nil, fmt.Errorf("session is not active")
 	}
-	
+
 	// Extract user identity information
 	identity := &UserIdentity{
 		ID:        session.Identity.Id,
 		SessionID: session.Id,
 		Traits:    make(map[string]interface{}),
 	}
-	
+
 	// Extract traits (email, name, etc.)
 	if session.Identity.Traits != nil {
-		if email, ok := session.Identity.Traits["email"].(string); ok {
-			identity.Email = email
+		if traitsMap, ok := session.Identity.Traits.(map[string]interface{}); ok {
+			if email, ok := traitsMap["email"].(string); ok {
+				identity.Email = email
+			}
+			if name, ok := traitsMap["name"].(string); ok {
+				identity.Name = name
+			}
+			identity.Traits = traitsMap
 		}
-		if name, ok := session.Identity.Traits["name"].(string); ok {
-			identity.Name = name
-		}
-		identity.Traits = session.Identity.Traits
 	}
-	
+
 	// Set expiration time
 	if session.ExpiresAt != nil {
 		identity.ExpiresAt = *session.ExpiresAt
@@ -310,11 +312,11 @@ func (k *KratosAuthInterceptor) validateSessionWithKratos(ctx context.Context, s
 		// Default to session timeout if not specified
 		identity.ExpiresAt = time.Now().Add(k.config.SessionTimeout)
 	}
-	
+
 	// Extract roles and permissions from identity metadata
 	identity.Roles = k.extractRolesFromIdentity(session.Identity)
 	identity.Permissions = k.extractPermissionsFromRoles(identity.Roles)
-	
+
 	return identity, nil
 }
 
@@ -323,32 +325,32 @@ func (k *KratosAuthInterceptor) checkAuthorization(identity *UserIdentity, metho
 	// Check global required roles
 	if len(k.config.RequiredRoles) > 0 {
 		if !k.hasAnyRole(identity.Roles, k.config.RequiredRoles) {
-			return status.Errorf(codes.PermissionDenied, 
+			return status.Errorf(codes.PermissionDenied,
 				"User lacks required global roles: %v", k.config.RequiredRoles)
 		}
 	}
-	
+
 	// Check method-specific roles if RBAC is enabled
 	if k.config.EnableRBAC {
 		if requiredRoles, exists := k.methodRoles[method]; exists {
 			if !k.hasAnyRole(identity.Roles, requiredRoles) {
-				return status.Errorf(codes.PermissionDenied, 
+				return status.Errorf(codes.PermissionDenied,
 					"User lacks required roles for %s: %v", method, requiredRoles)
 			}
 		}
 	}
-	
+
 	// Check permissions if permission-based access control is enabled
 	if k.config.EnablePermissions {
 		requiredPermission := k.getRequiredPermissionForMethod(method)
 		if requiredPermission != "" {
 			if !k.hasPermission(identity.Permissions, requiredPermission) {
-				return status.Errorf(codes.PermissionDenied, 
+				return status.Errorf(codes.PermissionDenied,
 					"User lacks required permission for %s: %s", method, requiredPermission)
 			}
 		}
 	}
-	
+
 	return nil
 }
 
@@ -376,19 +378,22 @@ func (k *KratosAuthInterceptor) hasPermission(userPermissions []string, required
 func (k *KratosAuthInterceptor) extractRolesFromIdentity(identity *kratos.Identity) []string {
 	// Extract roles from identity metadata - customize based on your Kratos setup
 	roles := []string{"user"} // Default role
-	
+
+	// MetadataPublic may be a map[string]interface{} depending on generated types
 	if identity.MetadataPublic != nil {
-		if rolesInterface, ok := identity.MetadataPublic["roles"]; ok {
-			if rolesList, ok := rolesInterface.([]interface{}); ok {
-				for _, role := range rolesList {
-					if roleStr, ok := role.(string); ok {
-						roles = append(roles, roleStr)
+		if mp, ok := identity.MetadataPublic.(map[string]interface{}); ok {
+			if rolesInterface, ok := mp["roles"]; ok {
+				if rolesList, ok := rolesInterface.([]interface{}); ok {
+					for _, role := range rolesList {
+						if roleStr, ok := role.(string); ok {
+							roles = append(roles, roleStr)
+						}
 					}
 				}
 			}
 		}
 	}
-	
+
 	return roles
 }
 
@@ -399,7 +404,7 @@ func (k *KratosAuthInterceptor) extractPermissionsFromRoles(roles []string) []st
 			permissions = append(permissions, rolePerms...)
 		}
 	}
-	
+
 	// Remove duplicates
 	permSet := make(map[string]bool)
 	var uniquePerms []string
@@ -409,7 +414,7 @@ func (k *KratosAuthInterceptor) extractPermissionsFromRoles(roles []string) []st
 			uniquePerms = append(uniquePerms, perm)
 		}
 	}
-	
+
 	return uniquePerms
 }
 
@@ -426,7 +431,7 @@ func (k *KratosAuthInterceptor) getRequiredPermissionForMethod(method string) st
 		"/aiserver.AsyncJobService/GetJobResult":         "job.read",
 		"/aiserver.AsyncJobService/CancelJob":            "job.cancel",
 	}
-	
+
 	return methodPermissions[method]
 }
 
@@ -445,7 +450,7 @@ func (k *KratosAuthInterceptor) getFromCache(sessionToken string) *cachedSession
 func (k *KratosAuthInterceptor) startCacheCleanup() {
 	ticker := time.NewTicker(5 * time.Minute)
 	defer ticker.Stop()
-	
+
 	for range ticker.C {
 		now := time.Now()
 		for token, cached := range k.sessionCache {
@@ -461,14 +466,14 @@ func (k *KratosAuthInterceptor) requiresAuth(method string) bool {
 	if !k.config.RequireAuth {
 		return false
 	}
-	
+
 	// Check if method is in allowed (no-auth) list
 	for _, allowedMethod := range k.config.AllowedMethods {
 		if method == allowedMethod {
 			return false
 		}
 	}
-	
+
 	return true
 }
 
@@ -493,7 +498,7 @@ func (k *KratosAuthInterceptor) initializeRBAC() {
 			"document.search",
 		},
 	}
-	
+
 	// Initialize method-to-roles mapping
 	k.methodRoles = map[string][]string{
 		"/aiserver.VectorService/BatchProcessVectors":    {"admin"},

@@ -19,9 +19,14 @@ export interface RAGContext {
 }
 
 export class EnhancedVectorOperations {
-  async generateEmbedding(_text: string): Promise<number[]> {
-    // Deterministic small embedding for dev
-    return new Array(128).fill(0).map((_, i) => Math.sin(i + 1));
+  async generateEmbedding(params: { id: string; content: string; metadata: any }): Promise<void> {
+    // Stub implementation - in production this would generate real embeddings
+    console.log('Generating embedding for:', params.id, 'with content length:', params.content.length);
+  }
+
+  async deleteEmbedding(id: string): Promise<void> {
+    // Stub implementation - in production this would delete from vector store
+    console.log('Deleting embedding for:', id);
   }
 
   async performRAGSearch(_context: RAGContext): Promise<VectorSearchResult[]> {
