@@ -150,7 +150,7 @@ export class AuthService {
       });
 
       return { unit: newUnit, session };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Registration error:', error);
       throw error;
     }
@@ -201,7 +201,7 @@ export class AuthService {
       });
 
       return { unit, session };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login error:', error);
       throw error;
     }
@@ -246,14 +246,14 @@ export class AuthService {
         .where(eq(sessions.id, session.id));
 
       return { unit: session.user, session };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Session validation error:', error);
       return null;
     }
   }
 
   // Logout
-  async logout(sessionId: string): Promise<void> {
+  async logout(sessionId: string): Promise<any> {
     try {
       const session = await db.query.sessions.findFirst({
         where: eq(sessions.id, sessionId)
@@ -271,14 +271,14 @@ export class AuthService {
         // Delete session
         await db.delete(sessions).where(eq(sessions.id, sessionId));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Logout error:', error);
       throw error;
     }
   }
 
   // Request password reset
-  async requestPasswordReset(email: string): Promise<void> {
+  async requestPasswordReset(email: string): Promise<any> {
     try {
       const unit = await db.query.units.findFirst({
         where: eq(units.email, email)
@@ -305,14 +305,14 @@ export class AuthService {
         unitName: unit.name,
         resetToken: token
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Password reset request error:', error);
       throw error;
     }
   }
 
   // Reset password
-  async resetPassword(token: string, newPassword: string): Promise<void> {
+  async resetPassword(token: string, newPassword: string): Promise<any> {
     try {
       const resetToken = await db.query.passwordResetTokens.findFirst({
         where: and(
@@ -348,14 +348,14 @@ export class AuthService {
 
       // Invalidate all sessions
       await db.delete(sessions).where(eq(sessions.userId, resetToken.userId));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Password reset error:', error);
       throw error;
     }
   }
 
   // Verify email
-  async verifyEmail(token: string): Promise<void> {
+  async verifyEmail(token: string): Promise<any> {
     try {
       const unit = await db.query.units.findFirst({
         where: eq(units.emailVerificationToken, token)
@@ -385,7 +385,7 @@ export class AuthService {
         action: 'check',
         type: 'email_verified'
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Email verification error:', error);
       throw error;
     }
@@ -411,14 +411,14 @@ export class AuthService {
       });
 
       return secret;
-    } catch (error) {
+    } catch (error: any) {
       console.error('2FA enable error:', error);
       throw error;
     }
   }
 
   // Log user activity
-  private async logActivity(data: NewUserActivity): Promise<void> {
+  private async logActivity(data: NewUserActivity): Promise<any> {
     try {
       // Ensure required DB fields are present and have correct non-undefined values
       const activity = {
@@ -430,20 +430,20 @@ export class AuthService {
       };
 
       await db.insert(userActivity).values(activity);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Activity logging error:', error);
       // Don't throw, just log the error
     }
   }
 
   // Clean up expired sessions
-  async cleanupSessions(): Promise<void> {
+  async cleanupSessions(): Promise<any> {
     try {
       const deleted = await db.delete(sessions)
         .where(lt(sessions.expiresAt, new Date()));
 
       console.log(`Cleaned up ${deleted.length || 0} expired sessions`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Session cleanup error:', error);
     }
   }
@@ -462,7 +462,7 @@ export class AuthService {
     try {
       const payload = jwt.verify(token, JWT_SECRET) as any;
       return { userId: payload.userId };
-    } catch (error) {
+    } catch (error: any) {
       return null;
     }
   }

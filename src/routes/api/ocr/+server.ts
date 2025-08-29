@@ -3,12 +3,12 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { createWorker } from 'tesseract.js';
+import { createWorker } from 'tesseract';
 import sharp from 'sharp';
 import pdfParse from 'pdf-parse';
 import { Redis } from 'ioredis';
-import { webLlamaService } from '$lib/ai/webasm-llamacpp.js';
-import { llamaCppService } from '$lib/ai/llamacpp-service.js';
+import { webLlamaService } from '$lib/ai/webasm-llamacpp';
+import { llamaCppService } from '$lib/ai/llamacpp-service';
 
 // LFU Cache implementation without constructor issues
 class LFUCache<K, V> {
@@ -233,7 +233,7 @@ async function performAdvancedLegalAnalysis(
       quantization: 'Q4_K_M'
     };
 
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('[Legal Analysis] Failed:', error);
     
     // Fallback analysis
@@ -302,7 +302,7 @@ function extractBasicKeyTerms(text: string): string[] {
 /**
  * Main POST handler for OCR with enhanced AI analysis
  */
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   try {
     console.log('[OCR] Processing request with enhanced AI analysis...');
     const formData = await request.formData();
@@ -338,7 +338,7 @@ export const POST: RequestHandler = async ({ request }) => {
           console.log(`[OCR] Redis cache hit for ${file.name}`);
           return json({ ...result, fromCache: true });
         }
-      } catch (err) {
+      } catch (err: any) {
         console.warn('[OCR] Redis cache unavailable:', err);
       }
     }
@@ -358,7 +358,7 @@ export const POST: RequestHandler = async ({ request }) => {
         const pdfData = await pdfParse(buffer);
         extractedText = pdfData.text;
         confidence = extractedText.length > 0 ? 0.95 : 0.1;
-      } catch (err) {
+      } catch (err: any) {
         console.error('[OCR] PDF parsing failed:', err);
         throw new Error('Failed to extract text from PDF');
       }
@@ -392,7 +392,7 @@ export const POST: RequestHandler = async ({ request }) => {
         confidence = data.confidence / 100;
         
         await worker.terminate();
-      } catch (err) {
+      } catch (err: any) {
         console.error('[OCR] Tesseract processing failed:', err);
         throw new Error('Failed to extract text from image');
       }
@@ -425,7 +425,7 @@ export const POST: RequestHandler = async ({ request }) => {
           useClientSideAI,
           analysisType
         );
-      } catch (err) {
+      } catch (err: any) {
         console.error('[OCR] Legal analysis failed:', err);
         legalAnalysis = {
           error: 'Legal analysis failed',
@@ -465,14 +465,14 @@ export const POST: RequestHandler = async ({ request }) => {
         // Redis cache (persistent, 1 hour TTL)
         await redis.setex(cacheKey, 3600, JSON.stringify(result));
         console.log('[OCR] Result cached successfully');
-      } catch (err) {
+      } catch (err: any) {
         console.warn('[OCR] Failed to cache result:', err);
       }
     }
 
     return json(result);
 
-  } catch (err: unknown) {
+  } catch (err: any) {
     console.error('[OCR] Error:', err);
     return json({
       success: false,
@@ -485,7 +485,7 @@ export const POST: RequestHandler = async ({ request }) => {
 /**
  * Enhanced health check endpoint
  */
-export const GET: RequestHandler = async () => {
+export const GET: RequestHandler = async (): Promise<any> => {
   try {
     const healthChecks = await Promise.allSettled([
       // Redis health
@@ -523,7 +523,7 @@ export const GET: RequestHandler = async () => {
       await worker.initialize('eng');
       await worker.terminate();
       tesseractStatus = 'healthy';
-    } catch (err) {
+    } catch (err: any) {
       tesseractStatus = 'unhealthy';
     }
 
@@ -559,7 +559,7 @@ export const GET: RequestHandler = async () => {
       ]
     });
 
-  } catch (err: unknown) {
+  } catch (err: any) {
     console.error('[OCR Health Check] Error:', err);
     return json({
       status: 'unhealthy',

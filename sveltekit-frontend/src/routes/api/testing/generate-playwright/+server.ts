@@ -61,7 +61,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
     return json(result);
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Playwright test generation error:', err);
     throw error(500, `Test generation failed: ${err.message}`);
   }

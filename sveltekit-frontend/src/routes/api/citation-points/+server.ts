@@ -30,7 +30,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
       limit,
       offset,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching citation points:", error);
     return json({ error: "Failed to fetch citation points" }, { status: 500 });
   }
@@ -81,7 +81,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       .returning();
 
     return json(newCitation, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating citation point:", error);
     return json({ error: "Failed to create citation point" }, { status: 500 });
   }
@@ -139,7 +139,7 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
       .returning();
 
     return json(updatedCitation);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating citation point:", error);
     return json({ error: "Failed to update citation point" }, { status: 500 });
   }
@@ -176,7 +176,7 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
     await db.delete(reports).where(eq(reports.id, citationId));
 
     return json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error deleting citation point:", error);
     return json({ error: "Failed to delete citation point" }, { status: 500 });
   }

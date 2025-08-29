@@ -11,9 +11,9 @@
  */
 
 import { performance } from 'perf_hooks';
-import { gpuOrchestrator } from './src/lib/services/gpu-acceleration-orchestrator.js';
+import { gpuOrchestrator } from './src/lib/services/gpu-acceleration-orchestrator';
 
-interface TestResult {
+export interface TestResult {
   testName: string;
   passed: boolean;
   actualValue: number;
@@ -22,7 +22,7 @@ interface TestResult {
   details?: string;
 }
 
-interface TestSuite {
+export interface TestSuite {
   suiteName: string;
   results: TestResult[];
   overallPassed: boolean;
@@ -128,7 +128,7 @@ class GPUAccelerationTestSuite {
         details: `WebGPU: ${webgpuTime.toFixed(2)}ms, CUDA: ${cudaTime.toFixed(2)}ms`
       });
 
-    } catch (error) {
+    } catch (error: any) {
       results.push({
         testName: 'Tensor Processing Error Handling',
         passed: false,
@@ -225,7 +225,7 @@ class GPUAccelerationTestSuite {
         details: `${cacheLayersPassed}/7 cache layers performing within targets`
       });
 
-    } catch (error) {
+    } catch (error: any) {
       results.push({
         testName: 'Cache System Error Handling',
         passed: false,
@@ -312,7 +312,7 @@ class GPUAccelerationTestSuite {
         details: `Fragmentation level: ${(fragmentationTest.fragmentationLevel * 100).toFixed(2)}%`
       });
 
-    } catch (error) {
+    } catch (error: any) {
       results.push({
         testName: 'GPU Memory Management Error',
         passed: false,
@@ -396,7 +396,7 @@ class GPUAccelerationTestSuite {
         details: `Resource utilization efficiency: ${(contentionTest.efficiency * 100).toFixed(2)}%`
       });
 
-    } catch (error) {
+    } catch (error: any) {
       results.push({
         testName: 'Concurrent Operations Error',
         passed: false,
@@ -488,7 +488,7 @@ class GPUAccelerationTestSuite {
         details: `Tested ${shaderTests.shaderCount} shaders`
       });
 
-    } catch (error) {
+    } catch (error: any) {
       results.push({
         testName: 'NES Architecture Error',
         passed: false,
@@ -574,7 +574,7 @@ class GPUAccelerationTestSuite {
         details: `Circuit breaker activated in ${circuitBreakerTest.failoverTime.toFixed(2)}ms`
       });
 
-    } catch (error) {
+    } catch (error: any) {
       results.push({
         testName: 'Go Service Integration Error',
         passed: false,
@@ -649,7 +649,7 @@ class GPUAccelerationTestSuite {
         details: `Memory alignment speedup: ${alignmentTest.speedup.toFixed(2)}x`
       });
 
-    } catch (error) {
+    } catch (error: any) {
       results.push({
         testName: 'Worker Thread Optimization Error',
         passed: false,
@@ -738,7 +738,7 @@ class GPUAccelerationTestSuite {
         details: `Memory adaptation time: ${adaptiveTest.adaptationSpeed.toFixed(2)}ms`
       });
 
-    } catch (error) {
+    } catch (error: any) {
       results.push({
         testName: 'Memory Optimization Error',
         passed: false,

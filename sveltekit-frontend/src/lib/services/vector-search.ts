@@ -110,7 +110,7 @@ export class VectorSearchService {
         .onConflictDoNothing();
 
       return embedding;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to generate embedding:", error);
       throw error;
     }
@@ -219,7 +219,7 @@ export class VectorSearchService {
         keywords: row.keywords,
         createdAt: new Date(row.created_at),
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.error("Vector search failed:", error);
       throw error;
     }
@@ -253,7 +253,7 @@ export class VectorSearchService {
           updatedAt: new Date(),
         })
         .where(eq(documents.id, documentId));
-    } catch (error) {
+    } catch (error: any) {
       console.error("Document indexing failed:", error);
       throw error;
     }
@@ -292,7 +292,7 @@ export class VectorSearchService {
       await db.execute(sql`ANALYZE documents`);
 
       console.log("Vector index created successfully");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to create vector index:", error);
       throw error;
     }

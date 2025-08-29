@@ -7,7 +7,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
 // gRPC client setup (simplified for demo)
-interface ProcessingRequest {
+export interface ProcessingRequest {
   documentId: string;
   content: string;
   options?: {
@@ -19,7 +19,7 @@ interface ProcessingRequest {
   };
 }
 
-interface ProcessingResponse {
+export interface ProcessingResponse {
   documentId: string;
   success: boolean;
   processingTime: number;
@@ -48,7 +48,7 @@ async function callGoSimdService(request: ProcessingRequest): Promise<any> {
   };
 }
 
-async function callNodeGpuService(documentId: string, data: unknown): Promise<any> {
+async function callNodeGpuService(documentId: string, data: any): Promise<any> {
   // Simulate Node.js GPU service call
   await new Promise(resolve => setTimeout(resolve, 200 + Math.random() * 800));
   
@@ -75,7 +75,7 @@ async function callNodeGpuService(documentId: string, data: unknown): Promise<an
   };
 }
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   const startTime = Date.now();
 
   try {
@@ -140,7 +140,7 @@ export const POST: RequestHandler = async ({ request }) => {
     
     return json(response);
 
-  } catch (error) {
+  } catch (error: any) {
     const processingTime = Date.now() - startTime;
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     
@@ -158,7 +158,7 @@ export const POST: RequestHandler = async ({ request }) => {
   }
 };
 
-export const GET: RequestHandler = async () => {
+export const GET: RequestHandler = async (): Promise<any> => {
   // Health check endpoint
   try {
     // Check if services are available (simplified)
@@ -173,7 +173,7 @@ export const GET: RequestHandler = async () => {
     };
     
     return json(healthStatus);
-  } catch (error) {
+  } catch (error: any) {
     return json({
       status: 'unhealthy',
       error: error instanceof Error ? error.message : 'Unknown error',

@@ -3,9 +3,9 @@
 
 import { json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
-import { createWorker } from "tesseract.js";
+import { createWorker } from 'tesseract';
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const formData = await request.formData();
     const imageFile = formData.get("image") as File;
@@ -63,7 +63,7 @@ export const POST: RequestHandler = async ({ request }) => {
         tesseractVersion: "5.0.0",
       },
     });
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("OCR processing error:", error);
     return json(
       { error: "OCR processing failed", details: error.message },
@@ -72,7 +72,7 @@ export const POST: RequestHandler = async ({ request }) => {
   }
 };
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
   try {
     const action = url.searchParams.get("action");
 
@@ -109,7 +109,7 @@ export const GET: RequestHandler = async ({ url }) => {
           availableActions: ["supported_languages", "health", "capabilities"],
         });
     }
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("OCR API error:", error);
     return json(
       { error: "OCR API request failed", details: error.message },
@@ -127,10 +127,10 @@ async function performOCR(
   text: string;
   confidence: number;
   detectedLanguage: string;
-  blocks?: unknown[];
-  paragraphs?: unknown[];
-  lines?: unknown[];
-  words?: unknown[];
+  blocks?: any[];
+  paragraphs?: any[];
+  lines?: any[];
+  words?: any[];
 }> {
   try {
     // Create Tesseract worker with fixed configuration
@@ -154,7 +154,7 @@ async function performOCR(
       lines: (data as any).lines || [],
       words: (data as any).words || [],
     };
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("Tesseract OCR error:", error);
 
     // Fallback for OCR failure
@@ -184,7 +184,7 @@ async function preprocessImageBuffer(inputBuffer: Buffer): Promise<Buffer> {
       .toBuffer()) as unknown as Buffer;
 
     return processedBuffer;
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.warn("Image preprocessing failed, using original:", error);
     return inputBuffer;
   }
@@ -347,7 +347,7 @@ async function performHealthCheck(): Promise<any> {
       features: ["OCR", "language_detection", "preprocessing"],
       timestamp: new Date().toISOString(),
     };
-  } catch (error: unknown) {
+  } catch (error: any) {
     return {
       status: "degraded",
       tesseract: "unavailable",
@@ -358,7 +358,7 @@ async function performHealthCheck(): Promise<any> {
 }
 
 // Batch processing endpoint
-export const PUT: RequestHandler = async ({ request }) => {
+export const PUT: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const { action, ...params } = await request.json();
 
@@ -380,7 +380,7 @@ export const PUT: RequestHandler = async ({ request }) => {
               text: "Mock OCR result for batch processing",
               confidence: 0.85,
             });
-          } catch (error: unknown) {
+          } catch (error: any) {
             results.push({
               imageUrl,
               success: false,
@@ -404,7 +404,7 @@ export const PUT: RequestHandler = async ({ request }) => {
           { status: 400 }
         );
     }
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("OCR batch operation error:", error);
     return json(
       { error: "Batch operation failed", details: error.message },

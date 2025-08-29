@@ -4,13 +4,13 @@
  */
 
 // Worker message types
-interface WorkerMessage {
+export interface WorkerMessage {
   type: 'PROCESS_TENSOR' | 'INITIALIZE' | 'GET_STATS' | 'CLEAR_CACHE';
   id?: string;
   data?: unknown;
 }
 
-interface WorkerResponse {
+export interface WorkerResponse {
   type: 'SUCCESS' | 'ERROR' | 'STATS' | 'INITIALIZED';
   id?: string;
   data?: unknown;
@@ -18,7 +18,7 @@ interface WorkerResponse {
 }
 
 // Multi-dimensional array interface
-interface MultiDimArray {
+export interface MultiDimArray {
   shape: number[];
   data: Float32Array;
   dimensions: number;
@@ -28,7 +28,7 @@ interface MultiDimArray {
   timestamp?: number;
 }
 
-interface GPUProcessingStats {
+export interface GPUProcessingStats {
   totalProcessed: number;
   cacheHitRate: number;
   averageProcessingTime: number;

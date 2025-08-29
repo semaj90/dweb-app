@@ -226,7 +226,7 @@ export class AdvancedBinaryEncodingService {
 
       return { encoded, format: targetFormat, metrics, cacheKey };
 
-    } catch (error) {
+    } catch (error: any) {
       if (this.options.fallback && targetFormat !== 'json') {
         console.warn(`Encoding failed for ${targetFormat}, falling back to JSON:`, error);
         return this.encode(data, 'json', context);
@@ -281,7 +281,7 @@ export class AdvancedBinaryEncodingService {
 
       return { decoded, metrics };
 
-    } catch (error) {
+    } catch (error: any) {
       if (this.options.fallback && format !== 'json') {
         console.warn(`Decoding failed for ${format}, attempting JSON fallback:`, error);
         return this.decode(data, 'json');
@@ -689,7 +689,7 @@ export async function encodeLegalDocument(data: unknown, context: LegalWorkflowC
   };
 }
 
-export async function createWorkflowMiddleware(workflowType: LegalWorkflowContext['type']) {
+export async function createWorkflowMiddleware(workflowType: LegalWorkflowContext['type']): Promise<any> {
   const context: LegalWorkflowContext = {
     type: workflowType,
     complexity: 'medium',

@@ -32,7 +32,7 @@ async function gpuServiceRequest(endpoint: string, options?: RequestInit): Promi
 		}
 		
 		return response;
-	} catch (error) {
+	} catch (error: any) {
 		console.error('GPU service request failed:', error);
 		throw error;
 	}
@@ -59,7 +59,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			default:
 				return await getGPUOverview();
 		}
-	} catch (error) {
+	} catch (error: any) {
 		console.error('GPU API error:', error);
 		return json(
 			{ 
@@ -90,7 +90,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
 			default:
 				return await processGPUTask(body);
 		}
-	} catch (error) {
+	} catch (error: any) {
 		console.error('GPU task processing error:', error);
 		return json(
 			{
@@ -203,7 +203,7 @@ async function getGPUOverview(): Promise<Response> {
 				}
 			}
 		});
-	} catch (error) {
+	} catch (error: any) {
 		// If detailed info fails, return basic status
 		return json({
 			overview: {
@@ -322,7 +322,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
 			default:
 				return json({ error: 'Invalid DELETE action' }, { status: 400 });
 		}
-	} catch (error) {
+	} catch (error: any) {
 		return json(
 			{ error: 'DELETE operation failed' },
 			{ status: 500 }

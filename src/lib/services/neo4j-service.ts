@@ -26,7 +26,7 @@ export function getSession(mode: 'read' | 'write' = 'write'): Session {
 
 export async function upsertLegalDocumentNode(doc: {
     id: string; title?: string; caseId?: string; uploadedAt?: string | Date; type?: string; status?: string;
-}): Promise<void> {
+}): Promise<any> {
     const session = getSession('write');
     try {
         await session.run(
@@ -38,7 +38,7 @@ export async function upsertLegalDocumentNode(doc: {
     }
 }
 
-export async function createRelatedDocuments(sourceId: string, targetId: string, relation: string = 'RELATED_TO'): Promise<void> {
+export async function createRelatedDocuments(sourceId: string, targetId: string, relation: string = 'RELATED_TO'): Promise<any> {
     const session = getSession('write');
     try {
         await session.run(
@@ -59,7 +59,7 @@ export async function getRelatedDocuments(documentId: string): Promise<string[]>
     } finally { await session.close(); }
 }
 
-export async function shutdownNeo4j(): Promise<void> {
+export async function shutdownNeo4j(): Promise<any> {
     if (driver) {
         await driver.close();
         driver = null;

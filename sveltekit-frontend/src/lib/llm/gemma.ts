@@ -45,7 +45,7 @@ export async function queryGemma(prompt: string, opts: GemmaOptions = {}): Promi
     
     // Handle different response formats from Ollama
     return data?.response ?? data?.text ?? data?.output ?? JSON.stringify(data);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Gemma3 query failed:', error);
     throw new Error(`Gemma3 connection failed: ${error.message}`);
   }

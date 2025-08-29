@@ -11,18 +11,18 @@ import { INGEST_SERVICE_URL } from '$env/static/private';
 const SERVICE_URL = INGEST_SERVICE_URL || 'http://localhost:8227';
 const TIMEOUT = 30000; // 30 seconds for document processing
 
-interface DocumentIngestRequest {
+export interface DocumentIngestRequest {
   title: string;
   content: string;
   case_id?: string;
   metadata?: Record<string, any>;
 }
 
-interface BatchIngestRequest {
+export interface BatchIngestRequest {
   documents: DocumentIngestRequest[];
 }
 
-interface IngestResponse {
+export interface IngestResponse {
   id: string;
   status: string;
   document_id: string;
@@ -118,7 +118,7 @@ export const POST: RequestHandler = async ({ request, fetch }) => {
       throw fetchError;
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Ingest API error:', error);
     
     return json(
@@ -165,7 +165,7 @@ export const GET: RequestHandler = async ({ fetch }) => {
       architecture: 'go-microservice'
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         status: 'error',

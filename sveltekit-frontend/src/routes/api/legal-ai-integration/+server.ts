@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { legalAIIntegration } from '$lib/services/quic-legal-ai-integration.js';
-import type { RequestHandler } from './$types.js';
+import type { RequestHandler } from './$types';
 
 // GET: System status and health
 export const GET: RequestHandler = async ({ url }) => {
@@ -47,7 +47,7 @@ export const GET: RequestHandler = async ({ url }) => {
           }
         });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Legal AI Integration API error:', error);
     return json({
       success: false,
@@ -91,7 +91,7 @@ export const POST: RequestHandler = async ({ request }) => {
       timestamp: new Date().toISOString()
     });
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('Document processing error:', error);
     return json({
       success: false,
@@ -121,7 +121,7 @@ export const PUT: RequestHandler = async ({ request }) => {
       timestamp: new Date().toISOString()
     });
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('Config update error:', error);
     return json({
       success: false,

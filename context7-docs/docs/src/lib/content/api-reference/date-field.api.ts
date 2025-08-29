@@ -11,7 +11,7 @@ import {
 	onDateValueChangeProp,
 	onPlaceholderChangeProp,
 	withChildProps,
-} from "./shared.js";
+} from './shared';
 import {
 	DateFieldInputChildSnippetProps,
 	DateFieldInputChildrenSnippetProps,
@@ -19,9 +19,9 @@ import {
 	GranularityProp,
 	HourCycleProp,
 	SegmentPartProp,
-} from "./extended-types/shared/index.js";
+} from './extended-types/shared/index';
 
-import { DateFieldEditableSegmentPartProp } from "./extended-types/date-field/index.js";
+import { DateFieldEditableSegmentPartProp } from './extended-types/date-field/index';
 import {
 	defineBooleanProp,
 	defineComponentApiSchema,
@@ -31,8 +31,8 @@ import {
 	definePropSchema,
 	defineSimpleDataAttr,
 	defineStringProp,
-} from "../utils.js";
-import { dateValueProp } from "./shared.js";
+} from '../utils';
+import { dateValueProp } from './shared';
 
 export const root = defineComponentApiSchema<DateFieldRootPropsWithoutHTML>({
 	title: "Root",

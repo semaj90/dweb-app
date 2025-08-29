@@ -1,6 +1,6 @@
 import sdk from "@stackblitz/sdk";
 
-export async function openInStackBlitz(demoName: string, componentName?: string) {
+export async function openInStackBlitz(demoName: string, componentName?: string): Promise<any> {
 	try {
 		const res = await fetch(`/api/demos.json?name=${demoName}`);
 		if (!res.ok) {
@@ -34,7 +34,7 @@ export async function openInStackBlitz(demoName: string, componentName?: string)
 				terminalHeight: 10,
 			}
 		);
-	} catch (err) {
+	} catch (err: any) {
 		console.error(err);
 	}
 }

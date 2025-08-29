@@ -4,7 +4,7 @@ import type { RequestHandler } from '@sveltejs/kit';
  * Library Sync API Endpoints - Step 6 & 7 Integration
  */
 
-import type { RequestHandler } from "./$types.js";
+import type { RequestHandler } from './$types';
 
 import { librarySyncService } from "$lib/services/library-sync-service";
 
@@ -25,7 +25,7 @@ export const GET: RequestHandler = async ({ url }) => {
       libraries,
       count: libraries.length,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to search libraries:", error);
     return json(
       {
@@ -56,7 +56,7 @@ export const POST: RequestHandler = async ({ request }) => {
       success: true,
       message: `Libraries synced successfully${source ? ` for ${source}` : ""}`,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to sync libraries:", error);
     return json(
       {

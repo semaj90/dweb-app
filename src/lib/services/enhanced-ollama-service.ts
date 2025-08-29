@@ -57,7 +57,7 @@ class EnhancedOllamaService {
 
       this.isHealthy = response.ok;
       return this.isHealthy;
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Ollama health check failed:", error);
       this.isHealthy = false;
       return false;
@@ -74,7 +74,7 @@ class EnhancedOllamaService {
     for (let attempt = 1; attempt <= this.retryAttempts; attempt++) {
       try {
         return await operation();
-      } catch (error) {
+      } catch (error: any) {
         lastError = error as Error;
         console.warn(
           `${context} failed (attempt ${attempt}/${this.retryAttempts}):`,
@@ -90,13 +90,13 @@ class EnhancedOllamaService {
     throw lastError!;
   }
 
-  private delay(ms: number): Promise<void> {
+  private delay(ms: number): Promise<any> {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   // List available models
   async listModels(): Promise<AIModel[]> {
-    return this.withRetry(async () => {
+    return this.withRetry(async (): Promise<any> => {
       const response = await fetch(`${this.baseUrl}/api/tags`);
 
       if (!response.ok) {
@@ -119,7 +119,7 @@ class EnhancedOllamaService {
     try {
       const models = await this.listModels();
       return models.some((model) => model.name === modelName);
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Failed to check model existence:", error);
       return false;
     }
@@ -144,7 +144,7 @@ class EnhancedOllamaService {
       }
 
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to ensure model ${modelName}:`, error);
       return false;
     }
@@ -156,7 +156,7 @@ class EnhancedOllamaService {
     prompt: string,
     options: OllamaGenerateOptions = {}
   ): Promise<OllamaResponse> {
-    return this.withRetry(async () => {
+    return this.withRetry(async (): Promise<any> => {
       // Ensure model exists, fallback if needed
       const modelToUse = await this.selectBestModel(model);
 
@@ -208,7 +208,7 @@ class EnhancedOllamaService {
     message: string,
     options: OllamaChatOptions = {}
   ): Promise<OllamaResponse> {
-    return this.withRetry(async () => {
+    return this.withRetry(async (): Promise<any> => {
       const modelToUse = await this.selectBestModel(model);
 
       // Build messages array
@@ -366,7 +366,7 @@ class EnhancedOllamaService {
                 done: data.done,
                 created_at: new Date(),
               };
-            } catch (error) {
+            } catch (error: any) {
               console.warn("Failed to parse stream chunk:", error);
             }
           }

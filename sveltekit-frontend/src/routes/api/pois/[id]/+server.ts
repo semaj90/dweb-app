@@ -16,7 +16,7 @@ export const GET: RequestHandler = async ({ params }) => {
       return json({ error: "Person of interest not found" }, { status: 404 });
     }
     return json(poi);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching POI:", error);
     return json(
       { error: "Failed to fetch person of interest" },
@@ -50,7 +50,7 @@ export const PUT: RequestHandler = async ({ request, params }) => {
       return json({ error: "Person of interest not found" }, { status: 404 });
     }
     return json(poi);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating POI:", error);
     return json(
       { error: "Failed to update person of interest" },
@@ -70,7 +70,7 @@ export const DELETE: RequestHandler = async ({ params }) => {
       return json({ error: "Person of interest not found" }, { status: 404 });
     }
     return json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error deleting POI:", error);
     return json(
       { error: "Failed to delete person of interest" },

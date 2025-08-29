@@ -9,7 +9,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { ragCoordinator } from '$lib/orchestration/production-rag-coordinator';
 
-export const GET: RequestHandler = async ({ params }) => {
+export const GET: RequestHandler = async ({ params }): Promise<any> => {
   try {
     const { jobId } = params;
     
@@ -93,7 +93,7 @@ export const GET: RequestHandler = async ({ params }) => {
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error(`[RAG API] ❌ Failed to get job status:`, err);
     
     return error(500, {

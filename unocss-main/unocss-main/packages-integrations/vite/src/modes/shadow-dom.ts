@@ -46,7 +46,7 @@ export function ShadowDomModuleModePlugin(ctx: UnocssPluginContext): Plugin {
       },
     }
   }
-  const transformWebComponent = async (code: string, id: string) => {
+  const transformWebComponent = async (code: string, id: string): Promise<any> => {
     if (!code.match(CSS_PLACEHOLDER))
       return code
 

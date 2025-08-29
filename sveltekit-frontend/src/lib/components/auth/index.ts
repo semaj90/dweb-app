@@ -4,6 +4,8 @@
  */
 
 export { default as AuthForm } from './AuthForm.svelte';
+export { default as NesAuthModal } from './NesAuthModal.svelte';
+export { default as NesAuthButton } from './NesAuthButton.svelte';
 
 export type AuthMode = 'login' | 'register' | 'forgot-password' | 'reset-password';
 export type AuthProvider = 'email' | 'google' | 'github' | 'microsoft';

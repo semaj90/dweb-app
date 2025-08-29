@@ -3,21 +3,21 @@
  * Connects all Loki services with Fuse.js-style fuzzy search capabilities
  */
 
-import { fuseLazySearch, type SearchableItem, type SearchResult, type SearchOptions } from './fuse-lazy-search-indexeddb.js';
-import { cacheManager } from '../server/cache/loki-cache.js';
-import { lokiEvidenceService } from '../utils/loki-evidence.js';
-import { loki } from '../stores/lokiStore.js';
-import { lokiRedisCache, type CachedDocument } from '../cache/loki-redis-integration.js';
+import { fuseLazySearch, type SearchableItem, type SearchResult, type SearchOptions } from './fuse-lazy-search-indexeddb';
+import { cacheManager } from '../server/cache/loki-cache';
+import { lokiEvidenceService } from '../utils/loki-evidence';
+import { loki } from '../stores/lokiStore';
+import { lokiRedisCache, type CachedDocument } from '../cache/loki-redis-integration';
 import { EventEmitter } from 'events';
 
-interface UnifiedSearchOptions extends SearchOptions {
+export interface UnifiedSearchOptions extends SearchOptions {
   sources?: Array<'cache' | 'evidence' | 'store' | 'redis' | 'all'>;
   includeMetadata?: boolean;
   legalContextOnly?: boolean;
   prioritizeRecent?: boolean;
 }
 
-interface UnifiedSearchResult extends SearchResult {
+export interface UnifiedSearchResult extends SearchResult {
   source: 'cache' | 'evidence' | 'store' | 'redis';
   lokiId?: number;
   cacheLocation?: 'loki' | 'redis' | 'nes';
@@ -59,7 +59,7 @@ export class UnifiedLokiFuzzySearch extends EventEmitter {
       this.emit('initialized');
 
       console.log('✅ Unified Loki Fuzzy Search initialized');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize unified search:', error);
       throw error;
     }
@@ -109,7 +109,7 @@ export class UnifiedLokiFuzzySearch extends EventEmitter {
 
       return unifiedResults;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Unified search failed:', error);
       return [];
     }
@@ -142,7 +142,7 @@ export class UnifiedLokiFuzzySearch extends EventEmitter {
         default:
           return [];
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn(`⚠️ Search failed for source ${source}:`, error);
       return [];
     }
@@ -167,7 +167,7 @@ export class UnifiedLokiFuzzySearch extends EventEmitter {
         confidence: entry.metadata?.confidence,
         refIndex: 0
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Cache manager search failed:', error);
       return [];
     }
@@ -200,7 +200,7 @@ export class UnifiedLokiFuzzySearch extends EventEmitter {
         score: this.calculateEvidenceRelevance(evidence, query),
         refIndex: index
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Evidence service search failed:', error);
       return [];
     }
@@ -249,7 +249,7 @@ export class UnifiedLokiFuzzySearch extends EventEmitter {
       });
 
       return results;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Loki store search failed:', error);
       return [];
     }
@@ -281,7 +281,7 @@ export class UnifiedLokiFuzzySearch extends EventEmitter {
         score: result.score,
         refIndex: index
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Redis cache search failed:', error);
       return [];
     }
@@ -447,7 +447,7 @@ export class UnifiedLokiFuzzySearch extends EventEmitter {
           await this.indexCacheEntry(entry);
           totalIndexed++;
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Cache indexing failed:', error);
       }
 
@@ -460,7 +460,7 @@ export class UnifiedLokiFuzzySearch extends EventEmitter {
             totalIndexed++;
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Evidence indexing failed:', error);
       }
 
@@ -473,7 +473,7 @@ export class UnifiedLokiFuzzySearch extends EventEmitter {
           await this.indexStoreItem(item);
           totalIndexed++;
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Store indexing failed:', error);
       }
 

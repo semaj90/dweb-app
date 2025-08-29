@@ -5,7 +5,7 @@ import { db } from '$lib/server/db/index';
 import { users } from '$lib/server/db/schema-postgres';
 import { eq } from 'drizzle-orm';
 
-interface WorkflowTest {
+export interface WorkflowTest {
   name: string;
   description: string;
   status: 'passed' | 'failed' | 'skipped';
@@ -14,7 +14,7 @@ interface WorkflowTest {
   details?: any;
 }
 
-interface WorkflowValidationResponse {
+export interface WorkflowValidationResponse {
   timestamp: string;
   overall: {
     status: 'healthy' | 'degraded' | 'failed';
@@ -47,7 +47,7 @@ async function runTest(name: string, description: string, testFn: () => Promise<
       duration: Date.now() - startTime,
       details: result,
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       name,
       description,
@@ -412,7 +412,7 @@ export const GET: RequestHandler = async ({ url }) => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     productionLogger.error('Workflow validation failed', {
       error: error instanceof Error ? error.message : 'Unknown error',
       processingTime: Date.now() - startTime,
@@ -482,7 +482,7 @@ export const POST: RequestHandler = async ({ request }) => {
           availableActions: ['test_user_flow', 'test_document_processing'],
         }, { status: 400 });
     }
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: 'Workflow test failed',
@@ -493,7 +493,7 @@ export const POST: RequestHandler = async ({ request }) => {
 };
 
 // Simulate complete user workflow
-async function simulateUserWorkflow() {
+async function simulateUserWorkflow(): Promise<any> {
   const steps = [
     { step: 'User Registration', status: 'completed', duration: 150 },
     { step: 'Email Verification', status: 'completed', duration: 50 },
@@ -513,7 +513,7 @@ async function simulateUserWorkflow() {
 }
 
 // Test document processing pipeline
-async function testDocumentProcessingPipeline() {
+async function testDocumentProcessingPipeline(): Promise<any> {
   const stages = [
     { stage: 'File Upload', status: 'passed', latency: 250 },
     { stage: 'Format Detection', status: 'passed', latency: 50 },

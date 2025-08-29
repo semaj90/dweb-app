@@ -17,7 +17,7 @@ import {
 } from "./types";
 
 // Example usage with stub mocks
-export async function runSynthesisExample() {
+export async function runSynthesisExample(): Promise<any> {
   // TODO: Replace mocks with real data from LLMs, user history, uploads, MCP servers
   const result = await synthesizeMultiLLMOutput({
     llmOutputs: [mockAIModelOutput],
@@ -52,7 +52,7 @@ export async function fetchMCPServerSummaries(): Promise<MCPServerData[]> {
   return [mockMCPServerData];
 }
 
-export async function runFullSynthesisPipeline() {
+export async function runFullSynthesisPipeline(): Promise<any> {
   // Example: Full pipeline wiring with stub mocks
   const llmOutputs = await fetchLLMOutputs();
   const userHistory = await getUserHistory();
@@ -134,7 +134,7 @@ export async function runFullSynthesisPipeline() {
 //    - Feed TODOs and errors to agents for automated code review, fixes, and analysis
 
 // Example stub for phase 10 semantic audit integration
-export async function phase10SemanticAudit(query: string) {
+export async function phase10SemanticAudit(query: string): Promise<any> {
   // TODO: Wire up to real semantic_search utility or API
   // const results = await semantic_search(query);
   // TODO: Log results, auto-generate TODOs, and trigger agent actions

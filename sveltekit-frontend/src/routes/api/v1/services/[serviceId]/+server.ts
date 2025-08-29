@@ -77,7 +77,7 @@ export const GET: RequestHandler = async ({ params, url }) => {
             timestamp: new Date().toISOString()
           });
 
-        } catch (error) {
+        } catch (error: any) {
           return json({
             success: true,
             data: {
@@ -130,7 +130,7 @@ export const GET: RequestHandler = async ({ params, url }) => {
         );
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.error(`Service API error for ${params.serviceId}:`, error);
     return json(
       {
@@ -194,7 +194,7 @@ export const POST: RequestHandler = async ({ params, request }) => {
         );
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.error(`Service POST API error for ${params.serviceId}:`, error);
     return json(
       {
@@ -214,7 +214,7 @@ async function executeServiceOperation(
   service: any,
   data: any,
   options: any
-) {
+): Promise<any> {
   try {
     switch (service.id) {
       case 'enhanced-rag':
@@ -297,7 +297,7 @@ async function executeServiceOperation(
       { status: 400 }
     );
 
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         success: false,
@@ -312,7 +312,7 @@ async function executeServiceOperation(
 /**
  * Query service with specific parameters
  */
-async function queryService(service: any, data: any, options: any) {
+async function queryService(service: any, data: any, options: any): Promise<any> {
   try {
     // Make direct HTTP request to service
     const endpoint = `http://localhost:${service.port}`;
@@ -342,7 +342,7 @@ async function queryService(service: any, data: any, options: any) {
       timestamp: new Date().toISOString()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         success: false,

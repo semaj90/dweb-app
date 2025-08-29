@@ -6,7 +6,7 @@
 import { type RequestHandler,  json, error } from '@sveltejs/kit';
 import { productionServiceClient } from "$lib/services/productionServiceClient";
 
-interface XStateEvent {
+export interface XStateEvent {
   type: string;
   data?: unknown;
   machineId?: string;
@@ -43,7 +43,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('XState API Error:', err);
     return error(500, `XState service unavailable: ${err instanceof Error ? err.message : 'Unknown error'}`);
   }
@@ -108,7 +108,7 @@ export const GET: RequestHandler = async ({ url }) => {
       version: '1.0.0'
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('XState GET Error:', err);
     return error(503, { message: 'XState service health check failed' });
   }

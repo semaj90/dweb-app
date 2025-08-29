@@ -9,7 +9,7 @@ it('extractorMdc', async () => {
     ],
   })
 
-  async function extract(code: string) {
+  async function extract(code: string): Promise<any> {
     return Array.from(await uno.applyExtractors(code, 'file.mdc'))
   }
 

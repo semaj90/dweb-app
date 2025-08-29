@@ -35,7 +35,7 @@ async function getGemma3Embedding(text: string): Promise<number[]> {
 
     const data = await response.json();
     return data.embedding || [];
-  } catch (error) {
+  } catch (error: any) {
     console.error("Gemma3 embedding error:", error);
     throw new Error("Failed to generate embedding");
   }
@@ -271,7 +271,7 @@ export const POST: RequestHandler = async ({ request }) => {
         confidence: finalResults.length > 0 ? finalResults[0].similarity : 0,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Semantic search error:", error);
 
     return json(
@@ -370,7 +370,7 @@ async function getClusterInsights(
       300,
       JSON.stringify(insights),
     );
-  } catch (error) {
+  } catch (error: any) {
     console.warn("Failed to generate cluster insights:", error);
     insights.push("Cluster analysis unavailable");
   }
@@ -432,7 +432,7 @@ export const GET: RequestHandler = async () => {
         processingTime: 50,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Cluster status error:", error);
 
     return json(

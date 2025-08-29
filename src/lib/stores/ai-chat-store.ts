@@ -3,7 +3,7 @@ import { writable, derived, get } from 'svelte/store';
 import { browser } from '$app/environment';
 import { aiUnified, aiActions, type ChatMessage } from './ai-unified';
 
-interface ChatSession {
+export interface ChatSession {
   id: string;
   name: string;
   messages: ChatMessage[];
@@ -13,7 +13,7 @@ interface ChatSession {
   model: string;
 }
 
-interface ChatState {
+export interface ChatState {
   // Current session
   currentSession: ChatSession | null;
   
@@ -99,7 +99,7 @@ export const chatPerformance = derived(
 // Chat actions
 export const chatActions = {
   // Initialize chat system
-  async initialize() {
+  async initialize(): Promise<any> {
     if (!browser) return;
     
     try {
@@ -116,7 +116,7 @@ export const chatActions = {
       }
       
       console.log('✅ Chat system initialized');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Chat initialization failed:', error);
     }
   },
@@ -174,7 +174,7 @@ export const chatActions = {
         this.generateSuggestions();
       }
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Chat send error:', error);
       
       aiChatStore.update(state => ({
@@ -291,7 +291,7 @@ export const chatActions = {
   },
   
   // Save current session to localStorage
-  async saveCurrentSession() {
+  async saveCurrentSession(): Promise<any> {
     if (!browser) return;
     
     const chatState = get(aiChatStore);
@@ -299,14 +299,14 @@ export const chatActions = {
       try {
         const key = `chat_session_${chatState.currentSession.id}`;
         localStorage.setItem(key, JSON.stringify(chatState.currentSession));
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Failed to save session:', error);
       }
     }
   },
   
   // Load persisted sessions
-  async loadPersistedSessions() {
+  async loadPersistedSessions(): Promise<any> {
     if (!browser) return;
     
     try {
@@ -331,13 +331,13 @@ export const chatActions = {
         sessions: sessions.slice(0, state.maxSessions)
       }));
       
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to load persisted sessions:', error);
     }
   },
   
   // Persist all sessions
-  async persistSessions() {
+  async persistSessions(): Promise<any> {
     if (!browser) return;
     
     const chatState = get(aiChatStore);
@@ -462,13 +462,13 @@ export const chatActions = {
         const settings = JSON.parse(savedSettings);
         this.updateSettings(settings);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to load chat settings:', error);
     }
   },
   
   // Clear all data
-  async clearAllData() {
+  async clearAllData(): Promise<any> {
     if (!browser) return;
     
     // Clear localStorage

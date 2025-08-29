@@ -35,7 +35,7 @@ export function vscodeErrorLogger(options: any = {}) {
           errors: Array.isArray(parsed?.errors) ? parsed.errors : []
         };
       }
-    } catch (e) {
+    } catch (e: any) {
     // ignore
     }
   }
@@ -49,7 +49,7 @@ export function vscodeErrorLogger(options: any = {}) {
       errorLog.metadata.lastUpdated = new Date().toISOString();
       errorLog.errors = Array.isArray(errorLog.errors) ? errorLog.errors : [];
       writeFileSync(config.logFile, JSON.stringify(errorLog, null, 2));
-    } catch (e) {
+    } catch (e: any) {
     // ignore
     }
   }
@@ -97,7 +97,7 @@ export function vscodeErrorLogger(options: any = {}) {
             pushEntry(e);
           });
         }
-      } catch (e) {
+      } catch (e: any) {
         // ignore websocket attach errors
       }
     },

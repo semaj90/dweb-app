@@ -12,7 +12,7 @@ import { reinforcementLearningCacheOptimizer } from './reinforcement-learning-ca
 import type { CacheEntry } from './gpu-cache-orchestrator';
 
 // === Client Cache Configuration ===
-interface ClientCacheConfig {
+export interface ClientCacheConfig {
   indexedDB: {
     dbName: string;
     version: number;
@@ -42,7 +42,7 @@ interface ClientCacheConfig {
 }
 
 // === Cache Entry Types ===
-interface ClientCacheEntry {
+export interface ClientCacheEntry {
   id: string;
   data: any;
   metadata: {
@@ -63,7 +63,7 @@ interface ClientCacheEntry {
   };
 }
 
-interface IndexedDBSchema {
+export interface IndexedDBSchema {
   cache_entries: {
     key: string;
     value: ClientCacheEntry;
@@ -125,7 +125,7 @@ const ENABLE_GPU = (() => {
   try {
     const v = process?.env?.ENABLE_GPU;
     if (typeof v === 'string') return v.toLowerCase() !== 'false' && v !== '0';
-  } catch (e) { }
+  } catch (e: any) { }
   return true;
 })();
 
@@ -184,7 +184,7 @@ export class SvelteKitGPUCacheIntegration {
 
       console.log('✅ SvelteKit GPU Cache Integration initialized');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize cache integration:', error);
       throw error;
     }
@@ -209,7 +209,7 @@ export class SvelteKitGPUCacheIntegration {
 
       return data;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`SSR data fetch error for ${key}:`, error);
       // Fallback to direct fetch
       return fetcher();
@@ -227,7 +227,7 @@ export class SvelteKitGPUCacheIntegration {
           console.log(`✅ Preloaded data for route: ${route}`);
           return data;
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`⚠️ Failed to preload route ${route}:`, error);
       }
     });
@@ -333,7 +333,7 @@ export class SvelteKitGPUCacheIntegration {
 
       return null;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Cache get error for ${key}:`, error);
       return null;
     } finally {
@@ -397,7 +397,7 @@ export class SvelteKitGPUCacheIntegration {
 
       console.log(`💾 Stored in cache: ${key} (${size} bytes)`);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Cache set error for ${key}:`, error);
       throw error;
     } finally {
@@ -430,7 +430,7 @@ export class SvelteKitGPUCacheIntegration {
         }
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Prefetch scheduling error:', error);
     }
   }
@@ -473,7 +473,7 @@ export class SvelteKitGPUCacheIntegration {
         console.log(`✅ Prefetch successful: ${key}`);
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn(`⚠️ Prefetch failed for ${key}:`, error);
     } finally {
       this.prefetchQueue.delete(key);
@@ -515,7 +515,7 @@ export class SvelteKitGPUCacheIntegration {
       await this.rpcClient.updateUserHistory(userId, 'bulk_sync', history);
       console.log(`📊 Synced user history for ${userId}: ${history.length} entries`);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('User history sync error:', error);
     }
   }
@@ -534,7 +534,7 @@ export class SvelteKitGPUCacheIntegration {
         resolve();
       };
 
-      request.onupgradeneeded = (event) => {
+      request.onupgradeneeded = (event: any) => {
         const db = (event.target as IDBOpenDBRequest).result;
 
         // Cache entries store
@@ -613,7 +613,7 @@ export class SvelteKitGPUCacheIntegration {
     try {
       await this.rpcClient.connect();
       console.log('📡 Server connection established');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Server connection failed, operating in offline mode:', error);
     }
   }
@@ -648,7 +648,7 @@ export class SvelteKitGPUCacheIntegration {
 
       console.log('🧹 Maintenance tasks completed');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Maintenance task error:', error);
     }
   }
@@ -691,7 +691,7 @@ export class SvelteKitGPUCacheIntegration {
         console.log(`🚀 Hydrated ${Object.keys(ssrData).length} entries from SSR`);
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('SSR hydration error:', error);
     }
   }
@@ -815,7 +815,7 @@ export class SvelteKitGPUCacheIntegration {
 
       console.log('🛑 SvelteKit GPU Cache Integration shut down');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Shutdown error:', error);
     }
   }

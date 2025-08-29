@@ -5,9 +5,9 @@
 // Integrates vector search, semantic analysis, and local LLM processing
 // ======================================================================
 
-// import type { Database, API } from './types/index.js';
+// import type { Database, API } from './types/index';
 
-interface RAGConfig {
+export interface RAGConfig {
   vectorStoreUrl: string;
   embeddingModel: string;
   retrievalLimit: number;
@@ -16,13 +16,13 @@ interface RAGConfig {
   chunkOverlap: number;
 }
 
-interface EmbeddingResult {
+export interface EmbeddingResult {
   vector: number[];
   model: string;
   tokens: number;
 }
 
-interface RetrievalResult {
+export interface RetrievalResult {
   id: string;
   content: string;
   score: number;
@@ -30,7 +30,7 @@ interface RetrievalResult {
   source: string;
 }
 
-interface RAGResponse {
+export interface RAGResponse {
   answer: string;
   sources: RetrievalResult[];
   confidence: number;
@@ -87,7 +87,7 @@ class EnhancedRAGService {
 
       this.initialized = true;
       console.log("✅ Enhanced RAG Service initialized successfully");
-    } catch (error) {
+    } catch (error: any) {
       console.warn(
         "⚠️ RAG Service initialization failed, using PostgreSQL fallback:",
         error
@@ -117,7 +117,7 @@ class EnhancedRAGService {
 
       // Initialize collections if needed
       await this.ensureCollections();
-    } catch (error) {
+    } catch (error: any) {
       // Fallback to in-memory storage for development
       console.warn("Vector store not available, using fallback mode");
       this.vectorClient = new InMemoryVectorStore();
@@ -139,7 +139,7 @@ class EnhancedRAGService {
             },
           }),
         });
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Failed to create collection ${collection}:`, error);
       }
     }
@@ -148,7 +148,7 @@ class EnhancedRAGService {
   private async testEmbeddingService(): Promise<void> {
     try {
       await this.generateEmbedding("test");
-    } catch (error) {
+    } catch (error: any) {
       throw new Error("Embedding service not available");
     }
   }
@@ -201,7 +201,7 @@ class EnhancedRAGService {
           synthesisStrategy: response.reasoning?.synthesisStrategy || ''
         },
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("RAG query failed:", error);
 
       // Fallback to direct LLM without context
@@ -261,7 +261,7 @@ class EnhancedRAGService {
       );
 
       return { success: true, chunks: chunks.length };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Document indexing failed:", error);
       return { success: false, chunks: 0 };
     }
@@ -307,7 +307,7 @@ class EnhancedRAGService {
       this.embeddingCache.set(cacheKey, result);
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Embedding generation failed:", error);
       throw error;
     }
@@ -364,7 +364,7 @@ class EnhancedRAGService {
       console.log(`✅ GPU embedding completed in ${result.processing_ms}ms (${result.result.length} dimensions)`);
 
       return embeddingResult;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('GPU embedding failed, falling back to CPU:', error);
       throw error; // Let the main method handle fallback
     }
@@ -434,7 +434,7 @@ class EnhancedRAGService {
           source: item.payload.title || "Unknown",
         })) || []
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error("Document retrieval failed:", error);
       return [];
     }
@@ -484,7 +484,7 @@ class EnhancedRAGService {
           return ranking.map((i) => documents[i]).filter(Boolean);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Reranking failed, using original order:", error);
     }
 
@@ -552,7 +552,7 @@ Answer:`;
             "Context-aware legal response with source citation",
         },
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Response generation failed:", error);
       throw error;
     }
@@ -580,7 +580,7 @@ Answer:`;
           "I apologize, but I cannot process your request right now."
         );
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Fallback response failed:", error);
     }
 
@@ -628,7 +628,7 @@ Answer:`;
           }),
         }
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to store embeddings:", error);
       throw error;
     }

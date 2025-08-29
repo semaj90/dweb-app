@@ -4,7 +4,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { productionServiceClient, services } from '$lib/services/productionServiceClient.js';
 
-interface AuthFlowTestResult {
+export interface AuthFlowTestResult {
   step: string;
   success: boolean;
   duration: number;
@@ -12,7 +12,7 @@ interface AuthFlowTestResult {
   error?: string;
 }
 
-interface TestSuite {
+export interface TestSuite {
   testId: string;
   timestamp: string;
   totalDuration: number;
@@ -105,7 +105,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Authentication flow test failed:', error);
     
     testSuite.totalDuration = Date.now() - startTime;
@@ -163,7 +163,7 @@ async function testAuthenticationSystem(testUser: string): Promise<AuthFlowTestR
         sessionCookie: loginResponse.headers.get('set-cookie')
       }
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Authentication system test failed:', error);
     
     return {
@@ -208,7 +208,7 @@ async function testSessionManagement(authData: any): Promise<AuthFlowTestResult>
         health: sessionHealth
       }
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Session management test failed:', error);
     
     return {
@@ -256,7 +256,7 @@ async function testProductionServices(): Promise<AuthFlowTestResult> {
         totalCount: totalServices
       }
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Production services test failed:', error);
     
     return {
@@ -314,7 +314,7 @@ async function testAIAssistant(): Promise<AuthFlowTestResult> {
         healthyInstances: healthyOllama
       }
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ AI assistant test failed:', error);
     
     return {
@@ -360,7 +360,7 @@ async function testGPUAcceleration(): Promise<AuthFlowTestResult> {
         accelerationEnabled: true
       }
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ GPU acceleration test failed:', error);
     
     return {
@@ -410,7 +410,7 @@ async function testEndToEndIntegration(testUser: string): Promise<AuthFlowTestRe
         integrationScore: '100%'
       }
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ End-to-end integration test failed:', error);
     
     return {

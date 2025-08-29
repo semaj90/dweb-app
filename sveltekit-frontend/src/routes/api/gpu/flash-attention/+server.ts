@@ -50,7 +50,7 @@ export const POST: RequestHandler = async ({ request }) => {
       timestamp: Date.now()
     });
     
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: error instanceof Error ? error.message : String(error),
@@ -76,7 +76,7 @@ export const GET: RequestHandler = async () => {
       timestamp: Date.now()
     });
     
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: error instanceof Error ? error.message : String(error),

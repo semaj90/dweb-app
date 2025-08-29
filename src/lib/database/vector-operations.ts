@@ -1,10 +1,10 @@
 // PostgreSQL Vector Operations Service
 // Optimized vector search and similarity operations using pgvector
 
-import { db, queryClient } from './postgres-enhanced.js';
-import { legalDocuments, legalEntities } from './schema/legal-documents.js';
+import { db, queryClient } from './postgres-enhanced';
+import { legalDocuments, legalEntities } from './schema/legal-documents';
 import { sql, desc, and, eq, inArray } from 'drizzle-orm';
-import type { LegalDocument, LegalEntity } from './schema/legal-documents.js';
+import type { LegalDocument, LegalEntity } from './schema/legal-documents';
 
 export interface VectorSearchOptions {
   limit?: number;
@@ -287,9 +287,9 @@ export class VectorSearchService {
       contentEmbedding?: number[];
       titleEmbedding?: number[];
     }>
-  ): Promise<void> {
+  ): Promise<any> {
     // Use transaction for batch updates
-    await queryClient.begin(async (sql) => {
+    await queryClient.begin(async (sql): Promise<any> => {
       for (const update of updates) {
         const setClause: any = {};
 
@@ -354,7 +354,7 @@ export class VectorSearchService {
   /**
    * Create vector index if not exists
    */
-  async ensureVectorIndexes(): Promise<void> {
+  async ensureVectorIndexes(): Promise<any> {
     try {
       // Create HNSW indexes for better performance
       await queryClient`
@@ -376,7 +376,7 @@ export class VectorSearchService {
       `;
 
       console.log('Vector indexes ensured successfully');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error ensuring vector indexes:', error);
       throw error;
     }

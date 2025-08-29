@@ -251,7 +251,7 @@ Respectfully submitted,
 };
 
 // GET /api/documents/templates - Get available document templates
-export async function GET({ url }: RequestEvent) {
+export async function GET({ url }: RequestEvent): Promise<any> {
   try {
     const documentType = url.searchParams.get("type");
 
@@ -288,7 +288,7 @@ export async function GET({ url }: RequestEvent) {
       success: true,
       templates,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching templates:", error);
     return json(
       {
@@ -321,7 +321,7 @@ function getTemplateDescription(templateKey: string): string {
   );
 }
 // POST /api/documents/templates/[type] - Create a new document from a template
-export async function POST({ url, request }: RequestEvent) {
+export async function POST({ url, request }: RequestEvent): Promise<any> {
   try {
     const templateType = url.pathname.split("/").pop();
     const body = await request.json();
@@ -380,7 +380,7 @@ export async function POST({ url, request }: RequestEvent) {
       success: true,
       document: newDocument,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating document from template:", error);
     return json(
       {

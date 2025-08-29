@@ -6,7 +6,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 // ======================================================================
 
 // Enhanced WebSocket message types
-interface WebSocketMessage {
+export interface WebSocketMessage {
   type: 
     | "evidence_processing"
     | "ai_result"
@@ -20,7 +20,7 @@ interface WebSocketMessage {
   priority?: number;
 }
 
-interface ConnectedClient {
+export interface ConnectedClient {
   id: string;
   ws: any;
   subscriptions: Set<string>;
@@ -86,7 +86,7 @@ class EnhancedWebSocketManager {
       try {
         client.ws.send(JSON.stringify(message));
         client.lastSeen = new Date();
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Failed to send message to client ${clientId}:`, error);
         this.removeClient(clientId);
       }
@@ -112,7 +112,7 @@ class EnhancedWebSocketManager {
           client.lastSeen = new Date();
           successCount++;
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Failed to broadcast to client ${client.id}:`, error);
         this.removeClient(client.id);
         failureCount++;
@@ -288,7 +288,7 @@ class EnhancedWebSocketManager {
     for (const client of this.clients.values()) {
       try {
         client.ws.close();
-      } catch (error) {
+      } catch (error: any) {
         console.warn("Error closing WebSocket:", error);
       }
     }
@@ -355,7 +355,7 @@ export const GET: RequestHandler = async ({ request, url }) => {
         },
       },
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("WebSocket setup error:", error);
     return new Response("WebSocket setup failed", { status: 500 });
   }

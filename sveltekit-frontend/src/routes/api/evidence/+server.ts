@@ -4,17 +4,17 @@
 
 import { json, type RequestHandler } from '@sveltejs/kit';
 import { z } from 'zod';
-import { withApiHandler, parseRequestBody, CommonErrors, createPagination } from '../../../lib/server/api/response.js';
-import { db } from "../../../lib/server/db/index.js";
+import { withApiHandler, parseRequestBody, CommonErrors, createPagination } from '../../../lib/server/api/response';
+import { db } from '../../../lib/server/db/index';
 import { eq, and, or, ilike, count, desc, asc, sql } from "drizzle-orm";
-import { evidence, cases } from '../../../lib/server/db/schema-postgres.js';
-import type { Evidence } from '../../../lib/server/db/schema-types.js';
+import { evidence, cases } from '../../../lib/server/db/schema-postgres';
+import type { Evidence } from '../../../lib/server/db/schema-types';
 import { randomUUID } from 'crypto';
 
 // Enhanced AI analysis service
 
 // Local types used by the AI service
-interface ProcessingOptions {
+export interface ProcessingOptions {
   useGPUAcceleration?: boolean;
   priority?: 'low' | 'normal' | 'high';
   notify?: boolean;
@@ -158,7 +158,7 @@ class EvidenceAIService {
           } else {
             console.warn('Enhanced RAG service returned non-OK status:', resp.status);
           }
-        } catch (err) {
+        } catch (err: any) {
           console.warn('Enhanced RAG service request failed, falling back:', err);
         }
       }
@@ -185,7 +185,7 @@ class EvidenceAIService {
               classification: 'evidence_analysis'
             };
           }
-        } catch (err) {
+        } catch (err: any) {
           console.warn('Fallback completion failed:', err);
           analysisResult = {
             summary: `${context.title}${context.description ? ' — ' + context.description : ''}`.slice(0, 2000),
@@ -214,7 +214,7 @@ class EvidenceAIService {
         processingTime,
         gpuAccelerated: Boolean(options.useGPUAcceleration)
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Evidence AI analysis failed:', error);
       return {
         id: randomUUID(),
@@ -238,7 +238,7 @@ class EvidenceAIService {
     try {
       const resp = await ollamaService.generateEmbedding({ model: 'all-mpnet-base-v2', input: text });
       return Array.isArray(resp?.embedding) ? (resp.embedding as number[]) : [];
-    } catch (err) {
+    } catch (err: any) {
       console.warn('generateEmbedding failed:', err);
       return [];
     }
@@ -256,7 +256,7 @@ class EvidenceAIService {
       // return an empty array by default or integrate a repository-based search if available.
       // Implementers should replace this with a proper pgvector search using raw SQL or a repository client.
       return [];
-    } catch (error) {
+    } catch (error: any) {
       console.error('Semantic search failed:', error);
       return [];
     }
@@ -330,7 +330,7 @@ export const GET: RequestHandler = async ({ url }) => {
       totalPages: Math.ceil(totalCount / limit),
       filters: { caseId, type, search }
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching evidence:', error);
     return json(
       { error: 'Failed to fetch evidence' },
@@ -499,7 +499,7 @@ export const POST: RequestHandler = async ({ request }) => {
       aiAnalysis: aiAnalysisResult,
       processingStatus: 'completed'
     }, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating evidence:', error);
     return json(
       { error: 'Failed to create evidence' },
@@ -568,7 +568,7 @@ export const PATCH: RequestHandler = async ({ request }) => {
           }
 
           return json({ analysis: analysisResult, embedding: Array.isArray(embedding) ? embedding.slice(0, 10) : [], status: 'completed' });
-        } catch (err) {
+        } catch (err: any) {
           console.error('Analysis action failed:', err);
           return json({ error: 'Analysis failed' }, { status: 500 });
         }
@@ -577,7 +577,7 @@ export const PATCH: RequestHandler = async ({ request }) => {
       default:
         return json({ error: 'Unknown action' }, { status: 400 });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Evidence processing error:', error);
     return json({ error: 'Processing failed' }, { status: 500 });
   }

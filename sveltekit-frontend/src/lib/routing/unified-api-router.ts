@@ -178,7 +178,7 @@ export class UnifiedAPIRouter {
 
       return response;
 
-    } catch (err) {
+    } catch (err: any) {
       console.error('[UnifiedAPIRouter] Error:', err);
       return this.createErrorResponse(
         dev ? String(err) : 'Internal server error',
@@ -402,7 +402,7 @@ export class UnifiedAPIRouter {
     this.use(async (event, context, next) => {
       try {
         return await next();
-      } catch (error) {
+      } catch (error: any) {
         console.error('[UnifiedAPIRouter] Middleware error:', error);
         return this.createErrorResponse('Internal server error', 500, context);
       }
@@ -462,12 +462,12 @@ export class UnifiedAPIRouter {
 
 // ===== SUPPORTING CLASSES =====
 
-interface RateLimitTracker {
+export interface RateLimitTracker {
   requests: number[];
   windowMs: number;
 }
 
-interface CachedResponse {
+export interface CachedResponse {
   body: ArrayBuffer;
   status: number;
   headers: Record<string, string>;
@@ -503,7 +503,7 @@ class ServiceRegistry {
   }
 }
 
-interface ServiceInfo {
+export interface ServiceInfo {
   name: string;
   url: string;
   protocol: 'http' | 'https' | 'grpc' | 'quic' | 'websocket';
@@ -511,7 +511,7 @@ interface ServiceInfo {
   health?: string;
 }
 
-interface RouterConfig {
+export interface RouterConfig {
   enableCaching?: boolean;
   enableRateLimit?: boolean;
   enableLogging?: boolean;
@@ -586,7 +586,7 @@ export function createValidationMiddleware<T>(schema: any): Middleware {
         // For now, just pass through
       }
       return next();
-    } catch (error) {
+    } catch (error: any) {
       return new Response(
         JSON.stringify(createAPIResponse('Invalid request body', false)),
         { status: 400, headers: { 'content-type': 'application/json' } }

@@ -1,7 +1,7 @@
 
 
-import { multiLayerCache } from '../cache/multi-layer-cache.js';
-import { rabbitmqService } from '../messaging/rabbitmq-service.js';
+import { multiLayerCache } from '../cache/multi-layer-cache';
+import { rabbitmqService } from '../messaging/rabbitmq-service';
 
 /**
  * Comprehensive Error Logging System
@@ -69,7 +69,7 @@ export class ErrorLogger {
   private initializeErrorHandling(): void {
     // Browser error handling
     if (typeof window !== 'undefined') {
-      window.addEventListener('error', (event) => {
+      window.addEventListener('error', (event: any) => {
         this.logError('Uncaught Error', event.error, {
           filename: event.filename,
           lineno: event.lineno,
@@ -77,7 +77,7 @@ export class ErrorLogger {
         }, ['uncaught', 'browser']);
       });
 
-      window.addEventListener('unhandledrejection', (event) => {
+      window.addEventListener('unhandledrejection', (event: any) => {
         this.logError('Unhandled Promise Rejection', event.reason, {
           promise: event.promise
         }, ['unhandled-rejection', 'promise']);
@@ -335,7 +335,7 @@ export class ErrorLogger {
       }
 
       return imported;
-    } catch (error) {
+    } catch (error: any) {
       this.logError('Failed to import errors', error as Error, { jsonData });
       return 0;
     }
@@ -415,7 +415,7 @@ export class ErrorLogger {
     });
   }
 
-  private async cacheError(errorLog: ErrorLog): Promise<void> {
+  private async cacheError(errorLog: ErrorLog): Promise<any> {
     try {
       await multiLayerCache.set(
         `error:${errorLog.id}`,
@@ -437,12 +437,12 @@ export class ErrorLogger {
           tags: ['error', 'metrics']
         }
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to cache error:', error);
     }
   }
 
-  private async sendToVSCode(errorLog: ErrorLog): Promise<void> {
+  private async sendToVSCode(errorLog: ErrorLog): Promise<any> {
     try {
       // Send error to VS Code extension via WebSocket or HTTP
       if (typeof window !== 'undefined' && (window as any).vscode) {
@@ -466,12 +466,12 @@ export class ErrorLogger {
           body: JSON.stringify(errorLog)
         }).catch(() => {}); // Ignore failures
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to send error to VS Code:', error);
     }
   }
 
-  private async notifyVSCodeResolution(errorLog: ErrorLog): Promise<void> {
+  private async notifyVSCodeResolution(errorLog: ErrorLog): Promise<any> {
     try {
       if (typeof window !== 'undefined' && (window as any).vscode) {
         (window as any).vscode.postMessage({
@@ -483,24 +483,24 @@ export class ErrorLogger {
           }
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to notify VS Code of resolution:', error);
     }
   }
 
-  private async sendToRemoteLogger(errorLog: ErrorLog): Promise<void> {
+  private async sendToRemoteLogger(errorLog: ErrorLog): Promise<any> {
     try {
       await fetch('/api/logging/error', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(errorLog)
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to send to remote logger:', error);
     }
   }
 
-  private async broadcastError(errorLog: ErrorLog): Promise<void> {
+  private async broadcastError(errorLog: ErrorLog): Promise<any> {
     try {
       await rabbitmqService.broadcastUpdate('error_logged', {
         id: errorLog.id,
@@ -509,7 +509,7 @@ export class ErrorLogger {
         tags: errorLog.tags,
         timestamp: errorLog.context.timestamp
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to broadcast error event:', error);
     }
   }
@@ -541,7 +541,7 @@ export function withErrorLogging<T extends unknown[], R>(
       }
       
       return result;
-    } catch (error) {
+    } catch (error: any) {
       errorLogger.logError(`${context} failed`, error as Error, { args }, tags);
       throw error;
     }

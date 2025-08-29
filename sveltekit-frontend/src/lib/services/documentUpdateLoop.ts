@@ -20,7 +20,7 @@ import crypto from 'crypto';
 // CONFIGURATION & TYPES
 // ============================================================================
 
-interface DocumentChange {
+export interface DocumentChange {
   documentId: string;
   changeType: 'content' | 'metadata' | 'analysis';
   oldContent?: string;
@@ -30,7 +30,7 @@ interface DocumentChange {
   affectedChunks?: number[];
 }
 
-interface ReembedResult {
+export interface ReembedResult {
   documentId: string;
   chunksUpdated: number;
   chunksAdded: number;
@@ -40,7 +40,7 @@ interface ReembedResult {
   rerankedQueries: number;
 }
 
-interface RerankingJob {
+export interface RerankingJob {
   queryId: string;
   query: string;
   originalResults: Array<{id: string, score: number}>;
@@ -121,7 +121,7 @@ export class DocumentUpdateLoop {
       
       return change;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Change detection failed:', error);
       throw error;
     }
@@ -165,7 +165,7 @@ export class DocumentUpdateLoop {
 
       return affectedChunks;
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to detect affected chunks:', error);
       return []; // Return empty array on error
     }
@@ -240,7 +240,7 @@ export class DocumentUpdateLoop {
       
       return result;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Re-embedding failed:', error);
       throw error;
     }
@@ -286,7 +286,7 @@ export class DocumentUpdateLoop {
       
       return rerankingJobs;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Re-ranking failed:', error);
       return [];
     }
@@ -331,7 +331,7 @@ export class DocumentUpdateLoop {
         improvement
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to re-rank single query:', error);
       return null;
     }
@@ -385,7 +385,7 @@ export class DocumentUpdateLoop {
             avgImprovement: reembedResult.similarityImpact?.toFixed(3)
           });
 
-        } catch (error) {
+        } catch (error: any) {
           console.error(`❌ Failed to process document update: ${change.documentId}`, error);
         }
       }

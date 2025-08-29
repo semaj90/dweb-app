@@ -7,7 +7,7 @@ import { writable } from "svelte/store";
 const summaryCache = new Map<string, { summary: string; sources: any[] }>();
 
 // Define context and events interfaces
-interface AIContext {
+export interface AIContext {
   summary: string;
   error: string;
   loading: boolean;

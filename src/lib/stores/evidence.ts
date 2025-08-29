@@ -2,7 +2,7 @@ import { writable } from 'svelte/store';
 import type { Evidence } from '$lib/types';
 import { cache } from '$lib/client/cache';
 
-interface EvidenceStore {
+export interface EvidenceStore {
   items: Evidence[];
   loading: boolean;
   error: string | null;
@@ -59,7 +59,7 @@ function createEvidenceStore() {
           loading: false
         }));
 
-      } catch (error) {
+      } catch (error: any) {
         update(state => ({
           ...state,
           loading: false,
@@ -233,7 +233,7 @@ function createEvidenceStore() {
 
         return newEvidence;
 
-      } catch (error) {
+      } catch (error: any) {
         update(state => ({
           ...state,
           loading: false,

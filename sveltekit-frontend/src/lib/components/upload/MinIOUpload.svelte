@@ -4,13 +4,14 @@
 
 
   import { superForm } from 'sveltekit-superforms/client';
-  import { fileUploadSchema, type FileUploadData } from '$lib/schemas/upload';
+  import { zod } from 'sveltekit-superforms/adapters';
+  import { evidenceUploadSchema, type EvidenceUploadData } from '$lib/schemas/evidence-upload.js';
   import { page } from '$app/state';
   import { invalidateAll } from '$app/navigation';
   import type { PageData } from './$types';
   import { createActor } from 'xstate';
   import { evidenceProcessingMachine } from '$lib/state/evidenceProcessingMachine';
-  import { documentApiService } from '$lib/services/documentApi';
+  import { enhancedEvidenceProcessor } from '$lib/services/enhanced-evidence-processor.js';
   
   // Props
   interface Props {
@@ -39,34 +40,12 @@
     message: string;
   }
 
-  // Superforms setup
+  // Superforms setup with unified schema
   const { form, errors, enhance, submitting, message } = superForm(data.form, {
+    validators: zod(evidenceUploadSchema),
     dataType: 'form',
-    multipleFiles: true,
-    validators: {
-      file: (value) => {
-        if (!value || !(value instanceof File)) return 'File is required';
-        
-        const maxSize = 100 * 1024 * 1024; // 100MB
-        if (value.size > maxSize) return 'File must be less than 100MB';
-        
-        const allowedTypes = [
-          'application/pdf',
-          'application/msword',
-          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-          'text/plain',
-          'image/jpeg',
-          'image/png',
-          'image/tiff'
-        ];
-        
-        if (!allowedTypes.includes(value.type)) {
-          return 'File type not supported';
-        }
-        
-        return null;
-      }
-    },
+    resetForm: false,
+    invalidateAll: true,
     onResult: ({ result }) => {
       if (result.type === 'success') {
         const uploadResult = result.data?.uploadResult as UploadResult;
@@ -158,7 +137,7 @@
     }
   }
 
-  // Enhanced form submission with XState evidence processing
+  // Enhanced form submission with unified evidence processing
   function handleSubmit() {
     uploadStatus = 'uploading';
     uploadProgress = 0;
@@ -169,105 +148,79 @@
         // Initial upload to MinIO/storage
         uploadProgress = 10;
         
-        // First upload the file and get basic document info
+        // Get the uploaded file
         const file = formData.get('file') as File;
         if (!file) {
           throw new Error('No file selected');
         }
 
-        // Read file content for processing
-        const fileContent = await file.text();
-        const evidenceId = `evidence_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        console.log('Starting enhanced evidence processing:', {
+          filename: file.name,
+          size: file.size,
+          type: file.type,
+          evidenceType: $form.evidence_type
+        });
         
         uploadProgress = 20;
         uploadStatus = 'processing';
         
-        // Create and start evidence processing actor
-        evidenceActor = createActor(evidenceProcessingMachine);
-        evidenceActor.start();
+        // Use Enhanced Evidence Processor service
+        const processingResult = await enhancedEvidenceProcessor.processEvidence(
+          file,
+          $form.evidence_type || 'UNKNOWN',
+          {
+            enableOcr: $form.enableOcr || false,
+            enableAiAnalysis: $form.enableAiAnalysis || false,
+            enableEmbeddings: $form.enableEmbeddings || false,
+            enableSummarization: $form.enableSummarization || false,
+            caseId: $form.case_id,
+            userId: 'current-user' // TODO: Get from auth context
+          }
+        );
         
-        // Subscribe to state changes
-        evidenceActor.subscribe((state) => {
-          processingStage = state.context.stage;
-          uploadProgress = state.context.progress;
+        console.log('Enhanced processing completed:', {
+          success: processingResult.success,
+          processingTime: processingResult.processingTime,
+          hasOcr: !!processingResult.ocrResult,
+          hasAiAnalysis: !!processingResult.aiAnalysis,
+          hasEmbeddings: !!processingResult.embeddings
+        });
+        
+        if (processingResult.success) {
+          uploadProgress = 100;
+          uploadStatus = 'completed';
           
-          if (state.context.error) {
-            processingError = state.context.error;
-            uploadStatus = 'error';
-          }
+          // Trigger success callback with enhanced results
+          const enhancedResult = {
+            success: true,
+            documentId: processingResult.evidenceId,
+            url: '',
+            objectName: processingResult.evidenceId,
+            message: 'Evidence processed successfully with Enhanced RAG pipeline',
+            processing: {
+              metadata: processingResult.metadata,
+              ocrResult: processingResult.ocrResult,
+              aiAnalysis: processingResult.aiAnalysis,
+              embeddings: processingResult.embeddings,
+              processingTime: processingResult.processingTime
+            }
+          };
           
-          if (state.matches('completed')) {
-            uploadStatus = 'completed';
-            uploadProgress = 100;
-            
-            // Trigger success callback
-            const enhancedResult = {
-              success: true,
-              documentId: evidenceId,
-              url: '',
-              objectName: evidenceId,
-              message: 'Evidence processed successfully through XState pipeline',
-              processing: {
-                extractedText: state.context.extractedText,
-                embeddings: state.context.embeddings,
-                analysis: state.context.analysis,
-                chunks: state.context.chunks
-              }
-            };
-            
-            onUploadComplete?.(enhancedResult);
-            
-            // Reset after delay
-            setTimeout(() => {
-              uploadProgress = 0;
-              uploadStatus = 'idle';
-              processingStage = '';
-              evidenceActor?.stop();
-              evidenceActor = null;
-            }, 3000);
-          }
+          onUploadComplete?.(enhancedResult);
           
-          if (state.matches('failed')) {
-            uploadStatus = 'error';
-            processingError = state.context.error || 'Processing failed';
-            onUploadError?.(processingError);
+          // Reset after delay
+          setTimeout(() => {
+            uploadProgress = 0;
+            uploadStatus = 'idle';
+            processingStage = '';
             evidenceActor?.stop();
             evidenceActor = null;
-          }
-        });
-        
-        // Start the evidence processing workflow
-        evidenceActor.send({
-          type: 'START_PROCESSING',
-          evidenceId,
-          caseId: $form.caseId || 'default',
-          userId: 'current-user', // TODO: Get from auth
-          filename: file.name,
-          content: fileContent,
-          metadata: {
-            documentType: $form.documentType,
-            description: $form.description,
-            priority: $form.priority,
-            tags: $form.tags?.split(',').map(t => t.trim()) || [],
-            isConfidential: $form.isConfidential,
-            fileSize: file.size,
-            mimeType: file.type
-          }
-        });
-        
-        // Also process through legal ingest API if it's a legal document
-        if ($form.documentType === 'evidence' || $form.documentType === 'contract') {
-          try {
-            const legalResult = await documentApiService.processLegalDocuments([file], {
-              caseId: $form.caseId || 'default',
-              jurisdiction: 'federal',
-              enhanceRAG: true
-            });
-            
-            console.log('Legal processing result:', legalResult);
-          } catch (legalError) {
-            console.warn('Legal processing failed (non-critical):', legalError);
-          }
+          }, 3000);
+          
+        } else {
+          uploadStatus = 'error';
+          processingError = processingResult.error || 'Processing failed';
+          onUploadError?.(processingError);
         }
         
       } catch (error) {
@@ -319,20 +272,19 @@
   <form method="POST" action="?/upload" use:enhance={handleSubmit} enctype="multipart/form-data">
     <!-- Case ID Input -->
     <div class="form-group">
-      <label for="caseId">Case ID *</label>
+      <label for="case_id">Case ID</label>
       <input
-        id="caseId"
-        name="caseId"
+        id="case_id"
+        name="case_id"
         type="text"
-        bind:value={$form.caseId}
-        placeholder="Enter case ID"
-        required
+        bind:value={$form.case_id}
+        placeholder="Enter case ID (optional)"
         disabled={disabled || $submitting}
         class="form-input"
-        class:error={$errors.caseId}
+        class:error={$errors.case_id}
       />
-      {#if $errors.caseId}
-        <div class="error-message">{$errors.caseId}</div>
+      {#if $errors.case_id}
+        <div class="error-message">{$errors.case_id}</div>
       {/if}
     </div>
 
@@ -391,21 +343,28 @@
       {/if}
     </div>
 
-    <!-- Document Type -->
+    <!-- Evidence Type -->
     <div class="form-group">
-      <label for="documentType">Document Type *</label>
+      <label for="evidence_type">Evidence Type *</label>
       <select
-        id="documentType"
-        name="documentType"
-        bind:value={$form.documentType}
+        id="evidence_type"
+        name="evidence_type"
+        bind:value={$form.evidence_type}
         required
         disabled={disabled || $submitting}
         class="form-select"
       >
-        {#each documentTypes as option}
-          <option value={option.value}>{option.label}</option>
-        {/each}
+        <option value="UNKNOWN">Auto-detect from file</option>
+        <option value="PDF">PDF Document</option>
+        <option value="IMAGE">Image/Photo</option>
+        <option value="VIDEO">Video Recording</option>
+        <option value="AUDIO">Audio Recording</option>
+        <option value="TEXT">Text Document</option>
+        <option value="LINK">Web Link/URL</option>
       </select>
+      {#if $errors.evidence_type}
+        <div class="error-message">{$errors.evidence_type}</div>
+      {/if}
     </div>
 
     <!-- Description -->
@@ -441,28 +400,123 @@
 
     <!-- Tags -->
     <div class="form-group">
-      <label for="tags">Tags (comma-separated)</label>
+      <label for="tags">Tags</label>
       <input
         id="tags"
         name="tags"
         type="text"
+        bind:value={$form.tags}
         placeholder="e.g., contract, confidential, priority"
+        disabled={disabled || $submitting}
+        class="form-input"
+      />
+      {#if $errors.tags}
+        <div class="error-message">{$errors.tags}</div>
+      {/if}
+    </div>
+
+    <!-- Confidentiality Level -->
+    <div class="form-group">
+      <label for="confidentialityLevel">Confidentiality Level</label>
+      <select
+        id="confidentialityLevel"
+        name="confidentialityLevel"
+        bind:value={$form.confidentialityLevel}
+        disabled={disabled || $submitting}
+        class="form-select"
+      >
+        <option value="public">Public</option>
+        <option value="standard">Standard</option>
+        <option value="confidential">Confidential</option>
+        <option value="classified">Classified</option>
+        <option value="restricted">Restricted</option>
+      </select>
+    </div>
+
+    <!-- Chain of Custody -->
+    <div class="form-group">
+      <label for="collectedBy">Collected By</label>
+      <input
+        id="collectedBy"
+        name="collectedBy"
+        type="text"
+        bind:value={$form.collectedBy}
+        placeholder="Officer/person who collected the evidence"
         disabled={disabled || $submitting}
         class="form-input"
       />
     </div>
 
-    <!-- Confidential Flag -->
+    <div class="form-group">
+      <label for="location">Collection Location</label>
+      <input
+        id="location"
+        name="location"
+        type="text"
+        bind:value={$form.location}
+        placeholder="Where the evidence was collected"
+        disabled={disabled || $submitting}
+        class="form-input"
+      />
+    </div>
+
+    <!-- Evidence Admissibility -->
     <div class="form-group">
       <label class="checkbox-label">
         <input
           type="checkbox"
-          name="isConfidential"
-          bind:checked={$form.isConfidential}
+          name="isAdmissible"
+          bind:checked={$form.isAdmissible}
           disabled={disabled || $submitting}
         />
-        Mark as confidential
+        Evidence is admissible in court
       </label>
+    </div>
+
+    <!-- AI Processing Options -->
+    <div class="form-group">
+      <h3>AI Processing Options</h3>
+      <div class="checkbox-grid">
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            name="enableOcr"
+            bind:checked={$form.enableOcr}
+            disabled={disabled || $submitting}
+          />
+          Enable OCR (text extraction)
+        </label>
+
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            name="enableAiAnalysis"
+            bind:checked={$form.enableAiAnalysis}
+            disabled={disabled || $submitting}
+          />
+          Enable AI analysis
+        </label>
+
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            name="enableEmbeddings"
+            bind:checked={$form.enableEmbeddings}
+            disabled={disabled || $submitting}
+          />
+          Generate vector embeddings
+        </label>
+
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            name="enableSummarization"
+            bind:checked={$form.enableSummarization}
+            disabled={disabled || $submitting}
+          />
+          Generate summary
+        </label>
+      </div>
     </div>
 
     <!-- Upload Progress -->

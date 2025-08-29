@@ -4,7 +4,7 @@
  */
 
 import { createMachine, assign, fromPromise } from 'xstate';
-import { dimensionalCache, type DimensionalArray } from '../ai/dimensional-cache-engine.js';
+import { dimensionalCache, type DimensionalArray } from '../ai/dimensional-cache-engine';
 
 export interface AIComputationContext {
   userId: string;
@@ -95,7 +95,7 @@ const processRabbitMQQueue = fromPromise(async ({ input }: {
         }), 500);
       });
       results.push(result);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to process queued computation:', error);
     }
   }

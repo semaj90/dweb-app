@@ -3,7 +3,7 @@ import { json } from "@sveltejs/kit";
 
 import { evidence } from "$lib/server/db/schema-postgres";
 
-export async function POST({ request }) {
+export async function POST({ request }): Promise<any> {
   try {
     const body = await request.json();
     const {
@@ -43,7 +43,7 @@ export async function POST({ request }) {
   }
 }
 
-export async function PUT({ request }) {
+export async function PUT({ request }): Promise<any> {
   try {
     const body = await request.json();
     if (!body.id) return json({ error: 'id required' }, { status: 400 });

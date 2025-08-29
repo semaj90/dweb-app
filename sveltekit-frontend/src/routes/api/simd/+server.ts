@@ -96,7 +96,7 @@ export const POST: RequestHandler = async ({ request }) => {
         );
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('SIMD API error:', error);
     
     return json(
@@ -133,7 +133,7 @@ export const GET: RequestHandler = async () => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         success: false,

@@ -12,7 +12,7 @@ declare namespace svelteHTML {
 }
 
 // Broad file preview / import result shims
-interface FilePreviewGeneric {
+export interface FilePreviewGeneric {
   name: string; size: number; content?: string; raw?: string; data?: unknown; type?: string;
   skipped?: number; imported?: number; updated?: number; errors?: string[];
 }
@@ -22,7 +22,7 @@ declare global {
 }
 
 // Local AI model dynamic shape
-interface LocalModelDynamic { name: string; status?: string; size?: string; id?: string; isLoaded?: boolean; type?: string; domain?: string; architecture?: string; dimensions?: number; description?: string }
+export interface LocalModelDynamic { name: string; status?: string; size?: string; id?: string; isLoaded?: boolean; type?: string; domain?: string; architecture?: string; dimensions?: number; description?: string }
 
 // Event augmentation for custom component events
 declare module 'svelte' {

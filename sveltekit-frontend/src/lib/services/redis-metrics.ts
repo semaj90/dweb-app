@@ -12,7 +12,7 @@ export interface RedisHealthMetrics {
 
 const state: RedisHealthMetrics = { up: 0, last_ping_ms: 0, last_error_ts: null, last_ok_ts: null };
 
-async function ensureClient() {
+async function ensureClient(): Promise<any> {
   if (redis) return;
   try {
     const mod = await import('ioredis');

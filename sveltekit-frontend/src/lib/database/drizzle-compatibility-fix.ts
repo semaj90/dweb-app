@@ -3,7 +3,7 @@
  * Systematic resolution of database type mismatches and missing methods
  */
 
-import { barrelStore } from '../stores/barrel-functions.js';
+import { barrelStore } from '../stores/barrel-functions';
 
 // ===== DRIZZLE ORM TYPE COMPATIBILITY =====
 export interface DrizzleCompatibilityLayer {
@@ -170,7 +170,7 @@ export const ensureConnection = async (client: any): Promise<any> => {
     if (typeof client.query === 'function') {
       await client.query('SELECT 1');
     }
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Database connection test failed:', error);
   }
   
@@ -279,7 +279,7 @@ export const createTypeSafeQuery = (baseQuery: any) => {
       try {
         const result = await baseQuery.execute(...args);
         return handleQueryResult(result);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Query execution error:', error);
         return [];
       }
@@ -290,7 +290,7 @@ export const createTypeSafeQuery = (baseQuery: any) => {
       try {
         const result = await (baseQuery.all || baseQuery.execute)(...args);
         return handleQueryResult(result);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Query all() error:', error);
         return [];
       }
@@ -302,7 +302,7 @@ export const createTypeSafeQuery = (baseQuery: any) => {
         const result = await (baseQuery.get || baseQuery.execute)(...args);
         const results = handleQueryResult(result);
         return results.length > 0 ? results[0] : null;
-      } catch (error) {
+      } catch (error: any) {
         console.error('Query get() error:', error);
         return null;
       }

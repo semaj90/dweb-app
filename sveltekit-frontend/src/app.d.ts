@@ -35,7 +35,7 @@ export { };
 /// <reference types="vite/client" />
 
 // Define SessionUser interface inline to avoid import issues
-interface SessionUser {
+export interface SessionUser {
   id: string;
   email: string;
   name: string | null;
@@ -44,7 +44,7 @@ interface SessionUser {
 }
 
 // Define Session interface for the session object
-interface UserSession {
+export interface UserSession {
   id: string;
   user: SessionUser;
   expiresAt: Date;

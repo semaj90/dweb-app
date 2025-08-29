@@ -1,5 +1,5 @@
 
-import type { LayoutLoad } from "./$types.js";
+import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async ({ url, fetch }) => {
   // Initialize default user state
@@ -13,7 +13,7 @@ export const load: LayoutLoad = async ({ url, fetch }) => {
     if (savedUser) {
       user = JSON.parse(savedUser);
     }
-  } catch (error) {
+  } catch (error: any) {
     console.warn("Failed to load user session:", error);
   }
 

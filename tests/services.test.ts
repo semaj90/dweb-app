@@ -56,7 +56,7 @@ function logTest(name: unknown, status: unknown, error: unknown = null) {
 }
 
 // Qdrant Service Tests
-async function testQdrantService() {
+async function testQdrantService(): Promise<any> {
   console.log("\n=== Qdrant Service Tests ===");
 
   const client = new QdrantClient({ url: config.qdrant.url });
@@ -168,7 +168,7 @@ async function testQdrantService() {
 }
 
 // Redis Service Tests
-async function testRedisService() {
+async function testRedisService(): Promise<any> {
   console.log("\n=== Redis Service Tests ===");
 
   const redis = createClient({ url: config.redis.url });
@@ -257,7 +257,7 @@ async function testRedisService() {
 }
 
 // PostgreSQL Service Tests
-async function testPostgresService() {
+async function testPostgresService(): Promise<any> {
   console.log("\n=== PostgreSQL Service Tests ===");
 
   const sql = pg(config.postgres);
@@ -380,7 +380,7 @@ async function testPostgresService() {
 }
 
 // Ollama Service Tests
-async function testOllamaService() {
+async function testOllamaService(): Promise<any> {
   console.log("\n=== Ollama Service Tests ===");
 
   // Test 1: Connection
@@ -461,7 +461,7 @@ async function testOllamaService() {
 }
 
 // Main test runner
-async function runTests() {
+async function runTests(): Promise<any> {
   console.log("Legal AI System - Service Tests");
   console.log("==============================\n");
 

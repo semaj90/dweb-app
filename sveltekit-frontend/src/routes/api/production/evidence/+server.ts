@@ -6,7 +6,7 @@
 import { type RequestHandler,  json } from '@sveltejs/kit';
 import { URL } from "url";
 
-interface EvidenceItem {
+export interface EvidenceItem {
   id: string;
   case_id: string;
   evidence_number: string;
@@ -21,7 +21,7 @@ interface EvidenceItem {
   updated_at: string;
 }
 
-interface ProcessingJob {
+export interface ProcessingJob {
   id: string;
   evidence_id: string;
   job_type: string;

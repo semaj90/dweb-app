@@ -110,7 +110,7 @@ if (browser) {
         localStorage.removeItem('legal_ai_session');
       }
     }
-  } catch (err) {
+  } catch (err: any) {
     console.warn('Failed to restore session:', err);
     localStorage.removeItem('legal_ai_session');
   }
@@ -234,7 +234,7 @@ export const authStore = {
           authState.update(state => ({ ...state, error: 'Security verification failed. Please try again.' }));
           return;
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn('GPU security check failed, proceeding with standard auth:', error);
       }
     }
@@ -314,7 +314,7 @@ export const authStore = {
           authState.update(state => ({ ...state, error: 'Unable to verify legal professional credentials. Please contact support.' }));
           return;
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn('GPU validation failed, proceeding with standard registration:', error);
       }
     }
@@ -396,7 +396,7 @@ export const authStore = {
           authActor.send({ type: 'SESSION_EXPIRED' });
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Session refresh failed:', err);
       if (authActor) {
         authActor.send({ type: 'SESSION_EXPIRED' });

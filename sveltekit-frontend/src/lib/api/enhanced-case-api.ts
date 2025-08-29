@@ -99,7 +99,7 @@ export class EnhancedCaseAPI {
 
       return caseResponse;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Enhanced case creation failed:', error);
       return {
         success: false,
@@ -149,7 +149,7 @@ export class EnhancedCaseAPI {
 
       return workerResponse;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Worker trigger failed:', error);
       return {
         success: false,

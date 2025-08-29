@@ -38,7 +38,7 @@ export class ProductionLogger {
     try {
       await mkdir(this.logDir, { recursive: true });
       console.log(`[LOGGER] Log directory initialized: ${this.logDir}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('[LOGGER] Failed to initialize log directory:', error);
     }
   }
@@ -106,7 +106,7 @@ export class ProductionLogger {
       
       await appendFile(filePath, logLine);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('[LOGGER] Failed to write log file:', error);
     }
   }
@@ -139,7 +139,7 @@ export class ProductionLogger {
       
       await appendFile(errorLogPath, JSON.stringify(errorLog) + '\n');
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('[LOGGER] Failed to store error in database:', error);
     }
   }
@@ -255,7 +255,7 @@ export class ProductionLogger {
 
       return logs.slice(-limit);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('[LOGGER] Failed to read recent logs:', error);
       return [];
     }
@@ -283,7 +283,7 @@ export class ProductionLogger {
         timeRange: `${hours} hours`
       };
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('[LOGGER] Failed to generate error summary:', error);
       return { totalErrors: 0, errorsByService: {}, recentErrors: [] };
     }

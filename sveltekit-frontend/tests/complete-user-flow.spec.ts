@@ -15,7 +15,7 @@ test.describe('Complete Legal AI User Flow', () => {
         if (!response.ok) {
           throw new Error(`Service ${service} not healthy`);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Warning: ${service} may not be running`);
       }
     }
@@ -177,7 +177,7 @@ test.describe('Complete Legal AI User Flow', () => {
       const uploadResponse = await fetch('http://localhost:8094/health');
       expect(uploadResponse.ok).toBeTruthy();
       console.log('✅ MinIO upload service is healthy');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Upload service may not be running:', error.message);
     }
   });
@@ -199,7 +199,7 @@ test.describe('Complete Legal AI User Flow', () => {
       expect(ragData.results).toBeDefined();
       
       console.log('✅ Vector search test passed!');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Vector search test failed:', error.message);
     }
   });

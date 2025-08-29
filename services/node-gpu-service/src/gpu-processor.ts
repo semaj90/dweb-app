@@ -8,20 +8,20 @@ import { Logger } from './logger';
 // Import WebGPU bindings
 const gpu = require('kmamal/gpu');
 
-interface GPUProcessorConfig {
+export interface GPUProcessorConfig {
   gpu: unknown;
   shaderManager: ShaderManager;
   maxBatchSize: number;
   logger: Logger;
 }
 
-interface EmbeddingBatch {
+export interface EmbeddingBatch {
   texts: string[];
   batchId: string;
   timestamp: number;
 }
 
-interface ProcessingResult {
+export interface ProcessingResult {
   embeddings: Float32Array[];
   processingTime: number;
   gpuTime: number;
@@ -82,7 +82,7 @@ export class GPUProcessor {
       this.startProcessingLoop();
 
       this.logger.info('✅ GPU Processor initialized successfully');
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error('❌ GPU Processor initialization failed:', error);
       throw error;
     }
@@ -128,7 +128,7 @@ export class GPUProcessor {
       });
 
       this.logger.info('✅ Compute pipelines created successfully');
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error('❌ Failed to create compute pipelines:', error);
       throw error;
     }
@@ -191,7 +191,7 @@ export class GPUProcessor {
       };
 
       callback(null, response);
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error('❌ Embedding processing failed:', error);
       callback(error, null);
     }
@@ -218,7 +218,7 @@ export class GPUProcessor {
       };
 
       callback(null, response);
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error('❌ Clustering failed:', error);
       callback(error, null);
     }
@@ -243,7 +243,7 @@ export class GPUProcessor {
       };
 
       callback(null, response);
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error('❌ Similarity computation failed:', error);
       callback(error, null);
     }
@@ -268,7 +268,7 @@ export class GPUProcessor {
       };
 
       callback(null, response);
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error('❌ Boost transform failed:', error);
       callback(error, null);
     }
@@ -290,7 +290,7 @@ export class GPUProcessor {
             call.write(response);
           }
         });
-      } catch (error) {
+      } catch (error: any) {
         call.emit('error', error);
       }
     });
@@ -483,7 +483,7 @@ export class GPUProcessor {
     try {
       const result = await this.computeEmbeddingsGPU(batch.texts);
       // Process result...
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error('❌ Batch processing failed:', error);
     } finally {
       this.isProcessing = false;

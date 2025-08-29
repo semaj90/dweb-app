@@ -113,7 +113,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		return json(enhancedResult);
 
-	} catch (error) {
+	} catch (error: any) {
 		console.error('Batch Processing Error:', error);
 		
 		return json({

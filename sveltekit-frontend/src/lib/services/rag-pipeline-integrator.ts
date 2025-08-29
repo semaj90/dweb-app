@@ -5,7 +5,7 @@ import type { LegalDocument } from "./types/legal";
  */
 
 
-interface SearchResult {
+export interface SearchResult {
   document: LegalDocument;
   score: number;
   metadata?: Record<string, any>;
@@ -18,14 +18,14 @@ interface SearchResult {
   rank?: number;
 }
 
-interface SummaryRequest {
+export interface SummaryRequest {
   documents: LegalDocument[];
   query?: string;
   maxLength?: number;
   diversityLambda?: number;
 }
 
-interface RAGPipelineConfig {
+export interface RAGPipelineConfig {
   enableSentenceSplitting: boolean;
   enableMMRSummarization: boolean;
   enableCrossEncoderReranking: boolean;
@@ -36,7 +36,7 @@ interface RAGPipelineConfig {
   enableStreaming: boolean;
 }
 
-interface RAGPipelineResult {
+export interface RAGPipelineResult {
   query: string;
   documents: LegalDocument[];
   rerankedResults: SearchResult[];
@@ -164,7 +164,7 @@ export class RAGPipelineIntegrator {
       }
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error('[RAGPipeline] Processing failed:', error);
 
       // Return minimal fallback result
@@ -342,7 +342,7 @@ export class RAGPipelineIntegrator {
           );
 
           controller.close();
-        } catch (error) {
+        } catch (error: any) {
           controller.error(error);
         }
       },
@@ -362,7 +362,7 @@ export class RAGPipelineIntegrator {
           originalLength: doc.content.length,
         },
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.warn('[RAGPipeline] Sentence splitting failed, using original documents:', error);
       return documents;
     }
@@ -378,7 +378,7 @@ export class RAGPipelineIntegrator {
         maxResults: this.config.maxDocuments,
         timeout: 5000,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.warn('[RAGPipeline] Cross-encoder reranking failed, using original ranking:', error);
       return searchResults;
     }
@@ -398,7 +398,7 @@ export class RAGPipelineIntegrator {
       };
       const result = await generateMMRSummary(documents, query, config);
       return { summary: result.summary };
-    } catch (error) {
+    } catch (error: any) {
       console.warn('[RAGPipeline] MMR summarization failed, using fallback:', error);
       return { summary: this.generateFallbackSummary(documents as SearchResult[], query) };
     }
@@ -534,7 +534,7 @@ export async function testRAGPipelineIntegration(): Promise<boolean> {
     console.log('[test] Confidence:', result.confidence.toFixed(3));
 
     return isValid;
-  } catch (error) {
+  } catch (error: any) {
     console.error('[test] RAG pipeline integration failed:', error);
     return false;
   }

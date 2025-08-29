@@ -127,7 +127,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
         context: basicContext,
       });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in analysis endpoint:", error);
     return json({ error: "Failed to perform analysis" }, { status: 500 });
   }

@@ -23,7 +23,7 @@ export interface LegalAnalysis {
 // MULTI-PROTOCOL RAG CONFIGURATION
 // ==========================================
 
-interface RagConfig {
+export interface RagConfig {
   quicEndpoint: string;
   httpEndpoint: string;
   grpcEndpoint: string;
@@ -373,7 +373,7 @@ export class SemanticAnalyzer {
       try {
         const embedding = await this.callEmbeddingService(chunk.content);
         embeddings.push(embedding);
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Failed to generate embedding for chunk ${chunk.id}:`, error);
         // Fallback to zero vector
         embeddings.push(new Array(defaultConfig.embeddingDimensions).fill(0));
@@ -455,7 +455,7 @@ export class IntentClassifier {
     };
   }
 
-  private async ensureModelLoaded(): Promise<void> {
+  private async ensureModelLoaded(): Promise<any> {
     if (!this.modelLoaded) {
       // Load Legal-BERT model
       console.log('Loading Legal-BERT intent classification model...');
@@ -594,7 +594,7 @@ export class GemmaGenerator {
 
       const result = await response.json();
       return result.response || 'Failed to generate response';
-    } catch (error) {
+    } catch (error: any) {
       console.error('Gemma generation failed:', error);
       return 'Error: Unable to generate legal analysis at this time.';
     }
@@ -649,14 +649,14 @@ export class MultiProtocolRagClient {
     // Step 1: Try QUIC for high-performance upload
     try {
       return await this.ingestViaQuic(request);
-    } catch (error) {
+    } catch (error: any) {
       console.warn('QUIC ingestion failed, falling back to HTTP:', error);
     }
 
     // Step 2: Fallback to HTTP
     try {
       return await this.ingestViaHttp(request);
-    } catch (error) {
+    } catch (error: any) {
       console.warn('HTTP ingestion failed, falling back to gRPC:', error);
     }
 
@@ -922,7 +922,7 @@ export async function ingestDocument(request: DocumentIngestionRequest): Promise
     });
 
     return response.documentId;
-  } catch (error) {
+  } catch (error: any) {
     ragState.update(state => ({
       ...state,
       isProcessing: false,
@@ -950,7 +950,7 @@ export async function queryRag(query: string, options: QueryOptions = {}): Promi
     }));
 
     return response;
-  } catch (error) {
+  } catch (error: any) {
     ragState.update(state => ({
       ...state,
       isProcessing: false,

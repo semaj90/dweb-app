@@ -7,7 +7,7 @@ import { eq, desc, and, gte, lte } from 'drizzle-orm';
 import { AuthService } from '$lib/yorha/services/auth.service';
 import { VectorService } from '$lib/yorha/services/vector.service';
 
-export const GET: RequestHandler = async ({ cookies, url }) => {
+export const GET: RequestHandler = async ({ cookies, url }): Promise<any> => {
   try {
     const sessionToken = cookies.get('yorha_session');
     
@@ -61,7 +61,7 @@ export const GET: RequestHandler = async ({ cookies, url }) => {
       );
       
       // Get activity IDs from vector search
-      const activityIds = searchResults.map((r: unknown) => r.payload.activityId);
+      const activityIds = searchResults.map((r: any) => r.payload.activityId);
       
       // Fetch full activity records
       const activities = await db.query.userActivity.findMany({
@@ -84,7 +84,7 @@ export const GET: RequestHandler = async ({ cookies, url }) => {
           total: activities.length,
           limit,
           offset,
-          searchResults: searchResults.map((r: unknown) => ({
+          searchResults: searchResults.map((r: any) => ({
             score: r.score,
             ...r.payload
           }))
@@ -109,7 +109,7 @@ export const GET: RequestHandler = async ({ cookies, url }) => {
     const total = Number(countResult.count);
     
     // Group activities by date for better visualization
-    const groupedActivities = activities.reduce((acc: unknown, activity) => {
+    const groupedActivities = activities.reduce((acc: any, activity) => {
       const date = new Date(activity.createdAt).toLocaleDateString();
       if (!acc[date]) {
         acc[date] = [];
@@ -126,7 +126,7 @@ export const GET: RequestHandler = async ({ cookies, url }) => {
         weekAgo.setDate(weekAgo.getDate() - 7);
         return new Date(a.createdAt) >= weekAgo;
       }).length,
-      mostCommonType: activities.reduce((acc: unknown, activity) => {
+      mostCommonType: activities.reduce((acc: any, activity) => {
         acc[activity.activityType] = (acc[activity.activityType] || 0) + 1;
         return acc;
       }, {}),
@@ -147,7 +147,7 @@ export const GET: RequestHandler = async ({ cookies, url }) => {
         }
       }
     });
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('Get activity error:', error);
     return json({
       success: false,

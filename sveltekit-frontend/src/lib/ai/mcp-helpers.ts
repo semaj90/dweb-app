@@ -255,7 +255,7 @@ export async function getContextAwareLibraryDocs(
     }
     
     return await getLibraryDocs(libraryName, enhancedTopic);
-  } catch (err) {
+  } catch (err: any) {
     console.error('getContextAwareLibraryDocs error:', err);
     throw err;
   }
@@ -279,7 +279,7 @@ export async function resolveLibraryId(libraryName: string): Promise<string> {
     const match = data?.content?.[0]?.text?.match(/Selected Library ID: (\S+)/);
     if (match) return match[1];
     throw new Error(data?.content?.[0]?.text || "No library ID found");
-  } catch (err) {
+  } catch (err: any) {
     console.error("resolveLibraryId error:", err);
     throw err;
   }
@@ -302,7 +302,7 @@ export async function getLibraryDocs(
     });
     const data = await response.json();
     return data?.content?.[0]?.text || "No documentation found.";
-  } catch (err) {
+  } catch (err: any) {
     console.error("getLibraryDocs error:", err);
     throw err;
   }
@@ -321,7 +321,7 @@ export async function semanticSearch(query: string): Promise<unknown[]> {
     }
     const data = await response.json();
     return data.results || [];
-  } catch (err) {
+  } catch (err: any) {
     console.error("semanticSearch error:", err);
     // Return empty array on error to prevent UI breakage
     return [];
@@ -357,7 +357,7 @@ export async function callContext7Tool(
 
     const data = await response.json();
     return data;
-  } catch (err) {
+  } catch (err: any) {
     console.error(`Context7 tool ${toolName} error:`, err);
     throw err;
   }
@@ -379,7 +379,7 @@ export async function getLibraryDocsWithContext(
     });
 
     return response?.content?.[0]?.text || "No documentation found.";
-  } catch (err) {
+  } catch (err: any) {
     console.error("getLibraryDocsWithContext error:", err);
     throw err;
   }
@@ -397,7 +397,7 @@ export async function createMemoryRelation(
       relation,
       targetId,
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error("createMemoryRelation error:", err);
     throw err;
   }

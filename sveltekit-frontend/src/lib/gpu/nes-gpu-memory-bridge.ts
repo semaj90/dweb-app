@@ -14,7 +14,7 @@ import { nesMemory, type LegalDocument, type MemoryStats } from '../memory/nes-m
 import type { FlashAttention2Config } from '../services/flashattention2-rtx3060';
 
 // FlatBuffer schema definitions for binary data
-interface GPUNodeDataFB {
+export interface GPUNodeDataFB {
   nodeId: Uint32Array;
   position: Float32Array; // x, y, z coordinates
   embedding: Float32Array; // 384-dim vector
@@ -23,7 +23,7 @@ interface GPUNodeDataFB {
   bankId: Uint8Array; // Memory bank reference
 }
 
-interface GPUTextureMatrix {
+export interface GPUTextureMatrix {
   width: number;
   height: number;
   format: 'R32F' | 'RGBA32F' | 'RG32F';
@@ -33,7 +33,7 @@ interface GPUTextureMatrix {
   bindGroup: GPUBindGroup | null;
 }
 
-interface CUDAMemoryRegion {
+export interface CUDAMemoryRegion {
   startAddr: number;
   endAddr: number;
   size: number;
@@ -107,7 +107,7 @@ export class NESGPUMemoryBridge {
         cacheSize: `${this.config.cacheSizeMB}MB`
       });
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize NES-GPU bridge:', error);
     }
   }
@@ -220,7 +220,7 @@ export class NESGPUMemoryBridge {
       console.log(`📦 FlatBuffer created for ${document.id}: ${buffer.byteLength} bytes in ${parseTime.toFixed(2)}ms`);
       return buffer;
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ FlatBuffer creation failed:', error);
       throw error;
     }
@@ -296,7 +296,7 @@ export class NESGPUMemoryBridge {
       
       return document;
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ FlatBuffer parsing failed:', error);
       return null;
     }
@@ -384,7 +384,7 @@ export class NESGPUMemoryBridge {
       console.log(`🎯 GPU ranking texture created for ${documentId}: ${dimensions.width}x${dimensions.height} in ${uploadTime.toFixed(2)}ms`);
       return textureMatrix;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ GPU texture creation failed:', error);
       return null;
     }
@@ -421,7 +421,7 @@ export class NESGPUMemoryBridge {
       const syncTime = performance.now() - startTime;
       console.log(`🔄 NES-GPU sync completed in ${syncTime.toFixed(2)}ms`);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ NES-GPU synchronization failed:', error);
     }
   }
@@ -446,7 +446,7 @@ export class NESGPUMemoryBridge {
         await this.createPatternMatchingTexture(cudaRegion);
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Failed to handle memory pressure for ${bankType}:`, error);
     }
   }

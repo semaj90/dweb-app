@@ -6,7 +6,7 @@ import stream from "stream";
 
 import type { Operation } from 'fast-json-patch';
 
-interface StreamingPatchConfig {
+export interface StreamingPatchConfig {
   maxBufferSize: number; // Maximum buffer size before flush
   flushInterval: number; // Auto-flush interval in ms
   enableCompression: boolean; // Compress patches
@@ -15,7 +15,7 @@ interface StreamingPatchConfig {
   connectionTimeout: number; // WebSocket timeout
 }
 
-interface PatchStreamEvent {
+export interface PatchStreamEvent {
   id: string;
   timestamp: number;
   patches: Operation[];
@@ -27,7 +27,7 @@ interface PatchStreamEvent {
   };
 }
 
-interface StreamingContext {
+export interface StreamingContext {
   connectionId: string;
   activeStreams: Map<string, ReadableStream>;
   patchBuffer: PatchStreamEvent[];
@@ -94,7 +94,7 @@ export class AdvancedPatchStreamer {
           context.metrics.patchesSent++;
           context.metrics.bytesTransferred += serialized.length;
           controller.enqueue(serialized);
-        } catch (error) {
+        } catch (error: any) {
           console.error('[PatchStreamer] Serialization failed:', error);
           controller.error(error);
         }
@@ -240,7 +240,7 @@ export class AdvancedPatchStreamer {
           );
 
           controller.close();
-        } catch (error) {
+        } catch (error: any) {
           controller.error(error);
         }
       },
@@ -347,7 +347,7 @@ export class AdvancedPatchStreamer {
           );
 
           controller.close();
-        } catch (error) {
+        } catch (error: any) {
           controller.error(error);
         }
       },
@@ -366,7 +366,7 @@ export class AdvancedPatchStreamer {
         console.log(`[PatchStreamer] WebSocket connected for context: ${contextId}`);
       };
 
-      this.websocket.onmessage = (event) => {
+      this.websocket.onmessage = (event: any) => {
         this.handleIncomingPatch(contextId, event.data);
       };
 
@@ -379,7 +379,7 @@ export class AdvancedPatchStreamer {
         // Attempt reconnection
         setTimeout(() => this.setupWebSocketConnection(contextId, customHeaders), 5000);
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('[PatchStreamer] WebSocket setup failed:', error);
     }
   }
@@ -474,7 +474,7 @@ export class AdvancedPatchStreamer {
       // Clear buffer and update metrics
       context.patchBuffer = [];
       context.lastFlush = Date.now();
-    } catch (error) {
+    } catch (error: any) {
       console.error(`[PatchStreamer] Failed to flush buffer for context ${contextId}:`, error);
     }
   }
@@ -489,7 +489,7 @@ export class AdvancedPatchStreamer {
         // Handle incoming patch application logic here
         console.log(`[PatchStreamer] Received patch for context ${contextId}:`, event);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(`[PatchStreamer] Failed to handle incoming patch:`, error);
     }
   }
@@ -509,7 +509,7 @@ export class AdvancedPatchStreamer {
     for (const [target, stream] of context.activeStreams) {
       try {
         await stream.cancel();
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`[PatchStreamer] Failed to close stream for target ${target}:`, error);
       }
     }
@@ -589,7 +589,7 @@ export async function testAdvancedPatchStreaming(): Promise<boolean> {
     console.log('[test] Patches received:', patchCount);
 
     return isValid;
-  } catch (error) {
+  } catch (error: any) {
     console.error('[test] Advanced patch streaming failed:', error);
     return false;
   }

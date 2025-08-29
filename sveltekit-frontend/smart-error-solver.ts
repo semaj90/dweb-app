@@ -10,7 +10,7 @@ import { promisify } from 'util';
 
 const execAsync = promisify(exec);
 
-interface TypeScriptError {
+export interface TypeScriptError {
   file: string;
   line: number;
   column: number;
@@ -19,7 +19,7 @@ interface TypeScriptError {
   severity: 'error' | 'warning';
 }
 
-interface ErrorCategory {
+export interface ErrorCategory {
   importErrors: TypeScriptError[];
   syntaxErrors: TypeScriptError[];
   typeErrors: TypeScriptError[];
@@ -89,7 +89,7 @@ class SmartErrorSolver {
       }
 
       return errors;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to get TypeScript errors:', error);
       return [];
     }
@@ -178,7 +178,7 @@ class SmartErrorSolver {
             console.log(`🔧 Fixed import in ${error.file}:${error.line}`);
           }
         }
-      } catch (err) {
+      } catch (err: any) {
         console.log(`⚠️  Could not fix import error in ${error.file}: ${err}`);
       }
     }
@@ -221,7 +221,7 @@ class SmartErrorSolver {
             console.log(`🔧 Fixed syntax in ${error.file}:${error.line}`);
           }
         }
-      } catch (err) {
+      } catch (err: any) {
         console.log(`⚠️  Could not fix syntax error in ${error.file}: ${err}`);
       }
     }
@@ -244,7 +244,7 @@ class SmartErrorSolver {
           fixes++;
           console.log(`🔧 Added @ts-ignore for ${error.file}:${error.line}`);
         }
-      } catch (err) {
+      } catch (err: any) {
         console.log(`⚠️  Could not fix declaration error in ${error.file}: ${err}`);
       }
     }
@@ -267,7 +267,7 @@ class SmartErrorSolver {
           fixes++;
           console.log(`🔧 Added @ts-ignore for missing name in ${error.file}:${error.line}`);
         }
-      } catch (err) {
+      } catch (err: any) {
         console.log(`⚠️  Could not fix type error in ${error.file}: ${err}`);
       }
     }
@@ -307,7 +307,7 @@ class SmartErrorSolver {
           
           await writeFile(file, todoComment + content);
           console.log(`📝 Added TODO summary to ${file}`);
-        } catch (err) {
+        } catch (err: any) {
           console.log(`⚠️  Could not add TODO to ${file}: ${err}`);
         }
       }

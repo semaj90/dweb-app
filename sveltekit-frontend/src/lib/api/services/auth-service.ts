@@ -8,12 +8,12 @@ export interface RegisterData extends LoginCredentials {
   name: string;
   role?: string;
 }
-export async function login(_c: LoginCredentials) {
+export async function login(_c: LoginCredentials): Promise<any> {
   throw new Error("Not implemented");
 }
-export async function logout() {
+export async function logout(): Promise<any> {
   throw new Error("Not implemented");
 }
-export async function register(_d: RegisterData) {
+export async function register(_d: RegisterData): Promise<any> {
   throw new Error("Not implemented");
 }

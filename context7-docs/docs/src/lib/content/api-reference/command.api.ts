@@ -12,8 +12,8 @@ import type {
 	CommandSeparatorPropsWithoutHTML,
 	CommandViewportPropsWithoutHTML,
 } from "bits-ui";
-import { NoopProp, OnStringValueChangeProp } from "./extended-types/shared/index.js";
-import { CommandFilterProp, CommandOnStateChangeProp } from "./extended-types/command/index.js";
+import { NoopProp, OnStringValueChangeProp } from './extended-types/shared/index';
+import { CommandFilterProp, CommandOnStateChangeProp } from './extended-types/command/index';
 import { withChildProps } from "$lib/content/api-reference/shared.js";
 import {
 	defineBooleanProp,
@@ -24,7 +24,7 @@ import {
 	defineSimpleDataAttr,
 	defineStringProp,
 	defineSimplePropSchema,
-} from "../utils.js";
+} from '../utils';
 
 const root = defineComponentApiSchema<CommandRootPropsWithoutHTML>({
 	title: "Root",

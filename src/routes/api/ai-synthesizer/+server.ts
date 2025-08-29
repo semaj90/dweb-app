@@ -5,7 +5,7 @@ import { json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 import type { MetricData } from "$lib/types/search-types";
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const {
       query,
@@ -42,7 +42,7 @@ export const POST: RequestHandler = async ({ request }) => {
       success: true,
       result: synthesizedResult,
     });
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("AI synthesis error:", error);
     return json(
       { error: "AI synthesis failed", details: error.message },
@@ -51,7 +51,7 @@ export const POST: RequestHandler = async ({ request }) => {
   }
 };
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
   try {
     // Get system metrics
     const metrics: MetricData[] = [
@@ -99,7 +99,7 @@ export const GET: RequestHandler = async ({ url }) => {
       },
       timestamp: new Date().toISOString(),
     });
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("Metrics retrieval error:", error);
     return json(
       { error: "Failed to retrieve metrics", details: error.message },
@@ -108,7 +108,7 @@ export const GET: RequestHandler = async ({ url }) => {
   }
 };
 
-export const PUT: RequestHandler = async ({ request }) => {
+export const PUT: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const { action, parameters } = await request.json();
 
@@ -144,7 +144,7 @@ export const PUT: RequestHandler = async ({ request }) => {
           { status: 400 }
         );
     }
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("AI synthesizer management error:", error);
     return json(
       { error: "Management operation failed", details: error.message },

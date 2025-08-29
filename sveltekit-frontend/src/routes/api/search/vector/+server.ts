@@ -7,7 +7,7 @@ import { vectorSearch } from "$lib/server/search/vector-search";
 import { URL } from "url";
 
 // Vector search request interface
-interface VectorSearchRequest {
+export interface VectorSearchRequest {
   query: string;
   options?: {
     limit?: number;
@@ -57,7 +57,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         requestTime: Date.now() - startTime,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Vector search API error:", error);
     return json(
       {
@@ -119,7 +119,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
         requestTime: Date.now() - startTime,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Vector search API error:", error);
     return json(
       {

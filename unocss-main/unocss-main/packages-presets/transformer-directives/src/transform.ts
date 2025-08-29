@@ -16,7 +16,7 @@ export async function transformDirectives(
   filename?: string,
   originalCode?: string,
   offset?: number,
-) {
+): Promise<any> {
   let { applyVariable } = options
   const varStyle = options.varStyle
   if (applyVariable === undefined) {
@@ -58,7 +58,7 @@ export async function transformDirectives(
     offset,
   }
 
-  const processNode = async (node: CssNode, _item: ListItem<CssNode>, _list: List<CssNode>) => {
+  const processNode = async (node: CssNode, _item: ListItem<CssNode>, _list: List<CssNode>): Promise<any> => {
     if (hasScreen && node.type === 'Atrule' && node.name === 'screen')
       handleScreen(ctx, node)
     else if (node.type === 'Function')

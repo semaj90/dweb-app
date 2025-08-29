@@ -2,7 +2,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 
 const DEFAULT_INTERVAL = 3000;
 
-interface StreamMetricEnvelope { type: string; data: any; ts: string }
+export interface StreamMetricEnvelope { type: string; data: any; ts: string }
 
 function collectMetrics() {
   return {

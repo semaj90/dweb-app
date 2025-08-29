@@ -5,7 +5,7 @@ import { json } from "@sveltejs/kit";
 import { randomUUID } from "crypto";
 import { promises as fs } from "fs";
 
-interface EvidenceRecord {
+export interface EvidenceRecord {
   id: string;
   title: string;
   description: string;
@@ -24,7 +24,7 @@ interface EvidenceRecord {
   aiSummary: string | null;
 }
 
-export const POST = async ({ request, locals }: { request: Request; locals: App.Locals }) => {
+export const POST = async ({ request, locals }: { request: Request; locals: App.Locals }): Promise<any> => {
   const user = locals.user;
   if (!user || typeof user.id !== "string") {
     return json({ error: "Not authenticated" }, { status: 401 });
@@ -32,7 +32,7 @@ export const POST = async ({ request, locals }: { request: Request; locals: App.
   let formData: FormData;
   try {
     formData = await request.formData();
-  } catch (e) {
+  } catch (e: any) {
     return json({ error: "Invalid form data" }, { status: 400 });
   }
   const file = formData.get("file");
@@ -51,7 +51,7 @@ export const POST = async ({ request, locals }: { request: Request; locals: App.
     await fs.mkdir(uploadDir, { recursive: true });
     const arrayBuffer = await file.arrayBuffer();
     await fs.writeFile(filePath, Buffer.from(arrayBuffer));
-  } catch (e) {
+  } catch (e: any) {
     return json({ error: "File upload failed", details: String(e) }, { status: 500 });
   }
 
@@ -78,7 +78,7 @@ export const POST = async ({ request, locals }: { request: Request; locals: App.
   };
   try {
     await db.insert(evidence).values(newEvidence);
-  } catch (e) {
+  } catch (e: any) {
     return json({ error: "Database insert failed", details: String(e) }, { status: 500 });
   }
   return json(newEvidence, { status: 201 });

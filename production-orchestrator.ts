@@ -22,7 +22,7 @@ import Loki from 'lokijs';
 const require = createRequire(import.meta.url);
 
 // Types and Interfaces
-interface ServiceConfig {
+export interface ServiceConfig {
   name: string;
   type: 'go' | 'node' | 'python' | 'windows' | 'native';
   command: string;
@@ -41,7 +41,7 @@ interface ServiceConfig {
   memoryLimit?: number;
 }
 
-interface ServiceStatus {
+export interface ServiceStatus {
   name: string;
   status: 'starting' | 'running' | 'stopping' | 'stopped' | 'error' | 'unhealthy';
   pid?: number;
@@ -52,7 +52,7 @@ interface ServiceStatus {
   metrics: ServiceMetrics;
 }
 
-interface ServiceMetrics {
+export interface ServiceMetrics {
   cpuUsage: number;
   memoryUsage: number;
   networkConnections: number;
@@ -62,7 +62,7 @@ interface ServiceMetrics {
   uptime: number;
 }
 
-interface SystemHealth {
+export interface SystemHealth {
   overall: 'healthy' | 'degraded' | 'critical';
   services: ServiceStatus[];
   infrastructure: {
@@ -77,7 +77,7 @@ interface SystemHealth {
   alerts: Alert[];
 }
 
-interface Alert {
+export interface Alert {
   id: string;
   level: 'info' | 'warning' | 'error' | 'critical';
   message: string;
@@ -519,7 +519,7 @@ export class ProductionOrchestrator extends EventEmitter {
       this.log('info', `Service ${serviceName} started successfully`);
       this.emit('service:started', serviceName);
       
-    } catch (error) {
+    } catch (error: any) {
       status.status = 'error';
       status.lastError = error instanceof Error ? error.message : String(error);
       this.log('error', `Failed to start service ${serviceName}: ${status.lastError}`);
@@ -581,7 +581,7 @@ export class ProductionOrchestrator extends EventEmitter {
       try {
         await this.startService(config.name);
         await new Promise(resolve => setTimeout(resolve, 2000)); // Stagger starts
-      } catch (error) {
+      } catch (error: any) {
         this.log('error', `Failed to start ${config.name} during startup: ${error}`);
         if (config.priority <= 2) { // Critical services
           throw new Error(`Critical service ${config.name} failed to start`);
@@ -610,7 +610,7 @@ export class ProductionOrchestrator extends EventEmitter {
     for (const config of servicesByPriority) {
       try {
         await this.stopService(config.name);
-      } catch (error) {
+      } catch (error: any) {
         this.log('error', `Error stopping ${config.name}: ${error}`);
       }
     }
@@ -659,7 +659,7 @@ export class ProductionOrchestrator extends EventEmitter {
           }
         }
         
-      } catch (error) {
+      } catch (error: any) {
         this.log('error', `Health check failed for ${name}: ${error}`);
       }
     });
@@ -684,7 +684,7 @@ export class ProductionOrchestrator extends EventEmitter {
       clearTimeout(timeoutId);
       return response.ok;
       
-    } catch (error) {
+    } catch (error: any) {
       return false;
     }
   }
@@ -716,7 +716,7 @@ export class ProductionOrchestrator extends EventEmitter {
             ...metrics
           });
           
-        } catch (error) {
+        } catch (error: any) {
           this.log('error', `Failed to collect metrics for ${name}: ${error}`);
         }
       }
@@ -820,7 +820,7 @@ export class ProductionOrchestrator extends EventEmitter {
         if (await this.checkServiceHealth(config)) {
           return;
         }
-      } catch (error) {
+      } catch (error: any) {
         // Continue waiting
       }
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -842,7 +842,7 @@ export class ProductionOrchestrator extends EventEmitter {
       setTimeout(async () => {
         try {
           await this.startService(serviceName);
-        } catch (error) {
+        } catch (error: any) {
           this.log('error', `Failed to restart ${serviceName}: ${error}`);
         }
       }, config.retryDelay);
@@ -866,7 +866,7 @@ export class ProductionOrchestrator extends EventEmitter {
       // This would check actual GPU availability
       // For now, assume GPU is available
       return true;
-    } catch (error) {
+    } catch (error: any) {
       return false;
     }
   }

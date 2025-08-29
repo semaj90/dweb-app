@@ -1,7 +1,7 @@
 // API Client utility for centralized API calls
 import { error } from '@sveltejs/kit';
 
-interface ApiConfig {
+export interface ApiConfig {
   baseUrl?: string;
   timeout?: number;
   retries?: number;
@@ -58,7 +58,7 @@ export async function apiFetch<T = any>(
     }
 
     return (await response.text()) as T;
-  } catch (err) {
+  } catch (err: any) {
     clearTimeout(timeoutId);
 
     if (err instanceof ApiError) {

@@ -341,7 +341,7 @@ class InteractionTrackerService {
     return predictions;
   }
 
-  private updateUserContext(eventType: string, data: unknown) {
+  private updateUserContext(eventType: string, data: any) {
     this.userContext.update(ctx => {
       const newCtx = { ...ctx };
       
@@ -450,7 +450,7 @@ class InteractionTrackerService {
       }
       
       await tx.complete;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to persist interactions:', error);
     }
   }
@@ -465,12 +465,12 @@ class InteractionTrackerService {
           interactions
         })
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to send interactions to backend:', error);
     }
   }
 
-  private async triggerProactiveLoading() {
+  private async triggerProactiveLoading(): Promise<any> {
     // Analyze recent patterns to predict what user might need
     const predictions = this.predictNextActions('current');
     
@@ -487,7 +487,7 @@ class InteractionTrackerService {
     }
   }
 
-  private async loadPersistedData() {
+  private async loadPersistedData(): Promise<any> {
     try {
       const db = await this.openDB();
       const tx = db.transaction(['interactions'], 'readonly');
@@ -505,7 +505,7 @@ class InteractionTrackerService {
           this.updateStateSequence(interaction);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load persisted interactions:', error);
     }
   }

@@ -7,8 +7,8 @@ import {
 	PinInputRootPasteTransformerProp,
 	PinInputRootPushPasswordManagerStrategyProp,
 	PinInputRootTextAlignProp,
-} from "./extended-types/pin-input/index.js";
-import { OnStringValueChangeProp } from "./extended-types/shared/index.js";
+} from './extended-types/pin-input/index';
+import { OnStringValueChangeProp } from './extended-types/shared/index';
 import { withChildProps } from "$lib/content/api-reference/shared.js";
 import {
 	defineBooleanProp,
@@ -19,7 +19,7 @@ import {
 	defineObjectProp,
 	defineSimpleDataAttr,
 	defineStringProp,
-} from "../utils.js";
+} from '../utils';
 
 const root = defineComponentApiSchema<PinInputRootPropsWithoutHTML>({
 	title: "Root",

@@ -9,7 +9,7 @@ export const GET: RequestHandler = async () => {
       message: 'Database test endpoint works',
       timestamp: new Date().toISOString()
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Database test error:', error);
     return json({ 
       status: 'error', 

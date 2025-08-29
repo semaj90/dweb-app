@@ -5,15 +5,15 @@
  */
 
 import { ComprehensiveAISystemIntegration } from './comprehensive-ai-system-integration';
-import { PerformanceMonitor } from '../monitoring/performance-monitor';
-import { AdaptiveQualityController } from '../optimization/adaptive-quality-controller';
+import { PerformanceMonitor as ImportedPerformanceMonitor } from '../monitoring/performance-monitor';
+import { AdaptiveQualityController as ImportedAdaptiveQualityController } from '../optimization/adaptive-quality-controller';
 
 // GPU and Math Libraries (would be imported in production)
 // import * as tf from '@tensorflow/tfjs-node-gpu';
 // import { Matrix } from 'ml-matrix';
 // import { create, all } from 'mathjs';
 
-interface OptimizationConfig {
+export interface OptimizationConfig {
   enableGPUAcceleration: boolean;
   enableSIMDOptimizations: boolean;
   enableWebGLShaders: boolean;
@@ -28,13 +28,13 @@ interface OptimizationConfig {
 }
 
 export class MathOptimizedAISystem extends ComprehensiveAISystemIntegration {
-  private performanceMonitor: PerformanceMonitor;
-  private qualityController: AdaptiveQualityController;
+  private performanceMonitor: ImportedPerformanceMonitor;
+  private qualityController: ImportedAdaptiveQualityController;
   private optimizationConfig: OptimizationConfig;
-  private gpuContext: unknown = null;
-  private workerPool: unknown = null;
+  private gpuContext: any = null;
+  private workerPool: any = null;
 
-  constructor(config: unknown) {
+  constructor(config: any) {
     super(config);
     
     this.optimizationConfig = {
@@ -54,17 +54,17 @@ export class MathOptimizedAISystem extends ComprehensiveAISystemIntegration {
     this.initializeOptimizations();
   }
 
-  private async initializeOptimizations() {
+  private async initializeOptimizations(): Promise<any> {
     try {
       // Initialize performance monitoring
-      this.performanceMonitor = new PerformanceMonitor();
+      this.performanceMonitor = new ImportedPerformanceMonitor();
       
       // Initialize adaptive quality control
-      this.qualityController = new AdaptiveQualityController();
+      this.qualityController = new ImportedAdaptiveQualityController();
       
       // Setup GPU acceleration if available
       if (this.optimizationConfig.enableGPUAcceleration) {
-        await this.initializeGPUAcceleration();
+        await this.initializeMathOptimizedGPU();
       }
       
       // Setup SIMD optimizations
@@ -77,12 +77,12 @@ export class MathOptimizedAISystem extends ComprehensiveAISystemIntegration {
       
       console.log('🚀 Math optimization layer initialized successfully');
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Math optimization initialization failed:', error);
     }
   }
 
-  private async initializeGPUAcceleration() {
+  private async initializeMathOptimizedGPU(): Promise<any> {
     try {
       // Mock TensorFlow.js GPU initialization
       console.log('🎮 Initializing GPU acceleration...');
@@ -103,7 +103,7 @@ export class MathOptimizedAISystem extends ComprehensiveAISystemIntegration {
         console.log('⚠️ GPU not available, falling back to CPU');
       }
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('GPU initialization failed:', error);
     }
   }
@@ -129,7 +129,7 @@ export class MathOptimizedAISystem extends ComprehensiveAISystemIntegration {
         console.log('⚠️ SIMD not supported on this platform');
       }
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('SIMD initialization failed:', error);
     }
   }
@@ -157,7 +157,7 @@ export class MathOptimizedAISystem extends ComprehensiveAISystemIntegration {
   async processDocumentOptimized(
     documentId: string, 
     content: string, 
-    options: unknown = {}
+    options: any = {}
   ): Promise<any> {
     const startTime = performance.now();
     
@@ -184,7 +184,7 @@ export class MathOptimizedAISystem extends ComprehensiveAISystemIntegration {
       // Fallback to standard processing
       return await super.processDocument(documentId, content, options);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Optimized document processing failed for ${documentId}:`, error);
       
       // Fallback to base implementation
@@ -195,7 +195,7 @@ export class MathOptimizedAISystem extends ComprehensiveAISystemIntegration {
   private async processDocumentGPU(
     documentId: string, 
     content: string, 
-    options: unknown
+    options: any
   ): Promise<any> {
     console.log(`🎮 GPU processing document ${documentId}...`);
     
@@ -225,7 +225,7 @@ export class MathOptimizedAISystem extends ComprehensiveAISystemIntegration {
   private async processDocumentSIMD(
     documentId: string, 
     content: string, 
-    options: unknown
+    options: any
   ): Promise<any> {
     console.log(`🔢 SIMD processing document ${documentId}...`);
     
@@ -260,7 +260,7 @@ export class MathOptimizedAISystem extends ComprehensiveAISystemIntegration {
   // Advanced batch processing with mathematical optimizations
   async processDocumentBatch(
     documents: Array<{ id: string; content: string }>,
-    options: unknown = {}
+    options: any = {}
   ): Promise<unknown[]> {
     console.log(`📊 Batch processing ${documents.length} documents with optimizations...`);
     
@@ -330,7 +330,7 @@ export class MathOptimizedAISystem extends ComprehensiveAISystemIntegration {
 
   private async processBatchParallel(
     batch: Array<{ id: string; content: string }>,
-    options: unknown
+    options: any
   ): Promise<unknown[]> {
     // Process documents in parallel using Promise.all
     const promises = batch.map(doc => 
@@ -340,8 +340,8 @@ export class MathOptimizedAISystem extends ComprehensiveAISystemIntegration {
     return Promise.all(promises);
   }
 
-  // Mathematical analysis methods
-  async performSemanticAnalysis(content: string): Promise<any> {
+  // Mathematical analysis methods (renamed to avoid inheritance conflict)
+  async performMathSemanticAnalysis(content: string): Promise<any> {
     console.log('🧮 Performing mathematical semantic analysis...');
     
     // Mock advanced mathematical operations
@@ -352,7 +352,7 @@ export class MathOptimizedAISystem extends ComprehensiveAISystemIntegration {
     const embeddings = this.generateMockEmbeddings(words, vectorDimensions);
     
     // Perform vector operations
-    const similarity = this.calculateCosineSimilarity(embeddings, embeddings);
+    const similarity = embeddings.length > 0 ? this.calculateCosineSimilarity(embeddings[0], embeddings[0]) : 0;
     const clusters = this.performKMeansClustering(embeddings, 5);
     const pca = this.performPCA(embeddings, 50);
     
@@ -386,7 +386,7 @@ export class MathOptimizedAISystem extends ComprehensiveAISystemIntegration {
     return dotProduct / (magnitudeA * magnitudeB);
   }
 
-  private performKMeansClustering(data: number[][], k: number): unknown {
+  private performKMeansClustering(data: number[][], k: number): any {
     // Simplified K-means implementation
     const centroids = data.slice(0, k); // Use first k points as initial centroids
     const clusters = Array.from({ length: k }, () => []);
@@ -405,7 +405,7 @@ export class MathOptimizedAISystem extends ComprehensiveAISystemIntegration {
     };
   }
 
-  private performPCA(data: number[][], targetDimensions: number): unknown {
+  private performPCA(data: number[][], targetDimensions: number): any {
     // Mock PCA - in production would use actual linear algebra
     return {
       reducedData: data.map(vector => vector.slice(0, targetDimensions)),
@@ -418,7 +418,7 @@ export class MathOptimizedAISystem extends ComprehensiveAISystemIntegration {
   }
 
   // System health and performance monitoring
-  getSystemHealth(): unknown {
+  getSystemHealth(): any {
     const baseHealth = super.getSystemHealth();
     
     return {
@@ -453,7 +453,7 @@ export class MathOptimizedAISystem extends ComprehensiveAISystemIntegration {
     };
   }
 
-  async shutdown(): Promise<void> {
+  async shutdown(): Promise<any> {
     console.log('🔄 Shutting down math-optimized AI system...');
     
     // Cleanup GPU resources
@@ -475,7 +475,7 @@ export class MathOptimizedAISystem extends ComprehensiveAISystemIntegration {
 
 // Mock classes for demonstration (would be actual implementations in production)
 class PerformanceMonitor {
-  async getCurrentMetrics() {
+  async getCurrentMetrics(): Promise<any> {
     return {
       cpuUsage: Math.random() * 100,
       memoryUsage: Math.random() * 2048,
@@ -491,7 +491,7 @@ class PerformanceMonitor {
     return Math.random() * 100; // Mock CPU load percentage
   }
 
-  updateMetrics(metrics: unknown): void {
+  updateMetrics(metrics: any): void {
     console.log('📊 Performance metrics updated:', metrics);
   }
 }
@@ -499,7 +499,7 @@ class PerformanceMonitor {
 class AdaptiveQualityController {
   currentQuality: string = 'standard';
 
-  adjustQuality(metrics: unknown): string {
+  adjustQuality(metrics: any): string {
     if (metrics.cpuUsage > 85 || metrics.memoryUsage > 1500) {
       this.currentQuality = 'low';
     } else if (metrics.cpuUsage < 50 && metrics.memoryUsage < 1000) {

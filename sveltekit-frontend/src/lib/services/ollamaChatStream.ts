@@ -134,7 +134,7 @@ export class OllamaChatStreamService {
           confidence: 0.9,
         },
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Chat stream error:", error);
       yield {
         text: "I apologize, but I encountered an error processing your request. Please try again.",
@@ -177,7 +177,7 @@ export class OllamaChatStreamService {
         ...evidenceResults.map((r) => ({ ...r, type: "evidence" })),
         ...caseResults.map((r) => ({ ...r, type: "case" })),
       ];
-    } catch (error) {
+    } catch (error: any) {
       console.error("Vector search error:", error);
       return [];
     }
@@ -257,7 +257,7 @@ Please provide a detailed, professional response based on the context and your l
       if (!response.ok) return null;
       const data = await response.json();
       return data.embedding;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Embedding generation error:", error);
       return null;
     }
@@ -293,7 +293,7 @@ Please provide a detailed, professional response based on the context and your l
           metadata: { timestamp: new Date().toISOString() },
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error storing chat embeddings:", error);
     }
   }

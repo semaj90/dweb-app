@@ -57,7 +57,7 @@ export class WebGPUWASMService {
     tokenizerUrl: '/models/gemma3-legal-tokenizer.json',
     modelSizeBytes: 7.3 * 1024 * 1024 * 1024, // 7.3GB
     maxTokens: 8192,
-    dimensions: 768,
+    dimensions: 384,
   };
 
   constructor() {
@@ -151,7 +151,7 @@ export class WebGPUWASMService {
         }
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Capability detection error:', error);
     }
 
@@ -250,7 +250,7 @@ export class WebGPUWASMService {
       console.log(`✅ Model loaded successfully: ${modelConfig.name}`);
       return true;
 
-    } catch (error) {
+    } catch (error: any) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       
       modelLoadingProgress.set({
@@ -332,7 +332,7 @@ export class WebGPUWASMService {
       this.wasmModule.tokenizer = tokenizerData;
       
       console.log('✅ WASM module initialized');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ WASM initialization failed:', error);
       throw error;
     }
@@ -385,7 +385,7 @@ export class WebGPUWASMService {
       (this.device as any)._gemma3Pipeline = computePipeline;
 
       console.log('✅ GPU buffers and compute pipeline ready');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ GPU buffer setup failed:', error);
       throw error;
     }
@@ -405,7 +405,7 @@ export class WebGPUWASMService {
       }
 
       console.log('✅ Model warmup completed:', result.text.substring(0, 100));
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Model warmup failed:', error);
       throw error;
     }
@@ -454,7 +454,7 @@ export class WebGPUWASMService {
         device: this.capabilities.deviceType,
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Text generation failed:', error);
       throw error;
     }
@@ -495,7 +495,7 @@ export class WebGPUWASMService {
         device: this.capabilities.deviceType,
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Embedding generation failed:', error);
       throw error;
     }

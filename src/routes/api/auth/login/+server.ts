@@ -9,7 +9,7 @@ const loginSchema = z.object({
   password: z.string()
 });
 
-export const POST: RequestHandler = async ({ request, cookies }) => {
+export const POST: RequestHandler = async ({ request, cookies }): Promise<any> => {
   try {
     const body = await request.json();
     
@@ -58,7 +58,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
         sessionToken: session.token
       }
     });
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('Login error:', error);
     
     if (error.name === 'ZodError') {

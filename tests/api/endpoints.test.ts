@@ -5,12 +5,12 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { json } from '@sveltejs/kit';
 
 // Import API handlers
-import { POST as documentsAnalyzePost, GET as documentsAnalyzeGet } from '../../src/routes/api/documents/analyze/+server.js';
-import { POST as documentsSearchPost } from '../../src/routes/api/documents/search/+server.js';
-import { POST as documentsStorePost } from '../../src/routes/api/documents/store/+server.js';
-import { POST as aiEmbeddingsPost } from '../../src/routes/api/ai/embeddings/+server.js';
-import { POST as aiSynthesizerPost } from '../../src/routes/api/ai-synthesizer/+server.js';
-import { POST as legalResearchPost } from '../../src/routes/api/ai/legal-research/+server.js';
+import { POST as documentsAnalyzePost, GET as documentsAnalyzeGet } from '../../src/routes/api/documents/analyze/+server';
+import { POST as documentsSearchPost } from '../../src/routes/api/documents/search/+server';
+import { POST as documentsStorePost } from '../../src/routes/api/documents/store/+server';
+import { POST as aiEmbeddingsPost } from '../../src/routes/api/ai/embeddings/+server';
+import { POST as aiSynthesizerPost } from '../../src/routes/api/ai-synthesizer/+server';
+import { POST as legalResearchPost } from '../../src/routes/api/ai/legal-research/+server';
 
 describe('API Endpoints Integration Tests', () => {
   beforeEach(() => {

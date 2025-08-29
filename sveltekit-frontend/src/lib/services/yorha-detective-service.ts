@@ -5,7 +5,7 @@
 
 import type { Case, Evidence } from '$lib/types/legal-document';
 
-interface SystemMetrics {
+export interface SystemMetrics {
   cpu: number;
   gpu: number;
   memory: number;
@@ -13,14 +13,14 @@ interface SystemMetrics {
   timestamp: string;
 }
 
-interface AIAnalysisRequest {
+export interface AIAnalysisRequest {
   caseId: string;
   query: string;
   context?: string;
   includeEvidence?: boolean;
 }
 
-interface AIAnalysisResponse {
+export interface AIAnalysisResponse {
   response: string;
   confidence: number;
   sources: string[];
@@ -28,7 +28,7 @@ interface AIAnalysisResponse {
   reasoning: string;
 }
 
-interface EnhancedRAGResponse {
+export interface EnhancedRAGResponse {
   success: boolean;
   data: {
     answer: string;
@@ -68,7 +68,7 @@ export class YoRHaDetectiveService {
           timestamp: new Date().toISOString()
         };
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Enhanced RAG service unavailable, using simulated metrics');
     }
 
@@ -119,7 +119,7 @@ export class YoRHaDetectiveService {
           reasoning: `Analysis completed using ${data.data.metadata.model_used} in ${data.data.metadata.query_time}ms`
         };
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Enhanced RAG service error:', error);
     }
 
@@ -170,7 +170,7 @@ export class YoRHaDetectiveService {
           error: `Upload failed: ${error}`
         };
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Upload service error:', error);
       return {
         success: false,
@@ -206,7 +206,7 @@ export class YoRHaDetectiveService {
         const data = await response.json();
         return data.results || [];
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Search service error:', error);
     }
 
@@ -251,7 +251,7 @@ export class YoRHaDetectiveService {
           'Prepare preliminary report for review'
         ]
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Case insights error:', error);
       
       // Fallback insights
@@ -300,7 +300,7 @@ export class YoRHaDetectiveService {
         signal: AbortSignal.timeout(5000)
       });
       results.enhancedRAG = ragResponse.ok;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Enhanced RAG health check failed');
     }
 
@@ -311,7 +311,7 @@ export class YoRHaDetectiveService {
         signal: AbortSignal.timeout(5000)
       });
       results.uploadService = uploadResponse.ok;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Upload service health check failed');
     }
 
@@ -319,7 +319,7 @@ export class YoRHaDetectiveService {
       // Check Kratos server (gRPC health check would need special handling)
       // For now, we'll assume it's healthy if the other services are up
       results.kratosServer = results.enhancedRAG; // Temporary assumption
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Kratos server health check failed');
     }
 

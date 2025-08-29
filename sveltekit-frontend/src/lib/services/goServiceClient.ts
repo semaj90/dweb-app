@@ -3,21 +3,21 @@
  * Integrates with Enhanced RAG (8094), Upload Service (8093), and Kratos Server (50051)
  */
 
-interface GoServiceConfig {
+export interface GoServiceConfig {
   enhancedRagUrl: string;
   uploadServiceUrl: string;
   kratosServerUrl: string;
   timeout: number;
 }
 
-interface RAGRequest {
+export interface RAGRequest {
   query: string;
   context?: string[];
   userId?: string;
   caseId?: string;
 }
 
-interface RAGResponse {
+export interface RAGResponse {
   response: string;
   confidence: number;
   sources: string[];
@@ -29,14 +29,14 @@ interface RAGResponse {
   };
 }
 
-interface UploadRequest {
+export interface UploadRequest {
   file: File;
   userId: string;
   caseId?: string;
   metadata?: Record<string, any>;
 }
 
-interface UploadResponse {
+export interface UploadResponse {
   fileId: string;
   url: string;
   metadata: {
@@ -97,7 +97,7 @@ export class GoServiceClient {
           tokensUsed: result.tokensUsed || 0
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Enhanced RAG service error:', error);
       throw new Error(`RAG query failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
@@ -131,7 +131,7 @@ export class GoServiceClient {
       }
 
       return await response.json();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Upload service error:', error);
       throw new Error(`File upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
@@ -171,7 +171,7 @@ export class GoServiceClient {
       });
 
       return await response.json();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Patch acceptance error:', error);
       return { success: false, message: `Patch failed: ${error instanceof Error ? error.message : 'Unknown error'}` };
     }
@@ -195,7 +195,7 @@ export class GoServiceClient {
       });
 
       return await response.json();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Rating submission error:', error);
       return { success: false };
     }
@@ -228,11 +228,11 @@ export class GoServiceClient {
   connectRAGWebSocket(userId: string, onMessage: (data: any) => void): WebSocket {
     const ws = new WebSocket(`ws://localhost:8094/ws/${userId}`);
     
-    ws.onmessage = (event) => {
+    ws.onmessage = (event: any) => {
       try {
         const data = JSON.parse(event.data);
         onMessage(data);
-      } catch (error) {
+      } catch (error: any) {
         console.error('WebSocket message parse error:', error);
       }
     };

@@ -64,7 +64,7 @@ export interface VectorCacheLogEntry {
 }
 
 // Memory-efficient vector cache entry
-interface VectorCacheEntry {
+export interface VectorCacheEntry {
   id: string;
   vector: Float32Array;  // More memory efficient than number[]
   payload: any;
@@ -75,7 +75,7 @@ interface VectorCacheEntry {
 }
 
 // Search result cache with LRU eviction
-interface SearchCache {
+export interface SearchCache {
   queryHash: string;
   results: any[];
   timestamp: number;
@@ -171,7 +171,7 @@ class OptimizedQdrantService {
         windowsOptimized: typeof process !== 'undefined' && process.platform === 'win32'
       });
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to initialize Qdrant client', error instanceof Error ? error : undefined, {
         component: 'QdrantOptimized',
         service: 'qdrant'
@@ -319,7 +319,7 @@ class OptimizedQdrantService {
 
       return formattedResults;
 
-    } catch (error) {
+    } catch (error: any) {
       const processingTime = Date.now() - startTime;
       
       logger.error('Qdrant search failed', error instanceof Error ? error : undefined, context, {
@@ -404,7 +404,7 @@ class OptimizedQdrantService {
         processingTime
       });
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Batch upsert failed', error instanceof Error ? error : undefined, context, {
         collection,
         pointCount: points.length

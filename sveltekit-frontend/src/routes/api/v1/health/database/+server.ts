@@ -69,7 +69,7 @@ export const GET: RequestHandler = async ({ url }) => {
         });
     }
     
-  } catch (err) {
+  } catch (err: any) {
     console.error('Database health check error:', err);
     return json({
       success: false,
@@ -117,7 +117,7 @@ export const POST: RequestHandler = async ({ request }) => {
         });
     }
     
-  } catch (err) {
+  } catch (err: any) {
     console.error('Database health check POST error:', err);
     return json({
       success: false,

@@ -20,7 +20,7 @@ test.describe('Development Environment Tests', () => {
     try {
       await dbClient.connect();
       console.log('✅ Connected to PostgreSQL for testing');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ PostgreSQL connection failed, some tests may be skipped');
     }
   });
@@ -93,7 +93,7 @@ test.describe('Development Environment Tests', () => {
       } else {
         console.warn('⚠️ Ollama not responding');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Ollama service not available:', error);
     }
   });
@@ -111,7 +111,7 @@ test.describe('Development Environment Tests', () => {
       expect(envContent).toContain('USE_POSTGRESQL_ONLY=true');
       
       console.log('✅ Environment configuration verified');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Environment file not found or invalid');
     }
   });
@@ -129,7 +129,7 @@ test.describe('Development Environment Tests', () => {
       } else {
         console.warn('⚠️ SvelteKit dev server not responding (expected if not running)');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ SvelteKit dev server not available (expected if not running)');
     }
   });

@@ -58,7 +58,7 @@ export class RabbitMQService {
   /**
    * Connect to RabbitMQ with automatic reconnection
    */
-  async connect(): Promise<void> {
+  async connect(): Promise<any> {
     if (this.isConnecting) return;
     this.isConnecting = true;
 
@@ -80,7 +80,7 @@ export class RabbitMQService {
       this.isConnecting = false;
       
       console.log('✅ RabbitMQ connected successfully');
-    } catch (error) {
+    } catch (error: any) {
       this.isConnecting = false;
       console.error('❌ RabbitMQ connection failed:', error);
       
@@ -98,7 +98,7 @@ export class RabbitMQService {
   /**
    * Setup essential RabbitMQ infrastructure
    */
-  private async setupInfrastructure(): Promise<void> {
+  private async setupInfrastructure(): Promise<any> {
     if (!this.channel) throw new Error('Channel not initialized');
 
     // AI Processing Exchange and Queues
@@ -179,7 +179,7 @@ export class RabbitMQService {
   /**
    * Declare an exchange
    */
-  async declareExchange(name: string, config: ExchangeConfig): Promise<void> {
+  async declareExchange(name: string, config: ExchangeConfig): Promise<any> {
     if (!this.channel) throw new Error('Channel not initialized');
     
     await this.channel.assertExchange(name, config.type, {
@@ -192,7 +192,7 @@ export class RabbitMQService {
   /**
    * Declare a queue
    */
-  async declareQueue(name: string, config: QueueConfig): Promise<void> {
+  async declareQueue(name: string, config: QueueConfig): Promise<any> {
     if (!this.channel) throw new Error('Channel not initialized');
     
     await this.channel.assertQueue(name, {
@@ -206,7 +206,7 @@ export class RabbitMQService {
   /**
    * Bind queue to exchange
    */
-  async bindQueue(queueName: string, exchangeName: string, routingKey: string): Promise<void> {
+  async bindQueue(queueName: string, exchangeName: string, routingKey: string): Promise<any> {
     if (!this.channel) throw new Error('Channel not initialized');
     
     await this.channel.bindQueue(queueName, exchangeName, routingKey);
@@ -218,7 +218,7 @@ export class RabbitMQService {
   async publish(
     exchange: string,
     routingKey: string,
-    message: unknown,
+    message: any,
     options: MessageOptions = {}
   ): Promise<boolean> {
     if (!this.channel) throw new Error('Channel not initialized');
@@ -241,7 +241,7 @@ export class RabbitMQService {
    */
   async sendToQueue(
     queueName: string,
-    message: unknown,
+    message: any,
     options: MessageOptions = {}
   ): Promise<boolean> {
     if (!this.channel) throw new Error('Channel not initialized');
@@ -264,7 +264,7 @@ export class RabbitMQService {
    */
   async consume(
     queueName: string,
-    handler: (message: Message) => Promise<void>,
+    handler: (message: Message) => Promise<any>,
     options: {
       noAck?: boolean;
       exclusive?: boolean;
@@ -276,7 +276,7 @@ export class RabbitMQService {
 
     const result = await this.channel.consume(
       queueName,
-      async (message) => {
+      async (message): Promise<any> => {
         if (!message) return;
 
         try {
@@ -285,7 +285,7 @@ export class RabbitMQService {
           if (!options.noAck) {
             this.channel!.ack(message);
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error(`Message processing failed for queue ${queueName}:`, error);
           
           // Reject and requeue with limit
@@ -323,7 +323,7 @@ export class RabbitMQService {
   /**
    * Schedule AI processing job
    */
-  async scheduleAIJob(job: AIProcessingJob): Promise<void> {
+  async scheduleAIJob(job: AIProcessingJob): Promise<any> {
     const routingKey = `ai.${job.type.replace('_', '.')}`;
     
     const messageOptions: MessageOptions = {
@@ -350,21 +350,21 @@ export class RabbitMQService {
   /**
    * Setup AI processing workers
    */
-  async setupAIWorkers(): Promise<void> {
+  async setupAIWorkers(): Promise<any> {
     // Document analysis worker
-    await this.consume('ai.document.analysis', async (message) => {
+    await this.consume('ai.document.analysis', async (message): Promise<any> => {
       const job: AIProcessingJob = JSON.parse(message.content.toString());
       await this.processDocumentAnalysis(job);
     });
 
     // Embedding generation worker
-    await this.consume('ai.embedding.generation', async (message) => {
+    await this.consume('ai.embedding.generation', async (message): Promise<any> => {
       const job: AIProcessingJob = JSON.parse(message.content.toString());
       await this.processEmbeddingGeneration(job);
     });
 
     // Vector search worker
-    await this.consume('ai.vector.search', async (message) => {
+    await this.consume('ai.vector.search', async (message): Promise<any> => {
       const job: AIProcessingJob = JSON.parse(message.content.toString());
       await this.processVectorSearch(job);
     });
@@ -377,9 +377,9 @@ export class RabbitMQService {
    */
   async broadcastUpdate(
     type: 'document_processed' | 'analysis_complete' | 'search_result',
-    data: unknown,
+    data: any,
     userId?: string
-  ): Promise<void> {
+  ): Promise<any> {
     const routingKey = userId ? `update.${type}.${userId}` : `update.${type}`;
     
     await this.publish('realtime_updates', routingKey, {
@@ -418,7 +418,7 @@ export class RabbitMQService {
   /**
    * Close connection
    */
-  async close(): Promise<void> {
+  async close(): Promise<any> {
     try {
       if (this.channel) {
         await this.channel.close();
@@ -431,14 +431,14 @@ export class RabbitMQService {
       }
       
       console.log('✅ RabbitMQ connection closed');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error closing RabbitMQ connection:', error);
     }
   }
 
   // Private helper methods
 
-  private async processDocumentAnalysis(job: AIProcessingJob): Promise<void> {
+  private async processDocumentAnalysis(job: AIProcessingJob): Promise<any> {
     console.log(`Processing document analysis job: ${job.id}`);
     
     // Here you would integrate with your AI service
@@ -454,7 +454,7 @@ export class RabbitMQService {
     await this.broadcastUpdate('analysis_complete', result);
   }
 
-  private async processEmbeddingGeneration(job: AIProcessingJob): Promise<void> {
+  private async processEmbeddingGeneration(job: AIProcessingJob): Promise<any> {
     console.log(`Processing embedding generation job: ${job.id}`);
     
     // Placeholder for embedding generation
@@ -468,7 +468,7 @@ export class RabbitMQService {
     await this.broadcastUpdate('document_processed', result);
   }
 
-  private async processVectorSearch(job: AIProcessingJob): Promise<void> {
+  private async processVectorSearch(job: AIProcessingJob): Promise<any> {
     console.log(`Processing vector search job: ${job.id}`);
     
     // Placeholder for vector search

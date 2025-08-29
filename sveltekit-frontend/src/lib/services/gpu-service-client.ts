@@ -34,7 +34,7 @@ class GPUServiceClientImpl implements GPUServiceClient {
 		try {
 			const response = await this.makeRequest('POST', '?action=process', task);
 			return await response.json();
-		} catch (error) {
+		} catch (error: any) {
 			throw this.handleError('Failed to submit GPU task', error);
 		}
 	}
@@ -45,7 +45,7 @@ class GPUServiceClientImpl implements GPUServiceClient {
 			const response = await this.makeRequest('POST', '?action=batch', batch);
 			const result = await response.json();
 			return result.batch_results;
-		} catch (error) {
+		} catch (error: any) {
 			throw this.handleError('Failed to submit batch tasks', error);
 		}
 	}
@@ -55,7 +55,7 @@ class GPUServiceClientImpl implements GPUServiceClient {
 		try {
 			const response = await this.makeRequest('GET', '?action=status');
 			return await response.json();
-		} catch (error) {
+		} catch (error: any) {
 			throw this.handleError('Failed to get GPU status', error);
 		}
 	}
@@ -65,7 +65,7 @@ class GPUServiceClientImpl implements GPUServiceClient {
 		try {
 			const response = await this.makeRequest('GET', '?action=metrics');
 			return await response.json();
-		} catch (error) {
+		} catch (error: any) {
 			throw this.handleError('Failed to get GPU metrics', error);
 		}
 	}
@@ -75,7 +75,7 @@ class GPUServiceClientImpl implements GPUServiceClient {
 		try {
 			const response = await this.makeRequest('GET', '?action=health');
 			return await response.json();
-		} catch (error) {
+		} catch (error: any) {
 			throw this.handleError('Failed to get GPU health', error);
 		}
 	}
@@ -86,7 +86,7 @@ class GPUServiceClientImpl implements GPUServiceClient {
 			const response = await this.makeRequest('GET', '?action=workers');
 			const result = await response.json();
 			return result.workers || [];
-		} catch (error) {
+		} catch (error: any) {
 			throw this.handleError('Failed to get worker status', error);
 		}
 	}
@@ -96,7 +96,7 @@ class GPUServiceClientImpl implements GPUServiceClient {
 		try {
 			const response = await this.makeRequest('GET', '?action=services');
 			return await response.json();
-		} catch (error) {
+		} catch (error: any) {
 			throw this.handleError('Failed to get service registry', error);
 		}
 	}
@@ -297,7 +297,7 @@ class GPUServiceClientImpl implements GPUServiceClient {
 				}
 				
 				return response;
-			} catch (error) {
+			} catch (error: any) {
 				if (attempt === this.retryAttempts - 1) {
 					throw error;
 				}

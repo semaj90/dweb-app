@@ -153,7 +153,7 @@ export const chatActions = {
       });
 
       return session;
-    } catch (error) {
+    } catch (error: any) {
       chatActions.addError('Failed to create chat session', { error });
       throw error;
     }
@@ -171,7 +171,7 @@ export const chatActions = {
 
       // Load chat history
       await chatActions.loadHistory(sessionId);
-    } catch (error) {
+    } catch (error: any) {
       chatActions.addError('Failed to load session', { sessionId, error });
       throw error;
     }
@@ -210,7 +210,7 @@ export const chatActions = {
 
       const history = await response.json();
       chatMessages.set(history.messages || []);
-    } catch (error) {
+    } catch (error: any) {
       chatActions.addError('Failed to load chat history', { sessionId, error });
     }
   },
@@ -408,7 +408,7 @@ if (browser) {
     try {
       const config = JSON.parse(savedConfig);
       chatConfig.set(config);
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to load saved chat config:', error);
     }
   }

@@ -3,11 +3,11 @@
  * Links all components with ultra-low latency QUIC protocol
  */
 
-import { vectorProxy } from './grpc-quic-vector-proxy.js';
-import { createQUICClient } from './quic-client.js';
+import { vectorProxy } from './grpc-quic-vector-proxy';
+import { createQUICClient } from './quic-client';
 import { yorhaAPI } from '$lib/components/three/yorha-ui/api/YoRHaAPIClient.js';
-import { createSelfPromptingSystem } from './selfPromptingSystem.js';
-import { createSvelteKitCluster } from './nodejs-cluster-architecture.js';
+import { createSelfPromptingSystem } from './selfPromptingSystem';
+import { createSvelteKitCluster } from './nodejs-cluster-architecture';
 
 export interface LegalAIIntegrationConfig {
   quicEnabled: boolean;
@@ -100,7 +100,7 @@ export class QUICLegalAIIntegration {
       this.isInitialized = true;
       console.log('🎯 Legal AI System: Fully integrated and operational');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Integration initialization failed:', error);
       throw error;
     }
@@ -189,7 +189,7 @@ export class QUICLegalAIIntegration {
         processingTime
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Document processing failed:', error);
       throw error;
     }
@@ -300,7 +300,7 @@ export class QUICLegalAIIntegration {
         errorsSolved: result.errorsSolved || 0,
         suggestions: result.suggestions || []
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Autosolve cycle failed:', error);
       return { errorsFound: 0, errorsSolved: 0, suggestions: [] };
     }

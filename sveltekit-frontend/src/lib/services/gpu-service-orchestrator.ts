@@ -12,7 +12,7 @@ import { writable, derived, type Writable } from 'svelte/store';
 import { browser } from '$app/environment';
 
 // Integration with existing services
-interface DocumentIngestionTask {
+export interface DocumentIngestionTask {
 	documentId: string;
 	documentType: 'pdf' | 'docx' | 'txt' | 'image' | 'legal_brief' | 'contract' | 'evidence';
 	content: string;
@@ -34,7 +34,7 @@ interface DocumentIngestionTask {
 	};
 }
 
-interface GPUOrchestrationResult {
+export interface GPUOrchestrationResult {
 	documentId: string;
 	success: boolean;
 	processedContent?: {
@@ -56,7 +56,7 @@ interface GPUOrchestrationResult {
 	warnings?: string[];
 }
 
-interface ServiceHealth {
+export interface ServiceHealth {
 	serviceName: string;
 	status: 'healthy' | 'degraded' | 'unhealthy' | 'offline';
 	responseTime: number;
@@ -134,7 +134,7 @@ export class GPUServiceOrchestrator {
 			this.isInitialized = true;
 			console.log('🎯 GPU Service Orchestrator fully initialized');
 
-		} catch (error) {
+		} catch (error: any) {
 			console.error('❌ Failed to initialize GPU Service Orchestrator:', error);
 			throw error;
 		}
@@ -229,7 +229,7 @@ export class GPUServiceOrchestrator {
 			// Update metrics
 			this.updateMetrics(result);
 
-		} catch (error) {
+		} catch (error: any) {
 			result.errors!.push(error instanceof Error ? error.message : 'Unknown processing error');
 			result.performance.totalProcessingTime = Date.now() - startTime;
 		} finally {
@@ -362,7 +362,7 @@ export class GPUServiceOrchestrator {
 							return { summary: result.summary };
 						}
 						throw new Error(`Summarizer service error: ${response.statusText}`);
-					} catch (error) {
+					} catch (error: any) {
 						throw new Error(`External summarizer failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
 					}
 				}
@@ -440,7 +440,7 @@ export class GPUServiceOrchestrator {
 							return { extractedText: result.text };
 						}
 						throw new Error(`OCR service error: ${response.statusText}`);
-					} catch (error) {
+					} catch (error: any) {
 						throw new Error(`External OCR failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
 					}
 				}
@@ -487,7 +487,7 @@ export class GPUServiceOrchestrator {
 				} else {
 					throw new Error(`HTTP ${response.status}: ${response.statusText}`);
 				}
-			} catch (error) {
+			} catch (error: any) {
 				this.serviceHealth.set(service.name, {
 					serviceName: service.name,
 					status: 'offline',
@@ -593,7 +593,7 @@ export class GPUServiceOrchestrator {
 	}
 }
 
-interface ProcessingStep {
+export interface ProcessingStep {
 	operation: string;
 	service: string;
 	priority: 'low' | 'medium' | 'high';

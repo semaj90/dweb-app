@@ -1,13 +1,13 @@
 // Simple in-memory rate limiting utility
 // For production, consider using Redis or a proper rate limiting service
 
-interface RateLimitConfig {
+export interface RateLimitConfig {
   windowMs: number;
   max: number;
   message?: string;
 }
 
-interface RateLimitResult {
+export interface RateLimitResult {
   allowed: boolean;
   remaining: number;
   resetTime: number;

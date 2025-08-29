@@ -12,7 +12,7 @@ import { getUser } from '$lib/server/auth';
 const ENHANCED_RAG_URL = 'http://localhost:8094';
 const OLLAMA_URL = 'http://localhost:11434';
 
-interface ProcessEvidenceRequest {
+export interface ProcessEvidenceRequest {
   caseId: string;
   evidence: any[];
   userId: string;
@@ -23,7 +23,7 @@ interface ProcessEvidenceRequest {
   stream?: boolean;
 }
 
-interface LegalAnalysisResponse {
+export interface LegalAnalysisResponse {
   summary: string;
   sources: Array<{
     id: string;
@@ -128,7 +128,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     let ragResult;
     try {
       ragResult = await ragResponse.json();
-    } catch (error) {
+    } catch (error: any) {
       console.warn('RAG service response parsing failed, falling back to direct Ollama');
       return await processWithDirectOllama(enhancedContext, startTime);
     }
@@ -157,7 +157,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 
     return json(enhancedResult);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Evidence processing error:', error);
     
     return json({
@@ -169,7 +169,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 };
 
 // Check Ollama model availability
-async function checkOllamaModel(model: string) {
+async function checkOllamaModel(model: string): Promise<any> {
   try {
     const response = await fetch(`${OLLAMA_URL}/api/tags`);
     if (!response.ok) {
@@ -183,7 +183,7 @@ async function checkOllamaModel(model: string) {
       available: availableModels.includes(model),
       models: availableModels
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Ollama availability check failed:', error);
     return { available: false, models: [] };
   }
@@ -217,7 +217,7 @@ Format: Comparative analysis highlighting relevant patterns and distinctions.`
 }
 
 // Fallback processing with direct Ollama integration
-async function processWithDirectOllama(context: any, startTime: number) {
+async function processWithDirectOllama(context: any, startTime: number): Promise<any> {
   try {
     const prompt = createLegalPrompt(context);
     
@@ -254,7 +254,7 @@ async function processWithDirectOllama(context: any, startTime: number) {
       tokenCount: estimateTokenCount(result.response)
     });
 
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(`Direct Ollama processing failed: ${error.message}`);
   }
 }
@@ -343,14 +343,14 @@ function estimateTokenCount(text: string): number {
 }
 
 // Log analysis for audit trail
-async function logAnalysis(data: any) {
+async function logAnalysis(data: any): Promise<any> {
   try {
     // In production, log to database or audit service
     console.log('Legal analysis logged:', {
       timestamp: new Date().toISOString(),
       ...data
     });
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Failed to log analysis:', error);
   }
 }

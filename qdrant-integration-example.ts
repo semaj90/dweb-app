@@ -5,7 +5,7 @@ import fetch from 'node-fetch';
 const QDRANT_URL = process.env.QDRANT_URL || 'http://localhost:6333';
 
 // Example: Upsert a vector for a case document
-export async function upsertCaseVector(caseId: string, embedding: number[], payload: unknown) {
+export async function upsertCaseVector(caseId: string, embedding: number[], payload: unknown): Promise<any> {
   const response = await fetch(`${QDRANT_URL}/collections/cases/points`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
@@ -21,7 +21,7 @@ export async function upsertCaseVector(caseId: string, embedding: number[], payl
 }
 
 // Example: Search for similar cases by vector
-export async function searchSimilarCases(embedding: number[], topK = 5) {
+export async function searchSimilarCases(embedding: number[], topK = 5): Promise<any> {
   const response = await fetch(`${QDRANT_URL}/collections/cases/points/search`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

@@ -5,7 +5,7 @@
 
 import { type RequestHandler,  json } from '@sveltejs/kit';
 
-interface LawPdfRequest {
+export interface LawPdfRequest {
   content: string;
   fileName?: string;
   analysisType?: 'basic' | 'comprehensive' | 'legal-focused';
@@ -16,7 +16,7 @@ interface LawPdfRequest {
   };
 }
 
-interface LawPdfResponse {
+export interface LawPdfResponse {
   summary: string;
   entities: Array<{
     text: string;
@@ -90,7 +90,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     };
 
     return json(response);
-  } catch (error) {
+  } catch (error: any) {
     console.error('[LawPDF API] Processing failed:', error);
     const message = error instanceof Error ? error.message : String(error);
 
@@ -105,7 +105,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   }
 };
 
-async function handleFileUpload(request: Request, locals: any) {
+async function handleFileUpload(request: Request, locals: any): Promise<any> {
   try {
     console.log('[LawPDF] Handling file upload with evidence processing pipeline');
     
@@ -180,7 +180,7 @@ async function handleFileUpload(request: Request, locals: any) {
           webSocketUrl: `${new URL(request.url).origin.replace(/^http/, 'ws')}/api/evidence/stream/${sessionId}`
         });
         
-      } catch (error) {
+      } catch (error: any) {
         console.error(`[LawPDF] Failed to process file ${file.name}:`, error);
         results.push({
           filename: file.name,
@@ -201,7 +201,7 @@ async function handleFileUpload(request: Request, locals: any) {
       failedFiles: files.length - successCount
     });
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('[LawPDF] File upload handling failed:', error);
     return json(
       {
@@ -264,7 +264,7 @@ async function processWithLocalModels(
         const embeddingData = await embeddingResponse.json();
         embedding = embeddingData.embedding || embeddingData.embeddings;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('[LawPDF] Embedding generation failed:', error);
     }
 
@@ -286,7 +286,7 @@ async function processWithLocalModels(
         confidence: parsedAnalysis.confidence,
       },
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('[LawPDF] Local processing failed:', error);
     // Fallback to basic processing
     return await processWithCloudFallback(content, analysisType);
@@ -462,7 +462,7 @@ function parseGemmaLegalResponse(response: string): {
         )
         .slice(0, 5);
     }
-  } catch (error) {
+  } catch (error: any) {
     console.warn('[LawPDF] Failed to parse gemma3-legal response:', error);
     sections.summary = response.substring(0, 500) + '...';
   }

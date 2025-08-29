@@ -5,8 +5,9 @@ import { HumanMessage, SystemMessage } from '@langchain/core/messages';
 import { StringOutputParser } from '@langchain/core/output_parsers';
 import { PromptTemplate } from '@langchain/core/prompts';
 import { RunnableSequence } from '@langchain/core/runnables';
-import { env } from '$env/dynamic/private';
-import { cacheManager } from '../database/redis.js';
+// Using process.env for server-side compatibility
+const env = process.env;
+import { cacheManager } from '../database/redis';
 
 /**
  * Advanced Legal AI Agent Orchestrator
@@ -134,7 +135,7 @@ export class LegalAIOrchestrator {
         case 'gemini':
           agent = new ChatGoogleGenerativeAI({
             apiKey: env.GOOGLE_AI_API_KEY,
-            modelName: config.model,
+            model: config.model,
             temperature: config.temperature,
             maxOutputTokens: config.maxTokens,
           });
@@ -166,7 +167,7 @@ export class LegalAIOrchestrator {
       } else {
         return await this.singleAgentExecution(request, selectedAgents[0], startTime, cacheKey);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Orchestration error:', error);
       throw new Error(`Orchestration failed: ${error.message}`);
     }
@@ -252,7 +253,7 @@ export class LegalAIOrchestrator {
     cacheKey: string
   ): Promise<OrchestrationResult> {
     // Execute agents in parallel
-    const agentPromises = agents.map(async ({ agent, config }) => {
+    const agentPromises = agents.map(async ({ agent, config }): Promise<any> => {
       const specializedPrompt = this.createSpecializedPrompt(request, config);
       
       const chain = RunnableSequence.from([
@@ -493,10 +494,10 @@ export class LegalAIOrchestrator {
     return Math.abs(hash).toString(36);
   }
 
-  private async cacheResult(cacheKey: string, result: OrchestrationResult): Promise<void> {
+  private async cacheResult(cacheKey: string, result: OrchestrationResult): Promise<any> {
     try {
       await cacheManager.cacheTokens(cacheKey, [{ text: JSON.stringify(result) }], 1800); // 30 min cache
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to cache orchestration result:', error);
     }
   }

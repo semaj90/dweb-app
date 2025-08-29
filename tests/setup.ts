@@ -42,7 +42,7 @@ afterEach(() => {
 });
 
 // Test database setup
-async function setupTestDatabase() {
+async function setupTestDatabase(): Promise<any> {
   try {
     // Mock database operations for testing
     console.log('📊 Setting up test database...');
@@ -52,12 +52,12 @@ async function setupTestDatabase() {
     // 2. Run migrations
     // 3. Seed test data
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Test database setup failed:', error);
   }
 }
 
-async function cleanupTestDatabase() {
+async function cleanupTestDatabase(): Promise<any> {
   try {
     console.log('🗑️ Cleaning up test database...');
     
@@ -65,32 +65,32 @@ async function cleanupTestDatabase() {
     // 1. Drop test tables
     // 2. Close connections
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Test database cleanup failed:', error);
   }
 }
 
 // Test services setup
-async function setupTestServices() {
+async function setupTestServices(): Promise<any> {
   try {
     console.log('🔧 Setting up test services...');
     
     // Mock external services
     global.fetch = vi.fn();
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Test services setup failed:', error);
   }
 }
 
-async function cleanupTestServices() {
+async function cleanupTestServices(): Promise<any> {
   try {
     console.log('🔌 Cleaning up test services...');
     
     // Reset mocks
     vi.restoreAllMocks();
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Test services cleanup failed:', error);
   }
 }

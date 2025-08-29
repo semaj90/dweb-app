@@ -211,7 +211,7 @@ export class NodeJSOrchestrator {
 
       console.log('✅ Node.js Orchestrator (Gemma3-Legal GGUF) initialized successfully');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Orchestrator initialization failed:', error);
     }
   }
@@ -447,7 +447,7 @@ export class NodeJSOrchestrator {
       const worker = new Worker(URL.createObjectURL(blob));
 
       // Setup worker event handlers
-      worker.onmessage = (event) => {
+      worker.onmessage = (event: any) => {
         this.handleWorkerMessage(workerId, event.data);
       };
 
@@ -490,7 +490,7 @@ export class NodeJSOrchestrator {
 
       console.log(`✅ Worker ${workerId} (${config.type}) created with model: ${config.model}`);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Failed to create worker ${workerId}:`, error);
     }
   }
@@ -585,7 +585,7 @@ export class NodeJSOrchestrator {
               });
               break;
           }
-        } catch (error) {
+        } catch (error: any) {
           self.postMessage({
             type: 'TASK_ERROR',
             taskId: taskId,
@@ -609,7 +609,7 @@ export class NodeJSOrchestrator {
     switch (type) {
       case 'GEMMA3_LEGAL_GGUF':
         return `
-          async function processTask(data) {
+          async function processTask(data): Promise<any> {
             const { prompt, maxTokens, temperature, model } = data;
             
             // Enforce gemma3-legal only
@@ -652,7 +652,7 @@ export class NodeJSOrchestrator {
 
       case 'NOMIC_EMBED':
         return `
-          async function processTask(data) {
+          async function processTask(data): Promise<any> {
             const { text, model } = data;
             
             // Enforce nomic-embed-text only
@@ -686,7 +686,7 @@ export class NodeJSOrchestrator {
 
       case 'WEB_GPU_RTX3060':
         return `
-          async function processTask(data) {
+          async function processTask(data): Promise<any> {
             const { operation, errorData, codeContext, config } = data;
             
             if (operation === 'ERROR_ANALYSIS_FLASHATTENTION') {
@@ -722,7 +722,7 @@ export class NodeJSOrchestrator {
 
       case 'DOCUMENT_PROCESSING':
         return `
-          async function processTask(data) {
+          async function processTask(data): Promise<any> {
             const { document, operation, model } = data;
             
             // Use gemma3-legal for document analysis
@@ -752,7 +752,7 @@ export class NodeJSOrchestrator {
 
       default:
         return `
-          async function processTask(data) {
+          async function processTask(data): Promise<any> {
             await new Promise(resolve => setTimeout(resolve, 100));
             return { processed: true, data, model: 'gemma3-legal' };
           }
@@ -1085,7 +1085,7 @@ export class NodeJSOrchestrator {
         const registration = await navigator.serviceWorker.register('/service-worker.js');
         this.serviceWorkerRegistration = registration;
         console.log('✅ Service Worker registered');
-      } catch (error) {
+      } catch (error: any) {
         console.warn('⚠️ Service Worker registration failed:', error);
       }
     }

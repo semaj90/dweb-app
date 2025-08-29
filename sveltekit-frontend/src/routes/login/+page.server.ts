@@ -88,7 +88,7 @@ export const actions: Actions = {
 
       console.log(`[Login] User ${user.email} logged in successfully`);
       throw redirect(303, "/dashboard");
-    } catch (error) {
+    } catch (error: any) {
       console.error("[Login] Error:", error);
       if (error instanceof Response) throw error;
       return fail(500, { error: "Login failed. Please try again." });

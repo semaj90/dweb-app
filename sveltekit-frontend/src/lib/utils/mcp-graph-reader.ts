@@ -312,7 +312,7 @@ export class MCPGraphReader {
           mcpSource: "drizzle-postgres-graph-reader",
         },
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Graph reading error:", error);
       throw new Error(
         `Failed to read graph: ${error instanceof Error ? error.message : "Unknown error"}`

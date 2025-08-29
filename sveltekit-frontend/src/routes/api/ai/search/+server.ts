@@ -55,7 +55,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Vector search API error:', error);
 
     if (error instanceof z.ZodError) {
@@ -111,7 +111,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Vector search GET API error:', error);
     return json(
       { error: 'Vector search failed' }, 

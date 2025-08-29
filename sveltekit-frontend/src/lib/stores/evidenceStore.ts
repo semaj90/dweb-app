@@ -83,7 +83,7 @@ class RealTimeEvidenceStore {
     try {
       // Try WebSocket first
       await this.connectWebSocket();
-    } catch (error) {
+    } catch (error: any) {
       console.warn("WebSocket failed, falling back to SSE:", error);
       this.connectSSE();
     }
@@ -112,11 +112,11 @@ class RealTimeEvidenceStore {
           resolve();
         };
 
-        this.websocket.onmessage = (event) => {
+        this.websocket.onmessage = (event: any) => {
           try {
             const message = JSON.parse(event.data);
             this.handleRealtimeUpdate(message);
-          } catch (error) {
+          } catch (error: any) {
             console.error("WebSocket message parse error:", error);
           }
         };
@@ -143,7 +143,7 @@ class RealTimeEvidenceStore {
           console.error("WebSocket error:", error);
           reject(error);
         };
-      } catch (error) {
+      } catch (error: any) {
         reject(error);
       }
     });
@@ -161,11 +161,11 @@ class RealTimeEvidenceStore {
         this.reconnectAttempts = 0;
       };
 
-      this.eventSource.onmessage = (event) => {
+      this.eventSource.onmessage = (event: any) => {
         try {
           const message = JSON.parse(event.data);
           this.handleRealtimeUpdate(message);
-        } catch (error) {
+        } catch (error: any) {
           console.error("SSE message parse error:", error);
         }
       };
@@ -181,7 +181,7 @@ class RealTimeEvidenceStore {
           }, this.reconnectDelay * this.reconnectAttempts);
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("SSE connection failed:", error);
     }
   }
@@ -318,7 +318,7 @@ class RealTimeEvidenceStore {
       }
       const result = await response.json();
       return result.id || evidenceId;
-    } catch (error) {
+    } catch (error: any) {
       // Revert optimistic update on error
       this.handleEvidenceDeleted(evidenceId);
       throw error;
@@ -348,7 +348,7 @@ class RealTimeEvidenceStore {
       if (!response.ok) {
         throw new Error(`Failed to update evidence: ${response.statusText}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       // Revert optimistic update on error
       this.handleEvidenceUpdated(
         evidenceId,
@@ -377,7 +377,7 @@ class RealTimeEvidenceStore {
       if (!response.ok) {
         throw new Error(`Failed to delete evidence: ${response.statusText}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       // Revert optimistic update on error
       this.handleEvidenceCreated(currentEvidence, this.getCurrentUserId());
       throw error;
@@ -502,7 +502,7 @@ class RealTimeEvidenceStore {
       };
 
       localStorage.setItem("evidenceStore", JSON.stringify(data));
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to save to localStorage:", error);
     }
   }
@@ -531,7 +531,7 @@ class RealTimeEvidenceStore {
           });
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to load from localStorage:", error);
     }
   }

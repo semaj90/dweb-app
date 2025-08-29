@@ -1,6 +1,6 @@
 
-import { db } from './unified-database-service.js';
-import { aiService } from './unified-ai-service.js';
+import { db } from './unified-database-service';
+import { aiService } from './unified-ai-service';
 
 /**
  * Enhanced RAG Pipeline with Self-Organizing Loop System
@@ -100,7 +100,7 @@ export class EnhancedRAGPipeline {
     return results;
   }
 
-  async createKnowledgeRelationships(document: any): Promise<void> {
+  async createKnowledgeRelationships(document: any): Promise<any> {
     // Extract entities and create relationships in Neo4j
     if (document.analysis && document.analysis.entities) {
       // Create document node
@@ -574,7 +574,7 @@ ${options.specialInstructions || ''}
 Response:`;
   }
 
-  private async processFeedbackLoop(query: string, response: any, options: any): Promise<void> {
+  private async processFeedbackLoop(query: string, response: any, options: any): Promise<any> {
     // Implement self-organizing feedback system
     try {
       // Store query-response pair for learning
@@ -601,7 +601,7 @@ Response:`;
     }
   }
 
-  private async updateSourceQualityScore(sourceId: string, processingTime?: number): Promise<void> {
+  private async updateSourceQualityScore(sourceId: string, processingTime?: number): Promise<any> {
     const key = `source_quality:${sourceId}`;
     const existing = await db.getCached(key) || { score: 0.5, usageCount: 0 };
 
@@ -616,7 +616,7 @@ Response:`;
     }, 86400 * 7); // Keep for a week
   }
 
-  private async updateQueryPatterns(query: string, response: any): Promise<void> {
+  private async updateQueryPatterns(query: string, response: any): Promise<any> {
     // Implement query pattern learning for optimization
     const key = `query_patterns:${this.hashString(query)}`;
     const pattern = {
@@ -707,7 +707,7 @@ Response:`;
   }
 
   // ============ Utility Methods ============
-  private async initializeVectorCollection(): Promise<void> {
+  private async initializeVectorCollection(): Promise<any> {
     try {
       const response = await fetch(`${process.env.QDRANT_URL || 'http://localhost:6333'}/collections/legal_documents`, {
         method: 'GET'

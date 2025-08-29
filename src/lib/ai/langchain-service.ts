@@ -1,4 +1,3 @@
-// @ts-nocheck
 // LangChain.js Integration with Ollama and pgvector
 // Production-ready AI pipeline for legal document processing
 
@@ -12,7 +11,7 @@ import { formatDocumentsAsString } from "langchain/util/document";
 import { Document } from "@langchain/core/documents";
 import postgres from 'postgres';
 
-interface LangChainConfig {
+export interface LangChainConfig {
   ollamaBaseUrl: string;
   llmModel: string;
   embeddingModel: string;
@@ -22,7 +21,7 @@ interface LangChainConfig {
   similarityThreshold: number;
 }
 
-interface AnalysisResult {
+export interface AnalysisResult {
   summary: string;
   entities: Array<{ type: string; value: string; confidence: number }>;
   keyTerms: string[];
@@ -34,7 +33,7 @@ interface AnalysisResult {
   tokensUsed: number;
 }
 
-interface SearchResult {
+export interface SearchResult {
   documents: Document[];
   scores: number[];
   query: string;
@@ -84,7 +83,7 @@ class LegalAILangChainService {
   /**
    * Initialize vector store connection
    */
-  async initializeVectorStore(): Promise<void> {
+  async initializeVectorStore(): Promise<any> {
     try {
       const connectionConfig = {
         host: process.env.DB_HOST || "localhost",
@@ -109,7 +108,7 @@ class LegalAILangChainService {
       this.isInitialized = true;
       console.log("✅ LangChain vector store initialized");
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Failed to initialize vector store:", error);
       throw error;
     }
@@ -173,7 +172,7 @@ Respond only with valid JSON.`);
       const processingTime = Date.now() - startTime;
 
       // Parse JSON response
-      let analysis: unknown;
+      let analysis: any;
       try {
         analysis = JSON.parse(result);
       } catch (parseError) {
@@ -196,7 +195,7 @@ Respond only with valid JSON.`);
         tokensUsed,
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Document analysis error:", error);
       throw new Error(`Analysis failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
@@ -209,7 +208,7 @@ Respond only with valid JSON.`);
     try {
       const embeddings = await this.embeddings.embedQuery(text);
       return embeddings;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Embedding generation error:", error);
       throw new Error(`Embedding generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
@@ -222,7 +221,7 @@ Respond only with valid JSON.`);
     id: string,
     content: string,
     metadata: Record<string, any> = {}
-  ): Promise<void> {
+  ): Promise<any> {
     if (!this.vectorStore) {
       await this.initializeVectorStore();
     }
@@ -240,7 +239,7 @@ Respond only with valid JSON.`);
       await this.vectorStore!.addDocuments([document], { ids: [id] });
       console.log(`✅ Document ${id} stored in vector database`);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Document storage error:", error);
       throw new Error(`Document storage failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
@@ -278,7 +277,7 @@ Respond only with valid JSON.`);
         processingTime: Date.now() - startTime,
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Semantic search error:", error);
       throw new Error(`Search failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
@@ -356,7 +355,7 @@ Respond only with valid JSON.`);
         searchResults: formattedResults.substring(0, 6000), // Limit for token management
       });
 
-      let synthesis: unknown;
+      let synthesis: any;
       try {
         synthesis = JSON.parse(synthesisResult);
       } catch (parseError) {
@@ -384,7 +383,7 @@ Respond only with valid JSON.`);
         },
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Legal research error:", error);
       throw new Error(`Research failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
@@ -403,7 +402,7 @@ Respond only with valid JSON.`);
   ): Promise<{
     answer: string;
     confidence: number;
-    sources: Array<{ content: string; metadata: unknown; relevance: number }>;
+    sources: Array<{ content: string; metadata: any; relevance: number }>;
     processingTime: number;
   }> {
     const startTime = Date.now();
@@ -446,7 +445,7 @@ Respond only with valid JSON.`);
         context: contextText.substring(0, 6000), // Limit for token management
       });
 
-      let parsed: unknown;
+      let parsed: any;
       try {
         parsed = JSON.parse(result);
       } catch (parseError) {
@@ -472,7 +471,7 @@ Respond only with valid JSON.`);
         processingTime: Date.now() - startTime,
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Question answering error:", error);
       throw new Error(`QA failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
@@ -517,7 +516,7 @@ Respond only with valid JSON.`);
         models: [this.config.llmModel],
         responseTime: Date.now() - startTime,
       };
-    } catch (error) {
+    } catch (error: any) {
       health.services.ollama.status = 'unhealthy';
       health.status = 'degraded';
     }
@@ -535,7 +534,7 @@ Respond only with valid JSON.`);
       } else {
         health.services.vectorStore.status = 'not_initialized';
       }
-    } catch (error) {
+    } catch (error: any) {
       health.services.vectorStore.status = 'unhealthy';
       health.status = 'degraded';
     }
@@ -548,7 +547,7 @@ Respond only with valid JSON.`);
         model: this.config.embeddingModel,
         dimensions: testEmbedding.length,
       };
-    } catch (error) {
+    } catch (error: any) {
       health.services.embeddings.status = 'unhealthy';
       health.status = 'degraded';
     }
@@ -580,7 +579,7 @@ Respond only with valid JSON.`);
 
   // Private helper methods
 
-  private parseNonJsonResponse(response: string): unknown {
+  private parseNonJsonResponse(response: string): any {
     // Fallback parser for non-JSON responses
     return {
       summary: response.substring(0, 200) + "...",
@@ -595,7 +594,7 @@ Respond only with valid JSON.`);
   /**
    * Clean up resources
    */
-  async dispose(): Promise<void> {
+  async dispose(): Promise<any> {
     try {
       // Close vector store connections if needed
       if (this.vectorStore) {
@@ -605,7 +604,7 @@ Respond only with valid JSON.`);
       
       this.isInitialized = false;
       console.log("🧹 LangChain service disposed");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error disposing LangChain service:", error);
     }
   }

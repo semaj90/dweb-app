@@ -25,7 +25,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
       return json({ error: "Case not found" }, { status: 404 });
     }
     return json(caseResult[0]);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching case:", error);
     return json({ error: "Failed to fetch case" }, { status: 500 });
   }
@@ -110,7 +110,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
       .returning();
 
     return json(updatedCase);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating case:", error);
     return json({ error: "Failed to update case" }, { status: 500 });
   }
@@ -145,7 +145,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
       .returning();
 
     return json({ success: true, deletedCase });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error deleting case:", error);
     return json({ error: "Failed to delete case" }, { status: 500 });
   }
@@ -215,7 +215,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
       .returning();
 
     return json(updatedCase);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error patching case:", error);
     return json({ error: "Failed to update case" }, { status: 500 });
   }

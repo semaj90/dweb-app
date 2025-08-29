@@ -64,7 +64,7 @@ export class FuseLazySearchService {
       
       this.isInitialized = true;
       console.log(`✅ Fuse lazy search initialized with ${this.items.length} items`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize Fuse lazy search:', error);
       throw error;
     }
@@ -83,7 +83,7 @@ export class FuseLazySearchService {
         resolve();
       };
 
-      request.onupgradeneeded = (event) => {
+      request.onupgradeneeded = (event: any) => {
         const db = (event.target as IDBOpenDBRequest).result;
         
         // Create object store with auto-incrementing key
@@ -269,7 +269,7 @@ export class FuseLazySearchService {
       console.log(`📊 Search complete: ${results.length} results`);
       return results.slice(0, searchOptions.maxResults);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Search failed:', error);
       return [];
     }
@@ -313,7 +313,7 @@ export class FuseLazySearchService {
 
       return [...textResults, ...vectorOnlyResults];
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Vector similarity enhancement failed:', error);
       return textResults;
     }
@@ -341,7 +341,7 @@ export class FuseLazySearchService {
       const data = await response.json();
       return new Float32Array(data.embedding);
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Embedding generation failed, using fallback:', error);
       // Fallback: simple hash-based pseudo-embedding
       return this.generateFallbackEmbedding(text);

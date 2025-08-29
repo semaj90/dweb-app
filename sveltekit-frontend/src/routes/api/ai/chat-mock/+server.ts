@@ -205,7 +205,7 @@ export const POST: RequestHandler = async ({ request }) => {
       fallback: true,
       message_note: 'AI services unavailable - using intelligent pattern matching'
     });
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: 'Mock chat failed',

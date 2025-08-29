@@ -2,7 +2,7 @@
 // Autogen Multi-Agent Framework for Legal AI
 // Ultra-efficient legal analysis using specialized AI agents
 
-interface AgentConfig {
+export interface AgentConfig {
   name: string;
   role: string;
   systemMessage: string;
@@ -11,7 +11,7 @@ interface AgentConfig {
   model: string;
 }
 
-interface ConversationMessage {
+export interface ConversationMessage {
   role: "user" | "assistant" | "system";
   content: string;
   agent?: string;
@@ -19,7 +19,7 @@ interface ConversationMessage {
   metadata?: Record<string, any>;
 }
 
-interface LegalAnalysisRequest {
+export interface LegalAnalysisRequest {
   caseId?: string;
   evidenceIds?: string[];
   query: string;
@@ -31,7 +31,7 @@ interface LegalAnalysisRequest {
   priority: "low" | "medium" | "high" | "urgent";
 }
 
-interface LegalAnalysisResult {
+export interface LegalAnalysisResult {
   sessionId: string;
   agentConversations: ConversationMessage[];
   finalAnalysis: string;
@@ -230,7 +230,7 @@ Provide:
         sources: [], // TODO: Implement source extraction
         processingTime: Date.now() - startTime,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Autogen analysis error:", error);
       throw new Error(`Multi-agent analysis failed: ${error}`);
     }
@@ -336,7 +336,7 @@ Identify any compliance issues and provide mitigation strategies.`,
       conversations.push(responseMessage);
 
       return response;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Agent ${agentName} query failed:`, error);
       throw error;
     }

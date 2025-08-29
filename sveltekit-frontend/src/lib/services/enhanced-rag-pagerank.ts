@@ -337,7 +337,7 @@ export class EnhancedRAGEngine {
 
       try {
         await this.apiCoordinator.submitTask(vectorSearchTask);
-      } catch (error) {
+      } catch (error: any) {
         console.warn("API coordinator unavailable, using local search");
       }
     }
@@ -826,7 +826,7 @@ export class EnhancedRAGEngine {
       });
       
       return embedding;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to create embedding:', error);
       // Return zero vector as fallback
       return new Array(384).fill(0);
@@ -862,7 +862,7 @@ export class EnhancedRAGEngine {
       const results = await this.queryDocuments(ragQuery);
       
       return results;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to perform RAG query:', error);
       return [];
     }

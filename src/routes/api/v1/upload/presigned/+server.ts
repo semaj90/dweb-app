@@ -24,7 +24,7 @@ const minioClient = new Client({
 const BUCKET_NAME = 'legal-documents';
 const UPLOAD_EXPIRY = 60 * 60; // 1 hour
 
-export async function POST({ request }) {
+export async function POST({ request }): Promise<any> {
   try {
     // Parse and validate request
     const body = await request.json();
@@ -82,13 +82,7 @@ export async function POST({ request }) {
     const presignedUrl = await minioClient.presignedPutObject(
       BUCKET_NAME,
       minioPath,
-      UPLOAD_EXPIRY,
-      {
-        'Content-Type': contentType,
-        'x-amz-meta-original-name': filename,
-        'x-amz-meta-file-id': fileId,
-        'x-amz-meta-case-id': caseId
-      }
+      UPLOAD_EXPIRY
     );
 
     // Create document record in database
@@ -123,7 +117,7 @@ export async function POST({ request }) {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Presigned URL generation error:', error);
     
     if (error instanceof z.ZodError) {
@@ -135,7 +129,7 @@ export async function POST({ request }) {
 }
 
 // Optional: GET method to check upload status
-export async function GET({ url }) {
+export async function GET({ url }): Promise<any> {
   const fileId = url.searchParams.get('fileId');
   
   if (!fileId) {
@@ -187,7 +181,7 @@ export async function GET({ url }) {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Upload status check error:', error);
     return json({ error: 'Internal server error' }, { status: 500 });
   }

@@ -33,7 +33,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       success: true,
       canvasState: enhancedCanvasState,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Canvas save error:", error);
     return json({ error: "Failed to save canvas state" }, { status: 500 });
   }
@@ -69,7 +69,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
       return json({ error: "Canvas state not found" }, { status: 404 });
     }
     return json({ canvasState });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Canvas load error:", error);
     return json({ error: "Failed to load canvas state" }, { status: 500 });
   }
@@ -96,7 +96,7 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
     await loki.deleteCanvasState(canvasId);
 
     return json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Canvas delete error:", error);
     return json({ error: "Failed to delete canvas state" }, { status: 500 });
   }

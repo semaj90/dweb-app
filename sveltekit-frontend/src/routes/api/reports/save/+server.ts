@@ -52,7 +52,7 @@ export const POST: RequestHandler = async ({ request }) => {
       report: savedReport,
       message: "Report saved successfully",
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Report save error:", error);
     return json(
       {
@@ -88,7 +88,7 @@ export const GET: RequestHandler = async ({ url }) => {
     return json({
       reports,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Reports load error:", error);
     return json(
       {

@@ -5,13 +5,13 @@
  */
 
 import { Worker } from "worker_threads";
-import { SelfOrganizingMapRAG } from "../ai/som-rag-system.js";
+import { SelfOrganizingMapRAG } from '../ai/som-rag-system';
 // Docker dependency removed - using native memory optimization
 import crypto from "crypto";
 import {
   SIMDJSONParser,
   type ParsedLegalDocument,
-} from "../parsers/simd-json-parser.js";
+} from '../parsers/simd-json-parser';
 
 // Initialize SIMD parser instance
 const simdParser = new SIMDJSONParser({
@@ -464,7 +464,7 @@ export class AdvancedMemoryOptimizer {
             worker.off("message", progressHandler);
             reject(new Error(`Worker error: ${message.error}`));
           }
-        } catch (error) {
+        } catch (error: any) {
           clearTimeout(timeout);
           reject(error);
         }
@@ -833,7 +833,7 @@ export class AdvancedMemoryOptimizer {
         `✅ Worker-based k-means clustering completed in ${processingTime}ms`
       );
       return clusterMetrics;
-    } catch (error) {
+    } catch (error: any) {
       console.error(
         "❌ Worker clustering failed, falling back to main thread:",
         error
@@ -905,7 +905,7 @@ export class AdvancedMemoryOptimizer {
 
       console.log(`✅ Processed ${flatResults.length} documents successfully`);
       return flatResults;
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Batch processing failed:", error);
       throw error;
     }
@@ -965,7 +965,7 @@ export class AdvancedMemoryOptimizer {
       });
 
       return result.processedDocuments || [];
-    } catch (error) {
+    } catch (error: any) {
       console.error(
         `❌ Document chunk processing failed for chunk ${chunkIndex}:`,
         error
@@ -1014,7 +1014,7 @@ export class AdvancedMemoryOptimizer {
       }
 
       return result.allocatedPool || this.allocateToDefaultPool(request);
-    } catch (error) {
+    } catch (error: any) {
       console.error(
         "❌ Worker-based optimization failed, using fallback:",
         error

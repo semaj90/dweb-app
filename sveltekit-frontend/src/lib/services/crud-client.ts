@@ -171,7 +171,7 @@ export class CrudClient {
       }
 
       return data;
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof CrudApiError) {
         throw error;
       }
@@ -371,7 +371,7 @@ export class CrudClient {
     try {
       const params = new URLSearchParams({ action: 'health' });
       return this.request('GET', params);
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Health check failed'

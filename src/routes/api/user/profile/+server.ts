@@ -10,7 +10,7 @@ import { VectorService } from '$lib/yorha/services/vector.service';
 import { z } from 'zod';
 
 // GET user profile
-export const GET: RequestHandler = async ({ cookies, url }) => {
+export const GET: RequestHandler = async ({ cookies, url }): Promise<any> => {
   try {
     const sessionToken = cookies.get('yorha_session');
     
@@ -38,7 +38,7 @@ export const GET: RequestHandler = async ({ cookies, url }) => {
     const includeAchievements = url.searchParams.get('includeAchievements') === 'true';
     const includeEquipment = url.searchParams.get('includeEquipment') === 'true';
     
-    const response: unknown = {
+    const response: any = {
       success: true,
       data: {
         unit: {
@@ -98,7 +98,7 @@ export const GET: RequestHandler = async ({ cookies, url }) => {
     }
     
     return json(response);
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('Get profile error:', error);
     return json({
       success: false,
@@ -122,7 +122,7 @@ const updateProfileSchema = z.object({
 });
 
 // PUT update profile
-export const PUT: RequestHandler = async ({ request, cookies }) => {
+export const PUT: RequestHandler = async ({ request, cookies }): Promise<any> => {
   try {
     const sessionToken = cookies.get('yorha_session');
     
@@ -147,7 +147,7 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
     const validated = updateProfileSchema.parse(body);
     
     // Update user profile
-    const updateData: unknown = {
+    const updateData: any = {
       updatedAt: new Date()
     };
     
@@ -211,7 +211,7 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
         }
       }
     });
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('Update profile error:', error);
     
     if (error.name === 'ZodError') {

@@ -302,7 +302,7 @@ export class BarrelStoreManager {
       if (persistedData) {
         await this.importStores(persistedData);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Failed to initialize persistent stores:", error);
     }
   }
@@ -312,7 +312,7 @@ export class BarrelStoreManager {
       try {
         const allPersistent = await this.exportStores();
         await vscodeCache.set("barrel-stores-persistent", allPersistent);
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Failed to persist store ${id}:`, error);
       }
     });
@@ -326,7 +326,7 @@ export class BarrelStoreManager {
     store.subscribe(async (value) => {
       try {
         await vscodeCache.set(`store-cache-${id}`, value, { ttl });
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Failed to cache store ${id}:`, error);
       }
     });
@@ -488,7 +488,7 @@ export const storeUtils = {
     try {
       const data = JSON.parse(backupData);
       await barrelStore.importStores(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to restore from backup:", error);
       throw error;
     }

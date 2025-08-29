@@ -45,7 +45,7 @@ export const POST: RequestHandler = async ({ request }) => {
     }));
 
     return json({ matches, query, useSemanticSearch, includeContext7 }, { status: 200 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Evidence search error:', error);
     return json({ 
       error: 'Search failed', 

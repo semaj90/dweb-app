@@ -188,7 +188,7 @@ export function testSentenceSplitterIntegration(): Promise<boolean> {
     console.log('[test] Result:', result);
 
     return Promise.resolve(matches);
-  } catch (error) {
+  } catch (error: any) {
     console.error('[test] Sentence splitter integration failed:', error);
     return Promise.resolve(false);
   }

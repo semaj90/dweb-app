@@ -14,7 +14,7 @@ const providers: Record<string, EmbeddingProvider> = {
     name: "Ollama",
     endpoint: "http://localhost:11434/api/embeddings",
     model: "nomic-embed-text",
-    dimensions: 768,
+    dimensions: 384,
   },
   openai: {
     name: "OpenAI",
@@ -45,7 +45,7 @@ export async function getEmbedding(
     throw new Error(
       `Embedding method not implemented for provider: ${provider}`,
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error(`Error getting embedding from ${provider}:`, error);
     throw new Error(
       `Failed to generate embedding: ${(error as Error).message || String(error)}`,

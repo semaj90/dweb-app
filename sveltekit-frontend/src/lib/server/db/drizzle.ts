@@ -2,7 +2,7 @@
 // src/lib/server/db/drizzle.ts
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-import * as schema from './schema-postgres.js';
+import * as schema from './schema-postgres';
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 // Create a mock pool for build time

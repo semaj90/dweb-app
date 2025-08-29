@@ -19,7 +19,7 @@ export const GET: RequestHandler = async () => {
     };
 
     return json(systemStatus);
-  } catch (error) {
+  } catch (error: any) {
     console.error('System status check failed:', error);
     return json(
       {
@@ -35,7 +35,7 @@ export const GET: RequestHandler = async () => {
   }
 };
 
-async function checkOllamaStatus() {
+async function checkOllamaStatus(): Promise<any> {
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), OLLAMA_TIMEOUT);
@@ -60,7 +60,7 @@ async function checkOllamaStatus() {
       version: data.version || 'unknown',
       url: OLLAMA_URL
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Ollama connection failed:', error);
     
     let errorMessage = 'Connection failed';
@@ -82,7 +82,7 @@ async function checkOllamaStatus() {
   }
 }
 
-async function checkDatabaseStatus() {
+async function checkDatabaseStatus(): Promise<any> {
   try {
     const result = await healthCheck();
     
@@ -99,7 +99,7 @@ async function checkDatabaseStatus() {
         type: 'PostgreSQL'
       };
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Database health check failed:', error);
     
     return {

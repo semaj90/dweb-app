@@ -142,7 +142,7 @@ export const POST: RequestHandler = async ({ request }) => {
       }, { status: 500 });
     }
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('Document upload error:', error);
     
     return json({
@@ -190,7 +190,7 @@ export const GET: RequestHandler = async ({ url }) => {
     
     return json({ error: 'Missing required parameters' }, { status: 400 });
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('Document retrieval error:', error);
     
     return json({

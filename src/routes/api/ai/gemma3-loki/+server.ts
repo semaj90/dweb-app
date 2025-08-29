@@ -10,7 +10,7 @@ import { gemma3LokiIntegration } from '$lib/services/gemma3-loki-integration';
 /**
  * POST /api/ai/gemma3-loki - Comprehensive legal document analysis
  */
-export const POST: RequestHandler = async ({ request, url }) => {
+export const POST: RequestHandler = async ({ request, url }): Promise<any> => {
   const searchParams = url.searchParams;
   const action = searchParams.get('action') || 'analyze';
 
@@ -34,7 +34,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
         throw error(400, `Unknown action: ${action}`);
     }
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('[Gemma3-Loki API] Request failed:', err);
     throw error(500, {
       message: err instanceof Error ? err.message : 'Internal server error',
@@ -99,7 +99,7 @@ async function handleLegalAnalysis(body: {
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('[Gemma3-Loki] Analysis failed:', err);
     throw error(500, {
       message: err instanceof Error ? err.message : 'Analysis failed',
@@ -155,7 +155,7 @@ async function handleLegalSearch(body: {
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('[Gemma3-Loki] Search failed:', err);
     throw error(500, {
       message: err instanceof Error ? err.message : 'Search failed',
@@ -209,7 +209,7 @@ async function handleBatchAnalysis(body: {
     }
 
     for (const chunk of chunks) {
-      const chunkPromises = chunk.map(async (doc, index) => {
+      const chunkPromises = chunk.map(async (doc, index): Promise<any> => {
         try {
           const result = await gemma3LokiIntegration.analyzeLegalDocument({
             content: doc.content,
@@ -222,7 +222,7 @@ async function handleBatchAnalysis(body: {
           });
 
           return { index: results.length + index, success: true, ...result };
-        } catch (error) {
+        } catch (error: any) {
           const errorResult = {
             index: results.length + index,
             success: false,
@@ -259,7 +259,7 @@ async function handleBatchAnalysis(body: {
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('[Gemma3-Loki] Batch analysis failed:', err);
     throw error(500, {
       message: err instanceof Error ? err.message : 'Batch analysis failed',
@@ -281,7 +281,7 @@ async function handlePerformanceStats(): Promise<Response> {
       timestamp: Date.now()
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('[Gemma3-Loki] Performance stats failed:', err);
     throw error(500, {
       message: err instanceof Error ? err.message : 'Failed to get performance stats',
@@ -293,7 +293,7 @@ async function handlePerformanceStats(): Promise<Response> {
 /**
  * GET /api/ai/gemma3-loki - Service health and information
  */
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
   const searchParams = url.searchParams;
   const info = searchParams.get('info');
 
@@ -366,7 +366,7 @@ export const GET: RequestHandler = async ({ url }) => {
       timestamp: Date.now()
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('[Gemma3-Loki API] GET request failed:', err);
     throw error(500, {
       message: err instanceof Error ? err.message : 'Service unavailable',

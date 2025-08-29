@@ -23,14 +23,14 @@ try {
       try {
         const { sessionId, msg } = JSON.parse(message);
         broadcastToSession(sessionId, msg);
-      } catch (err) {
+      } catch (err: any) {
         console.error('Redis message parse error:', err);
       }
     }
   });
 
   console.log('WebSocket broker connected to Redis');
-} catch (err) {
+} catch (err: any) {
   console.warn('Redis not available for WebSocket broker, using in-memory only:', err);
 }
 
@@ -85,7 +85,7 @@ function broadcastToSession(sessionId: string, msg: ProgressMsg) {
       } else {
         deadConnections.push(ws);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to send WebSocket message:', error);
       deadConnections.push(ws);
     }
@@ -110,7 +110,7 @@ export function sendWsMessageToSession(sessionId: string, msg: ProgressMsg) {
   if (redisPub) {
     try {
       redisPub.publish('ws:progress', JSON.stringify({ sessionId, msg }));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to publish WebSocket message to Redis:', error);
     }
   }
@@ -134,13 +134,13 @@ export function getSessionStats() {
 }
 
 // Cleanup function for graceful shutdown
-export async function closeWsBroker() {
+export async function closeWsBroker(): Promise<any> {
   // Close all WebSocket connections
   for (const [sessionId, connections] of sessions.entries()) {
     for (const ws of connections) {
       try {
         ws.close(1001, 'Server shutting down');
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error closing WebSocket:', error);
       }
     }
@@ -166,7 +166,7 @@ export function startHeartbeat() {
           } else {
             deadConnections.push(ws);
           }
-        } catch (error) {
+        } catch (error: any) {
           deadConnections.push(ws);
         }
       }

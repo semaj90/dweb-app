@@ -19,7 +19,7 @@ import {
 	OrientationProp,
 	SingleOrMultipleProp,
 	TimeValueProp,
-} from "./extended-types/shared/index.js";
+} from './extended-types/shared/index';
 import {
 	FloatingAlignProp,
 	FloatingCollisionBoundaryProp,
@@ -30,8 +30,8 @@ import {
 	FloatingStickyProp,
 	FloatingStrategyProp,
 	FloatingUpdatePositionStrategyProp,
-} from "./extended-types/floating/index.js";
-import { PortalToProp } from "./extended-types/portal/index.js";
+} from './extended-types/floating/index';
+import { PortalToProp } from './extended-types/portal/index';
 
 import type { PropSchema, PropTypeComplex } from "$lib/content/types.js";
 import * as C from "$lib/content/constants.js";
@@ -46,18 +46,18 @@ import {
 	defineSimplePropSchema,
 	defineUnionProp,
 	defineCSSVarSchema,
-} from "../utils.js";
-import { PaginationPageItemProp } from "./extended-types/pagination/index.js";
+} from '../utils';
+import { PaginationPageItemProp } from './extended-types/pagination/index';
 import {
 	CheckboxRootChildrenSnippetProps,
 	CheckboxRootChildSnippetProps,
 	CheckboxRootOnCheckedChangeProp,
 	CheckboxRootOnIndeterminateChangeProp,
-} from "./extended-types/checkbox/index.js";
+} from './extended-types/checkbox/index';
 import {
 	RadioGroupItemChildrenSnippetProps,
 	RadioGroupItemChildSnippetProps,
-} from "./extended-types/radio-group/index.js";
+} from './extended-types/radio-group/index';
 
 type ElementKind =
 	| "HTMLDivElement"

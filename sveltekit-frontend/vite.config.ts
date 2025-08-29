@@ -3,32 +3,116 @@ import { defineConfig } from "vite";
 import UnoCSS from "unocss/vite";
 import { resolve } from "path";
 
-// Plugin to fix SuperForms SuperDebug compatibility with Svelte 5
+// Enhanced plugin to fix SuperForms SuperDebug compatibility with Svelte 5
 function superFormsCompat() {
   return {
     name: 'superforms-svelte5-compat',
-    resolveId(id: string) {
-      if (id.includes('SuperDebug.svelte') || id.includes('sveltekit-superforms/dist/client/SuperDebug.svelte')) {
-        // Return a virtual module that provides a Svelte 5 compatible SuperDebug
+    enforce: 'pre' as const,
+    configResolved(config: any) {
+      // Add comprehensive aliases to intercept SuperDebug
+      config.resolve = config.resolve || {};
+      config.resolve.alias = config.resolve.alias || {};
+
+      // Multiple path variations to catch all imports
+      config.resolve.alias['sveltekit-superforms/dist/client/SuperDebug.svelte'] = 'virtual:superdebug-compat';
+      config.resolve.alias['sveltekit-superforms/client/SuperDebug.svelte'] = 'virtual:superdebug-compat';
+      config.resolve.alias['SuperDebug.svelte'] = 'virtual:superdebug-compat';
+    },
+    resolveId(id: string, importer?: string) {
+      // Comprehensive ID resolution for all SuperDebug variations
+      const superDebugPaths = [
+        'sveltekit-superforms/dist/client/SuperDebug.svelte',
+        'sveltekit-superforms/client/SuperDebug.svelte',
+        'SuperDebug.svelte'
+      ];
+
+      if (superDebugPaths.some(path => id === path || id.endsWith(path) || id.includes('SuperDebug'))) {
+        console.log(`🔧 Intercepting SuperDebug import: ${id} from ${importer}`);
         return 'virtual:superdebug-compat';
       }
     },
     load(id: string) {
       if (id === 'virtual:superdebug-compat') {
-        // Return a minimal Svelte 5 compatible SuperDebug component
+        console.log('✅ Loading Svelte 5 compatible SuperDebug replacement');
+        // Return a completely Svelte 5 compatible SuperDebug component
         return `
 <script lang="ts">
-  // Svelte 5 runes mode compatible props
-  let { data = {} } = $props();
+  // Svelte 5 runes mode compatible props with comprehensive types
+  interface DebugData {
+    [key: string]: any;
+  }
+
+  interface SuperDebugProps {
+    data?: DebugData;
+    display?: boolean;
+    label?: string;
+    status?: string | undefined;
+    collapsed?: boolean;
+    stringTruncate?: number;
+    raw?: boolean;
+  }
+
+  let {
+    data = {} as DebugData,
+    display = true,
+    label = 'Form Data',
+    status = undefined,
+    collapsed = false,
+    stringTruncate = 100,
+    raw = false
+  }: SuperDebugProps = $props();
+
+  // Format data for display
+  const formatData = (obj: any): string => {
+    if (raw) return String(obj);
+    try {
+      return JSON.stringify(obj, null, 2);
+    } catch (e: any) {
+      return String(obj);
+    }
+  };
 </script>
 
-<div class="superdebug-placeholder" style="display: none;">
-  <details>
-    <summary>SuperDebug (Svelte 5 Compatible)</summary>
-    <pre>{JSON.stringify(data, null, 2)}</pre>
-  </details>
-</div>
+{#if display}
+  <div class="superdebug-svelte5-compat" style="margin: 1rem 0; padding: 1rem; background: #f8f9fa; border: 2px solid #6c757d; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 12px;">
+    <details {open: !collapsed}>
+      <summary style="cursor: pointer; font-weight: bold; margin-bottom: 0.5rem; color: #495057; user-select: none;">
+        🐛 {label} {status ? \`(\${status})\` : ''} - Svelte 5 Compatible
+      </summary>
+      <div style="max-height: 400px; overflow: auto; background: #ffffff; padding: 0.5rem; border: 1px solid #dee2e6; border-radius: 2px;">
+        <pre style="margin: 0; white-space: pre-wrap; font-size: 11px; color: #212529;">{formatData(data)}</pre>
+      </div>
+    </details>
+  </div>
+{/if}
         `;
+      }
+    },
+    transform(code: string, id: string) {
+      // Aggressive transformation to replace any SuperDebug references
+      if (code.includes('SuperDebug') && !id.includes('virtual:superdebug-compat')) {
+        let transformedCode = code;
+
+        // Replace all possible import patterns
+        const importPatterns = [
+          /import\s+.*SuperDebug.*from\s+['"]['"]sveltekit-superforms[^'"]*['"]['"];?/gi,
+          /import\s+.*SuperDebug.*from\s+['"]['"]sveltekit-superforms\/dist\/client[^'"]*['"]['"];?/gi,
+          /import\s+.*SuperDebug.*from\s+['"]['"]sveltekit-superforms\/client[^'"]*['"]['"];?/gi,
+          /import\s+\{\s*SuperDebug\s*\}\s+from\s+['"]['"]sveltekit-superforms[^'"]*['"]['"];?/gi,
+        ];
+
+        importPatterns.forEach(pattern => {
+          transformedCode = transformedCode.replace(pattern, '// SuperDebug import replaced for Svelte 5 compatibility');
+        });
+
+        // Replace SuperDebug component usage
+        transformedCode = transformedCode.replace(/<SuperDebug\s+([^>]*)\/>/g, '<!-- SuperDebug removed for Svelte 5 compatibility -->');
+        transformedCode = transformedCode.replace(/<SuperDebug\s+([^>]*)>.*?<\/SuperDebug>/gs, '<!-- SuperDebug removed for Svelte 5 compatibility -->');
+
+        if (transformedCode !== code) {
+          console.log(`🔄 Transformed SuperDebug usage in: ${id}`);
+          return transformedCode;
+        }
       }
     }
   };
@@ -53,7 +137,7 @@ async function findAvailablePort(startPort: number, maxAttempts: number = 10): P
         server.on('error', reject);
       });
       return port;
-    } catch (error) {
+    } catch (error: any) {
       console.log(`Port ${port} is occupied, trying next...`);
     }
   }
@@ -72,7 +156,7 @@ async function loadDynamicPorts(): Promise<Record<string, number>> {
 
     console.log('📡 Loaded dynamic port configuration:', config.ports);
     return config.ports || {};
-  } catch (error) {
+  } catch (error: any) {
     console.log('ℹ️  No dynamic port configuration found, using defaults');
     return {};
   }
@@ -88,17 +172,40 @@ export default defineConfig(async ({ mode }) => {
     if (availablePort !== preferredPort) {
       console.log(`⚠️  Port ${preferredPort} was occupied, using port ${availablePort} instead`);
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error(`❌ Failed to find available port: ${error}`);
     availablePort = preferredPort; // Fallback to default
+  }
+
+  // Enhanced logging configuration
+  const logLevel = process.env.VITE_LOG_LEVEL || 'info';
+  const isVerbose = process.env.VITE_DEBUG === 'true';
+
+  if (isVerbose) {
+    console.log(`🔍 Debug mode enabled - comprehensive error logging active`);
+    console.log(`📊 Log level: ${logLevel}`);
   }
 
   // Load dynamic port configuration for proxy
   const dynamicPorts = await loadDynamicPorts();
 
   return {
+    logLevel: logLevel as 'info' | 'warn' | 'error' | 'silent',
+    clearScreen: false,
   plugins: [
     superFormsCompat(),
+    {
+      name: 'superforms-transform',
+      transform(code: string, id: string) {
+        // Transform any remaining SuperDebug imports during build
+        if (code.includes('SuperDebug') && code.includes('sveltekit-superforms')) {
+          return code.replace(
+            /import\s+.*SuperDebug.*from\s+['"]sveltekit-superforms.*['"];?/g,
+            "// SuperDebug import replaced for Svelte 5 compatibility"
+          );
+        }
+      }
+    },
     UnoCSS(),
     sveltekit()
   ],
@@ -303,14 +410,69 @@ export default defineConfig(async ({ mode }) => {
     ],
     exclude: [
       '@langchain/community',
-      '@langchain/anthropic', 
+      '@langchain/anthropic',
       '@langchain/google-genai',
+      '@langchain/core',
       'ioredis',
       'drizzle-orm',
       'postgres',
       '@qdrant/js-client-rest',
       'sveltekit-superforms/dist/client/SuperDebug.svelte'
     ],
+
+    // ESBuild options for dependency pre-bundling
+    esbuildOptions: {
+      plugins: [
+        {
+          name: 'fix-camelcase-import',
+          setup(build) {
+            // Fix camelcase default import issue for LangChain compatibility
+            build.onResolve({ filter: /^camelcase$/ }, (args) => {
+              return {
+                path: args.path,
+                namespace: 'fix-camelcase'
+              };
+            });
+
+            // Also handle camelcase imports from nested node_modules
+            build.onResolve({ filter: /\/camelcase\/index\.js$/ }, (args) => {
+              return {
+                path: args.path,
+                namespace: 'fix-camelcase'
+              };
+            });
+
+            build.onLoad({ filter: /.*/, namespace: 'fix-camelcase' }, async () => {
+              return {
+                contents: `
+                  // Enhanced camelcase compatibility for LangChain
+                  import camelCase from 'camelcase';
+                  export default camelCase;
+                  export { camelCase };
+                  export * from 'camelcase';
+                `,
+                loader: 'js',
+              };
+            });
+          }
+        },
+        {
+          name: 'fix-langchain-camelcase',
+          setup(build) {
+            // Specifically handle LangChain's camelcase imports
+            build.onResolve({
+              filter: /node_modules\/@langchain\/core\/node_modules\/camelcase/
+            }, (args) => {
+              console.log(`🔧 Fixing LangChain camelcase import: ${args.path}`);
+              return {
+                path: require.resolve('camelcase'),
+                external: false
+              };
+            });
+          }
+        }
+      ]
+    },
 
     // Force pre-bundling for better performance
     force: true
@@ -319,18 +481,41 @@ export default defineConfig(async ({ mode }) => {
   // Path resolution
   resolve: {
     alias: {
+      // Comprehensive SuperDebug compatibility with Svelte 5
+      'sveltekit-superforms/dist/client/SuperDebug.svelte': 'virtual:superdebug-compat',
+      'sveltekit-superforms/client/SuperDebug.svelte': 'virtual:superdebug-compat',
+      'SuperDebug.svelte': 'virtual:superdebug-compat',
+
       $lib: resolve('./src/lib'),
       $components: resolve('./src/lib/components'),
       $stores: resolve('./src/lib/stores'),
-      $utils: resolve('./src/lib/utils'),
+      $utils: resolve('./src/utils'),
       $database: resolve('./src/lib/database'),
       $agents: resolve('./src/lib/agents'),
   $legal: resolve('./src/lib/legal'),
   '@shared': resolve('../shared'),
   '@text': resolve('../shared/text'),
-      // Fix camelcase version conflict for LangChain compatibility
-      'camelcase': resolve('./node_modules/camelcase/index.js')
-    }
+        // Fix camelcase version conflict for LangChain compatibility by redirecting
+        // LangChain's nested camelcase import to our ESM shim which provides a default export.
+        'camelcase': resolve('./src/shims/camelcase-compat.mjs'),
+        // Additional camelcase path resolutions used by @langchain/core
+        '/node_modules/@langchain/core/node_modules/camelcase': resolve('./src/shims/camelcase-compat.mjs'),
+        '/node_modules/@langchain/core/node_modules/camelcase/index.js': resolve('./src/shims/camelcase-compat.mjs')
+      },
+      // Fix ESM module compatibility issues
+      conditions: ['import', 'module', 'browser', 'default']
+    },
+
+    // Fix for LangChain ESM module compatibility
+    ssr: {
+      noExternal: [
+        '@langchain/core',
+        '@langchain/community',
+        '@langchain/anthropic',
+        'camelcase'
+      ],
+      // Ensure camelcase is treated as ESM in SSR context
+      external: []
   },
 
   // ESBuild configuration for optimal transpilation
@@ -357,8 +542,9 @@ export default defineConfig(async ({ mode }) => {
     ]
   },
 
-  // Environment variables
+    // Environment variables and global fixes
   define: {
+    global: 'globalThis', // Fix for Node.js global in browser
     __DEV__: mode === 'development',
     __PROD__: mode === 'production',
     __VERSION__: JSON.stringify(import.meta.env.npm_package_version || '1.0.0'),

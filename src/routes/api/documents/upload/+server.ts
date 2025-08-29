@@ -23,7 +23,7 @@ const uploadSchema = z.object({
  * Document Upload API Endpoint with Database Integration
  * Handles file upload, text extraction, vector embeddings, and database storage
  */
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const formData = await request.formData();
     const file = formData.get("file") as File;
@@ -200,7 +200,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
     return json(responseData);
 
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("Document upload error:", error);
 
     if (error instanceof z.ZodError) {
@@ -247,7 +247,7 @@ async function extractTextFromFile(file: File, fileBuffer: ArrayBuffer): Promise
     }
 
     throw new Error(`Unsupported file type for text extraction: ${mimeType}`);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Text extraction error:', error);
     throw new Error(`Failed to extract text from ${mimeType} file`);
   }
@@ -268,13 +268,13 @@ async function extractPdfText(buffer: ArrayBuffer): Promise<string> {
       const page = await pdf.getPage(i);
       const textContent = await page.getTextContent();
       const pageText = textContent.items
-        .map((item: unknown) => item.str)
+        .map((item: any) => item.str)
         .join(' ');
       fullText += pageText + '\n';
     }
 
     return fullText.trim();
-  } catch (error) {
+  } catch (error: any) {
     console.error('PDF extraction error:', error);
     throw new Error('Failed to extract text from PDF');
   }
@@ -288,7 +288,7 @@ async function extractWordText(buffer: ArrayBuffer): Promise<string> {
     // This would use a library like mammoth.js
     // For now, return a placeholder
     return "Word document text extraction not yet implemented";
-  } catch (error) {
+  } catch (error: any) {
     console.error('Word extraction error:', error);
     throw new Error('Failed to extract text from Word document');
   }
@@ -316,9 +316,9 @@ async function processDocumentAsync(
   documentId: string, 
   content: string, 
   options: { includeEmbeddings: boolean; generateAnalysis: boolean }
-): Promise<void> {
+): Promise<any> {
   try {
-    const updates: unknown = {};
+    const updates: any = {};
 
     if (options.includeEmbeddings) {
       // Generate embeddings using your embedding service
@@ -352,7 +352,7 @@ async function processDocumentAsync(
       context: { action: 'processing-complete', documentId }
     }, { processingCompleted: true, timestamp: new Date().toISOString() });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Background processing error:', error);
     
     // Mark as error status using proper schema
@@ -397,7 +397,7 @@ async function generateDocumentAnalysis(content: string): Promise<any> {
 /**
  * Get document status and details
  */
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
   try {
     const documentId = url.searchParams.get("id");
 
@@ -462,7 +462,7 @@ export const GET: RequestHandler = async ({ url }) => {
     });
 
     return json(responseData);
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("Document status check error:", error);
 
     return json({
@@ -476,7 +476,7 @@ export const GET: RequestHandler = async ({ url }) => {
 /**
  * Delete a document
  */
-export const DELETE: RequestHandler = async ({ url }) => {
+export const DELETE: RequestHandler = async ({ url }): Promise<any> => {
   try {
     const documentId = url.searchParams.get("id");
 
@@ -522,7 +522,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
       deletedId: documentId,
     });
 
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("Document deletion error:", error);
 
     return json({

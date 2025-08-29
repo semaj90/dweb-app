@@ -17,7 +17,7 @@ const pg = postgres.default(envConfig.DATABASE_URL, {
 // Connect to Redis
 const redis: RedisClientType = createClient({ url: envConfig.REDIS_URL });
 
-async function startRelay() {
+async function startRelay(): Promise<any> {
   try {
     // Connect to Redis
     await redis.connect();
@@ -33,22 +33,22 @@ async function startRelay() {
     }
 
     // Set up notification handlers
-    pg.listen('evidence_inserted', async (payload) => {
+    pg.listen('evidence_inserted', async (payload): Promise<any> => {
       console.log('📨 Evidence notification:', payload);
       await redis.publish('realtime:evidence', payload);
     });
 
-    pg.listen('report_inserted', async (payload) => {
+    pg.listen('report_inserted', async (payload): Promise<any> => {
       console.log('📨 Report notification:', payload);
       await redis.publish('realtime:reports', payload);
     });
 
-    pg.listen('cases_changed', async (payload) => {
+    pg.listen('cases_changed', async (payload): Promise<any> => {
       console.log('📨 Cases notification:', payload);
       await redis.publish('realtime:cases', payload);
     });
 
-    pg.listen('reports_changed', async (payload) => {
+    pg.listen('reports_changed', async (payload): Promise<any> => {
       console.log('📨 Reports notification:', payload);
       await redis.publish('realtime:reports', payload);
     });
@@ -56,14 +56,14 @@ async function startRelay() {
     console.log('🚀 PG→Redis relay running successfully');
     console.log('📡 Monitoring channels: evidence_inserted, report_inserted, cases_changed, reports_changed');
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Error starting PG→Redis relay:', error);
     process.exit(1);
   }
 }
 
 // Handle graceful shutdown
-process.on('SIGINT', async () => {
+process.on('SIGINT', async (): Promise<any> => {
   console.log('\n📤 Shutting down PG→Redis relay...');
   await redis.quit();
   await pg.end();

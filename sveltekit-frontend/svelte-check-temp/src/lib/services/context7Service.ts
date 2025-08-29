@@ -64,7 +64,7 @@ class Context7Service {
     try {
       await this.loadAvailableTools();
       console.log("Context7 service initialized successfully");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to initialize Context7 service:", error);
     }
   }
@@ -89,7 +89,7 @@ class Context7Service {
       if (this.cacheEnabled) {
         this.cache.set(cacheKey, tools);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to load Context7 tools:", error);
       // Fallback to default tools
       this.availableTools.set(this.getDefaultTools());
@@ -134,7 +134,7 @@ class Context7Service {
       }
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to analyze component:", error);
       return this.getFallbackAnalysis(component);
     } finally {
@@ -165,7 +165,7 @@ class Context7Service {
       }
 
       return practices;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to generate best practices:", error);
       return this.getDefaultBestPractices(area);
     }
@@ -183,7 +183,7 @@ class Context7Service {
         feature,
         requirements: requirements || "",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to suggest integration:", error);
       return this.getFallbackIntegration(feature);
     }
@@ -222,7 +222,7 @@ class Context7Service {
       }
 
       return intelligence;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Vector search failed:", error);
       return this.getFallbackVectorResults(query);
     }
@@ -259,7 +259,7 @@ class Context7Service {
       }
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Auto-fix failed:", error);
       return {
         success: false,
@@ -310,7 +310,7 @@ class Context7Service {
         confidence: 0.7,
         recommendations: analysis.recommendations
       };
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Context7 legal document analysis failed:', error);
       return null;
     }
@@ -345,7 +345,7 @@ class Context7Service {
         jurisdictions: this.extractPatterns(content, /\b(?:federal|state|local|international)\b/gi),
         caseTypes: this.extractPatterns(content, /\b(?:contract|litigation|compliance|regulatory)\b/gi)
       };
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Context7 entity extraction failed:', error);
       // Return empty arrays as fallback
       return {
@@ -441,7 +441,7 @@ class Context7Service {
       }
 
       return recommendations;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to get auto-fix recommendations:", error);
       return [];
     }
@@ -474,7 +474,7 @@ class Context7Service {
 
         const data = await response.json();
         return data.content?.[0]?.text || data.result || "";
-      } catch (error) {
+      } catch (error: any) {
         if (i === retries - 1) throw error;
         await new Promise((resolve) => setTimeout(resolve, 1000 * (i + 1)));
       }

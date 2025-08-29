@@ -1,7 +1,7 @@
-import { getUserById } from "./db/queries.js";
+import { getUserById } from './db/queries';
 
 import type { RequestEvent } from "@sveltejs/kit";
-import { signJWT, verifyJWT } from "./authUtils.js";
+import { signJWT, verifyJWT } from './authUtils';
 
 // In-memory session store (for development)
 const sessions = new Map<string, Session>();
@@ -42,7 +42,7 @@ export async function validateSessionToken(
       }
     }
     return { session: null, user: null };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Session validation error:", error);
     return { session: null, user: null };
   }

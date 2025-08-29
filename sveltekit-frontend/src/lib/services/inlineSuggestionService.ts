@@ -47,7 +47,7 @@ export interface SuggestionOptions {
 }
 
 // Lightweight result/type guards to avoid pervasive `any` usage
-interface AITaskResult<T = unknown> {
+export interface AITaskResult<T = unknown> {
   success: boolean;
   taskId?: string;
   result?: T;
@@ -115,7 +115,7 @@ export class InlineSuggestionService {
       });
 
       this.isInitialized = true;
-    } catch (err) {
+    } catch (err: any) {
       console.warn('[InlineSuggestionService] init failed', err);
       this.isInitialized = false;
     }
@@ -334,7 +334,7 @@ export class InlineSuggestionService {
           }
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Legal term suggestion failed:', error);
     }
 
@@ -380,7 +380,7 @@ export class InlineSuggestionService {
           }
         }));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Case reference suggestion failed:', error);
     }
 
@@ -468,7 +468,7 @@ export class InlineSuggestionService {
             cleanup();
             reject(new Error(ctx.error));
           }
-        } catch (e) {
+        } catch (e: any) {
         // swallow; defensive guard
         }
       });

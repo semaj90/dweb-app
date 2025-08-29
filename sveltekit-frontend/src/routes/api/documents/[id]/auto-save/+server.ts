@@ -8,7 +8,7 @@ let legalDocuments: any;
 try {
   const schema = await import("$lib/server/db/unified-schema");
   legalDocuments = schema.legalDocuments;
-} catch (error) {
+} catch (error: any) {
   try {
     const schema = await import("$lib/server/db/schema-postgres");
     legalDocuments = schema.legalDocuments;
@@ -18,7 +18,7 @@ try {
 }
 
 // POST /api/documents/[id]/auto-save - Auto-save document content
-export async function POST({ params, request }: RequestEvent) {
+export async function POST({ params, request }: RequestEvent): Promise<any> {
   try {
     const documentId = params.id;
     const body = await request.json();
@@ -109,7 +109,7 @@ export async function POST({ params, request }: RequestEvent) {
         },
       });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error auto-saving document:", error);
     return json(
       {
@@ -121,7 +121,7 @@ export async function POST({ params, request }: RequestEvent) {
   }
 }
 // GET /api/documents/[id]/auto-save - Get auto-save status
-export async function GET({ params }: RequestEvent) {
+export async function GET({ params }: RequestEvent): Promise<any> {
   try {
     const documentId = params.id;
 
@@ -178,7 +178,7 @@ export async function GET({ params }: RequestEvent) {
         },
       });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching auto-save status:", error);
     return json(
       {

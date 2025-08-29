@@ -3,7 +3,7 @@ import { escapeRegExp, isAttributifySelector, splitWithVariantGroupRE } from '@u
 import MagicString from 'magic-string'
 import { arbitraryPropertyRE, quotedArbitraryValuesRE } from '../../../packages-presets/extractor-arbitrary-variants/src/index'
 
-export async function isPug(uno: UnoGenerator, code: string, id = '') {
+export async function isPug(uno: UnoGenerator, code: string, id = ''): Promise<any> {
   const pugExtractor = uno.config.extractors?.find(e => e.name === 'pug')
   if (!pugExtractor)
     return { pug: false, code: '' }
@@ -204,7 +204,7 @@ export async function getMatchedPositionsFromCode(
   code: string,
   id = '',
   options: GetMatchedPositionsOptions = {},
-) {
+): Promise<any> {
   const s = new MagicString(code)
   const tokens = new Set()
   const ctx = { uno, tokens } as any

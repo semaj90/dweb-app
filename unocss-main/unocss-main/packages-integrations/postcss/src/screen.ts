@@ -3,7 +3,7 @@ import type { Theme } from '@unocss/preset-mini'
 import type { Root } from 'postcss'
 import { calcMaxWidthBySize } from '@unocss/rule-utils'
 
-export async function parseScreen(root: Root, uno: UnoGenerator, directiveName: string) {
+export async function parseScreen(root: Root, uno: UnoGenerator, directiveName: string): Promise<any> {
   // @ts-expect-error types
   root.walkAtRules(directiveName, async (rule) => {
     let breakpointName = ''

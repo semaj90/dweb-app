@@ -21,7 +21,7 @@ export interface RAGInputs {
   search: (queryVec: number[], limit: number) => Promise<RankedChunk[]>; // pgvector/Qdrant
 }
 
-export async function buildIntentAwareRetrieval(input: RAGInputs) {
+export async function buildIntentAwareRetrieval(input: RAGInputs): Promise<any> {
   const { context, history, embeddings, search } = input;
   const recent = history.slice(-20); // light window
   const lastUser = [...recent].reverse().find((m) => m.role === "user");
@@ -34,27 +34,27 @@ export async function buildIntentAwareRetrieval(input: RAGInputs) {
   try {
     // Get embeddings for the query
     const queryVector = await embeddings(queryText);
-    
+
     // Search for relevant chunks
     const chunks = await search(queryVector, 10);
-    
+
     // Calculate confidence based on scores
-    const avgScore = chunks.length > 0 
+    const avgScore = chunks.length > 0
       ? chunks.reduce((sum, chunk) => sum + chunk.score, 0) / chunks.length
       : 0;
-    
+
     const confidence = Math.min(avgScore * 100, 100); // Convert to percentage
-    
+
     // Simple intent detection based on query keywords
     const intent = detectIntent(queryText);
-    
+
     return {
       chunks,
       confidence,
       intent,
       queryText
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in buildIntentAwareRetrieval:", error);
     return { chunks: [], confidence: 0, intent: "error" };
   }
@@ -62,7 +62,7 @@ export async function buildIntentAwareRetrieval(input: RAGInputs) {
 
 function detectIntent(queryText: string): string {
   const query = queryText.toLowerCase();
-  
+
   if (query.includes("legal") || query.includes("case") || query.includes("law")) {
     return "legal-research";
   }
@@ -75,7 +75,7 @@ function detectIntent(queryText: string): string {
   if (query.includes("analyze") || query.includes("summary")) {
     return "analysis";
   }
-  
+
   return "general-inquiry";
 }
 
@@ -93,7 +93,7 @@ export class SOMGrid {
     this.width = width;
     this.height = height;
     this.grid = [];
-    
+
     // Initialize grid
     for (let i = 0; i < height; i++) {
       this.grid[i] = [];
@@ -113,8 +113,29 @@ export class SOMGrid {
   }
 
   train(vectors: number[][], intents: string[]): void {
-    // Placeholder for SOM training algorithm
-    // In a real implementation, this would update the grid weights
-    console.log("SOM training not implemented yet");
+    // Lightweight placeholder: map provided intents onto grid cells so parameters are used.
+    // This assigns intents to grid positions deterministically by index; a real SOM would
+    // update neuron weights based on vector similarity.
+    if (!Array.isArray(vectors) || vectors.length === 0) {
+      console.log("No vectors provided for SOM training");
+      return;
+    }
+
+    if (!Array.isArray(intents) || intents.length === 0) {
+      console.log("No intents provided; defaulting to 'unknown'");
+    }
+
+    const count = Math.min(vectors.length, Math.max(intents.length, 1));
+    for (let i = 0; i < count; i++) {
+      const intent = intents[i] ?? "unknown";
+      const x = i % this.width;
+      const y = Math.floor(i / this.width) % this.height;
+
+      if (this.grid[y] && this.grid[y][x]) {
+        this.grid[y][x].intent = intent;
+      }
+    }
+
+    console.log(`SOM training: assigned ${count} intents to grid cells`);
   }
 }

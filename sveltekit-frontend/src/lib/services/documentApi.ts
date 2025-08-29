@@ -72,7 +72,7 @@ export class DocumentApiService {
       const result = await response.json();
       return result;
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Document upload failed:', error);
       return {
         success: false,
@@ -105,7 +105,7 @@ export class DocumentApiService {
 
       return await response.json();
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Document processing failed:', error);
       return {
         documentId,
@@ -128,7 +128,7 @@ export class DocumentApiService {
 
       return await response.json();
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Status check failed:', error);
       return null;
     }
@@ -150,7 +150,7 @@ export class DocumentApiService {
 
       return await response.json();
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Get document failed:', error);
       return null;
     }
@@ -190,7 +190,7 @@ export class DocumentApiService {
 
       return await response.json();
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('List documents failed:', error);
       return {
         documents: [],
@@ -216,7 +216,7 @@ export class DocumentApiService {
 
       return { success: true };
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Document deletion failed:', error);
       return {
         success: false,
@@ -260,7 +260,7 @@ export class DocumentApiService {
 
       return await response.json();
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Document search failed:', error);
       return {
         results: [],
@@ -294,7 +294,7 @@ export class DocumentApiService {
 
       return await response.json();
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Analytics failed:', error);
       return {
         totalDocuments: 0,
@@ -355,7 +355,7 @@ export class DocumentApiService {
 
       return await response.json();
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Legal document processing failed:', error);
       return {
         success: false,

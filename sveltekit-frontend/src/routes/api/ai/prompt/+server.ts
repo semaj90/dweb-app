@@ -78,7 +78,7 @@ export const POST: RequestHandler = async ({ request }) => {
       timestamp: new Date().toISOString(),
       promptId: Math.random().toString(36).substr(2, 9),
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error processing AI prompt:", error);
     return json({ error: "Failed to process AI prompt" }, { status: 500 });
   }

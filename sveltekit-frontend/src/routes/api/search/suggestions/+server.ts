@@ -11,7 +11,7 @@ class SuggestionsService {
       const response = await fetch(url, options);
       if (response.ok) return response;
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    } catch (error) {
+    } catch (error: any) {
       for (const port of fallbackPorts) {
         try {
           const fallbackUrl = url.replace(/:\d+/, `:${port}`);
@@ -160,7 +160,7 @@ export const GET: RequestHandler = async ({ url }) => {
       }
     });
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('Enhanced Legal AI Suggestions error:', error);
     
     // Fallback to basic suggestions if enhanced search fails
@@ -234,7 +234,7 @@ async function processEnhancedSuggestions(
         urgencyLevel: determineUrgencyLevel(suggestion.text)
       }));
 
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Error processing enhanced suggestions:', error);
     return [];
   }
@@ -252,7 +252,7 @@ async function processTrendingSuggestions(trendingData: any[], category: string)
       trendingPeriod: trending.period || '7d',
       growthRate: trending.growthRate || 0
     }));
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Error processing trending suggestions:', error);
     return [];
   }

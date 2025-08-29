@@ -2,8 +2,9 @@
 // Centralized management for all XState machines in the application
 
 import { writable, derived, type Readable } from 'svelte/store';
-import { interpret, type InterpreterFrom } from 'xstate';
-import { browser } from '$app/environment';
+import { createActor, type ActorRefFrom } from 'xstate';
+// Browser environment check
+const browser = typeof window !== 'undefined';
 
 // Import all state machines
 import { appStateMachine, type AppService, type AppContext } from '../machines/app-state-machine';
@@ -40,7 +41,7 @@ export class XStateStoreManager {
   /**
    * Initialize all state machines
    */
-  async initialize(): Promise<void> {
+  async initialize(): Promise<any> {
     if (!browser || this.initialized) return;
 
     try {
@@ -64,7 +65,7 @@ export class XStateStoreManager {
       this.initialized = true;
       console.log('✓ XState Store Manager initialized successfully');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ XState Store Manager initialization failed:', error);
       throw error;
     }
@@ -73,9 +74,9 @@ export class XStateStoreManager {
   /**
    * Initialize application state machine
    */
-  private async initializeAppMachine(): Promise<void> {
-    appService = interpret(appStateMachine)
-      .onTransition((state) => {
+  private async initializeAppMachine(): Promise<any> {
+    appService = createActor(appStateMachine)
+      .subscribe((state) => {
         appState.set(state.context);
       })
       .start();
@@ -89,12 +90,12 @@ export class XStateStoreManager {
   /**
    * Initialize document upload state machine
    */
-  private async initializeDocumentUploadMachine(): Promise<void> {
-    documentUploadService = interpret(documentUploadMachine)
-      .onTransition((state) => {
-        documentUploadState.set(state.context);
-      })
-      .start();
+  private async initializeDocumentUploadMachine(): Promise<any> {
+    documentUploadService = createActor(documentUploadMachine);
+    documentUploadService.subscribe((state) => {
+      documentUploadState.set(state.context);
+    });
+    documentUploadService.start();
 
     this.services.set('documentUpload', documentUploadService);
     documentUploadActor.set(documentUploadService);
@@ -105,9 +106,9 @@ export class XStateStoreManager {
   /**
    * Initialize chat state machine
    */
-  private async initializeChatMachine(): Promise<void> {
-    chatService = interpret(chatMachine)
-      .onTransition((state) => {
+  private async initializeChatMachine(): Promise<any> {
+    chatService = createActor(chatMachine)
+      .subscribe((state) => {
         chatState.set(state.context);
       })
       .start();
@@ -121,9 +122,9 @@ export class XStateStoreManager {
   /**
    * Initialize search state machine
    */
-  private async initializeSearchMachine(): Promise<void> {
-    searchService = interpret(searchMachine)
-      .onTransition((state) => {
+  private async initializeSearchMachine(): Promise<any> {
+    searchService = createActor(searchMachine)
+      .subscribe((state) => {
         searchState.set(state.context);
       })
       .start();
@@ -139,7 +140,7 @@ export class XStateStoreManager {
    */
   private setupCrossMachineCommunication(): void {
     // Listen for user authentication changes and propagate to other machines
-    appService?.onTransition((state) => {
+    appService?.subscribe((state) => {
       if (state.changed) {
         const { user, isAuthenticated } = state.context;
         
@@ -153,7 +154,7 @@ export class XStateStoreManager {
     });
 
     // Listen for document upload completion and update chat context
-    documentUploadService?.onTransition((state) => {
+    documentUploadService?.subscribe((state) => {
       if (state.matches('completed') && state.context.results.length > 0) {
         // Notify chat machine about new documents for context
         const successfulUploads = state.context.results.filter(r => r.success);
@@ -164,7 +165,7 @@ export class XStateStoreManager {
     });
 
     // Listen for search results and update chat suggestions
-    searchService?.onTransition((state) => {
+    searchService?.subscribe((state) => {
       if (state.matches('results') && state.context.results.length > 0) {
         // Update chat machine with relevant search context
         this.broadcastSearchResults(state.context.query, state.context.results);
@@ -177,7 +178,7 @@ export class XStateStoreManager {
   /**
    * Broadcast user authentication to all machines
    */
-  private broadcastUserAuthenticated(user: unknown): void {
+  private broadcastUserAuthenticated(user: any): void {
     // Update chat machine with user context
     chatService?.send({
       type: 'UPDATE_SETTINGS',
@@ -218,7 +219,7 @@ export class XStateStoreManager {
   /**
    * Broadcast document upload completion
    */
-  private broadcastDocumentsUploaded(documents: unknown[]): void {
+  private broadcastDocumentsUploaded(documents: any[]): void {
     // Add document context to chat machine
     const documentTitles = documents.map(d => d.documentId || d.fileId).join(', ');
     
@@ -238,7 +239,7 @@ export class XStateStoreManager {
   /**
    * Broadcast search results for context enhancement
    */
-  private broadcastSearchResults(query: string, results: unknown[]): void {
+  private broadcastSearchResults(query: string, results: any[]): void {
     // Update chat machine with search context for better responses
     if (results.length > 0) {
       chatService?.send({
@@ -262,14 +263,14 @@ export class XStateStoreManager {
   /**
    * Get service by name
    */
-  getService(name: string): unknown {
+  getService(name: string): any {
     return this.services.get(name);
   }
 
   /**
    * Send event to specific machine
    */
-  sendToMachine(machineName: string, event: unknown): void {
+  sendToMachine(machineName: string, event: any): void {
     const service = this.services.get(machineName);
     if (service) {
       service.send(event);
@@ -281,11 +282,11 @@ export class XStateStoreManager {
   /**
    * Broadcast event to all machines
    */
-  broadcastEvent(event: unknown): void {
+  broadcastEvent(event: any): void {
     this.services.forEach((service, name) => {
       try {
         service.send(event);
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Failed to send event to machine '${name}':`, error);
       }
     });
@@ -294,8 +295,8 @@ export class XStateStoreManager {
   /**
    * Get current state of all machines
    */
-  getGlobalState(): unknown {
-    const state: unknown = {};
+  getGlobalState(): any {
+    const state: any = {};
     
     this.services.forEach((service, name) => {
       state[name] = {
@@ -330,7 +331,7 @@ export class XStateStoreManager {
   /**
    * Restart all machines
    */
-  async restart(): Promise<void> {
+  async restart(): Promise<any> {
     this.stopAll();
     await this.initialize();
   }
@@ -338,8 +339,8 @@ export class XStateStoreManager {
   /**
    * Get performance metrics from all machines
    */
-  getPerformanceMetrics(): unknown {
-    const metrics: unknown = {
+  getPerformanceMetrics(): any {
+    const metrics: any = {
       timestamp: Date.now(),
       machines: {}
     };
@@ -360,8 +361,8 @@ export class XStateStoreManager {
   /**
    * Export machine configurations for debugging
    */
-  exportConfigurations(): unknown {
-    const configs: unknown = {};
+  exportConfigurations(): any {
+    const configs: any = {};
     
     this.services.forEach((service, name) => {
       configs[name] = {
@@ -378,8 +379,8 @@ export class XStateStoreManager {
   /**
    * Health check for all machines
    */
-  healthCheck(): unknown {
-    const health: unknown = {
+  healthCheck(): any {
+    const health: any = {
       overall: 'healthy',
       machines: {},
       issues: []
@@ -450,12 +451,12 @@ export const xstateHelpers = {
     appService?.send({ type: 'LOGOUT' });
   },
 
-  addNotification: (notification: unknown) => {
+  addNotification: (notification: any) => {
     appService?.send({ type: 'ADD_NOTIFICATION', notification });
   },
 
   // Chat helpers
-  createChatSession: (title?: string, context?: unknown) => {
+  createChatSession: (title?: string, context?: any) => {
     chatService?.send({ type: 'CREATE_SESSION', title, context });
   },
 
@@ -470,7 +471,7 @@ export const xstateHelpers = {
     searchService?.send({ type: 'SEARCH' });
   },
 
-  applySearchFilters: (filters: unknown) => {
+  applySearchFilters: (filters: any) => {
     searchService?.send({ type: 'APPLY_FILTERS', filters });
   },
 

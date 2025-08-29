@@ -335,7 +335,7 @@ export class NeuralSpriteEngine {
             features[i] = Math.sin(i * sprite.metadata.complexity * 0.01);
           }
 
-        } catch (error) {
+        } catch (error: any) {
           // Fallback features
           for (let i = 0; i < 16; i++) {
             features[i] = Math.random() * 0.5;
@@ -433,7 +433,7 @@ export class NeuralSpriteEngine {
 
           self.postMessage({ id, result, error: null });
 
-        } catch (error) {
+        } catch (error: any) {
           self.postMessage({ id, result: null, error: error.message });
         }
       };
@@ -448,7 +448,7 @@ export class NeuralSpriteEngine {
     for (let i = 0; i < this.maxWorkers; i++) {
       const worker = new Worker(workerUrl);
 
-      worker.onmessage = (e) => {
+      worker.onmessage = (e: any) => {
         const { id, result, error } = e.data;
 
         if (error) {
@@ -976,7 +976,7 @@ export class NeuralSpriteEngine {
     const frameInterval = 1000 / sequence.fps; // Convert FPS to milliseconds
     const animationStartTime = Date.now();
 
-    const playFrame = async () => {
+    const playFrame = async (): Promise<any> => {
       if (frameIndex >= sequence.frames.length) {
         if (sequence.loop) {
           frameIndex = 0;
@@ -1123,7 +1123,7 @@ export class NeuralSpriteEngine {
         // Pre-parse JSON in background (like loading sprite data into VRAM)
         try {
           JSON.parse(sprite.jsonState);
-        } catch (e) {
+        } catch (e: any) {
           console.warn(`Invalid sprite JSON for ${stateId}`);
         }
       }

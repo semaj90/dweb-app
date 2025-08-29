@@ -89,7 +89,7 @@ export class Gemma3LegalService {
         message: 'Ollama service is healthy and gemma3-legal model is available',
         models
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: 'unhealthy',
         message: `Connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`
@@ -191,7 +191,7 @@ export class Gemma3LegalService {
           try {
             const parsed = JSON.parse(line);
             yield parsed as OllamaStreamResponse;
-          } catch (e) {
+          } catch (e: any) {
             console.warn('Failed to parse streaming response line:', line);
           }
         }
@@ -243,7 +243,7 @@ export class Gemma3LegalService {
             const progress = JSON.parse(line);
             onProgress?.(progress);
             if (progress.status === 'success') return;
-          } catch (e) {
+          } catch (e: any) {
             console.warn('Failed to parse pull progress:', line);
           }
         }
@@ -286,7 +286,7 @@ IMPORTANT: Your responses should be informative but always include appropriate d
         }
 
         return await response.json();
-      } catch (error) {
+      } catch (error: any) {
         lastError = error as Error;
         console.warn(`Ollama request attempt ${attempt} failed:`, error);
         

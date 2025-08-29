@@ -20,7 +20,7 @@ export const GET: RequestHandler = async () => {
       summaryType: (r as any).summaryType || null,
     }));
     return new Response(JSON.stringify({ evidence: mapped }), { status: 200 });
-  } catch (err) {
+  } catch (err: any) {
     console.error('Evidence list error', err);
     return new Response(JSON.stringify({ error: 'Failed to list evidence' }), { status: 500 });
   }

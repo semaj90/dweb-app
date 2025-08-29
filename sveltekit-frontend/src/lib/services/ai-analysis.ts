@@ -28,7 +28,7 @@ export class AIAnalysisService {
       }
 
       return await response.json();
-    } catch (error) {
+    } catch (error: any) {
       console.error('AI Analysis error:', error);
       
       // Fallback analysis for development
@@ -71,7 +71,7 @@ export class AIAnalysisService {
       }
 
       return await response.json();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Text Analysis error:', error);
       
       // Fallback analysis for development

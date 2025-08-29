@@ -6,12 +6,12 @@ import { writable, derived } from 'svelte/store';
 import { browser } from '$app/environment';
 
 // Import core services
-import { 
-  getNATSService, 
+import {
+  getNATSService,
   createNATSService,
-  NATS_SUBJECTS,
-  type NATSMessage 
+  NATS_SUBJECTS
 } from './nats-messaging-service';
+import type { NATSMessage } from './nats-messaging-service';
 import { getLangChainService } from '../langchain/langchain-service';
 import { ragPipeline } from './enhanced-rag-pipeline';
 import { multiProtocolRouter } from './multi-protocol-router';
@@ -25,19 +25,19 @@ export interface IntegrationConfig {
   enableLangChainIntegration: boolean;
   enableRAGPipeline: boolean;
   enableMultiProtocol: boolean;
-  
+
   // Processing settings
   autoProcessMessages: boolean;
   enableMessagePersistence: boolean;
   enableEventForwarding: boolean;
   enablePerformanceMonitoring: boolean;
-  
+
   // Legal AI specific settings
   enableLegalWorkflows: boolean;
   enableCaseManagement: boolean;
   enableDocumentProcessing: boolean;
   enableRealTimeAnalysis: boolean;
-  
+
   // Performance settings
   maxConcurrentProcessing: number;
   messageRetentionHours: number;
@@ -51,7 +51,7 @@ export interface ProcessingResult {
   messageId: string;
   success: boolean;
   processingTime: number;
-  result?: unknown;
+  result?: any;
   error?: string;
   serviceUsed: string[];
   timestamp: number;
@@ -81,8 +81,8 @@ export interface IntegrationStats {
  */
 export class NATSLangChainIntegration extends EventEmitter {
   private config: IntegrationConfig;
-  private natsService: unknown = null;
-  private langchainService: unknown = null;
+  private natsService: any = null;
+  private langchainService: any = null;
   private isInitialized = false;
   private processingQueue: Map<string, NATSMessage> = new Map();
   private activeProcessing = new Set<string>();
@@ -101,11 +101,11 @@ export class NATSLangChainIntegration extends EventEmitter {
     activeWorkflows: 0
   };
   private subscriptionIds: string[] = [];
-  private healthCheckTimer: unknown = null;
+  private healthCheckTimer: any = null;
 
   constructor(config: Partial<IntegrationConfig> = {}) {
     super();
-    
+
     this.config = {
       enableNATSMessaging: config.enableNATSMessaging ?? true,
       enableLangChainIntegration: config.enableLangChainIntegration ?? true,
@@ -164,22 +164,22 @@ export class NATSLangChainIntegration extends EventEmitter {
 
       this.isInitialized = true;
       this.emit('integration:initialized', { config: this.config });
-      
+
       console.log('✓ NATS + LangChain + RAG Integration initialized');
       integrationStats.set(this.stats);
-      
+
       return true;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Integration initialization failed:', error);
       this.emit('integration:error', { error: error.message });
       return false;
     }
   }
 
-  private async initializeNATSService(): Promise<void> {
+  private async initializeNATSService(): Promise<any> {
     this.natsService = getNATSService();
-    
+
     if (!this.natsService) {
       this.natsService = createNATSService({
         enableLegalChannels: true,
@@ -193,9 +193,9 @@ export class NATSLangChainIntegration extends EventEmitter {
     console.log('✓ NATS service initialized');
   }
 
-  private async initializeLangChainService(): Promise<void> {
+  private async initializeLangChainService(): Promise<any> {
     this.langchainService = getLangChainService();
-    
+
     if (this.langchainService) {
       this.stats.serviceHealth.langchain = this.langchainService.isReady;
       this.setupLangChainEventForwarding();
@@ -205,18 +205,18 @@ export class NATSLangChainIntegration extends EventEmitter {
     }
   }
 
-  private async initializeRAGPipeline(): Promise<void> {
+  private async initializeRAGPipeline(): Promise<any> {
     try {
       const ragReady = await ragPipeline.initialize();
       this.stats.serviceHealth.rag = ragReady;
       console.log('✓ RAG pipeline integrated');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ RAG pipeline initialization failed:', error);
       this.stats.serviceHealth.rag = false;
     }
   }
 
-  private async setupMessageProcessing(): Promise<void> {
+  private async setupMessageProcessing(): Promise<any> {
     if (!this.natsService) return;
 
     // Subscribe to all legal AI subjects for processing
@@ -238,7 +238,7 @@ export class NATSLangChainIntegration extends EventEmitter {
     console.log(`✓ Message processing setup for ${processingSubjects.length} subjects`);
   }
 
-  private async setupLegalWorkflows(): Promise<void> {
+  private async setupLegalWorkflows(): Promise<any> {
     if (!this.natsService) return;
 
     // Legal case workflow
@@ -263,7 +263,7 @@ export class NATSLangChainIntegration extends EventEmitter {
     if (!this.langchainService || !this.natsService) return;
 
     // Forward LangChain events to NATS
-    this.langchainService.on('message:received', async (data: unknown) => {
+    this.langchainService.on('message:received', async (data: any) => {
       await this.natsService.publish(NATS_SUBJECTS.CHAT_RESPONSE, {
         sessionId: data.sessionId,
         message: data.message,
@@ -272,7 +272,7 @@ export class NATSLangChainIntegration extends EventEmitter {
       });
     });
 
-    this.langchainService.on('tool:executed', async (data: unknown) => {
+    this.langchainService.on('tool:executed', async (data: any) => {
       await this.natsService.publishAIAnalysisEvent('completed', {
         toolName: data.toolName,
         input: data.input,
@@ -281,7 +281,7 @@ export class NATSLangChainIntegration extends EventEmitter {
       });
     });
 
-    this.langchainService.on('streaming:chunk', async (data: unknown) => {
+    this.langchainService.on('streaming:chunk', async (data: any) => {
       await this.natsService.publish(NATS_SUBJECTS.CHAT_STREAMING, {
         sessionId: data.sessionId,
         chunk: data.chunk,
@@ -294,7 +294,7 @@ export class NATSLangChainIntegration extends EventEmitter {
 
   // ============ Message Processing ============
 
-  private async processMessage(message: NATSMessage): Promise<void> {
+  private async processMessage(message: NATSMessage): Promise<any> {
     if (this.activeProcessing.size >= this.config.maxConcurrentProcessing) {
       this.processingQueue.set(message.messageId, message);
       return;
@@ -302,14 +302,14 @@ export class NATSLangChainIntegration extends EventEmitter {
 
     this.activeProcessing.add(message.messageId);
     this.stats.activeWorkflows++;
-    
+
     const startTime = Date.now();
     let result: ProcessingResult;
 
     try {
       result = await this.executeMessageProcessing(message);
       this.stats.successfulProcessing++;
-    } catch (error) {
+    } catch (error: any) {
       result = {
         messageId: message.messageId,
         success: false,
@@ -338,7 +338,7 @@ export class NATSLangChainIntegration extends EventEmitter {
   private async executeMessageProcessing(message: NATSMessage): Promise<ProcessingResult> {
     const startTime = Date.now();
     const serviceUsed: string[] = [];
-    let result: unknown = null;
+    let result: any = null;
 
     switch (message.subject) {
       case NATS_SUBJECTS.SEARCH_QUERY:
@@ -405,7 +405,7 @@ export class NATSLangChainIntegration extends EventEmitter {
     }
 
     const { content, sessionId } = message.data;
-    
+
     // Get or create session
     let session = this.langchainService.getSession(sessionId);
     if (!session) {
@@ -424,7 +424,7 @@ export class NATSLangChainIntegration extends EventEmitter {
     }
 
     const documentData = message.data;
-    
+
     // Use multi-protocol router for document processing
     const uploadResult = await multiProtocolRouter.execute('document_upload', documentData, {
       preferredProtocol: 'grpc',
@@ -447,7 +447,7 @@ export class NATSLangChainIntegration extends EventEmitter {
   private async processAIAnalysis(message: NATSMessage): Promise<any> {
     const { documentContent, analysisType, caseId } = message.data;
 
-    let result: unknown = {};
+    let result: any = {};
 
     // Use LangChain for analysis if available
     if (this.langchainService && this.langchainService.isReady) {
@@ -486,7 +486,7 @@ export class NATSLangChainIntegration extends EventEmitter {
 
   // ============ Legal Workflow Handlers ============
 
-  private async handleCaseCreatedWorkflow(message: NATSMessage): Promise<void> {
+  private async handleCaseCreatedWorkflow(message: NATSMessage): Promise<any> {
     const caseData = message.data;
     console.log(`📋 Case created workflow: ${caseData.title || caseData.caseId}`);
 
@@ -502,7 +502,7 @@ export class NATSLangChainIntegration extends EventEmitter {
     this.emit('workflow:case_created', caseData);
   }
 
-  private async handleDocumentUploadedWorkflow(message: NATSMessage): Promise<void> {
+  private async handleDocumentUploadedWorkflow(message: NATSMessage): Promise<any> {
     const documentData = message.data;
     console.log(`📄 Document uploaded workflow: ${documentData.name || documentData.documentId}`);
 
@@ -512,7 +512,7 @@ export class NATSLangChainIntegration extends EventEmitter {
     this.emit('workflow:document_uploaded', documentData);
   }
 
-  private async handleAIAnalysisWorkflow(message: NATSMessage): Promise<void> {
+  private async handleAIAnalysisWorkflow(message: NATSMessage): Promise<any> {
     const analysisData = message.data;
     console.log(`🧠 AI analysis workflow: ${analysisData.analysisType}`);
 
@@ -530,7 +530,7 @@ export class NATSLangChainIntegration extends EventEmitter {
     }, this.config.healthCheckInterval);
   }
 
-  private async performHealthCheck(): Promise<void> {
+  private async performHealthCheck(): Promise<any> {
     // Check NATS health
     if (this.natsService) {
       this.stats.serviceHealth.nats = this.natsService.isConnected;
@@ -545,7 +545,7 @@ export class NATSLangChainIntegration extends EventEmitter {
     try {
       const ragHealth = await ragPipeline.getHealthStatus();
       this.stats.serviceHealth.rag = ragHealth.initialized;
-    } catch (error) {
+    } catch (error: any) {
       this.stats.serviceHealth.rag = false;
     }
 
@@ -570,7 +570,7 @@ export class NATSLangChainIntegration extends EventEmitter {
   // ============ Utility Methods ============
 
   private processNextQueuedMessage(): void {
-    if (this.processingQueue.size === 0 || 
+    if (this.processingQueue.size === 0 ||
         this.activeProcessing.size >= this.config.maxConcurrentProcessing) {
       return;
     }
@@ -582,7 +582,7 @@ export class NATSLangChainIntegration extends EventEmitter {
 
   private updateAverageProcessingTime(processingTime: number): void {
     const count = this.stats.messagesProcessed;
-    this.stats.averageProcessingTime = 
+    this.stats.averageProcessingTime =
       (this.stats.averageProcessingTime * (count - 1) + processingTime) / count;
   }
 
@@ -591,11 +591,11 @@ export class NATSLangChainIntegration extends EventEmitter {
       console.log(`✓ Message processed: ${result.messageId} (${result.processingTime}ms)`);
     });
 
-    this.on('workflow:case_created', (caseData: unknown) => {
+    this.on('workflow:case_created', (caseData: any) => {
       console.log(`📋 Case workflow initiated: ${caseData.caseId}`);
     });
 
-    this.on('integration:error', (data: unknown) => {
+    this.on('integration:error', (data: any) => {
       console.error(`❌ Integration error: ${data.error}`);
     });
   }
@@ -605,7 +605,7 @@ export class NATSLangChainIntegration extends EventEmitter {
   /**
    * Send a message through the integration system
    */
-  async sendMessage(subject: string, data: unknown, options: unknown = {}): Promise<void> {
+  async sendMessage(subject: string, data: any, options: any = {}): Promise<any> {
     if (!this.natsService) {
       throw new Error('NATS service not available');
     }
@@ -616,7 +616,7 @@ export class NATSLangChainIntegration extends EventEmitter {
   /**
    * Execute a search query through the integration
    */
-  async executeSearch(query: string, options: unknown = {}): Promise<any> {
+  async executeSearch(query: string, options: any = {}): Promise<any> {
     if (!this.natsService) {
       throw new Error('NATS service not available');
     }
@@ -646,7 +646,7 @@ export class NATSLangChainIntegration extends EventEmitter {
   /**
    * Trigger AI analysis through the integration
    */
-  async triggerAIAnalysis(documentContent: string, analysisType: string, caseId?: string): Promise<void> {
+  async triggerAIAnalysis(documentContent: string, analysisType: string, caseId?: string): Promise<any> {
     if (!this.natsService) {
       throw new Error('NATS service not available');
     }
@@ -677,14 +677,14 @@ export class NATSLangChainIntegration extends EventEmitter {
    * Check if integration is ready
    */
   get isReady(): boolean {
-    return this.isInitialized && 
+    return this.isInitialized &&
            this.stats.serviceHealth.nats &&
            (this.stats.serviceHealth.langchain || this.stats.serviceHealth.rag);
   }
 
   // ============ Cleanup ============
 
-  async cleanup(): Promise<void> {
+  async cleanup(): Promise<any> {
     console.log('🧹 Cleaning up NATS + LangChain + RAG Integration...');
 
     // Stop health monitoring
@@ -730,11 +730,11 @@ export const integrationHealth = derived(
   [integrationStats],
   ([$stats]) => ({
     overallHealth: Object.values($stats.serviceHealth).filter(Boolean).length / 4,
-    processingSuccessRate: $stats.messagesProcessed > 0 
-      ? $stats.successfulProcessing / $stats.messagesProcessed 
+    processingSuccessRate: $stats.messagesProcessed > 0
+      ? $stats.successfulProcessing / $stats.messagesProcessed
       : 0,
     averageResponseTime: $stats.averageProcessingTime,
-    isOperational: $stats.serviceHealth.nats && 
+    isOperational: $stats.serviceHealth.nats &&
                    ($stats.serviceHealth.langchain || $stats.serviceHealth.rag),
     lastActivity: $stats.lastActivity,
     activeLoad: $stats.activeWorkflows
@@ -748,7 +748,7 @@ export function createIntegrationService(config?: Partial<IntegrationConfig>): N
   if (integrationInstance) {
     integrationInstance.cleanup();
   }
-  
+
   integrationInstance = new NATSLangChainIntegration(config);
   return integrationInstance;
 }

@@ -1,5 +1,4 @@
 
-// @ts-nocheck
 // Enhanced Database Module Index
 // Provides centralized access to all database services with proper TypeScript support
 
@@ -14,19 +13,19 @@ export {
   contentEmbeddings,
   searchSessions,
   embeddings
-} from './postgres-enhanced.js';
+} from './postgres-enhanced';
 
 // Enhanced Qdrant Vector Database
 export { 
   qdrantManager,
   EnhancedQdrantManager
-} from './qdrant-enhanced.js';
+} from './qdrant-enhanced';
 
 // Enhanced Legal AI Orchestrator
 export { 
   legalOrchestrator,
   EnhancedLegalOrchestrator
-} from '../agents/orchestrator-enhanced.js';
+} from '../agents/orchestrator-enhanced';
 
 // Database Schema Types
 export type {
@@ -38,20 +37,20 @@ export type {
   NewSearchSession,
   EmbeddingRecord,
   NewEmbeddingRecord
-} from './schema/legal-documents.js';
+} from './schema/legal-documents';
 
 // Qdrant Types
 export type {
   QdrantPoint,
   QdrantSearchResult,
   DocumentUpsertRequest
-} from './qdrant-enhanced.js';
+} from './qdrant-enhanced';
 
 // Orchestration Types
 export type {
   OrchestrationRequest,
   OrchestrationResponse
-} from '../agents/orchestrator-enhanced.js';
+} from '../agents/orchestrator-enhanced';
 
 // Database initialization helper
 export async function initializeDatabase(): Promise<{
@@ -72,7 +71,7 @@ export async function initializeDatabase(): Promise<{
     if (!results.postgres) {
       results.errors.push('PostgreSQL initialization failed');
     }
-  } catch (error: unknown) {
+  } catch (error: any) {
     results.errors.push(`PostgreSQL error: ${error.message}`);
   }
 
@@ -83,7 +82,7 @@ export async function initializeDatabase(): Promise<{
     if (!results.qdrant) {
       results.errors.push('Qdrant connection failed');
     }
-  } catch (error: unknown) {
+  } catch (error: any) {
     results.errors.push(`Qdrant error: ${error.message}`);
   }
 
@@ -114,14 +113,14 @@ export async function getDatabaseHealth(): Promise<{
   try {
     const { dbManager } = await import('./postgres-enhanced.js');
     health.postgres = await dbManager.healthCheck();
-  } catch (error: unknown) {
+  } catch (error: any) {
     health.postgres = { connected: false, error: error.message };
   }
 
   try {
     const { qdrantManager } = await import('./qdrant-enhanced.js');
     health.qdrant = await qdrantManager.getHealthStatus();
-  } catch (error: unknown) {
+  } catch (error: any) {
     health.qdrant = { connected: false, collection: 'legal_documents', error: error.message };
   }
 
@@ -142,7 +141,7 @@ export const databaseUtils = {
   /**
    * Migrate a document from old schema to new enhanced schema
    */
-  async migrateDocument(oldDocument: unknown): Promise<NewLegalDocument> {
+  async migrateDocument(oldDocument: any): Promise<NewLegalDocument> {
     const { schema } = await import('./schema/legal-documents.js');
     
     return {
@@ -166,7 +165,7 @@ export const databaseUtils = {
   /**
    * Validate embedding dimensions
    */
-  validateEmbedding(embedding: unknown): embedding is number[] {
+  validateEmbedding(embedding: any): embedding is number[] {
     return Array.isArray(embedding) && 
            embedding.length > 0 && 
            embedding.every(val => typeof val === 'number');
@@ -226,8 +225,8 @@ export const databaseUtils = {
 };
 
 // Legacy compatibility - re-export from old locations
-export { db as postgres } from './postgres-enhanced.js';
-export { qdrantManager as qdrant } from './qdrant-enhanced.js';
+export { db as postgres } from './postgres-enhanced';
+export { qdrantManager as qdrant } from './qdrant-enhanced';
 
 // Default export
 export default {

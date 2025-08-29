@@ -149,7 +149,7 @@ export const POST: RequestHandler = async ({ request }) => {
 };
 
 // Helper function to call MCP tools
-async function callMCPTool(server: string, tool: string, data: any) {
+async function callMCPTool(server: string, tool: string, data: any): Promise<any> {
   try {
     const endpoint = MCP_ENDPOINTS[server as keyof typeof MCP_ENDPOINTS];
     if (!endpoint) {
@@ -221,7 +221,7 @@ async function callMCPTool(server: string, tool: string, data: any) {
 }
 
 // Sync Context7 results with database orchestrator
-async function syncWithOrchestrator(data: any) {
+async function syncWithOrchestrator(data: any): Promise<any> {
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 15000); // 15s timeout for sync operations

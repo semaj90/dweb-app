@@ -5,8 +5,8 @@
  */
 
 import { createMachine, assign, fromPromise } from 'xstate';
-import { db } from '../server/db/index.js';
-import { cases, evidence, legal_documents, documentChunks, users } from '../server/db/schema-postgres.js';
+import { db } from '../server/db/index';
+import { cases, evidence, legal_documents, documentChunks, users } from '../server/db/schema-postgres';
 import { eq, desc, and, sql } from 'drizzle-orm';
 
 // Temporary type definition to fix import issues
@@ -449,7 +449,7 @@ export const enhancedLegalCaseMachine = createMachine({
         }
         
         return { status: 'initialized' };
-      } catch (error) {
+      } catch (error: any) {
         throw new Error(`Database initialization failed: ${(error as any).message}`);
       }
     }),
@@ -485,7 +485,7 @@ export const enhancedLegalCaseMachine = createMachine({
               embedding_status: sql<'pending' | 'completed' | 'failed'>`CASE 
                   WHEN EXISTS (
                     SELECT 1 FROM document_chunks
-                    WHERE document_chunks.document_id = ${evidence.id}
+                    WHERE document_chunks.document_id = evidence.id
                     AND document_chunks.embedding IS NOT NULL
                   ) THEN 'completed'
                   ELSE 'pending'
@@ -500,7 +500,7 @@ export const enhancedLegalCaseMachine = createMachine({
           case: caseData,
           evidence: evidenceData
         };
-      } catch (error) {
+      } catch (error: any) {
         throw new Error(`Failed to load case: ${(error as any).message}`);
       }
     }),
@@ -519,7 +519,7 @@ export const enhancedLegalCaseMachine = createMachine({
           .returning();
         
         return newCase;
-      } catch (error) {
+      } catch (error: any) {
         throw new Error(`Failed to create case: ${(error as any).message}`);
       }
     }),
@@ -570,7 +570,7 @@ export const enhancedLegalCaseMachine = createMachine({
           ...newEvidence,
           embedding_status: 'pending' as const
         };
-      } catch (error) {
+      } catch (error: any) {
         throw new Error(`Failed to add evidence: ${(error as any).message}`);
       }
     }),
@@ -634,7 +634,7 @@ export const enhancedLegalCaseMachine = createMachine({
         
         // Parse AI response and return structured results
         return parseAnalysisResults(aiResult.response, input.analysisType);
-      } catch (error) {
+      } catch (error: any) {
         throw new Error(`AI analysis failed: ${(error as any).message}`);
       }
     }),
@@ -682,7 +682,7 @@ export const enhancedLegalCaseMachine = createMachine({
         }
         
         return { status: 'completed', chunksProcessed: chunks.length };
-      } catch (error) {
+      } catch (error: any) {
         throw new Error(`Embedding generation failed: ${(error as any).message}`);
       }
     }),
@@ -702,7 +702,7 @@ export const enhancedLegalCaseMachine = createMachine({
         }
         
         // Average embeddings for case representation - fix property access
-        const caseEmbedding = computeAverageEmbedding(caseChunks.map(c => c.document_chunks.embedding || []));
+        const caseEmbedding = computeAverageEmbedding(caseChunks.map(c => c.document_chunks?.embedding || []));
         
         // Find similar cases using cosine similarity
         const similarCases = await db.execute(
@@ -724,7 +724,7 @@ export const enhancedLegalCaseMachine = createMachine({
         );
         
         return similarCases;
-      } catch (error) {
+      } catch (error: any) {
         throw new Error(`Similarity search failed: ${(error as any).message}`);
       }
     }),
@@ -735,7 +735,7 @@ export const enhancedLegalCaseMachine = createMachine({
         // Perform health checks and sync operations
         await db.select().from(users).limit(1);
         return { status: 'synced', timestamp: new Date() };
-      } catch (error) {
+      } catch (error: any) {
         throw new Error(`Database sync failed: ${(error as any).message}`);
       }
     })

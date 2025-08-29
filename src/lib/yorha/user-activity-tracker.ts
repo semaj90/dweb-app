@@ -143,7 +143,7 @@ export class YoRHaUserTracker {
   private heartbeatInterval: ReturnType<typeof setInterval> | null = null;
   private performanceObserver: PerformanceObserver | null = null;
 
-  async initialize(userId: string): Promise<void> {
+  async initialize(userId: string): Promise<any> {
     if (this.initialized) return;
 
     try {
@@ -167,13 +167,13 @@ export class YoRHaUserTracker {
       this.initialized = true;
       console.log('✅ YoRHa User Tracker initialized');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ YoRHa User Tracker initialization failed:', error);
       throw error;
     }
   }
 
-  private async loadOrCreateProfile(userId: string): Promise<void> {
+  private async loadOrCreateProfile(userId: string): Promise<any> {
     let profile: UserProfile;
     
     if (browser) {
@@ -250,7 +250,7 @@ export class YoRHaUserTracker {
     };
   }
 
-  private async startSession(): Promise<void> {
+  private async startSession(): Promise<any> {
     const sessionData = this.createSessionData();
     currentSession.set(sessionData);
 
@@ -287,7 +287,7 @@ export class YoRHaUserTracker {
         const activities = JSON.parse(stored);
         activityFeed.set(activities);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to load activity history:', error);
     }
   }
@@ -312,7 +312,7 @@ export class YoRHaUserTracker {
         entryTypes: ['navigation', 'resource', 'measure'] 
       });
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Performance monitoring setup failed:', error);
     }
   }
@@ -333,7 +333,7 @@ export class YoRHaUserTracker {
   }
 
   // Public methods for tracking user activities
-  async trackActivity(activity: Partial<UserActivity>): Promise<void> {
+  async trackActivity(activity: Partial<UserActivity>): Promise<any> {
     const fullActivity: UserActivity = {
       id: crypto.randomUUID(),
       type: activity.type || 'search',
@@ -376,7 +376,7 @@ export class YoRHaUserTracker {
     await this.syncToBackend(fullActivity);
   }
 
-  async trackDocumentUpload(documentId: string, metadata: unknown): Promise<void> {
+  async trackDocumentUpload(documentId: string, metadata: any): Promise<any> {
     await this.trackActivity({
       type: 'document_upload',
       entityId: documentId,
@@ -408,7 +408,7 @@ export class YoRHaUserTracker {
     });
   }
 
-  async trackAIInteraction(query: string, response: string, intent: string): Promise<void> {
+  async trackAIInteraction(query: string, response: string, intent: string): Promise<any> {
     await this.trackActivity({
       type: 'ai_query',
       metadata: {
@@ -454,7 +454,7 @@ export class YoRHaUserTracker {
     });
   }
 
-  async trackCaseActivity(caseId: string, activityType: string, metadata: unknown): Promise<void> {
+  async trackCaseActivity(caseId: string, activityType: string, metadata: any): Promise<any> {
     await this.trackActivity({
       type: 'case_created',
       entityId: caseId,
@@ -535,14 +535,14 @@ export class YoRHaUserTracker {
   }
 
   // Backend synchronization
-  private async syncToBackend(activity: UserActivity): Promise<void> {
+  private async syncToBackend(activity: UserActivity): Promise<any> {
     try {
       await fetch('/api/user-activity', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(activity)
       });
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to sync activity to backend:', error);
     }
   }
@@ -557,7 +557,7 @@ export class YoRHaUserTracker {
   }
 
   // Cleanup
-  async cleanup(): Promise<void> {
+  async cleanup(): Promise<any> {
     if (this.heartbeatInterval) {
       clearInterval(this.heartbeatInterval);
     }
@@ -595,7 +595,7 @@ function calculateEfficiency(activities: UserActivity[]): number {
 function calculatePerformanceMetrics(
   activities: UserActivity[], 
   session: SessionData | null
-): unknown {
+): any {
   if (!session) return null;
 
   const avgResponseTime = session.performance.responseTimes.length > 0

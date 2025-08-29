@@ -152,7 +152,7 @@ export class FlashAttentionMulticoreBridge {
         systemMetrics,
         performanceOptimizations
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Enhanced analysis failed:', error);
       throw new Error(`FlashAttention2 + Multicore analysis failed: ${error.message}`);
     }

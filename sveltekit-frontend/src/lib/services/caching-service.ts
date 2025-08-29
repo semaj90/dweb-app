@@ -6,7 +6,7 @@ import type { Writable } from "svelte/store";
 import { writable } from "svelte/store";
 
 // Import advanced cache manager for L1-L7 caching integration
-import type { AdvancedCacheManager } from '../../lib/caching/advanced-cache-manager.js';
+import type { AdvancedCacheManager } from '../../lib/caching/advanced-cache-manager';
 
 // ============================================================================
 // CACHE SERVICE INTERFACE
@@ -52,7 +52,7 @@ class EnhancedCachingService {
       const { NESCacheOrchestrator } = await import('./nes-cache-orchestrator.js');
       this.nesCacheOrchestrator = new NESCacheOrchestrator();
       await this.nesCacheOrchestrator.initialize();
-    } catch (error) {
+    } catch (error: any) {
       console.warn('NES Cache Orchestrator not available, using fallback cache:', error);
     }
   }
@@ -63,7 +63,7 @@ class EnhancedCachingService {
       const { AdvancedCacheManager } = await import('../../lib/caching/advanced-cache-manager.js');
       this.advancedCacheManager = new AdvancedCacheManager();
       await this.advancedCacheManager.initialize();
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Advanced Cache Manager not available, using fallback cache:', error);
     }
   }
@@ -103,7 +103,7 @@ class EnhancedCachingService {
         this.stats.misses++;
         return null;
       }
-    } catch (error) {
+    } catch (error: any) {
       this.stats.errors++;
       console.error('Cache get error:', error);
       return null;
@@ -131,7 +131,7 @@ class EnhancedCachingService {
       // Priority 3: Fallback to local cache
       this.cache.set(key, value);
       return true;
-    } catch (error) {
+    } catch (error: any) {
       this.stats.errors++;
       console.error('Cache set error:', error);
       return false;
@@ -141,7 +141,7 @@ class EnhancedCachingService {
   async delete(key: string): Promise<boolean> {
     try {
       return this.cache.delete(key);
-    } catch (error) {
+    } catch (error: any) {
       this.stats.errors++;
       console.error('Cache delete error:', error);
       return false;
@@ -152,7 +152,7 @@ class EnhancedCachingService {
     try {
       this.cache.clear();
       return true;
-    } catch (error) {
+    } catch (error: any) {
       this.stats.errors++;
       console.error('Cache clear error:', error);
       return false;
@@ -276,7 +276,7 @@ class EnhancedCachingService {
       // Simple implementation: clear all cache
       await this.clear();
       return 1;
-    } catch (error) {
+    } catch (error: any) {
       this.stats.errors++;
       console.error('Cache invalidation error:', error);
       return 0;
@@ -392,7 +392,7 @@ export async function initializeNESCacheIntegration(): Promise<boolean> {
     // Force initialization of NES Cache Orchestrator if not already done
     await (cachingService as any).initializeNESCacheOrchestrator();
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to initialize NES Cache integration:', error);
     return false;
   }
@@ -451,11 +451,11 @@ export async function invalidateDocument(documentId: string): Promise<void> {
   return cachingService.invalidateDocument(documentId);
 }
 
-export async function getCacheStats() {
+export async function getCacheStats(): Promise<any> {
   return cachingService.getStats();
 }
 
-export async function getCacheHealth() {
+export async function getCacheHealth(): Promise<any> {
   return cachingService.healthCheck();
 }
 

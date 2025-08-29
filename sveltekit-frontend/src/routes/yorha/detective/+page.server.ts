@@ -76,7 +76,7 @@ export const load: PageServerLoad = async ({ locals }) => {
       recentEvidence: recentEvidence || [],
       user: mockUser
     };
-  } catch (err) {
+  } catch (err: any) {
     console.error('Error loading detective dashboard:', err);
     throw error(500, 'Failed to load dashboard data');
   }

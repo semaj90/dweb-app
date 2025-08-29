@@ -38,7 +38,7 @@ class SSEConnectionManager {
       }
       this.isInitialized = true;
       console.log("✅ SSE Redis subscriber initialized");
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ SSE Redis connection failed:", error);
     }
   }
@@ -59,7 +59,7 @@ class SSEConnectionManager {
           `Broadcasting to SSE connection ${connectionId}:`,
           sseMessage,
         );
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Failed to send to connection ${connectionId}:`, error);
         this.connections.delete(connectionId);
       }
@@ -111,7 +111,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
           controller.enqueue(
             `data: ${JSON.stringify({ type: "heartbeat", timestamp: new Date().toISOString() })}\n\n`,
           );
-        } catch (error) {
+        } catch (error: any) {
           console.error("Heartbeat failed:", error);
           clearInterval(heartbeatInterval);
         }

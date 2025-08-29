@@ -1,13 +1,13 @@
 // workers/evidenceProcessor.ts
-import { consumeFromQueue, publishToQueue } from '../sveltekit-frontend/src/lib/server/rabbitmq.js';
-import { sendWsMessageToSession, initializeWsBroker } from '../sveltekit-frontend/src/lib/server/wsBroker.js';
-import { runOcrForEvidence } from './services/ocr.js';
-import { generateEmbeddings } from './services/embeddings.js';
-import { runRag } from './services/rag.js';
+import { consumeFromQueue, publishToQueue } from '../sveltekit-frontend/src/lib/server/rabbitmq';
+import { sendWsMessageToSession, initializeWsBroker } from '../sveltekit-frontend/src/lib/server/wsBroker';
+import { runOcrForEvidence } from './services/ocr';
+import { generateEmbeddings } from './services/embeddings';
+import { runRag } from './services/rag';
 import { v4 as uuidv4 } from 'uuid';
-import { db } from '../sveltekit-frontend/src/lib/server/db.js';
+import { db } from '../sveltekit-frontend/src/lib/server/db';
 
-interface ProcessingJob {
+export interface ProcessingJob {
   sessionId: string;
   evidenceId: string;
   steps: string[];
@@ -15,7 +15,7 @@ interface ProcessingJob {
   timestamp: string;
 }
 
-interface ControlMessage {
+export interface ControlMessage {
   action: 'cancel' | 'pause' | 'resume';
   sessionId: string;
   timestamp: string;
@@ -24,7 +24,7 @@ interface ControlMessage {
 // Global state for tracking active jobs
 const activeJobs = new Map<string, { cancelled: boolean; paused: boolean }>();
 
-async function updateProcessStatus(sessionId: string, status: string, error?: string) {
+async function updateProcessStatus(sessionId: string, status: string, error?: string): Promise<any> {
   try {
     const updates: unknown = { // TODO-AUTO: Create ProcessStatusUpdate interface - type { status: string, updated_at: Date, error?: string, progress?: number }
       status,
@@ -45,7 +45,7 @@ async function updateProcessStatus(sessionId: string, status: string, error?: st
       .set(updates)
       .where('id', '=', sessionId);
       
-  } catch (err) {
+  } catch (err: any) {
     console.error('❌ Failed to update process status:', err);
   }
 }
@@ -283,7 +283,7 @@ async function processEvidenceJob(job: ProcessingJob, ack: () => void, nack: () 
     console.log(`✅ Evidence processing completed: ${sessionId}`);
     ack();
     
-  } catch (error) {
+  } catch (error: any) {
     console.error(`❌ Evidence processing failed for ${sessionId}:`, error);
     
     await updateProcessStatus(sessionId, 'failed', String(error));
@@ -338,13 +338,13 @@ async function handleControlMessage(message: ControlMessage, ack: () => void, na
     
     ack();
     
-  } catch (error) {
+  } catch (error: any) {
     console.error(`❌ Error handling control message:`, error);
     nack();
   }
 }
 
-async function startWorker() {
+async function startWorker(): Promise<any> {
   console.log('🏭 Starting Evidence Processing Worker...');
   
   try {
@@ -366,7 +366,7 @@ async function startWorker() {
       console.log(`💓 Worker health: ${activeJobs.size} active jobs`);
     }, 60000);
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Failed to start evidence processing worker:', error);
     process.exit(1);
   }

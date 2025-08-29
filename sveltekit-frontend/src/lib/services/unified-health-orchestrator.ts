@@ -498,7 +498,7 @@ async function checkRedisHealth(): Promise<boolean> {
 	try {
 		const response = await fetch('/api/v1/health/redis');
 		return response.ok;
-	} catch (error) {
+	} catch (error: any) {
 		return false;
 	}
 }
@@ -507,7 +507,7 @@ async function checkPostgresHealth(): Promise<boolean> {
 	try {
 		const response = await fetch('/api/v1/health/postgres');
 		return response.ok;
-	} catch (error) {
+	} catch (error: any) {
 		return false;
 	}
 }
@@ -516,7 +516,7 @@ async function checkRabbitMQHealth(): Promise<boolean> {
 	try {
 		const response = await fetch('/api/v1/health/rabbitmq');
 		return response.ok;
-	} catch (error) {
+	} catch (error: any) {
 		return false;
 	}
 }
@@ -525,7 +525,7 @@ async function checkCUDAHealth(): Promise<boolean> {
 	try {
 		const response = await fetch('/api/v1/health/cuda');
 		return response.ok;
-	} catch (error) {
+	} catch (error: any) {
 		return false;
 	}
 }
@@ -542,23 +542,23 @@ async function checkVectorServiceHealth(): Promise<boolean> {
 	try {
 		const response = await fetch('/api/v1/vector/health');
 		return response.ok;
-	} catch (error) {
+	} catch (error: any) {
 		return false;
 	}
 }
 
 // Metrics collection implementations
-async function fetchQueueMetrics() {
+async function fetchQueueMetrics(): Promise<any> {
 	const response = await fetch('/api/v1/metrics/queues');
 	return await response.json();
 }
 
-async function fetchPerformanceMetrics() {
+async function fetchPerformanceMetrics(): Promise<any> {
 	const response = await fetch('/api/v1/metrics/performance');
 	return await response.json();
 }
 
-async function fetchResourceMetrics() {
+async function fetchResourceMetrics(): Promise<any> {
 	const webgpuStats = webgpuPolyfill.getPerformanceStats();
 	const wasmStats = wasmLLMService.getStats();
 	
@@ -573,7 +573,7 @@ async function fetchResourceMetrics() {
 	};
 }
 
-async function fetchJobMetrics() {
+async function fetchJobMetrics(): Promise<any> {
 	const response = await fetch('/api/v1/metrics/jobs');
 	return await response.json();
 }
@@ -583,7 +583,7 @@ async function recoverWebGPU(): Promise<boolean> {
 	try {
 		webgpuPolyfill.dispose();
 		return await webgpuPolyfill.initialize();
-	} catch (error) {
+	} catch (error: any) {
 		console.error('WebGPU recovery failed:', error);
 		return false;
 	}
@@ -593,7 +593,7 @@ async function recoverWASMLLM(): Promise<boolean> {
 	try {
 		wasmLLMService.dispose();
 		return await wasmLLMService.initialize();
-	} catch (error) {
+	} catch (error: any) {
 		console.error('WASM LLM recovery failed:', error);
 		return false;
 	}

@@ -4,7 +4,7 @@ import { aiReports, canvasStates, reports } from '$lib/server/db/schema-postgres
 import { db } from '$lib/server/db/index';
 import { eq, and, or, like, desc, sql } from 'drizzle-orm';
 
-export async function GET({ url, locals }: RequestEvent) {
+export async function GET({ url, locals }: RequestEvent): Promise<any> {
   try {
     if (!locals.user) {
       return json({ error: "Not authenticated" }, { status: 401 });
@@ -26,7 +26,7 @@ export async function GET({ url, locals }: RequestEvent) {
     let query;
     try {
       query = db.select().from(aiReports);
-    } catch (error) {
+    } catch (error: any) {
       useAiReports = false;
       console.warn("aiReports table not found, using reports table");
       query = db.select().from(reports);
@@ -119,7 +119,7 @@ export async function GET({ url, locals }: RequestEvent) {
             ...report,
             canvasState: canvasState[0] || null,
           };
-        } catch (error) {
+        } catch (error: any) {
           console.warn("Error fetching canvas state:", error);
           return {
             ...report,
@@ -143,12 +143,12 @@ export async function GET({ url, locals }: RequestEvent) {
       // TODO: Add service worker for predictive prefetching and caching
       // TODO: Add advanced analytics and event streaming
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching reports:", error);
     return json({ error: "Failed to fetch reports" }, { status: 500 });
   }
 }
-export async function POST({ request, locals }: RequestEvent) {
+export async function POST({ request, locals }: RequestEvent): Promise<any> {
   try {
     if (!locals.user) {
       return json({ error: "Not authenticated" }, { status: 401 });
@@ -197,12 +197,12 @@ export async function POST({ request, locals }: RequestEvent) {
     const [newReport] = await db.insert(reports).values(reportData).returning();
 
     return json(newReport, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating report:", error);
     return json({ error: "Failed to create report" }, { status: 500 });
   }
 }
-export async function PUT({ request, locals }: RequestEvent) {
+export async function PUT({ request, locals }: RequestEvent): Promise<any> {
   try {
     if (!locals.user) {
       return json({ error: "Not authenticated" }, { status: 401 });
@@ -262,12 +262,12 @@ export async function PUT({ request, locals }: RequestEvent) {
       .returning();
 
     return json(updatedReport);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating report:", error);
     return json({ error: "Failed to update report" }, { status: 500 });
   }
 }
-export async function DELETE({ url, locals }: RequestEvent) {
+export async function DELETE({ url, locals }: RequestEvent): Promise<any> {
   try {
     if (!locals.user) {
       return json({ error: "Not authenticated" }, { status: 401 });
@@ -296,13 +296,13 @@ export async function DELETE({ url, locals }: RequestEvent) {
       .returning();
 
     return json({ success: true, deletedReport });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error deleting report:", error);
     return json({ error: "Failed to delete report" }, { status: 500 });
   }
 }
 // PATCH endpoint for partial updates
-export async function PATCH({ request, url, locals }: RequestEvent) {
+export async function PATCH({ request, url, locals }: RequestEvent): Promise<any> {
   try {
     if (!locals.user) {
       return json({ error: "Not authenticated" }, { status: 401 });
@@ -361,7 +361,7 @@ export async function PATCH({ request, url, locals }: RequestEvent) {
       .returning();
 
     return json(updatedReport);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error patching report:", error);
     return json({ error: "Failed to update report" }, { status: 500 });
   }

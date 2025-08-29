@@ -9,11 +9,11 @@ import type {
 	AlertDialogTitlePropsWithoutHTML,
 	AlertDialogTriggerPropsWithoutHTML,
 } from "bits-ui";
-import { HeaderLevelProp, OpenClosedProp } from "./extended-types/shared/index.js";
+import { HeaderLevelProp, OpenClosedProp } from './extended-types/shared/index';
 import {
 	DialogContentChildSnippetProps,
 	DialogOverlayChildSnippetProps,
-} from "./extended-types/dialog/index.js";
+} from './extended-types/dialog/index';
 import {
 	childrenSnippet,
 	dismissibleLayerProps,
@@ -34,7 +34,7 @@ import {
 	defineEnumDataAttr,
 	defineSimpleDataAttr,
 	defineUnionProp,
-} from "../utils.js";
+} from '../utils';
 
 const stateDataAttr = defineEnumDataAttr({
 	name: "state",

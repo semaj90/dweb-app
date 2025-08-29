@@ -37,13 +37,13 @@ export interface DocumentUploadContext {
     // where the data came from (used by SvelteKit frontend / SSR pipeline)
     source?: 'sveltekit-api' | 'server' | 'client';
     // raw payload returned from the API used during SSR (keep unknown to avoid strict coupling)
-    apiResponse?: unknown;
+    apiResponse?: any;
     // optional pre-rendered HTML returned by an SSR endpoint
     renderedHtml?: string;
     // timestamp when SSR data was fetched
     fetchedAt?: number;
   };// Child machine state
-  evidenceProcessingState?: unknown;
+  evidenceProcessingState?: any;
 
   // Timestamps and metrics
   uploadStartTime: number;
@@ -174,7 +174,7 @@ const uploadFileService = fromPromise(async ({ input }: { input: DocumentUploadC
           if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error('MCP Upload service failed:', error);
           throw error;
         }

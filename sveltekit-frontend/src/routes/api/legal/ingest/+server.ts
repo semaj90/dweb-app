@@ -47,13 +47,13 @@ export const POST: RequestHandler = async ({ request }) => {
  */
 
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types.js';
+import type { RequestHandler } from './$types';
 import pdf from 'pdf-parse';
 import crypto from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
 
 // Enhanced RAG processing pipeline
-interface LegalDocument {
+export interface LegalDocument {
     id: string;
     filename: string;
     jurisdiction: string;
@@ -65,7 +65,7 @@ interface LegalDocument {
     processingMetadata: ProcessingMetadata;
 }
 
-interface LegalEntity {
+export interface LegalEntity {
     type: 'WHO' | 'WHAT' | 'WHY' | 'HOW' | 'WHERE' | 'WHEN';
     text: string;
     confidence: number;
@@ -74,7 +74,7 @@ interface LegalEntity {
     jurisdiction: string;
 }
 
-interface DocumentChunk {
+export interface DocumentChunk {
     id: string;
     text: string;
     embedding?: number[];
@@ -83,7 +83,7 @@ interface DocumentChunk {
     entities: string[];
 }
 
-interface FactCheck {
+export interface FactCheck {
     claim: string;
     status: 'FACT' | 'FICTION' | 'UNVERIFIED' | 'DISPUTED';
     sources: string[];
@@ -91,7 +91,7 @@ interface FactCheck {
     jurisdiction: string;
 }
 
-interface ProcessingMetadata {
+export interface ProcessingMetadata {
     extractionTime: number;
     embeddingTime: number;
     factCheckTime: number;
@@ -332,7 +332,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
         return json(response);
 
-    } catch (err) {
+    } catch (err: any) {
         const processingTime = Date.now() - startTime;
         console.error('❌ Legal document processing failed:', err);
 

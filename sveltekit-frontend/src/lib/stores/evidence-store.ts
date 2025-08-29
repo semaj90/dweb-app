@@ -205,7 +205,7 @@ export const evidenceActions = {
         filteredItems: items,
         isLoading: false,
       }));
-    } catch (error) {
+    } catch (error: any) {
       evidenceGrid.update((state) => ({
         ...state,
         isLoading: false,
@@ -268,7 +268,7 @@ export const evidenceActions = {
           [...state.selectedItems].filter((id) => id !== evidenceId)
         ),
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.error("Delete evidence error:", error);
       throw error;
     }
@@ -321,7 +321,7 @@ export const uploadActions = {
     uploadFiles.forEach((uploadFile) => {
       if (uploadFile.file.type.startsWith("image/")) {
         const reader = new FileReader();
-        reader.onload = (e) => {
+        reader.onload = (e: any) => {
           uploadModal.update((state) => ({
             ...state,
             files: state.files.map((f) =>
@@ -380,7 +380,7 @@ export const uploadActions = {
         const xhr = new XMLHttpRequest();
 
         // Track upload progress
-        xhr.upload.addEventListener("progress", (e) => {
+        xhr.upload.addEventListener("progress", (e: any) => {
           if (e.lengthComputable) {
             const progress = Math.round((e.loaded / e.total) * 100);
             uploadModal.update((modalState) => ({
@@ -451,7 +451,7 @@ export const uploadActions = {
         ...modalState,
         isProcessing: false,
       }));
-    } catch (error) {
+    } catch (error: any) {
       uploadModal.update((state) => ({
         ...state,
         isProcessing: false,

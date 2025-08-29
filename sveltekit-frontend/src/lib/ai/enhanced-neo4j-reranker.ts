@@ -2,8 +2,8 @@
 // Enhanced Neo4j Path Context Reranker for Legal AI
 // Provides 95% accuracy search with boolean pattern matching and audit trails
 
-import { QdrantService } from "./qdrant-service.js";
-import { createSOMRAGSystem, type DocumentEmbedding } from "./som-rag-system.js";
+import { QdrantService } from './qdrant-service';
+import { createSOMRAGSystem, type DocumentEmbedding } from './som-rag-system';
 
 export interface Neo4jPathContext {
   document_id: string;
@@ -93,7 +93,7 @@ export class EnhancedNeo4jReranker {
       await this.qdrantService.ensureCollection();
       this.isInitialized = true;
       console.log("✅ Enhanced Neo4j Reranker initialized");
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Failed to initialize Enhanced Neo4j Reranker:", error);
       throw error;
     }
@@ -192,7 +192,7 @@ export class EnhancedNeo4jReranker {
           path_context: pathContext,
           explanation,
         });
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Failed to rerank document ${document.id}:`, error);
 
         // Fallback to original score

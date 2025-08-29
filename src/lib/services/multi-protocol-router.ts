@@ -62,7 +62,7 @@ export interface ProtocolStatus {
   uptime: number;
 }
 
-interface RouterState {
+export interface RouterState {
   protocolStatus: Map<string, ProtocolStatus>;
   activeConnections: Map<string, number>;
   metrics: {
@@ -131,7 +131,7 @@ export class MultiProtocolRouter {
     }
   }
 
-  private async initializeProtocols(): Promise<void> {
+  private async initializeProtocols(): Promise<any> {
     const protocols = Object.keys(this.state.config.protocols);
 
     for (const protocol of protocols) {
@@ -148,7 +148,7 @@ export class MultiProtocolRouter {
         }
 
         console.log(`✓ ${protocol.toUpperCase()} protocol initialized`);
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Failed to initialize ${protocol} protocol:`, error);
         this.updateProtocolStatus(protocol, 'error');
       }
@@ -158,7 +158,7 @@ export class MultiProtocolRouter {
   private startHealthCheck(protocol: string): void {
     const config = this.state.config.protocols[protocol as keyof typeof this.state.config.protocols];
     
-    const checkHealth = async () => {
+    const checkHealth = async (): Promise<any> => {
       const startTime = Date.now();
       
       try {
@@ -170,7 +170,7 @@ export class MultiProtocolRouter {
         } else {
           this.updateProtocolStatus(protocol, 'degraded', latency);
         }
-      } catch (error) {
+      } catch (error: any) {
         this.updateProtocolStatus(protocol, 'error');
       }
     };
@@ -183,7 +183,7 @@ export class MultiProtocolRouter {
     this.healthCheckIntervals.set(protocol, intervalId as any);
   }
 
-  private async executeHealthCheck(protocol: string): Promise<{ ok: boolean; data?: unknown }> {
+  private async executeHealthCheck(protocol: string): Promise<{ ok: boolean; data?: any }> {
     const worker = this.workers.get(protocol);
     if (!worker) {
       throw new Error(`Worker for ${protocol} not available`);
@@ -269,7 +269,7 @@ export class MultiProtocolRouter {
   }
 
   public async route<T>(
-    request: unknown,
+    request: any,
     options: {
       preferredProtocol?: string;
       timeout?: number;
@@ -297,7 +297,7 @@ export class MultiProtocolRouter {
           this.updateMetrics('request_success', { protocol, latency });
           
           return result;
-        } catch (error) {
+        } catch (error: any) {
           lastError = error as Error;
           console.warn(`Request failed with ${protocol}, trying next...`, error);
           
@@ -310,7 +310,7 @@ export class MultiProtocolRouter {
       }
 
       throw lastError || new Error('All protocols failed');
-    } catch (error) {
+    } catch (error: any) {
       this.updateMetrics('request_error');
       throw error;
     }
@@ -397,9 +397,9 @@ export class MultiProtocolRouter {
 
   private async executeRequest<T>(
     protocol: string,
-    request: unknown,
+    request: any,
     requestId: string,
-    options: unknown
+    options: any
   ): Promise<T> {
     const worker = this.workers.get(protocol);
     if (!worker) {
@@ -476,12 +476,12 @@ export class MultiProtocolRouter {
     });
   }
 
-  private handleRequestComplete(protocol: string, data: unknown, requestId: string): void {
+  private handleRequestComplete(protocol: string, data: any, requestId: string): void {
     // Handle successful request completion
     this.updateProtocolStatus(protocol, 'healthy');
   }
 
-  private handleRequestError(protocol: string, error: unknown, requestId: string): void {
+  private handleRequestError(protocol: string, error: any, requestId: string): void {
     // Handle request error
     this.updateProtocolStatus(protocol, 'error');
   }
@@ -549,7 +549,7 @@ export class MultiProtocolRouter {
     try {
       const result = await this.executeHealthCheck(protocol);
       return result.ok;
-    } catch (error) {
+    } catch (error: any) {
       return false;
     }
   }
@@ -575,7 +575,7 @@ export const multiProtocolRouter = new MultiProtocolRouter();
 
 // Helper functions for common operations
 export const routerHelpers = {
-  async ragQuery(query: string, options: unknown = {}) {
+  async ragQuery(query: string, options: any = {}) {
     return multiProtocolRouter.route({
       type: 'rag_query',
       query,
@@ -586,7 +586,7 @@ export const routerHelpers = {
     });
   },
 
-  async documentUpload(document: unknown, options: unknown = {}) {
+  async documentUpload(document: any, options: any = {}) {
     return multiProtocolRouter.route({
       type: 'document_upload',
       document,
@@ -597,7 +597,7 @@ export const routerHelpers = {
     });
   },
 
-  async semanticSearch(query: string, filters: unknown = {}) {
+  async semanticSearch(query: string, filters: any = {}) {
     return multiProtocolRouter.route({
       type: 'semantic_search',
       query,
@@ -608,7 +608,7 @@ export const routerHelpers = {
     });
   },
 
-  async healthCheck() {
+  async healthCheck(): Promise<any> {
     const protocols = ['quic', 'grpc', 'rest'];
     const results = await Promise.all(
       protocols.map(async protocol => ({
@@ -620,7 +620,7 @@ export const routerHelpers = {
     return Object.fromEntries(results.map(r => [r.protocol, r.healthy]));
   },
 
-  async search(options: unknown = {}) {
+  async search(options: any = {}) {
     return multiProtocolRouter.route({
       type: 'search',
       ...options
@@ -630,7 +630,7 @@ export const routerHelpers = {
     });
   },
 
-  async getSuggestions(query: string, options: unknown = {}) {
+  async getSuggestions(query: string, options: any = {}) {
     return multiProtocolRouter.route({
       type: 'suggestions',
       query,

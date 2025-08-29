@@ -11,7 +11,7 @@ type Case = typeof cases.$inferSelect;
 type Evidence = typeof evidence.$inferSelect;
 
 // Performance monitoring for SSR
-interface SSRMetrics {
+export interface SSRMetrics {
   loadTime: number;
   dbQueries: number;
   cacheHits: number;
@@ -134,7 +134,7 @@ export const createEnhancedLayoutLoad = (): LayoutServerLoad => {
           metrics.dbQueries++;
           layoutData.recentEvidence = recentEvidence;
 
-        } catch (error) {
+        } catch (error: any) {
           console.error('Error loading user layout data:', error);
           metrics.errors.push(error instanceof Error ? error.message : 'Unknown error');
         }
@@ -163,7 +163,7 @@ export const createEnhancedLayoutLoad = (): LayoutServerLoad => {
         _metrics: metrics
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Layout load error:', error);
       metrics.errors.push(error instanceof Error ? error.message : 'Layout load failed');
       metrics.loadTime = Date.now() - startTime;
@@ -252,7 +252,7 @@ export const createEnhancedCasePageLoad = (): PageServerLoad => {
         _metrics: metrics
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Case page load error:', error);
       metrics.errors.push(error instanceof Error ? error.message : 'Case load failed');
       metrics.loadTime = Date.now() - startTime;
@@ -299,7 +299,7 @@ function createHydrationContext(url: URL, request: Request, user: User | null) {
 }
 
 // Helper function to get case statistics
-async function getCaseStatistics(userId: string) {
+async function getCaseStatistics(userId: string): Promise<any> {
   try {
     // This would need to be implemented with proper aggregation queries
     // For now, return mock data
@@ -309,7 +309,7 @@ async function getCaseStatistics(userId: string) {
       investigating: 4,
       closed: 3
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error getting case statistics:', error);
     return {
       total: 0,

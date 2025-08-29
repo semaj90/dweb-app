@@ -9,7 +9,7 @@ import type {
   FeedbackTrigger,
   FeedbackAnalytics,
   UserFeedbackContext 
-} from '../types/feedback.js';
+} from '../types/feedback';
 
 export interface FeedbackState {
   activeSession: FeedbackSession | null;
@@ -193,7 +193,7 @@ class FeedbackStore {
       } else {
         throw new Error('Failed to submit feedback');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to submit feedback:', error);
       this.state.isCollecting = false;
       return false;
@@ -221,7 +221,7 @@ class FeedbackStore {
         const data = await response.json();
         return data.recommendations || [];
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to get recommendations:', error);
     }
     return [];

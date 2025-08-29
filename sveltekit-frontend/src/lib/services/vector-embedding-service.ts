@@ -73,7 +73,7 @@ export class EnhancedVectorEmbeddingService {
 
       // Initialize vector indexes if they don't exist
       await this.createVectorIndexes();
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Failed to initialize vector embedding service:", error);
     }
   }
@@ -121,7 +121,7 @@ export class EnhancedVectorEmbeddingService {
         );
         console.log("✅ Created legal_vectors index");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn(
         "⚠️ Vector index creation failed (may already exist):",
         error
@@ -146,7 +146,7 @@ export class EnhancedVectorEmbeddingService {
 
       const data = await response.json();
       return data.embedding;
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Embedding generation failed:", error);
       const msg = error instanceof Error ? error.message : String(error);
       throw new Error(msg);
@@ -229,7 +229,7 @@ export class EnhancedVectorEmbeddingService {
         `🎉 Completed processing document ${documentId}: ${storedIds.length} chunks stored`
       );
       return storedIds;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Failed to process document ${documentId}:`, error);
       const msg = error instanceof Error ? error.message : String(error);
       throw new Error(msg);
@@ -525,7 +525,7 @@ export class EnhancedVectorEmbeddingService {
 
       console.log(`✅ Found ${rankedResults.length} ranked results`);
       return rankedResults;
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Vector search failed:", error);
       const msg = error instanceof Error ? error.message : String(error);
       throw new Error(msg);
@@ -612,7 +612,7 @@ export class EnhancedVectorEmbeddingService {
       }
 
       return null;
-    } catch (error) {
+    } catch (error: any) {
       console.warn("⚠️ Cache retrieval failed:", error);
       return null;
     }
@@ -626,7 +626,7 @@ export class EnhancedVectorEmbeddingService {
     try {
       const cacheKey = `embedding:${Buffer.from(text).toString("base64")}`;
       await this.redis.setex(cacheKey, ttl, JSON.stringify(embedding));
-    } catch (error) {
+    } catch (error: any) {
       console.warn("⚠️ Cache storage failed:", error);
     }
   }
@@ -651,7 +651,7 @@ export class EnhancedVectorEmbeddingService {
         cache_hit_rate: 0.85, // TODO: Implement actual cache hit rate tracking
         avg_processing_time: 2500, // TODO: Implement actual timing tracking
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Failed to get processing stats:", error);
       return {
         total_vectors: 0,

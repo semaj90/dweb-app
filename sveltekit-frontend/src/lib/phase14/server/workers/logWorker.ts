@@ -25,7 +25,7 @@ const worker = new Worker('logQueue', async (job) => {
         console.log(`✅ Successfully processed and indexed log job ${job.id}.`);
     // NEXT STEP: This is where you would trigger the self-prompting/analysis agent
     // For now, we are just indexing the errors.
-  } catch (error) {
+  } catch (error: any) {
     console.error(`❌ Failed to process log job ${job.id}:`, error);
     // It's important to throw the error so BullMQ knows the job failed and can retry it
     throw error;

@@ -2,7 +2,7 @@
 import { db, cases } from "$lib/server/db/index";
 import { redirect } from "@sveltejs/kit";
 import { and, count, desc, eq, like, or } from "drizzle-orm";
-import type { LayoutServerLoad } from "./$types.js";
+import type { LayoutServerLoad } from './$types';
 
 // This runs for /cases and all its sub-pages
 // Perfect for loading persistent 3-column layout data
@@ -80,7 +80,7 @@ export const load: LayoutServerLoad = async ({ locals, url }) => {
   // try {
   //   userCases = await db.select(...).from(cases)...
   //   caseStats = await db.select(...).from(cases)...
-  // } catch (error) {
+  // } catch (error: any) {
   //   console.error("Database query failed:", error);
   //   userCases = [];
   //   caseStats = [];

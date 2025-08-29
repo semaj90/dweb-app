@@ -6,7 +6,7 @@ import crypto from "crypto";
  * semantic search, memory MCP, and automated problem-solving
  */
 
-import { autoGenService } from "./autogen-service.js";
+import { autoGenService } from './autogen-service';
 
 // Mock implementation for missing aiWorkerManager
 const aiWorkerManager = {
@@ -153,7 +153,7 @@ export class AutonomousEngineeringSystem {
       await this.synthesizeAndOptimize(result);
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Autonomous Engineering System failed:", error);
       throw error;
     }
@@ -300,7 +300,7 @@ export class AutonomousEngineeringSystem {
 
       // Parse crew results into structured diagnostics
       diagnostics.push(...this.parseCrewDiagnostics(results));
-    } catch (error) {
+    } catch (error: any) {
       console.error("Crew diagnostic failed, using fallback analysis:", error);
 
       // Fallback: basic diagnostic analysis
@@ -390,7 +390,7 @@ Please collaborate to develop a comprehensive solution strategy including:
         // Extract solution strategy from conversation
         const strategy = this.parseConversationToStrategy(problem.id, messages);
         strategies.push(strategy);
-      } catch (error) {
+      } catch (error: any) {
         console.error(
           `Failed to generate strategy for problem ${problem.id}:`,
           error,
@@ -554,7 +554,7 @@ Please collaborate to develop a comprehensive solution strategy including:
 
       // Sort by priority
       recommendations.sort((a, b) => b.priority - a.priority);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to generate recommendations:", error);
     }
 
@@ -599,7 +599,7 @@ Please provide:
       const synthesisResult = await aiWorkerManager.waitForTask(taskId);
 
       console.log("✅ Synthesis completed:", synthesisResult);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Synthesis failed:", error);
     }
   }
@@ -615,7 +615,7 @@ Please provide:
         body: JSON.stringify({ path: projectPath }),
       });
       return response.ok ? await response.json() : {};
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to get directory structure:", error);
       return {};
     }
@@ -630,7 +630,7 @@ Please provide:
       });
       const data = await response.json();
       return data.logs || [];
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to collect error logs:", error);
       return [];
     }
@@ -655,7 +655,7 @@ Please provide:
       const results = response.ok ? await response.json() : [];
       this.semanticSearchCache.set(query, results);
       return results;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Semantic search failed:", error);
       return [];
     }
@@ -673,7 +673,7 @@ Please provide:
       );
 
       return response.ok ? await response.json() : [];
-    } catch (error) {
+    } catch (error: any) {
       console.error("Best practices search failed:", error);
       return [];
     }
@@ -780,7 +780,7 @@ Please provide:
         if (execution.status === "failed") {
           throw new Error("Crew execution failed");
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error checking crew status:", error);
       }
 
@@ -808,7 +808,7 @@ Please provide:
         if (conversation.status === "failed") {
           throw new Error("Conversation failed");
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error checking conversation status:", error);
       }
 

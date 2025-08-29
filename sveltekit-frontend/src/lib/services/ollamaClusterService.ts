@@ -188,7 +188,7 @@ export class OllamaClusterService {
               last_health_check: Date.now()
             };
           }
-        } catch (error) {
+        } catch (error: any) {
           return {
             ...instance,
             status: 'unhealthy' as const,
@@ -329,7 +329,7 @@ export class OllamaClusterService {
 
       return await response.json();
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Request to ${instance.id} failed:`, error);
       
       // Mark instance as unhealthy if multiple failures

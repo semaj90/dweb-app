@@ -14,7 +14,7 @@ const qdrantClient = new QdrantClient({
 const NLP_SERVICE_URL = env.LLM_SERVICE_URL || "http://localhost:8000";
 
 // Add 'task' type for recommendations
-interface Recommendation {
+export interface Recommendation {
   id: string;
   type:
     | "missing_info"
@@ -167,7 +167,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
         .sort((a, b) => b.confidence - a.confidence)
         .slice(0, 10),
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error generating recommendations:", error);
     return json(
       { error: "Failed to generate recommendations" },

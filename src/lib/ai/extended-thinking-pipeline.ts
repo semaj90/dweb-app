@@ -1,5 +1,4 @@
 
-// @ts-nocheck
 /**
  * Multi-Model Extended Thinking Pipeline
  * Integrates all AI systems for comprehensive document analysis
@@ -13,12 +12,12 @@ import { AnalyticsService } from '../server/microservices/analytics-service';
 import { RecommendationEngine } from '../server/ai/recommendation-engine';
 import { EnhancedSemanticSearch } from '../search/enhanced-semantic-search';
 
-interface ExtendedThinkingInput {
+export interface ExtendedThinkingInput {
   sessionId: string;
   userId: string;
   documentContent: string;
   documentId?: string;
-  userContext?: unknown;
+  userContext?: any;
   options?: {
     analysisDepth: 'quick' | 'standard' | 'detailed' | 'comprehensive';
     enableStreaming: boolean;
@@ -35,17 +34,17 @@ interface ExtendedThinkingInput {
   };
 }
 
-interface ProcessorResult {
+export interface ProcessorResult {
   processorId: string;
   processorType: 'legal-bert' | 'local-llm' | 'enhanced-rag' | 'user-history' | 'semantic-tokens';
   startTime: number;
   endTime: number;
   processingTime: number;
   confidence: number;
-  data: unknown;
+  data: any;
   metadata: {
     modelVersion?: string;
-    parameters?: unknown;
+    parameters?: any;
     resourceUsage?: {
       cpuTime: number;
       memoryUsage: number;
@@ -55,23 +54,23 @@ interface ProcessorResult {
   error?: Error;
 }
 
-interface SynthesisResult {
+export interface SynthesisResult {
   overallConfidence: number;
   synthesizedAnalysis: {
     summary: string;
     keyInsights: string[];
-    entityExtraction: unknown[];
-    riskAssessment: unknown[];
+    entityExtraction: any[];
+    riskAssessment: any[];
     recommendedActions: string[];
-    legalConcepts: unknown[];
-    semanticClusters: unknown[];
+    legalConcepts: any[];
+    semanticClusters: any[];
   };
   processorResults: ProcessorResult[];
   crossReferences: Array<{
     processors: string[];
     correlation: number;
     insight: string;
-    supportingEvidence: unknown[];
+    supportingEvidence: any[];
   }>;
   qualityMetrics: {
     consistency: number;
@@ -80,7 +79,7 @@ interface SynthesisResult {
     relevance: number;
     novelty: number;
   };
-  recommendations: unknown[];
+  recommendations: any[];
   metadata: {
     totalProcessingTime: number;
     synthesisTime: number;
@@ -89,7 +88,7 @@ interface SynthesisResult {
   };
 }
 
-interface ThinkingChain {
+export interface ThinkingChain {
   id: string;
   steps: Array<{
     stepId: string;
@@ -97,7 +96,7 @@ interface ThinkingChain {
     processor: string;
     dependencies: string[];
     status: 'pending' | 'processing' | 'completed' | 'error';
-    result?: unknown;
+    result?: any;
     reasoning: string;
     confidence: number;
   }>;
@@ -229,7 +228,7 @@ export class ExtendedThinkingPipeline extends EventEmitter {
 
       return result;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Extended Thinking Pipeline failed: ${error}`);
       
       this.emit('pipeline-error', {
@@ -494,7 +493,7 @@ export class ExtendedThinkingPipeline extends EventEmitter {
         step.result = result;
         results.push(result);
         console.log(`✅ Completed step: ${step.stepId}`);
-      } catch (error) {
+      } catch (error: any) {
         step.status = 'error';
         console.error(`❌ Step failed: ${step.stepId}`, error);
         
@@ -519,7 +518,7 @@ export class ExtendedThinkingPipeline extends EventEmitter {
   private async executeProcessingStep(
     stepId: string,
     input: ExtendedThinkingInput,
-    pipeline: unknown
+    pipeline: any
   ): Promise<ProcessorResult> {
     const step = pipeline.thinkingChain.steps.find(s => s.stepId === stepId);
     if (!step) throw new Error(`Step not found: ${stepId}`);
@@ -570,7 +569,7 @@ export class ExtendedThinkingPipeline extends EventEmitter {
         }
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Processor ${step.processor} failed:`, error);
       throw error;
     }
@@ -795,7 +794,7 @@ export class ExtendedThinkingPipeline extends EventEmitter {
     };
   }
 
-  private performCrossReferenceAnalysis(results: ProcessorResult[]): unknown[] {
+  private performCrossReferenceAnalysis(results: ProcessorResult[]): any[] {
     const crossReferences = [];
     
     // Find entity correlations between Legal-BERT and Local LLM
@@ -841,8 +840,8 @@ export class ExtendedThinkingPipeline extends EventEmitter {
 
   private calculateQualityMetrics(
     results: ProcessorResult[],
-    crossReferences: unknown[]
-  ): unknown {
+    crossReferences: any[]
+  ): any {
     const confidenceScores = results.map(r => r.confidence);
     const avgConfidence = confidenceScores.reduce((sum, conf) => sum + conf, 0) / confidenceScores.length;
     
@@ -858,9 +857,9 @@ export class ExtendedThinkingPipeline extends EventEmitter {
 
   private createSynthesizedAnalysis(
     results: ProcessorResult[],
-    crossReferences: unknown[],
+    crossReferences: any[],
     input: ExtendedThinkingInput
-  ): unknown {
+  ): any {
     // Combine insights from all processors
     const allInsights = [];
     const allEntities = [];
@@ -906,8 +905,8 @@ export class ExtendedThinkingPipeline extends EventEmitter {
   private generateComprehensiveSummary(
     results: ProcessorResult[],
     insights: string[],
-    entities: unknown[],
-    risks: unknown[]
+    entities: any[],
+    risks: any[]
   ): string {
     const processorCount = results.length;
     const avgConfidence = results.reduce((sum, r) => sum + r.confidence, 0) / processorCount;
@@ -918,7 +917,7 @@ export class ExtendedThinkingPipeline extends EventEmitter {
   }
 
   // Utility methods
-  private deduplicateAndRank(items: unknown[], rankField: string, limit: number): unknown[] {
+  private deduplicateAndRank(items: any[], rankField: string, limit: number): any[] {
     const unique = new Map();
     
     items.forEach(item => {
@@ -939,7 +938,7 @@ export class ExtendedThinkingPipeline extends EventEmitter {
     const visited = new Set();
     const visiting = new Set();
 
-    const visit = (step: unknown) => {
+    const visit = (step: any) => {
       if (visiting.has(step.stepId)) {
         throw new Error(`Circular dependency detected: ${step.stepId}`);
       }
@@ -970,7 +969,7 @@ export class ExtendedThinkingPipeline extends EventEmitter {
 
   private createFinalResult(
     processorResults: ProcessorResult[],
-    synthesisResults: unknown,
+    synthesisResults: any,
     input: ExtendedThinkingInput
   ): SynthesisResult {
     const confidenceScores = processorResults.map(r => r.confidence);
@@ -1015,7 +1014,7 @@ export class ExtendedThinkingPipeline extends EventEmitter {
         chunks,
         userHistory
       );
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to generate recommendations:', error);
       return [];
     }
@@ -1029,7 +1028,7 @@ export class ExtendedThinkingPipeline extends EventEmitter {
     return avgConfidence / (avgProcessingTime / 1000); // Confidence per second
   }
 
-  private estimateTokenCount(data: unknown): number {
+  private estimateTokenCount(data: any): number {
     const text = JSON.stringify(data);
     return Math.ceil(text.length / 4); // Rough token estimation
   }
@@ -1045,7 +1044,7 @@ export class ExtendedThinkingPipeline extends EventEmitter {
     return btoa(str).replace(/[/+]/g, '_').substring(0, 16);
   }
 
-  private delay(ms: number): Promise<void> {
+  private delay(ms: number): Promise<any> {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
@@ -1054,7 +1053,7 @@ export class ExtendedThinkingPipeline extends EventEmitter {
     return Array.from(this.activePipelines.keys());
   }
 
-  public getPipelineStatus(pipelineId: string): unknown {
+  public getPipelineStatus(pipelineId: string): any {
     const pipeline = this.activePipelines.get(pipelineId);
     if (!pipeline) return null;
 
@@ -1069,7 +1068,7 @@ export class ExtendedThinkingPipeline extends EventEmitter {
     };
   }
 
-  public async shutdown(): Promise<void> {
+  public async shutdown(): Promise<any> {
     console.log('🔄 Shutting down Extended Thinking Pipeline...');
     
     // Wait for active pipelines to complete or timeout

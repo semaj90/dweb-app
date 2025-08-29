@@ -1,4 +1,4 @@
-import type { User } from "./user.js";
+import type { User } from './user';
 
 
 // Evidence AI Analysis Type

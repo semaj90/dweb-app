@@ -6,7 +6,7 @@
 import { type RequestHandler,  json } from '@sveltejs/kit';
 import { processRAGPipeline, rerankSearchResults } from "$lib/services/comprehensive-database-orchestrator";
 
-interface LegalResearchRequest {
+export interface LegalResearchRequest {
   topic: string;
   userRole?: string;
   jurisdiction?: string;
@@ -19,7 +19,7 @@ interface LegalResearchRequest {
   includeAnalysis?: boolean;
 }
 
-interface LegalResearchResult {
+export interface LegalResearchResult {
   title: string;
   citation: string;
   summary: string;
@@ -89,7 +89,7 @@ export const POST: RequestHandler = async ({ request }) => {
     };
 
     return json(response);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Legal research API error:', error);
 
     return json(
@@ -124,7 +124,7 @@ async function performLegalResearch(topic: string, options: any): Promise<LegalR
       if (Array.isArray(reranked)) return reranked;
       return (reranked as any).rerankedResults || results;
     }
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Legal research failed, using fallback:', error);
 
     // Fallback: generate mock results based on topic
@@ -256,7 +256,7 @@ Provide a detailed legal analysis:`;
       temperature: 0.3,
       maxTokens: 1000,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.warn('AI analysis generation failed:', error);
 
     return `Research Analysis for ${topic}:

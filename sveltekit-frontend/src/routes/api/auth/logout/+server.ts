@@ -50,7 +50,7 @@ export const POST: RequestHandler = async ({ cookies, getClientAddress }) => {
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Logout API error:', err);
 
     // Even if there's an error, clear the cookie for security

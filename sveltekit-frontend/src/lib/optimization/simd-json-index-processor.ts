@@ -9,14 +9,14 @@ import type { RAGDocument, RAGSearchResult, TextChunk } from '$lib/types/rag';
 import { enhancedRAGStore } from '$lib/stores/enhanced-rag-store';
 
 // SIMD JSON Parser using structured cloning for performance
-interface SIMDJSONParser {
+export interface SIMDJSONParser {
   parse: (buffer: ArrayBuffer) => Promise<any>;
   parseString: (jsonString: string) => Promise<any>;
   parseWithStreaming: (buffer: ArrayBuffer, chunkSize?: number) => AsyncGenerator<any>;
 }
 
 // Optimized index structures for copilot context
-interface CopilotIndexEntry {
+export interface CopilotIndexEntry {
   id: string;
   filePath: string;
   language: string;
@@ -38,7 +38,7 @@ interface CopilotIndexEntry {
   }>;
 }
 
-interface CopilotIndex {
+export interface CopilotIndex {
   version: string;
   indexType: 'enhanced_legal_ai' | 'context7_mcp' | 'hybrid';
   entries: CopilotIndexEntry[];
@@ -58,7 +58,7 @@ interface CopilotIndex {
 }
 
 // Vector embedding integration with pgvector/Qdrant
-interface VectorEmbeddingConfig {
+export interface VectorEmbeddingConfig {
   model: 'nomic-embed-text' | 'all-MiniLM-L6-v2' | 'text-embedding-ada-002';
   dimensions: 384 | 768 | 1536;
   backend: 'pgvector' | 'qdrant' | 'hybrid';
@@ -126,7 +126,7 @@ export class SIMDJSONIndexProcessor {
       await this.integrateWithRAGStore(processedIndex);
 
       return processedIndex;
-    } catch (error) {
+    } catch (error: any) {
       console.error('SIMD Index processing failed:', error);
       throw new Error(`Index processing failed: ${error.message}`);
     }
@@ -170,7 +170,7 @@ export class SIMDJSONIndexProcessor {
       this.performanceMetrics.embeddingTime += performance.now() - startTime;
       
       return embeddingArray;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Embedding generation failed:', error);
       // Return zero vector as fallback
       return new Float32Array(this.vectorConfig.dimensions);
@@ -296,7 +296,7 @@ export class SIMDJSONIndexProcessor {
           const textDecoder = new TextDecoder('utf-8');
           const jsonString = textDecoder.decode(buffer);
           return JSON.parse(jsonString);
-        } catch (error) {
+        } catch (error: any) {
           throw new Error(`SIMD JSON parse failed: ${error.message}`);
         }
       },
@@ -304,7 +304,7 @@ export class SIMDJSONIndexProcessor {
       parseString: async (jsonString: string) => {
         try {
           return JSON.parse(jsonString);
-        } catch (error) {
+        } catch (error: any) {
           throw new Error(`SIMD JSON string parse failed: ${error.message}`);
         }
       },
@@ -321,7 +321,7 @@ export class SIMDJSONIndexProcessor {
           try {
             const parsed = JSON.parse(jsonString);
             yield parsed;
-          } catch (error) {
+          } catch (error: any) {
             // Handle partial JSON in streaming
             console.warn('Partial JSON chunk skipped:', error.message);
           }
@@ -452,7 +452,7 @@ export class SIMDJSONIndexProcessor {
         memberIds: cluster.documents || [],
         relevantTerms: cluster.metadata?.dominant_legal_type ? [cluster.metadata.dominant_legal_type] : [],
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Cluster generation failed:', error);
       // Return empty clusters on error
       return [];
@@ -534,7 +534,7 @@ export class SIMDJSONIndexProcessor {
 
       const { embedding } = await response.json();
       return embedding;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('PGVector embedding failed, using fallback:', error);
       return this.generateFallbackEmbedding(content);
     }
@@ -559,7 +559,7 @@ export class SIMDJSONIndexProcessor {
 
       const { embedding } = await response.json();
       return embedding;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Qdrant embedding failed, using fallback:', error);
       return this.generateFallbackEmbedding(content);
     }
@@ -569,7 +569,7 @@ export class SIMDJSONIndexProcessor {
     // Try PGVector first, fallback to Qdrant, then local
     try {
       return await this.generatePGVectorEmbedding(content);
-    } catch (error) {
+    } catch (error: any) {
       try {
         return await this.generateQdrantEmbedding(content);
       } catch (error2) {

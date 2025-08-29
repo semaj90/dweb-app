@@ -111,7 +111,7 @@ export class EnhancedIngestService {
         metadata: response.service_info
       };
 
-    } catch (error) {
+    } catch (error: any) {
       // Error handling following your aiAgentStore pattern
       aiAgentStore.update(state => ({
         ...state,
@@ -221,7 +221,7 @@ export class EnhancedIngestService {
         performance: response.performance
       };
 
-    } catch (error) {
+    } catch (error: any) {
       // Fail the batch job in AI agent store
       aiAgentStore.update(state => ({
         ...state,
@@ -328,7 +328,7 @@ export class EnhancedIngestService {
       // Use your existing similar document search
       return await aiAgent.searchSimilarDocuments?.(searchQuery, limit) || [];
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Similar document search failed:', error);
       return [];
     }
@@ -358,7 +358,7 @@ export class EnhancedIngestService {
       }
 
       return await response.json();
-    } catch (error) {
+    } catch (error: any) {
       clearTimeout(timeoutId);
       throw error;
     }
@@ -403,7 +403,7 @@ export class EnhancedIngestService {
 }
 
 // Type definitions following your established patterns
-interface IngestResult {
+export interface IngestResult {
   success: boolean;
   documentId: string;
   embeddingId: string;
@@ -411,7 +411,7 @@ interface IngestResult {
   metadata?: any;
 }
 
-interface BatchIngestResult {
+export interface BatchIngestResult {
   success: boolean;
   batchId: string;
   processed: number;
@@ -425,27 +425,27 @@ interface BatchIngestResult {
   performance?: any;
 }
 
-interface ChunkingOptions {
+export interface ChunkingOptions {
   maxChunkSize?: number;
   overlap?: number;
   preserveSentences?: boolean;
   legalAware?: boolean;
 }
 
-interface ChunkedDocument {
+export interface ChunkedDocument {
   content: string;
   index: number;
   metadata?: Record<string, any>;
 }
 
-interface LegalSection {
+export interface LegalSection {
   title: string;
   content: string;
   type: string;
   context: string;
 }
 
-interface SimilarDocument {
+export interface SimilarDocument {
   id: string;
   title: string;
   content: string;

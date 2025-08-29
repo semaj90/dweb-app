@@ -15,7 +15,7 @@ export interface VectorDocument {
         type?: "pdf" | "web" | "code" | "chat";
         timestamp?: string;
         chunk_index?: number;
-        [key: string]: unknown;
+        [key: string]: any;
     };
     content: string;
     ttl?: number;
@@ -30,7 +30,7 @@ export interface SearchResult {
 
 export interface SemanticCacheEntry {
     query: string;
-    result: unknown;
+    result: any;
     timestamp: number;
     ttl: number;
 }
@@ -59,14 +59,14 @@ export class RedisVectorService {
         });
     }
 
-    async connect(): Promise<void> {
+    async connect(): Promise<any> {
         if (!this.isConnected) {
             await this.client.connect();
             await this.ensureIndex();
         }
     }
 
-    async disconnect(): Promise<void> {
+    async disconnect(): Promise<any> {
         if (this.isConnected) {
             await this.client.disconnect();
             this.isConnected = false;
@@ -76,11 +76,11 @@ export class RedisVectorService {
     /**
      * Create vector search index if it doesn't exist
      */
-    private async ensureIndex(): Promise<void> {
+    private async ensureIndex(): Promise<any> {
         try {
             await this.client.ft.info(this.indexName);
             console.log("✅ Vector index already exists");
-        } catch (error) {
+        } catch (error: any) {
             // Index doesn't exist, create it
             console.log("📊 Creating vector search index...");
 
@@ -123,7 +123,7 @@ export class RedisVectorService {
     /**
      * Store a document with vector embedding
      */
-    async storeDocument(doc: VectorDocument): Promise<void> {
+    async storeDocument(doc: VectorDocument): Promise<any> {
         await this.connect();
 
         const key = `doc:${doc.id}`;
@@ -150,7 +150,7 @@ export class RedisVectorService {
     /**
      * Batch store multiple documents
      */
-    async storeBatch(docs: VectorDocument[]): Promise<void> {
+    async storeBatch(docs: VectorDocument[]): Promise<any> {
         await this.connect();
 
         const pipeline = this.client.multi();
@@ -222,7 +222,7 @@ export class RedisVectorService {
         });
 
         return results.documents
-            .map((doc: unknown) => ({
+            .map((doc: any) => ({
                 id: doc.value["$.id"],
                 score: parseFloat(doc.value.score),
                 metadata: JSON.parse(doc.value["$.metadata"] || "{}"),
@@ -254,9 +254,9 @@ export class RedisVectorService {
      */
     async setCachedResult(
         queryHash: string,
-        result: unknown,
+        result: any,
         ttl: number = 3600
-    ): Promise<void> {
+    ): Promise<any> {
         await this.connect();
 
         const cacheKey = `${this.cachePrefix}${queryHash}`;
@@ -274,7 +274,7 @@ export class RedisVectorService {
     /**
      * Delete document
      */
-    async deleteDocument(id: string): Promise<void> {
+    async deleteDocument(id: string): Promise<any> {
         await this.connect();
         await this.client.del(`doc:${id}`);
         console.log(`🗑️ Deleted document: ${id}`);
@@ -299,7 +299,7 @@ export class RedisVectorService {
         try {
             const info = await this.client.ft.info(this.indexName);
             return info;
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error getting index stats:", error);
             return null;
         }
@@ -308,7 +308,7 @@ export class RedisVectorService {
     /**
      * Clear all cached results
      */
-    async clearCache(): Promise<void> {
+    async clearCache(): Promise<any> {
         await this.connect();
 
         const keys = await this.client.keys(`${this.cachePrefix}*`);
@@ -326,7 +326,7 @@ export class RedisVectorService {
             await this.connect();
             await this.client.ping();
             return true;
-        } catch (error) {
+        } catch (error: any) {
             console.error("Redis health check failed:", error);
             return false;
         }

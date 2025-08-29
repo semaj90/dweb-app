@@ -2,17 +2,17 @@
 // lib/server/ai/ollama-local-llm.ts
 // Ollama integration for local LLM inference with legal models
 
-import { logger } from "./logger.js";
-import { streamingService } from "./streaming-service.js";
+import { logger } from './logger';
+import { streamingService } from './streaming-service';
 
-interface OllamaModel {
+export interface OllamaModel {
   name: string;
   size: string;
   digest: string;
   modified: string;
 }
 
-interface OllamaGenerateOptions {
+export interface OllamaGenerateOptions {
   model: string;
   prompt: string;
   system?: string;
@@ -33,7 +33,7 @@ interface OllamaGenerateOptions {
   };
 }
 
-interface OllamaResponse {
+export interface OllamaResponse {
   model: string;
   created_at: string;
   response: string;
@@ -76,7 +76,7 @@ class OllamaLocalLLM {
       await this.ensureLegalModels();
       
       logger.info('[OllamaLLM] Ollama service initialized successfully');
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[OllamaLLM] Initialization failed:', error);
     }
   }
@@ -88,7 +88,7 @@ class OllamaLocalLLM {
     try {
       const response = await fetch(`${this.baseUrl}/api/tags`);
       return response.ok;
-    } catch (error) {
+    } catch (error: any) {
       return false;
     }
   }
@@ -110,7 +110,7 @@ class OllamaLocalLLM {
         this.availableModels.set(model.name, model);
         logger.info(`[OllamaLLM] Available model: ${model.name} (${model.size})`);
       }
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[OllamaLLM] Failed to load models:', error);
     }
   }
@@ -181,7 +181,7 @@ TEMPLATE """{{ if .System }}<|system|>
         logger.info(`[OllamaLLM] Created legal model variant: ${targetName}`);
         await this.loadAvailableModels();
       }
-    } catch (error) {
+    } catch (error: any) {
       logger.error(`[OllamaLLM] Failed to create legal model ${targetName}:`, error);
     }
   }
@@ -220,7 +220,7 @@ TEMPLATE """{{ if .System }}<|system|>
       
       return result;
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[OllamaLLM] Generation failed:', error);
       return null;
     }
@@ -274,12 +274,12 @@ TEMPLATE """{{ if .System }}<|system|>
             if (data.done) {
               onComplete(fullResponse);
             }
-          } catch (e) {
+          } catch (e: any) {
             // Ignore parsing errors
           }
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[OllamaLLM] Stream generation failed:', error);
       throw error;
     }
@@ -308,7 +308,7 @@ TEMPLATE """{{ if .System }}<|system|>
       const result = await response.json();
       return result.embedding;
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[OllamaLLM] Embedding generation failed:', error);
       return null;
     }
@@ -338,7 +338,7 @@ TEMPLATE """{{ if .System }}<|system|>
       const result = await response.json();
       return result.message?.content || null;
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[OllamaLLM] Chat completion failed:', error);
       return null;
     }
@@ -421,7 +421,7 @@ Document:\n${document}`;
       
       return null;
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[OllamaLLM] Legal document processing failed:', error);
       return null;
     }
@@ -489,7 +489,7 @@ Document:\n${document}`;
       
       this.modelCache.delete(model);
       logger.info(`[OllamaLLM] Unloaded model ${model}`);
-    } catch (error) {
+    } catch (error: any) {
       logger.error(`[OllamaLLM] Failed to unload model ${model}:`, error);
     }
   }
@@ -510,7 +510,7 @@ Document:\n${document}`;
       }
 
       return await response.json();
-    } catch (error) {
+    } catch (error: any) {
       logger.error(`[OllamaLLM] Failed to get model info for ${model}:`, error);
       return null;
     }
@@ -550,7 +550,7 @@ Document:\n${document}`;
             if (data.status) {
               logger.info(`[OllamaLLM] Pull progress: ${data.status}`);
             }
-          } catch (e) {
+          } catch (e: any) {
             // Ignore parsing errors
           }
         }
@@ -559,7 +559,7 @@ Document:\n${document}`;
       await this.loadAvailableModels();
       return true;
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error(`[OllamaLLM] Failed to pull model ${model}:`, error);
       return false;
     }

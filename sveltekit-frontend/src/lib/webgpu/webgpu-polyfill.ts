@@ -49,7 +49,7 @@ export class WebGPUPolyfill {
 					
 					return true;
 				}
-			} catch (error) {
+			} catch (error: any) {
 				console.warn('WebGPU initialization failed, falling back to WebGL:', error);
 			}
 		}
@@ -91,7 +91,7 @@ export class WebGPUPolyfill {
 			console.log('Renderer:', this.webglFallback.getParameter(this.webglFallback.RENDERER));
 			
 			return true;
-		} catch (error) {
+		} catch (error: any) {
 			console.error('WebGL initialization failed:', error);
 			return false;
 		}
@@ -143,7 +143,7 @@ export class WebGPUPolyfill {
 			this.updatePerformanceStats(processingTime);
 
 			return result;
-		} catch (error) {
+		} catch (error: any) {
 			console.error('Embedding computation failed:', error);
 			// Always fall back to CPU computation
 			return this.computeEmbeddingCPU(inputVector, dimensions);
@@ -461,7 +461,7 @@ export class WebGPUPolyfill {
 			this.updatePerformanceStats(processingTime);
 
 			return similarity;
-		} catch (error) {
+		} catch (error: any) {
 			console.error('Similarity computation failed:', error);
 			return this.computeSimilarityCPU(vector1, vector2);
 		}

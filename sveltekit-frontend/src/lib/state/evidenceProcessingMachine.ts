@@ -9,19 +9,19 @@ import { langChainService } from "../ai/langchain-ollama-service";
 import { ollamaService } from "../services/ollama-service";
 import { multiLayerCache } from "../services/multiLayerCache";
 
-interface DocumentProcessingJob {
+export interface DocumentProcessingJob {
   documentId: string;
   content: string;
   options: any;
   metadata: any;
 }
 
-interface EmbeddingGenerationJob {
+export interface EmbeddingGenerationJob {
   documentId: string;
   chunks: any[];
 }
 
-interface AIAnalysisJob {
+export interface AIAnalysisJob {
   documentId: string;
   content: string;
   type: string;
@@ -203,7 +203,7 @@ const aiAnalysisService = fromPromise(
 
       riskAssessment = langchainResult.riskAssessment;
       recommendations = langchainResult.recommendations;
-    } catch (error) {
+    } catch (error: any) {
       console.warn(
         "LangChain analysis failed, using basic analysis only:",
         error

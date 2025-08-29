@@ -91,7 +91,7 @@ export class EnhancedRAGSystem {
   private safeJSONParse(jsonString: string): unknown {
     try {
       return JSON.parse(jsonString);
-    } catch (error) {
+    } catch (error: any) {
       console.warn('JSON parse failed:', error);
       return {};
     }
@@ -234,7 +234,7 @@ export class EnhancedRAGSystem {
         `🧠 RAG query processed in ${response.processingTime}ms with ${enhancedSources.length} sources`
       );
       return response;
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ RAG query failed:", error);
       this.processing$.set(false);
       throw error;
@@ -291,7 +291,7 @@ Return JSON:
       throw new Error('Invalid LLM response format');
       }
       return this.safeJSONParse(data.response);
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Intent analysis failed, using defaults:", error);
       return {
         type: "search",
@@ -348,7 +348,7 @@ Return as JSON array: ["query1", "query2", "query3", ...]`;
       }
       const expanded = this.safeJSONParse(data.response);
       return [originalQuery, ...expanded].slice(0, 5); // Limit to 5 total queries
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Query expansion failed:", error);
       return [originalQuery];
     }
@@ -426,7 +426,7 @@ Return as JSON array: ["query1", "query2", "query3", ...]`;
         }));
 
         allResults.push(...weightedResults);
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Search failed for query: ${query}`, error);
       }
     }
@@ -463,7 +463,7 @@ Return as JSON array: ["query1", "query2", "query3", ...]`;
           reasoning,
           citations,
         });
-      } catch (error) {
+      } catch (error: any) {
         console.warn("Failed to enhance source:", error);
         // Include with basic information
         enhancedSources.push({
@@ -563,7 +563,7 @@ Structure your response as:
 
       const data = await response.json();
       return data.response;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Synthesis failed:", error);
       return "I encountered an error while synthesizing the answer. Please try again.";
     }
@@ -583,7 +583,7 @@ Structure your response as:
 
       const data = await response.json();
       return data.embedding;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Embedding generation failed:", error);
       return new Array(384).fill(0);
     }

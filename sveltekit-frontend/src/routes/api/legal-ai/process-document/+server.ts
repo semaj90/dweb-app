@@ -4,7 +4,7 @@ import { URL } from "url";
 import { queueDocumentProcessing, getJobStatus, getQueueStats, type DocumentProcessingJobData } from "$lib/services/queue-service";
 
 // Types for Go server integration (kept for compatibility)
-interface DocumentProcessRequest {
+export interface DocumentProcessRequest {
 	document_id: string;
 	content: string;
 	document_type: string;
@@ -12,7 +12,7 @@ interface DocumentProcessRequest {
 	options: ProcessingOptions;
 }
 
-interface ProcessingOptions {
+export interface ProcessingOptions {
 	extract_entities: boolean;
 	generate_summary: boolean;
 	assess_risk: boolean;
@@ -21,7 +21,7 @@ interface ProcessingOptions {
 	use_gemma3_legal: boolean;
 }
 
-interface DocumentProcessResponse {
+export interface DocumentProcessResponse {
 	success: boolean;
 	document_id: string;
 	summary?: string;
@@ -33,7 +33,7 @@ interface DocumentProcessResponse {
 	error?: string;
 }
 
-interface LegalEntity {
+export interface LegalEntity {
 	type: string;
 	value: string;
 	confidence: number;
@@ -41,7 +41,7 @@ interface LegalEntity {
 	end_pos: number;
 }
 
-interface RiskAssessment {
+export interface RiskAssessment {
 	overall_risk: string;
 	risk_score: number;
 	risk_factors: string[];
@@ -67,7 +67,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
 			try {
 				const status = await getJobStatus(jobId);
 				return json(status);
-			} catch (error) {
+			} catch (error: any) {
 				console.error('❌ Error checking job status:', error);
 				return json({ 
 					error: 'Failed to check job status',
@@ -190,7 +190,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
 			}, { status: 503 });
 		}
 
-	} catch (error) {
+	} catch (error: any) {
 		console.error('❌ API endpoint error:', error);
 		return json({ 
 			error: 'Internal server error',
@@ -228,7 +228,7 @@ export const GET: RequestHandler = async () => {
 			timestamp: new Date().toISOString()
 		});
 
-	} catch (error) {
+	} catch (error: any) {
 		console.error('❌ Go server health check failed:', error);
 		return json({ 
 			error: 'Go server unreachable',

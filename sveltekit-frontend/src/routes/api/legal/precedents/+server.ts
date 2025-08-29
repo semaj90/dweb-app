@@ -9,7 +9,7 @@ let legalPrecedents: any;
 try {
   const schema = await import('$lib/server/db/schema-postgres');
   legalPrecedents = schema.legalPrecedents;
-} catch (error) {
+} catch (error: any) {
   console.warn('Legal precedents schema not available');
 }
 

@@ -1,4 +1,5 @@
-import { parentPort, workerData } from "worker_threads";
+// Web Worker context - no imports needed
+declare const self: DedicatedWorkerGlobalScope;
 import { WebSocket } from "ws";
 import { EventEmitter } from "events";
 
@@ -8,72 +9,72 @@ import { EventEmitter } from "events";
  */
 
 // Type definitions
-interface WorkerMessage {
+export interface WorkerMessage {
   taskId: string;
   data: {
     type: string;
-    data?: unknown;
+    data?: any;
     connectionData?: ConnectionData;
-    message?: unknown;
+    message?: any;
     channels?: string[];
-    chunks?: unknown[];
+    chunks?: any[];
     connectionId?: string;
     bufferId?: string;
     operation?: string;
-    bufferData?: unknown;
+    bufferData?: any;
   };
-  options?: unknown;
+  options?: any;
 }
 
-interface ConnectionData {
+export interface ConnectionData {
   url: string;
   protocols?: string[];
   headers?: Record<string, string>;
 }
 
-interface StreamingConfig {
+export interface StreamingConfig {
   maxConnections: number;
   bufferSize: number;
   heartbeatInterval: number;
   maxMessageSize: number;
 }
 
-interface Connection {
+export interface Connection {
   ws: WebSocket;
   url: string;
   createdAt: Date;
   lastActivity: Date;
 }
 
-interface StreamBuffer {
+export interface StreamBuffer {
   type: string;
-  chunks: unknown[];
+  chunks: any[];
   metadata: Record<string, any>;
   currentIndex: number;
   isComplete: boolean;
   createdAt: Date;
 }
 
-interface StreamChunk {
+export interface StreamChunk {
   content: string;
   index: number;
   timestamp: string;
 }
 
-interface ProcessedUpdate {
+export interface ProcessedUpdate {
   id: string;
   timestamp: string;
   workerId: string;
   processed: boolean;
 }
 
-interface BroadcastResult {
+export interface BroadcastResult {
   channel: string;
   status: "sent" | "connection_not_ready" | "error";
   error?: string;
 }
 
-interface StreamingStats {
+export interface StreamingStats {
   activeConnections: number;
   streamBuffers: number;
   maxConnections: number;
@@ -109,7 +110,7 @@ class StreamingWorker extends EventEmitter {
     const { taskId, data, options } = message;
 
     try {
-      let result: unknown;
+      let result: any;
 
       switch (data.type) {
         case "process_stream":
@@ -135,14 +136,14 @@ class StreamingWorker extends EventEmitter {
           throw new Error(`Unknown streaming task type: ${data.type}`);
       }
 
-      parentPort?.postMessage({
+      self.postMessage({
         taskId,
         success: true,
         data: result,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Streaming error in ${this.workerId}:`, error);
-      parentPort?.postMessage({
+      self.postMessage({
         taskId,
         success: false,
         error: error instanceof Error ? error.message : String(error),
@@ -153,7 +154,7 @@ class StreamingWorker extends EventEmitter {
   /**
    * Process streaming data
    */
-  processStream(streamData: unknown, options: unknown = {}): unknown {
+  processStream(streamData: any, options: any = {}): any {
     const { type, content, metadata } = streamData;
 
     switch (type) {
@@ -173,7 +174,7 @@ class StreamingWorker extends EventEmitter {
   /**
    * Process AI response streaming
    */
-  processAIResponseStream(content: string, metadata: Record<string, any>, options: unknown): unknown {
+  processAIResponseStream(content: string, metadata: Record<string, any>, options: any): any {
     const chunks = this.chunkAIResponse(content, options);
     const streamId = `ai_${Date.now()}_${Math.random()
       .toString(36)
@@ -204,7 +205,7 @@ class StreamingWorker extends EventEmitter {
   /**
    * Chunk AI response for streaming
    */
-  chunkAIResponse(content: string, options: unknown = {}): StreamChunk[] {
+  chunkAIResponse(content: string, options: any = {}): StreamChunk[] {
     const chunkSize = options.chunkSize || 50; // Characters per chunk
     const chunks: StreamChunk[] = [];
 
@@ -243,13 +244,13 @@ class StreamingWorker extends EventEmitter {
   /**
    * Process document chunks for streaming
    */
-  processDocumentChunks(chunks: unknown[], metadata: Record<string, any>, options: unknown): unknown {
+  processDocumentChunks(chunks: any[], metadata: Record<string, any>, options: any): any {
     const streamId = `doc_${Date.now()}_${Math.random()
       .toString(36)
       .substr(2, 9)}`;
 
     // Process chunks for streaming
-    const processedChunks = chunks.map((chunk: unknown, index: number) => ({
+    const processedChunks = chunks.map((chunk: any, index: number) => ({
       ...chunk,
       streamIndex: index,
       processingTimestamp: new Date().toISOString(),
@@ -268,7 +269,7 @@ class StreamingWorker extends EventEmitter {
     return {
       streamId,
       totalChunks: processedChunks.length,
-      chunkSummary: processedChunks.map((c: unknown) => ({
+      chunkSummary: processedChunks.map((c: any) => ({
         index: c.streamIndex,
         size: c.content?.length || 0,
         type: c.type,
@@ -279,10 +280,10 @@ class StreamingWorker extends EventEmitter {
   /**
    * Process real-time updates
    */
-  processRealTimeUpdates(updates: unknown, metadata: Record<string, any>, options: unknown): ProcessedUpdate[] {
+  processRealTimeUpdates(updates: any, metadata: Record<string, any>, options: any): ProcessedUpdate[] {
     const processedUpdates = Array.isArray(updates) ? updates : [updates];
 
-    return processedUpdates.map((update: unknown): ProcessedUpdate => ({
+    return processedUpdates.map((update: any): ProcessedUpdate => ({
       ...update,
       id:
         update.id ||
@@ -296,7 +297,7 @@ class StreamingWorker extends EventEmitter {
   /**
    * Process search results for streaming
    */
-  processSearchResults(results: unknown[], metadata: Record<string, any>, options: unknown): unknown {
+  processSearchResults(results: any[], metadata: Record<string, any>, options: any): any {
     const batchSize = options.batchSize || 10;
     const batches = [];
 
@@ -319,7 +320,7 @@ class StreamingWorker extends EventEmitter {
   /**
    * Process generic streaming data
    */
-  processGenericStream(content: unknown, metadata: Record<string, any>, options: unknown): unknown {
+  processGenericStream(content: any, metadata: Record<string, any>, options: any): any {
     return {
       processedContent: content,
       metadata: {
@@ -334,7 +335,7 @@ class StreamingWorker extends EventEmitter {
   /**
    * Create WebSocket connection
    */
-  createConnection(connectionData: ConnectionData, options: unknown = {}): unknown {
+  createConnection(connectionData: ConnectionData, options: any = {}): any {
     const { url, protocols, headers } = connectionData;
     const connectionId = `conn_${Date.now()}_${Math.random()
       .toString(36)
@@ -348,7 +349,7 @@ class StreamingWorker extends EventEmitter {
         this.emit("connection_opened", { connectionId, url });
       });
 
-      ws.on("message", (data: unknown) => {
+      ws.on("message", (data: any) => {
         this.handleWebSocketMessage(connectionId, data);
       });
 
@@ -375,7 +376,7 @@ class StreamingWorker extends EventEmitter {
         status: "connecting",
         url,
       };
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(
         `Failed to create WebSocket connection: ${error instanceof Error ? error.message : String(error)}`
       );
@@ -385,7 +386,7 @@ class StreamingWorker extends EventEmitter {
   /**
    * Handle WebSocket messages
    */
-  handleWebSocketMessage(connectionId: string, data: unknown): void {
+  handleWebSocketMessage(connectionId: string, data: any): void {
     const connection = this.connections.get(connectionId);
     if (!connection) return;
 
@@ -398,7 +399,7 @@ class StreamingWorker extends EventEmitter {
         message,
         timestamp: new Date().toISOString(),
       });
-    } catch (error) {
+    } catch (error: any) {
       // Handle non-JSON messages
       this.emit("raw_message_received", {
         connectionId,
@@ -411,7 +412,7 @@ class StreamingWorker extends EventEmitter {
   /**
    * Broadcast message to multiple channels
    */
-  broadcastMessage(message: unknown, channels: string[], options: unknown = {}): unknown {
+  broadcastMessage(message: any, channels: string[], options: any = {}): any {
     const results: BroadcastResult[] = [];
 
     for (const channel of channels) {
@@ -423,7 +424,7 @@ class StreamingWorker extends EventEmitter {
         } else {
           results.push({ channel, status: "connection_not_ready" });
         }
-      } catch (error) {
+      } catch (error: any) {
         results.push({
           channel,
           status: "error",
@@ -442,7 +443,7 @@ class StreamingWorker extends EventEmitter {
   /**
    * Stream chunks to a connection
    */
-  streamChunks(chunks: unknown[], connectionId: string, options: unknown = {}): unknown {
+  streamChunks(chunks: any[], connectionId: string, options: any = {}): any {
     const connection = this.connections.get(connectionId);
     if (!connection || connection.ws.readyState !== WebSocket.OPEN) {
       throw new Error(`Connection ${connectionId} not available`);
@@ -470,7 +471,7 @@ class StreamingWorker extends EventEmitter {
           if (sentChunks < chunks.length) {
             setTimeout(sendNext, delay);
           }
-        } catch (error) {
+        } catch (error: any) {
           throw new Error(
             `Failed to send chunk ${sentChunks}: ${error instanceof Error ? error.message : String(error)}`
           );
@@ -490,7 +491,7 @@ class StreamingWorker extends EventEmitter {
   /**
    * Manage stream buffers
    */
-  manageBuffer(bufferId: string, operation: string, bufferData?: unknown): unknown {
+  manageBuffer(bufferId: string, operation: string, bufferData?: any): any {
     switch (operation) {
       case "get":
         return this.streamBuffers.get(bufferId) || null;
@@ -539,7 +540,7 @@ class StreamingWorker extends EventEmitter {
           // Send ping
           try {
             connection.ws.ping();
-          } catch (error) {
+          } catch (error: any) {
             console.error(`❌ Ping failed for ${connectionId}:`, error);
           }
         }
@@ -564,29 +565,29 @@ class StreamingWorker extends EventEmitter {
 const worker = new StreamingWorker();
 
 // Handle messages from main thread
-parentPort?.on("message", (message: WorkerMessage) => {
+self.addEventListener("message", (message: WorkerMessage) => {
   worker.handleMessage(message);
 });
 
 // Forward worker events to main thread
-worker.on("connection_opened", (data: unknown) => {
-  parentPort?.postMessage({ type: "event", event: "connection_opened", data });
+worker.on("connection_opened", (data: any) => {
+  self.postMessage({ type: "event", event: "connection_opened", data });
 });
 
-worker.on("connection_error", (data: unknown) => {
-  parentPort?.postMessage({ type: "event", event: "connection_error", data });
+worker.on("connection_error", (data: any) => {
+  self.postMessage({ type: "event", event: "connection_error", data });
 });
 
-worker.on("connection_closed", (data: unknown) => {
-  parentPort?.postMessage({ type: "event", event: "connection_closed", data });
+worker.on("connection_closed", (data: any) => {
+  self.postMessage({ type: "event", event: "connection_closed", data });
 });
 
-worker.on("message_received", (data: unknown) => {
-  parentPort?.postMessage({ type: "event", event: "message_received", data });
+worker.on("message_received", (data: any) => {
+  self.postMessage({ type: "event", event: "message_received", data });
 });
 
 // Send ready signal
-parentPort?.postMessage({
+self.postMessage({
   type: "ready",
   workerId: worker.workerId,
   stats: worker.getStats(),

@@ -1,8 +1,10 @@
-// Enhanced Evidence System Types
+// Enhanced Evidence System Types (fixed)
+
 export interface EvidenceNode {
   id: string;
   title: string;
-  type: EvidenceType;
+  // Keep node-level type lightweight (string key) for simple lookups in UI
+  type: EvidenceTypeKey;
   position: Position;
   data: EvidenceData;
   connections?: string[];
@@ -14,17 +16,21 @@ export interface Position {
   y: number;
 }
 
-export type EvidenceType = 
-  | 'physical'
-  | 'digital' 
-  | 'document'
-  | 'photo'
-  | 'video'
-  | 'audio'
-  | 'testimony'
-  | 'forensic'
-  | 'witness'
-  | 'expert';
+// Strong discriminated union for evidence kinds. Use `kind` to discriminate.
+export type EvidenceType =
+  | { kind: 'physical'; description?: string; weightGrams?: number }
+  | { kind: 'digital'; storageProvider?: string; path?: string }
+  | { kind: 'document'; pageCount?: number; docType?: string; language?: string }
+  | { kind: 'photo'; width?: number; height?: number; cameraModel?: string }
+  | { kind: 'video'; durationSeconds?: number; codec?: string }
+  | { kind: 'audio'; durationSeconds?: number; codec?: string }
+  | { kind: 'testimony'; witnessName?: string; recordedAt?: string }
+  | { kind: 'forensic'; labReportId?: string; method?: string }
+  | { kind: 'witness'; witnessId?: string }
+  | { kind: 'expert'; expertId?: string; field?: string };
+
+// Backwards-compatible key type for lightweight use (UI, indexes)
+export type EvidenceTypeKey = EvidenceType['kind'];
 
 export interface EvidenceData {
   id: string;
@@ -32,17 +38,22 @@ export interface EvidenceData {
   criminalId?: string;
   title: string;
   description?: string;
-  evidenceType: EvidenceType;
+  // simple key for indexing/search
+  evidenceType: EvidenceTypeKey;
+  // optional detailed discriminated object
+  evidenceTypeDetails?: EvidenceType;
   fileType?: string;
   subType?: string;
   fileUrl?: string;
   fileName?: string;
   fileSize?: number;
   mimeType?: string;
+  // raw binary payload (for gRPC/QUIC transfers) — optional and may be base64-encoded in JSON
+  rawBytes?: Uint8Array | null;
   hash?: string;
   tags?: string[];
   chainOfCustody?: ChainOfCustodyEntry[];
-  collectedAt?: Date;
+  collectedAt?: string; // ISO8601 instead of Date
   collectedBy?: string;
   location?: string;
   labAnalysis?: LabAnalysis;
@@ -53,14 +64,16 @@ export interface EvidenceData {
   isAdmissible?: boolean;
   confidentialityLevel?: 'public' | 'restricted' | 'confidential' | 'secret';
   canvasPosition?: Position;
+  // flexible metadata bag for vendor-specific or downstream extensions
+  metadata?: Record<string, unknown>;
   uploadedBy?: string;
-  uploadedAt?: Date;
-  updatedAt?: Date;
+  uploadedAt?: string;
+  updatedAt?: string;
 }
 
 export interface ChainOfCustodyEntry {
   id: string;
-  timestamp: Date;
+  timestamp: string;
   handler: string;
   action: 'collected' | 'transferred' | 'analyzed' | 'stored' | 'accessed';
   location: string;
@@ -69,17 +82,15 @@ export interface ChainOfCustodyEntry {
 }
 
 export interface LabAnalysis {
-  id?: string;
   technician?: string;
   method?: string;
-  results?: unknown;
+  results?: Record<string, unknown>;
   confidence?: number;
-  timestamp?: Date;
+  timestamp?: string;
   notes?: string;
 }
 
 export interface AIAnalysis {
-  id?: string;
   model?: string;
   confidence?: number;
   entities?: Entity[];
@@ -88,7 +99,7 @@ export interface AIAnalysis {
   keywords?: string[];
   summary?: string;
   relationships?: Relationship[];
-  timestamp?: Date;
+  timestamp?: string;
   processingTime?: number;
   gpuAccelerated?: boolean;
 }
@@ -98,10 +109,10 @@ export interface Entity {
   type: EntityType;
   confidence: number;
   position?: { start: number; end: number };
-  metadata?: unknown;
+  metadata?: Record<string, unknown>;
 }
 
-export type EntityType = 
+export type EntityType =
   | 'person'
   | 'organization'
   | 'location'
@@ -119,10 +130,10 @@ export interface Relationship {
   to: string;
   type: RelationshipType;
   confidence: number;
-  metadata?: unknown;
+  metadata?: Record<string, unknown>;
 }
 
-export type RelationshipType = 
+export type RelationshipType =
   | 'related_to'
   | 'contradicts'
   | 'supports'
@@ -143,7 +154,7 @@ export interface EvidenceMetadata {
   duplicates?: string[];
 }
 
-export type ProcessingStatus = 
+export type ProcessingStatus =
   | 'pending'
   | 'processing'
   | 'analyzed'
@@ -155,16 +166,16 @@ export interface AuthenticityCheck {
   verified: boolean;
   method: string;
   confidence: number;
-  timestamp: Date;
+  timestamp: string;
   notes?: string;
 }
 
 export interface CanvasData {
-  canvas_json: unknown;
-  evidence_nodes: EvidenceNode[];
-  node_relationships: NodeRelationship[];
-  case_id?: string;
-  user_id?: string;
+  canvasJson: Record<string, unknown>;
+  evidenceNodes: EvidenceNode[];
+  nodeRelationships: NodeRelationship[];
+  caseId?: string;
+  userId?: string;
   timestamp: string;
   metadata?: CanvasMetadata;
 }
@@ -175,15 +186,15 @@ export interface NodeRelationship {
   to: string;
   type: RelationshipType;
   confidence?: number;
-  metadata?: unknown;
-  createdAt?: Date;
+  metadata?: Record<string, unknown>;
+  createdAt?: string;
   createdBy?: string;
 }
 
 export interface CanvasMetadata {
   version: string;
-  created: Date;
-  lastModified: Date;
+  created: string;
+  lastModified: string;
   author: string;
   permissions?: CanvasPermissions;
 }
@@ -198,7 +209,7 @@ export interface CanvasPermissions {
 export interface EvidenceSearchQuery {
   query: string;
   caseId?: string;
-  evidenceType?: EvidenceType;
+  evidenceType?: EvidenceTypeKey;
   searchMode: SearchMode;
   limit?: number;
   offset?: number;
@@ -208,7 +219,7 @@ export interface EvidenceSearchQuery {
 export type SearchMode = 'text' | 'content' | 'semantic' | 'hybrid' | 'ai_enhanced';
 
 export interface SearchFilters {
-  dateRange?: { start: Date; end: Date };
+  dateRange?: { start: string; end: string };
   confidentiality?: string[];
   tags?: string[];
   hasAnalysis?: boolean;
@@ -221,12 +232,12 @@ export interface EvidenceSearchResult {
   caseId: string;
   title: string;
   description?: string;
-  evidenceType: EvidenceType;
+  evidenceType: EvidenceTypeKey;
   fileName?: string;
   fileUrl?: string;
   tags?: string[];
   summary?: string;
-  uploadedAt?: Date;
+  uploadedAt?: string;
   similarity: number;
   searchType: SearchMode;
   contentMatch?: string;
@@ -248,9 +259,9 @@ export interface ProcessingRequest {
   userId?: string;
 }
 
-export type ProcessingStep = 
+export type ProcessingStep =
   | 'ocr'
-  | 'embedding' 
+  | 'embedding'
   | 'analysis'
   | 'classification'
   | 'entity_extraction'
@@ -271,10 +282,10 @@ export interface ProcessingResult {
   progress: number;
   step: ProcessingStep;
   stepProgress?: number;
-  results?: unknown;
+  results?: Record<string, unknown>;
   error?: string;
-  startTime: Date;
-  endTime?: Date;
+  startTime: string;
+  endTime?: string;
   processingTime?: number;
   gpuAccelerated?: boolean;
 }
@@ -282,17 +293,17 @@ export interface ProcessingResult {
 // WebGPU and WASM Types
 export interface WebGPUCapabilities {
   available: boolean;
-  device?: GPUDevice;
-  adapter?: GPUAdapter;
+  device?: any; // GPUDevice
+  adapter?: any; // GPUAdapter
   features: string[];
-  limits: GPULimits;
+  limits: Record<string, number>; // GPULimits
 }
 
 export interface WASMModule {
   name: string;
   loaded: boolean;
   instance?: WebAssembly.Instance;
-  exports?: unknown;
+  exports?: Record<string, unknown>;
 }
 
 // Real-time Types
@@ -300,39 +311,19 @@ export interface RealtimeUpdate {
   type: 'evidence_update' | 'canvas_update' | 'processing_update';
   caseId: string;
   evidenceId?: string;
-  data: unknown;
-  timestamp: Date;
+  data: Record<string, unknown>;
+  timestamp: string;
   userId: string;
 }
 
-// Export all for easy importing
-export type {
-  // Main types
-  EvidenceNode,
-  EvidenceData,
-  EvidenceMetadata,
-  CanvasData,
-  NodeRelationship,
-  
-  // Analysis types
-  AIAnalysis,
-  Entity,
-  Relationship,
-  
-  // Search types
-  EvidenceSearchQuery,
-  EvidenceSearchResult,
-  SearchFilters,
-  
-  // Processing types
-  ProcessingRequest,
-  ProcessingResult,
-  ProcessingOptions,
-  
-  // Real-time types
-  RealtimeUpdate,
-  
-  // GPU/WASM types
-  WebGPUCapabilities,
-  WASMModule
-};
+// Response shape for API endpoints that return evidence objects
+export interface EvidenceResponse {
+  id: string;
+  data: EvidenceData;
+  status: ProcessingStatus | 'created' | 'accepted' | 'rejected';
+  message?: string;
+  warnings?: string[];
+  createdAt: string;
+  updatedAt?: string;
+}
+

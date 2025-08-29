@@ -11,8 +11,8 @@
  * - GPU acceleration for batch processing
  */
 
-import { lokiRedisCache, type CachedDocument } from '../cache/loki-redis-integration.js';
-import { nesMemory } from '../memory/nes-memory-architecture.js';
+import { lokiRedisCache, type CachedDocument } from '../cache/loki-redis-integration';
+import { nesMemory } from '../memory/nes-memory-architecture';
 import { EventEmitter } from 'events';
 
 // Legal-BERT model configurations
@@ -32,7 +32,7 @@ const LEGAL_BERT_CONFIG = {
     },
     similarity: {
       name: 'sentence-transformers/legal-bert-base-uncased',
-      dimensions: 768,
+      dimensions: 384,
       similarityThreshold: 0.7
     }
   },
@@ -53,7 +53,7 @@ const LEGAL_BERT_CONFIG = {
   }
 } as const;
 
-interface LegalEntity {
+export interface LegalEntity {
   text: string;
   label: string;
   confidence: number;
@@ -63,14 +63,14 @@ interface LegalEntity {
   linkedCases?: string[];
 }
 
-interface DocumentClassification {
+export interface DocumentClassification {
   category: 'contract' | 'litigation' | 'regulatory' | 'corporate' | 'intellectual_property' | 'employment' | 'real_estate' | 'tax' | 'other';
   subcategory: string;
   confidence: number;
   topPredictions: Array<{ category: string; confidence: number }>;
 }
 
-interface RiskAssessment {
+export interface RiskAssessment {
   overallRisk: 'low' | 'medium' | 'high' | 'critical';
   riskScore: number; // 0-100
   riskFactors: Array<{
@@ -83,7 +83,7 @@ interface RiskAssessment {
   confidenceInterval: { lower: number; upper: number };
 }
 
-interface SemanticAnalysis {
+export interface SemanticAnalysis {
   documentId: string;
   timestamp: number;
   
@@ -118,7 +118,7 @@ interface SemanticAnalysis {
   cacheHit: boolean;
 }
 
-interface StreamingUpdate {
+export interface StreamingUpdate {
   documentId: string;
   updateType: 'entity' | 'risk' | 'classification' | 'similarity';
   data: Partial<SemanticAnalysis>;
@@ -169,7 +169,7 @@ export class LegalBERTSemanticAnalyzer extends EventEmitter {
       this.emit('initialized');
       
       console.log('✅ Legal-BERT Semantic Analyzer initialized successfully');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Legal-BERT initialization failed:', error);
       throw error;
     }
@@ -359,7 +359,7 @@ export class LegalBERTSemanticAnalyzer extends EventEmitter {
         this.processingQueue.delete(documentId);
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Analysis failed for document ${documentId}:`, error);
       this.processingQueue.delete(documentId);
       throw error;
@@ -682,7 +682,7 @@ export class LegalBERTSemanticAnalyzer extends EventEmitter {
       await Promise.all(promises);
       console.log(`✅ Processed batch of ${batch.length} documents`);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Batch processing failed:', error);
     } finally {
       this.batchProcessor.processing = false;
@@ -695,7 +695,7 @@ export class LegalBERTSemanticAnalyzer extends EventEmitter {
       if (cached && (cached as any).analysis) {
         return (cached as any).analysis as SemanticAnalysis;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn(`Cache retrieval failed for ${documentId}:`, error);
     }
     return null;
@@ -715,7 +715,7 @@ export class LegalBERTSemanticAnalyzer extends EventEmitter {
         compressed: false,
         metadata: {} as any
       });
-    } catch (error) {
+    } catch (error: any) {
       console.warn(`Cache storage failed for ${documentId}:`, error);
     }
   }

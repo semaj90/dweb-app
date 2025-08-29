@@ -1,7 +1,7 @@
 // workers/services/rag.ts
 import fetch from 'node-fetch';
 import type { RagResult } from '../../sveltekit-frontend/src/lib/types/progress';
-import { searchByText, findSimilarEvidences } from './embeddings.js';
+import { searchByText, findSimilarEvidences } from './embeddings';
 import { QdrantClient } from '@qdrant/js-client-rest';
 import neo4j from 'neo4j-driver';
 
@@ -14,7 +14,7 @@ const neo4jDriver = neo4j.driver(
   )
 );
 
-interface RagRequest {
+export interface RagRequest {
   evidenceId: string;
   topK?: number;
   model?: string;
@@ -63,7 +63,7 @@ export async function runRag(request: RagRequest): Promise<RagResult> {
     console.log(`✅ RAG analysis completed for evidence: ${evidenceId}`);
     return result;
     
-  } catch (error) {
+  } catch (error: any) {
     console.error(`❌ RAG analysis failed for evidence ${evidenceId}:`, error);
     throw error;
   }
@@ -93,7 +93,7 @@ async function getEvidenceContent(evidenceId: string): Promise<{ text: string; m
       }
     };
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Failed to get evidence content:', error);
     return null;
   }
@@ -123,7 +123,7 @@ async function findRelevantEvidences(queryText: string, topK: number): Promise<A
     
     return evidencesWithText.filter(e => e.text); // Only return evidences with text
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Failed to find relevant evidences:', error);
     return [];
   }
@@ -152,7 +152,7 @@ async function getRelatedEntities(evidenceId: string): Promise<Array<{
       relationships: [record.get('relationship')]
     }));
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Failed to get related entities:', error);
     return [];
   } finally {
@@ -299,7 +299,7 @@ Format your response as JSON with the following structure:
       };
     }
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ LLM analysis failed:', error);
     
     // Fallback analysis
@@ -345,7 +345,7 @@ async function extractAndStoreEntities(
     
     console.log(`✅ Stored ${analysis.entities.length} entities for evidence: ${evidenceId}`);
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Failed to store entities:', error);
   } finally {
     await session.close();
@@ -385,7 +385,7 @@ export async function runMultiStepRag(evidenceIds: string[]): Promise<{
       timeline
     };
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Multi-step RAG analysis failed:', error);
     throw error;
   }
@@ -417,7 +417,7 @@ async function findCrossReferences(evidenceIds: string[]): Promise<Array<{
     
     return crossRefs;
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Failed to find cross-references:', error);
     return [];
   } finally {
@@ -446,7 +446,7 @@ async function buildTimeline(evidenceIds: string[]): Promise<Array<{
       evidenceIds: record.get('evidenceIds')
     }));
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Failed to build timeline:', error);
     return [];
   } finally {
@@ -505,7 +505,7 @@ Provide a comprehensive consolidated analysis including:
     const data = await response.json() as any;
     return data.response;
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Consolidated analysis failed:', error);
     return 'Consolidated analysis could not be generated. Please review individual evidence analyses.';
   }
@@ -528,7 +528,7 @@ export async function checkRagHealth(): Promise<{
     const ollamaUrl = process.env.OLLAMA_URL || 'http://localhost:11434';
     const response = await fetch(`${ollamaUrl}/api/tags`);
     health.ollama = response.ok;
-  } catch (error) {
+  } catch (error: any) {
     health.ollama = false;
   }
   
@@ -537,7 +537,7 @@ export async function checkRagHealth(): Promise<{
   try {
     await session.run('RETURN 1');
     health.neo4j = true;
-  } catch (error) {
+  } catch (error: any) {
     health.neo4j = false;
   } finally {
     await session.close();
@@ -550,7 +550,7 @@ export async function checkRagHealth(): Promise<{
     });
     await qdrantClient.getCollections();
     health.qdrant = true;
-  } catch (error) {
+  } catch (error: any) {
     health.qdrant = false;
   }
   
@@ -562,7 +562,7 @@ export async function closeRagService(): Promise<void> {
   try {
     await neo4jDriver.close();
     console.log('✅ RAG service closed gracefully');
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Error closing RAG service:', error);
   }
 }

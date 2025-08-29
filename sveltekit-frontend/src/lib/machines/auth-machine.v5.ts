@@ -2,7 +2,7 @@ import { setup, assign, createActor, fromPromise } from 'xstate';
 import { AuthService } from '$lib/server/auth.js';
 
 // Authentication context interface
-interface AuthContext {
+export interface AuthContext {
   user: {
     id?: string;
     email?: string;
@@ -60,7 +60,7 @@ type AuthEvent =
   | { type: 'PROFILE_UPDATED' }
   | { type: 'RETRY' };
 
-interface LoginData {
+export interface LoginData {
   email: string;
   password: string;
   rememberMe?: boolean;
@@ -68,7 +68,7 @@ interface LoginData {
   deviceInfo?: unknown;
 }
 
-interface RegistrationData {
+export interface RegistrationData {
   email: string;
   firstName: string;
   lastName: string;
@@ -183,7 +183,7 @@ export const authMachine = setup({
             fresh: true
           }
         };
-      } catch (error) {
+      } catch (error: any) {
         throw new Error(error instanceof Error ? error.message : 'Authentication failed');
       }
     }),
@@ -212,7 +212,7 @@ export const authMachine = setup({
             permissions: []
           }
         };
-      } catch (error) {
+      } catch (error: any) {
         throw new Error(error instanceof Error ? error.message : 'Registration failed');
       }
     }),
@@ -223,7 +223,7 @@ export const authMachine = setup({
       try {
         await (authService as any).logout();
         return { success: true };
-      } catch (error) {
+      } catch (error: any) {
         // Log error but still return success for logout
         console.warn('Logout warning:', error);
         return { success: true };
@@ -236,7 +236,7 @@ export const authMachine = setup({
       try {
         await (authService as any).requestPasswordReset(input.email);
         return { success: true };
-      } catch (error) {
+      } catch (error: any) {
         throw new Error(error instanceof Error ? error.message : 'Password reset failed');
       }
     })

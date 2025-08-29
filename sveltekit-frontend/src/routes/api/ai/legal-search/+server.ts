@@ -38,7 +38,7 @@ export const POST: RequestHandler = async ({ request, fetch }) => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('AI legal search error:', error);
     return json(
       { 
@@ -52,7 +52,7 @@ export const POST: RequestHandler = async ({ request, fetch }) => {
   }
 };
 
-async function enhanceWithAI(query: string, laws: any[], fetch: Function) {
+async function enhanceWithAI(query: string, laws: any[], fetch: Function): Promise<any> {
   try {
     // Use AI to analyze the query and provide legal context
     const aiAnalysisPrompt = `Analyze this legal search query and provide insights:
@@ -131,7 +131,7 @@ Format your response as JSON with these fields: summary, concepts, suggestions, 
       concepts: aiAnalysis.concepts || extractLegalConcepts(query)
     };
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('AI enhancement error:', error);
     
     // Return basic enhancement on AI failure

@@ -128,7 +128,7 @@ export const enhancedFetch = async (
     }
     
     return response;
-  } catch (error) {
+  } catch (error: any) {
     clearTimeout(timeoutId);
     
     if (error instanceof DOMException && error.name === 'AbortError') {
@@ -176,7 +176,7 @@ export const storage = {
       
       const item = localStorage.getItem(key);
       return item ? JSON.parse(item) : defaultValue || null;
-    } catch (error) {
+    } catch (error: any) {
       console.warn(`Failed to get localStorage item "${key}":`, error);
       return defaultValue || null;
     }
@@ -188,7 +188,7 @@ export const storage = {
       
       localStorage.setItem(key, JSON.stringify(value));
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.warn(`Failed to set localStorage item "${key}":`, error);
       return false;
     }
@@ -200,7 +200,7 @@ export const storage = {
       
       localStorage.removeItem(key);
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.warn(`Failed to remove localStorage item "${key}":`, error);
       return false;
     }
@@ -212,7 +212,7 @@ export const storage = {
       
       localStorage.clear();
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to clear localStorage:', error);
       return false;
     }

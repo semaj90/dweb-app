@@ -8,7 +8,7 @@ import { OllamaEmbeddings } from "@langchain/community/embeddings/ollama";
 import { PGVectorStore } from "@langchain/community/vectorstores/pgvector";
 import type { Document } from "@langchain/core/documents";
 import { sql } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/postgres-js";
+import { drizzle } from "drizzle-orm/node-postgres";
 import Redis from "ioredis";
 import { Pool } from "pg";
 import postgres from "postgres";
@@ -354,7 +354,7 @@ class EnhancedAIPipeline {
       console.log(`📍 Gemma3-Legal model: ${this.gemmaConfig.modelPath}`);
       console.log(`🎮 CUDA Device: ${this.gemmaConfig.cudaDeviceId}`);
       console.log(`💾 Redis connected: ${this.redis.status}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Failed to initialize Enhanced AI Pipeline:", error);
       throw error;
     }
@@ -367,7 +367,7 @@ class EnhancedAIPipeline {
         "Test CUDA availability with a simple legal query about contracts.";
       await this.ollama.invoke(testPrompt);
       console.log("✅ CUDA GPU acceleration verified");
-    } catch (error) {
+    } catch (error: any) {
       console.warn("⚠️  CUDA test failed, falling back to CPU:", error.message);
     }
   }
@@ -466,7 +466,7 @@ class EnhancedAIPipeline {
       );
 
       return results;
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Enhanced semantic search failed:", error);
       throw error;
     }
@@ -497,7 +497,7 @@ Enhanced Query:`;
     try {
       const enhanced = await this.ollama.invoke(contextPrompt);
       return enhanced.trim();
-    } catch (error) {
+    } catch (error: any) {
       console.warn(
         "⚠️  Query enhancement failed, using original:",
         error.message
@@ -585,7 +585,7 @@ Analysis:`;
           contextualInsights: [],
         };
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn("⚠️  AI analysis failed:", error.message);
       return {
         summary: "AI analysis error",
@@ -688,7 +688,7 @@ Analysis:`;
             relatedDocs
           ),
         };
-      } catch (error) {
+      } catch (error: any) {
         console.warn(
           `⚠️  RAG enhancement failed for result ${result.id}:`,
           error.message
@@ -709,7 +709,7 @@ Analysis:`;
         .limit(limit);
 
       return relatedResults;
-    } catch (error) {
+    } catch (error: any) {
       console.warn("⚠️  Failed to find related documents:", error.message);
       return [];
     }
@@ -732,7 +732,7 @@ Provide a brief contextual summary that connects these documents:`;
     try {
       const summary = await this.ollama.invoke(contextPrompt);
       return summary.trim();
-    } catch (error) {
+    } catch (error: any) {
       console.warn("⚠️  Contextual summary generation failed:", error.message);
       return "Contextual summary unavailable";
     }
@@ -780,7 +780,7 @@ Provide a brief contextual summary that connects these documents:`;
 
       await this.redis.lpush(analyticsKey, JSON.stringify(searchData));
       await this.redis.expire(analyticsKey, 86400 * 30); // 30 days retention
-    } catch (error) {
+    } catch (error: any) {
       console.warn("⚠️  Failed to store search analytics:", error.message);
     }
   }
@@ -825,7 +825,7 @@ Provide a brief contextual summary that connects these documents:`;
 
       console.log(`📄 Document ingested successfully: ${documentId}`);
       return documentId;
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Document ingestion failed:", error);
       throw error;
     }
@@ -855,7 +855,7 @@ Provide a brief contextual summary that connects these documents:`;
               parsedData.length || 0,
           topQueries: this.getTopQueries(parsedData),
         });
-      } catch (error) {
+      } catch (error: any) {
         console.warn(
           `⚠️  Failed to get analytics for ${dateKey}:`,
           error.message
@@ -912,7 +912,7 @@ Provide a brief contextual summary that connects these documents:`;
         `🚀 Go microservice processed document: ${result.document_id}`
       );
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Go microservice document processing failed:", error);
 
       if (this.goMicroservice.fallbackToLocal) {
@@ -955,7 +955,7 @@ Provide a brief contextual summary that connects these documents:`;
         `🔍 Go microservice search completed: ${result.total_results} results`
       );
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Go microservice vector search failed:", error);
 
       if (this.goMicroservice.fallbackToLocal) {
@@ -989,7 +989,7 @@ Provide a brief contextual summary that connects these documents:`;
 
       const [httpOk, grpcOk] = await Promise.all([httpCheck, grpcCheck]);
       return Boolean(httpOk || grpcOk);
-    } catch (error) {
+    } catch (error: any) {
       console.warn("⚠️ Go microservice health check failed:", error);
       return false;
     }
@@ -1143,7 +1143,7 @@ Provide a brief contextual summary that connects these documents:`;
               metadata: result.metadata,
             }) as EnhancedSearchResult
         );
-      } catch (error) {
+      } catch (error: any) {
         console.warn(
           "⚠️ Go microservice search failed, using local fallback:",
           error
@@ -1160,7 +1160,7 @@ Provide a brief contextual summary that connects these documents:`;
       await this.redis.quit();
       await this.pgPool.end();
       console.log("🧹 Enhanced AI Pipeline cleanup completed");
-    } catch (error) {
+    } catch (error: any) {
       console.warn("⚠️  Cleanup warning:", error.message);
     }
   }

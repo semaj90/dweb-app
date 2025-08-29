@@ -106,7 +106,7 @@ export class StackAnalyzer {
                 // Gaming
                 if (allDeps['three'] || allDeps['babylonjs']) stack.gaming.push('opengl');
             }
-        } catch (error) {
+        } catch (error: any) {
             console.log('Error analyzing package.json:', error);
         }
     }
@@ -245,7 +245,7 @@ export class StackAnalyzer {
             if (content.includes('cuda') || content.includes('gpu')) {
                 if (!stack.gpu.includes('cuda')) stack.gpu.push('cuda');
             }
-        } catch (error) {
+        } catch (error: any) {
             console.log('Error analyzing Python file:', error);
         }
     }
@@ -293,7 +293,7 @@ export class StackAnalyzer {
                 content.includes('register') || content.includes('volatile')) {
                 if (!stack.embedded.includes('bare-metal')) stack.embedded.push('bare-metal');
             }
-        } catch (error) {
+        } catch (error: any) {
             console.log('Error analyzing C++ file:', error);
         }
     }
@@ -328,7 +328,7 @@ export class StackAnalyzer {
                 content.includes('/dev/mem')) {
                 if (!stack.embedded.includes('raspberry-pi')) stack.embedded.push('raspberry-pi');
             }
-        } catch (error) {
+        } catch (error: any) {
             console.log('Error analyzing C file:', error);
         }
     }

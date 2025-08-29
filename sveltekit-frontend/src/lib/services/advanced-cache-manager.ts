@@ -133,7 +133,7 @@ class AdvancedCacheManager {
       if ('indexedDB' in window) {
         const request = indexedDB.open('LegalAICacheDB', 1);
         
-        request.onupgradeneeded = (event) => {
+        request.onupgradeneeded = (event: any) => {
           const db = (event.target as IDBOpenDBRequest).result;
           if (!db.objectStoreNames.contains('cache')) {
             const store = db.createObjectStore('cache', { keyPath: 'key' });
@@ -143,11 +143,11 @@ class AdvancedCacheManager {
           }
         };
         
-        request.onsuccess = (event) => {
+        request.onsuccess = (event: any) => {
           this.indexDB = (event.target as IDBOpenDBRequest).result;
         };
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to initialize advanced cache storage:', error);
     }
   }
@@ -221,7 +221,7 @@ class AdvancedCacheManager {
         processedData = encrypted as T;
         encryptionOverhead = this.calculateEncryptionOverhead(data, encrypted);
         checksum = await this.generateChecksum(JSON.stringify(data));
-      } catch (error) {
+      } catch (error: any) {
         console.error('Encryption failed, storing unencrypted:', error);
       }
     }
@@ -312,7 +312,7 @@ class AdvancedCacheManager {
       try {
         const decrypted = await this.decryptData(result as any);
         result = JSON.parse(decrypted) as T;
-      } catch (error) {
+      } catch (error: any) {
         console.error('Decryption failed:', error);
         await this.removeItem(key);
         return null;
@@ -390,7 +390,7 @@ class AdvancedCacheManager {
         });
 
         return data;
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Failed to lazy load ${key}:`, error);
         return null;
       } finally {
@@ -837,7 +837,7 @@ class AdvancedCacheManager {
             }
           }
         }
-      } catch (e) {
+      } catch (e: any) {
         console.warn('Failed to load cache from localStorage:', e);
       }
     }
@@ -983,7 +983,7 @@ class AdvancedCacheManager {
         } else {
           localStorage.setItem(`legal_cache_${key}`, JSON.stringify(item));
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Failed to persist to storage:', error);
       }
     }
@@ -1015,7 +1015,7 @@ class AdvancedCacheManager {
           };
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to load from storage:', error);
     }
     
@@ -1032,7 +1032,7 @@ class AdvancedCacheManager {
           const store = transaction.objectStore('cache');
           store.delete(key);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Failed to remove from storage:', error);
       }
     }

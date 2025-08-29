@@ -43,7 +43,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
         },
       },
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error("❌ Semantic analysis API error:", err);
 
     const errorMessage = err instanceof Error ? err.message : "Unknown error";

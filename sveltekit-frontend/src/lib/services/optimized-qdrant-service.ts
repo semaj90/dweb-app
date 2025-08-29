@@ -144,7 +144,7 @@ export class OptimizedQdrantService {
 
         console.log(`✅ Created optimized Qdrant collection: ${this.config.collectionName}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to ensure Qdrant collection:', error);
       throw error;
     }
@@ -236,7 +236,7 @@ export class OptimizedQdrantService {
 
       return { results, stats };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Qdrant search error:', error);
       throw new Error(`Vector search failed: ${error.message}`);
     }
@@ -303,7 +303,7 @@ export class OptimizedQdrantService {
 
       return { synced, errors, duration };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ PostgreSQL sync failed:', error);
       throw error;
     }
@@ -337,7 +337,7 @@ export class OptimizedQdrantService {
 
     try {
       return await this.client.search(this.config.collectionName, searchParams);
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Cluster search failed, falling back to standard search');
       return [];
     }
@@ -524,7 +524,7 @@ export class OptimizedQdrantService {
       });
 
       return { success: vectors.length, errors: 0 };
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Batch upsert error:', error);
       return { success: 0, errors: vectors.length };
     }
@@ -607,7 +607,7 @@ export class OptimizedQdrantService {
         cacheHits: this.searchCache.size,
         lastSync: new Date().toISOString()
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: 'unhealthy',
         collections: 0,

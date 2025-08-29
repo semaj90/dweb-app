@@ -6,7 +6,7 @@ import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { eq, and, or, desc, asc, ilike, count, isNull, isNotNull, sql as sqlRaw, gte, lte } from 'drizzle-orm';
 import {
   cases, evidence, users, legal_documents
-} from './schema-postgres.js';
+} from './schema-postgres';
 import {
   ragSessions, ragMessages, userAiQueries, embeddingCache,
   documentChunks, caseEmbeddings, evidenceVectors, legalPrecedents,
@@ -23,7 +23,7 @@ export async function withTransaction<T>(
   return await db.transaction(async (tx) => {
     try {
       return await operation(tx);
-    } catch (error) {
+    } catch (error: any) {
       // Transaction will be rolled back automatically
       throw error instanceof Error 
         ? CommonErrors.DatabaseError('transaction', { originalError: error.message })
@@ -86,7 +86,7 @@ export class CaseOperations {
         .limit(1);
       
       return result[0] || null;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to get case by ID:', error);
       return null;
     }
@@ -197,7 +197,7 @@ export class CaseOperations {
           cases: vectorResults as unknown as Case[],
           total: vectorResults.length
         };
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Vector search failed, falling back to text search:', error);
       }
     }
@@ -432,7 +432,7 @@ export class EvidenceOperations {
           evidence: vectorResults as unknown as Evidence[],
           total: vectorResults.length
         };
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Evidence vector search failed, falling back to text search:', error);
       }
     }
@@ -588,7 +588,7 @@ export class LegalDocumentOperations {
         precedents: results,
         total: results.length
       };
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Legal precedent vector search failed:', error);
       
       // Fallback to text search
@@ -677,7 +677,7 @@ export class RAGOperations {
       `);
       
       return results;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Similar query search failed:', error);
       return [];
     }
@@ -704,7 +704,7 @@ export async function checkDatabaseHealth(): Promise<{
     // Test pgvector extension
     await db.execute(sqlRaw`SELECT '[1,2,3]'::vector`);
     pgvectorEnabled = true;
-  } catch (error) {
+  } catch (error: any) {
     errors.push(error instanceof Error ? error.message : 'Unknown database error');
   }
 

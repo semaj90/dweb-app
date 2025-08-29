@@ -47,7 +47,7 @@ export class WebAssemblyClusteringService {
       
       console.log('WASM clustering module loaded successfully');
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load WASM clustering module:', error);
       return false;
     }
@@ -72,7 +72,7 @@ export class WebAssemblyClusteringService {
           centroids,
           iterations: config.maxIterations || 100
         };
-      } catch (error) {
+      } catch (error: any) {
         console.warn('WASM K-Means failed, falling back to JavaScript:', error);
       }
     }
@@ -94,7 +94,7 @@ export class WebAssemblyClusteringService {
         const clusters = this.mockSOMClustering(embeddings, weights);
         
         return { weights, clusters };
-      } catch (error) {
+      } catch (error: any) {
         console.warn('WASM SOM failed, falling back to JavaScript:', error);
       }
     }

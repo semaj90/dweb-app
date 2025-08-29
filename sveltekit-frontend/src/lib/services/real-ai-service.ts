@@ -98,7 +98,7 @@ export class RealAIService {
           available: true
         }));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Ollama health check failed:', error);
     }
 
@@ -108,7 +108,7 @@ export class RealAIService {
         signal: AbortSignal.timeout(5000)
       });
       health.ragService = response.ok;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('RAG service health check failed:', error);
     }
 
@@ -118,7 +118,7 @@ export class RealAIService {
         signal: AbortSignal.timeout(5000)
       });
       health.vectorSearch = response.ok;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Vector search health check failed:', error);
     }
 
@@ -156,7 +156,7 @@ export class RealAIService {
         model: actualModel,
         availableModels
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         model: '',
@@ -195,7 +195,7 @@ export class RealAIService {
             const vectorData = await vectorResponse.json();
             ragContext = vectorData.results;
           }
-        } catch (error) {
+        } catch (error: any) {
           console.warn('Vector search failed, proceeding without RAG:', error);
         }
       }
@@ -240,7 +240,7 @@ export class RealAIService {
         executionTime: duration,
         fromCache: false
       };
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(`AI service error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
@@ -274,7 +274,7 @@ export class RealAIService {
       }
 
       return { success: true };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Model switch failed'
@@ -317,7 +317,7 @@ export class RealAIService {
 
       const data = await response.json();
       return data.results || [];
-    } catch (error) {
+    } catch (error: any) {
       console.error('Document search failed:', error);
       return [];
     }
@@ -348,7 +348,7 @@ export class RealAIService {
       );
 
       return { success: result };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Indexing failed'

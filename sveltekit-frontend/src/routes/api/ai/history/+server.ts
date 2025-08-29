@@ -12,7 +12,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     const userId = locals.user?.id || "anonymous";
     await db.insert(aiHistory).values({ prompt, response, embedding, userId });
     return json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     return json({ error: "Failed to save AI history" }, { status: 500 });
   }
 };
@@ -25,7 +25,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
       .from(aiHistory)
       .where(eq(aiHistory.userId, userId));
     return json({ history });
-  } catch (error) {
+  } catch (error: any) {
     return json({ error: "Failed to fetch AI history" }, { status: 500 });
   }
 };

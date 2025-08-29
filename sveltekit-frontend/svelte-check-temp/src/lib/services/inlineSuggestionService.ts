@@ -284,7 +284,7 @@ export class InlineSuggestionService {
           }
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Legal term suggestion failed:', error);
     }
 
@@ -330,7 +330,7 @@ export class InlineSuggestionService {
           }
         }));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Case reference suggestion failed:', error);
     }
 

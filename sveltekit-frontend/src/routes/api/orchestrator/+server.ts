@@ -1,7 +1,7 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
 
 // Placeholder orchestrator route (repaired). Full multi-agent logic will be reinstated later.
-interface WorkflowStatus { id: string; state: string; createdAt: string }
+export interface WorkflowStatus { id: string; state: string; createdAt: string }
 
 // In-memory mock store
 const workflows: Record<string, WorkflowStatus> = {};

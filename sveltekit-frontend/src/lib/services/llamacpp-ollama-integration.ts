@@ -267,7 +267,7 @@ export class LlamaCppOllamaService {
 
       console.log('✅ Llama.cpp + Ollama Integration initialized successfully');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Llama.cpp + Ollama initialization failed:', error);
       this.serviceStatus.update(s => ({
         ...s,
@@ -299,7 +299,7 @@ export class LlamaCppOllamaService {
         await this.pullModel();
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Ollama initialization failed:', error);
       throw error;
     }
@@ -324,7 +324,7 @@ export class LlamaCppOllamaService {
 
       console.log('✅ Model pulled successfully');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Model pull failed:', error);
       throw error;
     }
@@ -365,7 +365,7 @@ export class LlamaCppOllamaService {
 
       console.log('✅ Llama.cpp parameters configured');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Llama.cpp configuration failed:', error);
       throw error;
     }
@@ -405,7 +405,7 @@ export class LlamaCppOllamaService {
         this.flashAttentionConfig.enabled = false;
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ FlashAttention2 initialization failed, using standard attention:', error);
       this.flashAttentionConfig.enabled = false;
     }
@@ -435,7 +435,7 @@ export class LlamaCppOllamaService {
         name: 'RTX 3060 (Detected)'
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn('GPU detection failed:', error);
       return {
         computeCapability: 0,
@@ -484,7 +484,7 @@ export class LlamaCppOllamaService {
 
       console.log('✅ Model loaded successfully');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Model loading failed:', error);
       throw error;
     }
@@ -569,7 +569,7 @@ export class LlamaCppOllamaService {
         ollamaVersion: '0.3.12'
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Generation failed:', error);
       throw error;
     }

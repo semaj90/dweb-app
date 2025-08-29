@@ -2,7 +2,7 @@
 // Load and cache a WASM module for numerical tasks (e.g., embeddings pre/post-processing)
 let wasmInstance: WebAssembly.Instance | null = null;
 
-export async function initWasm(path = 'wasm/module.wasm'){
+export async function initWasm(path = 'wasm/module.wasm'): Promise<any> {
   if (wasmInstance) return wasmInstance;
   const res = await fetch(path);
   const bytes = await res.arrayBuffer();
@@ -11,7 +11,7 @@ export async function initWasm(path = 'wasm/module.wasm'){
   return wasmInstance;
 }
 
-export async function runWasmExample(a: number, b: number){
+export async function runWasmExample(a: number, b: number): Promise<any> {
   await initWasm();
   // Example: if export add exists
   const add = (wasmInstance?.exports as any).add;

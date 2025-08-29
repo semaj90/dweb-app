@@ -6,7 +6,7 @@ import * as crypto from "crypto";
  * Coordinates multiple state machines and manages global application state
  */
 import { createMachine, assign, fromPromise, type ActorRefFrom } from "xstate";
-import { legalCaseMachine } from './legal-case-machine.js';
+import { legalCaseMachine } from './legal-case-machine';
 
 // Global application context
 export interface AppContext {

@@ -1,10 +1,10 @@
-import { CacheManager } from "../../../../../src/lib/server/cache/loki-cache";
+import { CacheManager } from '$lib/server/cache/loki-cache";
 
 const cache = new CacheManager({ dbPath: "cache/ai-cache.db" });
 
 export type CachePayload = unknown;
 
-export async function setCache(key: string, data: CachePayload) {
+export async function setCache(key: string, data: CachePayload): Promise<any> {
   await cache.set(key, data, { contentType: "summary", ttl: 24 * 3600 * 1000 });
 }
 

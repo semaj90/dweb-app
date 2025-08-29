@@ -3,7 +3,7 @@
 
 import { json, type RequestEvent } from '@sveltejs/kit';
 import { z } from 'zod';
-import type { ApiResponse, ApiError } from '../../types/api.js';
+import type { ApiResponse, ApiError } from '../../types/api';
 
 // Standard response interface
 export interface StandardApiResponse<T = any> {
@@ -163,7 +163,7 @@ export async function withApiHandler<T>(
     
     // Otherwise wrap the result in a standard success response
     return apiSuccess(result, requestId, processingTime);
-  } catch (error) {
+  } catch (error: any) {
     const processingTime = Date.now() - startTime;
     
     // Log error for monitoring
@@ -227,7 +227,7 @@ export async function parseRequestBody<T>(
   try {
     const body = await request.json();
     return schema.parse(body);
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof z.ZodError) {
       throw error; // Let the caller handle validation errors
     }

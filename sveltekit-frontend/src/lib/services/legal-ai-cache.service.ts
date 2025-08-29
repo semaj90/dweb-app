@@ -3,14 +3,14 @@ import crypto from "crypto";
 
 // Legal AI Cache Service - Performance Optimization
 
-interface CacheEntry<T> {
+export interface CacheEntry<T> {
   data: T;
   timestamp: number;
   accessCount: number;
   documentHash: string;
 }
 
-interface CacheMetrics {
+export interface CacheMetrics {
   hits: number;
   misses: number;
   totalRequests: number;
@@ -76,7 +76,7 @@ export class LegalAICache {
       this.metrics.misses++;
       console.log(`Cache MISS for document ${document.id}`);
       return null;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Cache lookup failed:", error);
       this.metrics.misses++;
       return null;
@@ -113,7 +113,7 @@ export class LegalAICache {
 
       // Store in IndexedDB for persistence
       await this.persistToIndexedDB(documentHash, cacheEntry);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to cache analysis:", error);
     }
   }

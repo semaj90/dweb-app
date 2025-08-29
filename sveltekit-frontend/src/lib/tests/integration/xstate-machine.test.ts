@@ -4,8 +4,8 @@
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createActor } from 'xstate';
-import { legalCaseMachine } from '../../machines/legalCaseMachine.js';
-import type { LegalCaseContext, LegalCaseEvent } from '../../machines/legalCaseMachine.js';
+import { legalCaseMachine } from '../../machines/legalCaseMachine';
+import type { LegalCaseContext, LegalCaseEvent } from '../../machines/legalCaseMachine';
 
 // TODO: Import from proper selectors file once created
 // Mock selectors for now to fix compilation

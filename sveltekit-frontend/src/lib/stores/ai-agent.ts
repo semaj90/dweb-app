@@ -10,7 +10,7 @@ import { realAIService } from "$lib/services/real-ai-service";
 // Integrates with local LLMs, vector search, and real-time capabilities
 // ======================================================================
 
-interface AIAgentState {
+export interface AIAgentState {
   // Connection & Health
   isConnected: boolean;
   isProcessing: boolean;
@@ -53,7 +53,7 @@ interface AIAgentState {
   successRate: number;
 }
 
-interface ProcessingJob {
+export interface ProcessingJob {
   id: string;
   type: "chat" | "summarize" | "analyze" | "embed" | "search";
   status: "pending" | "processing" | "completed" | "failed";
@@ -65,7 +65,7 @@ interface ProcessingJob {
   retryCount: number;
 }
 
-interface SimilarDocument {
+export interface SimilarDocument {
   id: string;
   title: string;
   content: string;
@@ -73,7 +73,7 @@ interface SimilarDocument {
   metadata: Record<string, any>;
 }
 
-interface CitationSource {
+export interface CitationSource {
   id: string;
   title: string;
   url?: string;
@@ -82,7 +82,7 @@ interface CitationSource {
   type: "document" | "case" | "statute" | "evidence";
 }
 
-interface AIError {
+export interface AIError {
   id: string;
   type: "connection" | "processing" | "timeout" | "model" | "rate_limit";
   message: string;
@@ -151,7 +151,7 @@ const createAIAgentStore = () => {
 
         // Start heartbeat
         this.startHeartbeat();
-      } catch (error) {
+      } catch (error: any) {
         this.addError({
           type: "connection",
           message: (error as Error).message,
@@ -244,7 +244,7 @@ const createAIAgentStore = () => {
           isProcessing: false,
           typingIndicator: false,
         }));
-      } catch (error) {
+      } catch (error: any) {
         this.addError({
           type: "processing",
           message: (error as Error).message,
@@ -305,7 +305,7 @@ const createAIAgentStore = () => {
                   this.completeStreamingResponse(assistantMessage, data, jobId);
                   return;
                 }
-              } catch (e) {
+              } catch (e: any) {
                 console.warn("Failed to parse streaming data:", line);
               }
             }
@@ -361,7 +361,7 @@ const createAIAgentStore = () => {
         }));
 
         return documents;
-      } catch (error) {
+      } catch (error: any) {
         this.addError({
           type: "processing",
           message: `Search failed: ${(error as Error).message}`,
@@ -399,7 +399,7 @@ const createAIAgentStore = () => {
         }));
 
         return { success: true };
-      } catch (error) {
+      } catch (error: any) {
         this.addError({
           type: "processing",
           message: `Indexing failed: ${(error as Error).message}`,
@@ -427,7 +427,7 @@ const createAIAgentStore = () => {
           isProcessing: false,
           currentConversation: [], // Clear conversation on model switch
         }));
-      } catch (error) {
+      } catch (error: any) {
         this.addError({
           type: "model",
           message: (error as Error).message,
@@ -564,7 +564,7 @@ const createAIAgentStore = () => {
             availableModels: health.models.map(m => m.name),
             isConnected: health.overall,
           }));
-        } catch (error) {
+        } catch (error: any) {
           update((state) => ({
             ...state,
             systemHealth: "critical",
@@ -604,7 +604,7 @@ export const similarDocuments = derived(
   (state) => state.similarDocuments
 );
 export const aiErrors = derived(aiAgentStore, (state) =>
-  state.errors.filter((e) => !e.resolved)
+  state.errors.filter((e: any) => !e.resolved)
 );
 export const systemHealth = derived(
   aiAgentStore,

@@ -24,7 +24,7 @@ import fs from 'fs';
 import crypto from 'crypto';
 import Redis from 'ioredis';
 import postgres from 'postgres';
-import { drizzle } from 'drizzle-orm/postgres-js';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import { eq, sql as drizzleSql, and, gte, desc } from 'drizzle-orm';
 import { Ollama } from '@langchain/community/llms/ollama';
 import { OllamaEmbeddings } from '@langchain/community/embeddings/ollama';
@@ -41,7 +41,7 @@ import type { LegalDocument, DocumentChunk, UserAiQuery, AutoTag } from '$lib/db
 /**
  * RAG Pipeline Configuration
  */
-interface RAGConfig {
+export interface RAGConfig {
   database: DatabaseConfig;
   redis: RedisConfig;
   ollama: OllamaConfig;
@@ -52,7 +52,7 @@ interface RAGConfig {
 /**
  * Database Configuration
  */
-interface DatabaseConfig {
+export interface DatabaseConfig {
   host: string;
   port: number;
   database: string;
@@ -67,7 +67,7 @@ interface DatabaseConfig {
 /**
  * Redis Configuration  
  */
-interface RedisConfig {
+export interface RedisConfig {
   host: string;
   port: number;
   db: number;
@@ -80,7 +80,7 @@ interface RedisConfig {
 /**
  * Ollama Configuration
  */
-interface OllamaConfig {
+export interface OllamaConfig {
   baseUrl: string;
   embeddingModel: string;
   llmModel: string;
@@ -94,7 +94,7 @@ interface OllamaConfig {
 /**
  * RAG Settings
  */
-interface RAGSettings {
+export interface RAGSettings {
   chunkSize: number;
   chunkOverlap: number;
   maxSources: number;
@@ -109,7 +109,7 @@ interface RAGSettings {
 /**
  * Security Settings
  */
-interface SecuritySettings {
+export interface SecuritySettings {
   rateLimit: {
     perMinute: number;
     windowMs: number;
@@ -570,7 +570,7 @@ class LegalChunker {
           
           if (structuredChunks.length > 1) break;
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Pattern matching failed for ${documentType}:`, error);
       }
     }
@@ -692,7 +692,7 @@ export class EnhancedLegalRAGPipeline {
 
       console.log(`[RAG] Pipeline initialized successfully in ${Date.now() - startTime}ms`);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('[RAG] Initialization failed:', error);
       this.metrics.incrementCounter('initialization_errors');
       throw new Error(`RAG Pipeline initialization failed: ${error}`);
@@ -728,7 +728,7 @@ export class EnhancedLegalRAGPipeline {
       }
 
       console.log('[RAG] Database initialized successfully');
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(`Database initialization failed: ${error}`);
     }
   }
@@ -751,7 +751,7 @@ export class EnhancedLegalRAGPipeline {
       // Test connection
       await this.redis.set('health-check', 'ok');
       console.log('[RAG] Redis initialized successfully');
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(`Redis initialization failed: ${error}`);
     }
   }
@@ -800,7 +800,7 @@ export class EnhancedLegalRAGPipeline {
       });
 
       console.log('[RAG] Ollama components initialized successfully');
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(`Ollama initialization failed: ${error}`);
     }
   }
@@ -823,7 +823,7 @@ export class EnhancedLegalRAGPipeline {
       }
 
       console.log('[RAG] All connections verified successfully');
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(`Connection verification failed: ${error}`);
     }
   }
@@ -947,7 +947,7 @@ export class EnhancedLegalRAGPipeline {
                     ...metadata,
                   },
                 };
-              } catch (error) {
+              } catch (error: any) {
                 const errorMsg = `Failed to process chunk ${i + idx}: ${error}`;
                 errors.push(errorMsg);
                 console.error(errorMsg);
@@ -964,7 +964,7 @@ export class EnhancedLegalRAGPipeline {
           }
 
           console.debug(`[RAG] Processed batch ${Math.floor(i / this.config.rag.batchSize) + 1}/${Math.ceil(chunks.length / this.config.rag.batchSize)}`);
-        } catch (error) {
+        } catch (error: any) {
           const errorMsg = `Failed to process batch ${Math.floor(i / this.config.rag.batchSize) + 1}: ${error}`;
           errors.push(errorMsg);
           console.error(errorMsg);
@@ -987,7 +987,7 @@ export class EnhancedLegalRAGPipeline {
               model: this.config.ollama.llmModel,
             });
           }
-        } catch (error) {
+        } catch (error: any) {
           const errorMsg = `Failed to generate auto-tags: ${error}`;
           errors.push(errorMsg);
           console.warn(errorMsg);
@@ -1021,7 +1021,7 @@ export class EnhancedLegalRAGPipeline {
         confidentialityLevel
       };
 
-    } catch (error) {
+    } catch (error: any) {
       const processingTime = Date.now() - startTime;
       
       console.error('[RAG] Ingestion error:', error);
@@ -1178,7 +1178,7 @@ export class EnhancedLegalRAGPipeline {
 
       return searchResults;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('[RAG] Search error:', error);
       this.metrics.incrementCounter('search_errors');
       throw error;
@@ -1322,7 +1322,7 @@ Answer:
             riskLevel: riskAssessment.level
           },
         });
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Failed to log query:', error);
         // Don't fail the main operation for logging issues
       }
@@ -1352,7 +1352,7 @@ Answer:
 
       return result;
 
-    } catch (error) {
+    } catch (error: any) {
       const processingTime = Date.now() - startTime;
       
       console.error('[RAG] QA error:', error);
@@ -1478,7 +1478,7 @@ Provide specific clause references and line numbers where applicable. Focus on p
         jurisdiction
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('[RAG] Contract analysis error:', error);
       this.metrics.incrementCounter('contract_analysis_errors');
       throw error;
@@ -1517,7 +1517,7 @@ Provide specific clause references and line numbers where applicable. Focus on p
       this.metrics.incrementCounter('embeddings_generated');
       return embedding;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Embedding generation failed:', error);
       this.metrics.incrementCounter('embedding_errors');
       throw error;
@@ -1573,7 +1573,7 @@ Limit to 10 most relevant tags.
       }
 
       return [];
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Auto-tagging failed:', error);
       return [];
     }
@@ -1894,7 +1894,7 @@ Limit to 10 most relevant tags.
       
       this.initialized = false;
       console.log('[RAG] Pipeline closed successfully');
-    } catch (error) {
+    } catch (error: any) {
       console.error('[RAG] Error during shutdown:', error);
     }
   }

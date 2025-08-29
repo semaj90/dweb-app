@@ -15,7 +15,7 @@ import os from 'os';
 // Import WebGPU bindings
 const gpu = require('kmamal/gpu');
 
-interface ServiceConfig {
+export interface ServiceConfig {
   port: number;
   gpuDevice: string;
   maxBatchSize: number;
@@ -70,7 +70,7 @@ class NodeGPUService {
       this.registerServices();
 
       this.logger.info('✅ Service initialization completed');
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error('❌ Service initialization failed:', error);
       throw error;
     }
@@ -99,7 +99,7 @@ class NodeGPUService {
 
       this.logger.info('✅ WebGPU initialized successfully');
       this.logger.info(`GPU Info: ${adapter.info.vendor} ${adapter.info.device}`);
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error('❌ WebGPU initialization failed:', error);
       throw error;
     }
@@ -184,7 +184,7 @@ class NodeGPUService {
       };
 
       callback(null, response);
-    } catch (error) {
+    } catch (error: any) {
       callback(error, null);
     }
   }
@@ -253,7 +253,7 @@ async function startSingleInstance(config: ServiceConfig): Promise<void> {
   try {
     await service.initialize();
     await service.start();
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Failed to start service:', error);
     process.exit(1);
   }

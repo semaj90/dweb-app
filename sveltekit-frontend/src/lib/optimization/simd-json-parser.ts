@@ -24,7 +24,7 @@ export class SIMDJSONParser {
       // Use Web Worker for SIMD operations to avoid blocking main thread
       this.worker = new Worker('/workers/simd-json-worker.js');
       this.initialized = true;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('SIMD Worker not available, falling back to native JSON');
     }
   }
@@ -43,7 +43,7 @@ export class SIMDJSONParser {
         reject(new Error('SIMD JSON parsing timeout'));
       }, 30000); // 30 second timeout
 
-      this.worker!.onmessage = (event) => {
+      this.worker!.onmessage = (event: any) => {
         clearTimeout(timeoutId);
         if (event.data.error) {
           reject(new Error(event.data.error));

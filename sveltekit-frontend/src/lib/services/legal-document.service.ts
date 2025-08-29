@@ -67,7 +67,7 @@ export class LegalDocumentService {
         },
         analyzedAt: new Date(),
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Document analysis failed:", error);
       throw new Error(`Failed to analyze document: ${error.message}`);
     }

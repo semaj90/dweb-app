@@ -32,7 +32,7 @@ export async function getUserById(id: string): Promise<User | null> {
       .where(eq(users.id, id))
       .limit(1);
     return result[0] as User || null;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching user by ID:", error);
     return null;
   }
@@ -45,7 +45,7 @@ export async function getUserByEmail(email: string): Promise<User | null> {
       .where(eq(users.email, email))
       .limit(1);
     return result[0] as User || null;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching user by email:", error);
     return null;
   }
@@ -73,7 +73,7 @@ export async function createUser(userData: {
       .returning();
 
     return result[0] as User || null;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating user:", error);
     return null;
   }
@@ -90,7 +90,7 @@ export async function updateUser(
       .returning();
 
     return result[0] as User || null;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating user:", error);
     return null;
   }

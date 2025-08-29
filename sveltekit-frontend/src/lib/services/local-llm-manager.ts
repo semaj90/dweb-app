@@ -6,7 +6,7 @@ import { dev } from "$app/environment";
 // TODO: Fix import - // Orphaned content: import {  // Optional Tauri imports - fallback for web environments
 let createDir: any, writeTextFile: any, readTextFile: any, exists: any, join: any, appLocalDataDir: any;
 
-async function initializeTauriAPI() {
+async function initializeTauriAPI(): Promise<any> {
   try {
     // Note: In Tauri v2, filesystem operations require plugins
     // For now, we'll use fallback implementations
@@ -63,7 +63,7 @@ export const localLLMConfig: LocalLLMConfig = {
       name: "legal-bert-base-uncased",
       url: "https://huggingface.co/nlpaueb/legal-bert-base-uncased",
       size: "440MB",
-      dimensions: 768,
+      dimensions: 384,
       description: "Legal domain BERT model for embedding generation",
     },
     chat: {
@@ -125,7 +125,7 @@ class LocalLLMManager {
       }
       this.isInitialized = true;
       console.log("Local LLM Manager initialized");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to initialize Local LLM Manager:", error);
     }
   }
@@ -153,7 +153,7 @@ class LocalLLMManager {
           }),
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to create directories:", error);
     }
   }
@@ -183,7 +183,7 @@ class LocalLLMManager {
         const data = await response.json();
         Object.assign(availability, data.availability);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to check model availability:", error);
     }
     return availability;
@@ -201,7 +201,7 @@ class LocalLLMManager {
         // Download through web API
         return await this.downloadModelWeb(model);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to download ${modelType} model:`, error);
       return false;
     }
@@ -265,7 +265,7 @@ class LocalLLMManager {
           (navigator as any).deviceMemory * 1024 || 4096; // MB
         systemInfo.hasGPU = !!(navigator as any).gpu;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to get system info:", error);
     }
     return systemInfo;

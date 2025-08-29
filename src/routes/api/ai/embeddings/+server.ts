@@ -2,16 +2,16 @@
 // Provides text embedding generation capabilities
 
 import { json } from "@sveltejs/kit";
-import { db } from "$lib/database/postgres.js";
-import { contentEmbeddings } from "$lib/database/schema/legal-documents.js";
+import { db } from '$lib/database/postgres';
+import { contentEmbeddings } from '$lib/database/schema/legal-documents';
 import { eq } from "drizzle-orm";
 import {
   serializeEmbedding,
   embeddingDimensions,
-} from "$lib/utils/embeddings.js";
+} from '$lib/utils/embeddings';
 import type { RequestHandler } from "./$types";
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const {
       text,
@@ -66,7 +66,7 @@ export const POST: RequestHandler = async ({ request }) => {
       dimensions: embedding.length,
       model: model,
     });
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("Embedding generation error:", error);
     return json(
       { error: "Failed to generate embedding", details: error.message },
@@ -75,7 +75,7 @@ export const POST: RequestHandler = async ({ request }) => {
   }
 };
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
   try {
     const contentId = url.searchParams.get("contentId");
     const limit = parseInt(url.searchParams.get("limit") || "10");
@@ -127,7 +127,7 @@ export const GET: RequestHandler = async ({ url }) => {
         dimensions: 384, // Default dimension count for nomic-embed-text
       })),
     });
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("Embedding retrieval error:", error);
     return json(
       { error: "Failed to retrieve embeddings", details: error.message },
@@ -136,7 +136,7 @@ export const GET: RequestHandler = async ({ url }) => {
   }
 };
 
-export const DELETE: RequestHandler = async ({ request }) => {
+export const DELETE: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const { contentId, embeddingId } = await request.json();
 
@@ -171,7 +171,7 @@ export const DELETE: RequestHandler = async ({ request }) => {
       { error: "Either embeddingId or contentId is required" },
       { status: 400 }
     );
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("Embedding deletion error:", error);
     return json(
       { error: "Failed to delete embedding", details: error.message },
@@ -203,7 +203,7 @@ async function generateEmbedding(
     } else {
       console.warn("Embedding service returned error:", response.status);
     }
-  } catch (error) {
+  } catch (error: any) {
     console.warn("Embedding service unavailable, using mock embedding:", error);
   }
 
@@ -238,7 +238,7 @@ async function calculateSimilarity(
   return dotProduct / (Math.sqrt(norm1) * Math.sqrt(norm2));
 }
 
-export const PUT: RequestHandler = async ({ request }) => {
+export const PUT: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const { action, ...params } = await request.json();
 
@@ -294,7 +294,7 @@ export const PUT: RequestHandler = async ({ request }) => {
           { status: 400 }
         );
     }
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("Embedding operation error:", error);
     return json(
       { error: "Operation failed", details: error.message },

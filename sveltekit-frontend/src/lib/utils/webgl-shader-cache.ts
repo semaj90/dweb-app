@@ -441,7 +441,7 @@ export class WebGLShaderCache {
         this.updateMetrics();
         resolve(shaderProgram);
         
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Shader compilation failed for '${id}':`, error);
         reject(error);
       }
@@ -540,7 +540,7 @@ export class WebGLShaderCache {
     for (const shaderId of commonShaders) {
       try {
         await this.getShaderProgram(shaderId);
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Failed to pre-compile shader ${shaderId}:`, error);
       }
     }

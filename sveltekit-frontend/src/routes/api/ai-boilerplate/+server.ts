@@ -123,7 +123,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
         return json(validatedResponse);
 
-    } catch (err) {
+    } catch (err: any) {
         console.error('❌ AI Boilerplate generation error:', err);
         
         if (err instanceof z.ZodError) {
@@ -144,7 +144,7 @@ async function getHighPerformingPhrases(
     type: string,
     jurisdiction?: string,
     context?: { case_type?: string; [key: string]: any }
-) {
+): Promise<any> {
     const db = getDB();
     
     // Build query based on request parameters
@@ -207,7 +207,7 @@ function getTypeSpecificFilter(type: string, paramIndex: number, params: any[]):
     return typeFilters[type] || '';
 }
 
-async function generateBoilerplate(request: any, sourcePhrases: any[]) {
+async function generateBoilerplate(request: any, sourcePhrases: any[]): Promise<any> {
     const phraseText = sourcePhrases.map((p: any) => p.phrase).join(', ');
     const avgProsecutionScore = sourcePhrases.reduce((sum, p) => sum + p.avg_prosecution_score, 0) / sourcePhrases.length;
 
@@ -268,7 +268,7 @@ Generate the boilerplate text:`;
             prosecutionStrength: avgProsecutionScore
         };
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('LLM generation failed:', error);
         
         // Fallback to template-based generation
@@ -456,7 +456,7 @@ export const GET: RequestHandler = async () => {
             }
         });
 
-    } catch (err) {
+    } catch (err: any) {
         console.error('Template listing error:', err);
         throw error(500, 'Unable to fetch template information');
     }

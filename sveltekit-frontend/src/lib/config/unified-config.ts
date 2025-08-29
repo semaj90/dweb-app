@@ -542,7 +542,7 @@ class ConfigManager {
         timestamp: new Date().toISOString()
       };
 
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: 'unhealthy',
         checks,

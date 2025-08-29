@@ -3,30 +3,30 @@
 
 import { EventEmitter } from 'events';
 // Database imports with graceful fallback
-let db: unknown = null;
-let cases: unknown = null;
-let evidence: unknown = null;
-let legalDocuments: unknown = null;
-let personsOfInterest: unknown = null;
+let db: any = null;
+let cases: any = null;
+let evidence: any = null;
+let legalDocuments: any = null;
+let personsOfInterest: any = null;
 import { eq, sql, and } from 'drizzle-orm';
-import { drizzle } from 'drizzle-orm/postgres-js';
+import { drizzle } from 'drizzle-orm/node-postgres';
 // import postgres from 'postgres'; // Uncomment and install 'postgres' if available
 // import * as legalDocumentsSchema from '#file:mcp-context72-get-library-docs.ts'; // Uncomment and provide correct path if available
 
-interface EventLoopCondition {
+export interface EventLoopCondition {
   id: string;
   type: 'timer' | 'database_change' | 'api_trigger' | 'context7_event';
-  condition: unknown;
+  condition: any;
   action: string;
   isActive: boolean;
   lastTriggered?: Date;
   metadata?: Record<string, any>;
 }
 
-interface DatabaseEvent {
+export interface DatabaseEvent {
   type: 'insert' | 'update' | 'delete' | 'query' | 'bulk_operation';
   table: string;
-  data: unknown;
+  data: any;
   timestamp: Date;
   userId?: string;
   context?: Record<string, any>;
@@ -35,7 +35,7 @@ interface DatabaseEvent {
 // Initialize database connection with fallback
 // Initialize database connection with fallback
 // db and legalDocuments already declared above
-async function initializeDatabase() {
+async function initializeDatabase(): Promise<any> {
   try {
     // Production-quality PostgreSQL connection using postgres-js and drizzle-orm
     const connectionString = process.env.DATABASE_URL || 'postgres://user:password@localhost:5432/legal_ai_db';
@@ -44,7 +44,7 @@ async function initializeDatabase() {
     legalDocuments = legalDocumentsSchema.legalDocuments;
     console.log('🗄️ Database orchestrator connected to PostgreSQL');
     return true;
-  } catch (error) {
+  } catch (error: any) {
     const errorMsg = error instanceof Error ? error.message : String(error);
     console.warn('Database initialization failed, running in mock mode:', errorMsg);
     db = null;
@@ -58,7 +58,7 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
   private conditions: Map<string, EventLoopCondition> = new Map();
   private isRunning = false;
   private processQueue: DatabaseEvent[] = [];
-  private context7Integration: unknown;
+  private context7Integration: any;
   private databaseAvailable = false;
 
   constructor() {
@@ -68,11 +68,11 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
     this.initializeDatabase();
   }
 
-  private async initializeDatabase() {
+  private async initializeDatabase(): Promise<any> {
     this.databaseAvailable = await initializeDatabase();
   }
 
-  async start(): Promise<void> {
+  async start(): Promise<any> {
     if (this.isRunning) return;
 
     console.log('🚀 Starting Comprehensive Database Orchestrator');
@@ -94,14 +94,14 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
     this.emit('orchestrator:started');
   }
 
-  private async startMainEventLoop(): Promise<void> {
-    const mainLoop = setInterval(async () => {
+  private async startMainEventLoop(): Promise<any> {
+    const mainLoop = setInterval(async (): Promise<any> => {
       try {
         await this.processEventQueue();
         await this.evaluateConditions();
         await this.syncWithContext7();
         await this.performHealthCheck();
-      } catch (error) {
+      } catch (error: any) {
         console.error('Main loop error:', error);
         this.emit('orchestrator:error', error);
       }
@@ -110,9 +110,9 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
     this.eventLoops.set('main', mainLoop);
   }
 
-  private async setupDatabaseListeners(): Promise<void> {
+  private async setupDatabaseListeners(): Promise<any> {
     // Real-time database change detection and processing
-    const dbWatcher = setInterval(async () => {
+    const dbWatcher = setInterval(async (): Promise<any> => {
       try {
         // Check for recent database changes
         const recentCases = await db.select()
@@ -146,7 +146,7 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
           await this.processNewDocuments(recentDocuments);
         }
 
-      } catch (error) {
+      } catch (error: any) {
         console.error('Database listener error:', error);
       }
     }, 5000); // Check every 5 seconds
@@ -154,8 +154,8 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
     this.eventLoops.set('database_watcher', dbWatcher);
   }
 
-  private async startContext7EventLoop(): Promise<void> {
-    const context7Loop = setInterval(async () => {
+  private async startContext7EventLoop(): Promise<any> {
+    const context7Loop = setInterval(async (): Promise<any> => {
       try {
         // Fetch Context7 recommendations
         const response = await fetch('http://localhost:8096/recommendations/latest');
@@ -170,7 +170,7 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
         // Sync with Context7 best practices
         await this.syncBestPractices();
 
-      } catch (error) {
+      } catch (error: any) {
         console.error('Context7 event loop error:', error);
       }
     }, 10000); // Every 10 seconds
@@ -178,8 +178,8 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
     this.eventLoops.set('context7', context7Loop);
   }
 
-  private async startConditionEvaluator(): Promise<void> {
-    const conditionLoop = setInterval(async () => {
+  private async startConditionEvaluator(): Promise<any> {
+    const conditionLoop = setInterval(async (): Promise<any> => {
       for (const [id, condition] of this.conditions.entries()) {
         if (!condition.isActive) continue;
 
@@ -190,7 +190,7 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
             condition.lastTriggered = new Date();
             this.emit('condition:triggered', { conditionId: id, condition });
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error(`Condition evaluation error (${id}):`, error);
         }
       }
@@ -200,7 +200,7 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
   }
 
   // Database Operation Methods
-  async saveToDatabase(data: unknown, table: string, options: unknown = {}): Promise<any> {
+  async saveToDatabase(data: any, table: string, options: any = {}): Promise<any> {
     const event: DatabaseEvent = {
       type: 'insert',
       table,
@@ -249,13 +249,13 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
       await this.triggerRealTimeProcessing(table, result[0]);
 
       return result[0];
-    } catch (error) {
+    } catch (error: any) {
       this.emit('database:operation_failed', { event, error });
       throw error;
     }
   }
 
-  async queryDatabase(query: unknown, table: string): Promise<unknown[]> {
+  async queryDatabase(query: any, table: string): Promise<unknown[]> {
     const event: DatabaseEvent = {
       type: 'query',
       table,
@@ -287,14 +287,14 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
 
       this.emit('database:query_completed', { event, result });
       return result;
-    } catch (error) {
+    } catch (error: any) {
       this.emit('database:query_failed', { event, error });
       throw error;
     }
   }
 
   // Context7 Integration Methods
-  private async initializeContext7Integration(): Promise<void> {
+  private async initializeContext7Integration(): Promise<any> {
     this.context7Integration = {
       mcpServers: {
         wrapper: 'mcp-servers/mcp-context7-wrapper.js',
@@ -309,7 +309,7 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
     };
   }
 
-  private async processContext7Recommendations(recommendations: unknown): Promise<void> {
+  private async processContext7Recommendations(recommendations: any): Promise<any> {
     try {
       for (const rec of recommendations) {
         // Save recommendation to database
@@ -327,12 +327,12 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
           await this.triggerHighConfidenceAction(rec);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Context7 recommendation processing error:', error);
     }
   }
 
-  private async checkMCPServerHealth(): Promise<void> {
+  private async checkMCPServerHealth(): Promise<any> {
     const healthChecks = [];
 
     for (const [name, endpoint] of Object.entries(this.context7Integration.endpoints)) {
@@ -348,7 +348,7 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
           endpoint,
           timestamp: new Date()
         });
-      } catch (error) {
+      } catch (error: any) {
         healthChecks.push({
           service: name,
           status: 'error',
@@ -437,7 +437,7 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
     }
   }
 
-  private async executeConditionAction(condition: EventLoopCondition): Promise<void> {
+  private async executeConditionAction(condition: EventLoopCondition): Promise<any> {
     try {
       switch (condition.action) {
         case 'prioritize_cases':
@@ -455,13 +455,13 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
         default:
           console.warn(`Unknown action: ${condition.action}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Action execution error (${condition.action}):`, error);
     }
   }
 
   // Specific Action Implementations
-  private async prioritizeCases(): Promise<void> {
+  private async prioritizeCases(): Promise<any> {
     const cases = await this.queryDatabase(sql`1=1`, 'cases');
 
     for (const case_ of cases) {
@@ -479,7 +479,7 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
     this.emit('action:cases_prioritized', { count: cases.length });
   }
 
-  private async analyzeEvidence(): Promise<void> {
+  private async analyzeEvidence(): Promise<any> {
     // Get recent evidence that hasn't been analyzed
     const unanalyzed = await db.select()
       .from(evidence)
@@ -503,13 +503,13 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
           .where(eq(evidence.id, item.id));
 
         this.emit('action:evidence_analyzed', { evidenceId: item.id, analysis });
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Evidence analysis error (${item.id}):`, error);
       }
     }
   }
 
-  private async syncRecommendations(): Promise<void> {
+  private async syncRecommendations(): Promise<any> {
     try {
       const response = await fetch('http://localhost:8096/recommendations/sync', {
         method: 'POST',
@@ -520,12 +520,12 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
         const result = await response.json();
         this.emit('action:recommendations_synced', result);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Recommendation sync error:', error);
     }
   }
 
-  private async checkAPIHealth(): Promise<void> {
+  private async checkAPIHealth(): Promise<any> {
     const endpoints = [
       'http://localhost:5173/api/health',
       'http://localhost:8080/health',
@@ -543,7 +543,7 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
           status: response.ok ? 'healthy' : 'unhealthy',
           responseTime: Date.now()
         });
-      } catch (error) {
+      } catch (error: any) {
         healthResults.push({
           endpoint,
           status: 'error',
@@ -565,7 +565,7 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
   }
 
   // Helper Methods
-  private async processEventQueue(): Promise<void> {
+  private async processEventQueue(): Promise<any> {
     while (this.processQueue.length > 0) {
       const event = this.processQueue.shift();
       if (event) {
@@ -574,15 +574,15 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
     }
   }
 
-  private async evaluateConditions(): Promise<void> {
+  private async evaluateConditions(): Promise<any> {
     // Conditions are evaluated in the dedicated loop
   }
 
-  private async syncWithContext7(): Promise<void> {
+  private async syncWithContext7(): Promise<any> {
     // Real-time sync with Context7 MCP servers
   }
 
-  private async performHealthCheck(): Promise<void> {
+  private async performHealthCheck(): Promise<any> {
     this.emit('health:check', {
       timestamp: new Date(),
       isRunning: this.isRunning,
@@ -592,7 +592,7 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
     });
   }
 
-  private calculateCasePriority(case_: unknown, evidenceCount: number): number {
+  private calculateCasePriority(case_: any, evidenceCount: number): number {
     let priority = 0;
 
     // Evidence count factor
@@ -609,7 +609,7 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
     return Math.round(priority);
   }
 
-  private async callContext7Analysis(evidence: unknown): Promise<any> {
+  private async callContext7Analysis(evidence: any): Promise<any> {
     try {
       const response = await fetch('http://localhost:8094/api/evidence/analyze', {
         method: 'POST',
@@ -626,27 +626,27 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
       }
 
       return { status: 'analysis_failed', error: 'API request failed' };
-    } catch (error) {
+    } catch (error: any) {
       return { status: 'analysis_error', error: error.message };
     }
   }
 
-  private async checkDatabaseChange(condition: unknown): Promise<boolean> {
+  private async checkDatabaseChange(condition: any): Promise<boolean> {
     // Implement database change detection logic
     return false;
   }
 
-  private async checkAPITrigger(condition: unknown): Promise<boolean> {
+  private async checkAPITrigger(condition: any): Promise<boolean> {
     // Implement API trigger detection logic
     return false;
   }
 
-  private async checkContext7Event(condition: unknown): Promise<boolean> {
+  private async checkContext7Event(condition: any): Promise<boolean> {
     // Implement Context7 event detection logic
     return false;
   }
 
-  private async triggerRealTimeProcessing(table: string, data: unknown): Promise<void> {
+  private async triggerRealTimeProcessing(table: string, data: any): Promise<any> {
     // Trigger immediate processing for critical data
     this.emit('realtime:processing', { table, data });
 
@@ -663,49 +663,49 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
     }
   }
 
-  private async processNewCases(cases: unknown[]): Promise<void> {
+  private async processNewCases(cases: any[]): Promise<any> {
     for (const case_ of cases) {
       await this.processNewCase(case_);
     }
   }
 
-  private async processNewEvidence(evidence: unknown[]): Promise<void> {
+  private async processNewEvidence(evidence: any[]): Promise<any> {
     for (const item of evidence) {
       await this.processNewEvidenceItem(item);
     }
   }
 
-  private async processNewDocuments(documents: unknown[]): Promise<void> {
+  private async processNewDocuments(documents: any[]): Promise<any> {
     for (const doc of documents) {
       await this.processNewDocument(doc);
     }
   }
 
-  private async processNewCase(case_: unknown): Promise<void> {
+  private async processNewCase(case_: any): Promise<any> {
     // Automatic case processing
     this.emit('case:new', case_);
   }
 
-  private async processNewEvidenceItem(evidence: unknown): Promise<void> {
+  private async processNewEvidenceItem(evidence: any): Promise<any> {
     // Automatic evidence processing
     this.emit('evidence:new', evidence);
   }
 
-  private async processNewDocument(document: unknown): Promise<void> {
+  private async processNewDocument(document: any): Promise<any> {
     // Automatic document processing
     this.emit('document:new', document);
   }
 
-  private async syncBestPractices(): Promise<void> {
+  private async syncBestPractices(): Promise<any> {
     // Sync with Context7 best practices
   }
 
-  private async triggerHighConfidenceAction(recommendation: unknown): Promise<void> {
+  private async triggerHighConfidenceAction(recommendation: any): Promise<any> {
     // Execute high-confidence recommendation actions
     this.emit('recommendation:high_confidence', recommendation);
   }
 
-  async stop(): Promise<void> {
+  async stop(): Promise<any> {
     console.log('🛑 Stopping Database Orchestrator');
 
     for (const [id, timeout] of this.eventLoops.entries()) {
@@ -720,7 +720,7 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
     console.log('✅ Database Orchestrator stopped');
   }
 
-  getStatus(): unknown {
+  getStatus(): any {
     return {
       isRunning: this.isRunning,
       activeLoops: this.eventLoops.size,

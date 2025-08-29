@@ -28,7 +28,7 @@ function parseArgs() {
   return out;
 }
 
-async function fetchWithTimeout(url: string, opts: any = {}, timeout = smokeConfig.timeout || 7000) {
+async function fetchWithTimeout(url: string, opts: any = {}, timeout = smokeConfig.timeout || 7000): Promise<any> {
   const ac = new AbortController();
   const timer = setTimeout(() => ac.abort(), timeout);
   try {
@@ -39,7 +39,7 @@ async function fetchWithTimeout(url: string, opts: any = {}, timeout = smokeConf
   }
 }
 
-async function runHealthChecks(verbose = false, criticalOnly = false) {
+async function runHealthChecks(verbose = false, criticalOnly = false): Promise<any> {
   console.log('\n🔥 Running Service Health Checks...');
   
   // Use comprehensive endpoint list or legacy endpoints
@@ -119,7 +119,7 @@ function resolveRoutesFromFile(filePath: string, host: string): RouteEntry[] {
       if (p.url) return { url: p.url.replace(/<HOST>/g, host), method: p.method || 'GET' };
       return p;
     });
-  } catch (e) {
+  } catch (e: any) {
     return content.split(/\r?\n/).map((l) => l.trim()).filter(Boolean).map((r) => r.replace(/<HOST>/g, host));
   }
   return [];
@@ -137,7 +137,7 @@ function generateRoutesIfNeeded(outFile = 'routes.txt') {
   return null;
 }
 
-async function runRouteCrawl(opts: { host: string; routesFile?: string; clientCheck?: boolean; verbose?: boolean }) {
+async function runRouteCrawl(opts: { host: string; routesFile?: string; clientCheck?: boolean; verbose?: boolean }): Promise<any> {
   console.log('\n🔍 Running Route Crawl...');
   let routes: RouteEntry[] = [];
   
@@ -189,7 +189,7 @@ async function runRouteCrawl(opts: { host: string; routesFile?: string; clientCh
     let playwright: any = null;
     try {
       playwright = await import('playwright');
-    } catch (e) {
+    } catch (e: any) {
       try { playwright = await import('@playwright/test'); } catch (_) { playwright = null; }
     }
     
@@ -222,7 +222,7 @@ async function runRouteCrawl(opts: { host: string; routesFile?: string; clientCh
   return failures;
 }
 
-async function main() {
+async function main(): Promise<any> {
   const opts = parseArgs();
   console.log('\n🔥 Smoke Test Runner');
   console.log(`Host: ${opts.host}`);
@@ -266,7 +266,7 @@ async function main() {
   }
 }
 
-main().catch((e) => {
+main().catch((e: any) => {
   console.error('💥 Smoke runner error:', e);
   process.exit(2);
 });

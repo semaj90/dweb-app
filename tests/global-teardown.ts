@@ -5,7 +5,7 @@ import { chromium } from "@playwright/test";
  * Cleans up test environment and resources
  */
 
-async function globalTeardown() {
+async function globalTeardown(): Promise<any> {
   console.log("🧹 Starting Legal AI RAG Test Environment Cleanup...");
 
   try {
@@ -18,7 +18,7 @@ async function globalTeardown() {
     try {
       await page.request.delete("http://localhost:5173/api/test/cleanup");
       console.log("✅ Test data cleaned up");
-    } catch (error) {
+    } catch (error: any) {
       console.log("⚠️  Test data cleanup failed:", error);
     }
 
@@ -27,7 +27,7 @@ async function globalTeardown() {
     try {
       await page.request.delete("http://localhost:5173/api/test/vectors/clear");
       console.log("✅ Vector embeddings cleared");
-    } catch (error) {
+    } catch (error: any) {
       console.log("⚠️  Vector cleanup failed:", error);
     }
 
@@ -36,7 +36,7 @@ async function globalTeardown() {
     try {
       await page.request.post("http://localhost:5173/api/test/tokens/reset");
       console.log("✅ Token counters reset");
-    } catch (error) {
+    } catch (error: any) {
       console.log("⚠️  Token reset failed:", error);
     }
 
@@ -45,7 +45,7 @@ async function globalTeardown() {
     try {
       await page.request.post("http://localhost:5173/api/system/gpu/cleanup");
       console.log("✅ GPU memory cleared");
-    } catch (error) {
+    } catch (error: any) {
       console.log("⚠️  GPU cleanup not available");
     }
 
@@ -57,13 +57,13 @@ async function globalTeardown() {
 
     console.log("✨ Test environment cleanup complete!");
     console.log("=".repeat(60));
-  } catch (error) {
+  } catch (error: any) {
     console.error("❌ Global teardown failed:", error);
     // Don't throw error to avoid failing the test suite
   }
 }
 
-async function generateTestSummary(page: unknown) {
+async function generateTestSummary(page: unknown): Promise<any> {
   try {
     const summaryResponse = await page.request.get(
       "http://localhost:5173/api/test/summary"
@@ -94,7 +94,7 @@ async function generateTestSummary(page: unknown) {
         );
       }
     }
-  } catch (error) {
+  } catch (error: any) {
     console.log("⚠️  Could not generate test summary");
   }
 }

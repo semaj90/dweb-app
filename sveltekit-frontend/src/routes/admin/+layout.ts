@@ -40,7 +40,7 @@ export const load: LayoutLoad = async ({ fetch, url, depends }) => {
       permissions: AccessControl.getRolePermissions(sessionData.user.role)
     };
     
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof Response) {
       throw error; // Re-throw redirects
     }

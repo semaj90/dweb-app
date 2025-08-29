@@ -33,7 +33,7 @@ export class VectorService {
         .returning({ id: userEmbeddings.userId });
 
       return result[0]?.id || userId;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error storing user embedding:", error);
       throw new Error(
         `Failed to store user embedding: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -54,7 +54,7 @@ export class VectorService {
       // TODO: Implement proper vector similarity search
       // For now, return empty array to avoid errors
       return [];
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error searching similar content:", error);
       return [];
     }
@@ -71,7 +71,7 @@ export class VectorService {
         .orderBy(desc(userEmbeddings.createdAt));
 
       return results;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error getting user embeddings:", error);
       return [];
     }

@@ -8,7 +8,7 @@ import type { DistanceStrategy } from "@langchain/community/vectorstores/pgvecto
 import type { Document as LangChainDocumentType } from "@langchain/core/documents";
 import { Embeddings } from "@langchain/core/embeddings";
 import { OllamaEmbeddings } from "@langchain/ollama";
-import { db, sql, eq, and, or, desc, asc } from "../db/index.js";
+import { db, sql, eq, and, or, desc, asc } from '../db/index';
 
 // Define legal document type
 type LegalDocumentType = {
@@ -28,7 +28,7 @@ async function loadLegalDocuments(): Promise<LegalDocumentType[]> {
   try {
     const legalDocsModule = await import("../../data/legal-documents.js");
     return legalDocsModule.legalDocuments || [];
-  } catch (error) {
+  } catch (error: any) {
     console.warn("Legal documents not available, using empty array:", error);
     return [];
   }
@@ -47,7 +47,7 @@ async function generateEmbedding(text: string, options?: { model?: string }): Pr
   try {
     const result = await embeddings.embedQuery(text);
     return result;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Embedding generation failed:', error);
     return new Array(768).fill(0); // Return zero vector as fallback
   }
@@ -75,7 +75,7 @@ export class NomicEmbeddings extends Embeddings {
 }
 
 // Enhanced Legal Search Configuration
-interface LegalSearchConfig {
+export interface LegalSearchConfig {
   useVector: boolean;
   useFallback: boolean;
   maxResults: number;
@@ -104,7 +104,7 @@ const defaultConfig: LegalSearchConfig = {
 };
 
 // Enhanced Legal Search Result
-interface LegalSearchResult {
+export interface LegalSearchResult {
   id: string;
   title: string;
   content: string;
@@ -146,7 +146,7 @@ export class EnhancedLegalSearchService {
       
       // Attempt to initialize pgvector store
       await this.initializePgVectorStore();
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Vector store initialization warning:", error);
     }
   }
@@ -173,7 +173,7 @@ export class EnhancedLegalSearchService {
       );
 
       console.log(`✅ Memory vector store initialized with ${documents.length} documents`);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Memory vector store initialization failed:", error);
     }
   }
@@ -201,7 +201,7 @@ export class EnhancedLegalSearchService {
 
         console.log("✅ PGVector store initialized");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn("PGVector store initialization failed (fallback to memory):", error);
     }
   }
@@ -240,7 +240,7 @@ export class EnhancedLegalSearchService {
 
       return finalResults.slice(0, options.maxResults || this.config.maxResults);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Enhanced legal search failed:", error);
       return await this.performFallbackSearch(query, options);
     }
@@ -295,7 +295,7 @@ export class EnhancedLegalSearchService {
       }
 
       console.log(`🔍 Vector search found ${results.length} results`);
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Vector search failed:", error);
     }
 
@@ -318,7 +318,7 @@ export class EnhancedLegalSearchService {
       const fuzzyResults = await this.performFuzzySearch(query, options);
       results.push(...fuzzyResults);
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Hybrid search failed:", error);
     }
 
@@ -373,7 +373,7 @@ export class EnhancedLegalSearchService {
         }
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Fuzzy search failed:", error);
     }
 

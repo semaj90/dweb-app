@@ -12,7 +12,7 @@ export function makeRegexClassGroup(separators = ['-', ':']) {
   return regexCache[key]
 }
 
-interface VariantGroup {
+export interface VariantGroup {
   length: number
   items: HighlightAnnotation[]
 }

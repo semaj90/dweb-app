@@ -7,7 +7,7 @@ import fs from 'fs-extra'
 const dir = typeof __dirname === 'string' ? __dirname : dirname(fileURLToPath(import.meta.url))
 const root = dirname(dir)
 
-async function publish() {
+async function publish(): Promise<any> {
   const pkgPath = join(root, 'package.json')
   const rawJSON = await fs.readFile(pkgPath, 'utf-8')
   const pkg = JSON.parse(rawJSON)

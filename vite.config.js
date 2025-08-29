@@ -17,6 +17,13 @@ export default defineConfig({
 		strictPort: false
 	},
 	optimizeDeps: {
-		include: ['fabric', 'pdf-lib', 'socket.io-client']
+		include: ['fabric', 'pdf-lib', 'socket.io-client'],
+		exclude: ['@langchain/core', '@langchain/community', 'langchain']
+	},
+	define: {
+		global: 'globalThis'
+	},
+	ssr: {
+		noExternal: ['@langchain/core', '@langchain/community', 'langchain']
 	}
 });

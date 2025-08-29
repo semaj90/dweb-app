@@ -4,7 +4,7 @@
  */
 
 import * as vscode from "vscode";
-import { AdvancedMemoryOptimizer } from "../optimization/advanced-memory-optimizer.js";
+import { AdvancedMemoryOptimizer } from '../optimization/advanced-memory-optimizer';
 
 export interface ExtensionMemoryMetrics {
   totalMemory: number;
@@ -170,7 +170,7 @@ export class EnhancedMCPExtensionMemoryManager {
       }
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       // Still record failed executions for analysis
       const memoryAfter = await this.getCurrentMemoryUsage();
       const duration = Date.now() - startTime;

@@ -11,7 +11,7 @@ import { insertChatMessageWithEmbedding, searchSimilarMessages } from '$lib/serv
  * Database Persistence Test for AI Recommendations
  * Tests database operations, vector embeddings, and recommendations storage
  */
-export async function POST({ request }: RequestEvent) {
+export async function POST({ request }: RequestEvent): Promise<any> {
   const startTime = Date.now();
   const testResults: any[] = [];
   
@@ -99,7 +99,7 @@ export async function POST({ request }: RequestEvent) {
       timestamp: new Date().toISOString()
     });
     
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: 'Database persistence test failed',
@@ -110,7 +110,7 @@ export async function POST({ request }: RequestEvent) {
   }
 }
 
-async function testCreateUser() {
+async function testCreateUser(): Promise<any> {
   const startTime = Date.now();
   
   try {
@@ -131,7 +131,7 @@ async function testCreateUser() {
       data: { userId, email: testEmail },
       responseTime: Date.now() - startTime
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       test: 'Create User',
       success: false,
@@ -142,7 +142,7 @@ async function testCreateUser() {
   }
 }
 
-async function testCreateChatSession(userId: string) {
+async function testCreateChatSession(userId: string): Promise<any> {
   const startTime = Date.now();
   
   try {
@@ -166,7 +166,7 @@ async function testCreateChatSession(userId: string) {
       data: { sessionId },
       responseTime: Date.now() - startTime
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       test: 'Create Chat Session',
       success: false,
@@ -177,7 +177,7 @@ async function testCreateChatSession(userId: string) {
   }
 }
 
-async function testEmbeddingGeneration(content: string) {
+async function testEmbeddingGeneration(content: string): Promise<any> {
   const startTime = Date.now();
   
   try {
@@ -202,7 +202,7 @@ async function testEmbeddingGeneration(content: string) {
       },
       responseTime: Date.now() - startTime
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       test: 'Embedding Generation',
       success: false,
@@ -213,7 +213,7 @@ async function testEmbeddingGeneration(content: string) {
   }
 }
 
-async function testStoreMessage(sessionId: string, content: string, embedding?: number[]) {
+async function testStoreMessage(sessionId: string, content: string, embedding?: number[]): Promise<any> {
   const startTime = Date.now();
   
   try {
@@ -261,7 +261,7 @@ async function testStoreMessage(sessionId: string, content: string, embedding?: 
       },
       responseTime: Date.now() - startTime
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       test: 'Store Message',
       success: false,
@@ -272,7 +272,7 @@ async function testStoreMessage(sessionId: string, content: string, embedding?: 
   }
 }
 
-async function testStoreRecommendations(userId: string, messageId: string) {
+async function testStoreRecommendations(userId: string, messageId: string): Promise<any> {
   const startTime = Date.now();
   
   try {
@@ -323,7 +323,7 @@ async function testStoreRecommendations(userId: string, messageId: string) {
       },
       responseTime: Date.now() - startTime
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       test: 'Store Recommendations',
       success: false,
@@ -334,7 +334,7 @@ async function testStoreRecommendations(userId: string, messageId: string) {
   }
 }
 
-async function testVectorSimilaritySearch(embedding?: number[]) {
+async function testVectorSimilaritySearch(embedding?: number[]): Promise<any> {
   const startTime = Date.now();
   
   try {
@@ -368,7 +368,7 @@ async function testVectorSimilaritySearch(embedding?: number[]) {
       },
       responseTime: Date.now() - startTime
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       test: 'Vector Similarity Search',
       success: false,
@@ -379,7 +379,7 @@ async function testVectorSimilaritySearch(embedding?: number[]) {
   }
 }
 
-async function testRetrieveRecommendations(userId: string) {
+async function testRetrieveRecommendations(userId: string): Promise<any> {
   const startTime = Date.now();
   
   try {
@@ -412,7 +412,7 @@ async function testRetrieveRecommendations(userId: string) {
       },
       responseTime: Date.now() - startTime
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       test: 'Retrieve Recommendations',
       success: false,
@@ -423,7 +423,7 @@ async function testRetrieveRecommendations(userId: string) {
   }
 }
 
-async function testUpdateRecommendationFeedback(userId: string) {
+async function testUpdateRecommendationFeedback(userId: string): Promise<any> {
   const startTime = Date.now();
   
   try {
@@ -463,7 +463,7 @@ async function testUpdateRecommendationFeedback(userId: string) {
       },
       responseTime: Date.now() - startTime
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       test: 'Update Recommendation Feedback',
       success: false,
@@ -474,7 +474,7 @@ async function testUpdateRecommendationFeedback(userId: string) {
   }
 }
 
-async function cleanupTestData(userId: string, sessionId: string) {
+async function cleanupTestData(userId: string, sessionId: string): Promise<any> {
   try {
     // Clean up in reverse order of dependencies
     await db.delete(chatRecommendations).where(eq(chatRecommendations.userId, userId));
@@ -483,7 +483,7 @@ async function cleanupTestData(userId: string, sessionId: string) {
     await db.delete(users).where(eq(users.id, userId));
     
     console.log('Test data cleaned up successfully');
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Failed to clean up test data:', error);
   }
 }
@@ -491,7 +491,7 @@ async function cleanupTestData(userId: string, sessionId: string) {
 /**
  * GET endpoint for quick health check
  */
-export async function GET() {
+export async function GET(): Promise<any> {
   try {
     // Quick database connection test
     await db.select().from(users).limit(1);
@@ -501,7 +501,7 @@ export async function GET() {
       message: 'Database persistence test endpoint is operational',
       timestamp: new Date().toISOString()
     });
-  } catch (error) {
+  } catch (error: any) {
     return json({
       status: 'unhealthy',
       message: 'Database connection failed',

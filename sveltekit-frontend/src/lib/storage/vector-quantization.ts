@@ -7,7 +7,7 @@
  * - Product Quantization (PQ): Custom codebooks for legal domain
  */
 
-interface QuantizationConfig {
+export interface QuantizationConfig {
   method: 'binary' | 'int8' | 'product' | 'scalar';
   dimensions: number;
   codebookSize?: number; // For product quantization
@@ -15,7 +15,7 @@ interface QuantizationConfig {
   legalDomainOptimized?: boolean;
 }
 
-interface QuantizedVector {
+export interface QuantizedVector {
   id: string;
   original: Float32Array;
   quantized: Uint8Array | Int8Array;
@@ -29,7 +29,7 @@ interface QuantizedVector {
   };
 }
 
-interface ProductQuantizationCodebook {
+export interface ProductQuantizationCodebook {
   centroids: Float32Array[];
   subspaceSize: number;
   numClusters: number;

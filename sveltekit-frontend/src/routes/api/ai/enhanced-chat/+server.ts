@@ -7,7 +7,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
 
 // Enhanced request interface
-interface EnhancedChatRequest {
+export interface EnhancedChatRequest {
   query: string;
   context?: {
     userRole?: string;
@@ -28,7 +28,7 @@ interface EnhancedChatRequest {
   };
 }
 
-interface EnhancedChatResponse {
+export interface EnhancedChatResponse {
   response: string;
   synthesizedInput?: unknown;
   legalAnalysis?: unknown;
@@ -73,7 +73,7 @@ export const POST: RequestHandler = async ({ request }) => {
     };
 
     return json(response);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Enhanced AI chat API error:', error);
     return json(
       { 
@@ -109,7 +109,7 @@ async function generateAIResponse(query: string, context: any): Promise<string> 
 
     const data = await response.json();
     return data.response || 'No response generated';
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Ollama connection failed, using fallback response:', error);
     return `I understand you're asking about: "${query}". I'm currently experiencing connectivity issues with the AI service. Please try again later or contact support for assistance.`;
   }
@@ -126,7 +126,7 @@ export const GET: RequestHandler = async () => {
     };
 
     return json(status);
-  } catch (error) {
+  } catch (error: any) {
     return json({ error: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 });
   }
 };

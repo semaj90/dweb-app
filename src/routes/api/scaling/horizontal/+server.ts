@@ -22,7 +22,7 @@ import type {
 } from '$lib/ai/types';
 
 // POST - Execute scaling operations
-export const POST: RequestHandler = async ({ request, url }) => {
+export const POST: RequestHandler = async ({ request, url }): Promise<any> => {
     try {
         const action = url.searchParams.get('action');
         const body = await request.json();
@@ -46,14 +46,14 @@ export const POST: RequestHandler = async ({ request, url }) => {
             default:
                 return error(400, 'Invalid action specified');
         }
-    } catch (err) {
+    } catch (err: any) {
         console.error('❌ Horizontal scaling API error:', err);
         return error(500, `Server error: ${err.message}`);
     }
 };
 
 // GET - Retrieve scaling information and status
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
     try {
         const action = url.searchParams.get('action');
         
@@ -79,14 +79,14 @@ export const GET: RequestHandler = async ({ url }) => {
             default:
                 return getDashboard();
         }
-    } catch (err) {
+    } catch (err: any) {
         console.error('❌ Horizontal scaling API error:', err);
         return error(500, `Server error: ${err.message}`);
     }
 };
 
 // PUT - Update scaling configuration or agent placement
-export const PUT: RequestHandler = async ({ request }) => {
+export const PUT: RequestHandler = async ({ request }): Promise<any> => {
     try {
         const { config, placement, policy } = await request.json();
         
@@ -104,14 +104,14 @@ export const PUT: RequestHandler = async ({ request }) => {
         
         return error(400, 'No valid update data provided');
         
-    } catch (err) {
+    } catch (err: any) {
         console.error('❌ Update scaling error:', err);
         return error(500, `Update error: ${err.message}`);
     }
 };
 
 // DELETE - Remove agents or servers
-export const DELETE: RequestHandler = async ({ url }) => {
+export const DELETE: RequestHandler = async ({ url }): Promise<any> => {
     try {
         const agentId = url.searchParams.get('agentId');
         const serverId = url.searchParams.get('serverId');
@@ -125,7 +125,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
         }
         
         return error(400, 'Agent ID or Server ID is required');
-    } catch (err) {
+    } catch (err: any) {
         console.error('❌ Remove operation error:', err);
         return error(500, `Remove error: ${err.message}`);
     }
@@ -135,7 +135,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
  * Handler Functions
  */
 
-async function scaleAgents(scaleData: unknown) {
+async function scaleAgents(scaleData: any): Promise<any> {
     const { agentType, targetCount, force = false } = scaleData;
     
     if (!agentType || typeof targetCount !== 'number') {
@@ -167,12 +167,12 @@ async function scaleAgents(scaleData: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Scaling failed: ${err.message}`);
     }
 }
 
-async function deployAgent(deployData: unknown) {
+async function deployAgent(deployData: any): Promise<any> {
     const { agentType, serverId, configuration = {} } = deployData;
     
     if (!agentType) {
@@ -211,12 +211,12 @@ async function deployAgent(deployData: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Deployment failed: ${err.message}`);
     }
 }
 
-async function migrateAgents(migrationData: unknown) {
+async function migrateAgents(migrationData: any): Promise<any> {
     const { fromServerId, toServerId, agentIds = [] } = migrationData;
     
     if (!fromServerId || !toServerId) {
@@ -224,7 +224,7 @@ async function migrateAgents(migrationData: unknown) {
     }
 
     try {
-        const migrations: unknown[] = [];
+        const migrations: any[] = [];
         
         // Get current placements
         const placements = await horizontalAgentScaler.getAgentPlacements();
@@ -247,7 +247,7 @@ async function migrateAgents(migrationData: unknown) {
                 
                 migrations.push(migrationResult);
                 
-            } catch (err) {
+            } catch (err: any) {
                 migrations.push({
                     agentId: agent.agentId,
                     fromServer: fromServerId,
@@ -272,12 +272,12 @@ async function migrateAgents(migrationData: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Migration failed: ${err.message}`);
     }
 }
 
-async function registerServer(serverData: unknown) {
+async function registerServer(serverData: any): Promise<any> {
     const { serverAddress, capabilities = [], resources = {} } = serverData;
     
     if (!serverAddress) {
@@ -310,12 +310,12 @@ async function registerServer(serverData: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Server registration failed: ${err.message}`);
     }
 }
 
-async function startScalingSystem(configData: unknown) {
+async function startScalingSystem(configData: any): Promise<any> {
     try {
         await horizontalAgentScaler.start();
         
@@ -326,7 +326,7 @@ async function startScalingSystem(configData: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Failed to start scaling system: ${err.message}`);
     }
 }
@@ -341,7 +341,7 @@ function getScalingStatus() {
     });
 }
 
-async function getAgentPlacements() {
+async function getAgentPlacements(): Promise<any> {
     const placements = await horizontalAgentScaler.getAgentPlacements();
     
     // Group placements by server and agent type
@@ -381,7 +381,7 @@ async function getAgentPlacements() {
     });
 }
 
-async function getSystemHealth() {
+async function getSystemHealth(): Promise<any> {
     const serverHealth = await horizontalAgentScaler.getServerHealth();
     const placements = await horizontalAgentScaler.getAgentPlacements();
     
@@ -550,7 +550,7 @@ function getDashboard() {
  * Helper Functions
  */
 
-async function updateScalingConfig(config: AgentScalingConfig) {
+async function updateScalingConfig(config: AgentScalingConfig): Promise<any> {
     console.log('🔧 Updating scaling configuration:', config);
     
     // In a real implementation, this would update the scaler configuration
@@ -562,7 +562,7 @@ async function updateScalingConfig(config: AgentScalingConfig) {
     };
 }
 
-async function updateAgentPlacement(placement: AgentPlacement) {
+async function updateAgentPlacement(placement: AgentPlacement): Promise<any> {
     console.log('🔧 Updating agent placement:', placement);
     
     return {
@@ -572,7 +572,7 @@ async function updateAgentPlacement(placement: AgentPlacement) {
     };
 }
 
-async function updateScalingPolicy(policy: unknown) {
+async function updateScalingPolicy(policy: any): Promise<any> {
     console.log('🔧 Updating scaling policy:', policy);
     
     return {
@@ -582,7 +582,7 @@ async function updateScalingPolicy(policy: unknown) {
     };
 }
 
-async function removeAgent(agentId: string) {
+async function removeAgent(agentId: string): Promise<any> {
     console.log(`🗑️ Removing agent: ${agentId}`);
     
     return {
@@ -593,7 +593,7 @@ async function removeAgent(agentId: string) {
     };
 }
 
-async function removeServer(serverId: string) {
+async function removeServer(serverId: string): Promise<any> {
     console.log(`🗑️ Removing server: ${serverId}`);
     
     return {

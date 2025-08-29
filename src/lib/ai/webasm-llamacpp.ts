@@ -3,7 +3,7 @@
 
 import '../types/index.js';
 
-interface WebLlamaConfig {
+export interface WebLlamaConfig {
   modelUrl: string;
   wasmUrl: string;
   threadsCount: number;
@@ -14,7 +14,7 @@ interface WebLlamaConfig {
   temperature: number;
 }
 
-interface WebLlamaResponse {
+export interface WebLlamaResponse {
   text: string;
   tokensGenerated: number;
   processingTime: number;
@@ -23,7 +23,7 @@ interface WebLlamaResponse {
 }
 
 class WebAssemblyLlamaService {
-  private module: unknown = null;
+  private module: any = null;
   private modelLoaded = false;
   private currentModel: string | null = null;
   private config: WebLlamaConfig;
@@ -52,7 +52,7 @@ class WebAssemblyLlamaService {
   /**
    * Initialize WebGPU for hardware acceleration
    */
-  private async initializeWebGPU(): Promise<void> {
+  private async initializeWebGPU(): Promise<any> {
     if (!this.config.enableWebGPU || !navigator.gpu) {
       console.log('[WebLlama] WebGPU not available, falling back to CPU');
       return;
@@ -79,11 +79,11 @@ class WebAssemblyLlamaService {
       console.log('[WebLlama] WebGPU initialized successfully');
       
       // Set up error handling
-      this.webgpuDevice.addEventListener('uncapturederror', (event) => {
+      (this.webgpuDevice as any).onuncapturederror = (event: any) => {
         console.error('[WebLlama] WebGPU error:', event.error);
-      });
+      };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('[WebLlama] WebGPU initialization failed:', error);
     }
   }
@@ -100,7 +100,7 @@ class WebAssemblyLlamaService {
         let wasmModule = null;
         let modelData = null;
 
-        self.onmessage = async function(e) {
+        self.onmessage = async function(e): Promise<any> {
           const { type, data } = e.data;
           
           switch (type) {
@@ -112,7 +112,7 @@ class WebAssemblyLlamaService {
                 wasmModule = await WebAssembly.instantiate(wasmBytes);
                 
                 self.postMessage({ type: 'init_complete', success: true });
-              } catch (error) {
+              } catch (error: any) {
                 self.postMessage({ type: 'init_complete', success: false, error: error.message });
               }
               break;
@@ -123,7 +123,7 @@ class WebAssemblyLlamaService {
                 modelData = await modelResponse.arrayBuffer();
                 
                 self.postMessage({ type: 'model_loaded', success: true });
-              } catch (error) {
+              } catch (error: any) {
                 self.postMessage({ type: 'model_loaded', success: false, error: error.message });
               }
               break;
@@ -133,14 +133,14 @@ class WebAssemblyLlamaService {
                 // Perform inference in worker thread
                 const result = await performInference(data.prompt, data.options);
                 self.postMessage({ type: 'generation_complete', result });
-              } catch (error) {
+              } catch (error: any) {
                 self.postMessage({ type: 'generation_error', error: error.message });
               }
               break;
           }
         };
 
-        async function performInference(prompt, options) {
+        async function performInference(prompt, options): Promise<any> {
           // Placeholder for actual WASM inference
           // This would call the compiled llama.cpp WASM functions
           return {
@@ -154,7 +154,7 @@ class WebAssemblyLlamaService {
       const blob = new Blob([workerCode], { type: 'application/javascript' });
       this.worker = new Worker(URL.createObjectURL(blob));
 
-      this.worker.onmessage = (e) => {
+      this.worker.onmessage = (e: any) => {
         const { type, data } = e.data;
         console.log(`[WebLlama Worker] ${type}:`, data);
       };
@@ -163,7 +163,7 @@ class WebAssemblyLlamaService {
         console.error('[WebLlama Worker] Error:', error);
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('[WebLlama] Worker initialization failed:', error);
     }
   }
@@ -212,7 +212,7 @@ class WebAssemblyLlamaService {
         throw new Error('Failed to load model in WASM');
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('[WebLlama] Model loading failed:', error);
       return false;
     }
@@ -262,7 +262,7 @@ class WebAssemblyLlamaService {
 
       return result;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('[WebLlama] Generation failed:', error);
       throw error;
     }
@@ -395,7 +395,7 @@ class WebAssemblyLlamaService {
     };
   }
 
-  private async generateWithWorker(prompt: string, options: unknown): Promise<WebLlamaResponse> {
+  private async generateWithWorker(prompt: string, options: any): Promise<WebLlamaResponse> {
     return new Promise((resolve, reject) => {
       if (!this.worker) {
         reject(new Error('Worker not available'));
@@ -432,7 +432,7 @@ class WebAssemblyLlamaService {
     });
   }
 
-  private async generateDirect(prompt: string, options: unknown): Promise<WebLlamaResponse> {
+  private async generateDirect(prompt: string, options: any): Promise<WebLlamaResponse> {
     // Direct WASM function calls
     const opts = options as LlamaGenerationParams;
     const maxTokens = opts.max_tokens || 1024;
@@ -504,7 +504,7 @@ Provide analysis in structured format:
 <|assistant|>`;
   }
 
-  private parseLegalAnalysisResponse(response: string): unknown {
+  private parseLegalAnalysisResponse(response: string): any {
     // Similar parsing logic as in the server-side version
     const analysis = {
       summary: '',
@@ -559,19 +559,19 @@ Provide analysis in structured format:
         analysis.confidence = parseFloat(confidenceMatch[1].trim()) || 0.8;
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('[WebLlama] Failed to parse analysis:', error);
     }
 
     return analysis;
   }
 
-  private getCacheKey(prompt: string, options: unknown): string {
+  private getCacheKey(prompt: string, options: any): string {
     const optionsStr = JSON.stringify(options);
     return `${prompt.substring(0, 100)}:${optionsStr}`;
   }
 
-  private addToCache(prompt: string, options: unknown, result: WebLlamaResponse): void {
+  private addToCache(prompt: string, options: any, result: WebLlamaResponse): void {
     const key = this.getCacheKey(prompt, options);
     
     // LFU cache implementation
@@ -599,7 +599,7 @@ Provide analysis in structured format:
     }
     
     if (this.webgpuDevice) {
-      this.webgpuDevice.destroy();
+      // GPUDevice doesn't have a destroy method - it's automatically cleaned up
       this.webgpuDevice = null;
     }
     

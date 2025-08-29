@@ -23,7 +23,7 @@ function createPipelineStore(){
         const data = JSON.parse(ev.data);
         const evt: PipelineEvent = { type: data.type, ts: Date.now(), raw: data.msg, llmResult: data.msg?.llmResult } as any;
         events.update(list => [...list.slice(-199), evt]);
-      } catch (e){ /* swallow */ }
+      } catch (e: any){ /* swallow */ }
     };
     socket.onclose = () => scheduleReconnect();
     socket.onerror = () => { try { socket?.close(); } catch {}; };

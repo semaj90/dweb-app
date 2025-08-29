@@ -1,10 +1,10 @@
 // Database Seed Script for YoRHa Interface
-import { db } from '../src/lib/yorha/db';
-import { units, achievements, missions, equipment } from '../src/lib/yorha/db/schema';
+import { db } from '$lib/yorha/db';
+import { units, achievements, missions, equipment } from '$lib/yorha/db/schema';
 import bcrypt from 'bcryptjs';
 import { nanoid } from 'nanoid';
 
-async function seed() {
+async function seed(): Promise<any> {
   console.log('🌱 Starting database seed...');
   
   try {
@@ -317,7 +317,7 @@ async function seed() {
     console.log('====================================');
     console.log('FOR THE GLORY OF MANKIND');
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Seed failed:', error);
     process.exit(1);
   }

@@ -3,9 +3,9 @@
  * Comprehensive XState machine for managing legal case workflows
  */
 import { createMachine, assign } from 'xstate';
-import type { Case, Evidence, NewCase, NewEvidence } from '../server/db/schema-types.js';
-import { aiSummarizationService } from '../services/ai-summarization-service.js';
-import { vectorSearchService } from '../services/vector-search-service.js';
+import type { Case, Evidence, NewCase, NewEvidence } from '../server/db/schema-types';
+import { aiSummarizationService } from '../services/ai-summarization-service';
+import { vectorSearchService } from '../services/vector-search-service';
 
 // Context types
 export interface LegalCaseContext {
@@ -109,7 +109,7 @@ export type LegalCaseEvents =
 // XState expects functions of the form (context, event) => Promise<any>
 // below we expose functions that return promises; when invoked by the machine we pass them directly
 
-const loadCaseService = async (_context: LegalCaseContext, event: any) => {
+const loadCaseService = async (_context: LegalCaseContext, event: any): Promise<any> => {
   const caseId = event?.caseId;
   if (!caseId) throw new Error('Missing caseId');
   const response = await fetch(`/api/cases/${caseId}`);
@@ -117,7 +117,7 @@ const loadCaseService = async (_context: LegalCaseContext, event: any) => {
   return await response.json();
 };
 
-const createCaseService = async (context: LegalCaseContext) => {
+const createCaseService = async (context: LegalCaseContext): Promise<any> => {
   const response = await fetch('/api/cases', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -127,7 +127,7 @@ const createCaseService = async (context: LegalCaseContext) => {
   return await response.json();
 };
 
-const loadEvidenceService = async (_context: LegalCaseContext, event: any) => {
+const loadEvidenceService = async (_context: LegalCaseContext, event: any): Promise<any> => {
   const caseId = event?.caseId ?? _context.caseId;
   if (!caseId) throw new Error('Missing caseId for evidence load');
   const response = await fetch(`/api/cases/${caseId}/evidence`);
@@ -135,14 +135,14 @@ const loadEvidenceService = async (_context: LegalCaseContext, event: any) => {
   return await response.json();
 };
 
-const processEvidenceService = async (_context: LegalCaseContext, event: any) => {
+const processEvidenceService = async (_context: LegalCaseContext, event: any): Promise<any> => {
   const evidenceId = event?.evidenceId ?? _context?.selectedEvidence?.id;
   if (!evidenceId) throw new Error('Missing evidenceId for processing');
   const result = await aiSummarizationService.summarizeEvidence(evidenceId);
   return result;
 };
 
-const findSimilarCasesService = async (_context: LegalCaseContext, event: any) => {
+const findSimilarCasesService = async (_context: LegalCaseContext, event: any): Promise<any> => {
   const caseId = event?.caseId ?? _context.caseId;
   if (!caseId) throw new Error('Missing caseId for similarity search');
   const similarDocs = await vectorSearchService.findSimilarDocuments(caseId, {
@@ -152,7 +152,7 @@ const findSimilarCasesService = async (_context: LegalCaseContext, event: any) =
   return similarDocs;
 };
 
-const searchService = async (_context: LegalCaseContext, event: any) => {
+const searchService = async (_context: LegalCaseContext, event: any): Promise<any> => {
   const query = event?.query ?? '';
   const results = await vectorSearchService.search({
     query,

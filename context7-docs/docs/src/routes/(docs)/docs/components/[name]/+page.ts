@@ -1,6 +1,6 @@
 import { componentDocs } from "$content/index.js";
 import { getComponentDoc } from "$lib/utils/docs.js";
-import type { EntryGenerator } from "./$types.js";
+import type { EntryGenerator } from './$types';
 
 export const prerender = true;
 
@@ -10,6 +10,6 @@ export const entries: EntryGenerator = async () => {
 	}));
 };
 
-export async function load(event) {
+export async function load(event): Promise<any> {
 	return await getComponentDoc(`components/${event.params.name}`);
 }

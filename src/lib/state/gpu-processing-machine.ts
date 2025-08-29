@@ -19,7 +19,7 @@ type GPUProcessingEvents =
   | { type: 'SERVICE_HEALTH_CHECK' }
   | { type: 'SERVICE_STATUS'; service: 'go-simd' | 'node-gpu'; status: 'healthy' | 'unhealthy' };
 
-interface ProcessingOptions {
+export interface ProcessingOptions {
   processType: 'embeddings' | 'clustering' | 'similarity' | 'boost' | 'full';
   priority: number;
   timeout: number;
@@ -27,7 +27,7 @@ interface ProcessingOptions {
   batchSize: number;
 }
 
-interface DocumentInput {
+export interface DocumentInput {
   documentId: string;
   content: string;
   title?: string;
@@ -35,7 +35,7 @@ interface DocumentInput {
   options?: ProcessingOptions;
 }
 
-interface ProcessingResult {
+export interface ProcessingResult {
   documentId: string;
   embeddings?: Float32Array[];
   clusters?: number[];
@@ -45,7 +45,7 @@ interface ProcessingResult {
   metadata: Record<string, any>;
 }
 
-interface QueuedDocument {
+export interface QueuedDocument {
   document: DocumentInput;
   status: 'queued' | 'processing' | 'completed' | 'failed' | 'cancelled';
   retryCount: number;
@@ -56,7 +56,7 @@ interface QueuedDocument {
 }
 
 // Context
-interface GPUProcessingContext {
+export interface GPUProcessingContext {
   processingQueue: QueuedDocument[];
   activeProcessing: Map<string, QueuedDocument>;
   completedDocuments: Map<string, ProcessingResult>;
@@ -280,12 +280,12 @@ const gpuProcessingMachine = setup({
         
         const result = await response.json();
         return result;
-      } catch (error) {
+      } catch (error: any) {
         throw error;
       }
     },
 
-    healthChecker: async () => {
+    healthChecker: async (): Promise<any> => {
       const healthChecks = await Promise.allSettled([
         fetch('/api/gpu-processing/health/go-simd'),
         fetch('/api/gpu-processing/health/node-gpu')

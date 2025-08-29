@@ -2,7 +2,7 @@ import { createClient } from "redis";
 
 // Redis pub/sub service for real-time updates
 
-interface RedisConfig {
+export interface RedisConfig {
   url: string;
   // retryDelayOnFailover removed - deprecated in newer redis versions
   maxRetriesPerRequest?: number;
@@ -45,7 +45,7 @@ class RedisService {
 
       this.isConnected = true;
       console.log("✅ Redis clients connected successfully");
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Redis connection failed:", error);
       this.isConnected = false;
     }
@@ -207,7 +207,7 @@ class RedisService {
     try {
       const message = JSON.stringify(data);
       await this.publisher.publish(channel, message);
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to publish to ${channel}:`, error);
     }
   }
@@ -218,7 +218,7 @@ class RedisService {
     try {
       const serialized = JSON.stringify(value);
       await this.client.setEx(key, ttlSeconds, serialized);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Cache set error:", error);
     }
   }
@@ -228,7 +228,7 @@ class RedisService {
     try {
       const cached = await this.client.get(key);
       return cached ? JSON.parse(cached) : null;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Cache get error:", error);
       return null;
     }
@@ -238,7 +238,7 @@ class RedisService {
 
     try {
       await this.client.del(key);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Cache delete error:", error);
     }
   }

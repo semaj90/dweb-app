@@ -3,7 +3,7 @@ import { json } from '@sveltejs/kit';
 import { db, testConnection, healthCheck } from '$lib/server/db';
 import { users, cases, evidence, documentChunks } from '$lib/server/db/schema-postgres';
 import { eq, sql } from 'drizzle-orm';
-// import { mcpTools } from '../../../mcp/index.js'; // Temporarily disabled due to dependency issues
+// import { mcpTools } from '../../../mcp/index'; // Temporarily disabled due to dependency issues
 import bcrypt from 'bcrypt';
 
 export const GET: RequestHandler = async ({ url }) => {
@@ -32,7 +32,7 @@ export const GET: RequestHandler = async ({ url }) => {
           installed: vectorTest.length > 0,
           details: vectorTest[0] || null
         };
-      } catch (error) {
+      } catch (error: any) {
         results.vector = {
           installed: false,
           error: error.message
@@ -55,7 +55,7 @@ export const GET: RequestHandler = async ({ url }) => {
           tablesCount: tables.length,
           expectedTables: ['users', 'cases', 'evidence', 'document_chunks']
         };
-      } catch (error) {
+      } catch (error: any) {
         results.schema = {
           error: error.message
         };
@@ -159,7 +159,7 @@ export const GET: RequestHandler = async ({ url }) => {
         await db.delete(cases).where(eq(cases.id, caseId));
         await db.delete(users).where(eq(users.id, userId));
 
-      } catch (error) {
+      } catch (error: any) {
         results.crud = {
           success: false,
           error: error.message,
@@ -209,7 +209,7 @@ export const GET: RequestHandler = async ({ url }) => {
           }
         };
 
-      } catch (error) {
+      } catch (error: any) {
         results.vectorOps = {
           success: false,
           error: error.message,
@@ -233,7 +233,7 @@ export const GET: RequestHandler = async ({ url }) => {
       results
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: error.message,
@@ -298,7 +298,7 @@ export const POST: RequestHandler = async ({ request }) => {
         return json({ error: 'Unknown action' }, { status: 400 });
     }
 
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: error.message,

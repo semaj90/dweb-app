@@ -89,7 +89,7 @@ const createCaseStore = () => {
             isLoading: false,
           }));
         }
-      } catch (error) {
+      } catch (error: any) {
         update((state) => ({
           ...state,
           error: "Network error while loading cases",
@@ -125,7 +125,7 @@ const createCaseStore = () => {
           }));
           return { success: false, error: error.message };
         }
-      } catch (error) {
+      } catch (error: any) {
         update((state) => ({
           ...state,
           error: "Network error while loading case",
@@ -175,7 +175,7 @@ const createCaseStore = () => {
           }));
           return { success: false, error: error.message };
         }
-      } catch (error) {
+      } catch (error: any) {
         update((state) => ({
           ...state,
           error: "Network error while creating case",
@@ -222,7 +222,7 @@ const createCaseStore = () => {
           }));
           return { success: false, error: error.message };
         }
-      } catch (error) {
+      } catch (error: any) {
         update((state) => ({
           ...state,
           error: "Network error while updating case",
@@ -266,7 +266,7 @@ const createCaseStore = () => {
           }));
           return { success: false, error: error.message };
         }
-      } catch (error) {
+      } catch (error: any) {
         update((state) => ({
           ...state,
           error: "Network error while deleting case",
@@ -323,7 +323,7 @@ const createCaseStore = () => {
           }));
           return { success: false, error: error.message };
         }
-      } catch (error) {
+      } catch (error: any) {
         update((state) => ({
           ...state,
           error: "Network error while generating report",
@@ -411,7 +411,7 @@ const createCaseStore = () => {
           const error = await response.json();
           return { success: false, error: error.message };
         }
-      } catch (error) {
+      } catch (error: any) {
         return { success: false, error: "Network error during analysis" };
       }
     },

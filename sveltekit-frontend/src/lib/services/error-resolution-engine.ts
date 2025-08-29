@@ -5,8 +5,8 @@
 
 import { writable, get } from 'svelte/store';
 import { browser } from '$app/environment';
-import type { ServiceDefinition, ServiceStatus, ErrorResolution } from './master-service-coordinator.js';
-import { masterServiceCoordinator } from './master-service-coordinator.js';
+import type { ServiceDefinition, ServiceStatus, ErrorResolution } from './master-service-coordinator';
+import { masterServiceCoordinator } from './master-service-coordinator';
 
 export interface ErrorPattern {
   id: string;
@@ -288,7 +288,7 @@ export class ErrorResolutionEngine {
       this.isActive = true;
       console.log('✅ Error Resolution Engine active');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize Error Resolution Engine:', error);
     }
   }
@@ -446,7 +446,7 @@ export class ErrorResolutionEngine {
       // Update processed error
       this.processedErrors.set(analysis.id, analysis);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error during recovery for ${analysis.id}:`, error);
       analysis.autoFixAttempted = true;
       this.processedErrors.set(analysis.id, analysis);
@@ -470,7 +470,7 @@ export class ErrorResolutionEngine {
         if (success) {
           return true;
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Recovery action ${action.type} failed:`, error);
       }
     }
@@ -532,7 +532,7 @@ export class ErrorResolutionEngine {
       });
       
       return response.ok;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to restart ${serviceId}:`, error);
       return false;
     }

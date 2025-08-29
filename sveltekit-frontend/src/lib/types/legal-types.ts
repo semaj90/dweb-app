@@ -1,6 +1,6 @@
 
 // Legal AI System Type Definitions - Extended for Evidence and Case Management
-export * from './legal.js';
+export * from './legal';
 
 // Additional Evidence Types
 export interface Evidence {
@@ -172,4 +172,4 @@ export type {
   SearchQuery,
   SearchResult,
   ApiResponse
-} from './legal.js';
+} from './legal';

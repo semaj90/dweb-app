@@ -21,6 +21,31 @@ import type {
     CachePerformanceData
 } from '$lib/ai/types';
 
+// Dynamic port finder utility
+async function getAvailablePort(startPort: number): Promise<number> {
+    const { createServer } = await import('net');
+    
+    return new Promise((resolve, reject) => {
+        const server = createServer();
+        
+        server.listen(startPort, () => {
+            const port = (server.address() as any)?.port;
+            server.close(() => {
+                resolve(port);
+            });
+        });
+        
+        server.on('error', (err: any) => {
+            if (err.code === 'EADDRINUSE') {
+                // Port is in use, try next one
+                getAvailablePort(startPort + 1).then(resolve).catch(reject);
+            } else {
+                reject(err);
+            }
+        });
+    });
+}
+
 export interface CacheMonitoringClient {
     id: string;
     ws: WebSocket;
@@ -48,6 +73,7 @@ export class CacheMonitoringService extends EventEmitter {
     private analyticsBuffer: CacheAnalytics[] = [];
     private config: {
         port: number;
+        preferredPort: number; // Store original preferred port
         maxClients: number;
         heartbeatInterval: number;
         bufferSize: number;
@@ -56,11 +82,16 @@ export class CacheMonitoringService extends EventEmitter {
         metricsUpdateInterval: number;
     };
 
+    // Global instance for port access
+    private static instance: CacheMonitoringService | null = null;
+
     constructor(config = {}) {
         super();
         
+        const defaultPort = 9002;
         this.config = {
-            port: 9002,
+            port: defaultPort,
+            preferredPort: defaultPort,
             maxClients: 100,
             heartbeatInterval: 30000,
             bufferSize: 500,
@@ -69,9 +100,40 @@ export class CacheMonitoringService extends EventEmitter {
             metricsUpdateInterval: 5000,
             ...config
         };
+        
+        // Store the preferred port before any changes
+        if (config.port) {
+            this.config.preferredPort = config.port;
+        }
+
+        // Set global instance for static access
+        CacheMonitoringService.instance = this;
 
         this.initializeChannels();
         this.setupCacheManagerListeners();
+    }
+
+    /**
+     * Get global instance port (for frontend access)
+     */
+    static getGlobalPort(): number | null {
+        if (!CacheMonitoringService.instance) {
+            // Try to get from environment variable
+            if (typeof process !== 'undefined' && process.env.PUBLIC_CACHE_MONITOR_WS_PORT) {
+                return parseInt(process.env.PUBLIC_CACHE_MONITOR_WS_PORT, 10);
+            }
+            return null;
+        }
+        return CacheMonitoringService.instance.getActualPort();
+    }
+
+    /**
+     * Get global instance connection URL (for frontend access)
+     */
+    static getGlobalConnectionUrl(host: string = 'localhost'): string | null {
+        const port = CacheMonitoringService.getGlobalPort();
+        if (!port) return null;
+        return `ws://${host}:${port}`;
     }
 
     /**
@@ -192,9 +254,9 @@ export class CacheMonitoringService extends EventEmitter {
     /**
      * Start WebSocket server for cache monitoring
      */
-    async startServer(server?: unknown): Promise<void> {
+    async startServer(server?: any): Promise<any> {
         try {
-            const options: unknown = {
+            let options: any = {
                 port: this.config.port,
                 perMessageDeflate: this.config.enableCompression
             };
@@ -202,6 +264,22 @@ export class CacheMonitoringService extends EventEmitter {
             if (server) {
                 options.server = server;
                 delete options.port;
+            } else {
+                // Find an available port dynamically
+                const availablePort = await getAvailablePort(this.config.port);
+                
+                if (availablePort !== this.config.port) {
+                    console.warn(`⚠️ Cache monitoring port ${this.config.port} was in use, switched to ${availablePort}`);
+                    this.config.port = availablePort;
+                    options.port = availablePort;
+                }
+                
+                console.log(`🚀 Starting cache monitoring WebSocket server on port ${this.config.port}`);
+                
+                // Set environment variable for frontend access (if in Node.js environment)
+                if (typeof process !== 'undefined' && process.env) {
+                    process.env.PUBLIC_CACHE_MONITOR_WS_PORT = String(this.config.port);
+                }
             }
 
             this.wss = new WebSocketServer(options);
@@ -226,7 +304,7 @@ export class CacheMonitoringService extends EventEmitter {
             console.log(`📡 Cache monitoring WebSocket server started on port ${this.config.port}`);
             console.log(`🔧 Max clients: ${this.config.maxClients}, Real-time metrics: ${this.config.enableRealTimeMetrics}`);
 
-        } catch (error) {
+        } catch (error: any) {
             console.error('❌ Failed to start cache monitoring WebSocket server:', error);
             throw error;
         }
@@ -235,7 +313,7 @@ export class CacheMonitoringService extends EventEmitter {
     /**
      * Handle new WebSocket connection
      */
-    private handleConnection(ws: WebSocket, request: unknown): void {
+    private handleConnection(ws: WebSocket, request: any): void {
         // Check client limit
         if (this.clients.size >= this.config.maxClients) {
             ws.close(1013, 'Server at capacity');
@@ -302,7 +380,7 @@ export class CacheMonitoringService extends EventEmitter {
     /**
      * Handle incoming messages from clients
      */
-    private handleMessage(client: CacheMonitoringClient, data: unknown): void {
+    private handleMessage(client: CacheMonitoringClient, data: any): void {
         try {
             client.lastActivity = new Date();
             
@@ -360,7 +438,7 @@ export class CacheMonitoringService extends EventEmitter {
                         timestamp: new Date().toISOString()
                     });
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error(`❌ Error handling message from cache monitoring client ${client.id}:`, error);
             this.sendToClient(client, {
                 type: 'error',
@@ -373,7 +451,7 @@ export class CacheMonitoringService extends EventEmitter {
     /**
      * Handle client subscription to channels
      */
-    private handleSubscription(client: CacheMonitoringClient, channels: string[], filters?: unknown): void {
+    private handleSubscription(client: CacheMonitoringClient, channels: string[], filters?: any): void {
         const subscribedChannels: string[] = [];
         const invalidChannels: string[] = [];
 
@@ -560,7 +638,7 @@ export class CacheMonitoringService extends EventEmitter {
     /**
      * Update client filters
      */
-    private updateClientFilters(client: CacheMonitoringClient, filters: unknown): void {
+    private updateClientFilters(client: CacheMonitoringClient, filters: any): void {
         client.filters = { ...client.filters, ...filters };
         
         this.sendToClient(client, {
@@ -575,7 +653,7 @@ export class CacheMonitoringService extends EventEmitter {
     /**
      * Trigger cache operation for testing
      */
-    private async triggerCacheOperation(client: CacheMonitoringClient, operation: unknown): Promise<void> {
+    private async triggerCacheOperation(client: CacheMonitoringClient, operation: any): Promise<any> {
         try {
             const { type, key, value, options } = operation;
             let result;
@@ -601,7 +679,7 @@ export class CacheMonitoringService extends EventEmitter {
                 timestamp: new Date().toISOString()
             });
 
-        } catch (error) {
+        } catch (error: any) {
             this.sendToClient(client, {
                 type: 'operation-error',
                 operation,
@@ -614,7 +692,7 @@ export class CacheMonitoringService extends EventEmitter {
     /**
      * Handle client disconnection
      */
-    private handleDisconnection(client: CacheMonitoringClient, code: number, reason: unknown): void {
+    private handleDisconnection(client: CacheMonitoringClient, code: number, reason: any): void {
         // Remove from all subscription channels
         client.subscriptions.forEach(channel => {
             this.subscriptionChannels.get(channel)?.delete(client.id);
@@ -631,7 +709,7 @@ export class CacheMonitoringService extends EventEmitter {
     /**
      * Broadcast message to all clients subscribed to a channel
      */
-    private broadcastToChannel(channel: string, message: unknown): void {
+    private broadcastToChannel(channel: string, message: any): void {
         const clientIds = this.subscriptionChannels.get(channel);
         if (!clientIds || clientIds.size === 0) return;
 
@@ -652,7 +730,7 @@ export class CacheMonitoringService extends EventEmitter {
                         this.sendToClient(client, broadcastMessage);
                         successCount++;
                     }
-                } catch (error) {
+                } catch (error: any) {
                     console.error(`❌ Failed to send to cache monitoring client ${clientId}:`, error);
                     failureCount++;
                 }
@@ -667,7 +745,7 @@ export class CacheMonitoringService extends EventEmitter {
     /**
      * Check if message passes client filters
      */
-    private messagePassesFilters(message: unknown, filters: unknown): boolean {
+    private messagePassesFilters(message: any, filters: any): boolean {
         // Apply layer filters
         if (filters.layers && filters.layers.length > 0 && message.data?.layer) {
             if (!filters.layers.includes(message.data.layer)) {
@@ -698,13 +776,13 @@ export class CacheMonitoringService extends EventEmitter {
     /**
      * Send message to specific client
      */
-    private sendToClient(client: CacheMonitoringClient, message: unknown): void {
+    private sendToClient(client: CacheMonitoringClient, message: any): void {
         if (client.ws.readyState !== client.ws.OPEN) return;
 
         try {
             const jsonMessage = JSON.stringify(message);
             client.ws.send(jsonMessage);
-        } catch (error) {
+        } catch (error: any) {
             console.error(`❌ Failed to send message to cache monitoring client ${client.id}:`, error);
         }
     }
@@ -744,7 +822,7 @@ export class CacheMonitoringService extends EventEmitter {
     /**
      * Collect and broadcast real-time metrics
      */
-    private async collectAndBroadcastMetrics(): Promise<void> {
+    private async collectAndBroadcastMetrics(): Promise<any> {
         try {
             const status = advancedCacheManager.getStatus();
             
@@ -773,7 +851,7 @@ export class CacheMonitoringService extends EventEmitter {
                 timestamp: new Date().toISOString()
             });
 
-        } catch (error) {
+        } catch (error: any) {
             console.error('❌ Error collecting cache metrics for WebSocket broadcast:', error);
         }
     }
@@ -781,7 +859,7 @@ export class CacheMonitoringService extends EventEmitter {
     /**
      * Handle metrics updates from cache manager
      */
-    private handleMetricsUpdate(metrics: unknown): void {
+    private handleMetricsUpdate(metrics: any): void {
         this.broadcastToChannel('performance-metrics', {
             type: 'metrics-update',
             data: metrics,
@@ -792,7 +870,7 @@ export class CacheMonitoringService extends EventEmitter {
     /**
      * Handle analytics updates from cache manager
      */
-    private handleAnalyticsUpdate(analytics: unknown): void {
+    private handleAnalyticsUpdate(analytics: any): void {
         // Add to analytics buffer
         this.analyticsBuffer.push({
             ...analytics,
@@ -820,7 +898,7 @@ export class CacheMonitoringService extends EventEmitter {
     /**
      * Get server statistics
      */
-    getServerStats(): unknown {
+    getServerStats(): any {
         const channelStats = Object.fromEntries(
             Array.from(this.subscriptionChannels.entries()).map(([channel, clients]) => [
                 channel,
@@ -839,14 +917,67 @@ export class CacheMonitoringService extends EventEmitter {
             },
             activeChannels: Array.from(this.subscriptionChannels.keys()),
             uptime: process.uptime(),
-            config: this.config
+            config: this.config,
+            actualPort: this.getActualPort(),
+            isRunning: this.isRunning()
         };
+    }
+
+    /**
+     * Get the actual port the WebSocket server is running on
+     */
+    getActualPort(): number | null {
+        if (!this.wss) return null;
+        
+        try {
+            const address = this.wss.address();
+            if (typeof address === 'object' && address !== null) {
+                return address.port;
+            }
+            return this.config.port;
+        } catch (error: any) {
+            console.warn('Could not determine actual WebSocket port:', error);
+            return this.config.port;
+        }
+    }
+
+    /**
+     * Get the preferred port (the port we wanted to use)
+     */
+    getPreferredPort(): number {
+        return this.config.preferredPort;
+    }
+
+    /**
+     * Check if the server is running on the preferred port
+     */
+    isRunningOnPreferredPort(): boolean {
+        const actualPort = this.getActualPort();
+        return actualPort === this.config.preferredPort;
+    }
+
+    /**
+     * Check if the WebSocket server is running
+     */
+    isRunning(): boolean {
+        return this.wss !== null && this.wss.listening;
+    }
+
+    /**
+     * Get connection URL for clients
+     */
+    getConnectionUrl(host: string = 'localhost'): string | null {
+        const port = this.getActualPort();
+        if (!port || !this.isRunning()) {
+            return null;
+        }
+        return `ws://${host}:${port}`;
     }
 
     /**
      * Shutdown server gracefully
      */
-    async shutdown(): Promise<void> {
+    async shutdown(): Promise<any> {
         if (!this.wss) return;
 
         console.log('🛑 Shutting down cache monitoring WebSocket server...');

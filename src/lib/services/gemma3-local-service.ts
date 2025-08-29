@@ -9,7 +9,7 @@ import type {
     Gemma3ServiceConfig 
 } from '../wasm/gemma3-inference.d.ts';
 
-interface LegalAnalysisResult {
+export interface LegalAnalysisResult {
     summary: string;
     keyTerms: string[];
     entities: Array<{
@@ -28,7 +28,7 @@ interface LegalAnalysisResult {
     method: 'webassembly' | 'ollama' | 'hybrid';
 }
 
-interface EmbeddingResult {
+export interface EmbeddingResult {
     embedding: number[];
     dimensions: number;
     model: string;
@@ -95,7 +95,7 @@ export class Gemma3LocalService {
                 throw new Error('Neither WebAssembly nor Ollama available');
             }
             
-        } catch (error) {
+        } catch (error: any) {
             console.error('[Gemma3Service] Initialization failed:', error);
             return false;
         }
@@ -130,13 +130,13 @@ export class Gemma3LocalService {
                         console.warn('[Gemma3Service] Model weights not loaded:', loadResult.error);
                     }
                 }
-            } catch (error) {
+            } catch (error: any) {
                 console.warn('[Gemma3Service] Model weights not available, using inference-only mode');
             }
             
             return true;
             
-        } catch (error) {
+        } catch (error: any) {
             console.warn('[Gemma3Service] WebAssembly initialization failed:', error);
             return false;
         }
@@ -168,7 +168,7 @@ export class Gemma3LocalService {
                 }
             }
             return false;
-        } catch (error) {
+        } catch (error: any) {
             console.warn('[Gemma3Service] Ollama health check failed:', error);
             return false;
         }
@@ -198,7 +198,7 @@ export class Gemma3LocalService {
             this.stats.ollamaRequests++;
             return result;
             
-        } catch (error) {
+        } catch (error: any) {
             console.error('[Gemma3Service] Generation failed:', error);
             return {
                 success: false,
@@ -316,7 +316,7 @@ export class Gemma3LocalService {
                 method: result.method?.includes('WebAssembly') ? 'webassembly' : 'ollama'
             };
 
-        } catch (error) {
+        } catch (error: any) {
             console.error('[Gemma3Service] Document analysis failed:', error);
             return {
                 summary: 'Analysis failed due to technical error',
@@ -367,7 +367,7 @@ export class Gemma3LocalService {
                 processingTime
             };
 
-        } catch (error) {
+        } catch (error: any) {
             console.error('[Gemma3Service] Embedding generation failed:', error);
             throw error;
         }
@@ -480,7 +480,7 @@ export class Gemma3LocalService {
                                 fullText += data.response;
                                 yield { text: fullText, done: data.done || false };
                             }
-                        } catch (e) {
+                        } catch (e: any) {
                             // Skip invalid JSON lines
                         }
                     }
@@ -610,7 +610,7 @@ Please provide your analysis in the following structured format:
                 defaultAnalysis.confidence = isNaN(confidence) ? 0.5 : Math.max(0, Math.min(1, confidence));
             }
 
-        } catch (error) {
+        } catch (error: any) {
             console.error('[Gemma3Service] Failed to parse analysis response:', error);
         }
 

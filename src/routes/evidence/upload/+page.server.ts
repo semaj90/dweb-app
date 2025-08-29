@@ -15,13 +15,13 @@ import type { PageServerLoad, Actions } from './$types';
 
 const UPLOAD_DIR = 'uploads';
 
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async (): Promise<any> => {
   const form = await superValidate(zod(fileUploadSchema));
   return { form };
 };
 
 export const actions: Actions = {
-  default: async ({ request, locals }) => {
+  default: async ({ request, locals }): Promise<any> => {
     const formData = await request.formData();
     const form = await superValidate(formData, zod(fileUploadSchema));
 
@@ -110,14 +110,14 @@ export const actions: Actions = {
             })
             .where(eq(evidence.id, newEvidence.id));
 
-        } catch (error) {
+        } catch (error: any) {
           console.error('AI analysis failed:', error);
           // Continue without AI analysis
         }
       }
 
       return message(form, 'Evidence uploaded successfully!');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Upload error:', error);
       return message(form, 'Failed to upload evidence. Please try again.', { status: 500 });
     }

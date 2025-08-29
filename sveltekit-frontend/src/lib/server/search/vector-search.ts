@@ -2,8 +2,8 @@
 // Complete Vector Search Service - Production Ready
 // Combines PostgreSQL pgvector + Qdrant + Local caching + Loki.js + Fuse.js
 const browser = false; // Server-side only
-import { db, isPostgreSQL } from "../db/index.js";
-import { ollamaService } from "../services/OllamaService.js";
+import { db, isPostgreSQL } from '../db/index';
+import { ollamaService } from '../services/OllamaService';
 import {
   and,
   eq,
@@ -24,19 +24,19 @@ if (!browser) {
     try {
       const qdrantModule = await import("../vector/qdrant.js");
       qdrant = qdrantModule.qdrant;
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Qdrant not available:", error);
     }
     try {
       const embeddingsModule = await import("../ai/embeddings-simple.js");
       generateEmbedding = embeddingsModule.generateEmbedding;
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Embeddings service not available:", error);
     }
     try {
       const cacheModule = await import("../cache/redis.js");
       cache = cacheModule.cache;
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Redis cache not available:", error);
       cache = { get: async () => null, set: async () => {} };
     }
@@ -44,14 +44,14 @@ if (!browser) {
       // Import Loki.js for local database
       const lokiModule = await import("lokijs");
       loki = (lokiModule as any).default || lokiModule;
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Loki.js not available:", error);
     }
     try {
       // Import Fuse.js for fuzzy search
       const fuseModule = await import("fuse.js");
       Fuse = (fuseModule as any).default || fuseModule;
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Fuse.js not available:", error);
     }
   }).catch(console.warn);
@@ -84,7 +84,7 @@ let fuseCases: any = null;
 let fuseEvidence: any = null;
 
 // Initialize local database
-async function initializeLocalDb() {
+async function initializeLocalDb(): Promise<any> {
   if (!loki || lokiDb) return;
 
   lokiDb = new loki("legal_search.db", {
@@ -181,7 +181,7 @@ export async function getQueryEmbeddingLegal(
       if (Array.isArray(arr) && arr.length > 0)
         return adjustToDim(arr, TARGET_DIM);
     }
-  } catch (e) {
+  } catch (e: any) {
     console.warn("CPU embedding fallback failed:", (e as Error)?.message || e);
   }
 
@@ -192,7 +192,7 @@ export async function getQueryEmbeddingLegal(
       if (Array.isArray(arr) && arr.length > 0)
         return adjustToDim(arr, TARGET_DIM);
     }
-  } catch (e) {
+  } catch (e: any) {
     console.warn(
       "OpenAI embedding fallback failed:",
       (e as Error)?.message || e
@@ -243,7 +243,7 @@ export async function searchLegalDocumentsPgvector(
       source: "pgvector",
       type: "document",
     }));
-  } catch (error) {
+  } catch (error: any) {
     console.error("legal_documents pgvector search error:", error);
     return [];
   }
@@ -275,13 +275,13 @@ export async function searchLegalDocumentsText(
       source: "pgvector",
       type: "document",
     }));
-  } catch (e) {
+  } catch (e: any) {
     console.error("legal_documents text search error:", e);
     return [];
   }
 }
 // Initialize Fuse.js for fuzzy search
-async function initializeFuzzySearch(cases: any[], evidence: any[]) {
+async function initializeFuzzySearch(cases: any[], evidence: any[]): Promise<any> {
   if (!Fuse) return;
 
   const fuseOptions = {
@@ -343,7 +343,7 @@ async function searchWithFuzzy(
       });
     }
     return results.sort((a, b) => b.score - a.score);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Fuzzy search error:", error);
     return [];
   }
@@ -416,7 +416,7 @@ async function searchWithLoki(
       });
     }
     return results;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Loki search error:", error);
     return [];
   }
@@ -481,7 +481,7 @@ export async function vectorSearch(
         if (ceResults.length > 0) {
           results = mergeSearchResults(results, ceResults);
         }
-      } catch (err) {
+      } catch (err: any) {
         console.warn(
           "Cases/Evidence pgvector search failed, continuing:",
           (err as Error)?.message || err
@@ -537,7 +537,7 @@ export async function vectorSearch(
       source,
       totalResults: results.length,
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Vector search error:", error);
     return {
       results: [],
@@ -632,7 +632,7 @@ async function searchWithPgVector(
 
     // Sort by score descending
     results.sort((a, b) => b.score - a.score);
-  } catch (error) {
+  } catch (error: any) {
     console.error("PostgreSQL vector search error:", error);
     throw error;
   }
@@ -689,7 +689,7 @@ async function searchWithQdrant(
     });
 
     return results.sort((a, b) => b.score - a.score);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Qdrant search error:", error);
     return [];
   }
@@ -759,7 +759,7 @@ async function searchWithTextFallback(
     });
 
     return results;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Text fallback search error:", error);
     return [];
   }

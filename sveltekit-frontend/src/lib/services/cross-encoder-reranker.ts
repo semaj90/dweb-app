@@ -5,7 +5,7 @@
 
 import type { LegalDocument } from './types/legal';
 
-interface SearchResult {
+export interface SearchResult {
   document: LegalDocument;
   score: number;
   metadata?: Record<string, any>;
@@ -18,13 +18,13 @@ interface SearchResult {
   rank?: number;
 }
 
-interface RerankingConfig {
+export interface RerankingConfig {
   threshold: number;
   maxResults: number;
   useSemanticSimilarity: boolean;
 }
 
-interface ScoredResult {
+export interface ScoredResult {
   document: LegalDocument;
   originalScore: number;
   rerankScore: number;
@@ -36,7 +36,7 @@ interface ScoredResult {
   };
 }
 
-interface CrossEncoderConfig {
+export interface CrossEncoderConfig {
   model: string; // Model identifier or endpoint
   maxResults: number; // Maximum results to rerank
   scoreWeight: number; // Weight for rerank score vs original
@@ -102,7 +102,7 @@ export class CrossEncoderReranker {
         };
         return rebuilt;
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('[CrossEncoder] Reranking failed:', error);
 
       if (this.config.fallbackEnabled) {
@@ -148,7 +148,7 @@ export class CrossEncoderReranker {
           confidence: this.calculateConfidence(scores[index] || 0),
         },
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.warn('[CrossEncoder] Batch processing failed, using fallback scores');
 
       // Fallback to lexical similarity scoring
@@ -170,14 +170,14 @@ export class CrossEncoderReranker {
     // 1. Try Ollama-based scoring
     try {
       return await this.scoreWithOllama(query, batch);
-    } catch (error) {
+    } catch (error: any) {
       console.warn('[CrossEncoder] Ollama scoring failed:', error.message);
     }
 
     // 2. Try external API (if configured)
     try {
       return await this.scoreWithExternalAPI(query, batch);
-    } catch (error) {
+    } catch (error: any) {
       console.warn('[CrossEncoder] External API scoring failed:', error.message);
     }
 
@@ -291,7 +291,7 @@ Scores:`;
       }
 
       return scores;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('[CrossEncoder] Failed to parse scores, using uniform fallback');
       return new Array(expectedCount).fill(0.5);
     }
@@ -442,7 +442,7 @@ export async function testCrossEncoderReranking(): Promise<boolean> {
     );
 
     return isValid;
-  } catch (error) {
+  } catch (error: any) {
     console.error('[test] Cross-encoder reranking failed:', error);
     return false;
   }

@@ -4,7 +4,7 @@ import type { Case } from "$lib/types";
 import { db } from "$lib/server/db/index";
 
 // Type definitions
-interface CaseSummaryRequest {
+export interface CaseSummaryRequest {
   caseId: string;
   includeEvidence?: boolean;
   includeTimeline?: boolean;
@@ -12,7 +12,7 @@ interface CaseSummaryRequest {
   regenerate?: boolean;
 }
 
-interface CaseSummaryResponse {
+export interface CaseSummaryResponse {
   success: boolean;
   summary?: {
     aiGenerated: boolean;
@@ -124,7 +124,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
       analytics
     } as CaseSummaryResponse);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Case summary generation error:", error);
     return json(
       {
@@ -165,7 +165,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
       analytics
     } as CaseSummaryResponse);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Case summary retrieval error:", error);
     return json(
       {
@@ -181,7 +181,7 @@ async function gatherCaseData(
   caseId: string,
   includeEvidence: boolean,
   includeTimeline: boolean
-) {
+): Promise<any> {
   const data: any = { caseId };
 
   if (includeEvidence) {
@@ -216,7 +216,7 @@ async function gatherCaseData(
   return data;
 }
 
-async function generateAISummary(caseData: any, depth: string) {
+async function generateAISummary(caseData: any, depth: string): Promise<any> {
   try {
     const evidenceText = caseData.evidence?.map((e: any) => e.content).join("\n") || "";
     const timelineText = caseData.timeline?.map((t: any) => `${t.date}: ${t.event}`).join("\n") || "";
@@ -248,7 +248,7 @@ Generate a ${depth} analysis with a structured summary.
     }
 
     return generateFallbackSummary(caseData);
-  } catch (error) {
+  } catch (error: any) {
     console.error("AI summary generation error:", error);
     return generateFallbackSummary(caseData);
   }
@@ -288,7 +288,7 @@ function generateFallbackSummary(caseData: any) {
   };
 }
 
-async function calculateCaseAnalytics(caseId: string) {
+async function calculateCaseAnalytics(caseId: string): Promise<any> {
   // Placeholder analytics calculation
   const evidence = 5; // Mock data
   const interactions = 10; // Mock data

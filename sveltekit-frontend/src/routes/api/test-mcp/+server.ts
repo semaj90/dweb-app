@@ -17,7 +17,7 @@ export const GET: RequestHandler = async () => {
       testPrompt,
       timestamp: new Date().toISOString()
     });
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: 'MCP helpers import failed',

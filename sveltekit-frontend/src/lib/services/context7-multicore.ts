@@ -185,7 +185,7 @@ class Context7MulticoreService extends EventEmitter {
 
       clearTimeout(timeout);
       return response.ok;
-    } catch (error) {
+    } catch (error: any) {
       return false;
     }
   }
@@ -251,7 +251,7 @@ class Context7MulticoreService extends EventEmitter {
         this.loadBalancerHealth = await response.json();
         console.log('📊 Load balancer is healthy');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Load balancer not available');
       this.loadBalancerHealth = null;
     }
@@ -397,7 +397,7 @@ class Context7MulticoreService extends EventEmitter {
       }
 
       return await response.json();
-    } catch (error) {
+    } catch (error: any) {
       clearTimeout(timeout);
       throw error;
     }
@@ -598,7 +598,7 @@ class Context7MulticoreService extends EventEmitter {
           Promise.all(activeTaskIds.map((id) => this.waitForTask(id, 5000))),
           new Promise((resolve) => setTimeout(resolve, 10000)), // Max 10s wait
         ]);
-      } catch (error) {
+      } catch (error: any) {
         console.warn('⚠️ Some tasks did not complete before shutdown');
       }
     }

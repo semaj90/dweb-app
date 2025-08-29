@@ -17,7 +17,7 @@ import { gpuWorkloadManager } from '$lib/gpu/gpu-workload-manager';
 import type { GPUWorkload } from '$lib/ai/types';
 
 // POST - Submit GPU workloads and execute operations
-export const POST: RequestHandler = async ({ request, url }) => {
+export const POST: RequestHandler = async ({ request, url }): Promise<any> => {
     try {
         const action = url.searchParams.get('action');
         const body = await request.json();
@@ -62,14 +62,14 @@ export const POST: RequestHandler = async ({ request, url }) => {
             default:
                 return error(400, 'Invalid action specified');
         }
-    } catch (err) {
+    } catch (err: any) {
         console.error('❌ GPU acceleration API error:', err);
         return error(500, `Server error: ${err.message}`);
     }
 };
 
 // GET - Retrieve GPU status and analytics
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
     try {
         const action = url.searchParams.get('action');
 
@@ -114,14 +114,14 @@ export const GET: RequestHandler = async ({ url }) => {
             default:
                 return getGPUDashboard();
         }
-    } catch (err) {
+    } catch (err: any) {
         console.error('❌ GPU analytics API error:', err);
         return error(500, `Server error: ${err.message}`);
     }
 };
 
 // PUT - Update GPU configuration
-export const PUT: RequestHandler = async ({ request }) => {
+export const PUT: RequestHandler = async ({ request }): Promise<any> => {
     try {
         const { config, optimization, device } = await request.json();
         
@@ -139,14 +139,14 @@ export const PUT: RequestHandler = async ({ request }) => {
         
         return error(400, 'No valid update data provided');
         
-    } catch (err) {
+    } catch (err: any) {
         console.error('❌ Update GPU configuration error:', err);
         return error(500, `Update error: ${err.message}`);
     }
 };
 
 // DELETE - Cancel workloads and cleanup resources
-export const DELETE: RequestHandler = async ({ url }) => {
+export const DELETE: RequestHandler = async ({ url }): Promise<any> => {
     try {
         const workloadId = url.searchParams.get('workloadId');
         const batchId = url.searchParams.get('batchId');
@@ -165,7 +165,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
         }
         
         return error(400, 'Workload ID, Batch ID, or cleanup type is required');
-    } catch (err) {
+    } catch (err: any) {
         console.error('❌ Delete GPU operation error:', err);
         return error(500, `Delete error: ${err.message}`);
     }
@@ -175,7 +175,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
  * Workload Submission Operations
  */
 
-async function submitWorkload(workloadData: unknown) {
+async function submitWorkload(workloadData: any): Promise<any> {
     const { workload } = workloadData;
     
     if (!workload || !workload.type) {
@@ -225,12 +225,12 @@ async function submitWorkload(workloadData: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Workload submission failed: ${err.message}`);
     }
 }
 
-async function submitBatchWorkloads(batchData: unknown) {
+async function submitBatchWorkloads(batchData: any): Promise<any> {
     const { workloads } = batchData;
     
     if (!Array.isArray(workloads) || workloads.length === 0) {
@@ -283,7 +283,7 @@ async function submitBatchWorkloads(batchData: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Batch submission failed: ${err.message}`);
     }
 }
@@ -292,7 +292,7 @@ async function submitBatchWorkloads(batchData: unknown) {
  * Direct GPU Execution Operations
  */
 
-async function executeMatrixMultiplication(operationData: unknown) {
+async function executeMatrixMultiplication(operationData: any): Promise<any> {
     const { matrixA, matrixB, options = {} } = operationData;
     
     if (!matrixA || !matrixB) {
@@ -339,12 +339,12 @@ async function executeMatrixMultiplication(operationData: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Matrix multiplication failed: ${err.message}`);
     }
 }
 
-async function executeNeuralInference(inferenceData: unknown) {
+async function executeNeuralInference(inferenceData: any): Promise<any> {
     const { model, input, options = {} } = inferenceData;
     
     if (!model || !input) {
@@ -392,12 +392,12 @@ async function executeNeuralInference(inferenceData: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Neural inference failed: ${err.message}`);
     }
 }
 
-async function executeEmbeddingGeneration(embeddingData: unknown) {
+async function executeEmbeddingGeneration(embeddingData: any): Promise<any> {
     const { tokens, model, options = {} } = embeddingData;
     
     if (!tokens || !Array.isArray(tokens)) {
@@ -444,12 +444,12 @@ async function executeEmbeddingGeneration(embeddingData: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Embedding generation failed: ${err.message}`);
     }
 }
 
-async function executeVectorOperations(vectorData: unknown) {
+async function executeVectorOperations(vectorData: any): Promise<any> {
     const { operation, vectorA, vectorB, options = {} } = vectorData;
     
     if (!operation || !vectorA) {
@@ -496,12 +496,12 @@ async function executeVectorOperations(vectorData: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Vector operations failed: ${err.message}`);
     }
 }
 
-async function executeConvolution(convolutionData: unknown) {
+async function executeConvolution(convolutionData: any): Promise<any> {
     const { input, filters, options = {} } = convolutionData;
     
     if (!input || !filters) {
@@ -549,12 +549,12 @@ async function executeConvolution(convolutionData: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Convolution failed: ${err.message}`);
     }
 }
 
-async function executeAttentionComputation(attentionData: unknown) {
+async function executeAttentionComputation(attentionData: any): Promise<any> {
     const { queries, keys, values, options = {} } = attentionData;
     
     if (!queries || !keys || !values) {
@@ -603,7 +603,7 @@ async function executeAttentionComputation(attentionData: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Attention computation failed: ${err.message}`);
     }
 }
@@ -612,7 +612,7 @@ async function executeAttentionComputation(attentionData: unknown) {
  * System Management Operations
  */
 
-async function initializeCUDA(initData: unknown) {
+async function initializeCUDA(initData: any): Promise<any> {
     const { config = {} } = initData;
     
     try {
@@ -641,12 +641,12 @@ async function initializeCUDA(initData: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `CUDA initialization failed: ${err.message}`);
     }
 }
 
-async function startWorkloadManager() {
+async function startWorkloadManager(): Promise<any> {
     try {
         const status = gpuWorkloadManager.getStatus();
         if (status.isRunning) {
@@ -669,7 +669,7 @@ async function startWorkloadManager() {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Workload manager start failed: ${err.message}`);
     }
 }
@@ -762,67 +762,67 @@ function getGPUAnalytics() {
  * Helper Functions
  */
 
-function calculateMatrixMemoryRequirement(matrixA: unknown, matrixB: unknown): number {
+function calculateMatrixMemoryRequirement(matrixA: any, matrixB: any): number {
     const sizeA = matrixA.rows * matrixA.cols * 4; // 4 bytes per float
     const sizeB = matrixB.rows * matrixB.cols * 4;
     const sizeC = matrixA.rows * matrixB.cols * 4;
     return sizeA + sizeB + sizeC;
 }
 
-function estimateMatrixExecutionTime(matrixA: unknown, matrixB: unknown): number {
+function estimateMatrixExecutionTime(matrixA: any, matrixB: any): number {
     const ops = 2 * matrixA.rows * matrixA.cols * matrixB.cols;
     const gflops = ops / 1e9;
     const peakGflops = 100; // Assume 100 GFLOPS peak performance
     return Math.max(100, (gflops / peakGflops) * 1000);
 }
 
-function calculateNeuralMemoryRequirement(model: unknown, input: unknown): number {
+function calculateNeuralMemoryRequirement(model: any, input: any): number {
     const layerCount = model.layers?.length || 10;
     const batchSize = input.batchSize || 1;
     const inputSize = Array.isArray(input.shape) ? input.shape.reduce((a, b) => a * b, 1) : 1000;
     return layerCount * batchSize * inputSize * 4; // 4 bytes per float
 }
 
-function estimateNeuralExecutionTime(model: unknown, input: unknown): number {
+function estimateNeuralExecutionTime(model: any, input: any): number {
     const layerCount = model.layers?.length || 10;
     const complexity = model.parameters || 1000000;
     return Math.max(500, layerCount * 100 + complexity / 10000);
 }
 
-function calculateEmbeddingMemoryRequirement(tokens: unknown[], embeddingDim?: number): number {
+function calculateEmbeddingMemoryRequirement(tokens: any[], embeddingDim?: number): number {
     const dim = embeddingDim || 384;
     return tokens.length * dim * 4; // 4 bytes per float
 }
 
-function estimateEmbeddingExecutionTime(tokens: unknown[]): number {
+function estimateEmbeddingExecutionTime(tokens: any[]): number {
     return Math.max(200, tokens.length * 10);
 }
 
-function calculateVectorMemoryRequirement(vectorA: unknown, vectorB?: unknown): number {
+function calculateVectorMemoryRequirement(vectorA: any, vectorB?: any): number {
     const sizeA = vectorA.length * 4; // 4 bytes per float
     const sizeB = vectorB ? vectorB.length * 4 : 0;
     return sizeA + sizeB;
 }
 
-function estimateVectorExecutionTime(vector: unknown, operation: string): number {
+function estimateVectorExecutionTime(vector: any, operation: string): number {
     const baseTime = vector.length / 1000; // 1ms per 1000 elements
     const operationMultiplier = operation === 'dot' ? 2 : 1;
     return Math.max(50, baseTime * operationMultiplier);
 }
 
-function calculateConvolutionMemoryRequirement(input: unknown, filters: unknown): number {
+function calculateConvolutionMemoryRequirement(input: any, filters: any): number {
     const inputSize = input.height * input.width * input.channels * 4;
     const filterSize = filters.height * filters.width * filters.count * input.channels * 4;
     const outputSize = input.height * input.width * filters.count * 4;
     return inputSize + filterSize + outputSize;
 }
 
-function estimateConvolutionExecutionTime(input: unknown, filters: unknown): number {
+function estimateConvolutionExecutionTime(input: any, filters: any): number {
     const ops = input.height * input.width * filters.height * filters.width * filters.count;
     return Math.max(200, ops / 1000000); // Rough estimate
 }
 
-function calculateAttentionMemoryRequirement(queries: unknown, keys: unknown, values: unknown): number {
+function calculateAttentionMemoryRequirement(queries: any, keys: any, values: any): number {
     const seqLen = queries.length;
     const headDim = queries[0]?.length || 64;
     const attentionSize = seqLen * seqLen * 4; // Attention matrix
@@ -831,14 +831,14 @@ function calculateAttentionMemoryRequirement(queries: unknown, keys: unknown, va
     return attentionSize + qkvSize + outputSize;
 }
 
-function estimateAttentionExecutionTime(queries: unknown, keys: unknown): number {
+function estimateAttentionExecutionTime(queries: any, keys: any): number {
     const seqLen = queries.length;
     const headDim = queries[0]?.length || 64;
     const ops = seqLen * seqLen * headDim;
     return Math.max(300, ops / 500000);
 }
 
-function calculateConvolutionGFLOPs(input: unknown, filters: unknown, timeMs: number): number {
+function calculateConvolutionGFLOPs(input: any, filters: any, timeMs: number): number {
     const ops = input.height * input.width * filters.height * filters.width * filters.count * 2;
     return (ops / 1e9) / (timeMs / 1000);
 }
@@ -848,7 +848,7 @@ async function getWorkloadQueuePosition(workloadId: string): Promise<number> {
     return status.queuePosition || 0;
 }
 
-function calculateOverallUtilization(cudaStatus: unknown, managerStatus: unknown): number {
+function calculateOverallUtilization(cudaStatus: any, managerStatus: any): number {
     const deviceUtil = cudaStatus.performance?.averageUtilization || 0;
     const workloadUtil = managerStatus.totalWorkloads > 0 
         ? (managerStatus.activeWorkloads / managerStatus.totalWorkloads) * 100 
@@ -856,15 +856,15 @@ function calculateOverallUtilization(cudaStatus: unknown, managerStatus: unknown
     return Math.round((deviceUtil + workloadUtil) / 2);
 }
 
-function calculatePeakUtilization(cudaStatus: unknown): number {
+function calculatePeakUtilization(cudaStatus: any): number {
     if (!cudaStatus.devices) return 0;
     
-    return Math.max(...Object.values(cudaStatus.devices).map((device: unknown) => 
+    return Math.max(...Object.values(cudaStatus.devices).map((device: any) => 
         device.utilization?.gpu || 0
     ));
 }
 
-function calculateSystemEfficiency(managerAnalytics: unknown, cudaStatus: unknown): number {
+function calculateSystemEfficiency(managerAnalytics: any, cudaStatus: any): number {
     const completionRate = managerAnalytics.queuePerformance?.normal?.completedWorkloads || 0;
     const totalWorkloads = managerAnalytics.workloadTypes ? 
         Object.values(managerAnalytics.workloadTypes).reduce((a: number, b: number) => a + b, 0) : 1;
@@ -872,7 +872,7 @@ function calculateSystemEfficiency(managerAnalytics: unknown, cudaStatus: unknow
     return Math.round((completionRate / totalWorkloads) * 100);
 }
 
-function generateOptimizationRecommendations(managerAnalytics: unknown, cudaStatus: unknown): unknown[] {
+function generateOptimizationRecommendations(managerAnalytics: any, cudaStatus: any): any[] {
     const recommendations = [];
     
     const utilizationRate = calculateOverallUtilization(cudaStatus, { totalWorkloads: 1, activeWorkloads: 0 });
@@ -902,7 +902,7 @@ function generateOptimizationRecommendations(managerAnalytics: unknown, cudaStat
  * Additional Operations (Stubs for advanced features)
  */
 
-async function trainNeuralNetwork(trainingData: unknown) {
+async function trainNeuralNetwork(trainingData: any): Promise<any> {
     return json({
         success: true,
         message: 'Neural network training started',
@@ -912,7 +912,7 @@ async function trainNeuralNetwork(trainingData: unknown) {
     });
 }
 
-async function optimizeHyperparameters(optimizationData: unknown) {
+async function optimizeHyperparameters(optimizationData: any): Promise<any> {
     return json({
         success: true,
         message: 'Hyperparameter optimization started',
@@ -922,7 +922,7 @@ async function optimizeHyperparameters(optimizationData: unknown) {
     });
 }
 
-async function cancelWorkload(workloadId: string) {
+async function cancelWorkload(workloadId: string): Promise<any> {
     const canceled = await gpuWorkloadManager.cancelWorkload(workloadId);
     
     return json({
@@ -933,7 +933,7 @@ async function cancelWorkload(workloadId: string) {
     });
 }
 
-async function cancelBatch(batchId: string) {
+async function cancelBatch(batchId: string): Promise<any> {
     return json({
         success: true,
         message: 'Batch cancellation requested',
@@ -942,7 +942,7 @@ async function cancelBatch(batchId: string) {
     });
 }
 
-async function cleanupGPUResources(cleanupType: string) {
+async function cleanupGPUResources(cleanupType: string): Promise<any> {
     return json({
         success: true,
         message: `GPU resource cleanup completed: ${cleanupType}`,
@@ -997,7 +997,7 @@ function getQueueStatus() {
     return json({
         success: true,
         queues: status.queues || {},
-        totalQueued: Object.values(status.queues || {}).reduce((sum: number, queue: unknown) => sum + queue.length, 0),
+        totalQueued: Object.values(status.queues || {}).reduce((sum: number, queue: any) => sum + queue.length, 0),
         timestamp: new Date().toISOString()
     });
 }
@@ -1058,7 +1058,7 @@ function getGPUDashboard() {
             efficiency: calculateSystemEfficiency({}, cudaStatus) + '%'
         },
         capacity: {
-            queuedWorkloads: Object.values(managerStatus.queues || {}).reduce((sum: number, queue: unknown) => sum + queue.length, 0),
+            queuedWorkloads: Object.values(managerStatus.queues || {}).reduce((sum: number, queue: any) => sum + queue.length, 0),
             availableMemory: '18.5 GB',
             peakUtilization: calculatePeakUtilization(cudaStatus) + '%'
         }
@@ -1071,7 +1071,7 @@ function getGPUDashboard() {
     });
 }
 
-async function updateGPUConfiguration(config: unknown) {
+async function updateGPUConfiguration(config: any): Promise<any> {
     return json({
         success: true,
         message: 'GPU configuration updated',
@@ -1080,7 +1080,7 @@ async function updateGPUConfiguration(config: unknown) {
     });
 }
 
-async function updateOptimizationSettings(optimization: unknown) {
+async function updateOptimizationSettings(optimization: any): Promise<any> {
     return json({
         success: true,
         message: 'Optimization settings updated',
@@ -1089,7 +1089,7 @@ async function updateOptimizationSettings(optimization: unknown) {
     });
 }
 
-async function updateDeviceSettings(device: unknown) {
+async function updateDeviceSettings(device: any): Promise<any> {
     return json({
         success: true,
         message: 'Device settings updated',

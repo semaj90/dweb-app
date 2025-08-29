@@ -91,10 +91,10 @@ export { default as RichTextEditor } from "./RichTextEditor.svelte";
 export { default as SmartTextarea } from "./SmartTextarea.svelte";
 
 // Performance utilities
-export const preloadComponent = async (loader: () => Promise<any>) => {
+export const preloadComponent = async (loader: (): Promise<any> => Promise<any>) => {
   try {
     return await loader();
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Failed to preload component:', error);
     return null;
   }

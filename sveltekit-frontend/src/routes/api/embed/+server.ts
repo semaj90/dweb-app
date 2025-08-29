@@ -12,7 +12,7 @@ class VectorService {
 
 const vectorService = new VectorService();
 
-interface EmbedRequest {
+export interface EmbedRequest {
   text: string;
   type: "user_context" | "chat_message" | "evidence" | "case_summary";
   metadata?: {
@@ -25,7 +25,7 @@ interface EmbedRequest {
   };
   model?: "openai" | "ollama";
 }
-interface EmbedResponse {
+export interface EmbedResponse {
   success: boolean;
   id?: string;
   vector?: number[];
@@ -176,7 +176,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
       vector: vector,
       similarity_results: similarityResults,
     } as EmbedResponse);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Embedding API error:", error);
     return json(
       {
@@ -226,7 +226,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
       success: true,
       similarity_results: similarityResults,
     } as EmbedResponse);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Similarity search error:", error);
     return json(
       {

@@ -1,5 +1,5 @@
 // Real database connection configuration
-import { drizzle } from 'drizzle-orm/postgres-js';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import postgres from "postgres";
 import { pgTable, serial, text, timestamp, jsonb, vector, real, uuid } from 'drizzle-orm/pg-core';
 
@@ -32,7 +32,7 @@ export const embeddings = pgTable('legal_embeddings', {
   id: uuid('id').primaryKey().defaultRandom(),
   documentId: uuid('document_id').references(() => documents.id),
   content: text('content').notNull(),
-  embedding: vector('embedding', { dimensions: 768 }),
+  embedding: vector('embedding', { dimensions: 384 }),
   metadata: jsonb('metadata'),
   model: text('model').default('nomic-embed-text'),
   createdAt: timestamp('created_at').defaultNow(),
@@ -41,7 +41,7 @@ export const embeddings = pgTable('legal_embeddings', {
 export const searchSessions = pgTable('search_sessions', {
   id: uuid('id').primaryKey().defaultRandom(),
   query: text('query').notNull(),
-  queryEmbedding: vector('query_embedding', { dimensions: 768 }),
+  queryEmbedding: vector('query_embedding', { dimensions: 384 }),
   results: jsonb('results'),
   searchType: text('search_type').default('hybrid'),
   resultCount: serial('result_count'),
@@ -49,7 +49,7 @@ export const searchSessions = pgTable('search_sessions', {
 });
 
 // Initialize database with extensions
-export async function initializeDatabase() {
+export async function initializeDatabase(): Promise<any> {
   try {
     console.log('[Database] Initializing database...');
     
@@ -81,18 +81,18 @@ export async function initializeDatabase() {
     console.log('[Database] Database initialized successfully');
     return true;
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('[Database] Initialization failed:', error);
     return false;
   }
 }
 
 // Test database connection
-export async function testDatabaseConnection() {
+export async function testDatabaseConnection(): Promise<any> {
   try {
     const result = await sql`SELECT 1 as test`;
     return result.length > 0;
-  } catch (error) {
+  } catch (error: any) {
     console.error('[Database] Connection test failed:', error);
     return false;
   }

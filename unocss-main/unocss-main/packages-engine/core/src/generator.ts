@@ -144,7 +144,7 @@ class UnoGeneratorInternal<Theme extends object = object> {
       return
     }
 
-    const handleVariantResult = async (matched: VariantMatchedResult<Theme>) => {
+    const handleVariantResult = async (matched: VariantMatchedResult<Theme>): Promise<any> => {
       const context = this.makeContext(raw, [alias || matched[0], matched[1], matched[2], matched[3]])
 
       if (this.config.details)
@@ -400,7 +400,7 @@ class UnoGeneratorInternal<Theme extends object = object> {
       ].filter(Boolean).join(nl)
     }
 
-    const setLayer = async (layer: string, callback: (content: string) => Promise<string>) => {
+    const setLayer = async (layer: string, callback: (content: string): Promise<any> => Promise<string>) => {
       const content = await callback(getLayer(layer))
       layerCache[layer] = content
       return content
@@ -923,7 +923,7 @@ class UnoGeneratorInternal<Theme extends object = object> {
 
   getBlocked(raw: string): [BlocklistValue, BlocklistMeta | undefined] | undefined {
     const rule = this.config.blocklist
-      .find((e) => {
+      .find((e: any) => {
         const v = Array.isArray(e) ? e[0] : e
         return typeof v === 'function' ? v(raw) : isString(v) ? v === raw : v.test(raw)
       })

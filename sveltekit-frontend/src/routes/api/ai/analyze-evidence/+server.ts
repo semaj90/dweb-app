@@ -100,7 +100,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Evidence analysis API error:', error);
 
     if (error instanceof z.ZodError) {

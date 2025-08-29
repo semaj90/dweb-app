@@ -39,7 +39,7 @@ async function testOllamaConnection(): Promise<{
       success: true,
       message: "Ollama is running but model list unavailable",
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       success: false,
       message: `Ollama connection failed: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -66,7 +66,7 @@ async function testLlamaCppConnection(): Promise<{
         message: "llama.cpp server not responding properly",
       };
     }
-  } catch (error) {
+  } catch (error: any) {
     return {
       success: false,
       message: `llama.cpp connection failed: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -93,7 +93,7 @@ export const GET: RequestHandler = async () => {
               models: ollamaService.getAvailableModels(),
               gemmaModel: ollamaService.getGemma3Model(),
             };
-          } catch (error) {
+          } catch (error: any) {
             return {
               available: false,
               error:
@@ -138,7 +138,7 @@ export const GET: RequestHandler = async () => {
         ],
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Local AI health check failed:", error);
     return json(
       {
@@ -231,7 +231,7 @@ export const POST: RequestHandler = async ({ request }) => {
             };
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         result = {
           success: false,
           provider: "ollama",
@@ -254,7 +254,7 @@ export const POST: RequestHandler = async ({ request }) => {
       };
     }
     return json(result);
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         success: false,

@@ -22,15 +22,15 @@ import {
 	preventScrollProp,
 	restoreScrollDelayProp,
 	withChildProps,
-} from "./shared.js";
-import { HeaderLevelProp, OpenClosedProp } from "./extended-types/shared/index.js";
+} from './shared';
+import { HeaderLevelProp, OpenClosedProp } from './extended-types/shared/index';
 import {
 	defineBooleanProp,
 	defineComponentApiSchema,
 	defineEnumDataAttr,
 	defineSimpleDataAttr,
 	defineUnionProp,
-} from "../utils.js";
+} from '../utils';
 
 const stateDataAttr = defineEnumDataAttr({
 	name: "state",

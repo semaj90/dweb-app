@@ -128,7 +128,7 @@ export const POST: RequestHandler = async ({ params, request, getClientAddress }
 
     return json(response);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error(`❌ POST /api/v1/cases/${params.caseId}/evidence error:`, error);
     return json({
       success: false,
@@ -198,7 +198,7 @@ export const GET: RequestHandler = async ({ params, url, getClientAddress }) => 
     console.log(`✅ Evidence retrieved: ${evidence.length} items`);
     return json(response);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error(`❌ GET /api/v1/cases/${params.caseId}/evidence error:`, error);
     return json({
       success: false,

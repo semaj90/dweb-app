@@ -1,4 +1,4 @@
-export async function queryQdrant(vec: number[], limit = 200, temperature = 0.3) {
+export async function queryQdrant(vec: number[], limit = 200, temperature = 0.3): Promise<any> {
   // Map temperature to score_threshold (Qdrant returns higher = closer for Cosine/Score)
   // We want tight threshold at low temp and lower threshold (more inclusive) at high temp.
   const minScore = 0.65; // strict
@@ -28,7 +28,7 @@ export async function queryQdrant(vec: number[], limit = 200, temperature = 0.3)
   const j = await r.json();
 
   // Normalize result object
-  const results = (j.result || []).map((p: unknown) => ({
+  const results = (j.result || []).map((p: any) => ({
     id: String(p.id),
     text: p.payload?.text ?? '',
     metadata: p.payload?.metadata ?? {},

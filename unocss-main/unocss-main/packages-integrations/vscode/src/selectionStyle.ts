@@ -9,11 +9,11 @@ import { getConfig } from './configs'
 import { log } from './log'
 import { addRemToPxComment, throttle } from './utils'
 
-export async function registerSelectionStyle(loader: ContextLoader) {
+export async function registerSelectionStyle(loader: ContextLoader): Promise<any> {
   const config = getConfig()
   const integrationDecoration = window.createTextEditorDecorationType({})
 
-  async function selectionStyle(editor: TextEditorSelectionChangeEvent) {
+  async function selectionStyle(editor: TextEditorSelectionChangeEvent): Promise<any> {
     try {
       if (!config.selectionStyle)
         return reset()

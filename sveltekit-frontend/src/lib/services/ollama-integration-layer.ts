@@ -131,7 +131,7 @@ class OllamaIntegrationLayer {
 
       console.log('✅ Ollama Integration Layer initialized successfully');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize Ollama Integration Layer:', error);
       throw error;
     }
@@ -173,7 +173,7 @@ class OllamaIntegrationLayer {
         }
       });
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to update service status:', error);
     }
   }
@@ -322,7 +322,7 @@ class OllamaIntegrationLayer {
         suggestions: this.extractSuggestions(ragResult.answer)
       };
 
-    } catch (error) {
+    } catch (error: any) {
       // Fallback to standard chat
       console.warn('LangChain RAG failed, falling back to standard chat:', error);
       return await this.processStandardChat(request);

@@ -34,7 +34,7 @@ async function initializeManager(): Promise<NeuralMemoryManager> {
     console.log(`🧠 Neural Memory Manager initialized with ${systemMemoryMB}MB`);
     return neuralManager;
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Neural manager initialization failed:', error);
     // Fallback to basic configuration
     neuralManager = new NeuralMemoryManager(4096); // 4GB fallback
@@ -204,7 +204,7 @@ export const GET: RequestHandler = async ({ url, getClientAddress }) => {
       default:
         return json({ success: false, error: 'Invalid action' }, { status: 400 });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Neural memory API error:', error);
     return json({ 
       success: false, 
@@ -316,7 +316,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
       default:
         return json({ success: false, error: 'Invalid action' }, { status: 400 });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Neural memory POST error:', error);
     return json({ 
       success: false, 
@@ -328,7 +328,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 };
 
 // Helper functions for enhanced functionality
-async function getSystemInfo() {
+async function getSystemInfo(): Promise<any> {
   try {
     const os = await import('os');
     return {
@@ -345,7 +345,7 @@ async function getSystemInfo() {
   }
 }
 
-async function getDetailedMetrics(manager: NeuralMemoryManager) {
+async function getDetailedMetrics(manager: NeuralMemoryManager): Promise<any> {
   return {
     memoryBreakdown: {
       used: manager.getCurrentMemoryUsage(),
@@ -360,7 +360,7 @@ async function getDetailedMetrics(manager: NeuralMemoryManager) {
   };
 }
 
-async function performHealthCheck(manager: NeuralMemoryManager) {
+async function performHealthCheck(manager: NeuralMemoryManager): Promise<any> {
   const checks = {
     memoryManager: 'healthy',
     neuralNetwork: 'healthy',
@@ -389,7 +389,7 @@ async function performHealthCheck(manager: NeuralMemoryManager) {
   };
 }
 
-async function updateManagerConfiguration(manager: NeuralMemoryManager, config: any) {
+async function updateManagerConfiguration(manager: NeuralMemoryManager, config: any): Promise<any> {
   const updatedFields: string[] = [];
   
   // Example configuration updates (extend based on manager capabilities)

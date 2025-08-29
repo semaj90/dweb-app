@@ -2,7 +2,7 @@ import { type RequestHandler,  json } from '@sveltejs/kit';
 import { writeFile, mkdir } from 'fs/promises';
 import { dirname, extname } from 'path';
 import { existsSync } from 'fs';
-import type { RequestHandler } from './$types.js';
+import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request }) => {
   try {
@@ -56,7 +56,7 @@ export const POST: RequestHandler = async ({ request }) => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('File write error:', error);
     return json(
       { error: 'Failed to write file', details: error instanceof Error ? error.message : String(error) },

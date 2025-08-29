@@ -122,7 +122,7 @@ export function createFilePreview(file: File): Promise<string | null> {
       return;
     }
     const reader = new FileReader();
-    reader.onload = (e) => resolve(e.target?.result as string);
+    reader.onload = (e: any) => resolve(e.target?.result as string);
     reader.onerror = () => resolve(null);
     reader.readAsDataURL(file);
   });

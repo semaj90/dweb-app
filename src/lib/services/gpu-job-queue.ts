@@ -277,7 +277,7 @@ export class GPUJobQueue extends EventEmitter {
   /**
    * Intelligent job scheduling with priority and resource awareness
    */
-  private async scheduleJobs(): Promise<void> {
+  private async scheduleJobs(): Promise<any> {
     try {
       // Check GPU memory availability
       const gpuStats = await legalAIGPUManager.getGPUStats();
@@ -306,7 +306,7 @@ export class GPUJobQueue extends EventEmitter {
         await this.executeScheduledJob(job);
       }
 
-    } catch (error) {
+    } catch (error: any) {
       this.emit('scheduler:error', {
         error: error instanceof Error ? error.message : 'Unknown scheduling error'
       });
@@ -373,7 +373,7 @@ export class GPUJobQueue extends EventEmitter {
   /**
    * Execute scheduled job on GPU kernel
    */
-  private async executeScheduledJob(job: GPUJob): Promise<void> {
+  private async executeScheduledJob(job: GPUJob): Promise<any> {
     const startTime = performance.now();
     
     try {
@@ -409,7 +409,7 @@ export class GPUJobQueue extends EventEmitter {
 
       await this.completeJob(job, jobResult);
 
-    } catch (error) {
+    } catch (error: any) {
       const executionTime = performance.now() - startTime;
       const queueTime = (job.startedAt || Date.now()) - job.createdAt;
 
@@ -461,7 +461,7 @@ export class GPUJobQueue extends EventEmitter {
   /**
    * Complete successful job
    */
-  private async completeJob(job: GPUJob, result: GPUJobResult): Promise<void> {
+  private async completeJob(job: GPUJob, result: GPUJobResult): Promise<any> {
     // Move from running to completed
     this.runningJobs.delete(job.id);
     this.completedJobs.set(job.id, result);
@@ -486,7 +486,7 @@ export class GPUJobQueue extends EventEmitter {
   /**
    * Handle job failure with retry logic
    */
-  private async handleJobFailure(job: GPUJob, result: GPUJobResult): Promise<void> {
+  private async handleJobFailure(job: GPUJob, result: GPUJobResult): Promise<any> {
     this.runningJobs.delete(job.id);
 
     // Retry logic
@@ -630,7 +630,7 @@ export class GPUJobQueue extends EventEmitter {
   /**
    * Shutdown queue system
    */
-  async shutdown(): Promise<void> {
+  async shutdown(): Promise<any> {
     clearInterval(this.scheduler);
     clearInterval(this.statsCollector);
     

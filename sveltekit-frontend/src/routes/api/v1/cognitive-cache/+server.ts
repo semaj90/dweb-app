@@ -65,7 +65,7 @@ export const POST: RequestHandler = async ({ request }) => {
       }, { status: 500 });
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Cognitive cache store error:', error);
     return json({
       error: 'Failed to store in cognitive cache',
@@ -138,7 +138,7 @@ export const GET: RequestHandler = async ({ params, url }) => {
       }, { status: 404 });
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Cognitive cache retrieve error:', error);
     return json({
       error: 'Failed to retrieve from cognitive cache',
@@ -242,7 +242,7 @@ export const PUT: RequestHandler = async ({ request }) => {
         return json({ error: 'Invalid action. Use: analyze, optimize, predict' }, { status: 400 });
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Cognitive cache analysis error:', error);
     return json({
       error: 'Failed to perform cognitive analysis',
@@ -293,7 +293,7 @@ export const DELETE: RequestHandler = async ({ params, request }) => {
       timestamp: Date.now()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Cognitive cache invalidation error:', error);
     return json({
       error: 'Failed to invalidate cache entry',
@@ -367,7 +367,7 @@ export const OPTIONS: RequestHandler = async ({ url }) => {
       timestamp: Date.now()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Cognitive cache metrics error:', error);
     return json({
       error: 'Failed to get cognitive cache metrics',

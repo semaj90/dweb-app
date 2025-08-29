@@ -3,8 +3,8 @@ import type {
 	AvatarImagePropsWithoutHTML,
 	AvatarRootPropsWithoutHTML,
 } from "bits-ui";
-import { withChildProps } from "./shared.js";
-import { LoadingStatusProp, OnLoadingStatusChangeProp } from "./extended-types/avatar/index.js";
+import { withChildProps } from './shared';
+import { LoadingStatusProp, OnLoadingStatusChangeProp } from './extended-types/avatar/index';
 import {
 	defineComponentApiSchema,
 	defineEnumDataAttr,
@@ -12,7 +12,7 @@ import {
 	defineFunctionProp,
 	defineNumberProp,
 	defineSimpleDataAttr,
-} from "../utils.js";
+} from '../utils';
 
 const statusDataAttr = defineEnumDataAttr({
 	name: "status",

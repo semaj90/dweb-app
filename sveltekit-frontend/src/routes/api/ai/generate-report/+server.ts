@@ -99,7 +99,7 @@ export const POST: RequestHandler = async ({ request }) => {
         confidence: 0.92,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("AI report generation error:", error);
     return json({ error: "Failed to generate report" }, { status: 500 });
   }

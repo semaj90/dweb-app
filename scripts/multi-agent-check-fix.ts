@@ -21,7 +21,7 @@ function isCudaAvailable() {
   try {
     const output = execSync('nvidia-smi').toString();
     return output.includes('CUDA');
-  } catch (err) {
+  } catch (err: any) {
     return false;
   }
 }
@@ -41,7 +41,7 @@ function runCheck(): Promise<string> {
   });
 }
 
-async function askClaude(errorLog: string) {
+async function askClaude(errorLog: string): Promise<any> {
   const prompt = {
     task: 'multi_agent_fix',
     prompt:
@@ -69,7 +69,7 @@ async function askClaude(errorLog: string) {
   let parsed;
   try {
     parsed = JSON.parse(result);
-  } catch (e) {
+  } catch (e: any) {
     parsed = { error: 'Failed to parse JSON', raw: result };
   }
   
@@ -100,7 +100,7 @@ async function askClaude(errorLog: string) {
   // Optional: Launch VS Code
   try {
     spawn('code', [summaryFile], { stdio: 'inherit' });
-  } catch (e) {
+  } catch (e: any) {
     console.log('VS Code not found, open manually:', summaryFile);
   }
 
@@ -113,7 +113,7 @@ async function askClaude(errorLog: string) {
     });
     const embedJson = await embed.json();
     console.log('🧠 Embedding complete:', embedJson?.embedding ? 'Success' : 'Failed');
-  } catch (err) {
+  } catch (err: any) {
     console.warn('⚠️ Embedding skipped (Ollama not running?)');
   }
 })();

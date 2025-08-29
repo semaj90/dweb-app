@@ -105,14 +105,14 @@ function createCaseService() {
         throw new Error(`API Error: ${response.statusText}`);
       }
       return await response.json();
-    } catch (err) {
+    } catch (err: any) {
       const message = err instanceof Error ? err.message : "Unknown error";
       error.set(message);
       throw err;
     }
   }
   // Load case data
-  async function loadCase(caseId: string) {
+  async function loadCase(caseId: string): Promise<any> {
     if (!caseId) return;
 
     currentCaseId = caseId;
@@ -124,7 +124,7 @@ function createCaseService() {
       reports.set(data.reports || []);
       evidence.set(data.evidence || []);
       pois.set(data.pois || []);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to load case:", err);
       // Reset stores on error
       reports.set([]);
@@ -135,7 +135,7 @@ function createCaseService() {
     }
   }
   // Create report
-  async function createReport(data: Partial<Report>) {
+  async function createReport(data: Partial<Report>): Promise<any> {
     if (!currentCaseId) {
       error.set("No case loaded");
       return;
@@ -153,13 +153,13 @@ function createCaseService() {
 
       reports.update((items) => [...items, newReport]);
       return newReport;
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to create report:", err);
       return null;
     }
   }
   // Create evidence
-  async function createEvidence(data: Partial<Evidence>) {
+  async function createEvidence(data: Partial<Evidence>): Promise<any> {
     if (!currentCaseId) {
       error.set("No case loaded");
       return;
@@ -177,13 +177,13 @@ function createCaseService() {
 
       evidence.update((items) => [...items, newEvidence]);
       return newEvidence;
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to create evidence:", err);
       return null;
     }
   }
   // Create POI
-  async function createPOI(data: Partial<POI>) {
+  async function createPOI(data: Partial<POI>): Promise<any> {
     if (!currentCaseId) {
       error.set("No case loaded");
       return;
@@ -201,7 +201,7 @@ function createCaseService() {
 
       pois.update((items) => [...items, newPOI]);
       return newPOI;
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to create POI:", err);
       return null;
     }
@@ -211,7 +211,7 @@ function createCaseService() {
     type: "report" | "evidence" | "poi",
     id: string,
     position: { x: number; y: number },
-  ) {
+  ): Promise<any> {
     try {
       await apiCall(`/api/${type}s/${id}/position`, {
         method: "PATCH",
@@ -248,12 +248,12 @@ function createCaseService() {
           );
           break;
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(`Failed to update ${type} position:`, err);
     }
   }
   // Delete item
-  async function deleteItem(type: "report" | "evidence" | "poi", id: string) {
+  async function deleteItem(type: "report" | "evidence" | "poi", id: string): Promise<any> {
     try {
       await apiCall(`/api/${type}s/${id}`, {
         method: "DELETE",
@@ -271,12 +271,12 @@ function createCaseService() {
           pois.update((items) => items.filter((item) => item.id !== id));
           break;
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(`Failed to delete ${type}:`, err);
     }
   }
   // Save all changes
-  async function saveAll() {
+  async function saveAll(): Promise<any> {
     if (!currentCaseId) {
       error.set("No case loaded");
       return;
@@ -294,7 +294,7 @@ function createCaseService() {
       });
 
       error.set(null);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to save all:", err);
     } finally {
       isLoading.set(false);

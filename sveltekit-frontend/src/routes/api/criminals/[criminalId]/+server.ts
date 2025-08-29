@@ -25,7 +25,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
       return json({ error: "Criminal record not found" }, { status: 404 });
     }
     return json(criminalResult[0]);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching criminal record:", error);
     return json({ error: "Failed to fetch criminal record" }, { status: 500 });
   }
@@ -111,7 +111,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
       .returning();
 
     return json(updatedCriminal);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating criminal record:", error);
     return json({ error: "Failed to update criminal record" }, { status: 500 });
   }
@@ -146,7 +146,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
       .returning();
 
     return json({ success: true, deletedCriminal });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error deleting criminal record:", error);
     return json({ error: "Failed to delete criminal record" }, { status: 500 });
   }
@@ -215,7 +215,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
       .returning();
 
     return json(updatedCriminal);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error patching criminal record:", error);
     return json({ error: "Failed to update criminal record" }, { status: 500 });
   }

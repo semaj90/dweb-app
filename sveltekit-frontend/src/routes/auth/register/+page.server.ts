@@ -1,8 +1,5 @@
 import { fail, redirect } from '@sveltejs/kit';
-import { lucia } from '$lib/server/auth';
-import { db, users } from '$lib/server/db';
-import { eq } from 'drizzle-orm';
-import bcrypt from 'bcryptjs';
+import { ExistingUserAuthService } from '$lib/server/db/existing-user-operations.js';
 import type { PageServerLoad, Actions } from './$types';
 
 export const load: PageServerLoad = async () => {
@@ -36,52 +33,52 @@ export const actions: Actions = {
     }
 
     try {
-      // Check if user already exists
-      const existingUser = await db
-        .select()
-        .from(users)
-        .where(eq(users.email, email.toLowerCase()))
-        .limit(1);
-
-      if (existingUser.length > 0) {
-        return fail(400, { error: 'An account with this email already exists' });
-      }
-
-      // Hash password
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      // Create user with basic fields that match the unified schema
-      const newUser = await db
-        .insert(users)
-        .values({
-          email: email.toLowerCase(),
-          passwordHash: hashedPassword,
-          displayName: `${firstName} ${lastName}`,
-          role: role || 'user',
-          createdAt: new Date(),
-          updatedAt: new Date()
-        })
-        .returning({ id: users.id });
-
-      const userId = newUser[0].id;
-
-      // Create a session
-      const session = await lucia.createSession(userId, {});
-      const sessionCookie = lucia.createSessionCookie(session.id);
-
-      cookies.set(sessionCookie.name, sessionCookie.value, {
-        path: '/',
-        ...sessionCookie.attributes
+      // Use the existing auth service
+      const result = await ExistingUserAuthService.registerUser({
+        email: email.toLowerCase(),
+        password: password,
+        firstName: firstName,
+        lastName: lastName,
+        role: role || 'user',
+        profileData: {
+          department: department,
+          jurisdiction: jurisdiction,
+          badgeNumber: badgeNumber
+        }
       });
 
-      console.log('User registered successfully:', { userId, email });
+      if (!result.success) {
+        return fail(400, { error: result.error });
+      }
 
-    } catch (error) {
+      // Create a session using existing auth service
+      const loginResult = await ExistingUserAuthService.loginUser({
+        email: email.toLowerCase(),
+        password: password
+      });
+
+      if (loginResult.success && loginResult.session) {
+        // Set session cookie
+        cookies.set('session_id', loginResult.session.id, {
+          path: '/',
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'strict',
+          maxAge: 60 * 60 * 24 // 1 day
+        });
+
+        console.log('User registered and logged in successfully:', { 
+          userId: result.user?.id, 
+          email: email 
+        });
+      }
+
+    } catch (error: any) {
       console.error('Registration error:', error);
       return fail(500, { error: 'An error occurred during registration. Please try again.' });
     }
 
     // Redirect to dashboard
-    throw redirect(302, '/dashboard');
+    throw redirect(302, '/yorha/dashboard');
   }
 };

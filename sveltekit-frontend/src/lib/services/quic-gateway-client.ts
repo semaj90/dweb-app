@@ -160,7 +160,7 @@ export class QUICGatewayClient {
 
       console.log(`✅ QUIC Gateway Client initialized (${this.config.baseURL}:${this.config.http3Port})`);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ QUIC Gateway Client initialization failed:', error);
       
       if (this.config.fallbackToHTTP2) {
@@ -230,7 +230,7 @@ export class QUICGatewayClient {
         throw new Error(`Gateway health check failed: ${response.status}`);
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ QUIC Gateway connection test failed:', error);
       throw error;
     }
@@ -275,7 +275,7 @@ export class QUICGatewayClient {
 
         return response;
 
-      } catch (error) {
+      } catch (error: any) {
         lastError = error instanceof Error ? error : new Error('Unknown error');
         attempt++;
         
@@ -360,7 +360,7 @@ export class QUICGatewayClient {
         zeroRTT: this.isZeroRTT(response)
       };
 
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(`Request failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
@@ -536,7 +536,7 @@ export class QUICGatewayClient {
           this.reconnectAttempts = 0;
         }
 
-      } catch (error) {
+      } catch (error: any) {
         console.warn('⚠️ Connection monitoring failed:', error);
         this.handleConnectionFailure();
       }

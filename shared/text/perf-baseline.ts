@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { runSplitterBenchmark } from './benchmark-splitter';
 
-interface BaselineFile {
+export interface BaselineFile {
   schemaVersion: 1;
   metric: 'perDoc';
   history: number[]; // last N perDoc values

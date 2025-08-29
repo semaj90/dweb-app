@@ -1,4 +1,4 @@
-export async function queryQdrant(vec: number[], limit = 200, temperature = 0.3) {
+export async function queryQdrant(vec: number[], limit = 200, temperature = 0.3): Promise<any> {
   const minScore = 0.65;
   const maxScore = 0.3;
   const t = Math.max(0, Math.min(1, temperature));

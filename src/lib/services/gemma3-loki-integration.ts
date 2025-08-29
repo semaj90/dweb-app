@@ -3,13 +3,13 @@
  * High-performance legal AI inference with intelligent caching and evidence processing
  */
 
-import { gemma3Service } from './gemma3-local-service.js';
-import { cacheManager } from '../server/cache/loki-cache.js';
-import { lokiEvidenceService } from '../utils/loki-evidence.js';
-import { fuseLazySearch } from './fuse-lazy-search-indexeddb.js';
-import type { Evidence } from '../stores/evidenceStore.js';
+import { gemma3Service } from './gemma3-local-service';
+import { cacheManager } from '../server/cache/loki-cache';
+import { lokiEvidenceService } from '../utils/loki-evidence';
+import { fuseLazySearch } from './fuse-lazy-search-indexeddb';
+import type { Evidence } from '../stores/evidenceStore';
 
-interface LegalAnalysisRequest {
+export interface LegalAnalysisRequest {
   content: string;
   title: string;
   caseId?: string;
@@ -19,7 +19,7 @@ interface LegalAnalysisRequest {
   userId?: string;
 }
 
-interface LegalAnalysisResult {
+export interface LegalAnalysisResult {
   analysis: {
     summary: string;
     keyFindings: string[];
@@ -69,7 +69,7 @@ export class Gemma3LokiIntegration {
     this.initialize();
   }
 
-  private async initialize(): Promise<void> {
+  private async initialize(): Promise<any> {
     if (this.initialized) return;
 
     try {
@@ -88,7 +88,7 @@ export class Gemma3LokiIntegration {
       this.initialized = true;
       console.log('🚀 Gemma3-Loki Integration initialized successfully');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize Gemma3-Loki Integration:', error);
       throw error;
     }
@@ -168,7 +168,7 @@ export class Gemma3LokiIntegration {
 
       return result;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Legal analysis failed:', error);
       throw error;
     }
@@ -319,7 +319,7 @@ export class Gemma3LokiIntegration {
         model: result.model || 'nomic-embed-text',
         processingTime: performance.now() - startTime
       };
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Embedding generation failed, using fallback');
       
       // Fallback to direct nomic-embed-text

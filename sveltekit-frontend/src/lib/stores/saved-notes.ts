@@ -134,7 +134,7 @@ class NotesManager {
     if (browser) {
       try {
         await set(`${this.dbPrefix}${note.id}`, noteWithTimestamp);
-      } catch (error) {
+      } catch (error: any) {
         console.warn("Failed to save note to IndexedDB:", error);
       }
     }
@@ -147,7 +147,7 @@ class NotesManager {
     if (browser) {
       try {
         await del(`${this.dbPrefix}${noteId}`);
-      } catch (error) {
+      } catch (error: any) {
         console.warn("Failed to remove note from IndexedDB:", error);
       }
     }
@@ -172,7 +172,7 @@ class NotesManager {
             note.savedAt = new Date(note.savedAt);
             notes.push(note);
           }
-        } catch (error) {
+        } catch (error: any) {
           console.warn("Failed to load note from IndexedDB:", key, error);
         }
       }
@@ -182,7 +182,7 @@ class NotesManager {
             new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime()
         )
       );
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Failed to load notes from IndexedDB:", error);
     }
   }
@@ -224,7 +224,7 @@ class NotesManager {
           );
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Failed to sync with server:", error);
     }
   }
@@ -285,15 +285,15 @@ class NotesManager {
 export const notesManager = NotesManager.getInstance();
 
 // Convenience functions
-export async function saveNoteForLater(note: Omit<SavedNote, "savedAt">) {
+export async function saveNoteForLater(note: Omit<SavedNote, "savedAt">): Promise<any> {
   await notesManager.saveNote(note);
 }
 
-export async function removeSavedNote(noteId: string) {
+export async function removeSavedNote(noteId: string): Promise<any> {
   await notesManager.removeNote(noteId);
 }
 
-export async function loadSavedNotes() {
+export async function loadSavedNotes(): Promise<any> {
   await notesManager.loadSavedNotes();
 }
 

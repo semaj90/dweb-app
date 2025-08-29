@@ -54,7 +54,7 @@ export const GET: RequestHandler = async ({ url }) => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching dashboard stats:', error);
     
     // Return fallback stats on error

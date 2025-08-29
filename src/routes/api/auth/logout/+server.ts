@@ -3,7 +3,7 @@ import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
 import { AuthService } from '$lib/yorha/services/auth.service';
 
-export const POST: RequestHandler = async ({ cookies, locals }) => {
+export const POST: RequestHandler = async ({ cookies, locals }): Promise<any> => {
   try {
     const sessionToken = cookies.get('yorha_session');
     
@@ -31,7 +31,7 @@ export const POST: RequestHandler = async ({ cookies, locals }) => {
       success: true,
       message: 'Logged out successfully'
     });
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('Logout error:', error);
     
     // Clear cookie anyway

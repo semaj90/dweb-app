@@ -7,11 +7,11 @@ import crypto from "crypto";
 import { OllamaEmbeddings } from "@langchain/community/embeddings/ollama";
 import { Ollama } from "@langchain/community/llms/ollama";
 import { PGVectorStore } from "@langchain/community/vectorstores/pgvector";
-import { drizzle } from "drizzle-orm/postgres-js";
+import { drizzle } from "drizzle-orm/node-postgres";
 import postgres from "postgres";
 import { Pool } from "pg";
 import type { Document } from "@langchain/core/documents";
-import { userEmbeddings } from "../server/db/schema-postgres.js";
+import { userEmbeddings } from '../server/db/schema-postgres';
 import { OllamaService } from "./ollamaService";
 
 export interface SemanticSearchOptions {
@@ -141,7 +141,7 @@ export class EnhancedAIPipeline {
 
       this.isInitialized = true;
       console.log("🚀 Enhanced AI Pipeline initialized successfully");
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ AI Pipeline initialization failed:", error);
       throw error;
     }
@@ -171,7 +171,7 @@ export class EnhancedAIPipeline {
           generatedAt: new Date().toISOString(),
         },
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Embedding generation failed:", error);
       throw new Error(`Failed to generate embeddings: ${error.message}`);
     }
@@ -201,7 +201,7 @@ export class EnhancedAIPipeline {
       const ids = await this.vectorStore.addDocuments([document]);
       console.log(`✅ Document stored with ID: ${ids[0]}`);
       return ids[0];
-    } catch (error) {
+    } catch (error: any) {
       console.error("Document storage failed:", error);
       throw new Error(`Failed to store document: ${error.message}`);
     }
@@ -265,7 +265,7 @@ export class EnhancedAIPipeline {
         `🔍 Found ${searchResults.length} results for query: "${query}"`
       );
       return searchResults;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Semantic search failed:", error);
       throw new Error(`Semantic search failed: ${error.message}`);
     }
@@ -325,7 +325,7 @@ Focus on legal implications, potential risks, and actionable insights.`;
           recommendations: ["Review document manually"],
         };
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Legal document analysis failed:", error);
       throw new Error(`Document analysis failed: ${error.message}`);
     }
@@ -383,7 +383,7 @@ Focus on legal implications, potential risks, and actionable insights.`;
         embeddingId,
         processingTime,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Document ingestion failed:", error);
       throw new Error(`Document ingestion failed: ${error.message}`);
     }
@@ -427,7 +427,7 @@ Focus on legal implications, potential risks, and actionable insights.`;
         documentTypes,
         recentActivity: parseInt(result.rows[0].recent),
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to get embedding stats:", error);
       return {
         totalDocuments: 0,
@@ -458,7 +458,7 @@ Focus on legal implications, potential risks, and actionable insights.`;
       // Test Ollama
       await this.llm.invoke("test");
       health.ollama = true;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Ollama health check failed:", error);
     }
 
@@ -466,7 +466,7 @@ Focus on legal implications, potential risks, and actionable insights.`;
       // Test PostgreSQL
       await this.pgPool.query("SELECT 1");
       health.postgres = true;
-    } catch (error) {
+    } catch (error: any) {
       console.error("PostgreSQL health check failed:", error);
     }
 
@@ -475,7 +475,7 @@ Focus on legal implications, potential risks, and actionable insights.`;
       if (this.vectorStore) {
         health.vectorStore = true;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Vector store health check failed:", error);
     }
 
@@ -483,7 +483,7 @@ Focus on legal implications, potential risks, and actionable insights.`;
       // Test embeddings
       await this.embeddings.embedQuery("test");
       health.embeddings = true;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Embeddings health check failed:", error);
     }
 
@@ -497,7 +497,7 @@ Focus on legal implications, potential risks, and actionable insights.`;
     try {
       await this.pgPool.end();
       console.log("✅ AI Pipeline cleanup completed");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Cleanup failed:", error);
     }
   }

@@ -74,7 +74,7 @@ class WebSocketClient implements ProtocolClient {
         }));
       };
 
-      ws.onmessage = (event) => {
+      ws.onmessage = (event: any) => {
         const data = JSON.parse(event.data);
         const latency = Date.now() - startTime;
         
@@ -91,7 +91,7 @@ class WebSocketClient implements ProtocolClient {
       };
 
       ws.onerror = () => reject(new Error('WebSocket connection failed'));
-      ws.onclose = (event) => {
+      ws.onclose = (event: any) => {
         if (event.code !== 1000) {
           reject(new Error(`WebSocket closed with code: ${event.code}`));
         }

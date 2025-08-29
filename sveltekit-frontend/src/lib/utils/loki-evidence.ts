@@ -6,11 +6,11 @@ const browser = typeof window !== "undefined";
 import Loki, { type Collection } from "lokijs";
 import type { Evidence } from '$lib/stores/evidenceStore.js';
 
-interface LokiEvidence extends Evidence {
+export interface LokiEvidence extends Evidence {
   $loki?: number;
   meta?: unknown;
 }
-interface SyncOperation {
+export interface SyncOperation {
   id: string;
   type: "CREATE" | "UPDATE" | "DELETE";
   collectionName: string;
@@ -47,7 +47,7 @@ class LokiEvidenceService {
           autosave: true,
           autosaveInterval: 4000,
         });
-      } catch (error) {
+      } catch (error: any) {
         console.error("❌ Loki database initialization failed:", error);
         reject(error);
       }
@@ -109,7 +109,7 @@ class LokiEvidenceService {
       if (navigator.onLine) {
         this.processSyncQueue();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to create evidence locally:", error);
       throw error;
     }
@@ -155,7 +155,7 @@ class LokiEvidenceService {
       if (navigator.onLine) {
         this.processSyncQueue();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to update evidence locally:", error);
       throw error;
     }
@@ -189,7 +189,7 @@ class LokiEvidenceService {
       if (navigator.onLine) {
         this.processSyncQueue();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to delete evidence locally:", error);
       throw error;
     }
@@ -298,7 +298,7 @@ class LokiEvidenceService {
           // Mark as synced
           operation.synced = true;
           this.syncQueue.update(operation);
-        } catch (error) {
+        } catch (error: any) {
           console.error(`Sync failed for operation ${operation.id}:`, error);
 
           // Increment retry count
@@ -369,8 +369,8 @@ class LokiEvidenceService {
     const localEvidence = this.evidenceCollection.find({});
 
     // Create maps for efficient lookup
-    const localMap = new Map(localEvidence.map((e) => [(e as any).id, e]));
-    const serverMap = new Map(serverEvidence.map((e) => [e.id, e]));
+    const localMap = new Map(localEvidence.map((e: any) => [(e as any).id, e]));
+    const serverMap = new Map(serverEvidence.map((e: any) => [e.id, e]));
 
     // Find conflicts and resolve them
     for (const [id, serverItem] of Array.from(serverMap)) {
@@ -436,7 +436,7 @@ class LokiIndexedAdapter {
 
     request.onerror = () => callback(null);
 
-    request.onsuccess = (event) => {
+    request.onsuccess = (event: any) => {
       const db = (event.target as IDBOpenDBRequest).result;
       const transaction = db.transaction(["data"], "readonly");
       const store = transaction.objectStore("data");
@@ -449,7 +449,7 @@ class LokiIndexedAdapter {
       getRequest.onerror = () => callback(null);
     };
 
-    request.onupgradeneeded = (event) => {
+    request.onupgradeneeded = (event: any) => {
       const db = (event.target as IDBOpenDBRequest).result;
       if (!db.objectStoreNames.contains("data")) {
         db.createObjectStore("data", { keyPath: "id" });
@@ -460,7 +460,7 @@ class LokiIndexedAdapter {
     // Save to IndexedDB
     const request = indexedDB.open(this.dbname, 1);
 
-    request.onsuccess = (event) => {
+    request.onsuccess = (event: any) => {
       const db = (event.target as IDBOpenDBRequest).result;
       const transaction = db.transaction(["data"], "readwrite");
       const store = transaction.objectStore("data");

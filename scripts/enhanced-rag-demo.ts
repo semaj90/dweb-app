@@ -31,7 +31,7 @@ console.log(`🚀 Enhanced RAG Demo Started
 🔧 VS Code Integration: Enabled`);
 
 // Enhanced Document Interface
-interface DemoDocument {
+export interface DemoDocument {
   id: string;
   content: string;
   summary: string;
@@ -134,7 +134,7 @@ class EmbeddingService {
       console.log(`✅ Generated ${result.embedding?.length || 0}-dimensional embedding`);
       
       return result.embedding;
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Embedding generation failed:', error);
       return null;
     }
@@ -341,7 +341,7 @@ ${documents.map(doc =>
 }
 
 // Main Demo Function
-async function runEnhancedRAGDemo() {
+async function runEnhancedRAGDemo(): Promise<any> {
   const startTime = Date.now();
   console.log('🚀 Enhanced RAG Demo Starting...');
   

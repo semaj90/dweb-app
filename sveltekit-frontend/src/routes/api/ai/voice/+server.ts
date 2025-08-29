@@ -1,7 +1,7 @@
 
 import { SpeechService } from "$lib/services/speech-service";
 
-export async function POST({ request }) {
+export async function POST({ request }): Promise<any> {
   const { audio } = await request.json();
   const transcript = await SpeechService.transcribe(audio);
   return json({ transcript });

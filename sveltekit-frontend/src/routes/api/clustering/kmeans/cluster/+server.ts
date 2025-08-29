@@ -23,14 +23,14 @@ const qdrant = new QdrantClient({
 });
 
 let rabbitConnection: any | null = null;
-async function getRabbitConnection() {
+async function getRabbitConnection(): Promise<any> {
   if (!rabbitConnection) {
     try {
       // const amqp = await import('amqplib').catch(() => null);
       // if (amqp) {
       //   rabbitConnection = await amqp.connect(import.meta.env.RABBITMQ_URL || 'amqp://localhost');
       // }
-    } catch (error) {
+    } catch (error: any) {
       console.warn("RabbitMQ not available:", error);
     }
   }
@@ -374,7 +374,7 @@ export const POST: RequestHandler = async ({ request }) => {
         { status: 500 },
       );
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("K-Means API error:", error);
 
     return json(
@@ -444,7 +444,7 @@ export const GET: RequestHandler = async ({ url }) => {
         processingTime: 10,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("K-Means prediction error:", error);
 
     return json(

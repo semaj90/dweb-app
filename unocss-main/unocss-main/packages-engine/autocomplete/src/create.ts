@@ -35,7 +35,7 @@ export function createAutocomplete(
     enumerate,
   }
 
-  async function enumerate() {
+  async function enumerate(): Promise<any> {
     const matched = new Set<string>()
     const a2z = Array.from('abcdefghijklmnopqrstuvwxyz')
     const a2zd = [...a2z, '-']
@@ -66,7 +66,7 @@ export function createAutocomplete(
     return templateCache.get(template)!.suggest
   }
 
-  async function suggest(input: string, allowsEmptyInput = false) {
+  async function suggest(input: string, allowsEmptyInput = false): Promise<any> {
     await ready
     if (!allowsEmptyInput && input.length < 1)
       return []
@@ -162,18 +162,18 @@ export function createAutocomplete(
     return null
   }
 
-  async function suggestSelf(input: string) {
+  async function suggestSelf(input: string): Promise<any> {
     const i = await uno.parseToken(input, '-')
     return i ? [input] : []
   }
 
-  async function suggestStatic(input: string) {
+  async function suggestStatic(input: string): Promise<any> {
     if (matchType === 'fuzzy')
       return staticUtils
     return staticUtils.filter(i => i.startsWith(input))
   }
 
-  async function suggestUnoCache(input: string) {
+  async function suggestUnoCache(input: string): Promise<any> {
     const keys = Array.from(uno.cache.entries())
     return keys.filter(i => i[1] && i[0].startsWith(input)).map(i => i[0])
   }
@@ -193,7 +193,7 @@ export function createAutocomplete(
         : getParsed(fn)(input, matchType))
   }
 
-  async function reset() {
+  async function reset(): Promise<any> {
     templateCache.clear()
     cache.clear()
 

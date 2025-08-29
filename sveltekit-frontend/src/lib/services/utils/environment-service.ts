@@ -5,7 +5,7 @@
 
 import { browser } from '$app/environment';
 import { env } from '$env/dynamic/public';
-import type { LLMEndpoint, ClientEnvironment } from '../types/service-types.js';
+import type { LLMEndpoint, ClientEnvironment } from '../types/service-types';
 
 /**
  * Client Environment Detection
@@ -84,7 +84,7 @@ class LLMHealthChecker {
           lastCheck: Date.now()
         };
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn(`Health check failed for ${endpoint.url}/${endpoint.model}:`, error);
     }
 

@@ -4,7 +4,7 @@ import type {
 	TimeFieldRootPropsWithoutHTML,
 	TimeFieldSegmentPropsWithoutHTML,
 } from "bits-ui";
-import { childrenSnippet, timeValueProp, withChildProps } from "./shared.js";
+import { childrenSnippet, timeValueProp, withChildProps } from './shared';
 import {
 	TimeGranularityProp,
 	HourCycleProp,
@@ -16,9 +16,9 @@ import {
 	TimeSegmentPartProp,
 	TimeValidateProp,
 	TimeSegmentDataAttr,
-} from "./extended-types/shared/index.js";
+} from './extended-types/shared/index';
 
-import { TimeFieldEditableSegmentPartProp } from "./extended-types/time-field/index.js";
+import { TimeFieldEditableSegmentPartProp } from './extended-types/time-field/index';
 import {
 	defineBooleanProp,
 	defineComponentApiSchema,
@@ -29,7 +29,7 @@ import {
 	definePropSchema,
 	defineSimpleDataAttr,
 	defineStringProp,
-} from "../utils.js";
+} from '../utils';
 
 export const root = defineComponentApiSchema<TimeFieldRootPropsWithoutHTML>({
 	title: "Root",

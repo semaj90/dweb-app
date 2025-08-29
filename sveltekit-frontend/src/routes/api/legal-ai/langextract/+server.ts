@@ -76,7 +76,7 @@ export const POST: RequestHandler = async ({ request }) => {
       service: 'langextract-ollama'
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('LangExtract API error:', error);
     
     return json({
@@ -147,7 +147,7 @@ export const GET: RequestHandler = async () => {
         }
       }
     });
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: 'Failed to get service status',

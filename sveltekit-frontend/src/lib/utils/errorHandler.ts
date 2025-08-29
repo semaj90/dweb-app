@@ -171,15 +171,15 @@ class ErrorHandler {
     let filtered = [...this.errors];
 
     if (criteria?.type) {
-      filtered = filtered.filter((e) => e.type === criteria.type);
+      filtered = filtered.filter((e: any) => e.type === criteria.type);
     }
 
     if (criteria?.severity) {
-      filtered = filtered.filter((e) => e.severity === criteria.severity);
+      filtered = filtered.filter((e: any) => e.severity === criteria.severity);
     }
 
     if (criteria?.since) {
-      filtered = filtered.filter((e) => e.timestamp >= criteria.since!);
+      filtered = filtered.filter((e: any) => e.timestamp >= criteria.since!);
     }
 
     return filtered;
@@ -189,7 +189,7 @@ class ErrorHandler {
     this.listeners.forEach((listener) => {
       try {
         listener(error);
-      } catch (e) {
+      } catch (e: any) {
         console.error("Error in error listener:", e);
       }
     });
@@ -202,7 +202,7 @@ class ErrorHandler {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(error),
       });
-    } catch (e) {
+    } catch (e: any) {
       console.error("Failed to report critical error:", e);
     }
   }
@@ -221,7 +221,7 @@ export async function withErrorHandling<T>(
 ): Promise<T | null> {
   try {
     return await operation();
-  } catch (error) {
+  } catch (error: any) {
     errorHandler.logError(
       errorType,
       errorMessage,
@@ -238,7 +238,7 @@ export async function withErrorHandling<T>(
 /**
  * Fetch wrapper with error handling
  */
-export async function safeFetch(url: string, options?: RequestInit) {
+export async function safeFetch(url: string, options?: RequestInit): Promise<any> {
   try {
     const response = await fetch(url, options);
 
@@ -247,7 +247,7 @@ export async function safeFetch(url: string, options?: RequestInit) {
     }
 
     return response;
-  } catch (error) {
+  } catch (error: any) {
     errorHandler.network(`Failed to fetch ${url}`, {
       url,
       method: options?.method || "GET",

@@ -59,7 +59,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
         },
       },
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error("❌ Vector intelligence search API error:", err);
 
     const errorMessage = err instanceof Error ? err.message : "Unknown error";
@@ -135,7 +135,7 @@ export const GET: RequestHandler = async ({ url }) => {
         searchOptions,
       },
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error("❌ Vector intelligence GET search error:", err);
     throw error(500, err instanceof Error ? err.message : "Search failed");
   }

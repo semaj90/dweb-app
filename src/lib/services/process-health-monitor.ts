@@ -143,7 +143,7 @@ export class ProcessHealthMonitor extends EventEmitter {
   /**
    * Perform comprehensive health checks
    */
-  private async performHealthChecks(): Promise<void> {
+  private async performHealthChecks(): Promise<any> {
     try {
       // Check process pool health
       await this.checkProcessPoolHealth();
@@ -161,7 +161,7 @@ export class ProcessHealthMonitor extends EventEmitter {
       // Store health snapshot in Redis
       await this.redis.setex('legal_ai:health_snapshot', 300, JSON.stringify(summary));
       
-    } catch (error) {
+    } catch (error: any) {
       this.createAlert('monitor-error', 'high',
         `Health monitoring error: ${error instanceof Error ? error.message : 'Unknown error'}`,
         { error }
@@ -172,7 +172,7 @@ export class ProcessHealthMonitor extends EventEmitter {
   /**
    * Check process pool health
    */
-  private async checkProcessPoolHealth(): Promise<void> {
+  private async checkProcessPoolHealth(): Promise<any> {
     const poolStats = legalAIProcessPool.getStats();
     
     for (const [poolName, stats] of Object.entries(poolStats)) {
@@ -191,7 +191,7 @@ export class ProcessHealthMonitor extends EventEmitter {
   /**
    * Check GPU health
    */
-  private async checkGPUHealth(): Promise<void> {
+  private async checkGPUHealth(): Promise<any> {
     const gpuStats = await legalAIGPUManager.getGPUStats();
     
     const memoryUsage = gpuStats.usedMemoryMB / gpuStats.totalMemoryMB;
@@ -229,7 +229,7 @@ export class ProcessHealthMonitor extends EventEmitter {
   /**
    * Check Redis health
    */
-  private async checkRedisHealth(): Promise<void> {
+  private async checkRedisHealth(): Promise<any> {
     try {
       const start = Date.now();
       await this.redis.ping();
@@ -251,7 +251,7 @@ export class ProcessHealthMonitor extends EventEmitter {
           `Redis memory usage high: ${memoryUsedMB.toFixed(0)}MB`, { memoryUsedMB });
       }
       
-    } catch (error) {
+    } catch (error: any) {
       this.createAlert('redis-connection', 'critical',
         'Redis connection failed', { error: error instanceof Error ? error.message : 'Unknown error' });
     }
@@ -364,7 +364,7 @@ export class ProcessHealthMonitor extends EventEmitter {
   /**
    * Process and manage alerts
    */
-  private async processAlerts(): Promise<void> {
+  private async processAlerts(): Promise<any> {
     const activeAlerts = Array.from(this.alerts.values()).filter(alert => !alert.resolved);
     
     // Auto-resolve alerts older than 5 minutes if condition no longer exists
@@ -555,7 +555,7 @@ export class ProcessHealthMonitor extends EventEmitter {
   /**
    * Shutdown monitoring
    */
-  async shutdown(): Promise<void> {
+  async shutdown(): Promise<any> {
     clearInterval(this.monitoringInterval);
     clearInterval(this.alertInterval);
     await this.redis.quit();

@@ -159,7 +159,7 @@ export function createDocumentUploadForm(
         autoSaveTimeout = setTimeout(() => {
           try {
             localStorage.setItem('document-upload-draft', JSON.stringify(($form as any).data || $form));
-          } catch (e) {
+          } catch (e: any) {
             console.warn('Failed to write draft to localStorage', e);
           }
         }, autoSaveDelay);
@@ -564,7 +564,7 @@ export class FormStatePersistence {
         data,
         timestamp: Date.now()
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to save form state:', error);
     }
   }
@@ -579,7 +579,7 @@ export class FormStatePersistence {
           return parsed.data;
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to load form state:', error);
     }
     return null;
@@ -588,7 +588,7 @@ export class FormStatePersistence {
   clear(): void {
     try {
       localStorage.removeItem(this.storageKey);
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to clear form state:', error);
     }
   }

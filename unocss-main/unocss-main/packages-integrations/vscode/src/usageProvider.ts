@@ -96,7 +96,7 @@ export class UsageReferenceProvider implements ReferenceProvider {
   }
 }
 
-export async function registerUsageProvider(loader: ContextLoader) {
+export async function registerUsageProvider(loader: ContextLoader): Promise<any> {
   const provider = new UsageReferenceProvider(loader)
 
   loader.ext.subscriptions.push(

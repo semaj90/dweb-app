@@ -4,7 +4,7 @@ import { createClient } from 'redis';
 import envConfig from '../../../../../env-config.mjs';
 
 // GET /api/realtime/[channel] - Server-Sent Events endpoint
-export const GET: RequestHandler = async ({ locals, params }) => {
+export const GET: RequestHandler = async ({ locals, params }): Promise<any> => {
   if (!locals.user) {
     return new Response('Unauthorized', { status: 401 });
   }
@@ -40,7 +40,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
           try {
             const data = JSON.parse(message);
             controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
-          } catch (err) {
+          } catch (err: any) {
             console.error('Error parsing Redis message:', err);
             controller.enqueue(encoder.encode(`data: ${message}\n\n`));
           }
@@ -52,14 +52,14 @@ export const GET: RequestHandler = async ({ locals, params }) => {
         }, 30000);
 
         // Store cleanup function
-        (controller as any)._cleanup = async () => {
+        (controller as any)._cleanup = async (): Promise<any> => {
           clearInterval(pingInterval);
           await redis.unsubscribe(channel);
           await redis.quit();
         };
       },
 
-      async cancel() {
+      async cancel(): Promise<any> {
         // Cleanup when client disconnects
         await (this as any)._cleanup?.();
       }
@@ -75,7 +75,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Error setting up SSE:', err);
     throw error(500, 'Failed to establish real-time connection');
   }

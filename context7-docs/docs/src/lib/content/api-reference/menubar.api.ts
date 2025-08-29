@@ -25,15 +25,15 @@ import {
 	floatingContentCSSVars,
 	onOpenChangeProp,
 	withChildProps,
-} from "./shared.js";
-import { menu as m } from "./menu.api.js";
-import { OnStringValueChangeProp } from "./extended-types/shared/index.js";
+} from './shared';
+import { menu as m } from './menu.api';
+import { OnStringValueChangeProp } from './extended-types/shared/index';
 import {
 	defineBooleanProp,
 	defineComponentApiSchema,
 	defineFunctionProp,
 	defineStringProp,
-} from "../utils.js";
+} from '../utils';
 
 export const root = defineComponentApiSchema<MenubarRootPropsWithoutHTML>({
 	title: "Root",

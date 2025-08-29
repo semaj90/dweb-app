@@ -26,7 +26,7 @@ class QdrantService {
           }]
         })
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Qdrant upsert failed:', error);
       throw error;
     }
@@ -45,7 +45,7 @@ class QdrantService {
         })
       });
       return await response.json();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Qdrant search failed:', error);
       return { result: [] };
     }
@@ -68,7 +68,7 @@ class GPUVectorProcessor {
         });
         const result = await response.json();
         embeddings.push(result.embedding);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Embedding failed:', error);
         embeddings.push([]);
       }
@@ -101,7 +101,7 @@ export class WebGPUVectorProcessor {
 
       console.log('✅ WebGPU initialized for legal AI vector processing');
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('WebGPU initialization failed:', error);
       return false;
     }
@@ -206,7 +206,7 @@ export class WebGPUVectorProcessor {
       stagingBuffer.unmap();
 
       return results;
-    } catch (error) {
+    } catch (error: any) {
       console.error('GPU dot product computation failed:', error);
       return this.fallbackDotProducts(queryVector, candidateVectors);
     }
@@ -244,7 +244,7 @@ export class WebGPUVectorProcessor {
       // Search with payload filters
       const results = await QdrantService.searchWithFilters(queryEmbedding, filters, limit);
       return results.result || [];
-    } catch (error) {
+    } catch (error: any) {
       console.error('GPU similarity search failed:', error);
       return [];
     }
@@ -265,7 +265,7 @@ export class WebGPUVectorProcessor {
       });
       const result = await response.json();
       return result.embedding;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Embedding generation failed:', error);
       return [];
     }

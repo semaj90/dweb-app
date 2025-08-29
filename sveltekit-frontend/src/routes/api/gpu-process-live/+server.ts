@@ -103,7 +103,7 @@ export const POST: RequestHandler = async ({ request }) => {
           error: 'Invalid action'
         }, { status: 400 });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('GPU Live Processing error:', error);
     return json({
       success: false,
@@ -137,7 +137,7 @@ export const GET: RequestHandler = async ({ url }) => {
         processes
       });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('GPU Live Processing GET error:', error);
     return json({
       success: false,

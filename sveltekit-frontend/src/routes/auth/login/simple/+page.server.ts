@@ -79,7 +79,7 @@ export const actions: Actions = {
 
       console.log('✅ Session created successfully for:', userRecord.email);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login error with PostgreSQL auth:', error);
 
       // Handle specific error messages

@@ -5,7 +5,7 @@ import { sql } from 'drizzle-orm';
  * PostgreSQL + pgvector optimization script for legal AI platform
  * Run this after importing documents to optimize vector search performance
  */
-async function optimizeVectorDatabase() {
+async function optimizeVectorDatabase(): Promise<any> {
   console.log('🚀 Starting PostgreSQL + pgvector optimization...');
 
   try {
@@ -27,7 +27,7 @@ async function optimizeVectorDatabase() {
         WITH (m = 16, ef_construction = 64)
       `);
       console.log('✅ HNSW index created (high accuracy)');
-    } catch (error) {
+    } catch (error: any) {
       console.log('⚠️  HNSW index not supported, using IVFFlat only');
     }
 
@@ -192,14 +192,14 @@ async function optimizeVectorDatabase() {
     console.log('3. Adjust index parameters based on workload patterns');
     console.log('4. Set up automated VACUUM and ANALYZE jobs');
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Optimization failed:', error);
     throw error;
   }
 }
 
 // Test vector search performance
-async function testVectorSearchPerformance() {
+async function testVectorSearchPerformance(): Promise<any> {
   console.log('\n🧪 Testing vector search performance...');
   
   try {
@@ -228,18 +228,18 @@ async function testVectorSearchPerformance() {
     
     console.log('✅ Performance test complete');
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Performance test failed:', error);
   }
 }
 
 // Main execution
-async function main() {
+async function main(): Promise<any> {
   try {
     await optimizeVectorDatabase();
     await testVectorSearchPerformance();
     process.exit(0);
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Script failed:', error);
     process.exit(1);
   }

@@ -91,7 +91,7 @@ export class GRPCQuicVectorProxy {
       await this.detectAvailableProtocols();
       
       console.log('✅ Vector proxy initialized with multi-protocol support');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Vector proxy initialization failed:', error);
       throw error;
     }
@@ -153,7 +153,7 @@ export class GRPCQuicVectorProxy {
           console.log(`⚠️ ${protocol.toUpperCase()}: HTTP ${response.status}`);
           this.config[protocol].enabled = false;
         }
-      } catch (error) {
+      } catch (error: any) {
         console.log(`🔴 ${protocol.toUpperCase()}: Unavailable`);
         this.config[protocol].enabled = false;
       }
@@ -188,7 +188,7 @@ export class GRPCQuicVectorProxy {
           protocol
         };
 
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`⚠️ ${protocol.toUpperCase()} failed, trying next protocol:`, error.message);
         continue;
       }
@@ -410,7 +410,7 @@ export class GRPCQuicVectorProxy {
       try {
         const opResult = await this.executeVectorOperation(op);
         results.push(opResult);
-      } catch (error) {
+      } catch (error: any) {
         results.push({
           success: false,
           error: error.message,
@@ -515,7 +515,7 @@ export class GRPCQuicVectorProxy {
           httpStatus: response.status
         };
         
-      } catch (error) {
+      } catch (error: any) {
         health[protocol] = {
           status: 'unreachable',
           error: error.message
@@ -630,7 +630,7 @@ export class GRPCQuicVectorProxy {
         gpuUtilization: result.gpu_utilization || 0
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ llama.cpp GPU parsing failed:', error);
       throw error;
     }

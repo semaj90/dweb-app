@@ -33,14 +33,14 @@ import type {
 	SelectTriggerPropsWithoutHTML,
 	SelectViewportPropsWithoutHTML,
 } from "bits-ui";
-import { ComboboxScrollAlignmentProp } from "./extended-types/combobox/index.js";
-import { DelayProp, ItemsProp } from "./extended-types/select/index.js";
+import { ComboboxScrollAlignmentProp } from './extended-types/combobox/index';
+import { DelayProp, ItemsProp } from './extended-types/select/index';
 import {
 	NoopProp,
 	OnChangeStringOrArrayProp,
 	OpenClosedProp,
 	StringOrArrayStringProp,
-} from "./extended-types/shared/index.js";
+} from './extended-types/shared/index';
 import {
 	defineBooleanProp,
 	defineComponentApiSchema,
@@ -52,7 +52,7 @@ import {
 	defineSimpleDataAttr,
 	defineStringProp,
 	defineUnionProp,
-} from "../utils.js";
+} from '../utils';
 
 const stateDataAttr = defineEnumDataAttr({
 	name: "state",

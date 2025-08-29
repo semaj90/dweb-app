@@ -132,7 +132,7 @@ class OllamaCudaService {
 
       this.initialized = true;
       console.log('✅ Ollama CUDA service initialized successfully');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize Ollama CUDA service:', error);
       throw error;
     }
@@ -146,7 +146,7 @@ class OllamaCudaService {
       const response = await fetch(`${this.baseUrl}/api/tags`);
       const data = await response.json();
       return data.models?.map((model: any) => model.name) || [];
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to fetch available models:', error);
       return [];
     }
@@ -205,7 +205,7 @@ class OllamaCudaService {
 
       console.log(`✅ Model ${modelName} loaded in ${loadTime}ms with CUDA acceleration`);
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Failed to load model ${modelName}:`, error);
       return false;
     }
@@ -254,7 +254,7 @@ class OllamaCudaService {
       });
 
       return response.content as string;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Chat completion failed:', error);
       throw error;
     }
@@ -288,7 +288,7 @@ class OllamaCudaService {
       options.streaming.onEnd?.();
 
       return fullResponse;
-    } catch (error) {
+    } catch (error: any) {
       options.streaming.onError?.(error as Error);
       throw error;
     }
@@ -302,7 +302,7 @@ class OllamaCudaService {
       const embeddings = await this.embeddings.embedDocuments(texts);
       console.log(`✅ Generated embeddings for ${texts.length} documents`);
       return embeddings;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to generate embeddings:', error);
       throw error;
     }
@@ -315,7 +315,7 @@ class OllamaCudaService {
     try {
       const embedding = await this.embeddings.embedQuery(text);
       return embedding;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to generate embedding:', error);
       throw error;
     }
@@ -376,7 +376,7 @@ class OllamaCudaService {
         },
         ...(gpuInfo && { gpu: gpuInfo })
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to get system health:', error);
       return {
         status: 'unhealthy',
@@ -494,7 +494,7 @@ class OllamaCudaService {
       this.models.clear();
       
       console.log('✅ Ollama CUDA service cleaned up');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to cleanup Ollama service:', error);
     }
   }

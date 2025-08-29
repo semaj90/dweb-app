@@ -3,7 +3,7 @@
  * Complete CRUD with PostgreSQL + pgvector + Drizzle ORM
  */
 
-import { drizzle } from 'drizzle-orm/postgres-js';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import { eq, and, desc, isNull, count, sql, cosineDistance } from 'drizzle-orm';
 import postgres from 'postgres';
 import bcrypt from 'bcryptjs';
@@ -19,7 +19,7 @@ import type {
   UserActivity,
   NewUserActivity,
   FullUserProfile
-} from './schema/user-management.js';
+} from './schema/user-management';
 import { 
   users, 
   userProfiles, 
@@ -29,7 +29,7 @@ import {
   updateUserSchema,
   insertProfileSchema,
   updateProfileSchema
-} from './schema/user-management.js';
+} from './schema/user-management';
 
 // ============================================================================
 // DATABASE CONNECTION
@@ -49,8 +49,18 @@ const queryClient = postgres(connectionString, {
     vector: {
       to: 1184,
       from: [1184],
-      serialize: (x: number[]) => `[${x.join(',')}]`,
-      parse: (x: string) => x.slice(1, -1).split(',').map(Number),
+      serialize: (x: number[]) => {
+        if (Array.isArray(x)) {
+          return `[${x.join(',')}]`;
+        }
+        return x || '[]';
+      },
+      parse: (x: string) => {
+        if (typeof x === 'string' && x.startsWith('[') && x.endsWith(']')) {
+          return x.slice(1, -1).split(',').map(Number);
+        }
+        return [];
+      },
     },
   },
 });
@@ -131,7 +141,7 @@ export class UserAuthService {
       });
 
       return { ...result, success: true };
-    } catch (error) {
+    } catch (error: any) {
       console.error('User registration error:', error);
       return { 
         user: {} as User, 
@@ -225,7 +235,7 @@ export class UserAuthService {
         session,
         success: true,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Authentication error:', error);
       return { 
         success: false, 
@@ -267,7 +277,7 @@ export class UserAuthService {
         session: data.user_sessions,
         valid: true,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Session validation error:', error);
       return { valid: false };
     }
@@ -284,7 +294,7 @@ export class UserAuthService {
         .where(eq(userSessions.sessionId, sessionId));
 
       return { success: true };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Logout error:', error);
       return { success: false };
     }
@@ -343,7 +353,7 @@ export class UserProfileService {
         sessions,
         recentActivity,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Get full profile error:', error);
       return null;
     }
@@ -446,7 +456,7 @@ export class UserProfileService {
       });
 
       return { ...result, success: true };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Update profile error:', error);
       return {
         success: false,
@@ -489,7 +499,7 @@ export class UserProfileService {
       });
 
       return { success: true };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Delete user error:', error);
       return {
         success: false,
@@ -529,7 +539,7 @@ export class UserProfileService {
         .limit(limit);
 
       return similarUsers.map(row => row.user);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Find similar users error:', error);
       return [];
     }
@@ -550,7 +560,7 @@ export class UserActivityService {
         ...activity,
         timestamp: new Date(),
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Log activity error:', error);
     }
   }
@@ -571,7 +581,7 @@ export class UserActivityService {
         .orderBy(desc(userActivityLog.timestamp))
         .limit(limit)
         .offset(offset);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Get user activity error:', error);
       return [];
     }
@@ -630,7 +640,7 @@ export class UserActivityService {
         successRate: stats[0]?.successRate || 0,
         topActions,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Get activity stats error:', error);
       return {
         totalActions: 0,

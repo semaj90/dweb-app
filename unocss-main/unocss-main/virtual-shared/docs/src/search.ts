@@ -64,7 +64,7 @@ export function createSearch(
   uno.events.on('config', reset)
 
   let _fusePrepare: Promise<void> | undefined
-  async function search(input: string) {
+  async function search(input: string): Promise<any> {
     input = input.trim()
     if (!input)
       return []
@@ -123,21 +123,21 @@ export function createSearch(
     return result
   }
 
-  async function suggestMultiple(str: string[]) {
+  async function suggestMultiple(str: string[]): Promise<any> {
     return uniq((await Promise.all(str.map(i => ac.suggest(i)))).flat())
   }
 
-  async function generateForMultiple(str: string[]) {
+  async function generateForMultiple(str: string[]): Promise<any> {
     return uniq(await Promise.all(str.map(i => generateFor(i)))).filter(notNull)
   }
 
-  async function prepareFuse() {
+  async function prepareFuse(): Promise<any> {
     await Promise.all(Array.from(await enumerateAutocomplete())
       .slice(0, 500)
       .map(async i => await generateFor(i)))
   }
 
-  async function enumerateAutocomplete() {
+  async function enumerateAutocomplete(): Promise<any> {
     const matched = new Set<string>()
     const a2z = Array.from('abcdefghijklmnopqrstuvwxyz')
     const a2zd = [...a2z, '-']
@@ -155,7 +155,7 @@ export function createSearch(
   }
 
   const _generatePromiseMap = new Map<string, Promise<RuleItem | undefined>>()
-  async function _generateFor(input: string) {
+  async function _generateFor(input: string): Promise<any> {
     if (matchedMap.has(input))
       return matchedMap.get(input)
 

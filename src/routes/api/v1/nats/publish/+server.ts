@@ -1,12 +1,12 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { getNATSService, NATS_SUBJECTS } from '$lib/services/nats-messaging-service.js';
+import { getNATSService, NATS_SUBJECTS } from '$lib/services/nats-messaging-service';
 
 /**
  * POST /api/v1/nats/publish
  * Publish messages to NATS subjects
  */
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const { subject, data, options = {} } = await request.json();
 
@@ -53,7 +53,7 @@ export const POST: RequestHandler = async ({ request }) => {
       timestamp: Date.now()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('NATS publish API error:', error);
     return json({ 
       error: 'Failed to publish message',

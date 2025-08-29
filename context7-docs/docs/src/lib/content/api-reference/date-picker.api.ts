@@ -18,21 +18,21 @@ import {
 	prevButton,
 	monthSelect,
 	yearSelect,
-} from "./calendar.api.js";
+} from './calendar.api';
 import {
 	input as dateFieldInput,
 	root as dateFieldRoot,
 	label,
 	segment,
-} from "./date-field.api.js";
+} from './date-field.api';
 import {
 	childrenSnippet,
 	onOpenChangeCompleteProp,
 	onOpenChangeProp,
 	withChildProps,
-} from "./shared.js";
-import { content, portal, trigger } from "./popover.api.js";
-import { defineBooleanProp, defineComponentApiSchema, defineSimpleDataAttr } from "../utils.js";
+} from './shared';
+import { content, portal, trigger } from './popover.api';
+import { defineBooleanProp, defineComponentApiSchema, defineSimpleDataAttr } from '../utils';
 
 export const root = defineComponentApiSchema<DatePickerRootPropsWithoutHTML>({
 	title: "Root",

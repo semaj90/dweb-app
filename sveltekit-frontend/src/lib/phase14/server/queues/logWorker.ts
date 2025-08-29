@@ -1,9 +1,9 @@
 
 import { Worker } from "bullmq";
-import { logQueue } from "./logQueue.js";
+import { logQueue } from './logQueue';
 
 // Define the type for the log entry data
-interface LogEntryData {
+export interface LogEntryData {
   timestamp: string;
   level: string;
   message: string;
@@ -54,7 +54,7 @@ const logWorker = new Worker<LogEntryData>('logQueue', async (job) => {
     // For now, just simulate success
     console.log(`Successfully processed log: ${message}`);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error(`Error processing log job ${job.id}:`, error);
     throw error; // Re-throw to mark the job as failed in BullMQ
   }

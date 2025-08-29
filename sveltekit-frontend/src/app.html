@@ -66,11 +66,14 @@
       }
     </script>
 
+    <!-- NES.css Framework via CDN for faster loading -->
+    <link href="https://unpkg.com/nes.css@latest/css/nes.min.css" rel="stylesheet" />
+    
     <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Press+Start+2P&display=swap"
       rel="stylesheet"
     />
 
@@ -227,22 +230,103 @@
         padding-bottom: 0.5rem;
       }
 
-      /* YoRHa Terminal Input Styles */
-      input, textarea, select {
-        background: var(--yorha-bg-secondary);
-        border: 2px solid var(--yorha-text-muted);
-        color: var(--yorha-text-primary);
-        padding: 12px 16px;
-        border-radius: 0;
-        font-family: var(--yorha-font-primary);
-        transition: all 0.2s ease;
+      /* NES.css Integration with YoRHa Terminal Styles */
+      .nes-input, .nes-textarea, .nes-select > select {
+        font-family: 'Press Start 2P', var(--yorha-font-primary), monospace !important;
+        background: var(--yorha-bg-secondary) !important;
+        color: var(--yorha-text-primary) !important;
+        border-color: var(--yorha-text-muted) !important;
       }
       
-      input:focus, textarea:focus, select:focus {
-        border-color: var(--yorha-secondary);
-        box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.3);
-        background: var(--yorha-bg-tertiary);
-        outline: none;
+      .nes-input:focus, .nes-textarea:focus, .nes-select > select:focus {
+        border-color: var(--yorha-secondary) !important;
+        box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.3) !important;
+        background: var(--yorha-bg-tertiary) !important;
+      }
+      
+      /* NES.css Container Defaults */
+      .nes-container {
+        background: var(--yorha-bg-secondary) !important;
+        color: var(--yorha-text-primary) !important;
+        border-color: var(--yorha-text-muted) !important;
+        font-family: 'Press Start 2P', var(--yorha-font-primary), monospace !important;
+      }
+      
+      .nes-container.with-title > .title {
+        background: var(--yorha-bg-primary) !important;
+        color: var(--yorha-text-accent) !important;
+        font-family: 'Press Start 2P', var(--yorha-font-secondary), monospace !important;
+      }
+      
+      .nes-container.is-centered {
+        text-align: center !important;
+      }
+      
+      .nes-container.is-rounded {
+        border-color: var(--yorha-secondary) !important;
+      }
+      
+      .nes-container.is-success {
+        border-color: var(--yorha-accent) !important;
+        background: rgba(0, 255, 65, 0.1) !important;
+      }
+      
+      .nes-container.is-error {
+        border-color: var(--yorha-danger) !important;
+        background: rgba(255, 0, 65, 0.1) !important;
+      }
+      
+      .nes-btn {
+        font-family: 'Press Start 2P', var(--yorha-font-primary), monospace !important;
+        color: var(--yorha-text-primary) !important;
+      }
+      
+      .nes-btn.is-success {
+        background: var(--yorha-accent) !important;
+        border-color: var(--yorha-accent-dark) !important;
+        color: #000000 !important;
+      }
+      
+      .nes-text.is-error {
+        color: var(--yorha-danger) !important;
+      }
+      
+      /* NES.css field labels */
+      .nes-field > label {
+        font-family: 'Press Start 2P', var(--yorha-font-secondary), monospace !important;
+        color: var(--yorha-text-accent) !important;
+        font-size: 12px !important;
+        margin-bottom: 8px !important;
+        display: block !important;
+      }
+      
+      /* NES.css Select Defaults */
+      .nes-select:after {
+        border-color: var(--yorha-text-accent) transparent transparent transparent !important;
+      }
+      
+      .nes-select > select {
+        font-family: 'Press Start 2P', var(--yorha-font-primary), monospace !important;
+        background: var(--yorha-bg-secondary) !important;
+        color: var(--yorha-text-primary) !important;
+        border-color: var(--yorha-text-muted) !important;
+        font-size: 12px !important;
+      }
+      
+      .nes-select > select:focus {
+        border-color: var(--yorha-secondary) !important;
+        box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.3) !important;
+        background: var(--yorha-bg-tertiary) !important;
+      }
+      
+      /* Default select styling for non-NES elements */
+      select:not(.nes-select > select) {
+        font-family: 'Press Start 2P', var(--yorha-font-primary), monospace !important;
+        background: var(--yorha-bg-secondary) !important;
+        color: var(--yorha-text-primary) !important;
+        border: 2px solid var(--yorha-text-muted) !important;
+        padding: 8px 12px !important;
+        font-size: 12px !important;
       }
 
       /* YoRHa Terminal Link Styles */

@@ -3,12 +3,12 @@
 // Automated TypeScript error resolution with LLM assistance
 // ======================================================================
 
-import { gpuLokiErrorAPI } from './gpu-loki-error-orchestrator.js';
-import { parallelAnalysisAPI } from './parallel-error-analyzer.js';
+import { gpuLokiErrorAPI } from './gpu-loki-error-orchestrator';
+import { parallelAnalysisAPI } from './parallel-error-analyzer';
 import { browser } from '$app/environment';
 import { writable, derived } from 'svelte/store';
 
-interface FixAttempt {
+export interface FixAttempt {
   id: string;
   errorId: string;
   strategy: string;
@@ -21,7 +21,7 @@ interface FixAttempt {
   llmModel?: string;
 }
 
-interface ErrorFix {
+export interface ErrorFix {
   errorId: string;
   file: string;
   line: number;
@@ -34,7 +34,7 @@ interface ErrorFix {
   validated: boolean;
 }
 
-interface AIFixConfig {
+export interface AIFixConfig {
   model: 'gemma3-legal';
   endpoint: string;
   maxRetries: number;
@@ -81,7 +81,7 @@ class AIErrorFixer {
           
           const data = await response.json();
           return data.response || '';
-        } catch (error) {
+        } catch (error: any) {
           console.error('Ollama generation failed:', error);
           return '';
         }
@@ -132,7 +132,7 @@ class AIErrorFixer {
           // Cache the fix attempt
           await this.cacheFixAttempt(error.id, fix);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fixing failed:', error);
       }
     }
@@ -164,7 +164,7 @@ class AIErrorFixer {
       if (!response) return null;
 
       return this.parseFixResponse(error, response);
-    } catch (error) {
+    } catch (error: any) {
       console.error('AI fix generation failed:', error);
       return null;
     }
@@ -229,7 +229,7 @@ ${this.getCommonFixes(error.code)}`;
       };
 
       return fix;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to parse fix response:', error);
       return null;
     }
@@ -260,7 +260,7 @@ ${this.getCommonFixes(error.code)}`;
       if (fix.strategy === 'add_import' && !fix.fixedText.includes('import')) return false;
       
       return true;
-    } catch (error) {
+    } catch (error: any) {
       return false;
     }
   }
@@ -328,7 +328,7 @@ ${this.getCommonFixes(error.code)}`;
           });
           failed++;
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Failed to apply fix for ${fix.errorId}:`, error);
         failed++;
       }
@@ -376,7 +376,7 @@ ${this.getCommonFixes(error.code)}`;
       } else {
         return { errorId: fix.errorId, success: false, reason: 'Line number out of range' };
       }
-    } catch (error) {
+    } catch (error: any) {
       return { errorId: fix.errorId, success: false, reason: String(error) };
     }
   }
@@ -472,7 +472,7 @@ export const aiErrorFixerAPI = {
         failedFixes: applyResults.failed,
         fixes: fixes
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fixing pipeline failed:', error);
       errorFixerStore.update(state => ({ ...state, fixing: false }));
       throw error;

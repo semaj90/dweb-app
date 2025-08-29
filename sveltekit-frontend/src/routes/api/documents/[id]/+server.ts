@@ -7,7 +7,7 @@ import { eq } from "drizzle-orm";
 // Real Document API Endpoint - No Mock Data
 
 // GET /api/documents/[id] - Get a specific document
-export async function GET({ params }: RequestEvent) {
+export async function GET({ params }: RequestEvent): Promise<any> {
   try {
     const documentId = params.id;
 
@@ -41,7 +41,7 @@ export async function GET({ params }: RequestEvent) {
       success: true,
       document: document[0],
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching document:", error);
     return json(
       {
@@ -53,7 +53,7 @@ export async function GET({ params }: RequestEvent) {
   }
 }
 // PUT /api/documents/[id] - Update a document
-export async function PUT({ params, request }: RequestEvent) {
+export async function PUT({ params, request }: RequestEvent): Promise<any> {
   try {
     const documentId = params.id;
     const body = await request.json();
@@ -104,7 +104,7 @@ export async function PUT({ params, request }: RequestEvent) {
       success: true,
       document: updatedDocument[0],
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating document:", error);
     return json(
       {
@@ -116,7 +116,7 @@ export async function PUT({ params, request }: RequestEvent) {
   }
 }
 // DELETE /api/documents/[id] - Delete a document
-export async function DELETE({ params }: RequestEvent) {
+export async function DELETE({ params }: RequestEvent): Promise<any> {
   try {
     const documentId = params.id;
 
@@ -149,7 +149,7 @@ export async function DELETE({ params }: RequestEvent) {
       success: true,
       message: "Document deleted successfully",
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error deleting document:", error);
     return json(
       {

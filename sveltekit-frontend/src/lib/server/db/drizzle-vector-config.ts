@@ -3,7 +3,7 @@
  * Production-ready database schema with pgvector support
  */
 
-import { drizzle } from 'drizzle-orm/postgres-js';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import { 
   pgTable, 
   serial, 
@@ -399,7 +399,7 @@ export type NewDocument = typeof documents.$inferInsert;
 export type NewEvidence = typeof evidence.$inferInsert;
 
 // Health check function
-export async function healthCheck() {
+export async function healthCheck(): Promise<any> {
   try {
     const result = await db.execute(sql`SELECT 1 as health`);
     return { 
@@ -408,7 +408,7 @@ export async function healthCheck() {
       connection: 'active',
       result: result[0]
     };
-  } catch (error) {
+  } catch (error: any) {
     return { 
       status: 'unhealthy', 
       timestamp: new Date().toISOString(),

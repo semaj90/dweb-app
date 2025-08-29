@@ -13,8 +13,8 @@ import { aiAssistantMachine, type AIAssistantContext } from '$lib/machines/aiAss
 import { agentShellMachine } from '$lib/machines/agentShellMachine.js';
 
 // Import services
-import { productionServiceClient, services } from './production-service-client.js';
-import { mcpGPUOrchestrator } from './mcp-gpu-orchestrator.js';
+import { productionServiceClient, services } from './production-service-client';
+import { mcpGPUOrchestrator } from './mcp-gpu-orchestrator';
 
 // Global state interface
 export interface GlobalAppState {
@@ -37,7 +37,7 @@ export interface GlobalAppState {
   };
 }
 
-interface Notification {
+export interface Notification {
   id: string;
   type: 'info' | 'success' | 'warning' | 'error';
   title: string;
@@ -317,7 +317,7 @@ class XStateIntegrationService {
           }
         }));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load user data:', error);
     }
   }
@@ -472,7 +472,7 @@ class XStateIntegrationService {
       }
 
       return response;
-    } catch (error) {
+    } catch (error: any) {
       this.showNotification({
         type: 'error',
         title: 'Upload Failed',

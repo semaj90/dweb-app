@@ -4,7 +4,7 @@ import type { WebSocket } from "ws";
 import { WebSocketServer } from "ws";
 import { createClient } from 'redis';
 
-interface ClientConnection {
+export interface ClientConnection {
   ws: WebSocket;
   userId?: string;
   subscriptions: Set<string>;
@@ -41,7 +41,7 @@ class RealTimeServer {
 
       this.isInitialized = true;
       console.log("✅ Redis connected and WebSocket server initialized");
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Redis connection failed:", error);
       // Continue without Redis - fallback to polling
     }
@@ -79,7 +79,7 @@ class RealTimeServer {
         try {
           const message = JSON.parse(data.toString());
           this.handleClientMessage(clientId, message);
-        } catch (error) {
+        } catch (error: any) {
           console.error("Invalid message format:", error);
         }
       });
@@ -152,7 +152,7 @@ class RealTimeServer {
       ) {
         try {
           client.ws.send(payload);
-        } catch (error) {
+        } catch (error: any) {
           console.error(`Failed to send to client ${clientId}:`, error);
           this.clients.delete(clientId);
         }
@@ -170,7 +170,7 @@ class RealTimeServer {
 
     try {
       await this.redisClient.publish(channel, message);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to publish to Redis:", error);
     }
   }
@@ -256,7 +256,7 @@ class RealTimeServer {
       this.wss.close();
 
       console.log("✅ WebSocket server shut down gracefully");
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Error during shutdown:", error);
     }
   }

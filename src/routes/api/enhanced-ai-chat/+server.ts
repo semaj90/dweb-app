@@ -8,7 +8,7 @@ import type { RequestHandler } from './$types';
 import { semanticPipeline } from '$lib/ai/semantic-analysis-pipeline';
 import { streamRag } from '$lib/ai/ragStreamClient';
 
-interface ChatRequest {
+export interface ChatRequest {
   message: string;
   context: {
     userId: string;
@@ -30,9 +30,9 @@ interface ChatRequest {
   };
 }
 
-interface ChatResponse {
+export interface ChatResponse {
   response: string;
-  intent: unknown;
+  intent: any;
   confidence: number;
   sources: string[];
   followUpQuestions: string[];
@@ -45,7 +45,7 @@ interface ChatResponse {
   };
 }
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   const startTime = Date.now();
   
   try {
@@ -72,7 +72,7 @@ export const POST: RequestHandler = async ({ request }) => {
     }
 
     // 2. Retrieve relevant documents using RAG
-    let relevantDocuments: unknown[] = [];
+    let relevantDocuments: any[] = [];
     if (chatRequest.options?.enableRAG !== false) {
       relevantDocuments = await retrieveRelevantDocuments(
         chatRequest.message,
@@ -111,7 +111,7 @@ export const POST: RequestHandler = async ({ request }) => {
     console.log(`✅ AI Chat response generated in ${processingTime}ms`);
     return json(response);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ AI Chat request failed:', error);
     
     return json({
@@ -125,12 +125,12 @@ export const POST: RequestHandler = async ({ request }) => {
 // RAG document retrieval
 async function retrieveRelevantDocuments(
   query: string,
-  context: unknown
+  context: any
 ): Promise<unknown[]> {
   try {
     // Use existing RAG streaming client for document retrieval
     const ragResult = await new Promise<unknown[]>((resolve, reject) => {
-      const documents: unknown[] = [];
+      const documents: any[] = [];
       
       streamRag({
         query,
@@ -153,7 +153,7 @@ async function retrieveRelevantDocuments(
 
     return ragResult;
 
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Document retrieval failed:', error);
     return [];
   }
@@ -162,9 +162,9 @@ async function retrieveRelevantDocuments(
 // Track chat interactions for analytics
 async function trackChatInteraction(
   request: ChatRequest,
-  intent: unknown,
-  response: unknown
-): Promise<void> {
+  intent: any,
+  response: any
+): Promise<any> {
   try {
     // This would integrate with your user activity tracking
     console.log(`📊 Tracking chat interaction for user ${request.context.userId}`);
@@ -184,7 +184,7 @@ async function trackChatInteraction(
     // Send to analytics service (implementation would depend on your analytics setup)
     // await analyticsService.trackChatInteraction(interactionData);
     
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Failed to track chat interaction:', error);
   }
 }
@@ -196,7 +196,7 @@ function estimateTokens(text: string): number {
 }
 
 // Streaming endpoint for real-time chat
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
   const query = url.searchParams.get('query');
   const userId = url.searchParams.get('userId');
   const caseId = url.searchParams.get('caseId');
@@ -218,7 +218,7 @@ export const GET: RequestHandler = async ({ url }) => {
       );
     },
     
-    async pull(controller) {
+    async pull(controller): Promise<any> {
       try {
         // Initialize context for streaming
         const context = {
@@ -273,7 +273,7 @@ export const GET: RequestHandler = async ({ url }) => {
           }
         });
 
-      } catch (error) {
+      } catch (error: any) {
         controller.enqueue(
           encoder.encode(`data: ${JSON.stringify({ 
             type: 'error', 

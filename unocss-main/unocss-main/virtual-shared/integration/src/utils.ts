@@ -61,7 +61,7 @@ export function replaceAsync(string: string, searchValue: RegExp, replacer: (...
       )
     }
   }
-  catch (error) {
+  catch (error: any) {
     return Promise.reject(error)
   }
 }

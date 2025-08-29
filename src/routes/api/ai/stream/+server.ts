@@ -1,7 +1,7 @@
 
 
-import { legalOrchestrator } from '$lib/agents/orchestrator.js';
-import { cacheManager } from '$lib/database/redis.js';
+import { legalOrchestrator } from '$lib/agents/orchestrator';
+import { cacheManager } from '$lib/database/redis';
 import type { RequestHandler } from './$types';
 
 /**
@@ -9,7 +9,7 @@ import type { RequestHandler } from './$types';
  * Token-by-token streaming with SIMD optimization and compression
  */
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const {
       prompt,
@@ -57,7 +57,7 @@ export const POST: RequestHandler = async ({ request }) => {
       enableSIMD
     });
 
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('Streaming API error:', error);
     return new Response(
       JSON.stringify({ error: 'Internal server error', details: (error as any)?.message || "Unknown error" }),
@@ -75,7 +75,7 @@ async function createOptimizedStream(
     enableCompression: boolean;
     enableSIMD: boolean;
   }
-) {
+): Promise<any> {
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
   
@@ -87,7 +87,7 @@ async function createOptimizedStream(
   const startTime = Date.now();
 
   const readable = new ReadableStream({
-    async start(controller) {
+    async start(controller): Promise<any> {
       try {
         // Send stream start event
         controller.enqueue(encoder.encode(JSON.stringify({
@@ -194,7 +194,7 @@ async function createOptimizedStream(
         }
 
         controller.close();
-      } catch (error: unknown) {
+      } catch (error: any) {
         console.error('Stream error:', error);
         controller.enqueue(encoder.encode(JSON.stringify({
           type: 'error',
@@ -344,7 +344,7 @@ class TokenStreamOptimizer {
   }
 }
 
-interface OptimizedToken {
+export interface OptimizedToken {
   text: string;
   compressed: boolean;
   originalSize: number;

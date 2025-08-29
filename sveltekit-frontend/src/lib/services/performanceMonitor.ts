@@ -191,7 +191,7 @@ class PerformanceMonitor {
         if (this.metricsHistory.length > 1000) {
           this.metricsHistory = this.metricsHistory.slice(-1000);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to collect performance metrics:', error);
       }
     }, intervalMs);
@@ -267,7 +267,7 @@ class PerformanceMonitor {
         confidenceHistory,
         throughputHistory
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to collect AI metrics:', error);
       return this.getDefaultAIMetrics();
     }
@@ -340,7 +340,7 @@ class PerformanceMonitor {
         throughputHistory,
         failureRateHistory
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to collect queue metrics:', error);
       return this.getDefaultQueueMetrics();
     }
@@ -379,7 +379,7 @@ class PerformanceMonitor {
         hitRateHistory,
         memoryUsageHistory
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to collect cache metrics:', error);
       return this.getDefaultCacheMetrics();
     }
@@ -438,7 +438,7 @@ class PerformanceMonitor {
         errorRate,
         activeAlerts: this.generateAlerts(components, { memory, responseTime, errorRate })
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to collect system metrics:', error);
       return this.getDefaultSystemMetrics();
     }
@@ -455,7 +455,7 @@ class PerformanceMonitor {
         status: health.status === 'healthy' ? 'healthy' : 'unhealthy',
         responseTime
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: 'unhealthy',
         responseTime: Date.now() - startTime
@@ -473,7 +473,7 @@ class PerformanceMonitor {
         status: health.status === 'healthy' ? 'healthy' : 'unhealthy',
         responseTime
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: 'unhealthy',
         responseTime: Date.now() - startTime
@@ -490,7 +490,7 @@ class PerformanceMonitor {
         status: 'healthy',
         responseTime: Date.now() - startTime
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: 'unhealthy',
         responseTime: Date.now() - startTime
@@ -508,7 +508,7 @@ class PerformanceMonitor {
         status: stats.hitRate > 0.5 ? 'healthy' : 'degraded',
         responseTime
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: 'unhealthy',
         responseTime: Date.now() - startTime
@@ -524,7 +524,7 @@ class PerformanceMonitor {
         status: 'healthy',
         responseTime: Date.now() - startTime
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: 'unhealthy',
         responseTime: Date.now() - startTime

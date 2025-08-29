@@ -16,7 +16,7 @@ export class MemoryMonitoringService {
         if (result.success) {
           this.notifyCallbacks(result.data);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Memory monitoring error:', error);
       }
     }, intervalMs);
@@ -40,7 +40,7 @@ export class MemoryMonitoringService {
     this.callbacks.forEach((callback: any) => {
       try {
         callback(data);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Memory monitoring callback error:', error);
       }
     });
@@ -51,7 +51,7 @@ export class MemoryMonitoringService {
       const response = await fetch('/api/memory/neural?action=optimize');
       const result = await response.json();
       return result.success;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to trigger optimization:', error);
       return false;
     }
@@ -62,7 +62,7 @@ export class MemoryMonitoringService {
       const response = await fetch(`/api/memory/neural?action=predict&horizon=${horizonMinutes}`);
       const result = await response.json();
       return result.success ? result.data : null;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to get memory prediction:', error);
       return null;
     }

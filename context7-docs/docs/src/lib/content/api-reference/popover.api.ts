@@ -7,12 +7,12 @@ import type {
 	PopoverRootPropsWithoutHTML,
 	PopoverTriggerPropsWithoutHTML,
 } from "bits-ui";
-import { OpenClosedProp } from "./extended-types/shared/index.js";
+import { OpenClosedProp } from './extended-types/shared/index';
 import {
 	floatingContentChildDefinition,
 	floatingContentCSSVars,
 	onOpenChangeCompleteProp,
-} from "./shared.js";
+} from './shared';
 import {
 	arrowProps,
 	childrenSnippet,
@@ -34,7 +34,7 @@ import {
 	defineEnumDataAttr,
 	definePropSchema,
 	defineSimpleDataAttr,
-} from "../utils.js";
+} from '../utils';
 
 const openClosedDataAttr = defineEnumDataAttr({
 	name: "state",

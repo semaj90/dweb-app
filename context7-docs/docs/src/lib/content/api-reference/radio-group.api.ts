@@ -1,7 +1,7 @@
 import type { RadioGroupItemPropsWithoutHTML, RadioGroupRootPropsWithoutHTML } from "bits-ui";
-import { withChildProps } from "./shared.js";
-import { OnStringValueChangeProp, OrientationProp } from "./extended-types/shared/index.js";
-import { RadioGroupStateAttr } from "./extended-types/radio-group/index.js";
+import { withChildProps } from './shared';
+import { OnStringValueChangeProp, OrientationProp } from './extended-types/shared/index';
+import { RadioGroupStateAttr } from './extended-types/radio-group/index';
 import {
 	defineBooleanProp,
 	defineComponentApiSchema,
@@ -10,7 +10,7 @@ import {
 	defineFunctionProp,
 	defineSimpleDataAttr,
 	defineStringProp,
-} from "../utils.js";
+} from '../utils';
 
 export const root = defineComponentApiSchema<RadioGroupRootPropsWithoutHTML>({
 	title: "Root",

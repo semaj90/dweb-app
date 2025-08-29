@@ -24,7 +24,7 @@ export async function fetchEmbedding(text: string): Promise<number[]> {
     }
 
     return [];
-  } catch (err) {
+  } catch (err: any) {
     console.error('Qdrant embedding fetch failed:', err);
     return [];
   }

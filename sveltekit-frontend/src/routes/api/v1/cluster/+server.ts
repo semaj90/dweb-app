@@ -20,7 +20,7 @@ export const GET: RequestHandler = async ({ url }) => {
             default:
                 return await handleClusterOverview();
         }
-    } catch (err) {
+    } catch (err: any) {
         console.error('Cluster API Error:', err);
         return error(500, `Cluster service unavailable: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
@@ -41,13 +41,13 @@ export const POST: RequestHandler = async ({ request }) => {
             default:
                 return error(400, 'Invalid cluster action');
         }
-    } catch (err) {
+    } catch (err: any) {
         console.error('Cluster Action Error:', err);
         return error(500, `Cluster action failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
 };
 
-async function handleHealthCheck() {
+async function handleHealthCheck(): Promise<any> {
     const health = await productionServiceClient.checkAllServicesHealth();
     const metrics = await productionServiceClient.getPerformanceMetrics();
     const totalServices = Object.keys(health).length;
@@ -67,7 +67,7 @@ async function handleHealthCheck() {
     });
 }
 
-async function handleServicesStatus() {
+async function handleServicesStatus(): Promise<any> {
     const health = await productionServiceClient.checkAllServicesHealth();
     const serviceDetails = {
         tier1_core: {
@@ -94,7 +94,7 @@ async function handleServicesStatus() {
     });
 }
 
-async function handleMetrics() {
+async function handleMetrics(): Promise<any> {
     const performance = await productionServiceClient.getPerformanceMetrics();
     const health = await productionServiceClient.checkAllServicesHealth();
     return json({
@@ -121,7 +121,7 @@ async function handleMetrics() {
     });
 }
 
-async function handleClusterOverview() {
+async function handleClusterOverview(): Promise<any> {
     const health = await productionServiceClient.checkAllServicesHealth();
     return json({
         cluster: {
@@ -146,14 +146,14 @@ async function handleClusterOverview() {
     });
 }
 
-async function handleServiceRestart(serviceName: string) {
+async function handleServiceRestart(serviceName: string): Promise<any> {
     return json({ success: true, message: `Service ${serviceName} restart initiated`, timestamp: new Date().toISOString() });
 }
 
-async function handleServiceScaling(serviceName: string, instances: number) {
+async function handleServiceScaling(serviceName: string, instances: number): Promise<any> {
     return json({ success: true, message: `Service ${serviceName} scaled to ${instances} instances`, timestamp: new Date().toISOString() });
 }
 
-async function handleServiceDeployment(serviceConfig: any) {
+async function handleServiceDeployment(serviceConfig: any): Promise<any> {
     return json({ success: true, message: 'Service deployment initiated', config: serviceConfig, timestamp: new Date().toISOString() });
 }

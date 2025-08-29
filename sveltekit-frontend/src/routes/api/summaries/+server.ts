@@ -15,7 +15,7 @@ import { aiSummaryMachine } from "$lib/machines/aiSummaryMachine";
 import { ollamaService } from "$lib/server/services/ollama-service"; // Assumed service providing generateResponse
 
 // Request payload for summary generation
-interface SummaryRequest {
+export interface SummaryRequest {
   type: "case" | "evidence" | "legal_document" | "cross_analysis";
   targetId: string;
   depth: "quick" | "comprehensive" | "forensic";
@@ -26,7 +26,7 @@ interface SummaryRequest {
   userId?: string;
 }
 
-interface AILLMOutput {
+export interface AILLMOutput {
   content: string;
   model: string;
   confidence: number;
@@ -35,7 +35,7 @@ interface AILLMOutput {
 }
 
 // Basic shape for vector search results (loose to accommodate both services)
-interface BasicVectorResult {
+export interface BasicVectorResult {
   id: string;
   content?: string;
   payload?: { content?: string; [k: string]: unknown };
@@ -44,7 +44,7 @@ interface BasicVectorResult {
   source?: string;
 }
 
-interface EnhancedRAGOutput {
+export interface EnhancedRAGOutput {
   relevantDocs: Array<{
     id: string;
     content: string;
@@ -59,7 +59,7 @@ interface EnhancedRAGOutput {
   };
 }
 
-interface UserActivityContext {
+export interface UserActivityContext {
   recentQueries: string[];
   preferredTopics: string[];
   interactionPatterns: {
@@ -70,7 +70,7 @@ interface UserActivityContext {
   recommendations: string[];
 }
 
-interface SynthesizedOutput {
+export interface SynthesizedOutput {
   summary: string;
   keyInsights: string[];
   actionItems: string[];
@@ -107,7 +107,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     } else {
       return handleBatchSummary(summaryRequest, userId);
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Summaries API error:", error);
     return json(
       {
@@ -119,7 +119,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   }
 };
 
-async function handleBatchSummary(request: SummaryRequest, userId: string) {
+async function handleBatchSummary(request: SummaryRequest, userId: string): Promise<any> {
   const startTime = Date.now();
 
   // Step 1: Get Local LLM Output
@@ -157,7 +157,7 @@ async function handleBatchSummary(request: SummaryRequest, userId: string) {
   });
 }
 
-async function handleStreamingSummary(request: SummaryRequest, userId: string) {
+async function handleStreamingSummary(request: SummaryRequest, userId: string): Promise<any> {
   // Create SSE stream for real-time updates
   const stream = new ReadableStream({
     async start(controller) {
@@ -248,7 +248,7 @@ async function handleStreamingSummary(request: SummaryRequest, userId: string) {
         );
 
         controller.close();
-      } catch (error) {
+      } catch (error: any) {
         controller.enqueue(
           encoder.encode(
             `data: ${JSON.stringify({
@@ -465,12 +465,12 @@ async function getUserActivityContext(
   // Extract activity patterns
   const recentQueries = [
     ...recentCases.map((c) => c.title),
-    ...recentEvidence.map((e) => e.title),
+    ...recentEvidence.map((e: any) => e.title),
   ].slice(0, 5);
 
   const preferredTopics = extractTopics([
     ...recentCases.map((c) => c.description || ""),
-    ...recentEvidence.map((e) => e.description || ""),
+    ...recentEvidence.map((e: any) => e.description || ""),
   ]);
 
   // Generate recommendations using Fuse.js fuzzy search

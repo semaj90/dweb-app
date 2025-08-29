@@ -10,12 +10,12 @@ import type { QueryResult } from 'pg';
  */
 export class UnifiedDatabaseService {
   private pgPool: pg.Pool | null = null;
-  private redisClient: unknown = null;
-  private neo4jDriver: unknown = null;
-  private qdrantConfig: unknown = {};
+  private redisClient: any = null;
+  private neo4jDriver: any = null;
+  private qdrantConfig: any = {};
   private initialized = false;
 
-  constructor(config: unknown = {}) {
+  constructor(config: any = {}) {
     // PostgreSQL configuration
     this.pgPool = new pg.Pool({
       host: config.pg?.host || process.env.DB_HOST || 'localhost',
@@ -76,14 +76,14 @@ export class UnifiedDatabaseService {
 
       this.initialized = true;
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Database initialization failed:', error);
       throw error;
     }
   }
 
   // ============ PostgreSQL Methods ============
-  async query(text: string, params: unknown[] = []): Promise<QueryResult> {
+  async query(text: string, params: any[] = []): Promise<QueryResult> {
     if (!this.pgPool) throw new Error('PostgreSQL not initialized');
     return await this.pgPool.query(text, params);
   }
@@ -97,7 +97,7 @@ export class UnifiedDatabaseService {
       const result = await callback(client);
       await client.query('COMMIT');
       return result;
-    } catch (error) {
+    } catch (error: any) {
       await client.query('ROLLBACK');
       throw error;
     } finally {
@@ -106,7 +106,7 @@ export class UnifiedDatabaseService {
   }
 
   // Legal document operations
-  async insertLegalDocument(document: unknown): Promise<any> {
+  async insertLegalDocument(document: any): Promise<any> {
     const query = `
       INSERT INTO legal_documents (id, title, content, metadata, embedding, case_id, created_at)
       VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -153,13 +153,13 @@ export class UnifiedDatabaseService {
     try {
       const value = await this.redisClient.get(key);
       return value ? JSON.parse(value) : null;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis get error:', error);
       return null;
     }
   }
 
-  async setCached(key: string, value: unknown, ttl: number = 3600): Promise<boolean> {
+  async setCached(key: string, value: any, ttl: number = 3600): Promise<boolean> {
     if (!this.redisClient) return false;
     try {
       const serialized = JSON.stringify(value);
@@ -169,26 +169,26 @@ export class UnifiedDatabaseService {
         await this.redisClient.set(key, serialized);
       }
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis set error:', error);
       return false;
     }
   }
 
-  async invalidateCache(pattern: string): Promise<void> {
+  async invalidateCache(pattern: string): Promise<any> {
     if (!this.redisClient) return;
     try {
       const keys = await this.redisClient.keys(pattern);
       if (keys.length > 0) {
         await this.redisClient.del(keys);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis invalidate error:', error);
     }
   }
 
   // ============ Neo4j Methods ============
-  async runCypher(query: string, params: unknown = {}): Promise<unknown[]> {
+  async runCypher(query: string, params: any = {}): Promise<unknown[]> {
     const session = this.neo4jDriver.session();
     try {
       const result = await session.run(query, params);
@@ -198,14 +198,14 @@ export class UnifiedDatabaseService {
     }
   }
 
-  async createNode(label: string, properties: unknown): Promise<any> {
+  async createNode(label: string, properties: any): Promise<any> {
     return await this.runCypher(
       `CREATE (n:${label} $props) RETURN n`,
       { props: properties }
     );
   }
 
-  async createRelationship(fromId: string, toId: string, type: string, properties: unknown = {}): Promise<any> {
+  async createRelationship(fromId: string, toId: string, type: string, properties: any = {}): Promise<any> {
     return await this.runCypher(
       `
       MATCH (a {id: $fromId})
@@ -218,7 +218,7 @@ export class UnifiedDatabaseService {
   }
 
   // Legal case operations
-  async createLegalCase(caseData: unknown): Promise<any> {
+  async createLegalCase(caseData: any): Promise<any> {
     return await this.createNode('LegalCase', {
       id: caseData.id,
       title: caseData.title,
@@ -250,7 +250,7 @@ export class UnifiedDatabaseService {
   }
 
   // ============ Qdrant Methods ============
-  async vectorSearch(vector: number[], limit: number = 10, filter: unknown = {}): Promise<unknown[]> {
+  async vectorSearch(vector: number[], limit: number = 10, filter: any = {}): Promise<unknown[]> {
     const response = await fetch(
       `${this.qdrantConfig.baseUrl}/collections/${this.qdrantConfig.collection}/points/search`,
       {
@@ -272,7 +272,7 @@ export class UnifiedDatabaseService {
     return [];
   }
 
-  async upsertVector(id: string, vector: number[], payload: unknown): Promise<boolean> {
+  async upsertVector(id: string, vector: number[], payload: any): Promise<boolean> {
     const response = await fetch(
       `${this.qdrantConfig.baseUrl}/collections/${this.qdrantConfig.collection}/points`,
       {
@@ -369,7 +369,7 @@ export class UnifiedDatabaseService {
       health.qdrant = qdrantResponse.ok;
 
       health.overall = Object.values(health).slice(0, 4).every(Boolean) ? 'healthy' : 'partial';
-    } catch (error) {
+    } catch (error: any) {
       console.error('Health check error:', error);
     }
 
@@ -377,7 +377,7 @@ export class UnifiedDatabaseService {
   }
 
   // ============ Cleanup ============
-  async close(): Promise<void> {
+  async close(): Promise<any> {
     if (this.pgPool) await this.pgPool.end();
     if (this.redisClient) await this.redisClient.quit();
     if (this.neo4jDriver) await this.neo4jDriver.close();

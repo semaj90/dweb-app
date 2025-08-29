@@ -23,7 +23,7 @@ declare global {
   };
 }
 
-interface ParseMetrics {
+export interface ParseMetrics {
   parseTime: number;
   documentSize: number;
   objectCount: number;
@@ -31,14 +31,14 @@ interface ParseMetrics {
   parseMethod: string;
 }
 
-interface CacheStats {
+export interface CacheStats {
   hits: number;
   misses: number;
   hitRate: number;
   cacheSize: number;
 }
 
-interface ParseResult {
+export interface ParseResult {
   success: boolean;
   error?: boolean;
   errorMessage?: string;
@@ -46,14 +46,14 @@ interface ParseResult {
   parsed?: boolean;
 }
 
-interface BatchResult {
+export interface BatchResult {
   results: ParseResult[];
   batchTime: number;
   documentCount: number;
   threadsUsed: number;
 }
 
-interface StringifyResult {
+export interface StringifyResult {
   success: boolean;
   error?: boolean;
   message?: string;
@@ -61,13 +61,13 @@ interface StringifyResult {
   size?: number;
 }
 
-interface ValidationResult {
+export interface ValidationResult {
   valid: boolean;
   error?: string;
   message?: string;
 }
 
-interface WasmModule {
+export interface WasmModule {
   RapidJsonParser: new () => RapidJsonParserWasm;
   getCacheStats(): CacheStats;
   clearCache(): void;
@@ -75,10 +75,10 @@ interface WasmModule {
   destroyParser(parser: RapidJsonParserWasm): void;
 }
 
-interface RapidJsonParserWasm {
+export interface RapidJsonParserWasm {
   parseWithCache(json: string, useCache?: boolean): ParseResult;
   parseBatch(jsonArray: string[]): BatchResult;
-  getValue(path: string): unknown;
+  getValue(path: string): any;
   getMetrics(): ParseMetrics;
   stringify(options?: { pretty?: boolean }): StringifyResult;
   validate(schemaJson: string): ValidationResult;
@@ -91,7 +91,7 @@ export class GpuAcceleratedJsonParser {
   private wasmModule: WasmModule | null = null;
   private parser: RapidJsonParserWasm | null = null;
   private isInitialized = false;
-  private initPromise: Promise<void> | null = null;
+  private initPromise: Promise<any> | null = null;
   private performanceCache = new Map<string, any>();
   private webWorker: Worker | null = null;
 
@@ -102,7 +102,7 @@ export class GpuAcceleratedJsonParser {
   /**
    * Initialize WebAssembly module and GPU resources
    */
-  private async initialize(): Promise<void> {
+  private async initialize(): Promise<any> {
     try {
       // Load WebAssembly module
       const wasmPath = "/static/wasm/rapid-json-parser.js";
@@ -119,7 +119,7 @@ export class GpuAcceleratedJsonParser {
 
       this.isInitialized = true;
       console.log("GPU-accelerated JSON parser initialized successfully");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to initialize WebAssembly JSON parser:", error);
       throw error;
     }
@@ -128,12 +128,12 @@ export class GpuAcceleratedJsonParser {
   /**
    * Initialize web worker for parallel processing
    */
-  private async initializeWebWorker(): Promise<void> {
+  private async initializeWebWorker(): Promise<any> {
     const workerCode = `
             let wasmModule = null;
             let parser = null;
 
-            self.onmessage = async function(e) {
+            self.onmessage = async function(e): Promise<any> {
                 const { id, type, data } = e.data;
 
                 try {
@@ -169,7 +169,7 @@ export class GpuAcceleratedJsonParser {
                     }
 
                     self.postMessage({ id, type, result });
-                } catch (error) {
+                } catch (error: any) {
                     self.postMessage({ id, type, error: error.message });
                 }
             };
@@ -205,7 +205,7 @@ export class GpuAcceleratedJsonParser {
   /**
    * Ensure parser is initialized before operations
    */
-  private async ensureInitialized(): Promise<void> {
+  private async ensureInitialized(): Promise<any> {
     if (!this.isInitialized && this.initPromise) {
       await this.initPromise;
     }
@@ -360,7 +360,7 @@ export class GpuAcceleratedJsonParser {
   /**
    * Clear parser cache
    */
-  async clearCache(): Promise<void> {
+  async clearCache(): Promise<any> {
     await this.ensureInitialized();
     this.wasmModule!.clearCache();
     this.performanceCache.clear();
@@ -505,7 +505,7 @@ export class GpuAcceleratedJsonParser {
         valid: errors.length === 0,
         errors,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.warn("GPU validation failed, falling back to CPU:", error);
       const result = await this.validate(json);
       return {

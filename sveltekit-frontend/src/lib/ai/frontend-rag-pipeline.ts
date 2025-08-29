@@ -13,7 +13,7 @@ if (browser) {
   env.useBrowserCache = true;
 }
 
-interface SemanticChunk {
+export interface SemanticChunk {
   id: string;
   text: string;
   embedding: Float32Array;
@@ -25,7 +25,7 @@ interface SemanticChunk {
   };
 }
 
-interface SIMDTensor {
+export interface SIMDTensor {
   data: Float32Array;
   shape: number[];
   simdOps: {
@@ -87,7 +87,7 @@ class FrontendRAGPipeline {
       );
 
       console.log('✅ Frontend RAG pipelines initialized');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Pipeline initialization failed, using fallbacks:', error);
     }
   }
@@ -108,7 +108,7 @@ class FrontendRAGPipeline {
         shape: result.dims,
         simdOps: this.simdProcessor.getOperations()
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Frontend embedding generation failed:', error);
       throw error;
     }
@@ -309,7 +309,7 @@ class G0llamaService {
 
       const data = await response.json();
       return data.text || '';
-    } catch (error) {
+    } catch (error: any) {
       console.warn('G0llama generation failed:', error);
       throw error;
     }

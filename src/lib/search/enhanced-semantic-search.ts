@@ -4,11 +4,11 @@
  * Provides fuzzy search, semantic matching, and intelligent ranking
  */
 
-import Fuse from 'fuse.js';
+import Fuse from 'fuse';
 import { EventEmitter } from 'events';
 import { CacheManager } from '../server/cache/loki-cache';
 
-interface SearchDocument {
+export interface SearchDocument {
   id: string;
   title: string;
   content: string;
@@ -48,7 +48,7 @@ interface SearchDocument {
   importance: number; // Calculated importance score
 }
 
-interface SearchQuery {
+export interface SearchQuery {
   text: string;
   filters?: {
     documentType?: string[];
@@ -71,7 +71,7 @@ interface SearchQuery {
   };
 }
 
-interface SearchResult {
+export interface SearchResult {
   document: SearchDocument;
   score: number;
   matches: Array<{
@@ -92,7 +92,7 @@ interface SearchResult {
   explanation: string;
 }
 
-interface SearchIndex {
+export interface SearchIndex {
   documents: Map<string, SearchDocument>;
   fuse: Fuse<SearchDocument>;
   lastUpdated: number;
@@ -172,7 +172,7 @@ export class EnhancedSemanticSearch extends EventEmitter {
   }
 
   // Document management
-  public async addDocument(document: Omit<SearchDocument, 'searchableText' | 'wordCount' | 'readability' | 'importance'>): Promise<void> {
+  public async addDocument(document: Omit<SearchDocument, 'searchableText' | 'wordCount' | 'readability' | 'importance'>): Promise<any> {
     const enrichedDocument: SearchDocument = {
       ...document,
       searchableText: this.preprocessText(document.title + ' ' + document.content),
@@ -206,7 +206,7 @@ export class EnhancedSemanticSearch extends EventEmitter {
     this.emit('document-added', { documentId: document.id, index: indexName });
   }
 
-  public async addDocuments(documents: Array<Omit<SearchDocument, 'searchableText' | 'wordCount' | 'readability' | 'importance'>>): Promise<void> {
+  public async addDocuments(documents: Array<Omit<SearchDocument, 'searchableText' | 'wordCount' | 'readability' | 'importance'>>): Promise<any> {
     const enrichedDocuments = documents.map(doc => ({
       ...doc,
       searchableText: this.preprocessText(doc.title + ' ' + doc.content),
@@ -815,7 +815,7 @@ export class EnhancedSemanticSearch extends EventEmitter {
     return Array.from(suggestions).slice(0, limit);
   }
 
-  public getStatistics(): unknown {
+  public getStatistics(): any {
     const overallStats = {
       totalIndices: this.indices.size,
       totalDocuments: 0,
@@ -880,7 +880,7 @@ export class EnhancedSemanticSearch extends EventEmitter {
     }
   }
 
-  public async shutdown(): Promise<void> {
+  public async shutdown(): Promise<any> {
     console.log('🔄 Shutting down Enhanced Semantic Search...');
     
     // Clear all indices

@@ -7,9 +7,9 @@
 import { EventEmitter } from 'events';
 import { Matrix, Vector } from 'ml-matrix';
 import { kmeans } from 'ml-kmeans';
-import Fuse from 'fuse.js';
+import Fuse from 'fuse';
 
-interface SOMNode {
+export interface SOMNode {
   id: string;
   position: { x: number; y: number };
   weights: number[];
@@ -18,7 +18,7 @@ interface SOMNode {
   lastActivation: number;
 }
 
-interface RecommendationPattern {
+export interface RecommendationPattern {
   id: string;
   userId: string;
   sessionId: string;
@@ -34,7 +34,7 @@ interface RecommendationPattern {
   };
 }
 
-interface RecommendationResult {
+export interface RecommendationResult {
   type: 'model' | 'feature' | 'workflow' | 'content' | 'optimization';
   title: string;
   description: string;
@@ -45,15 +45,15 @@ interface RecommendationResult {
   expectedImprovement: number; // 0-1 scale
   category: string;
   tags: string[];
-  metadata: unknown;
+  metadata: any;
 }
 
-interface UserContext {
+export interface UserContext {
   userId: string;
   role: string;
   experience: string;
   recentPatterns: RecommendationPattern[];
-  preferences: unknown;
+  preferences: any;
   behavioralSignals: {
     averageSessionTime: number;
     preferredComplexity: number;
@@ -144,8 +144,8 @@ export class RecommendationEngine extends EventEmitter {
   // Main recommendation generation
   public async generateRecommendations(
     userId: string,
-    sessionChunks: unknown[],
-    userHistory: unknown[]
+    sessionChunks: any[],
+    userHistory: any[]
   ): Promise<RecommendationResult[]> {
     console.log(`🎯 Generating recommendations for user ${userId}`);
 
@@ -177,7 +177,7 @@ export class RecommendationEngine extends EventEmitter {
   }
 
   // Pattern extraction and feature engineering
-  private extractPatternFromSession(userId: string, sessionChunks: unknown[]): RecommendationPattern {
+  private extractPatternFromSession(userId: string, sessionChunks: any[]): RecommendationPattern {
     const features = new Array(this.config.featureDimensions).fill(0);
 
     // Feature engineering from session chunks
@@ -233,7 +233,7 @@ export class RecommendationEngine extends EventEmitter {
     };
   }
 
-  private async buildUserContext(userId: string, userHistory: unknown[]): Promise<UserContext> {
+  private async buildUserContext(userId: string, userHistory: any[]): Promise<UserContext> {
     const existingContext = this.userContexts.get(userId);
     
     const context: UserContext = {
@@ -277,7 +277,7 @@ export class RecommendationEngine extends EventEmitter {
     return bestNode;
   }
 
-  private async updateSOM(pattern: RecommendationPattern, bmu: SOMNode): Promise<void> {
+  private async updateSOM(pattern: RecommendationPattern, bmu: SOMNode): Promise<any> {
     const currentIteration = bmu.activationCount;
     const learningRate = this.config.learningRate * Math.exp(-currentIteration / 1000);
     const radius = this.config.neighborhoodRadius * Math.exp(-currentIteration / 1000);
@@ -637,7 +637,7 @@ export class RecommendationEngine extends EventEmitter {
   }
 
   // Analytics calculations
-  private calculateAverageSessionTime(userHistory: unknown[]): number {
+  private calculateAverageSessionTime(userHistory: any[]): number {
     const sessionTimes = userHistory
       .filter(h => h.eventType === 'session-complete')
       .map(h => h.data.duration || 0);
@@ -647,7 +647,7 @@ export class RecommendationEngine extends EventEmitter {
       : 15 * 60 * 1000; // Default 15 minutes
   }
 
-  private calculatePreferredComplexity(userHistory: unknown[]): number {
+  private calculatePreferredComplexity(userHistory: any[]): number {
     // Analyze user's tendency toward simple vs complex analyses
     const complexityScores = userHistory
       .filter(h => h.data.analysisType)
@@ -666,7 +666,7 @@ export class RecommendationEngine extends EventEmitter {
       : 0.5;
   }
 
-  private calculateModelPreference(userHistory: unknown[]): string {
+  private calculateModelPreference(userHistory: any[]): string {
     const modelUsage = new Map<string, number>();
     
     userHistory
@@ -682,7 +682,7 @@ export class RecommendationEngine extends EventEmitter {
       .sort(([,a], [,b]) => b - a)[0][0];
   }
 
-  private calculateSatisfactionTrend(userHistory: unknown[]): number {
+  private calculateSatisfactionTrend(userHistory: any[]): number {
     const satisfactionScores = userHistory
       .filter(h => h.data.resultSatisfaction)
       .map(h => h.data.resultSatisfaction)
@@ -693,7 +693,7 @@ export class RecommendationEngine extends EventEmitter {
       : 3.0; // Default neutral
   }
 
-  private calculateFeatureUsage(userHistory: unknown[]): Map<string, number> {
+  private calculateFeatureUsage(userHistory: any[]): Map<string, number> {
     const usage = new Map<string, number>();
     
     userHistory.forEach(h => {
@@ -723,7 +723,7 @@ export class RecommendationEngine extends EventEmitter {
   }
 
   // Public methods for external updates
-  public async updateFromSession(session: unknown, synthesizedResult: unknown): Promise<void> {
+  public async updateFromSession(session: any, synthesizedResult: any): Promise<any> {
     const pattern = this.extractPatternFromSession(session.userId, session.chunks);
     
     // Update pattern with results
@@ -744,7 +744,7 @@ export class RecommendationEngine extends EventEmitter {
     }));
   }
 
-  public getSOMVisualization(): unknown {
+  public getSOMVisualization(): any {
     // Return SOM state for visualization
     return {
       dimensions: { width: this.config.somWidth, height: this.config.somHeight },
@@ -758,7 +758,7 @@ export class RecommendationEngine extends EventEmitter {
     };
   }
 
-  public getRecommendationStats(): unknown {
+  public getRecommendationStats(): any {
     return {
       totalPatterns: this.patterns.size,
       activeNodes: this.som.flat().filter(node => node.patterns.length > 0).length,
@@ -767,7 +767,7 @@ export class RecommendationEngine extends EventEmitter {
     };
   }
 
-  public async shutdown(): Promise<void> {
+  public async shutdown(): Promise<any> {
     console.log('🔄 Shutting down Recommendation Engine...');
     
     // Save SOM state if needed

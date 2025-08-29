@@ -67,7 +67,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         }));
 
         totalResults += caseResults.length;
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error searching cases:', error);
       }
     }
@@ -101,7 +101,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         }));
 
         totalResults += evidenceResults.length;
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error searching evidence:', error);
       }
     }
@@ -128,7 +128,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         }));
 
         totalResults += documentResults.length;
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error searching documents:', error);
       }
     }
@@ -157,7 +157,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         }));
 
         totalResults += userResults.length;
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error searching people:', error);
       }
     }
@@ -189,7 +189,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
             }
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Vector search failed:', error);
       }
     }
@@ -211,7 +211,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
     return json(response);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Command search error:', error);
     return json({
       success: false,

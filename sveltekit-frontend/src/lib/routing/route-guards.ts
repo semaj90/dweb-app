@@ -271,7 +271,7 @@ export function createGuardedLoader(
   guards: string[],
   loader?: ServerLoad
 ): ServerLoad {
-  return async (event) => {
+  return async (event: any) => {
     const route = event.route;
     const params = event.params;
 

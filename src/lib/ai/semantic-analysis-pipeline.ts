@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Advanced Semantic Analysis Pipeline
 // Integrates LangChain, Transformers.js ONNX, and Legal-BERT for comprehensive legal document analysis
 
@@ -12,7 +11,7 @@ env.allowRemoteModels = false;
 env.allowLocalModels = true;
 env.localModelPath = '/models/';
 
-interface SemanticAnalysisConfig {
+export interface SemanticAnalysisConfig {
   models: {
     gemma2b: string;
     legalBert: string;
@@ -32,7 +31,7 @@ interface SemanticAnalysisConfig {
   };
 }
 
-interface LegalEntity {
+export interface LegalEntity {
   text: string;
   label: string;
   confidence: number;
@@ -42,7 +41,7 @@ interface LegalEntity {
   legalCategory: 'person' | 'organization' | 'location' | 'case_law' | 'statute' | 'contract_term' | 'date' | 'money';
 }
 
-interface SemanticAnalysisResult {
+export interface SemanticAnalysisResult {
   documentId: string;
   analysis: {
     summary: string;
@@ -146,7 +145,7 @@ export class SemanticAnalysisPipeline {
     this.initializePromptTemplates();
   }
 
-  async initialize(): Promise<void> {
+  async initialize(): Promise<any> {
     if (this.initialized) return;
 
     try {
@@ -166,13 +165,13 @@ export class SemanticAnalysisPipeline {
       this.initialized = true;
       console.log('✅ Semantic Analysis Pipeline initialized');
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize Semantic Analysis Pipeline:', error);
       throw error;
     }
   }
 
-  private async loadModel(name: string, task: string): Promise<void> {
+  private async loadModel(name: string, task: string): Promise<any> {
     try {
       const modelPath = this.config.models[name];
       const model = await pipeline(task as any, modelPath, {
@@ -188,7 +187,7 @@ export class SemanticAnalysisPipeline {
       }
       
       console.log(`✅ Loaded ${name} model`);
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Failed to load ${name} model:`, error);
       throw error;
     }
@@ -251,7 +250,7 @@ export class SemanticAnalysisPipeline {
     id: string;
     content: string;
     title?: string;
-    metadata?: unknown;
+    metadata?: any;
   }): Promise<SemanticAnalysisResult> {
     if (!this.initialized) {
       await this.initialize();
@@ -317,7 +316,7 @@ export class SemanticAnalysisPipeline {
       console.log(`✅ Document analysis completed in ${processingTime}ms`);
       return result;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Document analysis failed:', error);
       throw error;
     }
@@ -353,7 +352,7 @@ export class SemanticAnalysisPipeline {
       legalEntities.push(...legalSpecificEntities);
 
       return legalEntities;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Entity extraction failed:', error);
       return [];
     }
@@ -373,7 +372,7 @@ export class SemanticAnalysisPipeline {
         distribution: this.calculateSentimentDistribution(result),
         legalTone
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Sentiment analysis failed:', error);
       return this.getDefaultSentiment();
     }
@@ -401,7 +400,7 @@ export class SemanticAnalysisPipeline {
         })),
         practiceAreas: this.mapToPracticeAreas(result.labels[0])
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Document classification failed:', error);
       return this.getDefaultClassification();
     }
@@ -420,7 +419,7 @@ export class SemanticAnalysisPipeline {
       });
 
       return result[0].generated_text || 'Summary generation failed';
-    } catch (error) {
+    } catch (error: any) {
       console.error('Summary generation failed:', error);
       return 'Unable to generate summary';
     }
@@ -455,7 +454,7 @@ export class SemanticAnalysisPipeline {
       }
 
       return keyPhrases.sort((a, b) => b.importance - a.importance).slice(0, 20);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Key phrase extraction failed:', error);
       return [];
     }
@@ -484,7 +483,7 @@ export class SemanticAnalysisPipeline {
           source: 'document'
         }))
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Structural analysis failed:', error);
       return this.getDefaultStructuralAnalysis();
     }
@@ -513,7 +512,7 @@ export class SemanticAnalysisPipeline {
         suggestedActions,
         urgency
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Intent detection failed:', error);
       return this.getDefaultUserIntent();
     }
@@ -532,7 +531,7 @@ export class SemanticAnalysisPipeline {
         complianceIssues,
         recommendations
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Risk assessment failed:', error);
       return this.getDefaultRiskAssessment();
     }
@@ -608,7 +607,7 @@ export class SemanticAnalysisPipeline {
     return 'informal';
   }
 
-  private calculateSentimentDistribution(result: unknown): { positive: number; neutral: number; negative: number } {
+  private calculateSentimentDistribution(result: any): { positive: number; neutral: number; negative: number } {
     // Simplified distribution calculation
     const positive = result[0].label === 'POSITIVE' ? result[0].score : 1 - result[0].score;
     const negative = 1 - positive;
@@ -811,7 +810,7 @@ export class SemanticAnalysisPipeline {
     return issues;
   }
 
-  private calculateOverallRisk(riskFactors: unknown[]): 'low' | 'medium' | 'high' {
+  private calculateOverallRisk(riskFactors: any[]): 'low' | 'medium' | 'high' {
     if (riskFactors.length === 0) return 'low';
     
     const maxSeverity = Math.max(...riskFactors.map(rf => rf.severity));
@@ -821,7 +820,7 @@ export class SemanticAnalysisPipeline {
     return 'low';
   }
 
-  private generateRiskRecommendations(riskFactors: unknown[], complianceIssues: string[]): string[] {
+  private generateRiskRecommendations(riskFactors: any[], complianceIssues: string[]): string[] {
     const recommendations = [];
     
     if (riskFactors.length > 0) {
@@ -840,7 +839,7 @@ export class SemanticAnalysisPipeline {
   }
 
   // Default values for failed analyses
-  private getDefaultSentiment(): unknown {
+  private getDefaultSentiment(): any {
     return {
       overall: 0,
       confidence: 0,
@@ -849,7 +848,7 @@ export class SemanticAnalysisPipeline {
     };
   }
 
-  private getDefaultClassification(): unknown {
+  private getDefaultClassification(): any {
     return {
       primaryCategory: 'General Legal',
       confidence: 0,
@@ -858,7 +857,7 @@ export class SemanticAnalysisPipeline {
     };
   }
 
-  private getDefaultRiskAssessment(): unknown {
+  private getDefaultRiskAssessment(): any {
     return {
       overallRisk: 'medium',
       riskFactors: [],
@@ -867,7 +866,7 @@ export class SemanticAnalysisPipeline {
     };
   }
 
-  private getDefaultStructuralAnalysis(): unknown {
+  private getDefaultStructuralAnalysis(): any {
     return {
       sections: [],
       citations: [],
@@ -875,7 +874,7 @@ export class SemanticAnalysisPipeline {
     };
   }
 
-  private getDefaultUserIntent(): unknown {
+  private getDefaultUserIntent(): any {
     return {
       primaryIntent: 'document_review',
       confidence: 0,
@@ -885,7 +884,7 @@ export class SemanticAnalysisPipeline {
     };
   }
 
-  private processAnalysisResult(summary: unknown, classification: unknown, content: string): unknown {
+  private processAnalysisResult(summary: any, classification: any, content: string): any {
     const summaryText = summary.status === 'fulfilled' ? summary.value : 'Unable to generate summary';
     const classificationData = classification.status === 'fulfilled' ? classification.value : this.getDefaultClassification();
     
@@ -943,7 +942,7 @@ export class SemanticAnalysisPipeline {
     return warnings;
   }
 
-  async healthCheck(): Promise<{ status: string; details: unknown }> {
+  async healthCheck(): Promise<{ status: string; details: any }> {
     return {
       status: this.initialized ? 'healthy' : 'not initialized',
       details: {

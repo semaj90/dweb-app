@@ -1,7 +1,7 @@
 // Application State Machine with XState
 // Manages global app state, authentication, and navigation
 
-import { createMachine, assign, type InterpreterFrom } from 'xstate';
+import { createMachine, assign, fromPromise, type ActorRefFrom } from 'xstate';
 import { writable } from 'svelte/store';
 import { browser } from '$app/environment';
 
@@ -82,10 +82,10 @@ const defaultContext: AppContext = {
   }
 };
 
-// Services for the state machine
+// Actors for the state machine  
 const appServices = {
-  authenticateUser: async (context: AppContext, event: unknown) => {
-    const { email, password } = event.credentials;
+  authenticateUser: fromPromise(async ({ input }: { input: { email: string; password: string } }) => {
+    const { email, password } = input;
     
     try {
       const response = await fetch('/api/auth/login', {
@@ -107,12 +107,12 @@ const appServices = {
       }
 
       return user;
-    } catch (error) {
+    } catch (error: any) {
       throw error;
     }
-  },
+  }),
 
-  loadUserSession: async () => {
+  loadUserSession: fromPromise(async (): Promise<any> => {
     if (!browser) return null;
 
     try {
@@ -133,18 +133,18 @@ const appServices = {
       }
 
       return JSON.parse(userData);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Session load error:', error);
       return null;
     }
-  },
+  }),
 
-  persistSettings: async (context: AppContext) => {
+  persistSettings: fromPromise(async ({ input }: { input: AppContext }) => {
     if (browser) {
-      localStorage.setItem('app_settings', JSON.stringify(context.settings));
-      localStorage.setItem('user_preferences', JSON.stringify(context.user?.preferences));
+      localStorage.setItem('app_settings', JSON.stringify(input.settings));
+      localStorage.setItem('user_preferences', JSON.stringify(input.user?.preferences));
     }
-  }
+  })
 };
 
 // Main application state machine
@@ -160,9 +160,9 @@ export const appStateMachine = createMachine({
         onDone: [
           {
             target: 'authenticated',
-            guard: (_, event) => event.data !== null,
+            guard: ({ event }) => event.output !== null,
             actions: assign({
-              user: (_, event) => event.data,
+              user: ({ event }) => event.output,
               isAuthenticated: true
             })
           },
@@ -183,7 +183,7 @@ export const appStateMachine = createMachine({
         },
         NAVIGATE: {
           actions: assign({
-            currentRoute: (_, event) => event.route
+            currentRoute: ({ event }) => (event as any)?.route || '/'
           })
         }
       }
@@ -193,11 +193,12 @@ export const appStateMachine = createMachine({
       invoke: {
         id: 'authenticate',
         src: 'authenticateUser',
+        input: ({ event }) => ({ email: (event as any).credentials.email, password: (event as any).credentials.password }),
         onDone: {
           target: 'authenticated',
           actions: [
             assign({
-              user: (_, event) => event.data,
+              user: ({ event }) => event.output,
               isAuthenticated: true
             }),
             'addSuccessNotification'
@@ -207,8 +208,8 @@ export const appStateMachine = createMachine({
           target: 'unauthenticated',
           actions: [
             assign({
-              user: null,
-              isAuthenticated: false
+              user: () => null,
+              isAuthenticated: () => false
             }),
             'addErrorNotification'
           ]
@@ -223,25 +224,25 @@ export const appStateMachine = createMachine({
           target: 'unauthenticated',
           actions: [
             assign({
-              user: null,
-              isAuthenticated: false
+              user: () => null,
+              isAuthenticated: () => false
             }),
             'clearSession'
           ]
         },
         NAVIGATE: {
           actions: assign({
-            currentRoute: (_, event) => event.route
+            currentRoute: ({ event }) => (event as any)?.route || '/'
           })
         },
         UPDATE_USER_PREFERENCES: {
           actions: [
             assign({
-              user: (context, event) => ({
+              user: ({ context, event }) => ({
                 ...context.user!,
                 preferences: {
                   ...context.user!.preferences,
-                  ...event.preferences
+                  ...(event as any)?.preferences || {}
                 }
               })
             }),
@@ -255,12 +256,12 @@ export const appStateMachine = createMachine({
   on: {
     ADD_NOTIFICATION: {
       actions: assign({
-        notifications: (context, event) => [
+        notifications: ({ context, event }) => [
           {
             id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
             timestamp: Date.now(),
             read: false,
-            ...event.notification
+            ...(event as any)?.notification || {}
           },
           ...context.notifications.slice(0, 19) // Keep last 20 notifications
         ]
@@ -269,25 +270,25 @@ export const appStateMachine = createMachine({
 
     MARK_NOTIFICATION_READ: {
       actions: assign({
-        notifications: (context, event) =>
+        notifications: ({ context, event }) =>
           context.notifications.map(notif =>
-            notif.id === event.id ? { ...notif, read: true } : notif
+            notif.id === (event as any)?.id ? { ...notif, read: true } : notif
           )
       })
     },
 
     CLEAR_NOTIFICATIONS: {
       actions: assign({
-        notifications: []
+        notifications: () => []
       })
     },
 
     UPDATE_SETTINGS: {
       actions: [
         assign({
-          settings: (context, event) => ({
+          settings: ({ context, event }) => ({
             ...context.settings,
-            ...event.settings
+            ...(event as any)?.settings || {}
           })
         }),
         'persistSettings'
@@ -296,8 +297,9 @@ export const appStateMachine = createMachine({
 
     RECORD_PERFORMANCE: {
       actions: assign({
-        performance: (context, event) => {
-          const { metric, value } = event;
+        performance: ({ context, event }) => {
+          const metric = (event as any)?.metric;
+          const value = (event as any)?.value || 0;
           
           switch (metric) {
             case 'pageLoad':
@@ -318,14 +320,14 @@ export const appStateMachine = createMachine({
 
     RESET_SESSION: {
       target: 'initializing',
-      actions: assign(defaultContext)
+      actions: assign(() => defaultContext)
     }
   }
 }, {
-  services: appServices,
+  actors: appServices,
   actions: {
     addSuccessNotification: assign({
-      notifications: (context) => [{
+      notifications: ({ context }) => [{
         id: `notif_${Date.now()}`,
         type: 'success' as const,
         title: 'Welcome!',
@@ -336,7 +338,7 @@ export const appStateMachine = createMachine({
     }),
 
     addErrorNotification: assign({
-      notifications: (context, event) => [{
+      notifications: ({ context }) => [{
         id: `notif_${Date.now()}`,
         type: 'error' as const,
         title: 'Authentication Failed',
@@ -354,13 +356,13 @@ export const appStateMachine = createMachine({
     },
 
     loadUserSettings: assign({
-      settings: (context) => {
+      settings: ({ context }) => {
         if (browser) {
           const saved = localStorage.getItem('app_settings');
           if (saved) {
             try {
               return { ...context.settings, ...JSON.parse(saved) };
-            } catch (e) {
+            } catch (e: any) {
               console.warn('Failed to load settings:', e);
             }
           }
@@ -369,13 +371,13 @@ export const appStateMachine = createMachine({
       }
     }),
 
-    persistUserPreferences: (context) => {
+    persistUserPreferences: ({ context }) => {
       if (browser && context.user) {
         localStorage.setItem('user_preferences', JSON.stringify(context.user.preferences));
       }
     },
 
-    persistSettings: (context) => {
+    persistSettings: ({ context }) => {
       if (browser) {
         localStorage.setItem('app_settings', JSON.stringify(context.settings));
       }
@@ -384,7 +386,7 @@ export const appStateMachine = createMachine({
 });
 
 // Type for the app service
-export type AppService = InterpreterFrom<typeof appStateMachine>;
+export type AppService = ActorRefFrom<typeof appStateMachine>;
 
 // Svelte store for app state
 export const appState = writable<AppContext>(defaultContext);

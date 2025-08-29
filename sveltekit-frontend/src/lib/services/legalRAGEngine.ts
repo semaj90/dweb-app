@@ -72,7 +72,7 @@ export class LegalRAGEngine {
             metadata.caseType,
             metadata.jurisdiction
           );
-        } catch (error) {
+        } catch (error: any) {
           console.warn('Context7 analysis failed, continuing with local processing:', error);
         }
       }
@@ -107,7 +107,7 @@ export class LegalRAGEngine {
       });
 
       return evidenceId;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error processing legal document:', error);
       throw new Error(`Failed to process legal document: ${error.message}`);
     }
@@ -152,7 +152,7 @@ export class LegalRAGEngine {
 
       // Apply filters and return top results
       return this.applyLegalFilters(rerankedResults, options).slice(0, 10);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error in legal RAG search:', error);
       throw new Error(`Legal RAG search failed: ${error.message}`);
     }
@@ -289,7 +289,7 @@ export class LegalRAGEngine {
         'clauses'
       ]);
       return entities;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Context7 entity extraction failed, using local fallback:', error);
       
       // Fallback to local entity extraction
@@ -335,7 +335,7 @@ export class LegalRAGEngine {
         score: Math.max(0, Math.min(100, parsed.score || 25)),
         confidence: Math.max(0, Math.min(1, parsed.confidence || 0.7))
       };
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Risk assessment failed, using default:', error);
       return { score: 25, confidence: 0.5 };
     }
@@ -381,7 +381,7 @@ export class LegalRAGEngine {
         ${content.substring(0, 2000)}`
       );
       return response;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating summary:', error);
       return 'Summary generation failed';
     }
@@ -399,7 +399,7 @@ export class LegalRAGEngine {
       );
       const tags = JSON.parse(response);
       return Array.isArray(tags) ? tags : ['legal', 'document'];
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating tags:', error);
       return ['legal', 'document'];
     }

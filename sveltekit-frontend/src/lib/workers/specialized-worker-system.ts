@@ -92,7 +92,7 @@ export class JobOrchestrator extends EventEmitter {
 
       console.log('🏗️ Job Orchestrator initialized with RabbitMQ');
       this.emit('initialized');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to initialize Job Orchestrator:', error);
       throw error;
     }
@@ -200,7 +200,7 @@ export class JobOrchestrator extends EventEmitter {
           this.emit('jobCompleted', result);
           
           this.channel?.ack(msg);
-        } catch (error) {
+        } catch (error: any) {
           console.error('Error processing job result:', error);
           this.channel?.nack(msg, false, false);
         }
@@ -261,7 +261,7 @@ export abstract class SpecializedWorker extends EventEmitter {
       
       console.log(`🐝 Worker ${this.workerId} (${this.workerType}) initialized`);
       this.emit('initialized');
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to initialize worker ${this.workerId}:`, error);
       throw error;
     }
@@ -308,7 +308,7 @@ export abstract class SpecializedWorker extends EventEmitter {
           console.log(`✅ Worker ${this.workerId} completed job ${job.id} in ${processingTime}ms`);
           this.emit('jobCompleted', { jobId: job.id, processingTime });
 
-        } catch (error) {
+        } catch (error: any) {
           const processingTime = Date.now() - startTime;
           const errorResult: WorkerResult = {
             jobId: JSON.parse(msg.content.toString()).id,

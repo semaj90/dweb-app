@@ -342,7 +342,7 @@ export class BullMQService {
           userId: metadata.userId
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -399,7 +399,7 @@ export class BullMQService {
         data: { embedding, type, entityId },
         processingTime: Date.now() - startTime
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -444,7 +444,7 @@ export class BullMQService {
         data: { analysis, type: analysisType, documentId },
         processingTime: Date.now() - startTime
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -490,7 +490,7 @@ export class BullMQService {
         data: { recommendations, type, userId },
         processingTime: Date.now() - startTime
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -520,7 +520,7 @@ export class BullMQService {
         data: { invalidatedCount, pattern },
         processingTime: Date.now() - startTime
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -570,7 +570,7 @@ export class BullMQService {
     for (const queueName of Object.values(BullMQService.QUEUES)) {
       try {
         stats[queueName] = await this.getQueueStats(queueName);
-      } catch (error) {
+      } catch (error: any) {
         stats[queueName] = { error: 'Failed to get stats' };
       }
     }
@@ -604,7 +604,7 @@ export class BullMQService {
       } else if ('quit' in this.redis) {
         await (this.redis as any).quit();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to close Redis connection:', error);
     }
   }

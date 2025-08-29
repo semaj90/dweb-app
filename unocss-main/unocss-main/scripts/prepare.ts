@@ -4,7 +4,7 @@ import fs from 'fs-extra'
 import { relative } from 'pathe'
 import { globSync } from 'tinyglobby'
 
-async function fixVSCodePackage() {
+async function fixVSCodePackage(): Promise<any> {
   const json = await fs.readJSON('./packages-integrations/vscode/package.json')
   if (json.name !== '@unocss/vscode') {
     json.name = '@unocss/vscode'
@@ -12,7 +12,7 @@ async function fixVSCodePackage() {
   }
 }
 
-async function preparePackagesBundle() {
+async function preparePackagesBundle(): Promise<any> {
   const allPackages = globSync(
     ['./packages-*/*/package.json'],
     { absolute: true, expandDirectories: false },
@@ -77,7 +77,7 @@ async function preparePackagesBundle() {
   )
 }
 
-async function updateTsconfig() {
+async function updateTsconfig(): Promise<any> {
   const root = fileURLToPath(new URL('..', import.meta.url))
   const alias = await import('../alias').then(r => r.alias)
   const tsconfig = await fs.readJSON('./tsconfig.json')
@@ -92,7 +92,7 @@ async function updateTsconfig() {
   await fs.writeJSON('./tsconfig.json', tsconfig, { spaces: 2, EOL: '\n' })
 }
 
-async function prepare() {
+async function prepare(): Promise<any> {
   await Promise.all([
     execa('pnpm', ['run', 'update:iconify-collections']),
     fixVSCodePackage(),

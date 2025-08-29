@@ -137,7 +137,7 @@ export class ServiceOrchestrator {
 				const targetInstances = options?.scale_factor || this.calculateOptimalScale(serviceName);
 
 				results[serviceName] = await this.scaleService(serviceName, targetInstances);
-			} catch (error) {
+			} catch (error: any) {
 				results[serviceName] = {
 					success: false,
 					error: error instanceof Error ? error.message : 'Scaling failed',
@@ -170,7 +170,7 @@ export class ServiceOrchestrator {
 				// Health check after each deployment
 				await this.verifyServiceHealth(serviceName);
 				
-			} catch (error) {
+			} catch (error: any) {
 				results[serviceName] = {
 					success: false,
 					error: error instanceof Error ? error.message : 'Deployment failed',
@@ -200,7 +200,7 @@ export class ServiceOrchestrator {
 		for (const serviceName of servicesToCheck) {
 			try {
 				healthData[serviceName] = await this.checkServiceHealth(serviceName);
-			} catch (error) {
+			} catch (error: any) {
 				healthData[serviceName] = {
 					name: serviceName,
 					status: 'unhealthy',

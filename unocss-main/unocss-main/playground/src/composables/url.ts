@@ -7,7 +7,7 @@ const params = new URLSearchParams(
   || '',
 )
 
-interface Options {
+export interface Options {
   transformHtml?: boolean
   transformCustomCSS?: boolean
   responsive?: boolean

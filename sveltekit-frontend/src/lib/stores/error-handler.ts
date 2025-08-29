@@ -1091,7 +1091,7 @@ class EnhancedErrorHandler {
         this.errorHistory.set(parsedHistory);
         this.updateStats();
       }
-    } catch (e) {
+    } catch (e: any) {
       console.warn('Failed to load persisted error data:', e);
     }
   }
@@ -1107,7 +1107,7 @@ class EnhancedErrorHandler {
       
       const filteredHistory = history.filter(error => error.timestamp >= retentionDate);
       localStorage.setItem('legal-ai-error-history', JSON.stringify(filteredHistory));
-    } catch (e) {
+    } catch (e: any) {
       console.warn('Failed to persist error data:', e);
     }
   }

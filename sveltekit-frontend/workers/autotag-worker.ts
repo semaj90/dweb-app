@@ -3,7 +3,7 @@
 // Uses Redis Streams for coordination, Postgres as source of truth
 
 import { createClient } from 'redis';
-import { drizzle } from 'drizzle-orm/postgres-js';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import postgres from 'postgres';
 import { eq, and } from 'drizzle-orm';
 import { 
@@ -12,7 +12,7 @@ import {
   evidenceVectorsTable,
   type Evidence,
   type Report 
-} from '../src/lib/server/schema.js';
+} from '$lib/server/schema';
 
 // Initialize connections
 const redis = createClient({ 
@@ -25,7 +25,7 @@ const db = drizzle(sql);
 let isConnected = false;
 
 // Connect to Redis
-async function connectRedis() {
+async function connectRedis(): Promise<any> {
   if (!isConnected) {
     await redis.connect();
     isConnected = true;
@@ -113,7 +113,7 @@ function generateReportSummary(report: Report): string {
 }
 
 // Process evidence tagging
-async function processEvidence(evidenceId: string) {
+async function processEvidence(evidenceId: string): Promise<any> {
   try {
     const [evidence] = await db
       .select()
@@ -147,13 +147,13 @@ async function processEvidence(evidenceId: string) {
       // TODO: Optionally sync to Qdrant here if needed
     }
     
-  } catch (error) {
+  } catch (error: any) {
     console.error(`❌ Error processing evidence ${evidenceId}:`, error);
   }
 }
 
 // Process report summarization
-async function processReport(reportId: string) {
+async function processReport(reportId: string): Promise<any> {
   try {
     const [report] = await db
       .select()
@@ -182,13 +182,13 @@ async function processReport(reportId: string) {
       console.log(`ℹ️ Report ${reportId} already has summary`);
     }
     
-  } catch (error) {
+  } catch (error: any) {
     console.error(`❌ Error processing report ${reportId}:`, error);
   }
 }
 
 // Multi-threaded job processing with k-means clustering
-async function processWithMultiThreading(type: string, id: string, data: any) {
+async function processWithMultiThreading(type: string, id: string, data: any): Promise<any> {
   const { Worker } = await import('worker_threads');
   const kmeansWorkerPath = new URL('../src/lib/workers/kmeans-worker.js', import.meta.url);
   
@@ -225,7 +225,7 @@ async function processWithMultiThreading(type: string, id: string, data: any) {
       worker.postMessage({
         data: data.items || [],
         k: Math.min(5, Math.max(2, Math.floor((data?.items?.length || 0) / 10))), // Dynamic k
-        dimensions: 768, // Embedding dimensions
+        dimensions: 384, // Embedding dimensions
         options: {
           maxIterations: 50,
           convergenceThreshold: 0.001
@@ -239,7 +239,7 @@ async function processWithMultiThreading(type: string, id: string, data: any) {
 }
 
 // Enhanced evidence processing with multi-threading support
-async function processEvidence(evidenceId: string, batchData?: any) {
+async function processEvidence(evidenceId: string, batchData?: any): Promise<any> {
   try {
     // Check if this is a batch job with clustering
     if (batchData && batchData.items) {
@@ -268,13 +268,13 @@ async function processEvidence(evidenceId: string, batchData?: any) {
     // Single evidence processing
     await processSingleEvidence(evidenceId);
     
-  } catch (error) {
+  } catch (error: any) {
     console.error(`❌ Error processing evidence ${evidenceId}:`, error);
   }
 }
 
 // Single evidence processing (extracted from original function)
-async function processSingleEvidence(evidenceId: string, clusterInfo?: any) {
+async function processSingleEvidence(evidenceId: string, clusterInfo?: any): Promise<any> {
   const [evidence] = await db
     .select()
     .from(evidenceTable)
@@ -340,7 +340,7 @@ async function submitToVectorPipeline(params: {
   ownerId: string;
   event: 'upsert' | 'reembed';
   data: any;
-}) {
+}): Promise<any> {
   // Use SvelteKit API endpoint for vector processing
   const response = await fetch('http://localhost:5173/api/compute', {
     method: 'POST',
@@ -356,7 +356,7 @@ async function submitToVectorPipeline(params: {
 }
 
 // Main worker loop with multi-threading support
-async function runWorker() {
+async function runWorker(): Promise<any> {
   await connectRedis();
   
   console.log('🚀 AutoTag Worker started - listening for Redis streams with multi-threading...');
@@ -411,7 +411,7 @@ async function runWorker() {
         }
       }
       
-    } catch (error) {
+    } catch (error: any) {
       if (error.message?.includes('BLOCK')) {
         // Timeout is normal, continue
         continue;

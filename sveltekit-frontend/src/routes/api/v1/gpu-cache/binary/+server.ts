@@ -63,7 +63,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Binary shader cache GET error:', error);
     return json({ error: 'Internal server error' }, { status: 500 });
   }
@@ -136,7 +136,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
     return json(response);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Binary shader cache POST error:', error);
     return json({ error: 'Failed to store shader' }, { status: 500 });
   }
@@ -187,7 +187,7 @@ export const PUT: RequestHandler = async ({ request }) => {
 
     return json(response);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Binary shader cache batch error:', error);
     return json({ error: 'Batch processing failed' }, { status: 500 });
   }
@@ -221,7 +221,7 @@ export const PATCH: RequestHandler = async ({ url }) => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('WebGPU shader cache error:', error);
     return json({ error: 'WebGPU shader retrieval failed' }, { status: 500 });
   }
@@ -239,7 +239,7 @@ export const DELETE: RequestHandler = async () => {
       timestamp: Date.now()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Metrics clear error:', error);
     return json({ error: 'Failed to clear metrics' }, { status: 500 });
   }

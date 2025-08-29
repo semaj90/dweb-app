@@ -3,7 +3,7 @@
  * Manages specialized crew of AI agents for collaborative legal work
  */
 
-import { context7Service } from '../sveltekit-frontend/src/lib/services/context7Service.js';
+import { context7Service } from '../sveltekit-frontend/src/lib/services/context7Service';
 
 export interface CrewAIAgentConfig {
   apiEndpoint: string;
@@ -119,7 +119,7 @@ Auto-Fix Report:
         }
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('CrewAI agent execution failed:', error);
       
       return {

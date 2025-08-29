@@ -6,7 +6,7 @@ import { EventEmitter } from "events";
  * Provides real-time cluster health and worker metrics via SSE
  */
 
-interface Worker {
+export interface Worker {
   id: string;
   status: string;
   metrics: any;
@@ -87,7 +87,7 @@ export const GET: RequestHandler = async ({ request }) => {
               uptime: process.uptime()
             }]);
 
-          } catch (error) {
+          } catch (error: any) {
             console.error('SSE fallback error:', error);
           }
         }, 5000);
@@ -106,7 +106,7 @@ export const GET: RequestHandler = async ({ request }) => {
         
         sendSSEEvent(controller, 'health', health);
         sendSSEEvent(controller, 'workers', workers);
-      } catch (error) {
+      } catch (error: any) {
         console.error('SSE initial data error:', error);
         sendSSEEvent(controller, 'error', {
           error: 'Failed to get initial cluster data'
@@ -130,7 +130,7 @@ export const GET: RequestHandler = async ({ request }) => {
             uptime: process.uptime()
           });
 
-        } catch (error) {
+        } catch (error: any) {
           console.error('SSE update error:', error);
           sendSSEEvent(controller, 'error', {
             error: 'Failed to update cluster data',
@@ -183,7 +183,7 @@ function sendSSEEvent(
   try {
     const event = `event: ${type}\ndata: ${JSON.stringify(data)}\n\n`;
     controller.enqueue(new TextEncoder().encode(event));
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to send SSE event:', error);
   }
 }

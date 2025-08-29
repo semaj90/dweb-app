@@ -4,7 +4,7 @@
  * Implements: SOM training, embedding computations, vertex buffer encoding
  */
 
-interface WebGPUProcessorConfig {
+export interface WebGPUProcessorConfig {
   preferredLimits?: {
     maxComputeWorkgroupSizeX?: number;
     maxComputeWorkgroupSizeY?: number;
@@ -68,7 +68,7 @@ export class WebGPUProcessor {
       console.log('Device limits:', this.device.limits);
 
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('WebGPU initialization failed:', error);
       
       if (this.config.fallbackToCPU) {

@@ -51,7 +51,7 @@ export function unregisterShortcut(key: string) {
 export async function loadShortcutsFromAI(
   userContext: any = {},
   neo4jContext: any = {}
-) {
+): Promise<any> {
   // Try cache first (avoid redundant backend calls)
   const cacheKey = `shortcuts:${userContext?.userId || "anon"}`;
   let aiShortcuts: Shortcut[] | null =
@@ -86,7 +86,7 @@ export async function loadShortcutsFromAI(
         ttl: 60 * 10,
         priority: "high",
       });
-    } catch (err) {
+    } catch (err: any) {
       aiShortcuts = [];
     }
   }
@@ -105,7 +105,7 @@ export async function loadShortcutsFromAI(
 export async function refreshShortcuts(
   userContext: any = {},
   neo4jContext: any = {}
-) {
+): Promise<any> {
   await advancedCache.invalidateByTags([
     `shortcuts:${userContext?.userId || "anon"}`,
   ]);

@@ -3,7 +3,8 @@
  * Production-ready worker pool management with GPU acceleration, CUDA support, and intelligent task routing
  */
 
-import { Worker, isMainThread, parentPort, workerData } from 'worker_threads';
+// Worker threads import removed for browser worker compatibility
+// declare const self: DedicatedWorkerGlobalScope;
 import { EventEmitter } from 'events';
 import { performance } from 'perf_hooks';
 import cluster from 'cluster';
@@ -55,7 +56,7 @@ export interface WorkerTask {
     type: TaskType;
     agentType: AgentType;
     priority: TaskPriority;
-    data: unknown;
+    data: any;
     requirements: TaskRequirements;
     constraints: TaskConstraints;
     metadata: TaskMetadata;
@@ -65,7 +66,7 @@ export interface WorkerResult {
     taskId: string;
     workerId: string;
     agentType: AgentType;
-    result: unknown;
+    result: any;
     performance: TaskPerformance;
     metadata: ResultMetadata;
     errors: WorkerError[];
@@ -140,7 +141,11 @@ export class SpecializedWorkerPoolManager extends EventEmitter {
             specialization: {
                 primary: 'io-bound',
                 secondary: ['text-processing', 'network-bound'],
-                capabilities: ['document-retrieval', 'semantic-search', 'api-calls'],
+                capabilities: [
+                    { name: 'document-retrieval', level: 1, certified: true },
+                    { name: 'semantic-search', level: 1, certified: true },
+                    { name: 'api-calls', level: 1, certified: true }
+                ],
                 resourceRequirements: {
                     cpuCores: 1,
                     memoryMB: 512,
@@ -148,7 +153,11 @@ export class SpecializedWorkerPoolManager extends EventEmitter {
                     storageMB: 100,
                     networkBandwidthMbps: 100
                 },
-                optimizations: ['connection-pooling', 'caching', 'compression']
+                optimizations: [
+                    { name: 'connection-pooling', enabled: true },
+                    { name: 'caching', enabled: true },
+                    { name: 'compression', enabled: true }
+                ]
             },
             resourceAllocation: {
                 cpu: { cores: 1, priority: 'normal', affinity: [] },
@@ -184,7 +193,11 @@ export class SpecializedWorkerPoolManager extends EventEmitter {
             specialization: {
                 primary: 'memory-intensive',
                 secondary: ['data-analysis', 'vector-computation'],
-                capabilities: ['graph-traversal', 'entity-linking', 'pattern-matching'],
+                capabilities: [
+                    { name: 'graph-traversal', level: 2, certified: true },
+                    { name: 'entity-linking', level: 2, certified: true },
+                    { name: 'pattern-matching', level: 2, certified: true }
+                ],
                 resourceRequirements: {
                     cpuCores: 2,
                     memoryMB: 2048,
@@ -192,7 +205,11 @@ export class SpecializedWorkerPoolManager extends EventEmitter {
                     storageMB: 500,
                     networkBandwidthMbps: 50
                 },
-                optimizations: ['memory-pooling', 'index-caching', 'batch-processing']
+                optimizations: [
+                    { name: 'memory-pooling', enabled: true },
+                    { name: 'index-caching', enabled: true },
+                    { name: 'batch-processing', enabled: true }
+                ]
             },
             resourceAllocation: {
                 cpu: { cores: 2, priority: 'high', affinity: [] },
@@ -231,7 +248,11 @@ export class SpecializedWorkerPoolManager extends EventEmitter {
             specialization: {
                 primary: 'gpu-accelerated',
                 secondary: ['vector-computation', 'ml-inference'],
-                capabilities: ['vector-similarity', 'embedding-generation', 'clustering'],
+                capabilities: [
+                    { name: 'vector-similarity', level: 3, certified: true },
+                    { name: 'embedding-generation', level: 3, certified: true },
+                    { name: 'clustering', level: 2, certified: true }
+                ],
                 resourceRequirements: {
                     cpuCores: 2,
                     memoryMB: 1024,
@@ -239,7 +260,11 @@ export class SpecializedWorkerPoolManager extends EventEmitter {
                     storageMB: 200,
                     networkBandwidthMbps: 25
                 },
-                optimizations: ['gpu-batching', 'vector-quantization', 'parallel-search']
+                optimizations: [
+                    { name: 'gpu-batching', enabled: true },
+                    { name: 'vector-quantization', enabled: true },
+                    { name: 'parallel-search', enabled: true }
+                ]
             },
             resourceAllocation: {
                 cpu: { cores: 2, priority: 'normal', affinity: [] },
@@ -278,7 +303,11 @@ export class SpecializedWorkerPoolManager extends EventEmitter {
             specialization: {
                 primary: 'cpu-intensive',
                 secondary: ['data-analysis', 'ml-inference'],
-                capabilities: ['pattern-recognition', 'anomaly-detection', 'fix-generation'],
+                capabilities: [
+                    { name: 'pattern-recognition', level: 3, certified: true },
+                    { name: 'anomaly-detection', level: 3, certified: true },
+                    { name: 'fix-generation', level: 2, certified: true }
+                ],
                 resourceRequirements: {
                     cpuCores: 4,
                     memoryMB: 1536,
@@ -286,7 +315,11 @@ export class SpecializedWorkerPoolManager extends EventEmitter {
                     storageMB: 300,
                     networkBandwidthMbps: 20
                 },
-                optimizations: ['parallel-analysis', 'pattern-caching', 'incremental-learning']
+                optimizations: [
+                    { name: 'parallel-analysis', enabled: true },
+                    { name: 'pattern-caching', enabled: true },
+                    { name: 'incremental-learning', enabled: true }
+                ]
             },
             resourceAllocation: {
                 cpu: { cores: 4, priority: 'high', affinity: [] },
@@ -325,7 +358,11 @@ export class SpecializedWorkerPoolManager extends EventEmitter {
             specialization: {
                 primary: 'text-processing',
                 secondary: ['data-analysis', 'ml-inference'],
-                capabilities: ['document-analysis', 'compliance-checking', 'precedent-search'],
+                capabilities: [
+                    { name: 'document-analysis', level: 2, certified: true },
+                    { name: 'compliance-checking', level: 2, certified: true },
+                    { name: 'precedent-search', level: 2, certified: true }
+                ],
                 resourceRequirements: {
                     cpuCores: 2,
                     memoryMB: 1024,
@@ -333,7 +370,11 @@ export class SpecializedWorkerPoolManager extends EventEmitter {
                     storageMB: 1000,
                     networkBandwidthMbps: 30
                 },
-                optimizations: ['document-caching', 'rule-indexing', 'batch-validation']
+                optimizations: [
+                    { name: 'document-caching', enabled: true },
+                    { name: 'rule-indexing', enabled: true },
+                    { name: 'batch-validation', enabled: true }
+                ]
             },
             resourceAllocation: {
                 cpu: { cores: 2, priority: 'normal', affinity: [] },
@@ -372,7 +413,11 @@ export class SpecializedWorkerPoolManager extends EventEmitter {
             specialization: {
                 primary: 'gpu-accelerated',
                 secondary: ['vector-computation', 'ml-inference'],
-                capabilities: ['cuda-kernels', 'parallel-computation', 'matrix-operations'],
+                capabilities: [
+                    { name: 'cuda-kernels', level: 3, certified: true },
+                    { name: 'parallel-computation', level: 3, certified: true },
+                    { name: 'matrix-operations', level: 3, certified: true }
+                ],
                 resourceRequirements: {
                     cpuCores: 1,
                     memoryMB: 512,
@@ -380,7 +425,11 @@ export class SpecializedWorkerPoolManager extends EventEmitter {
                     storageMB: 100,
                     networkBandwidthMbps: 10
                 },
-                optimizations: ['gpu-memory-pooling', 'kernel-optimization', 'stream-processing']
+                optimizations: [
+                    { name: 'gpu-memory-pooling', enabled: true },
+                    { name: 'kernel-optimization', enabled: true },
+                    { name: 'stream-processing', enabled: true }
+                ]
             },
             resourceAllocation: {
                 cpu: { cores: 1, priority: 'low', affinity: [] },
@@ -544,7 +593,7 @@ export class SpecializedWorkerPoolManager extends EventEmitter {
     /**
      * Scale pool dynamically based on load
      */
-    async scalePool(agentType: AgentType, newSize: number): Promise<void> {
+    async scalePool(agentType: AgentType, newSize: number): Promise<any> {
         const pool = this.pools.get(agentType);
         if (!pool) {
             throw new Error(`Pool not found for agent type: ${agentType}`);
@@ -560,7 +609,8 @@ export class SpecializedWorkerPoolManager extends EventEmitter {
     async optimizePools(): Promise<OptimizationResult> {
         const optimizations: Map<AgentType, PoolOptimization> = new Map();
         
-        for (const [agentType, pool] of this.pools) {
+        const poolEntries = Array.from(this.pools.entries());
+        for (const [agentType, pool] of poolEntries) {
             const optimization = await pool.optimize();
             optimizations.set(agentType, optimization);
         }
@@ -576,7 +626,7 @@ export class SpecializedWorkerPoolManager extends EventEmitter {
     /**
      * Shutdown all pools gracefully
      */
-    async shutdown(): Promise<void> {
+    async shutdown(): Promise<any> {
         const shutdownPromises = Array.from(this.pools.values()).map(pool => pool.shutdown());
         await Promise.all(shutdownPromises);
         
@@ -634,7 +684,7 @@ export class SpecializedWorkerPool extends EventEmitter {
         };
     }
     
-    private async initializeWorkers(): Promise<void> {
+    private async initializeWorkers(): Promise<any> {
         for (let i = 0; i < this.config.poolSize; i++) {
             const worker = new SpecializedWorker(
                 `${this.config.agentType}-worker-${i}`,
@@ -659,7 +709,7 @@ export class SpecializedWorkerPool extends EventEmitter {
         }
         
         this.stats.activeWorkers = this.workers.length;
-        this.updateIdleWorkerCount();
+        this.updateWorkerCounts();
     }
     
     private setupHealthMonitoring(): void {
@@ -754,7 +804,7 @@ export class SpecializedWorkerPool extends EventEmitter {
         return this.taskQueue.splice(bestIndex, 1)[0];
     }
     
-    private async assignTaskToWorker(task: WorkerTask, worker: SpecializedWorker): Promise<void> {
+    private async assignTaskToWorker(task: WorkerTask, worker: SpecializedWorker): Promise<any> {
         this.activeJobs++;
         this.stats.currentQueueSize = this.taskQueue.length;
         this.updateWorkerCounts();
@@ -762,7 +812,7 @@ export class SpecializedWorkerPool extends EventEmitter {
         try {
             const result = await worker.executeTask(task);
             this.handleTaskCompletion(result);
-        } catch (error) {
+        } catch (error: any) {
             this.handleTaskFailure({
                 taskId: task.id,
                 workerId: worker.getId(),
@@ -783,7 +833,7 @@ export class SpecializedWorkerPool extends EventEmitter {
         this.emit('task-completed', result);
     }
     
-    private handleTaskFailure(error: unknown): void {
+    private handleTaskFailure(error: any): void {
         this.stats.totalTasksFailed++;
         this.emit('task-failed', error);
     }
@@ -795,23 +845,23 @@ export class SpecializedWorkerPool extends EventEmitter {
         this.recoverWorker(worker);
     }
     
-    private async recoverWorker(worker: SpecializedWorker): Promise<void> {
+    private async recoverWorker(worker: SpecializedWorker): Promise<any> {
         try {
             await worker.restart();
             this.emit('worker-recovered', { workerId: worker.getId() });
-        } catch (error) {
+        } catch (error: any) {
             this.emit('worker-recovery-failed', { workerId: worker.getId(), error });
             await this.replaceWorker(worker);
         }
     }
     
-    private async replaceWorker(failedWorker: SpecializedWorker): Promise<void> {
+    private async replaceWorker(failedWorker: SpecializedWorker): Promise<any> {
         const index = this.workers.indexOf(failedWorker);
         if (index === -1) return;
         
         try {
             await failedWorker.shutdown();
-        } catch (error) {
+        } catch (error: any) {
             // Worker might already be dead
         }
         
@@ -876,7 +926,7 @@ export class SpecializedWorkerPool extends EventEmitter {
     
     // Statistics and monitoring
     private performHealthCheck(): void {
-        this.workers.forEach(async (worker) => {
+        this.workers.forEach(async (worker): Promise<any> => {
             const healthy = await worker.healthCheck();
             if (!healthy) {
                 this.handleWorkerError(worker, new Error('Health check failed'));
@@ -947,7 +997,7 @@ export class SpecializedWorkerPool extends EventEmitter {
     }
     
     // Pool management
-    async scale(newSize: number): Promise<void> {
+    async scale(newSize: number): Promise<any> {
         const currentSize = this.workers.length;
         
         if (newSize > currentSize) {
@@ -1011,7 +1061,7 @@ export class SpecializedWorkerPool extends EventEmitter {
         return currentSize;
     }
     
-    async shutdown(): Promise<void> {
+    async shutdown(): Promise<any> {
         const shutdownPromises = this.workers.map(w => w.shutdown());
         await Promise.all(shutdownPromises);
         
@@ -1061,9 +1111,9 @@ export class SpecializedWorker extends EventEmitter {
         super();
     }
     
-    async initialize(): Promise<void> {
+    async initialize(): Promise<any> {
         try {
-            this.worker = new Worker(new URL(import.meta.url), {
+            this.worker = new Worker(__filename, {
                 workerData: {
                     workerId: this.id,
                     agentType: this.config.agentType,
@@ -1086,7 +1136,7 @@ export class SpecializedWorker extends EventEmitter {
                 }
             });
             
-        } catch (error) {
+        } catch (error: any) {
             this.failed = true;
             throw error;
         }
@@ -1112,7 +1162,7 @@ export class SpecializedWorker extends EventEmitter {
                 this.handleTaskTimeout(task);
             }, task.constraints?.timeoutMs || 30000);
             
-            const messageHandler = (result: unknown) => {
+            const messageHandler = (result: any) => {
                 clearTimeout(timeout);
                 this.worker?.off('message', messageHandler);
                 
@@ -1158,7 +1208,7 @@ export class SpecializedWorker extends EventEmitter {
         });
     }
     
-    private handleWorkerMessage(message: unknown): void {
+    private handleWorkerMessage(message: any): void {
         switch (message.type) {
             case 'health-check-response':
                 this.emit('health-check-response', message.data);
@@ -1207,7 +1257,7 @@ export class SpecializedWorker extends EventEmitter {
         }
     }
     
-    private updatePerformanceScores(data: unknown): void {
+    private updatePerformanceScores(data: any): void {
         if (data.cpuEfficiency) {
             this.performanceScore = (this.performanceScore + data.cpuEfficiency) / 2;
         }
@@ -1237,14 +1287,14 @@ export class SpecializedWorker extends EventEmitter {
         });
     }
     
-    async restart(): Promise<void> {
+    async restart(): Promise<any> {
         await this.shutdown();
         await this.initialize();
         this.failed = false;
         this.busy = false;
     }
     
-    async shutdown(): Promise<void> {
+    async shutdown(): Promise<any> {
         if (this.worker) {
             await this.worker.terminate();
             this.worker = null;
@@ -1277,7 +1327,7 @@ export class SpecializedWorker extends EventEmitter {
 
 // Supporting Classes (simplified implementations)
 class GlobalTaskScheduler {
-    constructor(private options: unknown) {}
+    constructor(private options: any) {}
     
     async scheduleTask(task: WorkerTask, pools: Map<AgentType, SpecializedWorkerPool>): Promise<SchedulingDecision> {
         // Simple scheduling - return original agent type for now
@@ -1288,7 +1338,7 @@ class GlobalTaskScheduler {
         };
     }
     
-    getMetrics(): unknown {
+    getMetrics(): any {
         return {
             totalScheduledTasks: 0,
             averageSchedulingTime: 0,
@@ -1300,15 +1350,15 @@ class GlobalTaskScheduler {
         return { optimized: true };
     }
     
-    async shutdown(): Promise<void> {}
+    async shutdown(): Promise<any> {}
 }
 
 class AdvancedResourceManager {
-    constructor(private options: unknown) {}
+    constructor(private options: any) {}
     
-    async allocateResources(options: unknown): Promise<void> {}
+    async allocateResources(options: any): Promise<any> {}
     
-    getUtilization(): unknown {
+    getUtilization(): any {
         return {
             cpu: 0.65,
             memory: 0.70,
@@ -1321,13 +1371,13 @@ class AdvancedResourceManager {
         return { resourceOptimized: true };
     }
     
-    async shutdown(): Promise<void> {}
+    async shutdown(): Promise<any> {}
 }
 
 class PoolPerformanceMonitor {
-    constructor(private options: unknown) {}
+    constructor(private options: any) {}
     
-    getGlobalMetrics(): unknown {
+    getGlobalMetrics(): any {
         return {
             totalThroughput: 150,
             averageLatency: 1200,
@@ -1335,13 +1385,13 @@ class PoolPerformanceMonitor {
         };
     }
     
-    async shutdown(): Promise<void> {}
+    async shutdown(): Promise<any> {}
 }
 
 class FaultToleranceManager {
-    constructor(private options: unknown) {}
+    constructor(private options: any) {}
     
-    getMetrics(): unknown {
+    getMetrics(): any {
         return {
             totalFailures: 5,
             recoveryRate: 0.95,
@@ -1351,7 +1401,7 @@ class FaultToleranceManager {
 }
 
 // Type definitions
-interface PoolManagerOptions {
+export interface PoolManagerOptions {
     schedulingAlgorithm?: string;
     loadBalancing?: boolean;
     preemption?: boolean;
@@ -1360,31 +1410,31 @@ interface PoolManagerOptions {
     gpuDevices?: GPUDevice[];
 }
 
-interface PoolDependencies {
+export interface PoolDependencies {
     resourceManager: AdvancedResourceManager;
     performanceMonitor: PoolPerformanceMonitor;
     faultManager: FaultToleranceManager;
 }
 
-interface GPUDevice {
+export interface GPUDevice {
     id: number;
     memoryMB: number;
     computeCapability: string;
 }
 
-interface SchedulingDecision {
+export interface SchedulingDecision {
     targetPool: AgentType;
     reasoning: string;
     confidence: number;
 }
 
-interface WorkerCapability {
+export interface WorkerCapability {
     name: string;
     level: number;
     certified: boolean;
 }
 
-interface ResourceRequirements {
+export interface ResourceRequirements {
     cpuCores: number;
     memoryMB: number;
     gpuMemoryMB: number;
@@ -1392,83 +1442,83 @@ interface ResourceRequirements {
     networkBandwidthMbps: number;
 }
 
-interface OptimizationSetting {
+export interface OptimizationSetting {
     name: string;
     enabled: boolean;
-    parameters?: unknown;
+    parameters?: any;
 }
 
-interface CPUAllocation {
+export interface CPUAllocation {
     cores: number;
     priority: string;
     affinity: number[];
 }
 
-interface MemoryAllocation {
+export interface MemoryAllocation {
     limitMB: number;
     swappable: boolean;
     huge_pages: boolean;
 }
 
-interface GPUAllocation {
+export interface GPUAllocation {
     enabled: boolean;
     deviceId: number;
     memoryMB: number;
 }
 
-interface StorageAllocation {
+export interface StorageAllocation {
     limitMB: number;
     tempSpace: boolean;
     ssd: boolean;
 }
 
-interface NetworkAllocation {
+export interface NetworkAllocation {
     bandwidthMbps: number;
     connections: number;
     keepAlive: boolean;
 }
 
-interface AffinityRule {
+export interface AffinityRule {
     type: string;
     weight: number;
 }
 
-interface PreemptionPolicy {
+export interface PreemptionPolicy {
     enabled: boolean;
     threshold: number;
 }
 
-interface QueuingStrategy {
+export interface QueuingStrategy {
     strategy: string;
     maxSize: number;
     timeout: number;
 }
 
-interface RetryPolicy {
+export interface RetryPolicy {
     maxAttempts: number;
     backoffMs: number;
     exponential: boolean;
 }
 
-interface FailoverStrategy {
+export interface FailoverStrategy {
     enabled: boolean;
     fallbackPool: string;
 }
 
-interface HealthCheckConfig {
+export interface HealthCheckConfig {
     intervalMs: number;
     timeout: number;
     threshold: number;
 }
 
-interface PerformanceConfig {
+export interface PerformanceConfig {
     targetLatencyMs: number;
     maxThroughputTPS: number;
     memoryEfficiency: number;
     cpuUtilization: number;
 }
 
-interface TaskRequirements {
+export interface TaskRequirements {
     minCpuCores?: number;
     minMemoryMB?: number;
     requiresGPU?: boolean;
@@ -1476,48 +1526,48 @@ interface TaskRequirements {
     minNetworkBandwidth?: number;
 }
 
-interface TaskConstraints {
+export interface TaskConstraints {
     timeoutMs?: number;
     maxRetries?: number;
     requiresIsolation?: boolean;
     priority?: TaskPriority;
 }
 
-interface TaskMetadata {
+export interface TaskMetadata {
     createdAt: string;
     submittedBy: string;
     tags: string[];
     version: string;
 }
 
-interface TaskPerformance {
+export interface TaskPerformance {
     executionTime: number;
     memoryUsage: number;
     cpuUsage: number;
     gpuUsage: number;
 }
 
-interface ResultMetadata {
+export interface ResultMetadata {
     workerSpecialization: SpecializationType;
     timestamp: string;
     version: string;
 }
 
-interface WorkerError {
+export interface WorkerError {
     code: string;
     message: string;
     timestamp: number;
     recoverable: boolean;
 }
 
-interface WorkerWarning {
+export interface WorkerWarning {
     code: string;
     message: string;
     timestamp: number;
     severity: string;
 }
 
-interface PoolStats {
+export interface PoolStats {
     agentType: AgentType;
     poolSize: number;
     activeWorkers: number;
@@ -1543,31 +1593,31 @@ interface PoolStats {
     };
 }
 
-interface PoolMetrics {
+export interface PoolMetrics {
     pools: Map<AgentType, PoolStats>;
     global: {
         totalPools: number;
         totalWorkers: number;
         activeTasks: number;
         queuedTasks: number;
-        resourceUtilization: unknown;
-        performanceMetrics: unknown;
+        resourceUtilization: any;
+        performanceMetrics: any;
     };
-    scheduler: unknown;
-    faultTolerance: unknown;
+    scheduler: any;
+    faultTolerance: any;
 }
 
-interface PoolOptimization {
+export interface PoolOptimization {
     currentMetrics: PoolStats;
     optimizations: string[];
     suggestedPoolSize: number;
     timestamp: string;
 }
 
-interface OptimizationResult {
+export interface OptimizationResult {
     optimizations: Map<AgentType, PoolOptimization>;
-    globalOptimization: unknown;
-    resourceOptimization: unknown;
+    globalOptimization: any;
+    resourceOptimization: any;
     timestamp: string;
 }
 
@@ -1576,31 +1626,31 @@ if (!isMainThread && workerData) {
     const { workerId, agentType, specialization, resourceAllocation } = workerData;
     
     // Specialized worker implementation based on agent type
-    parentPort?.on('message', async (message) => {
+    parentPort?.on('message', async (message): Promise<any> => {
         try {
             switch (message.type) {
                 case 'execute-task':
                     const result = await executeSpecializedTask(message.task, agentType, specialization);
-                    parentPort?.postMessage({ type: 'task-result', data: result });
+                    self.postMessage({ type: 'task-result', data: result });
                     break;
                     
                 case 'health-check':
-                    parentPort?.postMessage({ type: 'health-check-response', data: { healthy: true } });
+                    self.postMessage({ type: 'health-check-response', data: { healthy: true } });
                     break;
                     
                 default:
-                    parentPort?.postMessage({ type: 'error', error: `Unknown message type: ${message.type}` });
+                    self.postMessage({ type: 'error', error: `Unknown message type: ${message.type}` });
             }
-        } catch (error) {
-            parentPort?.postMessage({ type: 'error', error: error.message });
+        } catch (error: any) {
+            self.postMessage({ type: 'error', error: error.message });
         }
     });
     
-    async function executeSpecializedTask(task: WorkerTask, agentType: AgentType, specialization: WorkerSpecialization): Promise<any> {
+    const executeSpecializedTask = async (task: WorkerTask, agentType: AgentType, specialization: WorkerSpecialization): Promise<any> => {
         const startTime = performance.now();
         
         // Specialized execution based on agent type
-        let result: unknown;
+        let result: any;
         
         switch (agentType) {
             case 'context7':
@@ -1627,17 +1677,16 @@ if (!isMainThread && workerData) {
         
         const executionTime = performance.now() - startTime;
         
-        return {
-            ...result,
+        return Object.assign({}, result as Record<string, unknown>, {
             executionTime,
             memoryUsage: process.memoryUsage().heapUsed,
             cpuUsage: 0.7, // Simulated
             gpuUsage: specialization.primary === 'gpu-accelerated' ? 0.6 : 0
-        };
+        });
     }
     
     // Specialized task execution functions
-    async function executeContext7Task(task: WorkerTask): Promise<any> {
+    const executeContext7Task = async (task: WorkerTask): Promise<any> => {
         // Context7-specific processing
         await new Promise(resolve => setTimeout(resolve, 100)); // Simulate API call
         return {
@@ -1645,9 +1694,9 @@ if (!isMainThread && workerData) {
             documentation: 'Retrieved documentation for query',
             confidence: 0.9
         };
-    }
+    };
     
-    async function executeMemoryTask(task: WorkerTask): Promise<any> {
+    const executeMemoryTask = async (task: WorkerTask): Promise<any> => {
         // Memory graph processing
         await new Promise(resolve => setTimeout(resolve, 200)); // Simulate graph traversal
         return {
@@ -1656,9 +1705,9 @@ if (!isMainThread && workerData) {
             relationships: ['rel1', 'rel2'],
             confidence: 0.85
         };
-    }
+    };
     
-    async function executeSemanticTask(task: WorkerTask): Promise<any> {
+    const executeSemanticTask = async (task: WorkerTask): Promise<any> => {
         // Semantic/vector processing
         await new Promise(resolve => setTimeout(resolve, 150)); // Simulate vector computation
         return {
@@ -1667,9 +1716,9 @@ if (!isMainThread && workerData) {
             clusters: ['cluster1', 'cluster2'],
             confidence: 0.88
         };
-    }
+    };
     
-    async function executeErrorAnalysisTask(task: WorkerTask): Promise<any> {
+    const executeErrorAnalysisTask = async (task: WorkerTask): Promise<any> => {
         // Error analysis processing
         await new Promise(resolve => setTimeout(resolve, 300)); // Simulate pattern analysis
         return {
@@ -1678,9 +1727,9 @@ if (!isMainThread && workerData) {
             fixes: ['fix1', 'fix2'],
             confidence: 0.92
         };
-    }
+    };
     
-    async function executeLegalTask(task: WorkerTask): Promise<any> {
+    const executeLegalTask = async (task: WorkerTask): Promise<any> => {
         // Legal document processing
         await new Promise(resolve => setTimeout(resolve, 250)); // Simulate document analysis
         return {
@@ -1689,9 +1738,9 @@ if (!isMainThread && workerData) {
             precedents: ['precedent1'],
             confidence: 0.86
         };
-    }
+    };
     
-    async function executeGPUTask(task: WorkerTask): Promise<any> {
+    const executeGPUTask = async (task: WorkerTask): Promise<any> => {
         // GPU-accelerated processing
         await new Promise(resolve => setTimeout(resolve, 50)); // Simulate GPU computation
         return {
@@ -1700,9 +1749,9 @@ if (!isMainThread && workerData) {
             speedup: 5.2,
             confidence: 0.95
         };
-    }
+    };
     
-    async function executeGenericTask(task: WorkerTask): Promise<any> {
+    const executeGenericTask = async (task: WorkerTask): Promise<any> => {
         // Generic task processing
         await new Promise(resolve => setTimeout(resolve, 100));
         return {
@@ -1710,7 +1759,7 @@ if (!isMainThread && workerData) {
             result: 'Task completed',
             confidence: 0.8
         };
-    }
+    };
 }
 
-export { SpecializedWorkerPoolManager };
+// Export already declared above

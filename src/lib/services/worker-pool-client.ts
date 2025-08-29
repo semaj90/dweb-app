@@ -211,7 +211,7 @@ export class WorkerPoolClient extends EventEmitter {
         responseTime
       };
       
-    } catch (error) {
+    } catch (error: any) {
       const responseTime = Date.now() - startTime;
       
       this.emit('request:failed', { 
@@ -360,7 +360,7 @@ export class WorkerPoolClient extends EventEmitter {
   /**
    * Process queued requests with priority handling
    */
-  private async processRequestQueue(): Promise<void> {
+  private async processRequestQueue(): Promise<any> {
     if (this.requestQueue.length === 0) return;
     
     // Sort by priority

@@ -42,7 +42,7 @@ console.log(`🚀 Enhanced Check Starting
 🤖 AI: ${config.enableAI ? 'Enabled' : 'Disabled'}`);
 
 // Enhanced Error Interface
-interface EnhancedError {
+export interface EnhancedError {
   id: string;
   type: ErrorType;
   file: string;
@@ -328,7 +328,7 @@ class GPUOllamaAnalyzer {
           error.embedding = result.embedding;
           console.log(`✅ Generated ${result.embedding?.length || 0}d embedding for ${error.id}`);
         }
-      } catch (err) {
+      } catch (err: any) {
         console.warn(`⚠️ Embedding failed for ${error.id}:`, err.message);
       }
 
@@ -390,7 +390,7 @@ Be concise and actionable.`;
         
         console.log(`🤖 AI analysis complete for ${error.id}`);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.warn(`⚠️ AI analysis failed for ${error.id}:`, err.message);
       error.aiAnalysis = 'AI analysis failed';
     }
@@ -667,7 +667,7 @@ async function updateVSCodeGPUSettings(): Promise<void> {
       
       fs.writeFileSync(vscodeSettingsPath, JSON.stringify(settings, null, 2));
       console.log('✅ VS Code GPU settings updated');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Failed to update VS Code settings:', error.message);
     }
   }

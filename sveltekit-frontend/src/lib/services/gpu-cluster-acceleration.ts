@@ -200,7 +200,7 @@ export class GPUClusterManager extends EventEmitter {
         default:
           console.warn(`⚠️ Unknown message type from worker ${workerId}:`, message.type);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to handle worker message from ${workerId}:`, error);
     }
   }
@@ -225,7 +225,7 @@ export class GPUClusterManager extends EventEmitter {
         
         console.log(`📱 Created ${contextType} context: ${contextId}`);
         
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Failed to create ${contextType} context for worker ${workerId}:`, error);
       }
     }
@@ -255,7 +255,7 @@ export class GPUClusterManager extends EventEmitter {
           device = await adapter.requestDevice();
           queue = device.queue;
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn('WebGPU not available, falling back to WebGL');
         contextType = 'webgl2';
       }
@@ -288,7 +288,7 @@ export class GPUClusterManager extends EventEmitter {
         gl.getExtension('OES_texture_float_linear');
         gl.getExtension('WEBGL_color_buffer_float');
         
-      } catch (error) {
+      } catch (error: any) {
         throw new Error(`WebGL context creation failed: ${error}`);
       }
     }
@@ -336,7 +336,7 @@ export class GPUClusterManager extends EventEmitter {
         description: info.description
       });
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn('WebGPU initialization failed:', error);
     }
   }
@@ -434,7 +434,7 @@ export class GPUClusterManager extends EventEmitter {
       
       return cachedShader;
       
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Shader compilation failed for '${name}':`, error);
       throw error;
     }
@@ -559,7 +559,7 @@ export class GPUClusterManager extends EventEmitter {
       this.emit('workload-completed', { workloadId: workload.id, result, context: context.id });
       return result;
       
-    } catch (error) {
+    } catch (error: any) {
       this.emit('workload-failed', { workloadId: workload.id, error, context: context.id });
       throw error;
     }
@@ -1023,7 +1023,7 @@ if (!isMainThread && workerData?.type === 'gpu-worker') {
         // Process GPU workload in worker thread
         const result = await processGPUWorkloadInWorker(message.workload);
         parentPort?.postMessage({ type: 'result', result, workloadId: message.workload.id});
-      } catch (error) {
+      } catch (error: any) {
         parentPort?.postMessage({ 
           type: 'error', 
           error: error instanceof Error ? error.message : 'Unknown error', 
@@ -1092,7 +1092,7 @@ export async function checkGPUCapabilities(): Promise<{
       capabilities.webgpu = !!adapter;
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.warn('GPU capability check failed:', error);
   }
 

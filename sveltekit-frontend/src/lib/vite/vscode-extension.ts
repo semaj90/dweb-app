@@ -5,12 +5,12 @@
 import { existsSync, readFileSync, watchFile } from "fs";
 import { resolve } from "path";
 
-interface VSCodeCommand {
+export interface VSCodeCommand {
   command: string;
   args?: unknown[];
 }
 
-interface VSCodeNotification {
+export interface VSCodeNotification {
   message: string;
   type: 'error' | 'warning' | 'info';
   actions?: Array<{
@@ -70,7 +70,7 @@ export class VSCodeIntegration {
       // Notify callbacks
       this.callbacks.forEach((callback: any) => callback(logData.errors));
       
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to parse error log:', error);
     }
   }
@@ -137,7 +137,7 @@ export class VSCodeIntegration {
         const data = readFileSync(this.logFile, 'utf-8');
         return JSON.parse(data);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to read current errors:', error);
     }
     return { errors: [], diagnostics: [] };

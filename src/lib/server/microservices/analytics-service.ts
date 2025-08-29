@@ -9,7 +9,7 @@ import { CacheManager } from '../cache/loki-cache';
 import { Queue } from 'bull';
 import Redis from 'ioredis';
 
-interface UserInteraction {
+export interface UserInteraction {
   id: string;
   userId: string;
   sessionId: string;
@@ -33,7 +33,7 @@ interface UserInteraction {
     modelUsed?: string;
     resultSatisfaction?: number; // 1-5 rating
     tags?: string[];
-    metadata?: unknown;
+    metadata?: any;
   };
   context: {
     userAgent?: string;
@@ -44,7 +44,7 @@ interface UserInteraction {
   };
 }
 
-interface UserProfile {
+export interface UserProfile {
   userId: string;
   demographics: {
     role: 'prosecutor' | 'detective' | 'legal-assistant' | 'admin' | 'user';
@@ -82,7 +82,7 @@ interface UserProfile {
   lastUpdated: number;
 }
 
-interface UserSession {
+export interface UserSession {
   sessionId: string;
   userId: string;
   startTime: number;
@@ -137,20 +137,20 @@ export class AnalyticsService extends EventEmitter {
 
   private setupQueueProcessors() {
     // Process interaction data in background
-    this.analyticsQueue.process('process-interaction', async (job) => {
+    this.analyticsQueue.process('process-interaction', async (job): Promise<any> => {
       const interaction: UserInteraction = job.data;
       await this.processUserInteraction(interaction);
       return { processed: true, interactionId: interaction.id };
     });
 
     // Generate user insights
-    this.analyticsQueue.process('generate-insights', async (job) => {
+    this.analyticsQueue.process('generate-insights', async (job): Promise<any> => {
       const { userId } = job.data;
       return await this.generateUserInsights(userId);
     });
 
     // Update recommendation models
-    this.analyticsQueue.process('update-recommendations', async (job) => {
+    this.analyticsQueue.process('update-recommendations', async (job): Promise<any> => {
       const { userId, sessionData } = job.data;
       return await this.updateRecommendationModel(userId, sessionData);
     });
@@ -158,23 +158,23 @@ export class AnalyticsService extends EventEmitter {
 
   private setupPeriodicTasks() {
     // Update user profiles every 5 minutes
-    setInterval(async () => {
+    setInterval(async (): Promise<any> => {
       await this.updateAllUserProfiles();
     }, 5 * 60 * 1000);
 
     // Generate daily analytics reports
-    setInterval(async () => {
+    setInterval(async (): Promise<any> => {
       await this.generateDailyReports();
     }, 24 * 60 * 60 * 1000);
 
     // Cleanup old data weekly
-    setInterval(async () => {
+    setInterval(async (): Promise<any> => {
       await this.cleanupOldData();
     }, 7 * 24 * 60 * 60 * 1000);
   }
 
   // Core interaction tracking
-  public async trackInteraction(interaction: Omit<UserInteraction, 'id' | 'timestamp'>): Promise<void> {
+  public async trackInteraction(interaction: Omit<UserInteraction, 'id' | 'timestamp'>): Promise<any> {
     const fullInteraction: UserInteraction = {
       id: this.generateId(),
       timestamp: Date.now(),
@@ -198,7 +198,7 @@ export class AnalyticsService extends EventEmitter {
       analysisType: string;
       startTime: number;
     }
-  ): Promise<void> {
+  ): Promise<any> {
     const session: UserSession = {
       sessionId: sessionData.sessionId,
       userId,
@@ -234,7 +234,7 @@ export class AnalyticsService extends EventEmitter {
     });
   }
 
-  private async processUserInteraction(interaction: UserInteraction): Promise<void> {
+  private async processUserInteraction(interaction: UserInteraction): Promise<any> {
     // Store in cache
     await this.cache.logAnalytics(
       interaction.userId,
@@ -256,7 +256,7 @@ export class AnalyticsService extends EventEmitter {
     this.emit('interaction-processed', interaction);
   }
 
-  private async updateActiveSession(interaction: UserInteraction): Promise<void> {
+  private async updateActiveSession(interaction: UserInteraction): Promise<any> {
     const session = this.activeSessions.get(interaction.sessionId);
     if (!session) return;
 
@@ -292,7 +292,7 @@ export class AnalyticsService extends EventEmitter {
     }
   }
 
-  private async updateUserProfile(interaction: UserInteraction): Promise<void> {
+  private async updateUserProfile(interaction: UserInteraction): Promise<any> {
     let profile = this.profiles.get(interaction.userId) || await this.getUserProfile(interaction.userId);
     
     if (!profile) {
@@ -402,9 +402,9 @@ export class AnalyticsService extends EventEmitter {
   // Advanced analytics
   public async generateUserInsights(userId: string): Promise<{
     profile: UserProfile;
-    trends: unknown;
-    recommendations: unknown;
-    predictions: unknown;
+    trends: any;
+    recommendations: any;
+    predictions: any;
   }> {
     const profile = await this.getUserProfile(userId);
     if (!profile) throw new Error('User profile not found');
@@ -429,7 +429,7 @@ export class AnalyticsService extends EventEmitter {
     };
   }
 
-  private async analyzeTrends(interactions: unknown[]): Promise<any> {
+  private async analyzeTrends(interactions: any[]): Promise<any> {
     const last30Days = Date.now() - (30 * 24 * 60 * 60 * 1000);
     const recentInteractions = interactions.filter(i => i.timestamp > last30Days);
 
@@ -443,7 +443,7 @@ export class AnalyticsService extends EventEmitter {
 
   private async generatePersonalizedRecommendations(
     profile: UserProfile, 
-    interactions: unknown[]
+    interactions: any[]
   ): Promise<any> {
     const recommendations = [];
 
@@ -480,7 +480,7 @@ export class AnalyticsService extends EventEmitter {
     return recommendations;
   }
 
-  private async generatePredictions(profile: UserProfile, interactions: unknown[]): Promise<any> {
+  private async generatePredictions(profile: UserProfile, interactions: any[]): Promise<any> {
     return {
       likelyNextAction: this.predictNextAction(interactions),
       churRisk: this.calculateChurnRisk(profile, interactions),
@@ -490,7 +490,7 @@ export class AnalyticsService extends EventEmitter {
   }
 
   // Utility methods for calculations
-  private calculateDailyUsage(interactions: unknown[]): unknown {
+  private calculateDailyUsage(interactions: any[]): any {
     const usage = new Map<string, number>();
     
     interactions.forEach(interaction => {
@@ -501,7 +501,7 @@ export class AnalyticsService extends EventEmitter {
     return Array.from(usage.entries()).map(([date, count]) => ({ date, count }));
   }
 
-  private calculateFeatureAdoption(interactions: unknown[]): unknown {
+  private calculateFeatureAdoption(interactions: any[]): any {
     const features = new Map<string, number>();
     
     interactions.forEach(interaction => {
@@ -512,7 +512,7 @@ export class AnalyticsService extends EventEmitter {
     return Array.from(features.entries()).map(([feature, count]) => ({ feature, count }));
   }
 
-  private calculateSatisfactionTrend(interactions: unknown[]): unknown {
+  private calculateSatisfactionTrend(interactions: any[]): any {
     return interactions
       .filter(i => i.data.data?.resultSatisfaction)
       .map(i => ({
@@ -521,7 +521,7 @@ export class AnalyticsService extends EventEmitter {
       }));
   }
 
-  private calculatePerformanceTrend(interactions: unknown[]): unknown {
+  private calculatePerformanceTrend(interactions: any[]): any {
     return interactions
       .filter(i => i.data.data?.processingTime)
       .map(i => ({
@@ -530,7 +530,7 @@ export class AnalyticsService extends EventEmitter {
       }));
   }
 
-  private predictNextAction(interactions: unknown[]): string {
+  private predictNextAction(interactions: any[]): string {
     // Simple prediction based on recent patterns
     const recentActions = interactions
       .slice(-10)
@@ -547,7 +547,7 @@ export class AnalyticsService extends EventEmitter {
     return mostCommon ? mostCommon[0] : 'ai-analysis';
   }
 
-  private calculateChurnRisk(profile: UserProfile, interactions: unknown[]): number {
+  private calculateChurnRisk(profile: UserProfile, interactions: any[]): number {
     const daysSinceLastInteraction = (Date.now() - profile.lastUpdated) / (24 * 60 * 60 * 1000);
     const satisfactionScore = profile.behavioral.satisfactionScore;
     const usageFrequency = interactions.length / Math.max(1, daysSinceLastInteraction);
@@ -562,7 +562,7 @@ export class AnalyticsService extends EventEmitter {
     return Math.min(risk, 1.0);
   }
 
-  private calculateUserValue(profile: UserProfile, interactions: unknown[]): number {
+  private calculateUserValue(profile: UserProfile, interactions: any[]): number {
     // Value score based on usage, satisfaction, and engagement
     const usageScore = Math.min(profile.usage.totalInteractions / 100, 1.0);
     const satisfactionScore = profile.behavioral.satisfactionScore / 5.0;
@@ -571,7 +571,7 @@ export class AnalyticsService extends EventEmitter {
     return (usageScore + satisfactionScore + engagementScore) / 3;
   }
 
-  private calculateGrowthPotential(profile: UserProfile, interactions: unknown[]): number {
+  private calculateGrowthPotential(profile: UserProfile, interactions: any[]): number {
     // Growth potential based on learning curve and feature adoption
     const featureAdoption = profile.usage.mostUsedFeatures.length / 10; // Assume 10 total features
     const learningCurve = profile.behavioral.learningCurve;
@@ -581,7 +581,7 @@ export class AnalyticsService extends EventEmitter {
   }
 
   // Session management
-  private async finalizeSession(session: UserSession): Promise<void> {
+  private async finalizeSession(session: UserSession): Promise<any> {
     // Update user profile with session data
     const profile = await this.getUserProfile(session.userId) || this.createDefaultProfile(session.userId);
     
@@ -600,17 +600,17 @@ export class AnalyticsService extends EventEmitter {
     return await this.cache.getAnalytics(userId, undefined, undefined);
   }
 
-  private async updateAllUserProfiles(): Promise<void> {
+  private async updateAllUserProfiles(): Promise<any> {
     console.log('🔄 Updating all user profiles...');
     // Implementation for bulk profile updates
   }
 
-  private async generateDailyReports(): Promise<void> {
+  private async generateDailyReports(): Promise<any> {
     console.log('📊 Generating daily analytics reports...');
     // Implementation for daily reporting
   }
 
-  private async cleanupOldData(): Promise<void> {
+  private async cleanupOldData(): Promise<any> {
     console.log('🧹 Cleaning up old analytics data...');
     // Implementation for data cleanup
   }
@@ -643,7 +643,7 @@ export class AnalyticsService extends EventEmitter {
     };
   }
 
-  public async shutdown(): Promise<void> {
+  public async shutdown(): Promise<any> {
     console.log('🔄 Shutting down Analytics Service...');
     
     // Finalize all active sessions

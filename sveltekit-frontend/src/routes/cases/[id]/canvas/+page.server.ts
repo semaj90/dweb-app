@@ -26,7 +26,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
       session,
       caseDetails,
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error loading case:", error);
     throw redirect(302, "/cases");
   }
@@ -59,7 +59,7 @@ export const actions: Actions = {
         .where(eq(cases.id, caseId));
 
       return { success: true, message: "Case updated successfully" };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating case:", error);
       return { success: false, error: "Failed to update case" };
     }

@@ -14,7 +14,7 @@ import type {
 // STORAGE INTEGRATION CONFIGURATION
 // ==========================================
 
-interface IntegrationConfig {
+export interface IntegrationConfig {
   minioEndpoint: string;
   minioAccessKey: string;
   minioSecretKey: string;
@@ -92,20 +92,20 @@ export interface DocumentMetadata {
 
 export class IntegratedStorageService {
   private config: IntegrationConfig;
-  private minioClient: unknown; // Would be S3 client or MinIO client
-  private neo4jDriver: unknown; // Would be Neo4j driver
-  private pgPool: unknown;      // Would be PostgreSQL connection pool
+  private minioClient: any; // Would be S3 client or MinIO client
+  private neo4jDriver: any; // Would be Neo4j driver
+  private pgPool: any;      // Would be PostgreSQL connection pool
 
   constructor(config: Partial<IntegrationConfig> = {}) {
     this.config = { ...defaultConfig, ...config };
     this.initializeClients();
   }
 
-  private async initializeClients(): Promise<void> {
+  private async initializeClients(): Promise<any> {
     // Initialize MinIO client
     this.minioClient = {
       // Mock MinIO client - would be actual MinIO SDK
-      putObject: async (bucket: string, key: string, data: ArrayBuffer, metadata: unknown) => {
+      putObject: async (bucket: string, key: string, data: ArrayBuffer, metadata: any) => {
         console.log(`Storing object ${key} in bucket ${bucket}`);
         return { etag: 'mock-etag', versionId: 'mock-version' };
       },
@@ -123,7 +123,7 @@ export class IntegratedStorageService {
     this.neo4jDriver = {
       // Mock Neo4j driver - would be actual Neo4j driver
       session: () => ({
-        run: async (query: string, params: unknown) => {
+        run: async (query: string, params: any) => {
           console.log(`Neo4j query: ${query}`, params);
           return { records: [] };
         },
@@ -135,7 +135,7 @@ export class IntegratedStorageService {
     // Initialize PostgreSQL pool
     this.pgPool = {
       // Mock PostgreSQL pool - would be actual pg pool
-      query: async (text: string, params: unknown[]) => {
+      query: async (text: string, params: any[]) => {
         console.log(`PostgreSQL query: ${text}`, params);
         return { rows: [] };
       }
@@ -172,7 +172,7 @@ export class IntegratedStorageService {
       workflow.status = 'completed';
       workflow.endTime = new Date();
 
-    } catch (error) {
+    } catch (error: any) {
       workflow.status = 'failed';
       workflow.error = error instanceof Error ? error.message : 'Unknown error';
       workflow.endTime = new Date();
@@ -184,8 +184,8 @@ export class IntegratedStorageService {
   private async executeStage(
     workflow: DocumentWorkflow, 
     stageIndex: number, 
-    stageFunction: () => Promise<void>
-  ): Promise<void> {
+    stageFunction: () => Promise<any>
+  ): Promise<any> {
     const stage = workflow.stages[stageIndex];
     stage.status = 'processing';
     stage.startTime = new Date();
@@ -197,7 +197,7 @@ export class IntegratedStorageService {
       stage.progress = 100;
       stage.endTime = new Date();
       workflow.currentStage = stageIndex + 1;
-    } catch (error) {
+    } catch (error: any) {
       stage.status = 'failed';
       stage.error = error instanceof Error ? error.message : 'Unknown error';
       stage.endTime = new Date();
@@ -209,7 +209,7 @@ export class IntegratedStorageService {
   // MINIO STORAGE OPERATIONS
   // ==========================================
 
-  private async uploadToMinio(workflow: DocumentWorkflow): Promise<void> {
+  private async uploadToMinio(workflow: DocumentWorkflow): Promise<any> {
     const objectKey = this.generateObjectKey(workflow.documentId, workflow.metadata.filename);
     
     // Prepare metadata for MinIO
@@ -283,7 +283,7 @@ export class IntegratedStorageService {
   // TEXT EXTRACTION AND METADATA
   // ==========================================
 
-  private async extractTextAndMetadata(workflow: DocumentWorkflow): Promise<void> {
+  private async extractTextAndMetadata(workflow: DocumentWorkflow): Promise<any> {
     const mimeType = workflow.metadata.mimeType;
     let extractedText = '';
     let additionalMetadata: Record<string, any> = {};
@@ -377,7 +377,7 @@ export class IntegratedStorageService {
   // EMBEDDING GENERATION
   // ==========================================
 
-  private async generateEmbeddings(workflow: DocumentWorkflow): Promise<void> {
+  private async generateEmbeddings(workflow: DocumentWorkflow): Promise<any> {
     const extractedText = workflow.stages[1].metadata.extractedText;
     const chunks = await this.chunkText(extractedText);
     const embeddings: number[][] = [];
@@ -395,7 +395,7 @@ export class IntegratedStorageService {
     };
   }
 
-  private async chunkText(text: string): Promise<Array<{ id: string; content: string; metadata: unknown }>> {
+  private async chunkText(text: string): Promise<Array<{ id: string; content: string; metadata: any }>> {
     const chunks = [];
     const chunkSize = 512;
     const overlap = 64;
@@ -428,7 +428,7 @@ export class IntegratedStorageService {
   // POSTGRESQL + PGVECTOR STORAGE
   // ==========================================
 
-  private async storeInPostgres(workflow: DocumentWorkflow): Promise<void> {
+  private async storeInPostgres(workflow: DocumentWorkflow): Promise<any> {
     const documentData = {
       id: workflow.documentId,
       case_id: workflow.caseId,
@@ -508,7 +508,7 @@ export class IntegratedStorageService {
   // NEO4J GRAPH STRUCTURE
   // ==========================================
 
-  private async createGraphStructure(workflow: DocumentWorkflow): Promise<void> {
+  private async createGraphStructure(workflow: DocumentWorkflow): Promise<any> {
     const session = this.neo4jDriver.session();
 
     try {
@@ -537,7 +537,7 @@ export class IntegratedStorageService {
     }
   }
 
-  private async createDocumentNode(session: unknown, workflow: DocumentWorkflow): Promise<void> {
+  private async createDocumentNode(session: any, workflow: DocumentWorkflow): Promise<any> {
     const query = `
       CREATE (d:Document {
         id: $documentId,
@@ -570,7 +570,7 @@ export class IntegratedStorageService {
     });
   }
 
-  private async createCaseRelationship(session: unknown, workflow: DocumentWorkflow): Promise<void> {
+  private async createCaseRelationship(session: any, workflow: DocumentWorkflow): Promise<any> {
     const query = `
       MATCH (c:Case {id: $caseId})
       MATCH (d:Document {id: $documentId})
@@ -583,7 +583,7 @@ export class IntegratedStorageService {
     });
   }
 
-  private async createEntityGraph(session: unknown, workflow: DocumentWorkflow): Promise<void> {
+  private async createEntityGraph(session: any, workflow: DocumentWorkflow): Promise<any> {
     const entities = workflow.stages[1].metadata.legalEntities;
 
     for (const entity of entities) {
@@ -615,7 +615,7 @@ export class IntegratedStorageService {
     }
   }
 
-  private async createUserRelationship(session: unknown, workflow: DocumentWorkflow): Promise<void> {
+  private async createUserRelationship(session: any, workflow: DocumentWorkflow): Promise<any> {
     const query = `
       MATCH (u:User {id: $userId})
       MATCH (d:Document {id: $documentId})
@@ -629,7 +629,7 @@ export class IntegratedStorageService {
     });
   }
 
-  private async createTemporalRelationships(session: unknown, workflow: DocumentWorkflow): Promise<void> {
+  private async createTemporalRelationships(session: any, workflow: DocumentWorkflow): Promise<any> {
     // Create relationships based on temporal proximity of uploads
     const query = `
       MATCH (d1:Document {id: $documentId})
@@ -658,7 +658,7 @@ export class IntegratedStorageService {
   // SEARCH INDEXING
   // ==========================================
 
-  private async indexForSearch(workflow: DocumentWorkflow): Promise<void> {
+  private async indexForSearch(workflow: DocumentWorkflow): Promise<any> {
     // Create full-text search indexes
     await this.createFullTextIndex(workflow);
 
@@ -675,7 +675,7 @@ export class IntegratedStorageService {
     };
   }
 
-  private async createFullTextIndex(workflow: DocumentWorkflow): Promise<void> {
+  private async createFullTextIndex(workflow: DocumentWorkflow): Promise<any> {
     const query = `
       CREATE INDEX IF NOT EXISTS FOR (d:Document) ON (d.extractedText)
     `;
@@ -688,7 +688,7 @@ export class IntegratedStorageService {
     }
   }
 
-  private async createVectorIndex(workflow: DocumentWorkflow): Promise<void> {
+  private async createVectorIndex(workflow: DocumentWorkflow): Promise<any> {
     // Create pgvector index for similarity search
     const indexQuery = `
       CREATE INDEX IF NOT EXISTS document_chunks_embedding_idx 
@@ -699,7 +699,7 @@ export class IntegratedStorageService {
     await this.pgPool.query(indexQuery);
   }
 
-  private async createMetadataIndexes(workflow: DocumentWorkflow): Promise<void> {
+  private async createMetadataIndexes(workflow: DocumentWorkflow): Promise<any> {
     const indexes = [
       'CREATE INDEX IF NOT EXISTS idx_documents_case_id ON legal_documents(case_id)',
       'CREATE INDEX IF NOT EXISTS idx_documents_user_id ON legal_documents(user_id)',
@@ -713,7 +713,7 @@ export class IntegratedStorageService {
     for (const indexQuery of indexes) {
       try {
         await this.pgPool.query(indexQuery);
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Failed to create index: ${indexQuery}`, error);
       }
     }
@@ -726,8 +726,8 @@ export class IntegratedStorageService {
   async retrieveDocument(documentId: string): Promise<{
     content: ArrayBuffer;
     metadata: DocumentMetadata;
-    graphData: unknown;
-    vectorData: unknown;
+    graphData: any;
+    vectorData: any;
   } | null> {
     // Get document metadata from PostgreSQL
     const docQuery = `
@@ -796,7 +796,7 @@ export class IntegratedStorageService {
     const threshold = options.threshold || 0.7;
 
     let whereClause = `embedding <=> $1 < $2`;
-    const params: unknown[] = [`[${queryVector.join(',')}]`, 1 - threshold];
+    const params: any[] = [`[${queryVector.join(',')}]`, 1 - threshold];
     let paramIndex = 3;
 
     if (options.caseId) {
@@ -836,7 +836,7 @@ export class IntegratedStorageService {
   // CLEANUP AND MAINTENANCE
   // ==========================================
 
-  async deleteDocument(documentId: string): Promise<void> {
+  async deleteDocument(documentId: string): Promise<any> {
     // Delete from MinIO
     const docQuery = `SELECT storage_path FROM legal_documents WHERE id = $1`;
     const docResult = await this.pgPool.query(docQuery, [documentId]);
@@ -860,7 +860,7 @@ export class IntegratedStorageService {
     await this.pgPool.query(pgQuery, [documentId]);
   }
 
-  async cleanup(): Promise<void> {
+  async cleanup(): Promise<any> {
     // Close all connections
     if (this.neo4jDriver) {
       await this.neo4jDriver.close();
@@ -934,7 +934,7 @@ export function createDocumentWorkflow(
   };
 }
 
-export async function processDocumentWorkflow(workflow: DocumentWorkflow): Promise<void> {
+export async function processDocumentWorkflow(workflow: DocumentWorkflow): Promise<any> {
   documentWorkflows.update(workflows => {
     workflows.set(workflow.documentId, workflow);
     return workflows;
@@ -957,7 +957,7 @@ export async function processDocumentWorkflow(workflow: DocumentWorkflow): Promi
       }));
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Document workflow failed:', error);
     
     documentWorkflows.update(workflows => {

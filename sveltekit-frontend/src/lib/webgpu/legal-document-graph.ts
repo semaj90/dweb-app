@@ -587,7 +587,7 @@ export class WebGPULegalDocumentGraph {
       
       console.log(`[WebGPU Legal Graph] Loaded graph: ${this.nodes.length} nodes, ${this.edges.length} edges`);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('[WebGPU Legal Graph] Error loading graph from database:', error);
     }
   }

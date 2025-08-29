@@ -66,7 +66,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
     return json(result);
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Enhanced RAG processing error:', err);
     throw error(500, `Enhanced RAG processing failed: ${err.message}`);
   }

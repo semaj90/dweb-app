@@ -76,7 +76,7 @@ export const POST: RequestHandler = async ({ request }) => {
       results,
       message: `Import completed: ${results.imported} imported, ${results.updated} updated, ${results.skipped} skipped`,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Import error:", error);
     return json(
       {
@@ -91,7 +91,7 @@ async function importCases(
   casesData: any[],
   overwriteExisting: boolean,
   results: any
-) {
+): Promise<any> {
   if (!Array.isArray(casesData)) {
     results.errors.push("Cases data must be an array");
     return;
@@ -148,7 +148,7 @@ async function importCases(
         await db.insert(cases).values(newCase);
         results.imported++;
       }
-    } catch (error) {
+    } catch (error: any) {
       results.errors.push(
         `Error importing case: ${error instanceof Error ? error.message : "Unknown error"}`
       );
@@ -160,7 +160,7 @@ async function importEvidence(
   evidenceData: any[],
   overwriteExisting: boolean,
   results: any
-) {
+): Promise<any> {
   if (!Array.isArray(evidenceData)) {
     results.errors.push("Evidence data must be an array");
     return;
@@ -240,7 +240,7 @@ async function importEvidence(
         await db.insert(evidence).values(newEvidence);
         results.imported++;
       }
-    } catch (error) {
+    } catch (error: any) {
       results.errors.push(
         `Error importing evidence: ${error instanceof Error ? error.message : "Unknown error"}`
       );
@@ -252,7 +252,7 @@ async function importParticipants(
   participantsData: any[],
   overwriteExisting: boolean,
   results: any
-) {
+): Promise<any> {
   if (!Array.isArray(participantsData)) {
     results.errors.push("Participants data must be an array");
     return;
@@ -313,7 +313,7 @@ async function importParticipants(
         await db.insert(criminals).values(newParticipant);
         results.imported++;
       }
-    } catch (error) {
+    } catch (error: any) {
       results.errors.push(
         `Error importing participant: ${error instanceof Error ? error.message : "Unknown error"}`
       );
@@ -377,7 +377,7 @@ function parseXML(xmlContent: string): unknown {
       return obj;
     }
     return xmlToJson(xmlDoc.documentElement);
-  } catch (error) {
+  } catch (error: any) {
     throw new Error("Invalid XML format");
   }
 }

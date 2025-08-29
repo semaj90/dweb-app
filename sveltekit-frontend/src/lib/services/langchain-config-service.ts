@@ -1,4 +1,4 @@
-import { ollamaCudaService, type ModelMetrics } from "./ollama-cuda-service.js";
+import { ollamaCudaService, type ModelMetrics } from './ollama-cuda-service';
 
 /**
  * LangChain Configuration Service
@@ -168,7 +168,7 @@ class LangChainConfigService {
       
       this.initialized = true;
       console.log('✅ LangChain Configuration Service initialized successfully');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize LangChain service:', error);
       throw error;
     }
@@ -359,7 +359,7 @@ class LangChainConfigService {
           confidence: this.calculateConfidence(result)
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to execute chain '${chainName}':`, error);
       throw error;
     }
@@ -419,7 +419,7 @@ class LangChainConfigService {
       }
 
       return await embeddingModel.embedDocuments(texts);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to generate embeddings:', error);
       throw error;
     }
@@ -453,7 +453,7 @@ class LangChainConfigService {
 
       this.chains.set(config.name, chain);
       console.log(`✅ Custom chain '${config.name}' created`);
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to create custom chain '${config.name}':`, error);
       throw error;
     }
@@ -489,7 +489,7 @@ class LangChainConfigService {
           lastCheck: new Date().toISOString()
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to get performance metrics:', error);
       return {
         models: {},

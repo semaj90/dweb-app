@@ -1,13 +1,13 @@
 import type { ProgressRootPropsWithoutHTML } from "bits-ui";
-import { withChildProps } from "./shared.js";
-import { ProgressStateAttr } from "./extended-types/progress/index.js";
+import { withChildProps } from './shared';
+import { ProgressStateAttr } from './extended-types/progress/index';
 import {
 	defineComponentApiSchema,
 	defineEnumDataAttr,
 	defineNumberProp,
 	defineSimpleDataAttr,
 	defineSimplePropSchema,
-} from "../utils.js";
+} from '../utils';
 
 export const root = defineComponentApiSchema<ProgressRootPropsWithoutHTML>({
 	title: "Root",

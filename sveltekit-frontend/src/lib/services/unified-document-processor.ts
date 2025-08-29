@@ -314,7 +314,7 @@ class UnifiedDocumentProcessor extends EventEmitter {
       this.initialized = true;
       this.emit('initialized');
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to initialize Unified Document Processor:', error);
       this.emit('initialization_failed', error);
     }
@@ -332,7 +332,7 @@ class UnifiedDocumentProcessor extends EventEmitter {
       if (!response.ok) {
         throw new Error('Ollama service not available');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Ollama service not available, some features will be limited');
     }
   }
@@ -344,7 +344,7 @@ class UnifiedDocumentProcessor extends EventEmitter {
       if (!response.ok) {
         throw new Error('MinIO service not available');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('MinIO service not available, storage features will be limited');
     }
   }
@@ -477,7 +477,7 @@ class UnifiedDocumentProcessor extends EventEmitter {
           result.metadata.performance.ocrTime = Date.now() - ocrStartTime;
           stagesCompleted.push('OCR');
           console.log(`✅ OCR completed: ${ocrResult.extractedText.length} characters extracted`);
-        } catch (error) {
+        } catch (error: any) {
           this.addError(errors, 'OCR', error.message, 'error');
           console.error('❌ OCR stage failed:', error);
         }
@@ -493,7 +493,7 @@ class UnifiedDocumentProcessor extends EventEmitter {
           result.metadata.performance.analysisTime = Date.now() - analysisStartTime;
           stagesCompleted.push('Legal Analysis');
           console.log(`✅ Legal analysis completed: ${analysisResult.legalDomains.join(', ')} domains detected`);
-        } catch (error) {
+        } catch (error: any) {
           this.addError(errors, 'Legal Analysis', error.message, 'error');
           console.error('❌ Legal analysis stage failed:', error);
         }
@@ -514,7 +514,7 @@ class UnifiedDocumentProcessor extends EventEmitter {
           result.metadata.performance.embeddingTime = Date.now() - embeddingStartTime;
           stagesCompleted.push('Embeddings');
           console.log(`✅ Embeddings completed: ${embeddingResult.chunks.length} chunks, ${embeddingResult.indexedCount} indexed`);
-        } catch (error) {
+        } catch (error: any) {
           this.addError(errors, 'Embeddings', error.message, 'error');
           console.error('❌ Embeddings stage failed:', error);
         }
@@ -535,7 +535,7 @@ class UnifiedDocumentProcessor extends EventEmitter {
           result.metadata.performance.summarizationTime = Date.now() - summaryStartTime;
           stagesCompleted.push('Summarization');
           console.log(`✅ Summarization completed: ${summaryResult.sections.length} sections generated`);
-        } catch (error) {
+        } catch (error: any) {
           this.addError(errors, 'Summarization', error.message, 'error');
           console.error('❌ Summarization stage failed:', error);
         }
@@ -551,7 +551,7 @@ class UnifiedDocumentProcessor extends EventEmitter {
           result.metadata.performance.storageTime = Date.now() - storageStartTime;
           stagesCompleted.push('Storage');
           console.log(`✅ Storage completed: ${storageResult.minioUrl}`);
-        } catch (error) {
+        } catch (error: any) {
           this.addError(errors, 'Storage', error.message, 'error');
           console.error('❌ Storage stage failed:', error);
         }
@@ -570,7 +570,7 @@ class UnifiedDocumentProcessor extends EventEmitter {
           result.chainOfCustody = [chainEntry];
           stagesCompleted.push('Chain of Custody');
           console.log(`✅ Chain of custody established`);
-        } catch (error) {
+        } catch (error: any) {
           this.addError(errors, 'Chain of Custody', error.message, 'warning');
           console.warn('⚠️ Chain of custody failed:', error);
         }
@@ -595,7 +595,7 @@ class UnifiedDocumentProcessor extends EventEmitter {
       console.log(`🎉 Document processing completed: ${stagesCompleted.length} stages successful, ${errors.length} errors`);
       return result;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Document processing pipeline failed:', error);
       result.success = false;
       result.metadata.processingTime = Date.now() - startTime;
@@ -650,7 +650,7 @@ class UnifiedDocumentProcessor extends EventEmitter {
           quality: this.assessOCRQuality(data.confidence || 0)
         };
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Enhanced OCR failed, falling back to basic OCR:', error);
     }
 
@@ -887,7 +887,7 @@ class UnifiedDocumentProcessor extends EventEmitter {
             }
           });
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Failed to embed chunk ${i}:`, error);
       }
     }
@@ -1078,7 +1078,7 @@ class UnifiedDocumentProcessor extends EventEmitter {
         encryptionStatus: requiresEncryption
       };
       
-    } catch (error) {
+    } catch (error: any) {
       // Fallback to basic storage
       console.warn('Secure storage failed, using basic storage:', error);
       return {
@@ -1170,7 +1170,7 @@ class UnifiedDocumentProcessor extends EventEmitter {
             ...metadata,
             documentId: `${metadata.caseId}-batch-${fileIndex + 1}`
           });
-        } catch (error) {
+        } catch (error: any) {
           console.error(`❌ Failed to process ${file.name}:`, error);
           return this.createFailedResult(`${metadata.caseId}-batch-${fileIndex + 1}`, error.message);
         }
@@ -1255,7 +1255,7 @@ class UnifiedDocumentProcessor extends EventEmitter {
         processingTime: Date.now() - startTime,
         totalMatches: results.length
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Semantic search failed:', error);
       throw error;
     }

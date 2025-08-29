@@ -10,7 +10,7 @@ export const SwitchThumb = null; // Switch.Thumb;
 export const Switch = null;
 
 // Common props interface
-interface CommonProps {
+export interface CommonProps {
   className?: string;
   [key: string]: any;
 }

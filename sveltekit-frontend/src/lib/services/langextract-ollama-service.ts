@@ -2,7 +2,7 @@
 // import langextract from 'langextract';
 
 // Mock langextract interface for development
-interface LangExtract {
+export interface LangExtract {
   extract(options: {
     text_or_documents: string;
     prompt_description: string;
@@ -101,7 +101,7 @@ export class LangExtractOllamaService {
         document_type: request.documentType,
         extraction_type: request.extractionType
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('LangExtract processing error:', error);
       throw new Error(`LangExtract processing failed: ${error}`);
     }
@@ -177,7 +177,7 @@ export class LangExtractOllamaService {
       try {
         const result = await this.extractLegalEntities(request);
         results.push(result);
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Batch extraction failed for ${request.documentType}:`, error);
         results.push({
           extracted_data: null,

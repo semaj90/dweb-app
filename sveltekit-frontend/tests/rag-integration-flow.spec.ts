@@ -314,7 +314,7 @@ test.describe('RAG Integration Full Pipeline', () => {
       if (testCaseId) {
         await request.delete(`/api/v1/cases?id=${testCaseId}&hard=true`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Cleanup error:', error);
     }
   });

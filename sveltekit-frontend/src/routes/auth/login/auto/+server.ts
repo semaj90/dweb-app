@@ -47,7 +47,7 @@ export const POST: RequestHandler = async ({ cookies, getClientAddress, request 
       headers: { 'Content-Type': 'application/json' }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Demo auto-login error:', error);
     return new Response(JSON.stringify({ 
       error: 'Auto-login failed. Please try manual login.' 

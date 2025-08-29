@@ -3,8 +3,8 @@
  * Combines multicore error analysis with service orchestration and GPU optimization
  */
 
-import { productionServiceRegistry, type ServiceDefinition, CONTEXT7_MULTICORE_CONFIG } from './production-service-registry.js';
-import type { RecommendationRequest } from './context7-multicore.js';
+import { productionServiceRegistry, type ServiceDefinition, CONTEXT7_MULTICORE_CONFIG } from './production-service-registry';
+import type { RecommendationRequest } from './context7-multicore';
 
 export interface OrchestrationMetrics {
   timestamp: string;

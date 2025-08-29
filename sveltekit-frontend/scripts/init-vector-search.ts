@@ -1,10 +1,10 @@
 // Vector search initialization script
 // Sets up Qdrant collections and PostgreSQL vector indexes
-import { qdrant } from "../src/lib/server/vector/qdrant";
-import { db, isPostgreSQL } from "../src/lib/server/db";
+import { qdrant } from '$lib/server/vector/qdrant";
+import { db, isPostgreSQL } from '$lib/server/db";
 import { sql } from "drizzle-orm";
 
-async function initializeVectorSearch() {
+async function initializeVectorSearch(): Promise<any> {
   console.log("🔍 Initializing vector search capabilities...");
 
   // Check if we're in the right environment
@@ -58,7 +58,7 @@ async function initializeVectorSearch() {
       `);
 
       console.log("✅ Vector indexes created successfully");
-    } catch (error) {
+    } catch (error: any) {
       console.log(
         "ℹ️  Vector indexes may already exist or pgvector extension is not installed",
       );
@@ -96,7 +96,7 @@ async function initializeVectorSearch() {
     console.log("  semantic - AI-powered similarity search");
     console.log("  hybrid   - Combines text and semantic results");
     console.log("");
-  } catch (error) {
+  } catch (error: any) {
     console.error("❌ Vector search initialization failed:", error);
     console.log("");
     console.log("🛠️  Troubleshooting:");

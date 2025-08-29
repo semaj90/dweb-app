@@ -7,7 +7,7 @@
 import { type RequestHandler,  json } from '@sveltejs/kit';
 import { copilotOrchestrator, generateMCPPrompt, commonMCPQueries, semanticSearch, mcpMemoryReadGraph, validateMCPRequest } from "$lib/utils/mcp-helpers";
 
-interface TestResult {
+export interface TestResult {
   name: string;
   status: 'pass' | 'fail' | 'warning';
   duration: number;
@@ -15,7 +15,7 @@ interface TestResult {
   error?: string;
 }
 
-interface TestSuite {
+export interface TestSuite {
   name: string;
   tests: TestResult[];
   totalTests: number;
@@ -79,7 +79,7 @@ export const POST: RequestHandler = async ({ request }) => {
       recommendations: generateRecommendations(results)
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Test suite execution failed:', error);
     
     return json({
@@ -318,7 +318,7 @@ async function testAIServices(verbose: boolean): Promise<TestSuite> {
       }
       
       return 'AI successfully returned structured JSON response';
-    } catch (error) {
+    } catch (error: any) {
       return 'AI response was not valid JSON format';
     }
   });
@@ -637,7 +637,7 @@ async function testSemanticSearch(verbose: boolean): Promise<TestSuite> {
       
       return `Qdrant connected, ${data.result.collections.length} collections available`;
       
-    } catch (error) {
+    } catch (error: any) {
       return 'Qdrant vector database not available (may be expected)';
     }
   });
@@ -683,7 +683,7 @@ async function runTest(
       details
     });
     
-  } catch (error) {
+  } catch (error: any) {
     tests.push({
       name,
       status: 'fail',
@@ -773,7 +773,7 @@ export const GET: RequestHandler = async () => {
       timestamp: new Date().toISOString()
     });
     
-  } catch (error) {
+  } catch (error: any) {
     return json({
       healthy: false,
       error: 'Health check failed',

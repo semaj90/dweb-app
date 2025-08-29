@@ -41,15 +41,15 @@ import {
 	radioGroupItemChildDefinition,
 	radioGroupItemChildrenDefinition,
 	withChildProps,
-} from "./shared.js";
+} from './shared';
 import {
 	NoopProp,
 	OnStringValueChangeProp,
 	OpenClosedProp,
-} from "./extended-types/shared/index.js";
-import { MenuCheckedStateAttr } from "./extended-types/menu/index.js";
-import { RadioGroupStateAttr } from "./extended-types/radio-group/index.js";
-import { CheckboxGroupOnValueChangeProp } from "./extended-types/checkbox/index.js";
+} from './extended-types/shared/index';
+import { MenuCheckedStateAttr } from './extended-types/menu/index';
+import { RadioGroupStateAttr } from './extended-types/radio-group/index';
+import { CheckboxGroupOnValueChangeProp } from './extended-types/checkbox/index';
 import type { ComponentAPISchema, PropObj } from "$lib/types/index.js";
 import { omit } from "$lib/utils/omit.js";
 import {
@@ -59,7 +59,7 @@ import {
 	defineSimpleDataAttr,
 	defineStringProp,
 	defineSimplePropSchema,
-} from "../utils.js";
+} from '../utils';
 
 const sharedItemProps = {
 	textValue: defineStringProp({

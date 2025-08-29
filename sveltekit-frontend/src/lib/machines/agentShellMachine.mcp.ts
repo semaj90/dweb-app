@@ -1,12 +1,12 @@
 // Enhanced XState Machine for AI Agent Shell with MCP Tools Integration
 import { createMachine, assign } from "xstate";
-import { goServiceClient, type RAGResponse, type UploadResponse } from "../services/goServiceClient.js";
-import { productionServiceClient, services } from "../services/productionServiceClient.js";
-import { mcpTools, type MCPToolResponse } from "../../mcp/index.js";
+import { goServiceClient, type RAGResponse, type UploadResponse } from '../services/goServiceClient';
+import { productionServiceClient, services } from '../services/productionServiceClient';
+import { mcpTools, type MCPToolResponse } from '../../mcp/index';
 import type { Case, Evidence, User } from "$lib/types/index.js";
 
 // Enhanced context with MCP tool integration
-interface AgentShellContext {
+export interface AgentShellContext {
   input: string;
   response: string;
   jobId?: string;
@@ -468,7 +468,7 @@ export const agentShellServicesMCP = {
       // Use production service client with enhanced context
       const response = await services.queryRAG(enhancedInput, { userId, caseId });
       return response.response || response.data?.response || 'No response';
-    } catch (error) {
+    } catch (error: any) {
       console.error("Enhanced agent call failed:", error);
       throw error;
     }
@@ -506,7 +506,7 @@ export const agentShellServicesMCP = {
         mcpResults: searchResults,
         enhancedContext: true
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Enhanced semantic search failed:", error);
       throw error;
     }
@@ -536,7 +536,7 @@ export const agentShellServicesMCP = {
       }
 
       return uploadResponse;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Enhanced file upload failed:", error);
       throw error;
     }
@@ -557,7 +557,7 @@ export const agentShellServicesMCP = {
         legacy: healthChecks[1].status === 'fulfilled' ? healthChecks[1].value : null,
         mcpDatabase: healthChecks[2].status === 'fulfilled' ? true : false,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Enhanced health check failed:", error);
       throw error;
     }

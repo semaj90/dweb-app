@@ -5,7 +5,7 @@ import { pipeline, env } from '@xenova/transformers';
 // Lightweight in-memory LRU + optional Redis cache + metrics hooks
 import type { Redis } from 'ioredis';
 
-interface CacheLayer {
+export interface CacheLayer {
   get(key: string): Promise<EmbeddingResult | undefined> | EmbeddingResult | undefined;
   set(key: string, value: EmbeddingResult): Promise<void> | void;
   has?(key: string): boolean | Promise<boolean>;
@@ -32,13 +32,13 @@ export const nlpMetrics = {
 env.allowLocalModels = false;
 env.useBrowserCache = true;
 
-interface EmbeddingResult {
+export interface EmbeddingResult {
   data: Float32Array;
   dimensions: number;
   model: string;
 }
 
-interface SimilarityResult {
+export interface SimilarityResult {
   text: string;
   score: number;
   index: number;
@@ -63,7 +63,7 @@ class LegalNLPService {
         this.model = await pipeline('feature-extraction', this.modelName);
         this.isInitialized = true;
         console.log('✅ Legal NLP Service initialized successfully');
-      } catch (error) {
+      } catch (error: any) {
         console.error('❌ Failed to initialize Legal NLP Service:', error);
         throw error;
       }

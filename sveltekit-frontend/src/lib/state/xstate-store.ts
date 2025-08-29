@@ -17,17 +17,17 @@ import {
   type AppContext,
   type AppEvents
 } from './app-machine';
-import { legalCaseMachine, legalCaseSelectors } from './legal-case-machine.js';
+import { legalCaseMachine, legalCaseSelectors } from './legal-case-machine';
 
 // Store persistence interface
-interface StoreState {
+export interface StoreState {
   appState: any;
   legalCaseState: any;
   timestamp: number;
 }
 
 // Configuration for store behavior
-interface XStateStoreConfig {
+export interface XStateStoreConfig {
   persist?: boolean;
   persistKey?: string;
   devtools?: boolean;
@@ -82,7 +82,7 @@ class XStateStoreManager {
     // Set up cross-tab synchronization
     if (this.config.syncAcrossTabs) {
       this.syncChannel = new BroadcastChannel('xstate-sync');
-      this.syncChannel.addEventListener('message', (event) => {
+      this.syncChannel.addEventListener('message', (event: any) => {
         this.handleCrossTabSync(event.data);
       });
     }
@@ -377,7 +377,7 @@ class XStateStoreManager {
       };
 
       localStorage.setItem(this.config.persistKey!, JSON.stringify(state));
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to persist XState store:', error);
     }
   }
@@ -399,7 +399,7 @@ class XStateStoreManager {
       }
 
       return state;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to load persisted XState store:', error);
       return null;
     }

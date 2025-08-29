@@ -5,7 +5,7 @@
  * Backends: Ollama (11434), Enhanced RAG (8094)
  */
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types.js';
+import type { RequestHandler } from './$types';
 
 const QUIC_AI_STREAM_CONFIG = {
   primaryPort: 8447,    // QUIC HTTP/3
@@ -119,7 +119,7 @@ export const GET: RequestHandler = async ({ url }) => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('QUIC AI Stream health check failed:', err);
     
     return json({
@@ -237,7 +237,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('QUIC AI Stream error:', err);
     error(500, {
       message: 'AI streaming failed',
@@ -284,7 +284,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('AI session termination error:', err);
     error(500, {
       message: 'Session termination failed',
@@ -322,7 +322,7 @@ export const PUT: RequestHandler = async ({ request }) => {
       config: updatedConfig
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('AI stream configuration update failed:', err);
     error(500, {
       message: 'Configuration update failed',

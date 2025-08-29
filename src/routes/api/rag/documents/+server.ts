@@ -20,7 +20,7 @@ const uploadSchema = z.object({
 });
 
 // POST - Upload and index document
-export const POST: RequestHandler = async ({ request, cookies }) => {
+export const POST: RequestHandler = async ({ request, cookies }): Promise<any> => {
   try {
     const sessionToken = cookies.get('yorha_session');
     
@@ -65,7 +65,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
         message: 'Document indexed successfully'
       }
     });
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('Document upload error:', error);
     
     if (error.name === 'ZodError') {
@@ -84,7 +84,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 };
 
 // GET - Search documents
-export const GET: RequestHandler = async ({ url, cookies }) => {
+export const GET: RequestHandler = async ({ url, cookies }): Promise<any> => {
   try {
     const sessionToken = cookies.get('yorha_session');
     let userId: string | undefined;
@@ -143,7 +143,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
         }
       });
     }
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('Document search error:', error);
     
     return json({
@@ -154,7 +154,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 };
 
 // DELETE - Delete document
-export const DELETE: RequestHandler = async ({ request, cookies }) => {
+export const DELETE: RequestHandler = async ({ request, cookies }): Promise<any> => {
   try {
     const sessionToken = cookies.get('yorha_session');
     
@@ -209,7 +209,7 @@ export const DELETE: RequestHandler = async ({ request, cookies }) => {
         message: 'Document deleted successfully'
       }
     });
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('Document delete error:', error);
     
     return json({

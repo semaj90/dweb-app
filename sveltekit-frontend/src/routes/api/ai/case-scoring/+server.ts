@@ -20,7 +20,7 @@ export const POST: RequestHandler = async ({ request }) => {
       confidence: score > 70 ? 0.85 : score > 50 ? 0.75 : 0.65,
       lastUpdated: new Date().toISOString()
     });
-  } catch (error) {
+  } catch (error: any) {
     return json({ error: 'Scoring failed', details: error.message }, { status: 500 });
   }
 };

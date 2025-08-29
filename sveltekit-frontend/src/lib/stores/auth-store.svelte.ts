@@ -10,7 +10,7 @@ import { browser } from "$app/environment";
 import { goto } from "$app/navigation";
 
 // Authentication context
-interface AuthContext {
+export interface AuthContext {
   user: SessionUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -29,7 +29,7 @@ type AuthEvents =
   | { type: 'AUTHENTICATED'; user: SessionUser }
   | { type: 'UNAUTHENTICATED' };
 
-interface RegisterData {
+export interface RegisterData {
   email: string;
   password: string;
   firstName?: string;

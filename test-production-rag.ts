@@ -8,7 +8,7 @@
 
 import fetch from 'node-fetch';
 
-interface TestResult {
+export interface TestResult {
   name: string;
   success: boolean;
   message: string;
@@ -67,7 +67,7 @@ class ProductionRAGTester {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       
-    } catch (error) {
+    } catch (error: any) {
       this.testResults.push({
         name: 'System Health Check',
         success: false,
@@ -111,7 +111,7 @@ class ProductionRAGTester {
 
         console.log(`  ${success ? '✅' : '❌'} ${endpoint.name}: ${success ? 'OK' : 'Failed'} (${responseTime}ms)`);
         
-      } catch (error) {
+      } catch (error: any) {
         this.testResults.push({
           name: `${endpoint.name} Endpoint`,
           success: false,
@@ -168,7 +168,7 @@ class ProductionRAGTester {
         throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
       
-    } catch (error) {
+    } catch (error: any) {
       this.testResults.push({
         name: 'Document Processing Start',
         success: false,
@@ -207,7 +207,7 @@ class ProductionRAGTester {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       
-    } catch (error) {
+    } catch (error: any) {
       this.testResults.push({
         name: 'Job Status Tracking',
         success: false,
@@ -278,7 +278,7 @@ class ProductionRAGTester {
           throw new Error(`HTTP ${response.status}: ${errorText}`);
         }
         
-      } catch (error) {
+      } catch (error: any) {
         this.testResults.push({
           name: testQuery.name,
           success: false,
@@ -310,7 +310,7 @@ class ProductionRAGTester {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       
-    } catch (error) {
+    } catch (error: any) {
       this.testResults.push({
         name: 'WebSocket Endpoint',
         success: false,
@@ -334,7 +334,7 @@ class ProductionRAGTester {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       
-    } catch (error) {
+    } catch (error: any) {
       this.testResults.push({
         name: 'Demo Page',
         success: false,

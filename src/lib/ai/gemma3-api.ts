@@ -2,7 +2,7 @@
 // This integrates with your existing Ollama setup without heavy dependencies
 
 import { db } from '$lib/db';
-import { documents, cases } from '$lib/db/schema';
+import { legalDocuments as documents, legalCases as cases } from '$lib/database/schema/legal-documents';
 import { eq, sql } from 'drizzle-orm';
 
 // Simple Gemma3 client
@@ -44,7 +44,7 @@ class Gemma3Client {
       if (numbers && numbers.length >= 384) {
         return new Float32Array(numbers.slice(0, 384).map(Number));
       }
-    } catch (e) {}
+    } catch (e: any) {}
     return null;
   }
   
@@ -133,15 +133,24 @@ ${content.slice(0, 2000)}`;
     // Generate embedding
     const embedding = await client.embed(summary);
     
-    // Store in database
+    // Store in database - map to correct schema fields
     const [doc] = await db.insert(documents).values({
+      title: (metadata as any).title || 'Untitled Document',
       content,
-      summary,
-      embedding,
-      metadata: {
-        ...metadata,
-        extraction,
-        processedAt: new Date().toISOString()
+      documentType: (metadata as any).documentType || 'evidence',
+      contentEmbedding: Array.from(embedding) as number[],
+      jurisdiction: (metadata as any).jurisdiction || 'federal',
+      analysisResults: {
+        entities: [],
+        keyTerms: [],
+        sentimentScore: 0.5,
+        complexityScore: 0.5,
+        confidenceLevel: 0.85,
+        extractedDates: [],
+        extractedAmounts: [],
+        parties: [],
+        obligations: [],
+        risks: []
       }
     }).returning();
     

@@ -55,7 +55,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			orchestration_id: generateOrchestrationId(),
 		});
 
-	} catch (error) {
+	} catch (error: any) {
 		console.error('Orchestration Error:', error);
 		
 		return json({
@@ -84,7 +84,7 @@ export const GET: RequestHandler = async () => {
 			timestamp: new Date().toISOString(),
 		});
 
-	} catch (error) {
+	} catch (error: any) {
 		return json({
 			service: 'Comprehensive Service Orchestrator',
 			status: 'degraded',
@@ -105,7 +105,7 @@ export const GET_HEALTH: RequestHandler = async () => {
 					healthReport.overall_health === 'degraded' ? 206 : 503
 		});
 
-	} catch (error) {
+	} catch (error: any) {
 		return json({
 			overall_health: 'critical',
 			error: 'Health check system failure',
@@ -147,7 +147,7 @@ export const POST_EMERGENCY: RequestHandler = async ({ request }) => {
 			timestamp: new Date().toISOString(),
 		});
 
-	} catch (error) {
+	} catch (error: any) {
 		console.error('Emergency Orchestration Error:', error);
 		
 		return json({

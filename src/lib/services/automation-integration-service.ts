@@ -68,7 +68,7 @@ export class AutomationIntegrationService extends EventEmitter {
     /**
      * Start the automation integration service
      */
-    async start(): Promise<void> {
+    async start(): Promise<any> {
         if (this.isRunning) {
             console.log('⚠️ Automation integration service is already running');
             return;
@@ -125,7 +125,7 @@ export class AutomationIntegrationService extends EventEmitter {
                 config: this.config
             });
 
-        } catch (error) {
+        } catch (error: any) {
             console.error('❌ Failed to start automation integration service:', error);
             throw error;
         }
@@ -134,7 +134,7 @@ export class AutomationIntegrationService extends EventEmitter {
     /**
      * Stop the automation integration service
      */
-    async stop(): Promise<void> {
+    async stop(): Promise<any> {
         if (!this.isRunning) {
             console.log('⚠️ Automation integration service is not running');
             return;
@@ -179,7 +179,7 @@ export class AutomationIntegrationService extends EventEmitter {
                 timestamp: new Date()
             });
 
-        } catch (error) {
+        } catch (error: any) {
             console.error('❌ Error stopping automation integration service:', error);
             throw error;
         }
@@ -318,7 +318,7 @@ export class AutomationIntegrationService extends EventEmitter {
     /**
      * Initialize default configuration and triggers
      */
-    private async initializeDefaultConfiguration(): Promise<void> {
+    private async initializeDefaultConfiguration(): Promise<any> {
         console.log('⚙️ Initializing default automation configuration...');
 
         // Register system-level triggers
@@ -339,7 +339,7 @@ export class AutomationIntegrationService extends EventEmitter {
      * Start metrics collection
      */
     private startMetricsCollection(): void {
-        this.metricsCollectionInterval = setInterval(async () => {
+        this.metricsCollectionInterval = setInterval(async (): Promise<any> => {
             try {
                 const metrics = await this.collectSystemMetrics();
                 
@@ -357,7 +357,7 @@ export class AutomationIntegrationService extends EventEmitter {
                 this.lastMetrics = metrics;
                 this.emit('metricsCollected', { metrics, performanceAnalysis });
                 
-            } catch (error) {
+            } catch (error: any) {
                 console.error('❌ Error collecting metrics:', error);
             }
         }, this.config.metricsInterval);
@@ -367,10 +367,10 @@ export class AutomationIntegrationService extends EventEmitter {
      * Start health monitoring
      */
     private startHealthMonitoring(): void {
-        this.healthCheckInterval = setInterval(async () => {
+        this.healthCheckInterval = setInterval(async (): Promise<any> => {
             try {
                 await this.performHealthChecks();
-            } catch (error) {
+            } catch (error: any) {
                 console.error('❌ Error during health checks:', error);
             }
         }, this.config.healthCheckInterval);
@@ -380,11 +380,11 @@ export class AutomationIntegrationService extends EventEmitter {
      * Start resource monitoring
      */
     private startResourceMonitoring(): void {
-        this.resourceMonitoringInterval = setInterval(async () => {
+        this.resourceMonitoringInterval = setInterval(async (): Promise<any> => {
             try {
                 const resourceMetrics = await this.collectResourceMetrics();
                 this.analyzeResourceUsage(resourceMetrics);
-            } catch (error) {
+            } catch (error: any) {
                 console.error('❌ Error monitoring resources:', error);
             }
         }, this.config.resourceMonitoringInterval);
@@ -494,7 +494,7 @@ export class AutomationIntegrationService extends EventEmitter {
     /**
      * Perform health checks on all services
      */
-    private async performHealthChecks(): Promise<void> {
+    private async performHealthChecks(): Promise<any> {
         const services = [
             'automation-engine',
             'websocket-monitor', 
@@ -562,7 +562,7 @@ export class AutomationIntegrationService extends EventEmitter {
     /**
      * Calculate overall system health
      */
-    private calculateOverallHealth(): { status: string; score: number; details: unknown } {
+    private calculateOverallHealth(): { status: string; score: number; details: any } {
         const services = Array.from(this.serviceHealthCache.values());
         
         if (services.length === 0) {
@@ -814,7 +814,7 @@ export class AutomationIntegrationService extends EventEmitter {
     /**
      * Calculate trends between metrics
      */
-    private calculateTrends(previous: PerformanceMetrics, current: PerformanceMetrics): unknown {
+    private calculateTrends(previous: PerformanceMetrics, current: PerformanceMetrics): any {
         const errorRateChange = ((current.errorRate - previous.errorRate) / previous.errorRate) * 100;
         const responseTimeChange = ((current.responseTime - previous.responseTime) / previous.responseTime) * 100;
         
@@ -845,7 +845,7 @@ export class AutomationIntegrationService extends EventEmitter {
     /**
      * Event handlers
      */
-    private handleTriggerExecution(data: unknown): void {
+    private handleTriggerExecution(data: any): void {
         console.log(`⚡ Trigger executed: ${data.triggerId} - ${data.trigger.name}`);
         
         // Log to monitoring system
@@ -867,7 +867,7 @@ export class AutomationIntegrationService extends EventEmitter {
         }
     }
 
-    private handleSystemError(error: unknown): void {
+    private handleSystemError(error: any): void {
         console.error('❌ System error in automation engine:', error);
         
         // Create critical alert
@@ -883,7 +883,7 @@ export class AutomationIntegrationService extends EventEmitter {
         automatedWorkflowEngine.emit('alert', criticalAlert);
     }
 
-    private handleHealthStatusChange(healthData: unknown): void {
+    private handleHealthStatusChange(healthData: any): void {
         console.log(`🏥 Health status changed: ${healthData.overall.status} (${healthData.overall.score}%)`);
         
         // Broadcast to monitoring clients
@@ -896,7 +896,7 @@ export class AutomationIntegrationService extends EventEmitter {
         }
     }
 
-    private handlePerformanceAnalysis(data: unknown): void {
+    private handlePerformanceAnalysis(data: any): void {
         console.log(`📊 Performance analysis completed: Health Score ${data.analysis.healthScore}`);
         
         // Forward to monitoring clients
@@ -923,7 +923,7 @@ export class AutomationIntegrationService extends EventEmitter {
         }
     }
 
-    private handleOptimizationCompleted(data: unknown): void {
+    private handleOptimizationCompleted(data: any): void {
         console.log(`✅ Optimization completed: ${data.recommendation.title} - Duration: ${data.duration}ms`);
         
         // Broadcast to monitoring clients
@@ -942,7 +942,7 @@ export class AutomationIntegrationService extends EventEmitter {
         }
     }
 
-    private handleOptimizationFailed(data: unknown): void {
+    private handleOptimizationFailed(data: any): void {
         console.error(`❌ Optimization failed: ${data.recommendation.title} - ${data.error.message}`);
         
         // Create critical alert for failed optimization
@@ -975,7 +975,7 @@ export class AutomationIntegrationService extends EventEmitter {
     /**
      * Cache event handlers
      */
-    private handleCacheMetrics(metrics: unknown): void {
+    private handleCacheMetrics(metrics: any): void {
         console.log('📊 Cache metrics received:', {
             hitRate: (metrics.hitRate * 100).toFixed(1) + '%',
             avgResponseTime: metrics.averageOperationTime?.toFixed(2) + 'ms'
@@ -1012,7 +1012,7 @@ export class AutomationIntegrationService extends EventEmitter {
         }
     }
 
-    private handleCacheAnalytics(analytics: unknown): void {
+    private handleCacheAnalytics(analytics: any): void {
         console.log('📈 Cache analytics generated:', {
             hotKeys: analytics.hotKeys?.length || 0,
             coldKeys: analytics.coldKeys?.length || 0,
@@ -1063,7 +1063,7 @@ export class AutomationIntegrationService extends EventEmitter {
     /**
      * Get current service status
      */
-    getStatus(): unknown {
+    getStatus(): any {
         const baseStatus = {
             isRunning: this.isRunning,
             config: this.config,

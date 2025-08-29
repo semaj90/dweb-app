@@ -206,7 +206,7 @@ export const GET: RequestHandler = async ({ url }) => {
           status: 'production'
         } satisfies APIResponse);
     }
-  } catch (err) {
+  } catch (err: any) {
     console.error('API v1 Error:', err);
     return error(500, {
       message: 'Internal API Error',
@@ -242,7 +242,7 @@ async function handleHealthCheck(): Promise<Response> {
             endpoint: healthEndpoint,
             lastCheck: new Date().toISOString()
           };
-        } catch (error) {
+        } catch (error: any) {
           healthChecks[serviceName] = {
             status: 'error',
             error: String(error),

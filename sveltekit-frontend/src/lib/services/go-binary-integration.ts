@@ -168,7 +168,7 @@ export class GoBinaryIntegrationService {
       this.isInitialized = true;
       console.log('✅ Go Binary Integration Service ready');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize Go Binary Integration:', error);
     }
   }
@@ -362,7 +362,7 @@ export class GoBinaryIntegrationService {
 
       return response;
 
-    } catch (error) {
+    } catch (error: any) {
       this.requestQueue.delete(request.id);
       this.updateRequestQueueStore();
 
@@ -483,7 +483,7 @@ export class GoBinaryIntegrationService {
       // Simulate Redis GET operation
       const cachedData = this.responseCache.get(key);
       return cachedData || null;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis GET failed:', error);
       return null;
     }
@@ -502,7 +502,7 @@ export class GoBinaryIntegrationService {
       setTimeout(() => {
         this.responseCache.delete(key);
       }, ttl * 1000);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis SET failed:', error);
     }
   }
@@ -556,7 +556,7 @@ export class GoBinaryIntegrationService {
           signal: AbortSignal.timeout(5000)
         });
         (status as any)[service.key] = response.ok;
-      } catch (error) {
+      } catch (error: any) {
         (status as any)[service.key] = false;
       }
     }
@@ -575,7 +575,7 @@ export class GoBinaryIntegrationService {
     try {
       // In a real implementation, you'd use a Redis client library
       console.log('✅ Redis connection initialized (simulated)');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to initialize Redis:', error);
     }
   }
@@ -591,7 +591,7 @@ export class GoBinaryIntegrationService {
       } else {
         console.log('✅ CUDA initialized (simulated)');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to initialize CUDA:', error);
     }
   }

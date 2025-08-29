@@ -27,7 +27,7 @@ const OLLAMA_BASE_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
 const EMBEDDING_MODEL = 'nomic-embed-text';
 const DEFAULT_LLM_MODEL = 'gemma3-legal';
 
-export async function POST({ request }) {
+export async function POST({ request }): Promise<any> {
   const startTime = Date.now();
   
   try {
@@ -175,7 +175,7 @@ export async function POST({ request }) {
 
     return json(response);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('RAG query error:', error);
     
     if (error instanceof z.ZodError) {
@@ -210,7 +210,7 @@ async function generateEmbedding(text: string): Promise<number[] | null> {
     const data = await response.json();
     return data.embedding;
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Embedding generation error:', error);
     return null;
   }
@@ -229,7 +229,7 @@ async function queryGemma3({
   model: string;
   maxTokens: number;
   temperature: number;
-}) {
+}): Promise<any> {
   try {
     // Construct legal-focused prompt
     const prompt = `You are a legal AI assistant with access to case documents and legal materials. Based on the provided context, answer the user's question accurately and concisely. If the context doesn't contain relevant information, say so clearly.
@@ -272,14 +272,14 @@ LEGAL ANALYSIS:`;
       done: data.done
     };
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('LLM query error:', error);
     return null;
   }
 }
 
 // Streaming version for real-time responses
-export async function GET({ url }) {
+export async function GET({ url }): Promise<any> {
   const query = url.searchParams.get('query');
   const caseId = url.searchParams.get('caseId');
   const model = url.searchParams.get('model') || DEFAULT_LLM_MODEL;
@@ -360,7 +360,7 @@ ANSWER:`;
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Streaming query error:', error);
     return json({ error: 'Streaming failed' }, { status: 500 });
   }

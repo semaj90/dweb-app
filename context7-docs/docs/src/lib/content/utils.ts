@@ -1,5 +1,5 @@
 import type { Component } from "svelte";
-import type { PropDefault } from "./types.js";
+import type { PropDefault } from './types';
 import type {
 	APISchema,
 	ComponentAPISchema,
@@ -13,7 +13,7 @@ import type {
 	PropSchemaSimple,
 	PropTypeComplex,
 	UtilityAPISchema,
-} from "./types.js";
+} from './types';
 
 /**
  * Escapes special characters in a string to prevent them from

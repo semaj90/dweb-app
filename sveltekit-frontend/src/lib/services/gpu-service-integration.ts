@@ -105,7 +105,7 @@ export class GPUServiceIntegration {
       // Start task processing loop
       this.startTaskProcessor();
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ GPU Service Integration initialization failed:', error);
       if (this.config.fallbackToCPU) {
         console.log('🔄 Falling back to CPU-only mode');
@@ -243,7 +243,7 @@ export class GPUServiceIntegration {
       }
 
       return { available: false, details: 'No GPU acceleration available' };
-    } catch (error) {
+    } catch (error: any) {
       return { available: false, details: `GPU test failed: ${error.message}` };
     }
   }
@@ -271,7 +271,7 @@ export class GPUServiceIntegration {
    * Start the task processing loop
    */
   private startTaskProcessor(): void {
-    const processNextTask = async () => {
+    const processNextTask = async (): Promise<any> => {
       if (this.taskQueue.length === 0 || this.activeTasks.size >= this.config.batchSize) {
         setTimeout(processNextTask, 100);
         return;
@@ -287,7 +287,7 @@ export class GPUServiceIntegration {
       
       try {
         await this.executeTask(task);
-      } catch (error) {
+      } catch (error: any) {
         console.error(`❌ Task ${task.id} execution failed:`, error);
       }
 
@@ -371,7 +371,7 @@ export class GPUServiceIntegration {
       this.updateMetrics(result);
       return result;
 
-    } catch (error) {
+    } catch (error: any) {
       result = {
         taskId: task.id,
         success: false,
@@ -556,7 +556,7 @@ export const GPUServiceUtils = {
         success: true, 
         details: `GPU integration test successful. Confidence: ${testResult.confidence?.toFixed(2) || 'N/A'}` 
       };
-    } catch (error) {
+    } catch (error: any) {
       return { 
         success: false, 
         details: `Integration test failed: ${error.message}` 

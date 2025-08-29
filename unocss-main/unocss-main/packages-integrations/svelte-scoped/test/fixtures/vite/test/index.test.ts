@@ -8,7 +8,7 @@ const isMacOS = process.platform === 'darwin'
 const isWindows = process.platform === 'win32'
 const isCI = process.env.CI
 
-async function getGlobContent(cwd: string, pattern: string) {
+async function getGlobContent(cwd: string, pattern: string): Promise<any> {
   return await glob([pattern], { cwd, absolute: true, expandDirectories: false })
     .then(r => Promise.all(r.map(f => readFile(f, 'utf8'))))
     .then(r => r.join('\n'))

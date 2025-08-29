@@ -4,7 +4,7 @@
 type AnyObject = Record<string, any>;
 
 // Lightweight LokiJS collection/database helpers used in tests and stores
-interface LokiCollection<T = any> {
+export interface LokiCollection<T = any> {
   name: string;
   insert?: (item: T) => void;
   findOne?: (query: any) => T | undefined;
@@ -17,7 +17,7 @@ interface LokiCollection<T = any> {
   get?: (id: string) => T | undefined;
 }
 
-interface LokiDB {
+export interface LokiDB {
   listCollections: () => LokiCollection[];
   getCollection: (name: string) => LokiCollection | undefined;
 }
@@ -40,14 +40,14 @@ declare global {
 }
 
 // Common model descriptor returned by Ollama / model registries
-interface ModelDescriptor {
+export interface ModelDescriptor {
   name: string;
   capabilities?: string[];
   [k: string]: any;
 }
 
 // Chunk / document shapes used across tests
-interface DocChunk {
+export interface DocChunk {
   document_id?: string;
   content?: string;
   similarity_score?: number;
@@ -61,7 +61,7 @@ interface DocChunk {
 }
 
 // Generic message/export interfaces used in tests
-interface ExportMessage {
+export interface ExportMessage {
   role?: string;
   content?: string;
   sources?: any[];
@@ -74,7 +74,7 @@ declare module '*/tests/*' {
 }
 
 // Import meta/env shims for Vite / SvelteKit
-interface ImportMetaEnv {
+export interface ImportMetaEnv {
   NODE_ENV?: string;
   VITE_OLLAMA_BASE_URL?: string;
   VITE_API_BASE?: string;
@@ -82,7 +82,7 @@ interface ImportMetaEnv {
   [key: string]: string | boolean | undefined;
 }
 
-interface ImportMeta {
+export interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
 
@@ -98,12 +98,12 @@ declare namespace GPU {
 }
 
 // Playwright / DOM helper shims used in tests to reduce noisy errors
-interface Element {
+export interface Element {
   style?: any;
 }
 
 // Simple helper to type Playwright click chains seen in tests
-interface ClickHandle extends Promise<void> {
+export interface ClickHandle extends Promise<void> {
   first?: () => Promise<void>;
   catch?: (cb: (...args: any[]) => any) => any;
 }

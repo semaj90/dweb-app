@@ -17,7 +17,7 @@ const dbConfig = {
 const OLLAMA_URL = 'http://localhost:11434';
 const EMBED_MODEL = 'nomic-embed-text';
 
-interface SearchResult {
+export interface SearchResult {
   id: string;
   content: string;
   file: string;
@@ -80,7 +80,7 @@ async function createClaudePrompt(query: string, results: SearchResult[]): Promi
   }, null, 2);
 }
 
-async function insertTestDocument(client: Client, content: string, file: string, summary: string) {
+async function insertTestDocument(client: Client, content: string, file: string, summary: string): Promise<any> {
   console.log(`📄 Inserting document: ${file}...`);
   
   const embedding = await generateEmbedding(content);
@@ -95,7 +95,7 @@ async function insertTestDocument(client: Client, content: string, file: string,
   console.log('✅ Document inserted!');
 }
 
-async function main() {
+async function main(): Promise<any> {
   const client = new Client(dbConfig);
   
   try {
@@ -117,7 +117,7 @@ async function main() {
           file TEXT,
           content TEXT,
           summary TEXT,
-          embedding vector(768),
+          embedding vector(384),
           created_at TIMESTAMP DEFAULT NOW()
         )
       `);
@@ -226,7 +226,7 @@ async function main() {
     }
 
     rl.close();
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Error:', error);
   } finally {
     await client.end();

@@ -51,7 +51,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         { status: 500 },
       );
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating user:", error);
     return json(
       {

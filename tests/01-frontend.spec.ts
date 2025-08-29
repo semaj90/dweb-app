@@ -28,7 +28,7 @@ test.describe('Legal AI Frontend Tests', () => {
         await expect(page.locator(selector).first()).toBeVisible({ timeout: 5000 });
         navFound = true;
         break;
-      } catch (e) {
+      } catch (e: any) {
         // Continue to next selector
       }
     }
@@ -104,7 +104,7 @@ test.describe('Legal AI Frontend Tests', () => {
             await page.waitForLoadState('networkidle');
             await expect(page.locator('body')).toBeVisible();
             await page.goBack();
-          } catch (error) {
+          } catch (error: any) {
             console.log(`Link ${href} failed:`, error.message);
           }
         }

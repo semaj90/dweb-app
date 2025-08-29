@@ -372,7 +372,7 @@ export class MatrixUICompiler {
     // Add event listeners
     if (node.events) {
       node.events.forEach((eventType) => {
-        element.addEventListener(eventType, (e) => {
+        element.addEventListener(eventType, (e: any) => {
           this.handleEvent(e, node);
         });
       });

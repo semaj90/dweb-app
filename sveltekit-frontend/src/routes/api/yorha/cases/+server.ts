@@ -46,7 +46,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Error fetching cases:', err);
     return error(500, {
       message: 'Failed to fetch cases'
@@ -105,7 +105,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       message: 'Case created successfully'
     }, { status: 201 });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Error creating case:', err);
     
     // Handle specific database errors
@@ -177,7 +177,7 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
       message: 'Case updated successfully'
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Error updating case:', err);
     return error(500, {
       message: 'Failed to update case'
@@ -223,7 +223,7 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
       message: 'Case deleted successfully'
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Error deleting case:', err);
     return error(500, {
       message: 'Failed to delete case'

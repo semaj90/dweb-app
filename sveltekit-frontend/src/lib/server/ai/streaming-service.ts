@@ -3,20 +3,20 @@ import { EventEmitter } from "events";
 // lib/server/ai/streaming-service.ts
 // Real-time streaming service for AI synthesis with progressive updates
 
-import { logger } from "./logger.js";
-import { aiAssistantSynthesizer } from "./ai-assistant-synthesizer.js";
+import { logger } from './logger';
+import { aiAssistantSynthesizer } from './ai-assistant-synthesizer';
 
-interface StreamEvent {
+export interface StreamEvent {
   type: 'status' | 'progress' | 'stage' | 'source' | 'complete' | 'error' | 'heartbeat';
   data: any;
 }
 
-interface StreamSubscriber {
+export interface StreamSubscriber {
   callback: (event: StreamEvent) => void;
   subscribed: number;
 }
 
-interface StreamingOptions {
+export interface StreamingOptions {
   input: {
     query: string;
     context?: unknown;
@@ -243,7 +243,7 @@ class StreamingService extends EventEmitter {
       
       return finalResult;
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error(`[StreamingService] Progressive synthesis failed for stream ${streamId}:`, error);
       
       // Mark processing as failed
@@ -277,7 +277,7 @@ class StreamingService extends EventEmitter {
       for (const subscriber of subscribers) {
         try {
           subscriber.callback(event);
-        } catch (error) {
+        } catch (error: any) {
           logger.error(`[StreamingService] Failed to send event to subscriber:`, error);
         }
       }
@@ -336,7 +336,7 @@ class StreamingService extends EventEmitter {
       
       return result;
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error(`[StreamingService] Stage ${stageName} failed:`, error);
       
       if (tracking) {
@@ -527,7 +527,7 @@ class StreamingService extends EventEmitter {
       for (const subscriber of subscribers) {
         try {
           subscriber.callback(event);
-        } catch (error) {
+        } catch (error: any) {
           // Ignore errors during shutdown
         }
       }
@@ -601,12 +601,12 @@ export class OllamaStreamingAdapter {
             if (data.done) {
               onComplete(fullResponse);
             }
-          } catch (e) {
+          } catch (e: any) {
             // Ignore parsing errors
           }
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[OllamaStreamingAdapter] Streaming failed:', error);
       throw error;
     }
@@ -619,7 +619,7 @@ export class OllamaStreamingAdapter {
     try {
       const response = await fetch(`${this.ollamaUrl}/api/tags`);
       return response.ok;
-    } catch (error) {
+    } catch (error: any) {
       return false;
     }
   }

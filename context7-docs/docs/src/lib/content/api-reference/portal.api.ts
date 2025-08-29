@@ -1,6 +1,6 @@
-import { portalProps } from "./shared.js";
+import { portalProps } from './shared';
 import type { PortalProps } from "bits-ui";
-import { defineUtilityApiSchema } from "../utils.js";
+import { defineUtilityApiSchema } from '../utils';
 
 export const portal = defineUtilityApiSchema<PortalProps>({
 	title: "Portal",

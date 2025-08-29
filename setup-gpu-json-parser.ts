@@ -13,7 +13,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-interface SetupConfig {
+export interface SetupConfig {
     buildWasm: boolean;
     runTests: boolean;
     optimizeDocker: boolean;
@@ -71,7 +71,7 @@ class JsonParserSetup {
             console.log('\n🎉 Setup completed successfully!');
             console.log('📚 Check INTEGRATION_GUIDE.md for usage instructions');
 
-        } catch (error) {
+        } catch (error: any) {
             console.error('\n💥 Setup failed:', error);
             process.exit(1);
         }
@@ -93,7 +93,7 @@ class JsonParserSetup {
             try {
                 const result = execSync(check.command, { encoding: 'utf8' });
                 console.log(`✅ ${check.name}: ${result.trim()}`);
-            } catch (error) {
+            } catch (error: any) {
                 throw new Error(`❌ ${check.name} not found. Please install ${check.name}.`);
             }
         }
@@ -102,7 +102,7 @@ class JsonParserSetup {
         try {
             execSync('docker --version', { encoding: 'utf8' });
             console.log('✅ Docker found');
-        } catch (error) {
+        } catch (error: any) {
             console.log('⚠️  Docker not found - Docker optimization will be skipped');
             this.config.optimizeDocker = false;
         }
@@ -150,7 +150,7 @@ class JsonParserSetup {
             }
 
             console.log('✅ WebAssembly build completed\n');
-        } catch (error) {
+        } catch (error: any) {
             throw new Error(`WebAssembly build failed: ${error}`);
         }
     }
@@ -178,7 +178,7 @@ class JsonParserSetup {
             });
 
             console.log('✅ All tests passed\n');
-        } catch (error) {
+        } catch (error: any) {
             console.log('⚠️  Some tests failed - continuing setup\n');
         }
     }
@@ -274,7 +274,7 @@ Object.defineProperty(navigator, 'gpu', {
             try {
                 const existing = await fs.readFile(dockerComposePath, 'utf8');
                 dockerCompose = require('yaml').parse(existing);
-            } catch (error) {
+            } catch (error: any) {
                 // Create new docker-compose
             }
 
@@ -320,7 +320,7 @@ Object.defineProperty(navigator, 'gpu', {
             await this.createWasmDockerfile();
 
             console.log('✅ Docker configuration optimized\n');
-        } catch (error) {
+        } catch (error: any) {
             console.log(`⚠️  Docker optimization failed: ${error}\n`);
         }
     }
@@ -472,7 +472,7 @@ CMD ["npm", "start"]
             );
 
             console.log('✅ VS Code configuration created\n');
-        } catch (error) {
+        } catch (error: any) {
             console.log(`⚠️  VS Code setup failed: ${error}\n`);
         }
     }
@@ -752,7 +752,7 @@ Node.js: ${process.version}
             try {
                 await fs.access(filePath);
                 console.log(`✅ ${check.name}`);
-            } catch (error) {
+            } catch (error: any) {
                 if (check.required) {
                     console.log(`❌ ${check.name} (REQUIRED)`);
                     allValid = false;

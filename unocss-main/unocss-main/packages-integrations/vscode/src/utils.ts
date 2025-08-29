@@ -25,7 +25,7 @@ export function throttle<T extends ((...args: unknown) => any)>(func: T, timeFra
   } as T
 }
 
-export async function getCSS(uno: UnoGenerator, utilName: string | string[]) {
+export async function getCSS(uno: UnoGenerator, utilName: string | string[]): Promise<any> {
   const { css } = await uno.generate(new Set(toArray(utilName)), { preflights: false, safelist: false })
   return css
 }
@@ -59,7 +59,7 @@ export function addRemToPxComment(str?: string, remToPixel = 16) {
   return output.join('')
 }
 
-export async function getPrettiedCSS(uno: UnoGenerator, util: string | string[], remToPxRatio: number) {
+export async function getPrettiedCSS(uno: UnoGenerator, util: string | string[], remToPxRatio: number): Promise<any> {
   const result = (await uno.generate(new Set(toArray(util)), { preflights: false, safelist: false }))
   const css = addRemToPxComment(result.css, remToPxRatio)
   const prettified = prettier.format(css, {
@@ -73,7 +73,7 @@ export async function getPrettiedCSS(uno: UnoGenerator, util: string | string[],
   }
 }
 
-export async function getPrettiedMarkdown(uno: UnoGenerator, util: string | string[], remToPxRatio: number) {
+export async function getPrettiedMarkdown(uno: UnoGenerator, util: string | string[], remToPxRatio: number): Promise<any> {
   return `\`\`\`css\n${(await getPrettiedCSS(uno, util, remToPxRatio)).prettified}\n\`\`\``
 }
 

@@ -173,7 +173,7 @@ class EnhancedLegalOrchestrator {
 
       return response;
 
-    } catch (error: unknown) {
+    } catch (error: any) {
       console.error('Orchestration error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       throw new Error(`Orchestration failed: ${errorMessage}`);
@@ -214,7 +214,7 @@ class EnhancedLegalOrchestrator {
 
       return analysis;
 
-    } catch (error: unknown) {
+    } catch (error: any) {
       console.error('Document analysis error:', error);
       throw new Error(`Analysis failed: ${error instanceof Error ? error.message : String(error)}`);
     }
@@ -272,7 +272,7 @@ class EnhancedLegalOrchestrator {
 
       return mockResults.slice(0, options.limit || 10);
 
-    } catch (error: unknown) {
+    } catch (error: any) {
       console.error('Precedent search error:', error);
       return [];
     }
@@ -306,7 +306,7 @@ class EnhancedLegalOrchestrator {
 
       return generator.call(this, params);
 
-    } catch (error: unknown) {
+    } catch (error: any) {
       console.error('Document generation error:', error);
       throw new Error(`Document generation failed: ${error instanceof Error ? error.message : String(error)}`);
     }
@@ -620,7 +620,7 @@ ${params.recommendation || '[RECOMMENDATION]'}
 
   // Public utility methods
 
-  getSession(sessionId: string): unknown {
+  getSession(sessionId: string): any {
     return this.sessions.get(sessionId) || null;
   }
 

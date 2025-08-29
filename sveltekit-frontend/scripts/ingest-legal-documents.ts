@@ -42,7 +42,7 @@ const DB_CONFIG = {
 };
 
 // Processing statistics
-interface ProcessingStats {
+export interface ProcessingStats {
   documentsProcessed: number;
   chunksCreated: number;
   embeddingsGenerated: number;
@@ -54,7 +54,7 @@ interface ProcessingStats {
 }
 
 // Enhanced document metadata
-interface EnhancedDocumentMetadata {
+export interface EnhancedDocumentMetadata {
   source: string;
   fileName: string;
   fileType: string;
@@ -208,7 +208,7 @@ class LegalDocumentIngestion {
 
       return this.stats;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Ingestion failed:', error);
       this.stats.errors++;
       throw error;
@@ -299,7 +299,7 @@ class LegalDocumentIngestion {
 
         console.log(`  ✅ Created ${chunks.length} chunks`);
 
-      } catch (error) {
+      } catch (error: any) {
         console.error(`❌ Error processing ${document.metadata.fileName}:`, error);
         this.stats.errors++;
       }
@@ -368,7 +368,7 @@ Risk assessment:`;
 
       this.stats.totalTokens += this.estimateTokens(content);
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn(`⚠️ AI analysis failed for chunk:`, error);
       // Continue without AI enhancement
       chunk.metadata.confidence = 0.5; // Default confidence
@@ -438,7 +438,7 @@ Risk assessment:`;
             console.log(`💾 Stored ${i + 1}/${chunks.length} chunks`);
           }
 
-        } catch (error) {
+        } catch (error: any) {
           console.error(`❌ Failed to store chunk ${i + 1}:`, error);
           this.stats.errors++;
         }
@@ -447,7 +447,7 @@ Risk assessment:`;
       await client.query('COMMIT');
       console.log(`✅ Successfully stored ${chunks.length - this.stats.errors} chunks in database`);
 
-    } catch (error) {
+    } catch (error: any) {
       await client.query('ROLLBACK');
       throw error;
     } finally {
@@ -547,7 +547,7 @@ program
         dryRun: options.dryRun
       });
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Ingestion failed:', error);
       process.exit(1);
     }
@@ -573,7 +573,7 @@ program
         console.log('❌ Ollama service not available');
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Status check failed:', error);
       process.exit(1);
     }

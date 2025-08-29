@@ -14,7 +14,7 @@ import { CacheManager } from '../cache/loki-cache';
 import { AnalyticsService } from '../microservices/analytics-service';
 import { RecommendationEngine } from '../ai/recommendation-engine';
 
-interface StreamingSession {
+export interface StreamingSession {
   id: string;
   userId: string;
   documentId: string;
@@ -25,10 +25,10 @@ interface StreamingSession {
   status: 'initializing' | 'processing' | 'streaming' | 'complete' | 'error';
 }
 
-interface ProcessingChunk {
+export interface ProcessingChunk {
   id: string;
   type: 'legal-bert' | 'local-llm' | 'enhanced-rag' | 'user-history' | 'semantic-tokens';
-  content: unknown;
+  content: any;
   status: 'pending' | 'processing' | 'complete' | 'error';
   confidence: number;
   processingTime: number;
@@ -129,12 +129,12 @@ export class StreamingAIServer extends EventEmitter {
         default:
           this.sendError(session.websocket, `Unknown message type: ${message.type}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       this.handleError(sessionId, error);
     }
   }
 
-  private async startStreamingProcessing(session: StreamingSession, payload: unknown) {
+  private async startStreamingProcessing(session: StreamingSession, payload: any) {
     const { content, analysisType, options = {} } = payload;
     
     session.status = 'processing';
@@ -166,7 +166,7 @@ export class StreamingAIServer extends EventEmitter {
   private async initializeProcessingChunks(
     content: string, 
     analysisType: string, 
-    options: unknown
+    options: any
   ): Promise<ProcessingChunk[]> {
     const chunks: ProcessingChunk[] = [];
     
@@ -271,7 +271,7 @@ export class StreamingAIServer extends EventEmitter {
         recommendations: await this.generateRecommendations(session)
       });
       
-    } catch (error) {
+    } catch (error: any) {
       session.status = 'error';
       this.handleError(session.id, error);
     }
@@ -332,7 +332,7 @@ export class StreamingAIServer extends EventEmitter {
       
       return result;
       
-    } catch (error) {
+    } catch (error: any) {
       chunk.status = 'error';
       chunk.processingTime = Date.now() - startTime;
       
@@ -349,7 +349,7 @@ export class StreamingAIServer extends EventEmitter {
   }
 
   // Individual processing methods (placeholders for actual implementations)
-  private async processLegalBert(content: unknown) {
+  private async processLegalBert(content: any) {
     // Simulate Legal-BERT processing
     await this.sleep(2000);
     return {
@@ -359,7 +359,7 @@ export class StreamingAIServer extends EventEmitter {
     };
   }
 
-  private async processLocalLLM(content: unknown) {
+  private async processLocalLLM(content: any) {
     // Simulate local LLM processing
     await this.sleep(3000);
     return {
@@ -369,7 +369,7 @@ export class StreamingAIServer extends EventEmitter {
     };
   }
 
-  private async processEnhancedRAG(content: unknown) {
+  private async processEnhancedRAG(content: any) {
     // Simulate enhanced RAG processing
     await this.sleep(1500);
     return {
@@ -379,7 +379,7 @@ export class StreamingAIServer extends EventEmitter {
     };
   }
 
-  private async processUserHistory(content: unknown) {
+  private async processUserHistory(content: any) {
     // Simulate user history processing
     await this.sleep(800);
     return {
@@ -389,7 +389,7 @@ export class StreamingAIServer extends EventEmitter {
     };
   }
 
-  private async processSemanticTokens(content: unknown) {
+  private async processSemanticTokens(content: any) {
     // Simulate semantic tokenization
     await this.sleep(500);
     return {
@@ -399,7 +399,7 @@ export class StreamingAIServer extends EventEmitter {
     };
   }
 
-  private async performExtendedThinking(session: StreamingSession, payload: unknown) {
+  private async performExtendedThinking(session: StreamingSession, payload: any) {
     // Synthesize results from multiple processing chunks
     const { chunks } = payload;
     
@@ -443,7 +443,7 @@ export class StreamingAIServer extends EventEmitter {
     return validChunks.reduce((sum, chunk) => sum + chunk.confidence, 0) / validChunks.length;
   }
 
-  private createResultPreview(result: unknown): unknown {
+  private createResultPreview(result: any): any {
     // Create a preview of the result for streaming
     return {
       summary: typeof result === 'object' ? JSON.stringify(result).substring(0, 200) + '...' : String(result),
@@ -458,7 +458,7 @@ export class StreamingAIServer extends EventEmitter {
     return Math.min(baseTime * analysisMultiplier, 30000); // Max 30 seconds
   }
 
-  private sendMessage(ws: WebSocket, message: unknown) {
+  private sendMessage(ws: WebSocket, message: any) {
     if (ws.readyState === WebSocket.OPEN) {
       ws.send(JSON.stringify(message));
     }
@@ -511,7 +511,7 @@ export class StreamingAIServer extends EventEmitter {
     }
   }
 
-  private handleError(sessionId: string, error: unknown) {
+  private handleError(sessionId: string, error: any) {
     console.error(`❌ WebSocket error for session ${sessionId}:`, error);
     
     const session = this.sessions.get(sessionId);
@@ -521,7 +521,7 @@ export class StreamingAIServer extends EventEmitter {
     }
   }
 
-  private sleep(ms: number): Promise<void> {
+  private sleep(ms: number): Promise<any> {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
@@ -534,7 +534,7 @@ export class StreamingAIServer extends EventEmitter {
     return this.sessions.get(sessionId) || null;
   }
 
-  public async shutdown() {
+  public async shutdown(): Promise<any> {
     console.log('🔄 Shutting down Streaming AI Server...');
     
     // Close all WebSocket connections

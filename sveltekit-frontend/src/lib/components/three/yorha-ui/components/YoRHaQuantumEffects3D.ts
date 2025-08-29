@@ -347,7 +347,7 @@ export class YoRHaQuantumEffects3D extends YoRHa3DComponent {
   }
 
   private startQuantumSimulation(): void {
-    const simulateQuantum = async () => {
+    const simulateQuantum = async (): Promise<any> => {
       this.quantumTime += 0.016; // ~60fps
 
       // Update quantum particles using WebGPU if available
@@ -367,7 +367,7 @@ export class YoRHaQuantumEffects3D extends YoRHa3DComponent {
 
           // Process quantum results
           this.updateQuantumStates(result);
-        } catch (error) {
+        } catch (error: any) {
           console.warn('WebGPU quantum simulation failed, using CPU fallback');
           this.updateQuantumStatesCPU();
         }

@@ -51,7 +51,7 @@ return { allowed and 1 or 0, count, retryAfter }
 
 let sha: string | null = null;
 
-export async function redisRateLimit(opts: RedisRateLimitOptions) {
+export async function redisRateLimit(opts: RedisRateLimitOptions): Promise<any> {
   const client = opts.redis || getClient();
   if (!sha) {
     try {
@@ -75,13 +75,13 @@ export async function redisRateLimit(opts: RedisRateLimitOptions) {
     const count = res[1];
     const retryAfter = res[2];
     return { allowed, count, retryAfter };
-  } catch (e) {
+  } catch (e: any) {
     console.warn('[redisRateLimit] fallback to allowed due to error', e);
     return { allowed: true, count: 1, retryAfter: 0 };
   }
 }
 
-export async function closeRedisRateLimit() {
+export async function closeRedisRateLimit(): Promise<any> {
   if (singleton.client) {
     await (singleton.client as any).quit?.();
     singleton.client = null;

@@ -46,7 +46,7 @@ export const POST: RequestHandler = async ({ request }) => {
       )
     );
     return new Response(JSON.stringify({ ok: true }), { status: 200 });
-  } catch (e) {
+  } catch (e: any) {
     return new Response(JSON.stringify({ ok: false, error: String(e) }), {
       status: 400,
     });

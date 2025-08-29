@@ -44,7 +44,7 @@ export function activate(context: vscode.ExtensionContext) {
   registerOptimizationCommands(context);
 }
 
-async function initializeExtensionSystems(context: vscode.ExtensionContext) {
+async function initializeExtensionSystems(context: vscode.ExtensionContext): Promise<any> {
   try {
     // Initialize cluster manager with memory tracking
     if (memoryManager) {
@@ -102,7 +102,7 @@ async function initializeExtensionSystems(context: vscode.ExtensionContext) {
     vscode.window.showInformationMessage(
       "MCP Context7 Extension with Enhanced Memory Management initialized successfully!"
     );
-  } catch (error) {
+  } catch (error: any) {
     vscode.window.showErrorMessage(`Failed to initialize extension: ${error}`);
     console.error("Extension initialization failed:", error);
   }
@@ -397,7 +397,7 @@ async function analyzeCurrentContext(): Promise<void> {
         });
       }
     );
-  } catch (error) {
+  } catch (error: any) {
     vscode.window.showErrorMessage(`Context analysis failed: ${error}`);
     console.error("Context analysis error:", error);
   }
@@ -473,7 +473,7 @@ async function runAutoFixCommand(): Promise<void> {
         }
       }
     );
-  } catch (error) {
+  } catch (error: any) {
     vscode.window.showErrorMessage(`Auto-fix command failed: ${error}`);
   }
 }
@@ -518,7 +518,7 @@ async function generateBestPracticesCommand(): Promise<void> {
 
       await vscode.window.showTextDocument(doc);
     }
-  } catch (error) {
+  } catch (error: any) {
     vscode.window.showErrorMessage(
       `Failed to generate best practices: ${error}`
     );
@@ -566,7 +566,7 @@ async function semanticSearchCommand(): Promise<void> {
         );
       }
     );
-  } catch (error) {
+  } catch (error: any) {
     vscode.window.showErrorMessage(`Semantic search failed: ${error}`);
   }
 }
@@ -645,7 +645,7 @@ async function orchestrateAgentsCommand(): Promise<void> {
         }
       }
     );
-  } catch (error) {
+  } catch (error: any) {
     vscode.window.showErrorMessage(`Orchestration command failed: ${error}`);
   }
 }
@@ -671,7 +671,7 @@ async function refreshModelsCommand(): Promise<void> {
         "Ollama not available. Please ensure Ollama is running."
       );
     }
-  } catch (error) {
+  } catch (error: any) {
     vscode.window.showErrorMessage(`Failed to refresh models: ${error}`);
   }
 }
@@ -691,7 +691,7 @@ async function showClusterStatusCommand(): Promise<void> {
     );
 
     panel.webview.html = generateClusterStatusWebviewContent(stats);
-  } catch (error) {
+  } catch (error: any) {
     vscode.window.showErrorMessage(`Failed to show cluster status: ${error}`);
   }
 }
@@ -723,7 +723,7 @@ async function restartClusterCommand(): Promise<void> {
         }
       );
     }
-  } catch (error) {
+  } catch (error: any) {
     vscode.window.showErrorMessage(`Failed to restart cluster: ${error}`);
   }
 }
@@ -743,7 +743,7 @@ async function showCacheStatsCommand(): Promise<void> {
     );
 
     panel.webview.html = generateCacheStatsWebviewContent(stats);
-  } catch (error) {
+  } catch (error: any) {
     vscode.window.showErrorMessage(`Failed to show cache stats: ${error}`);
   }
 }
@@ -763,7 +763,7 @@ async function clearCacheCommand(): Promise<void> {
       await ollamaGemmaCache.clearCache();
       vscode.window.showInformationMessage("Cache cleared successfully");
     }
-  } catch (error) {
+  } catch (error: any) {
     vscode.window.showErrorMessage(`Failed to clear cache: ${error}`);
   }
 }
@@ -786,7 +786,7 @@ async function preCacheWorkspaceCommand(): Promise<void> {
         );
       }
     );
-  } catch (error) {
+  } catch (error: any) {
     vscode.window.showErrorMessage(`Pre-caching failed: ${error}`);
   }
 }
@@ -803,7 +803,7 @@ async function showMemoryStatsCommand(): Promise<void> {
 
     // The memory manager will handle showing the status internally
     await memoryManager.showMemoryStatus();
-  } catch (error) {
+  } catch (error: any) {
     vscode.window.showErrorMessage(`Failed to show memory stats: ${error}`);
   }
 }
@@ -829,7 +829,7 @@ async function clearMemoryCommand(): Promise<void> {
         vscode.window.showErrorMessage("Memory manager not initialized");
       }
     }
-  } catch (error) {
+  } catch (error: any) {
     vscode.window.showErrorMessage(`Failed to clear memory: ${error}`);
   }
 }
@@ -1243,7 +1243,7 @@ async function processStreamingTokensCommand(): Promise<void> {
     });
 
     vscode.window.showInformationMessage("✅ Token processing completed with optimization");
-  } catch (error) {
+  } catch (error: any) {
     vscode.window.showErrorMessage(`Token processing failed: ${error}`);
   }
 }
@@ -1350,7 +1350,7 @@ async function compressTokensCommand(): Promise<void> {
         `;
       }
     });
-  } catch (error) {
+  } catch (error: any) {
     vscode.window.showErrorMessage(`Token compression failed: ${error}`);
   }
 }
@@ -1408,7 +1408,7 @@ async function demoStreamingResponseCommand(): Promise<void> {
     vscode.window.showInformationMessage(
       `✅ Streaming demo completed: ${tokenCount} tokens in ${duration}ms`
     );
-  } catch (error) {
+  } catch (error: any) {
     vscode.window.showErrorMessage(`Streaming demo failed: ${error}`);
   }
 }
@@ -1432,7 +1432,7 @@ async function showOptimizationMetricsCommand(): Promise<void> {
 
     // Show detailed dashboard
     await optimizationManager.showOptimizationDashboard();
-  } catch (error) {
+  } catch (error: any) {
     vscode.window.showErrorMessage(`Failed to show optimization metrics: ${error}`);
   }
 }
@@ -1471,7 +1471,7 @@ export function deactivate() {
     if ("dispose" in ollamaGemmaCache) {
       (ollamaGemmaCache as any).dispose();
     }
-  } catch (error) {
+  } catch (error: any) {
     console.warn("Error during cleanup:", error);
   }
 }

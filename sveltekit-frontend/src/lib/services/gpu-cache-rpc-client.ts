@@ -8,7 +8,7 @@ import { EventEmitter } from 'events';
 import type { CacheEntry, UserHistoryEntry } from './gpu-cache-orchestrator';
 
 // === RPC Configuration ===
-interface RPCConfig {
+export interface RPCConfig {
   serviceUrl: string;
   timeout: number;
   retryAttempts: number;
@@ -22,7 +22,7 @@ interface RPCConfig {
   };
 }
 
-interface RPCRequest {
+export interface RPCRequest {
   id: string;
   method: string;
   params: any;
@@ -30,7 +30,7 @@ interface RPCRequest {
   features?: string[];
 }
 
-interface RPCResponse {
+export interface RPCResponse {
   id: string;
   result?: any;
   error?: {
@@ -75,7 +75,7 @@ export class GPUCacheRPCClient extends EventEmitter {
       } else {
         throw new Error(`Health check failed: ${response.status}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       this.isConnected = false;
       this.emit('connectionError', error);
       throw error;

@@ -79,7 +79,7 @@ export async function publishToQueue(queueName: string, payload: any): Promise<v
       queueName 
     });
     
-  } catch (error) {
+  } catch (error: any) {
     console.error(`❌ Failed to publish to queue ${queueName}:`, error);
     throw error;
   }
@@ -114,13 +114,13 @@ export async function consumeFromQueue(
           () => ch.nack(msg, false, false)
         );
         
-      } catch (error) {
+      } catch (error: any) {
         console.error(`❌ Error processing message from ${queueName}:`, error);
         ch.nack(msg, false, false); // Don't requeue on parse errors
       }
     });
     
-  } catch (error) {
+  } catch (error: any) {
     console.error(`❌ Failed to consume from queue ${queueName}:`, error);
     throw error;
   }
@@ -162,7 +162,7 @@ export async function setupQueues(): Promise<void> {
     
     console.log('✅ RabbitMQ setup complete');
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Failed to setup RabbitMQ queues:', error);
     throw error;
   }
@@ -180,7 +180,7 @@ export async function closeRabbitMQ(): Promise<void> {
       connection = null;
     }
     console.log('✅ RabbitMQ connections closed gracefully');
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Error closing RabbitMQ connections:', error);
   }
 }
@@ -191,7 +191,7 @@ export async function healthCheck(): Promise<boolean> {
     const ch = await getChannel();
     await ch.checkQueue('evidence.process.queue');
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ RabbitMQ health check failed:', error);
     return false;
   }

@@ -3,7 +3,7 @@
 // Web Worker for parallel TypeScript error analysis
 // ======================================================================
 
-interface ErrorContext {
+export interface ErrorContext {
   id: string;
   file: string;
   line: number;
@@ -18,7 +18,7 @@ interface ErrorContext {
   fixable: boolean;
 }
 
-interface ErrorAnalysisResult {
+export interface ErrorAnalysisResult {
   errorId: string;
   priority: number;
   fixable: boolean;
@@ -242,7 +242,7 @@ self.addEventListener('message', (event: MessageEvent) => {
       default:
         throw new Error(`Unknown message type: ${type}`);
     }
-  } catch (error) {
+  } catch (error: any) {
     self.postMessage({
       type: 'error',
       error: error instanceof Error ? error.message : String(error),

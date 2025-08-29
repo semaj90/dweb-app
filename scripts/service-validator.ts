@@ -4,7 +4,7 @@
 import postgres from 'postgres';
 import { createClient } from 'redis';
 
-interface ServiceStatus {
+export interface ServiceStatus {
   name: string;
   status: 'healthy' | 'degraded' | 'unhealthy';
   responseTime?: number;
@@ -13,7 +13,7 @@ interface ServiceStatus {
   details?: Record<string, any>;
 }
 
-interface ValidationReport {
+export interface ValidationReport {
   overall: 'healthy' | 'degraded' | 'unhealthy';
   services: ServiceStatus[];
   timestamp: string;
@@ -551,7 +551,7 @@ class ServiceValidator {
 }
 
 // CLI interface
-async function main() {
+async function main(): Promise<any> {
   const validator = new ServiceValidator();
   
   try {
@@ -570,7 +570,7 @@ async function main() {
       process.exit(0);
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Service validation failed:', error);
     process.exit(1);
   }

@@ -2,7 +2,16 @@
 // Provides high-performance computing capabilities for embeddings, search, and document processing
 
 import { writable, derived } from 'svelte/store';
-import { browser } from '$app/environment';
+import '../types/webgpu';
+// Browser environment check
+const browser = typeof window !== 'undefined';
+
+export interface GPUTaskResult {
+  results?: number;
+  chunks?: number;
+  similarity?: number;
+  clusters?: number;
+}
 
 export interface WebGPUCapabilities {
   device: GPUDevice | null;
@@ -116,7 +125,7 @@ export class WebGPUManager {
 
       return true;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ WebGPU initialization failed:', error);
       this.capabilities.isSupported = false;
       webgpuCapabilities.set(this.capabilities);
@@ -227,7 +236,7 @@ export class WebGPUManager {
       this.completeTask(task, { similarity });
       return similarity;
 
-    } catch (error) {
+    } catch (error: any) {
       this.failTask(task, error.message);
       throw error;
     }
@@ -352,7 +361,7 @@ export class WebGPUManager {
       this.completeTask(task, { results: scoredResults.length });
       return scoredResults;
 
-    } catch (error) {
+    } catch (error: any) {
       this.failTask(task, error.message);
       throw error;
     }
@@ -415,7 +424,7 @@ export class WebGPUManager {
       this.completeTask(task, { chunks: chunks.length });
       return chunks;
 
-    } catch (error) {
+    } catch (error: any) {
       this.failTask(task, error.message);
       throw error;
     }
@@ -440,7 +449,7 @@ export class WebGPUManager {
       this.completeTask(task, { clusters: results.clusters.length });
       return results;
 
-    } catch (error) {
+    } catch (error: any) {
       this.failTask(task, error.message);
       throw error;
     }
@@ -508,7 +517,7 @@ export class WebGPUManager {
       size: data.byteLength,
       usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST
     });
-    this.device!.queue.writeBuffer(buffer, 0, data.buffer);
+    this.device!.queue.writeBuffer(buffer, 0, data as BufferSource);
     return buffer;
   }
 
@@ -545,7 +554,7 @@ export class WebGPUManager {
     return task;
   }
 
-  private completeTask(task: GPUComputeTask, result: unknown): void {
+  private completeTask(task: GPUComputeTask, result: GPUTaskResult): void {
     task.status = 'completed';
     task.endTime = performance.now();
     task.outputSize = result.results || result.chunks || result.similarity || 0;
@@ -606,7 +615,7 @@ export class WebGPUManager {
     return this.capabilities.isSupported;
   }
 
-  async cleanup(): Promise<void> {
+  async cleanup(): Promise<any> {
     if (this.device) {
       // WebGPU devices don't have a destroy method - they're garbage collected
       this.device = null;

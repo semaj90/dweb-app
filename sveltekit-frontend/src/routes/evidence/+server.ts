@@ -3,7 +3,7 @@ import { json } from "@sveltejs/kit";
 import { randomUUID } from 'crypto';
 
 // A light wrapper that accepts multipart form uploads and stores the file in MinIO under 'evidence' bucket.
-export const POST = async ({ request }) => {
+export const POST = async ({ request }): Promise<any> => {
   try {
     const form = await request.formData();
     const file = form.get('file') as File;
@@ -21,7 +21,7 @@ export const POST = async ({ request }) => {
     });
 
     return json({ success: true, id, objectName });
-  } catch (err) {
+  } catch (err: any) {
     console.error('Evidence upload error', err);
     return json({ success: false, error: (err as any)?.message || 'upload error' }, { status: 500 });
   }

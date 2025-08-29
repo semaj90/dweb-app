@@ -94,7 +94,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
             workflowOptimization: workflowOpt
           };
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Binary shader cache failed:', error);
       }
     }
@@ -128,7 +128,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
           cached: true,
           memoryStats: nesCacheOrchestrator.getMemoryStats()
         };
-      } catch (error) {
+      } catch (error: any) {
         nesIntegration = {
           cached: false,
           error: error instanceof Error ? error.message : 'NES cache failed'
@@ -148,7 +148,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
           performance: webgpuResult.performance,
           results: webgpuResult.results?.length || 0
         };
-      } catch (error) {
+      } catch (error: any) {
         webgpuIntegration = {
           processed: false,
           error: error instanceof Error ? error.message : 'WebGPU failed'
@@ -196,7 +196,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
 
     return json(response);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Enhanced GPU Cache store error:', error);
     return json({
       error: 'Failed to store in enhanced GPU cache',
@@ -246,7 +246,7 @@ export const GET: RequestHandler = async ({ params, url }) => {
       timestamp: Date.now()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('GPU Cache retrieve error:', error);
     return json({
       error: 'Failed to retrieve from GPU cache',
@@ -288,7 +288,7 @@ export const PATCH: RequestHandler = async ({ request }) => {
       timestamp: Date.now()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('GPU Cache image analysis error:', error);
     return json({
       error: 'Failed to analyze image with GPU cache',
@@ -344,7 +344,7 @@ export const PATCH: RequestHandler = async ({ request }) => {
             syncResults.indexeddb = { status: 'completed', entries: 200, errors: [] };
             break;
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Database sync error for ${db}:`, error);
         (syncResults as any)[db] = {
           status: 'failed',
@@ -360,7 +360,7 @@ export const PATCH: RequestHandler = async ({ request }) => {
       timestamp: Date.now()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('GPU Cache sync error:', error);
     return json({
       error: 'Failed to synchronize databases',
@@ -444,7 +444,7 @@ export const DELETE: RequestHandler = async ({ request }) => {
         return json({ error: 'Invalid action. Use: get, search, preload, clear' }, { status: 400 });
     }
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('Shader cache operation error:', error);
     return json({
       error: 'Shader cache operation failed',
@@ -517,7 +517,7 @@ export const OPTIONS: RequestHandler = async ({ url }) => {
       timestamp: Date.now()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('GPU Cache metrics error:', error);
     return json({
       error: 'Failed to get GPU cache metrics',
@@ -550,7 +550,7 @@ export const HEAD: RequestHandler = async ({ params, url }) => {
       timestamp: Date.now()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('User history error:', error);
     return json({
       error: 'Failed to get user history',
@@ -593,7 +593,7 @@ export const PUT: RequestHandler = async ({ request }) => {
       timestamp: Date.now()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Bulk operation error:', error);
     return json({
       error: 'Failed to perform bulk operation',
@@ -624,7 +624,7 @@ async function simulateIndexedDBSync(): Promise<void> {
   await new Promise(resolve => setTimeout(resolve, 200));
 }
 
-async function simulateGetUserHistory(userId: string, limit: number, includeAnalytics: boolean) {
+async function simulateGetUserHistory(userId: string, limit: number, includeAnalytics: boolean): Promise<any> {
   const history = [];
   
   for (let i = 0; i < Math.min(limit, 10); i++) {
@@ -668,7 +668,7 @@ async function handleBulkStore(entries: any[]): Promise<any> {
       await gpuCacheOrchestrator.store(entry.key, entry.data, entry.options || {});
       results.stored.push(entry.key);
       
-    } catch (error) {
+    } catch (error: any) {
       results.failed.push({ key: entry.key, error: error.message });
     }
   }
@@ -698,7 +698,7 @@ async function handleBulkRetrieve(keys: string[]): Promise<any> {
         results.failed.push({ key, error: 'Entry not found' });
       }
       
-    } catch (error) {
+    } catch (error: any) {
       results.failed.push({ key, error: error.message });
     }
   }

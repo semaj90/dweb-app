@@ -394,7 +394,7 @@ export class NeuralMemoryManager extends EventEmitter {
       }
 
       console.log("✅ Neural network training completed");
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Neural training error:", error);
     } finally {
       this.isTraining = false;
@@ -711,7 +711,7 @@ export class NeuralMemoryManager extends EventEmitter {
       if (currentState.length > 0) {
         this.predictMemoryUsage();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn("⚠️ Failed to update predictions:", error);
     }
   }

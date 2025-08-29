@@ -235,7 +235,7 @@ export function validateCaseData(data: any): ValidationResult {
 
   for (const [field, fieldConfig] of Object.entries(config)) {
     const result = validateField(data[field], fieldConfig);
-    errors.push(...result.errors.map((e) => `${field}: ${e}`));
+    errors.push(...result.errors.map((e: any) => `${field}: ${e}`));
     warnings.push(...result.warnings.map((w) => `${field}: ${w}`));
   }
   return createValidationResult(errors.length === 0, errors, warnings, data);
@@ -356,7 +356,7 @@ export class FormValidator {
       const result = validateField(value, config);
 
       if (result.errors.length > 0) {
-        allErrors.push(...result.errors.map((e) => `${name}: ${e}`));
+        allErrors.push(...result.errors.map((e: any) => `${name}: ${e}`));
         this.errors.set(name, result.errors);
       }
       if (result.warnings.length > 0) {
@@ -419,7 +419,7 @@ export function validateObject(
 
   for (const [key, config] of Object.entries(schema)) {
     const result = validateField(obj[key], config);
-    errors.push(...result.errors.map((e) => `${key}: ${e}`));
+    errors.push(...result.errors.map((e: any) => `${key}: ${e}`));
     warnings.push(...result.warnings.map((w) => `${key}: ${w}`));
   }
   return createValidationResult(errors.length === 0, errors, warnings, obj);

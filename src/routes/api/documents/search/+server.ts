@@ -1,8 +1,8 @@
 import { json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
-import { db } from "$lib/database/postgres-enhanced.js";
-import { legalDocuments } from "$lib/database/schema/legal-documents.js";
-import { vectorSearchService, embeddingUtils } from "$lib/database/vector-operations.js";
+import { db } from '$lib/database/postgres-enhanced';
+import { legalDocuments } from '$lib/database/schema/legal-documents';
+import { vectorSearchService, embeddingUtils } from '$lib/database/vector-operations';
 import { sql, desc, asc, and, or, eq, ilike, inArray, count } from "drizzle-orm";
 import { z } from 'zod';
 
@@ -31,7 +31,7 @@ const searchParamsSchema = z.object({
  * Document Search API Endpoint
  * Supports semantic search, text search, and hybrid search with advanced filtering
  */
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const body = await request.json();
     const searchParams = searchParamsSchema.parse(body);
@@ -53,7 +53,7 @@ export const POST: RequestHandler = async ({ request }) => {
       sortOrder
     } = searchParams;
 
-    let results: unknown[] = [];
+    let results: any[] = [];
     let totalCount = 0;
 
     if (searchType === 'semantic' || searchType === 'hybrid') {
@@ -158,7 +158,7 @@ export const POST: RequestHandler = async ({ request }) => {
       }
     });
 
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("Search error:", error);
 
     if (error instanceof z.ZodError) {
@@ -180,7 +180,7 @@ export const POST: RequestHandler = async ({ request }) => {
 /**
  * Get search suggestions and autocomplete
  */
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
   try {
     const query = url.searchParams.get("q");
     const type = url.searchParams.get("type") || "suggestions";
@@ -236,7 +236,7 @@ export const GET: RequestHandler = async ({ url }) => {
       }, { status: 400 });
     }
 
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("Search suggestions error:", error);
 
     return json({
@@ -249,7 +249,7 @@ export const GET: RequestHandler = async ({ url }) => {
 /**
  * Perform text-based search using PostgreSQL full-text search
  */
-async function performTextSearch(params: z.infer<typeof searchParamsSchema>) {
+async function performTextSearch(params: z.infer<typeof searchParamsSchema>): Promise<any> {
   const {
     query,
     documentTypes,
@@ -340,8 +340,8 @@ async function performTextSearch(params: z.infer<typeof searchParamsSchema>) {
 /**
  * Apply sorting to search results
  */
-function applySorting(results: unknown[], sortBy: string, sortOrder: string) {
-  const sortFn = (a: unknown, b: unknown) => {
+function applySorting(results: any[], sortBy: string, sortOrder: string) {
+  const sortFn = (a: any, b: any) => {
     let valueA, valueB;
 
     switch (sortBy) {
@@ -407,7 +407,7 @@ function generateSnippet(content: string, query: string, maxLength: number = 200
 /**
  * Get available filter options for the search interface
  */
-async function getFilterOptions() {
+async function getFilterOptions(): Promise<any> {
   const [documentTypes, jurisdictions, practiceAreas] = await Promise.all([
     // Get distinct document types
     db

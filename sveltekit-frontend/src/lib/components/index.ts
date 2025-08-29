@@ -6,53 +6,53 @@
  */
 
 // ===== CORE UI COMPONENTS =====
-export * from './ui/index.js';
+export * from './ui/index';
 
 // ===== LAYOUT COMPONENTS =====
-export * from './ui/layout/index.js';
+export * from './ui/layout/index';
 
 // ===== ENHANCED UI COMPONENTS =====
 // Note: Using selective exports to avoid conflicts with base UI components
-export { Button as EnhancedButton, Card as EnhancedCard, Input as EnhancedInput } from './ui/enhanced/index.js';
-// export { SelectOption as EnhancedSelectOption } from './ui/enhanced-bits/index.js'; // Disabled: empty file
-export * from './ui/modern/index.js';
+export { Button as EnhancedButton, Card as EnhancedCard, Input as EnhancedInput } from './ui/enhanced/index';
+// export { SelectOption as EnhancedSelectOption } from './ui/enhanced-bits/index'; // Disabled: empty file
+export * from './ui/modern/index';
 
 // ===== FORM COMPONENTS =====
-export * from './ui/form/index.js';
-export * from './ui/input/index.js';
+export * from './ui/form/index';
+export * from './ui/input/index';
 // Textarea export handled by base UI components
-// export * from './ui/textarea/index.js';
-export * from './ui/checkbox/index.js';
-export * from './ui/select/index.js';
-export * from './ui/switch/index.js';
-export * from './ui/slider/index.js';
+// export * from './ui/textarea/index';
+export * from './ui/checkbox/index';
+export * from './ui/select/index';
+export * from './ui/switch/index';
+export * from './ui/slider/index';
 
 // ===== NAVIGATION & INTERACTION =====
-export * from './ui/tabs/index.js';
+export * from './ui/tabs/index';
 // Context menu exports handled selectively to avoid conflicts
-export { Trigger as ContextMenuTrigger, Content as ContextMenuContent, Item as ContextMenuItem } from './ui/context-menu/index.js';
-export * from './ui/dialog/index.js';
+export { Trigger as ContextMenuTrigger, Content as ContextMenuContent, Item as ContextMenuItem } from './ui/context-menu/index';
+export * from './ui/dialog/index';
 // Tooltip exports - conditional based on availability
-// export * from './ui/tooltip/index.js';
-export * from './ui/command/index.js';
+// export * from './ui/tooltip/index';
+export * from './ui/command/index';
 
 // ===== FEEDBACK & DISPLAY =====
-export * from './ui/alert/index.js';
-export * from './ui/badge/index.js';
-export * from './ui/progress/index.js';
-export * from './ui/scroll-area/index.js';
-export * from './ui/separator/index.js';
-export * from './ui/drawer/index.js';
+export * from './ui/alert/index';
+export * from './ui/badge/index';
+export * from './ui/progress/index';
+export * from './ui/scroll-area/index';
+export * from './ui/separator/index';
+export * from './ui/drawer/index';
 
 // ===== YORHA THEME COMPONENTS =====
-export * from './yorha/index.js';
-export * from './three/yorha-ui/index.js';
+export * from './yorha/index';
+export * from './three/yorha-ui/index';
 
 // ===== SEARCH COMPONENTS =====
-export * from './search/index.js';
+export * from './search/index';
 
 // ===== UNIFIED COMPONENTS =====
-export * from './unified/index.js';
+export * from './unified/index';
 
 // ===== BUSINESS LOGIC COMPONENTS =====
 
@@ -60,42 +60,42 @@ export * from './unified/index.js';
 export { default as AIChat } from './AIChat.svelte';
 export { default as EnhancedLegalChat } from './EnhancedLegalChat.svelte';
 export { default as LLMAssistant } from './LLMAssistant.svelte';
-export * from './ai/index.js';
+export * from './ai/index';
 
 // Case Management
 export { default as CaseCard } from './+CaseCard.svelte';
 export { default as LegalCaseManager } from './LegalCaseManager.svelte';
-export * from './cases/index.js';
+export * from './cases/index';
 
 // Evidence & Legal
 export { default as EvidencePanel } from './EvidencePanel.svelte';
-export * from './legal/index.js';
-export * from './evidence-editor/index.js';
+export * from './legal/index';
+export * from './evidence-editor/index';
 
 // Chat & Messaging
-export * from './chat/index.js';
+export * from './chat/index';
 
 // Canvas & Visual Editor
-export * from './canvas/index.js';
+export * from './canvas/index';
 
 // Authentication
-export * from './auth/index.js';
+export * from './auth/index';
 
 // Layout & Navigation
 export { default as NierNavigation } from './NierNavigation.svelte';
-export * from './layout/index.js';
+export * from './layout/index';
 
 // Realtime Components
-export * from './realtime/index.js';
+export * from './realtime/index';
 
 // Editor Components
-export * from './editor/index.js';
+export * from './editor/index';
 
 // Detective Interface
-export * from './detective/index.js';
+export * from './detective/index';
 
 // Subcomponents
-export * from './subcomponents/index.js';
+export * from './subcomponents/index';
 
 // Utility Components
 export { default as LoadingSpinner } from './LoadingSpinner.svelte';

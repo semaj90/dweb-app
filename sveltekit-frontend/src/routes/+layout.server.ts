@@ -4,7 +4,7 @@
 // import { createEnhancedLayoutLoad } from '$lib/server/ssr/enhanced-load';
 
 // Minimal layout load for testing
-export const load = async () => {
+export const load = async (): Promise<any> => {
   return {
     props: {}
   };

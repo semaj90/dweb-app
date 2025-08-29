@@ -41,7 +41,7 @@ console.log(`🚀 Enhanced RAG Phase Integration Started
 🔧 VS Code Integration: Active`);
 
 // Enhanced document interface with ML features
-interface EnhancedDocument {
+export interface EnhancedDocument {
   id: string;
   content: string;
   summary: string;
@@ -75,7 +75,7 @@ enum DocumentSource {
   Build = 'build-log'
 }
 
-interface DocumentMetadata {
+export interface DocumentMetadata {
   fileType: string;
   wordCount: number;
   complexity: number;
@@ -84,7 +84,7 @@ interface DocumentMetadata {
   citations: string[];
 }
 
-interface RankingFeatures {
+export interface RankingFeatures {
   clarity: number;
   relevance: number;
   completeness: number;
@@ -119,7 +119,7 @@ class EnhancedCacheManager {
       this.loadCollections();
       
       console.log(`📦 LokiJS cache initialized: ${dbFile}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Cache initialization failed:', error);
       this.db = new loki();
       this.loadCollections();
@@ -249,7 +249,7 @@ class EnhancedEmbeddingService {
       console.log(`✅ Generated ${result.embedding?.length || 0}-dim embedding`);
       
       return result.embedding;
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Embedding generation failed:', error);
       return null;
     }
@@ -333,7 +333,7 @@ class MLDocumentAnalyzer {
 
       const result = await response.json();
       return result.response || 'Summary generation failed';
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Summary generation failed:', error);
       return content.slice(0, 200) + '...';
     }
@@ -686,7 +686,7 @@ ${Object.values(DocumentLabel).map(label => {
 }
 
 // Main Enhanced RAG Integration
-async function runEnhancedRAGPhase() {
+async function runEnhancedRAGPhase(): Promise<any> {
   const startTime = Date.now();
   console.log('🚀 Enhanced RAG Phase Integration Starting...');
 

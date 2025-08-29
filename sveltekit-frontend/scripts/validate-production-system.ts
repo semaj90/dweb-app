@@ -16,7 +16,7 @@
 
 import { performance } from 'perf_hooks';
 
-interface ValidationConfig {
+export interface ValidationConfig {
   endpoint: string;
   timeout: number;
   retries: number;
@@ -25,7 +25,7 @@ interface ValidationConfig {
   benchmark: boolean;
 }
 
-interface ApiResponse {
+export interface ApiResponse {
   success: boolean;
   data?: any;
   error?: string;
@@ -71,7 +71,7 @@ class ProductionValidator {
       console.log('\n✅ Validation completed successfully');
       console.log(`⏱️  Total time: ${Math.round(performance.now() - this.startTime)}ms`);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('\n❌ Validation failed:', error instanceof Error ? error.message : error);
       process.exit(1);
     }
@@ -260,7 +260,7 @@ class ProductionValidator {
         
         return await response.json();
         
-      } catch (error) {
+      } catch (error: any) {
         if (attempt === this.config.retries) {
           throw error;
         }
@@ -284,14 +284,14 @@ class ProductionValidator {
     try {
       await fs.writeFile(filepath, JSON.stringify(report, null, 2));
       console.log(`💾 Report saved to: ${filepath}`);
-    } catch (error) {
+    } catch (error: any) {
       console.log(`⚠️  Could not save report: ${error instanceof Error ? error.message : error}`);
     }
   }
 }
 
 // Script execution
-async function main() {
+async function main(): Promise<any> {
   const validator = new ProductionValidator();
   await validator.run();
 }

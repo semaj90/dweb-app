@@ -213,7 +213,7 @@ export class Context7Phase13Integration {
 
       this.updateIntegrationStatus("overall", "HEALTHY");
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Context7 MCP integration failed:", error);
       this.updateIntegrationStatus("overall", "ERROR");
     }
@@ -233,7 +233,7 @@ export class Context7Phase13Integration {
       } else {
         console.warn("Context7 semantic search returned empty results");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to initialize Context7 semantic search:", error);
       throw error;
     }
@@ -304,7 +304,7 @@ export class Context7Phase13Integration {
 
       return finalResults;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Enhanced semantic search failed:", error);
       this.performanceMetrics.errorCount++;
       this.updateIntegrationStatus("semanticSearch", "ERROR");
@@ -358,7 +358,7 @@ export class Context7Phase13Integration {
 
       return results;
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Context7 semantic search failed, using fallback:", error);
       
       // Fallback to local semantic search
@@ -387,7 +387,7 @@ export class Context7Phase13Integration {
       // This would integrate with the enhanced RAG engine
       // For now, return empty array as RAG integration is handled separately
       return [];
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Local RAG integration failed:", error);
       return [];
     }
@@ -425,7 +425,7 @@ export class Context7Phase13Integration {
         });
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Memory graph enhancement failed:", error);
     }
 
@@ -526,7 +526,7 @@ export class Context7Phase13Integration {
 
       return finalRecommendations;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Agent orchestration failed:", error);
       this.updateIntegrationStatus("agentOrchestration", "ERROR");
       throw error;
@@ -577,7 +577,7 @@ export class Context7Phase13Integration {
       this.updatePerformanceMetrics("memory", Date.now() - startTime);
       this.updateIntegrationStatus("memoryGraph", "IDLE");
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Memory graph sync failed:", error);
       this.updateIntegrationStatus("memoryGraph", "ERROR");
     }
@@ -633,7 +633,7 @@ export class Context7Phase13Integration {
       
       this.updateIntegrationStatus("bestPractices", "IDLE");
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Best practices loading failed:", error);
       this.updateIntegrationStatus("bestPractices", "ERROR");
     }

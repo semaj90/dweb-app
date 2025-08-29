@@ -94,7 +94,7 @@ export class ClientServerSyncService {
     hybridSearch: true,
     fallbackToClient: true,
     maxCacheSize: 100, // 100MB
-    vectorDimensions: 768
+    vectorDimensions: 384
   };
 
   // Internal state
@@ -173,7 +173,7 @@ export class ClientServerSyncService {
         }
         
         return serverResults;
-      } catch (error) {
+      } catch (error: any) {
         console.warn('[Sync Service] Server vector search failed, falling back to client');
         
         if (this.config.fallbackToClient) {
@@ -202,7 +202,7 @@ export class ClientServerSyncService {
     // First try GPU-accelerated vector search with CUDA worker
     try {
       return await this.performGPUVectorSearch(query, options);
-    } catch (error) {
+    } catch (error: any) {
       console.warn('[Sync Service] GPU vector search failed, falling back to standard API:', error);
     }
 
@@ -367,7 +367,7 @@ export class ClientServerSyncService {
         .where('queryHash')
         .equals(queryHash)
         .first() || null;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('[Sync Service] Failed to get cached search:', error);
       return null;
     }
@@ -403,7 +403,7 @@ export class ClientServerSyncService {
       
       // Manage cache size
       await this.manageCacheSize();
-    } catch (error) {
+    } catch (error: any) {
       console.warn('[Sync Service] Failed to cache search results:', error);
     }
   }
@@ -601,7 +601,7 @@ export class ClientServerSyncService {
         syncProgress: 1 - (this.syncQueue.length / (this.syncQueue.length + 1))
       });
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('[Sync Service] Operation failed:', error);
       
       operation.retryCount++;

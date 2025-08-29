@@ -59,7 +59,7 @@ export interface Phase8Recommendation {
   relatedStates?: string[];
 }
 
-interface RerankResult {
+export interface RerankResult {
   id: string;
   content: string;
   metadata: {
@@ -73,7 +73,7 @@ interface RerankResult {
   confidence: number;
 }
 
-interface UserContext {
+export interface UserContext {
   intent: string;
   timeOfDay: "morning" | "afternoon" | "evening" | "night";
   focusedElement: string;
@@ -121,7 +121,7 @@ export class Context7Phase8Integrator {
 
       // 6. Apply AI reranking based on current context
       return this.rerankRecommendations(recommendations, query);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Context7 Phase 8 integration error:", error);
       return this.getFallbackRecommendations(query);
     }
@@ -416,7 +416,7 @@ const adaptiveLOD = {
           };
         })
         .sort((a, b) => b.aiConfidence - a.aiConfidence);
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Reranking failed, using original order:", error);
       return recommendations.sort((a, b) => b.aiConfidence - a.aiConfidence);
     }

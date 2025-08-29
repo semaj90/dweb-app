@@ -6,7 +6,7 @@
 import { gemma3LokiIntegration } from './gemma3-loki-integration';
 import { vertexBufferImageAnalyzer } from './vertex-buffer-image-analyzer';
 
-interface UploadProcessingOptions {
+export interface UploadProcessingOptions {
   extractText?: boolean;
   generateEmbeddings?: boolean;
   performLegalAnalysis?: boolean;
@@ -18,7 +18,7 @@ interface UploadProcessingOptions {
   useWebAssembly?: boolean;
 }
 
-interface ProcessedFile {
+export interface ProcessedFile {
   id: string;
   originalName: string;
   mimeType: string;
@@ -36,7 +36,7 @@ interface ProcessedFile {
   method: 'webassembly' | 'ollama' | 'hybrid';
 }
 
-interface DatabaseStorageResult {
+export interface DatabaseStorageResult {
   documentId: string;
   vectorId: string;
   evidenceId?: string;
@@ -59,7 +59,7 @@ export class Gemma3UploadPgVectorService {
     this.initialize();
   }
 
-  private async initialize(): Promise<void> {
+  private async initialize(): Promise<any> {
     if (this.initialized) return;
 
     try {
@@ -72,7 +72,7 @@ export class Gemma3UploadPgVectorService {
       this.initialized = true;
       console.log('🚀 Gemma3 Upload & pgvector Service initialized');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize Gemma3 Upload Service:', error);
       throw error;
     }
@@ -159,7 +159,7 @@ export class Gemma3UploadPgVectorService {
 
       return result;
 
-    } catch (error) {
+    } catch (error: any) {
       this.metrics.errors++;
       console.error('❌ File processing failed:', error);
       throw error;
@@ -186,10 +186,10 @@ export class Gemma3UploadPgVectorService {
     for (let i = 0; i < fileArray.length; i += maxConcurrency) {
       const chunk = fileArray.slice(i, i + maxConcurrency);
       
-      const chunkPromises = chunk.map(async (file) => {
+      const chunkPromises = chunk.map(async (file): Promise<any> => {
         try {
           return await this.processUploadedFile(file, options);
-        } catch (error) {
+        } catch (error: any) {
           console.error(`Failed to process ${file.name}:`, error);
           errors.push({ fileName: file.name, error });
           return null;
@@ -255,7 +255,7 @@ export class Gemma3UploadPgVectorService {
 
       return results;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Document search failed:', error);
       throw error;
     }
@@ -308,8 +308,8 @@ export class Gemma3UploadPgVectorService {
   private async readTextFile(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = (e) => resolve(e.target?.result as string);
-      reader.onerror = (e) => reject(e);
+      reader.onload = (e: any) => resolve(e.target?.result as string);
+      reader.onerror = (e: any) => reject(e);
       reader.readAsText(file);
     });
   }
@@ -390,7 +390,7 @@ export class Gemma3UploadPgVectorService {
         processingTime: analysisResult.metadata.processingTimeMs
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Image analysis failed:', error);
       return null;
     }
@@ -449,7 +449,7 @@ export class Gemma3UploadPgVectorService {
         model: 'nomic-embed-text'
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Embedding generation failed:', error);
       throw error;
     }
@@ -494,7 +494,7 @@ export class Gemma3UploadPgVectorService {
         success: true
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Database storage failed:', error);
       return {
         documentId: '',

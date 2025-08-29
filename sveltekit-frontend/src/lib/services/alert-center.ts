@@ -326,7 +326,7 @@ export class AlertCenter {
         
         console.log('Alert Center: Persistence state loaded successfully');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Alert Center: Failed to load persistence state:', (error as Error).message);
     }
   }
@@ -466,7 +466,7 @@ export class AlertCenter {
     for (const channel of channels) {
       try {
         await this.sendNotificationToChannel(alert, channel);
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Failed to send notification via ${channel.type}:`, (error as Error).message);
       }
     }
@@ -864,7 +864,7 @@ export class AlertCenter {
         `Auto-remediation triggered for alert ${alert.id}: ${response.status} (${duration.toFixed(2)}ms)`
       );
       
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Auto-remediation failed for alert ${alert.id}:`, (error as Error).message);
     } finally {
       this.autosolveInFlight = false;
@@ -1035,7 +1035,7 @@ export class AlertCenter {
       };
       
       fs.writeFileSync(this.STATE_FILE, JSON.stringify(state, null, 2));
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Alert Center: Failed to persist state:', (error as Error).message);
     }
   }
@@ -1098,13 +1098,13 @@ export class AlertCenter {
 
 // ===== PERSISTENCE INTERFACES =====
 
-interface BaselineFile {
+export interface BaselineFile {
   created: string;
   stages: ReturnType<typeof getStageBaselineSnapshot>;
   quic: any;
 }
 
-interface PersistedState {
+export interface PersistedState {
   sustainedP99Breaches: number;
   lastP99Ok: number;
   lastBaseline?: BaselineFile;

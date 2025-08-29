@@ -51,7 +51,7 @@ export class Context7MissingImportsFetcher {
       // Extract best practices from all documentation
       await this.extractBestPractices(integration, analysis);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Context7 fetching failed:', error);
       // Provide fallback implementations
       await this.provideFallbackImplementations(integration, analysis);
@@ -78,7 +78,7 @@ export class Context7MissingImportsFetcher {
         bestPractices: this.extractSvelteBestPractices(response),
         apiReference: this.parseApiReference(response, 'svelte')
       };
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to fetch Svelte docs:', error);
       return this.createFallbackSvelteDoc(analysis);
     }
@@ -101,7 +101,7 @@ export class Context7MissingImportsFetcher {
         bestPractices: this.extractDrizzleBestPractices(response),
         apiReference: this.parseApiReference(response, 'drizzle')
       };
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to fetch Drizzle ORM docs:', error);
       return this.createFallbackDrizzleDoc(analysis);
     }
@@ -124,7 +124,7 @@ export class Context7MissingImportsFetcher {
         bestPractices: this.extractXStateBestPractices(response),
         apiReference: this.parseApiReference(response, 'xstate')
       };
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to fetch XState docs:', error);
       return this.createFallbackXStateDoc(analysis);
     }
@@ -164,7 +164,7 @@ export class Context7MissingImportsFetcher {
       this.cache.set(cacheKey, data);
       return data;
 
-    } catch (error) {
+    } catch (error: any) {
       // Fallback to structured response
       return {
         library: libraryId.split('/').pop() || libraryId,

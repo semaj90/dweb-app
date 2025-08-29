@@ -3,7 +3,7 @@
  * Supports legal abbreviations, fragment merging, and streaming
  */
 
-interface SplitterOptions {
+export interface SplitterOptions {
   minLength?: number;
   maxLength?: number;
   minFragmentLength?: number;
@@ -12,7 +12,7 @@ interface SplitterOptions {
   headingPatterns?: RegExp[]; // custom heading patterns to merge with following sentence
 }
 
-interface StreamingContext {
+export interface StreamingContext {
   buffer: string;
   processedSentences: string[];
 }

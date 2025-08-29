@@ -38,7 +38,7 @@ const ENABLE_GPU = (() => {
   try {
     const v = process?.env?.ENABLE_GPU;
     if (typeof v === 'string') return v.toLowerCase() !== 'false' && v !== '0';
-  } catch (e) { }
+  } catch (e: any) { }
   return true;
 })();
 
@@ -207,7 +207,7 @@ export class WebGPUSOMCache {
 
       console.log('🚀 WebGPU initialized for SOM semantic caching');
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('WebGPU initialization failed:', error);
       return false;
     }
@@ -222,13 +222,13 @@ export class WebGPUSOMCache {
         resolve(false);
       };
 
-      request.onsuccess = (event) => {
+      request.onsuccess = (event: any) => {
         this.indexDB = (event.target as IDBOpenDBRequest).result;
         console.log('📄 IndexDB initialized for persistent caching');
         resolve(true);
       };
 
-      request.onupgradeneeded = (event) => {
+      request.onupgradeneeded = (event: any) => {
         const db = (event.target as IDBOpenDBRequest).result;
 
         // Create todos store
@@ -454,7 +454,7 @@ export class WebGPUSOMCache {
       }
 
       return await response.json();
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Go SOM analyzer unavailable, using mock data');
       return this.generateMockTodos(errors);
     }
@@ -488,7 +488,7 @@ export class WebGPUSOMCache {
         priority: this.getSeverityWeight(severity) + Math.random() * 0.1,
         category,
         title: `Fix ${categoryErrors.length} ${category} ${categoryErrors.length === 1 ? 'error' : 'errors'}`,
-        description: `Address ${category} issues in ${new Set(categoryErrors.map((e) => e.file)).size} files`,
+        description: `Address ${category} issues in ${new Set(categoryErrors.map((e: any) => e.file)).size} files`,
         estimated_effort: categoryErrors.length * 15 * 60 * 1000000000, // 15 minutes per error in nanoseconds
         dependencies: [],
         suggested_fixes: this.generateSuggestedFixes(category),
@@ -498,7 +498,7 @@ export class WebGPUSOMCache {
         created_at: new Date().toISOString(),
         metadata: {
           error_count: categoryErrors.length,
-          files_affected: new Set(categoryErrors.map((e) => e.file)).size,
+          files_affected: new Set(categoryErrors.map((e: any) => e.file)).size,
         },
       });
     });
@@ -660,8 +660,8 @@ export class WebGPUSOMCache {
     }
 
     // File overlap in related errors
-    const files1 = new Set(todo1.related_errors.map((e) => e.file));
-    const files2 = new Set(todo2.related_errors.map((e) => e.file));
+    const files1 = new Set(todo1.related_errors.map((e: any) => e.file));
+    const files2 = new Set(todo2.related_errors.map((e: any) => e.file));
     const fileIntersection = new Set([...files1].filter((x) => files2.has(x)));
     if (files1.size > 0 || files2.size > 0) {
       similarity += 0.3 * (fileIntersection.size / Math.max(files1.size, files2.size));

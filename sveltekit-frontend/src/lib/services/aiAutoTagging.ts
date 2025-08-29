@@ -13,7 +13,7 @@ import {
 } from "drizzle-orm";
 import type { Evidence } from '$lib/types/legal-types';
 
-interface EvidenceMetadata {
+export interface EvidenceMetadata {
   aiTags: string[];
   entities: ExtractedEntity[];
   summary: string;
@@ -88,7 +88,7 @@ class AIAutoTaggingService {
         relationships
       };
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Auto-tagging failed:', error);
       throw new Error(`Auto-tagging failed: ${error.message}`);
     }
@@ -223,7 +223,7 @@ Return JSON format:
         title: row.title,
         similarity: row.similarity
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Similar document search failed:', error);
       return [];
     }
@@ -288,7 +288,7 @@ Return JSON format:
       try {
         const result = await this.autoTagDocument(doc.id, doc.content, doc.type);
         results.push({ id: doc.id, success: true, result });
-      } catch (error) {
+      } catch (error: any) {
         results.push({ id: doc.id, success: false, error: error.message });
       }
     }
@@ -321,7 +321,7 @@ Return JSON format:
         summary: row.summary,
         similarity: row.similarity
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Semantic search failed:', error);
       return [];
     }

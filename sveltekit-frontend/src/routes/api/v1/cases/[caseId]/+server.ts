@@ -89,7 +89,7 @@ export const GET: RequestHandler = async ({ params, getClientAddress }) => {
     console.log(`✅ Case retrieved: ${caseResult.title}`);
     return json(response);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error(`❌ GET /api/v1/cases/${params.caseId} error:`, error);
     return json({
       success: false,
@@ -160,7 +160,7 @@ export const PUT: RequestHandler = async ({ params, request, getClientAddress })
     console.log(`✅ Case updated: ${caseId}`);
     return json(response);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error(`❌ PUT /api/v1/cases/${params.caseId} error:`, error);
     return json({
       success: false,
@@ -229,7 +229,7 @@ export const DELETE: RequestHandler = async ({ params, getClientAddress }) => {
     console.log(`✅ Case archived: ${caseId}`);
     return json(response);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error(`❌ DELETE /api/v1/cases/${params.caseId} error:`, error);
     return json({
       success: false,

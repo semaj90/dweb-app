@@ -10,7 +10,7 @@ import { db } from '$lib/server/db';
 import { cases, aiAnalyses } from '$lib/server/db/schema-unified';
 import { eq } from 'drizzle-orm';
 
-interface SaveSummaryRequest {
+export interface SaveSummaryRequest {
   caseId: string;
   summary: string;
   metadata?: {
@@ -105,7 +105,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
       message: 'Summary saved successfully'
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Summary save error:', error);
     
     return json({

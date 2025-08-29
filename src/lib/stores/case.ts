@@ -2,7 +2,7 @@ import { writable } from 'svelte/store';
 import type { Case } from '$lib/types';
 import { cache } from '$lib/client/cache';
 
-interface CaseStore {
+export interface CaseStore {
   items: Case[];
   currentCase: Case | null;
   loading: boolean;
@@ -59,7 +59,7 @@ function createCaseStore() {
           loading: false
         }));
 
-      } catch (error) {
+      } catch (error: any) {
         update(state => ({
           ...state,
           loading: false,
@@ -90,7 +90,7 @@ function createCaseStore() {
 
         return caseData;
 
-      } catch (error) {
+      } catch (error: any) {
         update(state => ({
           ...state,
           loading: false,
@@ -133,7 +133,7 @@ function createCaseStore() {
 
         return newCase;
 
-      } catch (error) {
+      } catch (error: any) {
         update(state => ({
           ...state,
           loading: false,
@@ -181,7 +181,7 @@ function createCaseStore() {
 
         return updatedCase;
 
-      } catch (error) {
+      } catch (error: any) {
         update(state => ({
           ...state,
           loading: false,

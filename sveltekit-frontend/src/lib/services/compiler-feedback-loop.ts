@@ -256,7 +256,7 @@ export class CompilerFeedbackLoop {
         clusterCount: this.somClustering.getClusters().length
       }));
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Error processing compiler event:', error);
     }
   }
@@ -273,7 +273,7 @@ export class CompilerFeedbackLoop {
       // Use RAG engine's embedding capability
       const embedding = await this.ragEngine.createEmbedding(text);
       return new Float32Array(embedding);
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Failed to create embedding, using fallback:', error);
       // Fallback: simple hash-based embedding
       return this.createSimpleEmbedding(text);
@@ -328,7 +328,7 @@ export class CompilerFeedbackLoop {
         relevance: result.finalScore,
         source: (result.document.metadata as any)?.source || 'unknown'
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ RAG query failed:', error);
       return [];
     }
@@ -379,7 +379,7 @@ Generate a targeted patch with high confidence.
           errors: []
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to generate patch:', error);
       
       // Fallback patch

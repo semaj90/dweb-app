@@ -10,7 +10,7 @@ describe('sort rules', async () => {
     ],
   })
 
-  async function sort(tokens: string) {
+  async function sort(tokens: string): Promise<any> {
     return await sortRules(tokens, uno)
   }
 

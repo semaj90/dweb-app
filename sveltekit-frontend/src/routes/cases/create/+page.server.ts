@@ -49,7 +49,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
   //         notifyAssignee: existingCase.notifyAssignee || true
   //       };
   //     }
-  //   } catch (error) {
+  //   } catch (error: any) {
   //     console.error('Failed to load case for editing:', error);
   //   }
   // }
@@ -272,7 +272,7 @@ export const actions: Actions = {
             console.error('Failed to enqueue ingestion job to DB queue:', qErr);
           }
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error('Failed to start ingestion pipeline:', err);
         // Do not fail the main request; ingestion should be best-effort/asynchronous.
       }
@@ -473,7 +473,7 @@ export const actions: Actions = {
         }
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Case creation failed:', error);
 
       // Database constraint violation
@@ -573,7 +573,7 @@ export const actions: Actions = {
         data: { case: updatedCase }
       });
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Case update failed:', error);
       return fail(500, {
         form,
@@ -611,7 +611,7 @@ export const actions: Actions = {
         data: { draft }
       });
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Draft save failed:', error);
       return fail(500, {
         form,

@@ -5,7 +5,7 @@ import { writable } from 'svelte/store';
 import type { Readable } from 'stream';
 
 // Types and Interfaces
-interface FileMetadata {
+export interface FileMetadata {
   id: string;
   filename: string;
   originalPath: string;
@@ -20,7 +20,7 @@ interface FileMetadata {
   vectorId?: string;
 }
 
-interface MergeOperation {
+export interface MergeOperation {
   id: string;
   sourceFiles: string[];
   targetFilename: string;
@@ -36,7 +36,7 @@ interface MergeOperation {
   };
 }
 
-interface S3Config {
+export interface S3Config {
   endpoint: string;
   accessKey: string;
   secretKey: string;
@@ -44,7 +44,7 @@ interface S3Config {
   region?: string;
 }
 
-interface PostgresConfig {
+export interface PostgresConfig {
   host: string;
   port: number;
   database: string;
@@ -52,13 +52,13 @@ interface PostgresConfig {
   password: string;
 }
 
-interface VectorConfig {
+export interface VectorConfig {
   qdrantUrl: string;
   pgVectorConnection: string;
   collectionName: string;
 }
 
-interface RAGConfig {
+export interface RAGConfig {
   embeddingService: string;
   modelName: string;
   apiEndpoint: string;
@@ -83,9 +83,9 @@ export class FileMergeSystem {
   private postgresConfig: PostgresConfig;
   private vectorConfig: VectorConfig;
   private ragConfig: RAGConfig;
-  private s3Client: unknown;
-  private pgClient: unknown;
-  private qdrantClient: unknown;
+  private s3Client: any;
+  private pgClient: any;
+  private qdrantClient: any;
 
   constructor(
     s3Config: S3Config,
@@ -101,7 +101,7 @@ export class FileMergeSystem {
     this.initializeClients();
   }
 
-  private async initializeClients() {
+  private async initializeClients(): Promise<any> {
     try {
       // Initialize MinIO S3 Client
       const { Client } = await import('minio');
@@ -125,7 +125,7 @@ export class FileMergeSystem {
       });
 
       console.log('✅ All clients initialized successfully');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize clients:', error);
       throw error;
     }
@@ -205,7 +205,7 @@ export class FileMergeSystem {
       }));
 
       return fileMetadata;
-    } catch (error) {
+    } catch (error: any) {
       fileMergeStore.update(state => ({
         ...state,
         uploading: false,
@@ -344,7 +344,7 @@ export class FileMergeSystem {
       this.updateOperationStatus(operation);
 
       return operation;
-    } catch (error) {
+    } catch (error: any) {
       operation.status = 'failed';
       operation.progress = 0;
       this.updateOperationStatus(operation);
@@ -394,7 +394,7 @@ export class FileMergeSystem {
       const mergedResults = this.mergeSearchResults(results, pgResults);
 
       return mergedResults.slice(0, options.limit || 10);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Similarity search failed:', error);
       throw error;
     }
@@ -406,7 +406,7 @@ export class FileMergeSystem {
     return this.s3Client.getObject(this.s3Config.bucket, metadata.filename);
   }
 
-  async deleteFile(fileId: string): Promise<void> {
+  async deleteFile(fileId: string): Promise<any> {
     const metadata = await this.getFileMetadata(fileId);
 
     // Delete from MinIO
@@ -587,7 +587,7 @@ export class FileMergeSystem {
     return result.embedding;
   }
 
-  private async saveFileMetadata(metadata: FileMetadata): Promise<void> {
+  private async saveFileMetadata(metadata: FileMetadata): Promise<any> {
     await this.pgClient.query(`
       INSERT INTO file_metadata (
         id, filename, original_path, size, mime_type, checksum,
@@ -636,7 +636,7 @@ export class FileMergeSystem {
       fileIds
     );
 
-    return result.rows.map((row: unknown) => ({
+    return result.rows.map((row: any) => ({
       id: row.id,
       filename: row.filename,
       originalPath: row.original_path,
@@ -652,7 +652,7 @@ export class FileMergeSystem {
     }));
   }
 
-  private async updateFileMetadata(metadata: FileMetadata): Promise<void> {
+  private async updateFileMetadata(metadata: FileMetadata): Promise<any> {
     await this.pgClient.query(`
       UPDATE file_metadata SET
         embedding = $1, vector_id = $2, tags = $3
@@ -669,7 +669,7 @@ export class FileMergeSystem {
     metadata: FileMetadata,
     embedding: number[],
     content: string
-  ): Promise<void> {
+  ): Promise<any> {
     await this.pgClient.query(`
       INSERT INTO document_embeddings (file_id, content, embedding, metadata)
       VALUES ($1, $2, $3, $4)
@@ -718,7 +718,7 @@ export class FileMergeSystem {
 
   private async searchInPgVector(
     queryEmbedding: number[],
-    options: unknown
+    options: any
   ): Promise<Array<FileMetadata & { similarity: number }>> {
     const result = await this.pgClient.query(`
       SELECT
@@ -738,7 +738,7 @@ export class FileMergeSystem {
       options.limit || 10
     ]);
 
-    return result.rows.map((row: unknown) => ({
+    return result.rows.map((row: any) => ({
       id: row.id,
       filename: row.filename,
       originalPath: row.original_path,
@@ -753,7 +753,7 @@ export class FileMergeSystem {
     }));
   }
 
-  private async deleteFromPgVector(fileId: string): Promise<void> {
+  private async deleteFromPgVector(fileId: string): Promise<any> {
     await this.pgClient.query('DELETE FROM document_embeddings WHERE file_id = $1', [fileId]);
   }
 

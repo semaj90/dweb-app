@@ -1,10 +1,10 @@
 import { db } from '$lib/server/db';
-import { cases, evidence, reports } from '$lib/server/schema';
+import { cases, evidence, reports } from '$lib/server/db/schema-postgres';
 import { eq } from 'drizzle-orm';
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ locals, params }) => {
+export const load: PageServerLoad = async ({ locals, params }): Promise<any> => {
   // Check if user is authenticated
   if (!locals.user) {
     throw redirect(302, '/auth/login');
@@ -55,7 +55,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
       report: report || null
     };
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Error loading case data:', err);
     
     // Re-throw known errors

@@ -18,7 +18,7 @@ export const POST: RequestHandler = async ({ request }) => {
       maxTokens: 512,
     });
     return new Response(JSON.stringify({ analysis }), { status: 200 });
-  } catch (err) {
+  } catch (err: any) {
     return new Response(
       JSON.stringify({ error: "WWWH analysis failed", details: String(err) }),
       { status: 500 },

@@ -209,7 +209,7 @@ export async function parseIconWithLoader(
   loader: UniversalIconLoader,
   options: IconifyLoaderOptions = {},
   safeCollectionsNames: string[] = [],
-) {
+): Promise<any> {
   let collection = ''
   let name = ''
   let svg: string | undefined

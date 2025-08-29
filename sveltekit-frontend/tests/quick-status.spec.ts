@@ -32,7 +32,7 @@ test.describe("Quick Status Check", () => {
       }
 
       expect(true).toBe(true); // Pass the test if we get here
-    } catch (error) {
+    } catch (error: any) {
       console.log("❌ App not accessible:", (error as Error).message);
       throw error;
     }
@@ -60,7 +60,7 @@ test.describe("Quick Status Check", () => {
 
       expect(emailField).toBeGreaterThan(0);
       expect(passwordField).toBeGreaterThan(0);
-    } catch (error) {
+    } catch (error: any) {
       console.log("❌ Login page error:", (error as Error).message);
       throw error;
     }
@@ -90,7 +90,7 @@ test.describe("Quick Status Check", () => {
 
       expect(emailField).toBeGreaterThan(0);
       expect(passwordField).toBeGreaterThan(0);
-    } catch (error) {
+    } catch (error: any) {
       console.log("❌ Register page error:", (error as Error).message);
       throw error;
     }

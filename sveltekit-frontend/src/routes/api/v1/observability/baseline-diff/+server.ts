@@ -1,6 +1,6 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
 
-interface BaselineDiff {
+export interface BaselineDiff {
   metric: string;
   current_value: number;
   baseline_value: number;
@@ -10,7 +10,7 @@ interface BaselineDiff {
   threshold_breach: boolean;
 }
 
-interface BaselineDiffResponse {
+export interface BaselineDiffResponse {
   timestamp: string;
   diffs: BaselineDiff[];
   overall_status: 'stable' | 'drift_detected' | 'significant_drift';

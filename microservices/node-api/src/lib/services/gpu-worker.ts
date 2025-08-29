@@ -1,8 +1,9 @@
 // GPU Worker with proper server implementation
 import http from 'http';
-import { Worker } from 'worker_threads';
+// Worker threads import removed for browser worker compatibility
+// declare const self: DedicatedWorkerGlobalScope;
 
-export async function runGPUWorker(payload: unknown) {
+export async function runGPUWorker(payload: unknown): Promise<any> {
   // TODO: integrate with shared webgpu pipeline or offload via worker_threads
   return { ok: true, mode: 'cpu-fallback', inputSize: JSON.stringify(payload).length };
 }
@@ -35,7 +36,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
           const result = await runGPUWorker(payload);
           res.writeHead(200);
           res.end(JSON.stringify(result));
-        } catch (error) {
+        } catch (error: any) {
           res.writeHead(400);
           res.end(JSON.stringify({ error: 'Invalid JSON payload' }));
         }

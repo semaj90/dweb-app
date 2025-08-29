@@ -51,7 +51,7 @@ export const GET: RequestHandler = async () => {
         vectorTest = await sql`
           SELECT '[1,0,1]'::vector <-> '[1,0,0]'::vector as cosine_distance
         `;
-      } catch (err) {
+      } catch (err: any) {
         console.warn('Vector test failed:', err.message);
         vectorTest = { error: err.message };
       }
@@ -115,7 +115,7 @@ export const GET: RequestHandler = async () => {
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Database health check failed:', err);
     
     return json({
@@ -145,7 +145,7 @@ export const GET: RequestHandler = async () => {
     if (sql) {
       try {
         await sql.end();
-      } catch (err) {
+      } catch (err: any) {
         console.warn('Failed to close database connection:', err.message);
       }
     }

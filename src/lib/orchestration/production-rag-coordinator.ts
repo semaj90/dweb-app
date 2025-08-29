@@ -75,7 +75,7 @@ export class ProductionRAGCoordinator extends EventEmitter {
   /**
    * Initialize the production RAG system
    */
-  async initialize(): Promise<void> {
+  async initialize(): Promise<any> {
     console.log('[RAG Coordinator] Initializing production RAG system...');
     
     try {
@@ -95,7 +95,7 @@ export class ProductionRAGCoordinator extends EventEmitter {
       console.log('[RAG Coordinator] ✅ Production RAG system initialized');
       this.emit('system:initialized');
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('[RAG Coordinator] ❌ Initialization failed:', error);
       throw error;
     }
@@ -151,7 +151,7 @@ export class ProductionRAGCoordinator extends EventEmitter {
       await this.executeProcessingPipeline(job);
       return job;
       
-    } catch (error) {
+    } catch (error: any) {
       console.error(`[RAG Coordinator] ❌ Document processing failed: ${jobId}`, error);
       job.status = 'failed';
       job.error = error instanceof Error ? error.message : 'Unknown error';
@@ -163,9 +163,9 @@ export class ProductionRAGCoordinator extends EventEmitter {
   /**
    * Execute the complete document processing pipeline
    */
-  private async executeProcessingPipeline(job: DocumentProcessingJob): Promise<void> {
+  private async executeProcessingPipeline(job: DocumentProcessingJob): Promise<any> {
     // Stage 1: Document Extraction
-    await this.executeStage(job, 'extraction', async () => {
+    await this.executeStage(job, 'extraction', async (): Promise<any> => {
       const response = await fetch(`${SERVICES.UPLOAD_SERVICE}/api/extract`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -188,7 +188,7 @@ export class ProductionRAGCoordinator extends EventEmitter {
     });
 
     // Stage 2: Text Chunking
-    await this.executeStage(job, 'chunking', async () => {
+    await this.executeStage(job, 'chunking', async (): Promise<any> => {
       const response = await fetch(`${SERVICES.ENHANCED_RAG}/api/chunk`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -211,7 +211,7 @@ export class ProductionRAGCoordinator extends EventEmitter {
     });
 
     // Stage 3: Embedding Generation
-    await this.executeStage(job, 'embedding', async () => {
+    await this.executeStage(job, 'embedding', async (): Promise<any> => {
       const response = await fetch(`${SERVICES.ENHANCED_RAG}/api/embed`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -234,7 +234,7 @@ export class ProductionRAGCoordinator extends EventEmitter {
     });
 
     // Stage 4: Vector Indexing
-    await this.executeStage(job, 'vectorIndexing', async () => {
+    await this.executeStage(job, 'vectorIndexing', async (): Promise<any> => {
       const response = await fetch(`${SERVICES.VECTOR_SERVICE}/api/index`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -258,7 +258,7 @@ export class ProductionRAGCoordinator extends EventEmitter {
     });
 
     // Stage 5: Document Summarization
-    await this.executeStage(job, 'summarization', async () => {
+    await this.executeStage(job, 'summarization', async (): Promise<any> => {
       const response = await fetch(`${SERVICES.ENHANCED_RAG}/api/summarize`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -305,8 +305,8 @@ export class ProductionRAGCoordinator extends EventEmitter {
   private async executeStage(
     job: DocumentProcessingJob, 
     stageName: keyof DocumentProcessingJob['stages'], 
-    stageFunction: () => Promise<void>
-  ): Promise<void> {
+    stageFunction: () => Promise<any>
+  ): Promise<any> {
     const stage = job.stages[stageName];
     
     try {
@@ -336,7 +336,7 @@ export class ProductionRAGCoordinator extends EventEmitter {
       // Emit stage completion
       this.emit('stage:completed', { jobId: job.jobId, stage: stageName, job });
       
-    } catch (error) {
+    } catch (error: any) {
       stage.status = 'failed';
       stage.error = error instanceof Error ? error.message : 'Unknown error';
       stage.endTime = Date.now();
@@ -410,7 +410,7 @@ export class ProductionRAGCoordinator extends EventEmitter {
       
       return result;
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('[RAG Coordinator] ❌ RAG query failed:', error);
       throw error;
     }
@@ -459,7 +459,7 @@ export class ProductionRAGCoordinator extends EventEmitter {
   /**
    * Update job state in cache and memory
    */
-  private async updateJobState(job: DocumentProcessingJob): Promise<void> {
+  private async updateJobState(job: DocumentProcessingJob): Promise<any> {
     await this.redis.setex(`job:${job.jobId}`, 3600, JSON.stringify(job));
     this.activeJobs.set(job.jobId, job);
     
@@ -490,8 +490,8 @@ export class ProductionRAGCoordinator extends EventEmitter {
   /**
    * Perform health checks on all services
    */
-  private async performHealthChecks(): Promise<void> {
-    const healthPromises = Object.entries(SERVICES).map(async ([name, url]) => {
+  private async performHealthChecks(): Promise<any> {
+    const healthPromises = Object.entries(SERVICES).map(async ([name, url]): Promise<any> => {
       try {
         const response = await fetch(`${url}/health`, { 
           method: 'GET',
@@ -508,7 +508,7 @@ export class ProductionRAGCoordinator extends EventEmitter {
         
         this.services.set(name, status);
         
-      } catch (error) {
+      } catch (error: any) {
         this.services.set(name, {
           name,
           url,
@@ -548,7 +548,7 @@ export class ProductionRAGCoordinator extends EventEmitter {
   /**
    * Initialize job processing queues
    */
-  private async initializeJobQueues(): Promise<void> {
+  private async initializeJobQueues(): Promise<any> {
     // Setup Redis-based job queues
     await this.redis.del('job_queue:pending');
     console.log('[RAG Coordinator] ✅ Job queues initialized');
@@ -575,7 +575,7 @@ export class ProductionRAGCoordinator extends EventEmitter {
   /**
    * Cleanup resources
    */
-  async cleanup(): Promise<void> {
+  async cleanup(): Promise<any> {
     if (this.healthCheckInterval) {
       clearInterval(this.healthCheckInterval);
     }

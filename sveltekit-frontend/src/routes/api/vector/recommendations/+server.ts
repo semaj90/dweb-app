@@ -330,7 +330,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
       metadata: enhancedMetadata,
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error("❌ Enhanced Recommendations API error:", err);
 
     const errorMessage = err instanceof Error ? err.message : "Unknown error";
@@ -565,7 +565,7 @@ export const GET: RequestHandler = async ({ url }) => {
       },
     });
     
-  } catch (err) {
+  } catch (err: any) {
     console.error("❌ Enhanced Recommendations GET error:", err);
     throw error(
       500,
@@ -600,7 +600,7 @@ async function getCurrentCacheState(): Promise<any> {
       vectorDimensionality: 384 / 4096, // Normalized to 0-1
       tagDensity: 0.6 + Math.random() * 0.3 // 0.6 to 0.9
     };
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Failed to get cache state, using defaults:', error);
     
     // Fallback default state

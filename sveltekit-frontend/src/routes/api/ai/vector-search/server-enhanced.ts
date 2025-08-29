@@ -3,7 +3,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { json } from "@sveltejs/kit";
 import { vectorSearchService } from "$lib/services/real-vector-search-service";
 
-interface EnhancedSearchOptions {
+export interface EnhancedSearchOptions {
   maxResults?: number;
   threshold?: number;
   collection?: string;
@@ -11,12 +11,12 @@ interface EnhancedSearchOptions {
   filter?: Record<string, any>;
 }
 
-interface SearchRequest {
+export interface SearchRequest {
   query: string;
   options?: EnhancedSearchOptions;
 }
 
-interface SearchResponse {
+export interface SearchResponse {
   success: boolean;
   results?: any[];
   error?: string;
@@ -77,7 +77,7 @@ export const POST: RequestHandler = async ({ request }) => {
         resultsFound: searchResponse.totalResults,
       }
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Enhanced vector search API error:", error);
 
     return json(
@@ -119,7 +119,7 @@ export const GET: RequestHandler = async () => {
       },
       timestamp: new Date().toISOString(),
     });
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         status: "error",

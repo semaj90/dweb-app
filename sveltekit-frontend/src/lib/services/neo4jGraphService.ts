@@ -215,7 +215,7 @@ export class Neo4jGraphService {
         reasoning: enhancedResponse.reasoning
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Enhanced RAG search failed:', error);
       throw error;
     }
@@ -355,7 +355,7 @@ export class Neo4jGraphService {
 
       return result.nodes[0]?.id || '';
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to create node with embedding:', error);
       throw error;
     }
@@ -430,7 +430,7 @@ export class Neo4jGraphService {
         }
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Neo4j query failed:', error);
       throw error;
     }
@@ -467,11 +467,11 @@ export class Neo4jGraphService {
       const response = await productionServiceClient.execute('embedding.generate', {
         text,
         model: 'nomic-embed-text',
-        dimensions: 768
+        dimensions: 384
       });
 
       return response.embedding || [];
-    } catch (error) {
+    } catch (error: any) {
       console.error('Embedding generation failed:', error);
       return new Array(768).fill(0); // Fallback zero vector
     }
@@ -555,7 +555,7 @@ export class Neo4jGraphService {
         response: response.response || 'No response generated',
         reasoning: response.reasoning || []
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Enhanced response generation failed:', error);
       return {
         response: 'Sorry, I encountered an error generating the response.',
@@ -622,7 +622,7 @@ export class Neo4jGraphService {
         }));
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to update Neo4j stats:', error);
     }
   }

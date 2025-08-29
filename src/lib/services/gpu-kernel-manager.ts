@@ -169,7 +169,7 @@ export class GPUKernelManager extends EventEmitter {
   /**
    * Preload and warm up GPU kernels
    */
-  async preloadKernel(kernelName: string): Promise<void> {
+  async preloadKernel(kernelName: string): Promise<any> {
     const config = this.kernelConfigs.get(kernelName);
     if (!config) {
       throw new Error(`Kernel config not found: ${kernelName}`);
@@ -241,7 +241,7 @@ export class GPUKernelManager extends EventEmitter {
 
       console.log(`🚀 Kernel ${kernelName} preloaded in ${preloadTime.toFixed(0)}ms`);
 
-    } catch (error) {
+    } catch (error: any) {
       this.emit('kernel:preload_failed', {
         kernelName,
         error: error instanceof Error ? error.message : 'Unknown error'
@@ -323,7 +323,7 @@ export class GPUKernelManager extends EventEmitter {
   /**
    * Process batched jobs for optimal GPU utilization
    */
-  private async processBatchedJobs(): Promise<void> {
+  private async processBatchedJobs(): Promise<any> {
     for (const [kernelName, queue] of this.jobQueue) {
       if (queue.length === 0) continue;
 
@@ -366,7 +366,7 @@ export class GPUKernelManager extends EventEmitter {
           averagePerJob: computeTime / batch.length
         });
 
-      } catch (error) {
+      } catch (error: any) {
         // Reject all jobs in failed batch
         batch.forEach(job => {
           job.reject(error instanceof Error ? error : new Error('Batch execution failed'));
@@ -432,7 +432,7 @@ export class GPUKernelManager extends EventEmitter {
   /**
    * Wait for kernel process to be ready
    */
-  private async waitForKernelReady(process: ChildProcess, kernelName: string): Promise<void> {
+  private async waitForKernelReady(process: ChildProcess, kernelName: string): Promise<any> {
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
         reject(new Error(`Kernel ${kernelName} failed to initialize within 30 seconds`));
@@ -463,7 +463,7 @@ export class GPUKernelManager extends EventEmitter {
   /**
    * Warm up kernel with sample inputs
    */
-  private async warmupKernel(kernelName: string, warmupInputs: any[]): Promise<void> {
+  private async warmupKernel(kernelName: string, warmupInputs: any[]): Promise<any> {
     const startTime = performance.now();
     
     // Execute warmup computations
@@ -487,7 +487,7 @@ export class GPUKernelManager extends EventEmitter {
   /**
    * Preload all legal AI kernels for optimal performance
    */
-  async preloadAllKernels(): Promise<void> {
+  async preloadAllKernels(): Promise<any> {
     const kernelNames = Array.from(this.kernelConfigs.keys());
     
     console.log(`🔥 Preloading ${kernelNames.length} legal AI GPU kernels...`);
@@ -502,7 +502,7 @@ export class GPUKernelManager extends EventEmitter {
     for (const kernelName of sortedKernels) {
       try {
         await this.preloadKernel(kernelName);
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Failed to preload kernel ${kernelName}:`, error);
       }
     }
@@ -578,7 +578,7 @@ export class GPUKernelManager extends EventEmitter {
   /**
    * Shutdown all kernels and cleanup
    */
-  async shutdown(): Promise<void> {
+  async shutdown(): Promise<any> {
     clearInterval(this.batchProcessor);
 
     // Terminate all processes
@@ -586,7 +586,7 @@ export class GPUKernelManager extends EventEmitter {
       try {
         process.kill('SIGTERM');
         await legalAIGPUManager.releaseGPUMemory(`kernel_${kernelName}`);
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Error shutting down kernel ${kernelName}:`, error);
       }
     }

@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { drizzle } from "drizzle-orm/postgres-js";
+import { drizzle } from "drizzle-orm/node-postgres";
 import { building } from "$app/environment";
 import * as schema from "$lib/server/db/schema-postgres";
 
@@ -34,7 +34,7 @@ export function getPostgreSQLDatabase() {
       console.log(
         "✅ PostgreSQL migrations skipped (schema already synchronized)",
       );
-    } catch (error) {
+    } catch (error: any) {
       console.log("⚠️ PostgreSQL migration warning:", error);
     }
   } else {
@@ -47,7 +47,7 @@ export function getPostgreSQLDatabase() {
 export const db = getPostgreSQLDatabase();
 
 // Cleanup function
-export async function closeDatabase() {
+export async function closeDatabase(): Promise<any> {
   if (_pool) {
     await _pool.end();
     _pool = null;

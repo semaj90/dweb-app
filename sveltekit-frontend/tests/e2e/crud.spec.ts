@@ -21,7 +21,7 @@ test.describe('Full CRUD flow', () => {
       await page.fill('input[name="email"]', testUser.email);
       await page.fill('input[name="password"]', testUser.password);
       await page.click('button:has-text("Sign in")');
-    } catch (e) {
+    } catch (e: any) {
       // not redirected to login
     }
 

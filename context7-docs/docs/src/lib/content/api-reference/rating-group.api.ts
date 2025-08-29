@@ -1,14 +1,14 @@
 import type { RatingGroupItemPropsWithoutHTML, RatingGroupRootPropsWithoutHTML } from "bits-ui";
-import { withChildProps } from "./shared.js";
-import { OnNumberValueChangeProp, OrientationProp } from "./extended-types/shared/index.js";
-import { RadioGroupStateAttr } from "./extended-types/radio-group/index.js";
+import { withChildProps } from './shared';
+import { OnNumberValueChangeProp, OrientationProp } from './extended-types/shared/index';
+import { RadioGroupStateAttr } from './extended-types/radio-group/index';
 import {
 	RatingGroupAriaValuetext,
 	RatingGroupItemChildrenSnippetProps,
 	RatingGroupItemChildSnippetProps,
 	RatingGroupRootChildrenSnippetProps,
 	RatingGroupRootChildSnippetProps,
-} from "./extended-types/rating-group/index.js";
+} from './extended-types/rating-group/index';
 import {
 	defineBooleanProp,
 	defineComponentApiSchema,
@@ -19,7 +19,7 @@ import {
 	defineSimpleDataAttr,
 	defineStringProp,
 	defineUnionProp,
-} from "../utils.js";
+} from '../utils';
 
 export const root = defineComponentApiSchema<RatingGroupRootPropsWithoutHTML>({
 	title: "Root",

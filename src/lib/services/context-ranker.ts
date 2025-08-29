@@ -20,7 +20,7 @@ export interface ContextRankerConfig {
 export interface RankedContext {
   content: string;
   similarity: number;
-  metadata?: unknown;
+  metadata?: any;
   source?: string;
 }
 
@@ -105,7 +105,7 @@ class ContextRanker {
 
       return result;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Context ranking failed:', error);
       throw new Error(`Context ranking failed: ${error.message}`);
     }
@@ -132,7 +132,7 @@ class ContextRanker {
       const data: OllamaEmbedding = await response.json();
       return data.embedding;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Embedding generation failed:', error);
       throw error;
     }
@@ -181,7 +181,7 @@ class ContextRanker {
         source: row.title || row.file_name || 'Unknown'
       }));
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ pgvector search failed:', error);
       throw error;
     }

@@ -4,7 +4,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
-interface TestResult {
+export interface TestResult {
   test: string;
   status: 'success' | 'error' | 'warning';
   data?: any;
@@ -37,7 +37,7 @@ export const GET: RequestHandler = async ({ url }) => {
         status: 'success',
         data: { imported: true, type: typeof webgpuPolyfill }
       });
-    } catch (error) {
+    } catch (error: any) {
       results.push({
         test: 'webgpu_polyfill_import',
         status: 'error',
@@ -58,7 +58,7 @@ export const GET: RequestHandler = async ({ url }) => {
           shaders: Object.keys(LEGAL_AI_SHADERS)
         }
       });
-    } catch (error) {
+    } catch (error: any) {
       results.push({
         test: 'webgl_shader_cache_import',
         status: 'error',
@@ -83,7 +83,7 @@ export const GET: RequestHandler = async ({ url }) => {
           }
         }
       });
-    } catch (error) {
+    } catch (error: any) {
       results.push({
         test: 'nes_memory_import',
         status: 'error',
@@ -116,7 +116,7 @@ export const GET: RequestHandler = async ({ url }) => {
       note: "WebGPU and WebGL tests require browser context. Server-side tests validate imports and architecture."
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: error instanceof Error ? error.message : String(error),

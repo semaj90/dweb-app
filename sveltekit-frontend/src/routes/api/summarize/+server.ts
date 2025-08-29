@@ -174,7 +174,7 @@ Key terms:`;
           // Fallback: extract terms from text manually
           metadata.keyLegalTerms = extractLegalTermsFromText(enhancedSummary);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn('[Summarize] Failed to extract key terms:', error);
       }
     }
@@ -190,7 +190,7 @@ Risk analysis:`;
         
         const riskResponse = await llm.invoke(riskAnalysisPrompt);
         metadata.legalRiskAnalysis = riskResponse.content;
-      } catch (error) {
+      } catch (error: any) {
         console.warn('[Summarize] Failed to generate legal analysis:', error);
       }
     }
@@ -208,7 +208,7 @@ Risk analysis:`;
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('[Summarize] LangChain error:', error);
     
     // Handle specific LangChain/Ollama errors gracefully

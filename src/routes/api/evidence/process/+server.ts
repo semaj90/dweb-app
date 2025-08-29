@@ -5,7 +5,7 @@ import { publishToQueue } from '$lib/server/rabbitmq';
 import { db } from '$lib/server/db';
 import { evidenceProcess } from '$lib/database/schema/legal-documents';
 
-export const POST: RequestHandler = async ({ request, locals }) => {
+export const POST: RequestHandler = async ({ request, locals }): Promise<any> => {
   try {
     const body = await request.json();
     const { evidenceId, steps = ['ocr', 'embedding', 'analysis'] } = body;
@@ -54,7 +54,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       evidenceId
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Process evidence error:', error);
     return json({ 
       error: 'Failed to queue evidence processing',

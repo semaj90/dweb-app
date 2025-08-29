@@ -2,9 +2,9 @@
  * Database Connection with pgvector Support
  */
 
-import { drizzle } from 'drizzle-orm/postgres-js';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import postgres from 'postgres';
-import * as schema from './schema-unified.js';
+import * as schema from './schema-unified-postgres';
 
 // Connection configuration
 const connectionString = process.env.DATABASE_URL || 
@@ -24,7 +24,7 @@ const sql = postgres(connectionString, {
 export const db = drizzle(sql, { schema });
 
 // Test connection and ensure pgvector is installed
-export async function initializeDatabase() {
+export async function initializeDatabase(): Promise<any> {
   try {
     console.log('🔌 Connecting to PostgreSQL...');
     
@@ -46,7 +46,7 @@ export async function initializeDatabase() {
       try {
         await sql`CREATE EXTENSION IF NOT EXISTS vector`;
         console.log('✅ pgvector extension installed successfully');
-      } catch (error) {
+      } catch (error: any) {
         console.error('❌ Failed to install pgvector extension:', error);
       }
     }
@@ -72,7 +72,7 @@ export async function initializeDatabase() {
     }
     
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Database connection failed:', error);
     return false;
   }
@@ -85,7 +85,7 @@ export async function performSimilaritySearch(
   column: string = 'embedding',
   limit: number = 10,
   threshold: number = 0.7
-) {
+): Promise<any> {
   const embeddingStr = `[${embedding.join(',')}]`;
   
   const results = await sql`
@@ -101,7 +101,7 @@ export async function performSimilaritySearch(
 }
 
 // Cleanup function
-export async function closeConnection() {
+export async function closeConnection(): Promise<any> {
   await sql.end();
 }
 

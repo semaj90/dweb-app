@@ -98,7 +98,7 @@ export class OllamaService {
             yield json.response;
             options.onToken?.(json.response);
           }
-        } catch (e) {
+        } catch (e: any) {
           // Skip invalid JSON lines
         }
       }
@@ -167,7 +167,7 @@ export class OllamaService {
   /**
    * Pull a model from Ollama library
    */
-  async pullModel(modelName: string): Promise<void> {
+  async pullModel(modelName: string): Promise<any> {
     const response = await fetch(`${this.baseUrl}/api/pull`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

@@ -209,7 +209,7 @@ class PerformanceOptimizationService {
       
       this.initialized = true;
       console.log('✅ Performance Optimization Service initialized');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize Performance Optimization Service:', error);
       throw error;
     }
@@ -349,7 +349,7 @@ class PerformanceOptimizationService {
   }
 
   private startBatchProcessor(type: string): void {
-    const processBatch = async () => {
+    const processBatch = async (): Promise<any> => {
       const queue = this.batchQueues.get(type)!;
       if (queue.length === 0) {
         setTimeout(processBatch, this.config.batchTimeout);
@@ -364,7 +364,7 @@ class PerformanceOptimizationService {
         batch.forEach((request, index) => {
           request.resolve(results[index]);
         });
-      } catch (error) {
+      } catch (error: any) {
         batch.forEach((request: any) => {
           request.reject(error as Error);
         });
@@ -549,7 +549,7 @@ class PerformanceOptimizationService {
       // Collect cache metrics
       this.updateCacheMetrics();
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to collect metrics:', error);
     }
   }

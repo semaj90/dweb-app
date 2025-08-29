@@ -3,7 +3,7 @@ import type { Preset, UnoGenerator } from '@unocss/core'
 import type { IconsAPI, IconsOptions } from '@unocss/preset-icons'
 import { toArray } from '@unocss/core'
 
-export async function transformIconString(uno: UnoGenerator, icon: string, color?: string) {
+export async function transformIconString(uno: UnoGenerator, icon: string, color?: string): Promise<any> {
   const presetIcons = uno.config.presets?.flat()?.find(i => i.name === '@unocss/preset-icons') as Preset | undefined
 
   if (!presetIcons) {

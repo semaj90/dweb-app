@@ -111,7 +111,7 @@ export const POST: RequestHandler = async ({ request }) => {
               } else {
                 workerResults.errors++;
               }
-            } catch (error) {
+            } catch (error: any) {
               workerResults.errors++;
             }
           }
@@ -147,7 +147,7 @@ export const POST: RequestHandler = async ({ request }) => {
     
     return json({ success: false, error: 'Invalid action' }, { status: 400 });
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('Performance test error:', error);
     return json({ success: false, error: error.message }, { status: 500 });
   }

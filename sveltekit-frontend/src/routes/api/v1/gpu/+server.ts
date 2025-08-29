@@ -6,7 +6,7 @@ import { error } from '@sveltejs/kit';
 
 const GPU_SERVICE_URL = 'http://localhost:8231';
 
-interface GPURequest {
+export interface GPURequest {
 	service: string;
 	operation: string;
 	data: number[];
@@ -14,7 +14,7 @@ interface GPURequest {
 	priority?: 'high' | 'normal' | 'low';
 }
 
-interface GPUResponse {
+export interface GPUResponse {
 	success: boolean;
 	result?: number[];
 	processing_ms?: number;
@@ -90,7 +90,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			timestamp: new Date().toISOString()
 		});
 
-	} catch (err) {
+	} catch (err: any) {
 		console.error('GPU API error:', err);
 
 		if (err && typeof err === 'object' && 'status' in err) {
@@ -150,7 +150,7 @@ export const GET: RequestHandler = async () => {
 			timestamp: new Date().toISOString()
 		});
 
-	} catch (err) {
+	} catch (err: any) {
 		console.error('GPU status check failed:', err);
 		
 		return json({

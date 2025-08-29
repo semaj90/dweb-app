@@ -3,10 +3,10 @@
  * Uses the Context7 multicore service to analyze the 1962 TypeScript/Svelte errors
  */
 
-import { getContext7MulticoreService } from './src/lib/services/context7-multicore.js';
-import type { RecommendationRequest, ProcessingTask } from './src/lib/services/context7-multicore.js';
+import { getContext7MulticoreService } from './src/lib/services/context7-multicore';
+import type { RecommendationRequest, ProcessingTask } from './src/lib/services/context7-multicore';
 
-async function analyzeCurrentErrors() {
+async function analyzeCurrentErrors(): Promise<any> {
   console.log('🚀 Starting Context7 Multicore Error Analysis...');
   
   const multicoreService = getContext7MulticoreService({
@@ -116,7 +116,7 @@ async function analyzeCurrentErrors() {
           estimated_fixes: category.estimatedCount
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ ${category.type}: Error during analysis:`, error);
       analysisResults.push({
         category: category.type,

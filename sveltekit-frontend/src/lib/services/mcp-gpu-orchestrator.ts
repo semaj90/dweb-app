@@ -4,8 +4,8 @@
  * Integrates with existing 37 Go services and Ollama cluster
  */
 
-import { productionServiceClient } from './production-service-client.js';
-import type { ServiceResponse } from './production-service-client.js';
+import { productionServiceClient } from './production-service-client';
+import type { ServiceResponse } from './production-service-client';
 
 export interface GPUTask {
   id: string;
@@ -127,7 +127,7 @@ class MCPGPUOrchestrator {
       name: 'nomic-embed-text:latest',
       port: 11436,
       capabilities: ['vector_embedding', 'similarity_search'],
-      dimensions: 768,
+      dimensions: 384,
       memory_requirement: '274MB',
       batch_size: 32
     });
@@ -159,7 +159,7 @@ class MCPGPUOrchestrator {
         if (metricsResponse.ok) {
           this.clusterMetrics = await metricsResponse.json();
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Failed to load cluster metrics:', error);
       }
 
@@ -170,7 +170,7 @@ class MCPGPUOrchestrator {
           const report = await autosolveResponse.json();
           this.autosolveContext = report.autosolveContext || null;
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Failed to load autosolve context:', error);
       }
     }, 3000); */
@@ -213,7 +213,7 @@ class MCPGPUOrchestrator {
         legalVerification: result.data?.legalVerification
       };
 
-    } catch (error) {
+    } catch (error: any) {
       this.taskQueue.delete(task.id);
       this.activeGPUTasks.delete(task.id);
 
@@ -479,7 +479,7 @@ Respond with JSON: {"riskScore": 0.0, "reasoning": "explanation", "recommendatio
         latency: response.latency || 0
       };
       
-    } catch (error) {
+    } catch (error: any) {
       // Fallback security analysis
       return {
         success: true,
@@ -579,7 +579,7 @@ Respond with JSON: {"verified": true/false, "confidence": 0.0-1.0, "concerns": [
         latency: validationResponse.latency || 0
       };
       
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         data: {

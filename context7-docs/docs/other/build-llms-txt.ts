@@ -36,7 +36,7 @@ async function collectFiles(currentDir: string, baseDir: string): Promise<FileMa
 		}
 
 		return files;
-	} catch (error) {
+	} catch (error: any) {
 		throw new Error(
 			`Failed to collect files from ${currentDir}: ${error instanceof Error ? error.message : String(error)}`
 		);
@@ -58,7 +58,7 @@ const REGEX_PATTERNS = {
 	htmlComments: /<!--.*?-->/gs,
 } as const;
 
-async function transformAndSaveMarkdown(rawHtml: string) {
+async function transformAndSaveMarkdown(rawHtml: string): Promise<any> {
 	const dom = new JSDOM(rawHtml);
 	const document = dom.window.document;
 	const codeTags = document?.querySelectorAll("code");
@@ -117,7 +117,7 @@ async function transformAndSaveMarkdown(rawHtml: string) {
 	return sanitizedFile;
 }
 
-async function generateRootLLMsTxt(fileNames: string[]) {
+async function generateRootLLMsTxt(fileNames: string[]): Promise<any> {
 	let content = "# Bits UI Documentation for LLMs\n\n";
 
 	content += "> Bits UI is a headless component library for Svelte.\n\n";
@@ -171,7 +171,7 @@ async function generateRootLLMsTxt(fileNames: string[]) {
 	return content;
 }
 
-async function main() {
+async function main(): Promise<any> {
 	try {
 		consola.info("Starting to build LLMS files...");
 		const rootPath = join(__dirname, "../.svelte-kit/cloudflare/docs");
@@ -246,7 +246,7 @@ async function main() {
 		console.info("Saving `/docs/llms.txt` with all content");
 		const allOutputPath = join(__dirname, "../static/docs", "llms.txt");
 		await writeFile(allOutputPath, allContent.trim());
-	} catch (error) {
+	} catch (error: any) {
 		console.error("Error building llms.txt files:", error);
 	}
 }

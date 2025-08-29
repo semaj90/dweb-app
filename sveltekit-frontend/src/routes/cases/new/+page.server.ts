@@ -37,7 +37,7 @@ export const actions: Actions = {
         createdBy,
       });
       redirect(303, `/cases/${id}`);
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
       return fail(500, { error: "Failed to create case." });
     }

@@ -28,7 +28,7 @@ describe('transform', async () => {
     safelist: [safelistClassToSkip],
   })
 
-  async function transform(content: string, { combine = true, format = true } = {}) {
+  async function transform(content: string, { combine = true, format = true } = {}): Promise<any> {
     const transformed = (await transformClasses({ content, filename: 'Foo.svelte', uno, options: { combine } }))?.code
     if (transformed && format) {
       return prettier(transformed, {

@@ -11,13 +11,13 @@ import { eq } from 'drizzle-orm';
 // Type definitions for evidence processing
 type StepName = 'ocr' | 'embedding' | 'analysis' | 'classification' | 'entity_extraction' | 'similarity' | 'indexing';
 
-interface ProcessingRequest {
+export interface ProcessingRequest {
   evidenceId: string;
   steps: StepName[];
   options?: ProcessingOptions;
 }
 
-interface ProcessingResult {
+export interface ProcessingResult {
   sessionId?: string;
   jobId: string;
   status: 'pending' | 'processing' | 'completed' | 'failed' | 'error';
@@ -33,7 +33,7 @@ interface ProcessingResult {
   gpuAccelerated?: boolean;
 }
 
-interface ProcessingOptions {
+export interface ProcessingOptions {
   useGPUAcceleration?: boolean;
   priority?: 'low' | 'medium' | 'high' | 'normal';
   notify?: boolean;
@@ -41,7 +41,7 @@ interface ProcessingOptions {
   overrideExisting?: boolean;
 }
 
-interface EvidenceData {
+export interface EvidenceData {
   id: string;
   caseId?: string;
   title?: string;
@@ -117,7 +117,7 @@ class EvidenceProcessingService {
         if (rows && rows.length > 0) {
           evidenceData = rows[0] as EvidenceData;
         }
-      } catch (e) {
+      } catch (e: any) {
         console.warn('Failed to load evidence from DB, continuing with provided id.');
       }
       if (!evidenceData) {
@@ -174,10 +174,10 @@ class EvidenceProcessingService {
       this.processingJobs.set(jobId, result);
 
       // Best-effort persist results
-      await this.updateEvidenceWithResults(request.evidenceId, results).catch((e) => {
+      await this.updateEvidenceWithResults(request.evidenceId, results).catch((e: any) => {
         console.warn('Failed to persist results:', e);
       });
-    } catch (err) {
+    } catch (err: any) {
       result.status = 'error';
       result.error = err?.message ?? String(err);
       result.endTime = new Date();
@@ -247,7 +247,7 @@ class EvidenceProcessingService {
     }
     try {
       await db.update(evidence).set(updateData).where(eq(evidence.id, evidenceId));
-    } catch (e) {
+    } catch (e: any) {
       // ignore persistence errors (best-effort)
       console.warn('DB update failed:', e);
     }
@@ -304,7 +304,7 @@ export const POST: RequestHandler = async ({ request }) => {
       steps: processingRequest.steps,
       options: processingRequest.options
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error('POST processing error:', err);
     return json({ error: (err as any)?.message ?? 'Processing request failed' }, { status: 500 });
   }
@@ -323,7 +323,7 @@ export const GET: RequestHandler = async ({ url }) => {
       return json({ error: 'Job not found' }, { status: 404 });
     }
     return json(status);
-  } catch (err) {
+  } catch (err: any) {
     console.error('GET status error:', err);
     return json({ error: 'Failed to get status' }, { status: 500 });
   }
@@ -343,7 +343,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
       jobId,
       message: cancelled ? 'Processing cancelled' : 'Job not found or not cancellable'
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error('DELETE error:', err);
     return json({ error: 'Failed to cancel processing' }, { status: 500 });
   }

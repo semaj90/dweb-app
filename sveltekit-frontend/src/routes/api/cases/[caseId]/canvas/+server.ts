@@ -8,7 +8,7 @@ import { db } from "$lib/server/db/index";
 let schema: any = {};
 try {
   schema = await import("$lib/server/db/unified-schema.js");
-} catch (error) {
+} catch (error: any) {
   try {
     schema = await import("$lib/server/db/schema-postgres.js");
   } catch (error2) {
@@ -49,7 +49,7 @@ export const GET: RequestHandler = async ({ params }) => {
       canvasData: caseData.canvasData || "{}",
       lastModified: caseData.updatedAt,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching canvas data:", error);
     return json({ error: "Failed to fetch canvas data" }, { status: 500 });
   }
@@ -109,7 +109,7 @@ export const POST: RequestHandler = async ({ request, params }) => {
       success: true,
       savedAt: updatedCase.updatedAt,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error saving canvas data:", error);
     return json({ error: "Failed to save canvas data" }, { status: 500 });
   }

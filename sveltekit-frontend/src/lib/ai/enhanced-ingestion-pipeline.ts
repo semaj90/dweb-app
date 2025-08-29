@@ -20,16 +20,16 @@ import type { Document as LangChainDocumentType } from "@langchain/core/document
 import { resolveLibraryId, getLibraryDocs } from '$lib/mcp-context72-get-library-docs';
 // import { copilotOrchestrator } from "$lib/utils/mcp-helpers";
 // Mock copilot orchestrator function
-const copilotOrchestrator = async (prompt: string, options: any) => ({
+const copilotOrchestrator = async (prompt: string, options: any): Promise<any> => ({
   selfPrompt: "Mock copilot analysis completed",
 });
-import type { DocumentEmbedding } from "./som-rag-system.js";
-import { SelfOrganizingMapRAG } from "./som-rag-system.js";
+import type { DocumentEmbedding } from './som-rag-system';
+import { SelfOrganizingMapRAG } from './som-rag-system';
 import { QdrantService } from '$lib/server/services/qdrant-service';
 import { Pool } from 'pg';
 
 // Multimodal Evidence Processing
-interface MultimodalEvidence {
+export interface MultimodalEvidence {
   id: string;
   type: "image" | "video" | "audio" | "document" | "forensic";
   file_path: string;
@@ -58,7 +58,7 @@ interface MultimodalEvidence {
   };
 }
 
-interface AnchorPoint {
+export interface AnchorPoint {
   id: string;
   type: "object" | "text" | "audio_segment" | "timeline_event" | "custom";
   coordinates: {
@@ -103,7 +103,7 @@ export interface DetectedObject {
 
 
 // Claude Desktop Context Integration
-interface CopilotArchitectureContext {
+export interface CopilotArchitectureContext {
   architecture_summary: string;
   legal_context: string;
   copilot_patterns: string;
@@ -229,7 +229,7 @@ export class EnhancedIngestionPipeline {
 
       this.isInitialized = true;
       console.log("✅ Enhanced Ingestion Pipeline initialized");
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Failed to initialize ingestion pipeline:", error);
       errorHandler.system("Pipeline initialization failed", {
         error: error.message,
@@ -254,7 +254,7 @@ export class EnhancedIngestionPipeline {
         });
         console.log(`✅ Created collection: ${collectionName}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Failed to ensure collection ${collectionName}:`, error);
       throw error;
     }
@@ -283,7 +283,7 @@ export class EnhancedIngestionPipeline {
       };
 
       console.log("✅ Copilot integration initialized");
-    } catch (error) {
+    } catch (error: any) {
       console.warn("⚠️ Copilot integration failed, continuing without:", error);
     }
   }
@@ -477,7 +477,7 @@ export class EnhancedIngestionPipeline {
         `✅ Document processed successfully: ${document.id} (${processingTime}ms)`
       );
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Failed to process document ${document.id}:`, error);
       errorHandler.analysis(`Document processing failed: ${document.id}`, {
         error: error.message,
@@ -566,7 +566,7 @@ export class EnhancedIngestionPipeline {
 
       try {
         await this.processBatch(batch);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Batch processing failed:", error);
       }
 
@@ -655,7 +655,7 @@ export class EnhancedIngestionPipeline {
         clusters_searched: clustersSearched,
         processing_time: processingTime,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Enhanced search failed:", error);
       errorHandler.analysis("Enhanced search failed", {
         query,
@@ -691,7 +691,7 @@ export class EnhancedIngestionPipeline {
   async getCollectionInfo(): Promise<any> {
     try {
       return await this.qdrantClient.getCollection("legal_documents");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to get collection info:", error);
       return null;
     }
@@ -842,7 +842,7 @@ export class EnhancedIngestionPipeline {
           },
         ],
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to store document in Qdrant:", error);
       throw error;
     }
@@ -963,7 +963,7 @@ export class EnhancedIngestionPipeline {
         timeline_segments: timelineSegments,
         copilot_analysis: copilotAnalysis,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error(
         `❌ Failed to process multimodal evidence ${evidence.id}:`,
         error
@@ -1017,7 +1017,7 @@ export class EnhancedIngestionPipeline {
         orchestrationResult.selfPrompt ||
         "Analysis completed with Copilot integration"
       );
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Copilot analysis failed:", error);
       return "Standard analysis completed (Copilot unavailable)";
     }
@@ -1165,7 +1165,7 @@ export class EnhancedIngestionPipeline {
         });
 
         copilotInsights = insights.selfPrompt || "";
-      } catch (error) {
+      } catch (error: any) {
         console.warn("Failed to generate Copilot insights:", error);
       }
     }

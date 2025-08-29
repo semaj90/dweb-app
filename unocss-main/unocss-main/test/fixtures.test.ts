@@ -9,7 +9,7 @@ import { describe, expect, it } from 'vitest'
 const isWindows = process.platform === 'win32'
 const isRolldownVite = 'rolldownVersion' in vite
 
-async function getGlobContent(cwd: string, pattern: string) {
+async function getGlobContent(cwd: string, pattern: string): Promise<any> {
   return await glob([pattern], { cwd, absolute: true, expandDirectories: false })
     .then(r => Promise.all(r.map(f => fs.readFile(f, 'utf8'))))
     .then(r => r.join('\n'))

@@ -8,7 +8,7 @@ describe('runtime dom manipulation', async () => {
     window.document.documentElement.innerHTML = ''
   })
 
-  async function initRuntime(options?: unknown) {
+  async function initRuntime(options?: unknown): Promise<any> {
     await initUnocssRuntime({
       defaults: {
         presets: [

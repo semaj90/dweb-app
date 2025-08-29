@@ -1,4 +1,3 @@
-// @ts-nocheck
 import type {
 
 /**
@@ -21,7 +20,7 @@ import type {
 
 const DEFAULT_URL = 'redis://127.0.0.1:6379';
 
-interface RedisConfig {
+export interface RedisConfig {
     url: string;
     username?: string;
     password?: string;
@@ -100,23 +99,23 @@ export async function healthCheck(timeoutMs = 500): Promise<{
         ]);
         const latency = performance.now() - start;
         return { ok: pong === 'PONG', latencyMs: latency };
-    } catch (e: unknown) {
+    } catch (e: any) {
         return { ok: false, error: e?.message || 'unknown' };
     }
 }
 
 /* Pub/Sub helpers */
-export async function publish(channel: string, payload: unknown) {
+export async function publish(channel: string, payload: any): Promise<any> {
     const client = await getRedis();
     return client.publish(channel, JSON.stringify(payload));
 }
 
-export type SubscriptionHandler = (message: unknown) => void;
+export type SubscriptionHandler = (message: any) => void;
 
 export async function subscribe(
     channel: string,
     handler: SubscriptionHandler
-): Promise<() => Promise<void>> {
+): Promise<() => Promise<any>> {
     const { createClient } = await import('redis');
     const sub = createClient(buildConfig());
     await sub.connect();
@@ -127,7 +126,7 @@ export async function subscribe(
             handler(raw);
         }
     });
-    return async () => {
+    return async (): Promise<any> => {
         try {
             await sub.unsubscribe(channel);
         } finally {
@@ -175,7 +174,7 @@ export async function withTTL<T>(
 }
 
 /* Graceful shutdown (call from server hooks / process signals) */
-export async function closeRedis() {
+export async function closeRedis(): Promise<any> {
     if (globalThis.__REDIS_CLIENT__) {
         try {
             await globalThis.__REDIS_CLIENT__.quit();

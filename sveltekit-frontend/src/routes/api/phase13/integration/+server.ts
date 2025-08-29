@@ -8,7 +8,7 @@ import { type RequestHandler,  json } from '@sveltejs/kit';
 import { URL } from "url";
 
 // Temporary fallback for service health checking
-async function getSystemHealth() {
+async function getSystemHealth(): Promise<any> {
   try {
     // Test Ollama
     const ollamaTest = await fetch('http://localhost:11434/api/version', { 
@@ -35,7 +35,7 @@ async function getSystemHealth() {
       timestamp: new Date().toISOString(),
       phase: 'Phase 13 - Simplified Health Check'
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Health check error:', error);
     return {
       services: {
@@ -124,7 +124,7 @@ export const GET: RequestHandler = async ({ url }) => {
         }, { status: 400 });
     }
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('Phase 13 Integration API error:', error);
     return json({
       success: false,
@@ -234,7 +234,7 @@ export const POST: RequestHandler = async ({ request }) => {
         }, { status: 400 });
     }
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('Phase 13 Integration POST error:', error);
     return json({
       success: false,
@@ -273,7 +273,7 @@ export const PUT: RequestHandler = async ({ request }) => {
       }
     });
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('Phase 13 Integration PUT error:', error);
     return json({
       success: false,
@@ -309,7 +309,7 @@ export const DELETE: RequestHandler = async () => {
       }
     });
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('Phase 13 Integration DELETE error:', error);
     return json({
       success: false,

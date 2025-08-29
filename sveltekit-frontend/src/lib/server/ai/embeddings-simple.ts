@@ -1,5 +1,5 @@
 // Redis cache imports - using local interfaces to avoid missing module errors
-interface CacheInterface {
+export interface CacheInterface {
   getCachedEmbedding: (key: string) => Promise<number[] | null>;
   cacheEmbedding: (key: string, embedding: number[], ttl?: number) => Promise<void>;
 }
@@ -37,7 +37,7 @@ function ensureDim(
   return arr.concat(Array(target - arr.length).fill(0));
 }
 
-interface EmbeddingOptions {
+export interface EmbeddingOptions {
   model?: "openai" | "local";
   cache?: boolean;
   maxTokens?: number;
@@ -91,7 +91,7 @@ export async function generateEmbedding(
       await cacheEmbedding(cacheKey, embedding);
     }
     return embedding;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Embedding generation failed:", error);
     return null;
   }
@@ -162,7 +162,7 @@ async function generateNomicEmbedding(text: string): Promise<number[]> {
       return ensureDim(data.data[0].embedding, TARGET_DIM);
     }
     return [];
-  } catch (error) {
+  } catch (error: any) {
     console.error("Nomic embedding generation failed:", error);
     throw error;
   }
@@ -204,7 +204,7 @@ export async function generateBatchEmbeddings(
         try {
           const e = await generateCpuEmbedding(t);
           out.push(ensureDim(e, TARGET_DIM));
-        } catch (e) {
+        } catch (e: any) {
           // fallback to Ollama per-text
           try {
             const nomic = await generateNomicEmbedding(t);
@@ -216,7 +216,7 @@ export async function generateBatchEmbeddings(
       }
       return out;
     }
-  } catch (error) {
+  } catch (error: any) {
     console.warn(
       "Batch embedding failed, falling back to individual generation:",
       error
@@ -295,7 +295,7 @@ async function generateNomicBatchEmbeddings(
         return data.data[0].embedding;
       }
       return null;
-    } catch (error) {
+    } catch (error: any) {
       console.error(
         "Nomic embedding generation failed for text:",
         text.substring(0, 50),

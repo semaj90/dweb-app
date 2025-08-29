@@ -4,8 +4,8 @@
  */
 
 import { createMachine, assign, fromPromise } from 'xstate';
-import type { CaseForm, TimelineEvent, LegalContext, CaseMetrics } from '../types/case.js';
-import type { User } from '../types/user.js';
+import type { CaseForm, TimelineEvent, LegalContext, CaseMetrics } from '../types/case';
+import type { User } from '../types/user';
 
 // Legal Case Events - Strongly Typed
 export type LegalCaseEvent =

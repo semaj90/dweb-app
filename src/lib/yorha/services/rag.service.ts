@@ -5,16 +5,16 @@ import { documents, documentChunks, conversations, knowledgeBase } from '../db/s
 import { eq, and, gte, sql } from 'drizzle-orm';
 import { QueueService } from './queue.service';
 
-interface RAGContext {
+export interface RAGContext {
   query: string;
   userId?: string;
   conversationId?: string;
   previousMessages?: Array<{ role: string; content: string }>;
-  filters?: unknown;
+  filters?: any;
   maxTokens?: number;
 }
 
-interface RAGResponse {
+export interface RAGResponse {
   answer: string;
   sources: Array<{
     documentId: string;
@@ -23,7 +23,7 @@ interface RAGResponse {
     score: number;
   }>;
   confidence: number;
-  metadata?: unknown;
+  metadata?: any;
 }
 
 export class EnhancedRAGService {
@@ -75,7 +75,7 @@ export class EnhancedRAGService {
       await this.storeInteraction(context, finalResponse);
 
       return finalResponse;
-    } catch (error) {
+    } catch (error: any) {
       console.error('RAG query failed:', error);
       throw error;
     }
@@ -112,14 +112,14 @@ export class EnhancedRAGService {
       );
 
       return topChunks;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Document retrieval failed:', error);
       return [];
     }
   }
 
   // Build augmented context for generation
-  private async buildContext(context: RAGContext, retrievedChunks: unknown[]): Promise<string> {
+  private async buildContext(context: RAGContext, retrievedChunks: any[]): Promise<string> {
     let augmentedContext = '';
 
     // Add system prompt if configured
@@ -170,7 +170,7 @@ export class EnhancedRAGService {
       };
 
       return response;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Generation failed:', error);
       throw error;
     }
@@ -195,8 +195,8 @@ export class EnhancedRAGService {
 
   // Post-process the generated response
   private async postProcess(
-    response: unknown,
-    retrievedChunks: unknown[]
+    response: any,
+    retrievedChunks: any[]
   ): Promise<RAGResponse> {
     // Extract sources from retrieved chunks
     const sources = retrievedChunks.map(chunk => ({
@@ -223,7 +223,7 @@ export class EnhancedRAGService {
   }
 
   // Store interaction for continuous learning
-  private async storeInteraction(context: RAGContext, response: RAGResponse): Promise<void> {
+  private async storeInteraction(context: RAGContext, response: RAGResponse): Promise<any> {
     try {
       // Store in conversation history
       if (context.conversationId) {
@@ -253,7 +253,7 @@ export class EnhancedRAGService {
         sourcesCount: response.sources.length,
         timestamp: new Date().toISOString()
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to store interaction:', error);
       // Don't throw - this is non-critical
     }
@@ -280,18 +280,18 @@ export class EnhancedRAGService {
 
       return results.map(r => ({
         ...r,
-        content: r.payload.messages.map((m: unknown) => m.content).join('\n'),
+        content: r.payload.messages.map((m: any) => m.content).join('\n'),
         title: 'Previous Conversation',
         score: r.score * 0.8 // Slightly lower weight for conversation history
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to search conversation history:', error);
       return [];
     }
   }
 
   // Rank results based on multiple factors
-  private rankResults(results: unknown[], context: RAGContext): unknown[] {
+  private rankResults(results: any[], context: RAGContext): any[] {
     return results.sort((a, b) => {
       // Calculate composite score
       const scoreA = this.calculateCompositeScore(a, context);
@@ -301,7 +301,7 @@ export class EnhancedRAGService {
   }
 
   // Calculate composite score for ranking
-  private calculateCompositeScore(result: unknown, context: RAGContext): number {
+  private calculateCompositeScore(result: any, context: RAGContext): number {
     let score = result.score || 0;
 
     // Boost recent documents
@@ -326,7 +326,7 @@ export class EnhancedRAGService {
   }
 
   // Enrich chunks with document metadata
-  private async enrichChunksWithDocuments(chunks: unknown[]): Promise<unknown[]> {
+  private async enrichChunksWithDocuments(chunks: any[]): Promise<unknown[]> {
     const enriched = [];
 
     for (const chunk of chunks) {
@@ -355,7 +355,7 @@ export class EnhancedRAGService {
             title: 'Unknown Source'
           });
         }
-      } catch (error) {
+      } catch (error: any) {
         enriched.push(chunk);
       }
     }
@@ -400,7 +400,7 @@ export class EnhancedRAGService {
     title: string,
     content: string,
     source: string,
-    metadata: unknown = {}
+    metadata: any = {}
   ): Promise<string> {
     try {
       const documentId = `doc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -426,7 +426,7 @@ export class EnhancedRAGService {
 
       console.log(`Document indexed: ${title} (${documentId})`);
       return documentId;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to index document:', error);
       throw error;
     }
@@ -436,8 +436,8 @@ export class EnhancedRAGService {
   async updateDocument(
     documentId: string,
     content: string,
-    metadata: unknown = {}
-  ): Promise<void> {
+    metadata: any = {}
+  ): Promise<any> {
     try {
       // Delete old chunks
       await db.delete(documentChunks)
@@ -454,14 +454,14 @@ export class EnhancedRAGService {
       );
 
       console.log(`Document updated: ${documentId}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to update document:', error);
       throw error;
     }
   }
 
   // Delete document
-  async deleteDocument(documentId: string): Promise<void> {
+  async deleteDocument(documentId: string): Promise<any> {
     try {
       // Delete from PostgreSQL
       await db.delete(documents)
@@ -474,7 +474,7 @@ export class EnhancedRAGService {
       await this.vectorService.deleteEmbedding('documents', documentId);
 
       console.log(`Document deleted: ${documentId}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to delete document:', error);
       throw error;
     }
@@ -489,7 +489,7 @@ export class EnhancedRAGService {
       userId?: string;
     } = {}
   ): Promise<unknown[]> {
-    const filters: unknown = {};
+    const filters: any = {};
     
     if (options.source) {
       filters.must = filters.must || [];
@@ -527,7 +527,7 @@ export class EnhancedRAGService {
         createdAt: conversation.createdAt,
         updatedAt: conversation.updatedAt
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to get conversation context:', error);
       return null;
     }
@@ -563,7 +563,7 @@ export class EnhancedRAGService {
       );
 
       return entry.id;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to create knowledge entry:', error);
       throw error;
     }

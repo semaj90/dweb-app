@@ -1,10 +1,10 @@
-import { rabbitMQService, type DocumentProcessingJob } from '../services/rabbitmq-service.js';
+import { rabbitMQService, type DocumentProcessingJob } from '../services/rabbitmq-service';
 import { db } from '$lib/server/db';
 import { documents, document_processing, document_chunks, document_summaries } from '$lib/server/db/schema-postgres';
 import { eq } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 
-interface ProcessingContext {
+export interface ProcessingContext {
   job: DocumentProcessingJob;
   tempFilePath?: string;
   extractedText?: string;
@@ -13,7 +13,7 @@ interface ProcessingContext {
   summary?: string;
 }
 
-interface DocumentChunk {
+export interface DocumentChunk {
   id: string;
   content: string;
   metadata: {
@@ -24,7 +24,7 @@ interface DocumentChunk {
   };
 }
 
-interface EmbeddingResult {
+export interface EmbeddingResult {
   chunkId: string;
   embedding: number[];
   model: string;
@@ -56,7 +56,7 @@ class DocumentProcessingWorker {
       // Start consuming jobs from the document processing queue
       await this.startConsuming();
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to start document processing worker:', error);
       this.isRunning = false;
       throw error;
@@ -94,7 +94,7 @@ class DocumentProcessingWorker {
           await this.processDocumentFromDB(job);
         }
         
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error checking for jobs:', error);
       }
     }, 5000); // Check every 5 seconds
@@ -163,7 +163,7 @@ class DocumentProcessingWorker {
       this.processedCount++;
       console.log(`✅ Successfully processed document: ${job.documentId}`);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Error processing document ${job.documentId}:`, error);
       
       await this.updateProcessingStatus(

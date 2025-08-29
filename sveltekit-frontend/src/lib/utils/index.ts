@@ -31,7 +31,7 @@ export async function fetchWithTimeout(
     });
     clearTimeout(id);
     return response;
-  } catch (error) {
+  } catch (error: any) {
     clearTimeout(id);
     throw error;
   }
@@ -166,7 +166,7 @@ export async function copyToClipboard(text: string): Promise<boolean> {
       textArea.remove();
       return result;
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to copy to clipboard:', error);
     return false;
   }
@@ -208,7 +208,7 @@ export const storage = {
     if (!isBrowser) return;
     try {
       localStorage.setItem(key, JSON.stringify(value));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to save to localStorage:', error);
     }
   },

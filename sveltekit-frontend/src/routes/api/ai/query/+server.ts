@@ -44,7 +44,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('AI query API error:', error);
 
     if (error instanceof z.ZodError) {
@@ -96,7 +96,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Similar queries API error:', error);
     return json(
       { error: 'Failed to get query suggestions' }, 

@@ -120,7 +120,7 @@ export class EnhancedOCRProcessor extends EventEmitter {
       this.initialized = true;
       this.emit("initialized", `${this.workers.length} OCR workers ready`);
       this.processQueue();
-    } catch (error) {
+    } catch (error: any) {
       this.emit("error", `Failed to initialize OCR workers: ${error}`);
       throw error;
     }
@@ -178,7 +178,7 @@ export class EnhancedOCRProcessor extends EventEmitter {
 
       this.emit("processing:complete", result);
       return result;
-    } catch (error) {
+    } catch (error: any) {
       this.emit("processing:error", { filename, error: error.message });
       throw error;
     }
@@ -232,7 +232,7 @@ export class EnhancedOCRProcessor extends EventEmitter {
               total: pageImages.length,
               confidence: result.confidence,
             });
-          } catch (error) {
+          } catch (error: any) {
             this.emit("page:error", { page: i + 1, error: error.message });
             results.push("");
             confidenceBySection.push(0);
@@ -263,7 +263,7 @@ export class EnhancedOCRProcessor extends EventEmitter {
           extractedNumbers: [],
         },
       };
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(`Enhanced PDF processing failed: ${error}`);
     }
   }
@@ -313,7 +313,7 @@ export class EnhancedOCRProcessor extends EventEmitter {
           extractedNumbers: [],
         },
       };
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(`Enhanced image processing failed: ${error}`);
     }
   }
@@ -377,7 +377,7 @@ export class EnhancedOCRProcessor extends EventEmitter {
         text: this.cleanLegalText(text),
         confidence: confidence || 0,
       };
-    } catch (error) {
+    } catch (error: any) {
       worker.errors++;
       worker.status = 'error';
       
@@ -424,7 +424,7 @@ export class EnhancedOCRProcessor extends EventEmitter {
         .toFile(enhancedPath);
 
       return enhancedPath;
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(`Legal image enhancement failed: ${error}`);
     }
   }
@@ -609,7 +609,7 @@ export class EnhancedOCRProcessor extends EventEmitter {
             queueItem.task.pageIndex
           );
           queueItem.resolve(result);
-        } catch (error) {
+        } catch (error: any) {
           queueItem.reject(error);
         }
       }
@@ -623,7 +623,7 @@ export class EnhancedOCRProcessor extends EventEmitter {
     const cleanupPromises = imagePaths.map(async (imagePath) => {
       try {
         await fs.unlink(imagePath);
-      } catch (error) {
+      } catch (error: any) {
         // Ignore cleanup errors
       }
     });
@@ -673,7 +673,7 @@ export class EnhancedOCRProcessor extends EventEmitter {
           filename: path.basename(filePaths[i]),
           confidence: result.confidence,
         });
-      } catch (error) {
+      } catch (error: any) {
         this.emit("batch:error", {
           file: filePaths[i],
           error: error.message,
@@ -706,7 +706,7 @@ export class EnhancedOCRProcessor extends EventEmitter {
       const terminationPromises = this.workers.map(async (workerConfig) => {
         try {
           await workerConfig.worker.terminate();
-        } catch (error) {
+        } catch (error: any) {
           this.emit("worker:termination:error", { workerId: workerConfig.id, error });
         }
       });
@@ -716,7 +716,7 @@ export class EnhancedOCRProcessor extends EventEmitter {
       this.initialized = false;
 
       this.emit("destroyed", "All OCR workers terminated");
-    } catch (error) {
+    } catch (error: any) {
       this.emit("error", `Worker termination failed: ${error}`);
     }
   }
@@ -809,7 +809,7 @@ export const ocrUtils = {
       }
       
       return { valid: true };
-    } catch (error) {
+    } catch (error: any) {
       return { valid: false, reason: `File access error: ${error}` };
     }
   },

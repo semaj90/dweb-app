@@ -22,7 +22,7 @@ export const createRedisInstance = () => {
   });
 };
 
-export async function createRedisClient() {
+export async function createRedisClient(): Promise<any> {
   if (redisClient) {
     return redisClient;
   }
@@ -44,7 +44,7 @@ export async function getFromCache(key: string): Promise<string | null> {
   try {
     const client = await createRedisClient();
     return await client.get(key);
-  } catch (error) {
+  } catch (error: any) {
     console.warn("Redis get error:", error);
     return null;
   }
@@ -62,7 +62,7 @@ export async function setCache(
       await client.set(key, value);
     }
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.warn("Redis set error:", error);
     return false;
   }
@@ -72,12 +72,12 @@ export async function deleteFromCache(key: string): Promise<boolean> {
     const client = await createRedisClient();
     await client.del(key);
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.warn("Redis delete error:", error);
     return false;
   }
 }
-export async function closeRedisConnection() {
+export async function closeRedisConnection(): Promise<any> {
   if (redisClient) {
     await redisClient.quit();
     redisClient = null;

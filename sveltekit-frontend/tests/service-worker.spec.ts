@@ -358,7 +358,7 @@ test.describe('Service Worker Functionality', () => {
       return new Promise((resolve) => {
         const channel = new MessageChannel();
         
-        channel.port1.onmessage = (event) => {
+        channel.port1.onmessage = (event: any) => {
           resolve(event.data);
         };
         

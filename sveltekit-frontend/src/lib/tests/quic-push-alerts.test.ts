@@ -9,7 +9,7 @@ function buildRequest(body: any){
   });
 }
 
-async function invokePOST(POST: any, body: any){
+async function invokePOST(POST: any, body: any): Promise<any> {
   const req = buildRequest(body);
   const res = await POST({ request: req, getClientAddress: () => '127.0.0.1' } as any);
   const json = await res.json();

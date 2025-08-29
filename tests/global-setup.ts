@@ -1,6 +1,6 @@
 import { chromium, FullConfig } from '@playwright/test';
 
-async function globalSetup(config: FullConfig) {
+async function globalSetup(config: FullConfig): Promise<any> {
   console.log('🚀 Legal AI System - Global Test Setup');
   
   const browser = await chromium.launch();
@@ -27,14 +27,14 @@ async function globalSetup(config: FullConfig) {
         } else {
           console.log(`⚠️  ${service.name} returned status ${response?.status()}`);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.log(`❌ ${service.name} is not available`);
       }
     }
     
     console.log('🎯 Global setup completed');
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Global setup failed:', error);
     throw error;
   } finally {

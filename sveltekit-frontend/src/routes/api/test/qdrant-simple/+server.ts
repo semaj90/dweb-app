@@ -4,7 +4,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
-interface TestResult {
+export interface TestResult {
   test: string;
   status: 'success' | 'error' | 'warning';
   data?: any;
@@ -24,7 +24,7 @@ export const GET: RequestHandler = async ({ url }) => {
         const config = {
           url: 'http://localhost:6333',
           collectionName: 'legal_documents',
-          vectorDimensions: 768,
+          vectorDimensions: 384,
           enableBatching: true,
           enableSOMClustering: true,
           enableNESCache: true,
@@ -37,7 +37,7 @@ export const GET: RequestHandler = async ({ url }) => {
           data: config,
           duration: Date.now() - startTime
         });
-      } catch (error) {
+      } catch (error: any) {
         results.push({
           test: 'qdrant_config',
           status: 'error',
@@ -78,7 +78,7 @@ export const GET: RequestHandler = async ({ url }) => {
           },
           duration: Date.now() - startTime
         });
-      } catch (error) {
+      } catch (error: any) {
         results.push({
           test: 'vector_operations',
           status: 'error',
@@ -107,7 +107,7 @@ export const GET: RequestHandler = async ({ url }) => {
           data: memoryStats,
           duration: Date.now() - startTime
         });
-      } catch (error) {
+      } catch (error: any) {
         results.push({
           test: 'memory_efficiency',
           status: 'error',
@@ -132,7 +132,7 @@ export const GET: RequestHandler = async ({ url }) => {
         )
       },
       configuration: {
-        vector_dimensions: 768,
+        vector_dimensions: 384,
         embedding_model: 'nomic-embed-text',
         memory_efficient: true,
         clustering_enabled: true,
@@ -140,7 +140,7 @@ export const GET: RequestHandler = async ({ url }) => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: error instanceof Error ? error.message : String(error),

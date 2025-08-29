@@ -137,7 +137,7 @@ export const ENV_CONFIG = {
 };
 
 // Helper function to start local services
-export async function startLocalServices() {
+export async function startLocalServices(): Promise<any> {
   const { spawn } = await import("child_process");
   const status = checkLocalInstallations();
 
@@ -168,14 +168,14 @@ export async function startLocalServices() {
 
       // Wait a moment for startup
       await new Promise((resolve) => setTimeout(resolve, 3000));
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to start Ollama:", error);
     }
   }
   return services;
 }
 // Helper function to load Gemma model into Ollama
-export async function loadGemmaModel() {
+export async function loadGemmaModel(): Promise<any> {
   const status = checkLocalInstallations();
 
   if (!status.ollama.available || !status.gemmaModel.available) {
@@ -230,7 +230,7 @@ SYSTEM """You are a specialized Legal AI Assistant powered by Gemma 3. You excel
 
       importProcess.on("error", reject);
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to load Gemma model:", error);
     throw error;
   }

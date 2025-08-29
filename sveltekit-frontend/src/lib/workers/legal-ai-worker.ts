@@ -11,7 +11,7 @@ const GO_SERVER_URL = import.meta.env.GO_SERVER_URL || 'http://localhost:8080';
 const REDIS_URL = import.meta.env.REDIS_URL || 'redis://localhost:6379';
 
 // Job data interfaces
-interface LegalAIJobData {
+export interface LegalAIJobData {
 	documentId: string;
 	caseId?: string;
 	content: string;
@@ -27,7 +27,7 @@ interface LegalAIJobData {
 	};
 }
 
-interface GoServerResponse {
+export interface GoServerResponse {
 	success: boolean;
 	document_id: string;
 	summary?: string;
@@ -39,7 +39,7 @@ interface GoServerResponse {
 	error?: string;
 }
 
-interface LegalEntity {
+export interface LegalEntity {
 	type: string;
 	value: string;
 	confidence: number;
@@ -47,7 +47,7 @@ interface LegalEntity {
 	end_pos: number;
 }
 
-interface RiskAssessment {
+export interface RiskAssessment {
 	overall_risk: string;
 	risk_score: number;
 	risk_factors: string[];
@@ -137,7 +137,7 @@ async function updateEvidenceWithResults(
 
 		console.log(`✅ Evidence record ${documentId} updated with AI results`);
 
-	} catch (error) {
+	} catch (error: any) {
 		console.error(`❌ Failed to update evidence record ${documentId}:`, error);
 		throw error;
 	}
@@ -193,7 +193,7 @@ export function createLegalAIWorker(): Worker {
 				await job.updateProgress(100);
 				return jobResult;
 
-			} catch (error) {
+			} catch (error: any) {
 				const processingTime = Date.now() - startTime;
 				console.error(`❌ Legal AI job failed: ${job.id} after ${processingTime}ms:`, error);
 

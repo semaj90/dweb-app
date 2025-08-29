@@ -10,14 +10,14 @@ import { writable, derived } from "svelte/store";
 // TODO: Fix import - // Orphaned content: import {  import type { Evidence } from '$lib/data/types.js';
 
 // Enhanced types for the data pipeline
-interface CacheConfig {
+export interface CacheConfig {
   ttl: number;
   maxSize: number;
   strategy: "lru" | "lfu" | "fifo";
   syncInterval: number;
 }
 
-interface SyncOperation {
+export interface SyncOperation {
   id: string;
   type: "create" | "update" | "delete";
   collection: string;
@@ -27,7 +27,7 @@ interface SyncOperation {
   retries: number;
 }
 
-interface CacheStats {
+export interface CacheStats {
   hits: number;
   misses: number;
   evictions: number;
@@ -36,7 +36,7 @@ interface CacheStats {
   collections: Map<string, CollectionStats>;
 }
 
-interface CollectionStats {
+export interface CollectionStats {
   name: string;
   documents: number;
   memoryUsage: number;
@@ -44,7 +44,7 @@ interface CollectionStats {
   operations: number;
 }
 
-interface IndexStrategy {
+export interface IndexStrategy {
   field: string;
   type: "btree" | "hash" | "text" | "vector";
   options?: unknown;
@@ -114,7 +114,7 @@ class EnhancedLokiDB {
 
       // Start background sync process
       this.startBackgroundSync();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Enhanced Loki initialization failed:", error);
       throw error;
     }
@@ -599,7 +599,7 @@ class EnhancedLokiDB {
         console.log("Cache sync WebSocket connected");
       };
 
-      this.websocket.onmessage = (event) => {
+      this.websocket.onmessage = (event: any) => {
         const data = JSON.parse(event.data);
         this.handleRealtimeUpdate(data);
       };
@@ -609,7 +609,7 @@ class EnhancedLokiDB {
         // Attempt reconnection after 5 seconds
         setTimeout(() => this.setupRealtimeSync(), 5000);
       };
-    } catch (error) {
+    } catch (error: any) {
       console.warn("WebSocket setup failed:", error);
     }
   }
@@ -667,7 +667,7 @@ class EnhancedLokiDB {
         await this.syncToBackend(op);
         this.syncQueue.delete(op.id);
         this.cacheStats.syncOperations++;
-      } catch (error) {
+      } catch (error: any) {
         console.warn("Sync operation failed:", error);
         op.retries++;
         if (op.retries >= 3) {

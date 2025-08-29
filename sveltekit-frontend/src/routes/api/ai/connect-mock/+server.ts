@@ -98,7 +98,7 @@ export const POST: RequestHandler = async ({ request }) => {
         });
       }
     }
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: 'AI connection failed',

@@ -82,7 +82,7 @@ export class GPURankingMatrices {
 
       this.isInitialized = true;
       console.log('🚀 GPU Ranking Matrices initialized successfully');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize GPU Ranking Matrices:', error);
       throw error;
     }

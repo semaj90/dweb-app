@@ -28,7 +28,7 @@ export interface MessageHandler {
 }
 
 // Generic types for NATS compatibility
-interface NATSConnection {
+export interface NATSConnection {
   publish(subject: string, data: Uint8Array): void;
   subscribe(subject: string): unknown;
   request(subject: string, data: Uint8Array, options?: { timeout: number }): Promise<any>;
@@ -38,12 +38,12 @@ interface NATSConnection {
   info?: unknown;
 }
 
-interface NATSSubscription {
+export interface NATSSubscription {
   unsubscribe(): void;
   [Symbol.asyncIterator](): AsyncIterator<any>;
 }
 
-interface NATSCodec {
+export interface NATSCodec {
   encode(data: any): Uint8Array;
   decode(data: Uint8Array): unknown;
 }
@@ -57,7 +57,7 @@ class EventEmitter {
   emit(evt: string, ...a: any[]) { this.listeners.get(evt)?.forEach(fn => { try { fn(...a); } catch { } }); }
 }
 
-interface NATSMetricsSnapshot {
+export interface NATSMetricsSnapshot {
   connection: { status: 'connected' | 'disconnected'; since: number | null; reconnectAttempts: number };
   messaging: { published: number; received: number; subjects: Record<string, string[]> };
 }
@@ -162,7 +162,7 @@ export class NATSMessagingService extends EventEmitter {
       this.setupConnectionEvents();
 
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to connect to NATS Server:', error);
       this.emit('error', error);
       return false;
@@ -208,7 +208,7 @@ export class NATSMessagingService extends EventEmitter {
       this.sampleSubject(subject, message);
       console.log(`📤 Published message to ${subject}:`, message);
       this.emit('publish', { subject, message });
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Failed to publish to ${subject}:`, error);
       this.emit('error', error);
       throw error;
@@ -240,7 +240,7 @@ export class NATSMessagingService extends EventEmitter {
       }
       this.messageHandlers.get(subject)!.add(handler);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Failed to subscribe to ${subject}:`, error);
       throw error;
     }
@@ -288,7 +288,7 @@ export class NATSMessagingService extends EventEmitter {
       );
 
       return this.jsonCodec.decode(response.data) as LegalAIMessage;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Request to ${subject} failed:`, error);
       throw error;
     }
@@ -398,12 +398,12 @@ export class NATSMessagingService extends EventEmitter {
           for (const handler of handlers) {
             try {
               handler(message);
-            } catch (error) {
+            } catch (error: any) {
               console.error('❌ Error in message handler:', error);
             }
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error(`❌ Error processing message on ${subject}:`, error);
       }
     }

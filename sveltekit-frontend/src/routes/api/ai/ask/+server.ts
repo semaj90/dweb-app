@@ -14,7 +14,7 @@ let tauriLLM: any = null;
 try {
   const vectorSearchModule = await import("../../../../lib/server/search/vector-search.js");
   vectorSearch = vectorSearchModule.vectorSearch;
-} catch (error) {
+} catch (error: any) {
   console.warn("Vector search not available:", error);
   vectorSearch = { 
     search: async () => ({ results: [] }) 
@@ -24,7 +24,7 @@ try {
 try {
   const aiServiceModule = await import("../../../../lib/services/ai-service.js");
   aiService = aiServiceModule.aiService || aiServiceModule.default;
-} catch (error) {
+} catch (error: any) {
   console.warn("AI service not available:", error);
   aiService = { 
     generateResponse: async () => "AI service not available" 
@@ -37,7 +37,7 @@ try {
     get: async () => null, 
     set: async () => {} 
   };
-} catch (error) {
+} catch (error: any) {
   console.warn("Cache not available:", error);
   cache = { 
     get: async () => null, 
@@ -48,7 +48,7 @@ try {
 try {
   const tauriModule = await import("../../../../lib/services/tauri-llm.js");
   tauriLLM = tauriModule.tauriLLM || tauriModule.default;
-} catch (error) {
+} catch (error: any) {
   console.warn("Tauri LLM not available:", error);
   tauriLLM = { 
     isAvailable: () => false 
@@ -56,7 +56,7 @@ try {
 }
 
 // Enhanced AI response interface with Gemma3 support
-interface AIResponse {
+export interface AIResponse {
   answer: string;
   sources: Array<{
     id: string;
@@ -253,7 +253,7 @@ Instructions:
           confidence = 0.5;
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("AI inference failed:", error);
       aiAnswer = generateFallbackResponse(query, relevantSources);
       provider = "hybrid";
@@ -288,7 +288,7 @@ Instructions:
       data: response
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("AI endpoint error:", error);
     return json(
       {
@@ -356,7 +356,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
     return json({ suggestions });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Autocomplete error:", error);
     return json({ suggestions: [] });
   }

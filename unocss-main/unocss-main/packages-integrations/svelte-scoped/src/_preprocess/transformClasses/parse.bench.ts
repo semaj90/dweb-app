@@ -121,7 +121,7 @@ describe('parse classes in a slideover Svelte component with some logic as well 
 </script>
 
 <svelte:window
-  on:keydown={(e) => {
+  on:keydown={(e: any) => {
     if (e.key === 'Escape') return close();
     if (e.key === 'Tab') trapFocus(e, slideover);
   }}

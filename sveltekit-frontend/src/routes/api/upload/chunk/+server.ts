@@ -6,7 +6,7 @@ import { tmpdir } from "os";
 const UPLOAD_DIR = join(tmpdir(), "chunked-uploads");
 
 // Receives and appends a single chunk
-export async function POST({ request }) {
+export async function POST({ request }): Promise<any> {
   try {
     await mkdir(UPLOAD_DIR, { recursive: true });
     const formData = await request.formData();
@@ -20,7 +20,7 @@ export async function POST({ request }) {
     await appendFile(tempFilePath, Buffer.from(await chunk.arrayBuffer()));
 
     return json({ success: true });
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
     throw error(500, "Failed to process chunk.");
   }

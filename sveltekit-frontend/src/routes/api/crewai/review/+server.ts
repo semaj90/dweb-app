@@ -114,7 +114,7 @@ export const POST: RequestHandler = async ({ request }) => {
       message: `CrewAI review started with ${assignedAgents.length} agents`
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('❌ CrewAI review error:', err);
     
     if (err instanceof Error && 'status' in err) {
@@ -267,7 +267,7 @@ export const GET: RequestHandler = async ({ url }) => {
         throw error(400, `Unknown action: ${action}`);
     }
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('❌ CrewAI status error:', err);
     
     return json({
@@ -307,7 +307,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
       message: 'Review cancelled successfully'
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('❌ CrewAI cancellation error:', err);
     
     if (err instanceof Error && 'status' in err) {

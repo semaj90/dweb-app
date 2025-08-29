@@ -73,7 +73,7 @@ export const GET: RequestHandler = async ({ url }) => {
       default:
         throw error(400, `Unknown endpoint: ${endpoint}`);
     }
-  } catch (err) {
+  } catch (err: any) {
     console.error('[Orchestrator API] GET error:', err);
     throw error(500, `Internal server error: ${err}`);
   }
@@ -224,7 +224,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('[Orchestrator API] POST error:', err);
     
     if (err && typeof err === 'object' && 'status' in err) {
@@ -262,7 +262,7 @@ export const PUT: RequestHandler = async ({ request }) => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('[Orchestrator API] PUT error:', err);
     throw error(500, `Configuration update failed: ${err}`);
   }
@@ -286,7 +286,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('[Orchestrator API] DELETE error:', err);
     throw error(500, `Shutdown failed: ${err}`);
   }

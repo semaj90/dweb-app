@@ -8,7 +8,7 @@
 import { errorHandler, handleApiError, handleNetworkError, handleValidationError, type ErrorContext } from './error-handler';
 
 // Types
-interface ApiResponse<T = any> {
+export interface ApiResponse<T = any> {
   success: boolean;
   data?: T;
   message?: string;
@@ -16,7 +16,7 @@ interface ApiResponse<T = any> {
   fallback?: boolean;
 }
 
-interface CaseData {
+export interface CaseData {
   id?: string;
   title: string;
   description?: string;
@@ -27,7 +27,7 @@ interface CaseData {
   userId?: string;
 }
 
-interface EvidenceData {
+export interface EvidenceData {
   id?: string;
   caseId: string;
   title: string;
@@ -41,7 +41,7 @@ interface EvidenceData {
   userId?: string;
 }
 
-interface CriminalData {
+export interface CriminalData {
   id?: string;
   firstName: string;
   lastName: string;
@@ -55,7 +55,7 @@ interface CriminalData {
   userId?: string;
 }
 
-interface DocumentData {
+export interface DocumentData {
   id?: string;
   caseId?: string;
   userId?: string;
@@ -65,19 +65,19 @@ interface DocumentData {
   status?: 'draft' | 'review' | 'published' | 'archived';
 }
 
-interface SearchQuery {
+export interface SearchQuery {
   query: string;
   type?: 'semantic' | 'traditional' | 'hybrid';
   limit?: number;
   filters?: Record<string, any>;
 }
 
-interface AIRequest {
+export interface AIRequest {
   operation: 'chat' | 'analyze' | 'summarize' | 'train_som' | 'xstate_event';
   data: any;
 }
 
-interface UploadData {
+export interface UploadData {
   files: File[];
   caseId?: string;
   userId?: string;
@@ -158,7 +158,7 @@ class LegalPlatformClient {
 
       return result;
 
-    } catch (error) {
+    } catch (error: any) {
       // Handle network errors, parsing errors, etc.
       if (error instanceof Error) {
         if (error.message.includes('fetch')) {
@@ -374,7 +374,7 @@ class LegalPlatformClient {
       });
 
       return await response.json();
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Upload failed'
@@ -450,7 +450,7 @@ class LegalPlatformClient {
       });
 
       return await response.json();
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Health check failed'

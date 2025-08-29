@@ -9,7 +9,7 @@
 // import type { MultiDimArray, GPUProcessingStats } from '$lib/workers/gpu-tensor-worker';
 
 // Define interfaces locally
-interface CanvasState {
+export interface CanvasState {
   width: number;
   height: number;
   data?: Uint8ClampedArray;
@@ -17,13 +17,13 @@ interface CanvasState {
   format?: string;
 }
 
-interface MultiDimArray {
+export interface MultiDimArray {
   data: Float32Array | Uint8Array | Int32Array;
   shape: number[];
   dtype: string;
 }
 
-interface GPUProcessingStats {
+export interface GPUProcessingStats {
   totalProcessingTime: number;
   gpuUtilization: number;
   memoryUsage: number;
@@ -213,7 +213,7 @@ export class UnifiedWASMGPUOrchestrator {
       console.log('✅ Unified WASM-GPU Orchestrator initialized successfully');
       console.log(`📊 Services enabled: NES(${this.config.enableNESBridge}), Ollama(${this.config.enableOllamaIntegration}), YoRHa(${this.config.enableYoRHaProcessor}), QUIC(${this.config.enableQUICGateway})`);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ WASM-GPU Orchestrator initialization failed:', error);
       this.status.set('error');
       throw error;
@@ -227,7 +227,7 @@ export class UnifiedWASMGPUOrchestrator {
     try {
       this.nesGPUBridge = new NESStyleGPUBridge();
       console.log('✅ NES GPU Bridge initialized');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ NES GPU Bridge initialization failed:', error);
       throw error;
     }
@@ -253,7 +253,7 @@ export class UnifiedWASMGPUOrchestrator {
       });
 
       console.log('✅ Ollama/LlamaCpp service initialized');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Ollama service initialization failed:', error);
       throw error;
     }
@@ -273,7 +273,7 @@ export class UnifiedWASMGPUOrchestrator {
       } else {
         throw new Error('YoRHa WASM module not available');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ YoRHa Neural Processor initialization failed:', error);
       if (!this.config.enableGPUFallbacks) {
         throw error;
@@ -294,7 +294,7 @@ export class UnifiedWASMGPUOrchestrator {
 
       // Load additional WASM modules as needed
       console.log('✅ WASM modules initialized');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ WASM modules initialization failed:', error);
       throw error;
     }
@@ -307,7 +307,7 @@ export class UnifiedWASMGPUOrchestrator {
     try {
       await gpuServiceIntegration.initialize();
       console.log('✅ GPU Service Integration connected');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ GPU Service Integration failed:', error);
       throw error;
     }
@@ -321,7 +321,7 @@ export class UnifiedWASMGPUOrchestrator {
       const wasmModule = await import(path);
       this.wasmModules.set(name, wasmModule);
       return wasmModule;
-    } catch (error) {
+    } catch (error: any) {
       console.warn(`⚠️ Failed to load WASM module ${name} from ${path}:`, error);
       return null;
     }
@@ -524,7 +524,7 @@ export class UnifiedWASMGPUOrchestrator {
           queueLength: 0,
           capabilities: ['http3_transport', 'low_latency', 'streaming']
         });
-      } catch (error) {
+      } catch (error: any) {
         statuses.push({
           serviceName: 'QUIC Gateway',
           available: false,
@@ -564,7 +564,7 @@ export class UnifiedWASMGPUOrchestrator {
    * Start task processor
    */
   private startTaskProcessor(): void {
-    const processNextTask = async () => {
+    const processNextTask = async (): Promise<any> => {
       if (this.taskQueue.length === 0 || this.activeTasks.size >= this.config.maxConcurrentTasks) {
         setTimeout(processNextTask, 100);
         return;
@@ -582,7 +582,7 @@ export class UnifiedWASMGPUOrchestrator {
       try {
         const result = await this.executeTask(task);
         this.taskResults.set(task.id, result);
-      } catch (error) {
+      } catch (error: any) {
         console.error(`❌ Task ${task.id} execution failed:`, error);
         this.taskResults.set(task.id, {
           taskId: task.id,
@@ -703,7 +703,7 @@ export class UnifiedWASMGPUOrchestrator {
         }
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Service ${serviceUsed} failed:`, error);
       success = false;
       result = null;

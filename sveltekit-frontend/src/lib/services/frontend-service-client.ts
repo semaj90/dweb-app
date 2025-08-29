@@ -15,7 +15,7 @@ const CONFIG = {
 };
 
 // Types
-interface ServiceResponse<T = any> {
+export interface ServiceResponse<T = any> {
   success: boolean;
   data?: T;
   error?: string;
@@ -29,7 +29,7 @@ interface ServiceResponse<T = any> {
   };
 }
 
-interface HealthStatus {
+export interface HealthStatus {
   status: 'healthy' | 'degraded' | 'unhealthy';
   services: Record<string, {
     status: 'healthy' | 'unhealthy';
@@ -40,7 +40,7 @@ interface HealthStatus {
   timestamp: string;
 }
 
-interface SearchResult {
+export interface SearchResult {
   id: number;
   title: string;
   score: number;
@@ -48,7 +48,7 @@ interface SearchResult {
   content?: string;
 }
 
-interface RAGResponse {
+export interface RAGResponse {
   query: string;
   response: string;
   sources: string[];
@@ -56,7 +56,7 @@ interface RAGResponse {
   cacheId?: string;
 }
 
-interface UploadResult {
+export interface UploadResult {
   fileId: string;
   fileName: string;
   size: number;
@@ -135,7 +135,7 @@ class FrontendServiceClient {
       
       return data;
 
-    } catch (error) {
+    } catch (error: any) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       lastError.set(errorMessage);
       
@@ -167,7 +167,7 @@ class FrontendServiceClient {
       isConnected.set(true);
       
       return healthData;
-    } catch (error) {
+    } catch (error: any) {
       isConnected.set(false);
       throw error;
     }
@@ -314,7 +314,7 @@ export function createSearchStore(initialQuery: string = '') {
   const isLoading = writable(false);
   const error = writable<string | null>(null);
 
-  const search = async (searchQuery?: string) => {
+  const search = async (searchQuery?: string): Promise<any> => {
     const q = searchQuery || initialQuery;
     if (!q.trim()) return;
 
@@ -324,7 +324,7 @@ export function createSearchStore(initialQuery: string = '') {
     try {
       const searchResults = await serviceClient.search(q);
       results.set(searchResults);
-    } catch (err) {
+    } catch (err: any) {
       error.set(err instanceof Error ? err.message : 'Search failed');
       results.set([]);
     } finally {
@@ -350,7 +350,7 @@ export function createRAGStore() {
   const isLoading = writable(false);
   const error = writable<string | null>(null);
 
-  const ask = async (ragQuery: string, caseId?: string) => {
+  const ask = async (ragQuery: string, caseId?: string): Promise<any> => {
     if (!ragQuery.trim()) return;
 
     isLoading.set(true);
@@ -360,7 +360,7 @@ export function createRAGStore() {
     try {
       const ragResponse = await serviceClient.performRAG(ragQuery, caseId);
       response.set(ragResponse);
-    } catch (err) {
+    } catch (err: any) {
       error.set(err instanceof Error ? err.message : 'RAG query failed');
       response.set(null);
     } finally {
@@ -389,7 +389,7 @@ export function createUploadStore() {
     error?: string;
   }>>(new Map());
 
-  const upload = async (file: File, caseId?: string) => {
+  const upload = async (file: File, caseId?: string): Promise<any> => {
     const uploadId = `${Date.now()}_${file.name}`;
     
     uploads.update(map => {
@@ -415,7 +415,7 @@ export function createUploadStore() {
       });
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       uploads.update(map => {
         const upload = map.get(uploadId);
         if (upload) {

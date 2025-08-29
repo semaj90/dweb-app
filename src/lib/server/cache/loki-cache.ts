@@ -9,10 +9,10 @@ import { EventEmitter } from 'events';
 import path from 'path';
 import fs from 'fs/promises';
 
-interface CacheEntry {
+export interface CacheEntry {
   id: string;
   key: string;
-  data: unknown;
+  data: any;
   metadata: {
     sessionId?: string;
     userId?: string;
@@ -27,7 +27,7 @@ interface CacheEntry {
   };
 }
 
-interface CacheStats {
+export interface CacheStats {
   totalEntries: number;
   memoryUsage: number;
   hitRate: number;
@@ -77,7 +77,7 @@ export class CacheManager extends EventEmitter {
     console.log('📦 Advanced LokiJS Cache Manager initialized');
   }
 
-  private async initializeDatabase() {
+  private async initializeDatabase(): Promise<any> {
     // Ensure cache directory exists
     await fs.mkdir(path.dirname(this.dbPath), { recursive: true });
 
@@ -132,7 +132,7 @@ export class CacheManager extends EventEmitter {
   }
 
   // Core caching methods
-  public async set(key: string, data: unknown, options: {
+  public async set(key: string, data: any, options: {
     sessionId?: string;
     userId?: string;
     contentType?: string;
@@ -140,7 +140,7 @@ export class CacheManager extends EventEmitter {
     processingTime?: number;
     ttl?: number; // Time to live in milliseconds
     tags?: string[];
-  } = {}): Promise<void> {
+  } = {}): Promise<any> {
     const entry: CacheEntry = {
       id: this.generateId(),
       key,
@@ -260,7 +260,7 @@ export class CacheManager extends EventEmitter {
   }
 
   // User session management
-  public async setUserSession(userId: string, sessionData: unknown): Promise<void> {
+  public async setUserSession(userId: string, sessionData: any): Promise<any> {
     const existingSession = this.collections.userSessions.findOne({ userId });
 
     if (existingSession) {
@@ -286,10 +286,10 @@ export class CacheManager extends EventEmitter {
   // Recommendation caching
   public async setRecommendations(
     userId: string,
-    recommendations: unknown[],
+    recommendations: any[],
     contentType: string,
     confidence: number = 0.8
-  ): Promise<void> {
+  ): Promise<any> {
     // Remove old recommendations for this user and content type
     this.collections.recommendations.findAndRemove({
       userId,
@@ -318,8 +318,8 @@ export class CacheManager extends EventEmitter {
   public async logAnalytics(
     userId: string,
     eventType: string,
-    data: unknown
-  ): Promise<void> {
+    data: any
+  ): Promise<any> {
     this.collections.analytics.insert({
       id: this.generateId(),
       userId,
@@ -360,7 +360,7 @@ export class CacheManager extends EventEmitter {
   }
 
   private setupCleanup(interval: number) {
-    this.cleanupInterval = setInterval(async () => {
+    this.cleanupInterval = setInterval(async (): Promise<any> => {
       await this.performCleanup();
     }, interval);
   }
@@ -489,7 +489,7 @@ export class CacheManager extends EventEmitter {
     }
   }
 
-  public async shutdown(): Promise<void> {
+  public async shutdown(): Promise<any> {
     console.log('🔄 Shutting down Cache Manager...');
 
     // Clear intervals
@@ -497,7 +497,7 @@ export class CacheManager extends EventEmitter {
     if (this.cleanupInterval) clearInterval(this.cleanupInterval);
 
     // Final save
-    await new Promise<void>((resolve) => {
+    await new Promise<any>((resolve) => {
       this.db.saveDatabase(() => {
         console.log('✅ Final cache save completed');
         resolve();

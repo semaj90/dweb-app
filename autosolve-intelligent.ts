@@ -9,7 +9,7 @@ import { spawn } from 'child_process';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join } from 'path';
 
-interface AutoSolveConfig {
+export interface AutoSolveConfig {
   maxIterations: number;
   batchSize: number;
   useContext7: boolean;
@@ -22,7 +22,7 @@ interface AutoSolveConfig {
   simdJsonParsing: boolean;
 }
 
-interface ErrorAnalysis {
+export interface ErrorAnalysis {
   file: string;
   line: number;
   column: number;
@@ -39,7 +39,7 @@ interface ErrorAnalysis {
   };
 }
 
-interface FixResult {
+export interface FixResult {
   applied: boolean;
   commentAdded: boolean;
   improvementSuggestion: string;
@@ -588,7 +588,7 @@ class IntelligentAutoSolver {
           improvementSuggestion: error.context7Suggestion || 'Import error analysis complete'
         };
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(`Error processing ${error.file}:`, err);
     }
 
@@ -647,7 +647,7 @@ class IntelligentAutoSolver {
           improvementSuggestion: error.context7Suggestion || 'Type error analysis complete'
         };
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(`Error processing ${error.file}:`, err);
     }
 
@@ -786,7 +786,7 @@ class IntelligentAutoSolver {
               writeFileSync(error.file, lines.join('\n'));
             }
           }
-        } catch (err) {
+        } catch (err: any) {
           console.error(`Error adding comment to ${error.file}:`, err);
         }
       }

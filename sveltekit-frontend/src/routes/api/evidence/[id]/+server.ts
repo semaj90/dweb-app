@@ -27,7 +27,7 @@ export const DELETE: RequestHandler = async ({ params }) => {
       message: 'Evidence deleted successfully',
       id: evidenceId 
     }, { status: 200 });
-  } catch (err) {
+  } catch (err: any) {
     console.error('Evidence deletion error:', err);
     
     if (err instanceof Response) {

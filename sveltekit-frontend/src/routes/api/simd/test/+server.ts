@@ -51,7 +51,7 @@ export const POST: RequestHandler = async ({ request }) => {
             health,
             message: 'SIMD service is operational'
           };
-        } catch (error) {
+        } catch (error: any) {
           results.results = {
             simd_available: false,
             error: String(error),
@@ -72,7 +72,7 @@ export const POST: RequestHandler = async ({ request }) => {
           try {
             const simdResult = await simdRedisClient.benchmark(testData, Math.min(iterations, 100));
             benchmarkResults[size] = simdResult;
-          } catch (error) {
+          } catch (error: any) {
             benchmarkResults[size] = {
               error: String(error),
               message: 'SIMD benchmark failed - service may be unavailable'
@@ -101,7 +101,7 @@ export const POST: RequestHandler = async ({ request }) => {
           await cacheService.setSIMD(`simd:${cacheKey}`, testData);
           const simdCachedData = await cacheService.getSIMD(`simd:${cacheKey}`);
           simdTime = performance.now() - simdStart;
-        } catch (error) {
+        } catch (error: any) {
           console.warn('SIMD cache test failed:', error);
         }
 
@@ -145,7 +145,7 @@ export const POST: RequestHandler = async ({ request }) => {
             data_size: parseResult.size
           });
 
-        } catch (error) {
+        } catch (error: any) {
           operations.push({
             operation: 'error',
             error: String(error),
@@ -166,7 +166,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
     return json(results);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('SIMD test API error:', error);
     return json(
       { error: 'Test execution failed', details: String(error) },

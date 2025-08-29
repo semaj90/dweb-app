@@ -82,7 +82,7 @@ export class WebGPUAIEngine {
       console.log('🎮 WebGPU initialized successfully');
       console.log('Features:', this.capabilities.features);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('WebGPU initialization failed:', error);
       this.capabilities = { isSupported: false, features: [], limits: {} };
     }

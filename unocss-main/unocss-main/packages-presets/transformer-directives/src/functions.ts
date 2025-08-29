@@ -3,7 +3,7 @@ import type { TransformerDirectivesContext } from './types'
 import { transformThemeFn, transformThemeString } from '@unocss/rule-utils'
 import { transformIconString } from './icon'
 
-export async function handleFunction({ code, uno, options }: TransformerDirectivesContext, node: FunctionNode) {
+export async function handleFunction({ code, uno, options }: TransformerDirectivesContext, node: FunctionNode): Promise<any> {
   const { throwOnMissing = true } = options
 
   switch (node.name) {

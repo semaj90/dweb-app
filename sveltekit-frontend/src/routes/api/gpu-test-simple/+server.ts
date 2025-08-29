@@ -1,6 +1,6 @@
 // Simple GPU test endpoint without auth dependencies
 import { type RequestHandler,  json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types.js';
+import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async () => {
   return json({
@@ -56,7 +56,7 @@ export const POST: RequestHandler = async ({ request }) => {
       message: `GPU processed ${processedErrors.length} errors successfully`
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return json({ error: 'Processing failed' }, { status: 500 });
   }
 };

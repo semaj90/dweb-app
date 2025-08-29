@@ -18,7 +18,7 @@ test.describe('Legal AI File Upload Tests', () => {
         .map(file => path.join(LAWPDFS_DIR, file));
       
       console.log('Test PDFs found:', testPDFs.map(f => path.basename(f)));
-    } catch (error) {
+    } catch (error: any) {
       console.log('Error reading lawpdfs directory:', error);
     }
   });

@@ -7,7 +7,7 @@ import { createMachine, assign, fromPromise, type StateFrom } from 'xstate';
 import type { CaseData, EvidenceData } from '../mcp/cases.mcp';
 
 // Machine Context
-interface CaseManagementContext {
+export interface CaseManagementContext {
   // Current case data
   currentCase: CaseData | null;
   cases: CaseData[];

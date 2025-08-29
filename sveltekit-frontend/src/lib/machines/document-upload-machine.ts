@@ -142,7 +142,7 @@ export const documentUploadMachine = createMachine({
             }
             
             return response.json();
-          } catch (error) {
+          } catch (error: any) {
             clearInterval(progressInterval);
             throw error;
           }

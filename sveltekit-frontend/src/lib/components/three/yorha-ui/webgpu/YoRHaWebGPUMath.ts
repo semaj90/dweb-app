@@ -84,7 +84,7 @@ export class YoRHaWebGPUMath {
       console.log('YoRHa WebGPU Math initialized successfully');
       return true;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to initialize WebGPU:', error);
       return false;
     }
@@ -354,7 +354,7 @@ export class YoRHaWebGPUMath {
         memoryUsed: vectorsA.length * 3 * 4 * 3 // 3 buffers
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('WebGPU vector operation failed:', error);
       return this.fallbackVectorAdd(vectorsA, vectorsB);
     }
@@ -434,7 +434,7 @@ export class YoRHaWebGPUMath {
         memoryUsed: matricesA.length * 16 * 4 * 3 // 3 buffers
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('WebGPU matrix operation failed:', error);
       return this.fallbackMatrixMultiply(matricesA, matricesB);
     }
@@ -470,7 +470,7 @@ export class YoRHaWebGPUMath {
         memoryUsed: nodes.length * 32 // Estimated
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('WebGPU layout computation failed:', error);
       return this.fallbackComputeLayout(nodes, containerSize, layoutType);
     }
@@ -505,7 +505,7 @@ export class YoRHaWebGPUMath {
         memoryUsed: particles.length * 48 // Estimated
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('WebGPU physics simulation failed:', error);
       return this.fallbackSimulatePhysics(particles, deltaTime, gravity);
     }

@@ -1,8 +1,8 @@
 // Authentication Tests for YoRHa Interface
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
-import { AuthService } from '../src/lib/yorha/services/auth.service';
-import { db } from '../src/lib/yorha/db';
-import { units, sessions, userActivity, passwordResetTokens } from '../src/lib/yorha/db/schema';
+import { AuthService } from '$lib/yorha/services/auth.service';
+import { db } from '$lib/yorha/db';
+import { units, sessions, userActivity, passwordResetTokens } from '$lib/yorha/db/schema';
 import { eq, sql } from 'drizzle-orm';
 
 describe('AuthService', () => {

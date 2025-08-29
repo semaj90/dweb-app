@@ -10,7 +10,7 @@ import { apiOrchestrator } from '$lib/services/api-orchestrator.js';
 import { embeddingService } from '$lib/server/embedding-service.js';
 import type { APIResponse, APIRequestContext } from '$lib/types/api.js';
 
-interface IntegrationTestResult {
+export interface IntegrationTestResult {
   testName: string;
   status: 'passed' | 'failed' | 'skipped';
   duration: number;
@@ -18,7 +18,7 @@ interface IntegrationTestResult {
   error?: string;
 }
 
-interface ComprehensiveTestReport {
+export interface ComprehensiveTestReport {
   success: boolean;
   totalTests: number;
   passed: number;
@@ -64,7 +64,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
       }
     } satisfies APIResponse);
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Integration Test Error:', err);
     
     return error(500, {
@@ -117,7 +117,7 @@ export const GET: RequestHandler = async ({ url }) => {
           timestamp: new Date().toISOString()
         });
     }
-  } catch (err) {
+  } catch (err: any) {
     console.error('Test API Error:', err);
     return error(500, {
       message: 'Test service unavailable',
@@ -299,7 +299,7 @@ async function runSingleTest(
       details: result.details,
       error: result.error
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       testName,
       status: 'failed',
@@ -338,7 +338,7 @@ async function testAPIOrchestrator(): Promise<any> {
         metricsAvailable: Object.keys(metrics).length > 0
       }
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       success: false,
       error: String(error)
@@ -361,7 +361,7 @@ async function testCoreServices(): Promise<any> {
         status: health.status,
         config: !!config
       });
-    } catch (error) {
+    } catch (error: any) {
       results.push({
         service,
         healthy: false,
@@ -395,7 +395,7 @@ async function testRAGAPI(): Promise<any> {
         healthData: response.ok ? healthData : undefined
       }
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       success: false,
       error: String(error)
@@ -416,7 +416,7 @@ async function testUploadAPI(): Promise<any> {
         healthData: response.ok ? healthData : undefined
       }
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       success: false,
       error: String(error)
@@ -436,7 +436,7 @@ async function testDatabaseConnections(): Promise<any> {
         configured: !!config,
         status: config?.status || 'unknown'
       });
-    } catch (error) {
+    } catch (error: any) {
       results.push({
         database: db,
         configured: false,
@@ -466,7 +466,7 @@ async function testEmbeddingService(): Promise<any> {
         modelCount: models.length
       }
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       success: false,
       error: String(error)

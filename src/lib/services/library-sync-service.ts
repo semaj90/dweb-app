@@ -10,7 +10,7 @@
  */
 
 import { Redis } from "ioredis";
-import { redisVectorService } from "./redis-vector-service.js";
+import { redisVectorService } from './redis-vector-service';
 
 export interface LibraryMetadata {
     id: string;
@@ -33,8 +33,8 @@ export interface AgentCallLog {
     | "orchestrator"
     | "evaluation";
     operation: string;
-    input: unknown;
-    output: unknown;
+    input: any;
+    output: any;
     duration: number;
     success: boolean;
     error?: string;
@@ -59,11 +59,11 @@ class LibrarySyncService {
     startPeriodicSync(intervalHours: number = 6): void {
         const intervalMs = intervalHours * 60 * 60 * 1000;
 
-        this.syncInterval = setInterval(async () => {
+        this.syncInterval = setInterval(async (): Promise<any> => {
             try {
                 await this.syncAllLibraries();
                 console.log("📚 Library sync completed successfully");
-            } catch (error) {
+            } catch (error: any) {
                 console.error("❌ Library sync failed:", error);
             }
         }, intervalMs);
@@ -85,7 +85,7 @@ class LibrarySyncService {
     /**
      * Sync all libraries from different sources
      */
-    async syncAllLibraries(): Promise<void> {
+    async syncAllLibraries(): Promise<any> {
         const promises = [
             this.syncGitHubLibraries(),
             this.syncContext7Libraries(),
@@ -98,7 +98,7 @@ class LibrarySyncService {
     /**
      * Fetch and sync libraries from GitHub
      */
-    async syncGitHubLibraries(): Promise<void> {
+    async syncGitHubLibraries(): Promise<any> {
         try {
             // Popular AI/ML libraries and frameworks
             const popularRepos = [
@@ -121,7 +121,7 @@ class LibrarySyncService {
                     await this.storeLibraryMetadata(metadata);
                 }
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error("Failed to sync GitHub libraries:", error);
         }
     }
@@ -154,7 +154,7 @@ class LibrarySyncService {
                 lastUpdated: new Date(data.updated_at),
                 tags: data.topics || [],
             };
-        } catch (error) {
+        } catch (error: any) {
             console.error(`Failed to fetch GitHub repo ${repo}:`, error);
             return null;
         }
@@ -163,7 +163,7 @@ class LibrarySyncService {
     /**
      * Sync libraries from Context7
      */
-    async syncContext7Libraries(): Promise<void> {
+    async syncContext7Libraries(): Promise<any> {
         try {
             // This would integrate with Context7 API when available
             // For now, we'll store known context7 libraries
@@ -193,7 +193,7 @@ class LibrarySyncService {
             for (const lib of context7Libraries) {
                 await this.storeLibraryMetadata(lib);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error("Failed to sync Context7 libraries:", error);
         }
     }
@@ -201,7 +201,7 @@ class LibrarySyncService {
     /**
      * Sync popular NPM packages
      */
-    async syncNpmLibraries(): Promise<void> {
+    async syncNpmLibraries(): Promise<any> {
         try {
             const popularPackages = [
                 "@langchain/core",
@@ -222,7 +222,7 @@ class LibrarySyncService {
                     await this.storeLibraryMetadata(metadata);
                 }
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error("Failed to sync NPM libraries:", error);
         }
     }
@@ -250,7 +250,7 @@ class LibrarySyncService {
                 lastUpdated: new Date(data.time?.[latestVersion] || Date.now()),
                 tags: data.keywords || [],
             };
-        } catch (error) {
+        } catch (error: any) {
             console.error(`Failed to fetch NPM package ${packageName}:`, error);
             return null;
         }
@@ -259,7 +259,7 @@ class LibrarySyncService {
     /**
      * Store library metadata in Redis
      */
-    async storeLibraryMetadata(metadata: LibraryMetadata): Promise<void> {
+    async storeLibraryMetadata(metadata: LibraryMetadata): Promise<any> {
         const key = `library:${metadata.id}`;
         await this.redis.setex(key, 86400, JSON.stringify(metadata)); // 24 hour TTL
 
@@ -278,7 +278,7 @@ class LibrarySyncService {
     /**
      * Log agent/LLM calls for audit and RAG
      */
-    async logAgentCall(log: AgentCallLog): Promise<void> {
+    async logAgentCall(log: AgentCallLog): Promise<any> {
         try {
             // Store in Redis with timestamp-based key
             const key = `agent_log:${log.agentType}:${log.timestamp.getTime()}:${log.id}`;
@@ -317,7 +317,7 @@ class LibrarySyncService {
             }
 
             console.log(`📝 Logged agent call: ${log.agentType}/${log.operation}`);
-        } catch (error) {
+        } catch (error: any) {
             console.error("Failed to log agent call:", error);
         }
     }
@@ -344,7 +344,7 @@ class LibrarySyncService {
             }
 
             return logs;
-        } catch (error) {
+        } catch (error: any) {
             console.error("Failed to get agent logs:", error);
             return [];
         }
@@ -384,7 +384,7 @@ class LibrarySyncService {
             return libraries.sort(
                 (a, b) => b.lastUpdated.getTime() - a.lastUpdated.getTime()
             );
-        } catch (error) {
+        } catch (error: any) {
             console.error("Failed to search libraries:", error);
             return [];
         }
@@ -397,7 +397,7 @@ class LibrarySyncService {
         try {
             const data = await this.redis.get(`library:${id}`);
             return data ? JSON.parse(data) : null;
-        } catch (error) {
+        } catch (error: any) {
             console.error("Failed to get library:", error);
             return null;
         }
@@ -406,7 +406,7 @@ class LibrarySyncService {
     /**
      * Cleanup old logs and libraries
      */
-    async cleanup(): Promise<void> {
+    async cleanup(): Promise<any> {
         try {
             // Clean up old agent logs (older than 30 days)
             const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
@@ -427,7 +427,7 @@ class LibrarySyncService {
             );
 
             console.log(`🧹 Cleaned up ${oldLogs.length} old agent logs`);
-        } catch (error) {
+        } catch (error: any) {
             console.error("Failed to cleanup:", error);
         }
     }

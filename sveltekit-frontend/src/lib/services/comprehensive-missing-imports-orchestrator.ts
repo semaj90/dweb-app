@@ -124,7 +124,7 @@ export class ComprehensiveMissingImportsOrchestrator {
       
       return result;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Comprehensive resolution failed:', error);
       result.failedResolutions.push(`System error: ${error.message}`);
       result.warnings.push('Comprehensive resolution encountered errors - check individual components');
@@ -330,7 +330,7 @@ src/lib/stores/comprehensive-types.ts:180:30: error TS2339: Property 'dimensions
       console.log(`📊 Test Results: ${testResult.resolvedErrors}/${testResult.totalErrors} resolved`);
       console.log(`⏱️ Performance: ${testResult.performance.totalTime}ms total`);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Test failed:', error);
     }
   }

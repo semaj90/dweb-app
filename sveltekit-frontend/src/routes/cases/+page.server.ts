@@ -118,7 +118,7 @@ export const load: PageServerLoad = async ({ url, locals, parent }) => {
         pages: Math.ceil(total / limit)
       }
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in cases page load:', error);
     
     // Fallback data
@@ -197,7 +197,7 @@ export const actions: Actions = {
         success: true,
         case: newCase
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to create case:", error);
       return fail(500, { 
         form,
@@ -270,7 +270,7 @@ export const actions: Actions = {
         success: true,
         evidence: newEvidence[0]
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to add evidence:", error);
       return fail(500, {
         form,
@@ -320,7 +320,7 @@ export const actions: Actions = {
       }
 
       return { success: true };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to delete evidence:", error);
       return fail(500, { message: "Failed to delete evidence" });
     }

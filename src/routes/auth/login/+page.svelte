@@ -100,6 +100,7 @@
                 type="email" 
                 required 
                 class="yorha-input"
+                autocomplete="email"
                 bind:value={formData.email}
                 placeholder="your.email@example.com"
               />
@@ -116,6 +117,7 @@
                 type="password" 
                 required 
                 class="yorha-input"
+                autocomplete="current-password"
                 bind:value={formData.password}
                 placeholder="Enter your password"
               />

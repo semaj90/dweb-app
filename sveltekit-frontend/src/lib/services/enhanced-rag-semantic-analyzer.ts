@@ -192,7 +192,7 @@ class EnhancedRAGSemanticAnalyzer {
       await this.storeInVectorDB(result);
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Semantic analysis failed:', error);
       throw new Error(
         `Semantic analysis failed: ${error instanceof Error ? error.message : 'Unknown error'}`
@@ -239,7 +239,7 @@ class EnhancedRAGSemanticAnalyzer {
         processingTime,
         timestamp: new Date(),
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Enhanced RAG query failed:', error);
       throw new Error(
         `Enhanced RAG query failed: ${error instanceof Error ? error.message : 'Unknown error'}`
@@ -275,7 +275,7 @@ class EnhancedRAGSemanticAnalyzer {
     try {
       const mlEntities = await this.extractEntitiesML(text);
       entities.push(...mlEntities);
-    } catch (error) {
+    } catch (error: any) {
       console.warn('ML entity extraction failed:', error);
     }
 
@@ -339,7 +339,7 @@ class EnhancedRAGSemanticAnalyzer {
     try {
       const context7Concepts = await this.extractContext7Concepts(text);
       concepts.push(...context7Concepts);
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Context7 concept extraction failed:', error);
     }
 
@@ -383,7 +383,7 @@ class EnhancedRAGSemanticAnalyzer {
 
       const result = await response.json();
       return result.embedding || [];
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Embedding generation failed, using fallback:', error);
       // Return a mock embedding for fallback
       return new Array(384).fill(0).map(() => Math.random() * 0.1);
@@ -439,7 +439,7 @@ class EnhancedRAGSemanticAnalyzer {
    */
   private calculateLegalRelevance(entities: SemanticEntity[], concepts: ConceptMapping[]): number {
     const legalEntityTypes = ['LEGAL_CONCEPT', 'CASE_REF', 'STATUTE'];
-    const legalEntitiesCount = entities.filter((e) => legalEntityTypes.includes(e.type)).length;
+    const legalEntitiesCount = entities.filter((e: any) => legalEntityTypes.includes(e.type)).length;
 
     const conceptScore = concepts.reduce((sum, concept) => sum + concept.confidenceScore, 0);
 
@@ -478,7 +478,7 @@ class EnhancedRAGSemanticAnalyzer {
       if (!response.ok) {
         throw new Error(`Qdrant storage failed: ${response.status}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Vector DB storage failed:', error);
       // Continue without failing - vector storage is optional
     }
@@ -511,7 +511,7 @@ class EnhancedRAGSemanticAnalyzer {
 
       const result = await response.json();
       return result.result || [];
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Vector search failed:', error);
       return [];
     }

@@ -27,7 +27,7 @@ async function executeQuery(query: string, params: any[] = []): Promise<any[]> {
     const result = await response.json();
     return result.rows || [];
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Database query error:', err);
     throw err;
   }
@@ -36,7 +36,7 @@ async function executeQuery(query: string, params: any[] = []): Promise<any[]> {
 /**
  * POST /api/database/store-document - Store processed document with embeddings
  */
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const body = await request.json();
     const {
@@ -264,7 +264,7 @@ export const POST: RequestHandler = async ({ request }) => {
       timestamp: Date.now()
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('[Database Storage] Error:', err);
     throw error(500, {
       message: err instanceof Error ? err.message : 'Database storage failed',
@@ -276,7 +276,7 @@ export const POST: RequestHandler = async ({ request }) => {
 /**
  * GET /api/database/store-document - Get storage statistics
  */
-export const GET: RequestHandler = async () => {
+export const GET: RequestHandler = async (): Promise<any> => {
   try {
     // Get document statistics
     const statsQuery = `
@@ -319,7 +319,7 @@ export const GET: RequestHandler = async () => {
       timestamp: Date.now()
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('[Database Storage] Statistics error:', err);
     throw error(500, {
       message: err instanceof Error ? err.message : 'Failed to get statistics',

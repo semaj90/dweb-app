@@ -9,15 +9,15 @@
  * 5. Qdrant: Search index only (rebuildable from PostgreSQL)
  */
 
-import { redis } from '../lib/server/cache/redis-service.js';
-import { db } from '../lib/server/db/index.js';
-import { evidence, documentMetadata, documentEmbeddings } from '../lib/server/db/schema-unified.js';
-import { embeddingCache } from '../lib/server/db/schema-postgres.js';
+import { redis } from '../lib/server/cache/redis-service';
+import { db } from '../lib/server/db/index';
+import { evidence, documentMetadata, documentEmbeddings } from '../lib/server/db/schema-unified';
+import { embeddingCache } from '../lib/server/db/schema-postgres';
 import { eq, and, isNull, sql, desc } from 'drizzle-orm';
 import { QdrantClient } from '@qdrant/js-client-rest';
 
 // Types for Redis events
-interface AutoTagEvent {
+export interface AutoTagEvent {
   type: 'evidence' | 'document' | 'ingest_complete';
   id: string;
   action?: 'tag' | 'mirror' | 'process';
@@ -28,12 +28,12 @@ interface AutoTagEvent {
 }
 
 // PostgreSQL notification types
-interface PgNotification {
+export interface PgNotification {
   channel: string;
   payload: string;
 }
 
-interface IngestCompletionPayload {
+export interface IngestCompletionPayload {
   document_id: string;
   case_id?: string;
   evidence_id?: string;
@@ -41,7 +41,7 @@ interface IngestCompletionPayload {
   timestamp: string;
 }
 
-interface EvidenceUpdatePayload {
+export interface EvidenceUpdatePayload {
   evidence_id: string;
   case_id?: string;
   processing_status: string;
@@ -87,7 +87,7 @@ export class PostgreSQLFirstWorker {
         this.processEventStream(), // Redis streams
         this.processPostgreSQLNotifications() // PostgreSQL LISTEN/NOTIFY
       ]);
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to start worker:', error);
       throw error;
     }
@@ -111,7 +111,7 @@ export class PostgreSQLFirstWorker {
       await this.pgNotificationClient.query('LISTEN evidence_updated');
 
       console.log('✅ PostgreSQL notifications setup complete');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️  PostgreSQL notifications setup failed (non-critical):', error.message);
     }
   }
@@ -141,7 +141,7 @@ export class PostgreSQLFirstWorker {
           default:
             console.log(`📡 Unknown PostgreSQL notification: ${notification.channel}`);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('❌ Failed to process PostgreSQL notification:', error);
       }
     });
@@ -230,7 +230,7 @@ export class PostgreSQLFirstWorker {
           }
         }
 
-      } catch (error) {
+      } catch (error: any) {
         console.error('❌ Stream processing error:', error);
 
         // Exponential backoff on errors
@@ -251,7 +251,7 @@ export class PostgreSQLFirstWorker {
         caseId: message.caseId,
         retry: message.retry === 'true'
       };
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️  Failed to parse Redis message:', message);
       return null;
     }
@@ -282,7 +282,7 @@ export class PostgreSQLFirstWorker {
       const duration = Date.now() - startTime;
       console.log(`✅ Processed ${event.type} ${event.id} in ${duration}ms`);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Failed to process ${event.type} ${event.id}:`, error);
 
       // Retry logic for failed events
@@ -465,7 +465,7 @@ export class PostgreSQLFirstWorker {
       }
 
       console.log(`🔗 Linked document ${documentId} to ${relatedEvidence.length} evidence items`);
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️  Failed to link document to evidence:', error);
     }
   }
@@ -664,7 +664,7 @@ export class PostgreSQLFirstWorker {
 
       console.log(`🔄 Mirrored evidence ${evidenceId} to Qdrant`);
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn(`⚠️  Qdrant mirror failed for evidence ${evidenceId}:`, error.message);
     }
   }
@@ -716,7 +716,7 @@ export class PostgreSQLFirstWorker {
 
       console.log(`🔄 Mirrored document ${documentId} to Qdrant`);
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn(`⚠️  Qdrant mirror failed for document ${documentId}:`, error.message);
     }
   }
@@ -743,7 +743,7 @@ export class PostgreSQLFirstWorker {
       } else {
         console.log('✅ Qdrant collection exists: legal_documents');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️  Qdrant collection setup failed (non-critical):', error.message);
     }
   }
@@ -762,7 +762,7 @@ export class PostgreSQLFirstWorker {
       });
 
       console.log(`🔄 Re-queued ${event.type} ${event.id} for retry`);
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Failed to re-queue ${event.type} ${event.id}:`, error);
     }
   }
@@ -806,7 +806,7 @@ export class PostgreSQLFirstWorker {
       //   }
       // });
       console.log('📊 Worker Event:', event);
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️  Failed to log worker event:', (error as Error).message);
     }
   }
@@ -832,7 +832,7 @@ export class PostgreSQLFirstWorker {
         embedding,
         model: 'nomic-embed-text'
       }).onConflictDoNothing();
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️  Failed to cache embedding in PostgreSQL:', error.message);
     }
   }
@@ -847,7 +847,7 @@ export class PostgreSQLFirstWorker {
     try {
       await this.redis.disconnect();
       console.log('✅ Disconnected from Redis');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️  Redis disconnect error:', error);
     }
 
@@ -856,7 +856,7 @@ export class PostgreSQLFirstWorker {
         await this.pgNotificationClient.end();
         console.log('✅ Disconnected from PostgreSQL notifications');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️  PostgreSQL notification disconnect error:', error);
     }
 
@@ -896,7 +896,7 @@ export class PostgreSQLFirstWorker {
       // Check Redis
       await this.redis.ping();
       health.redis = true;
-    } catch (error) {
+    } catch (error: any) {
       health.redis = false;
     }
 
@@ -904,7 +904,7 @@ export class PostgreSQLFirstWorker {
       // Check Qdrant
       await this.qdrant.getCollections();
       health.qdrant = true;
-    } catch (error) {
+    } catch (error: any) {
       health.qdrant = false;
     }
 
@@ -912,7 +912,7 @@ export class PostgreSQLFirstWorker {
       // Check PostgreSQL
       await db.execute(sql`SELECT 1`);
       health.postgresql = true;
-    } catch (error) {
+    } catch (error: any) {
       health.postgresql = false;
     }
 
@@ -929,7 +929,7 @@ if (typeof process !== 'undefined' && process.argv[1] && process.argv[1].endsWit
   const worker = new PostgreSQLFirstWorker();
 
   // Graceful shutdown handling
-  const shutdown = async (signal: string) => {
+  const shutdown = async (signal: string): Promise<any> => {
     console.log(`\n🛑 Received ${signal}, shutting down worker...`);
     await worker.stop();
     process.exit(0);

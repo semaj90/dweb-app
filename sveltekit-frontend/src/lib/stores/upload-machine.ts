@@ -1,6 +1,6 @@
 import { createMachine, assign, createActor, type StateFrom, fromPromise } from "xstate";
 // TODO: Fix import - // Orphaned content: import {  // Context interfaces
-interface UploadContext {
+export interface UploadContext {
   uploadId?: string;
   caseId: string;
   files: File[];

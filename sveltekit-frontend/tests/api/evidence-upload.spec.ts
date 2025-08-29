@@ -3,7 +3,7 @@
 // Attempt to import POST handler and rate limiter reset for direct invocation
 // These imports rely on module paths; adjust if path resolution differs
 import { POST } from '../../src/routes/api/evidence/upload/+server';
-import { __resetRateLimiter } from '../../src/lib/server/rateLimit';
+import { __resetRateLimiter } from '$lib/server/rateLimit';
 
 // Minimal mock of SvelteKit Locals with user
 function mockEvent(body: BodyInit, headers: Record<string,string> = {}) {

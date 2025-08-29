@@ -261,7 +261,7 @@ export class VectorRankingService {
         .filter((line: any) => line.includes(':'))
         .map((line: any) => line.split(':')[1]?.trim())
         .filter(Boolean);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Entity extraction failed:', error);
       return [];
     }

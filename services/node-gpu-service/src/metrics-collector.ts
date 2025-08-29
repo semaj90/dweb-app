@@ -4,7 +4,7 @@
 
 import { Logger } from './logger';
 
-interface PerformanceMetrics {
+export interface PerformanceMetrics {
   embeddingsProcessed: number;
   totalProcessingTime: number;
   avgProcessingTime: number;
@@ -17,7 +17,7 @@ interface PerformanceMetrics {
   uptime: number;
 }
 
-interface MetricPoint {
+export interface MetricPoint {
   timestamp: number;
   value: number;
   tags?: Record<string, string>;

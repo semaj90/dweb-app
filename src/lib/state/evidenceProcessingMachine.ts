@@ -21,11 +21,11 @@ export interface EvidenceProcessingContext {
 
   // Processing results
   extractedText?: string;
-  chunks?: Array<{ content: string; embedding: number[]; metadata: unknown }>;
+  chunks?: Array<{ content: string; embedding: number[]; metadata: any }>;
   embeddings?: number[][];
   analysis?: {
     summary: string;
-    entities: unknown[];
+    entities: any[];
     sentiment: string;
     classification: string;
     riskAssessment?: string;
@@ -127,7 +127,7 @@ const documentProcessingService = fromPromise(
         // This would be handled by the state machine's progress update
       }
 
-      await new Promise((resolve: unknown) => setTimeout(resolve, interval));
+      await new Promise((resolve: any) => setTimeout(resolve, interval));
       waited += interval;
     }
 
@@ -186,7 +186,7 @@ const aiAnalysisService = fromPromise(
 
       riskAssessment = langchainResult.riskAssessment;
       recommendations = langchainResult.recommendations;
-    } catch (error) {
+    } catch (error: any) {
       console.warn(
         "LangChain analysis failed, using basic analysis only:",
         error
@@ -368,7 +368,7 @@ export const evidenceProcessingMachine = createMachine(
             actions: assign({
               chunks: ({ event }) => event.output.chunks,
               embeddings: ({ event }) =>
-                event.output.chunks?.map((chunk: unknown) => chunk.embedding) || [],
+                event.output.chunks?.map((chunk: any) => chunk.embedding) || [],
               processingTimes: ({ context }) => ({
                 ...context.processingTimes,
                 embeddingGeneration: Date.now() - context.stageStartTime,

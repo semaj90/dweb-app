@@ -33,7 +33,7 @@ export const GET: RequestHandler = async () => {
     ];
 
     return json(recentCases);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching recent cases:", error);
     return json({ error: "Failed to fetch recent cases" }, { status: 500 });
   }

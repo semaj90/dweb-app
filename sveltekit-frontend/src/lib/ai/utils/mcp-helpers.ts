@@ -32,7 +32,7 @@ export interface OrchestrationOptions {
 export async function copilotOrchestrator(
   request: MCPGenericRequest | string,
   options?: OrchestrationOptions
-) {
+): Promise<any> {
   const req: MCPRequest =
     typeof request === 'string'
       ? { method: 'prompt', params: { prompt: request } }
@@ -44,17 +44,17 @@ export async function copilotOrchestrator(
   };
 }
 
-export async function semanticSearch(query: string, options?: unknown) {
+export async function semanticSearch(query: string, options?: unknown): Promise<any> {
   // Implementation placeholder
   return [];
 }
 
-export async function mcpMemoryReadGraph() {
+export async function mcpMemoryReadGraph(): Promise<any> {
   // Implementation placeholder
   return { nodes: [], edges: [] };
 }
 
-export async function mcpCodebaseAnalyze(path: string) {
+export async function mcpCodebaseAnalyze(path: string): Promise<any> {
   // Implementation placeholder
   return { files: [], analysis: {} };
 }

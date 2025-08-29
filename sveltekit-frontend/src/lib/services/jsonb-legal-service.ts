@@ -14,7 +14,7 @@
  * - Citation network analysis
  */
 
-import { drizzle } from 'drizzle-orm/postgres-js';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import { eq, sql, and, or, gt, lt, desc, asc, inArray, like, ilike } from 'drizzle-orm';
 import postgres from 'postgres';
 import { 
@@ -99,7 +99,7 @@ export class JsonbLegalService {
       });
 
       return document;
-    } catch (error) {
+    } catch (error: any) {
       const duration = performance.now() - startTime;
       
       await logger.logDocumentProcessing({
@@ -247,7 +247,7 @@ export class JsonbLegalService {
       });
 
       return { documents, totalCount };
-    } catch (error) {
+    } catch (error: any) {
       const duration = performance.now() - startTime;
       
       await logger.logSearch({
@@ -339,7 +339,7 @@ export class JsonbLegalService {
         totalDocuments: documentIds.length,
         conceptNetwork
       };
-    } catch (error) {
+    } catch (error: any) {
       const duration = performance.now() - startTime;
       
       await logger.logAIInteraction({
@@ -384,7 +384,7 @@ export class JsonbLegalService {
       });
 
       return caseRecord;
-    } catch (error) {
+    } catch (error: any) {
       const duration = performance.now() - startTime;
       
       await logger.logDocumentProcessing({
@@ -431,7 +431,7 @@ export class JsonbLegalService {
       });
 
       return similarCases as any[];
-    } catch (error) {
+    } catch (error: any) {
       const duration = performance.now() - startTime;
       
       await logger.logAIInteraction({
@@ -490,7 +490,7 @@ export class JsonbLegalService {
       });
 
       return updatedCase;
-    } catch (error) {
+    } catch (error: any) {
       const duration = performance.now() - startTime;
       
       await logger.logDocumentProcessing({
@@ -544,7 +544,7 @@ export class JsonbLegalService {
       });
 
       return evidence;
-    } catch (error) {
+    } catch (error: any) {
       const duration = performance.now() - startTime;
       
       await logger.logDocumentProcessing({
@@ -606,7 +606,7 @@ export class JsonbLegalService {
       });
 
       return updatedEvidence;
-    } catch (error) {
+    } catch (error: any) {
       const duration = performance.now() - startTime;
       
       await logger.logSecurityEvent({
@@ -705,7 +705,7 @@ export class JsonbLegalService {
       });
 
       return { isValid, evidence, chainValidation };
-    } catch (error) {
+    } catch (error: any) {
       const duration = performance.now() - startTime;
       
       await logger.logSecurityEvent({
@@ -797,7 +797,7 @@ export class JsonbLegalService {
       });
 
       return { nodes, edges };
-    } catch (error) {
+    } catch (error: any) {
       const duration = performance.now() - startTime;
       
       await logger.logAIInteraction({
@@ -862,7 +862,7 @@ export class JsonbLegalService {
         storageEfficiency: storageEfficiency as any[],
         queryPerformance
       };
-    } catch (error) {
+    } catch (error: any) {
       await logger.logError({
         error: error instanceof Error ? error.message : 'Unknown error',
         context: 'jsonb_performance_metrics',
@@ -918,7 +918,7 @@ export class JsonbLegalService {
         caseAnalytics: caseAnalytics as any[],
         evidenceIntegrity: evidenceIntegrity as any[]
       };
-    } catch (error) {
+    } catch (error: any) {
       await logger.logError({
         error: error instanceof Error ? error.message : 'Unknown error',
         context: 'legal_analytics',
@@ -946,7 +946,7 @@ export class JsonbLegalService {
         operation: 'update_case_counters',
         success: true
       });
-    } catch (error) {
+    } catch (error: any) {
       await logger.logSystemEvent({
         eventType: 'maintenance',
         operation: 'update_case_counters',

@@ -6,10 +6,10 @@ import crypto from "crypto";
  * and autonomous engineering for comprehensive problem-solving
  */
 
-import { autonomousEngineeringSystem } from "../services/autonomous-engineering-system.js";
+import { autonomousEngineeringSystem } from '../services/autonomous-engineering-system';
 
 // Mock functions for missing services
-const analyzeLegalCaseWithCrew = async (caseData: any) => ({ analysis: 'completed' });
+const analyzeLegalCaseWithCrew = async (caseData: any): Promise<any> => ({ analysis: 'completed' });
 
 // Mock types and imports
 export interface AITask {
@@ -33,7 +33,7 @@ import { createClient } from 'redis';
 
 // Singleton Redis client for connection reuse
 let redisClient: ReturnType<typeof createClient> | null = null;
-async function getRedisClient() {
+async function getRedisClient(): Promise<any> {
   if (!redisClient) {
     redisClient = createClient({
       url: import.meta.env.REDIS_URL || "redis://localhost:6379",
@@ -46,7 +46,7 @@ async function getRedisClient() {
 }
 
 // Enhanced context with Redis cache and LangChain/Nomic embeddings
-export async function getEnhancedContext(query: string) {
+export async function getEnhancedContext(query: string): Promise<any> {
   const cacheKey = `context:${query}`;
   const client = await getRedisClient();
   try {
@@ -77,7 +77,7 @@ export async function getEnhancedContext(query: string) {
     // 3. Store the result in Redis with an expiration (e.g., 1 hour)
     await client.set(cacheKey, JSON.stringify(results), { EX: 3600 });
     return results;
-  } catch (err) {
+  } catch (err: any) {
     console.error("Redis cache error:", err);
     // Fallback to direct semantic search if cache fails
     return [];
@@ -88,7 +88,7 @@ export async function getEnhancedContext(query: string) {
 export async function injectContextToCopilotPrompt(
   query: string,
   code: string
-) {
+): Promise<any> {
   const context = await getEnhancedContext(query);
   return `/* Copilot Context Injection: ${JSON.stringify(context)} */\n${code}`;
 }
@@ -294,7 +294,7 @@ export async function copilotSelfPrompt(
         tokensUsed,
       },
     };
-  } catch (error) {
+  } catch (error: any) {
     // Log error to MCP_TODO_LOG.md for productionization
     try {
       const { mcpLogErrorOrContextLoss } = await import("./mcp-helpers.js");
@@ -347,12 +347,12 @@ async function performSemanticSearch(
       }
       return data.results || [];
     }
-    } catch (error) {
+    } catch (error: any) {
       clearTimeout(timeoutId);
       console.error("Semantic search service unavailable:", error.name);
       return []; // Return empty array immediately instead of hanging
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Semantic search failed:", error);
     return []; // Fast fallback for any other errors
   }
@@ -394,12 +394,12 @@ export async function accessMemoryMCP(
       }
       return data.memories || [];
     }
-    } catch (error) {
+    } catch (error: any) {
       clearTimeout(timeoutId);
       console.error("Memory MCP service unavailable:", error.name);
       return []; // Fast fallback
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Memory MCP access failed:", error);
     return []; // Fast fallback for any other errors
   }
@@ -436,7 +436,7 @@ async function orchestrateMultiAgentAnalysis(
       type: "task_based_analysis",
       ...crewaiResult,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Multi-agent analysis failed:", error);
   }
   // Sort agent results by confidence/tokensUsed if available
@@ -504,7 +504,7 @@ Format your response as a structured analysis with clear sections and actionable
       result.response?.content ||
       generateBasicSummary(prompt, contextResults, memoryResults, agentResults)
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("Synthesis failed, using fallback:", error);
     return generateBasicSummary(
       prompt,
@@ -884,7 +884,7 @@ export class RLRankingDatastore {
   private async initializeRedis() {
     try {
       this.redisClient = await getRedisClient();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to initialize Redis for RL ranking:', error);
     }
   }
@@ -918,7 +918,7 @@ export class RLRankingDatastore {
       await this.redisClient.zremrangebyrank(this.summariesKey, 0, -11);
       
       console.log(`✅ Stored RL summary with effectiveness: ${summary.effectiveness}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to store RL summary:', error);
     }
   }
@@ -932,7 +932,7 @@ export class RLRankingDatastore {
       );
       
       return summaries.map((s: string) => JSON.parse(s));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to get top summaries:', error);
       return [];
     }
@@ -969,7 +969,7 @@ export class RLRankingDatastore {
           break;
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to update user feedback:', error);
     }
   }

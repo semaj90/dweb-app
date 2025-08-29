@@ -5,7 +5,7 @@
  * Backend: Upload Service (8093), Enhanced RAG (8094)
  */
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types.js';
+import type { RequestHandler } from './$types';
 
 const RAG_QUIC_CONFIG = {
   primaryPort: 8451,    // QUIC HTTP/3
@@ -130,7 +130,7 @@ export const GET: RequestHandler = async ({ url }) => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('RAG QUIC Proxy health check failed:', err);
     
     return json({
@@ -203,6 +203,36 @@ export const POST: RequestHandler = async ({ request, url }) => {
         headers['If-None-Match'] = requestHash;
       }
 
+      // Use Go microservice client instead of direct fetch
+      const enhancedRagClient = goServiceManager.getEnhancedRAG();
+      const serviceResponse = await enhancedRagClient.ragQuery(
+        ragRequest.query,
+        {
+          context: ragRequest.context,
+          maxResults: ragRequest.maxResults,
+          threshold: ragRequest.threshold,
+          model: ragRequest.model
+        }
+      );
+
+      if (!serviceResponse.success) {
+        throw new Error(serviceResponse.error || 'Go service call failed');
+      }
+
+      // Convert service response to HTTP Response format
+      response = new Response(JSON.stringify(serviceResponse.data), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Service-Response-Time': serviceResponse.responseTime?.toString() || '0',
+          'X-Protocol': serviceResponse.protocol || 'HTTP'
+        }
+      });
+
+      protocol = useHttp3 ? 'HTTP/3' : 'HTTP/2';
+
+      // Original fetch as fallback (commented for reference)
+      /* 
       response = await fetch(targetUrl, {
         method: 'POST',
         headers,
@@ -210,6 +240,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
         signal: AbortSignal.timeout(RAG_QUIC_CONFIG.timeout)
       });
       protocol = useHttp3 ? 'HTTP/3' : 'HTTP/2';
+      */
 
     } catch (quicError) {
       console.error('RAG QUIC Proxy failed:', quicError);
@@ -266,7 +297,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('RAG QUIC Proxy error:', err);
     error(500, {
       message: 'RAG operation failed',
@@ -315,7 +346,7 @@ export const PUT: RequestHandler = async ({ request, url }) => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('RAG document update error:', err);
     error(500, {
       message: 'Document update failed',
@@ -361,7 +392,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('RAG document deletion error:', err);
     error(500, {
       message: 'Document deletion failed',

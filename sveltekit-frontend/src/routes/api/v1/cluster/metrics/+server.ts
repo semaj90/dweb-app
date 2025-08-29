@@ -4,7 +4,7 @@
  */
 
 import { type RequestHandler,  json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types.js';
+import type { RequestHandler } from './$types';
 import { productionAPIClient } from '$lib/../../../../lib/api/production-client.js';
 import { context7OrchestrationService } from '$lib/../../../../lib/services/context7-orchestration-integration.js';
 import { PROTOCOL_TIERS } from '$lib/../../../../lib/services/production-service-registry.js';
@@ -42,7 +42,7 @@ export const GET: RequestHandler = async ({ url }) => {
     };
 
     return json(response);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Metrics collection failed:', error);
     return json(
       {

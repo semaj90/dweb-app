@@ -10,13 +10,13 @@ import { createLokiRedisIntegration } from '../cache/loki-redis-integration';
 import { neo4jReranker } from '../ai/enhanced-neo4j-reranker';
 
 // Dimensional tensor interfaces
-interface TensorDimensions {
+export interface TensorDimensions {
   d1: number; // Vector dimension (384 for nomic-embed)
   d2?: number; // Matrix height (optional)
   d3?: number; // Tensor depth (optional)
 }
 
-interface DimensionalVector {
+export interface DimensionalVector {
   id: string;
   vector: Float32Array;
   dimensions: TensorDimensions;
@@ -32,7 +32,7 @@ interface DimensionalVector {
   timestamp: number;
 }
 
-interface GraphToTextureMapping {
+export interface GraphToTextureMapping {
   nodeId: string;
   textureCoords: { x: number; y: number; z?: number };
   embedding: Float32Array;
@@ -40,7 +40,7 @@ interface GraphToTextureMapping {
   weight: number;
 }
 
-interface QueryContext {
+export interface QueryContext {
   searchVector: Float32Array;
   dimensions: TensorDimensions;
   filters?: {
@@ -95,7 +95,7 @@ export class UnifiedDimensionalStore {
       
       this.isInitialized = true;
       console.log('✅ Unified Dimensional Store initialized');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize Unified Dimensional Store:', error);
     }
   }
@@ -110,7 +110,7 @@ export class UnifiedDimensionalStore {
         resolve();
       };
 
-      request.onupgradeneeded = (event) => {
+      request.onupgradeneeded = (event: any) => {
         const db = (event.target as IDBOpenDBRequest).result;
         
         // Dimensional vectors store

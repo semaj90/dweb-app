@@ -293,7 +293,7 @@ export const authService = new AuthService();
 /**
  * Helper function to get user from request event
  */
-export async function getUser(event: RequestEvent) {
+export async function getUser(event: RequestEvent): Promise<any> {
   const sessionId = event.cookies.get(lucia.sessionCookieName);
   
   if (!sessionId) {
@@ -324,7 +324,7 @@ export async function getUser(event: RequestEvent) {
 /**
  * Require authenticated user middleware
  */
-export async function requireAuth(event: RequestEvent) {
+export async function requireAuth(event: RequestEvent): Promise<any> {
   const { user, session } = await getUser(event);
   
   if (!user || !session) {

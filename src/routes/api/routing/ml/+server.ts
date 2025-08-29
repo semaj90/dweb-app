@@ -17,7 +17,7 @@ import { mlTaskRouter, type TaskRequest } from '$lib/routing/ml-task-router';
 import type { ServiceEndpointConfig } from '$lib/routing/ml-task-router';
 
 // POST - Route and execute tasks
-export const POST: RequestHandler = async ({ request, url }) => {
+export const POST: RequestHandler = async ({ request, url }): Promise<any> => {
     try {
         const action = url.searchParams.get('action');
         const body = await request.json();
@@ -50,14 +50,14 @@ export const POST: RequestHandler = async ({ request, url }) => {
             default:
                 return error(400, 'Invalid action specified');
         }
-    } catch (err) {
+    } catch (err: any) {
         console.error('❌ ML routing API error:', err);
         return error(500, `Server error: ${err.message}`);
     }
 };
 
 // GET - Retrieve routing information and analytics
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
     try {
         const action = url.searchParams.get('action');
 
@@ -93,14 +93,14 @@ export const GET: RequestHandler = async ({ url }) => {
             default:
                 return getRoutingDashboard();
         }
-    } catch (err) {
+    } catch (err: any) {
         console.error('❌ ML routing API error:', err);
         return error(500, `Server error: ${err.message}`);
     }
 };
 
 // PUT - Update routing configuration
-export const PUT: RequestHandler = async ({ request }) => {
+export const PUT: RequestHandler = async ({ request }): Promise<any> => {
     try {
         const { config, service, model } = await request.json();
         
@@ -118,14 +118,14 @@ export const PUT: RequestHandler = async ({ request }) => {
         
         return error(400, 'No valid update data provided');
         
-    } catch (err) {
+    } catch (err: any) {
         console.error('❌ Update routing error:', err);
         return error(500, `Update error: ${err.message}`);
     }
 };
 
 // DELETE - Remove tasks or services
-export const DELETE: RequestHandler = async ({ url }) => {
+export const DELETE: RequestHandler = async ({ url }): Promise<any> => {
     try {
         const taskId = url.searchParams.get('taskId');
         const serviceId = url.searchParams.get('serviceId');
@@ -144,7 +144,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
         }
         
         return error(400, 'Task ID, Service ID, or queue type is required');
-    } catch (err) {
+    } catch (err: any) {
         console.error('❌ Delete routing error:', err);
         return error(500, `Delete error: ${err.message}`);
     }
@@ -154,7 +154,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
  * Task Routing Operations
  */
 
-async function routeTask(taskData: unknown) {
+async function routeTask(taskData: any): Promise<any> {
     const { task } = taskData;
     
     if (!task || !task.type) {
@@ -192,12 +192,12 @@ async function routeTask(taskData: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Task routing failed: ${err.message}`);
     }
 }
 
-async function executeTask(executionData: unknown) {
+async function executeTask(executionData: any): Promise<any> {
     const { task, decision } = executionData;
     
     if (!task || !decision) {
@@ -220,7 +220,7 @@ async function executeTask(executionData: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         // Handle 429 (service at capacity) specifically
         if (err.message.includes('429')) {
             return json({
@@ -237,7 +237,7 @@ async function executeTask(executionData: unknown) {
     }
 }
 
-async function routeAndExecuteTask(taskData: unknown) {
+async function routeAndExecuteTask(taskData: any): Promise<any> {
     const { task } = taskData;
     
     if (!task || !task.type) {
@@ -275,7 +275,7 @@ async function routeAndExecuteTask(taskData: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         // Handle 429 (service at capacity) specifically
         if (err.message.includes('429')) {
             return json({
@@ -293,7 +293,7 @@ async function routeAndExecuteTask(taskData: unknown) {
     }
 }
 
-async function routeStreamingTask(taskData: unknown) {
+async function routeStreamingTask(taskData: any): Promise<any> {
     const { task } = taskData;
     
     if (!task || !task.type) {
@@ -335,12 +335,12 @@ async function routeStreamingTask(taskData: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Streaming task failed: ${err.message}`);
     }
 }
 
-async function batchRouteTask(batchData: unknown) {
+async function batchRouteTask(batchData: any): Promise<any> {
     const { tasks } = batchData;
     
     if (!Array.isArray(tasks) || tasks.length === 0) {
@@ -351,7 +351,7 @@ async function batchRouteTask(batchData: unknown) {
     
     try {
         const results = await Promise.allSettled(
-            tasks.map(async (task, index) => {
+            tasks.map(async (task, index): Promise<any> => {
                 const taskRequest: TaskRequest = {
                     id: task.id || `batch-task-${Date.now()}-${index}`,
                     type: task.type,
@@ -395,12 +395,12 @@ async function batchRouteTask(batchData: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Batch routing failed: ${err.message}`);
     }
 }
 
-async function startRouter() {
+async function startRouter(): Promise<any> {
     try {
         await mlTaskRouter.start();
         
@@ -410,7 +410,7 @@ async function startRouter() {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Failed to start router: ${err.message}`);
     }
 }
@@ -740,7 +740,7 @@ function getRoutingHistory() {
  * Configuration and Management Operations
  */
 
-async function updateRoutingConfig(config: unknown) {
+async function updateRoutingConfig(config: any): Promise<any> {
     console.log('🔧 Updating routing configuration:', config);
     
     return json({
@@ -752,7 +752,7 @@ async function updateRoutingConfig(config: unknown) {
     });
 }
 
-async function updateServiceConfig(serviceConfig: unknown) {
+async function updateServiceConfig(serviceConfig: any): Promise<any> {
     console.log('🔧 Updating service configuration:', serviceConfig);
     
     return json({
@@ -763,7 +763,7 @@ async function updateServiceConfig(serviceConfig: unknown) {
     });
 }
 
-async function updateModelConfig(modelConfig: unknown) {
+async function updateModelConfig(modelConfig: any): Promise<any> {
     console.log('🧠 Updating model configuration:', modelConfig);
     
     return json({
@@ -775,7 +775,7 @@ async function updateModelConfig(modelConfig: unknown) {
     });
 }
 
-async function trainModels(trainingData: unknown) {
+async function trainModels(trainingData: any): Promise<any> {
     const { modelIds = [], options = {} } = trainingData;
     
     try {
@@ -799,12 +799,12 @@ async function trainModels(trainingData: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Model training failed: ${err.message}`);
     }
 }
 
-async function updateService(serviceData: unknown) {
+async function updateService(serviceData: any): Promise<any> {
     const { serviceId, updates } = serviceData;
     
     if (!serviceId || !updates) {
@@ -822,7 +822,7 @@ async function updateService(serviceData: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Service update failed: ${err.message}`);
     }
 }
@@ -831,7 +831,7 @@ async function updateService(serviceData: unknown) {
  * Task Management Operations
  */
 
-async function cancelTask(taskId: string) {
+async function cancelTask(taskId: string): Promise<any> {
     console.log(`🚫 Canceling task: ${taskId}`);
     
     return json({
@@ -843,7 +843,7 @@ async function cancelTask(taskId: string) {
     });
 }
 
-async function removeService(serviceId: string) {
+async function removeService(serviceId: string): Promise<any> {
     console.log(`🗑️ Removing service: ${serviceId}`);
     
     return json({
@@ -855,7 +855,7 @@ async function removeService(serviceId: string) {
     });
 }
 
-async function clearTaskQueue(queueType: string) {
+async function clearTaskQueue(queueType: string): Promise<any> {
     console.log(`🗑️ Clearing queue: ${queueType}`);
     
     return json({
@@ -921,7 +921,7 @@ function getRoutingDashboard() {
  * Helper Functions
  */
 
-function generateAnalyticsRecommendations(analytics: unknown, services: Map<string, ServiceEndpointConfig>): unknown[] {
+function generateAnalyticsRecommendations(analytics: any, services: Map<string, ServiceEndpointConfig>): any[] {
     const recommendations = [];
     
     // Service capacity recommendations
@@ -963,7 +963,7 @@ function generateAnalyticsRecommendations(analytics: unknown, services: Map<stri
     return recommendations;
 }
 
-function generateHealthAlerts(services: Map<string, ServiceEndpointConfig>, analytics: unknown): unknown[] {
+function generateHealthAlerts(services: Map<string, ServiceEndpointConfig>, analytics: any): any[] {
     const alerts = [];
     
     // Service health alerts

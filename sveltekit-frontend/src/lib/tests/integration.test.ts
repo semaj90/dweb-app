@@ -99,7 +99,7 @@ describe('Database Integration Tests', () => {
           // Force an error to trigger rollback
           throw new Error('Intentional test error');
         });
-      } catch (error) {
+      } catch (error: any) {
         expect(error).toBeInstanceOf(Error);
       }
 
@@ -120,7 +120,7 @@ describe('Case Operations Integration Tests', () => {
     if (createdCaseId) {
       try {
         await db.delete(cases).where(eq(cases.id, createdCaseId));
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Failed to clean up case:', error);
       }
     }
@@ -283,7 +283,7 @@ describe('Evidence Operations Integration Tests', () => {
     if (createdEvidenceId) {
       try {
         await db.delete(evidence).where(eq(evidence.id, createdEvidenceId));
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Failed to clean up evidence:', error);
       }
     }
@@ -291,7 +291,7 @@ describe('Evidence Operations Integration Tests', () => {
     if (createdCaseId) {
       try {
         await db.delete(cases).where(eq(cases.id, createdCaseId));
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Failed to clean up case:', error);
       }
     }
@@ -452,7 +452,7 @@ describe('Vector Operations Integration Tests', () => {
 });
 
 // Test utilities
-export async function setupTestDatabase() {
+export async function setupTestDatabase(): Promise<any> {
   // Insert test user if not exists
   const existingUsers = await db.select().from(users).where(eq(users.id, testUser.id)).limit(1);
   if (existingUsers.length === 0) {
@@ -466,7 +466,7 @@ export async function setupTestDatabase() {
   }
 }
 
-export async function cleanupTestDatabase() {
+export async function cleanupTestDatabase(): Promise<any> {
   // Clean up all test data
   await db.delete(evidence).where(eq(evidence.uploadedBy, testUser.id));
   await db.delete(cases).where(eq(cases.createdBy, testUser.id));

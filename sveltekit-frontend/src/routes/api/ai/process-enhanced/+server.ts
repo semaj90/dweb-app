@@ -8,7 +8,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { json } from "@sveltejs/kit";
 
 // Import AI services
-interface ProcessingPipeline {
+export interface ProcessingPipeline {
   evidenceId: string;
   stages: {
     embedding: { status: string; result?: unknown; error?: string };
@@ -62,7 +62,7 @@ export const POST: RequestHandler = async ({ request, fetch }) => {
       const embeddingResult = await embeddingResponse.json();
       pipeline.stages.embedding.status = "complete";
       pipeline.stages.embedding.result = embeddingResult;
-    } catch (error) {
+    } catch (error: any) {
       pipeline.stages.embedding.status = "error";
       pipeline.stages.embedding.error = error.message;
     }
@@ -88,7 +88,7 @@ export const POST: RequestHandler = async ({ request, fetch }) => {
         pipeline.stages.tagging.result = taggingResult;
 
         return taggingResult;
-      } catch (error) {
+      } catch (error: any) {
         pipeline.stages.tagging.status = "error";
         pipeline.stages.tagging.error = error.message;
         return null;
@@ -116,7 +116,7 @@ export const POST: RequestHandler = async ({ request, fetch }) => {
         pipeline.stages.analysis.result = analysisResult;
 
         return analysisResult;
-      } catch (error) {
+      } catch (error: any) {
         pipeline.stages.analysis.status = "error";
         pipeline.stages.analysis.error = error.message;
         return null;
@@ -155,7 +155,7 @@ export const POST: RequestHandler = async ({ request, fetch }) => {
 
         pipeline.stages.vectorSearch.status = "complete";
         pipeline.stages.vectorSearch.result = { matches: vectorMatches };
-      } catch (error) {
+      } catch (error: any) {
         pipeline.stages.vectorSearch.status = "error";
         pipeline.stages.vectorSearch.error = error.message;
       }
@@ -188,7 +188,7 @@ export const POST: RequestHandler = async ({ request, fetch }) => {
 
       pipeline.stages.graphDiscovery.status = "complete";
       pipeline.stages.graphDiscovery.result = { relationships };
-    } catch (error) {
+    } catch (error: any) {
       pipeline.stages.graphDiscovery.status = "error";
       pipeline.stages.graphDiscovery.error = error.message;
     }
@@ -229,7 +229,7 @@ export const POST: RequestHandler = async ({ request, fetch }) => {
         ).length,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Evidence processing failed:", error);
     return json(
       {

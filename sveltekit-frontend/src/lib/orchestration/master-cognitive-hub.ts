@@ -14,7 +14,7 @@ import { webgpuRAGService } from '../webgpu/webgpu-rag-service';
 import { nesCacheOrchestrator } from '../services/nes-cache-orchestrator';
 
 // 🎮 Master cognitive state with secret developer modes
-interface MasterCognitiveState {
+export interface MasterCognitiveState {
   // Core systems status
   systems: {
     routing: 'initializing' | 'ready' | 'learning' | 'optimizing' | 'transcendent';
@@ -75,7 +75,7 @@ interface MasterCognitiveState {
 }
 
 // 🎯 Advanced orchestration capabilities
-interface CognitiveCapabilities {
+export interface CognitiveCapabilities {
   // Core AI capabilities
   reasoning: number;
   learning: number;
@@ -94,7 +94,7 @@ interface CognitiveCapabilities {
 }
 
 // 🚀 Ultimate developer toolkit
-interface DeveloperToolkit {
+export interface DeveloperToolkit {
   // Performance analysis
   profiler: {
     enabled: boolean;
@@ -550,7 +550,7 @@ export class MasterCognitiveHub {
         console.log('⚠️ WebGPU RAG Service not available or not ready');
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('⚠️ System initialization error:', error);
       this.activatePhoenixMode(); // Auto-recovery
     }

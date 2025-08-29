@@ -8,7 +8,7 @@ import { EventEmitter } from 'events';
 import { performance } from 'perf_hooks';
 
 // === RL Configuration ===
-interface RLConfig {
+export interface RLConfig {
   algorithm: 'q-learning' | 'dqn' | 'a3c';
   learningRate: number;
   discountFactor: number;
@@ -23,7 +23,7 @@ interface RLConfig {
 }
 
 // === State and Action Spaces ===
-interface CacheState {
+export interface CacheState {
   // Cache metrics (normalized 0-1)
   cacheUtilization: number;
   hitRatio: number;
@@ -50,7 +50,7 @@ interface CacheState {
   tagDensity: number;
 }
 
-interface CacheAction {
+export interface CacheAction {
   type: 'prefetch' | 'evict' | 'compress' | 'promote' | 'demote' | 'replicate';
   target: string; // Cache key or pattern
   priority: number; // 0-1
@@ -61,7 +61,7 @@ interface CacheAction {
   };
 }
 
-interface Experience {
+export interface Experience {
   state: CacheState;
   action: CacheAction;
   reward: number;
@@ -71,7 +71,7 @@ interface Experience {
 }
 
 // === Neural Network Architecture (Simplified) ===
-interface NeuralNetwork {
+export interface NeuralNetwork {
   layers: {
     inputSize: number;
     hiddenSizes: number[];
@@ -141,7 +141,7 @@ export class ReinforcementLearningCacheOptimizer extends EventEmitter {
       this.emit('initialized');
       console.log(`✅ RL Optimizer initialized with ${this.config.algorithm.toUpperCase()}`);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize RL Optimizer:', error);
       throw error;
     }
@@ -232,7 +232,7 @@ export class ReinforcementLearningCacheOptimizer extends EventEmitter {
       
       this.emit('dqnTrainingComplete', { batchSize: batch.length, episode: this.trainingEpisodes });
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('DQN training error:', error);
       this.emit('trainingError', error);
     } finally {
@@ -510,7 +510,7 @@ export class ReinforcementLearningCacheOptimizer extends EventEmitter {
         averageReward: episodeReward / actionsExecuted
       };
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Training episode error:', error);
       throw error;
     }

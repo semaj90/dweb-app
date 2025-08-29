@@ -53,7 +53,7 @@ describe('wind3', () => {
       ],
     })
 
-    async function transform(code: string, _uno: UnoGenerator = uno) {
+    async function transform(code: string, _uno: UnoGenerator = uno): Promise<any> {
       const s = new MagicString(code)
       await transformDirectives(s, _uno, {})
       return prettier.format(s.toString(), {
@@ -768,7 +768,7 @@ div {
       ],
     })
 
-    async function transform(code: string, _uno: UnoGenerator = uno) {
+    async function transform(code: string, _uno: UnoGenerator = uno): Promise<any> {
       const s = new MagicString(code)
       await transformDirectives(s, _uno, {})
       return prettier.format(s.toString(), {
@@ -1401,7 +1401,7 @@ div {
       })
     }
 
-    async function transform(code: string, _uno: UnoGenerator) {
+    async function transform(code: string, _uno: UnoGenerator): Promise<any> {
       const s = new MagicString(code)
       await transformDirectives(s, _uno, {})
       return prettier.format(s.toString(), {
@@ -1464,7 +1464,7 @@ describe('wind4', () => {
       ],
     })
 
-    async function transform(code: string, _uno: UnoGenerator = uno) {
+    async function transform(code: string, _uno: UnoGenerator = uno): Promise<any> {
       const s = new MagicString(code)
       await transformDirectives(s, _uno, {})
       return prettier.format(s.toString(), {
@@ -1565,7 +1565,7 @@ describe('wind4', () => {
       ],
     })
 
-    async function transform(code: string, _uno: UnoGenerator = uno) {
+    async function transform(code: string, _uno: UnoGenerator = uno): Promise<any> {
       const s = new MagicString(code)
       await transformDirectives(s, _uno, {})
       return prettier.format(s.toString(), {

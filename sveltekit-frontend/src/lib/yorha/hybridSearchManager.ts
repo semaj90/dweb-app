@@ -14,7 +14,7 @@ export interface HybridInitOptions {
 export function getLastRefresh() { return lastRefresh; }
 export function isRefreshing() { return refreshing; }
 
-export async function initHybridLayer(opts: HybridInitOptions = {}) {
+export async function initHybridLayer(opts: HybridInitOptions = {}): Promise<any> {
   if (typeof window === 'undefined') return;
   const { refreshIntervalMs = 5 * 60_000, maxDocs = 750 } = opts;
   await ensureLocalIndex();
@@ -29,8 +29,8 @@ export async function initHybridLayer(opts: HybridInitOptions = {}) {
   }
 }
 
-interface RefreshOpts { maxDocs?: number; }
-export async function refreshRemote(opts: RefreshOpts = {}) {
+export interface RefreshOpts { maxDocs?: number; }
+export async function refreshRemote(opts: RefreshOpts = {}): Promise<any> {
   if (refreshing) return;
   refreshing = true;
   const { maxDocs = 750 } = opts;
@@ -54,14 +54,14 @@ export async function refreshRemote(opts: RefreshOpts = {}) {
       }
       lastRefresh = Date.now();
     }
-  } catch (e) {
+  } catch (e: any) {
     console.warn('[HybridSearch] refresh failed', e);
   } finally {
     refreshing = false;
   }
 }
 
-export async function reRankWithPgVector(query: string, current: any[], endpoint = '/api/ai/vector-search') {
+export async function reRankWithPgVector(query: string, current: any[], endpoint = '/api/ai/vector-search'): Promise<any> {
   if (!query.trim() || current.length === 0) return current;
   try {
     const payload: any = { query, limit: current.length };
@@ -82,7 +82,7 @@ export async function reRankWithPgVector(query: string, current: any[], endpoint
       const scaled = raw <= 1 ? Math.round(raw * 100) : Math.round(Math.min(100, raw));
       return { ...item, relevance: scaled, source: item.source || 'hybrid' };
     }).sort((a, b) => b.relevance - a.relevance);
-  } catch (e) {
+  } catch (e: any) {
     console.warn('[HybridSearch] re-rank failed', e);
     return current;
   }

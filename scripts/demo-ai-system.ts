@@ -202,7 +202,7 @@ class AISystemDemo {
       // Step 8: Final Performance Report
       await this.finalPerformanceReport();
       
-    } catch (error) {
+    } catch (error: any) {
       console.error(chalk.red('\n❌ Demo failed:'), error);
       process.exit(1);
     }
@@ -229,7 +229,7 @@ class AISystemDemo {
         if (name === 'Ollama Service' && result.models) {
           console.log(chalk.gray(`  Available models: ${result.models.join(', ')}`));
         }
-      } catch (error) {
+      } catch (error: any) {
         console.log(chalk.red(`✗ ${name}: Unhealthy - ${error}`));
       }
     }
@@ -315,7 +315,7 @@ class AISystemDemo {
         console.log(chalk.gray(`  Query embedding dimensions: ${queryEmbedding.length}`));
         console.log(chalk.gray(`  Simulated results: 5 relevant document chunks found`));
         console.log();
-      } catch (error) {
+      } catch (error: any) {
         console.log(chalk.red(`✗ Query failed: ${error}`));
       }
     }
@@ -363,7 +363,7 @@ class AISystemDemo {
       try {
         const submittedJob = await job.submit();
         console.log(chalk.green(`✓ ${job.name} job submitted (ID: ${submittedJob.id})`));
-      } catch (error) {
+      } catch (error: any) {
         console.log(chalk.red(`✗ ${job.name} job failed: ${error}`));
       }
     }
@@ -384,7 +384,7 @@ class AISystemDemo {
         console.log(chalk.gray(`    Completed: ${queueStats.completed}`));
         console.log(chalk.gray(`    Failed: ${queueStats.failed}`));
       });
-    } catch (error) {
+    } catch (error: any) {
       console.log(chalk.red(`Queue stats error: ${error}`));
     }
     
@@ -445,7 +445,7 @@ class AISystemDemo {
         if (result) {
           console.log(chalk.gray(`  Result: ${JSON.stringify(result)}`));
         }
-      } catch (error) {
+      } catch (error: any) {
         console.log(chalk.red(`✗ ${name} failed: ${error}`));
       }
     }
@@ -575,7 +575,7 @@ class AISystemDemo {
 }
 
 // Main execution
-async function main() {
+async function main(): Promise<any> {
   const demo = new AISystemDemo();
   await demo.runFullDemo();
 }

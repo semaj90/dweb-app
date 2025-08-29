@@ -2,7 +2,7 @@ import type { ToggleRootPropsWithoutHTML } from "bits-ui";
 import {
 	ToggleRootOnPressedChangeProp,
 	ToggleRootStateDataAttr,
-} from "./extended-types/toggle/index.js";
+} from './extended-types/toggle/index';
 import { withChildProps } from "$lib/content/api-reference/shared.js";
 import {
 	defineBooleanProp,
@@ -10,7 +10,7 @@ import {
 	defineEnumDataAttr,
 	defineFunctionProp,
 	defineSimpleDataAttr,
-} from "../utils.js";
+} from '../utils';
 
 const root = defineComponentApiSchema<ToggleRootPropsWithoutHTML>({
 	title: "Root",

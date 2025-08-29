@@ -46,7 +46,7 @@ export const load: PageServerLoad = async ({ url, locals, fetch }) => {
       timestamp: new Date().toISOString()
     };
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error loading command center data:', error);
     
     // Return fallback data if database is unavailable
@@ -88,7 +88,7 @@ export const load: PageServerLoad = async ({ url, locals, fetch }) => {
   }
 };
 
-async function getSystemMetrics() {
+async function getSystemMetrics(): Promise<any> {
   try {
     // Use the YoRHa Detective Service
     const metrics = await yorhaDetectiveService.getSystemMetrics();
@@ -98,7 +98,7 @@ async function getSystemMetrics() {
       memoryUsage: metrics.memory,
       networkLatency: metrics.network
     };
-  } catch (error) {
+  } catch (error: any) {
     console.warn('YoRHa Detective Service unavailable, using fallback metrics');
     
     // Fallback to simulated metrics
@@ -111,7 +111,7 @@ async function getSystemMetrics() {
   }
 }
 
-async function getCasesData() {
+async function getCasesData(): Promise<any> {
   try {
     // Query database for case statistics
     const activeCasesCount = await db
@@ -130,7 +130,7 @@ async function getCasesData() {
       personsOfInterest: Math.floor((activeCasesCount[0]?.count || 12) * 0.7), // Estimated
       aiQueries: (activeCasesCount[0]?.count || 12) * 127 // Estimated based on activity
     };
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Database unavailable for cases data, using fallback');
     return {
       total: 12,
@@ -140,7 +140,7 @@ async function getCasesData() {
   }
 }
 
-async function getEvidenceData() {
+async function getEvidenceData(): Promise<any> {
   try {
     // Query database for evidence statistics
     const evidenceCount = await db
@@ -151,7 +151,7 @@ async function getEvidenceData() {
     return {
       total: evidenceCount[0]?.count || 247
     };
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Database unavailable for evidence data, using fallback');
     return {
       total: 247
@@ -159,7 +159,7 @@ async function getEvidenceData() {
   }
 }
 
-async function getRecentActivity() {
+async function getRecentActivity(): Promise<any> {
   try {
     // Query for recent case updates, evidence uploads, etc.
     const recentCases = await db
@@ -182,7 +182,7 @@ async function getRecentActivity() {
       type: case_.status === 'open' ? 'success' : 'info'
     }));
 
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Database unavailable for recent activity, using fallback');
     return [
       {

@@ -31,10 +31,10 @@ import {
 	preventScrollProp,
 	refProp,
 	withChildProps,
-} from "./shared.js";
-import { menu } from "./menu.api.js";
+} from './shared';
+import { menu } from './menu.api';
 import { omit } from "$lib/utils/omit.js";
-import { defineBooleanProp, defineComponentApiSchema } from "../utils.js";
+import { defineBooleanProp, defineComponentApiSchema } from '../utils';
 
 export const root = defineComponentApiSchema<ContextMenuRootPropsWithoutHTML>({
 	title: "Root",

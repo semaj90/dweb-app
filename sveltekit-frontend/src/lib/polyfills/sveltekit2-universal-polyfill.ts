@@ -16,7 +16,7 @@ import { lokiRedisCache } from '$lib/cache/loki-redis-integration';
 import type { SvelteKitWASMPolyfill } from '$lib/types/wasm-types';
 
 // Browser polyfills for Node.js APIs
-interface NodePolyfills {
+export interface NodePolyfills {
   Buffer: typeof Buffer;
   process: typeof process;
   global: typeof globalThis;
@@ -65,7 +65,7 @@ class SvelteKit2UniversalPolyfill implements SvelteKitWASMPolyfill {
       console.log('✅ SvelteKit 2 Universal Polyfill initialized');
       
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Polyfill initialization failed:', error);
       return false;
     }
@@ -195,7 +195,7 @@ class SvelteKit2UniversalPolyfill implements SvelteKitWASMPolyfill {
 
       this.polyfillsApplied.add('node');
       console.log('✅ Node.js polyfills applied');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to apply Node.js polyfills:', error);
     }
   }
@@ -386,7 +386,7 @@ class SvelteKit2UniversalPolyfill implements SvelteKitWASMPolyfill {
 
       this.polyfillsApplied.add('loki');
       console.log('✅ Loki.js polyfills applied');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to apply Loki.js polyfills:', error);
     }
   }
@@ -404,7 +404,7 @@ class SvelteKit2UniversalPolyfill implements SvelteKitWASMPolyfill {
       });
 
       // Enhanced service worker messaging for legal AI
-      navigator.serviceWorker.addEventListener('message', (event) => {
+      navigator.serviceWorker.addEventListener('message', (event: any) => {
         const { type, data } = event.data;
         
         switch (type) {
@@ -435,7 +435,7 @@ class SvelteKit2UniversalPolyfill implements SvelteKitWASMPolyfill {
 
       this.serviceWorkerReady = true;
       console.log('✅ Service Worker integration established');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Service Worker registration failed:', error);
     }
   }
@@ -474,7 +474,7 @@ class SvelteKit2UniversalPolyfill implements SvelteKitWASMPolyfill {
       });
 
       console.log(`📊 Initialized ${successCount}/${results.length} integrated services`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize integrated services:', error);
     }
   }
@@ -559,7 +559,7 @@ class SvelteKit2UniversalPolyfill implements SvelteKitWASMPolyfill {
       this.serviceWorkerReady = false;
 
       console.log('🧹 SvelteKit 2 Universal Polyfill disposed');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Disposal failed:', error);
     }
   }

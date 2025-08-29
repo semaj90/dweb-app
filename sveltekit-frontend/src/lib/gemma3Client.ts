@@ -89,7 +89,7 @@ export class Gemma3Client {
         signal: AbortSignal.timeout(10000),
       });
       return response.ok;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Health check failed:", error);
       return false;
     }
@@ -352,7 +352,7 @@ export async function detectAvailableServer(): Promise<{
           backend: info.backend || server.name,
         };
       }
-    } catch (error) {
+    } catch (error: any) {
       console.debug(`Server ${server.url} not available:`, error);
     }
   }
@@ -393,7 +393,7 @@ export function createGemma3Store() {
         }
         serverInfo = null;
         return false;
-      } catch (error) {
+      } catch (error: any) {
         console.error("Health check failed:", error);
         serverInfo = null;
         return false;

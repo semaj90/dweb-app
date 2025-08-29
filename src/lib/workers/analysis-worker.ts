@@ -1,5 +1,6 @@
-import { parentPort, workerData } from "worker_threads";
-import fetch from "node-fetch";
+// Web Worker context - no imports needed
+declare const self: DedicatedWorkerGlobalScope;
+// fetch is available globally in Web Workers
 
 /**
  * Phase 4: Analysis Worker
@@ -7,7 +8,7 @@ import fetch from "node-fetch";
  */
 
 // Type definitions
-interface WorkerConfig {
+export interface WorkerConfig {
   ollamaUrl: string;
   analysisModel: string;
   maxAnalysisLength: number;
@@ -15,21 +16,21 @@ interface WorkerConfig {
   timeout: number;
 }
 
-interface WorkerStats {
+export interface WorkerStats {
   analyzed: number;
   patterns: number;
   recommendations: number;
   errors: number;
 }
 
-interface LegalPatterns {
+export interface LegalPatterns {
   evidenceTypes: Record<string, string[]>;
   chargePatterns: Record<string, string[]>;
   strengthIndicators: string[];
   weaknessIndicators: string[];
 }
 
-interface Evidence {
+export interface Evidence {
   id?: string;
   type?: string;
   description?: string;
@@ -40,30 +41,30 @@ interface Evidence {
   reliability?: string;
 }
 
-interface Charge {
+export interface Charge {
   statute?: string;
   description?: string;
   severity?: string;
 }
 
-interface Witness {
+export interface Witness {
   reliability?: string;
 }
 
-interface Person {
+export interface Person {
   id?: string;
   name?: string;
   role?: string;
 }
 
-interface TimelineEvent {
+export interface TimelineEvent {
   date?: string;
   timestamp?: string;
   type?: string;
   description?: string;
 }
 
-interface CaseData {
+export interface CaseData {
   id?: string;
   title?: string;
   status?: string;
@@ -75,36 +76,36 @@ interface CaseData {
   filingDate?: string;
 }
 
-interface TaskMessage {
+export interface TaskMessage {
   taskId: string;
   data: {
     type: string;
     case?: CaseData;
     evidence?: Evidence[];
-    items?: unknown[];
+    items?: any[];
     caseData?: CaseData;
-    analysisData?: unknown;
+    analysisData?: any;
     query?: string;
   };
-  options?: unknown;
+  options?: any;
 }
 
-interface AnalysisResult {
+export interface AnalysisResult {
   caseId?: string;
-  summary: unknown;
-  evidence: unknown;
-  patterns: unknown;
-  strength: unknown;
-  aiInsights: unknown;
-  recommendations: unknown;
-  timeline: unknown;
-  riskFactors: unknown[];
+  summary: any;
+  evidence: any;
+  patterns: any;
+  strength: any;
+  aiInsights: any;
+  recommendations: any;
+  timeline: any;
+  riskFactors: any[];
   processingTime: number;
   workerId: string;
   timestamp: string;
 }
 
-interface StrengthAssessment {
+export interface StrengthAssessment {
   overallStrength: {
     level: string;
     confidence: number;
@@ -116,7 +117,7 @@ interface StrengthAssessment {
   factors: Record<string, any>;
 }
 
-interface EvidenceAnalysis {
+export interface EvidenceAnalysis {
   total: number;
   byType: Record<string, number>;
   strengths: string[];
@@ -124,27 +125,27 @@ interface EvidenceAnalysis {
   recommendations: string[];
 }
 
-interface PatternAnalysis {
-  temporal: unknown;
-  categorical: unknown;
-  relational: unknown;
-  anomalies: unknown[];
+export interface PatternAnalysis {
+  temporal: any;
+  categorical: any;
+  relational: any;
+  anomalies: any[];
 }
 
-interface ScoreResult {
+export interface ScoreResult {
   score: number;
   maxPossible: number;
   normalized: number;
   details: string;
 }
 
-interface RiskFactor {
+export interface RiskFactor {
   type: string;
   level: string;
   description: string;
 }
 
-interface Recommendation {
+export interface Recommendation {
   type: string;
   priority: string;
   action: string;
@@ -228,7 +229,7 @@ class AnalysisWorker {
     const { taskId, data, options } = message;
 
     try {
-      let result: unknown;
+      let result: any;
 
       switch (data.type) {
         case "analyze_case":
@@ -256,8 +257,8 @@ class AnalysisWorker {
       // Handle async results
       if (result instanceof Promise) {
         result
-          .then((asyncResult: unknown) => {
-            parentPort?.postMessage({
+          .then((asyncResult: any) => {
+            self.postMessage({
               taskId,
               success: true,
               data: asyncResult,
@@ -265,23 +266,23 @@ class AnalysisWorker {
           })
           .catch((error: Error) => {
             this.stats.errors++;
-            parentPort?.postMessage({
+            self.postMessage({
               taskId,
               success: false,
               error: error.message,
             });
           });
       } else {
-        parentPort?.postMessage({
+        self.postMessage({
           taskId,
           success: true,
           data: result,
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Analysis error in ${this.workerId}:`, error);
       this.stats.errors++;
-      parentPort?.postMessage({
+      self.postMessage({
         taskId,
         success: false,
         error: error instanceof Error ? error.message : String(error),
@@ -292,7 +293,7 @@ class AnalysisWorker {
   /**
    * Analyze a complete case
    */
-  private async analyzeCase(caseData: CaseData, options: unknown = {}): Promise<AnalysisResult> {
+  private async analyzeCase(caseData: CaseData, options: any = {}): Promise<AnalysisResult> {
     console.log(`⚖️ Analyzing case: ${caseData.id || "Unknown"}`);
 
     try {
@@ -342,7 +343,7 @@ class AnalysisWorker {
 
       this.stats.analyzed++;
       return analysis;
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(`Case analysis failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
@@ -350,7 +351,7 @@ class AnalysisWorker {
   /**
    * Generate case summary
    */
-  private generateCaseSummary(caseData: CaseData, strengthAssessment: StrengthAssessment): unknown {
+  private generateCaseSummary(caseData: CaseData, strengthAssessment: StrengthAssessment): any {
     const evidenceCount = caseData.evidence?.length || 0;
     const chargeCount = caseData.charges?.length || 0;
     const strength = strengthAssessment.overallStrength;
@@ -519,7 +520,7 @@ class AnalysisWorker {
   /**
    * Perform pattern analysis
    */
-  private performPatternAnalysis(items: unknown[], options: unknown = {}): PatternAnalysis {
+  private performPatternAnalysis(items: any[], options: any = {}): PatternAnalysis {
     const patterns: PatternAnalysis = {
       temporal: this.findTemporalPatterns(items),
       categorical: this.findCategoricalPatterns(items),
@@ -534,8 +535,11 @@ class AnalysisWorker {
   /**
    * Find temporal patterns
    */
-  private findTemporalPatterns(items: unknown[]): unknown {
-    const datedItems = items.filter((item: unknown) => item.date || item.timestamp);
+  private findTemporalPatterns(items: any[]): any {
+    const datedItems = items.filter((item: any) => {
+      const obj = item as any;
+      return obj.date || obj.timestamp;
+    });
 
     if (datedItems.length < 2) {
       return { message: "Insufficient temporal data" };
@@ -543,21 +547,27 @@ class AnalysisWorker {
 
     // Sort by date
     datedItems.sort(
-      (a: unknown, b: unknown) =>
-        new Date(a.date || a.timestamp).getTime() - new Date(b.date || b.timestamp).getTime()
+      (a: any, b: any) => {
+        const objA = a as any;
+        const objB = b as any;
+        return new Date(objA.date || objA.timestamp).getTime() - new Date(objB.date || objB.timestamp).getTime();
+      }
     );
 
     return {
-      timeline: datedItems.map((item: unknown) => ({
-        date: item.date || item.timestamp,
-        type: item.type,
-        description: item.description,
-      })),
+      timeline: datedItems.map((item: any) => {
+        const obj = item as any;
+        return {
+          date: obj.date || obj.timestamp,
+          type: obj.type,
+          description: obj.description,
+        };
+      }),
       timespan: {
-        start: datedItems[0].date || datedItems[0].timestamp,
+        start: (datedItems[0] as any).date || (datedItems[0] as any).timestamp,
         end:
-          datedItems[datedItems.length - 1].date ||
-          datedItems[datedItems.length - 1].timestamp,
+          (datedItems[datedItems.length - 1] as any).date ||
+          (datedItems[datedItems.length - 1] as any).timestamp,
       },
     };
   }
@@ -565,11 +575,12 @@ class AnalysisWorker {
   /**
    * Find categorical patterns
    */
-  private findCategoricalPatterns(items: unknown[]): unknown {
+  private findCategoricalPatterns(items: any[]): any {
     const categories: Record<string, number> = {};
 
     for (const item of items) {
-      const category = item.type || item.category || "uncategorized";
+      const obj = item as any;
+      const category = obj.type || obj.category || "uncategorized";
       categories[category] = (categories[category] || 0) + 1;
     }
 
@@ -583,8 +594,8 @@ class AnalysisWorker {
   /**
    * Find relational patterns
    */
-  private findRelationalPatterns(items: unknown[]): unknown {
-    const relationships: unknown[] = [];
+  private findRelationalPatterns(items: any[]): any {
+    const relationships: any[] = [];
 
     // Look for items that reference each other
     for (let i = 0; i < items.length; i++) {
@@ -602,38 +613,41 @@ class AnalysisWorker {
     return {
       relationships,
       count: relationships.length,
-      types: [...new Set(relationships.map((r: unknown) => r.type))],
+      types: Array.from(new Set(relationships.map((r: any) => (r as any).type))),
     };
   }
 
   /**
    * Find relationship between two items
    */
-  private findRelationship(item1: unknown, item2: unknown): unknown | null {
+  private findRelationship(item1: any, item2: any): any | null {
+    const obj1 = item1 as any;
+    const obj2 = item2 as any;
+    
     // Same location
-    if (item1.location && item2.location && item1.location === item2.location) {
+    if (obj1.location && obj2.location && obj1.location === obj2.location) {
       return {
         type: "location",
-        items: [item1.id, item2.id],
-        description: `Both items associated with ${item1.location}`,
+        items: [obj1.id, obj2.id],
+        description: `Both items associated with ${obj1.location}`,
       };
     }
 
     // Same person
-    if (item1.person && item2.person && item1.person === item2.person) {
+    if (obj1.person && obj2.person && obj1.person === obj2.person) {
       return {
         type: "person",
-        items: [item1.id, item2.id],
-        description: `Both items associated with ${item1.person}`,
+        items: [obj1.id, obj2.id],
+        description: `Both items associated with ${obj1.person}`,
       };
     }
 
     // Same date
-    if (item1.date && item2.date && item1.date === item2.date) {
+    if (obj1.date && obj2.date && obj1.date === obj2.date) {
       return {
         type: "temporal",
-        items: [item1.id, item2.id],
-        description: `Both items occurred on ${item1.date}`,
+        items: [obj1.id, obj2.id],
+        description: `Both items occurred on ${obj1.date}`,
       };
     }
 
@@ -643,12 +657,15 @@ class AnalysisWorker {
   /**
    * Find anomalies in the data
    */
-  private findAnomalies(items: unknown[]): unknown[] {
-    const anomalies: unknown[] = [];
+  private findAnomalies(items: any[]): any[] {
+    const anomalies: any[] = [];
 
     // Check for missing critical information
     const missingInfo = items.filter(
-      (item: unknown) => !item.date || !item.type || !item.description
+      (item: any) => {
+        const obj = item as any;
+        return !obj.date || !obj.type || !obj.description;
+      }
     );
     if (missingInfo.length > 0) {
       anomalies.push({
@@ -660,9 +677,10 @@ class AnalysisWorker {
 
     // Check for duplicate items
     const seen = new Set<string>();
-    const duplicates: unknown[] = [];
+    const duplicates: any[] = [];
     for (const item of items) {
-      const key = `${item.type}-${item.description}`;
+      const obj = item as any;
+      const key = `${obj.type}-${obj.description}`;
       if (seen.has(key)) {
         duplicates.push(item);
       } else {
@@ -684,7 +702,7 @@ class AnalysisWorker {
   /**
    * Assess case strength
    */
-  private assessCaseStrength(caseData: CaseData, options: unknown = {}): StrengthAssessment {
+  private assessCaseStrength(caseData: CaseData, options: any = {}): StrengthAssessment {
     const assessment: StrengthAssessment = {
       overallStrength: { level: "unknown", confidence: 0, score: 0 },
       strengths: [],
@@ -865,7 +883,7 @@ class AnalysisWorker {
   /**
    * Analyze timeline
    */
-  private analyzeTimeline(timeline: TimelineEvent[]): unknown {
+  private analyzeTimeline(timeline: TimelineEvent[]): any {
     if (!timeline || timeline.length === 0) {
       return { message: "No timeline data available" };
     }
@@ -891,8 +909,8 @@ class AnalysisWorker {
   /**
    * Find gaps in timeline
    */
-  private findTimelineGaps(events: TimelineEvent[]): unknown[] {
-    const gaps: unknown[] = [];
+  private findTimelineGaps(events: TimelineEvent[]): any[] {
+    const gaps: any[] = [];
 
     for (let i = 0; i < events.length - 1; i++) {
       const current = new Date(events[i].date || events[i].timestamp!);
@@ -959,7 +977,7 @@ class AnalysisWorker {
   /**
    * Perform AI analysis using LLM
    */
-  private async performAIAnalysis(caseData: CaseData, options: unknown = {}): Promise<any> {
+  private async performAIAnalysis(caseData: CaseData, options: any = {}): Promise<any> {
     try {
       const prompt = this.buildAnalysisPrompt(caseData);
 
@@ -993,7 +1011,7 @@ class AnalysisWorker {
         response_length: ((data as any).response?.length || 0),
         timestamp: new Date().toISOString(),
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("AI analysis failed:", error);
       return {
         error: error instanceof Error ? error.message : String(error),
@@ -1042,33 +1060,35 @@ Focus on practical prosecutorial considerations and provide specific, actionable
   /**
    * Generate recommendations
    */
-  private async generateRecommendations(analysisData: unknown, options: unknown = {}): Promise<any> {
+  private async generateRecommendations(analysisData: any, options: any = {}): Promise<any> {
     const recommendations: Recommendation[] = [];
 
+    const data = analysisData as any;
+    
     // Evidence-based recommendations
-    if (analysisData.evidence) {
-      if (analysisData.evidence.total < 5) {
+    if (data.evidence) {
+      if (data.evidence.total < 5) {
         recommendations.push({
           type: "evidence",
           priority: "high",
           action: "Gather additional evidence to strengthen case",
-          rationale: `Only ${analysisData.evidence.total} pieces of evidence available`,
+          rationale: `Only ${data.evidence.total} pieces of evidence available`,
         });
       }
 
-      if (analysisData.evidence.weaknesses.length > 0) {
+      if (data.evidence.weaknesses.length > 0) {
         recommendations.push({
           type: "evidence",
           priority: "medium",
           action: "Address evidence weaknesses",
-          rationale: `${analysisData.evidence.weaknesses.length} potential issues identified`,
+          rationale: `${data.evidence.weaknesses.length} potential issues identified`,
         });
       }
     }
 
     // Strength-based recommendations
-    if (analysisData.strength) {
-      if (analysisData.strength.overallStrength.level === "weak") {
+    if (data.strength) {
+      if (data.strength.overallStrength.level === "weak") {
         recommendations.push({
           type: "strategy",
           priority: "high",
@@ -1092,7 +1112,7 @@ Focus on practical prosecutorial considerations and provide specific, actionable
   /**
    * Perform legal research
    */
-  private async performLegalResearch(query: string, options: unknown = {}): Promise<any> {
+  private async performLegalResearch(query: string, options: any = {}): Promise<any> {
     // This would typically integrate with legal databases
     // For now, provide structured research framework
 
@@ -1123,14 +1143,14 @@ Focus on practical prosecutorial considerations and provide specific, actionable
   /**
    * Analyze evidence (for external API calls)
    */
-  private async analyzeEvidence(evidence: Evidence[], options: unknown = {}): Promise<any> {
+  private async analyzeEvidence(evidence: Evidence[], options: any = {}): Promise<any> {
     return this.analyzeEvidenceSet(evidence);
   }
 
   /**
    * Get worker statistics
    */
-  getStats(): unknown {
+  getStats(): any {
     return {
       ...this.stats,
       cacheSize: this.analysisCache.size,
@@ -1148,12 +1168,12 @@ Focus on practical prosecutorial considerations and provide specific, actionable
 const worker = new AnalysisWorker();
 
 // Handle messages from main thread
-parentPort?.on("message", (message: TaskMessage) => {
+self.addEventListener("message", (message: TaskMessage) => {
   worker.handleMessage(message);
 });
 
 // Send ready signal
-parentPort?.postMessage({
+self.postMessage({
   type: "ready",
   workerId: worker.workerId,
   patterns: Object.keys(worker.legalPatterns),

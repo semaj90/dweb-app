@@ -18,7 +18,7 @@ import { getWatcher } from './watcher'
 
 const name = 'unocss'
 
-export async function resolveOptions(options: CliOptions) {
+export async function resolveOptions(options: CliOptions): Promise<any> {
   if (!options.patterns?.length) {
     throw new PrettyError(
       `No glob patterns, try ${cyan(`${name} <path/to/**/*>`)}`,
@@ -28,13 +28,13 @@ export async function resolveOptions(options: CliOptions) {
   return options as ResolvedCliOptions
 }
 
-export async function build(_options: CliOptions) {
+export async function build(_options: CliOptions): Promise<any> {
   const fileCache = new Map<string, string>()
 
   const cwd = _options.cwd || process.cwd()
   const options = await resolveOptions(_options)
 
-  async function loadConfig() {
+  async function loadConfig(): Promise<any> {
     const ctx = createContext<UserConfig>(options.config, defaultConfig)
     const configSources = (await ctx.updateRoot(cwd)).sources.map(i => normalize(i))
     return { ctx, configSources }
@@ -67,7 +67,7 @@ export async function build(_options: CliOptions) {
     100,
   )
 
-  const startWatcher = async () => {
+  const startWatcher = async (): Promise<any> => {
     if (!options.watch)
       return
     const { patterns } = options
@@ -120,7 +120,7 @@ export async function build(_options: CliOptions) {
     )
   }
 
-  async function generate(options: ResolvedCliOptions) {
+  async function generate(options: ResolvedCliOptions): Promise<any> {
     const sourceCache = Array.from(fileCache).map(([id, code]) => ({ id, code }))
 
     const afterPreTrans = await transformFiles(sourceCache, 'pre')

@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import type { RequestHandler } from './$types.js';
+import type { RequestHandler } from './$types';
 
 const SUMMARIZER_BASE =
   import.meta.env.SUMMARIZER_BASE_URL || "http://localhost:8091";

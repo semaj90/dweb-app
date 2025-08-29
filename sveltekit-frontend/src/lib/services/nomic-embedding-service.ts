@@ -14,7 +14,7 @@ import { evidence, cases, legalDocuments } from "$lib/server/db/unified-schema";
 import { eq, sql, desc, asc, and } from "drizzle-orm";
 
 // Import sentence transformer for enhanced analysis
-import { legalNLP } from './sentence-transformer.js';
+import { legalNLP } from './sentence-transformer';
 
 export interface EmbeddingConfig {
   model: string;
@@ -98,7 +98,7 @@ class NomicEmbeddingService {
   private getDefaultConfig(): EmbeddingConfig {
     return {
       model: 'nomic-embed-text:latest',
-      dimensions: 768, // nomic-embed-text uses 768-dimensional embeddings
+      dimensions: 384, // nomic-embed-text uses 768-dimensional embeddings
       batchSize: 32,   // Optimized for RTX 3060
       maxConcurrency: 4,
       chunkSize: 1000,  // Characters per chunk
@@ -133,7 +133,7 @@ class NomicEmbeddingService {
 
       this.initialized = true;
       console.log('✅ Nomic Embedding Service initialized successfully');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize Nomic Embedding Service:', error);
       throw error;
     }
@@ -191,7 +191,7 @@ class NomicEmbeddingService {
       };
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to generate embedding:', error);
       throw error;
     }
@@ -279,7 +279,7 @@ class NomicEmbeddingService {
           }
 
           results.push(...cachedResults);
-        } catch (error) {
+        } catch (error: any) {
           // Handle batch errors
           batch.forEach((text, batchIndex) => {
             errors.push({
@@ -318,7 +318,7 @@ class NomicEmbeddingService {
           cacheMisses
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       this.processing = false;
       console.error('Failed to generate batch embeddings:', error);
       throw error;
@@ -353,7 +353,7 @@ class NomicEmbeddingService {
       try {
         documentAnalysis = await legalNLP.analyzeLegalDocument(content);
         console.log(`📊 Legal analysis completed: ${documentAnalysis.legalDomain.join(', ')} domains detected`);
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Legal analysis failed, continuing without it:', error);
       }
 
@@ -361,7 +361,7 @@ class NomicEmbeddingService {
       let textChunks;
       try {
         textChunks = legalNLP.chunkText(content, this.config.chunkSize, this.config.chunkOverlap);
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Legal chunking failed, using default chunking:', error);
         textChunks = await this.textSplitter.splitText(content);
       }
@@ -412,7 +412,7 @@ class NomicEmbeddingService {
         indexedCount,
         analysis: documentAnalysis
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to process document:', error);
       throw error;
     }
@@ -541,7 +541,7 @@ class NomicEmbeddingService {
       return similarities
         .sort((a, b) => b.similarity - a.similarity)
         .slice(0, k);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to perform similarity search:', error);
       throw error;
     }
@@ -597,7 +597,7 @@ class NomicEmbeddingService {
       }
 
       return insertedCount;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to store embeddings in database:', error);
       return 0;
     }

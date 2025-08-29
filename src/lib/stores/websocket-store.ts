@@ -8,19 +8,19 @@ import { writable } from 'svelte/store';
 import type { Writable } from 'svelte/store';
 import { browser } from '$app/environment';
 
-interface WebSocketState {
+export interface WebSocketState {
   connected: boolean;
   connecting: boolean;
   error: string | null;
-  lastMessage: unknown;
+  lastMessage: any;
   reconnectAttempts: number;
   maxReconnectAttempts: number;
   reconnectDelay: number;
 }
 
-interface WebSocketMessage {
+export interface WebSocketMessage {
   type: string;
-  data: unknown;
+  data: any;
   timestamp: number;
   id?: string;
 }
@@ -28,7 +28,7 @@ interface WebSocketMessage {
 class WebSocketStore {
   private socket: WebSocket | null = null;
   private connectionState: Writable<WebSocketState>;
-  private eventListeners: Map<string, ((data: unknown) => void)[]> = new Map();
+  private eventListeners: Map<string, ((data: any) => void)[]> = new Map();
   private reconnectTimer: NodeJS.Timeout | null = null;
   private heartbeatTimer: NodeJS.Timeout | null = null;
   private url: string = '';
@@ -76,7 +76,7 @@ class WebSocketStore {
         });
       });
 
-    } catch (error) {
+    } catch (error: any) {
       this.connectionState.update(state => ({
         ...state,
         connecting: false,
@@ -104,7 +104,7 @@ class WebSocketStore {
       this.emit('connected', { timestamp: Date.now() });
     });
 
-    this.socket.addEventListener('close', (event) => {
+    this.socket.addEventListener('close', (event: any) => {
       console.log('🔌 WebSocket disconnected:', event.code, event.reason);
       
       this.connectionState.update(state => ({
@@ -135,7 +135,7 @@ class WebSocketStore {
       this.emit('error', { error: error.toString() });
     });
 
-    this.socket.addEventListener('message', (event) => {
+    this.socket.addEventListener('message', (event: any) => {
       try {
         const message: WebSocketMessage = JSON.parse(event.data);
         
@@ -146,7 +146,7 @@ class WebSocketStore {
 
         this.handleMessage(message);
         
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Failed to parse WebSocket message:', error);
       }
     });
@@ -217,7 +217,7 @@ class WebSocketStore {
     }
   }
 
-  private handleHeartbeat(data: unknown) {
+  private handleHeartbeat(data: any) {
     // Respond to heartbeat from server
     this.send('heartbeat-response', { 
       timestamp: Date.now(),
@@ -253,7 +253,7 @@ class WebSocketStore {
   }
 
   // Public API methods
-  send(type: string, data: unknown = {}) {
+  send(type: string, data: any = {}) {
     if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
       console.warn('Cannot send message: WebSocket not connected');
       return false;
@@ -269,14 +269,14 @@ class WebSocketStore {
     try {
       this.socket.send(JSON.stringify(message));
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to send WebSocket message:', error);
       return false;
     }
   }
 
   // Event system
-  on(eventType: string, callback: (data: unknown) => void) {
+  on(eventType: string, callback: (data: any) => void) {
     if (!this.eventListeners.has(eventType)) {
       this.eventListeners.set(eventType, []);
     }
@@ -295,13 +295,13 @@ class WebSocketStore {
     };
   }
 
-  private emit(eventType: string, data: unknown) {
+  private emit(eventType: string, data: any) {
     const listeners = this.eventListeners.get(eventType);
     if (listeners) {
       listeners.forEach(callback => {
         try {
           callback(data);
-        } catch (error) {
+        } catch (error: any) {
           console.error(`Error in WebSocket event listener for ${eventType}:`, error);
         }
       });
@@ -321,15 +321,15 @@ class WebSocketStore {
     return this.send('request-recommendations', { userId });
   }
 
-  startDocumentProcessing(documentId: string, options: unknown = {}) {
+  startDocumentProcessing(documentId: string, options: any = {}) {
     return this.send('start-document-processing', { documentId, options });
   }
 
-  startAnalysisSession(sessionId: string, documents: unknown[], options: unknown = {}) {
+  startAnalysisSession(sessionId: string, documents: any[], options: any = {}) {
     return this.send('start-analysis-session', { sessionId, documents, options });
   }
 
-  updateUserPreferences(preferences: unknown) {
+  updateUserPreferences(preferences: any) {
     return this.send('update-user-preferences', preferences);
   }
 

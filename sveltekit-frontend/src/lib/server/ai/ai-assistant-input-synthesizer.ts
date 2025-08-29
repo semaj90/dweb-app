@@ -87,7 +87,7 @@ export interface RetrievalOptions {
 import { generateEmbedding } from "./embeddings-simple";
 
 // Input types for the synthesizer
-interface SynthesizerInput {
+export interface SynthesizerInput {
   query: string;
   context?: {
     caseId?: string;
@@ -123,7 +123,7 @@ interface SynthesizerInput {
 }
 
 // Synthesized output structure
-interface SynthesizedOutput {
+export interface SynthesizedOutput {
   processedQuery: {
     original: string;
     enhanced: string;
@@ -172,7 +172,7 @@ interface SynthesizedOutput {
 }
 
 // Quality assessment metrics
-interface QualityMetrics {
+export interface QualityMetrics {
   contextRelevance: number;
   sourceAuthority: number;
   conceptCoverage: number;
@@ -198,7 +198,7 @@ export class AIAssistantInputSynthesizer {
 
       logger.info('[Synthesizer] All components verified successfully');
       metrics.incrementCounter('synthesizer_initializations');
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[Synthesizer] Initialization failed:', error);
       throw error;
     }
@@ -283,7 +283,7 @@ export class AIAssistantInputSynthesizer {
       );
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[Synthesizer] Processing failed:', error);
       metrics.incrementCounter('synthesizer_errors');
       throw error;
@@ -311,7 +311,7 @@ export class AIAssistantInputSynthesizer {
         original: query,
         enhanced: enhancedQuery,
         intent,
-        entities: legalAnalysis.entities.map((e) => ({
+        entities: legalAnalysis.entities.map((e: any) => ({
           text: e.text,
           type: e.type,
           confidence: e.confidence,
@@ -319,7 +319,7 @@ export class AIAssistantInputSynthesizer {
         legalConcepts: legalAnalysis.concepts.map((c) => c.concept),
         complexity: legalAnalysis.complexity.legalComplexity,
       };
-    } catch (error) {
+    } catch (error: any) {
       logger.warn('[Synthesizer] Query analysis failed, using fallback:', error);
       return {
         original: query,
@@ -373,7 +373,7 @@ export class AIAssistantInputSynthesizer {
 
           retrievalResults.searchStrategies.push('rag_hybrid');
           logger.debug(`[Synthesizer] RAG search found ${ragResults.length} results`);
-        } catch (error) {
+        } catch (error: any) {
           logger.warn('[Synthesizer] RAG search failed:', error);
         }
       }
@@ -408,7 +408,7 @@ export class AIAssistantInputSynthesizer {
 
         retrievalResults.searchStrategies.push('enhanced_legal_search');
         logger.debug(`[Synthesizer] Legal search found ${legalSearchResults.length} results`);
-      } catch (error) {
+      } catch (error: any) {
         logger.warn('[Synthesizer] Enhanced legal search failed:', error);
       }
 
@@ -433,7 +433,7 @@ export class AIAssistantInputSynthesizer {
                 metadata: { source: 'context_documents' },
               });
             }
-          } catch (error) {
+          } catch (error: any) {
             logger.warn('[Synthesizer] Context document processing failed:', error);
           }
         }
@@ -446,7 +446,7 @@ export class AIAssistantInputSynthesizer {
       retrievalResults.totalSources = retrievalResults.sources.length;
 
       return retrievalResults;
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[Synthesizer] Multi-strategy retrieval failed:', error);
       return retrievalResults;
     }
@@ -472,7 +472,7 @@ export class AIAssistantInputSynthesizer {
             options.diversityLambda
           );
           logger.debug('[Synthesizer] Applied MMR diversification');
-        } catch (error) {
+        } catch (error: any) {
           logger.warn('[Synthesizer] MMR diversification failed:', error);
         }
       }
@@ -482,7 +482,7 @@ export class AIAssistantInputSynthesizer {
         try {
           sources = await this.applyCrossEncoderReranking(sources, processedQuery.enhanced);
           logger.debug('[Synthesizer] Applied cross-encoder reranking');
-        } catch (error) {
+        } catch (error: any) {
           logger.warn('[Synthesizer] Cross-encoder reranking failed:', error);
         }
       }
@@ -496,7 +496,7 @@ export class AIAssistantInputSynthesizer {
         totalSources: sources.length,
         searchStrategies: retrievedContext.searchStrategies,
       };
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[Synthesizer] Content processing failed:', error);
       return retrievedContext;
     }
@@ -533,7 +533,7 @@ export class AIAssistantInputSynthesizer {
         instructions,
         constraints,
       };
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[Synthesizer] Prompt construction failed:', error);
       return {
         systemPrompt: 'You are a legal AI assistant.',
@@ -583,7 +583,7 @@ export class AIAssistantInputSynthesizer {
         informationCompleteness,
         responseReadiness,
       };
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[Synthesizer] Quality assessment failed:', error);
       return {
         contextRelevance: 0.5,
@@ -633,7 +633,7 @@ export class AIAssistantInputSynthesizer {
       return 'definition_request';
     } else if (
       queryLower.includes('case') ||
-      analysis.entities.some((e) => e.type === 'CASE_CITATION')
+      analysis.entities.some((e: any) => e.type === 'CASE_CITATION')
     ) {
       return 'case_analysis';
     } else if (
@@ -643,7 +643,7 @@ export class AIAssistantInputSynthesizer {
       return 'contract_analysis';
     } else if (
       queryLower.includes('statute') ||
-      analysis.entities.some((e) => e.type === 'STATUTE')
+      analysis.entities.some((e: any) => e.type === 'STATUTE')
     ) {
       return 'statute_interpretation';
     } else if (queryLower.includes('precedent') || queryLower.includes('ruling')) {
@@ -759,7 +759,7 @@ export class AIAssistantInputSynthesizer {
 
       // Sort by reranked score
       return rerankedSources.sort((a, b) => b.rerankedScore - a.rerankedScore);
-    } catch (error) {
+    } catch (error: any) {
       logger.warn('[Synthesizer] Cross-encoder reranking failed:', error);
       return sources;
     }
@@ -785,7 +785,7 @@ export class AIAssistantInputSynthesizer {
           ? summary.summary.keyPoints 
           : [summary.summary.keyPoints || ''],
       };
-    } catch (error) {
+    } catch (error: any) {
       logger.warn('[Synthesizer] Summary generation failed:', error);
       return {
         abstractive: 'Summary generation failed',
@@ -1026,7 +1026,7 @@ export class AIAssistantInputSynthesizer {
       const [emb1, emb2] = await Promise.all([generateEmbedding(text1), generateEmbedding(text2)]);
 
       return this.calculateCosineSimilarity(emb1 || [], emb2 || []);
-    } catch (error) {
+    } catch (error: any) {
       // Fallback to basic similarity
       const words1 = new Set(text1.toLowerCase().split(/\s+/));
       const words2 = new Set(text2.toLowerCase().split(/\s+/));
@@ -1117,13 +1117,13 @@ export class AIAssistantInputSynthesizer {
 
     try {
       components.legalbert = await legalBERT.healthCheck();
-    } catch (error) {
+    } catch (error: any) {
       components.legalbert = { status: 'unhealthy', error: error.message };
     }
 
     try {
       components.rag = await enhancedRAGPipeline.getHealthStatus();
-    } catch (error) {
+    } catch (error: any) {
       components.rag = { status: 'unhealthy', error: error.message };
     }
 

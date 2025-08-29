@@ -50,7 +50,7 @@ export class WebFetchMissingImplementations {
         if (implementation) {
           resolution.implementations.set(item, implementation);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Failed to fetch implementation for ${item}:`, error);
         // Create fallback implementation
         const fallback = this.createFallbackImplementation(item);
@@ -86,7 +86,7 @@ export class WebFetchMissingImplementations {
           }
           return result;
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Search strategy ${strategy.name} failed for ${item}:`, error);
         continue;
       }
@@ -275,7 +275,7 @@ export const $effect = (fn: () => void | (() => void)) => {
         cleanups.push(cleanup);
       }
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Effect error:', error);
   }
 };`,
@@ -429,7 +429,7 @@ export const createActor = (machine: any, options?: any) => {
         source: 'GitHub Search',
         confidence: 0.6
       };
-    } catch (error) {
+    } catch (error: any) {
       return null;
     }
   }
@@ -494,7 +494,7 @@ export const ${item} = (...args: any[]): any => {
   }
 }
 
-interface SearchStrategy {
+export interface SearchStrategy {
   name: string;
   priority: number;
   source: string;

@@ -11,7 +11,7 @@ import { getColorString, getPrettiedMarkdown, throttle } from './utils'
 
 export async function registerAnnotations(
   loader: ContextLoader,
-) {
+): Promise<any> {
   const config = getConfig()
   const disposals: Disposable[] = []
 
@@ -74,7 +74,7 @@ export async function registerAnnotations(
     },
   })
 
-  async function updateAnnotation(editor = window.activeTextEditor) {
+  async function updateAnnotation(editor = window.activeTextEditor): Promise<any> {
     try {
       const doc = editor?.document
       if (!doc)
@@ -174,7 +174,7 @@ export async function registerAnnotations(
   const throttledUpdateAnnotation = throttle(updateAnnotation, 200)
 
   disposals.push(window.onDidChangeActiveTextEditor(updateAnnotation))
-  disposals.push(workspace.onDidChangeTextDocument((e) => {
+  disposals.push(workspace.onDidChangeTextDocument((e: any) => {
     if (e.document === window.activeTextEditor?.document)
       throttledUpdateAnnotation()
   }))

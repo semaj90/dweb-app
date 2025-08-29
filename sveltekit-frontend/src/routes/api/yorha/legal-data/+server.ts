@@ -61,7 +61,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
             model: 'gemma3-legal'
           };
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn('AI analysis failed', { requestId, error: error.message });
       }
     }
@@ -87,7 +87,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
             resultsCount: vectorData.result?.length || 0
           });
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Vector search failed', { requestId, error: error.message });
       }
     }

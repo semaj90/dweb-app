@@ -129,7 +129,7 @@ export class EnhancedRAGSuggestionsService {
         const enhancedResponse = await this.enhanceRAGResponse(response, request);
         
         return enhancedResponse;
-      } catch (error) {
+      } catch (error: any) {
         attempt++;
         console.warn(`Enhanced RAG attempt ${attempt} failed:`, error);
         
@@ -197,7 +197,7 @@ export class EnhancedRAGSuggestionsService {
       } finally {
         reader.releaseLock();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('RAG streaming failed:', error);
       
       // Fallback to non-streaming
@@ -239,7 +239,7 @@ export class EnhancedRAGSuggestionsService {
       }
 
       return await response.json();
-    } catch (error) {
+    } catch (error: any) {
       clearTimeout(timeoutId);
       if (error instanceof DOMException && error.name === 'AbortError') {
         throw new Error('Enhanced RAG request timed out');
@@ -430,7 +430,7 @@ export class EnhancedRAGSuggestionsService {
       } else {
         return { available: false, responseTime: Date.now() - startTime };
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Enhanced RAG health check failed:', error);
       return { available: false, responseTime: Date.now() - startTime };
     }
@@ -513,7 +513,7 @@ export async function testEnhancedRAGIntegration(): Promise<{
       testSuggestion: testResponse.suggestions[0],
       responseTime: testResponse.processingMetrics.totalProcessingTimeMs
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       success: false,
       serviceAvailable: false,

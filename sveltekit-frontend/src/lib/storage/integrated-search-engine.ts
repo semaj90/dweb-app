@@ -17,7 +17,7 @@ import { textureStreamer } from '../webgpu/texture-streaming';
 import { neo4jReranker } from '../ai/enhanced-neo4j-reranker';
 import { langChainOllamaService } from '../ai/langchain-ollama-service';
 
-interface SearchQuery {
+export interface SearchQuery {
   text: string;
   filters?: {
     documentType?: string[];
@@ -34,7 +34,7 @@ interface SearchQuery {
   };
 }
 
-interface SearchResult {
+export interface SearchResult {
   id: string;
   score: number;
   content: string;
@@ -53,7 +53,7 @@ interface SearchResult {
   quantizedEmbedding?: QuantizedVector;
 }
 
-interface SearchPerformanceMetrics {
+export interface SearchPerformanceMetrics {
   totalTime: number;
   graphQueryTime: number;
   vectorSearchTime: number;
@@ -80,7 +80,7 @@ export class IntegratedSearchEngine {
 
       console.log('✅ Integrated Search Engine initialized');
       this.initialized = true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize Integrated Search Engine:', error);
       throw error;
     }

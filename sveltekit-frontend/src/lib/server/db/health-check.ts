@@ -128,7 +128,7 @@ export class DatabaseHealthChecker {
         ssl: Boolean(process.env.DATABASE_SSL)
       };
 
-    } catch (error) {
+    } catch (error: any) {
       status.connected = false;
       status.error = error instanceof Error ? error.message : String(error);
       status.responseTime = Date.now() - startTime;
@@ -182,7 +182,7 @@ export class DatabaseHealthChecker {
       );
 
       return similarityTest && similarityTest.length > 0;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Vector operations test failed:', error);
       return false;
     }
@@ -215,7 +215,7 @@ export class DatabaseHealthChecker {
           missingTables.push(tableName);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Schema validation failed:', error);
       return { valid: false, missingTables: essentialTables };
     }
@@ -273,7 +273,7 @@ export class DatabaseHealthChecker {
         timestamp: new Date().toISOString()
       };
 
-    } catch (error) {
+    } catch (error: any) {
       return { 
         error: error instanceof Error ? error.message : String(error),
         timestamp: new Date().toISOString()

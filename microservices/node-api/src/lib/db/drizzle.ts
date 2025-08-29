@@ -7,7 +7,7 @@ const pool = new Pool({ connectionString, max: 5 });
 
 export const db = drizzle(pool);
 
-export async function healthCheck() {
+export async function healthCheck(): Promise<any> {
   const client = await pool.connect();
   try {
     await client.query('select 1');

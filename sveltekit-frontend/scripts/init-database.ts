@@ -2,7 +2,7 @@
 import { db } from '$lib/server/database';
 import { sql } from 'drizzle-orm';
 
-async function initializeDatabase() {
+async function initializeDatabase(): Promise<any> {
   try {
     console.log('Initializing database...');
 
@@ -31,7 +31,7 @@ async function initializeDatabase() {
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         document_id UUID REFERENCES documents(id),
         content TEXT NOT NULL,
-        embedding VECTOR(768),
+        embedding VECTOR(384),
         metadata JSONB,
         model TEXT DEFAULT 'nomic-embed-text',
         created_at TIMESTAMP DEFAULT NOW()
@@ -43,7 +43,7 @@ async function initializeDatabase() {
       CREATE TABLE IF NOT EXISTS search_sessions (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         query TEXT NOT NULL,
-        query_embedding VECTOR(768),
+        query_embedding VECTOR(384),
         results JSONB,
         search_type TEXT DEFAULT 'hybrid',
         result_count INTEGER,
@@ -67,7 +67,7 @@ async function initializeDatabase() {
 
     console.log('✅ Database initialization complete!');
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Database initialization failed:', error);
     throw error;
   }

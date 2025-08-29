@@ -99,7 +99,7 @@ export class AIPipeline {
       }
 
       result.success = true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Pipeline processing error:', error);
       result.error = error instanceof Error ? error.message : 'Unknown error';
     }

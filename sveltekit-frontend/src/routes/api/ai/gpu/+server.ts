@@ -9,7 +9,7 @@ import { llvmWasmBridge } from '$lib/wasm/llvm-wasm-bridge';
  * Handles all GPU-related operations: NVIDIA LLaMA, WASM-LLVM, WebGPU, and NES Bridge
  */
 
-interface GPUApiRequest {
+export interface GPUApiRequest {
 	operation: 'llama_generate' | 'wasm_compile' | 'wasm_execute' | 'gpu_compute' | 'health' | 'hybrid';
 	data?: any;
 	options?: {
@@ -20,7 +20,7 @@ interface GPUApiRequest {
 	};
 }
 
-interface GPUApiResponse {
+export interface GPUApiResponse {
 	success: boolean;
 	operation: string;
 	result?: any;
@@ -46,7 +46,7 @@ async function checkGPUHealth(): Promise<Record<string, any>> {
 			status: 'healthy',
 			...nvidiaStats
 		};
-	} catch (error) {
+	} catch (error: any) {
 		health.nvidia_llama = {
 			available: false,
 			status: 'error',
@@ -63,7 +63,7 @@ async function checkGPUHealth(): Promise<Record<string, any>> {
 			status: status.initialized ? 'healthy' : 'initializing',
 			performance: status.performance
 		};
-	} catch (error) {
+	} catch (error: any) {
 		health.gpu_service_integration = {
 			available: false,
 			status: 'error',
@@ -78,7 +78,7 @@ async function checkGPUHealth(): Promise<Record<string, any>> {
 			status: 'healthy',
 			capabilities: ['legal_processing', 'vector_computation', 'fallback_cpu']
 		};
-	} catch (error) {
+	} catch (error: any) {
 		health.wasm_llvm = {
 			available: false,
 			status: 'error',
@@ -99,7 +99,7 @@ async function checkGPUHealth(): Promise<Record<string, any>> {
 		} else {
 			throw new Error(`Service responded with status ${response.status}`);
 		}
-	} catch (error) {
+	} catch (error: any) {
 		health.wasm_llvm_service = {
 			available: false,
 			status: 'error',
@@ -139,7 +139,7 @@ async function performHybridOperation(data: any, options: any = {}): Promise<GPU
 				serviceUsed = 'nvidia_llama';
 				memoryUsed = 1024 * 1024; // Estimate
 				gpuUtilization = 0.8;
-			} catch (error) {
+			} catch (error: any) {
 				// Fallback to WASM-LLVM bridge
 				const wasmResult = await llvmWasmBridge.processLegalText(
 					data.prompt || data.query || '',
@@ -165,7 +165,7 @@ async function performHybridOperation(data: any, options: any = {}): Promise<GPU
 				serviceUsed = 'wasm_llvm_bridge';
 				memoryUsed = (data.dimensions || 384) * 4;
 				gpuUtilization = 0.3;
-			} catch (error) {
+			} catch (error: any) {
 				// Fallback to GPU service integration
 				const gpuResult = await gpuServiceIntegration.generateEmbeddings([
 					Array.isArray(data.input) ? data.input.join(' ') : String(data.input)
@@ -203,7 +203,7 @@ async function performHybridOperation(data: any, options: any = {}): Promise<GPU
 				} else {
 					throw new Error(`WASM service error: ${response.statusText}`);
 				}
-			} catch (error) {
+			} catch (error: any) {
 				// Fallback to local WASM bridge
 				result = {
 					success: false,
@@ -230,7 +230,7 @@ async function performHybridOperation(data: any, options: any = {}): Promise<GPU
 				serviceUsed = 'gpu_service_integration';
 				memoryUsed = task.memoryUsed || 0;
 				gpuUtilization = 0.5;
-			} catch (error) {
+			} catch (error: any) {
 				throw new Error(`GPU processing failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
 			}
 		}
@@ -253,7 +253,7 @@ async function performHybridOperation(data: any, options: any = {}): Promise<GPU
 			}
 		};
 
-	} catch (error) {
+	} catch (error: any) {
 		return {
 			success: false,
 			operation: 'hybrid',
@@ -307,7 +307,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			error: `Unsupported GET operation: ${operation}`
 		}, { status: 400 });
 
-	} catch (error) {
+	} catch (error: any) {
 		console.error('GPU API GET error:', error);
 		return json({
 			success: false,
@@ -349,7 +349,7 @@ export const POST: RequestHandler = async ({ request }) => {
 							tokens_generated: result.tokens_generated
 						}
 					};
-				} catch (error) {
+				} catch (error: any) {
 					response = {
 						success: false,
 						operation,
@@ -389,7 +389,7 @@ export const POST: RequestHandler = async ({ request }) => {
 					} else {
 						throw new Error(`WASM service error: ${serviceResponse.statusText}`);
 					}
-				} catch (error) {
+				} catch (error: any) {
 					response = {
 						success: false,
 						operation,
@@ -423,7 +423,7 @@ export const POST: RequestHandler = async ({ request }) => {
 						},
 						metadata: { taskId: task.taskId }
 					};
-				} catch (error) {
+				} catch (error: any) {
 					response = {
 						success: false,
 						operation,
@@ -466,7 +466,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		return json(response);
 
-	} catch (error) {
+	} catch (error: any) {
 		console.error('GPU API POST error:', error);
 		return json({
 			success: false,

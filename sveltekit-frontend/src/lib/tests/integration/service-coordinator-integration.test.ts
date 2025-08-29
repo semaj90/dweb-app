@@ -4,11 +4,11 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll, vi, beforeEach } from 'vitest';
-import { masterServiceCoordinator } from '../../services/master-service-coordinator.js';
-import { errorResolutionEngine } from '../../services/error-resolution-engine.js';
+import { masterServiceCoordinator } from '../../services/master-service-coordinator';
+import { errorResolutionEngine } from '../../services/error-resolution-engine';
 import { get } from 'svelte/store';
 
-interface TestContext {
+export interface TestContext {
   coordinator: typeof masterServiceCoordinator;
   errorEngine: typeof errorResolutionEngine;
   mockFetch: ReturnType<typeof vi.fn>;

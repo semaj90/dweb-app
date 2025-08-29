@@ -1,5 +1,5 @@
 
-import { drizzle } from 'drizzle-orm/postgres-js';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import { eq, sql as drizzleSql } from 'drizzle-orm';
 import postgres from 'postgres';
 // Use fallbacks if env is not available
@@ -9,7 +9,7 @@ const env = {
   DATABASE_POOL_TIMEOUT: process.env.DATABASE_POOL_TIMEOUT || '30000',
   NODE_ENV: process.env.NODE_ENV || 'development'
 };
-import * as schema from './schema/legal-documents.js';
+import * as schema from './schema/legal-documents';
 
 /**
  * PostgreSQL connection with pgvector support for Legal AI System
@@ -24,15 +24,7 @@ const sql = postgres(connectionString, {
   max: parseInt(env.DATABASE_POOL_SIZE || '20'),
   idle_timeout: parseInt(env.DATABASE_POOL_TIMEOUT || '30000'),
   connect_timeout: 10,
-  types: {
-    // Custom type for pgvector
-    vector: {
-      to: [1000],
-      from: [1000],
-      serialize: (x: number[]) => `[${x.join(',')}]`,
-      parse: (x: string) => x.slice(1, -1).split(',').map(Number),
-    },
-  },
+  // Vector types will be handled by pgvector extension
   // Enable SSL in production
   ssl: env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
   // Connection debugging
@@ -48,7 +40,7 @@ export class LegalDatabaseManager {
   /**
    * Initialize database with required extensions and optimizations
    */
-  async initializeDatabase(): Promise<void> {
+  async initializeDatabase(): Promise<any> {
     try {
       // Enable pgvector extension
       await drizzleSql`CREATE EXTENSION IF NOT EXISTS vector`;
@@ -83,7 +75,7 @@ export class LegalDatabaseManager {
       await drizzleSql`SET ivfflat.probes = 10`;
       
       console.log('✅ Database initialized successfully with pgvector support');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Database initialization failed:', error);
       throw error;
     }
@@ -127,7 +119,7 @@ export class LegalDatabaseManager {
       
       const results = await query;
       return results as unknown as Array<schema.LegalDocument & { similarity: number }>;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Vector similarity search failed:', error);
       throw error;
     }
@@ -195,7 +187,7 @@ export class LegalDatabaseManager {
       
       const results = await searchQuery;
       return results as unknown as Array<schema.LegalDocument & { combinedScore: number }>;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Hybrid search failed:', error);
       throw error;
     }
@@ -242,7 +234,7 @@ export class LegalDatabaseManager {
       
       const results = await precedentsQuery;
       return results as unknown as Array<schema.LegalCase & { relevanceScore: number }>;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Precedent search failed:', error);
       throw error;
     }
@@ -258,7 +250,7 @@ export class LegalDatabaseManager {
       return await db.insert(schema.legalDocuments)
         .values(documents)
         .returning();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Batch document insert failed:', error);
       throw error;
     }
@@ -271,7 +263,7 @@ export class LegalDatabaseManager {
     documentId: string,
     contentEmbedding: number[],
     titleEmbedding?: number[]
-  ): Promise<void> {
+  ): Promise<any> {
     try {
       const updateData: Partial<schema.LegalDocument> = {
         contentEmbedding: contentEmbedding as any,
@@ -285,7 +277,7 @@ export class LegalDatabaseManager {
       await db.update(schema.legalDocuments)
         .set(updateData)
         .where(eq(schema.legalDocuments.id, documentId));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Embedding update failed:', error);
       throw error;
     }
@@ -300,7 +292,7 @@ export class LegalDatabaseManager {
     entityCount: number;
     cacheHitRate: number;
     avgQueryTime: number;
-    vectorIndexStats: unknown;
+    vectorIndexStats: any;
   }> {
     try {
       const documentCountResult = await drizzleSql`SELECT COUNT(*) as count FROM legal_documents`;
@@ -326,7 +318,7 @@ export class LegalDatabaseManager {
         avgQueryTime: 0, // Would need query time tracking
         vectorIndexStats: vectorStats
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to get database stats:', error);
       throw error;
     }
@@ -342,7 +334,7 @@ export class LegalDatabaseManager {
         .returning({ id: schema.agentAnalysisCache.id });
       
       return result.length;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Cache cleanup failed:', error);
       throw error;
     }
@@ -351,7 +343,7 @@ export class LegalDatabaseManager {
   /**
    * Vacuum and analyze tables for optimal performance
    */
-  async optimizeDatabase(): Promise<void> {
+  async optimizeDatabase(): Promise<any> {
     try {
       await drizzleSql`VACUUM ANALYZE legal_documents`;
       await drizzleSql`VACUUM ANALYZE legal_cases`;
@@ -363,7 +355,7 @@ export class LegalDatabaseManager {
       await drizzleSql`REINDEX INDEX CONCURRENTLY legal_documents_title_embedding_idx`;
       
       console.log('✅ Database optimization completed');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Database optimization failed:', error);
       throw error;
     }
@@ -384,10 +376,10 @@ export async function checkPostgresHealth(): Promise<boolean> {
 }
 
 // Graceful shutdown
-export async function closePostgresConnection(): Promise<void> {
+export async function closePostgresConnection(): Promise<any> {
   try {
     await sql.end();
-  } catch (error) {
+  } catch (error: any) {
     console.error('Postgres shutdown error:', error);
   }
 }

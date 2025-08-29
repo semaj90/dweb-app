@@ -9,15 +9,15 @@ export type ProgressMsg =
       fileId: string;
       step: 'ocr' | 'embedding' | 'rag' | 'analysis' | string;
       stepProgress?: number; // 0-100
-      fragment?: unknown; // partial/streamed result
+      fragment?: any; // partial/streamed result
     }
   | {
       type: 'processing-complete';
       fileId: string;
-      finalResult?: unknown;
+      finalResult?: any;
     }
   | {
       type: 'error';
       fileId: string;
-      error: { message: string; code?: string; meta?: unknown };
+      error: { message: string; code?: string; meta?: any };
     };

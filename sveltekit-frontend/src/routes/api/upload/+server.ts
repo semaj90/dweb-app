@@ -4,8 +4,8 @@ import { randomUUID } from "crypto";
 import { existsSync, createReadStream } from "fs";
 import { mkdir, writeFile, readFile } from "fs/promises";
 import * as path from "path";
-import { db } from "../../../lib/server/db/index.js";
-import { evidence } from "../../../lib/server/db/schema-postgres.js";
+import { db } from '../../../lib/server/db/index';
+import { evidence } from '../../../lib/server/db/schema-postgres';
 
 // Ensure upload directory exists
 const UPLOAD_DIR = "./uploads";
@@ -41,7 +41,7 @@ export const POST: RequestHandler = async ({ request }) => {
       size: file.size
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Upload error:', error);
     return json({ error: 'Upload failed' }, { status: 500 });
   }

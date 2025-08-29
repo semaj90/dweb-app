@@ -43,7 +43,7 @@ export const userAiQueries = pgTable("user_ai_queries", {
   caseId: uuid("case_id").references(() => cases.id),
   query: text("query").notNull(),
   response: text("response").notNull(),
-  embedding: vector("embedding", { dimensions: 768 }), 
+  embedding: vector("embedding", { dimensions: 384 }), 
   metadata: jsonb("metadata").default({}),
   isSuccessful: boolean("is_successful").default(true).notNull(),
   errorMessage: text("error_message"),
@@ -56,7 +56,7 @@ export const userAiQueries = pgTable("user_ai_queries", {
 // Embedding Cache
 export const embeddingCache = pgTable("embedding_cache", {
   textHash: varchar("text_hash", { length: 64 }).primaryKey(),
-  embedding: vector("embedding", { dimensions: 768 }),
+  embedding: vector("embedding", { dimensions: 384 }),
   model: varchar("model", { length: 100 }).notNull(),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
 });
@@ -82,7 +82,7 @@ export const ragMessages = pgTable("rag_messages", {
   sessionId: uuid("session_id").references(() => ragSessions.id).notNull(),
   role: varchar("role", { length: 20 }).notNull(), // 'user', 'assistant', 'system'
   content: text("content").notNull(),
-  embedding: vector("embedding", { dimensions: 768 }),
+  embedding: vector("embedding", { dimensions: 384 }),
   sources: jsonb("sources").default([]),
   confidence: decimal("confidence", { precision: 3, scale: 2 }),
   processingTimeMs: integer("processing_time_ms"),
@@ -95,7 +95,7 @@ export const documentChunks = pgTable("document_chunks", {
   documentId: uuid("document_id").references(() => legalDocuments.id).notNull(),
   chunkIndex: integer("chunk_index").notNull(),
   content: text("content").notNull(),
-  embedding: vector("embedding", { dimensions: 768 }),
+  embedding: vector("embedding", { dimensions: 384 }),
   metadata: jsonb("metadata").default({}),
   wordCount: integer("word_count").notNull(),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
@@ -105,7 +105,7 @@ export const documentChunks = pgTable("document_chunks", {
 export const caseEmbeddings = pgTable("case_embeddings", {
   id: uuid("id").primaryKey().defaultRandom(),
   caseId: uuid("case_id").references(() => cases.id).notNull(),
-  embedding: vector("embedding", { dimensions: 768 }),
+  embedding: vector("embedding", { dimensions: 384 }),
   embeddingType: varchar("embedding_type", { length: 50 }).notNull(), // 'description', 'summary', 'full_content'
   sourceField: varchar("source_field", { length: 100 }).notNull(),
   model: varchar("model", { length: 100 }).default("nomic-embed-text").notNull(),
@@ -117,7 +117,7 @@ export const caseEmbeddings = pgTable("case_embeddings", {
 export const evidenceVectors = pgTable("evidence_vectors", {
   id: uuid("id").primaryKey().defaultRandom(),
   evidenceId: uuid("evidence_id").references(() => evidence.id).notNull(),
-  embedding: vector("embedding", { dimensions: 768 }),
+  embedding: vector("embedding", { dimensions: 384 }),
   embeddingType: varchar("embedding_type", { length: 50 }).notNull(),
   sourceField: varchar("source_field", { length: 100 }).notNull(),
   model: varchar("model", { length: 100 }).default("nomic-embed-text").notNull(),
@@ -136,7 +136,7 @@ export const legalPrecedents = pgTable("legal_precedents", {
   legalArea: varchar("legal_area", { length: 100 }).notNull(),
   summary: text("summary").notNull(),
   keyHolding: text("key_holding").notNull(),
-  embedding: vector("embedding", { dimensions: 768 }),
+  embedding: vector("embedding", { dimensions: 384 }),
   relevanceScore: decimal("relevance_score", { precision: 3, scale: 2 }),
   citeCount: integer("cite_count").default(0).notNull(),
   url: varchar("url", { length: 500 }),

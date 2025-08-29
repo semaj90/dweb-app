@@ -4,7 +4,7 @@ import envConfig from '../../../../../env-config.mjs';
 import type { RequestHandler } from './$types';
 
 // POST /api/tags/auto - Enqueue auto-tagging job
-export const POST: RequestHandler = async ({ locals, request }) => {
+export const POST: RequestHandler = async ({ locals, request }): Promise<any> => {
   if (!locals.user) {
     throw error(401, 'Unauthorized');
   }
@@ -47,14 +47,14 @@ export const POST: RequestHandler = async ({ locals, request }) => {
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Error queuing auto-tagging job:', err);
     throw error(500, 'Failed to queue auto-tagging job');
   }
 };
 
 // GET /api/tags/auto?jobId=xxx - Check job status
-export const GET: RequestHandler = async ({ locals, url }) => {
+export const GET: RequestHandler = async ({ locals, url }): Promise<any> => {
   if (!locals.user) {
     throw error(401, 'Unauthorized');
   }
@@ -116,7 +116,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
       data: jobResult
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Error checking job status:', err);
     throw error(500, 'Failed to check job status');
   }

@@ -110,7 +110,7 @@ async function collectFiles(currentDir: string, baseDir: string): Promise<FileMa
 		}
 
 		return files;
-	} catch (error) {
+	} catch (error: any) {
 		throw new Error(
 			`Failed to collect files from ${currentDir}: ${error instanceof Error ? error.message : String(error)}`
 		);
@@ -122,7 +122,7 @@ async function writeJsonFile(path: string, data: unknown): Promise<void> {
 		await fs.mkdir(dirname(path), { recursive: true });
 		await fs.writeFile(path, JSON.stringify(data, null, 2), "utf-8");
 		console.info(`Successfully wrote to ${path}`);
-	} catch (error) {
+	} catch (error: any) {
 		throw new Error(
 			`Failed to write to ${path}: ${error instanceof Error ? error.message : String(error)}`
 		);
@@ -161,7 +161,7 @@ async function buildDemoRegistry(): Promise<void> {
 		}
 
 		await writeJsonFile(outputPath, components);
-	} catch (error) {
+	} catch (error: any) {
 		throw new Error(
 			`Failed to build demo registry: ${error instanceof Error ? error.message : String(error)}`
 		);
@@ -178,7 +178,7 @@ async function createSvelteProject(): Promise<string> {
 
 		console.info(`Created temporary Svelte project at ${projectDir}`);
 		return projectDir;
-	} catch (error) {
+	} catch (error: any) {
 		throw new Error(
 			`Failed to create Svelte project: ${error instanceof Error ? error.message : String(error)}`
 		);
@@ -218,7 +218,7 @@ async function buildBaseStackBlitzFiles(files: FileMap): Promise<void> {
 		};
 
 		await writeJsonFile(outputPath, outputFiles);
-	} catch (error) {
+	} catch (error: any) {
 		throw new Error(
 			`Failed to build StackBlitz files: ${error instanceof Error ? error.message : String(error)}`
 		);
@@ -243,7 +243,7 @@ async function main(): Promise<void> {
 		await buildDemoRegistry();
 
 		console.info("Successfully built StackBlitz files");
-	} catch (error) {
+	} catch (error: any) {
 		console.error("Failed to build StackBlitz files", error);
 		process.exit(1);
 	} finally {

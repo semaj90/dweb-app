@@ -43,7 +43,7 @@ export class BinaryEncodingService {
   /**
    * Detect optimal encoding format based on data characteristics
    */
-  detectOptimalFormat(data: unknown): EncodingFormat {
+  detectOptimalFormat(data: any): EncodingFormat {
     const jsonStr = JSON.stringify(data);
     const size = new TextEncoder().encode(jsonStr).length;
     
@@ -64,7 +64,7 @@ export class BinaryEncodingService {
   /**
    * Encode data using specified format
    */
-  async encode(data: unknown, format?: EncodingFormat): Promise<{
+  async encode(data: any, format?: EncodingFormat): Promise<{
     encoded: ArrayBuffer | Uint8Array | Buffer | string;
     format: EncodingFormat;
     metrics: EncodingMetrics;
@@ -113,7 +113,7 @@ export class BinaryEncodingService {
 
       return { encoded, format: targetFormat, metrics };
 
-    } catch (error) {
+    } catch (error: any) {
       if (this.options.fallback && targetFormat !== 'json') {
         console.warn(`Encoding failed for ${targetFormat}, falling back to JSON:`, error);
         return this.encode(data, 'json');
@@ -126,11 +126,11 @@ export class BinaryEncodingService {
    * Decode data using specified format
    */
   async decode(data: ArrayBuffer | Uint8Array | Buffer | string, format: EncodingFormat): Promise<{
-    decoded: unknown;
+    decoded: any;
     metrics: EncodingMetrics;
   }> {
     const startTime = performance.now();
-    let decoded: unknown;
+    let decoded: any;
 
     try {
       switch (format) {
@@ -167,7 +167,7 @@ export class BinaryEncodingService {
 
       return { decoded, metrics };
 
-    } catch (error) {
+    } catch (error: any) {
       if (this.options.fallback && format !== 'json') {
         console.warn(`Decoding failed for ${format}, attempting JSON fallback:`, error);
         return this.decode(data, 'json');
@@ -268,7 +268,7 @@ export class BinaryEncodingService {
   /**
    * Check if data contains binary content
    */
-  private hasBinaryData(data: unknown): boolean {
+  private hasBinaryData(data: any): boolean {
     return this.traverseObject(data, (value) => {
       return value instanceof ArrayBuffer || 
              value instanceof Uint8Array || 
@@ -279,7 +279,7 @@ export class BinaryEncodingService {
   /**
    * Check if data is structured (objects/arrays)
    */
-  private isStructuredData(data: unknown): boolean {
+  private isStructuredData(data: any): boolean {
     return typeof data === 'object' && data !== null && 
            (Array.isArray(data) || Object.keys(data).length > 3);
   }
@@ -287,7 +287,7 @@ export class BinaryEncodingService {
   /**
    * Traverse object and test condition
    */
-  private traverseObject(obj: unknown, condition: (value: unknown) => boolean): boolean {
+  private traverseObject(obj: any, condition: (value: any) => boolean): boolean {
     if (condition(obj)) return true;
     
     if (typeof obj === 'object' && obj !== null) {
@@ -304,12 +304,12 @@ export class BinaryEncodingService {
 export const binaryEncoder = new BinaryEncodingService();
 
 // Helper functions for direct use
-export async function encodeCBOR(data: unknown): Promise<ArrayBuffer> {
+export async function encodeCBOR(data: any): Promise<ArrayBuffer> {
   const { encoded } = await binaryEncoder.encode(data, 'cbor');
   return encoded as ArrayBuffer;
 }
 
-export async function encodeMessagePack(data: unknown): Promise<ArrayBuffer> {
+export async function encodeMessagePack(data: any): Promise<ArrayBuffer> {
   const { encoded } = await binaryEncoder.encode(data, 'msgpack');
   return encoded as ArrayBuffer;
 }

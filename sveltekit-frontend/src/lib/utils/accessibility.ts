@@ -88,7 +88,7 @@ export class FocusManager {
       if (element) {
         element.focus();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn(`Failed to set focus on element: ${selector}`, error);
     }
   }

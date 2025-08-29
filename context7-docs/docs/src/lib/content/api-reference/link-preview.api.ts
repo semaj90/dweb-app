@@ -6,7 +6,7 @@ import type {
 	LinkPreviewRootPropsWithoutHTML,
 	LinkPreviewTriggerPropsWithoutHTML,
 } from "bits-ui";
-import { OpenClosedProp } from "./extended-types/shared/index.js";
+import { OpenClosedProp } from './extended-types/shared/index';
 import {
 	arrowProps,
 	childrenSnippet,
@@ -28,7 +28,7 @@ import {
 	defineEnumDataAttr,
 	defineNumberProp,
 	defineSimpleDataAttr,
-} from "../utils.js";
+} from '../utils';
 
 const openClosedDataAttr = defineEnumDataAttr({
 	name: "state",

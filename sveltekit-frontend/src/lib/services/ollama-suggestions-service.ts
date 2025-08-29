@@ -72,7 +72,7 @@ export class OllamaSuggestionsService {
       });
 
       return this.parseSuggestionsResponse(response, request.reportType);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Ollama suggestion generation failed:', error);
       throw new Error(`Failed to generate AI suggestions: ${error}`);
     }
@@ -95,7 +95,7 @@ export class OllamaSuggestionsService {
           yield suggestion;
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Ollama streaming suggestions failed:', error);
       throw error;
     }
@@ -197,7 +197,7 @@ Provide practical, implementable suggestions that would genuinely improve the le
       }
 
       return await response.json();
-    } catch (error) {
+    } catch (error: any) {
       clearTimeout(timeoutId);
       if (error instanceof DOMException && error.name === 'AbortError') {
         throw new Error('Ollama request timed out');
@@ -265,7 +265,7 @@ Provide practical, implementable suggestions that would genuinely improve the le
       } finally {
         reader.releaseLock();
       }
-    } catch (error) {
+    } catch (error: any) {
       clearTimeout(timeoutId);
       if (error instanceof DOMException && error.name === 'AbortError') {
         throw new Error('Ollama streaming request timed out');
@@ -310,7 +310,7 @@ Provide practical, implementable suggestions that would genuinely improve the le
           index
         }
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to parse structured suggestions, falling back to text analysis:', error);
       return this.fallbackTextParsing(response.response, reportType);
     }
@@ -380,7 +380,7 @@ Provide practical, implementable suggestions that would genuinely improve the le
         signal: AbortSignal.timeout(5000)
       });
       return response.ok;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Ollama health check failed:', error);
       return false;
     }
@@ -398,7 +398,7 @@ Provide practical, implementable suggestions that would genuinely improve the le
       
       const data = await response.json();
       return data.models?.map((model: any) => model.name) || [];
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to get available models:', error);
       return [];
     }
@@ -472,7 +472,7 @@ export async function testOllamaIntegration(): Promise<{
       availableModels,
       testSuggestion: testSuggestions[0]
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       success: false,
       model: 'unknown',

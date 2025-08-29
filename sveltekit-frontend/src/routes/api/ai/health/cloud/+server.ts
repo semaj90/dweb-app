@@ -13,7 +13,7 @@ export const GET: RequestHandler = async () => {
         "../../../../../lib/services/ai-service.js"
       );
       aiService = aiServiceModule.aiService || aiServiceModule.default;
-    } catch (error) {
+    } catch (error: any) {
       return json({
         success: false,
         available: false,
@@ -55,7 +55,7 @@ export const GET: RequestHandler = async () => {
           (testError instanceof Error ? testError.message : "Unknown error"),
       });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Cloud AI health check failed:", error);
     return json(
       {

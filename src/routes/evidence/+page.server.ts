@@ -23,7 +23,7 @@ const evidenceSchema = z.object({
   metadata: z.record(z.unknown()).optional(),
 });
 
-export const load: PageServerLoad = async ({ url, locals }) => {
+export const load: PageServerLoad = async ({ url, locals }): Promise<any> => {
   const user = locals.user;
   if (!user) {
     throw error(401, "Authentication required");
@@ -80,7 +80,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
       totalCount: evidenceData?.length || 0,
       hasMore: evidenceData?.length === limit,
     };
-  } catch (err) {
+  } catch (err: any) {
     console.error("Failed to load evidence:", err);
     throw error(500, "Failed to load evidence data");
   }
@@ -88,7 +88,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 
 export const actions = {
   // CREATE and UPDATE evidence
-  save: async ({ request }) => {
+  save: async ({ request }): Promise<any> => {
     const form = await superValidate(request, zod(evidenceSchema));
 
     if (!form.valid) {
@@ -120,7 +120,7 @@ export const actions = {
         await db.insert(evidence).values(evidenceData);
       }
       return { form };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving evidence:", error);
       return fail(500, {
         form,
@@ -130,7 +130,7 @@ export const actions = {
   },
 
   // DELETE evidence
-  delete: async ({ request }) => {
+  delete: async ({ request }): Promise<any> => {
     const formData = await request.formData();
     const id = formData.get("id") as string;
 
@@ -140,7 +140,7 @@ export const actions = {
     try {
       await db.delete(evidence).where(eq(evidence.id, id));
       return { success: true };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deleting evidence:", error);
       return fail(500, { error: "Failed to delete evidence" });
     }

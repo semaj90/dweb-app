@@ -4,7 +4,7 @@ import type { Options } from 'pug'
 const regexVueTemplate = /<template.*?lang=['"]pug['"][^>]*>([\s\S]*?)<\/template>/g
 
 export default function extractorPug(options: Options = {}): Extractor {
-  async function compile(code: string, id: string) {
+  async function compile(code: string, id: string): Promise<any> {
     const Pug = await import('pug')
     try {
       return Pug.compile(code, { filename: id, doctype: 'html', ...options })()

@@ -16,8 +16,18 @@ const sql = postgres(connectionString, {
     vector: {
       to: 1184,
       from: [1184],
-      serialize: (x: number[]) => `[${x.join(',')}]`,
-      parse: (x: string) => x.slice(1, -1).split(',').map(Number),
+      serialize: (x: number[]) => {
+        if (Array.isArray(x)) {
+          return `[${x.join(',')}]`;
+        }
+        return x || '[]';
+      },
+      parse: (x: string) => {
+        if (typeof x === 'string' && x.startsWith('[') && x.endsWith(']')) {
+          return x.slice(1, -1).split(',').map(Number);
+        }
+        return [];
+      },
     },
   },
 });
@@ -57,7 +67,7 @@ export interface ExistingUserProfile {
 }
 
 // Service Results
-interface ServiceResult<T = any> {
+export interface ServiceResult<T = any> {
   success: boolean;
   data?: T;
   user?: ExistingUser;
@@ -146,7 +156,7 @@ export class ExistingUserAuthService {
         profile,
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('User registration error:', error);
       return {
         success: false,
@@ -227,7 +237,7 @@ export class ExistingUserAuthService {
         profile,
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('User login error:', error);
       return {
         success: false,
@@ -280,7 +290,7 @@ export class ExistingUserAuthService {
         session,
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Session validation error:', error);
       return {
         success: false,
@@ -303,7 +313,7 @@ export class ExistingUserAuthService {
         data: { deleted: result.count > 0 }
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('User logout error:', error);
       return {
         success: false,
@@ -361,7 +371,7 @@ export class ExistingUserProfileService {
         data: profile
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Get user profile error:', error);
       return {
         success: false,
@@ -411,7 +421,7 @@ export class ExistingUserProfileService {
         profile: result[0] as ExistingUserProfile
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Update user profile error:', error);
       return {
         success: false,
@@ -436,7 +446,7 @@ export class ExistingUserProfileService {
         data: { deactivated: result.count > 0 }
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Delete user error:', error);
       return {
         success: false,

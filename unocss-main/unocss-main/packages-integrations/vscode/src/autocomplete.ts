@@ -23,7 +23,7 @@ class UnoCompletionItem extends CompletionItem {
 
 export async function registerAutoComplete(
   loader: ContextLoader,
-) {
+): Promise<any> {
   const autoCompletes = new Map<UnocssPluginContext, UnocssAutocomplete>()
   const config = getConfig()
   loader.events.on('contextReload', (ctx) => {
@@ -51,7 +51,7 @@ export async function registerAutoComplete(
     return autocomplete
   }
 
-  async function getMarkdown(uno: UnoGenerator, util: string, remToPxRatio: number) {
+  async function getMarkdown(uno: UnoGenerator, util: string, remToPxRatio: number): Promise<any> {
     return new MarkdownString(await getPrettiedMarkdown(uno, util, remToPxRatio))
   }
 
@@ -61,7 +61,7 @@ export async function registerAutoComplete(
     id,
     doc,
     position,
-  }: { ctx: UnocssPluginContext, code: string, id: string, doc: TextDocument, position: Position }) {
+  }: { ctx: UnocssPluginContext, code: string, id: string, doc: TextDocument, position: Position }): Promise<any> {
     const isPug = isVueWithPug(code, id)
     // If isPug is true, then we should not recognize it as a cssId.
     if (!ctx.filter(code, id) && !isCssId(id) && !isPug)
@@ -192,7 +192,7 @@ export async function registerAutoComplete(
 
   let completeUnregister: Disposable
 
-  const registerProvider = async () => {
+  const registerProvider = async (): Promise<any> => {
     completeUnregister?.dispose?.()
 
     completeUnregister = languages.registerCompletionItemProvider(

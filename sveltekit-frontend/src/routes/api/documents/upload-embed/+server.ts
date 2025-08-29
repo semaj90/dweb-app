@@ -105,7 +105,7 @@ export const POST: RequestHandler = async ({ request }) => {
       message: 'Document uploaded successfully'
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('❌ Upload error:', err);
     if (err instanceof Error) {
       throw error(500, `Upload failed: ${err.message}`);
@@ -130,7 +130,7 @@ export const GET: RequestHandler = async () => {
         connected: true
       }
     });
-  } catch (err) {
+  } catch (err: any) {
     return json({
       status: 'unhealthy',
       error: err instanceof Error ? err.message : 'Unknown error',

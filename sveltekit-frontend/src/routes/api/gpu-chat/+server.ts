@@ -61,7 +61,7 @@ async function processWithGPU(content: string): Promise<any> {
     if (response.ok) {
       return await response.json();
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Go microservice error:', error);
   }
 
@@ -81,7 +81,7 @@ async function processWithGPU(content: string): Promise<any> {
       })
     });
     return await ollamaResponse.json();
-  } catch (error) {
+  } catch (error: any) {
     console.error('Ollama error:', error);
     return { response: 'Service temporarily unavailable', error: true };
   }
@@ -148,7 +148,7 @@ export const POST: RequestHandler = async ({ request }) => {
         tensorRT: GPU_CONFIG.tensorRT.enabled
       }
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Chat error:', error);
     return json({
       success: false,

@@ -20,7 +20,7 @@ import type {
 } from '$lib/ai/types';
 
 // POST - Process metrics and evaluate triggers
-export const POST: RequestHandler = async ({ request, url }) => {
+export const POST: RequestHandler = async ({ request, url }): Promise<any> => {
     try {
         const action = url.searchParams.get('action');
         const body = await request.json();
@@ -41,14 +41,14 @@ export const POST: RequestHandler = async ({ request, url }) => {
             default:
                 return error(400, 'Invalid action specified');
         }
-    } catch (err) {
+    } catch (err: any) {
         console.error('❌ Automation triggers API error:', err);
         return error(500, `Server error: ${err.message}`);
     }
 };
 
 // GET - Retrieve trigger information and statistics
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
     try {
         const action = url.searchParams.get('action');
         
@@ -74,14 +74,14 @@ export const GET: RequestHandler = async ({ url }) => {
             default:
                 return getDashboard();
         }
-    } catch (err) {
+    } catch (err: any) {
         console.error('❌ Automation triggers API error:', err);
         return error(500, `Server error: ${err.message}`);
     }
 };
 
 // PUT - Update trigger configuration
-export const PUT: RequestHandler = async ({ request }) => {
+export const PUT: RequestHandler = async ({ request }): Promise<any> => {
     try {
         const { triggerId, updates } = await request.json();
         
@@ -99,14 +99,14 @@ export const PUT: RequestHandler = async ({ request }) => {
             result,
             timestamp: new Date().toISOString()
         });
-    } catch (err) {
+    } catch (err: any) {
         console.error('❌ Update trigger error:', err);
         return error(500, `Update error: ${err.message}`);
     }
 };
 
 // DELETE - Remove trigger
-export const DELETE: RequestHandler = async ({ url }) => {
+export const DELETE: RequestHandler = async ({ url }): Promise<any> => {
     try {
         const triggerId = url.searchParams.get('triggerId');
         
@@ -122,7 +122,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
             removed: result,
             timestamp: new Date().toISOString()
         });
-    } catch (err) {
+    } catch (err: any) {
         console.error('❌ Remove trigger error:', err);
         return error(500, `Remove error: ${err.message}`);
     }
@@ -132,7 +132,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
  * Handler Functions
  */
 
-async function processMetrics(metricsData: unknown) {
+async function processMetrics(metricsData: any): Promise<any> {
     const startTime = performance.now();
     
     // Validate metrics data
@@ -163,7 +163,7 @@ async function processMetrics(metricsData: unknown) {
     });
 }
 
-async function registerTrigger(triggerData: unknown) {
+async function registerTrigger(triggerData: any): Promise<any> {
     // Validate trigger data
     if (!triggerData || !triggerData.id || !triggerData.conditions) {
         return error(400, 'Invalid trigger configuration');
@@ -193,7 +193,7 @@ async function registerTrigger(triggerData: unknown) {
     });
 }
 
-async function executeTrigger(triggerData: unknown) {
+async function executeTrigger(triggerData: any): Promise<any> {
     const { triggerId, forceExecute = false, testMode = false } = triggerData;
     
     if (!triggerId) {
@@ -214,7 +214,7 @@ async function executeTrigger(triggerData: unknown) {
     });
 }
 
-async function sendAlert(alertData: unknown) {
+async function sendAlert(alertData: any): Promise<any> {
     const alert: SystemAlert = {
         id: `manual-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         ...alertData,
@@ -365,7 +365,7 @@ function getDashboard() {
  * Helper Functions
  */
 
-async function executeManualTrigger(triggerId: string, forceExecute: boolean, testMode: boolean) {
+async function executeManualTrigger(triggerId: string, forceExecute: boolean, testMode: boolean): Promise<any> {
     // This would integrate with the automation engine to manually execute a trigger
     // For now, return a mock result
     
@@ -382,7 +382,7 @@ async function executeManualTrigger(triggerId: string, forceExecute: boolean, te
     };
 }
 
-async function updateTrigger(triggerId: string, updates: unknown) {
+async function updateTrigger(triggerId: string, updates: any): Promise<any> {
     // This would update the trigger configuration in the automation engine
     console.log(`🔧 Updating trigger: ${triggerId}`, updates);
     
@@ -394,7 +394,7 @@ async function updateTrigger(triggerId: string, updates: unknown) {
     };
 }
 
-async function removeTrigger(triggerId: string) {
+async function removeTrigger(triggerId: string): Promise<any> {
     // This would remove the trigger from the automation engine
     console.log(`🗑️ Removing trigger: ${triggerId}`);
     
@@ -405,7 +405,7 @@ async function removeTrigger(triggerId: string) {
     };
 }
 
-function calculateSystemHealth(stats: unknown, metrics: unknown) {
+function calculateSystemHealth(stats: any, metrics: any) {
     const triggerHealth = stats.totalTriggers > 0 
         ? (stats.activeTriggers / stats.totalTriggers) * 100 
         : 100;

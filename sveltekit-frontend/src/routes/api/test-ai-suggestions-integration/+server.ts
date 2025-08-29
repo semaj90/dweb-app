@@ -22,7 +22,7 @@ export interface IntegrationTestResult {
  * Comprehensive AI Suggestions Integration Test
  * Tests all services, database connections, and Protocol Buffers integration
  */
-export async function GET({ url }: RequestEvent) {
+export async function GET({ url }: RequestEvent): Promise<any> {
   const startTime = Date.now();
   const testResults: IntegrationTestResult[] = [];
   const testContent = "The defendant was found with stolen evidence. We need to analyze the chain of custody and prepare charges for prosecution.";
@@ -107,7 +107,7 @@ async function testDatabaseConnection(): Promise<IntegrationTestResult> {
         error: health.error
       };
     }
-  } catch (error) {
+  } catch (error: any) {
     return {
       service: 'Database Connection',
       status: 'fail',
@@ -143,7 +143,7 @@ async function testPgVectorIntegration(): Promise<IntegrationTestResult> {
         error: health.error
       };
     }
-  } catch (error) {
+  } catch (error: any) {
     return {
       service: 'pgvector Integration',
       status: 'fail',
@@ -187,7 +187,7 @@ async function testEmbeddingGeneration(content: string): Promise<IntegrationTest
         responseTime
       };
     }
-  } catch (error) {
+  } catch (error: any) {
     return {
       service: 'Embedding Generation',
       status: 'fail',
@@ -227,7 +227,7 @@ async function testOllamaService(): Promise<IntegrationTestResult> {
         error: result.error
       };
     }
-  } catch (error) {
+  } catch (error: any) {
     return {
       service: 'Ollama AI Service',
       status: 'fail',
@@ -268,7 +268,7 @@ async function testEnhancedRAGService(): Promise<IntegrationTestResult> {
         error: result.error
       };
     }
-  } catch (error) {
+  } catch (error: any) {
     return {
       service: 'Enhanced RAG Service',
       status: 'fail',
@@ -304,7 +304,7 @@ async function testProtobufGRPCService(): Promise<IntegrationTestResult> {
         responseTime
       };
     }
-  } catch (error) {
+  } catch (error: any) {
     return {
       service: 'Protocol Buffers gRPC',
       status: 'warning',
@@ -358,7 +358,7 @@ async function testMainSuggestionsAPI(): Promise<IntegrationTestResult> {
         error: errorText
       };
     }
-  } catch (error) {
+  } catch (error: any) {
     return {
       service: 'Main Suggestions API',
       status: 'fail',
@@ -398,7 +398,7 @@ async function testStreamingAPI(): Promise<IntegrationTestResult> {
         responseTime
       };
     }
-  } catch (error) {
+  } catch (error: any) {
     return {
       service: 'Streaming API',
       status: 'fail',
@@ -438,7 +438,7 @@ async function testRatingAPI(): Promise<IntegrationTestResult> {
         responseTime
       };
     }
-  } catch (error) {
+  } catch (error: any) {
     return {
       service: 'Rating API',
       status: 'fail',
@@ -474,7 +474,7 @@ async function testHealthCheckAPI(): Promise<IntegrationTestResult> {
         responseTime
       };
     }
-  } catch (error) {
+  } catch (error: any) {
     return {
       service: 'Health Check API',
       status: 'fail',

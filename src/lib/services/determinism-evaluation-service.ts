@@ -3,8 +3,8 @@
  * Tracks agent actions, user feedback, and test results for RL/benchmarking
  */
 
-import { librarySyncService } from "./library-sync-service.js";
-import { redisVectorService } from "./redis-vector-service.js";
+import { librarySyncService } from './library-sync-service';
+import { redisVectorService } from './redis-vector-service';
 
 export interface EvaluationMetric {
     id: string;
@@ -124,7 +124,7 @@ class DeterminismEvaluationService {
                 `📝 Recorded user feedback: ${feedback.rating}/5 for ${feedback.agentType}/${feedback.operation}`
             );
             return feedbackRecord.id;
-        } catch (error) {
+        } catch (error: any) {
             console.error("Failed to record user feedback:", error);
             throw error;
         }
@@ -183,7 +183,7 @@ class DeterminismEvaluationService {
                 `🧪 Recorded test result: ${testResult.testName} - ${testResult.passed ? "PASSED" : "FAILED"}`
             );
             return testRecord.id;
-        } catch (error) {
+        } catch (error: any) {
             console.error("Failed to record test result:", error);
             throw error;
         }
@@ -283,7 +283,7 @@ class DeterminismEvaluationService {
             }
 
             return metrics;
-        } catch (error) {
+        } catch (error: any) {
             console.error("Failed to calculate metrics:", error);
             return [];
         }
@@ -323,7 +323,7 @@ class DeterminismEvaluationService {
                 technicalAccuracy,
                 previousSuccessRate,
             };
-        } catch (error) {
+        } catch (error: any) {
             console.error("Failed to extract RL features:", error);
             // Return default features
             return {
@@ -364,7 +364,7 @@ class DeterminismEvaluationService {
                 trends,
                 recommendations,
             };
-        } catch (error) {
+        } catch (error: any) {
             console.error("Failed to get benchmark results:", error);
             return { metrics: [], trends: {}, recommendations: [] };
         }
@@ -427,7 +427,7 @@ class DeterminismEvaluationService {
                 "Getting recent feedback - implementation needed for full text search"
             );
             return [];
-        } catch (error) {
+        } catch (error: any) {
             console.error("Failed to get recent feedback:", error);
             return [];
         }
@@ -447,7 +447,7 @@ class DeterminismEvaluationService {
                 "Getting recent test results - implementation needed for full text search"
             );
             return [];
-        } catch (error) {
+        } catch (error: any) {
             console.error("Failed to get recent test results:", error);
             return [];
         }

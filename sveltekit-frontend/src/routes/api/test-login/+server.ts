@@ -5,7 +5,7 @@ import { users } from "$lib/server/db/schema-postgres";
 import { verifyPassword, createUserSession, setSessionCookie } from "drizzle-orm";
 import { eq } from 'drizzle-orm';
 
-export async function POST({ request }) {
+export async function POST({ request }): Promise<any> {
   try {
     const { email, password } = await request.json();
     

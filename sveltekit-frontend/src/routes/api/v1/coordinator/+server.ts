@@ -95,7 +95,7 @@ export const GET: RequestHandler = async ({ url }) => {
         );
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Coordinator API error:', error);
     return json(
       {
@@ -194,7 +194,7 @@ export const POST: RequestHandler = async ({ request }) => {
         );
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Coordinator POST API error:', error);
     return json(
       {

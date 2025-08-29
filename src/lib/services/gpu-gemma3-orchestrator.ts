@@ -1,12 +1,26 @@
 // GPU-Gemma3 Orchestrator: Unified WebAssembly + Node GPU Service Integration
 // Combines local WebAssembly inference with high-performance GPU processing
 
-import type { Gemma3GenerationResult, Gemma3ServiceConfig } from './gemma3-local-service';
+// Import types with proper fallbacks
 import { gemma3Service } from './gemma3-local-service';
-import { createChannel, createClientFactory } from 'nice-grpc';
-import { NodeGPUServiceDefinition } from '../grpc/gpu-service';
 
-interface GPUServiceClient {
+// Define types locally to avoid import issues
+export interface Gemma3GenerationResult {
+    text: string;
+    processingTime: number;
+    tokensGenerated: number;
+}
+
+export interface Gemma3ServiceConfig {
+    modelUrl?: string;
+    wasmUrl?: string;
+    enableWebGPU?: boolean;
+    enableThreading?: boolean;
+    maxCacheSize?: number;
+    defaultTemperature?: number;
+}
+
+export interface GPUServiceClient {
     processEmbeddings(request: EmbeddingRequest): Promise<EmbeddingResponse>;
     performClustering(request: ClusteringRequest): Promise<ClusteringResponse>;
     computeSimilarity(request: SimilarityRequest): Promise<SimilarityResponse>;
@@ -14,24 +28,171 @@ interface GPUServiceClient {
     getHealthStatus(): Promise<HealthResponse>;
 }
 
-interface EmbeddingRequest {
+// HTTP-based GPU service client
+class HTTPGPUServiceClient implements GPUServiceClient {
+    constructor(private baseUrl: string) {}
+
+    async processEmbeddings(request: EmbeddingRequest): Promise<EmbeddingResponse> {
+        // Convert to GPU orchestrator format
+        const gpuRequest = {
+            jobId: globalThis.crypto?.randomUUID() || `job_${Date.now()}_${Math.random().toString(36).slice(2)}`,
+            type: 'embedding',
+            data: request.requests.map(r => r.text).join(' ').split(' ').map(Number),
+            priority: 'normal'
+        };
+
+        const response = await fetch(`${this.baseUrl}/api/gpu/process`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(gpuRequest)
+        });
+
+        if (!response.ok) {
+            throw new Error(`GPU embedding failed: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        return {
+            embeddings: [{ values: result.result }],
+            dimensions: result.result.length,
+            processingTime: result.processingMs,
+            batchSize: 1
+        };
+    }
+
+    async performClustering(request: ClusteringRequest): Promise<ClusteringResponse> {
+        // Use SOM training endpoint for clustering
+        const gpuRequest = {
+            jobId: globalThis.crypto?.randomUUID() || `job_${Date.now()}_${Math.random().toString(36).slice(2)}`,
+            type: 'som_train',
+            data: request.embeddings.map(e => e.values).flat(),
+            options: {
+                clusters: request.numClusters,
+                iterations: request.maxIterations || 100
+            },
+            priority: 'normal'
+        };
+
+        const response = await fetch(`${this.baseUrl}/api/gpu/process`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(gpuRequest)
+        });
+
+        if (!response.ok) {
+            throw new Error(`GPU clustering failed: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        return {
+            assignments: result.result || [],
+            centers: [],
+            inertia: 0,
+            iterations: request.maxIterations || 100,
+            processingTime: result.processingMs
+        };
+    }
+
+    async computeSimilarity(request: SimilarityRequest): Promise<SimilarityResponse> {
+        const gpuRequest = {
+            jobId: globalThis.crypto?.randomUUID() || `job_${Date.now()}_${Math.random().toString(36).slice(2)}`,
+            type: 'similarity',
+            data: [...request.embeddingsA[0].values, ...request.embeddingsB[0].values],
+            options: {
+                metric: request.metric || 'cosine',
+                vector_a: request.embeddingsA[0].values,
+                vector_b: request.embeddingsB[0].values
+            },
+            priority: 'normal'
+        };
+
+        const response = await fetch(`${this.baseUrl}/api/gpu/process`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(gpuRequest)
+        });
+
+        if (!response.ok) {
+            throw new Error(`GPU similarity failed: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        return {
+            scores: Array.isArray(result.result) ? result.result : [result.result],
+            metric: request.metric || 'cosine',
+            processingTime: result.processingMs
+        };
+    }
+
+    async applyBoostTransform(request: BoostRequest): Promise<BoostResponse> {
+        // Use rotation operation for boost transform
+        const gpuRequest = {
+            jobId: globalThis.crypto?.randomUUID() || `job_${Date.now()}_${Math.random().toString(36).slice(2)}`,
+            type: 'rotation',
+            data: request.embeddings[0].values,
+            options: {
+                boostFactors: request.boostFactors
+            },
+            priority: 'normal'
+        };
+
+        const response = await fetch(`${this.baseUrl}/api/gpu/process`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(gpuRequest)
+        });
+
+        if (!response.ok) {
+            throw new Error(`GPU boost transform failed: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        return {
+            transformedEmbeddings: [{ values: result.result }],
+            boostFactors: request.boostFactors,
+            processingTime: result.processingMs
+        };
+    }
+
+    async getHealthStatus(): Promise<HealthResponse> {
+        const response = await fetch(`${this.baseUrl}/api/gpu/status`);
+        
+        if (!response.ok) {
+            throw new Error(`Health check failed: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        return {
+            status: result.status === 'healthy' ? 'healthy' : 'unhealthy',
+            uptime: Date.now() - (result.timestamp || Date.now()),
+            metrics: {
+                totalJobs: result.gpu_stats?.totalJobs?.toString() || '0',
+                successfulJobs: result.gpu_stats?.successfulJobs?.toString() || '0',
+                failedJobs: result.gpu_stats?.failedJobs?.toString() || '0',
+                gpuModel: result.gpu_stats?.gpuModel || 'Unknown'
+            }
+        };
+    }
+}
+
+export interface EmbeddingRequest {
     requests: Array<{ text: string; id?: string }>;
 }
 
-interface EmbeddingResponse {
+export interface EmbeddingResponse {
     embeddings: Array<{ values: number[] }>;
     dimensions: number;
     processingTime: number;
     batchSize: number;
 }
 
-interface ClusteringRequest {
+export interface ClusteringRequest {
     embeddings: Array<{ values: number[] }>;
     numClusters: number;
     maxIterations?: number;
 }
 
-interface ClusteringResponse {
+export interface ClusteringResponse {
     assignments: number[];
     centers: Array<{ values: number[] }>;
     inertia: number;
@@ -39,36 +200,36 @@ interface ClusteringResponse {
     processingTime: number;
 }
 
-interface SimilarityRequest {
+export interface SimilarityRequest {
     embeddingsA: Array<{ values: number[] }>;
     embeddingsB: Array<{ values: number[] }>;
     metric?: 'cosine' | 'euclidean' | 'dot';
 }
 
-interface SimilarityResponse {
+export interface SimilarityResponse {
     scores: number[];
     metric: string;
     processingTime: number;
 }
 
-interface BoostRequest {
+export interface BoostRequest {
     embeddings: Array<{ values: number[] }>;
     boostFactors: number[];
 }
 
-interface BoostResponse {
+export interface BoostResponse {
     transformedEmbeddings: Array<{ values: number[] }>;
     boostFactors: number[];
     processingTime: number;
 }
 
-interface HealthResponse {
+export interface HealthResponse {
     status: string;
     uptime: number;
     metrics: Record<string, string>;
 }
 
-interface DocumentProcessingPipeline {
+export interface DocumentProcessingPipeline {
     documentId: string;
     content: string;
     title: string;
@@ -83,8 +244,9 @@ interface DocumentProcessingPipeline {
     };
 }
 
-interface OrchestrationConfig extends Gemma3ServiceConfig {
-    nodeGpuServiceUrl?: string;
+export interface OrchestrationConfig extends Gemma3ServiceConfig {
+    nodeGpuServiceUrl?: string; // GPU orchestrator service
+    enhancedRagServiceUrl?: string; // Enhanced RAG service  
     enableGpuAcceleration?: boolean;
     maxBatchSize?: number;
     clusteringThreshold?: number;
@@ -94,8 +256,9 @@ interface OrchestrationConfig extends Gemma3ServiceConfig {
 
 export class GPUGemma3Orchestrator {
     private gemma3Service = gemma3Service;
-    private gpuClient: GPUServiceClient | null = null;
-    private config: Required<OrchestrationConfig>;
+    private gpuClient: GPUServiceClient | null = null; // GPU orchestrator (8231)
+    private ragClient: HTTPGPUServiceClient | null = null; // Enhanced RAG (8094)
+    private config: Required<OrchestrationConfig & { enhancedRagServiceUrl: string }>;
     private initialized = false;
     private processingQueue: DocumentProcessingPipeline[] = [];
     private isProcessing = false;
@@ -118,7 +281,8 @@ export class GPUGemma3Orchestrator {
             enableThreading: config.enableThreading ?? true,
             maxCacheSize: config.maxCacheSize || 100,
             defaultTemperature: config.defaultTemperature || 0.1,
-            nodeGpuServiceUrl: config.nodeGpuServiceUrl || 'localhost:50052',
+            nodeGpuServiceUrl: config.nodeGpuServiceUrl || 'http://localhost:8231',
+            enhancedRagServiceUrl: config.enhancedRagServiceUrl || 'http://localhost:8094',
             enableGpuAcceleration: config.enableGpuAcceleration ?? true,
             maxBatchSize: config.maxBatchSize || 32,
             clusteringThreshold: config.clusteringThreshold || 0.7,
@@ -137,9 +301,12 @@ export class GPUGemma3Orchestrator {
                 console.warn('[GPUGemma3Orchestrator] Gemma3 service failed to initialize');
             }
 
-            // Initialize GPU service client if enabled
+            // Initialize both GPU services if enabled
             if (this.config.enableGpuAcceleration) {
-                await this.initializeGPUService();
+                await Promise.all([
+                    this.initializeGPUService(), // GPU orchestrator
+                    this.initializeRAGService()  // Enhanced RAG
+                ]);
             }
 
             // Start processing loop
@@ -149,35 +316,54 @@ export class GPUGemma3Orchestrator {
             console.log('[GPUGemma3Orchestrator] Unified system initialized successfully');
             return true;
 
-        } catch (error) {
+        } catch (error: any) {
             console.error('[GPUGemma3Orchestrator] Initialization failed:', error);
             return false;
         }
     }
 
-    private async initializeGPUService(): Promise<void> {
+    private async initializeGPUService(): Promise<any> {
         try {
-            console.log('[GPUGemma3Orchestrator] Connecting to Node GPU service...');
+            console.log('[GPUGemma3Orchestrator] Connecting to GPU Orchestrator (port 8231)...');
             
-            const channel = createChannel(this.config.nodeGpuServiceUrl);
-            const clientFactory = createClientFactory()
-                .use(/* Add interceptors if needed */);
-            
-            this.gpuClient = clientFactory.create(NodeGPUServiceDefinition, channel) as GPUServiceClient;
+            // Create HTTP-based GPU client for orchestrator
+            this.gpuClient = new HTTPGPUServiceClient(this.config.nodeGpuServiceUrl);
 
             // Test connection
             const health = await this.gpuClient.getHealthStatus();
             if (health.status !== 'healthy') {
-                throw new Error(`GPU service unhealthy: ${health.status}`);
+                throw new Error(`GPU orchestrator unhealthy: ${health.status}`);
             }
 
-            console.log('[GPUGemma3Orchestrator] GPU service connected successfully');
-            console.log(`GPU Service Uptime: ${health.uptime}s`);
+            console.log('[GPUGemma3Orchestrator] GPU Orchestrator connected successfully');
+            console.log(`GPU Orchestrator - ${health.metrics.gpuModel} (${health.metrics.totalJobs} jobs completed)`);
 
-        } catch (error) {
-            console.warn('[GPUGemma3Orchestrator] GPU service connection failed:', error);
-            console.log('[GPUGemma3Orchestrator] Continuing without GPU acceleration');
+        } catch (error: any) {
+            console.warn('[GPUGemma3Orchestrator] GPU Orchestrator connection failed:', error);
             this.gpuClient = null;
+        }
+    }
+
+    private async initializeRAGService(): Promise<any> {
+        try {
+            console.log('[GPUGemma3Orchestrator] Connecting to Enhanced RAG Service (port 8094)...');
+            
+            // Create HTTP client for enhanced RAG service
+            this.ragClient = new HTTPGPUServiceClient(this.config.enhancedRagServiceUrl);
+
+            // Test connection with system metrics
+            const response = await fetch(`${this.config.enhancedRagServiceUrl}/api/system/metrics`);
+            if (!response.ok) {
+                throw new Error(`RAG service metrics unavailable: ${response.statusText}`);
+            }
+
+            const metrics = await response.json();
+            console.log('[GPUGemma3Orchestrator] Enhanced RAG Service connected successfully');
+            console.log(`RAG Service - Database: ${metrics.database?.connected ? 'Connected' : 'Disconnected'}, GPU: ${metrics.services?.gpu?.available ? 'Available' : 'Unavailable'}`);
+
+        } catch (error: any) {
+            console.warn('[GPUGemma3Orchestrator] Enhanced RAG Service connection failed:', error);
+            this.ragClient = null;
         }
     }
 
@@ -217,7 +403,7 @@ export class GPUGemma3Orchestrator {
             throw new Error('Orchestrator not initialized');
         }
 
-        const documentId = crypto.randomUUID();
+        const documentId = globalThis.crypto?.randomUUID() || `doc_${Date.now()}_${Math.random().toString(36).slice(2)}`;
         const startTime = performance.now();
         const stages: Record<string, number> = {};
         
@@ -239,20 +425,41 @@ export class GPUGemma3Orchestrator {
                 console.log(`[GPUGemma3Orchestrator] Analysis completed in ${Math.round(stages.analysis)}ms`);
             }
 
-            // Stage 2: Generate Embeddings (GPU-accelerated if available)
+            // Stage 2: Generate Embeddings (Choose best available service)
             let embeddings: number[] | null = null;
             if (options.generateEmbeddings !== false) {
                 const embeddingStart = performance.now();
                 
-                if (this.gpuClient) {
-                    // Use GPU service for high-performance embedding generation
+                if (this.ragClient) {
+                    // Use Enhanced RAG service for embeddings (has Ollama integration)
+                    try {
+                        const ragResponse = await fetch(`${this.config.enhancedRagServiceUrl}/api/embeddings`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ text: content })
+                        });
+                        
+                        if (ragResponse.ok) {
+                            const result = await ragResponse.json();
+                            embeddings = result.embedding;
+                            console.log('[GPUGemma3Orchestrator] Using Enhanced RAG for embeddings');
+                        }
+                    } catch (error: any) {
+                        console.warn('[GPUGemma3Orchestrator] RAG embedding failed, trying GPU orchestrator');
+                    }
+                }
+                
+                if (!embeddings && this.gpuClient) {
+                    // Fallback to GPU orchestrator service
                     embeddings = await this.generateEmbeddingsGPU([content]);
                     this.stats.gpuOperations++;
-                } else {
-                    // Fallback to Ollama nomic-embed
+                    console.log('[GPUGemma3Orchestrator] Using GPU Orchestrator for embeddings');
+                } else if (!embeddings) {
+                    // Final fallback to Ollama via Gemma3 service
                     const embeddingResult = await this.gemma3Service.generateEmbeddings(content);
                     embeddings = embeddingResult.embedding;
                     this.stats.wasmOperations++;
+                    console.log('[GPUGemma3Orchestrator] Using Gemma3 service for embeddings');
                 }
 
                 stages.embeddings = performance.now() - embeddingStart;
@@ -310,7 +517,7 @@ export class GPUGemma3Orchestrator {
                 }
             };
 
-        } catch (error) {
+        } catch (error: any) {
             console.error('[GPUGemma3Orchestrator] Document processing failed:', error);
             throw error;
         }
@@ -366,7 +573,7 @@ export class GPUGemma3Orchestrator {
             for (let i = 0; i < documents.length; i += maxConcurrency) {
                 const batch = documents.slice(i, i + maxConcurrency);
                 
-                const batchPromises = batch.map(async (doc, idx) => {
+                const batchPromises = batch.map(async (doc, idx): Promise<any> => {
                     try {
                         const result = await this.processLegalDocument(
                             doc.title,
@@ -389,10 +596,10 @@ export class GPUGemma3Orchestrator {
                             embeddings: result.embeddings
                         };
 
-                    } catch (error) {
+                    } catch (error: any) {
                         console.error(`[GPUGemma3Orchestrator] Failed to process document ${doc.title}:`, error);
                         return {
-                            documentId: crypto.randomUUID(),
+                            documentId: globalThis.crypto?.randomUUID() || `doc_${Date.now()}_${Math.random().toString(36).slice(2)}`,
                             title: doc.title,
                             error: error instanceof Error ? error.message : 'Unknown error'
                         };
@@ -434,7 +641,7 @@ export class GPUGemma3Orchestrator {
                 }
             };
 
-        } catch (error) {
+        } catch (error: any) {
             console.error('[GPUGemma3Orchestrator] Batch processing failed:', error);
             throw error;
         }
@@ -506,14 +713,14 @@ export class GPUGemma3Orchestrator {
     }
 
     private startProcessingLoop(): void {
-        setInterval(async () => {
+        setInterval(async (): Promise<any> => {
             if (!this.isProcessing && this.processingQueue.length > 0) {
                 await this.processQueueBatch();
             }
         }, 100); // Check every 100ms
     }
 
-    private async processQueueBatch(): Promise<void> {
+    private async processQueueBatch(): Promise<any> {
         if (this.processingQueue.length === 0) return;
 
         this.isProcessing = true;
@@ -525,7 +732,7 @@ export class GPUGemma3Orchestrator {
             // Process batch...
             // Implementation would handle the queued documents
             
-        } catch (error) {
+        } catch (error: any) {
             console.error('[GPUGemma3Orchestrator] Queue batch processing failed:', error);
         } finally {
             this.isProcessing = false;
@@ -577,7 +784,7 @@ export class GPUGemma3Orchestrator {
     /**
      * Clean up resources
      */
-    async dispose(): Promise<void> {
+    async dispose(): Promise<any> {
         console.log('[GPUGemma3Orchestrator] Disposing orchestrator...');
         
         this.initialized = false;

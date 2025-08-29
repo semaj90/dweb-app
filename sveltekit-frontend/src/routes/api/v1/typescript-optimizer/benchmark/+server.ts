@@ -75,7 +75,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			}
 		});
 
-	} catch (error) {
+	} catch (error: any) {
 		console.error('Benchmark Error:', error);
 		
 		return json({
@@ -164,7 +164,7 @@ async function runSpeedBenchmark(errorCount: number, iterations: number): Promis
 					endpointResults.push(duration);
 					successfulRuns++;
 				}
-			} catch (error) {
+			} catch (error: any) {
 				console.warn(`Benchmark iteration ${i + 1} failed for ${endpoint.name}:`, error);
 			}
 		}
@@ -226,7 +226,7 @@ async function runQualityBenchmark(errorCount: number, iterations: number): Prom
 					totalSuccess += successRate;
 					qualityScores.push(confidence * 100);
 				}
-			} catch (error) {
+			} catch (error: any) {
 				console.warn(`Quality test iteration ${i + 1} failed for ${strategy.name}:`, error);
 			}
 		}

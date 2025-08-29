@@ -30,7 +30,7 @@ export const GET: RequestHandler = async ({ url }) => {
       success: true,
       data: searchResults,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Search API error:", error);
     return json(
       {

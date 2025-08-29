@@ -6,7 +6,7 @@ import { getUtils } from './getUtils'
 import { removeOuterQuotes } from './removeOuterQuotes'
 import { writeUtilStyles } from './writeUtilStyles'
 
-interface TransformApplyContext {
+export interface TransformApplyContext {
   s: MagicString
   uno: UnoGenerator
   applyVariables: string[]
@@ -34,14 +34,14 @@ export async function transformApply(ctx: TransformApplyContext): Promise<MagicS
 }
 
 /** transformerDirectives's handleApply function checks for style nesting (childNode.type === 'Raw') but we are not supporting it here as it is not valid syntax in Svelte style tags. If browser support becomes mainstream and Svelte updates in kind, we can support that. */
-async function handleApply(ctx: TransformApplyContext, node: Rule) {
+async function handleApply(ctx: TransformApplyContext, node: Rule): Promise<any> {
   const parsePromises = node.block.children.map(async (childNode) => {
     await parseApply(ctx, node, childNode)
   })
   await Promise.all(parsePromises)
 }
 
-async function parseApply({ s, uno, applyVariables }: TransformApplyContext, node: Rule, childNode: CssNode) {
+async function parseApply({ s, uno, applyVariables }: TransformApplyContext, node: Rule, childNode: CssNode): Promise<any> {
   const body = getChildNodeValue(childNode, applyVariables)
   if (!body)
     return

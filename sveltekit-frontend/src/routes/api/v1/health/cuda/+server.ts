@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
-interface CudaHealthCheck {
+export interface CudaHealthCheck {
 	service: string;
 	timestamp: number;
 	status: 'healthy' | 'degraded' | 'unhealthy';
@@ -12,7 +12,7 @@ interface CudaHealthCheck {
 	};
 }
 
-interface ServiceHealth {
+export interface ServiceHealth {
 	name: string;
 	url: string;
 	status: 'online' | 'offline' | 'degraded';
@@ -64,7 +64,7 @@ export const GET: RequestHandler = async ({ fetch }) => {
 				details: { error: `HTTP ${response.status}` }
 			});
 		}
-	} catch (error) {
+	} catch (error: any) {
 		healthChecks.push({
 			name: 'cuda-service',
 			url: 'http://localhost:8095',
@@ -122,7 +122,7 @@ export const GET: RequestHandler = async ({ fetch }) => {
 				details
 			});
 
-		} catch (error) {
+		} catch (error: any) {
 			healthChecks.push({
 				name: service.name,
 				url: service.url,

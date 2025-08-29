@@ -54,7 +54,7 @@ export class RabbitMQService {
       this.isConnected = true;
       console.log('✅ RabbitMQ connected');
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ RabbitMQ connection failed:', error);
       return false;
     }
@@ -74,7 +74,7 @@ export class RabbitMQService {
     try {
       const messageBuffer = Buffer.from(JSON.stringify(message));
       return this.channel.sendToQueue(queue, messageBuffer, { persistent: true });
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to publish message:', error);
       return false;
     }
@@ -89,7 +89,7 @@ export class RabbitMQService {
           const content = JSON.parse(msg.content.toString());
           await handler(content, msg);
           this.channel!.ack(msg);
-        } catch (error) {
+        } catch (error: any) {
           console.error('❌ Message processing error:', error);
           this.channel!.nack(msg);
         }
@@ -107,7 +107,7 @@ export class RabbitMQService {
         status: 'healthy',
         details: { connected: this.isConnected, queues: Object.keys(QUEUES).length }
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: 'unhealthy',
         details: { error: error instanceof Error ? error.message : 'Unknown error' }

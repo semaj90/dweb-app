@@ -3,24 +3,24 @@
 // High-performance error analysis using WebGPU and Worker threads
 // ======================================================================
 
-import { gpuLokiErrorAPI } from './gpu-loki-error-orchestrator.js';
+import { gpuLokiErrorAPI } from './gpu-loki-error-orchestrator';
 import { browser } from '$app/environment';
 
-interface GPUComputePipeline {
+export interface GPUComputePipeline {
   device: GPUDevice;
   computeShader: GPUShaderModule;
   pipeline: GPUComputePipeline;
   bindGroupLayout: GPUBindGroupLayout;
 }
 
-interface ErrorAnalysisWorker {
+export interface ErrorAnalysisWorker {
   worker: Worker;
   id: string;
   busy: boolean;
   processedCount: number;
 }
 
-interface ParallelAnalysisConfig {
+export interface ParallelAnalysisConfig {
   maxWorkers: number;
   batchSize: number;
   useGPU: boolean;
@@ -164,7 +164,7 @@ class ParallelErrorAnalyzer {
       });
 
       console.log('✅ GPU compute pipeline initialized');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ GPU initialization failed:', error);
       this.config.useGPU = false;
     }
@@ -187,7 +187,7 @@ class ParallelErrorAnalyzer {
         };
 
         // Setup worker message handling
-        worker.onmessage = (event) => {
+        worker.onmessage = (event: any) => {
           errorWorker.busy = false;
           errorWorker.processedCount++;
           
@@ -200,7 +200,7 @@ class ParallelErrorAnalyzer {
         };
 
         this.workers.push(errorWorker);
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Failed to create worker ${i}:`, error);
       }
     }

@@ -1,12 +1,12 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { getNATSService } from '$lib/services/nats-messaging-service.js';
+import { getNATSService } from '$lib/services/nats-messaging-service';
 
 /**
  * GET /api/v1/nats/status
  * Get NATS server health and connection status
  */
-export const GET: RequestHandler = async () => {
+export const GET: RequestHandler = async (): Promise<any> => {
   try {
     const natsService = getNATSService();
     
@@ -60,7 +60,7 @@ export const GET: RequestHandler = async () => {
       timestamp: Date.now()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('NATS status API error:', error);
     return json({ 
       error: 'Failed to get NATS status',

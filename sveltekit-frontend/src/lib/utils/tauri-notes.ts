@@ -10,7 +10,7 @@ let writeTextFile: any;
 let readTextFile: any;
 let exists: any;
 
-async function initializeTauri() {
+async function initializeTauri(): Promise<any> {
   try {
     // Note: In Tauri v2, core functions are in different modules
     const { invoke: tauriInvoke } = await import("@tauri-apps/api/core");
@@ -23,7 +23,7 @@ async function initializeTauri() {
     // File system operations require @tauri-apps/plugin-fs plugin in Tauri v2
     // For now, these will use fallbacks
     throw new Error("Tauri v2 filesystem plugin not configured");
-  } catch (error) {
+  } catch (error: any) {
     console.warn("Tauri not available - desktop features disabled");
     // Provide fallback implementations
     invoke = () => Promise.reject(new Error("Tauri not available"));
@@ -59,7 +59,7 @@ class TauriNotesService {
   async renderMarkdownToHtml(markdown: string): Promise<string> {
     try {
       return await invoke("render_markdown_to_html", { markdown });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to render markdown via Tauri:", error);
       throw new Error(`Markdown rendering failed: ${error}`);
     }
@@ -99,7 +99,7 @@ class TauriNotesService {
       await writeTextFile(filePath, content);
 
       return filePath;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to save note to file:", error);
       throw new Error(`File save failed: ${error}`);
     }
@@ -136,7 +136,7 @@ class TauriNotesService {
         };
       }
       return null;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to load note from file:", error);
       return null;
     }
@@ -177,7 +177,7 @@ class TauriNotesService {
       await writeTextFile(filePath, content);
 
       return filePath;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to export notes:", error);
       throw new Error(`Export failed: ${error}`);
     }
@@ -187,7 +187,7 @@ class TauriNotesService {
     try {
       const html = await this.notesToHtml(notes);
       return await invoke("generate_pdf_from_html", { html });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to generate PDF:", error);
       throw new Error(`PDF generation failed: ${error}`);
     }
@@ -211,7 +211,7 @@ class TauriNotesService {
         notes: searchData,
       });
       return results as SavedNote[];
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Rust search failed, falling back to JavaScript:", error);
       // Fallback to client-side search
       return notes.filter(
@@ -228,7 +228,7 @@ class TauriNotesService {
   private async ensureDirectoryExists(path: string): Promise<void> {
     try {
       await invoke("ensure_directory_exists", { path });
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Failed to ensure directory exists:", error);
     }
   }

@@ -4,7 +4,7 @@ import { AuthService } from '$lib/yorha/services/auth.service';
 import { sequence } from '@sveltejs/kit/hooks';
 
 // Authentication hook
-const authentication: Handle = async ({ event, resolve }) => {
+const authentication: Handle = async ({ event, resolve }): Promise<any> => {
   const sessionToken = event.cookies.get('yorha_session');
 
   if (sessionToken) {
@@ -48,7 +48,7 @@ const authentication: Handle = async ({ event, resolve }) => {
 };
 
 // Route protection hook
-const routeProtection: Handle = async ({ event, resolve }) => {
+const routeProtection: Handle = async ({ event, resolve }): Promise<any> => {
   const protectedRoutes = [
     '/profile',
     '/dashboard',
@@ -98,7 +98,7 @@ const routeProtection: Handle = async ({ event, resolve }) => {
 };
 
 // Activity logging hook
-const activityLogging: Handle = async ({ event, resolve }) => {
+const activityLogging: Handle = async ({ event, resolve }): Promise<any> => {
   const response = await resolve(event);
 
   // Log API activity for authenticated users
@@ -122,7 +122,7 @@ const activityLogging: Handle = async ({ event, resolve }) => {
         userAgent: event.request.headers.get('user-agent'),
         sessionId: event.locals.session?.id
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Activity logging error:', error);
     }
   }
@@ -131,7 +131,7 @@ const activityLogging: Handle = async ({ event, resolve }) => {
 };
 
 // Security headers hook
-const securityHeaders: Handle = async ({ event, resolve }) => {
+const securityHeaders: Handle = async ({ event, resolve }): Promise<any> => {
   const response = await resolve(event);
 
   response.headers.set('X-Frame-Options', 'DENY');

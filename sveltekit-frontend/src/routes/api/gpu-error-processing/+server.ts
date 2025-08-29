@@ -4,7 +4,7 @@ import { promisify } from 'util';
 
 const execAsync = promisify(exec);
 
-interface ParsedError {
+export interface ParsedError {
   id: string;
   code: string;
   message: string;
@@ -82,7 +82,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
     console.log(`   - GPU utilization: ${result.performance.gpu_utilization.toFixed(1)}%`);
 
     return json(result);
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ GPU error processing failed:', error);
     return json(
       {

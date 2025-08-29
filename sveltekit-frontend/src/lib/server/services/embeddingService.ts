@@ -10,7 +10,7 @@ export async function getEmbedding(text: string): Promise<number[]> {
       prompt: text,
     });
     return response.data.embedding;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to get embedding from Ollama:", error);
     throw new Error("Embedding generation failed.");
   }

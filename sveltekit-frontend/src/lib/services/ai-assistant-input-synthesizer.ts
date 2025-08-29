@@ -166,7 +166,7 @@ export class AIAssistantInputSynthesizer {
     try {
       const { legalBERT } = await import('../server/ai/legalbert-middleware');
       this.legalBERT = legalBERT;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('LegalBERT middleware not available, using fallback analysis');
       this.legalBERT = null;
     }
@@ -228,7 +228,7 @@ export class AIAssistantInputSynthesizer {
       }
 
       return synthesized;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Input synthesis failed:', error);
       return this.createFallbackSynthesis(query, context);
     }
@@ -249,7 +249,7 @@ export class AIAssistantInputSynthesizer {
         includeSentiment: true,
         includeComplexity: true,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.warn('LegalBERT analysis failed, using fallback:', error);
       return this.performBasicLegalAnalysis(query);
     }
@@ -305,7 +305,7 @@ export class AIAssistantInputSynthesizer {
     if (this.legalBERT) {
       try {
         return await this.legalBERT.generateEmbedding(query);
-      } catch (error) {
+      } catch (error: any) {
         console.warn('LegalBERT embedding failed:', error);
       }
     }

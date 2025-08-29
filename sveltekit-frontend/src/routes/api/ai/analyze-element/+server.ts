@@ -42,7 +42,7 @@ Format as JSON: {"relevance": "...", "legalContext": "evidence|case|statute|proc
         actionable: false
       });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Element analysis failed:', error);
     return json({ relevance: 'Analysis unavailable' });
   }

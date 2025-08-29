@@ -6,7 +6,7 @@ import path from 'path';
 // Usage: set environment variables PGHOST, PGPORT, PGUSER, PGPASSWORD, PGDATABASE
 // then run: node tests/setup-db.ts
 
-async function main() {
+async function main(): Promise<any> {
   const cfg = {
     host: process.env.PGHOST || 'localhost',
     port: parseInt(process.env.PGPORT || '5432', 10),
@@ -48,7 +48,7 @@ async function main() {
     console.log('Tables present check:', res.rows[0]);
 
     console.log('Success. Test DB ready.');
-  } catch (err) {
+  } catch (err: any) {
     console.error('Error setting up test DB:', err);
     process.exitCode = 1;
   } finally {

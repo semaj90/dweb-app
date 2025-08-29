@@ -1,6 +1,6 @@
 /**
  * 🖥️ WebGPU Worker for Browser-Side GPU Acceleration
- * 
+ *
  * Handles:
  * - WebGPU compute shaders for tensor operations
  * - GPU memory management
@@ -10,12 +10,19 @@
 
 /// <reference lib="webworker" />
 
-declare const self: DedicatedWorkerGlobalScope;
+// Skip strict typing for WebGPU compatibility
 
-interface GPUWorkerMessage {
+export interface GPUWorkerMessage {
   type: 'process_gpu' | 'initialize_gpu' | 'cleanup_gpu';
   jobId: string;
-  operation?: any;
+  operation?: {
+    type: string;
+    input: any;
+    metadata?: {
+      legalWeight?: number;
+      threshold?: number;
+    };
+  };
   config?: any;
 }
 
@@ -56,11 +63,11 @@ class WebGPUWorker {
         default:
           throw new Error(`Unknown message type: ${type}`);
       }
-    } catch (error) {
-      self.postMessage({ 
-        jobId, 
-        result: null, 
-        error: error instanceof Error ? error.message : 'Unknown error' 
+    } catch (error: any) {
+      self.postMessage({
+        jobId,
+        result: null,
+        error: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   }
@@ -87,7 +94,7 @@ class WebGPUWorker {
           'timestamp-query',
           'texture-compression-bc',
           'float32-filterable'
-        ],
+        ] as GPUFeatureName[],
         requiredLimits: {
           maxBufferSize: 2147483648, // 2GB (within 8GB VRAM limit)
           maxStorageBufferBindingSize: 1073741824, // 1GB per binding
@@ -109,13 +116,13 @@ class WebGPUWorker {
       this.initialized = true;
 
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('WebGPU initialization failed:', error);
       return false;
     }
   }
 
-  private async loadOptimizedShaders(): Promise<void> {
+  private async loadOptimizedShaders(): Promise<any> {
     // Tensor processing shader optimized for legal documents
     const tensorShader = `
       struct TensorConfig {
@@ -164,16 +171,16 @@ class WebGPUWorker {
 
       fn computeLegalScore(tensor: vec4<f32>, index: u32) -> f32 {
         var score = 1.0;
-        
+
         // Check against legal keyword patterns
         let keywordHash = u32(tensor.x * 1000000.0) % arrayLength(&legalKeywords);
         let keyword = legalKeywords[keywordHash];
-        
+
         // Boost score for legal terms
         if (keyword != 0u) {
           score *= 2.0;
         }
-        
+
         // Legal document pattern recognition
         let pattern = (tensor.y + tensor.z) * 0.5;
         if (pattern > 0.7) {
@@ -183,7 +190,7 @@ class WebGPUWorker {
         } else if (pattern > 0.3) {
           score *= 1.1; // General legal patterns
         }
-        
+
         return clamp(score, 0.1, 3.0);
       }
 
@@ -191,10 +198,10 @@ class WebGPUWorker {
         // Semantic similarity computation
         let magnitude = length(tensor);
         let normalized = normalize(tensor);
-        
+
         // Semantic patterns for legal documents
         let semanticWeight = dot(normalized, vec4<f32>(0.25, 0.25, 0.25, 0.25));
-        
+
         return clamp(semanticWeight * magnitude, 0.0, 2.0);
       }
 
@@ -202,7 +209,7 @@ class WebGPUWorker {
         // Temporal relevance based on document position
         let position = f32(index) / f32(config.inputSize);
         let decay = exp(-position * 0.1); // Exponential decay
-        
+
         return tensor.z * decay;
       }
 
@@ -210,7 +217,7 @@ class WebGPUWorker {
         // Context awareness for surrounding tokens
         let localContext = (tensor.x + tensor.y + tensor.z) / 3.0;
         let globalContext = f32(index) / f32(config.inputSize);
-        
+
         return mix(localContext, globalContext, 0.3);
       }
     `;
@@ -302,7 +309,7 @@ class WebGPUWorker {
         for (var i = 0u; i < numClusters; i++) {
           let centroid = centroids[i].position;
           let distance = computeWeightedDistance(point.position, centroid, point.legalWeight);
-          
+
           if (distance < minDistance) {
             secondBestDistance = minDistance;
             minDistance = distance;
@@ -315,7 +322,7 @@ class WebGPUWorker {
         // Calculate confidence based on distance ratios
         point.confidence = select(0.5, 1.0 - (minDistance / secondBestDistance), secondBestDistance > 0.0);
         point.clusterId = bestCluster;
-        
+
         points[index] = point;
       }
 
@@ -345,7 +352,7 @@ class WebGPUWorker {
     }
 
     const startTime = performance.now();
-    
+
     switch (operation.type) {
       case 'embedding':
         return await this.processEmbedding(operation);
@@ -365,14 +372,14 @@ class WebGPUWorker {
   private async processEmbedding(operation: any): Promise<Float32Array> {
     const pipeline = await this.getOrCreatePipeline('tensor');
     const input = new Float32Array(operation.input);
-    
+
     // Create GPU buffers
     const inputBuffer = this.createBuffer(input, GPUBufferUsage.STORAGE);
     const outputBuffer = this.createBuffer(
       new Float32Array(input.length),
       GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC
     );
-    
+
     const configData = new Float32Array([
       input.length / 4, // inputSize (assuming vec4 elements)
       input.length / 4, // outputSize
@@ -401,31 +408,32 @@ class WebGPUWorker {
     // Execute compute pass
     const commandEncoder = this.device!.createCommandEncoder();
     const passEncoder = commandEncoder.beginComputePass();
-    
+
     passEncoder.setPipeline(pipeline);
     passEncoder.setBindGroup(0, bindGroup);
     passEncoder.dispatchWorkgroups(Math.ceil((input.length / 4) / 256));
     passEncoder.end();
 
     // Read results
-    const readBuffer = this.createReadBuffer(output.byteLength);
-    commandEncoder.copyBufferToBuffer(outputBuffer, 0, readBuffer, 0, output.byteLength);
-    
+    const outputByteLength = input.length * 4; // Float32Array bytes
+    const readBuffer = this.createReadBuffer(outputByteLength);
+    commandEncoder.copyBufferToBuffer(outputBuffer, 0, readBuffer, 0, outputByteLength);
+
     this.device!.queue.submit([commandEncoder.finish()]);
     await this.device!.queue.onSubmittedWorkDone();
 
     await readBuffer.mapAsync(GPUMapMode.READ);
     const result = new Float32Array(readBuffer.getMappedRange());
-    const output = new Float32Array(result);
+    const outputArray = new Float32Array(result);
     readBuffer.unmap();
 
-    return output;
+    return outputArray;
   }
 
   private async processSimilarity(operation: any): Promise<any[]> {
     const pipeline = await this.getOrCreatePipeline('similarity');
     const { vectorsA, vectorsB } = operation.input;
-    
+
     const numPairs = Math.min(vectorsA.length, vectorsB.length);
     const pairData = new Float32Array(numPairs * 8); // 2 vec4s per pair
 
@@ -457,7 +465,7 @@ class WebGPUWorker {
     // Execute
     const commandEncoder = this.device!.createCommandEncoder();
     const passEncoder = commandEncoder.beginComputePass();
-    
+
     passEncoder.setPipeline(pipeline);
     passEncoder.setBindGroup(0, bindGroup);
     passEncoder.dispatchWorkgroups(Math.ceil(numPairs / 256));
@@ -466,13 +474,13 @@ class WebGPUWorker {
     // Read results
     const readBuffer = this.createReadBuffer(numPairs * 4 * 4);
     commandEncoder.copyBufferToBuffer(outputBuffer, 0, readBuffer, 0, numPairs * 4 * 4);
-    
+
     this.device!.queue.submit([commandEncoder.finish()]);
     await this.device!.queue.onSubmittedWorkDone();
 
     await readBuffer.mapAsync(GPUMapMode.READ);
     const results = new Float32Array(readBuffer.getMappedRange());
-    
+
     const similarities = [];
     for (let i = 0; i < numPairs; i++) {
       similarities.push({
@@ -482,7 +490,7 @@ class WebGPUWorker {
         jaccard: results[i * 4 + 3]
       });
     }
-    
+
     readBuffer.unmap();
     return similarities;
   }
@@ -517,7 +525,7 @@ class WebGPUWorker {
       layout: 'auto',
       compute: {
         module: shader,
-        entryPoint: shaderName === 'tensor' ? 'tensorProcess' : 
+        entryPoint: shaderName === 'tensor' ? 'tensorProcess' :
                    shaderName === 'similarity' ? 'computeSimilarity' : 'assignClusters'
       }
     });
@@ -538,7 +546,7 @@ class WebGPUWorker {
     } else {
       new Uint8Array(buffer.getMappedRange()).set(new Uint8Array(data.buffer, data.byteOffset, data.byteLength));
     }
-    
+
     buffer.unmap();
     return buffer;
   }
@@ -568,7 +576,7 @@ class WebGPUWorker {
     return new Uint32Array(hashes);
   }
 
-  private async cleanup(): Promise<void> {
+  private async cleanup(): Promise<any> {
     if (this.device) {
       this.device.destroy();
       this.device = null;

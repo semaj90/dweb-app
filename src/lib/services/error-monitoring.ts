@@ -34,7 +34,7 @@ export interface ErrorLog {
   timestamp: Date;
   level: 'error' | 'warning' | 'info' | 'debug';
   message: string;
-  details?: unknown;
+  details?: any;
   stack?: string;
   url?: string;
   userAgent?: string;
@@ -70,8 +70,8 @@ export interface ApiError {
   method: string;
   statusCode: number;
   message: string;
-  requestBody?: unknown;
-  responseBody?: unknown;
+  requestBody?: any;
+  responseBody?: any;
   duration: number;
   userAgent?: string;
   ipAddress?: string;
@@ -107,7 +107,7 @@ class ErrorMonitoringService {
 
   private initializeErrorHandlers(): void {
     // Global error handler
-    window.addEventListener('error', (event) => {
+    window.addEventListener('error', (event: any) => {
       this.logError({
         level: 'error',
         message: event.message || 'Uncaught JavaScript error',
@@ -123,7 +123,7 @@ class ErrorMonitoringService {
     });
 
     // Unhandled promise rejection handler
-    window.addEventListener('unhandledrejection', (event) => {
+    window.addEventListener('unhandledrejection', (event: any) => {
       this.logError({
         level: 'error',
         message: 'Unhandled promise rejection',
@@ -257,7 +257,7 @@ class ErrorMonitoringService {
     try {
       result = await fn();
       return result;
-    } catch (error) {
+    } catch (error: any) {
       success = false;
       this.logError({
         level: 'error',
@@ -289,7 +289,7 @@ class ErrorMonitoringService {
     try {
       result = fn();
       return result;
-    } catch (error) {
+    } catch (error: any) {
       success = false;
       this.logError({
         level: 'error',
@@ -309,7 +309,7 @@ class ErrorMonitoringService {
     }
   }
 
-  private async flushBuffers(): Promise<void> {
+  private async flushBuffers(): Promise<any> {
     if (this.errorBuffer.length === 0 && this.performanceBuffer.length === 0) {
       return;
     }
@@ -345,7 +345,7 @@ class ErrorMonitoringService {
       } else {
         console.warn('Failed to send monitoring data:', response.statusText);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Error flushing monitoring buffers:', error);
     }
   }
@@ -361,7 +361,7 @@ class ErrorMonitoringService {
       if (response.ok) {
         return await response.json();
       }
-    } catch (error) {
+    } catch (error: any) {
       this.logError({
         level: 'error',
         message: 'Failed to get error summary',
@@ -388,7 +388,7 @@ class ErrorMonitoringService {
       if (response.ok) {
         return await response.json();
       }
-    } catch (error) {
+    } catch (error: any) {
       this.logError({
         level: 'error',
         message: 'Failed to get performance metrics',
@@ -423,7 +423,7 @@ class ErrorMonitoringService {
 export const errorMonitoring = new ErrorMonitoringService();
 
 // Utility functions for common error patterns
-export const handleApiError = (error: unknown, context?: Record<string, any>) => {
+export const handleApiError = (error: any, context?: Record<string, any>) => {
   const e: any = error as any;
   errorMonitoring.logError({
     level: 'error',
@@ -438,7 +438,7 @@ export const handleApiError = (error: unknown, context?: Record<string, any>) =>
     context
   });
 };
-export const handleDatabaseError = (error: unknown, query?: string, context?: Record<string, any>) => {
+export const handleDatabaseError = (error: any, query?: string, context?: Record<string, any>) => {
   const e: any = error as any;
   errorMonitoring.logDatabaseError({
     message: e?.message || 'Database operation failed',
@@ -448,7 +448,7 @@ export const handleDatabaseError = (error: unknown, query?: string, context?: Re
     context
   });
 };
-export const handleValidationError = (error: unknown, data?: unknown, context?: Record<string, any>) => {
+export const handleValidationError = (error: any, data?: any, context?: Record<string, any>) => {
   const e: any = error as any;
   errorMonitoring.logError({
     level: 'warning',
@@ -463,7 +463,7 @@ export const handleValidationError = (error: unknown, data?: unknown, context?: 
   });
 };
 
-export const logInfo = (message: string, details?: unknown, context?: Record<string, any>) => {
+export const logInfo = (message: string, details?: any, context?: Record<string, any>) => {
   errorMonitoring.logError({
     level: 'info',
     message,
@@ -472,7 +472,7 @@ export const logInfo = (message: string, details?: unknown, context?: Record<str
   });
 };
 
-export const logWarning = (message: string, details?: unknown, context?: Record<string, any>) => {
+export const logWarning = (message: string, details?: any, context?: Record<string, any>) => {
   errorMonitoring.logError({
     level: 'warning',
     message,
@@ -481,7 +481,7 @@ export const logWarning = (message: string, details?: unknown, context?: Record<
   });
 };
 
-export const logDebug = (message: string, details?: unknown, context?: Record<string, any>) => {
+export const logDebug = (message: string, details?: any, context?: Record<string, any>) => {
   if (process.env.NODE_ENV === 'development') {
     errorMonitoring.logError({
       level: 'debug',
@@ -493,22 +493,22 @@ export const logDebug = (message: string, details?: unknown, context?: Record<st
 };
 
 // Performance monitoring decorators and helpers
-export const withPerformanceMonitoring = <T extends (...args: unknown[]) => Promise<any>>(
+export const withPerformanceMonitoring = <T extends (...args: any[]) => Promise<any>>(
   fn: T,
   operationName?: string
 ): T => {
-  return (async (...args: unknown[]) => {
+  return (async (...args: any[]) => {
     const operation = operationName || fn.name || 'anonymous';
     return await errorMonitoring.measurePerformance(operation, () => fn(...args));
   }) as T;
 };
 
-export const withErrorBoundary = <T extends (...args: unknown[]) => any>(
+export const withErrorBoundary = <T extends (...args: any[]) => any>(
   fn: T,
-  fallback?: unknown,
+  fallback?: any,
   context?: Record<string, any>
 ): T => {
-  return ((...args: unknown[]) => {
+  return ((...args: any[]) => {
     try {
       const result = fn(...args);
 
@@ -550,10 +550,10 @@ export const monitoredQuery = async <T>(
 ): Promise<T> => {
   return await errorMonitoring.measurePerformance(
     `db_query_${queryDescription}`,
-    async () => {
+    async (): Promise<any> => {
       try {
         return await queryFn();
-      } catch (error) {
+      } catch (error: any) {
         handleDatabaseError(error, queryDescription, context);
         throw error;
       }

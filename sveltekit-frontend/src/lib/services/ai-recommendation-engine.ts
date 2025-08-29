@@ -59,7 +59,7 @@ export interface QueryEnhancement {
 }
 
 // XState Machine Context for Recommendation Engine
-interface RecommendationMachineContext {
+export interface RecommendationMachineContext {
   userContext: UserFeedbackContext;
   currentRecommendations: FeedbackRecommendation[];
   lokiDb: Loki | null;
@@ -717,7 +717,7 @@ class AIRecommendationEngine {
 
         // Create dedicated worker for recommendations
         this.workerClient = new Worker(RECOMMENDATION_WORKER_PATH);
-        this.workerClient.onmessage = (event) => {
+        this.workerClient.onmessage = (event: any) => {
           this.interpreter.send({
             type: 'RECOMMENDATIONS_GENERATED',
             data: event.data
@@ -729,7 +729,7 @@ class AIRecommendationEngine {
           this.interpreter.send({ type: 'ERROR', data: { message: error.message } });
         };
 
-      } catch (error) {
+      } catch (error: any) {
         console.error('❌ Service Worker registration failed:', error);
       }
     }
@@ -783,7 +783,7 @@ class AIRecommendationEngine {
       console.log('✅ LangChain.js initialized with Ollama gemma3-legal');
       this.interpreter.send({ type: 'INITIALIZED' });
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize LangChain.js:', error);
       this.interpreter.send({ type: 'ERROR', data: { message: error.message } });
     }
@@ -860,7 +860,7 @@ class AIRecommendationEngine {
       // Fallback to existing system if LangChain not available
       return this.getFallbackLegalRecommendations(userContext, query, legalDomain);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Enhanced recommendation generation failed:', error);
       this.interpreter.send({ type: 'ERROR', data: { message: error.message } });
       return [];
@@ -897,7 +897,7 @@ class AIRecommendationEngine {
 
       return this.parseLangChainRecommendations(response);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ LangChain AI recommendation failed:', error);
       return this.getFallbackLegalRecommendations(userContext, query, legalDomain);
     }
@@ -993,7 +993,7 @@ class AIRecommendationEngine {
           } : undefined
         })) as FeedbackRecommendation[];
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to parse LangChain recommendations:', error);
     }
 

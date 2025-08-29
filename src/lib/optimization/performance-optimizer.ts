@@ -146,7 +146,7 @@ export class PerformanceOptimizer extends EventEmitter {
                 timestamp: Date.now()
             };
             
-        } catch (error) {
+        } catch (error: any) {
             console.error('❌ Error processing performance metrics:', error);
             this.emit('optimizationError', { error, metrics });
             throw error;
@@ -207,7 +207,7 @@ export class PerformanceOptimizer extends EventEmitter {
      */
     private async executeAutoOptimizations(
         recommendations: OptimizationRecommendation[]
-    ): Promise<void> {
+    ): Promise<any> {
         const maxConcurrent = this.config.optimizationLimits.maxConcurrentOptimizations;
         const currentOptimizations = this.activeOptimizations.size;
         
@@ -228,7 +228,7 @@ export class PerformanceOptimizer extends EventEmitter {
         for (const recommendation of toExecute) {
             try {
                 await this.executeOptimization(recommendation);
-            } catch (error) {
+            } catch (error: any) {
                 console.error(`❌ Failed to execute optimization ${recommendation.id}:`, error);
             }
         }
@@ -294,7 +294,7 @@ export class PerformanceOptimizer extends EventEmitter {
             
             return result;
             
-        } catch (error) {
+        } catch (error: any) {
             console.error(`❌ Optimization failed: ${recommendation.title}`, error);
             
             const optimization = this.activeOptimizations.get(optimizationId);
@@ -402,10 +402,10 @@ export class PerformanceOptimizer extends EventEmitter {
      * Setup optimization scheduler
      */
     private setupOptimizationScheduler(): void {
-        setInterval(async () => {
+        setInterval(async (): Promise<any> => {
             try {
                 await this.performScheduledOptimizations();
-            } catch (error) {
+            } catch (error: any) {
                 console.error('❌ Scheduled optimization error:', error);
             }
         }, this.config.optimizationInterval);
@@ -414,7 +414,7 @@ export class PerformanceOptimizer extends EventEmitter {
     /**
      * Perform scheduled optimizations
      */
-    private async performScheduledOptimizations(): Promise<void> {
+    private async performScheduledOptimizations(): Promise<any> {
         // Background optimization tasks
         const tasks = [
             this.optimizeMemoryFragmentation(),
@@ -487,24 +487,24 @@ export class PerformanceOptimizer extends EventEmitter {
         };
     }
 
-    private async optimizeMemoryFragmentation(): Promise<void> {
+    private async optimizeMemoryFragmentation(): Promise<any> {
         // Background memory optimization
         if (this.activeOptimizations.size < this.config.optimizationLimits.maxConcurrentOptimizations) {
             console.log('🔧 Background: Memory fragmentation optimization');
         }
     }
 
-    private async optimizeCacheEviction(): Promise<void> {
+    private async optimizeCacheEviction(): Promise<any> {
         // Background cache optimization
         console.log('🔄 Background: Cache eviction optimization');
     }
 
-    private async optimizeConnectionPools(): Promise<void> {
+    private async optimizeConnectionPools(): Promise<any> {
         // Background connection pool optimization
         console.log('🔌 Background: Connection pool optimization');
     }
 
-    private async cleanupExpiredOptimizations(): Promise<void> {
+    private async cleanupExpiredOptimizations(): Promise<any> {
         const now = Date.now();
         const expiredThreshold = now - this.config.optimizationLimits.maxOptimizationDuration;
         
@@ -550,7 +550,7 @@ export class PerformanceOptimizer extends EventEmitter {
     /**
      * Public API methods
      */
-    getOptimizationStatus(): unknown {
+    getOptimizationStatus(): any {
         return {
             activeOptimizations: Array.from(this.activeOptimizations.values()),
             recentOptimizations: this.optimizationHistory.slice(-10),
@@ -560,7 +560,7 @@ export class PerformanceOptimizer extends EventEmitter {
         };
     }
 
-    getPerformanceInsights(): unknown {
+    getPerformanceInsights(): any {
         return this.analysisEngine.getInsights(this.metricsHistory);
     }
 
@@ -605,7 +605,7 @@ class PerformanceAnalysisEngine {
         return analysis;
     }
 
-    private analyzeTrends(history: MetricsHistory[]): unknown {
+    private analyzeTrends(history: MetricsHistory[]): any {
         if (history.length < 2) return {};
         
         const recent = history.slice(-10);
@@ -619,7 +619,7 @@ class PerformanceAnalysisEngine {
         };
     }
 
-    private calculateTrend(older: unknown[], recent: unknown[], metric: string): unknown {
+    private calculateTrend(older: any[], recent: any[], metric: string): any {
         if (older.length === 0 || recent.length === 0) return null;
         
         const olderAvg = older.reduce((sum, item) => sum + (item[metric] || 0), 0) / older.length;
@@ -694,7 +694,7 @@ class PerformanceAnalysisEngine {
         return Math.max(0, Math.round(score));
     }
 
-    getInsights(history: MetricsHistory[]): unknown {
+    getInsights(history: MetricsHistory[]): any {
         return {
             totalDataPoints: history.length,
             timespan: history.length > 0 ? 
@@ -704,7 +704,7 @@ class PerformanceAnalysisEngine {
         };
     }
 
-    private identifyPatterns(history: MetricsHistory[]): unknown {
+    private identifyPatterns(history: MetricsHistory[]): any {
         // Simple pattern identification
         return {
             peakHours: this.identifyPeakHours(history),
@@ -713,17 +713,17 @@ class PerformanceAnalysisEngine {
         };
     }
 
-    private identifyPeakHours(history: MetricsHistory[]): unknown {
+    private identifyPeakHours(history: MetricsHistory[]): any {
         // Implement peak hour analysis
         return { message: 'Peak hour analysis not yet implemented' };
     }
 
-    private identifyCycles(history: MetricsHistory[]): unknown {
+    private identifyCycles(history: MetricsHistory[]): any {
         // Implement cyclical pattern analysis
         return { message: 'Cyclical pattern analysis not yet implemented' };
     }
 
-    private identifyAnomalies(history: MetricsHistory[]): unknown {
+    private identifyAnomalies(history: MetricsHistory[]): any {
         // Implement anomaly detection
         return { message: 'Anomaly detection not yet implemented' };
     }
@@ -912,7 +912,7 @@ class MLPerformancePredictor {
         return predictions;
     }
 
-    private predictNextPeriod(history: MetricsHistory[], periodMs: number): unknown {
+    private predictNextPeriod(history: MetricsHistory[], periodMs: number): any {
         const recent = history.slice(-20);
         
         // Simple average-based prediction
@@ -928,7 +928,7 @@ class MLPerformancePredictor {
         };
     }
 
-    private predictTrend(history: MetricsHistory[]): unknown {
+    private predictTrend(history: MetricsHistory[]): any {
         const recent = history.slice(-10);
         const older = history.slice(-20, -10);
         

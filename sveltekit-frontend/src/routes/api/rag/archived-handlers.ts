@@ -20,7 +20,7 @@ function errorMessage(err: any): string {
 async function forwardToRAGBackend(
   endpoint: string,
   options: RequestInit = {}
-) {
+): Promise<any> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), RAG_TIMEOUT);
   const startTime = Date.now();
@@ -99,7 +99,7 @@ async function forwardToRAGBackend(
 }
 
 // Full preserved implementations
-export async function handleUpload(request: Request) {
+export async function handleUpload(request: Request): Promise<any> {
   try {
     const formData = await request.formData();
     const file = formData.get("file") as File;
@@ -134,7 +134,7 @@ export async function handleUpload(request: Request) {
   }
 }
 
-export async function handleCrawl(request: Request) {
+export async function handleCrawl(request: Request): Promise<any> {
   try {
     const {
       url: crawlUrl,
@@ -172,7 +172,7 @@ export async function handleCrawl(request: Request) {
   }
 }
 
-export async function handleWorkflow(request: Request) {
+export async function handleWorkflow(request: Request): Promise<any> {
   try {
     const { workflowType, input, options = {} } = await request.json();
 
@@ -201,7 +201,7 @@ export async function handleWorkflow(request: Request) {
   }
 }
 
-export async function handleChat(request: Request) {
+export async function handleChat(request: Request): Promise<any> {
   try {
     const { messages, options = {} } = await request.json();
 
@@ -229,7 +229,7 @@ export async function handleChat(request: Request) {
   }
 }
 
-export async function handlePgaiProcess(request: Request) {
+export async function handlePgaiProcess(request: Request): Promise<any> {
   try {
     const { documentId } = await request.json();
 
@@ -297,7 +297,7 @@ export async function handlePgaiProcess(request: Request) {
   }
 }
 
-export async function handlePgaiCustomAnalysis(request: Request) {
+export async function handlePgaiCustomAnalysis(request: Request): Promise<any> {
   try {
     const { content, prompt, model = "gemma3-legal" } = await request.json();
 
@@ -332,7 +332,7 @@ export async function handlePgaiCustomAnalysis(request: Request) {
   }
 }
 
-export async function handlePgaiComparison(request: Request) {
+export async function handlePgaiComparison(request: Request): Promise<any> {
   try {
     const {
       document1,
@@ -381,7 +381,7 @@ Provide analysis covering:
   }
 }
 
-export async function handlePgaiExtraction(request: Request) {
+export async function handlePgaiExtraction(request: Request): Promise<any> {
   try {
     const {
       content,

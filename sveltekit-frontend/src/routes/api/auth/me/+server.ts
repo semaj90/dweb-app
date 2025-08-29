@@ -135,7 +135,7 @@ export const GET: RequestHandler = async ({ locals }) => {
       data: userData
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Auth me error:", error);
     return json({ user: null }, { status: 401 });
   }

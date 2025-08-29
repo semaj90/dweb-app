@@ -39,7 +39,7 @@ const fuseSearch = new Fuse(demoData.documents, {
 });
 
 // Test search function
-async function testSearch(query: string) {
+async function testSearch(query: string): Promise<any> {
   console.log(`\n🔍 Searching for: "${query}"`);
   
   const results = fuseSearch.search(query, { limit: 3 });
@@ -73,7 +73,7 @@ async function testSearch(query: string) {
 }
 
 // Test AI analysis function
-async function testAIAnalysis(docId: string) {
+async function testAIAnalysis(docId: string): Promise<any> {
   const doc = demoData.documents.find((d: unknown) => d.id === docId);
   if (!doc) {
     console.log(`❌ Document ${docId} not found`);
@@ -106,7 +106,7 @@ async function testAIAnalysis(docId: string) {
     } else {
       console.log('❌ AI analysis failed - check Ollama status');
     }
-  } catch (error) {
+  } catch (error: any) {
     console.log('❌ AI analysis error:', error.message);
   }
 }
@@ -174,7 +174,7 @@ function showAnalytics() {
 }
 
 // Run comprehensive tests
-async function runTests() {
+async function runTests(): Promise<any> {
   showAnalytics();
   
   // Test different search queries

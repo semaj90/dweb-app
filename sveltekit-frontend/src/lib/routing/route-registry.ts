@@ -384,7 +384,7 @@ export class RouteRegistry {
       };
       
       localStorage.setItem(this.options.storageKey, JSON.stringify(persistedData));
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to save route registry state:', error);
     }
   }
@@ -407,7 +407,7 @@ export class RouteRegistry {
           routeHistory: persistedData.routeHistory || []
         }));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to load route registry state:', error);
     }
   }

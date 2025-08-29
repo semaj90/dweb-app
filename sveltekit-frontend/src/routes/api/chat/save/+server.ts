@@ -46,7 +46,7 @@ export const POST: RequestHandler = async ({ request }) => {
 					const embeddingData = await embeddingResponse.json();
 					embedding = embeddingData.embedding;
 				}
-			} catch (error) {
+			} catch (error: any) {
 				console.warn('Failed to generate embedding:', error);
 				// Continue without embedding - not critical for basic functionality
 			}
@@ -85,7 +85,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			sessionId
 		});
 
-	} catch (error) {
+	} catch (error: any) {
 		console.error('Error saving chat messages:', error);
 		return json({ 
 			error: 'Failed to save chat messages',

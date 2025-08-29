@@ -10,7 +10,7 @@ import { enqueue, processNext as queueProcessNext, getStatus } from './ingestion
 
 const DEFAULT_MODEL = 'nomic-embed-text';
 
-async function embedContent(text: string, model: string) {
+async function embedContent(text: string, model: string): Promise<any> {
   const emb = await getEmbedding(text, { model });
   return emb?.embedding || emb || [];
 }

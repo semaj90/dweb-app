@@ -6,7 +6,7 @@ const env = {
   QDRANT_COLLECTION_NAME: process.env.QDRANT_COLLECTION_NAME || 'legal_documents',
   VECTOR_DIMENSIONS: process.env.VECTOR_DIMENSIONS || '384'
 };
-import { cacheManager } from './redis.js';
+import { cacheManager } from './redis';
 
 /**
  * Qdrant Vector Database Integration for Legal AI System
@@ -60,7 +60,7 @@ export class QdrantManager {
   /**
    * Initialize Qdrant collection with optimal settings for legal documents
    */
-  async initializeCollection(): Promise<void> {
+  async initializeCollection(): Promise<any> {
     try {
       // Check if collection exists
       const collections = await this.client.getCollections();
@@ -111,7 +111,7 @@ export class QdrantManager {
       } else {
         console.log(`✅ Qdrant collection '${this.collectionName}' already exists`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Qdrant collection initialization failed:', error);
       throw error;
     }
@@ -120,7 +120,7 @@ export class QdrantManager {
   /**
    * Create field indexes for efficient filtering
    */
-  private async createIndexes(): Promise<void> {
+  private async createIndexes(): Promise<any> {
     try {
       // Index for document type filtering
       await this.client.createPayloadIndex(this.collectionName, {
@@ -147,7 +147,7 @@ export class QdrantManager {
       });
 
       console.log('✅ Qdrant payload indexes created');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to create Qdrant indexes:', error);
     }
   }
@@ -155,13 +155,13 @@ export class QdrantManager {
   /**
    * Insert or update a document vector
    */
-  async upsertDocument(point: QdrantPoint): Promise<void> {
+  async upsertDocument(point: QdrantPoint): Promise<any> {
     try {
       await this.client.upsert(this.collectionName, {
         wait: true,
         points: [point],
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to upsert document:', error);
       throw error;
     }
@@ -170,7 +170,7 @@ export class QdrantManager {
   /**
    * Batch insert documents for better performance
    */
-  async batchUpsertDocuments(points: QdrantPoint[]): Promise<void> {
+  async batchUpsertDocuments(points: QdrantPoint[]): Promise<any> {
     try {
       // Process in batches of 100 for optimal performance
       const batchSize = 100;
@@ -188,7 +188,7 @@ export class QdrantManager {
       }
 
       console.log(`✅ Batch upserted ${points.length} documents to Qdrant`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to batch upsert documents:', error);
       throw error;
     }
@@ -236,7 +236,7 @@ export class QdrantManager {
       await cacheManager.cacheTokens(cacheKey, [{ text: JSON.stringify(results) }], 1800);
 
       return results;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Vector similarity search failed:', error);
       throw error;
     }
@@ -374,7 +374,7 @@ export class QdrantManager {
     pointsCount: number;
     segmentsCount: number;
     status: string;
-    optimizerStatus: unknown;
+    optimizerStatus: any;
   }> {
     try {
       const info = await this.client.getCollection(this.collectionName);
@@ -386,7 +386,7 @@ export class QdrantManager {
         status: info.status,
         optimizerStatus: info.optimizer_status,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to get collection stats:', error);
       throw error;
     }
@@ -395,13 +395,13 @@ export class QdrantManager {
   /**
    * Delete documents by IDs
    */
-  async deleteDocuments(documentIds: (string | number)[]): Promise<void> {
+  async deleteDocuments(documentIds: (string | number)[]): Promise<any> {
     try {
       await this.client.delete(this.collectionName, {
         wait: true,
         points: documentIds,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to delete documents:', error);
       throw error;
     }
@@ -410,13 +410,13 @@ export class QdrantManager {
   /**
    * Delete documents by filter
    */
-  async deleteDocumentsByFilter(filter: Record<string, any>): Promise<void> {
+  async deleteDocumentsByFilter(filter: Record<string, any>): Promise<any> {
     try {
       await this.client.delete(this.collectionName, {
         wait: true,
         filter,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to delete documents by filter:', error);
       throw error;
     }
@@ -425,7 +425,7 @@ export class QdrantManager {
   /**
    * Optimize collection for better performance
    */
-  async optimizeCollection(): Promise<void> {
+  async optimizeCollection(): Promise<any> {
     try {
       await this.client.updateCollection(this.collectionName, {
         optimizers_config: {
@@ -441,7 +441,7 @@ export class QdrantManager {
       });
 
       console.log('✅ Qdrant collection optimized');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Collection optimization failed:', error);
       throw error;
     }
@@ -454,7 +454,7 @@ export class QdrantManager {
     try {
       const snapshot = await this.client.createSnapshot(this.collectionName);
       return snapshot.name;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Snapshot creation failed:', error);
       throw error;
     }
@@ -477,7 +477,7 @@ export class QdrantManager {
     return `qdrant:search:${hash}`;
   }
 
-  private hashObject(obj: unknown): string {
+  private hashObject(obj: any): string {
     const str = JSON.stringify(obj);
     let hash = 0;
     for (let i = 0; i < str.length; i++) {

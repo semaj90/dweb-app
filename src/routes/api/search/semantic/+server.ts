@@ -44,7 +44,7 @@ const searchRequestSchema = z.object({
   includeAnalysis: z.boolean().optional().default(true),
 });
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const body = await request.json();
 
@@ -94,7 +94,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
     // Process results based on options
     const processedResults = filteredResults.map((result) => {
-      const processedResult: unknown = {
+      const processedResult: any = {
         id: result.id,
         title: result.title,
         documentType: result.documentType,
@@ -153,7 +153,7 @@ export const POST: RequestHandler = async ({ request }) => {
         cached: useCache,
       },
     });
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("Semantic search error:", error);
 
     return json(
@@ -170,7 +170,7 @@ export const POST: RequestHandler = async ({ request }) => {
   }
 };
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
   try {
     // Simple GET endpoint for quick searches
     const query = url.searchParams.get("q");
@@ -182,7 +182,7 @@ export const GET: RequestHandler = async ({ url }) => {
       return json({ error: "Query parameter required" }, { status: 400 });
     }
 
-    const searchOptions: unknown = { limit, useCache: true };
+    const searchOptions: any = { limit, useCache: true };
 
     if (documentType) searchOptions.documentType = documentType;
     if (practiceArea) searchOptions.practiceArea = practiceArea;
@@ -204,7 +204,7 @@ export const GET: RequestHandler = async ({ url }) => {
       results: simplifiedResults,
       count: results.length,
     });
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("GET search error:", error);
 
     return json(

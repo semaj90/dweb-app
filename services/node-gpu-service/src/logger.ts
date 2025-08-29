@@ -9,7 +9,7 @@ export enum LogLevel {
   ERROR = 3
 }
 
-interface LogContext {
+export interface LogContext {
   timestamp: string;
   level: string;
   message: string;

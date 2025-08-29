@@ -5,8 +5,9 @@
  * Backends: Qdrant (6333), pgvector via Enhanced RAG (8094)
  */
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types.js';
+import type { RequestHandler } from './$types';
 import { vectorOperations, type VectorSearchQuery } from '$lib/server/db/vector-operations.js';
+import { goServiceManager } from '$lib/services/go-microservice-client.js';
 
 const QUIC_VECTOR_CONFIG = {
   primaryPort: 8445,    // QUIC HTTP/3
@@ -75,7 +76,7 @@ export const GET: RequestHandler = async ({ url }) => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('QUIC Vector Proxy health check failed:', err);
     
     return json({
@@ -122,7 +123,61 @@ export const POST: RequestHandler = async ({ request, url }) => {
     let protocol: string;
 
     try {
-      // Try QUIC first if enabled
+      // Use Go Vector Service if backend is 'auto' or 'vector'
+      if (backend === 'auto' || backend === 'vector' || backend === 'pgvector') {
+        const vectorClient = goServiceManager.getClient('vectorService');
+        if (vectorClient) {
+          const serviceResponse = await vectorClient.post('/api/vector/search', requestPayload);
+          
+          if (serviceResponse.success) {
+            return json({
+              success: true,
+              results: serviceResponse.data.results || serviceResponse.data,
+              protocol: serviceResponse.protocol || 'HTTP',
+              source: 'go-vector-service',
+              cached: serviceResponse.data.cached || false,
+              timestamp: new Date().toISOString(),
+              metrics: {
+                totalResults: serviceResponse.data.results?.length || 0,
+                executionTimeMs: serviceResponse.responseTime || 0,
+                cacheHit: serviceResponse.data.cacheHit || false,
+                backend: 'go-vector-service'
+              }
+            });
+          } else {
+            console.warn('Go Vector Service failed, falling back to enhanced RAG:', serviceResponse.error);
+          }
+        }
+      }
+
+      // Fallback to Enhanced RAG service 
+      const enhancedRagClient = goServiceManager.getEnhancedRAG();
+      const ragSearchResponse = await enhancedRagClient.semanticSearch(
+        searchQuery.query || 'vector search',
+        {
+          collection: searchQuery.collection,
+          limit: searchQuery.limit || 10
+        }
+      );
+
+      if (ragSearchResponse.success) {
+        return json({
+          success: true,
+          results: ragSearchResponse.data.results || ragSearchResponse.data,
+          protocol: ragSearchResponse.protocol || 'HTTP',
+          source: 'enhanced-rag-service',
+          cached: false,
+          timestamp: new Date().toISOString(),
+          metrics: {
+            totalResults: ragSearchResponse.data.results?.length || 0,
+            executionTimeMs: ragSearchResponse.responseTime || 0,
+            cacheHit: false,
+            backend: 'enhanced-rag'
+          }
+        });
+      }
+
+      // Original QUIC proxy as final fallback
       response = await fetch(targetUrl, {
         method: 'POST',
         headers: {
@@ -178,7 +233,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('QUIC Vector search error:', err);
     error(500, {
       message: 'Vector search failed',
@@ -223,7 +278,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Vector cache clear error:', err);
     error(500, {
       message: 'Cache clear failed',
@@ -261,7 +316,7 @@ export const PUT: RequestHandler = async ({ request }) => {
       config: updatedConfig
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Vector proxy configuration update failed:', err);
     error(500, {
       message: 'Configuration update failed',

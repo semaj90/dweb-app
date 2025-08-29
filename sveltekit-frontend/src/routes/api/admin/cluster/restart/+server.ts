@@ -87,7 +87,7 @@ export const POST: RequestHandler = async ({ request }) => {
       timestamp: Date.now()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Cluster restart error:', error);
     globalThis.clusterRestarting = false;
     
@@ -122,7 +122,7 @@ export const GET: RequestHandler = async () => {
       canRestart: !isRestarting && health.healthyWorkers > 0
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Cluster restart status error:', error);
     
     return json({
@@ -167,7 +167,7 @@ async function performRollingRestart(
         )
       ]);
 
-    } catch (error) {
+    } catch (error: any) {
       if (options.force) {
         console.log(`💀 Force killing worker ${worker.workerId}`);
         clusterWorker.kill();

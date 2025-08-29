@@ -16,9 +16,9 @@ const evidenceProcessor = interpret(evidenceProcessingMachine).start();
 let serviceInitialized = false;
 
 // Initialize services on first request
-async function ensureServicesInitialized(): Promise<void> {
+async function ensureServicesInitialized(): Promise<any> {
     if (serviceInitialized) return;
-    
+
     try {
         // Initialize core services in parallel
         await Promise.all([
@@ -28,11 +28,11 @@ async function ensureServicesInitialized(): Promise<void> {
             pgVectorService.initialize(),
             redisService.initialize()
         ]);
-        
+
         serviceInitialized = true;
         console.log('[Gemma3API] All services initialized successfully');
-        
-    } catch (err) {
+
+    } catch (err: any) {
         console.error('[Gemma3API] Service initialization failed:', err);
         throw err;
     }
@@ -41,15 +41,15 @@ async function ensureServicesInitialized(): Promise<void> {
 /**
  * POST /api/ai/gemma3-local - Generate text with local inference
  */
-export const POST: RequestHandler = async ({ request, url }) => {
+export const POST: RequestHandler = async ({ request, url }): Promise<any> => {
     await ensureServicesInitialized();
-    
+
     const searchParams = url.searchParams;
     const endpoint = searchParams.get('endpoint') || 'generate';
-    
+
     try {
         const body = await request.json();
-        
+
         switch (endpoint) {
             case 'generate':
                 return await handleGenerate(body);
@@ -66,8 +66,8 @@ export const POST: RequestHandler = async ({ request, url }) => {
             default:
                 throw error(400, `Unknown endpoint: ${endpoint}`);
         }
-        
-    } catch (err) {
+
+    } catch (err: any) {
         console.error('[Gemma3API] Request failed:', err);
         throw error(500, {
             message: err instanceof Error ? err.message : 'Internal server error',
@@ -90,11 +90,11 @@ async function handleGenerate(body: {
     };
 }): Promise<Response> {
     const { prompt, options = {} } = body;
-    
+
     if (!prompt?.trim()) {
         throw error(400, 'Prompt is required');
     }
-    
+
     // Check Redis cache first if context_id provided
     let cacheKey: string | null = null;
     if (options.context_id) {
@@ -108,7 +108,7 @@ async function handleGenerate(body: {
             });
         }
     }
-    
+
     // Generate with Gemma3 service
     const result = await gemma3Service.generate(prompt, {
         max_tokens: options.max_tokens || 1024,
@@ -116,12 +116,12 @@ async function handleGenerate(body: {
         top_p: options.top_p || 0.9,
         use_cache: options.use_cache !== false
     });
-    
+
     // Cache result if successful and context_id provided
     if (result.success && cacheKey) {
         await redisService.setex(cacheKey, 3600, result); // 1 hour TTL
     }
-    
+
     return json({
         ...result,
         timestamp: Date.now(),
@@ -140,36 +140,36 @@ async function handleDocumentAnalysis(body: {
     evidenceId?: string;
     userId?: string;
 }): Promise<Response> {
-    const { 
-        title, 
-        content, 
-        analysisType = 'comprehensive', 
+    const {
+        title,
+        content,
+        analysisType = 'comprehensive',
         storeResults = false,
         evidenceId,
-        userId 
+        userId
     } = body;
-    
+
     if (!title?.trim() || !content?.trim()) {
         throw error(400, 'Title and content are required');
     }
-    
+
     const startTime = performance.now();
-    
+
     try {
         // Analyze document with Gemma3
         const analysis = await gemma3Service.analyzeDocument(title, content, analysisType);
-        
+
         // Generate embeddings for semantic search
         const embeddings = await gemma3Service.generateEmbeddings(
             `${title}\n\n${content.substring(0, 1000)}`
         );
-        
+
         let storageResults = null;
-        
+
         // Store results in integrated systems if requested
         if (storeResults && userId) {
             const documentId = evidenceId || crypto.randomUUID();
-            
+
             // Parallel storage operations
             const storagePromises = [
                 // Store in pgvector for semantic search
@@ -185,7 +185,7 @@ async function handleDocumentAnalysis(body: {
                         analysisType
                     }
                 }),
-                
+
                 // Store in Neo4j for graph relationships
                 neo4jService.createDocumentNode({
                     id: documentId,
@@ -195,7 +195,7 @@ async function handleDocumentAnalysis(body: {
                     keyTerms: analysis.keyTerms,
                     risks: analysis.risks
                 }),
-                
+
                 // Store raw content in MinIO
                 minioService.uploadDocument({
                     bucketName: 'legal-documents',
@@ -208,7 +208,7 @@ async function handleDocumentAnalysis(body: {
                         timestamp: new Date().toISOString()
                     }
                 }),
-                
+
                 // Cache analysis in Redis
                 redisService.setex(
                     `analysis:${documentId}`,
@@ -216,9 +216,9 @@ async function handleDocumentAnalysis(body: {
                     analysis
                 )
             ];
-            
+
             storageResults = await Promise.allSettled(storagePromises);
-            
+
             // Update evidence processing state if evidenceId provided
             if (evidenceId) {
                 evidenceProcessor.send({
@@ -232,9 +232,9 @@ async function handleDocumentAnalysis(body: {
                 });
             }
         }
-        
+
         const totalTime = performance.now() - startTime;
-        
+
         return json({
             success: true,
             analysis,
@@ -258,8 +258,8 @@ async function handleDocumentAnalysis(body: {
             } : null,
             timestamp: Date.now()
         });
-        
-    } catch (err) {
+
+    } catch (err: any) {
         console.error('[Gemma3API] Document analysis failed:', err);
         throw error(500, {
             message: err instanceof Error ? err.message : 'Analysis failed',
@@ -280,19 +280,19 @@ async function handleStreamGenerate(body: {
     };
 }): Promise<Response> {
     const { prompt, options = {} } = body;
-    
+
     if (!prompt?.trim()) {
         throw error(400, 'Prompt is required');
     }
-    
+
     // Create readable stream for SSE
     const stream = new ReadableStream({
-        async start(controller) {
+        async start(controller): Promise<any> {
             const encoder = new TextEncoder();
-            
+
             try {
                 let fullText = '';
-                
+
                 for await (const chunk of gemma3Service.generateStream(prompt, {
                     max_tokens: options.max_tokens || 1024,
                     temperature: options.temperature || 0.1,
@@ -304,34 +304,34 @@ async function handleStreamGenerate(body: {
                         done: chunk.done,
                         timestamp: Date.now()
                     };
-                    
+
                     fullText = chunk.text;
-                    
+
                     // Send SSE formatted data
                     const sseData = `data: ${JSON.stringify(data)}\n\n`;
                     controller.enqueue(encoder.encode(sseData));
-                    
+
                     if (chunk.done) {
                         controller.close();
                         break;
                     }
                 }
-                
-            } catch (err) {
+
+            } catch (err: any) {
                 console.error('[Gemma3API] Streaming failed:', err);
                 const errorData = {
                     error: err instanceof Error ? err.message : 'Streaming failed',
                     done: true,
                     timestamp: Date.now()
                 };
-                
+
                 const sseData = `data: ${JSON.stringify(errorData)}\n\n`;
                 controller.enqueue(encoder.encode(sseData));
                 controller.close();
             }
         }
     });
-    
+
     return new Response(stream, {
         headers: {
             'Content-Type': 'text/event-stream',
@@ -352,11 +352,11 @@ async function handleEmbeddings(body: {
     cacheKey?: string;
 }): Promise<Response> {
     const { text, cacheKey } = body;
-    
+
     if (!text?.trim()) {
         throw error(400, 'Text is required');
     }
-    
+
     // Check Redis cache
     if (cacheKey) {
         const cached = await redisService.get(`embeddings:${cacheKey}`);
@@ -368,14 +368,14 @@ async function handleEmbeddings(body: {
             });
         }
     }
-    
+
     const embeddings = await gemma3Service.generateEmbeddings(text);
-    
+
     // Cache embeddings
     if (cacheKey) {
         await redisService.setex(`embeddings:${cacheKey}`, 7200, embeddings); // 2 hours
     }
-    
+
     return json({
         ...embeddings,
         cached: false,
@@ -393,21 +393,21 @@ async function handleUploadAndAnalyze(body: {
     userId: string;
     analysisType?: 'comprehensive' | 'quick' | 'risk-focused';
 }): Promise<Response> {
-    const { 
-        fileName, 
-        fileContent, 
+    const {
+        fileName,
+        fileContent,
         mimeType = 'text/plain',
         userId,
         analysisType = 'comprehensive'
     } = body;
-    
+
     if (!fileName?.trim() || !fileContent?.trim() || !userId?.trim()) {
         throw error(400, 'fileName, fileContent, and userId are required');
     }
-    
+
     const documentId = crypto.randomUUID();
     const startTime = performance.now();
-    
+
     try {
         // Start evidence processing workflow
         evidenceProcessor.send({
@@ -420,7 +420,7 @@ async function handleUploadAndAnalyze(body: {
                 timestamp: Date.now()
             }
         });
-        
+
         // Perform document analysis with full pipeline
         const analysisResult = await handleDocumentAnalysis({
             title: fileName,
@@ -430,9 +430,9 @@ async function handleUploadAndAnalyze(body: {
             evidenceId: documentId,
             userId
         });
-        
+
         const analysisData = await analysisResult.json();
-        
+
         // Update evidence processing state
         evidenceProcessor.send({
             type: 'UPLOAD_COMPLETE',
@@ -442,9 +442,9 @@ async function handleUploadAndAnalyze(body: {
                 analysisComplete: true
             }
         });
-        
+
         const totalTime = performance.now() - startTime;
-        
+
         return json({
             success: true,
             documentId,
@@ -459,10 +459,10 @@ async function handleUploadAndAnalyze(body: {
             evidenceProcessingState: evidenceProcessor.getSnapshot().value,
             timestamp: Date.now()
         });
-        
-    } catch (err) {
+
+    } catch (err: any) {
         console.error('[Gemma3API] Upload and analysis failed:', err);
-        
+
         // Update evidence processing with error
         evidenceProcessor.send({
             type: 'ERROR',
@@ -471,7 +471,7 @@ async function handleUploadAndAnalyze(body: {
                 error: err instanceof Error ? err.message : 'Unknown error'
             }
         });
-        
+
         throw error(500, {
             message: err instanceof Error ? err.message : 'Upload and analysis failed',
             code: 'UPLOAD_ANALYSIS_FAILED'
@@ -487,9 +487,9 @@ async function handleEvidenceProcessing(body: {
     evidenceId?: string;
 }): Promise<Response> {
     const { action, evidenceId } = body;
-    
+
     const currentState = evidenceProcessor.getSnapshot();
-    
+
     switch (action) {
         case 'status':
             return json({
@@ -498,18 +498,18 @@ async function handleEvidenceProcessing(body: {
                 evidenceId: evidenceId || null,
                 timestamp: Date.now()
             });
-            
+
         case 'history':
             // Get processing history from Redis
             const historyKey = evidenceId ? `evidence:${evidenceId}:history` : 'evidence:global:history';
             const history = await redisService.lrange(historyKey, 0, -1);
-            
+
             return json({
                 history: history.map(item => JSON.parse(item)),
                 evidenceId: evidenceId || null,
                 timestamp: Date.now()
             });
-            
+
         case 'reset':
             evidenceProcessor.send({ type: 'RESET' });
             return json({
@@ -517,7 +517,7 @@ async function handleEvidenceProcessing(body: {
                 message: 'Evidence processing state reset',
                 timestamp: Date.now()
             });
-            
+
         default:
             throw error(400, `Unknown action: ${action}`);
     }
@@ -526,10 +526,10 @@ async function handleEvidenceProcessing(body: {
 /**
  * GET /api/ai/gemma3-local - Get service status and stats
  */
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
     const searchParams = url.searchParams;
     const info = searchParams.get('info');
-    
+
     if (info === 'health') {
         return json({
             healthy: serviceInitialized,
@@ -547,7 +547,7 @@ export const GET: RequestHandler = async ({ url }) => {
             timestamp: Date.now()
         });
     }
-    
+
     if (info === 'stats') {
         return json({
             gemma3: gemma3Service.getServiceStats(),
@@ -558,7 +558,7 @@ export const GET: RequestHandler = async ({ url }) => {
             timestamp: Date.now()
         });
     }
-    
+
     return json({
         service: 'Gemma3 Local Inference API',
         version: '1.0.0',
@@ -582,10 +582,10 @@ async function checkServiceHealth(healthCheck: () => Promise<any>): Promise<{ he
     try {
         await healthCheck();
         return { healthy: true };
-    } catch (err) {
-        return { 
-            healthy: false, 
-            error: err instanceof Error ? err.message : 'Unknown error' 
+    } catch (err: any) {
+        return {
+            healthy: false,
+            error: err instanceof Error ? err.message : 'Unknown error'
         };
     }
 }

@@ -110,7 +110,7 @@ test.describe('Legal AI Integration Tests', () => {
       console.log(`Complex prompt response: ${response.status()}`);
       expect([200, 400, 404, 500, 504]).toContain(response.status());
       
-    } catch (error) {
+    } catch (error: any) {
       console.log('Request timeout or error (expected for complex prompts)');
       // Timeout is acceptable for complex requests
     }
@@ -177,7 +177,7 @@ test.describe('Legal AI Integration Tests', () => {
       } else {
         console.log(`Streaming test result: ${response.status()}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log('Streaming test may need model to be loaded');
     }
   });

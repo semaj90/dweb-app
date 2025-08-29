@@ -11,7 +11,7 @@ export interface ServiceCommand {
   description: string;
   endpoint?: string;
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
-  payload?: unknown;
+  payload?: any;
   category: 'system' | 'service' | 'monitoring' | 'encoding' | 'gpu' | 'database';
 }
 
@@ -311,7 +311,7 @@ export class OrchestraKeyboardController {
     document.addEventListener('keydown', this.handleKeydown.bind(this));
 
     // Help overlay toggle
-    document.addEventListener('keydown', (e) => {
+    document.addEventListener('keydown', (e: any) => {
       if (e.key === 'F1' || (e.ctrlKey && e.key === '?')) {
         e.preventDefault();
         this.showHelpOverlay();
@@ -358,7 +358,7 @@ export class OrchestraKeyboardController {
   /**
    * Execute a service command
    */
-  private async executeCommand(command: ServiceCommand): Promise<void> {
+  private async executeCommand(command: ServiceCommand): Promise<any> {
     try {
       if (command.endpoint) {
         const response = await fetch(command.endpoint, {
@@ -379,7 +379,7 @@ export class OrchestraKeyboardController {
         // Handle client-side commands
         this.handleClientCommand(command);
       }
-    } catch (error) {
+    } catch (error: any) {
       this.showError(command.name, error as Error);
     }
   }
@@ -436,7 +436,7 @@ export class OrchestraKeyboardController {
   /**
    * Start streaming logs
    */
-  private async startLogStreaming(display: HTMLElement): Promise<void> {
+  private async startLogStreaming(display: HTMLElement): Promise<any> {
     try {
       const response = await fetch('/api/logs/stream');
       const reader = response.body?.getReader();
@@ -451,7 +451,7 @@ export class OrchestraKeyboardController {
           display.scrollTop = display.scrollHeight;
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       display.innerHTML += `Log streaming error: ${error}\n`;
     }
   }
@@ -499,7 +499,7 @@ export class OrchestraKeyboardController {
   /**
    * Show success message
    */
-  private showSuccess(commandName: string, result: unknown): void {
+  private showSuccess(commandName: string, result: any): void {
     if (this.statusDisplay) {
       this.statusDisplay.innerHTML = `
         <div style="color: #4CAF50;">✓ ${commandName} - Success</div>

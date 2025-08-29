@@ -120,7 +120,7 @@ import {
   commonMCPQueries,
   type MCPToolRequest,
   type OrchestrationOptions,
-} from "../utils/mcp-helpers.js";
+} from '../utils/mcp-helpers';
 
 // Context7 Semantic Search Integration
 export interface Context7SearchOptions {
@@ -163,7 +163,7 @@ export async function performContext7Search(
         ...result.metadata,
       },
     }));
-  } catch (error) {
+  } catch (error: any) {
     console.error("Context7 semantic search failed:", error);
     return [
       {
@@ -220,7 +220,7 @@ export class Context7AgentOrchestrator {
       });
 
       return completedTrigger;
-    } catch (error) {
+    } catch (error: any) {
       const failedTrigger = {
         ...trigger,
         status: "done" as const,
@@ -297,7 +297,7 @@ ${orchestratorResult.selfPrompt}`;
       } else {
         return `Auto-Fix Complete: No issues found. Codebase follows best practices.`;
       }
-    } catch (error) {
+    } catch (error: any) {
       // Fallback to orchestrator only
       const options: OrchestrationOptions = {
         useMemory: true,
@@ -338,7 +338,7 @@ ${orchestratorResult.selfPrompt}`;
             "Auto-fix module not available - manual review recommended",
           ],
         };
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error in auto-fix simulation:", error);
         result = {
           summary: {
@@ -373,7 +373,7 @@ ${result.recommendations.join("\n")}
 
 Config Improvements:
 ${result.configImprovements.join("\n")}`;
-    } catch (error) {
+    } catch (error: any) {
       return `Auto-Fix Failed for ${todoId}: ${error}`;
     }
   }
@@ -494,7 +494,7 @@ export class Context7SemanticAuditor {
           });
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       results.push({
         step: `semantic_audit_${component}`,
         status: "error",
@@ -538,7 +538,7 @@ export class Context7SemanticAuditor {
           // 30% chance of finding issues
           issues.push(`${area} best practices need review for ${component}`);
         }
-      } catch (error) {
+      } catch (error: any) {
         issues.push(`Failed to check ${area} best practices: ${error}`);
       }
     }
@@ -573,7 +573,7 @@ export class Context7SemanticAuditor {
           agentTriggered: false,
         };
       }
-    } catch (error) {
+    } catch (error: any) {
       return {
         step: `semantic_integration_${component}`,
         status: "error",

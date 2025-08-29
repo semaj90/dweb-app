@@ -10,7 +10,7 @@ export async function applyTransformers(
   original: string,
   id: string,
   enforce: SourceCodeTransformerEnforce = 'default',
-) {
+): Promise<any> {
   if (original.includes(IGNORE_COMMENT))
     return
 

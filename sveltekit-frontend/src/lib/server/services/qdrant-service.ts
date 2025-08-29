@@ -1,9 +1,9 @@
 import { QdrantClient } from "@qdrant/js-client-rest";
-import VectorService from "./vector-service.js";
+import VectorService from './vector-service';
 
 // Production Qdrant Service - Fixed vector dimensions and stub implementations
 
-interface QdrantPoint {
+export interface QdrantPoint {
   id: string;
   vector: number[];
   payload: {
@@ -19,7 +19,7 @@ interface QdrantPoint {
   };
 }
 
-interface SearchResult {
+export interface SearchResult {
   id: string;
   score: number;
   payload: QdrantPoint["payload"];
@@ -79,7 +79,7 @@ class QdrantService {
         }
       }
       this.isInitialized = true;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Qdrant initialization failed:", error);
       throw error;
     }
@@ -133,7 +133,7 @@ Return ONLY a JSON object:
       const parsed = JSON.parse(data.response);
       
       return Math.min(100, Math.max(0, parsed.score || 50));
-    } catch (error) {
+    } catch (error: any) {
       console.error('AI scoring failed:', error);
       return 50; // Neutral fallback score
     }
@@ -197,7 +197,7 @@ Return ONLY a JSON object:
         message: `Synced ${synced} records from PostgreSQL`,
         synced
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('PostgreSQL sync failed:', error);
       return {
         success: false,
@@ -258,7 +258,7 @@ Return ONLY a JSON object:
         score: result.score || 0,
         payload: result.payload as QdrantPoint["payload"],
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Similarity search failed:', error);
       return [];
     }
@@ -279,7 +279,7 @@ Return ONLY a JSON object:
           createdAt: new Date().toISOString()
         }
       ];
-    } catch (error) {
+    } catch (error: any) {
       console.error('PostgreSQL query failed:', error);
       return [];
     }
@@ -422,7 +422,7 @@ Return ONLY a JSON object:
         console.warn('setPayload not available, using alternative method');
         // Alternative: re-upsert the point with updated payload
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('setPayload failed:', error);
     }
   }
@@ -463,7 +463,7 @@ Return only a JSON array of strings, no other text:
       }
       
       return [evidenceType, "unprocessed", "requires-review"];
-    } catch (error) {
+    } catch (error: any) {
       console.error("Tag generation error:", error);
       return [evidenceType, "auto-tag-failed"];
     }
@@ -473,7 +473,7 @@ Return only a JSON array of strings, no other text:
     try {
       await this.client.getCollections();
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Qdrant health check failed:", error);
       return false;
     }
@@ -524,7 +524,7 @@ Return only a JSON array of strings, no other text:
         });
         evidencePoints = searchResult || [];
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to retrieve evidence points:', error);
       evidencePoints = [];
     }

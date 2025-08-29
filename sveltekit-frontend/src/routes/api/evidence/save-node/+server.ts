@@ -42,7 +42,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       default:
         return json({ error: "Invalid action" }, { status: 400 });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Save API error:", error);
     return json(
       { 
@@ -55,7 +55,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 };
 
 // Save individual evidence node
-async function saveEvidenceNode(nodeData: any, userId: string) {
+async function saveEvidenceNode(nodeData: any, userId: string): Promise<any> {
   try {
     // Validate input
     const validatedNode = evidenceNodeSchema.parse({
@@ -86,7 +86,7 @@ async function saveEvidenceNode(nodeData: any, userId: string) {
       message: "Evidence saved successfully"
     });
 
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof z.ZodError) {
       return json(
         { error: "Validation failed", details: error.errors },
@@ -98,7 +98,7 @@ async function saveEvidenceNode(nodeData: any, userId: string) {
 }
 
 // Save canvas state
-async function saveCanvasState(canvasData: any, userId: string) {
+async function saveCanvasState(canvasData: any, userId: string): Promise<any> {
   try {
     const canvasStateData = {
       id: crypto.randomUUID(),
@@ -114,7 +114,7 @@ async function saveCanvasState(canvasData: any, userId: string) {
       message: "Canvas state saved successfully"
     });
 
-  } catch (error) {
+  } catch (error: any) {
     throw error;
   }
 }
@@ -138,7 +138,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
       default:
         return json({ error: "Invalid action" }, { status: 400 });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Load API error:", error);
     return json(
       { 

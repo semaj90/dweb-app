@@ -37,12 +37,12 @@ class TypedEventEmitter<T extends Record<string, any[]>> {
 	
 	emit<K extends keyof T>(event: K, ...args: T[K]): void {
 		this.listeners.get(event)?.forEach(fn => {
-			try { fn(...args); } catch (error) { console.error('Event handler error:', error); }
+			try { fn(...args); } catch (error: any) { console.error('Event handler error:', error); }
 		});
 	}
 }
 
-interface NATSEvents {
+export interface NATSEvents {
 	connected: [NATSConnectionStatus];
 	disconnected: [string];
 	reconnecting: [number];
@@ -190,7 +190,7 @@ export class EnhancedNATSMessagingService extends TypedEventEmitter<NATSEvents> 
 			console.log('✅ Enhanced NATS: Connected successfully');
 			
 			return true;
-		} catch (error) {
+		} catch (error: any) {
 			console.error('❌ Enhanced NATS: Connection failed:', error);
 			this.emit('error', error as Error);
 			return false;
@@ -205,7 +205,7 @@ export class EnhancedNATSMessagingService extends TypedEventEmitter<NATSEvents> 
 			for (const [subject, subscription] of this.subscriptions) {
 				try {
 					await subscription.unsubscribe();
-				} catch (error) {
+				} catch (error: any) {
 					console.warn(`Warning: Failed to unsubscribe from ${subject}:`, error);
 				}
 			}
@@ -256,7 +256,7 @@ export class EnhancedNATSMessagingService extends TypedEventEmitter<NATSEvents> 
 			console.log(`📤 Enhanced NATS: Published to ${subject}`, { type: message.type, id: message.id });
 			this.emit('message', subject, message);
 			
-		} catch (error) {
+		} catch (error: any) {
 			this.metrics.error_count++;
 			console.error(`❌ Enhanced NATS: Publish failed for ${subject}:`, error);
 			throw error;
@@ -311,7 +311,7 @@ export class EnhancedNATSMessagingService extends TypedEventEmitter<NATSEvents> 
 			this.metrics.active_subscriptions++;
 			console.log(`📥 Enhanced NATS: Subscribed to ${subject}`, { durable: !!options?.durable_name });
 			
-		} catch (error) {
+		} catch (error: any) {
 			console.error(`❌ Enhanced NATS: Subscribe failed for ${subject}:`, error);
 			throw error;
 		}
@@ -360,7 +360,7 @@ export class EnhancedNATSMessagingService extends TypedEventEmitter<NATSEvents> 
 			console.log(`🔄 Enhanced NATS: Request-reply completed for ${subject}`, { requestId });
 			
 			return responseMessage;
-		} catch (error) {
+		} catch (error: any) {
 			console.error(`❌ Enhanced NATS: Request failed for ${subject}:`, error);
 			throw error;
 		}
@@ -382,7 +382,7 @@ export class EnhancedNATSMessagingService extends TypedEventEmitter<NATSEvents> 
 			
 			console.log(`🌊 Enhanced NATS: Stream created ${config.name}`, { subjects: config.subjects });
 			this.emit('stream_created', config.name);
-		} catch (error) {
+		} catch (error: any) {
 			console.error(`❌ Enhanced NATS: Stream creation failed for ${config.name}:`, error);
 			throw error;
 		}
@@ -402,7 +402,7 @@ export class EnhancedNATSMessagingService extends TypedEventEmitter<NATSEvents> 
 			
 			console.log(`👤 Enhanced NATS: Consumer created ${config.name} for stream ${streamName}`);
 			this.emit('consumer_created', streamName, config.name);
-		} catch (error) {
+		} catch (error: any) {
 			console.error(`❌ Enhanced NATS: Consumer creation failed:`, error);
 			throw error;
 		}
@@ -613,7 +613,7 @@ export class EnhancedNATSMessagingService extends TypedEventEmitter<NATSEvents> 
 					for (const handler of handlers) {
 						try {
 							await handler(message);
-						} catch (error) {
+						} catch (error: any) {
 							console.error(`Handler error for ${subject}:`, error);
 						}
 					}
@@ -622,7 +622,7 @@ export class EnhancedNATSMessagingService extends TypedEventEmitter<NATSEvents> 
 				this.metrics.messages_received++;
 				this.metrics.bytes_received += msg.data.length;
 			}
-		} catch (error) {
+		} catch (error: any) {
 			console.error(`Message processing error for ${subject}:`, error);
 		}
 	}

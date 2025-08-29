@@ -1,4 +1,4 @@
-export async function runCustomAnalysis(content: string, prompt: string) {
+export async function runCustomAnalysis(content: string, prompt: string): Promise<any> {
   const ollamaUrl = process.env.OLLAMA_URL || "http://localhost:11434";
   const res = await fetch(`${ollamaUrl}/api/generate`, {
     method: "POST",

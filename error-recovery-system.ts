@@ -11,7 +11,7 @@ import { createRequire } from 'module';
 
 const require = createRequire(import.meta.url);
 
-interface ErrorContext {
+export interface ErrorContext {
   serviceName: string;
   errorType: ErrorType;
   severity: ErrorSeverity;
@@ -22,7 +22,7 @@ interface ErrorContext {
   correlationId: string;
 }
 
-interface RecoveryAction {
+export interface RecoveryAction {
   id: string;
   name: string;
   description: string;
@@ -34,7 +34,7 @@ interface RecoveryAction {
   cooldown: number;
 }
 
-interface RecoveryResult {
+export interface RecoveryResult {
   success: boolean;
   message: string;
   duration: number;
@@ -42,7 +42,7 @@ interface RecoveryResult {
   metadata?: Record<string, any>;
 }
 
-interface ErrorPattern {
+export interface ErrorPattern {
   id: string;
   name: string;
   pattern: RegExp | string;
@@ -53,7 +53,7 @@ interface ErrorPattern {
   autoRecoverable: boolean;
 }
 
-interface ServiceHealthSnapshot {
+export interface ServiceHealthSnapshot {
   serviceName: string;
   timestamp: Date;
   status: 'healthy' | 'degraded' | 'unhealthy' | 'critical';
@@ -228,7 +228,7 @@ export class ErrorRecoverySystem extends EventEmitter {
               message: `Service ${error.serviceName} restarted successfully`,
               duration: performance.now() - startTime
             };
-          } catch (err) {
+          } catch (err: any) {
             return {
               success: false,
               message: `Failed to restart service: ${err}`,
@@ -255,7 +255,7 @@ export class ErrorRecoverySystem extends EventEmitter {
               message: 'Database connection reestablished',
               duration: performance.now() - startTime
             };
-          } catch (err) {
+          } catch (err: any) {
             return {
               success: false,
               message: `Failed to reconnect database: ${err}`,
@@ -285,7 +285,7 @@ export class ErrorRecoverySystem extends EventEmitter {
               message: `Scaled up ${error.serviceName}`,
               duration: performance.now() - startTime
             };
-          } catch (err) {
+          } catch (err: any) {
             return {
               success: false,
               message: `Failed to scale up: ${err}`,
@@ -316,7 +316,7 @@ export class ErrorRecoverySystem extends EventEmitter {
               duration: performance.now() - startTime,
               metadata: { cleanedResources: cleaned }
             };
-          } catch (err) {
+          } catch (err: any) {
             return {
               success: false,
               message: `Failed to cleanup resources: ${err}`,
@@ -343,7 +343,7 @@ export class ErrorRecoverySystem extends EventEmitter {
               message: `Circuit breaker reset for ${error.serviceName}`,
               duration: performance.now() - startTime
             };
-          } catch (err) {
+          } catch (err: any) {
             return {
               success: false,
               message: `Failed to reset circuit breaker: ${err}`,
@@ -370,7 +370,7 @@ export class ErrorRecoverySystem extends EventEmitter {
               message: `Enabled CPU fallback for ${error.serviceName}`,
               duration: performance.now() - startTime
             };
-          } catch (err) {
+          } catch (err: any) {
             return {
               success: false,
               message: `Failed to enable CPU fallback: ${err}`,
@@ -595,7 +595,7 @@ export class ErrorRecoverySystem extends EventEmitter {
           }
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       this.emit('recoveryError', error.serviceName, action.id, err);
     } finally {
       this.activeRecoveries.delete(error.serviceName);
@@ -614,7 +614,7 @@ export class ErrorRecoverySystem extends EventEmitter {
     
     try {
       return await Promise.race([execution, timeout]);
-    } catch (err) {
+    } catch (err: any) {
       return {
         success: false,
         message: `Recovery action failed: ${err}`,
@@ -677,7 +677,7 @@ export class ErrorRecoverySystem extends EventEmitter {
           cleaned.push(`log:${log}`);
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       // Ignore cleanup errors
     }
 
@@ -692,7 +692,7 @@ export class ErrorRecoverySystem extends EventEmitter {
           cleaned.push(`temp:${file}`);
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       // Ignore cleanup errors
     }
 

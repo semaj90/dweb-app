@@ -6,7 +6,7 @@ export { normalizedFontMeta }
 export * from './types'
 
 const userAgentWoff2 = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36'
-const defaultFetch = async (url: string) => (await import('ofetch')).$fetch(url, { headers: { 'User-Agent': userAgentWoff2 }, retry: 3 })
+const defaultFetch = async (url: string): Promise<any> => (await import('ofetch')).$fetch(url, { headers: { 'User-Agent': userAgentWoff2 }, retry: 3 })
 
 /**
  * Preset for using web fonts by provide just the names.

@@ -160,7 +160,7 @@ class EnhancedAuthStore {
         this._error = result.error || 'Login failed';
         return { success: false, error: this._error };
       }
-    } catch (error) {
+    } catch (error: any) {
       this._error = 'Network error. Please try again.';
       console.error('Login error:', error);
       return { success: false, error: this._error };
@@ -205,7 +205,7 @@ class EnhancedAuthStore {
         this._error = result.error || 'Registration failed';
         return { success: false, error: this._error };
       }
-    } catch (error) {
+    } catch (error: any) {
       this._error = 'Network error. Please try again.';
       console.error('Registration error:', error);
       return { success: false, error: this._error };
@@ -229,7 +229,7 @@ class EnhancedAuthStore {
           })
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Logout error:', error);
     } finally {
       this.clearAuthState();
@@ -256,7 +256,7 @@ class EnhancedAuthStore {
       }
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Email verification error:', error);
       return { success: false, error: 'Verification failed' };
     }
@@ -273,7 +273,7 @@ class EnhancedAuthStore {
       });
 
       return await response.json();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Password reset request error:', error);
       return { success: false, error: 'Request failed' };
     }
@@ -297,7 +297,7 @@ class EnhancedAuthStore {
       }
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Password reset error:', error);
       return { success: false, error: 'Reset failed' };
     }
@@ -324,7 +324,7 @@ class EnhancedAuthStore {
       }
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Profile update error:', error);
       return { success: false, error: 'Update failed' };
     }
@@ -345,7 +345,7 @@ class EnhancedAuthStore {
       });
 
       return await response.json();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Password change error:', error);
       return { success: false, error: 'Password change failed' };
     }
@@ -373,7 +373,7 @@ class EnhancedAuthStore {
       
       this.clearAuthState();
       return false;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Session refresh error:', error);
       this.clearAuthState();
       return false;
@@ -402,7 +402,7 @@ class EnhancedAuthStore {
       if (response.ok) {
         return await response.json();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Security summary error:', error);
     }
     return null;
@@ -441,7 +441,7 @@ class EnhancedAuthStore {
       if (!isValid) {
         this.clearAuthState();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Auth initialization error:', error);
       this.clearAuthState();
     } finally {

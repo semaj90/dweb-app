@@ -72,7 +72,7 @@ function createAvatarStore() {
             error: null,
           }));
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to load avatar:", error);
         // Only show error if we don't have a cached avatar
         update((state) => ({
@@ -129,7 +129,7 @@ function createAvatarStore() {
         } else {
           throw new Error(data.error || "Upload failed");
         }
-      } catch (error) {
+      } catch (error: any) {
         const errorMessage =
           error instanceof Error ? error.message : "Upload failed";
         update((state) => ({
@@ -172,7 +172,7 @@ function createAvatarStore() {
         } else {
           throw new Error("Failed to remove avatar");
         }
-      } catch (error) {
+      } catch (error: any) {
         const errorMessage =
           error instanceof Error ? error.message : "Removal failed";
         update((state) => ({ ...state, error: errorMessage }));

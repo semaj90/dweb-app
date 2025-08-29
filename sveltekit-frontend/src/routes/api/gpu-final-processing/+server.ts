@@ -16,7 +16,7 @@ export const GET: RequestHandler = async () => {
       timestamp: new Date().toISOString(),
       message: 'Complete GPU error processing pipeline executed successfully'
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ GPU error processing failed:', error);
 
     return json({
@@ -48,7 +48,7 @@ export const POST: RequestHandler = async ({ request }) => {
       default:
         return json({ success: false, error: 'Invalid action' }, { status: 400 });
     }
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error'

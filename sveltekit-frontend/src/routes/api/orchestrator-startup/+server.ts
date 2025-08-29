@@ -37,7 +37,7 @@ export const GET: RequestHandler = async () => {
       ],
       timestamp: new Date().toISOString(),
     });
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         success: false,
@@ -90,7 +90,7 @@ export const POST: RequestHandler = async ({ request }) => {
           { status: 400 }
         );
     }
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         success: false,
@@ -103,7 +103,7 @@ export const POST: RequestHandler = async ({ request }) => {
 };
 
 // Start the database orchestrator
-async function startOrchestrator(configuration: any = {}) {
+async function startOrchestrator(configuration: any = {}): Promise<any> {
   try {
     const status = (orchestrator as any).getStatus?.() || { isRunning: false };
 
@@ -138,7 +138,7 @@ async function startOrchestrator(configuration: any = {}) {
         'Real-time processing ready',
       ],
     });
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         success: false,
@@ -151,7 +151,7 @@ async function startOrchestrator(configuration: any = {}) {
 }
 
 // Stop the database orchestrator
-async function stopOrchestrator() {
+async function stopOrchestrator(): Promise<any> {
   try {
     const status = (orchestrator as any).getStatus?.() || { isRunning: false };
 
@@ -171,7 +171,7 @@ async function stopOrchestrator() {
       message: 'Database orchestrator stopped successfully',
       shutdown_time: new Date().toISOString(),
     });
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         success: false,
@@ -184,7 +184,7 @@ async function stopOrchestrator() {
 }
 
 // Restart the orchestrator
-async function restartOrchestrator(configuration: any = {}) {
+async function restartOrchestrator(configuration: any = {}): Promise<any> {
   try {
     await stopOrchestrator();
 
@@ -199,7 +199,7 @@ async function restartOrchestrator(configuration: any = {}) {
       restart_time: new Date().toISOString(),
       start_result: startResult,
     });
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         success: false,
@@ -212,7 +212,7 @@ async function restartOrchestrator(configuration: any = {}) {
 }
 
 // Initialize the full system
-async function initializeFullSystem(configuration: any = {}) {
+async function initializeFullSystem(configuration: any = {}): Promise<any> {
   try {
     const initializationSteps = [];
 
@@ -283,7 +283,7 @@ async function initializeFullSystem(configuration: any = {}) {
       system_ready: true,
       timestamp: new Date().toISOString(),
     });
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         success: false,
@@ -296,7 +296,7 @@ async function initializeFullSystem(configuration: any = {}) {
 }
 
 // Perform comprehensive system health check
-async function performSystemHealthCheck() {
+async function performSystemHealthCheck(): Promise<any> {
   try {
     const healthResults = {
       orchestrator: (orchestrator as any).getStatus?.(),
@@ -324,7 +324,7 @@ async function performSystemHealthCheck() {
           response_code: response.status,
           endpoint: service.url,
         };
-      } catch (error) {
+      } catch (error: any) {
         (healthResults.services as any)[service.name] = {
           status: 'error',
           error: (error as Error).message,
@@ -341,7 +341,7 @@ async function performSystemHealthCheck() {
         connection: 'active',
         test_query: 'successful',
       };
-    } catch (error) {
+    } catch (error: any) {
       healthResults.database = {
         status: 'error',
         error: error.message,
@@ -370,7 +370,7 @@ async function performSystemHealthCheck() {
       total_services: totalServices,
       timestamp: new Date().toISOString(),
     });
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         success: false,
@@ -383,7 +383,7 @@ async function performSystemHealthCheck() {
 }
 
 // Configure orchestrator settings
-async function configureOrchestrator(configuration: any) {
+async function configureOrchestrator(configuration: any): Promise<any> {
   try {
     // Apply configuration settings
     const appliedSettings = [];
@@ -422,7 +422,7 @@ async function configureOrchestrator(configuration: any) {
       configuration,
       timestamp: new Date().toISOString(),
     });
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         success: false,

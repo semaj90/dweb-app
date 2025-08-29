@@ -6,7 +6,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { binaryEncoder } from '$lib/middleware/binary-encoding';
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const data = await request.json();
     
@@ -51,7 +51,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
     return json(response);
     
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -60,7 +60,7 @@ export const POST: RequestHandler = async ({ request }) => {
   }
 };
 
-export const GET: RequestHandler = async () => {
+export const GET: RequestHandler = async (): Promise<any> => {
   // Provide usage example and stats
   const metrics = binaryEncoder.getMetrics();
   

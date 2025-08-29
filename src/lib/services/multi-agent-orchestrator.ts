@@ -4,9 +4,9 @@
  */
 
 import { spawn } from "child_process";
-import { librarySyncService } from "./library-sync-service.js";
-import { redisVectorService } from "./redis-vector-service.js";
-import { bestPracticesService } from "./best-practices-service.js";
+import { librarySyncService } from './library-sync-service';
+import { redisVectorService } from './redis-vector-service';
+import { bestPracticesService } from './best-practices-service';
 
 export interface AgentNode {
     id: string;
@@ -217,7 +217,7 @@ class MultiAgentOrchestrator {
 
             for (const phase of executionPlan) {
                 // Execute agents in parallel within each phase
-                const phasePromises = phase.map(async (agent) => {
+                const phasePromises = phase.map(async (agent): Promise<any> => {
                     try {
                         agent.status = "running";
                         workflow.logs.push(`Starting agent: ${agent.name}`);
@@ -235,7 +235,7 @@ class MultiAgentOrchestrator {
                         workflow.logs.push(`Completed agent: ${agent.name}`);
 
                         return agentResult;
-                    } catch (error) {
+                    } catch (error: any) {
                         agent.error = error.message;
                         agent.status = "failed";
                         workflow.logs.push(
@@ -270,7 +270,7 @@ class MultiAgentOrchestrator {
             });
 
             return results;
-        } catch (error) {
+        } catch (error: any) {
             workflow.status = "failed";
             workflow.endTime = new Date();
             workflow.logs.push(`Workflow failed: ${error.message}`);
@@ -362,7 +362,7 @@ class MultiAgentOrchestrator {
             });
 
             return result;
-        } catch (error) {
+        } catch (error: any) {
             const duration = Date.now() - startTime;
 
             // Log agent failure
@@ -424,7 +424,7 @@ class MultiAgentOrchestrator {
                 relevantDocs: searchResults.length,
                 timestamp: new Date().toISOString(),
             };
-        } catch (error) {
+        } catch (error: any) {
             return {
                 action: "rag_search",
                 query: context.originalQuery,
@@ -476,7 +476,7 @@ class MultiAgentOrchestrator {
                 practices,
                 timestamp: new Date().toISOString(),
             };
-        } catch (error) {
+        } catch (error: any) {
             return {
                 action: "best_practices_generation",
                 error: error.message,
@@ -581,7 +581,7 @@ print(json.dumps(result))
                     try {
                         const result = JSON.parse(output);
                         resolve(result);
-                    } catch (e) {
+                    } catch (e: any) {
                         resolve({
                             action: agent.id,
                             result: output,
@@ -680,7 +680,7 @@ print(json.dumps(result))
     /**
      * Cancel a workflow
      */
-    async cancelWorkflow(workflowId: string): Promise<void> {
+    async cancelWorkflow(workflowId: string): Promise<any> {
         const workflow = this.activeWorkflows.get(workflowId);
         if (workflow) {
             workflow.status = "failed";

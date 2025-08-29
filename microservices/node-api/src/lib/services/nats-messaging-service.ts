@@ -10,9 +10,9 @@ import { connect, StringCodec } from 'nats';
 import { db } from '../db/drizzle';
 import { nats_messages, pipeline_logs } from '../db/schema';
 // Dynamic loaders for TS modules (avoids direct .ts static import in plain JS runtime)
-let runGPUWorker = async (payload) => ({ ok: true, skipped: true, reason: 'gpu-worker not loaded', payloadSize: JSON.stringify(payload||{}).length });
-let runWasmWorker = async () => null;
-let callGoLLM = async () => null;
+let runGPUWorker = async (payload): Promise<any> => ({ ok: true, skipped: true, reason: 'gpu-worker not loaded', payloadSize: JSON.stringify(payload||{}).length });
+let runWasmWorker = async (): Promise<any> => null;
+let callGoLLM = async (): Promise<any> => null;
 try {
   const gpuMod = await import('./gpu-worker').catch(()=>null);
   if (gpuMod?.runGPUWorker) runGPUWorker = gpuMod.runGPUWorker;
@@ -75,14 +75,14 @@ function subjectAllowed(subject){
   return SUBJECT_WHITELIST.length === 0 || SUBJECT_WHITELIST.includes(subject);
 }
 
-async function ensureRedis(){
+async function ensureRedis(): Promise<any> {
   if (redisClient || redisInitAttempted || !REDIS_URL) return redisClient;
   redisInitAttempted = true;
   try {
     const { default: Redis } = await import('ioredis');
     redisClient = new Redis(REDIS_URL, { lazyConnect: true });
     await redisClient.connect().catch(()=>{});
-  } catch (err){
+  } catch (err: any){
     logger.warn?.('[NATS] Redis init skipped:', err.message);
   }
   return redisClient;
@@ -161,7 +161,7 @@ export function renderMetrics(){
   return lines.join('\n') + '\n';
 }
 
-export async function getNATSService(){
+export async function getNATSService(): Promise<any> {
   if (nc) return nc;
   // Circuit gating
   if (circuit.open && Date.now() < circuit.nextAttempt){
@@ -176,7 +176,7 @@ export async function getNATSService(){
     nc.closed().then(err => { if(err) logger.error('NATS closed with error:', err); nc = null; });
     evaluateCircuitSuccess();
     flushQueue();
-  } catch (err){
+  } catch (err: any){
     recordFailure(err);
     throw err;
   }
@@ -191,14 +191,14 @@ function enqueue(subject, payload){
   metrics.queueBacklog = pendingQueue.length;
 }
 
-async function flushQueue(){
+async function flushQueue(): Promise<any> {
   if (!nc) return;
   for (let i=0; i<pendingQueue.length; i++){
     const item = pendingQueue[0];
     try {
       await internalPublish(item.subject, item.payload, true);
       pendingQueue.shift();
-    } catch (err){
+    } catch (err: any){
       // stop flushing on first error to prevent hot loop
       break;
     }
@@ -214,7 +214,7 @@ function genTraceId(){
   try { return crypto.randomUUID(); } catch { return Math.random().toString(36).slice(2); }
 }
 
-async function internalPublish(subject, payload, isQueueFlush=false){
+async function internalPublish(subject, payload, isQueueFlush=false): Promise<any> {
   const start = Date.now();
   const conn = await getNATSService();
   const traceId = genTraceId();
@@ -225,7 +225,7 @@ async function internalPublish(subject, payload, isQueueFlush=false){
   recordLatency(metrics.lastPublishTs - start);
   try {
     await db.insert(nats_messages).values({ subject, payload: JSON.stringify(enriched), created_at: new Date() });
-  } catch (e){
+  } catch (e: any){
     logger.error('Failed to log NATS message', e);
   }
   try {
@@ -234,11 +234,11 @@ async function internalPublish(subject, payload, isQueueFlush=false){
       await rc.lpush('recent:nats:messages', JSON.stringify({ subject, traceId, ts: Date.now() }));
       await rc.ltrim('recent:nats:messages', 0, 199);
     }
-  } catch (e){ /* ignore */ }
+  } catch (e: any){ /* ignore */ }
   if (!isQueueFlush) logger.info?.('[NATS publish]', subject, { traceId });
 }
 
-export async function publishMessage(subject, payload){
+export async function publishMessage(subject, payload): Promise<any> {
   if (!subjectAllowed(subject)){
     metrics.publishFailures++;
     return { ok: false, error: 'Subject not allowed' };
@@ -254,7 +254,7 @@ export async function publishMessage(subject, payload){
   try {
     await internalPublish(subject, payload);
     return { ok: true };
-  } catch (err){
+  } catch (err: any){
     metrics.publishFailures++;
     recordFailure(err);
     enqueue(subject, payload);
@@ -262,7 +262,7 @@ export async function publishMessage(subject, payload){
   }
 }
 
-export async function subscribe(subject, callback){
+export async function subscribe(subject, callback): Promise<any> {
   const conn = await getNATSService();
   metrics.subscriptions.add(subject);
   const sub = conn.subscribe(subject);
@@ -278,11 +278,11 @@ export async function subscribe(subject, callback){
             const traceId = base.traceId || genTraceId();
             // GPU Stage
             let gpuResult = null;
-            try { gpuResult = await runGPUWorker(base); } catch(e){ logger.warn('GPU worker failed', e.message); }
+            try { gpuResult = await runGPUWorker(base); } catch(e: any){ logger.warn('GPU worker failed', e.message); }
             await publishMessage(NATS_SUBJECTS.AI_RESPONSE, { id: traceId, stage: 'gpu', ok: !!gpuResult });
             // WASM Stage
             let wasmResult = null;
-            try { wasmResult = await runWasmWorker(1,1); } catch(e){ logger.warn('WASM worker failed', e.message); }
+            try { wasmResult = await runWasmWorker(1,1); } catch(e: any){ logger.warn('WASM worker failed', e.message); }
             await publishMessage(NATS_SUBJECTS.AI_RESPONSE, { id: traceId, stage: 'wasm', ok: !!wasmResult });
             // Embedding Stage with hash + skip
             let embedding = null;
@@ -314,7 +314,7 @@ export async function subscribe(subject, callback){
                         logger.debug?.('Embedding cache hit (redis)', embeddingHash);
                       }
                     }
-                  } catch(e){ logger.warn?.('Redis embedding lookup failed', e.message); }
+                  } catch(e: any){ logger.warn?.('Redis embedding lookup failed', e.message); }
                   if (!embedding) {
                     const embedEndpoint = process.env.EMBED_ENDPOINT || 'http://localhost:11434/api/embeddings';
                     const model = process.env.EMBED_MODEL || 'nomic-embed-text';
@@ -323,13 +323,13 @@ export async function subscribe(subject, callback){
                     if (embedding) {
                       globalThis.__embeddingCache.set(embeddingHash, embedding);
                       // Write-through to Redis
-                      try { const rc = await ensureRedis(); if (rc) await rc.set('embed:'+embeddingHash, JSON.stringify(embedding), 'EX', 60*60*24); } catch(e){ /* ignore */ }
+                      try { const rc = await ensureRedis(); if (rc) await rc.set('embed:'+embeddingHash, JSON.stringify(embedding), 'EX', 60*60*24); } catch(e: any){ /* ignore */ }
                     }
                   }
                   await publishMessage(NATS_SUBJECTS.AI_RESPONSE, { id: traceId, stage: 'embedding_cache', redisTried, redisHit });
                 }
               }
-            } catch (e){ logger.warn('Embedding stage failed', e.message); await publishMessage(NATS_SUBJECTS.AI_RESPONSE, { id: traceId, stage: 'embedding', error: e.message }); }
+            } catch (e: any){ logger.warn('Embedding stage failed', e.message); await publishMessage(NATS_SUBJECTS.AI_RESPONSE, { id: traceId, stage: 'embedding', error: e.message }); }
             await publishMessage(NATS_SUBJECTS.AI_RESPONSE, { id: traceId, stage: 'embedding', ok: !!embedding });
             // Retrieval Stage
             let retrieval = null; let contextDocs = [];
@@ -338,7 +338,7 @@ export async function subscribe(subject, callback){
               const vsUrl = process.env.VECTOR_SEARCH_ENDPOINT || 'http://localhost:5173/api/ai/vector-search';
               const vr = await fetch(vsUrl, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ query: queryText, model: 'claude', limit: 5 }) });
               if (vr.ok){ retrieval = await vr.json(); contextDocs = (retrieval.results||[]).map(r=>r.content||r.text||'').slice(0,5); }
-            } catch(e){ logger.warn('Retrieval stage failed', e.message); await publishMessage(NATS_SUBJECTS.AI_RESPONSE, { id: traceId, stage: 'retrieval', error: e.message }); }
+            } catch(e: any){ logger.warn('Retrieval stage failed', e.message); await publishMessage(NATS_SUBJECTS.AI_RESPONSE, { id: traceId, stage: 'retrieval', error: e.message }); }
             await publishMessage(NATS_SUBJECTS.AI_RESPONSE, { id: traceId, stage: 'retrieval', k: retrieval?.results?.length || 0 });
             // Go LLM Stage with retry/backoff
             let llmResult = null;
@@ -348,7 +348,7 @@ export async function subscribe(subject, callback){
                 try {
                   llmResult = await callGoLLM({ gpuResult, wasmResult, context: contextDocs });
                   if (llmResult && !llmResult.error) break;
-                } catch(e){ logger.warn(`Go LLM attempt ${attempt} failed`, e.message); if (attempt===maxAttempts){ await publishMessage(NATS_SUBJECTS.AI_RESPONSE, { id: traceId, stage: 'llm', error: e.message }); } }
+                } catch(e: any){ logger.warn(`Go LLM attempt ${attempt} failed`, e.message); if (attempt===maxAttempts){ await publishMessage(NATS_SUBJECTS.AI_RESPONSE, { id: traceId, stage: 'llm', error: e.message }); } }
                 const backoff = 250 * Math.pow(2, attempt-1);
                 await new Promise(r=>setTimeout(r, backoff));
               }
@@ -367,14 +367,14 @@ export async function subscribe(subject, callback){
                 context: contextDocs.length ? JSON.stringify(contextDocs) : null,
                 created_at: new Date()
               });
-            } catch (e){ logger.error('Failed to log pipeline', e); }
+            } catch (e: any){ logger.error('Failed to log pipeline', e); }
             // Final publish
             await publishMessage(NATS_SUBJECTS.AI_RESPONSE, { id: traceId, final: true, llmResult, gpuResult, wasmResult, context: contextDocs, embeddingPresent: !!embedding, retrievalCount: retrieval?.results?.length || 0 });
           } catch (pipelineErr){
             logger.error('Pipeline processing error', pipelineErr);
           }
         }
-      } catch(err){
+      } catch(err: any){
         logger.error('NATS parse error', err);
       }
     }

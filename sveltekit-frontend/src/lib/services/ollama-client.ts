@@ -1,7 +1,7 @@
 // Unified client wrapper for server Ollama AI endpoints
 // Frontend code should use this instead of directly accessing local Ollama.
 
-interface GenerateOptions {
+export interface GenerateOptions {
   system?: string;
   stream?: boolean;
   temperature?: number;

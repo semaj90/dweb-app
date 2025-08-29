@@ -69,7 +69,7 @@ export const POST: RequestHandler = async ({ request }) => {
     }
 
     return json(context7Analysis, { status: 200 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Context7 analysis error:', error);
     return json({ 
       error: 'Analysis failed',

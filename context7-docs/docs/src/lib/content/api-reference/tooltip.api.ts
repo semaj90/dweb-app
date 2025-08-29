@@ -7,7 +7,7 @@ import type {
 	TooltipRootPropsWithoutHTML,
 	TooltipTriggerPropsWithoutHTML,
 } from "bits-ui";
-import { FloatingSideProp } from "./extended-types/floating/index.js";
+import { FloatingSideProp } from './extended-types/floating/index';
 import {
 	arrowProps,
 	childrenSnippet,
@@ -25,14 +25,14 @@ import {
 	portalProps,
 	withChildProps,
 } from "$lib/content/api-reference/shared.js";
-import { TooltipStateDataAttr } from "./extended-types/tooltip/index.js";
+import { TooltipStateDataAttr } from './extended-types/tooltip/index';
 import {
 	defineBooleanProp,
 	defineComponentApiSchema,
 	defineEnumDataAttr,
 	defineNumberProp,
 	defineSimpleDataAttr,
-} from "../utils.js";
+} from '../utils';
 
 const openClosedDataAttr = defineEnumDataAttr({
 	name: "state",

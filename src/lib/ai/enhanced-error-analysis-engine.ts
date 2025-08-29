@@ -106,7 +106,7 @@ export class EnhancedErrorAnalysisEngine extends EventEmitter {
         this.initializeEngine();
     }
     
-    private async initializeEngine(): Promise<void> {
+    private async initializeEngine(): Promise<any> {
         try {
             await this.gpuManager.initialize();
             await this.mlProcessor.loadModel();
@@ -117,7 +117,7 @@ export class EnhancedErrorAnalysisEngine extends EventEmitter {
                 workersReady: this.workerPool.size,
                 mlModelLoaded: this.mlProcessor.isReady()
             });
-        } catch (error) {
+        } catch (error: any) {
             this.emit('engine-error', error);
             throw error;
         }
@@ -127,7 +127,7 @@ export class EnhancedErrorAnalysisEngine extends EventEmitter {
      * Analyze errors with full parallel processing and GPU acceleration
      */
     async analyzeErrors(
-        errors: unknown[], 
+        errors: any[], 
         options: AnalysisOptions = {}
     ): Promise<AnalysisResult> {
         const startTime = performance.now();
@@ -185,13 +185,13 @@ export class EnhancedErrorAnalysisEngine extends EventEmitter {
             
             return result;
             
-        } catch (error) {
+        } catch (error: any) {
             this.emit('analysis-error', error);
             throw error;
         }
     }
     
-    private createPreprocessingTasks(errors: unknown[]): unknown[] {
+    private createPreprocessingTasks(errors: any[]): any[] {
         const chunkSize = Math.ceil(errors.length / this.workerPool.size);
         const tasks = [];
         
@@ -206,7 +206,7 @@ export class EnhancedErrorAnalysisEngine extends EventEmitter {
         return tasks;
     }
     
-    private async extractPatternsGPU(preprocessedData: unknown[]): Promise<ErrorPattern[]> {
+    private async extractPatternsGPU(preprocessedData: any[]): Promise<ErrorPattern[]> {
         const gpuTasks = preprocessedData.map(data => 
             this.gpuManager.processErrorData(data)
         );
@@ -215,7 +215,7 @@ export class EnhancedErrorAnalysisEngine extends EventEmitter {
         return this.consolidatePatterns(gpuResults);
     }
     
-    private async extractPatternsCPU(preprocessedData: unknown[]): Promise<ErrorPattern[]> {
+    private async extractPatternsCPU(preprocessedData: any[]): Promise<ErrorPattern[]> {
         const cpuTasks = preprocessedData.map(data => ({
             type: 'extractPatterns',
             data
@@ -229,7 +229,7 @@ export class EnhancedErrorAnalysisEngine extends EventEmitter {
         return this.consolidatePatterns(cpuResults);
     }
     
-    private consolidatePatterns(results: unknown[]): ErrorPattern[] {
+    private consolidatePatterns(results: any[]): ErrorPattern[] {
         const patternMap = new Map<string, ErrorPattern>();
         
         results.flat().forEach(patternData => {
@@ -304,8 +304,8 @@ export class EnhancedErrorAnalysisEngine extends EventEmitter {
     /**
      * Real-time error analysis for continuous monitoring
      */
-    async startRealTimeAnalysis(): Promise<void> {
-        setInterval(async () => {
+    async startRealTimeAnalysis(): Promise<any> {
+        setInterval(async (): Promise<any> => {
             try {
                 const recentErrors = await this.contextManager.getRecentErrors();
                 if (recentErrors.length > 0) {
@@ -316,7 +316,7 @@ export class EnhancedErrorAnalysisEngine extends EventEmitter {
                     
                     this.emit('real-time-analysis', analysis);
                 }
-            } catch (error) {
+            } catch (error: any) {
                 this.emit('real-time-error', error);
             }
         }, 10000); // Every 10 seconds
@@ -344,7 +344,7 @@ class WorkerPool {
     
     constructor(private options: WorkerPoolOptions) {}
     
-    async initialize(): Promise<void> {
+    async initialize(): Promise<any> {
         for (let i = 0; i < this.options.size; i++) {
             const worker = new AnalysisWorker(i, {
                 specialized: this.options.specialized,
@@ -356,7 +356,7 @@ class WorkerPool {
         }
     }
     
-    async executeParallel(taskType: string, tasks: unknown[]): Promise<unknown[]> {
+    async executeParallel(taskType: string, tasks: any[]): Promise<unknown[]> {
         const promises = tasks.map(taskData => 
             this.executeTask(taskType, taskData)
         );
@@ -364,7 +364,7 @@ class WorkerPool {
         return Promise.all(promises);
     }
     
-    private async executeTask(taskType: string, data: unknown): Promise<any> {
+    private async executeTask(taskType: string, data: any): Promise<any> {
         return new Promise((resolve, reject) => {
             const task: Task = {
                 id: Date.now() + Math.random(),
@@ -430,7 +430,7 @@ class GPUManager {
     
     constructor(private options: GPUOptions) {}
     
-    async initialize(): Promise<void> {
+    async initialize(): Promise<any> {
         try {
             // Check for CUDA availability
             this.cudaAvailable = await this.checkCUDAAvailability();
@@ -438,7 +438,7 @@ class GPUManager {
             if (this.cudaAvailable) {
                 await this.initializeCUDA();
             }
-        } catch (error) {
+        } catch (error: any) {
             console.warn('GPU initialization failed, falling back to CPU:', error);
             this.cudaAvailable = false;
         }
@@ -450,12 +450,12 @@ class GPUManager {
         return this.options.enableCUDA;
     }
     
-    private async initializeCUDA(): Promise<void> {
+    private async initializeCUDA(): Promise<any> {
         // Initialize CUDA context and memory pools
         console.log('CUDA GPU acceleration initialized');
     }
     
-    async processErrorData(data: unknown): Promise<any> {
+    async processErrorData(data: any): Promise<any> {
         if (!this.cudaAvailable) {
             throw new Error('GPU not available');
         }
@@ -472,7 +472,7 @@ class GPUManager {
         return result;
     }
     
-    private async runCUDAKernel(kernelName: string, data: unknown): Promise<any> {
+    private async runCUDAKernel(kernelName: string, data: any): Promise<any> {
         // Simulate GPU processing
         return new Promise(resolve => {
             setTimeout(() => {
@@ -485,7 +485,7 @@ class GPUManager {
         });
     }
     
-    private extractPatternsGPU(data: unknown): ErrorPattern[] {
+    private extractPatternsGPU(data: any): ErrorPattern[] {
         // GPU-accelerated pattern extraction logic
         // This would use parallel algorithms optimized for GPU
         return [];
@@ -516,16 +516,16 @@ class GPUManager {
 // ML Error Processor
 class MLErrorProcessor {
     private modelLoaded = false;
-    private model: unknown;
+    private model: any;
     
     constructor(private options: MLProcessorOptions) {}
     
-    async loadModel(): Promise<void> {
+    async loadModel(): Promise<any> {
         try {
             // Load ONNX model for error pattern recognition
             console.log(`Loading ML model from ${this.options.modelPath}`);
             this.modelLoaded = true;
-        } catch (error) {
+        } catch (error: any) {
             console.warn('ML model loading failed:', error);
             this.modelLoaded = false;
         }
@@ -579,10 +579,10 @@ class MLErrorProcessor {
 
 // Context Manager
 class ContextManager {
-    private recentErrors: unknown[] = [];
+    private recentErrors: any[] = [];
     private contextCache = new Map<string, any>();
     
-    getContext(pattern: ErrorPattern): unknown {
+    getContext(pattern: ErrorPattern): any {
         const cacheKey = `${pattern.type}-${pattern.severity}`;
         
         if (this.contextCache.has(cacheKey)) {
@@ -605,7 +605,7 @@ class ContextManager {
         return this.recentErrors.filter(error => (error as any).timestamp > fiveMinutesAgo);
     }
     
-    addError(error: unknown): void {
+    addError(error: any): void {
         this.recentErrors.push({
             ...(error as Record<string, any>),
             timestamp: Date.now()
@@ -647,7 +647,7 @@ class AnalysisWorker {
     
     constructor(private id: number, private options: WorkerOptions) {}
     
-    async initialize(): Promise<void> {
+    async initialize(): Promise<any> {
         // Worker thread would be initialized here
         console.log(`Analysis worker ${this.id} initialized`);
     }
@@ -682,7 +682,7 @@ class AnalysisWorker {
         }
     }
     
-    private preprocessErrors(data: unknown): unknown {
+    private preprocessErrors(data: any): any {
         // Preprocess error data for analysis
         return {
             ...(data as Record<string, any>),
@@ -691,12 +691,12 @@ class AnalysisWorker {
         };
     }
     
-    private extractPatterns(data: unknown): ErrorPattern[] {
+    private extractPatterns(data: any): ErrorPattern[] {
         // Extract error patterns from preprocessed data
         return [];
     }
     
-    private generateFixes(data: unknown): AutoFix[] {
+    private generateFixes(data: any): AutoFix[] {
         // Generate automated fixes
         return [];
     }
@@ -751,7 +751,7 @@ class MetricsCollector {
 }
 
 // Type definitions
-interface AnalysisEngineOptions {
+export interface AnalysisEngineOptions {
     workerPoolSize?: number;
     enableGPU?: boolean;
     enableCUDA?: boolean;
@@ -759,43 +759,43 @@ interface AnalysisEngineOptions {
     mlModelPath?: string;
 }
 
-interface AnalysisOptions {
+export interface AnalysisOptions {
     useGPU?: boolean;
     realTime?: boolean;
     priority?: 'low' | 'medium' | 'high';
 }
 
-interface WorkerPoolOptions {
+export interface WorkerPoolOptions {
     size: number;
     specialized: boolean;
     gpuEnabled: boolean;
 }
 
-interface GPUOptions {
+export interface GPUOptions {
     enableCUDA: boolean;
     memoryLimit: string;
 }
 
-interface MLProcessorOptions {
+export interface MLProcessorOptions {
     modelPath: string;
     useGPU: boolean;
 }
 
-interface WorkerOptions {
+export interface WorkerOptions {
     specialized: boolean;
     gpuEnabled: boolean;
 }
 
-interface Task {
+export interface Task {
     id: number;
     type: string;
-    data: unknown;
-    resolve: (value: unknown) => void;
-    reject: (error: unknown) => void;
+    data: any;
+    resolve: (value: any) => void;
+    reject: (error: any) => void;
     startTime: number;
 }
 
-interface AnalysisEngineMetrics {
+export interface AnalysisEngineMetrics {
     workerPool: WorkerStats;
     gpu: GPUStats;
     ml: MLStats;
@@ -803,20 +803,20 @@ interface AnalysisEngineMetrics {
     overall: OverallStats;
 }
 
-interface MLStats {
+export interface MLStats {
     modelLoaded: boolean;
     inferencesRun: number;
     averageInferenceTime: number;
     accuracy: number;
 }
 
-interface ContextStats {
+export interface ContextStats {
     recentErrors: number;
     cacheSize: number;
     cacheHitRate: number;
 }
 
-interface OverallStats {
+export interface OverallStats {
     totalAnalyses: number;
     averageProcessingTime: number;
     totalErrorsAnalyzed: number;

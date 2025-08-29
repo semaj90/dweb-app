@@ -110,7 +110,7 @@ export class ShaderCache {
           const parsed = JSON.parse(cached);
           this.persistentCache = new Map(parsed);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn("Failed to load shader cache from storage:", error);
       }
     }
@@ -404,7 +404,7 @@ export class ShaderCache {
           "neural-sprite-shaders",
           JSON.stringify(Array.from(this.persistentCache.entries())),
         );
-      } catch (error) {
+      } catch (error: any) {
         console.warn("Failed to save shader cache to storage:", error);
       }
     }

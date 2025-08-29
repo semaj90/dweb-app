@@ -109,7 +109,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
         total: totalCount,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching users:", error);
     return json({ error: "Failed to fetch users" }, { status: 500 });
   }
@@ -176,7 +176,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     });
 
     return json(newUser, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating user:", error);
     return json({ error: "Failed to create user" }, { status: 500 });
   }

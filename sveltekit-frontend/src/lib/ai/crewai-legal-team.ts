@@ -2,7 +2,7 @@
 // CrewAI Legal Team Integration
 // Orchestrated multi-agent workflows for legal case management
 
-interface CrewMember {
+export interface CrewMember {
   id: string;
   name: string;
   role: string;
@@ -14,7 +14,7 @@ interface CrewMember {
   verboseMode: boolean;
 }
 
-interface Task {
+export interface Task {
   id: string;
   description: string;
   expectedOutput: string;
@@ -25,7 +25,7 @@ interface Task {
   context?: Record<string, any>;
 }
 
-interface CrewConfig {
+export interface CrewConfig {
   name: string;
   members: CrewMember[];
   tasks: Task[];
@@ -35,7 +35,7 @@ interface CrewConfig {
   maxIterations: number;
 }
 
-interface WorkflowResult {
+export interface WorkflowResult {
   crewId: string;
   workflowName: string;
   status: "completed" | "failed" | "partial";
@@ -339,7 +339,7 @@ class CrewAILegalTeam {
       this.activeWorkflows.delete(workflowId);
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       this.activeWorkflows.delete(workflowId);
       console.error(`Workflow ${workflowId} failed:`, error);
       throw error;
@@ -389,7 +389,7 @@ class CrewAILegalTeam {
         insights: [...new Set(insights)], // Remove duplicates
         recommendations: [...new Set(recommendations)], // Remove duplicates
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Crew workflow failed:`, error);
       return {
         status: "failed",
@@ -610,7 +610,7 @@ class CrewAILegalTeam {
 
       const data = await response.json();
       return data.response;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Agent ${agent.id} task execution failed:`, error);
       throw error;
     }
@@ -690,7 +690,7 @@ Final synthesis:`;
 
       const data = await response.json();
       return data.response;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Synthesis failed:", error);
       return `Synthesis failed: ${error}. Individual results available above.`;
     }
@@ -776,7 +776,7 @@ Consensus output:`;
 
       const data = await response.json();
       return data.response;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Consensus building failed:", error);
       // Fallback to highest confidence output
       return agentOutputs.reduce((best, current) =>

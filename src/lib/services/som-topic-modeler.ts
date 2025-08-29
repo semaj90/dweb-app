@@ -104,7 +104,7 @@ class SOMTopicModeler {
 
   async trainOnDocuments(
     documents: Array<{ id: string; embedding: Float32Array; text?: string }>
-  ): Promise<void> {
+  ): Promise<any> {
     if (documents.length === 0) return;
 
     this.isTraining.set(true);
@@ -154,7 +154,7 @@ class SOMTopicModeler {
       this.setupProactiveCaching();
 
       console.log("✅ SOM training completed successfully");
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ SOM training failed:", error);
       throw error;
     } finally {
@@ -317,7 +317,7 @@ class SOMTopicModeler {
     this.documentMappings.set(mappings);
   }
 
-  private async calculateDensityAndImportance() {
+  private async calculateDensityAndImportance(): Promise<any> {
     const { gridWidth, gridHeight } = this.config;
     const densityArray = new Float32Array(gridWidth * gridHeight);
     const importanceMap = new Map<string, number>();
@@ -377,7 +377,7 @@ class SOMTopicModeler {
     return 1 - distance / maxDistance; // Higher centrality for nodes closer to center
   }
 
-  private async extractTopicClusters() {
+  private async extractTopicClusters(): Promise<any> {
     const clusters: TopicCluster[] = [];
 
     this.som.subscribe((grid) => {
@@ -558,7 +558,7 @@ class SOMTopicModeler {
           })),
         }),
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to trigger proactive caching:", error);
     }
   }

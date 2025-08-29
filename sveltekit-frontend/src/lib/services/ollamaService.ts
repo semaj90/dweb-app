@@ -47,7 +47,7 @@ export class OllamaService {
         return data.data[0].embedding;
       }
       return [];
-    } catch (error) {
+    } catch (error: any) {
       console.error("Ollama embedding error:", error);
       throw error;
     }
@@ -110,7 +110,7 @@ export class OllamaService {
         const data: GenerateResponse = await response.json();
         return data.response;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Ollama generation error:", error);
       throw error;
     }
@@ -139,7 +139,7 @@ export class OllamaService {
           if (data.response) {
             fullText += data.response;
           }
-        } catch (e) {
+        } catch (e: any) {
           // Skip invalid JSON lines
         }
       }
@@ -232,7 +232,7 @@ export class OllamaService {
         headers: { 'Content-Type': 'application/json' },
       });
       return response.ok;
-    } catch (error) {
+    } catch (error: any) {
       return false;
     }
   }
@@ -253,7 +253,7 @@ export class OllamaService {
           if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error('Fetch failed:', error);
           throw error;
         }
@@ -275,7 +275,7 @@ export class OllamaService {
         llmModel: models.includes(this.llmModel),
         models,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: "unhealthy",
         embedModel: false,

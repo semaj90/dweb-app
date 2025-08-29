@@ -163,7 +163,7 @@ export class YoRHaAPIClient {
                 const data = await res.json();
                 this.pushData(ds.name, data);
               }
-            } catch (err) {
+            } catch (err: any) {
               console.warn(`Data source '${ds.name}' fetch failed`, err);
             }
           }, ds.intervalMs ?? 5000);
@@ -199,7 +199,7 @@ export class YoRHaAPIClient {
     this.cache.set(`ds:${id}`, data);
     this.notifySubscribers(`data:${id}`, data);
     if (this.config.onData) {
-      try { this.config.onData(id, data); } catch (e) { /* swallow */ }
+      try { this.config.onData(id, data); } catch (e: any) { /* swallow */ }
     }
   }
 
@@ -357,7 +357,7 @@ export class YoRHaAPIClient {
 
     try {
       this.websocket = new WebSocket(wsUrl);
-    } catch (e) {
+    } catch (e: any) {
       console.warn('WebSocket init failed', e);
       return;
     }
@@ -367,11 +367,11 @@ export class YoRHaAPIClient {
       console.log('YoRHa WebSocket connected');
     };
 
-    this.websocket.onmessage = (event) => {
+    this.websocket.onmessage = (event: any) => {
       try {
         const message = JSON.parse(event.data);
         this.handleWebSocketMessage(message);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to parse WebSocket message:', error);
       }
     };
@@ -414,12 +414,12 @@ export class YoRHaAPIClient {
 
     try {
       this.eventSource = new EventSource(`${this.config.baseURL}/events/stream`);
-    } catch (e) {
+    } catch (e: any) {
       console.warn('SSE init failed', e);
       return;
     }
 
-    this.eventSource.onmessage = (event) => {
+    this.eventSource.onmessage = (event: any) => {
       try {
         const data = JSON.parse(event.data);
         this.notifySubscribers('sse:message', data);
@@ -428,7 +428,7 @@ export class YoRHaAPIClient {
           const payload = (data as any).data ?? data;
           this.notifySubscribers(evtType, payload);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to parse SSE message:', error);
       }
     };
@@ -474,7 +474,7 @@ export class YoRHaAPIClient {
 
         return await response.json();
 
-      } catch (error) {
+      } catch (error: any) {
         lastError = error as Error;
         if (attempt < this.config.retryAttempts - 1) {
           await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));

@@ -5,7 +5,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { optimizedQdrantService } from '$lib/services/optimized-qdrant-service';
 
-interface TestResult {
+export interface TestResult {
   test: string;
   status: 'success' | 'error' | 'warning';
   data?: any;
@@ -29,7 +29,7 @@ export const GET: RequestHandler = async ({ url }) => {
           data: health,
           duration: Date.now() - startTime
         });
-      } catch (error) {
+      } catch (error: any) {
         results.push({
           test: 'qdrant_health_check',
           status: 'error',
@@ -50,7 +50,7 @@ export const GET: RequestHandler = async ({ url }) => {
           data: { message: 'Collection ensured with 768-dimensional nomic-embed vectors' },
           duration: Date.now() - startTime
         });
-      } catch (error) {
+      } catch (error: any) {
         results.push({
           test: 'collection_setup',
           status: 'error',
@@ -84,7 +84,7 @@ export const GET: RequestHandler = async ({ url }) => {
           },
           duration: Date.now() - startTime
         });
-      } catch (error) {
+      } catch (error: any) {
         results.push({
           test: 'vector_search',
           status: 'error',
@@ -133,7 +133,7 @@ export const GET: RequestHandler = async ({ url }) => {
           },
           duration: Date.now() - startTime
         });
-      } catch (error) {
+      } catch (error: any) {
         results.push({
           test: 'vector_upsert',
           status: 'error',
@@ -161,7 +161,7 @@ export const GET: RequestHandler = async ({ url }) => {
           },
           duration: Date.now() - startTime
         });
-      } catch (error) {
+      } catch (error: any) {
         results.push({
           test: 'postgresql_sync_test',
           status: 'error',
@@ -204,7 +204,7 @@ export const GET: RequestHandler = async ({ url }) => {
           },
           duration: Date.now() - startTime
         });
-      } catch (error) {
+      } catch (error: any) {
         results.push({
           test: 'performance_test',
           status: 'error',
@@ -229,7 +229,7 @@ export const GET: RequestHandler = async ({ url }) => {
         )
       },
       configuration: {
-        vector_dimensions: 768,
+        vector_dimensions: 384,
         embedding_model: 'nomic-embed-text',
         som_clustering: 'enabled',
         nes_cache: 'enabled',
@@ -238,7 +238,7 @@ export const GET: RequestHandler = async ({ url }) => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: error instanceof Error ? error.message : String(error),
@@ -267,7 +267,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
         result: syncResult,
         timestamp: new Date().toISOString()
       });
-    } catch (error) {
+    } catch (error: any) {
       return json({
         success: false,
         action: 'postgresql_sync',

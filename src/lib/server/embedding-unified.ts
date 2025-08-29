@@ -11,26 +11,26 @@
 import { OLLAMA_API_URL } from "$env/static/private";
 
 // Type definitions
-interface EmbeddingOptions {
+export interface EmbeddingOptions {
   model?: 'onnx' | 'ollama';
   maxRetries?: number;
   timeout?: number;
 }
 
-interface EmbeddingResult {
+export interface EmbeddingResult {
   embedding: number[];
   dimensions: number;
   model: string;
   processingTime: number;
 }
 
-interface ChunkOptions {
+export interface ChunkOptions {
   chunkSize?: number;
   chunkOverlap?: number;
   separator?: string;
 }
 
-interface TextChunk {
+export interface TextChunk {
   content: string;
   startOffset: number;
   endOffset: number;
@@ -73,14 +73,14 @@ class UnifiedEmbeddingService {
       this.onnxInitialized = true;
       console.log('✅ ONNX embedding service initialized');
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ ONNX initialization failed, falling back to Ollama:', error);
       this.onnxInitialized = false;
       return false;
     }
   }
 
-  private onnxEmbedder: unknown = null;
+  private onnxEmbedder: any = null;
 
   /**
    * Generate embeddings using ONNX (preferred method)
@@ -161,7 +161,7 @@ class UnifiedEmbeddingService {
       try {
         embedding = await this.generateONNXEmbedding(text);
         actualModel = 'onnx';
-      } catch (error) {
+      } catch (error: any) {
         console.warn('ONNX embedding failed, trying Ollama fallback:', error);
         lastError = error as Error;
         
@@ -206,7 +206,7 @@ class UnifiedEmbeddingService {
       try {
         const batchResults = await Promise.all(batchPromises);
         results.push(...batchResults);
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Batch embedding failed for batch ${i}-${i + batchSize}:`, error);
         throw error;
       }

@@ -3,9 +3,9 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { EnhancedSentenceSplitter } from '../../shared/text/enhanced-sentence-splitter';
-import { EnhancedLegalOrchestrator } from '../../src/lib/agents/orchestrator-enhanced.js';
-import { EnhancedQdrantManager } from '../../src/lib/database/qdrant-enhanced.js';
-import { RagPipelineIntegrator } from '../../src/lib/services/rag-pipeline-integrator.js';
+import { EnhancedLegalOrchestrator } from '$lib/agents/orchestrator-enhanced';
+import { EnhancedQdrantManager } from '$lib/database/qdrant-enhanced';
+import { RagPipelineIntegrator } from '$lib/services/rag-pipeline-integrator';
 
 describe('Service Layer Tests', () => {
   beforeEach(() => {

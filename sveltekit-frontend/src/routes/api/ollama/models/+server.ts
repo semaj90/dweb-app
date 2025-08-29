@@ -42,7 +42,7 @@ export const GET: RequestHandler = async () => {
         chat: enhancedModels.filter(m => m.isChat).length,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching Ollama models:', error);
     return json(
       {
@@ -113,7 +113,7 @@ export const POST: RequestHandler = async ({ request }) => {
       default:
         return json({ success: false, error: 'Invalid action' }, { status: 400 });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in Ollama models API:', error);
     return json(
       {

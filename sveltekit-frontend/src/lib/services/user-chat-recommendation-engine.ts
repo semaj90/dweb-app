@@ -263,7 +263,7 @@ export class UserChatRecommendationEngine {
       this.isInitialized = true;
       console.log('✅ User Chat Recommendation Engine ready');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize recommendation engine:', error);
     }
   }
@@ -316,14 +316,14 @@ export class UserChatRecommendationEngine {
         this.serviceWorker = registration.active;
         
         // Set up message handling for offline SIMD JSON parsing
-        navigator.serviceWorker.addEventListener('message', (event) => {
+        navigator.serviceWorker.addEventListener('message', (event: any) => {
           if (event.data.type === 'PARSED_JSON') {
             this.handleOfflineParsedData(event.data.payload);
           }
         });
 
         console.log('✅ Service Worker registered for offline capability');
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Service Worker registration failed:', error);
       }
     }
@@ -451,7 +451,7 @@ export class UserChatRecommendationEngine {
       console.log(`🎯 Generated ${recommendations.length} recommendations`);
       return recommendations;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to generate recommendations:', error);
       return [];
     }
@@ -599,7 +599,7 @@ export class UserChatRecommendationEngine {
       // Use the enhanced embeddings service
       const { generateEmbedding } = await import('./embeddings-enhanced');
       return await generateEmbedding(text);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to generate embedding:', error);
       return new Array(384).fill(0); // Return zero vector as fallback
     }
@@ -809,7 +809,7 @@ export class UserChatRecommendationEngine {
       for (const item of batch) {
         await this.sendToEnhancedRAGIngestion(item);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to process ingestion queue:', error);
     }
   }
@@ -877,7 +877,7 @@ class LokiIndexedDBAdapter {
     try {
       const request = indexedDB.open('LokiChatEngine', 1);
       
-      request.onsuccess = (event) => {
+      request.onsuccess = (event: any) => {
         const db = (event.target as IDBOpenDBRequest).result;
         const transaction = db.transaction(['database'], 'readonly');
         const store = transaction.objectStore('database');
@@ -892,13 +892,13 @@ class LokiIndexedDBAdapter {
       
       request.onerror = () => callback(null);
       
-      request.onupgradeneeded = (event) => {
+      request.onupgradeneeded = (event: any) => {
         const db = (event.target as IDBOpenDBRequest).result;
         if (!db.objectStoreNames.contains('database')) {
           db.createObjectStore('database');
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       callback(null);
     }
   }
@@ -907,7 +907,7 @@ class LokiIndexedDBAdapter {
     try {
       const request = indexedDB.open('LokiChatEngine', 1);
       
-      request.onsuccess = (event) => {
+      request.onsuccess = (event: any) => {
         const db = (event.target as IDBOpenDBRequest).result;
         const transaction = db.transaction(['database'], 'readwrite');
         const store = transaction.objectStore('database');
@@ -919,7 +919,7 @@ class LokiIndexedDBAdapter {
       };
       
       request.onerror = () => callback();
-    } catch (error) {
+    } catch (error: any) {
       callback();
     }
   }

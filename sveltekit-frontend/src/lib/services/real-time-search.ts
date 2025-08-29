@@ -9,7 +9,7 @@ const UPLOAD_SERVICE_URL = 'http://localhost:8093';
 const NATS_WS_URL = 'ws://localhost:4222';
 
 // Real-time search state management
-interface RealTimeSearchState {
+export interface RealTimeSearchState {
   isConnected: boolean;
   isSearching: boolean;
   currentQuery: string;
@@ -24,7 +24,7 @@ interface RealTimeSearchState {
   };
 }
 
-interface SearchResult {
+export interface SearchResult {
   id: string;
   title: string;
   type: 'case' | 'evidence' | 'precedent' | 'statute' | 'criminal' | 'document';
@@ -103,7 +103,7 @@ export class RealTimeSearchService {
       }));
 
       console.log('🔗 Real-time search connections established');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize real-time search:', error);
       this.state.update(s => ({ 
         ...s, 
@@ -129,7 +129,7 @@ export class RealTimeSearchService {
           resolve();
         };
 
-        this.ws.onmessage = (event) => {
+        this.ws.onmessage = (event: any) => {
           this.handleWebSocketMessage(event);
         };
 
@@ -151,7 +151,7 @@ export class RealTimeSearchService {
           }
         }, 5000);
 
-      } catch (error) {
+      } catch (error: any) {
         reject(error);
       }
     });
@@ -166,7 +166,7 @@ export class RealTimeSearchService {
       
       // For now, we'll focus on WebSocket and add full NATS later
       // This allows immediate testing with the existing Enhanced RAG WebSocket
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ NATS connection failed, using WebSocket only:', error);
     }
   }
@@ -196,7 +196,7 @@ export class RealTimeSearchService {
         default:
           console.log('📨 Received WebSocket message:', message);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to parse WebSocket message:', error);
     }
   }
@@ -226,7 +226,7 @@ export class RealTimeSearchService {
       // Fallback to HTTP API with enhanced error handling
       return await this.performHTTPSearch(query, options);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Real-time search failed:', error);
       this.state.update(s => ({ 
         ...s, 
@@ -276,7 +276,7 @@ export class RealTimeSearchService {
               reject(new Error(message.data.error));
               break;
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error('❌ Error processing streaming search response:', error);
         }
       };
@@ -357,7 +357,7 @@ export class RealTimeSearchService {
         this.state.update(s => ({ ...s, results, isSearching: false }));
         return results;
 
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`❌ Endpoint ${endpoint} failed:`, error);
         lastError = error as Error;
         continue;

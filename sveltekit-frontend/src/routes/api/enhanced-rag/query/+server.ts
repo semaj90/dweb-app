@@ -8,7 +8,7 @@
 import { type RequestHandler,  json, error } from '@sveltejs/kit';
 import { v4 as uuidv4 } from "uuid";
 
-interface RAGQueryRequest {
+export interface RAGQueryRequest {
     query: string;
     caseId?: string;
     jurisdiction?: string;
@@ -19,7 +19,7 @@ interface RAGQueryRequest {
     entityTypes?: string[];
 }
 
-interface RAGResult {
+export interface RAGResult {
     id: string;
     content: string;
     similarity: number;
@@ -37,7 +37,7 @@ interface RAGResult {
     };
 }
 
-interface RAGResponse {
+export interface RAGResponse {
     success: boolean;
     query: string;
     results: RAGResult[];
@@ -251,7 +251,7 @@ export const POST: RequestHandler = async ({ request }) => {
         
         return json(response);
         
-    } catch (err) {
+    } catch (err: any) {
         const processingTime = Date.now() - startTime;
         console.error('❌ Enhanced RAG query failed:', err);
         

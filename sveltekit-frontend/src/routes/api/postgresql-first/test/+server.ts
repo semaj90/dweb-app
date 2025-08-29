@@ -46,7 +46,7 @@ const SAMPLE_EVIDENCE = {
   `
 };
 
-interface TestWorkflowRequest {
+export interface TestWorkflowRequest {
   userId?: string;
   caseId?: string;
   enableIngestService?: boolean;
@@ -157,7 +157,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
             });
 
             console.log(`✅ Step 2: Published Redis event for evidence ${evidenceId}`);
-          } catch (error) {
+          } catch (error: any) {
             results.redis = {
               status: 'error',
               error: error.message
@@ -218,7 +218,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
             } else {
               throw new Error(`Ingest service responded with ${ingestResponse.status}`);
             }
-          } catch (error) {
+          } catch (error: any) {
             results.ingestService = {
               status: 'error',
               error: error.message
@@ -254,7 +254,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
             } else {
               throw new Error('Sync returned false - no embedding available');
             }
-          } catch (error) {
+          } catch (error: any) {
             results.qdrantSync = {
               status: 'error',
               error: error.message
@@ -264,7 +264,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
           }
         }
 
-      } catch (error) {
+      } catch (error: any) {
         results.postgresql = {
           status: 'error',
           error: error.message
@@ -292,7 +292,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
       data: results
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Test endpoint error:', error);
     return json({
       success: false,
@@ -355,7 +355,7 @@ export const GET: RequestHandler = async ({ url }) => {
           }
         });
     }
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       message: 'Failed to process request',
@@ -364,7 +364,7 @@ export const GET: RequestHandler = async ({ url }) => {
   }
 };
 
-async function checkSystemHealth() {
+async function checkSystemHealth(): Promise<any> {
   const health = {
     postgresql: { status: 'unknown', details: null },
     redis: { status: 'unknown', details: null },
@@ -381,7 +381,7 @@ async function checkSystemHealth() {
       status: 'healthy', 
       details: { connected: true, evidenceCount: evidenceCount.count }
     };
-  } catch (error) {
+  } catch (error: any) {
     health.postgresql = { status: 'unhealthy', details: { error: error.message } };
   }
 
@@ -392,7 +392,7 @@ async function checkSystemHealth() {
     await redisClient.ping();
     await redisClient.disconnect();
     health.redis = { status: 'healthy', details: { connected: true } };
-  } catch (error) {
+  } catch (error: any) {
     health.redis = { status: 'unhealthy', details: { error: error.message } };
   }
 
@@ -405,7 +405,7 @@ async function checkSystemHealth() {
     } else {
       health.ingestService = { status: 'unhealthy', details: { httpStatus: response.status } };
     }
-  } catch (error) {
+  } catch (error: any) {
     health.ingestService = { status: 'unhealthy', details: { error: error.message } };
   }
 
@@ -416,7 +416,7 @@ async function checkSystemHealth() {
       status: qdrantHealth.status === 'healthy' ? 'healthy' : 'unhealthy', 
       details: qdrantHealth 
     };
-  } catch (error) {
+  } catch (error: any) {
     health.qdrant = { status: 'unhealthy', details: { error: error.message } };
   }
 
@@ -438,7 +438,7 @@ async function checkSystemHealth() {
   return health;
 }
 
-async function getPostgreSQLStats() {
+async function getPostgreSQLStats(): Promise<any> {
   try {
     const [evidenceStats] = await db.execute(sql`
       SELECT 
@@ -471,7 +471,7 @@ async function getPostgreSQLStats() {
       embeddings: embeddingStats,
       timestamp: new Date().toISOString()
     };
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(`Failed to get PostgreSQL stats: ${error.message}`);
   }
 }

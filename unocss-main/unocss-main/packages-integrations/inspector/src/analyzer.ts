@@ -17,7 +17,7 @@ function uniq<T>(array: T[]) {
   return [...new Set(array)]
 }
 
-export async function analyzer(modules: BetterMap<string, string>, ctx: UnocssPluginContext) {
+export async function analyzer(modules: BetterMap<string, string>, ctx: UnocssPluginContext): Promise<any> {
   const matched: MatchedSelector[] = []
   const icons: MatchedSelector[] = []
   const colors: MatchedColor[] = []

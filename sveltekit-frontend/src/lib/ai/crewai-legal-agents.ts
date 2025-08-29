@@ -219,7 +219,7 @@ Please provide your analysis in the following JSON format:
         processingTime: Date.now() - startTime
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error processing with agent ${agentId}:`, error);
       
       return {
@@ -243,7 +243,7 @@ Please provide your analysis in the following JSON format:
       if (jsonMatch) {
         return JSON.parse(jsonMatch[0]);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to parse structured response, using fallback parsing');
     }
 
@@ -277,7 +277,7 @@ Please provide your analysis in the following JSON format:
         }
       });
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to store agent results:', error);
     }
   }

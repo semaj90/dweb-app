@@ -16,7 +16,7 @@ const querySchema = z.object({
   includeHistory: z.boolean().optional()
 });
 
-export const POST: RequestHandler = async ({ request, cookies }) => {
+export const POST: RequestHandler = async ({ request, cookies }): Promise<any> => {
   try {
     const sessionToken = cookies.get('yorha_session');
     let userId: string | undefined;
@@ -49,7 +49,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
       success: true,
       data: response
     });
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('RAG query error:', error);
     
     if (error.name === 'ZodError') {

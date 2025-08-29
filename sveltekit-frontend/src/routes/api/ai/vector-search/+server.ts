@@ -1,9 +1,9 @@
 
 import { json } from '@sveltejs/kit';
-import { getEmbeddingRepository } from '../../../../lib/server/embedding/embedding-repository.js';
+import { getEmbeddingRepository } from '../../../../lib/server/embedding/embedding-repository';
 
 // Minimal vector search endpoint leveraging pgvector embedding repository
-export async function POST({ request }) {
+export async function POST({ request }): Promise<any> {
   try {
     const contentType = request.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
@@ -30,12 +30,12 @@ export async function POST({ request }) {
     const repo = await getEmbeddingRepository();
     const results = await repo.querySimilar(query, { limit, model });
     return json({ results, count: results.length });
-  } catch (e) {
+  } catch (e: any) {
     console.error('vector-search error', e);
     return json({ error: 'internal error' }, { status: 500 });
   }
 }
 
-export async function GET() {
+export async function GET(): Promise<any> {
   return json({ status: 'ok', message: 'POST { query, limit?, model? }' });
 }

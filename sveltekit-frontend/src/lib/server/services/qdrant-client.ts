@@ -9,7 +9,7 @@ export const EVIDENCE_COLLECTION_NAME = "evidence_v1";
  * Ensures the Qdrant collection exists and has a payload index for tags.
  * This is critical for efficient filtering and should be called on server startup.
  */
-export async function initializeQdrantCollection() {
+export async function initializeQdrantCollection(): Promise<any> {
   try {
     const collections = await qdrant.getCollections();
     const collectionExists = collections.collections.some(
@@ -33,7 +33,7 @@ export async function initializeQdrantCollection() {
       }
       console.log("Qdrant collection and payload index created successfully.");
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to initialize Qdrant:", error);
   }
 }

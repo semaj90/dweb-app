@@ -162,9 +162,9 @@ export class AutomationMonitoringService extends EventEmitter {
     /**
      * Start WebSocket server
      */
-    async startServer(server?: unknown): Promise<void> {
+    async startServer(server?: any): Promise<any> {
         try {
-            const options: unknown = {
+            const options: any = {
                 port: this.config.port,
                 perMessageDeflate: this.config.enableCompression
             };
@@ -191,7 +191,7 @@ export class AutomationMonitoringService extends EventEmitter {
             console.log(`📡 Automation monitoring WebSocket server started on port ${this.config.port}`);
             console.log(`🔧 Max clients: ${this.config.maxClients}, Compression: ${this.config.enableCompression}`);
 
-        } catch (error) {
+        } catch (error: any) {
             console.error('❌ Failed to start WebSocket server:', error);
             throw error;
         }
@@ -200,7 +200,7 @@ export class AutomationMonitoringService extends EventEmitter {
     /**
      * Handle new WebSocket connection
      */
-    private handleConnection(ws: WebSocket, request: unknown): void {
+    private handleConnection(ws: WebSocket, request: any): void {
         // Check client limit
         if (this.clients.size >= this.config.maxClients) {
             ws.close(1013, 'Server at capacity');
@@ -263,7 +263,7 @@ export class AutomationMonitoringService extends EventEmitter {
     /**
      * Handle incoming messages from clients
      */
-    private handleMessage(client: MonitoringClient, data: unknown): void {
+    private handleMessage(client: MonitoringClient, data: any): void {
         try {
             client.lastActivity = new Date();
             
@@ -297,7 +297,7 @@ export class AutomationMonitoringService extends EventEmitter {
                         timestamp: new Date().toISOString()
                     });
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error(`❌ Error handling message from ${client.id}:`, error);
             this.sendToClient(client, {
                 type: 'error',
@@ -388,7 +388,7 @@ export class AutomationMonitoringService extends EventEmitter {
      * Send historical data to client
      */
     private sendHistoryData(client: MonitoringClient, channel: string, limit = 50): void {
-        let historyData: unknown[] = [];
+        let historyData: any[] = [];
 
         switch (channel) {
             case 'metrics':
@@ -418,7 +418,7 @@ export class AutomationMonitoringService extends EventEmitter {
     /**
      * Handle client disconnection
      */
-    private handleDisconnection(client: MonitoringClient, code: number, reason: unknown): void {
+    private handleDisconnection(client: MonitoringClient, code: number, reason: any): void {
         // Remove from all subscription channels
         client.subscriptions.forEach(channel => {
             this.subscriptionChannels.get(channel)?.delete(client.id);
@@ -435,7 +435,7 @@ export class AutomationMonitoringService extends EventEmitter {
     /**
      * Broadcast message to all clients subscribed to a channel
      */
-    private broadcastToChannel(channel: string, message: unknown): void {
+    private broadcastToChannel(channel: string, message: any): void {
         const clientIds = this.subscriptionChannels.get(channel);
         if (!clientIds || clientIds.size === 0) return;
 
@@ -453,7 +453,7 @@ export class AutomationMonitoringService extends EventEmitter {
                 try {
                     this.sendToClient(client, broadcastMessage);
                     successCount++;
-                } catch (error) {
+                } catch (error: any) {
                     console.error(`❌ Failed to send to client ${clientId}:`, error);
                     failureCount++;
                 }
@@ -468,13 +468,13 @@ export class AutomationMonitoringService extends EventEmitter {
     /**
      * Send message to specific client
      */
-    private sendToClient(client: MonitoringClient, message: unknown): void {
+    private sendToClient(client: MonitoringClient, message: any): void {
         if (client.ws.readyState !== client.ws.OPEN) return;
 
         try {
             const jsonMessage = JSON.stringify(message);
             client.ws.send(jsonMessage);
-        } catch (error) {
+        } catch (error: any) {
             console.error(`❌ Failed to send message to client ${client.id}:`, error);
         }
     }
@@ -528,7 +528,7 @@ export class AutomationMonitoringService extends EventEmitter {
     /**
      * Get server statistics
      */
-    getServerStats(): unknown {
+    getServerStats(): any {
         const channelStats = Object.fromEntries(
             Array.from(this.subscriptionChannels.entries()).map(([channel, clients]) => [
                 channel,
@@ -552,7 +552,7 @@ export class AutomationMonitoringService extends EventEmitter {
     /**
      * Shutdown server gracefully
      */
-    async shutdown(): Promise<void> {
+    async shutdown(): Promise<any> {
         if (!this.wss) return;
 
         console.log('🛑 Shutting down automation monitoring WebSocket server...');

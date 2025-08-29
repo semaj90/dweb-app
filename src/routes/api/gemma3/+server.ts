@@ -4,7 +4,7 @@ import { json } from '@sveltejs/kit';
 import { gemma3API } from '$lib/ai/gemma3-api';
 
 // Query endpoint
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const { action, ...params } = await request.json();
     
@@ -24,14 +24,14 @@ export const POST: RequestHandler = async ({ request }) => {
       default:
         return json({ error: 'Invalid action' }, { status: 400 });
     }
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('Gemma3 API error:', error);
     return json({ error: (error as any)?.message || "Unknown error" }, { status: 500 });
   }
 };
 
 // Direct chat endpoint
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
   const prompt = url.searchParams.get('prompt');
   
   if (!prompt) {
@@ -55,7 +55,7 @@ export const GET: RequestHandler = async ({ url }) => {
     
     const data = await response.json();
     return json({ response: data.response });
-  } catch (error: unknown) {
+  } catch (error: any) {
     return json({ error: 'Failed to query Gemma3' }, { status: 500 });
   }
 };

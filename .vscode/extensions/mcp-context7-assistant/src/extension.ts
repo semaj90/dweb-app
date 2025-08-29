@@ -194,7 +194,7 @@ function registerCommands(context: vscode.ExtensionContext) {
         // Show performance metrics
         const metrics = mcpServerManager.getEnhancedMetrics();
         console.log("🔍 Enhanced RAG Analysis Metrics:", metrics);
-      } catch (error) {
+      } catch (error: any) {
         vscode.window.showErrorMessage(
           `Enhanced context analysis failed: ${error}`
         );
@@ -227,7 +227,7 @@ function registerCommands(context: vscode.ExtensionContext) {
         }
 
         statusBarManager.updateStatus("ready", "Best practices generated");
-      } catch (error) {
+      } catch (error: any) {
         vscode.window.showErrorMessage(
           `Best practices generation failed: ${error}`
         );
@@ -282,7 +282,7 @@ function registerCommands(context: vscode.ExtensionContext) {
             "No relevant documentation suggestions found"
           );
         }
-      } catch (error) {
+      } catch (error: any) {
         vscode.window.showErrorMessage(
           `Documentation retrieval failed: ${error}`
         );
@@ -310,7 +310,7 @@ function registerCommands(context: vscode.ExtensionContext) {
           suggestions,
           `Analyzed ${errors.length} TypeScript errors`
         );
-      } catch (error) {
+      } catch (error: any) {
         vscode.window.showErrorMessage(`Error analysis failed: ${error}`);
       }
     }
@@ -337,7 +337,7 @@ function registerCommands(context: vscode.ExtensionContext) {
         await showResultPanel("🔍 Tech Stack Analysis", stackReport);
 
         statusBarManager.updateStatus("ready", `Project: ${projectType}`);
-      } catch (error) {
+      } catch (error: any) {
         vscode.window.showErrorMessage(`Tech stack analysis failed: ${error}`);
         statusBarManager.updateStatus("error", "Analysis failed");
       }
@@ -377,7 +377,7 @@ function registerCommands(context: vscode.ExtensionContext) {
             "Enhanced RAG query completed"
           );
         }
-      } catch (error) {
+      } catch (error: any) {
         vscode.window.showErrorMessage(`Enhanced RAG query failed: ${error}`);
       }
     }
@@ -421,7 +421,7 @@ function registerCommands(context: vscode.ExtensionContext) {
             );
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         vscode.window.showErrorMessage(`Agent orchestration failed: ${error}`);
       }
     }
@@ -479,7 +479,7 @@ function registerCommands(context: vscode.ExtensionContext) {
             await showResultPanel(`🧠 Memory Graph: ${action}`, result.data);
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         vscode.window.showErrorMessage(
           `Memory graph operation failed: ${error}`
         );
@@ -493,7 +493,7 @@ function registerCommands(context: vscode.ExtensionContext) {
       try {
         const metrics = mcpServerManager.getEnhancedMetrics();
         await showResultPanel("📊 Enhanced RAG System Metrics", metrics);
-      } catch (error) {
+      } catch (error: any) {
         vscode.window.showErrorMessage(`Metrics retrieval failed: ${error}`);
       }
     }
@@ -532,7 +532,7 @@ function registerCommands(context: vscode.ExtensionContext) {
 
 function setupEventListeners(context: vscode.ExtensionContext) {
   // Watch for diagnostic changes (TypeScript errors)
-  const onDiagnosticsChange = vscode.languages.onDidChangeDiagnostics((e) => {
+  const onDiagnosticsChange = vscode.languages.onDidChangeDiagnostics((e: any) => {
     diagnosticWatcher.onDiagnosticsChanged(e);
   });
 
@@ -547,7 +547,7 @@ function setupEventListeners(context: vscode.ExtensionContext) {
 
   // Watch for workspace folder changes
   const onWorkspaceFoldersChange = vscode.workspace.onDidChangeWorkspaceFolders(
-    (e) => {
+    (e: any) => {
       mcpServerManager.onWorkspaceChanged(e);
     }
   );
@@ -594,7 +594,7 @@ async function detectProjectTypeAndStack(
   try {
     // Use the comprehensive stack analyzer
     return await stackAnalyzer.analyzeFullStack();
-  } catch (error) {
+  } catch (error: any) {
     console.log("Could not analyze project stack:", error);
     return {
       projectType: "generic",
@@ -619,7 +619,7 @@ async function detectProjectTypeAndStack(
 async function showSuggestionsPanel(
   suggestions: AutoMCPSuggestion[],
   title: string = "MCP Suggestions"
-) {
+): Promise<any> {
   if (suggestions.length === 0) {
     vscode.window.showInformationMessage(
       "No MCP suggestions available for current context"
@@ -653,7 +653,7 @@ async function showSuggestionsPanel(
       );
       await showResultPanel(`${selected.suggestion.tool} Result`, result);
       statusBarManager.updateStatus("ready", "MCP tool executed successfully");
-    } catch (error) {
+    } catch (error: any) {
       vscode.window.showErrorMessage(`MCP tool execution failed: ${error}`);
       statusBarManager.updateStatus("error", "Execution failed");
     }
@@ -799,7 +799,7 @@ function generateStackReport(
   return report;
 }
 
-async function showResultPanel(title: string, result: unknown) {
+async function showResultPanel(title: string, result: unknown): Promise<any> {
   const panel = vscode.window.createWebviewPanel(
     "mcpResult",
     title,

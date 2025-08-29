@@ -1,5 +1,4 @@
 
-// @ts-nocheck
 // Enhanced GPU+SIMD Legal API Client
 export class LegalProcessorAPI {
     private baseUrl: string;
@@ -41,7 +40,7 @@ export class LegalProcessorAPI {
         model?: string;
         prompt: string;
         format?: string;
-        options?: unknown;
+        options?: any;
     }) {
         return this.post('llm-request', params);
     }
@@ -61,15 +60,15 @@ export class LegalProcessorAPI {
         return this.post('batch-process-files', { filePaths });
     }
 
-    async getHealth() {
+    async getHealth(): Promise<any> {
         return this.get('health');
     }
 
-    async getLLMEndpoints() {
+    async getLLMEndpoints(): Promise<any> {
         return this.get('llm-endpoints');
     }
 
-    private async post(endpoint: string, data: unknown) {
+    private async post(endpoint: string, data: any) {
         const response = await fetch(this.baseUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

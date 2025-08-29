@@ -20,7 +20,7 @@ async function loadCopilotContext(): Promise<Record<string, string | null>> {
       const content = await fs.readFile(fullPath, "utf-8");
       const key = path.basename(file, ".md");
       context[key] = content;
-    } catch (err) {
+    } catch (err: any) {
       console.warn(`Could not load ${file}:`, (err as Error).message);
       context[path.basename(file, ".md")] = null;
     }
@@ -85,7 +85,7 @@ export const load: PageServerLoad = async ({ url }) => {
           orchestrationResult.contextResults?.slice(0, 3);
       }
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("SSR Context7 error:", error);
     libraryData = {
       library,

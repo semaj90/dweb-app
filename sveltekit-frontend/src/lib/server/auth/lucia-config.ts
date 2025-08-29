@@ -1,9 +1,9 @@
 import { Lucia } from "lucia";
 import { DrizzlePostgreSQLAdapter } from "@lucia-auth/adapter-drizzle";
-import { db } from "../db/index.js";
-import { sessions, users } from "../db/schema-postgres.js";
+import { db } from '../db/index';
+import { sessions, users } from '../db/schema-postgres';
 import { dev } from "$app/environment";
-import type { DatabaseUserAttributes } from "../auth.js";
+import type { DatabaseUserAttributes } from '../auth';
 
 // Enhanced Lucia v3 configuration for legal AI platform
 const adapter = new DrizzlePostgreSQLAdapter(db, sessions, users);

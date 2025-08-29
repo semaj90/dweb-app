@@ -128,7 +128,7 @@ export class SIMDJSONParser {
       document.size = jsonString.length;
 
       return document;
-    } catch (error) {
+    } catch (error: any) {
       console.error("📄 JSON parsing failed:", error);
 
       // Fallback to tolerant parsing

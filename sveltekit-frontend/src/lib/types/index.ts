@@ -95,21 +95,21 @@ export interface Report {
 // Re-export all types from organized type files
 
 // Core Domain Types - Safe exports without conflicts
-export { User, UserSession } from './user.js';
-export { Case, CaseForm, CaseFormState, CaseMetrics } from './case.js';
+export { User, UserSession } from './user';
+export { Case, CaseForm, CaseFormState, CaseMetrics } from './case';
 
 // Export Evidence interface defined above
 export type { Evidence };
 
 // Component Props (Svelte 5 runes compatible)
-export * from './component-props.js';
+export * from './component-props';
 
 // XState Types - Centralized state management types
-export type { AIAssistantEvent, AIAssistantContext, ConversationEntry } from './xstate.js';
+export type { AIAssistantEvent, AIAssistantContext, ConversationEntry } from './xstate';
 
 // AI & ML Types - Safe exports
-export { type AIAnalysisResult, type AIModelConfig, type VectorSearchOptions } from './ai-types.js';
-export { type ChatMessage, type ChatSession, type StreamingResponse } from './ai-chat.js';
+export { type AIAnalysisResult, type AIModelConfig, type VectorSearchOptions } from './ai-types';
+export { type ChatMessage, type ChatSession, type StreamingResponse } from './ai-chat';
 
 // Global type references for enhanced compatibility
 /// <reference path="./webgpu.d.ts" />

@@ -229,7 +229,7 @@ export async function generateFileHash(file: File): Promise<string> {
     const hashBuffer = await crypto.subtle.digest("SHA-256", arrayBuffer);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error generating file hash:", error);
     return Math.random().toString(36);
   }

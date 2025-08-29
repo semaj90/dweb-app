@@ -14,11 +14,11 @@ type Canvas3DEvents =
   | { type: 'RESET_VIEW' }
   | { type: 'SET_CAMERA_MODE'; mode: 'orbit' | 'fly' | 'fixed' }
   | { type: 'GPU_PROCESSING_START' }
-  | { type: 'GPU_PROCESSING_COMPLETE'; result: unknown }
+  | { type: 'GPU_PROCESSING_COMPLETE'; result: any }
   | { type: 'GPU_PROCESSING_ERROR'; error: string }
   | { type: 'INTERACTION_RECORDED'; interaction: UserInteraction };
 
-interface Canvas3DContext {
+export interface Canvas3DContext {
   selectedDocumentId: string | null;
   hoveredDocumentId: string | null;
   cameraMode: 'orbit' | 'fly' | 'fixed';
@@ -38,7 +38,7 @@ interface Canvas3DContext {
   };
 }
 
-interface UserInteraction {
+export interface UserInteraction {
   type: 'mouse_move' | 'click' | 'hover' | 'scroll' | 'key_press';
   timestamp: number;
   position: { x: number; y: number };

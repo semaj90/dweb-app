@@ -232,7 +232,7 @@ export class NESMemoryArchitecture {
         // Fallback to manual compression without worker to avoid CSP issues
         console.log('Using fallback compression for legal documents');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Compression setup failed:', error);
     }
   }
@@ -337,7 +337,7 @@ export class NESMemoryArchitecture {
       console.log(`✅ Allocated ${document.type} document ${document.id} in ${preferredBank} (${this.formatBytes(documentSize)})`);
       return true;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Failed to allocate document ${document.id}:`, error);
       return false;
     }
@@ -423,7 +423,7 @@ export class NESMemoryArchitecture {
         reject(new Error('Compression timeout'));
       }, 5000);
 
-      this.compressionWorker!.onmessage = (e) => {
+      this.compressionWorker!.onmessage = (e: any) => {
         clearTimeout(timeout);
         if (e.data.success) {
           resolve({
@@ -495,7 +495,7 @@ export class NESMemoryArchitecture {
       console.log(`🔄 Bank switch in ${bankName}: swapped ${swappedDocs.length} documents, freed ${this.formatBytes(freedSpace)}`);
       return freedSpace >= requiredSpace;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Bank switch failed in ${bankName}:`, error);
       return false;
     }

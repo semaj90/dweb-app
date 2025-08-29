@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Enhanced Self-Prompting Engine with Multi-Agent Orchestration
  * Production-ready self-prompting with contextual awareness, GPU acceleration, and distributed processing
@@ -7,7 +6,7 @@
 import { EventEmitter } from 'events';
 import { performance } from 'perf_hooks';
 import { Worker } from 'worker_threads';
-import { EnhancedErrorAnalysisEngine } from './enhanced-error-analysis-engine.js';
+import { EnhancedErrorAnalysisEngine } from './enhanced-error-analysis-engine';
 
 // Enhanced Types for Self-Prompting
 export interface SelfPromptRequest {
@@ -118,7 +117,7 @@ export interface NextAction {
 
 export interface AgentResult {
     agentType: AgentType;
-    result: unknown;
+    result: any;
     confidence: number;
     processingTime: number;
     memoryUsage: number;
@@ -349,7 +348,7 @@ export class EnhancedSelfPromptingEngine extends EventEmitter {
             
             return result;
             
-        } catch (error) {
+        } catch (error: any) {
             this.activePrompts.delete(requestId);
             this.emit('prompt-error', { requestId, error });
             throw error;
@@ -541,8 +540,8 @@ export class EnhancedSelfPromptingEngine extends EventEmitter {
     /**
      * Real-time self-prompting with continuous learning
      */
-    async startRealTimePrompting(): Promise<void> {
-        setInterval(async () => {
+    async startRealTimePrompting(): Promise<any> {
+        setInterval(async (): Promise<any> => {
             try {
                 const contextChanges = await this.detectContextChanges();
                 
@@ -557,7 +556,7 @@ export class EnhancedSelfPromptingEngine extends EventEmitter {
                     
                     this.emit('real-time-prompt', result);
                 }
-            } catch (error) {
+            } catch (error: any) {
                 this.emit('real-time-error', error);
             }
         }, 30000); // Every 30 seconds
@@ -723,16 +722,16 @@ export class EnhancedSelfPromptingEngine extends EventEmitter {
 
 // Supporting Classes (simplified implementations)
 class MultiAgentOrchestrator extends EventEmitter {
-    constructor(private options: unknown) {
+    constructor(private options: any) {
         super();
     }
     
-    async executeParallel(tasks: unknown[]): Promise<AgentResult[]> {
+    async executeParallel(tasks: any[]): Promise<AgentResult[]> {
         const promises = tasks.map(task => this.executeAgent(task));
         return Promise.all(promises);
     }
     
-    async executeSequential(tasks: unknown[]): Promise<AgentResult[]> {
+    async executeSequential(tasks: any[]): Promise<AgentResult[]> {
         const results: AgentResult[] = [];
         for (const task of tasks) {
             results.push(await this.executeAgent(task));
@@ -740,7 +739,7 @@ class MultiAgentOrchestrator extends EventEmitter {
         return results;
     }
     
-    private async executeAgent(task: unknown): Promise<AgentResult> {
+    private async executeAgent(task: any): Promise<AgentResult> {
         const startTime = performance.now();
         
         // Simulate agent processing
@@ -758,7 +757,7 @@ class MultiAgentOrchestrator extends EventEmitter {
         };
     }
     
-    getMetrics(): unknown {
+    getMetrics(): any {
         return {
             totalAgentsExecuted: 0,
             averageExecutionTime: 0,
@@ -768,7 +767,7 @@ class MultiAgentOrchestrator extends EventEmitter {
 }
 
 class ContextProcessor {
-    constructor(private options: unknown) {}
+    constructor(private options: any) {}
     
     async analyzeContext(prompt: string, options: SelfPromptOptions): Promise<PromptContext> {
         // Simulate context analysis
@@ -818,7 +817,7 @@ class ContextProcessor {
 }
 
 class PromptEnhancer {
-    constructor(private options: unknown) {}
+    constructor(private options: any) {}
     
     async enhance(prompt: string, context: PromptContext, agentTypes: AgentType[]): Promise<string> {
         const enhancements = [];
@@ -837,7 +836,7 @@ class PromptEnhancer {
 }
 
 class SynthesisEngine extends EventEmitter {
-    constructor(private options: unknown) {
+    constructor(private options: any) {
         super();
     }
     
@@ -861,7 +860,7 @@ class SynthesisEngine extends EventEmitter {
         return result;
     }
     
-    getMetrics(): unknown {
+    getMetrics(): any {
         return {
             totalSyntheses: 0,
             averageConfidence: 0.85,
@@ -872,37 +871,37 @@ class SynthesisEngine extends EventEmitter {
 
 // Additional supporting classes would be implemented similarly...
 class GPUManager {
-    constructor(private options: unknown) {}
+    constructor(private options: any) {}
     
     isAvailable(): boolean { return true; }
     isCUDAAvailable(): boolean { return true; }
-    getStats(): unknown { return { gpuUtilization: 45, memoryUsage: '2GB' }; }
+    getStats(): any { return { gpuUtilization: 45, memoryUsage: '2GB' }; }
 }
 
 class DistributedProcessor {
-    constructor(private options: unknown) {}
-    getMetrics(): unknown { return { nodeCount: 1, loadBalance: 0.8 }; }
+    constructor(private options: any) {}
+    getMetrics(): any { return { nodeCount: 1, loadBalance: 0.8 }; }
 }
 
 class CacheManager {
     private cache = new Map();
     private hitCount = 0;
     
-    constructor(private options: unknown) {}
+    constructor(private options: any) {}
     
-    get(key: string): unknown { return this.cache.get(key); }
-    set(key: string, value: unknown): void { this.cache.set(key, value); }
+    get(key: string): any { return this.cache.get(key); }
+    set(key: string, value: any): void { this.cache.set(key, value); }
     getHitCount(): number { return this.hitCount; }
-    getStats(): unknown { return { size: this.cache.size, hitRate: 0.75 }; }
+    getStats(): any { return { size: this.cache.size, hitRate: 0.75 }; }
 }
 
 class PromptMetricsCollector {
     recordPrompt(result: SelfPromptResult): void {}
-    getProcessingMetrics(): unknown { return { totalPrompts: 0, averageTime: 0 }; }
+    getProcessingMetrics(): any { return { totalPrompts: 0, averageTime: 0 }; }
 }
 
 // Additional type definitions
-interface SelfPromptEngineOptions {
+export interface SelfPromptEngineOptions {
     maxConcurrentAgents?: number;
     agentTimeoutMs?: number;
     enableGPU?: boolean;
@@ -911,20 +910,20 @@ interface SelfPromptEngineOptions {
     nodeCount?: number;
 }
 
-interface PromptMetadata {
+export interface PromptMetadata {
     timestamp: string;
     source: string;
     version: string;
 }
 
-interface ProcessedContext {
+export interface ProcessedContext {
     summary: string;
     keyElements: string[];
     complexity: number;
     coverage: number;
 }
 
-interface PromptPerformance {
+export interface PromptPerformance {
     totalProcessingTime: number;
     agentProcessingTime: number;
     contextProcessingTime: number;
@@ -933,47 +932,47 @@ interface PromptPerformance {
     memoryUsage: number;
 }
 
-interface FollowUpSuggestion {
+export interface FollowUpSuggestion {
     type: string;
     description: string;
     priority: string;
     estimatedBenefit: string;
 }
 
-interface ContextChanges {
+export interface ContextChanges {
     significantChanges: boolean;
     changes: string[];
 }
 
-interface SelfPromptEngineMetrics {
-    processing: unknown;
-    agents: unknown;
-    gpu: unknown;
-    cache: unknown;
-    synthesis: unknown;
-    distributed: unknown;
+export interface SelfPromptEngineMetrics {
+    processing: any;
+    agents: any;
+    gpu: any;
+    cache: any;
+    synthesis: any;
+    distributed: any;
 }
 
 // Placeholder interfaces for missing types
-interface FileChange { file: string; type: string; timestamp: string; }
-interface MemoryEntity { id: string; type: string; data: unknown; }
-interface MemoryRelationship { from: string; to: string; type: string; }
-interface RecentQuery { query: string; timestamp: string; }
-interface KnowledgeGraph { nodes: unknown[]; edges: unknown[]; }
-interface VectorEmbedding { vector: number[]; metadata: unknown; }
-interface SimilarQuery { query: string; similarity: number; }
-interface ConceptCluster { concepts: string[]; centroid: number[]; }
-interface ComplianceRule { id: string; description: string; }
-interface LegalPrecedent { case: string; ruling: string; }
-interface ErrorPattern { id: string; type: string; severity: string; suggestedFixes: unknown[]; mlConfidence: number; }
-interface ErrorTrend { pattern: string; frequency: number; }
-interface FixHistory { fix: string; success: boolean; }
-interface SystemMetrics { cpuUsage: number; memoryUsage: number; diskUsage: number; }
-interface PerformanceBottleneck { type: string; severity: string; }
-interface OptimizationOpportunity { type: string; impact: string; }
-interface Recommendation { type: string; description: string; priority: string; }
-interface IdentifiedPattern { description: string; priority: number; automatable: boolean; dependencies: string[]; estimatedTime: number; confidence: number; }
-interface ResultConflict { agent1: string; agent2: string; conflict: string; }
-interface ConsensusPoint { topic: string; agreement: number; }
+export interface FileChange { file: string; type: string; timestamp: string; }
+export interface MemoryEntity { id: string; type: string; data: any; }
+export interface MemoryRelationship { from: string; to: string; type: string; }
+export interface RecentQuery { query: string; timestamp: string; }
+export interface KnowledgeGraph { nodes: any[]; edges: any[]; }
+export interface VectorEmbedding { vector: number[]; metadata: any; }
+export interface SimilarQuery { query: string; similarity: number; }
+export interface ConceptCluster { concepts: string[]; centroid: number[]; }
+export interface ComplianceRule { id: string; description: string; }
+export interface LegalPrecedent { case: string; ruling: string; }
+export interface ErrorPattern { id: string; type: string; severity: string; suggestedFixes: any[]; mlConfidence: number; }
+export interface ErrorTrend { pattern: string; frequency: number; }
+export interface FixHistory { fix: string; success: boolean; }
+export interface SystemMetrics { cpuUsage: number; memoryUsage: number; diskUsage: number; }
+export interface PerformanceBottleneck { type: string; severity: string; }
+export interface OptimizationOpportunity { type: string; impact: string; }
+export interface Recommendation { type: string; description: string; priority: string; }
+export interface IdentifiedPattern { description: string; priority: number; automatable: boolean; dependencies: string[]; estimatedTime: number; confidence: number; }
+export interface ResultConflict { agent1: string; agent2: string; conflict: string; }
+export interface ConsensusPoint { topic: string; agreement: number; }
 
 // Export already done above

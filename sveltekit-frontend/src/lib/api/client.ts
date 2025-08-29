@@ -8,7 +8,7 @@ import type {
 import { browser } from '$app/environment';
 
 // API Client Configuration
-interface ApiClientConfig {
+export interface ApiClientConfig {
   baseUrl?: string;
   timeout?: number;
   retries?: number;
@@ -155,7 +155,7 @@ class EnhancedApiClient {
         }
         
         return result;
-      } catch (error) {
+      } catch (error: any) {
         this.abortControllers.delete(requestId);
         
         if (error instanceof ApiClientError) {

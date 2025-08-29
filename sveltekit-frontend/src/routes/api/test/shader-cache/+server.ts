@@ -106,7 +106,7 @@ export const POST: RequestHandler = async ({ request }) => {
         default:
           throw new Error(`Unknown test type: ${testType}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       testResults.errors.push(`Test execution failed: ${error.message}`);
       testResults.metrics.failedTests++;
     }
@@ -128,7 +128,7 @@ export const POST: RequestHandler = async ({ request }) => {
       }
     });
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Shader cache test endpoint error:', error);
     return json({
       success: false,
@@ -138,7 +138,7 @@ export const POST: RequestHandler = async ({ request }) => {
   }
 };
 
-async function runComprehensiveTests(testResults: any) {
+async function runComprehensiveTests(testResults: any): Promise<any> {
   console.log('🔬 Running comprehensive shader cache tests...');
   
   // Test 1: Cold Path Operations
@@ -163,7 +163,7 @@ async function runComprehensiveTests(testResults: any) {
   await testDatabaseIntegration(testResults);
 }
 
-async function testColdPath(testResults: any) {
+async function testColdPath(testResults: any): Promise<any> {
   testResults.results.coldPath = {
     description: 'Test first-time shader caching (network fetch → compile → store)',
     tests: []
@@ -196,7 +196,7 @@ async function testColdPath(testResults: any) {
       
       testResults.metrics.passedTests++;
       
-    } catch (error) {
+    } catch (error: any) {
       testResults.results.coldPath.tests.push({
         shader: shader.key,
         success: false,
@@ -209,7 +209,7 @@ async function testColdPath(testResults: any) {
   }
 }
 
-async function testHotPath(testResults: any) {
+async function testHotPath(testResults: any): Promise<any> {
   testResults.results.hotPath = {
     description: 'Test cached shader retrieval performance (memory/database)',
     tests: []
@@ -248,7 +248,7 @@ async function testHotPath(testResults: any) {
         testResults.metrics.passedTests++;
       }
       
-    } catch (error) {
+    } catch (error: any) {
       testResults.results.hotPath.tests.push({
         shader: shader.key,
         success: false,
@@ -261,7 +261,7 @@ async function testHotPath(testResults: any) {
   }
 }
 
-async function testPredictivePreloading(testResults: any) {
+async function testPredictivePreloading(testResults: any): Promise<any> {
   testResults.results.predictivePreloading = {
     description: 'Test ML-based workflow analysis and shader preloading',
     tests: []
@@ -288,7 +288,7 @@ async function testPredictivePreloading(testResults: any) {
     
     testResults.metrics.passedTests++;
     
-  } catch (error) {
+  } catch (error: any) {
     testResults.results.predictivePreloading.tests.push({
       test: 'workflow_analysis',
       success: false,
@@ -300,7 +300,7 @@ async function testPredictivePreloading(testResults: any) {
   }
 }
 
-async function testMultiDimensionalSearch(testResults: any) {
+async function testMultiDimensionalSearch(testResults: any): Promise<any> {
   testResults.results.multiDimensionalSearch = {
     description: 'Test semantic, temporal, and contextual shader search',
     tests: []
@@ -341,7 +341,7 @@ async function testMultiDimensionalSearch(testResults: any) {
       
       testResults.metrics.passedTests++;
       
-    } catch (error) {
+    } catch (error: any) {
       testResults.results.multiDimensionalSearch.tests.push({
         query: searchQuery.name,
         success: false,
@@ -354,7 +354,7 @@ async function testMultiDimensionalSearch(testResults: any) {
   }
 }
 
-async function testReinforcementLearning(testResults: any) {
+async function testReinforcementLearning(testResults: any): Promise<any> {
   testResults.results.reinforcementLearning = {
     description: 'Test ML pattern recognition and adaptive caching',
     tests: []
@@ -379,7 +379,7 @@ async function testReinforcementLearning(testResults: any) {
     
     testResults.metrics.passedTests++;
     
-  } catch (error) {
+  } catch (error: any) {
     testResults.results.reinforcementLearning.tests.push({
       test: 'metrics_collection',
       success: false,
@@ -391,7 +391,7 @@ async function testReinforcementLearning(testResults: any) {
   }
 }
 
-async function testCacheManagement(testResults: any) {
+async function testCacheManagement(testResults: any): Promise<any> {
   testResults.results.cacheManagement = {
     description: 'Test cache clearing and management operations',
     tests: []
@@ -414,7 +414,7 @@ async function testCacheManagement(testResults: any) {
     
     testResults.metrics.passedTests++;
     
-  } catch (error) {
+  } catch (error: any) {
     testResults.results.cacheManagement.tests.push({
       test: 'cache_clearing',
       success: false,
@@ -426,7 +426,7 @@ async function testCacheManagement(testResults: any) {
   }
 }
 
-async function testDatabaseIntegration(testResults: any) {
+async function testDatabaseIntegration(testResults: any): Promise<any> {
   testResults.results.databaseIntegration = {
     description: 'Test PostgreSQL + pgvector integration',
     tests: []
@@ -446,7 +446,7 @@ async function testDatabaseIntegration(testResults: any) {
     
     testResults.metrics.passedTests++;
     
-  } catch (error) {
+  } catch (error: any) {
     testResults.results.databaseIntegration.tests.push({
       test: 'database_connection',
       success: false,
@@ -475,7 +475,7 @@ function createMockWorkflowContext(step: string, docContext: any) {
   };
 }
 
-async function simulateColdPath(shader: any, context: any) {
+async function simulateColdPath(shader: any, context: any): Promise<any> {
   // Simulate the cold path process without actual network fetch
   // This would normally be handled by the actual cold path logic
   return {

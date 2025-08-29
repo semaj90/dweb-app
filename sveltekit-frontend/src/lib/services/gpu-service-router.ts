@@ -171,7 +171,7 @@ export class GPUServiceRouter {
         memoryUsed: request.data.length * 4
       };
 
-    } catch (error) {
+    } catch (error: any) {
       // Release memory on error
       this.deallocateMemory(request.jobId);
       
@@ -225,7 +225,7 @@ export class GPUServiceRouter {
         memoryUsed: result.memory_used
       };
 
-    } catch (error) {
+    } catch (error: any) {
       return {
         jobId: this.generateJobID(),
         type: request.operation,
@@ -275,7 +275,7 @@ export class GPUServiceRouter {
       const response = await this.processWithCUDAWorker(healthCheckRequest);
       return response.status === 'success';
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('CUDA worker health check failed:', error);
       return false;
     }

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
 	"container/list"
 	"context"
@@ -777,6 +776,7 @@ func (s *AdvancedCudaService) processAdvancedAttention(req AttentionRequest) (*A
 	cacheKey := fmt.Sprintf("%s:%s:%s", req.UserID, req.Type, req.Context)
 	var output, attention []float32
 	var cached bool
+	var cudaResult map[string]interface{}
 	
 	if req.UseCache {
 		if cachedOutput, cachedAttention, found := s.cache.Get(cacheKey); found {
@@ -853,7 +853,6 @@ func (s *AdvancedCudaService) processAdvancedAttention(req AttentionRequest) (*A
 		outputBytes := outputBuf.Bytes()
 		
 		// Parse CUDA output
-		var cudaResult map[string]interface{}
 		if err := json.Unmarshal(outputBytes, &cudaResult); err != nil {
 			return nil, fmt.Errorf("failed to parse CUDA output: %v", err)
 		}

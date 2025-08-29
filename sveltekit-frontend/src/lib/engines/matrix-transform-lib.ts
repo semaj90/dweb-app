@@ -60,7 +60,7 @@ export class MatrixTransformLib {
       }
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Failed to generate transforms from sprite:", error);
       return {};
     }

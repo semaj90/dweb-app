@@ -134,7 +134,7 @@ export const GET: RequestHandler = async ({ url }) => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Laws search error:', error);
     return json(
       { 
@@ -182,7 +182,7 @@ function calculateRelevanceScore(law: any, searchTerm: string): number {
 }
 
 // For integration with vector search in the future
-async function performVectorSearch(query: string, jurisdiction: string, category: string) {
+async function performVectorSearch(query: string, jurisdiction: string, category: string): Promise<any> {
   try {
     // This would use your existing vector search endpoint
     const response = await fetch('/api/ai/vector-search', {
@@ -200,7 +200,7 @@ async function performVectorSearch(query: string, jurisdiction: string, category
       const result = await response.json();
       return result.results || [];
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Vector search error:', error);
   }
   

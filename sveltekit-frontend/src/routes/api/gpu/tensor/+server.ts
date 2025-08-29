@@ -15,7 +15,7 @@ const gpuServicePool = [
 ];
 
 // Service health tracking
-interface ServiceHealth {
+export interface ServiceHealth {
   url: string;
   healthy: boolean;
   lastCheck: number;
@@ -73,7 +73,7 @@ class GPUServiceManager {
         health.healthy = false;
         health.errorCount++;
       }
-    } catch (error) {
+    } catch (error: any) {
       health.healthy = false;
       health.errorCount++;
     }
@@ -150,7 +150,7 @@ if (dev) {
 }
 
 // Request processing statistics
-interface ProcessingStats {
+export interface ProcessingStats {
   totalRequests: number;
   successfulRequests: number;
   failedRequests: number;
@@ -255,7 +255,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress, url }) =
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     stats.failedRequests++;
     console.error('GPU tensor processing error:', err);
 
@@ -309,7 +309,7 @@ export const GET: RequestHandler = async ({ url }) => {
           if (response.ok) {
             serviceStats = await response.json();
           }
-        } catch (error) {
+        } catch (error: any) {
           console.warn('Failed to fetch service stats:', error);
         }
 
@@ -324,7 +324,7 @@ export const GET: RequestHandler = async ({ url }) => {
           environment: dev ? 'development' : 'production'
         });
     }
-  } catch (err) {
+  } catch (err: any) {
     console.error('Stats retrieval error:', err);
     throw error(500, {
       message: `Stats retrieval failed: ${err.message}`,
@@ -362,7 +362,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
             method: 'DELETE'
           });
           return { service: serviceUrl, success: response.ok };
-        } catch (error) {
+        } catch (error: any) {
           return { service: serviceUrl, success: false, error: error.message };
         }
       });
@@ -384,7 +384,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
       message: 'Operation completed'
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Cache clearing error:', err);
     throw error(500, {
       message: `Cache clearing failed: ${err.message}`,
@@ -427,7 +427,7 @@ async function processWithService(serviceUrl: string, tensorData: any): Promise<
 
       return result;
 
-    } catch (error) {
+    } catch (error: any) {
       lastError = error as Error;
       console.warn(`Attempt ${attempt + 1} failed for service ${serviceUrl}:`, error.message);
 
@@ -464,7 +464,7 @@ async function processWithService(serviceUrl: string, tensorData: any): Promise<
           return result;
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn(`Fallback service ${fallbackService.url} failed:`, error.message);
     }
   }

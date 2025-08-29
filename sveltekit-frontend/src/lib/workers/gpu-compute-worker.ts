@@ -12,14 +12,14 @@ declare const GPUBufferUsage: any;
 declare const GPUMapMode: any;
 
 // Types for tensor operations
-interface TensorOp {
+export interface TensorOp {
     type: 'matmul' | 'conv2d' | 'attention' | 'fft' | 'embedding';
     inputA: Float32Array;
     inputB?: Float32Array;
     params?: unknown;
 }
 
-interface VertexCache {
+export interface VertexCache {
     url: string;
     buffer: Float32Array;
     timestamp: number;
@@ -369,7 +369,7 @@ class GPUWorker {
 // Worker message handler
 let gpuWorker: GPUWorker | null = null;
 
-self.addEventListener('message', async (event) => {
+self.addEventListener('message', async (event: any) => {
     const { type, data } = event.data;
 
     switch (type) {

@@ -50,7 +50,7 @@ export class RedisVectorService {
     try {
       await this.redis.ping();
       return this.isConnected;
-    } catch (error) {
+    } catch (error: any) {
       logger.error("Redis health check failed", error);
       return false;
     }
@@ -71,7 +71,7 @@ export class RedisVectorService {
       await this.redis.sadd("vectors:all", id);
 
       logger.debug(`Stored vector for ID: ${id}`);
-    } catch (error) {
+    } catch (error: any) {
       logger.error("Failed to store vector", { id, error });
       throw error;
     }
@@ -89,7 +89,7 @@ export class RedisVectorService {
         payload: vectorData.payload,
         metadata: vectorData.metadata,
       };
-    } catch (error) {
+    } catch (error: any) {
       logger.error("Failed to get vector", { id, error });
       return null;
     }
@@ -100,7 +100,7 @@ export class RedisVectorService {
       await this.redis.del(`vector:${id}`);
       await this.redis.srem("vectors:all", id);
       logger.debug(`Deleted vector for ID: ${id}`);
-    } catch (error) {
+    } catch (error: any) {
       logger.error("Failed to delete vector", { id, error });
       throw error;
     }
@@ -141,7 +141,7 @@ export class RedisVectorService {
       // Sort by score and limit
       results.sort((a, b) => b.score - a.score);
       return results.slice(0, options.limit || 10);
-    } catch (error) {
+    } catch (error: any) {
       logger.error("Failed to search vectors", error);
       return [];
     }
@@ -155,7 +155,7 @@ export class RedisVectorService {
     try {
       const key = `embedding:${this.hashText(text)}:${model}`;
       await this.redis.setex(key, 3600, JSON.stringify(embedding)); // Cache for 1 hour
-    } catch (error) {
+    } catch (error: any) {
       logger.error("Failed to cache embedding", error);
     }
   }
@@ -168,7 +168,7 @@ export class RedisVectorService {
       const key = `embedding:${this.hashText(text)}:${model}`;
       const cached = await this.redis.get(key);
       return cached ? JSON.parse(cached) : null;
-    } catch (error) {
+    } catch (error: any) {
       logger.error("Failed to get cached embedding", error);
       return null;
     }

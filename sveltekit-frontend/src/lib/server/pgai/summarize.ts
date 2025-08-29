@@ -3,7 +3,7 @@ import { setCache } from '$lib/utils/server-cache.js';
 const RABBITMQ_URL = process.env.RABBITMQ_URL || "amqp://localhost";
 const QUEUE_NAME = "summarization_tasks";
 
-export async function summarizeWithQueue(content: string, documentId: string) {
+export async function summarizeWithQueue(content: string, documentId: string): Promise<any> {
   try {
     const { connect } = await import("amqplib");
     const connection = await connect(RABBITMQ_URL);
@@ -17,7 +17,7 @@ export async function summarizeWithQueue(content: string, documentId: string) {
 
     await channel.close();
     await connection.close();
-  } catch (e) {
+  } catch (e: any) {
     // If RabbitMQ is not available, fall back to immediate cache mark
     console.warn(
       "RabbitMQ unavailable, marking as processing only:",

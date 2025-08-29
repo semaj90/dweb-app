@@ -70,7 +70,7 @@ export const POST: RequestHandler = async ({ request }) => {
       timestamp: Date.now()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Cluster scaling error:', error);
     
     return json({
@@ -114,7 +114,7 @@ export const GET: RequestHandler = async () => {
       }))
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Cluster scaling info error:', error);
     
     return json({

@@ -2,7 +2,7 @@ import { type RequestHandler,  json } from '@sveltejs/kit';
 import { randomUUID } from "crypto";
 
 // Types for upload handling
-interface PresignRequest {
+export interface PresignRequest {
   filename: string;
   fileSize: number;
   caseId: string;
@@ -10,7 +10,7 @@ interface PresignRequest {
   chunkCount?: number;
 }
 
-interface PresignResponse {
+export interface PresignResponse {
   uploadId: string;
   presignedUrls: string[];
   metadata: {
@@ -93,7 +93,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
     return json(response);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Presign error:', error);
     return json({ error: 'Failed to generate presigned URLs' }, { status: 500 });
   }
@@ -122,13 +122,13 @@ export const PUT: RequestHandler = async ({ request }) => {
 
     return json({ success: true, uploadId });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Complete upload error:', error);
     return json({ error: 'Failed to complete upload' }, { status: 500 });
   }
 };
 
-async function triggerProcessingPipeline(uploadId: string) {
+async function triggerProcessingPipeline(uploadId: string): Promise<any> {
   try {
     // Push job to message queue for processing
     const jobData = {
@@ -141,7 +141,7 @@ async function triggerProcessingPipeline(uploadId: string) {
     // await jobQueue.add('process-document', jobData);
     
     console.log(`🚀 Triggered processing for upload ${uploadId}`);
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Failed to trigger processing:', error);
   }
 }

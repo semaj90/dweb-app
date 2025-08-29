@@ -3,14 +3,14 @@
  * Agentic workflow for analyzing codebase and generating actionable best practices
  */
 
-import { aiService } from "./unified-ai-service.js";
+import { aiService } from './unified-ai-service';
 // Mock redis vector service for now
 const redisVectorService = {
-  async storeDocument(doc: unknown) {
+  async storeDocument(doc: any) {
     console.log('Storing document (mock):', doc.id);
     return { success: true };
   },
-  async searchSimilar(embedding: number[], options: unknown) {
+  async searchSimilar(embedding: number[], options: any) {
     console.log('Searching similar (mock)');
     return [];
   }
@@ -194,7 +194,7 @@ Make recommendations specific, actionable, and prioritized by impact vs effort.
         if (content.includes("any")) patterns.add("loose_typing");
         if (content.includes("fetch(")) patterns.add("api_calls");
         if (content.includes("await")) patterns.add("async_patterns");
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Failed to analyze file ${file}:`, error);
       }
     }
@@ -219,7 +219,7 @@ Make recommendations specific, actionable, and prioritized by impact vs effort.
       if (packageJson.dependencies?.express) {
         architectureStyle = "REST_API";
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Could not read package.json:", error);
     }
 
@@ -267,7 +267,7 @@ Make recommendations specific, actionable, and prioritized by impact vs effort.
     try {
       await fs.access(path.join(projectPath, "README.md"));
       patterns.push("Documentation with README");
-    } catch (error) {
+    } catch (error: any) {
       // README doesn't exist
     }
 
@@ -311,7 +311,7 @@ Make recommendations specific, actionable, and prioritized by impact vs effort.
       if (envFile.includes("password") || envFile.includes("secret")) {
         issues.push("Potential secrets in .env file");
       }
-    } catch (error) {
+    } catch (error: any) {
       // .env file doesn't exist or isn't readable
     }
 
@@ -339,11 +339,11 @@ Make recommendations specific, actionable, and prioritized by impact vs effort.
       });
 
       const result = JSON.parse(response);
-      return result.best_practices.map((practice: unknown, index: number) => ({
+      return result.best_practices.map((practice: any, index: number) => ({
         id: `bp_${Date.now()}_${index}`,
         ...practice,
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to generate AI practices:", error);
       return this.getFallbackPractices(analysis);
     }
@@ -420,7 +420,7 @@ Make recommendations specific, actionable, and prioritized by impact vs effort.
   /**
    * Store report in vector database
    */
-  private async storeReport(report: BestPracticesReport): Promise<void> {
+  private async storeReport(report: BestPracticesReport): Promise<any> {
     try {
       // Generate embedding for the report content
       const content = `${report.codebase_analysis.project_type} best practices: ${report.best_practices
@@ -444,7 +444,7 @@ Make recommendations specific, actionable, and prioritized by impact vs effort.
         content: JSON.stringify(report),
         ttl: 604800, // 1 week
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to store best practices report:", error);
     }
   }
@@ -504,7 +504,7 @@ Make recommendations specific, actionable, and prioritized by impact vs effort.
       });
 
       return results.map((result) => JSON.parse(result.content));
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to retrieve stored reports:", error);
       return [];
     }

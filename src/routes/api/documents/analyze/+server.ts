@@ -1,9 +1,9 @@
 
 import { json } from '@sveltejs/kit';
-import { db } from '$lib/database/postgres.js';
-import { legalDocuments, type NewLegalDocument } from '$lib/database/schema/legal-documents.js';
-import { legalOrchestrator } from '$lib/agents/orchestrator.js';
-import { qdrantManager } from '$lib/database/qdrant.js';
+import { db } from '$lib/database/postgres';
+import { legalDocuments, type NewLegalDocument } from '$lib/database/schema/legal-documents';
+import { legalOrchestrator } from '$lib/agents/orchestrator';
+import { qdrantManager } from '$lib/database/qdrant';
 import type { RequestHandler } from './$types';
 
 /**
@@ -11,7 +11,7 @@ import type { RequestHandler } from './$types';
  * Comprehensive legal document processing and analysis
  */
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const {
       content,
@@ -33,7 +33,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
     // Check if document already exists
     const existingDoc = await db.query.legalDocuments.findFirst({
-      where: (documents: unknown, { eq }: unknown) => eq(documents.fileHash, fileHash)
+      where: (documents: any, { eq }: any) => eq(documents.fileHash, fileHash)
     });
 
     if (existingDoc) {
@@ -120,7 +120,7 @@ export const POST: RequestHandler = async ({ request }) => {
       }
     });
 
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('Document analysis error:', error);
     return json(
       { error: 'Document analysis failed', details: (error as any)?.message || "Unknown error" },
@@ -129,7 +129,7 @@ export const POST: RequestHandler = async ({ request }) => {
   }
 };
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
   try {
     const documentId = url.searchParams.get('id');
     const limit = parseInt(url.searchParams.get('limit') || '10');
@@ -188,7 +188,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
     return json({ documents });
 
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('Document retrieval error:', error);
     return json(
       { error: 'Failed to retrieve documents', details: (error as any)?.message || "Unknown error" },
@@ -284,7 +284,7 @@ async function analyzeDocumentWithAI(
       processingTime: result.totalProcessingTime,
       agentUsed: result.primaryResponse.agentName
     };
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('AI analysis failed:', error);
     return {
       entities: [],

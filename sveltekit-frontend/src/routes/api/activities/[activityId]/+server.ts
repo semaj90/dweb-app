@@ -25,7 +25,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
       return json({ error: "Activity not found" }, { status: 404 });
     }
     return json(activityResult[0]);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching activity:", error);
     return json({ error: "Failed to fetch activity" }, { status: 500 });
   }
@@ -91,7 +91,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
       .returning();
 
     return json(updatedActivity);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating activity:", error);
     return json({ error: "Failed to update activity" }, { status: 500 });
   }
@@ -126,7 +126,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
       .returning();
 
     return json({ success: true, deletedActivity });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error deleting activity:", error);
     return json({ error: "Failed to delete activity" }, { status: 500 });
   }
@@ -215,7 +215,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
       .returning();
 
     return json(updatedActivity);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error patching activity:", error);
     return json({ error: "Failed to update activity" }, { status: 500 });
   }

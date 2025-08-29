@@ -251,7 +251,7 @@ export class StatelessAPICoordinator {
             ws.onopen = () => {
               console.log(`WebSocket connected: ${node.id}`);
             };
-            ws.onmessage = (event) => {
+            ws.onmessage = (event: any) => {
               this.handleWebSocketMessage(node.id, JSON.parse(event.data));
             };
             ws.onerror = () => {
@@ -264,7 +264,7 @@ export class StatelessAPICoordinator {
 
       node.status = "ACTIVE";
       node.lastHeartbeat = Date.now();
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to initialize connection to ${node.id}:`, error);
       node.status = "INACTIVE";
     }
@@ -385,7 +385,7 @@ export class StatelessAPICoordinator {
       node.metadata.processedTasks += 1;
       this.updateActiveNodes();
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to route task to ${node.id}:`, error);
       this.markNodeDegraded(node.id);
       

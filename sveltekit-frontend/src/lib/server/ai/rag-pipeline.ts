@@ -25,7 +25,7 @@ import { RunnableSequence, RunnablePassthrough } from "@langchain/core/runnables
 import { StringOutputParser } from '@langchain/core/output_parsers';
 import type { Document as LangChainDocument } from "@langchain/core/documents";
 const postgres = require("postgres");
-import { drizzle } from "drizzle-orm/postgres-js";
+import { drizzle } from "drizzle-orm/node-postgres";
 
 // Import schema directly (same path used across project). If it fails at runtime we degrade gracefully.
 
@@ -238,7 +238,7 @@ export class LegalRAGPipeline {
         tags: tags.map((t) => t.tag),
         processingTime,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('[RAG] Ingestion error:', error);
       throw error;
     }
@@ -334,7 +334,7 @@ export class LegalRAGPipeline {
             },
           })
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error('[RAG] Search error:', error);
       throw error;
     }
@@ -443,7 +443,7 @@ Answer:
         keyPoints: analysis.keyPoints,
         processingTime: Date.now() - startTime,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('[RAG] QA error:', error);
 
       // Log failed query
@@ -670,7 +670,7 @@ Return ONLY a JSON array of tags with confidence scores (0-1):
       }
 
       return [];
-    } catch (error) {
+    } catch (error: any) {
       console.error('[RAG] Auto-tagging error:', error);
       return [];
     }

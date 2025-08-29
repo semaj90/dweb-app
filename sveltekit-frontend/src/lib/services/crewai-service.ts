@@ -450,7 +450,7 @@ export class CrewAIService {
 
       const data = await response.json();
       return data;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to execute CrewAI crew:", error);
       throw error;
     }
@@ -476,7 +476,7 @@ export class CrewAIService {
       }
 
       return await response.json();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to get execution:", error);
       throw error;
     }
@@ -493,7 +493,7 @@ export class CrewAIService {
           ...(this.apiKey && { Authorization: `Bearer ${this.apiKey}` }),
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to cancel execution:", error);
       throw error;
     }
@@ -532,7 +532,7 @@ export class CrewAIService {
 
       const data = await response.json();
       return data.tools || [];
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to get available tools:", error);
       return [
         "evidence_analyzer",
@@ -572,7 +572,7 @@ export class CrewAIService {
         try {
           const result: CrewTaskResult = JSON.parse(event.data);
           yield result;
-        } catch (error) {
+        } catch (error: any) {
           console.error("Failed to parse streaming result:", error);
         }
       }
@@ -656,7 +656,7 @@ export async function analyzeLegalCaseWithCrew(
         crewType: "legal-investigation",
       },
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Legal case analysis with crew failed:", error);
     throw error;
   }
@@ -710,7 +710,7 @@ export async function analyzeContractWithCrew(
         crewType: "contract-analysis",
       },
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Contract analysis with crew failed:", error);
     throw error;
   }

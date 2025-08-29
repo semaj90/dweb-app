@@ -4,7 +4,7 @@ import { db } from '$lib/db/drizzle';
 import { pipeline_logs } from '$lib/db/schema';
 import { desc } from 'drizzle-orm';
 
-export async function GET(req: Request) {
+export async function GET(req: Request): Promise<any> {
   const url = new URL(req.url);
   const limit = Math.min(parseInt(url.searchParams.get('limit') || '25', 10), 200);
   try {

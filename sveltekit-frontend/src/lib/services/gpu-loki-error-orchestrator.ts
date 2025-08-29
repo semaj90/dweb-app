@@ -7,7 +7,7 @@ import { enhancedLoki, enhancedLokiDB } from '$lib/stores/enhancedLokiStore.js';
 import { writable, derived } from 'svelte/store';
 import { browser } from '$app/environment';
 
-interface ErrorContext {
+export interface ErrorContext {
   id: string;
   file: string;
   line: number;
@@ -22,7 +22,7 @@ interface ErrorContext {
   fixable: boolean;
 }
 
-interface GPUErrorBatch {
+export interface GPUErrorBatch {
   id: string;
   errors: ErrorContext[];
   priority: number;
@@ -34,7 +34,7 @@ interface GPUErrorBatch {
   embeddingModel: 'nomic-embed-text:latest';
 }
 
-interface ErrorAnalysisResult {
+export interface ErrorAnalysisResult {
   errorId: string;
   fixStrategy: string;
   autoFixAvailable: boolean;
@@ -72,7 +72,7 @@ class GPULokiErrorOrchestrator {
         this.gpuContext = { adapter, device };
         console.log('✅ GPU context initialized for error processing');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ GPU not available, falling back to CPU processing:', error);
     }
   }
@@ -335,7 +335,7 @@ class GPULokiErrorOrchestrator {
       console.log(`✅ Processed batch ${batch.id} in ${processingTime.toFixed(2)}ms`);
       
       return results;
-    } catch (error) {
+    } catch (error: any) {
       batch.status = 'failed';
       console.error(`❌ Batch ${batch.id} failed:`, error);
       return [];
@@ -612,7 +612,7 @@ export const gpuLokiErrorAPI = {
       }));
       
       return results;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error processing failed:', error);
       gpuErrorStore.update(state => ({ ...state, processing: false }));
       return [];

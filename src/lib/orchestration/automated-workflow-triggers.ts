@@ -293,7 +293,7 @@ export class AutomatedWorkflowEngine extends EventEmitter {
     /**
      * Process incoming metrics and evaluate trigger conditions
      */
-    async processMetrics(metrics: PerformanceMetrics): Promise<void> {
+    async processMetrics(metrics: PerformanceMetrics): Promise<any> {
         try {
             // Store metrics for historical analysis
             this.performanceHistory.push({
@@ -328,7 +328,7 @@ export class AutomatedWorkflowEngine extends EventEmitter {
             // Update metrics collector
             await this.metricsCollector.recordMetrics(metrics);
 
-        } catch (error) {
+        } catch (error: any) {
             console.error('❌ Error processing metrics:', error);
             this.emit('error', { type: 'metrics-processing', error });
         }
@@ -337,7 +337,7 @@ export class AutomatedWorkflowEngine extends EventEmitter {
     /**
      * Evaluate trigger conditions against current metrics
      */
-    private async evaluateTrigger(trigger: WorkflowTrigger, metrics: PerformanceMetrics): Promise<void> {
+    private async evaluateTrigger(trigger: WorkflowTrigger, metrics: PerformanceMetrics): Promise<any> {
         try {
             // Check cooldown period
             if (trigger.lastTriggered && 
@@ -359,7 +359,7 @@ export class AutomatedWorkflowEngine extends EventEmitter {
                 await this.executeTrigger(trigger, metrics);
             }
 
-        } catch (error) {
+        } catch (error: any) {
             console.error(`❌ Error evaluating trigger ${trigger.id}:`, error);
             
             const circuitBreaker = this.circuitBreakers.get(trigger.id);
@@ -403,7 +403,7 @@ export class AutomatedWorkflowEngine extends EventEmitter {
     /**
      * Execute trigger actions
      */
-    private async executeTrigger(trigger: WorkflowTrigger, metrics: PerformanceMetrics): Promise<void> {
+    private async executeTrigger(trigger: WorkflowTrigger, metrics: PerformanceMetrics): Promise<any> {
         try {
             console.log(`🚀 Executing automated trigger: ${trigger.name} (${trigger.id})`);
 
@@ -448,7 +448,7 @@ export class AutomatedWorkflowEngine extends EventEmitter {
                 timestamp: new Date()
             });
 
-        } catch (error) {
+        } catch (error: any) {
             console.error(`❌ Error executing trigger ${trigger.id}:`, error);
             trigger.failureCount++;
             
@@ -460,7 +460,7 @@ export class AutomatedWorkflowEngine extends EventEmitter {
     /**
      * Execute individual trigger action
      */
-    private async executeAction(action: unknown, trigger: WorkflowTrigger, metrics: PerformanceMetrics): Promise<any> {
+    private async executeAction(action: any, trigger: WorkflowTrigger, metrics: PerformanceMetrics): Promise<any> {
         const executionId = `${trigger.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
         switch (action.type) {
@@ -487,7 +487,7 @@ export class AutomatedWorkflowEngine extends EventEmitter {
     /**
      * Execute automated workflow
      */
-    private async executeWorkflow(action: unknown, executionId: string, metrics: PerformanceMetrics): Promise<any> {
+    private async executeWorkflow(action: any, executionId: string, metrics: PerformanceMetrics): Promise<any> {
         const workflowExecution: WorkflowExecution = {
             id: executionId,
             workflowName: action.workflow,
@@ -514,7 +514,7 @@ export class AutomatedWorkflowEngine extends EventEmitter {
             console.log(`✅ Workflow ${action.workflow} completed successfully (${executionId})`);
             return result;
 
-        } catch (error) {
+        } catch (error: any) {
             workflowExecution.status = 'failed';
             workflowExecution.endTime = new Date();
             workflowExecution.error = error.message;
@@ -532,7 +532,7 @@ export class AutomatedWorkflowEngine extends EventEmitter {
     /**
      * Run specific workflow based on name
      */
-    private async runWorkflow(workflowName: string, parameters: unknown): Promise<any> {
+    private async runWorkflow(workflowName: string, parameters: any): Promise<any> {
         switch (workflowName) {
             case 'error-analysis-enhanced':
                 return await this.runErrorAnalysisWorkflow(parameters);
@@ -560,7 +560,7 @@ export class AutomatedWorkflowEngine extends EventEmitter {
     /**
      * Workflow implementations
      */
-    private async runErrorAnalysisWorkflow(parameters: unknown): Promise<any> {
+    private async runErrorAnalysisWorkflow(parameters: any): Promise<any> {
         console.log('🔍 Running automated error analysis workflow...');
         
         // This would integrate with the existing error analysis engine
@@ -573,7 +573,7 @@ export class AutomatedWorkflowEngine extends EventEmitter {
         };
     }
 
-    private async runPerformanceOptimizationWorkflow(parameters: unknown): Promise<any> {
+    private async runPerformanceOptimizationWorkflow(parameters: any): Promise<any> {
         console.log('⚡ Running automated performance optimization workflow...');
         
         return {
@@ -585,7 +585,7 @@ export class AutomatedWorkflowEngine extends EventEmitter {
         };
     }
 
-    private async runResourceCleanupWorkflow(parameters: unknown): Promise<any> {
+    private async runResourceCleanupWorkflow(parameters: any): Promise<any> {
         console.log('🧹 Running automated resource cleanup workflow...');
         
         return {
@@ -597,7 +597,7 @@ export class AutomatedWorkflowEngine extends EventEmitter {
         };
     }
 
-    private async runDocumentProcessingWorkflow(parameters: unknown): Promise<any> {
+    private async runDocumentProcessingWorkflow(parameters: any): Promise<any> {
         console.log('📄 Running automated document processing workflow...');
         
         return {
@@ -609,7 +609,7 @@ export class AutomatedWorkflowEngine extends EventEmitter {
         };
     }
 
-    private async runAgentRecoveryWorkflow(parameters: unknown): Promise<any> {
+    private async runAgentRecoveryWorkflow(parameters: any): Promise<any> {
         console.log('🤖 Running automated agent recovery workflow...');
         
         return {
@@ -621,7 +621,7 @@ export class AutomatedWorkflowEngine extends EventEmitter {
         };
     }
 
-    private async runAnomalyInvestigationWorkflow(parameters: unknown): Promise<any> {
+    private async runAnomalyInvestigationWorkflow(parameters: any): Promise<any> {
         console.log('🕵️ Running automated anomaly investigation workflow...');
         
         return {
@@ -640,7 +640,7 @@ export class AutomatedWorkflowEngine extends EventEmitter {
     private getMetricValue(metricName: string, metrics: PerformanceMetrics): number | undefined {
         // Handle nested metric paths (e.g., 'database.connections')
         const path = metricName.split('.');
-        let value: unknown = metrics;
+        let value: any = metrics;
         
         for (const key of path) {
             value = value?.[key];
@@ -666,7 +666,7 @@ export class AutomatedWorkflowEngine extends EventEmitter {
         }
     }
 
-    private async sendAlert(action: unknown, trigger: WorkflowTrigger, metrics: PerformanceMetrics): Promise<void> {
+    private async sendAlert(action: any, trigger: WorkflowTrigger, metrics: PerformanceMetrics): Promise<any> {
         const alert: SystemAlert = {
             id: `alert-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             type: action.type,
@@ -689,17 +689,17 @@ export class AutomatedWorkflowEngine extends EventEmitter {
         console.log(`🚨 Alert sent: ${alert.message} (${alert.severity})`);
     }
 
-    private async scaleResources(action: unknown, metrics: PerformanceMetrics): Promise<void> {
+    private async scaleResources(action: any, metrics: PerformanceMetrics): Promise<any> {
         console.log(`📈 Scaling resources ${action.direction} by factor ${action.factor}`);
         // This would integrate with container orchestration or cloud scaling APIs
     }
 
-    private async performCleanup(action: unknown, metrics: PerformanceMetrics): Promise<void> {
+    private async performCleanup(action: any, metrics: PerformanceMetrics): Promise<any> {
         console.log('🧹 Performing automated cleanup...');
         // Implement cleanup logic
     }
 
-    private async restartService(action: unknown, metrics: PerformanceMetrics): Promise<void> {
+    private async restartService(action: any, metrics: PerformanceMetrics): Promise<any> {
         console.log(`🔄 Restarting service: ${action.serviceName}`);
         // Implement service restart logic
     }
@@ -710,7 +710,7 @@ export class AutomatedWorkflowEngine extends EventEmitter {
         console.log(`📋 Queued trigger for later execution: ${trigger.id}`);
     }
 
-    private async processAnomalies(anomalies: unknown[]): Promise<void> {
+    private async processAnomalies(anomalies: any[]): Promise<any> {
         for (const anomaly of anomalies) {
             // Create synthetic metrics for anomaly triggers
             const anomalyMetrics = {
@@ -744,7 +744,7 @@ export class AutomatedWorkflowEngine extends EventEmitter {
     /**
      * Get current trigger statistics
      */
-    getTriggerStats(): unknown {
+    getTriggerStats(): any {
         const stats = {
             totalTriggers: this.triggers.size,
             activeTriggers: Array.from(this.triggers.values()).filter(t => t.enabled).length,
@@ -769,7 +769,7 @@ export class AutomatedWorkflowEngine extends EventEmitter {
     /**
      * Get current system metrics
      */
-    getSystemMetrics(): unknown {
+    getSystemMetrics(): any {
         const latest = this.performanceHistory[this.performanceHistory.length - 1];
         return {
             currentMetrics: latest,
@@ -839,7 +839,7 @@ class MetricsCollector {
 
     constructor(private engine: AutomatedWorkflowEngine) {}
 
-    async recordMetrics(metrics: PerformanceMetrics): Promise<void> {
+    async recordMetrics(metrics: PerformanceMetrics): Promise<any> {
         // Record metrics for analysis
         for (const [key, value] of Object.entries(metrics)) {
             if (typeof value === 'number') {
@@ -862,7 +862,7 @@ class MetricsCollector {
         return this.metrics.get(metricName) || [];
     }
 
-    calculateTrends(metricName: string): unknown {
+    calculateTrends(metricName: string): any {
         const values = this.getMetricHistory(metricName);
         if (values.length < 2) return null;
 
@@ -887,14 +887,14 @@ class MetricsCollector {
  * Pattern Analyzer for ML-based anomaly detection
  */
 class PatternAnalyzer {
-    constructor(private config: unknown) {}
+    constructor(private config: any) {}
 
     async analyzeMetrics(metrics: PerformanceMetrics[]): Promise<unknown[]> {
         if (metrics.length < this.config.minOccurrences) {
             return [];
         }
 
-        const anomalies: unknown[] = [];
+        const anomalies: any[] = [];
 
         // Simple statistical anomaly detection
         for (const metricName of ['errorRate', 'responseTime', 'cpuUsage', 'memoryUsage']) {

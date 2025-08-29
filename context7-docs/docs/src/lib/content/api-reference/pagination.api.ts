@@ -4,13 +4,13 @@ import type {
 	PaginationPrevButtonPropsWithoutHTML,
 	PaginationRootPropsWithoutHTML,
 } from "bits-ui";
-import { pageItemProp, withChildProps } from "./shared.js";
+import { pageItemProp, withChildProps } from './shared';
 import {
 	PaginationChildSnippetProps,
 	PaginationChildrenSnippetProps,
 	PaginationOnPageChangeProp,
-} from "./extended-types/pagination/index.js";
-import { OrientationProp } from "./extended-types/shared/index.js";
+} from './extended-types/pagination/index';
+import { OrientationProp } from './extended-types/shared/index';
 import {
 	defineBooleanProp,
 	defineComponentApiSchema,
@@ -18,7 +18,7 @@ import {
 	defineFunctionProp,
 	defineNumberProp,
 	defineSimpleDataAttr,
-} from "../utils.js";
+} from '../utils';
 
 export const root = defineComponentApiSchema<PaginationRootPropsWithoutHTML>({
 	title: "Root",

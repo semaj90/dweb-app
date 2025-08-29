@@ -4,7 +4,7 @@
 export interface SynthesizerInput {
   query: string;
   context?: {
-    legalBertAnalysis?: unknown;
+    legalBertAnalysis?: any;
     conversationHistory?: Array<{
       role: "user" | "assistant";
       content: string;

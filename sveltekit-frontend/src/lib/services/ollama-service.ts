@@ -12,7 +12,7 @@ const LOCAL_LLM_PATHS = {
   ollama: "http://localhost:11434"
 };
 
-const checkLocalInstallations = async () => ({ ollama: true });
+const checkLocalInstallations = async (): Promise<any> => ({ ollama: true });
 
 export interface OllamaModelInfo {
   name: string;
@@ -86,7 +86,7 @@ class OllamaService {
         return data.embedding;
       }
       throw new Error("Invalid embedding response from Ollama");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Ollama embedding generation failed:", error);
       throw error;
     }
@@ -129,7 +129,7 @@ class OllamaService {
 
         return true;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn("⚠️ Ollama not available:", error);
       this.isAvailable = false;
     }
@@ -149,7 +149,7 @@ class OllamaService {
         this.availableModels = data.models || [];
         console.log(`📦 Found ${this.availableModels.length} Ollama models`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to load Ollama models:", error);
     }
   }
@@ -233,7 +233,7 @@ SYSTEM """You are a specialized legal AI assistant with expertise in case law an
         console.error("Failed to import GGUF model:", error);
         return false;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error importing GGUF model:", error);
       return false;
     }
@@ -283,7 +283,7 @@ SYSTEM """You are a specialized legal AI assistant with expertise in case law an
 
       const data: OllamaGenerateResponse = await response.json();
       return data.response || "";
-    } catch (error) {
+    } catch (error: any) {
       console.error("Ollama generation failed:", error);
       throw error;
     }
@@ -354,13 +354,13 @@ SYSTEM """You are a specialized legal AI assistant with expertise in case law an
             if (data.done) {
               return;
             }
-          } catch (e) {
+          } catch (e: any) {
             // Skip invalid JSON lines
             continue;
           }
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Ollama streaming failed:", error);
       throw error;
     }
@@ -455,7 +455,7 @@ SYSTEM """You are a specialized legal AI assistant with expertise in case law an
         done: data.done,
         context: data.context,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Generate response failed:", error);
       throw error;
     }
@@ -470,7 +470,7 @@ SYSTEM """You are a specialized legal AI assistant with expertise in case law an
         body: JSON.stringify({ name: modelName }),
       });
       return response.ok;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to pull model:", error);
       return false;
     }
@@ -484,7 +484,7 @@ SYSTEM """You are a specialized legal AI assistant with expertise in case law an
         body: JSON.stringify({ name: modelName }),
       });
       return response.ok;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to delete model:", error);
       return false;
     }

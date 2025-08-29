@@ -12,7 +12,7 @@ import { ocrService, type OCRResult, type ExtractedField } from './ocrService';
 import type { AIResponse } from '../types/ai';
 
 // Model configuration and priorities
-interface ModelConfig {
+export interface ModelConfig {
   name: string;
   endpoint: string;
   priority: number;
@@ -30,7 +30,7 @@ type ModelCapability =
   | 'property_law'
   | 'deed_analysis';
 
-interface OrchestratorConfig {
+export interface OrchestratorConfig {
   primaryModel: string;
   fallbackModels: string[];
   maxRetries: number;
@@ -39,7 +39,7 @@ interface OrchestratorConfig {
   memoryThreshold: number; // GB
 }
 
-interface ProcessingContext {
+export interface ProcessingContext {
   task: string;
   documentType?: string;
   priority: 'low' | 'medium' | 'high';
@@ -49,7 +49,7 @@ interface ProcessingContext {
   useVision?: boolean;
 }
 
-interface ModelStatus {
+export interface ModelStatus {
   name: string;
   available: boolean;
   memoryUsage: number;
@@ -153,7 +153,7 @@ export class AIModelOrchestrator {
 
       return result;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Model ${selectedModel} failed:`, error);
 
       // Step 5: Try fallback if enabled
@@ -267,7 +267,7 @@ export class AIModelOrchestrator {
           }
         };
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Multi-agent processing failed:', error);
       // Fallback to direct model
       return await this.processWithDirectModel(prompt, context, modelName);
@@ -340,7 +340,7 @@ Please analyze this document considering the OCR extraction results.
 `;
 
       return await this.processWithDirectModel(enhancedPrompt, context, modelName);
-    } catch (error) {
+    } catch (error: any) {
       console.error('OCR processing failed:', error);
       return await this.processWithDirectModel(prompt, context, modelName);
     }
@@ -402,7 +402,7 @@ Please analyze this document considering the OCR extraction results.
           evalDuration: data.eval_duration
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Direct model ${modelName} failed:`, error);
       throw error;
     }
@@ -444,7 +444,7 @@ Please analyze this document considering the OCR extraction results.
           }
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Legal-BERT enhancement failed:', error);
       return response;
     }
@@ -476,7 +476,7 @@ Please analyze this document considering the OCR extraction results.
         console.log(`🔄 Trying fallback model: ${modelName}`);
         return await this.processWithDirectModel(prompt, context, modelName);
 
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Fallback model ${modelName} also failed:`, error);
         continue;
       }
@@ -523,7 +523,7 @@ Provide thorough, accurate legal guidance across all practice areas.`;
 
       const data = await response.json();
       const models = data.models || [];
-      return models.some((model: unknown) => model.name.includes(modelName));
+      return models.some((model: any) => model.name.includes(modelName));
     } catch {
       return false;
     }
@@ -536,7 +536,7 @@ Provide thorough, accurate legal guidance across all practice areas.`;
   }
 
   private startHealthMonitoring(): void {
-    setInterval(async () => {
+    setInterval(async (): Promise<any> => {
       for (const [name, model] of this.models) {
         const startTime = Date.now();
         const isHealthy = await model.healthCheck();

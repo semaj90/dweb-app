@@ -4,8 +4,8 @@ import type { RequestHandler } from '@sveltejs/kit';
 // SvelteKit 2.0 + Svelte 5 + Direct Ollama integration
 
 import { json, error } from "@sveltejs/kit";
-import { ollamaService } from "../../../../lib/server/services/OllamaService.js";
-import { logger } from "../../../../lib/server/production-logger.js";
+import { ollamaService } from '../../../../lib/server/services/OllamaService';
+import { logger } from '../../../../lib/server/production-logger';
 const dev = process.env.NODE_ENV === 'development';
 
 export interface ChatRequest {
@@ -71,7 +71,7 @@ export const POST: RequestHandler = async ({ request }) => {
         startTime
       );
     }
-  } catch (err) {
+  } catch (err: any) {
     logger.error("Chat API error", err);
 
     if (err instanceof Error && "status" in err) {
@@ -136,7 +136,7 @@ async function handleStreamingResponse(
             }
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         logger.error("Streaming error", error);
         controller.error(error);
       }
@@ -244,7 +244,7 @@ export const GET: RequestHandler = async () => {
         "GET /api/ai/chat - Health check",
       ],
     });
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Health check failed", error);
     return json({ 
       status: "error", 

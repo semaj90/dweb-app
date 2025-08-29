@@ -13,7 +13,7 @@
 
 import { writable, derived, get } from 'svelte/store';
 import { browser } from '$app/environment';
-import { goBinaryService } from './go-binary-integration.js';
+import { goBinaryService } from './go-binary-integration';
 
 // Service topology from architecture analysis
 export interface ServiceDefinition {
@@ -381,7 +381,7 @@ export class MasterServiceCoordinator {
       this.isInitialized = true;
       console.log('✅ Master Service Coordinator initialized');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize Master Service Coordinator:', error);
     }
   }
@@ -433,7 +433,7 @@ export class MasterServiceCoordinator {
 
       console.log(`✅ Started service: ${service.displayName} (${service.port})`);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Failed to start service ${service.name}:`, error);
       this.updateServiceStatus(service.id, {
         status: 'failed',
@@ -525,7 +525,7 @@ export class MasterServiceCoordinator {
         build: healthData.build
       });
 
-    } catch (error) {
+    } catch (error: any) {
       const responseTime = Date.now() - startTime;
       const currentStatus = get(this.serviceStatuses).get(service.id);
       
@@ -713,7 +713,7 @@ export class MasterServiceCoordinator {
             break;
           // Add more recovery action types as needed
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Failed to execute recovery action ${action.type}:`, error);
       }
     }

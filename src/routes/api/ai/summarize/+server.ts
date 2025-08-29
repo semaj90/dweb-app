@@ -3,8 +3,8 @@
 
 import { json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
-import { langchain } from "$lib/ai/langchain.js";
-import { multiLayerCache } from "$lib/cache/multi-layer-cache.js";
+import { langchain } from '$lib/ai/langchain';
+import { multiLayerCache } from '$lib/cache/multi-layer-cache';
 import { z } from "zod";
 
 /**
@@ -35,7 +35,7 @@ const summarizeRequestSchema = z.object({
   extractionTemplate: z.string().optional(),
 });
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const body = await request.json();
 
@@ -90,7 +90,7 @@ export const POST: RequestHandler = async ({ request }) => {
       }
     }
 
-    let result: unknown = {};
+    let result: any = {};
 
     switch (type) {
       case "summary":
@@ -171,7 +171,7 @@ export const POST: RequestHandler = async ({ request }) => {
         options,
       },
     });
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("Summarization error:", error);
 
     return json(
@@ -188,13 +188,13 @@ export const POST: RequestHandler = async ({ request }) => {
   }
 };
 
-async function performSummarization(content: string, options: unknown) {
+async function performSummarization(content: string, options: any): Promise<any> {
   const summary = await langchain.summarizeDocument(content, {
     type: content.length > 4000 ? "map_reduce" : "stuff",
     maxTokens: options.maxTokens,
   });
 
-  const result: unknown = {
+  const result: any = {
     summary,
     wordCount: content.split(/\s+/).length,
     characterCount: content.length,
@@ -290,7 +290,7 @@ async function performSummarization(content: string, options: unknown) {
   return result;
 }
 
-async function performCustomAnalysis(content: string, prompt: string) {
+async function performCustomAnalysis(content: string, prompt: string): Promise<any> {
   const analysis = await langchain.extractInfo(content, prompt);
 
   return {
@@ -300,7 +300,7 @@ async function performCustomAnalysis(content: string, prompt: string) {
   };
 }
 
-async function performInformationExtraction(content: string, template: string) {
+async function performInformationExtraction(content: string, template: string): Promise<any> {
   const extraction = await langchain.extractInfo(content, template);
 
   return {
@@ -310,7 +310,7 @@ async function performInformationExtraction(content: string, template: string) {
   };
 }
 
-async function performDocumentComparison(content1: string, content2: string) {
+async function performDocumentComparison(content1: string, content2: string): Promise<any> {
   const comparison = await langchain.compareDocuments(content1, content2);
 
   return {
@@ -323,7 +323,7 @@ async function performDocumentComparison(content1: string, content2: string) {
 function generateCacheKey(
   content: string,
   type: string,
-  options: unknown,
+  options: any,
   customPrompt?: string,
   comparisonContent?: string,
   extractionTemplate?: string
@@ -361,7 +361,7 @@ function generateCacheKey(
   return key;
 }
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
   try {
     // Simple summary endpoint for quick text analysis
     const text = url.searchParams.get("text");
@@ -387,7 +387,7 @@ export const GET: RequestHandler = async ({ url }) => {
       summary,
       wordCount: text.split(/\s+/).length,
     });
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("GET summarization error:", error);
 
     return json(

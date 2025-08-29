@@ -48,7 +48,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
             controller.enqueue(encoder.encode('data: [DONE]\n\n'));
             controller.close();
-          } catch (error) {
+          } catch (error: any) {
             console.error('Streaming error:', error);
             const errorChunk = {
               text: 'An error occurred while processing your request.',
@@ -106,7 +106,7 @@ export const POST: RequestHandler = async ({ request }) => {
         timestamp: new Date().toISOString(),
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Chat API error:', error);
     return json(
       {

@@ -40,7 +40,7 @@ export const GET: RequestHandler = async () => {
     ];
 
     return json(statutes);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching statutes:", error);
     return json({ error: "Failed to fetch statutes" }, { status: 500 });
   }
@@ -58,7 +58,7 @@ export const POST: RequestHandler = async ({ request }) => {
     };
 
     return json(newStatute, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating statute:", error);
     return json({ error: "Failed to create statute" }, { status: 500 });
   }

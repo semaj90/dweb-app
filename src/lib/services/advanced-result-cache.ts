@@ -171,7 +171,7 @@ export class AdvancedResultCache extends EventEmitter {
       }
       
       this.stats.redis.misses++;
-    } catch (error) {
+    } catch (error: any) {
       this.emit('cache:error', {
         operation: 'redis_get',
         inputHash,
@@ -200,7 +200,7 @@ export class AdvancedResultCache extends EventEmitter {
     result: T, 
     computeTimeMs: number,
     options: { ttl?: number; fromGPU?: boolean; metadata?: any } = {}
-  ): Promise<void> {
+  ): Promise<any> {
     const startTime = performance.now();
     
     const entry: CacheEntry<T> = {
@@ -238,7 +238,7 @@ export class AdvancedResultCache extends EventEmitter {
         entry.metadata.compressionRatio = originalSize / compressedSize;
       }
       
-    } catch (error) {
+    } catch (error: any) {
       this.emit('cache:error', {
         operation: 'redis_set',
         inputHash,
@@ -406,7 +406,7 @@ export class AdvancedResultCache extends EventEmitter {
       // Use MessagePack for better compression and speed
       const packed = msgpackEncode(entry);
       return Buffer.from(packed).toString('base64');
-    } catch (error) {
+    } catch (error: any) {
       // Fallback to JSON
       return JSON.stringify(entry);
     }
@@ -420,7 +420,7 @@ export class AdvancedResultCache extends EventEmitter {
     try {
       const buffer = Buffer.from(data, 'base64');
       return msgpackDecode(buffer) as CacheEntry<T>;
-    } catch (error) {
+    } catch (error: any) {
       // Fallback to JSON
       return JSON.parse(data);
     }
@@ -510,7 +510,7 @@ export class AdvancedResultCache extends EventEmitter {
     inputs: any[];
     computeFn: (input: any) => Promise<any>;
     concurrency?: number;
-  }): Promise<void> {
+  }): Promise<any> {
     const concurrency = preloadConfig.concurrency || 5;
     const chunks = [];
     
@@ -535,7 +535,7 @@ export class AdvancedResultCache extends EventEmitter {
   /**
    * Shutdown cache system
    */
-  async shutdown(): Promise<void> {
+  async shutdown(): Promise<any> {
     this.memoryCache.clear();
     await this.redis.quit();
     this.emit('cache:shutdown');

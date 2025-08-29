@@ -15,12 +15,12 @@ import {
 	escapeLayerProps,
 	forceMountProp,
 	withChildProps,
-} from "./shared.js";
+} from './shared';
 import {
 	NoopProp,
 	OnStringValueChangeProp,
 	OrientationProp,
-} from "./extended-types/shared/index.js";
+} from './extended-types/shared/index';
 import {
 	defineBooleanProp,
 	defineComponentApiSchema,
@@ -28,7 +28,7 @@ import {
 	defineFunctionProp,
 	defineNumberProp,
 	defineStringProp,
-} from "../utils.js";
+} from '../utils';
 
 export const root = defineComponentApiSchema<NavigationMenuRootPropsWithoutHTML>({
 	title: "Root",

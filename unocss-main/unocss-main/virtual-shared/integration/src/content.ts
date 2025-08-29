@@ -7,7 +7,7 @@ import { applyTransformers } from './transformers'
 export async function setupContentExtractor(
   ctx: UnocssPluginContext,
   shouldWatch = false,
-) {
+): Promise<any> {
   const { content } = await ctx.getConfig()
   const { extract, tasks, root, filter } = ctx
 
@@ -28,7 +28,7 @@ export async function setupContentExtractor(
   if (content?.filesystem) {
     const files = await glob(content.filesystem, { cwd: root, expandDirectories: false })
 
-    async function extractFile(file: string) {
+    async function extractFile(file: string): Promise<any> {
       file = isAbsolute(file) ? file : resolve(root, file)
       const code = await fs.readFile(file, 'utf-8')
       if (!filter(code, file))

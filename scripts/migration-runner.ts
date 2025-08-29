@@ -1,8 +1,8 @@
 // Database Migration Runner
 // Production-ready database migration and validation system
 
-import { drizzle } from 'drizzle-orm/postgres-js';
-import { migrate } from 'drizzle-orm/postgres-js/migrator';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import postgres from 'postgres';
 import fs from 'fs/promises';
 import path from 'path';
@@ -10,14 +10,14 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-interface MigrationResult {
+export interface MigrationResult {
   success: boolean;
   migrationsRun: number;
   errors: string[];
   duration: number;
 }
 
-interface ValidationResult {
+export interface ValidationResult {
   valid: boolean;
   checks: {
     tablesExist: boolean;
@@ -476,7 +476,7 @@ class DatabaseMigrationRunner {
 }
 
 // CLI interface for running migrations
-async function main() {
+async function main(): Promise<any> {
   const args = process.argv.slice(2);
   const command = args[0];
 
@@ -534,7 +534,7 @@ Examples:
         `);
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Command failed:', error);
     process.exit(1);
   } finally {

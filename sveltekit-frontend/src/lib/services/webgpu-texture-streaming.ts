@@ -4,10 +4,10 @@
  * Author: Claude Code Integration
  */
 
-import { gpuCacheOrchestrator } from './gpu-cache-orchestrator.js';
+import { gpuCacheOrchestrator } from './gpu-cache-orchestrator';
 
 // === WebGPU Texture Configuration ===
-interface TextureStreamConfig {
+export interface TextureStreamConfig {
   device: GPUDevice;
   format: GPUTextureFormat;
   usage: GPUTextureUsageFlags;
@@ -22,7 +22,7 @@ interface TextureStreamConfig {
   label?: string;
 }
 
-interface StreamingTextureEntry {
+export interface StreamingTextureEntry {
   id: string;
   texture: GPUTexture;
   textureView: GPUTextureView;
@@ -138,7 +138,7 @@ export class WebGPUTextureStreamingService {
       // Initialize GPU cache integration
       await this.initializeGPUCacheIntegration();
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize WebGPU:', error);
       throw error;
     }
@@ -256,7 +256,7 @@ export class WebGPUTextureStreamingService {
       console.log(`🎨 Texture created: ${id} (${textureSize} bytes, ${entry.cacheRegion})`);
       return entry;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Failed to create texture ${id}:`, error);
       throw error;
     }
@@ -355,7 +355,7 @@ export class WebGPUTextureStreamingService {
       const streamTime = performance.now() - startTime;
       console.log(`📤 Texture streamed: ${textureId} (${streamTime.toFixed(2)}ms)`);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Failed to stream texture data for ${textureId}:`, error);
       throw error;
     }

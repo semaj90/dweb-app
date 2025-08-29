@@ -6,7 +6,7 @@
 import { type RequestHandler,  json } from '@sveltejs/kit';
 import { synthesizeAIInput, processAIAssistantQuery } from "$lib/services/comprehensive-database-orchestrator";
 
-interface DocumentDraftingRequest {
+export interface DocumentDraftingRequest {
   documentType: string;
   jurisdiction?: string;
   parties: {
@@ -24,7 +24,7 @@ interface DocumentDraftingRequest {
   customRequirements?: string;
 }
 
-interface DraftingAssistance {
+export interface DraftingAssistance {
   documentStructure: {
     section: string;
     description: string;
@@ -95,7 +95,7 @@ export const POST: RequestHandler = async ({ request }) => {
     };
 
     return json(response);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Document drafting API error:', error);
 
     return json(
@@ -487,7 +487,7 @@ Provide specific language suggestions and alternatives for key sections:`;
       temperature: 0.4,
       maxTokens: 800,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.warn('AI content suggestions failed:', error);
 
     return `Content Suggestions for ${request.documentType}:

@@ -92,7 +92,7 @@ export class AIServiceWorkerManager {
 			this.updateSystemMetrics();
 			
 			console.log(`🧵 AI Service Worker Manager initialized with ${this.workers.size} workers`);
-		} catch (error) {
+		} catch (error: any) {
 			console.error('Failed to initialize AI Service Workers:', error);
 		}
 	}
@@ -113,7 +113,7 @@ export class AIServiceWorkerManager {
 				config: this.getWorkerConfig(type)
 			});
 
-			worker.onmessage = (event) => this.handleWorkerMessage(workerId, event);
+			worker.onmessage = (event: any) => this.handleWorkerMessage(workerId, event);
 			worker.onerror = (error) => this.handleWorkerError(workerId, error);
 
 			this.workers.set(workerId, worker);
@@ -126,7 +126,7 @@ export class AIServiceWorkerManager {
 				load: 0
 			});
 
-		} catch (error) {
+		} catch (error: any) {
 			console.error(`Failed to create worker ${workerId}:`, error);
 		}
 	}

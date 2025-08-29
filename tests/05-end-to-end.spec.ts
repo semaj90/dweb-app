@@ -79,7 +79,7 @@ test.describe('Legal AI End-to-End Workflow Tests', () => {
       } else {
         console.log('⚠️ No PDF files found in lawpdfs, skipping upload test');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log('⚠️ File upload error:', error.message);
     }
     
@@ -124,7 +124,7 @@ test.describe('Legal AI End-to-End Workflow Tests', () => {
             console.log('✅ AI generation working:', aiResult.response.substring(0, 50) + '...');
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         console.log('⚠️ AI test failed (may need model loaded)');
       }
     }
@@ -144,7 +144,7 @@ test.describe('Legal AI End-to-End Workflow Tests', () => {
           workingPages++;
           console.log(`✅ Page accessible: ${testPage}`);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.log(`⚠️ Page not accessible: ${testPage}`);
       }
     }
@@ -230,7 +230,7 @@ test.describe('Legal AI End-to-End Workflow Tests', () => {
       } else {
         console.log('⚠️ AI analysis unavailable (model may need to be loaded)');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log('⚠️ AI analysis simulation skipped');
     }
     

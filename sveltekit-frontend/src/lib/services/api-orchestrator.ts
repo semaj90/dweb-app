@@ -5,11 +5,11 @@
  */
 
 // Service endpoint configuration interfaces
-interface ServiceEndpoints {
+export interface ServiceEndpoints {
   [serviceName: string]: ServiceEndpoint;
 }
 
-interface ServiceEndpoint {
+export interface ServiceEndpoint {
   http?: string;
   grpc?: string;
   quic?: string;
@@ -33,7 +33,7 @@ enum ServiceTier {
   STANDARD = 'standard'
 }
 
-interface ProtocolEndpoint {
+export interface ProtocolEndpoint {
   protocol: ServiceTier;
   host: string;
   port: number;
@@ -46,11 +46,11 @@ interface ProtocolEndpoint {
   };
 }
 
-interface DatabaseEndpoint extends ProtocolEndpoint {}
-interface MessagingEndpoint extends ProtocolEndpoint {}
-interface FrontendEndpoint extends ProtocolEndpoint {}
+export interface DatabaseEndpoint extends ProtocolEndpoint {}
+export interface MessagingEndpoint extends ProtocolEndpoint {}
+export interface FrontendEndpoint extends ProtocolEndpoint {}
 
-interface HealthCheckResult {
+export interface HealthCheckResult {
   healthy: boolean;
   status: string;
   timestamp: Date;
@@ -61,7 +61,7 @@ interface HealthCheckResult {
   endpoint?: string;
 }
 
-interface APIRequestContext {
+export interface APIRequestContext {
   userId?: string;
   requestId?: string;
   timestamp?: number;
@@ -72,7 +72,7 @@ interface APIRequestContext {
   metadata?: Record<string, any>;
 }
 
-interface MultiProtocolRequestOptions {
+export interface MultiProtocolRequestOptions {
   timeout?: number;
   retries?: number;
   fallbackProtocol?: ServiceTier;
@@ -467,7 +467,7 @@ export class APIOrchestrator {
         lastCheck: new Date().toISOString(),
         metadata: response.ok ? await this.extractHealthMetadata(response) : undefined
       };
-    } catch (error) {
+    } catch (error: any) {
       result = {
         status: 'error',
         error: String(error),
@@ -500,7 +500,7 @@ export class APIOrchestrator {
           cpuUsage: data.cpu_usage
         };
       }
-    } catch (error) {
+    } catch (error: any) {
       // Ignore JSON parsing errors
     }
     return {};

@@ -188,7 +188,7 @@ export class AutoGenGGUFOrchestra {
 
       console.log('✅ AutoGen GGUF Orchestra initialized successfully');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ AutoGen Orchestra initialization failed:', error);
     }
   }
@@ -218,7 +218,7 @@ export class AutoGenGGUFOrchestra {
     try {
       await flashAttentionMulticoreBridge.initialize();
       console.log('⚡ FlashAttention2 integrated with AutoGen Orchestra');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ FlashAttention integration failed:', error);
     }
   }
@@ -359,7 +359,7 @@ export class AutoGenGGUFOrchestra {
 
       return response;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Orchestra task failed: ${error}`);
       this.failedTasks++;
 

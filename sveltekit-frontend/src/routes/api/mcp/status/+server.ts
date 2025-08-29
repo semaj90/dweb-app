@@ -25,7 +25,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
 				const healthData = await mcpResponse.json();
 				mcpMetrics = healthData.metrics;
 			}
-		} catch (error) {
+		} catch (error: any) {
 			console.log('MCP server not available:', error.message);
 		}
 		
@@ -40,7 +40,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
 				const data = await ollamaResponse.json();
 				ollamaModels = data.models || [];
 			}
-		} catch (error) {
+		} catch (error: any) {
 			console.log('Ollama not available:', error.message);
 		}
 		
@@ -61,7 +61,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
 				workerCount: 2,
 				lastTestTime: new Date().toISOString()
 			};
-		} catch (error) {
+		} catch (error: any) {
 			console.log('Cluster metrics not available:', error.message);
 		}
 		
@@ -126,7 +126,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
 			recommendations: generateRecommendations(integrationReadiness, mcpServerStatus, ollamaStatus, clusterStatus)
 		});
 		
-	} catch (error) {
+	} catch (error: any) {
 		console.error('MCP status check failed:', error);
 		
 		return json({

@@ -3,7 +3,7 @@
  * Enhanced Vector Operations Service - PostgreSQL + pgvector + Qdrant Integration
  * Production CRUD operations with multi-store vector search and persistence
  */
-import { db } from "./index.js";
+import { db } from './index';
 import { sql, eq, and, desc } from 'drizzle-orm';
 import { 
   cases, 
@@ -14,7 +14,7 @@ import {
   embeddingCache,
   userAiQueries,
   users 
-} from './schema-postgres.js';
+} from './schema-postgres';
 import type { QdrantClient } from '@qdrant/js-client-rest';
 
 // === ENHANCED INTERFACES ===
@@ -70,7 +70,7 @@ export interface EvidenceCreationRequest {
 }
 
 // Legacy interface for backward compatibility
-interface SimilarityResult {
+export interface SimilarityResult {
   id: string;
   content: string;
   similarity: number;
@@ -97,7 +97,7 @@ class EnhancedVectorOperationsService {
       });
       
       console.log('✅ Qdrant client initialized');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Qdrant client initialization failed:', error);
       this.qdrantClient = null;
     }
@@ -204,7 +204,7 @@ class EnhancedVectorOperationsService {
 
       const { embedding } = await response.json();
       return embedding;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Remote embedding generation failed, using fallback:', error);
       return generateSampleEmbedding(); // Fallback to sample embedding
     }
@@ -233,7 +233,7 @@ class EnhancedVectorOperationsService {
 
       console.log(`✅ Embedding generated and stored for ${request.documentType}:${request.documentId}`);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Embedding generation failed:', error);
       throw error;
     }
@@ -287,7 +287,7 @@ class EnhancedVectorOperationsService {
           distance: 'Cosine'
         }
       });
-    } catch (error) {
+    } catch (error: any) {
       // Collection might already exist, that's okay
     }
 
@@ -387,7 +387,7 @@ class EnhancedVectorOperationsService {
         }));
 
         results.push(...collectionResults);
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Qdrant search failed for collection ${collection}:`, error);
       }
     }
@@ -456,7 +456,7 @@ export async function searchSimilarDocuments(
         topics: Array.isArray(row.topics) ? row.topics : (row.topics ? [row.topics] : [])
       }
     }));
-  } catch (error) {
+  } catch (error: any) {
     console.error('Vector similarity search failed:', error);
     // Fallback to text search if vector search fails
     return await fallbackTextSearch(queryEmbedding, limit);
@@ -509,7 +509,7 @@ export async function storeAiQueryWithEmbedding(
       metadata,
       isSuccessful: true,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to store AI query with embedding:', error);
   }
 }
@@ -526,7 +526,7 @@ export async function cacheEmbedding(
       embedding: arrayToPgVector(embedding) as any,
       model,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to cache embedding:', error);
   }
 }
@@ -548,7 +548,7 @@ export async function getCachedEmbedding(textHash: string): Promise<number[] | n
       }
     }
     return null;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to retrieve cached embedding:', error);
     return null;
   }
@@ -602,7 +602,7 @@ export async function hybridSearch(
       .sort((a, b) => b.similarity - a.similarity)
       .slice(0, limit);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Hybrid search failed:', error);
     return await fallbackTextSearch(queryEmbedding, limit);
   }
@@ -613,7 +613,7 @@ export async function checkPgVectorAvailable(): Promise<boolean> {
   try {
     await db.execute(sql`SELECT 1::vector;`);
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.log('pgvector not available:', error.message);
     return false;
   }
@@ -635,7 +635,7 @@ export async function testVectorOperations(): Promise<{
       const testEmbedding = generateSampleEmbedding();
       const results = await searchSimilarDocuments(testEmbedding, 1, 0.0);
       similaritySearchWorking = true;
-    } catch (error) {
+    } catch (error: any) {
       console.log('Similarity search test failed:', error.message);
     }
 
@@ -644,7 +644,7 @@ export async function testVectorOperations(): Promise<{
       await cacheEmbedding('test-hash', testEmbedding);
       const retrieved = await getCachedEmbedding('test-hash');
       embeddingCacheWorking = retrieved !== null;
-    } catch (error) {
+    } catch (error: any) {
       console.log('Embedding cache test failed:', error.message);
     }
   }

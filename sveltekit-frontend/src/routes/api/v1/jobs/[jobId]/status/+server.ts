@@ -7,7 +7,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { redis } from '$lib/server/cache/redis-service';
 
-interface JobStatus {
+export interface JobStatus {
   id: string;
   uploadId: string;
   status: 'queued' | 'processing' | 'completed' | 'failed';
@@ -133,7 +133,7 @@ export const GET: RequestHandler = async ({ params, url, getClientAddress }) => 
     console.log(`✅ Job status retrieved: ${jobId} - ${job.status}`);
     return json(response);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error(`❌ GET /api/v1/jobs/${params.jobId}/status error:`, error);
     return json({
       success: false,
@@ -265,7 +265,7 @@ export const POST: RequestHandler = async ({ params, request, getClientAddress }
     console.log(`✅ Job status updated: ${jobId} - ${job.status}`);
     return json(response);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error(`❌ POST /api/v1/jobs/${params.jobId}/status error:`, error);
     return json({
       success: false,
@@ -359,7 +359,7 @@ export const DELETE: RequestHandler = async ({ params, getClientAddress }) => {
     console.log(`✅ Job cancelled: ${jobId}`);
     return json(response);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error(`❌ DELETE /api/v1/jobs/${params.jobId}/status error:`, error);
     return json({
       success: false,

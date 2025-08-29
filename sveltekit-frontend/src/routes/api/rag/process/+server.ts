@@ -15,7 +15,7 @@ const UPLOADS_DIR = path.join(process.cwd(), 'uploads', 'documents');
 const OCR_DIR = path.join(process.cwd(), 'uploads', 'ocr-processed');
 
 // Ensure upload directories exist
-async function ensureDirectories() {
+async function ensureDirectories(): Promise<any> {
   if (!existsSync(UPLOADS_DIR)) {
     await mkdir(UPLOADS_DIR, { recursive: true });
   }
@@ -89,7 +89,7 @@ async function processWithOCR(filePath: string, mimeType: string): Promise<strin
       return content;
     }
     return `[UNSUPPORTED FILE TYPE: ${mimeType}]`;
-  } catch (error) {
+  } catch (error: any) {
     console.error('OCR processing failed:', error);
     return `[OCR ERROR: ${error.message}]`;
   }
@@ -103,7 +103,7 @@ async function saveDocument(docData: {
   confidence?: number;
   legalAnalysis?: unknown;
   filePath: string;
-}) {
+}): Promise<any> {
   try {
     const [result] = await db.insert(documents).values({
       filename: docData.filename,
@@ -115,7 +115,7 @@ async function saveDocument(docData: {
     }).returning();
 
     return result;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to save document to database:', error);
     throw error;
   }
@@ -181,7 +181,7 @@ async function generateEmbeddings(content: string, documentId: string): Promise<
     }]);
 
     return result;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to generate embeddings:', error);
     throw error;
   }
@@ -224,7 +224,7 @@ ${content.substring(0, 4000)}`,
       model: 'gemma3-legal',
       analyzedAt: new Date().toISOString()
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Legal analysis failed:', error);
     return {
       documentType: 'Unknown',
@@ -326,7 +326,7 @@ export const POST: RequestHandler = async ({ request }) => {
           processedAt: new Date().toISOString()
         });
 
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Failed to process file ${file.name}:`, error);
         results.push({
           filename: file.name,
@@ -352,7 +352,7 @@ export const POST: RequestHandler = async ({ request }) => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('RAG process error:', error);
     return json(
       { error: 'Failed to process files', details: error.message },

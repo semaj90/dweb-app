@@ -5,14 +5,14 @@ import { json } from '@sveltejs/kit';
 import { db } from "$lib/server/db/index";
 
 // Mock interfaces for now
-interface InsertLegalAnalysisSession {
+export interface InsertLegalAnalysisSession {
   userId: string;
   prompt: string;
   response: string;
   caseId?: string;
 }
 
-interface LegalChatRequest {
+export interface LegalChatRequest {
   prompt: string;
   caseId?: string;
   userId: string;
@@ -28,7 +28,7 @@ interface LegalChatRequest {
   };
 }
 
-interface LegalChatResponse {
+export interface LegalChatResponse {
   sessionId: string;
   analysis: string;
   confidence: number;
@@ -111,7 +111,7 @@ export const POST: RequestHandler = async ({ request }) => {
     };
 
     return json(response);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Legal chat error:", error);
     return json(
       { error: "Failed to process legal analysis request" },
@@ -142,7 +142,7 @@ export const GET: RequestHandler = async ({ url }) => {
       .limit(limit);
 
     return json(sessions);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching legal analysis sessions:", error);
     return json(
       { error: "Failed to fetch analysis sessions" },
@@ -152,7 +152,7 @@ export const GET: RequestHandler = async ({ url }) => {
 };
 
 // Helper function to find relevant legal sources
-async function findRelevantLegalSources(prompt: string, caseId?: string) {
+async function findRelevantLegalSources(prompt: string, caseId?: string): Promise<any> {
   const sources = [];
 
   try {
@@ -180,7 +180,7 @@ async function findRelevantLegalSources(prompt: string, caseId?: string) {
       .limit(3);
 
     sources.push(...precedents.map((prec) => ({ ...prec, type: "precedent" })));
-  } catch (error) {
+  } catch (error: any) {
     console.warn("Error searching legal sources:", error);
   }
 
@@ -192,7 +192,7 @@ async function generateLegalAnalysis(
   prompt: string,
   sources: any[],
   context?: unknown
-) {
+): Promise<any> {
   try {
     // Construct analysis prompt with legal context
     const legalPrompt = `
@@ -244,7 +244,7 @@ The case appears to have merit based on the documented evidence and applicable l
     };
 
     return analysisResult;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error generating legal analysis:", error);
     throw new Error("Failed to generate legal analysis");
   }

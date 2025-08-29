@@ -128,7 +128,7 @@ export class ContextAnalyzer {
             const commentSuggestions = this.analyzePromptIntent(comments);
             suggestions.push(...commentSuggestions);
 
-        } catch (error) {
+        } catch (error: any) {
             console.log('Error analyzing file for docs:', error);
         }
 
@@ -157,7 +157,7 @@ export class ContextAnalyzer {
                     comments.push(trimmed.substring(4, trimmed.length - 3).trim());
                 }
             }
-        } catch (error) {
+        } catch (error: any) {
             console.log('Error extracting comments:', error);
         }
         
@@ -189,7 +189,7 @@ export class ContextAnalyzer {
                 );
                 
                 allPrompts.push(...prompts);
-            } catch (error) {
+            } catch (error: any) {
                 // Skip files that can't be read
                 continue;
             }

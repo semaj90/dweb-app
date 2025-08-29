@@ -7,7 +7,7 @@ import { createMachine, assign, fromPromise } from 'xstate';
 import { browser } from '$app/environment';
 
 // RabbitMQ Web STOMP configuration (free tier)
-interface RabbitMQConfig {
+export interface RabbitMQConfig {
   host: string;
   port: number;
   vhost: string;
@@ -370,7 +370,7 @@ export class RabbitMQXStateIntegration {
           onStompError: (frame) => {
             console.error('❌ RabbitMQ STOMP error:', frame);
           },
-          onWebSocketClose: (event) => {
+          onWebSocketClose: (event: any) => {
             console.log('🔌 RabbitMQ WebSocket closed:', event);
           }
         });
@@ -392,7 +392,7 @@ export class RabbitMQXStateIntegration {
       this.isInitialized = true;
       return { connection: this.connection, isConnected: true };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize RabbitMQ:', error);
       throw error;
     }
@@ -527,7 +527,7 @@ export class RabbitMQXStateIntegration {
         default:
           throw new Error(`Unknown message type: ${message.type}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Failed to process ${message.type}:`, error);
       throw error;
     } finally {
@@ -781,7 +781,7 @@ export class RabbitMQXStateIntegration {
         ragContext: result.ragContext
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ WASM inference processing failed:', error);
 
       // Publish error result
@@ -848,7 +848,7 @@ export class RabbitMQXStateIntegration {
         config
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ WASM model loading failed:', error);
       throw error;
     }
@@ -870,7 +870,7 @@ export class RabbitMQXStateIntegration {
         cleanupCompleted: true
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ WASM model unloading failed:', error);
       throw error;
     }
@@ -895,7 +895,7 @@ export class RabbitMQXStateIntegration {
             result,
             success: true
           });
-        } catch (error) {
+        } catch (error: any) {
           results.push({
             requestId: request.id,
             error: error.message,
@@ -913,7 +913,7 @@ export class RabbitMQXStateIntegration {
         results
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ WASM batch inference failed:', error);
       throw error;
     }
@@ -966,7 +966,7 @@ export class RabbitMQXStateIntegration {
         totalChunks: chunks.length
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ WASM streaming inference failed:', error);
       throw error;
     }
@@ -990,7 +990,7 @@ export class RabbitMQXStateIntegration {
         version: '1.0.0'
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ WASM health check failed:', error);
       return {
         status: 'health_check_failed',

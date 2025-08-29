@@ -6,7 +6,7 @@ import { db } from '$lib/server/db/index.js';
 import { cases, evidence } from "$lib/server/db/schema-postgres";
 import { eq } from 'drizzle-orm';
 
-interface EmbeddingOptions {
+export interface EmbeddingOptions {
   model?: string;
   cache?: boolean;
   maxTokens?: number;
@@ -52,7 +52,7 @@ export async function generateEmbedding(
       await cacheEmbedding(truncatedText, model, embedding);
     }
     return embedding;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Embedding generation failed:", error);
     return null;
   }
@@ -79,7 +79,7 @@ async function generateLocalEmbedding(text: string, model: string = "nomic-embed
 
     const data = await response.json();
     return data.embedding;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Ollama embedding generation failed:", error);
     // Fallback to mock embedding for development
     return generateMockEmbedding(384); // nomic-embed-text is 768 dimensions
@@ -151,7 +151,7 @@ export async function updateCaseEmbeddings(caseId: string): Promise<void> {
     //   .where(eq(cases.id, caseId));
 
     console.log(`Updated embeddings for case ${caseId}`);
-  } catch (error) {
+  } catch (error: any) {
     console.error(`Failed to update embeddings for case ${caseId}:`, error);
     throw error;
   }
@@ -212,7 +212,7 @@ export async function updateEvidenceEmbeddings(
     //   .where(eq(evidence.id, evidenceId));
 
     console.log(`Updated embeddings for evidence ${evidenceId}`);
-  } catch (error) {
+  } catch (error: any) {
     console.error(
       `Failed to update embeddings for evidence ${evidenceId}:`,
       error,

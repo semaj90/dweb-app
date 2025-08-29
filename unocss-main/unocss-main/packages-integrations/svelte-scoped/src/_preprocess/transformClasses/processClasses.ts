@@ -2,7 +2,7 @@ import type { UnoGenerator } from '@unocss/core'
 import type { TransformClassesOptions } from '../types'
 import type { FoundClass } from './findClasses'
 import { processClassBody } from './processClassBody'
-import { processClsx } from './processClsx.js'
+import { processClsx } from './processClsx'
 import { processDirective } from './processDirective'
 
 export interface ProcessResult {
@@ -10,11 +10,11 @@ export interface ProcessResult {
   codeUpdate: CodeUpdate
 }
 
-interface ProcessResults extends Omit<ProcessResult, 'codeUpdate'> {
+export interface ProcessResults extends Omit<ProcessResult, 'codeUpdate'> {
   codeUpdates: CodeUpdate[]
 }
 
-interface CodeUpdate {
+export interface CodeUpdate {
   start: number
   end: number
   content: string

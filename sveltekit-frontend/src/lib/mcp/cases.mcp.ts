@@ -81,7 +81,7 @@ export async function loadCase(caseId: string): Promise<CaseData | null> {
     console.log(`✅ Case ${caseId} loaded from database`);
     return result as CaseData;
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ MCP Tool loadCase error:', error);
     throw error;
   }
@@ -121,7 +121,7 @@ export async function createCase(caseData: Omit<CaseData, 'id' | 'createdAt' | '
     console.log(`✅ Case created: ${newCase.id}`);
     return { success: true, caseId: newCase.id };
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ MCP Tool createCase error:', error);
     return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
   }
@@ -162,7 +162,7 @@ export async function updateCase(caseId: string, updates: Partial<CaseData>): Pr
     console.log(`✅ Case ${caseId} updated`);
     return { success: true };
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ MCP Tool updateCase error:', error);
     return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
   }
@@ -212,7 +212,7 @@ export async function addEvidence(caseId: string, evidence: Omit<EvidenceData, '
     console.log(`✅ Evidence added: ${newEvidence.id}`);
     return { success: true, evidenceId: newEvidence.id };
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ MCP Tool addEvidence error:', error);
     return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
   }
@@ -279,7 +279,7 @@ export async function searchCases(query: string, userId: string, filters?: {
     console.log(`✅ Found ${results.length} cases`);
     return searchResult;
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ MCP Tool searchCases error:', error);
     return { cases: [], totalCount: 0 };
   }
@@ -331,7 +331,7 @@ export async function getUserCases(userId: string, options: {
 
     return result;
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ MCP Tool getUserCases error:', error);
     return { cases: [], totalCount: 0 };
   }
@@ -389,7 +389,7 @@ export async function healthCheck(): Promise<{ status: 'healthy' | 'unhealthy'; 
       }
     };
     
-  } catch (error) {
+  } catch (error: any) {
     return {
       status: 'unhealthy',
       details: {

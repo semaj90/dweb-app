@@ -139,7 +139,7 @@ class AppLogger {
       try {
         // You could implement database storage here
         // await db.insert(auditLogs).values({...});
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to persist log:", error);
       }
     }
@@ -166,7 +166,7 @@ class AppLogger {
         });
 
         return response;
-      } catch (error) {
+      } catch (error: any) {
         const duration = Date.now() - start;
 
         this.log("error", `Request failed: ${method} ${endpoint}`, {

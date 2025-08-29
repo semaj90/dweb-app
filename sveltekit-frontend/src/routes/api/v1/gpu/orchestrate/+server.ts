@@ -31,7 +31,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
       default:
         return json({ error: 'Invalid action' }, { status: 400 });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('GPU orchestration error:', error);
     return json({
       error: 'GPU orchestration failed',
@@ -40,7 +40,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
   }
 };
 
-async function handleLegalAnalysis(data: any, config: any) {
+async function handleLegalAnalysis(data: any, config: any): Promise<any> {
   const { document, context, options } = data;
   
   // Enhanced legal analysis with Gemma3 configuration
@@ -78,7 +78,7 @@ async function handleLegalAnalysis(data: any, config: any) {
   });
 }
 
-async function handleDocumentProcessing(data: any, config: any) {
+async function handleDocumentProcessing(data: any, config: any): Promise<any> {
   const { files, context, options } = data;
   
   const results = [];
@@ -113,7 +113,7 @@ async function handleDocumentProcessing(data: any, config: any) {
   });
 }
 
-async function handleAutosolve(data: any, config: any) {
+async function handleAutosolve(data: any, config: any): Promise<any> {
   const { threshold, forceRun, includeClusterMetrics } = data;
   
   // Trigger autosolve maintenance cycle
@@ -138,7 +138,7 @@ async function handleAutosolve(data: any, config: any) {
   });
 }
 
-async function handleGPUTask(data: any, config: any) {
+async function handleGPUTask(data: any, config: any): Promise<any> {
   const { taskType, taskData, priority, context } = data;
   
   const result = await mcpGPUOrchestrator.dispatchGPUTask({
@@ -164,7 +164,7 @@ async function handleGPUTask(data: any, config: any) {
   });
 }
 
-async function handleClusterStatus() {
+async function handleClusterStatus(): Promise<any> {
   const clusterStatus = await mcpGPUOrchestrator.getClusterStatus();
   
   return json({
@@ -303,7 +303,7 @@ export const GET: RequestHandler = async () => {
       cluster: clusterStatus,
       timestamp: new Date().toISOString()
     });
-  } catch (error) {
+  } catch (error: any) {
     return json({
       status: 'unhealthy',
       error: error instanceof Error ? error.message : 'Unknown error',

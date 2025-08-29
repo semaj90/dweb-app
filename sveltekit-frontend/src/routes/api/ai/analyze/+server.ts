@@ -145,7 +145,7 @@ Comprehensive Analysis:`;
         complexityLevel: enhancedAnalysis.complexityLevel,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("AI analysis error:", error);
 
     // Check if it's an Ollama connection error
@@ -258,7 +258,7 @@ function calculateConfidence(text: string): number {
   return Math.min(0.95, Math.max(0.6, confidence));
 }
 
-interface AnalysisContext {
+export interface AnalysisContext {
   analysisType: string;
   model: string;
   processingTime: number;

@@ -52,7 +52,7 @@ export interface ErrorReport {
 }
 
 // Logger interface for different environments
-interface Logger {
+export interface Logger {
   error(message: string, error?: AppError): void;
   warn(message: string, context?: any): void;
   info(message: string, context?: any): void;
@@ -96,7 +96,7 @@ class ProductionLogger implements Logger {
           timestamp: new Date().toISOString()
         })
       });
-    } catch (err) {
+    } catch (err: any) {
       // Fallback to console if logging service is down
       console.error(`[ERROR] ${message}`, error);
     }
@@ -116,7 +116,7 @@ class ProductionLogger implements Logger {
           timestamp: new Date().toISOString()
         })
       });
-    } catch (err) {
+    } catch (err: any) {
       console.warn(`[WARN] ${message}`, context);
     }
   }
@@ -135,7 +135,7 @@ class ProductionLogger implements Logger {
           timestamp: new Date().toISOString()
         })
       });
-    } catch (err) {
+    } catch (err: any) {
       console.info(`[INFO] ${message}`, context);
     }
   }
@@ -316,7 +316,7 @@ class ErrorHandler {
         },
         body: JSON.stringify(report)
       });
-    } catch (err) {
+    } catch (err: any) {
       await this.logger.error('Failed to send error to monitoring service', error);
     }
   }

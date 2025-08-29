@@ -46,7 +46,7 @@ export const POST: RequestHandler = async ({ request }) => {
 					error: `Unsupported event type: ${body.event_type}` 
 				}, { status: 400 });
 		}
-	} catch (error) {
+	} catch (error: any) {
 		console.error('Legal NATS API Error:', error);
 		return json({
 			success: false,
@@ -149,7 +149,7 @@ export const GET: RequestHandler = async () => {
 
 // Event Handlers
 
-async function handleCaseEvent(nats: EnhancedNATSMessagingService, body: any) {
+async function handleCaseEvent(nats: EnhancedNATSMessagingService, body: any): Promise<any> {
 	const { action, data } = body;
 	
 	if (!['created', 'updated', 'closed'].includes(action)) {
@@ -171,7 +171,7 @@ async function handleCaseEvent(nats: EnhancedNATSMessagingService, body: any) {
 	});
 }
 
-async function handleDocumentEvent(nats: EnhancedNATSMessagingService, body: any) {
+async function handleDocumentEvent(nats: EnhancedNATSMessagingService, body: any): Promise<any> {
 	const { action, data } = body;
 	
 	if (!['uploaded', 'processed', 'analyzed', 'indexed'].includes(action)) {
@@ -193,7 +193,7 @@ async function handleDocumentEvent(nats: EnhancedNATSMessagingService, body: any
 	});
 }
 
-async function handleAIAnalysisEvent(nats: EnhancedNATSMessagingService, body: any) {
+async function handleAIAnalysisEvent(nats: EnhancedNATSMessagingService, body: any): Promise<any> {
 	const { action, data } = body;
 	
 	if (!['started', 'completed', 'failed'].includes(action)) {
@@ -215,7 +215,7 @@ async function handleAIAnalysisEvent(nats: EnhancedNATSMessagingService, body: a
 	});
 }
 
-async function handleChatEvent(nats: EnhancedNATSMessagingService, body: any) {
+async function handleChatEvent(nats: EnhancedNATSMessagingService, body: any): Promise<any> {
 	const { action, data } = body;
 	
 	if (!['message', 'response', 'streaming'].includes(action)) {
@@ -238,7 +238,7 @@ async function handleChatEvent(nats: EnhancedNATSMessagingService, body: any) {
 	});
 }
 
-async function handleSearchEvent(nats: EnhancedNATSMessagingService, body: any) {
+async function handleSearchEvent(nats: EnhancedNATSMessagingService, body: any): Promise<any> {
 	const { action, data } = body;
 	
 	if (!['query', 'results'].includes(action)) {
@@ -264,7 +264,7 @@ async function handleSearchEvent(nats: EnhancedNATSMessagingService, body: any) 
 	});
 }
 
-async function handleSystemEvent(nats: EnhancedNATSMessagingService, body: any) {
+async function handleSystemEvent(nats: EnhancedNATSMessagingService, body: any): Promise<any> {
 	const { action, data } = body;
 	
 	if (!['health', 'metrics'].includes(action)) {

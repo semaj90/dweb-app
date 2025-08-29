@@ -1,9 +1,9 @@
 // WebAssembly LLM Service for Legal AI
 // Client-side gemma3:legal-latest WebAssembly implementation with GPU acceleration
 
-import type { WASMLLMConfig, WASMLLMResponse } from '../types/vector-jobs.js';
+import type { WASMLLMConfig, WASMLLMResponse } from '../types/vector-jobs';
 
-interface WASMModule {
+export interface WASMModule {
 	_initialize: () => number;
 	_load_model: (modelPathPtr: number, modelPathLen: number) => number;
 	_generate_text: (promptPtr: number, promptLen: number, maxTokens: number, temperature: number) => number;
@@ -66,7 +66,7 @@ export class WASMLLMService {
 			console.log('✅ WebAssembly LLM service initialized');
 			
 			return true;
-		} catch (error) {
+		} catch (error: any) {
 			console.error('❌ WASM LLM initialization failed:', error);
 			return false;
 		}
@@ -101,7 +101,7 @@ export class WASMLLMService {
 
 			// Create mock interface for demonstration
 			return this.createMockWASMInterface(wasmModule);
-		} catch (error) {
+		} catch (error: any) {
 			console.error('Error loading WASM module:', error);
 			return null;
 		}
@@ -206,7 +206,7 @@ export class WASMLLMService {
 			
 			console.log(`✅ Model loaded in ${this.stats.modelLoadTime.toFixed(2)}ms`);
 			return true;
-		} catch (error) {
+		} catch (error: any) {
 			console.error('❌ Model loading failed:', error);
 			return false;
 		}
@@ -278,7 +278,7 @@ export class WASMLLMService {
 			
 			console.log(`✅ Generated ${totalTokens} tokens in ${processingTime.toFixed(2)}ms`);
 			return response;
-		} catch (error) {
+		} catch (error: any) {
 			console.error('❌ Text generation failed:', error);
 			throw error;
 		}

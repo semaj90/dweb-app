@@ -4,7 +4,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { drizzle } from 'drizzle-orm/postgres-js';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import postgres from 'postgres';
 import { createClient } from 'redis';
 import { evidence, reports, vectors, vectorOutbox, vectorJobs } from '$lib/server/db/schema-postgres.js';
@@ -21,7 +21,7 @@ const redis = createClient({
 
 let redisConnected = false;
 
-async function connectRedis() {
+async function connectRedis(): Promise<any> {
   if (!redisConnected) {
     await redis.connect();
     redisConnected = true;
@@ -72,7 +72,7 @@ export const POST: RequestHandler = async ({ request }) => {
       timestamp: new Date().toISOString(),
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Pipeline test error:', error);
     
     return json({
@@ -84,7 +84,7 @@ export const POST: RequestHandler = async ({ request }) => {
 };
 
 // Test full end-to-end pipeline
-async function testFullPipeline(testData?: any) {
+async function testFullPipeline(testData?: any): Promise<any> {
   const startTime = Date.now();
   const testId = `test_${nanoid()}`;
   
@@ -209,7 +209,7 @@ async function testFullPipeline(testData?: any) {
 }
 
 // Test evidence processing with autotag worker
-async function testEvidenceProcessing(testData?: any) {
+async function testEvidenceProcessing(testData?: any): Promise<any> {
   await connectRedis();
   
   const testId = `evidence_test_${nanoid()}`;
@@ -274,7 +274,7 @@ async function testEvidenceProcessing(testData?: any) {
 }
 
 // Test batch processing with k-means clustering
-async function testBatchClustering(testData?: any) {
+async function testBatchClustering(testData?: any): Promise<any> {
   await connectRedis();
   
   const testId = `cluster_test_${nanoid()}`;
@@ -316,7 +316,7 @@ async function testBatchClustering(testData?: any) {
 }
 
 // Test WebGPU with WASM fallback
-async function testWebGPUFallback(testData?: any) {
+async function testWebGPUFallback(testData?: any): Promise<any> {
   const testText = testData?.text || "What are the key elements of a contract?";
   
   try {
@@ -345,7 +345,7 @@ async function testWebGPUFallback(testData?: any) {
       success: webgpuResult.success,
     };
 
-  } catch (error) {
+  } catch (error: any) {
     return {
       testInput: testText,
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -355,7 +355,7 @@ async function testWebGPUFallback(testData?: any) {
 }
 
 // Stress test pipeline with multiple concurrent jobs
-async function testStressLoad(testData?: any) {
+async function testStressLoad(testData?: any): Promise<any> {
   const concurrentJobs = testData?.jobCount || 20;
   const testId = `stress_test_${nanoid()}`;
   
@@ -393,7 +393,7 @@ async function testStressLoad(testData?: any) {
         success: !!result?.jobId,
       };
 
-    } catch (error) {
+    } catch (error: any) {
       return {
         index: i,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -489,7 +489,7 @@ export const GET: RequestHandler = async () => {
       ready: overallHealth >= 3, // At least 3/4 services healthy
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: error instanceof Error ? error.message : 'Health check failed',

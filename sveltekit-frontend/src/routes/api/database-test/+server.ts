@@ -23,7 +23,7 @@ export const GET: RequestHandler = async () => {
         installed: vectorCheck.length > 0,
         version: vectorCheck[0]?.extversion || null
       };
-    } catch (error) {
+    } catch (error: any) {
       results.pgvector = {
         installed: false,
         error: error.message
@@ -40,7 +40,7 @@ export const GET: RequestHandler = async () => {
       `);
       
       results.tables = tables;
-    } catch (error) {
+    } catch (error: any) {
       results.tables = { error: error.message };
     }
 
@@ -60,7 +60,7 @@ export const GET: RequestHandler = async () => {
       `);
       
       results.schemas = schemas;
-    } catch (error) {
+    } catch (error: any) {
       results.schemas = { error: error.message };
     }
 
@@ -79,7 +79,7 @@ export const GET: RequestHandler = async () => {
       `);
       
       results.stats = simpleQuery;
-    } catch (error) {
+    } catch (error: any) {
       results.stats = { error: error.message };
     }
 
@@ -93,7 +93,7 @@ export const GET: RequestHandler = async () => {
         success: true,
         testVector: vectorTest[0]?.test_vector
       };
-    } catch (error) {
+    } catch (error: any) {
       results.vectorOperations = {
         success: false,
         error: error.message
@@ -107,7 +107,7 @@ export const GET: RequestHandler = async () => {
       results
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: error.message,
@@ -135,7 +135,7 @@ export const POST: RequestHandler = async ({ request }) => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: error.message,

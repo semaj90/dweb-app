@@ -1,61 +1,35 @@
+<!--
+  Simple Login Page - Works with Existing Database
+  Now with NES.css Retro Gaming Modal Option
+-->
 <script lang="ts">
-  import { page } from '$app/stores';
-  import { superForm } from 'sveltekit-superforms/client';
+  import { enhance } from '$app/forms';
+  import NesAuthModal from '$lib/components/auth/NesAuthModal.svelte';
   
-  let { data, form } = $props();
-  
-  // Initialize SuperForm
-  const { form: formData, enhance } = superForm(data.form);
-  
-  let isAutoLoggingIn = $state(false);
-  
-  // Check for registration success message
-  const showRegistrationSuccess = $derived($page.url.searchParams.get('registered') === 'true');
-  
-  // Auto-fill demo user credentials
-  function autoLoginDemo() {
-    console.log('🔧 Auto-fill demo credentials clicked');
-    
-    // Update SuperForm data directly
-    $formData.email = 'demo@legalai.gov';
-    $formData.password = 'demo123456';
-    
-    console.log('✅ Demo credentials filled');
+  interface Props {
+    data?: any;
+    form?: any;
   }
   
-  // Auto-login with demo user (skip form submission)
-  async function quickDemoLogin() {
-    console.log('⚡ Quick demo login clicked');
-    isAutoLoggingIn = true;
+  let { data, form }: Props = $props();
+  
+  let isLoading = $state(false);
+  let showPassword = $state(false);
+  let isNesModalOpen = $state(false);
+  
+  // Auto-fill demo credentials
+  function fillDemoCredentials() {
+    const emailInput = document.getElementById('email') as HTMLInputElement;
+    const passwordInput = document.getElementById('password') as HTMLInputElement;
     
-    try {
-      console.log('📡 Calling auto-login endpoint...');
-      const response = await fetch('/auth/login/auto', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-      
-      const result = await response.json();
-      console.log('📨 Auto-login response:', result);
-      
-      if (result.success) {
-        console.log('✅ Auto-login successful, redirecting...');
-        // Redirect to dashboard
-        window.location.href = result.redirectTo || '/dashboard';
-      } else {
-        // Fall back to auto-fill if auto-login fails
-        console.warn('⚠️ Auto-login failed, falling back to auto-fill:', result.error);
-        autoLoginDemo();
-      }
-    } catch (error) {
-      console.error('❌ Quick demo login failed:', error);
-      // Fall back to auto-fill
-      autoLoginDemo();
-    } finally {
-      isAutoLoggingIn = false;
+    if (emailInput && passwordInput) {
+      emailInput.value = 'admin@legal-ai.local';
+      passwordInput.value = 'admin123';
     }
+  }
+  
+  function openNesModal() {
+    isNesModalOpen = true;
   }
 </script>
 
@@ -63,113 +37,156 @@
   <title>Login - Legal AI Platform</title>
 </svelte:head>
 
-<div class="min-h-screen flex items-center justify-center bg-gray-900 px-4">
+<div class="min-h-screen flex items-center justify-center bg-gray-900 px-4 py-8">
   <div class="w-full max-w-md">
-    <div class="bg-gray-800 p-8 rounded-lg border border-gray-700">
+    <div class="bg-gray-800 p-8 rounded-lg border border-gray-700 max-h-none overflow-visible">
       <h1 class="text-3xl font-bold text-center text-yellow-400 mb-8">
         Legal AI Platform
       </h1>
-
-      {#if showRegistrationSuccess}
-        <div class="success-message bg-green-900/50 border border-green-500 text-green-200 px-4 py-3 rounded mb-4" data-testid="success-message">
-          Account registered successfully! You can now sign in.
-        </div>
-      {/if}
+      
+      <h2 class="text-xl text-center text-white mb-6">
+        Sign In
+      </h2>
       
       {#if form?.error}
-        <div class="error-message bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded mb-4" data-testid="error-message">
+        <div class="error-message bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded mb-4">
           {form.error}
         </div>
       {/if}
 
-      {#if form?.errors?.email}
-        <div class="error-message bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded mb-4" data-testid="error-message">
-          Invalid email or password
-        </div>
-      {/if}
-
-      {#if form?.errors?.password}
-        <div class="error-message bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded mb-4" data-testid="error-message">
-          Invalid email or password
-        </div>
-      {/if}
-
-      <form method="POST" action="?/login" use:enhance class="space-y-6">
+      <form 
+        method="POST" 
+        action="?/login"
+        use:enhance={({ formData, cancel }) => {
+          isLoading = true;
+          return async ({ result }) => {
+            isLoading = false;
+            if (result.type === 'redirect') {
+              // Let SvelteKit handle the redirect
+            }
+          };
+        }}
+        class="space-y-4"
+      >
+        <!-- Email -->
         <div>
-          <label for="email" class="block text-sm font-medium text-gray-300 mb-2">
-            Email
+          <label for="email" class="block text-sm font-medium text-gray-300 mb-1">
+            Email Address
           </label>
           <input
             type="email"
             name="email"
             id="email"
             required
-            bind:value={$formData.email}
+            disabled={isLoading}
             class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-yellow-400"
-            placeholder="Enter your email"
+            placeholder="admin@legal-ai.local"
           />
         </div>
 
+        <!-- Password -->
         <div>
-          <label for="password" class="block text-sm font-medium text-gray-300 mb-2">
+          <label for="password" class="block text-sm font-medium text-gray-300 mb-1">
             Password
           </label>
           <input
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             name="password"
             id="password"
             required
-            bind:value={$formData.password}
+            disabled={isLoading}
             class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-yellow-400"
             placeholder="Enter your password"
           />
         </div>
 
+        <!-- Options -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <input
+              type="checkbox"
+              id="showPassword"
+              bind:checked={showPassword}
+              disabled={isLoading}
+              class="mr-2"
+            />
+            <label for="showPassword" class="text-sm text-gray-300">
+              Show password
+            </label>
+          </div>
+          
+          <div class="flex items-center">
+            <input
+              type="checkbox"
+              name="rememberMe"
+              id="rememberMe"
+              disabled={isLoading}
+              class="mr-2"
+            />
+            <label for="rememberMe" class="text-sm text-gray-300">
+              Remember me
+            </label>
+          </div>
+        </div>
+
+        <!-- Demo Button -->
+        <button
+          type="button"
+          onclick={fillDemoCredentials}
+          disabled={isLoading}
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition-colors disabled:opacity-50"
+        >
+          Fill Demo Credentials
+        </button>
+
+        <!-- Submit Button -->
         <button
           type="submit"
-          class="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded transition-colors"
+          disabled={isLoading}
+          class="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded transition-colors disabled:opacity-50"
         >
-          Sign In
+          {#if isLoading}
+            Signing In...
+          {:else}
+            Sign In
+          {/if}
         </button>
       </form>
 
-      <!-- Quick Demo Login -->
-      <div class="mt-4 space-y-2">
+      <!-- NES Modal Option - Made more prominent -->
+      <div class="mt-6 text-center">
+        <div class="mb-2">
+          <p class="text-sm text-gray-400">Or try our retro gaming experience:</p>
+        </div>
         <button
           type="button"
-          onclick={quickDemoLogin}
-          disabled={isAutoLoggingIn}
-          class="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-800 disabled:cursor-not-allowed text-white font-semibold py-2 px-4 rounded transition-colors flex items-center justify-center"
+          onclick={openNesModal}
+          class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition-colors transform hover:scale-105 border-2 border-purple-400"
         >
-          {#if isAutoLoggingIn}
-            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            Logging in...
-          {:else}
-            ⚡ Quick Demo Login
-          {/if}
-        </button>
-        
-        <button
-          type="button"
-          onclick={autoLoginDemo}
-          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition-colors"
-        >
-          📝 Auto-fill Demo Credentials
+          🎮 Retro Gaming Login (NES Style)
         </button>
       </div>
 
-      <div class="mt-4 text-center">
+      <!-- Register Link -->
+      <div class="mt-6 text-center">
         <p class="text-gray-400 text-sm">
-          Demo Account: demo@legalai.gov / demo123456
+          Don't have an account?
+          <a href="/auth/register" class="text-yellow-400 hover:underline">Create one here</a>
         </p>
-        <div class="text-gray-500 text-xs mt-2 space-y-1">
-          <p>⚡ Quick Login: Instant access (one-click)</p>
-          <p>📝 Auto-fill: Fill form then click Sign In</p>
-        </div>
+      </div>
+      
+      <!-- Quick Access -->
+      <div class="mt-4 text-center">
+        <p class="text-gray-500 text-xs">
+          Demo: admin@legal-ai.local / admin123
+        </p>
       </div>
     </div>
   </div>
 </div>
+
+<!-- NES Auth Modal -->
+<NesAuthModal 
+  bind:isOpen={isNesModalOpen}
+  {form}
+/>

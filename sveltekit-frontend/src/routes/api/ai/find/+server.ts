@@ -8,7 +8,7 @@ import { type RequestHandler,  json } from '@sveltejs/kit';
 import { copilotOrchestrator, generateMCPPrompt, commonMCPQueries, semanticSearch, mcpMemoryReadGraph } from "$lib/utils/mcp-helpers";
 
 // Define the types locally since they're not exported from mcp-helpers
-interface MCPContextAnalysis {
+export interface MCPContextAnalysis {
   query?: string;
   context?: unknown;
   suggestions?: string[];
@@ -20,7 +20,7 @@ interface MCPContextAnalysis {
   [key: string]: unknown; // Allow additional properties
 }
 
-interface AutoMCPSuggestion {
+export interface AutoMCPSuggestion {
   type: 'enhancement' | 'correction' | 'alternative' | 'ai-integration' | 'performance' | 'ui-enhancement';
   original?: string;
   suggested?: string;
@@ -56,7 +56,7 @@ const redis = {
   }
 };
 
-interface AIFindRequest {
+export interface AIFindRequest {
   query: string;
   type: 'all' | 'cases' | 'evidence' | 'documents' | 'ai';
   useAI?: boolean;
@@ -68,7 +68,7 @@ interface AIFindRequest {
   userId?: string;
 }
 
-interface AIFindResult {
+export interface AIFindResult {
   id: string;
   title: string;
   excerpt: string;
@@ -81,7 +81,7 @@ interface AIFindResult {
   mcpInsights?: string[];
 }
 
-interface AIFindResponse {
+export interface AIFindResponse {
   success: boolean;
   results: AIFindResult[];
   metadata: {
@@ -129,7 +129,7 @@ async function checkRateLimit(key: string): Promise<{ allowed: boolean; remainin
       allowed: current <= RATE_LIMIT.requests,
       remaining
     };
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Rate limiting check failed:', error);
     return { allowed: true, remaining: RATE_LIMIT.requests };
   }
@@ -276,7 +276,7 @@ async function performDatabaseSearch(
     // Limit results
     return results.slice(0, maxResults);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Mock database search failed:', error);
     throw new Error('Database search failed');
   }
@@ -374,7 +374,7 @@ Focus on legal relevance, case importance, and factual accuracy. Prioritize resu
       };
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.warn('AI enhancement failed:', error);
     
     // Return basic enhancement
@@ -434,14 +434,14 @@ async function performMCPAnalysis(query: string): Promise<MCPContextAnalysis | n
         const synthesized = JSON.parse(mcpResults.synthesized);
         analysis.recommendations = synthesized.recommendations || 
           synthesized.suggestions || [];
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Failed to parse MCP synthesized output:', error);
       }
     }
 
     return analysis;
 
-  } catch (error) {
+  } catch (error: any) {
     console.warn('MCP analysis failed:', error);
     return null;
   }
@@ -489,7 +489,7 @@ function generateAutoSuggestions(query: string, mcpContext: any): AutoMCPSuggest
 /**
  * Update memory graph with search interaction
  */
-async function updateMemoryGraph(query: string, results: any[], metadata: any) {
+async function updateMemoryGraph(query: string, results: any[], metadata: any): Promise<any> {
   try {
     // Create memory entry for this search
     const memoryEntry = {
@@ -506,7 +506,7 @@ async function updateMemoryGraph(query: string, results: any[], metadata: any) {
     // For now, we'll simulate the memory update
     console.log('Memory graph updated with search interaction:', memoryEntry);
     
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Failed to update memory graph:', error);
   }
 }
@@ -589,7 +589,7 @@ export const POST: RequestHandler = async ({ request }) => {
           cachedResults = JSON.parse(cached);
           fromCache = true;
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Cache retrieval failed:', error);
       }
     }
@@ -641,7 +641,7 @@ export const POST: RequestHandler = async ({ request }) => {
     if (useSemanticSearch && dbResults.length > 0) {
       try {
         semanticResults = await semanticSearch(query);
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Semantic search failed:', error);
       }
     }
@@ -735,7 +735,7 @@ export const POST: RequestHandler = async ({ request }) => {
           300, // 5 minutes cache
           JSON.stringify(response)
         );
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Failed to cache results:', error);
       }
     }
@@ -748,7 +748,7 @@ export const POST: RequestHandler = async ({ request }) => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('AI Find API error:', error);
     
     const processingTime = Date.now() - startTime;
@@ -808,7 +808,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
       if (cached) {
         suggestions = JSON.parse(cached);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Suggestions cache retrieval failed:', error);
     }
 
@@ -831,7 +831,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
       try {
         const aiSuggestions = await generateAISuggestions(query);
         suggestions = [...suggestions, ...aiSuggestions].slice(0, 8);
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Failed to generate AI suggestions:', error);
       }
 
@@ -839,7 +839,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
       if (suggestions.length > 0) {
         try {
           await redis.setex(cacheKey, 600, JSON.stringify(suggestions));
-        } catch (error) {
+        } catch (error: any) {
           console.warn('Failed to cache suggestions:', error);
         }
       }
@@ -855,7 +855,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Suggestions API error:', error);
     
     return json({
@@ -901,7 +901,7 @@ async function generateAISuggestions(query: string): Promise<string[]> {
 
     return suggestions;
 
-  } catch (error) {
+  } catch (error: any) {
     console.warn('AI suggestion generation failed:', error);
     return [];
   }
@@ -938,7 +938,7 @@ export const OPTIONS: RequestHandler = async () => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return json({
       healthy: false,
       error: 'Health check failed',

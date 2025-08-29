@@ -13,7 +13,7 @@ import { generateVectorContextualSuggestions, type ContextualSuggestion } from '
 import { generateEnhancedRAGSuggestions, type RAGSuggestionResponse } from '$lib/services/enhanced-rag-suggestions-service.js';
 import { aiSuggestionsClient, ReportTypeUtils, type SuggestionResponse } from '$lib/services/ai-suggestions-grpc-client.js';
 
-interface EnhancedSuggestionRequest {
+export interface EnhancedSuggestionRequest {
   content: string;
   reportType?: 'prosecution_memo' | 'case_brief' | 'evidence_summary' | 'motion' | 'discovery_request' | 'witness_statement' | 'legal_research' | 'closing_argument' | 'general';
   userId?: string;
@@ -38,7 +38,7 @@ interface EnhancedSuggestionRequest {
   temperature?: number;
 }
 
-interface UnifiedSuggestion {
+export interface UnifiedSuggestion {
   id: string;
   content: string;
   type: string;
@@ -56,7 +56,7 @@ interface UnifiedSuggestion {
   };
 }
 
-export async function POST({ request, url }: RequestEvent) {
+export async function POST({ request, url }: RequestEvent): Promise<any> {
   try {
     const data: EnhancedSuggestionRequest = await request.json();
     const {
@@ -128,7 +128,7 @@ export async function POST({ request, url }: RequestEvent) {
         processingServices: suggestions.map(s => s.metadata.source).filter((v, i, a) => a.indexOf(v) === i)
       }
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error generating AI suggestions:', error);
     return json({ 
       error: 'Failed to generate suggestions',
@@ -206,7 +206,7 @@ async function generateComprehensiveSuggestions({
               }
             });
           });
-        } catch (error) {
+        } catch (error: any) {
           console.warn('Protocol Buffers gRPC service failed:', error);
         }
       })()
@@ -247,7 +247,7 @@ async function generateComprehensiveSuggestions({
               }
             });
           });
-        } catch (error) {
+        } catch (error: any) {
           console.warn('Enhanced RAG service failed:', error);
         }
       })()
@@ -283,7 +283,7 @@ async function generateComprehensiveSuggestions({
               }
             });
           });
-        } catch (error) {
+        } catch (error: any) {
           console.warn('Ollama AI service failed:', error);
         }
       })()
@@ -319,7 +319,7 @@ async function generateComprehensiveSuggestions({
               }
             });
           });
-        } catch (error) {
+        } catch (error: any) {
           console.warn('Vector search service failed:', error);
         }
       })()
@@ -478,7 +478,7 @@ function generateRuleBasedSuggestions(
   return suggestions;
 }
 
-async function getVectorBasedSuggestions(content: string, reportType: string) {
+async function getVectorBasedSuggestions(content: string, reportType: string): Promise<any> {
   try {
     // Generate embedding for the content
     const embedding = await generateEnhancedEmbedding(content, {
@@ -513,13 +513,13 @@ async function getVectorBasedSuggestions(content: string, reportType: string) {
         reasoning: 'Based on similar previous conversations',
         metadata: { source: 'vector_search', similarContent: msg.content }
       }));
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Vector similarity search failed:', error);
     return [];
   }
 }
 
-async function generateContextualSuggestions(content: string, context: any) {
+async function generateContextualSuggestions(content: string, context: any): Promise<any> {
   const suggestions: Array<{
     content: string;
     type: string;
@@ -561,7 +561,7 @@ async function generateContextualSuggestions(content: string, context: any) {
         metadata: { previousMessageCount: context.previousMessages.length, category: 'consistency' }
       });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Failed to generate contextual suggestions:', error);
   }
 
@@ -634,7 +634,7 @@ async function storeRecommendations({
   suggestions: UnifiedSuggestion[];
   recommendationId: string;
   reportType: string;
-}) {
+}): Promise<any> {
   try {
     // Generate embedding for the content
     const embedding = await generateEnhancedEmbedding(content, {
@@ -688,7 +688,7 @@ async function storeRecommendations({
         });
       }
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to store enhanced recommendations:', error);
     // Don't throw - we don't want storage failure to break the API
   }

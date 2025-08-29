@@ -69,7 +69,7 @@ export class CacheLayerManager {
           layer.hitRate = layer.hitRate * 0.9 + 1 * 0.1;
           return data;
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Cache layer ${layer.name} failed:`, error);
       }
     }
@@ -104,7 +104,7 @@ export class CacheLayerManager {
                   layer.hitRate = layer.hitRate * 0.9 + 1 * 0.1;
                   return data;
                 }
-              } catch (error) {
+              } catch (error: any) {
                 console.warn(`Batch cache layer ${layer.name} failed for key ${key}:`, error);
               }
             }
@@ -190,7 +190,7 @@ export class CacheLayerManager {
             if (data !== null && data !== undefined) {
               await this.set(key, data, dataType, 3600); // 1 hour TTL for warmed data
             }
-          } catch (error) {
+          } catch (error: any) {
             console.warn(`Cache warming failed for key ${key}:`, error);
           }
         });
@@ -280,7 +280,7 @@ export class CacheLayerManager {
       const data = await client.get(key);
       await client.quit();
       return data ? JSON.parse(data.toString()) : null;
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Redis get error:", error);
       return null;
     }
@@ -302,7 +302,7 @@ export class CacheLayerManager {
         await client.set(key, serialized);
       }
       await client.quit();
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Redis set error:", error);
     }
   }
@@ -323,7 +323,7 @@ export class CacheLayerManager {
       );
       const result = await response.json();
       return result.result?.[0]?.payload?.data || null;
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Qdrant get error:", error);
       return null;
     }
@@ -354,7 +354,7 @@ export class CacheLayerManager {
           ],
         }),
       });
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Qdrant set error:", error);
     }
   }

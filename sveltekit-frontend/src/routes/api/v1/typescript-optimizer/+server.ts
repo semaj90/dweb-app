@@ -63,7 +63,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		return json(enhancedResult);
 
-	} catch (error) {
+	} catch (error: any) {
 		console.error('TypeScript Optimizer Error:', error);
 		
 		return json({
@@ -120,7 +120,7 @@ export const GET: RequestHandler = async () => {
 			}
 		});
 
-	} catch (error) {
+	} catch (error: any) {
 		return json({
 			service: 'TypeScript Error Optimizer',
 			status: 'degraded',

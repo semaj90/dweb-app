@@ -60,7 +60,7 @@ export class ProcessPoolManager extends EventEmitter {
   /**
    * Register worker configuration for legal AI services
    */
-  async registerWorker(poolName: string, config: WorkerConfig): Promise<void> {
+  async registerWorker(poolName: string, config: WorkerConfig): Promise<any> {
     this.configs.set(poolName, config);
     this.pools.set(poolName, []);
     
@@ -119,7 +119,7 @@ export class ProcessPoolManager extends EventEmitter {
   /**
    * Release worker back to pool
    */
-  async releaseWorker(poolName: string, workerId: string, responseTime?: number): Promise<void> {
+  async releaseWorker(poolName: string, workerId: string, responseTime?: number): Promise<any> {
     const pool = this.pools.get(poolName);
     const worker = pool?.find(w => w.id === workerId);
     
@@ -251,7 +251,7 @@ export class ProcessPoolManager extends EventEmitter {
   /**
    * Legal AI specific pool configurations
    */
-  async initializeLegalAIPools(): Promise<void> {
+  async initializeLegalAIPools(): Promise<any> {
     // Enhanced RAG Go service pool
     await this.registerWorker('enhanced-rag', {
       type: 'go',
@@ -326,7 +326,7 @@ export class ProcessPoolManager extends EventEmitter {
   /**
    * Cleanup idle workers to free resources
    */
-  private async cleanupIdleWorkers(): Promise<void> {
+  private async cleanupIdleWorkers(): Promise<any> {
     const now = Date.now();
     
     for (const [poolName, pool] of this.pools) {
@@ -350,7 +350,7 @@ export class ProcessPoolManager extends EventEmitter {
   /**
    * Terminate worker process
    */
-  private async terminateWorker(worker: WorkerInstance): Promise<void> {
+  private async terminateWorker(worker: WorkerInstance): Promise<any> {
     if (worker.process) {
       if (worker.type === 'node') {
         await (worker.process as Worker).terminate();
@@ -384,12 +384,12 @@ export class ProcessPoolManager extends EventEmitter {
   /**
    * Utility: Wait for service to be ready
    */
-  private async waitForService(url: string, maxAttempts: number = 30): Promise<void> {
+  private async waitForService(url: string, maxAttempts: number = 30): Promise<any> {
     for (let i = 0; i < maxAttempts; i++) {
       try {
         const response = await fetch(url);
         if (response.ok) return;
-      } catch (error) {
+      } catch (error: any) {
         // Service not ready yet
       }
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -400,7 +400,7 @@ export class ProcessPoolManager extends EventEmitter {
   /**
    * Shutdown all pools
    */
-  async shutdown(): Promise<void> {
+  async shutdown(): Promise<any> {
     clearInterval(this.cleanupInterval);
     
     for (const [poolName, pool] of this.pools) {

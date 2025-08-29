@@ -34,7 +34,7 @@ export const GET: RequestHandler = async () => {
             status: response.ok ? 'healthy' : 'unhealthy',
             response_code: response.status
           };
-        } catch (error) {
+        } catch (error: any) {
           return {
             service: name,
             endpoint,
@@ -67,7 +67,7 @@ export const GET: RequestHandler = async () => {
       },
       timestamp: new Date().toISOString()
     });
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         success: false,
@@ -105,7 +105,7 @@ export const POST: RequestHandler = async ({ request }) => {
           { status: 400 }
         );
     }
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         success: false,
@@ -118,7 +118,7 @@ export const POST: RequestHandler = async ({ request }) => {
 };
 
 // Implementation functions (simplified for now)
-async function processDocumentComprehensive(data: any) {
+async function processDocumentComprehensive(data: any): Promise<any> {
   return json({
     success: true,
     message: 'Document processing started',
@@ -127,7 +127,7 @@ async function processDocumentComprehensive(data: any) {
   });
 }
 
-async function analyzeCase(data: any) {
+async function analyzeCase(data: any): Promise<any> {
   return json({
     success: true,
     message: 'Case analysis completed',
@@ -136,7 +136,7 @@ async function analyzeCase(data: any) {
   });
 }
 
-async function synthesizeEvidence(data: any) {
+async function synthesizeEvidence(data: any): Promise<any> {
   return json({
     success: true,
     message: 'Evidence synthesis completed',
@@ -145,7 +145,7 @@ async function synthesizeEvidence(data: any) {
   });
 }
 
-async function performLegalResearch(data: any) {
+async function performLegalResearch(data: any): Promise<any> {
   return json({
     success: true,
     message: 'Legal research completed',
@@ -154,7 +154,7 @@ async function performLegalResearch(data: any) {
   });
 }
 
-async function optimizeSystem() {
+async function optimizeSystem(): Promise<any> {
   return json({
     success: true,
     message: 'System optimization completed',
@@ -162,7 +162,7 @@ async function optimizeSystem() {
   });
 }
 
-async function performRealTimeAnalysis(data: any) {
+async function performRealTimeAnalysis(data: any): Promise<any> {
   return json({
     success: true,
     message: 'Real-time analysis completed',
@@ -171,7 +171,7 @@ async function performRealTimeAnalysis(data: any) {
   });
 }
 
-async function integrateContext7(data: any) {
+async function integrateContext7(data: any): Promise<any> {
   return json({
     success: true,
     message: 'Context7 integration completed',

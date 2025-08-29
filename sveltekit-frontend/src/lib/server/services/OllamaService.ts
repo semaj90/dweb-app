@@ -48,7 +48,7 @@ export class OllamaService {
         signal: AbortSignal.timeout(5000),
       });
       return response.ok;
-    } catch (error) {
+    } catch (error: any) {
       logger.error("Ollama health check failed", error);
       return false;
     }
@@ -61,7 +61,7 @@ export class OllamaService {
 
       const data = await response.json();
       return data.models || [];
-    } catch (error) {
+    } catch (error: any) {
       logger.error("Failed to list Ollama models", error);
       return [];
     }
@@ -102,7 +102,7 @@ export class OllamaService {
 
       const data: OllamaResponse = await response.json();
       return data.response;
-    } catch (error) {
+    } catch (error: any) {
       logger.error("Failed to generate with Ollama", { model, error });
       throw error;
     }
@@ -147,7 +147,7 @@ export class OllamaService {
         return data.data[0].embedding;
       }
       return [];
-    } catch (error) {
+    } catch (error: any) {
       logger.error("Failed to get embeddings from Ollama", { model, error });
       throw error;
     }

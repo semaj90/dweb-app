@@ -1,5 +1,5 @@
 // Toast utility for user notifications
-interface ToastOptions {
+export interface ToastOptions {
   duration?: number;
   type?: 'success' | 'error' | 'warning' | 'info';
 }

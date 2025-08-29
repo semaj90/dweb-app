@@ -322,7 +322,7 @@ export class ExtensionClusterManager extends EventEmitter {
           throw new Error(`Unknown task type: ${task.type}`);
       }
 
-    } catch (err) {
+    } catch (err: any) {
       success = false;
       error = err instanceof Error ? err.message : 'Unknown error';
 

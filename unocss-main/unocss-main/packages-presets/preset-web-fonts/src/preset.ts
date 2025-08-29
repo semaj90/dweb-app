@@ -61,7 +61,7 @@ export function createWebFontPreset(fetcher: (url: string) => Promise<any>) {
 
     const importCache: Record<string, Promise<string>> = {}
 
-    async function fetchWithTimeout(url: string) {
+    async function fetchWithTimeout(url: string): Promise<any> {
       if (timeouts === false)
         return customFetch(url)
       const {
@@ -91,11 +91,11 @@ export function createWebFontPreset(fetcher: (url: string) => Promise<any>) {
         .finally(() => clearTimeout(timer))
     }
 
-    async function importUrl(url: string) {
+    async function importUrl(url: string): Promise<any> {
       if (inlineImports) {
         if (!importCache[url]) {
           importCache[url] = fetchWithTimeout(url)
-            .catch((e) => {
+            .catch((e: any) => {
               console.error(`[unocss] Failed to fetch web fonts: ${url}`)
               console.error(e)
               // eslint-disable-next-line node/prefer-global/process
@@ -115,7 +115,7 @@ export function createWebFontPreset(fetcher: (url: string) => Promise<any>) {
     async function getCSSDefault(
       fonts: ResolvedWebFontMeta[],
       providers: Provider[] | Set<Provider>,
-    ) {
+    ): Promise<any> {
       const preflights: (string | undefined)[] = []
 
       for (const provider of providers) {

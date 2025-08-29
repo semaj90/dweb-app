@@ -1,7 +1,7 @@
 
 import type { RequestHandler } from "@sveltejs/kit";
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   const { jobId } = await request.json();
   // TODO: Integrate with backend (Go, BullMQ, etc.)
   // Accept patch logic here

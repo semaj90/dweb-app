@@ -84,7 +84,7 @@ class AdvancedSearch {
         suggestions,
         queryTime: Date.now() - startTime,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Search failed:", error);
       throw error;
     }

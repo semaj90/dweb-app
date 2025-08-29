@@ -85,7 +85,7 @@ export class SessionManager {
 
       this.isInitialized = true;
       console.log('Session manager initialized successfully');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to initialize session manager:', error);
       throw error;
     }
@@ -188,7 +188,7 @@ export class SessionManager {
       }
 
       return sessionData;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error getting session:', error);
       return null;
     }
@@ -237,7 +237,7 @@ export class SessionManager {
       
       await pipeline.exec();
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating session activity:', error);
       return false;
     }
@@ -271,7 +271,7 @@ export class SessionManager {
 
       console.log(`Session destroyed: ${sessionId}`);
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error destroying session:', error);
       return false;
     }
@@ -316,7 +316,7 @@ export class SessionManager {
       }
 
       return destroyedCount;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error destroying user sessions:', error);
       return 0;
     }
@@ -346,7 +346,7 @@ export class SessionManager {
       sessions.sort((a, b) => b.lastActivity.getTime() - a.lastActivity.getTime());
       
       return sessions;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error getting user sessions:', error);
       return [];
     }
@@ -392,7 +392,7 @@ export class SessionManager {
         expiredSessions,
         userSessionCounts,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error getting session stats:', error);
       return {
         totalSessions: 0,
@@ -430,7 +430,7 @@ export class SessionManager {
       }
 
       return cleanedCount;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error cleaning up expired sessions:', error);
       return 0;
     }
@@ -514,7 +514,7 @@ export class SessionManager {
     this.cleanupTimer = setInterval(async () => {
       try {
         await this.cleanupExpiredSessions();
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error during scheduled cleanup:', error);
       }
     }, this.config.cleanupInterval);

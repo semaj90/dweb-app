@@ -53,7 +53,7 @@ export const POST: RequestHandler = async ({ request }) => {
         },
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Gemma3 test failed:", error);
 
     return json(
@@ -91,7 +91,7 @@ export const GET: RequestHandler = async () => {
         ? "Gemma3 local LLM is ready"
         : "Local LLM not available - running in web mode",
     });
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       status: {

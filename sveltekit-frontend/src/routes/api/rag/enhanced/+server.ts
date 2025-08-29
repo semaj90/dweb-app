@@ -4,7 +4,7 @@ import { db, legalDocuments } from "$lib/server/db";
 import { eq } from "drizzle-orm";
 import { getVectorStore } from "$lib/ai/langchain-rag";
 
-export async function POST({ request }) {
+export async function POST({ request }): Promise<any> {
   try {
     const body = await request.json();
     const query = body.query;

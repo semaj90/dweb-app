@@ -11,7 +11,7 @@ export const contentEmbeddings = pgTable('content_embeddings', {
   contentId: uuid('content_id').notNull(),
   contentType: text('content_type').notNull(),
   textContent: text('text_content').notNull(),
-  embedding: vector('embedding', { dimensions: 768 }),
+  embedding: vector('embedding', { dimensions: 384 }),
   metadata: jsonb('metadata'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow()
@@ -21,7 +21,7 @@ export const contentEmbeddings = pgTable('content_embeddings', {
 export const searchQueries = pgTable('search_queries', {
   id: uuid('id').defaultRandom().primaryKey(),
   query: text('query').notNull(),
-  queryEmbedding: vector('query_embedding', { dimensions: 768 }),
+  queryEmbedding: vector('query_embedding', { dimensions: 384 }),
   results: jsonb('results'),
   searchType: text('search_type'),
   resultCount: integer('result_count'),
@@ -34,7 +34,7 @@ export const documents = pgTable('documents', {
   title: text('title').notNull(),
   documentType: text('document_type'),
   content: text('content'),
-  embedding: vector('embedding', { dimensions: 768 }),
+  embedding: vector('embedding', { dimensions: 384 }),
   metadata: jsonb('metadata'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow()
@@ -44,7 +44,7 @@ export const documents = pgTable('documents', {
 export const embeddings = pgTable('embeddings', {
   id: uuid('id').defaultRandom().primaryKey(),
   content: text('content').notNull(),
-  embedding: vector('embedding', { dimensions: 768 }),
+  embedding: vector('embedding', { dimensions: 384 }),
   model: text('model'),
   metadata: jsonb('metadata'),
   documentId: uuid('document_id'),
@@ -65,7 +65,7 @@ export const legalCases = pgTable('legal_cases', {
   datePublished: timestamp('date_published'),
   summary: text('summary'),
   content: text('content'),
-  embedding: vector('embedding', { dimensions: 768 }),
+  embedding: vector('embedding', { dimensions: 384 }),
   metadata: jsonb('metadata'),
   tags: jsonb('tags'),
   createdAt: timestamp('created_at').defaultNow(),
@@ -79,7 +79,7 @@ export const chatMessages = pgTable('chat_messages', {
   sessionId: uuid('session_id').notNull(),
   role: text('role').notNull(), // 'user' | 'assistant' | 'system'
   content: text('content').notNull(),
-  embedding: vector('embedding', { dimensions: 768 }),
+  embedding: vector('embedding', { dimensions: 384 }),
   metadata: jsonb('metadata'),
   createdAt: timestamp('created_at').defaultNow()
 });

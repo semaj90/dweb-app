@@ -9,7 +9,7 @@ export class SIMDJSONParser {
   private worker: Worker | null = null;
   private gpu: WebGPUAccelerator | null = null;
   private cache: Map<string, any> = new Map();
-  private performanceMetrics: unknown = {};
+  private performanceMetrics: any = {};
 
   constructor() {
     this.initializeGPUAccelerator();
@@ -30,7 +30,7 @@ export class SIMDJSONParser {
 
       console.log('✓ SIMD JSON Parser initialized');
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('SIMD JSON Parser initialization failed:', error);
       return false;
     }
@@ -39,7 +39,7 @@ export class SIMDJSONParser {
   /**
    * Parse JSON with intelligent method selection
    */
-  async parse(jsonString: string, options: unknown = {}): Promise<any> {
+  async parse(jsonString: string, options: any = {}): Promise<any> {
     const { 
       useGPU = true,
       useSIMD = true,
@@ -90,7 +90,7 @@ export class SIMDJSONParser {
 
       return result;
 
-    } catch (error) {
+    } catch (error: any) {
       // Fallback to native parsing
       if (method !== 'native') {
         console.warn(`${method} parsing failed, falling back to native:`, error.message);
@@ -108,7 +108,7 @@ export class SIMDJSONParser {
   /**
    * Parse with SIMD worker thread acceleration
    */
-  private async parseWithSIMD(jsonString: string, options: unknown = {}): Promise<any> {
+  private async parseWithSIMD(jsonString: string, options: any = {}): Promise<any> {
     if (!this.worker) {
       throw new Error('SIMD worker not available');
     }
@@ -124,7 +124,7 @@ export class SIMDJSONParser {
         reject(new Error('SIMD parsing timeout'));
       }, 30000);
 
-      const messageHandler = (result: unknown) => {
+      const messageHandler = (result: any) => {
         clearTimeout(timeout);
         this.worker?.off('message', messageHandler);
         
@@ -187,10 +187,10 @@ export class SIMDJSONParser {
   /**
    * Native JSON parsing with error handling
    */
-  private parseNative(jsonString: string): unknown {
+  private parseNative(jsonString: string): any {
     try {
       return JSON.parse(jsonString);
-    } catch (error) {
+    } catch (error: any) {
       // Try to fix common JSON issues
       const fixedJson = this.attemptJsonFix(jsonString);
       if (fixedJson !== jsonString) {
@@ -255,7 +255,7 @@ export class SIMDJSONParser {
   /**
    * Merge results from parallel chunk processing
    */
-  private mergeChunkResults(chunkResults: unknown[], chunks: string[]): unknown {
+  private mergeChunkResults(chunkResults: any[], chunks: string[]): any {
     // This is a simplified merger - real implementation would need
     // sophisticated logic to reconstruct complex nested objects
     
@@ -301,7 +301,7 @@ export class SIMDJSONParser {
   /**
    * Decode GPU processing result back to JavaScript object
    */
-  private decodeGPUResult(gpuResult: Uint8Array): unknown {
+  private decodeGPUResult(gpuResult: Uint8Array): any {
     const decoder = new TextDecoder();
     const jsonString = decoder.decode(gpuResult);
     return JSON.parse(jsonString);
@@ -330,7 +330,7 @@ export class SIMDJSONParser {
   private initializeGPUAccelerator(): void {
     try {
       this.gpu = new WebGPUAccelerator();
-    } catch (error) {
+    } catch (error: any) {
       console.warn('WebGPU not available:', error.message);
     }
   }
@@ -351,7 +351,7 @@ export class SIMDJSONParser {
   /**
    * Update performance metrics
    */
-  private updateMetrics(operation: string, data?: unknown): void {
+  private updateMetrics(operation: string, data?: any): void {
     if (!this.performanceMetrics[operation]) {
       this.performanceMetrics[operation] = {
         count: 0,
@@ -372,7 +372,7 @@ export class SIMDJSONParser {
   /**
    * Get performance statistics
    */
-  getPerformanceStats(): unknown {
+  getPerformanceStats(): any {
     return {
       cacheSize: this.cache.size,
       metrics: this.performanceMetrics,
@@ -387,7 +387,7 @@ export class SIMDJSONParser {
   /**
    * Cleanup resources
    */
-  async cleanup(): Promise<void> {
+  async cleanup(): Promise<any> {
     if (this.worker) {
       await this.worker.terminate();
       this.worker = null;
@@ -427,13 +427,13 @@ export class WebGPUAccelerator {
       
       console.log('✓ WebGPU accelerator initialized');
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('WebGPU initialization failed:', error);
       return false;
     }
   }
 
-  async processJSON(data: Uint8Array, options: unknown): Promise<Uint8Array> {
+  async processJSON(data: Uint8Array, options: any): Promise<Uint8Array> {
     if (!this.device) {
       throw new Error('WebGPU device not available');
     }
@@ -540,7 +540,7 @@ export class WebGPUAccelerator {
     `;
   }
 
-  async cleanup(): Promise<void> {
+  async cleanup(): Promise<any> {
     if (this.device) {
       this.device.destroy();
       this.device = null;

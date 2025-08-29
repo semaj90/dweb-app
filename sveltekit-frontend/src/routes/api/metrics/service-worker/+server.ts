@@ -20,7 +20,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			message: 'Service worker metrics received',
 			timestamp: new Date().toISOString()
 		});
-	} catch (error) {
+	} catch (error: any) {
 		console.error('❌ Error processing service worker metrics:', error);
 		
 		return json({

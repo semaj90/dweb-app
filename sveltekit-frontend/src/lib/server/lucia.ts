@@ -51,7 +51,7 @@ export async function createUserSession(
   return { sessionId, expiresAt };
 }
 
-export async function validateSession(sessionId: string) {
+export async function validateSession(sessionId: string): Promise<any> {
   // Find the session in the database that is not expired, and join user
   const now = new Date();
   const session = await db.query.sessions.findFirst({
@@ -102,7 +102,7 @@ export function setSessionCookie(
   // are expected across the codebase.
   try {
     cookies.set("session", sessionId, options);
-  } catch (e) {
+  } catch (e: any) {
     // ignore - some runtimes may restrict duplicate cookie writes
   }
 }

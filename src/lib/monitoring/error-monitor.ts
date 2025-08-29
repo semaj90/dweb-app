@@ -4,7 +4,7 @@
 import { writable } from 'svelte/store';
 import type { Writable } from 'svelte/store';
 
-interface ErrorMetrics {
+export interface ErrorMetrics {
   timestamp: Date;
   errorType: string;
   message: string;
@@ -16,13 +16,14 @@ interface ErrorMetrics {
     component?: string;
     model?: string;
     operation?: string;
+    table?: string;
   };
   severity: 'low' | 'medium' | 'high' | 'critical';
   resolved: boolean;
   tags: string[];
 }
 
-interface SystemHealth {
+export interface SystemHealth {
   overall: 'healthy' | 'degraded' | 'unhealthy';
   services: {
     sveltekit: { status: string; responseTime?: number };
@@ -41,7 +42,7 @@ interface SystemHealth {
   lastChecked: Date;
 }
 
-interface AlertConfig {
+export interface AlertConfig {
   id: string;
   name: string;
   condition: {
@@ -65,7 +66,7 @@ class ProductionErrorMonitor {
   private alerts: Map<string, AlertConfig> = new Map();
   private systemHealth: Writable<SystemHealth>;
   private isMonitoring = false;
-  private monitoringInterval?: NodeJS.Timeout;
+  private monitoringInterval?: ReturnType<typeof setInterval>;
   private alertCooldowns: Map<string, number> = new Map();
 
   constructor() {
@@ -148,11 +149,12 @@ class ProductionErrorMonitor {
     this.errors.push(errorMetric);
 
     // Log to console with appropriate level
-    const logLevel = severity === 'critical' ? 'error' : 
-                   severity === 'high' ? 'error' : 
-                   severity === 'medium' ? 'warn' : 'info';
-    
-    console[logLevel]('🚨 Error logged:', {
+    const logLevel = severity === 'critical' ? 'error' :
+      severity === 'high' ? 'error' :
+      severity === 'medium' ? 'warn' : 'info';
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (console as any)[logLevel]('🚨 Error logged:', {
       type: errorMetric.errorType,
       message: errorMetric.message,
       context: errorMetric.context,
@@ -235,8 +237,8 @@ class ProductionErrorMonitor {
       endpoint,
       operation: `${method} ${endpoint}`,
       userId
-    }, statusCode && statusCode >= 500 ? 'high' : 'medium', 
-    ['api', 'sveltekit', `status-${statusCode}`]);
+    }, statusCode && statusCode >= 500 ? 'high' : 'medium',
+      ['api', 'sveltekit', `status-${statusCode}`]);
   }
 
   /**
@@ -263,10 +265,10 @@ class ProductionErrorMonitor {
     // Group by severity
     recentErrors.forEach(error => {
       stats.bySeverity[error.severity] = (stats.bySeverity[error.severity] || 0) + 1;
-      
+
       const component = error.context.component || 'unknown';
       stats.byComponent[component] = (stats.byComponent[component] || 0) + 1;
-      
+
       stats.byType[error.errorType] = (stats.byType[error.errorType] || 0) + 1;
     });
 
@@ -351,7 +353,7 @@ class ProductionErrorMonitor {
       // Update store
       this.systemHealth.set(health);
 
-    } catch (error) {
+    } catch (error: any) {
       this.logError(error as Error, { component: 'health-check' }, 'high');
       health.overall = 'unhealthy';
     }
@@ -378,6 +380,7 @@ class ProductionErrorMonitor {
    */
   getRecentErrors(limit: number = 50): ErrorMetrics[] {
     return this.errors
+      .slice()
       .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
       .slice(0, limit);
   }
@@ -428,17 +431,17 @@ class ProductionErrorMonitor {
   }
 
   private setupErrorHandlers(): void {
-    // Global error handlers
+    // Global error handlers (browser)
     if (typeof window !== 'undefined') {
-      window.addEventListener('error', (event) => {
+      window.addEventListener('error', (event: ErrorEvent) => {
         this.logError(event.error || event.message, {
           component: 'window',
           operation: 'global_error'
         }, 'medium', ['frontend', 'unhandled']);
       });
 
-      window.addEventListener('unhandledrejection', (event) => {
-        this.logError(event.reason, {
+      window.addEventListener('unhandledrejection', (event: PromiseRejectionEvent) => {
+        this.logError((event as any).reason || 'unhandledrejection', {
           component: 'window',
           operation: 'unhandled_promise_rejection'
         }, 'high', ['frontend', 'promise']);
@@ -446,15 +449,15 @@ class ProductionErrorMonitor {
     }
 
     // Node.js error handlers
-    if (typeof process !== 'undefined') {
-      process.on('uncaughtException', (error) => {
+    if (typeof process !== 'undefined' && typeof (process as any).on === 'function') {
+      (process as any).on('uncaughtException', (error: Error) => {
         this.logError(error, {
           component: 'process',
           operation: 'uncaught_exception'
         }, 'critical', ['backend', 'fatal']);
       });
 
-      process.on('unhandledRejection', (reason) => {
+      (process as any).on('unhandledRejection', (reason: any) => {
         this.logError(reason as Error, {
           component: 'process',
           operation: 'unhandled_promise_rejection'
@@ -469,12 +472,12 @@ class ProductionErrorMonitor {
       // Basic health check - this would ping your health endpoint
       // For now, we'll assume healthy if no major errors
       const responseTime = Date.now() - start;
-      
+
       return {
         status: 'healthy',
         responseTime
       };
-    } catch (error) {
+    } catch (error: any) {
       return { status: 'unhealthy' };
     }
   }
@@ -482,19 +485,19 @@ class ProductionErrorMonitor {
   private async checkPostgreSQLHealth(): Promise<{ status: string; connectionPool?: number; responseTime?: number }> {
     try {
       const start = Date.now();
-      
+
       // This would use your actual database connection
       // For mock purposes, we'll simulate
       await new Promise(resolve => setTimeout(resolve, 10));
-      
+
       const responseTime = Date.now() - start;
-      
+
       return {
         status: 'healthy',
         connectionPool: 15, // Mock active connections
         responseTime
       };
-    } catch (error) {
+    } catch (error: any) {
       return { status: 'unhealthy' };
     }
   }
@@ -502,23 +505,30 @@ class ProductionErrorMonitor {
   private async checkOllamaHealth(): Promise<{ status: string; models?: string[]; responseTime?: number }> {
     try {
       const start = Date.now();
-      
+
       // This would check Ollama API
-      const response = await fetch(`${process.env.OLLAMA_BASE_URL || 'http://localhost:11434'}/api/tags`);
-      
-      if (!response.ok) {
-        throw new Error(`Ollama API returned ${response.status}`);
+      const base = typeof process !== 'undefined' ? (process.env.OLLAMA_BASE_URL || 'http://localhost:11434') : 'http://localhost:11434';
+      // guard fetch availability
+      if (typeof fetch === 'undefined') {
+        return { status: 'unknown' };
       }
-      
-      const data = await response.json();
+
+      const response = await fetch(`${base}/api/tags`).catch(() => null);
+
+      if (!response || !response.ok) {
+        return { status: 'unhealthy' };
+      }
+
+      const data = await response.json() as any;
       const responseTime = Date.now() - start;
-      
+      const models = Array.isArray(data?.models) ? data.models.map((m: any) => String(m?.name)) : [];
+
       return {
         status: 'healthy',
-        models: data.models?.map((m: unknown) => m.name) || [],
+        models,
         responseTime
       };
-    } catch (error) {
+    } catch (error: any) {
       return { status: 'unhealthy' };
     }
   }
@@ -526,46 +536,53 @@ class ProductionErrorMonitor {
   private async checkLangChainHealth(): Promise<{ status: string; vectorStore?: boolean; responseTime?: number }> {
     try {
       const start = Date.now();
-      
+
       // This would check LangChain service
       // Mock implementation
       await new Promise(resolve => setTimeout(resolve, 20));
-      
+
       const responseTime = Date.now() - start;
-      
+
       return {
         status: 'healthy',
         vectorStore: true,
         responseTime
       };
-    } catch (error) {
+    } catch (error: any) {
       return { status: 'unhealthy' };
     }
   }
 
-  private async checkPgVectorHealth(): Promise<{ status: string; indexHealth?: string; documentCount?: number }> {
+  private async checkPgVectorHealth(): Promise<{ status: string; indexHealth?: string; documentCount?: number; responseTime?: number }> {
     try {
       const start = Date.now();
-      
+
       // This would check pgvector extension and indexes
       // Mock implementation
       await new Promise(resolve => setTimeout(resolve, 15));
-      
+
+      const responseTime = Date.now() - start;
       return {
         status: 'healthy',
         indexHealth: 'optimal',
-        documentCount: 1250 // Mock document count
+        documentCount: 1250, // Mock document count
+        responseTime
       };
-    } catch (error) {
+    } catch (error: any) {
       return { status: 'unhealthy' };
     }
   }
 
   private async checkSystemPerformance(): Promise<SystemHealth['performance']> {
     try {
-      const memoryUsage = process.memoryUsage();
-      const heapUsedPercent = (memoryUsage.heapUsed / memoryUsage.heapTotal) * 100;
-      
+      let heapUsedPercent = 0;
+      if (typeof process !== 'undefined' && typeof (process as any).memoryUsage === 'function') {
+        const memoryUsage = (process as any).memoryUsage();
+        if (memoryUsage && memoryUsage.heapTotal) {
+          heapUsedPercent = (memoryUsage.heapUsed / memoryUsage.heapTotal) * 100;
+        }
+      }
+
       return {
         memoryUsage: Math.round(heapUsedPercent),
         cpuUsage: Math.round(Math.random() * 30), // Mock CPU usage
@@ -573,7 +590,7 @@ class ProductionErrorMonitor {
         requestsPerMinute: this.calculateRequestsPerMinute(),
         errorRate: this.calculateErrorRate()
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         memoryUsage: 0,
         cpuUsage: 0,
@@ -587,7 +604,7 @@ class ProductionErrorMonitor {
   private calculateErrorRate(): number {
     const oneHourAgo = new Date(Date.now() - 3600000);
     const recentErrors = this.errors.filter(e => e.timestamp > oneHourAgo);
-    
+
     // Mock calculation - in production, this would use actual request metrics
     const totalRequests = 1000; // Mock total requests in last hour
     return recentErrors.length > 0 ? (recentErrors.length / totalRequests) * 100 : 0;
@@ -604,13 +621,13 @@ class ProductionErrorMonitor {
 
       const now = Date.now();
       const lastTriggered = this.alertCooldowns.get(alertId) || 0;
-      
+
       if (now - lastTriggered < alert.cooldown * 1000) {
         continue; // Still in cooldown
       }
 
       const shouldTrigger = this.evaluateAlertCondition(alert);
-      
+
       if (shouldTrigger) {
         this.triggerAlert(alert);
         this.alertCooldowns.set(alertId, now);
@@ -619,19 +636,19 @@ class ProductionErrorMonitor {
   }
 
   private evaluateAlertCondition(alert: AlertConfig): boolean {
-    // Simplified condition evaluation
-    // In production, this would be more sophisticated
-    return Math.random() < 0.01; // 1% chance for demo
+    // Simplified condition evaluation for demo purposes
+    const baseChance = alert.condition.metric === 'error_rate' ? 0.05 : 0.01;
+    return Math.random() < baseChance;
   }
 
   private triggerAlert(alert: AlertConfig): void {
     console.warn(`🚨 ALERT TRIGGERED: ${alert.name}`);
-    
+
     // Send notifications based on configuration
     if (alert.notifications.email) {
       this.sendEmailAlert(alert);
     }
-    
+
     if (alert.notifications.webhook) {
       this.sendWebhookAlert(alert);
     }
@@ -639,9 +656,9 @@ class ProductionErrorMonitor {
 
   private triggerImmediateAlert(error: ErrorMetrics): void {
     console.error(`🚨 CRITICAL ERROR: ${error.message}`);
-    
+
     // Send immediate notifications for critical errors
-    this.sendEmailAlert({
+    const alert: AlertConfig = {
       id: 'critical_error',
       name: 'Critical Error Detected',
       condition: { metric: 'severity', operator: 'eq', threshold: 'critical', timeWindow: 0 },
@@ -649,23 +666,27 @@ class ProductionErrorMonitor {
       cooldown: 0,
       enabled: true,
       notifications: { email: true, webhook: true }
-    });
+    };
+    this.triggerAlert(alert);
   }
 
-  private async sendEmailAlert(alert: AlertConfig): Promise<void> {
+  private async sendEmailAlert(alert: AlertConfig): Promise<any> {
     try {
       // Email notification implementation would go here
       console.log(`📧 Email alert sent: ${alert.name}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to send email alert:', error);
     }
   }
 
-  private async sendWebhookAlert(alert: AlertConfig): Promise<void> {
+  private async sendWebhookAlert(alert: AlertConfig): Promise<any> {
     try {
       // Webhook notification implementation would go here
-      console.log(`🔗 Webhook alert sent: ${alert.name}`);
-    } catch (error) {
+      if (typeof fetch !== 'undefined') {
+        // Example: await fetch(webhookUrl, { method: 'POST', body: JSON.stringify({ alert: alert.name }) });
+      }
+      console.log(`🔗 Webhook alert processed: ${alert.name}`);
+    } catch (error: any) {
       console.error('Failed to send webhook alert:', error);
     }
   }
@@ -673,23 +694,23 @@ class ProductionErrorMonitor {
   private sendToExternalServices(error: ErrorMetrics): void {
     try {
       // Send to Sentry, LogRocket, or other monitoring services
-      if (process.env.SENTRY_DSN) {
-        // Sentry integration would go here
+      if (typeof process !== 'undefined' && process.env && process.env.SENTRY_DSN) {
+        // Sentry integration would go here, e.g. Sentry.captureException(error)
       }
-      
+
       // Custom logging service
-      console.log('📤 Error sent to external monitoring services');
-    } catch (error) {
-      console.error('Failed to send to external services:', error);
+      console.log('📤 Error sent to external monitoring services', error);
+    } catch (err: any) {
+      console.error('Failed to send to external services:', err);
     }
   }
 
   private cleanupOldErrors(): void {
     const cutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000); // 7 days
     const initialCount = this.errors.length;
-    
+
     this.errors = this.errors.filter(error => error.timestamp > cutoff);
-    
+
     const removed = initialCount - this.errors.length;
     if (removed > 0) {
       console.log(`🧹 Cleaned up ${removed} old errors`);
@@ -699,7 +720,7 @@ class ProductionErrorMonitor {
   private updateErrorRate(): void {
     // Update real-time error rate calculation
     const errorRate = this.calculateErrorRate();
-    
+
     this.systemHealth.update(health => ({
       ...health,
       performance: {
@@ -716,19 +737,14 @@ export const errorMonitor = new ProductionErrorMonitor();
 // Export types
 export type { ErrorMetrics, SystemHealth, AlertConfig };
 
-// Auto-start in production
-if (process.env.NODE_ENV === 'production') {
-  errorMonitor.start();
-}
-
 // SvelteKit error handler hook
-export function handleError({ error, event }: { error: Error; event: unknown }) {
+export function handleError({ error, event }: { error: Error; event: any }) {
   errorMonitor.logApiError(
     error,
-    event.url?.pathname || 'unknown',
-    event.request?.method || 'GET',
+    event?.url?.pathname || 'unknown',
+    event?.request?.method || 'GET',
     500,
-    event.locals?.user?.id
+    event?.locals?.user?.id
   );
 
   return {

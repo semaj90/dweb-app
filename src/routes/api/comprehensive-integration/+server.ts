@@ -8,7 +8,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
 // System status and integration health check
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
   const checkType = url.searchParams.get('check') || 'basic';
   
   try {
@@ -108,7 +108,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
     return json(systemStatus);
 
-  } catch (error) {
+  } catch (error: any) {
     return json({
       status: 'error',
       error: error instanceof Error ? error.message : 'System check failed',
@@ -118,7 +118,7 @@ export const GET: RequestHandler = async ({ url }) => {
 };
 
 // Comprehensive integration test endpoint
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const { testType = 'full_workflow', payload } = await request.json();
     
@@ -144,7 +144,7 @@ export const POST: RequestHandler = async ({ request }) => {
         }, { status: 400 });
     }
 
-  } catch (error) {
+  } catch (error: any) {
     return json({
       error: 'Integration test failed',
       message: error instanceof Error ? error.message : 'Unknown error'
@@ -161,7 +161,7 @@ async function checkService(url: string, type: string): Promise<string> {
     });
     
     return response.ok ? 'operational' : 'degraded';
-  } catch (error) {
+  } catch (error: any) {
     console.warn(`Service ${type} at ${url} check failed:`, error);
     return 'unavailable';
   }
@@ -202,7 +202,7 @@ async function runDetailedDiagnostics(): Promise<any> {
 }
 
 // Full workflow integration test
-async function testFullWorkflow(payload: unknown): Promise<any> {
+async function testFullWorkflow(payload: any): Promise<any> {
   const testResults = {
     workflow: 'document_upload_to_ai_chat',
     startTime: new Date().toISOString(),
@@ -267,7 +267,7 @@ async function testFullWorkflow(payload: unknown): Promise<any> {
 
     return testResults;
 
-  } catch (error) {
+  } catch (error: any) {
     testResults.success = false;
     testResults.error = error instanceof Error ? error.message : 'Workflow test failed';
     return testResults;
@@ -275,7 +275,7 @@ async function testFullWorkflow(payload: unknown): Promise<any> {
 }
 
 // AI pipeline specific test
-async function testAIPipeline(payload: unknown): Promise<any> {
+async function testAIPipeline(payload: any): Promise<any> {
   return {
     test: 'ai_pipeline',
     components_tested: [
@@ -298,7 +298,7 @@ async function testAIPipeline(payload: unknown): Promise<any> {
 }
 
 // Multi-protocol test
-async function testMultiProtocol(payload: unknown): Promise<any> {
+async function testMultiProtocol(payload: any): Promise<any> {
   return {
     test: 'multi_protocol',
     protocols_tested: {
@@ -324,7 +324,7 @@ async function testMultiProtocol(payload: unknown): Promise<any> {
 }
 
 // Performance benchmark test
-async function testPerformance(payload: unknown): Promise<any> {
+async function testPerformance(payload: any): Promise<any> {
   return {
     test: 'performance',
     benchmarks: {

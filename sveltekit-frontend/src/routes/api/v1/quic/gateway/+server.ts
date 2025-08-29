@@ -4,7 +4,7 @@
  * Port: 8443 (QUIC), 8444 (HTTP/2 fallback)
  */
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types.js';
+import type { RequestHandler } from './$types';
 import { productionServiceClient } from '$lib/services/production-service-client.js';
 
 const QUIC_GATEWAY_CONFIG = {
@@ -65,7 +65,7 @@ export const GET: RequestHandler = async ({ url }) => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('QUIC Gateway health check failed:', err);
     
     return json({
@@ -137,7 +137,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
     // All attempts failed
     throw lastError || new Error('All gateway attempts failed');
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('QUIC Gateway proxy error:', err);
     error(500, {
       message: 'Gateway proxy failed',
@@ -175,7 +175,7 @@ export const PUT: RequestHandler = async ({ request }) => {
       config: updatedConfig
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Gateway configuration update failed:', err);
     error(500, {
       message: 'Configuration update failed',

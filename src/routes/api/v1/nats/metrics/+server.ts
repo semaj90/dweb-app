@@ -1,12 +1,12 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { getNATSService } from '$lib/services/nats-messaging-service.js';
+import { getNATSService } from '$lib/services/nats-messaging-service';
 
 /**
  * GET /api/v1/nats/metrics
  * Get NATS messaging metrics and statistics
  */
-export const GET: RequestHandler = async () => {
+export const GET: RequestHandler = async (): Promise<any> => {
   try {
     const natsService = getNATSService();
     
@@ -126,7 +126,7 @@ export const GET: RequestHandler = async () => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('NATS metrics API error:', error);
     return json({ 
       error: 'Failed to get NATS metrics',
@@ -137,23 +137,23 @@ export const GET: RequestHandler = async () => {
 };
 
 // Helper functions
-function calculateHealthScore(status: unknown, messageStats: unknown): number {
+function calculateHealthScore(status: any, messageStats: any): number {
   let score = 0;
   
   // Connection status (40 points)
-  if (status.connected) score += 40;
-  else if (status.connecting) score += 20;
+  if ((status as any)?.connected) score += 40;
+  else if ((status as any)?.connecting) score += 20;
   
   // Message throughput (30 points)
-  const totalMessages = messageStats.published + messageStats.received;
+  const totalMessages = ((messageStats as any)?.published || 0) + ((messageStats as any)?.received || 0);
   if (totalMessages > 100) score += 30;
   else if (totalMessages > 50) score += 20;
   else if (totalMessages > 10) score += 10;
   
   // Reliability (30 points)
-  if (status.reconnectAttempts === 0) score += 30;
-  else if (status.reconnectAttempts < 3) score += 20;
-  else if (status.reconnectAttempts < 10) score += 10;
+  if (((status as any)?.reconnectAttempts || 0) === 0) score += 30;
+  else if (((status as any)?.reconnectAttempts || 0) < 3) score += 20;
+  else if (((status as any)?.reconnectAttempts || 0) < 10) score += 10;
   
   return Math.min(score, 100);
 }
@@ -179,8 +179,8 @@ function calculateReliability(reconnects: number, uptime: number): number {
   return Math.max(0, 100 - (reconnectsPerHour * 10));
 }
 
-function calculateEfficiency(messageStats: unknown, totalBytes: number): number {
-  const totalMessages = messageStats.published + messageStats.received;
+function calculateEfficiency(messageStats: any, totalBytes: number): number {
+  const totalMessages = ((messageStats as any)?.published || 0) + ((messageStats as any)?.received || 0);
   if (totalMessages === 0) return 100;
   
   const bytesPerMessage = totalBytes / totalMessages;
@@ -193,11 +193,11 @@ function calculateEfficiency(messageStats: unknown, totalBytes: number): number 
   return 20;
 }
 
-function getSubjectBreakdown(subscriptions: unknown[]): Record<string, number> {
+function getSubjectBreakdown(subscriptions: any[]): Record<string, number> {
   const breakdown: Record<string, number> = {};
   
   subscriptions.forEach(sub => {
-    const category = sub.subject.split('.')[0] || 'unknown';
+    const category = (sub as any)?.subject?.split('.')[0] || 'unknown';
     breakdown[category] = (breakdown[category] || 0) + 1;
   });
   

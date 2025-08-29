@@ -66,7 +66,7 @@ export class VectorService {
 
       const data = await response.json();
       return data.embedding;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error generating embedding:", error);
       throw error;
     }
@@ -249,7 +249,7 @@ export class VectorService {
         type: analysisType,
         timestamp: new Date().toISOString(),
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error analyzing document:", error);
       return {
         analysis: "Analysis failed",
@@ -289,7 +289,7 @@ export class VectorService {
         limit,
         threshold: 0.7,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error finding similar documents:", error);
       return [];
     }

@@ -8,8 +8,8 @@ import type {
 import {
 	ScrollAreaTypeProp,
 	ScrollAreaVisibleHiddenProp,
-} from "./extended-types/scroll-area/index.js";
-import { OrientationProp } from "./extended-types/shared/index.js";
+} from './extended-types/scroll-area/index';
+import { OrientationProp } from './extended-types/shared/index';
 import {
 	childrenSnippet,
 	dirProp,
@@ -23,7 +23,7 @@ import {
 	defineEnumProp,
 	defineNumberProp,
 	defineSimpleDataAttr,
-} from "../utils.js";
+} from '../utils';
 
 export const root = defineComponentApiSchema<ScrollAreaRootPropsWithoutHTML>({
 	title: "Root",

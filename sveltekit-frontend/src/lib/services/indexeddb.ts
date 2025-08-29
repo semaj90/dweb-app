@@ -5,7 +5,7 @@ import { browser } from "$app/environment";
 // IndexedDB service for client-side caching and offline RAG support
 // Stores embeddings, search results, and user interactions locally
 
-interface CachedDocument {
+export interface CachedDocument {
   id: string;
   title: string;
   content: string;
@@ -15,13 +15,13 @@ interface CachedDocument {
   lastUpdated: number;
   syncStatus: "synced" | "pending" | "error";
 }
-interface SearchResult {
+export interface SearchResult {
   query: string;
   results: any[];
   timestamp: number;
   executionTime: number;
 }
-interface UserInteraction {
+export interface UserInteraction {
   id: string;
   type: "search" | "view" | "edit" | "ai_query";
   query?: string;
@@ -49,7 +49,7 @@ class IndexedDBService {
         resolve();
       };
 
-      request.onupgradeneeded = (event) => {
+      request.onupgradeneeded = (event: any) => {
         const db = (event.target as IDBOpenDBRequest).result;
 
         // Documents store for caching case/evidence data
@@ -133,7 +133,7 @@ class IndexedDBService {
       const documents: CachedDocument[] = [];
       const request = store.openCursor();
 
-      request.onsuccess = (event) => {
+      request.onsuccess = (event: any) => {
         const cursor = (event.target as IDBRequest).result;
         if (cursor && documents.length < limit) {
           const doc = cursor.value as CachedDocument;
@@ -244,7 +244,7 @@ class IndexedDBService {
         const index = store.index("timestamp");
         request = index.openCursor(null, "prev"); // Most recent first
       }
-      request.onsuccess = (event) => {
+      request.onsuccess = (event: any) => {
         const cursor = (event.target as IDBRequest).result;
         if (cursor && interactions.length < limit) {
           interactions.push(cursor.value);
@@ -337,7 +337,7 @@ class IndexedDBService {
     const searchRequest = searchIndex.openCursor(
       IDBKeyRange.upperBound(cutoffTime),
     );
-    searchRequest.onsuccess = (event) => {
+    searchRequest.onsuccess = (event: any) => {
       const cursor = (event.target as IDBRequest).result;
       if (cursor) {
         cursor.delete();
@@ -357,7 +357,7 @@ class IndexedDBService {
     const interactionsRequest = interactionsIndex.openCursor(
       IDBKeyRange.upperBound(cutoffTime),
     );
-    interactionsRequest.onsuccess = (event) => {
+    interactionsRequest.onsuccess = (event: any) => {
       const cursor = (event.target as IDBRequest).result;
       if (cursor) {
         cursor.delete();

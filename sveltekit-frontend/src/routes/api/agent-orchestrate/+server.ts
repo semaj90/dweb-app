@@ -7,9 +7,9 @@ import type { RequestHandler } from '@sveltejs/kit';
 
 import { json, type RequestHandler } from "@sveltejs/kit";
 
-import { autoGenAgent } from "../../../../../agents/autogen-agent.js";
+import { autoGenAgent } from '../../../../../agents/autogen-agent';
 
-import { enhancedRAGService } from "../../../../../rag/enhanced-rag-service.js";
+import { enhancedRAGService } from '../../../../../rag/enhanced-rag-service';
 
 export interface AgentOrchestrationRequest {
   prompt: string;
@@ -236,7 +236,7 @@ export const POST: RequestHandler = async ({ request }) => {
             });
           }
         });
-      } catch (error) {
+      } catch (error: any) {
         // Timeout occurred, collect partial results
         console.error('Agent orchestration timeout:', error);
         results.push({
@@ -253,7 +253,7 @@ export const POST: RequestHandler = async ({ request }) => {
         try {
           const result = await agentPromise;
           results.push(result);
-        } catch (error) {
+        } catch (error: any) {
           results.push({
             agent: 'unknown',
             output: '',
@@ -285,7 +285,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
     return json(response);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Agent orchestration failed:', error);
     
     return json({

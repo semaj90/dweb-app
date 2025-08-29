@@ -47,7 +47,7 @@ export const POST: RequestHandler = async ({ request }) => {
         };
         logger.info(`Vector ranking: ${rankingResults.length} results found`);
 
-      } catch (error) {
+      } catch (error: any) {
         logger.error('Vector ranking test failed', error);
         results.tests.vectorRanking = {
           success: false,
@@ -71,7 +71,7 @@ export const POST: RequestHandler = async ({ request }) => {
         };
         logger.info(`Legal analysis: ${analysis.entities.length} entities, ${analysis.concepts.length} concepts`);
 
-      } catch (error) {
+      } catch (error: any) {
         logger.error('Legal analysis test failed', error);
         results.tests.legalAnalysis = {
           success: false,
@@ -101,7 +101,7 @@ export const POST: RequestHandler = async ({ request }) => {
         };
         logger.info(`Enhanced RAG: ${ragResult.sources?.length || 0} sources, confidence ${ragResult.confidence}`);
 
-      } catch (error) {
+      } catch (error: any) {
         logger.error('Enhanced RAG test failed', error);
         results.tests.enhancedRAG = {
           success: false,
@@ -129,7 +129,7 @@ export const POST: RequestHandler = async ({ request }) => {
         };
         logger.info(`LangChain RAG: ${langchainResult.sourceDocuments.length} sources, confidence ${langchainResult.confidence}`);
 
-      } catch (error) {
+      } catch (error: any) {
         logger.error('LangChain RAG test failed', error);
         results.tests.langchainRAG = {
           success: false,
@@ -158,7 +158,7 @@ export const POST: RequestHandler = async ({ request }) => {
         };
         logger.info(`Qdrant search: ${qdrantResults.length} results found`);
 
-      } catch (error) {
+      } catch (error: any) {
         logger.error('Qdrant search test failed', error);
         results.tests.qdrantSearch = {
           success: false,
@@ -183,7 +183,7 @@ export const POST: RequestHandler = async ({ request }) => {
     logger.info(`Vector search tests completed: ${successCount}/${totalTests} passed`);
     return json(results);
 
-  } catch (error) {
+  } catch (error: any) {
     logger.error('Vector search test failed', error);
     return json({
       success: false,
@@ -210,7 +210,7 @@ export const GET: RequestHandler = async () => {
 
     return json(health);
 
-  } catch (error) {
+  } catch (error: any) {
     logger.error('Health check failed', error);
     return json({
       status: 'error',

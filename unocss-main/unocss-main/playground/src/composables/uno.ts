@@ -21,13 +21,13 @@ let initial = true
 
 const { transformedHTML, transformed, getTransformed, transformedCSS } = useTransformer()
 
-export async function generate() {
+export async function generate(): Promise<any> {
   output.value = await (await __uno).generate(transformedHTML.value || '')
   annotations.value = transformed.value?.annotations || []
   init.value = true
 }
 
-async function reGenerate() {
+async function reGenerate(): Promise<any> {
   const uno = await __uno
   await uno.setConfig(customConfig, defaultConfig.value)
   await detectTransformer()
@@ -83,7 +83,7 @@ debouncedWatch(
         }
       }
     }
-    catch (e) {
+    catch (e: any) {
       console.error(e)
       customConfigError.value = e as Error
     }
@@ -102,7 +102,7 @@ function useTransformer() {
   const transformedHTML = computed(() => transformed.value?.output || '')
   const transformedCSS = computedAsync(async () => (await getTransformed('css')).output)
 
-  async function applyTransformers(code: MagicString, id: string, enforce?: 'pre' | 'post') {
+  async function applyTransformers(code: MagicString, id: string, enforce?: 'pre' | 'post'): Promise<any> {
     const uno = await __uno
     let { transformers } = uno.config
     transformers = (transformers ?? []).filter(i => i.enforce === enforce)
@@ -123,7 +123,7 @@ function useTransformer() {
     return annotations
   }
 
-  async function getTransformed(type: 'html' | 'css') {
+  async function getTransformed(type: 'html' | 'css'): Promise<any> {
     const isHTML = type === 'html'
     const id = isHTML ? 'input.html' : 'input.css'
     const input = new MagicString(isHTML ? inputHTML.value : customCSS.value)
@@ -137,7 +137,7 @@ function useTransformer() {
   return { transformedHTML, transformed, getTransformed, transformedCSS }
 }
 
-async function detectTransformer() {
+async function detectTransformer(): Promise<any> {
   const uno = await __uno
   const { transformers = [] } = uno.config
   if (!transformers.some(t => t.name === '@unocss/transformer-directives')) {

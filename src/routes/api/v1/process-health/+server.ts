@@ -10,7 +10,7 @@ import { legalAIWorkerClient } from '$lib/services/worker-pool-client';
 import { legalAIGPUManager } from '$lib/services/gpu-memory-manager';
 
 // GET /api/v1/process-health - Get comprehensive health summary
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
   try {
     const format = url.searchParams.get('format') || 'summary';
     const includeMetrics = url.searchParams.get('metrics') === 'true';
@@ -82,7 +82,7 @@ export const GET: RequestHandler = async ({ url }) => {
         }, { status: 400 });
     }
     
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -92,7 +92,7 @@ export const GET: RequestHandler = async ({ url }) => {
 };
 
 // POST /api/v1/process-health/alert/:alertId/resolve - Resolve specific alert
-export const POST: RequestHandler = async ({ request, url }) => {
+export const POST: RequestHandler = async ({ request, url }): Promise<any> => {
   try {
     const action = url.searchParams.get('action');
     
@@ -142,7 +142,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
       error: 'Invalid action. Use: resolve-alert, optimize-gpu, or health-check'
     }, { status: 400 });
     
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',

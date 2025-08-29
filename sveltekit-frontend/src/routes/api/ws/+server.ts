@@ -151,14 +151,14 @@ function setupRedisSubscriptions() {
         });
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to parse Redis message:', error);
     }
   });
 }
 
 // Track user attention for AI context switching
-async function trackUserAttention(socketId: string, data: any) {
+async function trackUserAttention(socketId: string, data: any): Promise<any> {
   if (!redis) return;
 
   const attentionEvent = {
@@ -181,7 +181,7 @@ async function trackUserAttention(socketId: string, data: any) {
 }
 
 // Trigger AI context switching based on user attention
-async function triggerAIContextSwitching(socketId: string, query: string) {
+async function triggerAIContextSwitching(socketId: string, query: string): Promise<any> {
   try {
     // Analyze query for legal context
     const contextResponse = await fetch('http://localhost:8080/api/context/analyze', {
@@ -205,19 +205,19 @@ async function triggerAIContextSwitching(socketId: string, query: string) {
         confidence: context.confidence,
       });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ AI context switching failed:', error);
   }
 }
 
 // Get current progress for an upload
-async function getCurrentProgress(uploadId: string) {
+async function getCurrentProgress(uploadId: string): Promise<any> {
   if (!redis) return null;
 
   try {
     const progressData = await redis.get(`progress:${uploadId}`);
     return progressData ? JSON.parse(progressData) : null;
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Failed to get current progress:', error);
     return null;
   }

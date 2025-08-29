@@ -58,7 +58,7 @@ export const GET: RequestHandler = async ({ url }) => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("❌ Error fetching user info:", error);
     return json({
       success: false,

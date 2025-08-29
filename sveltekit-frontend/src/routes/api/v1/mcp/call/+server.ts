@@ -28,7 +28,7 @@ const MCP_TOOLS = {
 
 type MCPToolName = keyof typeof MCP_TOOLS;
 
-interface MCPCallRequest {
+export interface MCPCallRequest {
   tool: MCPToolName;
   args: Record<string, any>;
   metadata?: {
@@ -38,7 +38,7 @@ interface MCPCallRequest {
   };
 }
 
-interface MCPCallResponse {
+export interface MCPCallResponse {
   success: boolean;
   result?: any;
   error?: string;
@@ -56,7 +56,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress, url }) =
 
   try {
     requestBody = await request.json();
-  } catch (error) {
+  } catch (error: any) {
     return json<MCPCallResponse>({
       success: false,
       error: 'Invalid JSON in request body',
@@ -127,7 +127,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress, url }) =
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     const executionTime = Date.now() - startTime;
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
 
@@ -170,7 +170,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
     return json(response);
 
-  } catch (error) {
+  } catch (error: any) {
     return json({
       status: 'error',
       timestamp: Date.now(),

@@ -5,8 +5,8 @@
  * to WebAssembly at runtime with SvelteKit 2 compatibility
  */
 
-import type { LLVMCompileOptions, WASMModule, CompilationResult } from '../types/wasm-types.js';
-// // import { webgpuPolyfill } from '../webgpu/webgpu-polyfill.js'; // Disabled for now
+import type { LLVMCompileOptions, WASMModule, CompilationResult } from '../types/wasm-types';
+// // import { webgpuPolyfill } from '../webgpu/webgpu-polyfill'; // Disabled for now
 // import { wasmLLMService } from './wasm-llm-service'; // Disabled for now
 import { gpuServiceIntegration } from '../services/gpu-service-integration';
 
@@ -29,7 +29,7 @@ const LLVM_CONFIG = {
   }
 } as const;
 
-interface LLVMModule {
+export interface LLVMModule {
   id: string;
   name: string;
   sourceFiles: string[];
@@ -96,7 +96,7 @@ export class LLVMWASMBridge {
       console.log('✅ LLVM-WASM Bridge initialized successfully');
       
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ LLVM-WASM Bridge initialization failed:', error);
       return false;
     }
@@ -130,7 +130,7 @@ export class LLVMWASMBridge {
           this.modules.set(moduleId, module);
           console.log(`✅ Compiled module: ${name}`);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error(`❌ Failed to compile module ${name}:`, error);
       }
     }
@@ -183,7 +183,7 @@ export class LLVMWASMBridge {
       await this.loadModule(module);
       
       return module;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Failed to compile module ${moduleId}:`, error);
       return null;
     }
@@ -354,7 +354,7 @@ int32_t ${baseName}_process(const char* input, int32_t input_length, char* outpu
         warnings: [],
         error: null
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         wasmBinary: null,
@@ -475,7 +475,7 @@ int32_t ${baseName}_process(const char* input, int32_t input_length, char* outpu
       module.performance.loadTimeMs = performance.now() - startTime;
       
       console.log(`✅ Module ${module.name} loaded successfully`);
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Failed to load module ${module.name}:`, error);
       throw error;
     }
@@ -562,7 +562,7 @@ int32_t ${baseName}_process(const char* input, int32_t input_length, char* outpu
         citations,
         processingTime
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Legal text processing failed:', error);
       throw error;
     }
@@ -614,7 +614,7 @@ int32_t ${baseName}_process(const char* input, int32_t input_length, char* outpu
       vectorModule.performance.executionTimeMs += processingTime;
 
       return { embedding, processingTime };
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ WASM embedding computation failed:', error);
       // Fallback to GPU service integration
       try {
@@ -710,7 +710,7 @@ export async function initializeLLVMIntegration(): Promise<void> {
     await gpuServiceIntegration.initialize();
     
     console.log('✅ Complete LLVM/WASM integration initialized');
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ LLVM integration initialization failed:', error);
     throw error;
   }

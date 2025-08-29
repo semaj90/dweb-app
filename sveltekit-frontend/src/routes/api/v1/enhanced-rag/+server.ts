@@ -3,7 +3,7 @@
  * Provides seamless integration with Enhanced RAG Go service (port 8094)
  */
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types.js';
+import type { RequestHandler } from './$types';
 import { vectorOperations } from '$lib/server/db/vector-operations.js';
 
 const ENHANCED_RAG_CONFIG = {
@@ -155,7 +155,7 @@ export const GET: RequestHandler = async ({ url }) => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Enhanced RAG integration health check failed:', err);
     
     return json({
@@ -282,7 +282,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Enhanced RAG operation failed:', err);
     error(500, {
       message: 'Enhanced RAG operation failed',
@@ -332,7 +332,7 @@ export const PUT: RequestHandler = async ({ request }) => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Document upload for RAG failed:', err);
     error(500, {
       message: 'Document upload failed',
@@ -373,7 +373,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Document deletion from RAG failed:', err);
     error(500, {
       message: 'Document deletion failed',

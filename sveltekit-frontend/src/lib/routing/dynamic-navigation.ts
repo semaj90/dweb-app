@@ -133,7 +133,7 @@ export class DynamicNavigation {
       if (!options.replaceState && options.keepHistory !== false) {
         this.addToHistory(path, options.state);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Navigation failed:', error);
       throw error;
     } finally {

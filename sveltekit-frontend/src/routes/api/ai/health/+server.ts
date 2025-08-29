@@ -14,7 +14,7 @@ export const GET: RequestHandler = async () => {
       try {
         const models = await ollamaService.listModels();
         availableModels = models.map((m) => m.name);
-      } catch (error) {
+      } catch (error: any) {
         logger.warn("Failed to list Ollama models", error);
       }
     }
@@ -51,7 +51,7 @@ export const GET: RequestHandler = async () => {
           ? `All systems operational (${availableModels.length} models available)`
           : "Ollama service not available",
     });
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Health check failed", error);
     return json(
       {

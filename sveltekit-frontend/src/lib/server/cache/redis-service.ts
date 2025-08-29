@@ -126,7 +126,7 @@ export class RedisService {
       console.log('✅ Redis connection established successfully');
       return true;
       
-    } catch (error) {
+    } catch (error: any) {
       this.connectionStatus = 'error';
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       
@@ -189,7 +189,7 @@ export class RedisService {
       );
 
       return session;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error getting session:', error);
       return null;
     }
@@ -251,7 +251,7 @@ export class RedisService {
         await this.redis.set(key, serialized);
       }
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis set error:', error);
       return false;
     }
@@ -261,7 +261,7 @@ export class RedisService {
     try {
       const data = await this.redis.get(key);
       return data ? JSON.parse(data) : null;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis get error:', error);
       return null;
     }
@@ -271,7 +271,7 @@ export class RedisService {
     try {
       await this.redis.del(key);
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis delete error:', error);
       return false;
     }
@@ -281,7 +281,7 @@ export class RedisService {
     try {
       const result = await this.redis.exists(key);
       return result === 1;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis exists error:', error);
       return false;
     }
@@ -291,7 +291,7 @@ export class RedisService {
     try {
       await this.redis.expire(key, ttl);
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis expire error:', error);
       return false;
     }
@@ -357,7 +357,7 @@ export class RedisService {
       
       return { allowed: true, remaining: limit - newCount };
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Rate limit check error:', error);
       // Allow request if Redis is down
       return { allowed: true, remaining: limit };
@@ -370,7 +370,7 @@ export class RedisService {
     try {
       await this.redis.publish(channel, JSON.stringify(message));
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis publish error:', error);
       return false;
     }
@@ -387,7 +387,7 @@ export class RedisService {
           try {
             const parsed = JSON.parse(message);
             callback(parsed);
-          } catch (error) {
+          } catch (error: any) {
             console.error('Error parsing pubsub message:', error);
             callback(message);
           }
@@ -427,7 +427,7 @@ export class RedisService {
         }
       };
       
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: 'unhealthy',
         details: {
@@ -514,6 +514,6 @@ export interface RAGCacheData {
 }
 
 // Health check endpoint data
-export async function getRedisHealth() {
+export async function getRedisHealth(): Promise<any> {
   return await redis.healthCheck();
 }

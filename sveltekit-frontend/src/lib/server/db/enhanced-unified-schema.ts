@@ -108,6 +108,29 @@ export const sessions = pgTable('sessions', {
 }));
 
 // ============================================================================
+// KEYS TABLE (AUTHENTICATION KEYS MANAGEMENT)
+// ============================================================================
+
+export const keys = pgTable('keys', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  hashedPassword: varchar('hashed_password', { length: 255 }),
+  keyType: varchar('key_type', { length: 50 }).notNull(), // 'password', 'oauth', 'api_key'
+  keyId: varchar('key_id', { length: 255 }).notNull(),
+  keyValue: text('key_value'), // Encrypted key data
+  expiresAt: timestamp('expires_at', { mode: 'date' }),
+  isActive: boolean('is_active').default(true).notNull(),
+  metadata: jsonb('metadata').default({}),
+  createdAt: timestamp('created_at', { mode: 'date' }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).notNull().defaultNow(),
+}, (table) => ({
+  userIdIdx: index('keys_user_id_idx').on(table.userId),
+  keyIdIdx: uniqueIndex('keys_key_id_idx').on(table.keyId),
+  keyTypeIdx: index('keys_key_type_idx').on(table.keyType),
+  activeIdx: index('keys_active_idx').on(table.isActive),
+}));
+
+// ============================================================================
 // LEGAL DOCUMENT TABLES WITH VECTOR SUPPORT
 // ============================================================================
 
@@ -296,6 +319,7 @@ export const qdrantCollections = pgTable('qdrant_collections', {
 
 export const usersRelations = relations(users, ({ many, one }) => ({
   sessions: many(sessions),
+  keys: many(keys),
   documents: many(legalDocuments),
   assignedCases: many(cases, { relationName: 'assignedAttorney' }),
 }));
@@ -303,6 +327,13 @@ export const usersRelations = relations(users, ({ many, one }) => ({
 export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(users, {
     fields: [sessions.userId],
+    references: [users.id],
+  }),
+}));
+
+export const keysRelations = relations(keys, ({ one }) => ({
+  user: one(users, {
+    fields: [keys.userId],
     references: [users.id],
   }),
 }));
@@ -368,6 +399,8 @@ export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Session = typeof sessions.$inferSelect;
 export type NewSession = typeof sessions.$inferInsert;
+export type Key = typeof keys.$inferSelect;
+export type NewKey = typeof keys.$inferInsert;
 export type LegalDocument = typeof legalDocuments.$inferSelect;
 export type NewLegalDocument = typeof legalDocuments.$inferInsert;
 export type Case = typeof cases.$inferSelect;

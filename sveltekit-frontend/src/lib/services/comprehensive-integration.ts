@@ -9,7 +9,7 @@ import {
 } from "svelte/store";
 
 // Define types for missing dependencies
-interface SemanticAnalysisResult {
+export interface SemanticAnalysisResult {
   summaryEmbedding: number[];
   legalRelevanceScore: number;
   concepts: Array<{
@@ -19,7 +19,7 @@ interface SemanticAnalysisResult {
   }>;
 }
 
-interface RAGQuery {
+export interface RAGQuery {
   query: string;
   context?: string;
   semantic: {
@@ -32,13 +32,13 @@ interface RAGQuery {
   };
 }
 
-interface RAGResponse {
+export interface RAGResponse {
   results: Array<{
     relevanceScore: number;
   }>;
 }
 
-interface WebGPUCapabilities {
+export interface WebGPUCapabilities {
   available: boolean;
   maxBufferSize?: number;
   maxTextureSize?: number;
@@ -265,7 +265,7 @@ class ComprehensiveIntegrationService {
             `query_${Date.now()}`
           );
           console.log('✅ Semantic analysis completed');
-        } catch (error) {
+        } catch (error: any) {
           console.warn('⚠️ Semantic analysis failed:', error);
         }
       }
@@ -288,7 +288,7 @@ class ComprehensiveIntegrationService {
 
           response.ragResults = await semanticAnalyzer.enhancedQuery(ragQuery);
           console.log('✅ RAG query completed');
-        } catch (error) {
+        } catch (error: any) {
           console.warn('⚠️ RAG query failed:', error);
         }
       }
@@ -317,7 +317,7 @@ class ComprehensiveIntegrationService {
 
             console.log('✅ WebGPU acceleration applied');
           }
-        } catch (error) {
+        } catch (error: any) {
           console.warn('⚠️ WebGPU acceleration failed:', error);
         }
       }
@@ -331,7 +331,7 @@ class ComprehensiveIntegrationService {
             analysis: response.semanticAnalysis,
           });
           console.log('✅ Real-time streaming initiated');
-        } catch (error) {
+        } catch (error: any) {
           console.warn('⚠️ Real-time streaming failed:', error);
         }
       }
@@ -345,7 +345,7 @@ class ComprehensiveIntegrationService {
 
       console.log(`✅ Integrated query completed in ${response.processingTime.toFixed(2)}ms`);
       return response;
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Integrated query failed:', error);
       response.processingTime = performance.now() - startTime;
       throw error;
@@ -383,7 +383,7 @@ class ComprehensiveIntegrationService {
       } else {
         throw new Error('Enhanced RAG health check failed');
       }
-    } catch (error) {
+    } catch (error: any) {
       this.systemStatus.enhancedRAG.status = 'offline';
       console.warn('⚠️ Enhanced RAG system offline:', error);
     }
@@ -406,7 +406,7 @@ class ComprehensiveIntegrationService {
       } else {
         console.log('ℹ️ WebGPU not available');
       }
-    } catch (error) {
+    } catch (error: any) {
       this.systemStatus.webGPU.available = false;
       console.warn('⚠️ WebGPU initialization failed:', error);
     }
@@ -431,7 +431,7 @@ class ComprehensiveIntegrationService {
       };
 
       console.log('✅ Real-time communication initialized');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Real-time communication initialization failed:', error);
     }
   }
@@ -444,7 +444,7 @@ class ComprehensiveIntegrationService {
     try {
       const response = await fetch('http://localhost:8094/api/database/postgres/health');
       this.systemStatus.databases.postgresql = response.ok;
-    } catch (error) {
+    } catch (error: any) {
       this.systemStatus.databases.postgresql = false;
     }
 
@@ -452,7 +452,7 @@ class ComprehensiveIntegrationService {
     try {
       const response = await fetch('http://localhost:8094/api/database/redis/health');
       this.systemStatus.databases.redis = response.ok;
-    } catch (error) {
+    } catch (error: any) {
       this.systemStatus.databases.redis = false;
     }
 
@@ -460,7 +460,7 @@ class ComprehensiveIntegrationService {
     try {
       const response = await fetch('http://localhost:6333/');
       this.systemStatus.databases.qdrant = response.ok;
-    } catch (error) {
+    } catch (error: any) {
       this.systemStatus.databases.qdrant = false;
     }
 
@@ -468,7 +468,7 @@ class ComprehensiveIntegrationService {
     try {
       const response = await fetch('http://localhost:7474/');
       this.systemStatus.databases.neo4j = response.ok;
-    } catch (error) {
+    } catch (error: any) {
       this.systemStatus.databases.neo4j = false;
     }
 
@@ -492,7 +492,7 @@ class ComprehensiveIntegrationService {
         };
         console.log('🤖 Model availability checked');
       }
-    } catch (error) {
+    } catch (error: any) {
       this.systemStatus.models = {
         ollama: false,
         embeddings: false,
@@ -562,7 +562,7 @@ class ComprehensiveIntegrationService {
           });
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Failed to store query results:', error);
     }
   }

@@ -4,7 +4,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { drizzle } from 'drizzle-orm/postgres-js';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import postgres from 'postgres';
 import { createClient } from 'redis';
 import { nanoid } from 'nanoid';
@@ -21,7 +21,7 @@ const redis = createClient({
 
 let redisConnected = false;
 
-async function connectRedis() {
+async function connectRedis(): Promise<any> {
   if (!redisConnected) {
     await redis.connect();
     redisConnected = true;
@@ -102,7 +102,7 @@ export const POST: RequestHandler = async ({ request }) => {
       estimatedTime: getEstimatedTime(type, data),
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Compute API error:', error);
     
     return json({
@@ -182,7 +182,7 @@ export const GET: RequestHandler = async ({ url }) => {
       vector: vectorResult,
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Job status error:', error);
     
     return json({

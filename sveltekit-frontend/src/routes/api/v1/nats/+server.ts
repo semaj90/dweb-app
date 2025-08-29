@@ -60,7 +60,7 @@ export const POST: RequestHandler = async ({ request }) => {
 					error: `Unsupported action: ${body.action}` 
 				}, { status: 400 });
 		}
-	} catch (error) {
+	} catch (error: any) {
 		console.error('NATS API Error:', error);
 		return json({
 			success: false,
@@ -130,7 +130,7 @@ export const GET: RequestHandler = async () => {
 				real_time_streaming: true,
 			},
 		});
-	} catch (error) {
+	} catch (error: any) {
 		return json({
 			service: 'Enhanced NATS Messaging',
 			status: 'degraded',
@@ -142,7 +142,7 @@ export const GET: RequestHandler = async () => {
 
 // Handler functions
 
-async function handlePublish(nats: EnhancedNATSMessagingService, body: any) {
+async function handlePublish(nats: EnhancedNATSMessagingService, body: any): Promise<any> {
 	if (!body.subject || body.data === undefined) {
 		throw new Error('Subject and data are required for publish');
 	}
@@ -158,7 +158,7 @@ async function handlePublish(nats: EnhancedNATSMessagingService, body: any) {
 	});
 }
 
-async function handlePublishBatch(nats: EnhancedNATSMessagingService, body: any) {
+async function handlePublishBatch(nats: EnhancedNATSMessagingService, body: any): Promise<any> {
 	if (!body.messages || !Array.isArray(body.messages)) {
 		throw new Error('Messages array is required for batch publish');
 	}
@@ -173,7 +173,7 @@ async function handlePublishBatch(nats: EnhancedNATSMessagingService, body: any)
 	});
 }
 
-async function handleRequest(nats: EnhancedNATSMessagingService, body: any) {
+async function handleRequest(nats: EnhancedNATSMessagingService, body: any): Promise<any> {
 	if (!body.subject || body.data === undefined) {
 		throw new Error('Subject and data are required for request');
 	}
@@ -190,7 +190,7 @@ async function handleRequest(nats: EnhancedNATSMessagingService, body: any) {
 	});
 }
 
-async function handleSubscribe(nats: EnhancedNATSMessagingService, body: any) {
+async function handleSubscribe(nats: EnhancedNATSMessagingService, body: any): Promise<any> {
 	if (!body.subject) {
 		throw new Error('Subject is required for subscription');
 	}
@@ -205,7 +205,7 @@ async function handleSubscribe(nats: EnhancedNATSMessagingService, body: any) {
 	}, { status: 400 });
 }
 
-async function handleUnsubscribe(nats: EnhancedNATSMessagingService, body: any) {
+async function handleUnsubscribe(nats: EnhancedNATSMessagingService, body: any): Promise<any> {
 	if (!body.subject) {
 		throw new Error('Subject is required for unsubscribe');
 	}
@@ -220,7 +220,7 @@ async function handleUnsubscribe(nats: EnhancedNATSMessagingService, body: any) 
 	});
 }
 
-async function handleCreateStream(nats: EnhancedNATSMessagingService, body: any) {
+async function handleCreateStream(nats: EnhancedNATSMessagingService, body: any): Promise<any> {
 	if (!body.stream_config) {
 		throw new Error('Stream configuration is required');
 	}
@@ -236,7 +236,7 @@ async function handleCreateStream(nats: EnhancedNATSMessagingService, body: any)
 	});
 }
 
-async function handleCreateConsumer(nats: EnhancedNATSMessagingService, body: any) {
+async function handleCreateConsumer(nats: EnhancedNATSMessagingService, body: any): Promise<any> {
 	if (!body.stream_name || !body.consumer_config) {
 		throw new Error('Stream name and consumer configuration are required');
 	}

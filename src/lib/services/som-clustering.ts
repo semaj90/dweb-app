@@ -37,7 +37,7 @@ export class LegalDocumentSOM implements SelfOrganizingMap {
   /**
    * Train SOM with legal document embeddings
    */
-  async train(embeddings: number[][]): Promise<void> {
+  async train(embeddings: number[][]): Promise<any> {
     console.log(`Training SOM with ${embeddings.length} document embeddings...`);
     
     let learningRate = this.config.learningRate;
@@ -99,7 +99,7 @@ export class LegalDocumentSOM implements SelfOrganizingMap {
     bmu: { x: number; y: number },
     learningRate: number,
     radius: number
-  ): Promise<void> {
+  ): Promise<any> {
     for (let x = 0; x < this.config.width; x++) {
       for (let y = 0; y < this.config.height; y++) {
         const distance = Math.sqrt((x - bmu.x) ** 2 + (y - bmu.y) ** 2);
@@ -182,7 +182,7 @@ export class LegalDocumentSOM implements SelfOrganizingMap {
   /**
    * Analyze legal document clusters on the SOM
    */
-  async analyzeLegalClusters(documents: Array<{ id: string; embedding: number[]; metadata: unknown }>): Promise<{
+  async analyzeLegalClusters(documents: Array<{ id: string; embedding: number[]; metadata: any }>): Promise<{
     clusters: Array<{
       position: { x: number; y: number };
       documents: string[];
@@ -190,7 +190,7 @@ export class LegalDocumentSOM implements SelfOrganizingMap {
       coherence: number;
     }>;
   }> {
-    const clusterMap = new Map<string, Array<{ id: string; metadata: unknown }>>();
+    const clusterMap = new Map<string, Array<{ id: string; metadata: any }>>();
     
     // Map documents to SOM positions
     for (const doc of documents) {
@@ -228,7 +228,7 @@ export class LegalDocumentSOM implements SelfOrganizingMap {
   /**
    * Extract legal topics from document metadata
    */
-  private extractLegalTopics(metadataArray: unknown[]): string[] {
+  private extractLegalTopics(metadataArray: any[]): string[] {
     const topicCounts = new Map<string, number>();
     
     for (const metadata of metadataArray) {
@@ -290,7 +290,7 @@ export class LegalDocumentSOM implements SelfOrganizingMap {
   // PERSISTENCE METHODS
   // =============================================================================
   
-  private async saveTrainingProgress(iteration: number, learningRate: number, radius: number): Promise<void> {
+  private async saveTrainingProgress(iteration: number, learningRate: number, radius: number): Promise<any> {
     await this.redis.hset('som:training:progress', {
       iteration,
       learningRate,
@@ -299,7 +299,7 @@ export class LegalDocumentSOM implements SelfOrganizingMap {
     });
   }
   
-  private async saveToRedis(): Promise<void> {
+  private async saveToRedis(): Promise<any> {
     const serialized = {
       config: this.config,
       neurons: this.neurons,

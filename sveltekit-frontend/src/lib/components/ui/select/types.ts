@@ -1,7 +1,7 @@
 import type { Writable } from "svelte/store";
 
 // Common props interface
-interface CommonProps {
+export interface CommonProps {
   className?: string;
   [key: string]: any;
 }

@@ -3,7 +3,7 @@ import { ollamaService } from '$lib/server/services/OllamaService';
 
 const GO_BASE = import.meta.env.GO_SERVICE_URL || "http://localhost:8084";
 
-async function fetchWithTimeout(path: string, timeoutMs = 2500) {
+async function fetchWithTimeout(path: string, timeoutMs = 2500): Promise<any> {
   const controller = new AbortController();
   const t = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -27,7 +27,7 @@ export const GET: RequestHandler = async () => {
   try {
     const data = await fetchWithTimeout("/api/gpu-status");
     return json({ ok: true, source: "go", config: data });
-  } catch (err) {
+  } catch (err: any) {
     return json({
       ok: true,
       source: "shim",

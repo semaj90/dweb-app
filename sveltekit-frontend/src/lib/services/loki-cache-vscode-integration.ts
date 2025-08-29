@@ -462,7 +462,7 @@ export class LokiCacheVSCodeIntegration {
         tags: ['vscode', 'tasks', taskId]
       });
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ VS Code tasks.json update failed:', error);
     }
   }
@@ -497,7 +497,7 @@ export class LokiCacheVSCodeIntegration {
       console.log(`✅ Task executed: ${taskId}`);
       return result;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Task execution failed: ${taskId}`, error);
       return {
         success: false,

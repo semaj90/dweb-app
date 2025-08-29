@@ -2,7 +2,7 @@
 
 type EventsMap = Record<string, any>
 
-interface DefaultEvents extends EventsMap {
+export interface DefaultEvents extends EventsMap {
   [event: string]: (...args: unknown) => void
 }
 

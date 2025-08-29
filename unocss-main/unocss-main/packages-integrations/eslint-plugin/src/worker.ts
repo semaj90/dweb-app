@@ -10,7 +10,7 @@ const promises = new Map<string | undefined, Promise<UnoGenerator<any>> | undefi
 // bypass icon rules in ESLint
 process.env.ESLINT ||= 'true'
 
-async function _getGenerator(configPath?: string) {
+async function _getGenerator(configPath?: string): Promise<any> {
   const { config, sources } = await loadConfig(
     process.cwd(),
     configPath,
@@ -23,7 +23,7 @@ async function _getGenerator(configPath?: string) {
   })
 }
 
-export async function getGenerator(configPath?: string) {
+export async function getGenerator(configPath?: string): Promise<any> {
   let promise = promises.get(configPath)
   if (!promise) {
     promise = _getGenerator(configPath)
@@ -36,7 +36,7 @@ export function setGenerator(generator: Awaited<UnoGenerator<any>>, configPath?:
   promises.set(configPath, Promise.resolve(generator))
 }
 
-async function actionSort(configPath: string | undefined, classes: string) {
+async function actionSort(configPath: string | undefined, classes: string): Promise<any> {
   return await sortRules(classes, await getGenerator(configPath))
 }
 
@@ -56,7 +56,7 @@ async function actionBlocklist(configPath: string | undefined, classes: string, 
       : meta
   }
 
-  const matchBlocked = async (raw: string) => {
+  const matchBlocked = async (raw: string): Promise<any> => {
     if (blocked.has(raw))
       return
     const rule = uno.getBlocked(raw)

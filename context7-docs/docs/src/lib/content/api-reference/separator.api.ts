@@ -1,5 +1,5 @@
 import type { SeparatorRootPropsWithoutHTML } from "bits-ui";
-import { OrientationProp } from "./extended-types/shared/index.js";
+import { OrientationProp } from './extended-types/shared/index';
 import { withChildProps } from "$lib/content/api-reference/shared.js";
 import {
 	defineBooleanProp,
@@ -7,7 +7,7 @@ import {
 	defineEnumDataAttr,
 	defineEnumProp,
 	defineSimpleDataAttr,
-} from "../utils.js";
+} from '../utils';
 
 export const root = defineComponentApiSchema<SeparatorRootPropsWithoutHTML>({
 	title: "Root",

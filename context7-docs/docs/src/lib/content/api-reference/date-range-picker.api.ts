@@ -3,9 +3,9 @@ import type {
 	DateRangePickerInputPropsWithoutHTML,
 	DateRangePickerRootPropsWithoutHTML,
 } from "bits-ui";
-import { label, root as rangeFieldRoot, segment } from "./date-range-field.api.js";
-import { withChildProps } from "./shared.js";
-import { content, portal, trigger } from "./popover.api.js";
+import { label, root as rangeFieldRoot, segment } from './date-range-field.api';
+import { withChildProps } from './shared';
+import { content, portal, trigger } from './popover.api';
 import {
 	root as calendarRoot,
 	cell,
@@ -21,17 +21,17 @@ import {
 	prevButton,
 	monthSelect,
 	yearSelect,
-} from "./range-calendar.api.js";
-import { root as rangeCalendarRoot } from "./range-calendar.api.js";
-import { root as datePickerRoot } from "./date-picker.api.js";
-import { DateRangeFieldInputTypeProp } from "./extended-types/date-range-field/index.js";
+} from './range-calendar.api';
+import { root as rangeCalendarRoot } from './range-calendar.api';
+import { root as datePickerRoot } from './date-picker.api';
+import { DateRangeFieldInputTypeProp } from './extended-types/date-range-field/index';
 import {
 	defineBooleanProp,
 	defineComponentApiSchema,
 	defineEnumProp,
 	defineSimpleDataAttr,
 	defineStringProp,
-} from "../utils.js";
+} from '../utils';
 
 const root = defineComponentApiSchema<DateRangePickerRootPropsWithoutHTML>({
 	title: "Root",

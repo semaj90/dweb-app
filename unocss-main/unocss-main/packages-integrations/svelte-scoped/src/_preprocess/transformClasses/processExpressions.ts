@@ -11,7 +11,7 @@ export async function processExpressions(
   options: TransformClassesOptions,
   uno: UnoGenerator,
   filename: string,
-) {
+): Promise<any> {
   const rulesToGenerate: ProcessResult['rulesToGenerate'] = {}
   const updatedExpressions: string[] = []
   let restOfBody = body

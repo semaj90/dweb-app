@@ -96,7 +96,7 @@ export class PredictivePrefetcher {
       console.log(
         "✅ Enhanced Predictive Prefetcher initialized with LLM integration",
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to initialize predictive prefetcher:", error);
     }
   }
@@ -127,7 +127,7 @@ export class PredictivePrefetcher {
       } else {
         throw new Error("Local LLM not available, using heuristic fallback");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn(
         "⚠️ LLM initialization failed, using pattern matching:",
         error,
@@ -518,7 +518,7 @@ export class PredictivePrefetcher {
       console.log(
         `Prefetched resources for intent: ${intent.action} (confidence: ${intent.confidence})`,
       );
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Prefetch failed:", error);
     }
   }
@@ -571,7 +571,7 @@ export class PredictivePrefetcher {
       if (response.ok) {
         await this.cache.put(route, response.clone());
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn(`Failed to prefetch route ${route}:`, error);
     }
   }
@@ -587,7 +587,7 @@ export class PredictivePrefetcher {
       if (response.ok) {
         await this.cache.put(asset, response.clone());
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn(`Failed to prefetch asset ${asset}:`, error);
     }
   }
@@ -597,7 +597,7 @@ export class PredictivePrefetcher {
    */
   private setupEventListeners(): void {
     // Listen for user interactions
-    self.addEventListener("message", async (event) => {
+    self.addEventListener("message", async (event: any) => {
       if (event.data.type === "USER_INTERACTION") {
         const intent = await this.predictIntent(event.data.context);
         if (intent) {
@@ -638,7 +638,7 @@ export class PredictivePrefetcher {
           }
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Cache cleanup failed:", error);
     }
   }
@@ -651,7 +651,7 @@ export class PredictivePrefetcher {
 
     try {
       return await this.cache.match(request);
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Cache retrieval failed:", error);
       return null;
     }

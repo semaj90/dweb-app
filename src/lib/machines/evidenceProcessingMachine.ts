@@ -15,7 +15,7 @@ function createWsActor(sessionId: string) {
       callback({ type: 'WS_CONNECTED' });
     };
     
-    ws.onmessage = (event) => {
+    ws.onmessage = (event: any) => {
       try {
         const msg: ProgressMsg = JSON.parse(event.data);
         
@@ -58,7 +58,7 @@ function createWsActor(sessionId: string) {
           default:
             console.warn('Unknown message type:', msg);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('WebSocket message parse error:', error);
         callback({ type: 'ERROR', error: { message: 'Failed to parse WebSocket message' } });
       }
@@ -69,7 +69,7 @@ function createWsActor(sessionId: string) {
       callback({ type: 'ERROR', error: { message: 'WebSocket connection error' } });
     };
     
-    ws.onclose = (event) => {
+    ws.onclose = (event: any) => {
       console.log('WebSocket closed:', event.code, event.reason);
       callback({ type: 'WS_CLOSED', code: event.code, reason: event.reason });
     };
@@ -95,9 +95,9 @@ export const evidenceProcessingMachine = createMachine({
       uploadProgress?: number;
       currentStep?: string;
       stepProgress?: number;
-      fragment?: unknown;
-      result?: unknown;
-      error?: { message: string; code?: string; meta?: unknown };
+      fragment?: any;
+      result?: any;
+      error?: { message: string; code?: string; meta?: any };
     }>,
     steps: [] as string[],
     error: null as any
@@ -295,9 +295,9 @@ export const evidenceProcessingMachine = createMachine({
       | { type: 'START_PROCESSING'; sessionId: string; evidenceId: string; steps?: string[] }
       | { type: 'WS_CONNECTED' }
       | { type: 'UPLOAD_PROGRESS'; fileId: string; progress: number }
-      | { type: 'PROCESSING_STEP'; fileId: string; step: string; progress: number; fragment?: unknown }
-      | { type: 'PROCESSING_COMPLETE'; fileId: string; result?: unknown }
-      | { type: 'ERROR'; fileId?: string; error: { message: string; code?: string; meta?: unknown } }
+      | { type: 'PROCESSING_STEP'; fileId: string; step: string; progress: number; fragment?: any }
+      | { type: 'PROCESSING_COMPLETE'; fileId: string; result?: any }
+      | { type: 'ERROR'; fileId?: string; error: { message: string; code?: string; meta?: any } }
       | { type: 'WS_CLOSED'; code?: number; reason?: string }
       | { type: 'CANCEL_PROCESSING' }
       | { type: 'RETRY_PROCESSING' }
@@ -307,7 +307,7 @@ export const evidenceProcessingMachine = createMachine({
 });
 
 // Helper function to start evidence processing
-export async function startEvidenceProcessing(evidenceId: string, steps: string[] = ['ocr', 'embedding', 'analysis']) {
+export async function startEvidenceProcessing(evidenceId: string, steps: string[] = ['ocr', 'embedding', 'analysis']): Promise<any> {
   try {
     const response = await fetch('/api/evidence/process', {
       method: 'POST',
@@ -327,7 +327,7 @@ export async function startEvidenceProcessing(evidenceId: string, steps: string[
     
     const { sessionId } = await response.json();
     return { sessionId, evidenceId, steps };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to start evidence processing:', error);
     throw error;
   }
@@ -335,14 +335,14 @@ export async function startEvidenceProcessing(evidenceId: string, steps: string[
 
 // Selectors for easy state access
 export const evidenceProcessingSelectors = {
-  getFileStatus: (state: unknown, fileId: string) => state.context.files[fileId]?.status,
-  getFileProgress: (state: unknown, fileId: string) => state.context.files[fileId]?.stepProgress || 0,
-  getCurrentStep: (state: unknown, fileId: string) => state.context.files[fileId]?.currentStep,
-  getFileResult: (state: unknown, fileId: string) => state.context.files[fileId]?.result,
-  getFileError: (state: unknown, fileId: string) => state.context.files[fileId]?.error,
-  isProcessing: (state: unknown) => state.matches('processing'),
-  isCompleted: (state: unknown) => state.matches('completed'),
-  isFailed: (state: unknown) => state.matches('failed'),
-  isDisconnected: (state: unknown) => state.matches('disconnected'),
-  canRetry: (state: unknown) => state.matches('failed') || state.matches('disconnected')
+  getFileStatus: (state: any, fileId: string) => state.context.files[fileId]?.status,
+  getFileProgress: (state: any, fileId: string) => state.context.files[fileId]?.stepProgress || 0,
+  getCurrentStep: (state: any, fileId: string) => state.context.files[fileId]?.currentStep,
+  getFileResult: (state: any, fileId: string) => state.context.files[fileId]?.result,
+  getFileError: (state: any, fileId: string) => state.context.files[fileId]?.error,
+  isProcessing: (state: any) => state.matches('processing'),
+  isCompleted: (state: any) => state.matches('completed'),
+  isFailed: (state: any) => state.matches('failed'),
+  isDisconnected: (state: any) => state.matches('disconnected'),
+  canRetry: (state: any) => state.matches('failed') || state.matches('disconnected')
 };

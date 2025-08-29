@@ -80,7 +80,7 @@ export class BrowserPerformanceMonitor {
       this.performanceObserver.observe({ 
         entryTypes: ['paint', 'layout-shift'] 
       });
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Performance monitoring not available:', error);
     }
   }
@@ -124,7 +124,7 @@ export class BrowserErrorHandler {
     if (typeof window === 'undefined') return;
 
     // Global error handler
-    window.addEventListener('error', (event) => {
+    window.addEventListener('error', (event: any) => {
       this.logError({
         message: event.message,
         source: event.filename || 'unknown',
@@ -135,7 +135,7 @@ export class BrowserErrorHandler {
     });
 
     // Promise rejection handler
-    window.addEventListener('unhandledrejection', (event) => {
+    window.addEventListener('unhandledrejection', (event: any) => {
       this.logError({
         message: `Unhandled Promise Rejection: ${event.reason}`,
         source: 'promise',

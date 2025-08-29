@@ -20,7 +20,7 @@ import type {
 } from '$lib/ai/types';
 
 // POST - Process metrics and execute optimizations
-export const POST: RequestHandler = async ({ request, url }) => {
+export const POST: RequestHandler = async ({ request, url }): Promise<any> => {
     try {
         const action = url.searchParams.get('action');
         const body = await request.json();
@@ -41,14 +41,14 @@ export const POST: RequestHandler = async ({ request, url }) => {
             default:
                 throw error(400, 'Invalid action specified');
         }
-    } catch (err) {
+    } catch (err: any) {
         console.error('❌ Performance optimization API error:', err);
         throw error(500, `Server error: ${err instanceof Error ? err.message : String(err)}`);
     }
 };
 
 // GET - Retrieve optimization information and statistics
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
     try {
         const action = url.searchParams.get('action');
 
@@ -74,14 +74,14 @@ export const GET: RequestHandler = async ({ url }) => {
             default:
                 return getDashboard();
         }
-    } catch (err) {
+    } catch (err: any) {
         console.error('❌ Performance optimization API error:', err);
         return error(500, `Server error: ${err.message}`);
     }
 };
 
 // PUT - Update optimization configuration
-export const PUT: RequestHandler = async ({ request }) => {
+export const PUT: RequestHandler = async ({ request }): Promise<any> => {
     try {
         const { config, optimization } = await request.json();
 
@@ -95,14 +95,14 @@ export const PUT: RequestHandler = async ({ request }) => {
 
         throw error(400, 'No valid update data provided');
 
-    } catch (err) {
+    } catch (err: any) {
         console.error('❌ Update optimization error:', err);
         throw error(500, `Update error: ${err instanceof Error ? err.message : String(err)}`);
     }
 };
 
 // DELETE - Cancel or remove optimizations
-export const DELETE: RequestHandler = async ({ url }) => {
+export const DELETE: RequestHandler = async ({ url }): Promise<any> => {
     try {
         const optimizationId = url.searchParams.get('optimizationId');
 
@@ -118,7 +118,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
             cancelled: result,
             timestamp: new Date().toISOString()
         });
-    } catch (err) {
+    } catch (err: any) {
         console.error('❌ Cancel optimization error:', err);
         throw error(500, `Cancel error: ${err instanceof Error ? err.message : String(err)}`);
     }
@@ -128,7 +128,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
  * Handler Functions
  */
 
-async function processPerformanceMetrics(metricsData: any) {
+async function processPerformanceMetrics(metricsData: any): Promise<any> {
     const startTime = performance.now();
 
     // Validate metrics data
@@ -163,7 +163,7 @@ async function processPerformanceMetrics(metricsData: any) {
     });
 }
 
-async function executeOptimization(optimizationData: any) {
+async function executeOptimization(optimizationData: any): Promise<any> {
     const { recommendationId, recommendation, parameters = {} } = optimizationData || {};
 
     if (!recommendation && !recommendationId) {
@@ -201,7 +201,7 @@ async function executeOptimization(optimizationData: any) {
     });
 }
 
-async function forceOptimization(forceData: any) {
+async function forceOptimization(forceData: any): Promise<any> {
     const { type, target, parameters = {} } = forceData || {};
 
     if (!type || !target) {
@@ -224,7 +224,7 @@ async function forceOptimization(forceData: any) {
     });
 }
 
-async function analyzePerformance(analysisData: any) {
+async function analyzePerformance(analysisData: any): Promise<any> {
     const { metrics, options = {} } = analysisData || {};
 
     if (!metrics) {
@@ -425,7 +425,7 @@ function getDashboard() {
  * Helper Functions
  */
 
-async function updateOptimizationConfig(config: any) {
+async function updateOptimizationConfig(config: any): Promise<any> {
     console.log('🔧 Updating optimization configuration:', config);
 
     // In a real implementation, this would update the optimizer configuration
@@ -436,7 +436,7 @@ async function updateOptimizationConfig(config: any) {
     });
 }
 
-async function updateOptimization(optimization: any) {
+async function updateOptimization(optimization: any): Promise<any> {
     console.log('🔧 Updating optimization:', optimization);
 
     return json({
@@ -446,7 +446,7 @@ async function updateOptimization(optimization: any) {
     });
 }
 
-async function cancelOptimization(optimizationId: string) {
+async function cancelOptimization(optimizationId: string): Promise<any> {
     console.log(`🛑 Cancelling optimization: ${optimizationId}`);
 
     // In a real implementation, this would cancel the running optimization

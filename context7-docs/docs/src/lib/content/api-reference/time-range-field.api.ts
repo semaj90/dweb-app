@@ -4,16 +4,16 @@ import type {
 	TimeRangeFieldRootPropsWithoutHTML,
 	TimeRangeFieldSegmentPropsWithoutHTML,
 } from "bits-ui";
-import { withChildProps } from "./shared.js";
-import { input as timeFieldInput, root as timeFieldRoot } from "./time-field.api.js";
+import { withChildProps } from './shared';
+import { input as timeFieldInput, root as timeFieldRoot } from './time-field.api';
 import {
 	OnTimeStartEndValueChangeProp,
 	TimeOnRangeChangeProp,
 	TimeRangeProp,
 	TimeSegmentDataAttr,
 	TimeSegmentPartProp,
-} from "./extended-types/shared/index.js";
-import { DateRangeFieldInputTypeProp } from "./extended-types/date-range-field/index.js";
+} from './extended-types/shared/index';
+import { DateRangeFieldInputTypeProp } from './extended-types/date-range-field/index';
 import {
 	defineComponentApiSchema,
 	defineComponentPropSchema,
@@ -22,7 +22,7 @@ import {
 	defineFunctionProp,
 	defineSimpleDataAttr,
 	defineStringProp,
-} from "../utils.js";
+} from '../utils';
 
 export const root = defineComponentApiSchema<TimeRangeFieldRootPropsWithoutHTML>({
 	title: "Root",

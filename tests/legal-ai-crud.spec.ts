@@ -20,7 +20,7 @@ const testCase = {
 };
 
 // Helper function to wait for navigation
-async function waitForNavigation(page: Page, url: string) {
+async function waitForNavigation(page: Page, url: string): Promise<any> {
   await page.waitForURL(url, { timeout: 10000 });
 }
 

@@ -10,7 +10,7 @@ import { URL } from "url";
 let schema: any = {};
 try {
   schema = await import("$lib/server/db/unified-schema.js");
-} catch (error) {
+} catch (error: any) {
   try {
     schema = await import("$lib/server/db/schema-postgres.js");
   } catch (error2) {
@@ -20,7 +20,7 @@ try {
 const { legalDocuments } = schema;
 
 // Legal document interface
-interface LegalDocument {
+export interface LegalDocument {
   id?: string;
   title: string;
   content: string;
@@ -111,7 +111,7 @@ export const GET: RequestHandler = async ({ url }) => {
     }));
 
     return json(documentsWithWordCount);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching legal documents:", error);
     return json({ error: "Failed to fetch legal documents" }, { status: 500 });
   }
@@ -163,7 +163,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
     const newDocument = Array.isArray(result) ? result[0] : result;
     return json(newDocument, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating legal document:", error);
     return json({ error: "Failed to create legal document" }, { status: 500 });
   }
@@ -210,7 +210,7 @@ export const PUT: RequestHandler = async ({ request, params }) => {
       return json({ error: "Document not found" }, { status: 404 });
     }
     return json(updatedDocument);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating legal document:", error);
     return json({ error: "Failed to update legal document" }, { status: 500 });
   }
@@ -242,7 +242,7 @@ export const DELETE: RequestHandler = async ({ params }) => {
       return json({ error: "Document not found" }, { status: 404 });
     }
     return json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error deleting legal document:", error);
     return json({ error: "Failed to delete legal document" }, { status: 500 });
   }

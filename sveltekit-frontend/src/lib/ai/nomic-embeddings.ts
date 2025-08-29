@@ -5,13 +5,13 @@
 // - Add error handling and logging for all embedding operations
 // - See qdrant-service.ts for vector DB integration
 
-interface DocumentChunk {
+export interface DocumentChunk {
   id: string;
   text: string;
   metadata?: Record<string, any>;
 }
 
-interface EmbeddingResult {
+export interface EmbeddingResult {
   embedding: number[];
   model: string;
   metadata?: {
@@ -40,7 +40,7 @@ export class NomicEmbeddingsService {
           timestamp: new Date().toISOString(),
         },
       };
-    } catch (error) {
+    } catch (error: any) {
       // Fallback to mock embedding if real API fails
       console.warn("Falling back to mock embedding:", error);
       return {
@@ -89,7 +89,7 @@ export class NomicEmbeddingsService {
           },
         },
       ]);
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Failed to upsert to Qdrant:", error);
     }
 

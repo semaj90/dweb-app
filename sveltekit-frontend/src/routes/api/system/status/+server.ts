@@ -232,7 +232,7 @@ export const GET: RequestHandler = async ({ url }) => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("❌ System health check failed:", error);
     
     return json({
@@ -313,7 +313,7 @@ async function httpCheck(url: string, timeout = 5000): Promise<{ ok: boolean; st
       status: response.status, 
       responseTime: Date.now() - startTime 
     };
-  } catch (error) {
+  } catch (error: any) {
     return { 
       ok: false, 
       responseTime: Date.now() - startTime 
@@ -322,7 +322,7 @@ async function httpCheck(url: string, timeout = 5000): Promise<{ ok: boolean; st
 }
 
 // PostgreSQL health check
-async function checkPostgreSQLHealth() {
+async function checkPostgreSQLHealth(): Promise<any> {
   try {
     const { connected, responseTime } = await tcpCheck("127.0.0.1", 5432);
     
@@ -335,7 +335,7 @@ async function checkPostgreSQLHealth() {
       extensions: connected ? ["pgvector", "uuid-ossp", "hstore"] : undefined,
       responseTime,
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       healthy: false,
       name: "PostgreSQL",
@@ -346,7 +346,7 @@ async function checkPostgreSQLHealth() {
 }
 
 // Redis health check  
-async function checkRedisHealth() {
+async function checkRedisHealth(): Promise<any> {
   try {
     const { connected, responseTime } = await tcpCheck("127.0.0.1", 6379);
     
@@ -359,7 +359,7 @@ async function checkRedisHealth() {
       keyCount: connected ? 1250 : undefined,
       responseTime,
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       healthy: false,
       name: "Redis", 
@@ -370,7 +370,7 @@ async function checkRedisHealth() {
 }
 
 // Neo4j health check
-async function checkNeo4jHealth() {
+async function checkNeo4jHealth(): Promise<any> {
   try {
     const { ok, status, responseTime } = await httpCheck("http://localhost:7474");
     
@@ -382,7 +382,7 @@ async function checkNeo4jHealth() {
       httpStatus: status,
       responseTime,
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       healthy: false,
       name: "Neo4j",
@@ -393,7 +393,7 @@ async function checkNeo4jHealth() {
 }
 
 // Qdrant health check
-async function checkQdrantHealth() {
+async function checkQdrantHealth(): Promise<any> {
   try {
     const { ok, status, responseTime } = await httpCheck("http://localhost:6333/health");
     
@@ -405,7 +405,7 @@ async function checkQdrantHealth() {
       httpStatus: status,
       responseTime,
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       healthy: false,
       name: "Qdrant",
@@ -416,7 +416,7 @@ async function checkQdrantHealth() {
 }
 
 // Ollama health check
-async function checkOllamaHealth() {
+async function checkOllamaHealth(): Promise<any> {
   try {
     const { ok, status, responseTime } = await httpCheck('http://localhost:11434/api/version');
     
@@ -433,7 +433,7 @@ async function checkOllamaHealth() {
       embeddingModel: "nomic-embed-text:latest",
       responseTime,
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       healthy: false,
       name: "Ollama",
@@ -444,7 +444,7 @@ async function checkOllamaHealth() {
 }
 
 // Enhanced RAG service health check
-async function checkEnhancedRAGHealth() {
+async function checkEnhancedRAGHealth(): Promise<any> {
   try {
     const { ok, status, responseTime } = await httpCheck("http://localhost:8094/health");
     
@@ -455,7 +455,7 @@ async function checkEnhancedRAGHealth() {
       httpStatus: status,
       responseTime,
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       healthy: false,
       name: "Enhanced RAG",
@@ -466,7 +466,7 @@ async function checkEnhancedRAGHealth() {
 }
 
 // Upload service health check
-async function checkUploadServiceHealth() {
+async function checkUploadServiceHealth(): Promise<any> {
   try {
     const { ok, status, responseTime } = await httpCheck("http://localhost:8093/health");
     
@@ -477,7 +477,7 @@ async function checkUploadServiceHealth() {
       httpStatus: status,
       responseTime,
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       healthy: false,
       name: "Upload Service",
@@ -488,7 +488,7 @@ async function checkUploadServiceHealth() {
 }
 
 // Vector Service v2.0 health check
-async function checkVectorServiceHealth() {
+async function checkVectorServiceHealth(): Promise<any> {
   try {
     const { ok, status, responseTime } = await httpCheck("http://localhost:8095/health");
     
@@ -499,7 +499,7 @@ async function checkVectorServiceHealth() {
       httpStatus: status,
       responseTime,
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       healthy: false,
       name: "Vector Service v2.0",
@@ -510,7 +510,7 @@ async function checkVectorServiceHealth() {
 }
 
 // Legal AI service health check
-async function checkLegalAIHealth() {
+async function checkLegalAIHealth(): Promise<any> {
   try {
     const { ok, status, responseTime } = await httpCheck("http://localhost:8202/health");
     
@@ -521,7 +521,7 @@ async function checkLegalAIHealth() {
       httpStatus: status,
       responseTime,
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       healthy: false,
       name: "Legal AI",
@@ -532,7 +532,7 @@ async function checkLegalAIHealth() {
 }
 
 // GPU Indexer service health check
-async function checkGPUIndexerHealth() {
+async function checkGPUIndexerHealth(): Promise<any> {
   try {
     const { ok, status, responseTime } = await httpCheck("http://localhost:8220/health");
     
@@ -543,7 +543,7 @@ async function checkGPUIndexerHealth() {
       httpStatus: status,
       responseTime,
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       healthy: false,
       name: "GPU Indexer",
@@ -554,7 +554,7 @@ async function checkGPUIndexerHealth() {
 }
 
 // MinIO health check
-async function checkMinIOHealth() {
+async function checkMinIOHealth(): Promise<any> {
   try {
     const { ok, status, responseTime } = await httpCheck("http://localhost:9000/minio/health/live");
     
@@ -565,7 +565,7 @@ async function checkMinIOHealth() {
       httpStatus: status,
       responseTime,
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       healthy: false,
       name: "MinIO",
@@ -576,7 +576,7 @@ async function checkMinIOHealth() {
 }
 
 // Cluster Manager health check
-async function checkClusterManagerHealth() {
+async function checkClusterManagerHealth(): Promise<any> {
   try {
     const { ok, status, responseTime } = await httpCheck("http://localhost:8213/health");
     
@@ -587,7 +587,7 @@ async function checkClusterManagerHealth() {
       httpStatus: status,
       responseTime,
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       healthy: false,
       name: "Cluster Manager",
@@ -598,7 +598,7 @@ async function checkClusterManagerHealth() {
 }
 
 // XState Manager health check
-async function checkXStateManagerHealth() {
+async function checkXStateManagerHealth(): Promise<any> {
   try {
     const { ok, status, responseTime } = await httpCheck("http://localhost:8212/health");
     
@@ -609,7 +609,7 @@ async function checkXStateManagerHealth() {
       httpStatus: status,
       responseTime,
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       healthy: false,
       name: "XState Manager",
@@ -620,7 +620,7 @@ async function checkXStateManagerHealth() {
 }
 
 // Load Balancer health check
-async function checkLoadBalancerHealth() {
+async function checkLoadBalancerHealth(): Promise<any> {
   try {
     const { ok, status, responseTime } = await httpCheck("http://localhost:8224/health");
     
@@ -631,7 +631,7 @@ async function checkLoadBalancerHealth() {
       httpStatus: status,
       responseTime,
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       healthy: false,
       name: "Load Balancer",
@@ -642,7 +642,7 @@ async function checkLoadBalancerHealth() {
 }
 
 // GPU health check
-async function checkGPUHealth() {
+async function checkGPUHealth(): Promise<any> {
   try {
     // Check if GPU services are accessible
     const { ok, status, responseTime } = await httpCheck("http://localhost:8094/cuda-status");
@@ -665,7 +665,7 @@ async function checkGPUHealth() {
     } else {
       throw new Error(`GPU services returned ${status}`);
     }
-  } catch (error) {
+  } catch (error: any) {
     return {
       healthy: false,
       name: "NVIDIA RTX 3060 Ti",

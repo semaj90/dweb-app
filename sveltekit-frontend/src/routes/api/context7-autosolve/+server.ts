@@ -6,13 +6,13 @@ import type { RequestHandler } from '@sveltejs/kit';
  */
 
 import { json, type RequestHandler } from "@sveltejs/kit";
-import { legalAIIntegration } from "../../../lib/services/quic-legal-ai-integration.js";
-import { vectorProxy } from "../../../lib/services/grpc-quic-vector-proxy.js";
-import { chatEngine } from "../../../lib/services/user-chat-recommendation-engine.js";
-import { multiLayerCache } from "../../../lib/services/multiLayerCache.js";
-import { goBinaryService } from "../../../lib/services/go-binary-integration.js";
-import { context7FlashAttentionIntegration } from "../../../lib/services/context7-flashattention-integration.js";
-import { analyzeCurrentErrors } from "../../../context7-multicore-error-analysis.js";
+import { legalAIIntegration } from '../../../lib/services/quic-legal-ai-integration';
+import { vectorProxy } from '../../../lib/services/grpc-quic-vector-proxy';
+import { chatEngine } from '../../../lib/services/user-chat-recommendation-engine';
+import { multiLayerCache } from '../../../lib/services/multiLayerCache';
+import { goBinaryService } from '../../../lib/services/go-binary-integration';
+import { context7FlashAttentionIntegration } from '../../../lib/services/context7-flashattention-integration';
+import { analyzeCurrentErrors } from '../../../context7-multicore-error-analysis';
 
 // Configuration for the enhanced autosolve system
 const ENHANCED_AUTOSOLVE_CONFIG = {
@@ -80,7 +80,7 @@ export const GET: RequestHandler = async ({ url, getClientAddress }) => {
       default:
         return json({ error: 'Invalid action' }, { status: 400 });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Enhanced Autosolve API error:', error);
     return json(
       {
@@ -125,7 +125,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
       default:
         return json({ error: 'Invalid action' }, { status: 400 });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Enhanced Autosolve POST error:', error);
     return json(
       {
@@ -606,7 +606,7 @@ async function handleCacheStatus(): Promise<Response> {
 }
 
 // Helper functions
-async function getUserAnalyticsSummary(userId: string) {
+async function getUserAnalyticsSummary(userId: string): Promise<any> {
   const analytics = await chatEngine.getUserAnalytics(userId);
   return {
     total_chats: analytics.totalChats,
@@ -617,7 +617,7 @@ async function getUserAnalyticsSummary(userId: string) {
   };
 }
 
-async function getEnhancedServiceStatus() {
+async function getEnhancedServiceStatus(): Promise<any> {
   return {
     chat_engine: chatEngine.getSystemStatus().initialized,
     go_binaries: goBinaryService.getSystemStatus().initialized,
@@ -629,7 +629,7 @@ async function getEnhancedServiceStatus() {
   };
 }
 
-async function runGoBinaryEnhancedRAG() {
+async function runGoBinaryEnhancedRAG(): Promise<any> {
   // Simulate Go binary RAG operations
   return {
     queries: 23,
@@ -640,13 +640,13 @@ async function runGoBinaryEnhancedRAG() {
   };
 }
 
-async function benchmarkNativeJSONParse(data: any) {
+async function benchmarkNativeJSONParse(data: any): Promise<any> {
   const start = performance.now();
   JSON.parse(JSON.stringify(data));
   return { time: performance.now() - start, method: 'native' };
 }
 
-async function benchmarkWASMParse(data: any) {
+async function benchmarkWASMParse(data: any): Promise<any> {
   const start = performance.now();
   // Simulate WASM parsing (would be faster)
   JSON.parse(JSON.stringify(data));

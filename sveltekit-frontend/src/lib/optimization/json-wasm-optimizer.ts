@@ -7,7 +7,7 @@ import { EventEmitter } from "events";
 
 
 // === WebAssembly JSON Parser Interface ===
-interface WebAssemblyModule {
+export interface WebAssemblyModule {
   memory: WebAssembly.Memory;
   parse_json: (ptr: number, len: number) => number;
   stringify_json: (ptr: number) => number;
@@ -19,7 +19,7 @@ interface WebAssemblyModule {
   decompress_lz4: (ptr: number, len: number) => number;
 }
 
-interface OptimizedJSON {
+export interface OptimizedJSON {
   original_size: number;
   compressed_size: number;
   compression_ratio: number;
@@ -64,7 +64,7 @@ class JSONWebAssemblyOptimizer extends EventEmitter {
       this.wasmModule = instance.exports as unknown as WebAssemblyModule;
       this.initialized = true;
       this.emit('wasm_initialized');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('WebAssembly initialization failed, using JS fallback:', error);
       this.initialized = false;
     }
@@ -85,7 +85,7 @@ class JSONWebAssemblyOptimizer extends EventEmitter {
         // Fallback to optimized JavaScript
         result = this.parseJSONOptimized<T>(jsonString);
       }
-    } catch (error) {
+    } catch (error: any) {
       // Final fallback to native JSON.parse
       result = JSON.parse(jsonString) as T;
     }
@@ -119,7 +119,7 @@ class JSONWebAssemblyOptimizer extends EventEmitter {
         // Optimized JavaScript stringify
         result = this.stringifyJSONOptimized(data);
       }
-    } catch (error) {
+    } catch (error: any) {
       // Fallback to native JSON.stringify
       result = JSON.stringify(data);
     }

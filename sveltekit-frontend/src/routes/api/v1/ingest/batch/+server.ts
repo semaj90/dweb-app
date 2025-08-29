@@ -12,7 +12,7 @@ const SERVICE_URL = 'http://localhost:8227'; // INGEST_SERVICE_URL ||
 const TIMEOUT = 120000; // 2 minutes for batch processing
 const BATCH_SIZE_LIMIT = parseInt('10'); // MAX_BATCH_SIZE ||
 
-interface BatchIngestRequest {
+export interface BatchIngestRequest {
   documents: Array<{
     title: string;
     content: string;
@@ -21,7 +21,7 @@ interface BatchIngestRequest {
   }>;
 }
 
-interface BatchIngestResponse {
+export interface BatchIngestResponse {
   results: Array<{
     id: string;
     status: string;
@@ -185,7 +185,7 @@ export const POST: RequestHandler = async ({ request, fetch }) => {
       throw fetchError;
     }
 
-  } catch (error) {
+  } catch (error: any) {
     const processingTime = Date.now() - startTime;
 
     console.error('Batch ingest API error:', error);

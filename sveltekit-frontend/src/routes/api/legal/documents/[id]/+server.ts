@@ -9,7 +9,7 @@ import { json } from "@sveltejs/kit";
 let schema: any = {};
 try {
   schema = await import("$lib/server/db/unified-schema.js");
-} catch (error) {
+} catch (error: any) {
   try {
     schema = await import("$lib/server/db/schema-postgres.js");
   } catch (error2) {
@@ -55,7 +55,7 @@ export const GET: RequestHandler = async ({ params }) => {
     };
 
     return json(documentWithWordCount);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching legal document:", error);
     return json({ error: "Failed to fetch legal document" }, { status: 500 });
   }
@@ -102,7 +102,7 @@ export const PUT: RequestHandler = async ({ request, params }) => {
       return json({ error: "Document not found" }, { status: 404 });
     }
     return json(updatedDocument);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating legal document:", error);
     return json({ error: "Failed to update legal document" }, { status: 500 });
   }
@@ -134,7 +134,7 @@ export const DELETE: RequestHandler = async ({ params }) => {
       return json({ error: "Document not found" }, { status: 404 });
     }
     return json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error deleting legal document:", error);
     return json({ error: "Failed to delete legal document" }, { status: 500 });
   }

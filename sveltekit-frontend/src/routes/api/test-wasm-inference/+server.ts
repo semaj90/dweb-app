@@ -4,7 +4,7 @@
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types.js';
+import type { RequestHandler } from './$types';
 import { wasmInferenceMachine, WASMInferenceRAGService } from '$lib/services/webasm-inference-rag.js';
 import { rabbitMQIntegration } from '$lib/messaging/rabbitmq-xstate-integration.js';
 
@@ -206,7 +206,7 @@ export const POST: RequestHandler = async ({ request }) => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ WebAssembly inference test failed:', error);
     
     const errorTime = Date.now() - startTime;
@@ -292,7 +292,7 @@ export const GET: RequestHandler = async () => {
       version: '1.0.0'
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return json({
       status: 'unhealthy',
       error: error.message,

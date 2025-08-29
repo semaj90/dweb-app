@@ -10,7 +10,7 @@ let canvasStateCollection: any = null;
 let notesCollection: any = null;
 
 // Initialize Loki database
-async function initLoki() {
+async function initLoki(): Promise<any> {
   if (!browser) return;
 
   try {
@@ -22,7 +22,7 @@ async function initLoki() {
       autosave: true,
       autosaveInterval: 5000,
     } as any);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to initialize Loki:", error);
   }
 }

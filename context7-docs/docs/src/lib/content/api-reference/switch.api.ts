@@ -1,17 +1,17 @@
 import type { SwitchRootPropsWithoutHTML, SwitchThumbPropsWithoutHTML } from "bits-ui";
-import { checkedProp, onCheckedChangeProp, withChildProps } from "./shared.js";
+import { checkedProp, onCheckedChangeProp, withChildProps } from './shared';
 import {
 	SwitchCheckedDataAttr,
 	SwitchRootChildSnippetProps,
 	SwitchRootChildrenSnippetProps,
-} from "./extended-types/switch/index.js";
+} from './extended-types/switch/index';
 import {
 	defineBooleanProp,
 	defineComponentApiSchema,
 	defineEnumDataAttr,
 	defineSimpleDataAttr,
 	defineStringProp,
-} from "../utils.js";
+} from '../utils';
 
 const stateDataAttr = defineEnumDataAttr({
 	name: "state",

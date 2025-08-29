@@ -3,7 +3,7 @@
 
 import { EventEmitter } from 'events';
 
-interface PerformanceMetric {
+export interface PerformanceMetric {
   name: string;
   value: number;
   unit: string;
@@ -12,7 +12,7 @@ interface PerformanceMetric {
   type: 'counter' | 'gauge' | 'histogram' | 'timer';
 }
 
-interface SystemHealth {
+export interface SystemHealth {
   status: 'healthy' | 'degraded' | 'unhealthy';
   score: number; // 0-100
   checks: {
@@ -25,7 +25,7 @@ interface SystemHealth {
   timestamp: Date;
 }
 
-interface AlertRule {
+export interface AlertRule {
   id: string;
   metric: string;
   condition: 'gt' | 'lt' | 'eq';
@@ -324,7 +324,7 @@ class PerformanceMonitor extends EventEmitter {
   /**
    * Generate performance report
    */
-  generateReport(): unknown {
+  generateReport(): any {
     const now = new Date();
     const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
 
@@ -391,7 +391,7 @@ class PerformanceMonitor extends EventEmitter {
   }
 
   private setupDefaultHealthChecks(): void {
-    this.addHealthCheck('system', async () => {
+    this.addHealthCheck('system', async (): Promise<any> => {
       return {
         cpu: process.cpuUsage(),
         memory: process.memoryUsage(),
@@ -400,7 +400,7 @@ class PerformanceMonitor extends EventEmitter {
     });
   }
 
-  private async collectSystemMetrics(): Promise<void> {
+  private async collectSystemMetrics(): Promise<any> {
     try {
       // System metrics
       const memUsage = process.memoryUsage();
@@ -423,18 +423,18 @@ class PerformanceMonitor extends EventEmitter {
       // Custom metrics
       await this.collectCustomMetrics();
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error collecting system metrics:', error);
     }
   }
 
-  private async collectCustomMetrics(): Promise<void> {
+  private async collectCustomMetrics(): Promise<any> {
     // Database connection pool metrics
     try {
       // This would integrate with your actual database pool
       this.setGauge('database.pool.active', 5, 'connections'); // Mock data
       this.setGauge('database.pool.idle', 15, 'connections');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Database pool metrics unavailable');
     }
 
@@ -443,7 +443,7 @@ class PerformanceMonitor extends EventEmitter {
       // This would integrate with Qdrant
       this.setGauge('vectordb.documents', 1250, 'documents'); // Mock data
       this.setGauge('vectordb.collections', 3, 'collections');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Vector database metrics unavailable');
     }
   }
@@ -490,7 +490,7 @@ class PerformanceMonitor extends EventEmitter {
         status: responseTime > 1000 ? 'critical' : responseTime > 500 ? 'warning' : 'healthy',
         responseTime
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: 'critical',
         responseTime: Date.now() - start
@@ -510,7 +510,7 @@ class PerformanceMonitor extends EventEmitter {
         status: responseTime > 2000 ? 'critical' : responseTime > 1000 ? 'warning' : 'healthy',
         responseTime
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: 'critical',
         responseTime: Date.now() - start
@@ -531,13 +531,13 @@ class PerformanceMonitor extends EventEmitter {
     }
   }
 
-  private getRecentAlerts(): unknown[] {
+  private getRecentAlerts(): any[] {
     // Return recent alerts (would be stored in database in production)
     return [];
   }
 
-  private calculatePerformanceStats(): unknown {
-    const stats: unknown = {};
+  private calculatePerformanceStats(): any {
+    const stats: any = {};
 
     // Calculate stats for each metric type
     for (const [name, metrics] of this.metrics) {
@@ -588,11 +588,83 @@ class PerformanceMonitor extends EventEmitter {
 
     return recommendations;
   }
+
+  /**
+   * Get current metrics for math-optimized system
+   */
+  async getCurrentMetrics(): Promise<any> {
+    const cpuUsage = this.getLatestMetricValue('cpu_usage') || 0;
+    const memoryUsage = this.getLatestMetricValue('memory_usage') || 0;
+    const activeConnections = this.getLatestMetricValue('active_connections') || 0;
+
+    return {
+      cpuUsage,
+      memoryUsage,
+      activeConnections
+    };
+  }
+
+  /**
+   * Get available memory in MB
+   */
+  getAvailableMemory(): number {
+    const totalMemory = this.getLatestMetricValue('total_memory') || 4096;
+    const usedMemory = this.getLatestMetricValue('memory_usage') || 0;
+    return totalMemory - usedMemory;
+  }
+
+  /**
+   * Get current CPU load percentage
+   */
+  getCurrentLoad(): number {
+    return this.getLatestMetricValue('cpu_usage') || 0;
+  }
+
+  /**
+   * Update metrics with new values
+   */
+  updateMetrics(metrics: any): void {
+    if (metrics.batchIndex !== undefined) {
+      this.recordMetric({
+        name: 'batch_index',
+        value: metrics.batchIndex,
+        unit: 'count',
+        type: 'gauge'
+      });
+    }
+    
+    if (metrics.documentsProcessed !== undefined) {
+      this.recordMetric({
+        name: 'documents_processed',
+        value: metrics.documentsProcessed,
+        unit: 'count',
+        type: 'counter'
+      });
+    }
+
+    if (metrics.averageProcessingTime !== undefined) {
+      this.recordMetric({
+        name: 'average_processing_time',
+        value: metrics.averageProcessingTime,
+        unit: 'ms',
+        type: 'gauge'
+      });
+    }
+  }
+
+  /**
+   * Helper method to get latest metric value
+   */
+  private getLatestMetricValue(metricName: string): number | null {
+    const metrics = this.metrics.get(metricName);
+    if (!metrics || metrics.length === 0) return null;
+    return metrics[metrics.length - 1].value;
+  }
 }
 
 // Express middleware for automatic API monitoring
 export function createPerformanceMiddleware(monitor: PerformanceMonitor) {
-  return (req: unknown, res: unknown, next: unknown) => {
+  return (req: any, res: any, next: any) => {
     const start = Date.now();
     
     res.on('finish', () => {

@@ -1,10 +1,9 @@
-// @ts-nocheck
 // Enhanced PostgreSQL Database Service with Drizzle ORM
 // Provides type-safe database operations with proper TypeScript support
 
-import { drizzle } from 'drizzle-orm/postgres-js';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import postgres from 'postgres';
-import { migrate } from 'drizzle-orm/postgres-js/migrator';
+import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import * as schema from './schema/legal-documents.ts';
 import { getSvelte5Docs, mcpContext72GetLibraryDocs } from '../../sveltekit-frontend/src/lib/mcp-context72-get-library-docs';
 
@@ -16,13 +15,13 @@ import { getSvelte5Docs, mcpContext72GetLibraryDocs } from '../../sveltekit-fron
 
 // Optionally fetch docs at runtime for developer tooling
 // (Remove or comment out in production)
-(async () => {
+(async (): Promise<any> => {
   try {
-    const drizzleDocs = await mcpContext72GetLibraryDocs('drizzle-orm/postgres-js', 'usage', { format: 'typescript', tokens: 4000 });
+    const drizzleDocs = await mcpContext72GetLibraryDocs('drizzle-orm/node-postgres', 'usage', { format: 'typescript', tokens: 4000 });
     const postgresJsDocs = await mcpContext72GetLibraryDocs('postgres-js', 'usage', { format: 'typescript', tokens: 4000 });
     console.log('Drizzle ORM Docs:', drizzleDocs.content.slice(0, 200));
     console.log('Postgres-js Docs:', postgresJsDocs.content.slice(0, 200));
-  } catch (err) {
+  } catch (err: any) {
     // Ignore errors in docs fetch
   }
 })();
@@ -80,30 +79,30 @@ class DatabaseManager {
       this.connected = true;
       console.log('Connected to PostgreSQL via Drizzle ORM');
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to connect to PostgreSQL:', error);
       this.connected = false;
       return false;
     }
   }
 
-  async migrate(): Promise<void> {
+  async migrate(): Promise<any> {
     try {
       // Run migrations
       await migrate(db, { migrationsFolder: './drizzle' });
       console.log('Database migrations completed');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Migration failed:', error);
       throw error;
     }
   }
 
-  async disconnect(): Promise<void> {
+  async disconnect(): Promise<any> {
     try {
       await queryClient.end();
       this.connected = false;
       console.log('Disconnected from PostgreSQL');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error disconnecting from database:', error);
     }
   }
@@ -126,7 +125,7 @@ class DatabaseManager {
         connected: true,
         responseTime
       };
-    } catch (error: unknown) {
+    } catch (error: any) {
       return {
         connected: false,
         error: error.message
@@ -150,7 +149,7 @@ export const dbUtils = {
         // Run migrations if needed
         await dbManager.migrate();
         return true;
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to run migrations:', error);
         return false;
       }
@@ -161,13 +160,13 @@ export const dbUtils = {
   /**
    * Execute raw SQL query
    */
-  async executeRaw<T = any>(query: string, params: unknown[] = []): Promise<T[]> {
+  async executeRaw<T = any>(query: string, params: any[] = []): Promise<T[]> {
     try {
       const result = await queryClient.unsafe(query, params);
       // Safe type conversion - convert result to array if it isn't already
       const resultArray = Array.isArray(result) ? result : [result];
       return resultArray as T[];
-    } catch (error) {
+    } catch (error: any) {
       console.error('Raw query execution failed:', error);
       throw error;
     }
@@ -186,7 +185,7 @@ export const dbUtils = {
         )
       `;
       return result[0]?.exists || false;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error checking if table ${tableName} exists:`, error);
       return false;
     }
@@ -199,7 +198,7 @@ export const dbUtils = {
     try {
       const result = await queryClient.unsafe(`SELECT COUNT(*) FROM ${tableName}`);
       return parseInt(result[0]?.count || '0');
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error getting count for table ${tableName}:`, error);
       return 0;
     }
@@ -208,11 +207,11 @@ export const dbUtils = {
   /**
    * Truncate table
    */
-  async truncateTable(tableName: string): Promise<void> {
+  async truncateTable(tableName: string): Promise<any> {
     try {
       await queryClient.unsafe(`TRUNCATE TABLE ${tableName} RESTART IDENTITY CASCADE`);
       console.log(`Table ${tableName} truncated successfully`);
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error truncating table ${tableName}:`, error);
       throw error;
     }
@@ -229,7 +228,7 @@ export const dbUtils = {
       // This would typically use pg_dump in a real implementation
       console.log(`Creating backup: ${backupName}`);
       return backupName;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Backup creation failed:', error);
       throw error;
     }
@@ -249,13 +248,13 @@ export default {
 };
 
 // Graceful shutdown handling
-process.on('SIGINT', async () => {
+process.on('SIGINT', async (): Promise<any> => {
   console.log('Shutting down database connection...');
   await dbManager.disconnect();
   process.exit(0);
 });
 
-process.on('SIGTERM', async () => {
+process.on('SIGTERM', async (): Promise<any> => {
   console.log('Shutting down database connection...');
   await dbManager.disconnect();
   process.exit(0);

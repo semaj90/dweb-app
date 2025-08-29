@@ -129,7 +129,7 @@ Content: ${content.slice(0, 2000)}`;
           modelUsed = model;
           break;
         }
-      } catch (error) {
+      } catch (error: any) {
         console.log(`Model ${model} failed, trying next...`);
         continue;
       }
@@ -149,13 +149,13 @@ Content: ${content.slice(0, 2000)}`;
     if (enhanced) {
       try {
         await generateEmbedding(parsedResult, content);
-      } catch (error) {
+      } catch (error: any) {
         console.log("Embedding generation failed:", error);
         // Non-critical, continue without embedding
       }
     }
     return parsedResult;
-  } catch (error) {
+  } catch (error: any) {
     console.error("AI Tagging error:", error);
     return json(
       {
@@ -173,7 +173,7 @@ async function parseAndReturnTags(
   fileType?: string,
   enhanced = false,
   modelUsed = "",
-) {
+): Promise<any> {
   // Enhanced default structure for auto-form fill
   let tagsResult: any = {
     tags: [],
@@ -630,7 +630,7 @@ function enhanceWithFileMetadata(
 
   return result;
 }
-async function generateEmbedding(parsedResult: any, content: string) {
+async function generateEmbedding(parsedResult: any, content: string): Promise<any> {
   // Generate embeddings for vector search using Ollama's embedding model
   try {
     const embeddingText = [
@@ -667,7 +667,7 @@ async function generateEmbedding(parsedResult: any, content: string) {
         }),
       }).catch((error) => console.log("Qdrant storage failed:", error));
     }
-  } catch (error) {
+  } catch (error: any) {
     console.log("Embedding generation failed:", error);
   }
 }

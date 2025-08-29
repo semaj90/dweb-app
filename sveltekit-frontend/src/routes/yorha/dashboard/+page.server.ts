@@ -35,7 +35,7 @@ export const load: PageServerLoad = async ({ url, fetch }) => {
       initialLoad: true,
       timestamp: new Date().toISOString()
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error loading dashboard data:', error);
     
     // Return fallback data

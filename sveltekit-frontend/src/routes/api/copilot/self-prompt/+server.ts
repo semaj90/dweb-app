@@ -32,20 +32,20 @@ async function copilotSelfPrompt(prompt: string, options: CopilotSelfPromptOptio
 }
 
 // Type definitions for the API response
-interface NextAction {
+export interface NextAction {
   description: string;
   priority: string;
   estimatedTime: number;
 }
 
-interface Recommendation {
+export interface Recommendation {
   title: string;
   description: string;
   impact: string;
   effort: string;
 }
 
-interface SelfPromptResult {
+export interface SelfPromptResult {
   synthesizedOutput: string;
   nextActions: NextAction[];
   recommendations: Recommendation[];
@@ -59,7 +59,7 @@ interface SelfPromptResult {
   };
 }
 
-interface CopilotSelfPromptOptions {
+export interface CopilotSelfPromptOptions {
   useSemanticSearch?: boolean;
   useMemory?: boolean;
   useMultiAgent?: boolean;
@@ -119,7 +119,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
       timestamp: new Date().toISOString(),
       ...response,
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error("❌ Copilot self-prompt API error:", err);
 
     const errorMessage = err instanceof Error ? err.message : "Unknown error";

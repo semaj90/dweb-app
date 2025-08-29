@@ -33,7 +33,7 @@ function getBodyJson(req: IncomingMessage) {
       try {
         resolve(JSON.parse(body) || {})
       }
-      catch (e) {
+      catch (e: any) {
         reject(e)
       }
     })
@@ -75,7 +75,7 @@ export function createDevtoolsPlugin(ctx: UnocssPluginContext, pluginConfig: Vit
     }, 100)
   }
 
-  async function getMockClassesInjector() {
+  async function getMockClassesInjector(): Promise<any> {
     const suggest = Object.keys(ctx.uno.config.rulesStaticMap)
     const comment = '/* unocss CSS mock class names for devtools auto-completion */\n'
     const css = suggest.map(toClass).join('')
@@ -120,7 +120,7 @@ export function createDevtoolsPlugin(ctx: UnocssPluginContext, pluginConfig: Vit
             }
             res.statusCode = 200
           }
-          catch (e) {
+          catch (e: any) {
             console.error(e)
             res.statusCode = 500
           }

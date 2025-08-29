@@ -10,7 +10,7 @@ import { cognitiveCacheManager } from '../services/cognitive-cache-integration';
 import { initializeDatabase, getDatabaseHealth } from '../database';
 
 // Enhanced Context with Cognitive Cache Integration
-interface EnhancedCaseManagementContext {
+export interface EnhancedCaseManagementContext {
   // Core case data
   currentCase: CaseData | null;
   cases: CaseData[];

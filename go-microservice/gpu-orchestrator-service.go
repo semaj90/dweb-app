@@ -92,6 +92,8 @@ func NewGPUOrchestratorService() *GPUOrchestratorService {
 		"../cuda-worker/cuda-worker.exe",
 		"./cuda-worker/cuda-worker.exe",
 		"../cuda-worker.exe",
+		"../../cuda-worker/cuda-worker.exe",
+		"../../../cuda-worker/cuda-worker.exe",
 	}
 
 	for _, path := range possiblePaths {
@@ -173,6 +175,19 @@ func (s *GPUOrchestratorService) executeCUDAJob(request RotationRequest) (*GPUJo
 	output, err := cmd.Output()
 	if err != nil {
 		s.gpuStats.FailedJobs++
+		// Check if it's a timeout or other specific error
+		if ctx.Err() == context.DeadlineExceeded {
+			return nil, fmt.Errorf("CUDA execution timeout after 30 seconds")
+		}
+		
+		// Get more detailed error information
+		if exitError, ok := err.(*exec.ExitError); ok {
+			stderr := string(exitError.Stderr)
+			log.Printf("❌ CUDA worker stderr: %s", stderr)
+			return nil, fmt.Errorf("CUDA execution failed (exit code %d): %s", exitError.ExitCode(), stderr)
+		}
+		
+		log.Printf("❌ CUDA worker execution error: %v", err)
 		return nil, fmt.Errorf("CUDA execution failed: %v", err)
 	}
 
@@ -235,7 +250,35 @@ func (s *GPUOrchestratorService) generateJobID() string {
 func (s *GPUOrchestratorService) handleGPUProcess(c *gin.Context) {
 	var request GPUJobRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Printf("❌ GPU Process: Invalid JSON request: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request", "details": err.Error()})
+		return
+	}
+
+	// Validate request
+	if request.Type == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing job type"})
+		return
+	}
+
+	if len(request.Data) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing data"})
+		return
+	}
+
+	// Check CUDA availability
+	if !s.gpuStats.CUDAAvailable {
+		c.JSON(http.StatusServiceUnavailable, gin.H{
+			"error": "CUDA worker not available",
+			"cuda_path_searched": []string{
+				"./cuda-worker.exe",
+				"../cuda-worker/cuda-worker.exe",
+				"./cuda-worker/cuda-worker.exe",
+				"../cuda-worker.exe",
+				"../../cuda-worker/cuda-worker.exe",
+				"../../../cuda-worker/cuda-worker.exe",
+			},
+		})
 		return
 	}
 

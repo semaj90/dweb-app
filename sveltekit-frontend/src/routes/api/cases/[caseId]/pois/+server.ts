@@ -15,7 +15,7 @@ export const GET: RequestHandler = async ({ params }) => {
       .where(eq(personsOfInterest.caseId, caseId));
 
     return json(pois);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching POIs:", error);
     return json(
       { error: "Failed to fetch persons of interest" },
@@ -52,7 +52,7 @@ export const POST: RequestHandler = async ({ request, params }) => {
       .returning();
 
     return json(poi, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating POI:", error);
     return json(
       { error: "Failed to create person of interest" },

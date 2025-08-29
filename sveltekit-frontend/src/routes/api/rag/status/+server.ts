@@ -54,7 +54,7 @@ export const GET: RequestHandler = async () => {
     };
 
     return json(status);
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         error: 'Failed to check system status',

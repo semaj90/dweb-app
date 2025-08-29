@@ -4,7 +4,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { drizzle } from 'drizzle-orm/postgres-js';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import postgres from 'postgres';
 import { createClient } from 'redis';
 import { vectors, vectorJobs, evidence, reports } from '$lib/server/db/schema-postgres.js';
@@ -20,7 +20,7 @@ const redis = createClient({
 
 let redisConnected = false;
 
-async function connectRedis() {
+async function connectRedis(): Promise<any> {
   if (!redisConnected) {
     await redis.connect();
     redisConnected = true;
@@ -96,7 +96,7 @@ class QdrantClient {
       }
 
       console.log(`✅ Created Qdrant collection: ${collectionName}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Qdrant collection error for ${collectionName}:`, error);
       throw error;
     }
@@ -159,7 +159,7 @@ export const POST: RequestHandler = async ({ request }) => {
       message: `Vector ${event} completed successfully`,
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Vector sync error:', error);
     
     // Update job status to failed
@@ -182,7 +182,7 @@ export const POST: RequestHandler = async ({ request }) => {
   }
 };
 
-async function handleVectorUpsert(ownerType: string, ownerId: string, vectorId?: string) {
+async function handleVectorUpsert(ownerType: string, ownerId: string, vectorId?: string): Promise<any> {
   // Get vector from PostgreSQL
   const [vector] = await db
     .select()
@@ -257,7 +257,7 @@ async function handleVectorUpsert(ownerType: string, ownerId: string, vectorId?:
   };
 }
 
-async function handleVectorDeletion(ownerType: string, ownerId: string) {
+async function handleVectorDeletion(ownerType: string, ownerId: string): Promise<any> {
   const collectionName = ownerType === 'evidence' ? 'legal_evidence' : 'legal_reports';
   
   // Delete from Qdrant
@@ -302,7 +302,7 @@ export const GET: RequestHandler = async () => {
       timestamp: new Date().toISOString(),
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: error instanceof Error ? error.message : 'Health check failed',

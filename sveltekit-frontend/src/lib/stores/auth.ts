@@ -45,7 +45,7 @@ const createAuthStore = () => {
           set({ isAuthenticated: false, user: null, isLoading: false });
           return { success: false, error };
         }
-      } catch (error) {
+      } catch (error: any) {
         set({ isAuthenticated: false, user: null, isLoading: false });
         return { success: false, error: "Network error" };
       }
@@ -54,7 +54,7 @@ const createAuthStore = () => {
     logout: async () => {
       try {
         await fetch("/api/auth/logout", { method: "POST" });
-      } catch (error) {
+      } catch (error: any) {
         console.error("Logout error:", error);
       }
       set({ isAuthenticated: false, user: null, isLoading: false });
@@ -71,7 +71,7 @@ const createAuthStore = () => {
         } else {
           set({ isAuthenticated: false, user: null, isLoading: false });
         }
-      } catch (error) {
+      } catch (error: any) {
         set({ isAuthenticated: false, user: null, isLoading: false });
       }
     },

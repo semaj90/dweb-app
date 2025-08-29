@@ -99,7 +99,7 @@ export const GET: RequestHandler = async ({ url }) => {
         }
       }, { status: 404 });
     }
-  } catch (error) {
+  } catch (error: any) {
     logger.error('💥 Cache retrieval error', {
       key,
       type,
@@ -205,12 +205,12 @@ export const POST: RequestHandler = async ({ request }) => {
         const startTime = Date.now();
         
         // Data loader function for cache warming
-        const dataLoader = async (key: string) => {
+        const dataLoader = async (key: string): Promise<any> => {
           try {
             const response = await fetch(`${dataUrl}?key=${encodeURIComponent(key)}`);
             if (!response.ok) return null;
             return await response.json();
-          } catch (error) {
+          } catch (error: any) {
             console.warn(`Failed to load data for key ${key}:`, error);
             return null;
           }
@@ -274,7 +274,7 @@ export const POST: RequestHandler = async ({ request }) => {
       }
     }
 
-  } catch (error) {
+  } catch (error: any) {
     logger.error('💥 Cache storage error', {
       error: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -303,7 +303,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
         message: 'All caches cleared successfully',
         timestamp: new Date().toISOString()
       });
-    } catch (error) {
+    } catch (error: any) {
       return json({
         success: false,
         error: 'Failed to clear all caches',
@@ -335,7 +335,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: 'Cache deletion failed',

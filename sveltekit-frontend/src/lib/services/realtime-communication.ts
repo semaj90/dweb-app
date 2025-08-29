@@ -122,10 +122,10 @@ class RealtimeCommunicationLayer {
         console.log('Service Worker registered for background communication');
 
         // Listen for messages from service worker
-        navigator.serviceWorker.addEventListener('message', (event) => {
+        navigator.serviceWorker.addEventListener('message', (event: any) => {
           this.handleServiceWorkerMessage(event.data);
         });
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Service Worker registration failed:', error);
       }
     }
@@ -155,18 +155,18 @@ class RealtimeCommunicationLayer {
         this.processQueuedMessages('websocket');
       };
 
-      ws.onmessage = (event) => {
+      ws.onmessage = (event: any) => {
         try {
           const message: RealtimeMessage = JSON.parse(event.data);
           message.channel = 'websocket';
           message.timestamp = new Date(message.timestamp);
           this.handleMessage(message);
-        } catch (error) {
+        } catch (error: any) {
           console.error('WebSocket message parsing failed:', error);
         }
       };
 
-      ws.onclose = (event) => {
+      ws.onclose = (event: any) => {
         console.log('WebSocket disconnected:', event.code, event.reason);
         this.connections.websocket = null;
         connectionStatus.update((status) => ({
@@ -183,7 +183,7 @@ class RealtimeCommunicationLayer {
         console.error('WebSocket error:', error);
         connectionStatus.update((status) => ({ ...status, websocket: 'error' }));
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('WebSocket initialization failed:', error);
       connectionStatus.update((status) => ({ ...status, websocket: 'error' }));
     }
@@ -210,24 +210,24 @@ class RealtimeCommunicationLayer {
         }));
       };
 
-      eventSource.onmessage = (event) => {
+      eventSource.onmessage = (event: any) => {
         try {
           const message: RealtimeMessage = JSON.parse(event.data);
           message.channel = 'sse';
           message.timestamp = new Date(message.timestamp);
           this.handleMessage(message);
-        } catch (error) {
+        } catch (error: any) {
           console.error('SSE message parsing failed:', error);
         }
       };
 
       // Handle streaming AI responses
-      eventSource.addEventListener('ai_stream', (event) => {
+      eventSource.addEventListener('ai_stream', (event: any) => {
         this.handleStreamingResponse(JSON.parse(event.data));
       });
 
       // Handle document processing updates
-      eventSource.addEventListener('document_progress', (event) => {
+      eventSource.addEventListener('document_progress', (event: any) => {
         this.handleStreamingResponse(JSON.parse(event.data));
       });
 
@@ -243,7 +243,7 @@ class RealtimeCommunicationLayer {
         // Attempt reconnection
         this.scheduleReconnect('sse', userId, sessionId);
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('SSE initialization failed:', error);
       connectionStatus.update((status) => ({ ...status, sse: 'error' }));
     }
@@ -283,13 +283,13 @@ class RealtimeCommunicationLayer {
         }));
       };
 
-      dataChannel.onmessage = (event) => {
+      dataChannel.onmessage = (event: any) => {
         try {
           const message: RealtimeMessage = JSON.parse(event.data);
           message.channel = 'webrtc';
           message.timestamp = new Date(message.timestamp);
           this.handleMessage(message);
-        } catch (error) {
+        } catch (error: any) {
           console.error('WebRTC message parsing failed:', error);
         }
       };
@@ -311,7 +311,7 @@ class RealtimeCommunicationLayer {
 
       // Handle ICE candidates and signaling
       await this.handleWebRTCSignaling(peerConnection, userId, sessionId);
-    } catch (error) {
+    } catch (error: any) {
       console.error('WebRTC initialization failed:', error);
       connectionStatus.update((status) => ({ ...status, webrtc: 'error' }));
     }
@@ -347,7 +347,7 @@ class RealtimeCommunicationLayer {
     }
 
     // Handle ICE candidates
-    peerConnection.onicecandidate = (event) => {
+    peerConnection.onicecandidate = (event: any) => {
       if (event.candidate) {
         fetch(this.urls.webrtc, {
           method: 'POST',
@@ -393,7 +393,7 @@ class RealtimeCommunicationLayer {
     try {
       message.channel = channel;
       await this.sendThroughChannel(message, channel);
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to send message through ${channel}:`, error);
       // Try alternative channels or queue
       this.messageQueue.push(message);

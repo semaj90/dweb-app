@@ -149,7 +149,7 @@ export class OCRService {
 
 			this.isInitialized = true;
 			console.log('✅ OCR worker initialized');
-		} catch (error) {
+		} catch (error: any) {
 			console.error('❌ OCR worker initialization failed:', error);
 		}
 	}
@@ -227,7 +227,7 @@ export class OCRService {
 			console.log(`✅ OCR completed in ${result.processingTime}ms with ${extractedFields.length} fields extracted`);
 			return result;
 
-		} catch (error) {
+		} catch (error: any) {
 			console.error('❌ OCR processing failed:', error);
 			this.processing$.set(false);
 			throw error;
@@ -339,7 +339,7 @@ Return only the classification: legal_document, contract, or form`;
 			const result = data.response.trim().toLowerCase();
 			
 			return ['legal_document', 'contract', 'form'].includes(result) ? result : 'form';
-		} catch (error) {
+		} catch (error: any) {
 			console.warn('Document type detection failed:', error);
 			return 'form';
 		}
@@ -489,7 +489,7 @@ Return JSON array:
 				validationStatus: this.validateField(field.fieldType, field.value)
 			}));
 
-		} catch (error) {
+		} catch (error: any) {
 			console.warn('LLM field enhancement failed:', error);
 			return [];
 		}
@@ -547,7 +547,7 @@ Provide 3-5 realistic suggestions as a JSON array: ["suggestion1", "suggestion2"
 
 			const data = await response.json();
 			return JSON.parse(data.response);
-		} catch (error) {
+		} catch (error: any) {
 			console.warn('Suggestion generation failed:', error);
 			return [];
 		}

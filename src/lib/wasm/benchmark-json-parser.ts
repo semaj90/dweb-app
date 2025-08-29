@@ -10,7 +10,7 @@ import {
   parseJsonBatch,
 } from "./gpu-json-parser";
 
-interface BenchmarkResult {
+export interface BenchmarkResult {
   name: string;
   totalTime: number;
   averageTime: number;
@@ -19,7 +19,7 @@ interface BenchmarkResult {
   errors: number;
 }
 
-interface ComparisonResult {
+export interface ComparisonResult {
   wasmResult: BenchmarkResult;
   nativeResult: BenchmarkResult;
   speedup: number;
@@ -105,7 +105,7 @@ export class JsonParserBenchmark {
     });
 
     // Very large JSON with deep nesting
-    const createDeepObject = (depth: number): unknown => {
+    const createDeepObject = (depth: number): any => {
       if (depth === 0) {
         return {
           value: Math.random(),
@@ -168,7 +168,7 @@ export class JsonParserBenchmark {
         const time = end - start;
         times.push(time);
         totalTime += time;
-      } catch (error) {
+      } catch (error: any) {
         errors++;
       }
     }
@@ -251,7 +251,7 @@ export class JsonParserBenchmark {
       try {
         results[testName] = await this.comparePerformance(testName, 100);
         console.log(`✅ Completed benchmark: ${testName}`);
-      } catch (error) {
+      } catch (error: any) {
         console.error(`❌ Failed benchmark: ${testName}`, error);
       }
     }
@@ -290,7 +290,7 @@ export class JsonParserBenchmark {
     // Benchmark sequential parsing
     const sequential = await this.runBenchmark(
       "Sequential",
-      async (jsonArray) => {
+      async (jsonArray): Promise<any> => {
         const results = [];
         for (const json of jsonArray as unknown as string[]) {
           results.push(await this.parser.parse(json, { useCache: true }));
@@ -352,7 +352,7 @@ export class JsonParserBenchmark {
   async benchmarkCacheEffectiveness(): Promise<{
     withCache: BenchmarkResult;
     withoutCache: BenchmarkResult;
-    cacheStats: unknown;
+    cacheStats: any;
     speedup: number;
   }> {
     console.log("💾 Benchmarking cache effectiveness...");
@@ -456,7 +456,7 @@ export class JsonParserBenchmark {
         await this.parser.parse(testData, { useCache: true });
         const end = performance.now();
         times.push(end - start);
-      } catch (error) {
+      } catch (error: any) {
         errors++;
       }
 
@@ -488,7 +488,7 @@ export class JsonParserBenchmark {
 /**
  * Run benchmark from command line or programmatically
  */
-export async function runBenchmark(): Promise<void> {
+export async function runBenchmark(): Promise<any> {
   const benchmark = new JsonParserBenchmark();
 
   try {
@@ -550,7 +550,7 @@ export async function runBenchmark(): Promise<void> {
     );
 
     console.log("\n🎉 Benchmark completed successfully!");
-  } catch (error) {
+  } catch (error: any) {
     console.error("💥 Benchmark failed:", error);
   } finally {
     benchmark.dispose();

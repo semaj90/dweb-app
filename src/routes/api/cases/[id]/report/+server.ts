@@ -5,7 +5,7 @@ import { eq, and } from 'drizzle-orm';
 import type { RequestHandler } from './$types';
 
 // GET /api/cases/[id]/report - Get report for case
-export const GET: RequestHandler = async ({ locals, params }) => {
+export const GET: RequestHandler = async ({ locals, params }): Promise<any> => {
   if (!locals.user) {
     throw error(401, 'Unauthorized');
   }
@@ -40,14 +40,14 @@ export const GET: RequestHandler = async ({ locals, params }) => {
       data: report || null
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Error fetching report:', err);
     throw error(500, 'Failed to fetch report');
   }
 };
 
 // POST /api/cases/[id]/report - Create or update report
-export const POST: RequestHandler = async ({ locals, params, request }) => {
+export const POST: RequestHandler = async ({ locals, params, request }): Promise<any> => {
   if (!locals.user) {
     throw error(401, 'Unauthorized');
   }
@@ -118,7 +118,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
       data: report
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Error saving report:', err);
     throw error(500, 'Failed to save report');
   }

@@ -67,7 +67,7 @@ export async function runOcrForEvidence(evidenceId: string): Promise<OcrResult> 
     
     return ocrResult;
     
-  } catch (error) {
+  } catch (error: any) {
     console.error(`❌ OCR failed for evidence ${evidenceId}:`, error);
     throw error;
   }
@@ -199,7 +199,7 @@ async function runDocumentOcr(filePath: string, evidenceId: string): Promise<Ocr
     // This would require LibreOffice or similar converter
     throw new Error('Document conversion not implemented yet');
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Document OCR failed:', error);
     throw error;
   }
@@ -245,7 +245,7 @@ async function storeOcrResult(evidenceId: string, result: OcrResult): Promise<vo
     
     console.log(`💾 Stored OCR result for evidence: ${evidenceId}`);
     
-  } catch (error) {
+  } catch (error: any) {
     console.warn('⚠️ Failed to store OCR result:', error);
     // Don't throw - this is just caching
   }
@@ -270,7 +270,7 @@ export async function checkOcrHealth(): Promise<boolean> {
       setTimeout(() => resolve(false), 5000);
     });
     
-  } catch (error) {
+  } catch (error: any) {
     return false;
   }
 }

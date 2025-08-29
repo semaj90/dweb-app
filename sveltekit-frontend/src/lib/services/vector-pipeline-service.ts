@@ -162,7 +162,7 @@ export class VectorPipelineService {
 
       return job;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Failed to get job status for ${jobId}:`, error);
       return null;
     }
@@ -178,7 +178,7 @@ export class VectorPipelineService {
 
     this.activePolling.add(jobId);
 
-    const poll = async () => {
+    const poll = async (): Promise<any> => {
       try {
         const job = await this.getJobStatus(jobId);
         
@@ -197,7 +197,7 @@ export class VectorPipelineService {
           setTimeout(poll, this.pollingInterval);
         }
 
-      } catch (error) {
+      } catch (error: any) {
         console.error(`❌ Polling error for job ${jobId}:`, error);
         this.activePolling.delete(jobId);
       }
@@ -323,7 +323,7 @@ export class VectorPipelineService {
     try {
       const response = await fetch('/api/vectors/sync', { method: 'GET' });
       return response.ok ? await response.json() : { success: false };
-    } catch (error) {
+    } catch (error: any) {
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Health check failed' 

@@ -6,7 +6,7 @@
 import { type RequestHandler,  json, error } from '@sveltejs/kit';
 import { productionServiceClient } from "$lib/services/productionServiceClient";
 
-interface AIRequest {
+export interface AIRequest {
   type: 'summary' | 'legal' | 'live' | 'analysis';
   content?: string;
   document?: unknown;
@@ -97,7 +97,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('AI API Error:', err);
     return error(500, `AI service unavailable: ${err instanceof Error ? err.message : 'Unknown error'}`);
   }
@@ -111,7 +111,7 @@ export const GET: RequestHandler = async ({ url }) => {
     try {
       const result = await productionServiceClient.execute('ai.session.status', { sessionId });
       return json({ success: true, data: result });
-    } catch (err) {
+    } catch (err: any) {
       return error(404, { message: 'Session not found' });
     }
   }
@@ -148,7 +148,7 @@ export const GET: RequestHandler = async ({ url }) => {
       ],
       version: '1.0.0'
     });
-  } catch (err) {
+  } catch (err: any) {
     return error(503, { message: 'AI service health check failed' });
   }
 };

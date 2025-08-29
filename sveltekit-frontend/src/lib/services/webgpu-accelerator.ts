@@ -246,7 +246,7 @@ class WebGPUAccelerator {
             console.log('WebGPU initialized successfully:', this.capabilities);
             return this.capabilities;
 
-        } catch (error) {
+        } catch (error: any) {
             console.warn('WebGPU initialization failed:', error);
             this.capabilities = {
                 available: false,
@@ -277,7 +277,7 @@ class WebGPUAccelerator {
 
                 this.computeShaders.set(name, shaderModule);
                 console.log(`Initialized shader: ${name}`);
-            } catch (error) {
+            } catch (error: any) {
                 console.error(`Failed to create shader ${name}:`, error);
             }
         }

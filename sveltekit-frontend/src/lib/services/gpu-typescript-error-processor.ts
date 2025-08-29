@@ -105,7 +105,7 @@ export class GPUTypeScriptErrorProcessor {
       this.isInitialized = true;
       console.log('✅ GPU TypeScript error processor initialized');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ GPU error processor initialization failed:', error);
       throw error;
     }
@@ -237,7 +237,7 @@ export class GPUTypeScriptErrorProcessor {
       console.log(`🎯 Error processing complete: ${batch.processedErrors} errors processed with ${batch.successRate.toFixed(1)}% success rate`);
       return batch;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Error processing failed:', error);
       batch.endTime = Date.now();
       throw error;
@@ -303,7 +303,7 @@ export class GPUTypeScriptErrorProcessor {
       console.log(`🔧 Processed error ${error.code} in ${result.processingTime.toFixed(2)}ms (confidence: ${result.confidence.toFixed(2)})`);
       return result;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Failed to process error: ${error.code}`, error);
       return {
         originalError: error,
@@ -339,7 +339,7 @@ export class GPUTypeScriptErrorProcessor {
         return `${marker}${lineNumber}: ${line}`;
       }).join('\n');
 
-    } catch (err) {
+    } catch (err: any) {
       console.warn(`⚠️ Could not read context for ${error.file}:`, err);
       return `Error at ${error.file}:${error.line}:${error.column}`;
     }
@@ -395,7 +395,7 @@ export class GPUTypeScriptErrorProcessor {
         confidence: analysisResult.confidence || 0.6
       };
 
-    } catch (err) {
+    } catch (err: any) {
       console.warn('⚠️ AI error analysis failed:', err);
       return {
         analysis: this.getFallbackAnalysis(error),
@@ -451,7 +451,7 @@ export class GPUTypeScriptErrorProcessor {
         confidence: fixResult.confidence || 0.5
       };
 
-    } catch (err) {
+    } catch (err: any) {
       console.warn('⚠️ AI fix generation failed:', err);
       return {
         fix: this.getFallbackFix(error),
@@ -506,7 +506,7 @@ export class GPUTypeScriptErrorProcessor {
 
       return true;
 
-    } catch (err) {
+    } catch (err: any) {
       console.error(`❌ Failed to apply fix to ${error.file}:`, err);
       return false;
     }
@@ -611,7 +611,7 @@ export class GPUTypeScriptErrorProcessor {
 
       console.log(`💾 Batch results stored: ${batch.id}`);
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Failed to store batch results:', error);
     }
   }

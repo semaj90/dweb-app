@@ -9,7 +9,7 @@ import { cognitiveRoutingOrchestrator } from '../orchestration/cognitive-routing
 import { reinforcementLearningCache } from '../caching/reinforcement-learning-cache';
 
 // Multi-dimensional routing space
-interface RoutingDimension {
+export interface RoutingDimension {
   name: string;
   weight: number;
   resolution: number;      // Granularity of the dimension
@@ -18,7 +18,7 @@ interface RoutingDimension {
 }
 
 // N-dimensional routing coordinates
-interface RoutingCoordinates {
+export interface RoutingCoordinates {
   dimensions: Map<string, number>;
   spatial: { x: number; y: number; z: number };
   temporal: number;
@@ -26,7 +26,7 @@ interface RoutingCoordinates {
 }
 
 // Route with multi-dimensional properties
-interface MultiDimensionalRoute {
+export interface MultiDimensionalRoute {
   id: string;
   coordinates: RoutingCoordinates;
   performance: {
@@ -49,7 +49,7 @@ interface MultiDimensionalRoute {
 }
 
 // Routing query in multi-dimensional space
-interface RoutingQuery {
+export interface RoutingQuery {
   target: RoutingCoordinates;
   constraints: {
     maxLatency?: number;
@@ -66,14 +66,14 @@ interface RoutingQuery {
 }
 
 // Advanced spatial indexing with R-tree like structure
-interface SpatialIndex {
+export interface SpatialIndex {
   nodes: Map<string, SpatialNode>;
   root: string;
   dimensions: number;
   maxChildren: number;
 }
 
-interface SpatialNode {
+export interface SpatialNode {
   id: string;
   bounds: { min: number[]; max: number[] };
   children: string[];
@@ -82,7 +82,7 @@ interface SpatialNode {
 }
 
 // Recommendation engine state
-interface RecommendationEngine {
+export interface RecommendationEngine {
   userProfiles: Map<string, UserProfile>;
   itemSimilarity: Map<string, Map<string, number>>;
   collaborativeFiltering: Map<string, Map<string, number>>;
@@ -90,7 +90,7 @@ interface RecommendationEngine {
   hybridWeights: { collaborative: number; content: number; context: number };
 }
 
-interface UserProfile {
+export interface UserProfile {
   id: string;
   preferences: Map<string, number>;
   behavior: {
@@ -279,7 +279,7 @@ export class MultiDimensionalRoutingMatrix {
     performance: { latency: number; throughput: number; reliability: number; cost: number };
     capabilities: string[];
     metadata?: any;
-  }): Promise<void> {
+  }): Promise<any> {
     // Calculate multi-dimensional coordinates
     const coordinates = this.calculateCoordinates(route);
 
@@ -881,7 +881,7 @@ export class MultiDimensionalRoutingMatrix {
     query: RoutingQuery, 
     selectedRoutes: MultiDimensionalRoute[], 
     confidence: number
-  ): Promise<void> {
+  ): Promise<any> {
     // Store in episodic memory
     this.cognitiveState.episodicMemory.push({
       event: {
@@ -1074,7 +1074,7 @@ export class MultiDimensionalRoutingMatrix {
     return similarity / dimensions;
   }
 
-  private async analyzeRouteRelationships(route: MultiDimensionalRoute): Promise<void> {
+  private async analyzeRouteRelationships(route: MultiDimensionalRoute): Promise<any> {
     // Analyze relationships with existing routes
     for (const existingRoute of this.routes.values()) {
       if (existingRoute.id === route.id) continue;

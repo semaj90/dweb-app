@@ -137,7 +137,7 @@ export class AIWorkerManager implements AIServiceWorkerManager {
           `AI Worker Manager initialized with ${this.workerPool.maxWorkers} workers`,
         );
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to initialize AI Worker Manager:", error);
       throw error;
     }

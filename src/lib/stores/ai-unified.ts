@@ -3,7 +3,7 @@ import { writable, derived, type Readable } from 'svelte/store';
 import { browser } from '$app/environment';
 import { createAISystemStore } from './ai-system-store';
 
-interface ChatMessage {
+export interface ChatMessage {
   id: string;
   role: 'user' | 'assistant' | 'system';
   content: string;
@@ -15,7 +15,7 @@ interface ChatMessage {
   };
 }
 
-interface AIUnifiedState {
+export interface AIUnifiedState {
   // System integration
   systemStore: ReturnType<typeof createAISystemStore> | null;
   
@@ -96,7 +96,7 @@ export const aiConfig = derived(aiUnified, ($ai) => $ai.config);
 // Store actions
 export const aiActions = {
   // Initialize the AI system
-  async initialize() {
+  async initialize(): Promise<any> {
     if (!browser) return;
     
     try {
@@ -130,7 +130,7 @@ export const aiActions = {
       this.startHealthMonitoring();
       
       console.log('✅ AI Unified System initialized');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ AI System initialization failed:', error);
     }
   },
@@ -208,7 +208,7 @@ export const aiActions = {
         });
       }
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Chat message error:', error);
       
       aiUnified.update(state => ({
@@ -284,7 +284,7 @@ export const aiActions = {
             };
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Failed to call ${endpoint}:`, error);
       }
     }
@@ -296,7 +296,7 @@ export const aiActions = {
   startHealthMonitoring() {
     if (!browser) return;
     
-    const checkHealth = async () => {
+    const checkHealth = async (): Promise<any> => {
       const services = {
         ollama: await this.checkServiceHealth('http://localhost:11434/api/tags'),
         goMicroservice: await this.checkServiceHealth('http://localhost:8094/health'),
@@ -328,7 +328,7 @@ export const aiActions = {
       } else if (response.status >= 500) {
         return 'degraded';
       }
-    } catch (error) {
+    } catch (error: any) {
       // Service is offline or unreachable
     }
     

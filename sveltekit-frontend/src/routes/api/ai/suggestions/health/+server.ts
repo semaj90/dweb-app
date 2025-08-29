@@ -9,7 +9,7 @@ import { aiSuggestionsClient } from '$lib/services/ai-suggestions-grpc-client.js
 /**
  * Health check endpoint for AI Suggestions services
  */
-export async function GET({ url }: RequestEvent) {
+export async function GET({ url }: RequestEvent): Promise<any> {
   const startTime = Date.now();
   
   try {
@@ -63,7 +63,7 @@ export async function GET({ url }: RequestEvent) {
 
     return json(healthStatus, { status: httpStatus });
 
-  } catch (error) {
+  } catch (error: any) {
     return json({
       status: 'error',
       timestamp: new Date().toISOString(),
@@ -78,7 +78,7 @@ export async function GET({ url }: RequestEvent) {
   }
 }
 
-async function checkOllamaService() {
+async function checkOllamaService(): Promise<any> {
   try {
     const isHealthy = await ollamaSuggestionsService.healthCheck();
     const models = await ollamaSuggestionsService.getAvailableModels();
@@ -90,7 +90,7 @@ async function checkOllamaService() {
       availableModels: models.length,
       models: models.slice(0, 5) // Limit for response size
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       status: 'down',
       error: error instanceof Error ? error.message : 'Unknown error'
@@ -98,7 +98,7 @@ async function checkOllamaService() {
   }
 }
 
-async function checkEnhancedRAGService() {
+async function checkEnhancedRAGService(): Promise<any> {
   try {
     const health = await enhancedRAGSuggestionsService.healthCheck();
     const config = enhancedRAGSuggestionsService.getServiceInfo();
@@ -110,7 +110,7 @@ async function checkEnhancedRAGService() {
       responseTime: health.responseTime,
       config
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       status: 'down',
       error: error instanceof Error ? error.message : 'Unknown error'
@@ -118,7 +118,7 @@ async function checkEnhancedRAGService() {
   }
 }
 
-async function checkGRPCService() {
+async function checkGRPCService(): Promise<any> {
   try {
     const isHealthy = await aiSuggestionsClient.healthCheck();
     const status = aiSuggestionsClient.getConnectionStatus();
@@ -128,7 +128,7 @@ async function checkGRPCService() {
       connected: status.connected,
       serviceUrl: status.serviceUrl
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       status: 'down',
       error: error instanceof Error ? error.message : 'Unknown error'

@@ -39,7 +39,7 @@ import type { Connection, Channel } from 'amqplib';
 const { Pool } = pkg;
 
 // Neo4j type definitions (fallback for environments without neo4j-driver)
-interface Neo4jDriver {
+export interface Neo4jDriver {
   driver: (uri: string, auth: any) => any;
   auth: {
     basic: (username: string, password: string) => any;
@@ -289,7 +289,7 @@ export class ComprehensiveCachingArchitecture {
       this.initialized = true;
       console.log('✅ All cache layers initialized successfully with legal compliance');
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize caching architecture:', error);
       this.initialized = false;
       throw error;
@@ -387,7 +387,7 @@ export class ComprehensiveCachingArchitecture {
     // Set up Redis modules for legal compliance if available
     try {
       await this.redisClient.configSet('save', '900 1 300 10 60 10000'); // Aggressive persistence for legal data
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Redis persistence configuration failed:', error);
     }
 
@@ -436,18 +436,18 @@ export class ComprehensiveCachingArchitecture {
       // Create indexes for legal metadata
       try {
         await this.qdrantClient.createPayloadIndex(this.config.qdrant.collection, 'confidentiality_level');
-      } catch (error) {
+      } catch (error: any) {
         console.log("Index for 'confidentiality_level' may already exist");
       }
 
       try {
         await this.qdrantClient.createPayloadIndex(this.config.qdrant.collection, 'case_id');
-      } catch (error) {
+      } catch (error: any) {
         console.log("Index for 'case_id' may already exist");
       }
 
       console.log('📐 Qdrant legal vector collection created');
-    } catch (error) {
+    } catch (error: any) {
       console.log('📐 Qdrant collection exists or created');
     }
 
@@ -617,7 +617,7 @@ export class ComprehensiveCachingArchitecture {
           const invalidationEvent = JSON.parse(msg.content.toString());
           this.handleLegalCacheInvalidation(invalidationEvent);
           this.rabbitChannel?.ack(msg);
-        } catch (error) {
+        } catch (error: any) {
           console.error('Failed to process cache invalidation:', error);
           this.rabbitChannel?.nack(msg, false, false);
         }
@@ -651,13 +651,13 @@ export class ComprehensiveCachingArchitecture {
       for (const query of queries) {
         try {
           await this.neo4jSession.run(query);
-        } catch (error) {
+        } catch (error: any) {
           console.log('Neo4j index/constraint exists or created');
         }
       }
 
       console.log('🕸️ Neo4j legal graph cache initialized');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Neo4j initialization failed, using mock implementation:', error);
     }
 
@@ -921,7 +921,7 @@ export class ComprehensiveCachingArchitecture {
 
           return result;
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Cache layer ${layer} failed:`, error);
         
         // Audit failed access
@@ -1001,7 +1001,7 @@ export class ComprehensiveCachingArchitecture {
             await this.setInNeo4j(key, cacheEntry);
             break;
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Failed to cache in ${layer}:`, error);
         this.performanceMetrics.update(metrics => ({ 
           ...metrics, 
@@ -1088,7 +1088,7 @@ export class ComprehensiveCachingArchitecture {
           VALUES ((SELECT id FROM legal_cache WHERE cache_key = $1), $2, $3, $4, $5, $6)
         `, [key, auditEntry.user_id, action, null, success, details]);
         client.release();
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to audit cache access:', error);
       }
     }
@@ -1241,7 +1241,7 @@ export class ComprehensiveCachingArchitecture {
           legalContext: point.payload?.legalContext
         };
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Qdrant retrieval failed:', error);
     }
     return null;
@@ -1382,7 +1382,7 @@ export class ComprehensiveCachingArchitecture {
           legalContext: node.legalContext ? JSON.parse(node.legalContext) : undefined
         };
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Neo4j retrieval failed:', error);
     }
     return null;
@@ -1406,7 +1406,7 @@ export class ComprehensiveCachingArchitecture {
         confidentiality: entry.confidentiality_level,
         legalContext: entry.legalContext ? JSON.stringify(entry.legalContext) : null
       });
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Neo4j storage failed:', error);
     }
   }
@@ -1559,7 +1559,7 @@ export class ComprehensiveCachingArchitecture {
       
       this.initialized = false;
       console.log('🔄 Legal caching architecture destroyed');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error during cleanup:', error);
     }
   }

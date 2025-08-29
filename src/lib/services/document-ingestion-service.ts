@@ -9,7 +9,7 @@ import pdfParse from "pdf-parse";
 import { chromium } from "playwright";
 import * as cheerio from "cheerio";
 import crypto from "crypto";
-import { redisVectorService, VectorDocument } from "./redis-vector-service.js";
+import { redisVectorService, VectorDocument } from './redis-vector-service';
 
 export interface DocumentChunk {
     id: string;
@@ -216,7 +216,7 @@ export class DocumentIngestionService {
 
                         await page.close();
                     }
-                } catch (error) {
+                } catch (error: any) {
                     console.error(`❌ Error crawling ${url}:`, error);
                 }
             }
@@ -234,7 +234,7 @@ export class DocumentIngestionService {
     async storeDocument(
         document: ParsedDocument,
         embeddingFunction: (text: string) => Promise<number[]>
-    ): Promise<void> {
+    ): Promise<any> {
         console.log(`💾 Storing document: ${document.title}`);
 
         const vectorDocs: VectorDocument[] = [];
@@ -251,7 +251,7 @@ export class DocumentIngestionService {
                     content: chunk.content,
                     ttl: 7200, // 2 hours default TTL
                 });
-            } catch (error) {
+            } catch (error: any) {
                 console.error(`❌ Error generating embedding for chunk ${chunk.id}:`, error);
             }
         }
@@ -351,7 +351,7 @@ export class DocumentIngestionService {
             await browser.close();
 
             return !!redisHealthy;
-        } catch (error) {
+        } catch (error: any) {
             console.error("Document ingestion service health check failed:", error);
             try {
                 if (browser) await browser.close();

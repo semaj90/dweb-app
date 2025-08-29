@@ -2,7 +2,7 @@ import { nativeServiceManager } from './native-windows-service-manager';
 import { flashAttentionProcessor } from './flashattention-gpu-error-processor';
 import { concurrentSearch } from './concurrent-indexeddb-search';
 
-interface ErrorProcessingPipeline {
+export interface ErrorProcessingPipeline {
   stage: 'initializing' | 'scanning' | 'indexing' | 'processing' | 'applying' | 'completed' | 'error';
   progress: number;
   currentTask: string;
@@ -59,7 +59,7 @@ export class CompleteGPUErrorPipeline {
       this.stage6_Complete();
 
       return this.pipeline;
-    } catch (error) {
+    } catch (error: any) {
       this.pipeline.stage = 'error';
       this.pipeline.currentTask = `Pipeline failed: ${error}`;
       console.error('❌ Error processing pipeline failed:', error);
@@ -110,7 +110,7 @@ export class CompleteGPUErrorPipeline {
         console.log('⚠️ Using npm run check fallback...');
         this.pipeline.errors.total = 9000;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Error scanning failed, using estimated count:', error);
       this.pipeline.errors.total = 9000;
     }
@@ -130,7 +130,7 @@ export class CompleteGPUErrorPipeline {
       await concurrentSearch.indexTypeScriptErrors(mockErrors);
       
       console.log(`✅ Indexed ${mockErrors.length} errors in IndexedDB with Fuse.js`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Error indexing failed:', error);
     }
 
@@ -155,7 +155,7 @@ export class CompleteGPUErrorPipeline {
       this.pipeline.performance.tokens_per_second = result.performance.tokens_per_second;
       
       console.log(`⚡ GPU processing complete: ${this.pipeline.errors.fixed} high-confidence fixes`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ GPU processing failed:', error);
       this.pipeline.errors.failed = this.pipeline.errors.total;
     }
@@ -176,7 +176,7 @@ export class CompleteGPUErrorPipeline {
       
       console.log('🎯 Fix application simulated (would apply real fixes in production)');
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Fix application failed:', error);
     }
 

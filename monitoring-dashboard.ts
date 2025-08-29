@@ -16,7 +16,7 @@ import { spawn } from 'child_process';
 
 const require = createRequire(import.meta.url);
 
-interface SystemMetrics {
+export interface SystemMetrics {
   timestamp: Date;
   system: {
     cpu: {
@@ -58,7 +58,7 @@ interface SystemMetrics {
   performance: PerformanceMetrics;
 }
 
-interface ServiceMetrics {
+export interface ServiceMetrics {
   name: string;
   status: 'running' | 'stopped' | 'error' | 'starting' | 'stopping';
   pid?: number;
@@ -91,7 +91,7 @@ interface ServiceMetrics {
   };
 }
 
-interface Alert {
+export interface Alert {
   id: string;
   level: 'info' | 'warning' | 'error' | 'critical';
   title: string;
@@ -106,7 +106,7 @@ interface Alert {
   duration?: number;
 }
 
-interface PerformanceMetrics {
+export interface PerformanceMetrics {
   overall: {
     score: number; // 0-100
     latency: number;
@@ -123,7 +123,7 @@ interface PerformanceMetrics {
   recommendations: string[];
 }
 
-interface LogEntry {
+export interface LogEntry {
   timestamp: Date;
   level: 'debug' | 'info' | 'warn' | 'error' | 'fatal';
   service: string;
@@ -136,7 +136,7 @@ interface LogEntry {
   stack?: string;
 }
 
-interface MetricsCollector {
+export interface MetricsCollector {
   name: string;
   interval: number;
   enabled: boolean;
@@ -193,7 +193,7 @@ export class MonitoringDashboard extends EventEmitter {
         try {
           const message = JSON.parse(data.toString());
           await this.handleClientMessage(ws, message);
-        } catch (error) {
+        } catch (error: any) {
           this.sendToClient(ws, 'error', { message: 'Invalid message format' });
         }
       });
@@ -328,7 +328,7 @@ export class MonitoringDashboard extends EventEmitter {
       try {
         await this.executeServiceAction(name, action);
         res.json({ success: true, message: `${action} executed for ${name}` });
-      } catch (error) {
+      } catch (error: any) {
         res.status(500).json({ error: (error as Error).message });
       }
     });
@@ -383,7 +383,7 @@ export class MonitoringDashboard extends EventEmitter {
               collector: collector.name, 
               data: metrics 
             });
-          } catch (error) {
+          } catch (error: any) {
             this.log('error', 'monitoring', `Failed to collect ${collector.name} metrics: ${error}`);
           }
         }
@@ -419,7 +419,7 @@ export class MonitoringDashboard extends EventEmitter {
         disk: diskUsage,
         network: networkUsage
       };
-    } catch (error) {
+    } catch (error: any) {
       this.log('error', 'monitoring', `Failed to collect system metrics: ${error}`);
       return null;
     }
@@ -438,7 +438,7 @@ export class MonitoringDashboard extends EventEmitter {
           services.push(metrics);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       this.log('error', 'monitoring', `Failed to collect service metrics: ${error}`);
     }
 
@@ -464,7 +464,7 @@ export class MonitoringDashboard extends EventEmitter {
           power: values[6]
         };
       }
-    } catch (error) {
+    } catch (error: any) {
       // GPU not available or nvidia-smi not found
     }
     
@@ -483,7 +483,7 @@ export class MonitoringDashboard extends EventEmitter {
         postgresql: pgMetrics,
         redis: redisMetrics
       };
-    } catch (error) {
+    } catch (error: any) {
       this.log('error', 'monitoring', `Failed to collect database metrics: ${error}`);
       return null;
     }

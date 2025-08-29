@@ -1,4 +1,3 @@
-// @ts-nocheck
 import cluster from 'node:cluster';
 import { cpus } from 'node:os';
 import { Worker, isMainThread, parentPort, workerData } from 'node:worker_threads';
@@ -21,7 +20,7 @@ export interface ClusterConfig {
 export interface WorkerTask {
   id: string;
   type: 'document_analysis' | 'vector_search' | 'ai_inference' | 'data_processing';
-  payload: unknown;
+  payload: any;
   priority: 'low' | 'medium' | 'high' | 'critical';
   timeout?: number;
 }
@@ -29,7 +28,7 @@ export interface WorkerTask {
 export interface WorkerResult {
   taskId: string;
   success: boolean;
-  result?: unknown;
+  result?: any;
   error?: string;
   processingTime: number;
   workerId: number;
@@ -63,7 +62,7 @@ export class LegalAIClusterManager {
   /**
    * Initialize the cluster manager
    */
-  async initialize(): Promise<void> {
+  async initialize(): Promise<any> {
     if (cluster.isPrimary && env.ENABLE_CLUSTERING === 'true') {
       await this.initializePrimaryProcess();
     } else {
@@ -71,7 +70,7 @@ export class LegalAIClusterManager {
     }
   }
 
-  private async initializePrimaryProcess(): Promise<void> {
+  private async initializePrimaryProcess(): Promise<any> {
     console.log(`🚀 Starting Legal AI Cluster Manager with ${this.config.workers} workers`);
 
     // Fork worker processes
@@ -92,7 +91,7 @@ export class LegalAIClusterManager {
     console.log('✅ Legal AI Cluster Manager initialized successfully');
   }
 
-  private async initializeWorkerProcess(): Promise<void> {
+  private async initializeWorkerProcess(): Promise<any> {
     console.log(`👷 Worker ${process.pid} started`);
     
     // Initialize worker thread pool for this process
@@ -102,7 +101,7 @@ export class LegalAIClusterManager {
     this.setupGracefulShutdown();
   }
 
-  private async initializeWorkerThreadPool(): Promise<void> {
+  private async initializeWorkerThreadPool(): Promise<any> {
     for (let i = 0; i < this.config.workerPoolSize; i++) {
       const worker = new Worker(new URL('./worker-thread.js', import.meta.url), {
         workerData: { workerId: i }
@@ -123,7 +122,7 @@ export class LegalAIClusterManager {
     console.log(`✅ Worker thread pool initialized with ${this.config.workerPoolSize} threads`);
   }
 
-  private setupWorkerEventHandlers(worker: unknown): void {
+  private setupWorkerEventHandlers(worker: any): void {
     worker.on('exit', (code: number | null, signal: string | null) => {
       console.log(`⚠️ Worker ${worker.process.pid} died (${signal || code}). Restarting...`);
       
@@ -140,7 +139,7 @@ export class LegalAIClusterManager {
       console.error(`❌ Worker ${worker.process.pid} error:`, error);
     });
 
-    worker.on('message', (message: unknown) => {
+    worker.on('message', (message: any) => {
       this.handleWorkerMessage(worker, message);
     });
   }
@@ -290,7 +289,7 @@ export class LegalAIClusterManager {
     }
   }
 
-  private handleWorkerMessage(worker: unknown, message: unknown): void {
+  private handleWorkerMessage(worker: any, message: any): void {
     // Handle inter-process communication between primary and worker processes
     switch (message.type) {
       case 'health_check':
@@ -422,7 +421,7 @@ export class LegalAIClusterManager {
     };
   }
 
-  private async gracefulShutdown(): Promise<void> {
+  private async gracefulShutdown(): Promise<any> {
     console.log('🔄 Starting graceful shutdown...');
     
     // Stop accepting new tasks
@@ -443,7 +442,7 @@ export class LegalAIClusterManager {
     process.exit(0);
   }
 
-  private async shutdownWorkerThreads(): Promise<void> {
+  private async shutdownWorkerThreads(): Promise<any> {
     console.log('🔄 Shutting down worker threads...');
     
     const shutdownPromises = this.workerPool.map(worker => 

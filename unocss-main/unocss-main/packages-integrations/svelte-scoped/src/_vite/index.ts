@@ -49,7 +49,7 @@ function createSvelteScopedContext(configOrPath?: UserConfig | string): SvelteSc
   const loadConfig = createRecoveryConfigLoader()
   const ready = reloadConfig()
 
-  async function reloadConfig() {
+  async function reloadConfig(): Promise<any> {
     await _uno
     const { config, sources } = await loadConfig(process.cwd(), configOrPath)
     await uno.setConfig(config, defaults)

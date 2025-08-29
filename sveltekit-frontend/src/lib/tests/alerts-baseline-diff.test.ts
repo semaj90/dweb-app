@@ -9,7 +9,7 @@ describe('Alerts Baseline Diff Endpoint', () => {
     GET = mod.GET;
   });
 
-  async function call(mode?: string){
+  async function call(mode?: string): Promise<any> {
     const url = new URL('http://localhost/api/v1/alerts' + (mode?`?mode=${mode}`:''));
     const res = await GET({ url } as any);
     const json = await res.json();

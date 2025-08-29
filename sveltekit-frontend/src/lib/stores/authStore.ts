@@ -61,7 +61,7 @@ const createAuthStore = () => {
             isLoading: false,
           });
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to initialize auth:", error);
         set({
           user: null,
@@ -108,7 +108,7 @@ const createAuthStore = () => {
           });
           return { success: false, error: error.message };
         }
-      } catch (error) {
+      } catch (error: any) {
         set({
           user: null,
           isAuthenticated: false,
@@ -161,7 +161,7 @@ const createAuthStore = () => {
           });
           return { success: false, error: error.message };
         }
-      } catch (error) {
+      } catch (error: any) {
         set({
           user: null,
           isAuthenticated: false,
@@ -178,7 +178,7 @@ const createAuthStore = () => {
           method: "POST",
           credentials: "include",
         });
-      } catch (error) {
+      } catch (error: any) {
         console.error("Logout error:", error);
       }
 
@@ -224,7 +224,7 @@ const createAuthStore = () => {
           const error = await response.json();
           return { success: false, error: error.message };
         }
-      } catch (error) {
+      } catch (error: any) {
         return { success: false, error: "Network error" };
       }
     },
@@ -332,7 +332,7 @@ const createAIAssistantStore = () => {
             preferences: { ...state.preferences, ...preferences },
           }));
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to load AI preferences:", error);
       }
     },
@@ -358,7 +358,7 @@ const createAIAssistantStore = () => {
         } else {
           return { success: false, error: "Failed to update preferences" };
         }
-      } catch (error) {
+      } catch (error: any) {
         return { success: false, error: "Network error" };
       }
     },

@@ -1,12 +1,12 @@
 import type { ButtonRootPropsWithoutHTML } from "bits-ui";
-import { childrenSnippet, refProp } from "./shared.js";
+import { childrenSnippet, refProp } from './shared';
 import type { HTMLButtonAttributes } from "svelte/elements";
 import {
 	defineBooleanProp,
 	defineComponentApiSchema,
 	defineSimpleDataAttr,
 	defineStringProp,
-} from "../utils.js";
+} from '../utils';
 
 export const root = defineComponentApiSchema<
 	ButtonRootPropsWithoutHTML & { href: string; disabled: HTMLButtonAttributes["disabled"] }

@@ -3,13 +3,13 @@
  * Provides proper vector similarity search and embedding operations
  */
 
-import { db, sql } from './index.js';
+import { db, sql } from './index';
 import type { 
   chatMessages, 
   chatRecommendations, 
   evidence, 
   documentEmbeddings 
-} from './schema-unified.js';
+} from './schema-unified';
 
 export interface VectorSearchResult {
   id: string;
@@ -111,7 +111,7 @@ export async function initializePgVector(): Promise<boolean> {
 
     console.log('✅ pgvector utilities initialized successfully');
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Failed to initialize pgvector:', error);
     return false;
   }
@@ -146,7 +146,7 @@ export function vectorToArray(vectorString: string): number[] {
     // Remove brackets and split by comma
     const cleaned = vectorString.replace(/^\[|\]$/g, '');
     return cleaned.split(',').map(val => parseFloat(val.trim()));
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Failed to parse vector string:', vectorString);
     return [];
   }
@@ -183,7 +183,7 @@ export async function searchSimilarMessages(
       metadata: includeMetadata ? row.metadata : undefined,
       documentType: 'chat_message'
     }));
-  } catch (error) {
+  } catch (error: any) {
     console.error('Vector search for messages failed:', error);
     return [];
   }
@@ -228,7 +228,7 @@ export async function searchSimilarEvidence(
       } : undefined,
       documentType: 'evidence'
     }));
-  } catch (error) {
+  } catch (error: any) {
     console.error('Vector search for evidence failed:', error);
     return [];
   }
@@ -264,7 +264,7 @@ export async function insertChatMessageWithEmbedding(
     `);
     
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to insert chat message with embedding:', error);
     return false;
   }
@@ -303,7 +303,7 @@ export async function updateEvidenceEmbeddings(
     `);
     
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to update evidence embeddings:', error);
     return false;
   }
@@ -358,7 +358,7 @@ export async function searchAcrossAllVectors(
     return combined
       .sort((a, b) => b.similarity - a.similarity)
       .slice(0, limit);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Batch vector search failed:', error);
     return [];
   }
@@ -431,7 +431,7 @@ export async function pgvectorHealthCheck(): Promise<{
       version: (extensionCheck[0]?.version as string) || 'unknown',
       functions: availableFunctions
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       available: false,
       functions: [],

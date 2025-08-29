@@ -58,7 +58,7 @@ class TodoAutogen {
     for (const dir of dirs) {
       try {
         await mkdir(dir, { recursive: true });
-      } catch (error) {
+      } catch (error: any) {
         // Directory exists or creation failed
       }
     }
@@ -176,7 +176,7 @@ class TodoAutogen {
     try {
       await writeFile(filepath, JSON.stringify(todo, null, 2));
       console.log(`📝 TODO logged: ${filepath}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to save TODO:', error);
     }
   }
@@ -197,7 +197,7 @@ class TodoAutogen {
     try {
       await writeFile(queueFile, JSON.stringify(queueEntry, null, 2));
       console.log(`🤖 Queued for ${agent} review: ${todo.id}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to queue for ${agent}:`, error);
     }
   }
@@ -252,7 +252,7 @@ export async function retryLLMCall<T>(
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       return await llmCall();
-    } catch (error) {
+    } catch (error: any) {
       lastError = error as Error;
       
       console.warn(`🔄 LLM retry ${attempt}/${maxRetries}:`, error.message);

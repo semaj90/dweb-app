@@ -17,7 +17,7 @@ import { dev } from '$app/environment';
  */
 
 // Enhanced interfaces for optimized operations
-interface OptimizedSearchRequest {
+export interface OptimizedSearchRequest {
   collection: string;
   query: string | number[];
   limit?: number;
@@ -27,7 +27,7 @@ interface OptimizedSearchRequest {
   filter?: Record<string, any>;
 }
 
-interface BatchUpsertRequest {
+export interface BatchUpsertRequest {
   collection: string;
   points: Array<{
     id: string;
@@ -36,7 +36,7 @@ interface BatchUpsertRequest {
   }>;
 }
 
-interface CacheManagementRequest {
+export interface CacheManagementRequest {
   action: 'clear_cache' | 'get_stats' | 'optimize_memory';
   cacheType?: 'vector' | 'search' | 'query_history' | 'all';
 }
@@ -274,7 +274,7 @@ export const GET: RequestHandler = async ({ url, locals, getClientAddress }) => 
         }, { status: 400 });
     }
 
-  } catch (error) {
+  } catch (error: any) {
     logger.error('Optimized Qdrant GET operation failed', error instanceof Error ? error : undefined, {
       component: 'QdrantOptimizedAPI',
       service: 'qdrant'
@@ -489,7 +489,7 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
         }, { status: 400 });
     }
 
-  } catch (error) {
+  } catch (error: any) {
     logger.error('Optimized Qdrant POST operation failed', error instanceof Error ? error : undefined, {
       component: 'QdrantOptimizedAPI',
       service: 'qdrant'

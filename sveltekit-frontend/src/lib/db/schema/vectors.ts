@@ -8,22 +8,11 @@ import {
   jsonb,
   real,
   index,
-  customType
+  vector
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
-// Custom pgvector type for Drizzle
-const vector = customType<{ data: number[]; driverData: string }>({
-  dataType() {
-    return 'vector(384)'; // nomic-embed-text produces 384-dimensional vectors
-  },
-  toDriver(value: number[]): string {
-    return JSON.stringify(value);
-  },
-  fromDriver(value: string): number[] {
-    return typeof value === 'string' ? JSON.parse(value) : value;
-  },
-});
+// Using standard drizzle-orm pgvector support
 
 // Document vectors table for semantic search
 export const documentVectors = pgTable("document_vectors", {
@@ -31,7 +20,7 @@ export const documentVectors = pgTable("document_vectors", {
   documentId: uuid("document_id").references(() => documents.id).notNull(),
   chunkIndex: integer("chunk_index").notNull(),
   content: text("content").notNull(),
-  embedding: vector("embedding").notNull(),
+  embedding: vector("embedding", { dimensions: 384 }).notNull(),
   metadata: jsonb("metadata"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => ({
@@ -44,7 +33,7 @@ export const caseSummaryVectors = pgTable("case_summary_vectors", {
   id: uuid("id").primaryKey().defaultRandom(),
   caseId: uuid("case_id").references(() => cases.id).notNull().unique(),
   summary: text("summary").notNull(),
-  embedding: vector("embedding").notNull(),
+  embedding: vector("embedding", { dimensions: 384 }).notNull(),
   confidence: real("confidence").default(1.0),
   lastUpdated: timestamp("last_updated").defaultNow().notNull(),
 }, (table) => ({
@@ -57,7 +46,7 @@ export const evidenceVectors = pgTable("evidence_vectors", {
   evidenceId: uuid("evidence_id").references(() => evidence.id).notNull(),
   chunkIndex: integer("chunk_index").notNull(),
   content: text("content").notNull(),
-  embedding: vector("embedding").notNull(),
+  embedding: vector("embedding", { dimensions: 384 }).notNull(),
   analysisType: text("analysis_type"), // summary, entities, sentiment, classification
   metadata: jsonb("metadata"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -71,7 +60,7 @@ export const queryVectors = pgTable("query_vectors", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id).notNull(),
   query: text("query").notNull(),
-  embedding: vector("embedding").notNull(),
+  embedding: vector("embedding", { dimensions: 384 }).notNull(),
   resultCount: integer("result_count").default(0),
   clickedResults: jsonb("clicked_results"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -86,7 +75,7 @@ export const knowledgeNodes = pgTable("knowledge_nodes", {
   nodeType: text("node_type").notNull(), // case, evidence, document, entity
   nodeId: uuid("node_id").notNull(),
   label: text("label").notNull(),
-  embedding: vector("embedding").notNull(),
+  embedding: vector("embedding", { dimensions: 384 }).notNull(),
   properties: jsonb("properties"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

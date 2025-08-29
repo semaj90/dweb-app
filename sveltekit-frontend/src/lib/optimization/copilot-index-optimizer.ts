@@ -9,7 +9,7 @@ import { simdIndexProcessor, type CopilotIndex, type CopilotIndexEntry } from ".
 import { enhancedRAGStore } from "$lib/stores/enhanced-rag";
 
 // Context7 MCP integration patterns
-interface Context7Pattern {
+export interface Context7Pattern {
   id: string;
   pattern: string;
   priority: 'high' | 'medium' | 'low';
@@ -19,7 +19,7 @@ interface Context7Pattern {
 }
 
 // Enhanced index optimization configuration
-interface OptimizationConfig {
+export interface OptimizationConfig {
   enableContext7Boost: boolean;
   enableSemanticClustering: boolean;
   enablePatternRecognition: boolean;
@@ -150,7 +150,7 @@ export class CopilotIndexOptimizer {
       this.performanceMetrics.totalOptimizations++;
 
       return this.optimizedIndex;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Copilot index optimization failed:', error);
       throw new Error(`Optimization failed: ${error.message}`);
     }
@@ -219,7 +219,7 @@ export class CopilotIndexOptimizer {
       this.performanceMetrics.searchTime += performance.now() - startTime;
 
       return finalResults;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Enhanced semantic search failed:', error);
       throw error;
     }
@@ -256,7 +256,7 @@ export class CopilotIndexOptimizer {
       return suggestions
         .sort((a, b) => (b.priority * b.confidence) - (a.priority * a.confidence))
         .slice(0, 10);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Suggestion generation failed:', error);
       return [];
     }

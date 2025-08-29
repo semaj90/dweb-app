@@ -16,7 +16,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { glob } from 'glob';
 
-interface DrizzlePattern {
+export interface DrizzlePattern {
   pattern: RegExp;
   replacement: string;
   description: string;
@@ -105,7 +105,7 @@ const targetPatterns = [
   '**/lib/**/*.ts'
 ];
 
-interface FileAnalysis {
+export interface FileAnalysis {
   filePath: string;
   originalContent: string;
   modifiedContent: string;
@@ -176,7 +176,7 @@ class DrizzleTypeFixer {
         changesCount,
         appliedFixes
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error analyzing file ${filePath}:`, error);
       return null;
     }
@@ -205,7 +205,7 @@ class DrizzleTypeFixer {
     try {
       await fs.promises.writeFile(analysis.filePath, analysis.modifiedContent, 'utf-8');
       console.log(`✅ Fixed ${analysis.filePath}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Failed to write ${analysis.filePath}:`, error);
     }
   }
@@ -287,7 +287,7 @@ class DrizzleTypeFixer {
 }
 
 // CLI Interface
-async function main() {
+async function main(): Promise<any> {
   const args = process.argv.slice(2);
   const dryRun = args.includes('--dry-run');
   const generateReport = args.includes('--report');
@@ -313,7 +313,7 @@ async function main() {
       console.log(`📄 Report generated: ${reportPath}`);
     }
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Script failed:', error);
     process.exit(1);
   }

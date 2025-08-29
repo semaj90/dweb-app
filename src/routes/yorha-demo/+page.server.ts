@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ url, locals }) => {
+export const load: PageServerLoad = async ({ url, locals }): Promise<any> => {
   // Get system status for the demo navigation
   const systemStatus = {
     services: {

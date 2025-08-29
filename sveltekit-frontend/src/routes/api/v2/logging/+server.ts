@@ -9,7 +9,7 @@ import type { RequestHandler } from './$types';
 // Log levels
 type LogLevel = 'error' | 'warn' | 'info' | 'debug';
 
-interface LogEntry {
+export interface LogEntry {
   level: LogLevel;
   message: string;
   timestamp: string;
@@ -22,7 +22,7 @@ interface LogEntry {
   url?: string;
 }
 
-interface LogBatch {
+export interface LogBatch {
   logs: LogEntry[];
   clientInfo: {
     userAgent: string;
@@ -89,7 +89,7 @@ async function forwardToExternalService(entry: LogEntry): Promise<void> {
         body: JSON.stringify(entry)
       });
     }
-  } catch (err) {
+  } catch (err: any) {
     console.error('Failed to forward log to external service:', err);
   }
 }
@@ -143,7 +143,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress, url }) =
 
     throw error(400, 'Invalid log format. Expected single entry or batch.');
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Logging endpoint error:', err);
     throw error(500, 'Failed to process log entry');
   }

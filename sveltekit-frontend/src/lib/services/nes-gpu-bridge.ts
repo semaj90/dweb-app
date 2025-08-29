@@ -7,7 +7,7 @@ import type { CanvasState } from '$lib/stores/canvas-states';
 import type { MultiDimArray, GPUProcessingStats } from '$lib/workers/gpu-tensor-worker';
 
 // NES-style memory hierarchy mapping to modern GPU
-interface NESGPUMemoryHierarchy {
+export interface NESGPUMemoryHierarchy {
   // NES Equivalents → Modern GPU
   prgRom: Float32Array;      // Global Memory (VRAM - The Library)
   chrRom: Uint8ClampedArray; // L2 Cache (Automatic - The Bookshelf)
@@ -16,7 +16,7 @@ interface NESGPUMemoryHierarchy {
 }
 
 // Bit depth profiles for browser optimization
-interface BitDepthProfile {
+export interface BitDepthProfile {
   standard: number;    // 24-bit RGB (16.7M colors) - 99.9% browser support
   modern: number;      // 30-bit HDR (1.07B colors) - 85% modern browser support
   premium: number;     // 48-bit ProPhoto RGB - <5% professional displays
@@ -26,7 +26,7 @@ interface BitDepthProfile {
 }
 
 // Cache optimization table (NES-style)
-interface CacheTable {
+export interface CacheTable {
   alphabet: string;
   numbers: string;
   specialChars: string;
@@ -61,7 +61,7 @@ export class NESStyleGPUBridge {
       
       this.gpuWorker.postMessage({ type: 'INITIALIZE' });
       
-      this.gpuWorker.onmessage = (e) => {
+      this.gpuWorker.onmessage = (e: any) => {
         const { type, data } = e.data;
         
         if (type === 'INITIALIZED') {
@@ -71,7 +71,7 @@ export class NESStyleGPUBridge {
         }
       };
       
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ GPU Worker initialization failed:', error);
     }
   }
@@ -152,7 +152,7 @@ export class NESStyleGPUBridge {
       
       return tensor;
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('🚨 Canvas state conversion failed:', error);
       throw new Error(`Canvas conversion failed: ${error.message}`);
     }
@@ -186,7 +186,7 @@ export class NESStyleGPUBridge {
         throw new Error('GPU worker not available');
       }
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('🚨 GPU processing failed:', error);
       
       // Fallback to CPU processing with NES optimization
@@ -666,14 +666,14 @@ class BitDepthDetector {
   }
 }
 
-interface CachedTensor {
+export interface CachedTensor {
   tensor: MultiDimArray;
   timestamp: number;
   hitCount: number;
   memoryLevel: keyof NESGPUMemoryHierarchy;
 }
 
-interface BridgeStats {
+export interface BridgeStats {
   totalConversions: number;
   cacheHitRate: number;
   averageCompressionRatio: number;

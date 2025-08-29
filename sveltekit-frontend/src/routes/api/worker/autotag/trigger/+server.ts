@@ -32,7 +32,7 @@ const WorkerTriggerSchema = z.object({
 
 type WorkerTriggerData = z.infer<typeof WorkerTriggerSchema>;
 
-async function getRedisClient() {
+async function getRedisClient(): Promise<any> {
   await redis.connect();
   return redis;
 }
@@ -196,7 +196,7 @@ export const GET: RequestHandler = async ({ url }) => {
       }
     });
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Worker status check failed:', error);
     
     return json({
@@ -246,7 +246,7 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
       }
     });
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Worker stream clear failed:', error);
     
     return error(500, 'Worker stream clear failed');

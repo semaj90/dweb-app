@@ -4,7 +4,7 @@ import { json } from "@sveltejs/kit";
 
 import { personsOfInterest } from "$lib/server/db/schema-postgres";
 
-export async function GET({ url }) {
+export async function GET({ url }): Promise<any> {
   try {
     const caseId = url.searchParams.get('caseId');
     let query = db.select().from(personsOfInterest).limit(500);
@@ -18,7 +18,7 @@ export async function GET({ url }) {
   }
 }
 
-export async function POST({ request }) {
+export async function POST({ request }): Promise<any> {
   try {
     const body = await request.json();
     const [created] = await db
@@ -40,7 +40,7 @@ export async function POST({ request }) {
   }
 }
 
-export async function PUT({ request }) {
+export async function PUT({ request }): Promise<any> {
   try {
     const body = await request.json();
     if (!body.id) return json({ error: 'id required' }, { status: 400 });
@@ -63,7 +63,7 @@ export async function PUT({ request }) {
   }
 }
 
-export async function DELETE({ url }) {
+export async function DELETE({ url }): Promise<any> {
   try {
     const id = url.searchParams.get('id');
     if (!id) return json({ error: 'id required' }, { status: 400 });

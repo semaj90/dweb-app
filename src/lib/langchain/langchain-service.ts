@@ -3,9 +3,10 @@
 
 import { EventEmitter } from 'events';
 import { writable, derived } from 'svelte/store';
-import { browser } from '$app/environment';
+// Browser environment check
+const browser = typeof window !== 'undefined';
 
-import LangChainManager, { type LangChainConfig, type ChainExecution } from './langchain-manager';
+import LangChainManager, { type LangChainConfig, type ChainExecution, type BaseTool } from './langchain-manager';
 import { legalTools } from './tools/legal-tools';
 import { xstateManager } from '../stores/xstate-store-manager';
 
@@ -16,7 +17,22 @@ export interface LangChainServiceConfig {
   enableMemory: boolean;
   enableStreaming: boolean;
   enableEventLogging: boolean;
-  customTools?: unknown[];
+  customTools?: BaseTool[];
+}
+
+export interface SessionContext {
+  caseId?: string;
+  jurisdiction?: string;
+  purpose?: string;
+  [key: string]: any;
+}
+
+export interface MessageOptions {
+  chainType?: string;
+  context?: SessionContext;
+  enableTools?: boolean;
+  useGPU?: boolean;
+  [key: string]: any;
 }
 
 export interface ConversationSession {
@@ -25,12 +41,7 @@ export interface ConversationSession {
   createdAt: number;
   lastActivity: number;
   messageCount: number;
-  context: {
-    caseId?: string;
-    documentIds?: string[];
-    legalContext?: string;
-    userRole?: string;
-  };
+  context: SessionContext;
   metadata: {
     totalTokens: number;
     totalCost: number;
@@ -43,7 +54,7 @@ export interface StreamingResponse {
   executionId: string;
   chunk: string;
   isComplete: boolean;
-  metadata?: unknown;
+  metadata?: any;
 }
 
 /**
@@ -113,7 +124,7 @@ export class LangChainService extends EventEmitter {
 
       return true;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ LangChain Service initialization failed:', error);
       this.emit('service:error', { error: error.message });
       return false;
@@ -190,7 +201,7 @@ export class LangChainService extends EventEmitter {
     options: {
       chainType?: 'simple' | 'conversation' | 'tool' | 'rag';
       enableTools?: boolean;
-      context?: unknown;
+      context?: any;
     } = {}
   ): Promise<{
     response: string;
@@ -212,7 +223,10 @@ export class LangChainService extends EventEmitter {
       // Execute chain with context
       const execution = await this.manager.executeChain(message, {
         chainType: options.chainType || 'conversation',
-        context: { ...session.context, ...options.context },
+        context: { 
+          ...(typeof session.context === 'object' && session.context !== null ? session.context : {}),
+          ...(typeof options.context === 'object' && options.context !== null ? options.context : {})
+        },
         memory: this.config.enableMemory,
         tools: options.enableTools !== false && this.config.enableTools ? undefined : []
       });
@@ -249,12 +263,12 @@ export class LangChainService extends EventEmitter {
       this.updateServiceStatus();
 
       return {
-        response: execution.output,
+        response: typeof execution.output === 'string' ? execution.output : String(execution.output),
         execution,
         session
       };
 
-    } catch (error) {
+    } catch (error: any) {
       this.emit('message:error', { sessionId, message, error: error.message });
       throw error;
     }
@@ -269,7 +283,7 @@ export class LangChainService extends EventEmitter {
     options: {
       chainType?: 'simple' | 'conversation' | 'tool' | 'rag';
       enableTools?: boolean;
-      context?: unknown;
+      context?: any;
     } = {}
   ): AsyncGenerator<StreamingResponse, void, unknown> {
     if (!this.isInitialized || !this.manager) {
@@ -331,7 +345,7 @@ export class LangChainService extends EventEmitter {
       this.emit('streaming:completed', { sessionId, message });
       yield finalResponse;
 
-    } catch (error) {
+    } catch (error: any) {
       this.emit('streaming:error', { sessionId, message, error: error.message });
       throw error;
     } finally {
@@ -363,7 +377,7 @@ export class LangChainService extends EventEmitter {
   async executeTool(
     toolName: string,
     input: string,
-    options: unknown = {}
+    options: any = {}
   ): Promise<{
     toolName: string;
     input: string;
@@ -396,7 +410,7 @@ export class LangChainService extends EventEmitter {
       this.emit('tool:executed', result);
       return result;
 
-    } catch (error) {
+    } catch (error: any) {
       this.emit('tool:error', { toolName, input, error: error.message });
       throw error;
     }
@@ -422,7 +436,7 @@ export class LangChainService extends EventEmitter {
   async analyzeLegalDocument(
     documentContent: string,
     analysisType: 'summary' | 'precedents' | 'facts' | 'holding' | 'reasoning' = 'summary',
-    context: unknown = {}
+    context: any = {}
   ): Promise<any> {
     const toolInput = JSON.stringify({
       caseText: documentContent,
@@ -439,8 +453,8 @@ export class LangChainService extends EventEmitter {
    */
   async searchLegalDatabase(
     query: string,
-    filters: unknown = {},
-    options: unknown = {}
+    filters: any = {},
+    options: any = {}
   ): Promise<any> {
     const toolInput = JSON.stringify({
       query,
@@ -457,9 +471,9 @@ export class LangChainService extends EventEmitter {
    */
   async generateLegalDocument(
     documentType: string,
-    parties: unknown,
-    terms: unknown,
-    options: unknown = {}
+    parties: any,
+    terms: any,
+    options: any = {}
   ): Promise<any> {
     const toolInput = JSON.stringify({
       documentType,
@@ -511,7 +525,7 @@ export class LangChainService extends EventEmitter {
   /**
    * Get service metrics
    */
-  getMetrics(): unknown {
+  getMetrics(): any {
     if (!this.manager) return null;
     
     const managerMetrics = this.manager.getMetrics();
@@ -586,7 +600,7 @@ export class LangChainService extends EventEmitter {
 
   // ============ Cleanup ============
 
-  async cleanup(): Promise<void> {
+  async cleanup(): Promise<any> {
     // Cancel all active streams
     for (const controller of this.activeStreams.values()) {
       controller.abort();

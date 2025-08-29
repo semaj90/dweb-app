@@ -26,7 +26,7 @@ async function executeQuery(query: string, params: any[] = []): Promise<any[]> {
     const result = await response.json();
     return result.rows || [];
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Vector search query error:', err);
     throw err;
   }
@@ -35,7 +35,7 @@ async function executeQuery(query: string, params: any[] = []): Promise<any[]> {
 /**
  * POST /api/database/vector-search - Perform semantic similarity search
  */
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const body = await request.json();
     const {
@@ -176,7 +176,7 @@ export const POST: RequestHandler = async ({ request }) => {
       timestamp: Date.now()
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('[Vector Search] Error:', err);
     throw error(500, {
       message: err instanceof Error ? err.message : 'Vector search failed',
@@ -188,7 +188,7 @@ export const POST: RequestHandler = async ({ request }) => {
 /**
  * GET /api/database/vector-search - Get search statistics and health
  */
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
   try {
     const searchParams = url.searchParams;
     const info = searchParams.get('info');
@@ -298,7 +298,7 @@ export const GET: RequestHandler = async ({ url }) => {
       timestamp: Date.now()
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('[Vector Search] GET error:', err);
     throw error(500, {
       message: err instanceof Error ? err.message : 'Failed to get search info',

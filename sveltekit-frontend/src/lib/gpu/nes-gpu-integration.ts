@@ -68,7 +68,7 @@ const GPUMapMode = {
 };
 
 // Local LegalDocument type definition (avoiding module resolution issues)
-interface LegalDocument {
+export interface LegalDocument {
   id: string;
   title: string;
   content?: string;
@@ -156,7 +156,7 @@ export interface GPULegalGraphTexture {
 }
 
 // Performance tracking
-interface PipelineStats {
+export interface PipelineStats {
   binaryParseTime: number;
   gpuUploadTime: number;
   wasmProcessTime: number;
@@ -183,7 +183,7 @@ export class NESGPUIntegration {
       try {
         const v = process?.env?.ENABLE_GPU;
         if (typeof v === 'string') return v.toLowerCase() !== 'false' && v !== '0';
-      } catch (e) { }
+      } catch (e: any) { }
       return true;
     })();
 
@@ -199,7 +199,7 @@ export class NESGPUIntegration {
     try {
       await gpuRankingMatrices.initialize(this.device, {});
       console.log('🔥 GPU ranking matrices initialized successfully');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('GPU ranking matrices not available, using CPU fallback:', error);
     }
   }
@@ -209,7 +209,7 @@ export class NESGPUIntegration {
       const deviceInfo = webgpuPolyfill.getDeviceInfo();
       this.device = deviceInfo.device;
       console.log('🔥 NES-GPU integration initialized with RTX acceleration');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('GPU not available, falling back to CPU processing:', error);
     }
   }
@@ -247,7 +247,7 @@ export class NESGPUIntegration {
       console.log(`✅ Binary ingestion complete: ${documents.length} docs in ${totalTime.toFixed(2)}ms`);
       console.log(`📊 Performance: ${(documents.length / totalTime * 1000).toFixed(0)} docs/second`);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Binary ingestion failed:', error);
       throw error;
     }
@@ -427,7 +427,7 @@ export class NESGPUIntegration {
       this.stats.gpuUploadTime = performance.now() - startTime;
       console.log(`🔥 GPU textures uploaded in ${this.stats.gpuUploadTime.toFixed(2)}ms`);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ GPU texture upload failed:', error);
     }
   }
@@ -553,7 +553,7 @@ export class NESGPUIntegration {
 
       return results;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ GPU search failed:', error);
       throw error;
     }
@@ -571,7 +571,7 @@ export class NESGPUIntegration {
 
       this.stats.wasmProcessTime = performance.now() - startTime;
       return embedding;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('WASM embedding failed, using CPU fallback:', error);
       return new Float32Array(this.textToVector(query));
     }
@@ -679,7 +679,7 @@ export class NESGPUIntegration {
 
       return results;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ GPU ranking search failed:', error);
       // Fallback to basic GPU search without ranking
       return this.performBasicGPUSimilaritySearch(queryEmbedding, limit, threshold);
@@ -974,7 +974,7 @@ export class NESGPUIntegration {
         ...this.stats,
         gpuRankingStats
       };
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Could not fetch GPU ranking stats:', error);
       return { ...this.stats };
     }

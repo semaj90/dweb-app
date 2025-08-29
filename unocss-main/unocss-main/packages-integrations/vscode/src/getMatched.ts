@@ -10,7 +10,7 @@ const cache = new Map<string, ReturnType<typeof getMatchedPositionsFromCode>>()
 
 export function registerDocumentCacheCleaner(loader: ContextLoader) {
   loader.ext.subscriptions.push(
-    workspace.onDidChangeTextDocument((e) => {
+    workspace.onDidChangeTextDocument((e: any) => {
       cache.delete(e.document.uri.fsPath)
     }),
   )

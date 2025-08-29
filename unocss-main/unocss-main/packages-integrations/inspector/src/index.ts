@@ -15,7 +15,7 @@ const _dirname = typeof __dirname !== 'undefined'
   : dirname(fileURLToPath(import.meta.url))
 
 export default function UnocssInspector(ctx: UnocssPluginContext): Plugin {
-  async function configureServer(server: ViteDevServer) {
+  async function configureServer(server: ViteDevServer): Promise<any> {
     await ctx.ready
     const baseUrl = '__unocss'
 

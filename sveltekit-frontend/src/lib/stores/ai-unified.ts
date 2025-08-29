@@ -7,7 +7,7 @@
 import { writable, derived } from "svelte/store";
 
 // Core AI state interface
-interface AIState {
+export interface AIState {
   current: string;
   history: Array<{
     command: string;
@@ -34,7 +34,7 @@ export const aiCommandResult = writable(null);
 /**
  * Parse AI commands with enhanced capabilities
  */
-export async function parseAICommand(command: string) {
+export async function parseAICommand(command: string): Promise<any> {
   try {
     setProcessing(true);
 
@@ -64,7 +64,7 @@ export async function parseAICommand(command: string) {
     setProcessing(false);
 
     return result;
-  } catch (error) {
+  } catch (error: any) {
     setError(error.message);
     setProcessing(false);
     throw error;

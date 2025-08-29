@@ -8,16 +8,16 @@ import {
 	onOpenChangeCompleteProp,
 	onOpenChangeProp,
 	withChildProps,
-} from "./shared.js";
-import { CollapsibleContentChildSnippetProps } from "./extended-types/collapsible/index.js";
-import { OpenClosedProp } from "./extended-types/shared/index.js";
+} from './shared';
+import { CollapsibleContentChildSnippetProps } from './extended-types/collapsible/index';
+import { OpenClosedProp } from './extended-types/shared/index';
 import {
 	defineBooleanProp,
 	defineComponentApiSchema,
 	defineCSSVarSchema,
 	defineEnumDataAttr,
 	defineSimpleDataAttr,
-} from "../utils.js";
+} from '../utils';
 
 export const root = defineComponentApiSchema<CollapsibleRootPropsWithoutHTML>({
 	title: "Root",

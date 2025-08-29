@@ -8,7 +8,7 @@ const __dirname = path.dirname(__filename)
 
 const ICONIFY_COLLECTION = path.resolve(__dirname, '../packages-presets/preset-icons/src/collections.ts')
 
-async function update() {
+async function update(): Promise<any> {
   try {
     const collections: string[] = []
     const res = await fetch('https://api.github.com/repos/iconify/icon-sets/contents/json')
@@ -28,7 +28,7 @@ async function update() {
 
     execa('eslint', ['--fix', '--no-ignore', ICONIFY_COLLECTION])
   }
-  catch (err) {
+  catch (err: any) {
     console.log(err)
   }
 }

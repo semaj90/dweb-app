@@ -6,7 +6,7 @@ import { hash } from 'bcryptjs';
  * Seed the database with test data
  * Run with: npm run seed
  */
-async function seed() {
+async function seed(): Promise<any> {
   console.log('🌱 Seeding database...');
 
   try {
@@ -257,7 +257,7 @@ async function seed() {
     console.log('Admin: admin@warden-net.com / admin123');
     console.log('Analyst: analyst@warden-net.com / analyst123');
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Error seeding database:', error);
     throw error;
   }

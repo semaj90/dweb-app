@@ -10,7 +10,7 @@ import { minioService } from '$lib/server/storage/minio-service';
 import { db } from '$lib/server/db/client';
 import { evidence, documents } from '$lib/db/schema';
 
-interface WebhookEvent {
+export interface WebhookEvent {
   eventName: string;
   bucket: string;
   objectName: string;
@@ -21,7 +21,7 @@ interface WebhookEvent {
   metadata?: Record<string, any>;
 }
 
-interface IngestionJob {
+export interface IngestionJob {
   id: string;
   uploadId: string;
   bucket: string;
@@ -217,7 +217,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
     console.log(`✅ Ingestion job created: ${jobId} for ${uploadMetadata.fileName}`);
     return json(response);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ POST /api/v1/upload/webhook error:', error);
     return json({
       success: false,
@@ -292,7 +292,7 @@ export const GET: RequestHandler = async ({ url, getClientAddress }) => {
     console.log(`✅ Retrieved ${jobs.length} ingestion jobs`);
     return json(response);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ GET /api/v1/upload/webhook/jobs error:', error);
     return json({
       success: false,

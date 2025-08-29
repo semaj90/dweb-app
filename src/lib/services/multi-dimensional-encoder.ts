@@ -4,7 +4,7 @@
  * Implements: Image texture encoding, QUIC/gRPC/REST protocol selection, vertex buffer optimization
  */
 
-interface EncodingConfig {
+export interface EncodingConfig {
   dimensions: 1 | 2 | 3;
   protocol: 'rest' | 'grpc' | 'quic';
   compression: 'none' | 'gzip' | 'brotli' | 'custom';
@@ -13,7 +13,7 @@ interface EncodingConfig {
   enableGPUOptimization: boolean;
 }
 
-interface EncodedData {
+export interface EncodedData {
   format: 'raw' | 'texture' | 'vertex_buffer' | 'compressed';
   dimensions: number;
   shape: number[];
@@ -27,7 +27,7 @@ interface EncodedData {
   };
 }
 
-interface StreamConfig {
+export interface StreamConfig {
   protocol: 'rest' | 'grpc' | 'quic';
   chunkSize: number;
   enableCompression: boolean;
@@ -45,7 +45,7 @@ class MultiDimensionalEncoder {
     this.initializeCompressionWorker();
   }
 
-  async initialize() {
+  async initialize(): Promise<any> {
     // Initialize WebGPU for advanced encoding
     if (navigator.gpu) {
       try {
@@ -54,7 +54,7 @@ class MultiDimensionalEncoder {
           this.webGPUDevice = await adapter.requestDevice();
           console.log('🎮 WebGPU encoder initialized');
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn('WebGPU not available for encoding:', error);
       }
     }
@@ -95,7 +95,7 @@ class MultiDimensionalEncoder {
           await writer.close();
           
           return data; // Echo for demo
-        } catch (error) {
+        } catch (error: any) {
           console.warn('WebTransport not available, falling back to WebSocket');
           return this.fallbackToWebSocket(data, endpoint);
         }
@@ -113,7 +113,7 @@ class MultiDimensionalEncoder {
         ws.send(data);
       };
       
-      ws.onmessage = (event) => {
+      ws.onmessage = (event: any) => {
         if (event.data instanceof Blob) {
           event.data.arrayBuffer().then(resolve);
         } else {
@@ -177,7 +177,7 @@ class MultiDimensionalEncoder {
         return compressed;
       }
       
-      function compressToFP16(data) {
+      function compressToFP16(data: any) {
         // Convert float32 to float16
         const result = new Uint16Array(data.length);
         for (let i = 0; i < data.length; i++) {
@@ -186,7 +186,7 @@ class MultiDimensionalEncoder {
         return result.buffer;
       }
       
-      function compressToInt8(data) {
+      function compressToInt8(data: any) {
         // Quantize to int8 [-128, 127]
         const result = new Int8Array(data.length);
         for (let i = 0; i < data.length; i++) {
@@ -195,7 +195,7 @@ class MultiDimensionalEncoder {
         return result.buffer;
       }
       
-      function compressToInt4(data) {
+      function compressToInt4(data: any) {
         // Pack two 4-bit values into each byte
         const result = new Uint8Array(Math.ceil(data.length / 2));
         for (let i = 0; i < data.length; i += 2) {
@@ -568,7 +568,7 @@ class MultiDimensionalEncoder {
   /**
    * Stream encoded data using optimal protocol
    */
-  async streamData(encodedData: EncodedData, endpoint: string, config: Partial<StreamConfig> = {}): Promise<void> {
+  async streamData(encodedData: EncodedData, endpoint: string, config: Partial<StreamConfig> = {}): Promise<any> {
     const streamConfig: StreamConfig = {
       protocol: 'rest',
       chunkSize: 8192,
@@ -600,7 +600,7 @@ class MultiDimensionalEncoder {
         try {
           await handler(chunk, chunkEndpoint);
           console.log(`📦 Streamed chunk ${i + 1}/${chunks.length}`);
-        } catch (error) {
+        } catch (error: any) {
           console.error(`❌ Failed to stream chunk ${i}:`, error);
           throw error;
         }
@@ -630,7 +630,7 @@ class MultiDimensionalEncoder {
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => reject(new Error('Compression timeout')), 10000);
       
-      this.compressionWorker!.onmessage = (e) => {
+      this.compressionWorker!.onmessage = (e: any) => {
         clearTimeout(timeout);
         resolve(e.data);
       };

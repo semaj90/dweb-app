@@ -4,7 +4,7 @@
  * Following the suggested architecture pattern for Legal AI Platform
  */
 
-import { drizzle } from 'drizzle-orm/postgres-js';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import postgres from 'postgres';
 import { eq, desc, and, sql, like, or } from 'drizzle-orm';
 import { cosineDistance } from 'drizzle-orm';
@@ -115,7 +115,7 @@ export class UsersMCPTool {
           hasProfileEmbedding: !!params.profileEmbedding
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -204,7 +204,7 @@ export class UsersMCPTool {
           timestamp: Date.now()
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -289,7 +289,7 @@ export class UsersMCPTool {
           timestamp: Date.now()
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -359,7 +359,7 @@ export class UsersMCPTool {
           timestamp: Date.now()
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -416,7 +416,7 @@ export class UsersMCPTool {
           timestamp: Date.now()
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -491,7 +491,7 @@ export class UsersMCPTool {
           timestamp: Date.now()
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -553,7 +553,7 @@ export class UsersMCPTool {
           timestamp: Date.now()
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',

@@ -4,7 +4,7 @@ import { error, fail } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
 import { zod } from "sveltekit-superforms/adapters";
 import { db } from "$lib/server/db/index";
-import type { PageServerLoad } from "./$types.js";
+import type { PageServerLoad } from './$types';
 import { z } from "zod";
 
 // Schema for validating evidence form data
@@ -51,7 +51,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
       caseId,
       user
     };
-  } catch (err) {
+  } catch (err: any) {
     console.error("Failed to load evidence:", err);
     throw error(500, "Failed to load evidence data");
   }

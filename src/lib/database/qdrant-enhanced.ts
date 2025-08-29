@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Enhanced Qdrant Vector Database Service
 // Provides comprehensive vector storage and search capabilities
 
@@ -34,7 +33,7 @@ class EnhancedQdrantManager {
   private baseUrl: string;
   private collection: string;
   private connected = false;
-  private client: unknown;
+  private client: any;
 
   constructor(options: {
     baseUrl?: string;
@@ -48,7 +47,7 @@ class EnhancedQdrantManager {
     this.initializeClient(options.apiKey);
   }
 
-  private async initializeClient(apiKey?: string): Promise<void> {
+  private async initializeClient(apiKey?: string): Promise<any> {
     try {
       // Try to use @qdrant/js-client-rest if available
       const { QdrantClient } = await import('@qdrant/js-client-rest');
@@ -57,7 +56,7 @@ class EnhancedQdrantManager {
         apiKey: apiKey || process.env.QDRANT_API_KEY
       });
       console.log('Qdrant client initialized');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Qdrant client library not available, using fetch API');
       this.client = null;
     }
@@ -81,7 +80,7 @@ class EnhancedQdrantManager {
       await this.ensureCollection();
       return true;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to connect to Qdrant:', error);
       this.connected = false;
       return false;
@@ -91,7 +90,7 @@ class EnhancedQdrantManager {
   /**
    * Ensure collection exists with proper configuration
    */
-  async ensureCollection(): Promise<void> {
+  async ensureCollection(): Promise<any> {
     try {
       const response = await this.fetchWithRetry(`${this.baseUrl}/collections/${this.collection}`);
       
@@ -105,7 +104,7 @@ class EnhancedQdrantManager {
       } else {
         console.log(`Collection ${this.collection} exists`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to ensure collection:', error);
       throw error;
     }
@@ -145,7 +144,7 @@ class EnhancedQdrantManager {
         throw new Error(`Failed to create collection: ${response.status} - ${errorText}`);
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Collection creation failed:', error);
       return false;
     }
@@ -168,7 +167,7 @@ class EnhancedQdrantManager {
 
       return await this.upsertPoints([point]);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Document upsert failed:', error);
       return false;
     }
@@ -214,7 +213,7 @@ class EnhancedQdrantManager {
         }
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Points upsert failed:', error);
       return false;
     }
@@ -276,7 +275,7 @@ class EnhancedQdrantManager {
         }
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Vector search failed:', error);
       return [];
     }
@@ -340,7 +339,7 @@ class EnhancedQdrantManager {
         metadata: result.payload.metadata || {}
       }));
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Document search failed:', error);
       return [];
     }
@@ -387,7 +386,7 @@ class EnhancedQdrantManager {
         return null;
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to get point ${id}:`, error);
       return null;
     }
@@ -424,7 +423,7 @@ class EnhancedQdrantManager {
         return response.ok;
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to delete point ${id}:`, error);
       return false;
     }
@@ -446,7 +445,7 @@ class EnhancedQdrantManager {
       console.log(`Deleted ${deletedCount}/${documentIds.length} documents`);
       return deletedCount;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Batch delete failed:', error);
       return 0;
     }
@@ -471,7 +470,7 @@ class EnhancedQdrantManager {
       }
       return null;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to get collection info:', error);
       return null;
     }
@@ -494,7 +493,7 @@ class EnhancedQdrantManager {
       }
       return false;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to clear collection:', error);
       return false;
     }
@@ -524,7 +523,7 @@ class EnhancedQdrantManager {
         collectionStatus: info?.status || 'unknown'
       };
 
-    } catch (error: unknown) {
+    } catch (error: any) {
       return {
         connected: false,
         collection: this.collection,
@@ -561,7 +560,7 @@ class EnhancedQdrantManager {
             results.failed += batch.length;
             results.errors.push(`Batch ${i / batchSize + 1} failed`);
           }
-        } catch (error: unknown) {
+        } catch (error: any) {
           results.failed += batch.length;
           results.errors.push(`Batch ${i / batchSize + 1}: ${error.message}`);
         }
@@ -570,7 +569,7 @@ class EnhancedQdrantManager {
       console.log(`Batch upsert completed: ${results.success} success, ${results.failed} failed`);
       return results;
 
-    } catch (error: unknown) {
+    } catch (error: any) {
       results.errors.push(`Batch operation failed: ${error.message}`);
       return results;
     }
@@ -603,7 +602,7 @@ class EnhancedQdrantManager {
         // Wait before retrying (exponential backoff)
         await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
 
-      } catch (error: unknown) {
+      } catch (error: any) {
         lastError = error;
         if (attempt === maxRetries) {
           throw error;

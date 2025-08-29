@@ -4,7 +4,7 @@
  * Following the suggested architecture pattern
  */
 
-import { drizzle } from 'drizzle-orm/postgres-js';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import postgres from 'postgres';
 import { eq, desc, and, sql } from 'drizzle-orm';
 import { l2Distance } from 'drizzle-orm';
@@ -82,7 +82,7 @@ export class CasesMCPTool {
           timestamp: Date.now()
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -135,7 +135,7 @@ export class CasesMCPTool {
           timestamp: Date.now()
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -180,7 +180,7 @@ export class CasesMCPTool {
           timestamp: Date.now()
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -217,7 +217,7 @@ export class CasesMCPTool {
           timestamp: Date.now()
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -252,7 +252,7 @@ export class CasesMCPTool {
           timestamp: Date.now()
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -300,7 +300,7 @@ export class CasesMCPTool {
           timestamp: Date.now()
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',

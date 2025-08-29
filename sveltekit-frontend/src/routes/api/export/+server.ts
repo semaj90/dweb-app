@@ -148,7 +148,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
         "Content-Length": responseData.length.toString(),
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Export error:", error);
     return json(
       {

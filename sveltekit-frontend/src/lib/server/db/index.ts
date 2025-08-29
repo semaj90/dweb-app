@@ -33,7 +33,7 @@ export type InsertLegalDocument = typeof legal_documents.$inferInsert;
 export type InsertDocumentChunk = typeof documentChunks.$inferInsert;
 export type InsertEmbeddingCache = typeof embeddingCache.$inferInsert;
 // Database connection and schema exports
-import { drizzle } from 'drizzle-orm/postgres-js';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import postgres from 'postgres';
 import { sql, eq, and, or, desc, asc, count, like, ilike, isNull, isNotNull, ne, SQL } from 'drizzle-orm';
 
@@ -68,7 +68,7 @@ export const migrationDb = drizzle(migrationClient);
 // they contain overlapping symbol names which causes duplicate-export errors.
 
 // Helper function to test database connection
-export async function testConnection() {
+export async function testConnection(): Promise<any> {
   try {
     await queryClient`SELECT 1`;
     console.log('✅ Database connection successful');
@@ -89,7 +89,7 @@ export async function testConnection() {
     }
 
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Database connection failed:', error);
     return false;
   }
@@ -101,7 +101,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Health check function for API routes
-export async function healthCheck() {
+export async function healthCheck(): Promise<any> {
   try {
     await queryClient`SELECT 1`;
 
@@ -118,7 +118,7 @@ export async function healthCheck() {
       database: 'connected',
       tablesAccessible: tables.length > 0
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       status: 'unhealthy',
       database: 'disconnected',

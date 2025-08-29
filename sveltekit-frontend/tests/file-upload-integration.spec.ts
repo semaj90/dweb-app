@@ -280,7 +280,7 @@ test.describe('File Upload Integration Tests', () => {
     if (fs.existsSync(testDir)) {
       try {
         fs.rmSync(testDir, { recursive: true, force: true });
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Could not clean up test files:', error);
       }
     }

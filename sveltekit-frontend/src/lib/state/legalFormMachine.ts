@@ -544,7 +544,7 @@ export async function generateBestPractices(
         .map((r: any) => r.text || r.snippet || r)
         .filter(Boolean);
     }
-  } catch (err) {
+  } catch (err: any) {
     // Fallback to static if MCP tools unavailable
     console.warn(
       "Context7 semantic search unavailable, using static best practices.",

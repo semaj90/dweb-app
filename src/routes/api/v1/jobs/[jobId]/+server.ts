@@ -12,7 +12,7 @@ const JOB_STATUS_KEY = 'jobs:status:';
 const JOB_RESULT_KEY = 'jobs:result:';
 const JOB_PROGRESS_KEY = 'jobs:progress:';
 
-export async function GET({ params }) {
+export async function GET({ params }): Promise<any> {
   const { jobId } = params;
 
   try {
@@ -58,7 +58,7 @@ export async function GET({ params }) {
     let error = job?.error || null;
 
     if (redisStatus) {
-      const redisData = JSON.parse(redisStatus);
+      const redisData = JSON.parse(redisStatus.toString());
       status = redisData.status;
       currentStep = redisData.currentStep;
       if (redisData.error) error = redisData.error;
@@ -70,7 +70,7 @@ export async function GET({ params }) {
 
     if (redisResult) {
       try {
-        result = JSON.parse(redisResult);
+        result = JSON.parse(redisResult.toString());
       } catch (parseError) {
         console.warn('Failed to parse Redis result:', parseError);
       }
@@ -136,14 +136,14 @@ export async function GET({ params }) {
       } : null
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Job status retrieval error:', error);
     return json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
 // Cancel a job
-export async function DELETE({ params }) {
+export async function DELETE({ params }): Promise<any> {
   const { jobId } = params;
 
   try {
@@ -155,7 +155,7 @@ export async function DELETE({ params }) {
     const redisStatus = await redis.get(`${JOB_STATUS_KEY}${jobId}`);
     
     if (redisStatus) {
-      const statusData = JSON.parse(redisStatus);
+      const statusData = JSON.parse(redisStatus.toString());
       
       if (statusData.status === 'processing') {
         // Send cancellation signal to worker
@@ -180,7 +180,7 @@ export async function DELETE({ params }) {
           
           for (let i = 0; i < queueItems.length; i++) {
             try {
-              const item = JSON.parse(queueItems[i]);
+              const item = JSON.parse(queueItems[i].toString());
               if (item.jobId === jobId) {
                 await redis.lRem(queueName, 1, queueItems[i]);
                 break;
@@ -223,7 +223,7 @@ export async function DELETE({ params }) {
       message: 'Job cancellation requested'
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Job cancellation error:', error);
     return json({ error: 'Internal server error' }, { status: 500 });
   }

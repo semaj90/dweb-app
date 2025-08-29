@@ -85,7 +85,7 @@ export class CaseScoringService {
       });
 
       return scoringResult;
-    } catch (error) {
+    } catch (error: any) {
       logger.error("Failed to score case", error);
       throw error;
     }
@@ -185,7 +185,7 @@ Respond in JSON format with keys: evidence_strength, witness_reliability, legal_
         resource_requirements: aiScores.resource_requirements ?? 0.5,
         ...provided, // Include any additional criteria
       };
-    } catch (error) {
+    } catch (error: any) {
       logger.warn("Failed to get AI scores, using defaults", error);
       // Fallback to provided scores or defaults
       return {
@@ -305,7 +305,7 @@ Provide 2-3 specific strategic recommendations for the prosecution team.`;
         .filter((line) => line.trim().length > 10)
         .slice(0, 3);
       recommendations.push(...parsed);
-    } catch (error) {
+    } catch (error: any) {
       logger.warn("Failed to generate AI recommendations", error);
     }
 
@@ -348,7 +348,7 @@ Provide 2-3 specific strategic recommendations for the prosecution team.`;
         }
         return scores;
       }
-    } catch (error) {
+    } catch (error: any) {
       logger.warn("Failed to parse AI scores", error);
     }
 
@@ -389,7 +389,7 @@ Provide 2-3 specific strategic recommendations for the prosecution team.`;
         calculatedAt: new Date(),
         updatedAt: new Date(),
       });
-    } catch (error) {
+    } catch (error: any) {
       logger.error("Failed to save case scoring", error);
       // Don't throw - scoring can still be returned even if save fails
     }
@@ -424,7 +424,7 @@ Provide 2-3 specific strategic recommendations for the prosecution team.`;
         ai_analysis: (score as any).notes || "",
         processing_time: 0
       }));
-    } catch (error) {
+    } catch (error: any) {
       logger.error("Failed to get case score history", error);
       throw error;
     }

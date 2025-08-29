@@ -26,7 +26,7 @@ const RAG_TIMEOUT = 30000;
 async function forwardToRAGBackend(
   endpoint: string,
   options: RequestInit = {}
-) {
+): Promise<any> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), RAG_TIMEOUT);
   const startTime = Date.now();
@@ -78,7 +78,7 @@ async function forwardToRAGBackend(
     });
 
     return result;
-  } catch (err) {
+  } catch (err: any) {
     clearTimeout(timeoutId);
     const duration = Date.now() - startTime;
 
@@ -121,7 +121,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
       default:
         return json({ error: "Invalid action" }, { status: 400 });
     }
-  } catch (err) {
+  } catch (err: any) {
     console.error("Enhanced RAG API Error:", err);
     return json(
       {
@@ -138,7 +138,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
  * Handle document upload via Enhanced RAG Backend
  */
 // Archived: handleUpload moved to archived-handlers.ts
-async function handleQueueSummarize(request: Request) {
+async function handleQueueSummarize(request: Request): Promise<any> {
   try {
     const { content, documentId } = await request.json();
     if (!content || !documentId) {
@@ -146,7 +146,7 @@ async function handleQueueSummarize(request: Request) {
     }
     const result = await summarizeWithQueue(content, documentId);
     return json({ success: true, data: result });
-  } catch (err) {
+  } catch (err: any) {
     console.error("queue-summarize error:", err);
     throw error(500, `Queue summarize failed: ${err.message}`);
   }
@@ -160,7 +160,7 @@ async function handleQueueSummarize(request: Request) {
 /**
  * Handle enhanced search (vector/hybrid/chunk)
  */
-async function handleSearch(request: Request) {
+async function handleSearch(request: Request): Promise<any> {
   try {
     const {
       query,
@@ -198,7 +198,7 @@ async function handleSearch(request: Request) {
       metadata: result.metadata,
       total: result.total || result.results?.length || 0,
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error("Search error:", err);
     throw error(500, `Search failed: ${err.message}`);
   }
@@ -207,7 +207,7 @@ async function handleSearch(request: Request) {
 /**
  * Handle AI text analysis
  */
-async function handleAnalyze(request: Request) {
+async function handleAnalyze(request: Request): Promise<any> {
   try {
     const {
       text,
@@ -234,7 +234,7 @@ async function handleAnalyze(request: Request) {
       analysis: result.analysis,
       metadata: result.metadata,
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error("Analysis error:", err);
     throw error(500, `Text analysis failed: ${err.message}`);
   }
@@ -243,7 +243,7 @@ async function handleAnalyze(request: Request) {
 /**
  * Handle AI text summarization
  */
-async function handleSummarize(request: Request) {
+async function handleSummarize(request: Request): Promise<any> {
   try {
     const { text, length = "medium", options = {} } = await request.json();
 
@@ -266,7 +266,7 @@ async function handleSummarize(request: Request) {
       summary: result.summary,
       metadata: result.metadata,
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error("Summarization error:", err);
     throw error(500, `Text summarization failed: ${err.message}`);
   }
@@ -285,7 +285,7 @@ async function handleSummarize(request: Request) {
 /**
  * Handle Enhanced RAG Backend health check
  */
-async function handleStatus() {
+async function handleStatus(): Promise<any> {
   try {
     const [healthResult, metricsResult, statsResult] = await Promise.allSettled(
       [
@@ -316,7 +316,7 @@ async function handleStatus() {
       timestamp: new Date().toISOString(),
       responseTime: metrics?.responseTime || null,
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error("Status check error:", err);
     return json({
       success: false,
@@ -389,7 +389,7 @@ export const GET: RequestHandler = async ({ url }) => {
       default:
         throw error(400, `Invalid action: ${action || "none"}`);
     }
-  } catch (err) {
+  } catch (err: any) {
     console.error(`GET /${action} error:`, err);
     if (err.status) {
       throw err;
@@ -423,7 +423,7 @@ export const PATCH: RequestHandler = async ({ url }) => {
       default:
         throw error(400, `Invalid operation: ${operation}`);
     }
-  } catch (err) {
+  } catch (err: any) {
     console.error("PATCH operation error:", err);
     if (err.status) {
       throw err;
@@ -449,7 +449,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
       message: result.message || "Cache cleared successfully",
       pattern: pattern || "all",
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error("Cache clear error:", err);
     if (err.status) {
       throw err;

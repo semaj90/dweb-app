@@ -19,7 +19,7 @@ export class LegalAIServiceDiscovery {
         if (response.ok) {
           return { status: 'online', url: baseUrl, capabilities: ['health_check'] };
         }
-      } catch (error) {
+      } catch (error: any) {
         continue;
       }
     }

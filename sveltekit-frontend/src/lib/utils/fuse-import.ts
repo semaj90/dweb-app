@@ -6,7 +6,7 @@ let Fuse: any;
 try {
   // Try importing fuse.js
   Fuse = require('fuse.js');
-} catch (error) {
+} catch (error: any) {
   // Fallback implementation for basic search
   Fuse = class FuseFallback {
     private items: any[];

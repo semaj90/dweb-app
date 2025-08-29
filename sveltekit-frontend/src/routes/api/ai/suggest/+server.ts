@@ -16,7 +16,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       suggestions: response.suggestions,
       actions: response.actions,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("AI suggestion error:", error);
     return json({ error: "Failed to generate AI suggestion" }, { status: 500 });
   }
@@ -26,7 +26,7 @@ async function generateAIResponse(
   prompt: string,
   vibe: string = "professional",
   context?: unknown,
-) {
+): Promise<any> {
   try {
     // Use the ollama service instance
     await ollamaService.initialize();
@@ -45,7 +45,7 @@ async function generateAIResponse(
     const structuredResponse = parseAIResponse(aiResponse, prompt);
 
     return structuredResponse;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Ollama integration error:", error);
 
     // Fallback to mock response if Ollama fails
@@ -200,7 +200,7 @@ async function generateMockResponse(
   prompt: string,
   vibe: string = "professional",
   context?: unknown,
-) {
+): Promise<any> {
   // Simulate AI processing delay
   await new Promise((resolve) =>
     setTimeout(resolve, 1000 + Math.random() * 2000),

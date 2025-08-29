@@ -8,9 +8,9 @@ import { browser } from '$app/environment';
 import { writable, derived } from 'svelte/store';
 import type { UserInteraction, InteractionPattern } from './interaction-tracker';
 
-interface CacheEntry {
+export interface CacheEntry {
   key: string;
-  data: unknown;
+  data: any;
   timestamp: number;
   accessCount: number;
   lastAccessed: number;
@@ -19,7 +19,7 @@ interface CacheEntry {
   ttl: number;
 }
 
-interface CachePrediction {
+export interface CachePrediction {
   key: string;
   probability: number;
   importance: number;
@@ -27,7 +27,7 @@ interface CachePrediction {
   metadata: Record<string, any>;
 }
 
-interface CacheStats {
+export interface CacheStats {
   hitRate: number;
   missRate: number;
   totalRequests: number;
@@ -52,7 +52,7 @@ class ProactiveCacheService {
   });
 
   private isInitialized = false;
-  private redisClient: unknown = null;
+  private redisClient: any = null;
   private prefetchQueue = new Set<string>();
   private warmupTimer: NodeJS.Timeout | null = null;
 
@@ -70,7 +70,7 @@ class ProactiveCacheService {
     }
   }
 
-  async initialize() {
+  async initialize(): Promise<any> {
     if (this.isInitialized) return;
 
     try {
@@ -89,18 +89,18 @@ class ProactiveCacheService {
 
       this.isInitialized = true;
       console.log('🚀 Proactive cache service initialized');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize cache service:', error);
     }
   }
 
-  private async initializeIndexedDBCache() {
+  private async initializeIndexedDBCache(): Promise<any> {
     // Use IndexedDB for client-side caching
     const db = await this.openCacheDB();
     console.log('📱 IndexedDB cache backend initialized');
   }
 
-  private async initializeRedisCache() {
+  private async initializeRedisCache(): Promise<any> {
     // Server-side Redis initialization would go here
     // For now, use in-memory cache
     console.log('🔴 Redis cache backend initialized (mock)');
@@ -146,7 +146,7 @@ class ProactiveCacheService {
           await this.set(key, data, { importance: 0.5 });
           entry = this.cache.get(key);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Cache miss and backend fetch failed:', error);
       }
     }
@@ -163,11 +163,11 @@ class ProactiveCacheService {
     return entry?.data;
   }
 
-  async set(key: string, data: unknown, options: { 
+  async set(key: string, data: any, options: { 
     ttl?: number; 
     importance?: number; 
     metadata?: Record<string, any> 
-  } = {}): Promise<void> {
+  } = {}): Promise<any> {
     const entry: CacheEntry = {
       key,
       data,
@@ -187,7 +187,7 @@ class ProactiveCacheService {
         const db = await this.openCacheDB();
         const tx = db.transaction(['cache'], 'readwrite');
         await tx.objectStore('cache').put(entry);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to persist cache entry:', error);
       }
     }
@@ -196,7 +196,7 @@ class ProactiveCacheService {
     this.evictIfNeeded();
   }
 
-  async delete(key: string): Promise<void> {
+  async delete(key: string): Promise<any> {
     this.cache.delete(key);
     
     if (browser) {
@@ -204,7 +204,7 @@ class ProactiveCacheService {
         const db = await this.openCacheDB();
         const tx = db.transaction(['cache'], 'readwrite');
         await tx.objectStore('cache').delete(key);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to delete cache entry:', error);
       }
     }
@@ -412,7 +412,7 @@ class ProactiveCacheService {
         if (response.ok) {
           return await response.json();
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Backend fetch failed:', error);
       }
     }
@@ -496,7 +496,7 @@ class ProactiveCacheService {
     return (now - entry.timestamp) < entry.ttl;
   }
 
-  private estimateSize(data: unknown): number {
+  private estimateSize(data: any): number {
     // Rough estimation of object size in bytes
     return JSON.stringify(data).length * 2; // Assume 2 bytes per character
   }
@@ -614,7 +614,7 @@ class ProactiveCacheService {
     }
   }
 
-  async clearCache() {
+  async clearCache(): Promise<any> {
     this.cache.clear();
     this.predictions.set([]);
     this.accessLog.set([]);
@@ -624,7 +624,7 @@ class ProactiveCacheService {
         const db = await this.openCacheDB();
         const tx = db.transaction(['cache'], 'readwrite');
         await tx.objectStore('cache').clear();
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to clear IndexedDB cache:', error);
       }
     }

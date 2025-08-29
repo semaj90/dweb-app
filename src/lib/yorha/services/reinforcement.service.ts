@@ -5,7 +5,7 @@ import { eq, and, gte, sql, desc } from 'drizzle-orm';
 import { EnhancedVectorService } from './vector.service';
 import { QueueService } from './queue.service';
 
-interface FeedbackData {
+export interface FeedbackData {
   queryId: string;
   responseId: string;
   userId: string;
@@ -18,7 +18,7 @@ interface FeedbackData {
   preferredResponse?: string;
 }
 
-interface LearningMetrics {
+export interface LearningMetrics {
   accuracy: number;
   helpfulness: number;
   completeness: number;
@@ -53,7 +53,7 @@ export class ReinforcementLearningService {
   }
 
   // Initialize performance metrics
-  private async initializeMetrics() {
+  private async initializeMetrics(): Promise<any> {
     // Load historical metrics from database
     const historicalMetrics = await db.execute(sql`
       SELECT 
@@ -80,7 +80,7 @@ export class ReinforcementLearningService {
   }
 
   // Process user feedback for reinforcement learning
-  async processFeedback(feedback: FeedbackData): Promise<void> {
+  async processFeedback(feedback: FeedbackData): Promise<any> {
     try {
       // Calculate reward signal
       const reward = this.calculateReward(feedback);
@@ -119,7 +119,7 @@ export class ReinforcementLearningService {
         reward,
         timestamp: new Date().toISOString()
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to process feedback:', error);
       throw error;
     }
@@ -155,7 +155,7 @@ export class ReinforcementLearningService {
   }
 
   // Update Q-values for reinforcement learning
-  private async updateQValues(feedback: FeedbackData, reward: number): Promise<void> {
+  private async updateQValues(feedback: FeedbackData, reward: number): Promise<any> {
     // Get the original query and response
     const interaction = await db.query.conversations.findFirst({
       where: eq(conversations.id, feedback.queryId)
@@ -182,7 +182,7 @@ export class ReinforcementLearningService {
   }
 
   // Update retrieval policy based on feedback
-  private async updateRetrievalPolicy(feedback: FeedbackData): Promise<void> {
+  private async updateRetrievalPolicy(feedback: FeedbackData): Promise<any> {
     // Get the sources used in the response
     const response = await db.execute(sql`
       SELECT sources, retrieval_strategy
@@ -217,7 +217,7 @@ export class ReinforcementLearningService {
   }
 
   // Update generation policy based on feedback
-  private async updateGenerationPolicy(feedback: FeedbackData): Promise<void> {
+  private async updateGenerationPolicy(feedback: FeedbackData): Promise<any> {
     if (feedback.preferredResponse) {
       // Learn from user's preferred response
       const embedding = await this.vectorService.generateEmbedding(
@@ -236,7 +236,7 @@ export class ReinforcementLearningService {
           originalQuery: feedback.queryId,
           reward
         },
-        embedding: sql`${embedding}::vector(768)`
+        embedding: sql`${embedding}::vector(384)`
       });
     }
     
@@ -257,7 +257,7 @@ export class ReinforcementLearningService {
           userId: feedback.userId,
           originalQuery: feedback.queryId
         },
-        embedding: sql`${correctionEmbedding}::vector(768)`
+        embedding: sql`${correctionEmbedding}::vector(384)`
       });
     }
   }
@@ -278,7 +278,7 @@ export class ReinforcementLearningService {
   }
 
   // Retrain embeddings with feedback
-  private async retrainEmbeddings(feedback: FeedbackData): Promise<void> {
+  private async retrainEmbeddings(feedback: FeedbackData): Promise<any> {
     // Get positive and negative examples
     const positiveExamples = await db.execute(sql`
       SELECT content, embedding
@@ -313,7 +313,7 @@ export class ReinforcementLearningService {
   }
 
   // Perform policy update
-  private async performPolicyUpdate(): Promise<void> {
+  private async performPolicyUpdate(): Promise<any> {
     console.log('Performing policy update...');
     
     // Get recent interactions
@@ -387,7 +387,7 @@ export class ReinforcementLearningService {
         r.response,
         r.sources,
         f.rating,
-        1 - (q.embedding <=> ${embedding}::vector(768)) as similarity
+        1 - (q.embedding <=> ${embedding}::vector(384)) as similarity
       FROM queries q
       JOIN responses r ON q.id = r.query_id
       JOIN feedback_data f ON r.id = f.response_id
@@ -410,7 +410,7 @@ export class ReinforcementLearningService {
   }
 
   // Extract response patterns for learning
-  private extractResponsePatterns(responses: unknown[]): unknown[] {
+  private extractResponsePatterns(responses: any[]): any[] {
     const patterns = [];
     
     for (const response of responses) {
@@ -426,7 +426,7 @@ export class ReinforcementLearningService {
   }
 
   // Calculate policy gradients for updates
-  private async calculatePolicyGradients(interactions: unknown[]): Promise<any> {
+  private async calculatePolicyGradients(interactions: any[]): Promise<any> {
     const gradients = {
       retrieval: {},
       generation: {},
@@ -459,7 +459,7 @@ export class ReinforcementLearningService {
   }
 
   // Update retrieval weights based on learning
-  private async updateRetrievalWeights(gradients: unknown): Promise<void> {
+  private async updateRetrievalWeights(gradients: any): Promise<any> {
     for (const [strategy, gradient] of Object.entries(gradients.retrieval)) {
       await db.execute(sql`
         UPDATE retrieval_strategies
@@ -470,7 +470,7 @@ export class ReinforcementLearningService {
   }
 
   // Update generation parameters
-  private async updateGenerationParameters(gradients: unknown): Promise<void> {
+  private async updateGenerationParameters(gradients: any): Promise<any> {
     for (const [param, gradient] of Object.entries(gradients.generation)) {
       await db.execute(sql`
         UPDATE generation_params
@@ -481,7 +481,7 @@ export class ReinforcementLearningService {
   }
 
   // Store feedback in database
-  private async storeFeedback(feedback: FeedbackData, reward: number): Promise<void> {
+  private async storeFeedback(feedback: FeedbackData, reward: number): Promise<any> {
     await db.execute(sql`
       INSERT INTO feedback_data (
         query_id,
@@ -514,7 +514,7 @@ export class ReinforcementLearningService {
   }
 
   // Get Q-value for state-action pair
-  private async getQValue(state: unknown, action: unknown): Promise<number> {
+  private async getQValue(state: any, action: any): Promise<number> {
     const result = await db.execute(sql`
       SELECT q_value
       FROM q_values
@@ -526,7 +526,7 @@ export class ReinforcementLearningService {
   }
 
   // Store Q-value
-  private async storeQValue(state: unknown, action: unknown, value: number): Promise<void> {
+  private async storeQValue(state: any, action: any, value: number): Promise<any> {
     await db.execute(sql`
       INSERT INTO q_values (state_hash, action_hash, q_value, state, action, updated_at)
       VALUES (
@@ -545,7 +545,7 @@ export class ReinforcementLearningService {
   }
 
   // Get maximum future Q-value
-  private async getMaxFutureQValue(state: unknown): Promise<number> {
+  private async getMaxFutureQValue(state: any): Promise<number> {
     const result = await db.execute(sql`
       SELECT MAX(q_value) as max_q
       FROM q_values
@@ -556,7 +556,7 @@ export class ReinforcementLearningService {
   }
 
   // Extract state features
-  private extractStateFeatures(interaction: unknown): unknown {
+  private extractStateFeatures(interaction: any): any {
     return {
       queryLength: interaction.messages[0]?.content.length || 0,
       queryType: this.classifyQuery(interaction.messages[0]?.content),
@@ -567,7 +567,7 @@ export class ReinforcementLearningService {
   }
 
   // Extract action features
-  private extractActionFeatures(interaction: unknown): unknown {
+  private extractActionFeatures(interaction: any): any {
     return {
       retrievalStrategy: interaction.metadata?.retrievalStrategy || 'hybrid',
       numSources: interaction.metadata?.sources?.length || 0,
@@ -587,7 +587,7 @@ export class ReinforcementLearningService {
   }
 
   // Hash state for storage
-  private hashState(state: unknown): string {
+  private hashState(state: any): string {
     return require('crypto')
       .createHash('md5')
       .update(JSON.stringify(state))
@@ -595,7 +595,7 @@ export class ReinforcementLearningService {
   }
 
   // Hash action for storage
-  private hashAction(action: unknown): string {
+  private hashAction(action: any): string {
     return require('crypto')
       .createHash('md5')
       .update(JSON.stringify(action))
@@ -603,7 +603,7 @@ export class ReinforcementLearningService {
   }
 
   // Update metrics
-  private async updateMetrics(feedback: FeedbackData): Promise<void> {
+  private async updateMetrics(feedback: FeedbackData): Promise<any> {
     const category = await this.getQueryCategory(feedback.queryId);
     const currentMetrics = this.metrics.get(category) || {
       accuracy: 0.5,
@@ -636,7 +636,7 @@ export class ReinforcementLearningService {
   }
 
   // Analyze response structure
-  private analyzeStructure(response: string): unknown {
+  private analyzeStructure(response: string): any {
     return {
       paragraphs: response.split('\n\n').length,
       sentences: response.split(/[.!?]/).length,
@@ -647,7 +647,7 @@ export class ReinforcementLearningService {
   }
 
   // Analyze source usage
-  private analyzeSourceUsage(sources: unknown[]): unknown {
+  private analyzeSourceUsage(sources: any[]): any {
     return {
       count: sources.length,
       diversity: new Set(sources.map(s => s.source)).size,
@@ -657,7 +657,7 @@ export class ReinforcementLearningService {
   }
 
   // Extract top sources
-  private extractTopSources(responses: unknown[]): unknown[] {
+  private extractTopSources(responses: any[]): any[] {
     const sourceFrequency = new Map();
     
     for (const response of responses) {
@@ -674,7 +674,7 @@ export class ReinforcementLearningService {
   }
 
   // Calculate confidence
-  private calculateConfidence(patterns: unknown[]): number {
+  private calculateConfidence(patterns: any[]): number {
     if (patterns.length === 0) return 0;
     
     const avgRating = patterns.reduce((acc, p) => acc + p.rating, 0) / patterns.length;
@@ -691,7 +691,7 @@ export class ReinforcementLearningService {
   }
 
   // Increase strategy weight
-  private async increaseStrategyWeight(strategy: string): Promise<void> {
+  private async increaseStrategyWeight(strategy: string): Promise<any> {
     await db.execute(sql`
       UPDATE retrieval_strategies
       SET weight = LEAST(weight * 1.1, 1.0)
@@ -700,7 +700,7 @@ export class ReinforcementLearningService {
   }
 
   // Decrease strategy weight
-  private async decreaseStrategyWeight(strategy: string): Promise<void> {
+  private async decreaseStrategyWeight(strategy: string): Promise<any> {
     await db.execute(sql`
       UPDATE retrieval_strategies
       SET weight = GREATEST(weight * 0.9, 0.1)

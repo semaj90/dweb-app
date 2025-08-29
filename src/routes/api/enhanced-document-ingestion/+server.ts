@@ -5,7 +5,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
 // POST endpoint for document upload and processing
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const requestData = await request.json();
     const { action } = requestData;
@@ -17,7 +17,7 @@ export const POST: RequestHandler = async ({ request }) => {
       timestamp: new Date().toISOString(),
       version: '2.0.0'
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Enhanced Document Ingestion API error:', error);
     return json(
       { 
@@ -31,7 +31,7 @@ export const POST: RequestHandler = async ({ request }) => {
 };
 
 // GET endpoint for quick queries and status
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
   try {
     const action = url.searchParams.get('action') || 'status';
 
@@ -44,7 +44,7 @@ export const GET: RequestHandler = async ({ url }) => {
       version: '2.0.0',
       status: 'healthy'
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Enhanced Document Ingestion GET error:', error);
     return json(
       { 

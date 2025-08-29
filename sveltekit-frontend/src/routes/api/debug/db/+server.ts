@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 
-export const GET = async ({ url }) => {
+export const GET = async ({ url }): Promise<any> => {
   if (process.env.NODE_ENV === 'production') {
     return json({ error: 'Not available in production' }, { status: 403 });
   }
@@ -30,7 +30,7 @@ export const GET = async ({ url }) => {
     }
 
     return json({ available: true, exists: false });
-  } catch (err) {
+  } catch (err: any) {
     return json({ error: String(err) }, { status: 500 });
   }
 };

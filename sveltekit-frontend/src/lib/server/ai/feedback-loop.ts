@@ -2,9 +2,9 @@
 // lib/server/ai/feedback-loop.ts
 // Machine learning feedback loop for continuous improvement of AI synthesis
 
-import { logger } from "./logger.js";
+import { logger } from './logger';
 
-interface FeedbackData {
+export interface FeedbackData {
   requestId: string;
   userId: string;
   rating: number; // 1-5 stars
@@ -12,7 +12,7 @@ interface FeedbackData {
   improvedResponse?: string;
 }
 
-interface InteractionData {
+export interface InteractionData {
   requestId: string;
   query: string;
   result: any;
@@ -20,7 +20,7 @@ interface InteractionData {
   timestamp: Date;
 }
 
-interface LearningMetrics {
+export interface LearningMetrics {
   queryPatterns: Map<string, number>;
   sourcePreferences: Map<string, number>;
   strategyEffectiveness: Map<string, number>;
@@ -61,7 +61,7 @@ class FeedbackLoop {
       await this.loadHistoricalMetrics();
       
       logger.info('[FeedbackLoop] Feedback loop initialized successfully');
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[FeedbackLoop] Initialization failed:', error);
     }
   }
@@ -89,7 +89,7 @@ class FeedbackLoop {
       await this.persistInteraction(interaction);
       
       logger.debug(`[FeedbackLoop] Recorded interaction ${interaction.requestId}`);
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[FeedbackLoop] Failed to record interaction:', error);
     }
   }
@@ -132,7 +132,7 @@ class FeedbackLoop {
       await this.persistFeedback(feedback);
       
       logger.info(`[FeedbackLoop] Processed feedback for ${feedback.requestId}: rating ${feedback.rating}`);
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[FeedbackLoop] Failed to process feedback:', error);
     }
   }
@@ -221,7 +221,7 @@ class FeedbackLoop {
       };
       
       return recommendations;
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[FeedbackLoop] Failed to get personalized recommendations:', error);
       return null;
     }
@@ -270,7 +270,7 @@ class FeedbackLoop {
         this.modelWeights.set('authority', 1.0);
         this.modelWeights.set('recency', 1.0);
       }
-    } catch (error) {
+    } catch (error: any) {
       logger.warn('[FeedbackLoop] Failed to load model weights:', error);
       // Use defaults
       this.modelWeights.set('relevance', 1.0);
@@ -292,7 +292,7 @@ class FeedbackLoop {
       }
       
       logger.info(`[FeedbackLoop] Loaded ${recentInteractions.length} historical interactions`);
-    } catch (error) {
+    } catch (error: any) {
       logger.warn('[FeedbackLoop] Failed to load historical metrics:', error);
     }
   }
@@ -402,7 +402,7 @@ class FeedbackLoop {
         requestId: interaction.requestId,
         userId: interaction.userId
       });
-    } catch (error) {
+    } catch (error: any) {
       logger.warn('[FeedbackLoop] Failed to persist interaction:', error);
     }
   }
@@ -422,7 +422,7 @@ class FeedbackLoop {
         requestId: feedback.requestId,
         rating: feedback.rating
       });
-    } catch (error) {
+    } catch (error: any) {
       logger.warn('[FeedbackLoop] Failed to persist feedback:', error);
     }
   }
@@ -440,7 +440,7 @@ class FeedbackLoop {
       await this.saveModelWeights();
       
       logger.info(`[FeedbackLoop] Processed batch of ${batch.length} feedback items`);
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[FeedbackLoop] Batch processing failed:', error);
     }
   }
@@ -474,7 +474,7 @@ class FeedbackLoop {
       // where: { id: 'current' },
       // update: { weights: weightsObject, updatedAt: new Date() },
       // create: { id: 'current', weights: weightsObject, active: true }
-    } catch (error) {
+    } catch (error: any) {
       logger.warn('[FeedbackLoop] Failed to save model weights:', error);
     }
   }

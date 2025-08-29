@@ -20,7 +20,7 @@ import { writable, derived, type Readable } from 'svelte/store';
 import * as msgpack from '@msgpack/msgpack';
 
 // Core Types and Interfaces
-interface GPUAccelerationConfig {
+export interface GPUAccelerationConfig {
   rtx3060Ti: {
     cudaCores: 4864;
     vramGB: 8;
@@ -41,7 +41,7 @@ interface GPUAccelerationConfig {
   };
 }
 
-interface TensorOperation {
+export interface TensorOperation {
   id: string;
   type: 'embedding' | 'similarity' | 'clustering' | 'search' | 'transform';
   input: Float32Array | number[][];
@@ -60,7 +60,7 @@ interface TensorOperation {
   };
 }
 
-interface CacheLayer {
+export interface CacheLayer {
   level: number;
   type: 'nes-state' | 'tensor-4d' | 'vertex-buffer' | 'som-cluster' | 'neo4j-graph' | 'lod-hierarchy' | 'service-worker';
   capacity: number;
@@ -68,7 +68,7 @@ interface CacheLayer {
   evictionPolicy: 'lru' | 'lfu' | 'adaptive' | 'neural';
 }
 
-interface WorkerPool {
+export interface WorkerPool {
   webgpu: Worker[];
   simd: Worker[];
   tensor: Worker[];
@@ -77,7 +77,7 @@ interface WorkerPool {
   activeJobs: Map<string, Promise<any>>;
 }
 
-interface ServiceEndpoint {
+export interface ServiceEndpoint {
   service: string;
   protocol: 'http' | 'grpc' | 'quic' | 'websocket';
   endpoint: string;
@@ -192,7 +192,7 @@ class GPUTensorProcessor {
       this.initializeCUDA();
 
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('GPU initialization failed:', error);
       return false;
     }
@@ -526,7 +526,7 @@ class GoServiceOrchestrator {
         const result = await this.callServiceEndpoint(endpoint, operation, data);
         this.recordSuccess(endpoint.service);
         return result;
-      } catch (error) {
+      } catch (error: any) {
         this.recordFailure(endpoint.service, error);
         console.warn(`Service call failed for ${endpoint.service} via ${endpoint.protocol}:`, error);
       }
@@ -601,7 +601,7 @@ class GoServiceOrchestrator {
     }, this.healthCheckInterval);
   }
 
-  private async checkServiceHealth(endpoint: ServiceEndpoint): Promise<void> {
+  private async checkServiceHealth(endpoint: ServiceEndpoint): Promise<any> {
     try {
       const response = await fetch(`${endpoint.endpoint}${endpoint.healthCheck}`, {
         timeout: 5000
@@ -612,7 +612,7 @@ class GoServiceOrchestrator {
       } else {
         this.recordFailure(endpoint.service, new Error(`Health check failed: ${response.status}`));
       }
-    } catch (error) {
+    } catch (error: any) {
       this.recordFailure(endpoint.service, error);
     }
   }
@@ -1136,7 +1136,7 @@ export class GPUAccelerationOrchestrator {
       console.log('🎉 GPU Acceleration Orchestrator fully initialized');
 
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Orchestrator initialization failed:', error);
       return false;
     }
@@ -1192,7 +1192,7 @@ export class GPUAccelerationOrchestrator {
       }
 
       return searchResults;
-    } catch (error) {
+    } catch (error: any) {
       console.error('4D tensor search failed:', error);
       throw error;
     }

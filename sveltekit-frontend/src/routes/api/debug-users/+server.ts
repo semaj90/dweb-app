@@ -5,7 +5,7 @@ import { users } from "$lib/server/db/schema-postgres";
 
 import { eq } from 'drizzle-orm';
 
-export async function GET() {
+export async function GET(): Promise<any> {
   try {
     // Check if users exist
     const existingUsers = await db.select({
@@ -29,7 +29,7 @@ export async function GET() {
   }
 }
 
-export async function POST() {
+export async function POST(): Promise<any> {
   try {
     // Update existing users with proper password hashes
     const adminHash = await hashPassword('admin123');

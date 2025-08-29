@@ -64,7 +64,7 @@ const DEFAULT_CONFIG: LangChainConfig = {
   chunkOverlap: 200,
   maxRetrieverResults: 10,
   useCuda: true,
-  vectorDimensions: 768
+  vectorDimensions: 384
 };
 
 // ============================================================================
@@ -172,7 +172,7 @@ export class LangChainOllamaService {
       console.log(`✅ Processed document: ${chunks.length} chunks in ${processingTime}ms`);
       return result;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Document processing failed:', error);
       throw new Error(`Document processing failed: ${error.message}`);
     }
@@ -239,7 +239,7 @@ export class LangChainOllamaService {
       console.log(`✅ Query processed in ${processingTime}ms with ${filteredDocs.length} sources`);
       return result;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Query processing failed:', error);
       throw new Error(`Query processing failed: ${error.message}`);
     }
@@ -315,7 +315,7 @@ Answer:`;
     try {
       const testResponse = await this.chatModel.invoke("Hello, this is a connection test.");
       return !!testResponse;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Connection test failed:', error);
       return false;
     }

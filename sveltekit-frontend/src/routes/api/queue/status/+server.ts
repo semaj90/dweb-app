@@ -30,7 +30,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			timestamp: new Date().toISOString()
 		});
 		
-	} catch (error) {
+	} catch (error: any) {
 		console.error('❌ Queue status error:', error);
 		return json({ 
 			success: false,
@@ -83,7 +83,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
 			error: 'No valid action specified. Use job_id to cancel job or action=clear_completed'
 		}, { status: 400 });
 		
-	} catch (error) {
+	} catch (error: any) {
 		console.error('❌ Queue delete operation error:', error);
 		return json({ 
 			success: false,

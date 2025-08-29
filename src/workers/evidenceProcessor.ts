@@ -1,9 +1,9 @@
 import amqp from 'amqplib';
 import { v4 as uuidv4 } from 'uuid';
-import { sendWsMessageToSession } from '../lib/server/wsBroker';
-import { db } from '../lib/server/db';
+import { sendWsMessageToSession } from '$lib/server/wsBroker';
+import { db } from '$lib/server/db';
 // Use a namespace import for the schema module and cast to any to avoid missing named-export errors
-import * as legalDocuments from '../lib/database/schema/legal-documents';
+import * as legalDocuments from '$lib/database/schema/legal-documents';
 const { evidenceProcess, evidenceOcr, evidenceEmbeddings, evidenceAnalysis } = (legalDocuments as any);
 import { eq } from 'drizzle-orm';
 import fetch from 'node-fetch';
@@ -18,7 +18,7 @@ import fetch from 'node-fetch';
 */
 
 // Service imports - these would be implemented based on your stack
-async function runOcrForEvidence(evidenceId: string) {
+async function runOcrForEvidence(evidenceId: string): Promise<any> {
   // TODO: Implement OCR service integration
   // Could use Tesseract.js, AWS Textract, or custom OCR solution
   console.log(`Running OCR for evidence ${evidenceId}`);
@@ -33,7 +33,7 @@ async function runOcrForEvidence(evidenceId: string) {
   };
 }
 
-async function generateEmbeddings(params: { evidenceId: string; model: string; text?: string }) {
+async function generateEmbeddings(params: { evidenceId: string; model: string; text?: string }): Promise<any> {
   // Try the app's internal embeddings API first (fallback to local/mock if it fails)
   const apiBase = process.env.INTERNAL_API_URL || process.env.APP_API_URL || 'http://localhost:3000';
   const endpoint = `${apiBase.replace(/\/$/, '')}/api/embeddings`;
@@ -159,7 +159,7 @@ async function generateEmbeddings(params: { evidenceId: string; model: string; t
   };
 }
 
-async function runRag(params: { evidenceId: string; topK?: number }) {
+async function runRag(params: { evidenceId: string; topK?: number }): Promise<any> {
   // TODO: Implement RAG with Qdrant vector search + Ollama LLM
   console.log(`Running RAG analysis for evidence ${params.evidenceId}`);
 
@@ -177,13 +177,13 @@ async function runRag(params: { evidenceId: string; topK?: number }) {
   };
 }
 
-async function processEvidenceJob(payload: unknown) {
+async function processEvidenceJob(payload: any): Promise<any> {
   // Define a minimal runtime type for incoming jobs
   type JobPayload = {
     sessionId?: string;
     evidenceId?: string;
     fileId?: string;
-    steps?: unknown;
+    steps?: any;
     userId?: string;
   };
 
@@ -279,7 +279,7 @@ async function processEvidenceJob(payload: unknown) {
             }
           });
 
-        } catch (error) {
+        } catch (error: any) {
           console.error('OCR step failed:', error);
           throw new Error(`OCR processing failed: ${String(error)}`);
         }
@@ -449,7 +449,7 @@ async function processEvidenceJob(payload: unknown) {
             }
           });
 
-        } catch (error) {
+        } catch (error: any) {
           console.error('Embedding step failed:', error);
           throw new Error(`Embedding generation failed: ${String(error)}`);
         }
@@ -495,7 +495,7 @@ async function processEvidenceJob(payload: unknown) {
             }
           });
 
-        } catch (error) {
+        } catch (error: any) {
           console.error('RAG/Analysis step failed:', error);
           throw new Error(`${step} processing failed: ${String(error)}`);
         }
@@ -536,7 +536,7 @@ async function processEvidenceJob(payload: unknown) {
 
     console.log(`Evidence processing completed for session ${sessionId}`);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Evidence processing failed:', error);
 
     // Mark as failed in database
@@ -560,7 +560,7 @@ async function processEvidenceJob(payload: unknown) {
   }
 }
 
-async function startWorker() {
+async function startWorker(): Promise<any> {
   try {
     const conn = await amqp.connect(process.env.RABBITMQ_URL || 'amqp://localhost');
     const ch = await conn.createChannel();
@@ -585,21 +585,21 @@ async function startWorker() {
         // Acknowledge successful processing
         ch.ack(msg);
         console.log('Job completed:', payload?.sessionId ?? payload);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Job processing error:', error);
         ch.nack(msg, false, false); // Don't requeue failed jobs
       }
     });
 
     // Handle shutdown gracefully
-    process.on('SIGINT', async () => {
+    process.on('SIGINT', async (): Promise<any> => {
       console.log('Shutting down evidence processor...');
       await ch.close();
       await conn.close();
       process.exit(0);
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to start evidence processing worker:', error);
     process.exit(1);
   }

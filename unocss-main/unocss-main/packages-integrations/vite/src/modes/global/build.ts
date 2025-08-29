@@ -20,7 +20,7 @@ export function GlobalModeBuildPlugin(ctx: UnocssPluginContext<VitePluginConfig>
   const cssPostPlugins = new Map<string | undefined, Plugin | undefined>()
   const cssPlugins = new Map<string | undefined, Plugin | undefined>()
 
-  async function applyCssTransform(css: string, id: string, dir: string | undefined, ctx: Rollup.PluginContext) {
+  async function applyCssTransform(css: string, id: string, dir: string | undefined, ctx: Rollup.PluginContext): Promise<any> {
     const {
       postcss = true,
     } = await getConfig()
@@ -44,7 +44,7 @@ export function GlobalModeBuildPlugin(ctx: UnocssPluginContext<VitePluginConfig>
 
   let lastTokenSize = 0
   let lastResult: GenerateResult | undefined
-  async function generateAll() {
+  async function generateAll(): Promise<any> {
     await flushTasks()
     if (lastResult && lastTokenSize === tokens.size)
       return lastResult

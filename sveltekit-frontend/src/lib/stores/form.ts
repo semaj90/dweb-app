@@ -210,7 +210,7 @@ function createFormStore(options: FormOptions = {}) {
             ])
           );
           await onSubmit(currentValues);
-        } catch (error) {
+        } catch (error: any) {
           console.error("Form submission error:", error);
         }
       }

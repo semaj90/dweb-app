@@ -2,17 +2,17 @@
 // Provides document storage and embedding management capabilities
 
 import { json } from "@sveltejs/kit";
-import { db } from "$lib/database/postgres.js";
+import { db } from '$lib/database/postgres';
 import { eq, inArray } from "drizzle-orm";
-import { serializeEmbedding } from "$lib/utils/embeddings.js";
+import { serializeEmbedding } from '$lib/utils/embeddings';
 import {
   legalDocuments,
   embeddings,
   type NewLegalDocument,
-} from "$lib/database/schema/legal-documents.js";
+} from '$lib/database/schema/legal-documents';
 import type { RequestHandler } from "./$types";
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const {
       title,
@@ -118,7 +118,7 @@ export const POST: RequestHandler = async ({ request }) => {
         embeddingsGenerated: generateEmbeddings,
       },
     });
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("Document store error:", error);
     return json(
       { error: "Failed to store document", details: error.message },
@@ -127,7 +127,7 @@ export const POST: RequestHandler = async ({ request }) => {
   }
 };
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
   try {
     const documentId = url.searchParams.get("id");
     const withEmbeddings = url.searchParams.get("embeddings") === "true";
@@ -205,7 +205,7 @@ export const GET: RequestHandler = async ({ url }) => {
         hasMore: documents.length === limit,
       },
     });
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("Document retrieval error:", error);
     return json(
       { error: "Failed to retrieve documents", details: error.message },
@@ -214,7 +214,7 @@ export const GET: RequestHandler = async ({ url }) => {
   }
 };
 
-export const PUT: RequestHandler = async ({ request }) => {
+export const PUT: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const { action, documentId, ...params } = await request.json();
 
@@ -301,7 +301,7 @@ export const PUT: RequestHandler = async ({ request }) => {
           { status: 400 }
         );
     }
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("Document update error:", error);
     return json(
       { error: "Failed to update document", details: error.message },
@@ -310,7 +310,7 @@ export const PUT: RequestHandler = async ({ request }) => {
   }
 };
 
-export const DELETE: RequestHandler = async ({ request }) => {
+export const DELETE: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const { documentId, deleteEmbeddings = true } = await request.json();
 
@@ -341,7 +341,7 @@ export const DELETE: RequestHandler = async ({ request }) => {
       documentId,
       embeddingsDeleted: deleteEmbeddings,
     });
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("Document deletion error:", error);
     return json(
       { error: "Failed to delete document", details: error.message },
@@ -366,7 +366,7 @@ async function processDocumentEmbeddings(
   title: string,
   chunkSize: number,
   chunkOverlap: number,
-  chunkMetadata: unknown
+  chunkMetadata: any
 ): Promise<{ chunks: number; embeddings: number; totalDimensions: number }> {
   try {
     // Chunk the document content
@@ -409,7 +409,7 @@ async function processDocumentEmbeddings(
       embeddings: embeddingsCreated,
       totalDimensions,
     };
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("Embedding processing error:", error);
     return {
       chunks: 0,
@@ -478,7 +478,7 @@ async function generateChunkEmbedding(chunk: string): Promise<number[]> {
       const data = await response.json();
       return data.embedding;
     }
-  } catch (error) {
+  } catch (error: any) {
     console.warn("Embedding service unavailable, using mock embedding");
   }
 
@@ -487,7 +487,7 @@ async function generateChunkEmbedding(chunk: string): Promise<number[]> {
 }
 
 // Batch operations
-export const PATCH: RequestHandler = async ({ request }) => {
+export const PATCH: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const { action, documentIds, ...params } = await request.json();
 
@@ -533,7 +533,7 @@ export const PATCH: RequestHandler = async ({ request }) => {
                 error: "Document not found",
               });
             }
-          } catch (error: unknown) {
+          } catch (error: any) {
             results.push({
               documentId: docId,
               success: false,
@@ -583,7 +583,7 @@ export const PATCH: RequestHandler = async ({ request }) => {
           { status: 400 }
         );
     }
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("Batch operation error:", error);
     return json(
       { error: "Batch operation failed", details: error.message },

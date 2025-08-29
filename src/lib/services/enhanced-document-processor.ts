@@ -37,16 +37,16 @@ message Entity {
 }
 `;
 
-interface DocumentIngestionEvent {
+export interface DocumentIngestionEvent {
   type: 'upload' | 'process' | 'embed' | 'store' | 'analyze';
-  data: unknown;
+  data: any;
   priority: 'high' | 'medium' | 'low';
   timestamp: number;
   userId?: string;
   caseId?: string;
 }
 
-interface ProcessingPipeline {
+export interface ProcessingPipeline {
   minioStorage: boolean;
   neo4jGraph: boolean;
   pgVector: boolean;
@@ -58,19 +58,19 @@ export class EnhancedDocumentProcessor {
   private eventQueue: DocumentIngestionEvent[] = [];
   private processing = false;
   private workerPool: Worker[] = [];
-  private quicServer: unknown;
-  private protobufRoot: unknown;
+  private quicServer: any;
+  private protobufRoot: any;
   
   // Database connections
   private pgPool: Pool;
   private qdrantClient: QdrantClient;
-  private neo4jDriver: unknown;
-  private minioClient: unknown;
+  private neo4jDriver: any;
+  private minioClient: any;
   
   // AI Models
-  private embeddingModel: unknown;
-  private intentModel: unknown; // Gemma2B ONNX for intent detection
-  private legalBertModel: unknown;
+  private embeddingModel: any;
+  private intentModel: any; // Gemma2B ONNX for intent detection
+  private legalBertModel: any;
   
   // Service Worker for background processing
   private serviceWorker: ServiceWorker | null = null;
@@ -79,7 +79,7 @@ export class EnhancedDocumentProcessor {
     pgConnectionString: string;
     qdrantUrl: string;
     neo4jUrl: string;
-    minioConfig: unknown;
+    minioConfig: any;
     workerPoolSize?: number;
   }) {
     this.pgPool = new Pool({ connectionString: config.pgConnectionString });
@@ -90,7 +90,7 @@ export class EnhancedDocumentProcessor {
     this.initializeServiceWorker();
   }
 
-  async initialize(): Promise<void> {
+  async initialize(): Promise<any> {
     // Initialize AI models
     await this.initializeAIModels();
     
@@ -103,7 +103,7 @@ export class EnhancedDocumentProcessor {
     console.log('✅ Enhanced Document Processor initialized');
   }
 
-  private async initializeAIModels(): Promise<void> {
+  private async initializeAIModels(): Promise<any> {
     console.log('🤖 Loading AI models...');
     
     // Load embedding model (nomic-embed-text equivalent)
@@ -118,31 +118,31 @@ export class EnhancedDocumentProcessor {
     console.log('✅ AI models loaded successfully');
   }
 
-  private async initializeProtobuf(): Promise<void> {
+  private async initializeProtobuf(): Promise<any> {
     this.protobufRoot = protobuf.parse(documentProtoSchema).root;
   }
 
   private initializeWorkerPool(size: number): void {
     for (let i = 0; i < size; i++) {
       const worker = new Worker('/workers/document-processor-worker.js');
-      worker.onmessage = (event) => this.handleWorkerResult(event);
+      worker.onmessage = (event: any) => this.handleWorkerResult(event);
       this.workerPool.push(worker);
     }
   }
 
-  private async initializeServiceWorker(): Promise<void> {
+  private async initializeServiceWorker(): Promise<any> {
     if ('serviceWorker' in navigator) {
       try {
         const registration = await navigator.serviceWorker.register('/sw-document-processor.js');
         this.serviceWorker = registration.active;
         console.log('✅ Service Worker registered for document processing');
-      } catch (error) {
+      } catch (error: any) {
         console.warn('⚠️ Service Worker registration failed:', error);
       }
     }
   }
 
-  private async initializeQUICServer(): Promise<void> {
+  private async initializeQUICServer(): Promise<any> {
     // QUIC server for high-performance document ingestion
     // This would require a QUIC implementation - placeholder for design
     console.log('🚀 QUIC server initialized for document ingestion');
@@ -163,8 +163,8 @@ export class EnhancedDocumentProcessor {
     embeddingId?: string;
     graphNodeId?: string;
     minioObjectId?: string;
-    semanticAnalysis?: unknown;
-    intentAnalysis?: unknown;
+    semanticAnalysis?: any;
+    intentAnalysis?: any;
   }> {
     const startTime = Date.now();
     
@@ -205,7 +205,7 @@ export class EnhancedDocumentProcessor {
         intentAnalysis: results[4].status === 'fulfilled' ? results[4].value : undefined
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Document processing failed:', error);
       return {
         success: false,
@@ -217,7 +217,7 @@ export class EnhancedDocumentProcessor {
 
   // Event loop optimization for high-throughput processing
   private startEventLoop(): void {
-    setInterval(async () => {
+    setInterval(async (): Promise<any> => {
       if (!this.processing && this.eventQueue.length > 0) {
         this.processing = true;
         await this.processEventBatch();
@@ -226,7 +226,7 @@ export class EnhancedDocumentProcessor {
     }, 100); // Process every 100ms
   }
 
-  private async processEventBatch(): Promise<void> {
+  private async processEventBatch(): Promise<any> {
     // Sort by priority and timestamp
     this.eventQueue.sort((a, b) => {
       const priorityOrder = { high: 3, medium: 2, low: 1 };
@@ -245,7 +245,7 @@ export class EnhancedDocumentProcessor {
     await Promise.allSettled(workerPromises);
   }
 
-  private async queueDocumentEvent(event: DocumentIngestionEvent): Promise<void> {
+  private async queueDocumentEvent(event: DocumentIngestionEvent): Promise<any> {
     this.eventQueue.push(event);
     
     // If using service worker, also queue there for persistence
@@ -258,7 +258,7 @@ export class EnhancedDocumentProcessor {
   }
 
   // MinIO storage integration
-  private async storeInMinio(document: unknown): Promise<{ objectId: string }> {
+  private async storeInMinio(document: any): Promise<{ objectId: string }> {
     // Store original document in MinIO
     const objectName = `documents/${document.caseId || 'general'}/${document.id}`;
     
@@ -269,7 +269,7 @@ export class EnhancedDocumentProcessor {
   }
 
   // PostgreSQL + pgvector integration
-  private async processForPgVector(document: unknown, chunks: string[]): Promise<{ embeddingId: string }> {
+  private async processForPgVector(document: any, chunks: string[]): Promise<{ embeddingId: string }> {
     try {
       // Generate embeddings for each chunk
       const embeddings = await Promise.all(
@@ -299,21 +299,21 @@ export class EnhancedDocumentProcessor {
         await client.query('COMMIT');
         return { embeddingId: docResult.rows[0].id };
         
-      } catch (error) {
+      } catch (error: any) {
         await client.query('ROLLBACK');
         throw error;
       } finally {
         client.release();
       }
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ PgVector storage failed:', error);
       throw error;
     }
   }
 
   // Neo4j graph relations
-  private async createGraphRelations(document: unknown): Promise<{ nodeId: string }> {
+  private async createGraphRelations(document: any): Promise<{ nodeId: string }> {
     const session = this.neo4jDriver.session();
     
     try {
@@ -351,8 +351,8 @@ export class EnhancedDocumentProcessor {
   }
 
   // Semantic analysis with Legal-BERT
-  private async performSemanticAnalysis(document: unknown): Promise<{
-    entities: unknown[];
+  private async performSemanticAnalysis(document: any): Promise<{
+    entities: any[];
     legalCategories: string[];
     sentimentScore: number;
     keyPhrases: string[];
@@ -383,7 +383,7 @@ export class EnhancedDocumentProcessor {
         keyPhrases
       };
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Semantic analysis failed:', error);
       return {
         entities: [],
@@ -395,7 +395,7 @@ export class EnhancedDocumentProcessor {
   }
 
   // User intent detection with Gemma2B ONNX
-  private async detectUserIntent(document: unknown): Promise<{
+  private async detectUserIntent(document: any): Promise<{
     primaryIntent: string;
     confidence: number;
     secondaryIntents: string[];
@@ -418,7 +418,7 @@ export class EnhancedDocumentProcessor {
         actionRecommendations
       };
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Intent detection failed:', error);
       return {
         primaryIntent: 'unknown',
@@ -436,7 +436,7 @@ export class EnhancedDocumentProcessor {
     userIntent?: string;
   }): Promise<{
     response: string;
-    sources: unknown[];
+    sources: any[];
     confidence: number;
     followUpQuestions: string[];
   }> {
@@ -468,7 +468,7 @@ export class EnhancedDocumentProcessor {
         followUpQuestions
       };
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Chat response generation failed:', error);
       return {
         response: 'I apologize, but I cannot process your request right now.',
@@ -551,7 +551,7 @@ export class EnhancedDocumentProcessor {
     );
   }
 
-  private mapToLegalIntents(intentResult: unknown): {
+  private mapToLegalIntents(intentResult: any): {
     primaryIntent: string;
     confidence: number;
     secondaryIntents: string[];
@@ -582,7 +582,7 @@ export class EnhancedDocumentProcessor {
     return recommendations[intent] || ['Consult with legal professional'];
   }
 
-  private async retrieveRelevantDocuments(query: string, context: unknown): Promise<unknown[]> {
+  private async retrieveRelevantDocuments(query: string, context: any): Promise<unknown[]> {
     // Use hybrid search across pgvector and Qdrant
     const queryEmbedding = await this.generateEmbedding(query);
     
@@ -607,7 +607,7 @@ export class EnhancedDocumentProcessor {
     }
   }
 
-  private buildChatPrompt(query: string, docs: unknown[], context: unknown): string {
+  private buildChatPrompt(query: string, docs: any[], context: any): string {
     const docContext = docs.map(doc => doc.content).join('\n\n');
     
     return `You are a legal AI assistant. Answer the user's question based on the provided legal documents.
@@ -622,14 +622,14 @@ Provide a professional legal response, citing relevant documents when appropriat
 Response:`;
   }
 
-  private calculateResponseConfidence(docs: unknown[], response: string): number {
+  private calculateResponseConfidence(docs: any[], response: string): number {
     if (!docs.length) return 0.3;
     
     const avgDistance = docs.reduce((sum, doc) => sum + (doc.distance || 0), 0) / docs.length;
     return Math.max(0.1, 1 - avgDistance);
   }
 
-  private generateFollowUpQuestions(query: string, context: unknown): string[] {
+  private generateFollowUpQuestions(query: string, context: any): string[] {
     // Generate contextual follow-up questions
     const questions = [
       'Would you like me to analyze any specific clauses?',
@@ -645,7 +645,7 @@ Response:`;
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => reject(new Error('Worker timeout')), 30000);
       
-      worker.onmessage = (e) => {
+      worker.onmessage = (e: any) => {
         clearTimeout(timeout);
         resolve(e.data);
       };
@@ -669,7 +669,7 @@ Response:`;
     }
   }
 
-  async healthCheck(): Promise<{ status: string; components: unknown }> {
+  async healthCheck(): Promise<{ status: string; components: any }> {
     const checks = await Promise.allSettled([
       this.pgPool.query('SELECT 1'),
       this.qdrantClient.getCollections(),

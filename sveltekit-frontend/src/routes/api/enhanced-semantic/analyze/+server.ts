@@ -44,7 +44,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			source: 'Enhanced Semantic Architecture'
 		});
 		
-	} catch (error) {
+	} catch (error: any) {
 		console.error('Semantic Analysis API Error:', error);
 		
 		// Fallback: Simple semantic analysis
@@ -142,7 +142,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		const data = await response.json();
 		return json(data);
 		
-	} catch (error) {
+	} catch (error: any) {
 		console.error('Enhanced Semantic Analysis POST Error:', error);
 		
 		return json({

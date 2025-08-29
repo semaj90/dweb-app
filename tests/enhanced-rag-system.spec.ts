@@ -51,7 +51,7 @@ test.describe('Enhanced RAG System Tests', () => {
       await ragService.initialize();
       expect(ragService.initialized).toBe(true);
       console.log('✅ RAG service initialized in development mode');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ RAG service initialization failed:', error);
     }
   });
@@ -84,7 +84,7 @@ test.describe('Enhanced RAG System Tests', () => {
       } else {
         console.warn('⚠️ Embedding generation failed - nomic-embed-text model may not be available');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Ollama embedding test failed:', error);
     }
   });
@@ -154,7 +154,7 @@ test.describe('Enhanced RAG System Tests', () => {
       testCleanupIds.push(insertResult.rows[0].id);
       console.log(`✅ Stored document with vector embedding: ${insertResult.rows[0].id}`);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Document ingestion failed:', error);
       throw error;
     }
@@ -223,7 +223,7 @@ test.describe('Enhanced RAG System Tests', () => {
         console.log(`✅ Query: "${query}" - Found ${searchResults.rows.length} results`);
         console.log(`   Best match: ${searchResults.rows[0].file} (distance: ${distance.toFixed(4)})`);
 
-      } catch (error) {
+      } catch (error: any) {
         console.error(`❌ Search failed for query: "${query}"`, error);
       }
     }
@@ -296,7 +296,7 @@ test.describe('Enhanced RAG System Tests', () => {
 
       console.log('✅ RAG response structure validated');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ RAG response generation failed:', error);
       throw error;
     }
@@ -401,7 +401,7 @@ test.describe('Enhanced RAG System Tests', () => {
 
       console.log(`✅ Batch processing: ${batchProcessed} items in ${batchProcessingTime}ms`);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Performance optimization test failed:', error);
       throw error;
     }
@@ -431,7 +431,7 @@ test.describe('Enhanced RAG System Tests', () => {
         console.log('✅ Proper dimension validation - invalid embedding rejected');
       }
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Error handling test failed:', error);
     }
 

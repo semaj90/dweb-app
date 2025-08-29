@@ -38,7 +38,7 @@ const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 // Upload directory
 const UPLOAD_DIR = path.join(process.cwd(), 'uploads');
 
-interface UploadResult {
+export interface UploadResult {
   success: boolean;
   documentId?: string;
   evidenceId?: string;
@@ -307,7 +307,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
     logger.info('Upload completed successfully', { documentId, evidenceId, processingTime });
     return json(result);
 
-  } catch (error) {
+  } catch (error: any) {
     const processingTime = Date.now() - startTime;
     logger.error('Upload failed', error);
 
@@ -357,7 +357,7 @@ export const GET: RequestHandler = async () => {
     logger.info('Health check completed successfully');
     return json(healthStatus);
 
-  } catch (error) {
+  } catch (error: any) {
     logger.error('Health check failed', error);
     return json({
       status: 'unhealthy',

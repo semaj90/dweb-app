@@ -28,7 +28,7 @@ import type {
 const BASE_URL = '/api/v1';
 const DEFAULT_TIMEOUT = 10000;
 
-interface RequestConfig {
+export interface RequestConfig {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
   headers?: Record<string, string>;
   timeout?: number;
@@ -83,7 +83,7 @@ class ApiClient {
       }
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       clearTimeout(timeoutId);
       if (error instanceof Error) {
         throw error;
@@ -206,7 +206,7 @@ class ApiClient {
 
 // === REACTIVE DATA STORES ===
 
-interface DataStore<T> {
+export interface DataStore<T> {
   data: T | null;
   loading: boolean;
   error: string | null;
@@ -286,7 +286,7 @@ export class ReactiveApiClient extends ApiClient {
       });
       
       return data;
-    } catch (error) {
+    } catch (error: any) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       this.updateStore<Case>(key, {
         loading: false,
@@ -318,7 +318,7 @@ export class ReactiveApiClient extends ApiClient {
       });
       
       return data;
-    } catch (error) {
+    } catch (error: any) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       this.updateStore<Evidence[]>(key, {
         loading: false,
@@ -346,7 +346,7 @@ export class ReactiveApiClient extends ApiClient {
       });
       
       return data;
-    } catch (error) {
+    } catch (error: any) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       this.updateStore<Case[]>(key, {
         loading: false,

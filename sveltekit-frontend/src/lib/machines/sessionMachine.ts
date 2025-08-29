@@ -1,10 +1,10 @@
 // XState Machine for Session Management with Production Services Integration
 import { createMachine, assign } from "xstate";
-import { productionServiceClient, services } from "../services/productionServiceClient.js";
-import type { User } from "../stores/auth.svelte.js";
+import { productionServiceClient, services } from '../services/productionServiceClient';
+import type { User } from '../stores/auth.svelte';
 
 // Session context interface
-interface SessionContext {
+export interface SessionContext {
   user: User | null;
   sessionId: string | null;
   expiresAt: Date | null;
@@ -329,7 +329,7 @@ export const sessionServices = {
         permissions,
         valid: true
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Session validation failed:', error);
       throw error;
     }
@@ -345,7 +345,7 @@ export const sessionServices = {
       return {
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Session refresh failed:', error);
       throw error;
     }
@@ -364,7 +364,7 @@ export const sessionServices = {
       return {
         expiresAt: new Date(Date.now() + requestedDuration).toISOString()
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Session extension failed:', error);
       throw error;
     }
@@ -400,7 +400,7 @@ export const sessionServices = {
       return {
         newLevel: 'elevated' as const
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Security elevation failed:', error);
       throw error;
     }
@@ -440,7 +440,7 @@ export const sessionServices = {
         warningCount: 0,
         secure: true
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Security check failed:', error);
       throw error;
     }
@@ -460,7 +460,7 @@ export const sessionServices = {
         healthy: true,
         metrics: result
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Health check failed:', error);
       return { healthy: false };
     }
@@ -479,7 +479,7 @@ export const sessionServices = {
       });
 
       return { success: true };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Logout failed:', error);
       return { success: false };
     }

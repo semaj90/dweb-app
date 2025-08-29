@@ -1,6 +1,6 @@
     console.log(`✅ Stored embedding in Qdrant for evidence: ${evidenceId}`);
     
-  } catch (error) {
+  } catch (error: any) {
     console.error(`❌ Failed to store embedding in Qdrant:`, error);
     // Don't throw - continue with other storage methods
   }
@@ -37,7 +37,7 @@ async function storeInPgVector(evidenceId: string, embedding: EmbeddingResult): 
     
     console.log(`✅ Stored embedding in pgvector for evidence: ${evidenceId}`);
     
-  } catch (error) {
+  } catch (error: any) {
     console.error(`❌ Failed to store embedding in pgvector:`, error);
     // Don't throw - this is secondary storage
   }
@@ -65,7 +65,7 @@ export async function findSimilarEvidences(
       metadata: point.payload
     }));
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Similarity search failed:', error);
     return [];
   }
@@ -85,7 +85,7 @@ export async function searchByText(
     
     return await findSimilarEvidences(queryEmbedding.vector, limit, threshold);
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Text search failed:', error);
     return [];
   }
@@ -108,7 +108,7 @@ export async function checkEmbeddingHealth(): Promise<{
     const ollamaUrl = process.env.OLLAMA_URL || 'http://localhost:11434';
     const response = await fetch(`${ollamaUrl}/api/tags`);
     health.ollama = response.ok;
-  } catch (error) {
+  } catch (error: any) {
     health.ollama = false;
   }
   
@@ -116,7 +116,7 @@ export async function checkEmbeddingHealth(): Promise<{
   try {
     const collections = await qdrantClient.getCollections();
     health.qdrant = Array.isArray(collections.collections);
-  } catch (error) {
+  } catch (error: any) {
     health.qdrant = false;
   }
   
@@ -125,7 +125,7 @@ export async function checkEmbeddingHealth(): Promise<{
     const db = await import('../../sveltekit-frontend/src/lib/server/db.js');
     await db.db.execute('SELECT 1');
     health.pgvector = true;
-  } catch (error) {
+  } catch (error: any) {
     health.pgvector = false;
   }
   

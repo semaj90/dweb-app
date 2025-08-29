@@ -27,7 +27,7 @@ export const POST: RequestHandler = async ({ request }) => {
     };
 
     return json(response);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Document processing error:', error);
     return json(
       { error: 'Processing failed', details: error instanceof Error ? error.message : 'Unknown error' },
@@ -49,7 +49,7 @@ export const GET: RequestHandler = async ({ url }) => {
       status: 'completed',
       documentId
     });
-  } catch (error) {
+  } catch (error: any) {
     return json(
       { error: 'Status check failed', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }

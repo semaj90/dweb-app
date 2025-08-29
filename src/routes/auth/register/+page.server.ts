@@ -1,7 +1,7 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load: PageServerLoad = async ({ locals }): Promise<any> => {
   // If user is already logged in, redirect to dashboard
   if (locals.user) {
     throw redirect(302, '/cases');
@@ -11,7 +11,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 };
 
 export const actions: Actions = {
-  default: async ({ request, cookies }) => {
+  default: async ({ request, cookies }): Promise<any> => {
     const data = await request.formData();
     const email = data.get('email')?.toString();
     const password = data.get('password')?.toString();
@@ -89,7 +89,7 @@ export const actions: Actions = {
         type: 'success'
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Registration error:', error);
       return fail(500, {
         message: 'An error occurred during registration. Please try again.',

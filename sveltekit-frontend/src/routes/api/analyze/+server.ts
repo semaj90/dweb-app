@@ -92,7 +92,7 @@ export const POST: RequestHandler = async ({ request }) => {
     };
 
     return json(result);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Analysis endpoint error:', error);
     return json(
       { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },

@@ -30,7 +30,7 @@ const GO_SERVICES = {
 } as const;
 
 // Request routing schema
-interface GoServiceRequest {
+export interface GoServiceRequest {
   service: keyof typeof GO_SERVICES;
   endpoint: string;
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
@@ -48,7 +48,7 @@ async function makeServiceRequest(
   data?: any,
   headers: Record<string, string> = {},
   timeout: number = 30000
-) {
+): Promise<any> {
   const url = `${serviceConfig.baseUrl}${endpoint.startsWith('/') ? endpoint : '/' + endpoint}`;
   
   const requestConfig: RequestInit = {
@@ -79,7 +79,7 @@ async function makeServiceRequest(
       data: responseData,
       headers: Object.fromEntries(response.headers.entries()),
     };
-  } catch (err) {
+  } catch (err: any) {
     console.error(`Go service request failed for ${url}:`, err);
     throw new Error(`Service request failed: ${err.message}`);
   }
@@ -166,7 +166,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Go services proxy error:', err);
     
     const statusCode = err.status || 500;
@@ -205,7 +205,7 @@ export const GET: RequestHandler = async () => {
             },
             response: healthCheck.data,
           };
-        } catch (err) {
+        } catch (err: any) {
           return {
             name,
             status: 'error',
@@ -253,7 +253,7 @@ export const GET: RequestHandler = async () => {
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Go services status check failed:', err);
     
     return json({

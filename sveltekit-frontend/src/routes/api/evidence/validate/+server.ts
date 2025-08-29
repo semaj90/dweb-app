@@ -33,7 +33,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     let aiAnalysis: any = {};
     try {
       aiAnalysis = JSON.parse(evidenceRecord.aiAnalysis as string || "{}");
-    } catch (e) {
+    } catch (e: any) {
       console.warn("Failed to parse AI analysis JSON");
     }
     // Create validation record
@@ -110,7 +110,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     };
 
     return json(response);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Validation error:", error);
 
     return json(
@@ -150,7 +150,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
     let aiAnalysis: any = {};
     try {
       aiAnalysis = JSON.parse(evidenceRecord.aiAnalysis as string || "{}");
-    } catch (e) {
+    } catch (e: any) {
       console.warn("Failed to parse AI analysis JSON");
     }
     const validations = (aiAnalysis as any).validations || [];
@@ -163,7 +163,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
       totalValidations: validations.length,
       validValidations: validations.filter((v) => v.valid).length,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Get validations error:", error);
 
     return json(

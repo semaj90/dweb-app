@@ -13,7 +13,7 @@ export interface Notification {
   showProgress?: boolean;
 }
 
-interface NotificationOptions {
+export interface NotificationOptions {
   type?: Notification['type'];
   title?: string;
   duration?: number;

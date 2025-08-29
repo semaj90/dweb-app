@@ -44,7 +44,7 @@ export const GET: RequestHandler = async ({ url }) => {
         }, { status: 400 });
     }
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('Worker API error:', error);
     
     return json({
@@ -109,7 +109,7 @@ export const POST: RequestHandler = async ({ request }) => {
         }, { status: 400 });
     }
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('Worker control error:', error);
     
     return json({

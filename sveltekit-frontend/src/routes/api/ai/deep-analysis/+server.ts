@@ -6,7 +6,7 @@
 import { type RequestHandler,  json } from '@sveltejs/kit';
 import { analyzeLegalText } from "$lib/services/comprehensive-database-orchestrator";
 
-interface DeepAnalysisRequest {
+export interface DeepAnalysisRequest {
   text: string;
   userRole?: string;
   caseId?: string;
@@ -71,7 +71,7 @@ export const POST: RequestHandler = async ({ request }) => {
     };
 
     return json(result);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Deep analysis API error:', error);
 
     return json(

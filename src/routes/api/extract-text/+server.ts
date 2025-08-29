@@ -9,7 +9,7 @@ import pdf from 'pdf-parse';
 // For DOCX: npm install mammoth
 // import mammoth from 'mammoth';
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
@@ -74,7 +74,7 @@ export const POST: RequestHandler = async ({ request }) => {
       throw extractError;
     }
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('Text extraction error:', error);
     return json({ 
       error: 'Failed to extract text from document' 

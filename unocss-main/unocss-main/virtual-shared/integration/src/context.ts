@@ -41,7 +41,7 @@ export function createContext<Config extends UserConfig<any> = UserConfig<any>>(
 
   let ready = reloadConfig()
 
-  async function reloadConfig() {
+  async function reloadConfig(): Promise<any> {
     await _uno
     const result = await loadConfig(root, configOrPath, extraConfigSources, defaults)
     resolveConfigResult(result)
@@ -66,7 +66,7 @@ export function createContext<Config extends UserConfig<any> = UserConfig<any>>(
     return result
   }
 
-  async function updateRoot(newRoot: string) {
+  async function updateRoot(newRoot: string): Promise<any> {
     if (newRoot !== root) {
       root = newRoot
       ready = reloadConfig()
@@ -82,7 +82,7 @@ export function createContext<Config extends UserConfig<any> = UserConfig<any>>(
     reloadListeners.forEach(cb => cb())
   }
 
-  async function extract(code: string, id?: string) {
+  async function extract(code: string, id?: string): Promise<any> {
     const uno = await _uno
     if (id)
       modules.set(id, code)
@@ -98,12 +98,12 @@ export function createContext<Config extends UserConfig<any> = UserConfig<any>>(
     return code.includes(INCLUDE_COMMENT) || code.includes(CSS_PLACEHOLDER) || rollupFilter(id.replace(/\?v=\w+$/, ''))
   }
 
-  async function getConfig() {
+  async function getConfig(): Promise<any> {
     await ready
     return rawConfig
   }
 
-  async function flushTasks() {
+  async function flushTasks(): Promise<any> {
     const _tasks = [...tasks]
     await Promise.all(_tasks)
     if (tasks[0] === _tasks[0])

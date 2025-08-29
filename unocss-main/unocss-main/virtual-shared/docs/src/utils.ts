@@ -18,7 +18,7 @@ export function extractColors(css: string) {
 let prettier: typeof import('prettier/standalone')['format']
 let prettierParserCSS: typeof import('prettier/parser-postcss')
 
-export async function formatCSS(input: string) {
+export async function formatCSS(input: string): Promise<any> {
   await Promise.all([
     import('prettier/standalone').then(r => prettier = r.format),
     import('prettier/parser-postcss').then(r => prettierParserCSS = r.default),

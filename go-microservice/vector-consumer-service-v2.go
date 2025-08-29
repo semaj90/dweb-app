@@ -6,6 +6,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -22,7 +23,7 @@ import (
 	// Enterprise database layer
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/postgres"
+	"github.com/golang-migrate/migrate/v4/database/pgx/v5"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 
 	// High-performance caching
@@ -31,8 +32,6 @@ import (
 
 	// gRPC and protobuf
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
@@ -44,7 +43,6 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/sirupsen/logrus"
-	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
 
 	// Generated protobuf code (placeholder - will be generated)
@@ -292,27 +290,36 @@ func (s *EnterpriseVectorService) initializeDatabase() error {
 
 // Run database migrations
 func (s *EnterpriseVectorService) runMigrations() error {
-	db, err := s.dbPool.Acquire(context.Background())
+	// Create a standard sql.DB instance from the connection string for migrations
+	// This is needed because migrate requires a sql.DB interface
+	db, err := sql.Open("pgx", s.config.PostgreSQLURL)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to open database for migrations: %w", err)
 	}
-	defer db.Release()
+	defer db.Close()
 	
-	driver, err := postgres.WithConnection(context.Background(), db.Conn(), &postgres.Config{})
-	if err != nil {
-		return err
+	// Test the connection
+	if err := db.Ping(); err != nil {
+		return fmt.Errorf("failed to ping database for migrations: %w", err)
 	}
 	
-	m, err := migrate.NewWithDatabaseInstance(s.config.MigrationsPath, "postgres", driver)
+	// Use pgx v5 compatible migration driver
+	driver, err := pgx.WithInstance(db, &pgx.Config{})
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create migration driver: %w", err)
 	}
+	
+	m, err := migrate.NewWithDatabaseInstance(s.config.MigrationsPath, "pgx", driver)
+	if err != nil {
+		return fmt.Errorf("failed to create migrate instance: %w", err)
+	}
+	defer m.Close()
 	
 	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
-		return err
+		return fmt.Errorf("migration failed: %w", err)
 	}
 	
-	s.logger.Info("Database migrations completed")
+	s.logger.Info("Database migrations completed successfully")
 	return nil
 }
 
@@ -390,7 +397,8 @@ func (s *EnterpriseVectorService) processSimilarityWithCuBLAS(ctx context.Contex
 	cacheKey := fmt.Sprintf("similarity:%x:%x", vectorA, vectorB)
 	if cached, found := s.ristrettoCache.Get(cacheKey); found {
 		if result, ok := cached.(*CUDAResponseV2); ok {
-			s.cacheHitRatio.Set(s.cacheHitRatio.Get() + 0.1) // Increment hit ratio
+			// Increment cache hit ratio (using Add instead of Get)
+			s.cacheHitRatio.Add(1) // Increment hit counter
 			s.logger.Debug("Cache hit for similarity calculation")
 			return result, nil
 		}

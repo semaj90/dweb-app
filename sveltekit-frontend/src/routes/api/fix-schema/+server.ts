@@ -1,7 +1,7 @@
 // Fix database schema to match Drizzle schema
 import { json } from "@sveltejs/kit";
 import { db, sql } from "drizzle-orm";
-export async function POST() {
+export async function POST(): Promise<any> {
   try {
     console.log('🔧 Adding missing columns to users table...');
     

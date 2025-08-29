@@ -129,7 +129,7 @@ export interface EvidenceStats {
 }
 
 // Store State Interface
-interface EvidenceStoreState {
+export interface EvidenceStoreState {
   evidence: Evidence[];
   filtered_evidence: Evidence[];
   current_filter: EvidenceFilter | null;
@@ -167,7 +167,7 @@ const createEvidenceStore = () => {
     security_alerts: []
   });
 
-  const fetchEvidence = async (caseId: string | null) => {
+  const fetchEvidence = async (caseId: string | null): Promise<any> => {
     if (!caseId) {
       set({
         evidence: [],
@@ -698,7 +698,7 @@ const createEvidenceStore = () => {
           const stats = await response.json();
           update((state) => ({ ...state, stats }));
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to refresh stats:", error);
       }
     },
@@ -829,7 +829,7 @@ async function logEvidenceAccess(evidenceId: string, action: string, metadata?: 
         metadata
       })
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to log evidence access:', error);
   }
 }

@@ -120,8 +120,8 @@ declare module 'drizzle-orm' {
   export function innerProduct<T, U>(vector1: T, vector2: U): any;
 }
 
-declare module 'drizzle-orm/postgres-js' {
-  import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+declare module 'drizzle-orm/node-postgres' {
+  import type { PostgresJsDatabase } from 'drizzle-orm/node-postgres';
   
   export function drizzle<T = any>(client: any, config?: {
     schema?: T;

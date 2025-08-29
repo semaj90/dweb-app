@@ -41,7 +41,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
       return json({ error: "User not found" }, { status: 404 });
     }
     return json(userResult[0]);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching user:", error);
     return json({ error: "Failed to fetch user" }, { status: 500 });
   }
@@ -130,7 +130,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
       });
 
     return json(updatedUser);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating user:", error);
     return json({ error: "Failed to update user" }, { status: 500 });
   }
@@ -177,7 +177,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
       });
 
     return json({ success: true, deletedUser });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error deleting user:", error);
     return json({ error: "Failed to delete user" }, { status: 500 });
   }
@@ -274,7 +274,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
       });
 
     return json(updatedUser);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error patching user:", error);
     return json({ error: "Failed to update user" }, { status: 500 });
   }

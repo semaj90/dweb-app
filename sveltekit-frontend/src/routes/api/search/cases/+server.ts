@@ -6,7 +6,7 @@ import { json } from "@sveltejs/kit";
 import { and, desc, ilike, or, sql } from "drizzle-orm";
 import { db, isPostgreSQL } from "$lib/server/db/index";
 
-import type { RequestHandler } from "./$types.js";
+import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ url }) => {
   try {
@@ -48,7 +48,7 @@ export const GET: RequestHandler = async ({ url }) => {
       filters,
       fromCache: false,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Case search error:", error);
     return json(
       {
@@ -99,7 +99,7 @@ async function searchCasesText(
       searchScore: 1.0,
       matchType: "text",
     }));
-  } catch (error) {
+  } catch (error: any) {
     console.error("Text search failed:", error);
     return [];
   }

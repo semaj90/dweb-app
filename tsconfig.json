@@ -3,8 +3,25 @@
   "compilerOptions": {
     "strict": false,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
-    "types": ["vitest/globals", "node"]
+    "downlevelIteration": true,
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "node",
+    "types": [
+      "node",
+      "webgpu"
+    ],
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/lib/types"
+    ],
+    "allowImportingTsExtensions": false,
+    "noUncheckedIndexedAccess": false
   },
-  "include": ["src", "tests"]
+  "include": [
+    "src",
+    "src/app.d.ts"
+  ]
 }

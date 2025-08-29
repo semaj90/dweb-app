@@ -147,7 +147,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     
     return json(response);
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Auto-tagging API error:', error);
     
     return json({
@@ -223,7 +223,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
       ]
     });
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('Auto-tagging status error:', error);
     
     return json({

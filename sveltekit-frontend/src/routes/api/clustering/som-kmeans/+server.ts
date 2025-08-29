@@ -74,7 +74,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
     return json(result);
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Clustering analysis error:', err);
     throw error(500, `Clustering analysis failed: ${err.message}`);
   }

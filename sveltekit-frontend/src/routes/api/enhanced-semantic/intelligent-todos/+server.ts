@@ -33,7 +33,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			]
 		});
 		
-	} catch (error) {
+	} catch (error: any) {
 		console.error('Enhanced Semantic API Error:', error);
 		
 		// Fallback: Generate mock intelligent todos based on system analysis
@@ -145,7 +145,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		const data = await response.json();
 		return json(data);
 		
-	} catch (error) {
+	} catch (error: any) {
 		console.error('Enhanced Semantic API POST Error:', error);
 		
 		return json({

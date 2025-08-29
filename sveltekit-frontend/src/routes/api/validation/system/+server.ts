@@ -198,7 +198,7 @@ export const GET: RequestHandler = async ({ url, getClientAddress }) => {
           availableActions: ['health', 'validate', 'report', 'status', 'metrics']
         }, { status: 400 });
     }
-  } catch (error) {
+  } catch (error: any) {
     productionLogger.error('System validation API error', {
       error: error instanceof Error ? error.message : 'Unknown error',
       action,
@@ -339,7 +339,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
           availableActions: ['force_validate', 'clear_cache', 'benchmark']
         }, { status: 400 });
     }
-  } catch (error) {
+  } catch (error: any) {
     productionLogger.error('System validation POST API error', {
       error: error instanceof Error ? error.message : 'Unknown error',
       clientIP

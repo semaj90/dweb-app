@@ -163,7 +163,7 @@ class LoggingAggregationService {
                 timestamp: Date.now()
               })
             });
-          } catch (error) {
+          } catch (error: any) {
             // Fallback to console if remote fails
             console.error('Failed to send log to remote:', error);
           }
@@ -181,7 +181,7 @@ class LoggingAggregationService {
         send: async (entry) => {
           try {
             await this.saveToIndexedDB(entry);
-          } catch (error) {
+          } catch (error: any) {
             console.error('Failed to save log to IndexedDB:', error);
           }
         }
@@ -191,7 +191,7 @@ class LoggingAggregationService {
 
   private setupBrowserIntegration() {
     // Capture unhandled errors
-    window.addEventListener('error', (event) => {
+    window.addEventListener('error', (event: any) => {
       this.error('system', 'Unhandled JavaScript error', {
         message: event.message,
         filename: event.filename,
@@ -202,7 +202,7 @@ class LoggingAggregationService {
     });
 
     // Capture unhandled promise rejections
-    window.addEventListener('unhandledrejection', (event) => {
+    window.addEventListener('unhandledrejection', (event: any) => {
       this.error('system', 'Unhandled promise rejection', {
         reason: event.reason
       });
@@ -408,7 +408,7 @@ class LoggingAggregationService {
         if (this.shouldSendToTransport(entry, transport)) {
           try {
             await transport.send(entry);
-          } catch (error) {
+          } catch (error: any) {
             // Don't log transport errors to avoid infinite loops
             console.error(`Transport ${transport.name} failed:`, error);
           }

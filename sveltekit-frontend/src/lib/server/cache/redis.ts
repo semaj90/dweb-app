@@ -7,7 +7,7 @@ const memoryCache = new Map<string, any>();
 const MEMORY_CACHE_MAX_SIZE = 1000;
 const CACHE_TTL = 60 * 60 * 1000; // 1 hour
 
-interface CacheItem<T> {
+export interface CacheItem<T> {
   data: T;
   timestamp: number;
   ttl: number;
@@ -47,7 +47,7 @@ class CacheService {
       await this.redisClient.connect();
       this.useRedis = true;
       console.log("📝 Redis cache connected");
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Redis not available, using memory cache:", error);
       this.useRedis = false;
     }
@@ -60,7 +60,7 @@ class CacheService {
       } else {
         return this.getFromMemory(key);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Cache get error:", error);
       return null;
     }
@@ -80,7 +80,7 @@ class CacheService {
       } else {
         this.setInMemory(key, value, ttlMs);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Cache set error:", error);
       // Fallback to memory cache
       this.setInMemory(key, value, ttlMs);
@@ -93,7 +93,7 @@ class CacheService {
       } else {
         memoryCache.delete(key);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Cache delete error:", error);
     }
   }

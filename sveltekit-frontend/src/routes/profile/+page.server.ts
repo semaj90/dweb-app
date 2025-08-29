@@ -5,7 +5,7 @@ import type { PageServerLoad } from "./$types";
 import { redirect } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 
-export const load: PageServerLoad = async (event) => {
+export const load: PageServerLoad = async (event: any) => {
   const { locals } = event;
   if (!locals.user) {
     throw redirect(302, "/login");
@@ -70,7 +70,7 @@ export const load: PageServerLoad = async (event) => {
       session: locals.session,
       userStats,
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error loading user stats:", error);
 
     // Return basic data if stats fail

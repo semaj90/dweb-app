@@ -391,7 +391,7 @@ async function processTask(task: ConcurrencyTask): Promise<WorkerResult> {
       duration: Date.now() - startTime,
       workerId
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       taskId: task.id,
       success: false,

@@ -265,7 +265,7 @@ class ComprehensiveCachingService {
 
       this.initialized = true;
       console.log("✅ Comprehensive Caching Service initialized");
-    } catch (error) {
+    } catch (error: any) {
       console.error(
         "❌ Failed to initialize Comprehensive Caching Service:",
         error
@@ -297,7 +297,7 @@ class ComprehensiveCachingService {
         autosave: true,
         autosaveInterval: 10000,
       });
-    } catch (e) {
+    } catch (e: any) {
       console.warn('LokiJS unavailable – continuing without it', e);
     }
   }
@@ -308,7 +308,7 @@ class ComprehensiveCachingService {
       const mod = await import('../server/redis.js');
       this.redisClient = (mod as any).REDIS_CONNECTION as RedisLike;
       console.log('✅ Redis connection initialized');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Redis connection failed, continuing without Redis cache');
     }
   }
@@ -374,7 +374,7 @@ class ComprehensiveCachingService {
           this.recordHit(layer);
           return entry.value;
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Cache layer ${layer} error:`, error);
       }
     }
@@ -437,7 +437,7 @@ class ComprehensiveCachingService {
         const layerEntry = { ...entry };
         layerEntry.metadata.layer = layer;
         await this.setInLayer(layerEntry, layer);
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Failed to set in layer ${layer}:`, error);
       }
     });
@@ -461,7 +461,7 @@ class ComprehensiveCachingService {
     const promises = layers.map(async (layer) => {
       try {
         await this.deleteFromLayer(key, layer);
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Failed to delete from layer ${layer}:`, error);
       }
     });
@@ -531,7 +531,7 @@ class ComprehensiveCachingService {
       // If not in cache but SIMD is enabled, log for analytics
       console.log(`SIMD cache miss for key: ${key}`);
       return null;
-    } catch (error) {
+    } catch (error: any) {
       console.warn(
         "SIMD get operation failed, falling back to standard cache:",
         error
@@ -559,7 +559,7 @@ class ComprehensiveCachingService {
         console.log(`SIMD cached large object: ${key} (${str.length} bytes)`);
       }
       return this.set(key, value, { ttl, tags });
-    } catch (e) {
+    } catch (e: any) {
       console.warn('SIMD set failed – fallback', e);
       return this.set(key, value, { ttl, tags });
     }
@@ -617,7 +617,7 @@ class ComprehensiveCachingService {
         try {
           const redisResult = await this.redisClient.get(key);
           return redisResult ? JSON.parse(redisResult) : null;
-        } catch (e) {
+        } catch (e: any) {
           console.warn('Redis get failed', e); return null;
         }
 
@@ -670,7 +670,7 @@ class ComprehensiveCachingService {
               Math.floor(entry.metadata.ttl / 1000),
               JSON.stringify(entry)
             );
-          } catch (e) {
+          } catch (e: any) {
             console.warn('Redis set failed', e);
           }
         }
@@ -709,7 +709,7 @@ class ComprehensiveCachingService {
 
       case 'redis':
         if (this.redisClient) {
-          try { await this.redisClient.del(key); } catch (e) { console.warn('Redis delete failed', e); }
+          try { await this.redisClient.del(key); } catch (e: any) { console.warn('Redis delete failed', e); }
         }
         break;
 

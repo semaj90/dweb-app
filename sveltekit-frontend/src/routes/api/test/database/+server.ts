@@ -7,7 +7,7 @@ import { db } from '$lib/server/db/index';
 import { users, cases, reports, evidence, criminals, personsOfInterest } from '$lib/server/db/unified-schema';
 import { eq, desc, sql } from 'drizzle-orm';
 
-interface TestResult {
+export interface TestResult {
   test: string;
   status: 'success' | 'error';
   data?: any;
@@ -28,7 +28,7 @@ export const GET: RequestHandler = async ({ url }) => {
           status: 'success',
           data: connectionTest[0] || { status: 'Connected', count: connectionTest.length }
         });
-      } catch (error) {
+      } catch (error: any) {
         results.push({
           test: 'database_connection',
           status: 'error',
@@ -54,7 +54,7 @@ export const GET: RequestHandler = async ({ url }) => {
           status: 'success',
           data: { count: usersList.length, users: usersList }
         });
-      } catch (error) {
+      } catch (error: any) {
         results.push({
           test: 'users_read',
           status: 'error',
@@ -79,7 +79,7 @@ export const GET: RequestHandler = async ({ url }) => {
           status: 'success',
           data: { count: casesList.length, cases: casesList }
         });
-      } catch (error) {
+      } catch (error: any) {
         results.push({
           test: 'cases_read',
           status: 'error',
@@ -103,7 +103,7 @@ export const GET: RequestHandler = async ({ url }) => {
           status: 'success',
           data: { count: reportsList.length, reports: reportsList }
         });
-      } catch (error) {
+      } catch (error: any) {
         results.push({
           test: 'reports_read',
           status: 'error',
@@ -128,7 +128,7 @@ export const GET: RequestHandler = async ({ url }) => {
           status: 'success',
           data: { count: evidenceList.length, evidence: evidenceList }
         });
-      } catch (error) {
+      } catch (error: any) {
         results.push({
           test: 'evidence_read',
           status: 'error',
@@ -153,7 +153,7 @@ export const GET: RequestHandler = async ({ url }) => {
           status: 'success',
           data: { count: poiList.length, personsOfInterest: poiList }
         });
-      } catch (error) {
+      } catch (error: any) {
         results.push({
           test: 'persons_of_interest_read',
           status: 'error',
@@ -179,7 +179,7 @@ export const GET: RequestHandler = async ({ url }) => {
           status: 'success',
           data: { count: criminalsList.length, criminals: criminalsList }
         });
-      } catch (error) {
+      } catch (error: any) {
         results.push({
           test: 'criminals_read',
           status: 'error',
@@ -197,7 +197,7 @@ export const GET: RequestHandler = async ({ url }) => {
           status: 'success',
           data: vectorTest.rows.length > 0 ? { available: true } : { available: false }
         });
-      } catch (error) {
+      } catch (error: any) {
         results.push({
           test: 'pgvector_extension',
           status: 'error',
@@ -217,7 +217,7 @@ export const GET: RequestHandler = async ({ url }) => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: error instanceof Error ? error.message : String(error),

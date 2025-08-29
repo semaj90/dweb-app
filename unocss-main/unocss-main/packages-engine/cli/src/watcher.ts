@@ -4,7 +4,7 @@ import process from 'node:process'
 
 let watcher: FSWatcher
 
-export async function getWatcher(options?: CliOptions) {
+export async function getWatcher(options?: CliOptions): Promise<any> {
   // test case entry without options
   if (watcher && !options)
     return watcher

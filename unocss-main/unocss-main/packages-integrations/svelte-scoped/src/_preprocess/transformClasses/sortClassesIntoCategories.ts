@@ -10,7 +10,7 @@ export async function sortClassesIntoCategories(
   options: TransformClassesOptions,
   uno: UnoGenerator<object>,
   filename: string,
-) {
+): Promise<any> {
   const { combine = true } = options
 
   const rulesToGenerate: ProcessResult['rulesToGenerate'] = {}

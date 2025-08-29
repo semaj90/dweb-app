@@ -49,7 +49,7 @@ function initializeDatabase(): NodePgDatabase<typeof schema> | null {
       console.log("Running PostgreSQL migrations...");
       migrate(_db, { migrationsFolder: "./drizzle" });
       console.log("✅ PostgreSQL migrations completed");
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ PostgreSQL migration error:", error);
     }
   }

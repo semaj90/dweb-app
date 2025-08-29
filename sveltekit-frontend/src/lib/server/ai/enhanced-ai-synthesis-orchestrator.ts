@@ -2,25 +2,25 @@
 // Connects Neo4j, PostgreSQL/pgvector, XState, Redis, Ollama, and Go services
 // TypeScript-safe implementation with MCP Context7 best practices
 
-import { logger } from "../logger.js";
+import { logger } from '../logger';
 import postgres from "postgres";
-import { drizzle } from "drizzle-orm/postgres-js";
+import { drizzle } from "drizzle-orm/node-postgres";
 import { createMachine, createActor, fromPromise } from "xstate";
 import { OllamaEmbeddings, ChatOllama } from "@langchain/ollama";
 import { PGVectorStore } from "@langchain/community/vectorstores/pgvector";
 import { Neo4jVectorStore } from "@langchain/community/vectorstores/neo4j_vector";
 import type { Document } from '@langchain/core/documents';
 import Redis from 'ioredis';
-import { aiAssistantSynthesizer } from "./ai-assistant-input-synthesizer.js";
-import { legalBERT } from "./legalbert-middleware.js";
-import { cachingLayer } from "./caching-layer.js";
-import { monitoringService } from "./monitoring-service.js";
+import { aiAssistantSynthesizer } from './ai-assistant-input-synthesizer';
+import { legalBERT } from './legalbert-middleware';
+import { cachingLayer } from './caching-layer';
+import { monitoringService } from './monitoring-service';
 
 // Type-safe stub for production
 const prisma = null as any; // Will be replaced with proper Drizzle implementation
 
 // Type definitions for TypeScript safety
-interface ServiceConfig {
+export interface ServiceConfig {
   neo4j: {
     uri: string;
     user: string;
@@ -52,7 +52,7 @@ interface ServiceConfig {
   };
 }
 
-interface AutoSolveQuery {
+export interface AutoSolveQuery {
   query: string;
   context?: unknown;
   options?: {
@@ -65,7 +65,7 @@ interface AutoSolveQuery {
   };
 }
 
-interface AutoSolveResult {
+export interface AutoSolveResult {
   synthesis: string;
   sources: Document[];
   confidence: number;
@@ -381,7 +381,7 @@ export class EnhancedAISynthesisOrchestrator {
         this.neo4jStore = null;
       }
       logger.info('[Orchestrator] ✅ Neo4j vector store connected');
-    } catch (error) {
+    } catch (error: any) {
       logger.warn('[Orchestrator] ⚠️ Neo4j connection failed:', error);
     }
 
@@ -412,7 +412,7 @@ export class EnhancedAISynthesisOrchestrator {
         this.pgVectorStore = null;
       }
       logger.info('[Orchestrator] ✅ PGVector store connected');
-    } catch (error) {
+    } catch (error: any) {
       logger.warn('[Orchestrator] ⚠️ PGVector connection failed:', error);
     }
 
@@ -462,7 +462,7 @@ export class EnhancedAISynthesisOrchestrator {
 
           try {
             return await this.neo4jStore.similaritySearch(context.query, 10);
-          } catch (error) {
+          } catch (error: any) {
             logger.error('[Neo4j] Search failed:', error);
             return [];
           }
@@ -472,7 +472,7 @@ export class EnhancedAISynthesisOrchestrator {
 
           try {
             return await this.pgVectorStore.similaritySearch(context.query, 10);
-          } catch (error) {
+          } catch (error: any) {
             logger.error('[PGVector] Search failed:', error);
             return [];
           }
@@ -494,7 +494,7 @@ export class EnhancedAISynthesisOrchestrator {
 
             if (!response.ok) throw new Error(`RAG failed: ${response.statusText}`);
             return await response.json();
-          } catch (error) {
+          } catch (error: any) {
             logger.error('[RAG] Pipeline failed:', error);
             return [];
           }
@@ -505,7 +505,7 @@ export class EnhancedAISynthesisOrchestrator {
           try {
             const response = await this.ollama.invoke(prompt);
             return response.content;
-          } catch (error) {
+          } catch (error: any) {
             logger.error('[Orchestrator] Generation failed:', error);
             throw error;
           }
@@ -662,7 +662,7 @@ TEMPLATE """{{ if .System }}<|system|>
         });
         logger.info('[Orchestrator] ✅ nomic-embed-text model ready');
       }
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[Orchestrator] Failed to ensure models:', error);
     }
   }
@@ -690,7 +690,7 @@ TEMPLATE """{{ if .System }}<|system|>
           if (!response.ok) throw new Error(`HTTP ${response.status}`);
         }
         logger.info(`[Orchestrator] ✅ ${service.name} connected`);
-      } catch (error) {
+      } catch (error: any) {
         logger.warn(`[Orchestrator] ⚠️ ${service.name} unavailable:`, error.message);
       }
     }
@@ -845,7 +845,7 @@ RESPONSE:`;
 
         // Send the START event to begin processing
         service.send({ type: 'START' });
-      } catch (error) {
+      } catch (error: any) {
         reject(error);
       }
     });

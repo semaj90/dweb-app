@@ -1,6 +1,6 @@
 import Fuse from '$lib/utils/fuse-import';
 
-interface SearchableDocument {
+export interface SearchableDocument {
   id: string;
   content: string;
   path: string;
@@ -13,7 +13,7 @@ interface SearchableDocument {
   };
 }
 
-interface SearchRequest {
+export interface SearchRequest {
   query: string;
   filters?: {
     type?: string[];
@@ -27,7 +27,7 @@ interface SearchRequest {
   };
 }
 
-interface SearchWorkerMessage {
+export interface SearchWorkerMessage {
   type: 'search' | 'index' | 'clear';
   data: any;
   workerId: string;
@@ -61,7 +61,7 @@ export class ConcurrentIndexedDBSearch {
       }
       this.isInitialized = true;
       console.log('✅ Concurrent IndexedDB Search initialized');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize IndexedDB search:', error);
       throw error;
     }
@@ -82,7 +82,7 @@ export class ConcurrentIndexedDBSearch {
         resolve();
       };
 
-      request.onupgradeneeded = (event) => {
+      request.onupgradeneeded = (event: any) => {
         const db = (event.target as IDBOpenDBRequest).result;
         
         if (!db.objectStoreNames.contains('documents')) {
@@ -171,7 +171,7 @@ export class ConcurrentIndexedDBSearch {
               documentCount: documents.length
             }
           });
-        } catch (error) {
+        } catch (error: any) {
           self.postMessage({
             workerId,
             type: 'error',
@@ -283,7 +283,7 @@ export class ConcurrentIndexedDBSearch {
       console.log(`📊 Found ${finalResults.length} results for query: "${request.query}"`);
 
       return finalResults;
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Search error:', error);
       return [];
     }
@@ -434,7 +434,7 @@ export class ConcurrentIndexedDBSearch {
 
       const result = await response.json();
       return result.embedding;
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Embedding generation failed:', error);
       return [];
     }

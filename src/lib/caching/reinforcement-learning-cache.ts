@@ -5,16 +5,17 @@
  */
 
 import { writable, derived } from 'svelte/store';
+import '../types/webgpu';
 import { nesCacheOrchestrator } from '../services/nes-cache-orchestrator';
 import type { NESCacheState } from '../services/nes-cache-orchestrator';
 
 // Multi-dimensional cache entry with cognitive metadata
-interface CognitiveCacheEntry {
+export interface CognitiveCacheEntry {
   id: string;
   data: any;
+  accessCount: number;
+  lastAccess: number;
   metadata: {
-    accessCount: number;
-    lastAccess: number;
     creationTime: number;
     priority: number;
     userContexts: string[];
@@ -31,10 +32,21 @@ interface CognitiveCacheEntry {
     confidence: number;
     adaptationRate: number;
   };
+  accessPattern: {
+    userPatterns: Record<string, number>;
+    operationTypes: Record<string, number>;
+  };
+}
+
+export interface CacheContext {
+  userContext?: string;
+  priority?: number;
+  semanticHints?: string[];
+  expectedUse?: string;
 }
 
 // Multidimensional hashtable for precise routing and retrieval
-interface MultiDimensionalHash {
+export interface MultiDimensionalHash {
   dimensions: {
     temporal: Map<string, Set<string>>;    // Time-based indexing
     semantic: Map<string, Set<string>>;    // Content-based indexing
@@ -55,7 +67,7 @@ enum ReplacementPolicy {
 }
 
 // Learning patterns for cache optimization
-interface CacheLearningPattern {
+export interface CacheLearningPattern {
   pattern: string;
   frequency: number;
   successRate: number;
@@ -65,7 +77,7 @@ interface CacheLearningPattern {
 }
 
 // Physics-aware cache state
-interface CachePhysicsState {
+export interface CachePhysicsState {
   momentum: Float32Array;        // Cache access momentum
   temperature: number;           // System "heat" (high activity)
   pressure: number;              // Memory pressure
@@ -94,7 +106,7 @@ interface CachePhysicsState {
 }
 
 export class ReinforcementLearningCache {
-  private cache: Map<string, CognitiveCache Entry> = new Map();
+  private cache: Map<string, CognitiveCacheEntry> = new Map();
   private multiDimHash: MultiDimensionalHash;
   private learningPatterns: Map<string, CacheLearningPattern> = new Map();
   private physicsState: CachePhysicsState;
@@ -209,12 +221,12 @@ export class ReinforcementLearningCache {
     }
 
     // Create cognitive cache entry
-    const entry: CognitiveCache Entry = {
+    const entry: CognitiveCacheEntry = {
       id: key,
       data,
+      accessCount: 0,
+      lastAccess: Date.now(),
       metadata: {
-        accessCount: 0,
-        lastAccess: Date.now(),
         creationTime: Date.now(),
         priority: options?.priority || this.predictPriority(data),
         userContexts: options?.userContext ? [options.userContext] : [],
@@ -230,6 +242,10 @@ export class ReinforcementLearningCache {
         reward: 0,
         confidence: 0.5,
         adaptationRate: 0.1
+      },
+      accessPattern: {
+        userPatterns: {},
+        operationTypes: {}
       }
     };
 
@@ -255,7 +271,7 @@ export class ReinforcementLearningCache {
   /**
    * Multi-dimensional candidate finding with spatial indexing
    */
-  private findCandidatesMultiDimensional(key: string, context?: any): CognitiveCache Entry[] {
+  private findCandidatesMultiDimensional(key: string, context?: any): CognitiveCacheEntry[] {
     const candidates: Set<string> = new Set();
     const weights = { exact: 1.0, temporal: 0.3, semantic: 0.6, context: 0.4, spatial: 0.2 };
 
@@ -291,16 +307,16 @@ export class ReinforcementLearningCache {
     // Convert to entries and filter valid ones
     return Array.from(candidates)
       .map(id => this.cache.get(id))
-      .filter(entry => entry !== undefined) as CognitiveCache Entry[];
+      .filter(entry => entry !== undefined) as CognitiveCacheEntry[];
   }
 
   /**
    * Cognitive candidate selection using reinforcement learning
    */
   private async selectOptimalCandidate(
-    candidates: CognitiveCache Entry[],
+    candidates: CognitiveCacheEntry[],
     context?: any
-  ): Promise<CognitiveCache Entry | null> {
+  ): Promise<CognitiveCacheEntry | null> {
     if (candidates.length === 0) return null;
     if (candidates.length === 1) return candidates[0];
 
@@ -328,19 +344,19 @@ export class ReinforcementLearningCache {
   /**
    * Calculate candidate score using multiple cognitive factors
    */
-  private calculateCandidateScore(candidate: CognitiveCache Entry, context?: any): number {
+  private calculateCandidateScore(candidate: CognitiveCacheEntry, context?: any): number {
     let score = 0;
 
     // Base priority
     score += candidate.metadata.priority * 0.3;
 
     // Recency factor (temporal locality)
-    const timeSinceAccess = Date.now() - candidate.metadata.lastAccess;
+    const timeSinceAccess = Date.now() - candidate.lastAccess;
     const recencyScore = Math.exp(-timeSinceAccess / 300000); // 5 min decay
     score += recencyScore * 0.25;
 
     // Frequency factor (access count)
-    const normalizedAccessCount = Math.min(1.0, candidate.metadata.accessCount / 100);
+    const normalizedAccessCount = Math.min(1.0, candidate.accessCount / 100);
     score += normalizedAccessCount * 0.2;
 
     // Cognitive value
@@ -365,7 +381,7 @@ export class ReinforcementLearningCache {
   /**
    * Cognitive eviction using reinforcement learning
    */
-  private async cognitiveEviction(): Promise<void> {
+  private async cognitiveEviction(): Promise<any> {
     const evictionTarget = Math.max(1, Math.floor(this.cache.size * 0.1)); // Evict 10%
     const entries = Array.from(this.cache.values());
 
@@ -397,7 +413,7 @@ export class ReinforcementLearningCache {
   /**
    * Calculate eviction score (lower = more likely to be evicted)
    */
-  private calculateEvictionScore(entry: CognitiveCache Entry): number {
+  private calculateEvictionScore(entry: CognitiveCacheEntry): number {
     let score = 1.0;
 
     // Age factor (older entries more likely to evict)
@@ -405,7 +421,7 @@ export class ReinforcementLearningCache {
     score -= Math.min(0.4, age / 3600000); // Max 0.4 reduction for 1 hour+
 
     // Access frequency
-    score += Math.min(0.3, entry.metadata.accessCount / 50);
+    score += Math.min(0.3, entry.accessCount / 50);
 
     // Priority
     score += entry.metadata.priority * 0.2;
@@ -444,17 +460,17 @@ export class ReinforcementLearningCache {
    * Apply selected eviction policy
    */
   private applyEvictionPolicy(
-    scoredEntries: Array<{ entry: CognitiveCache Entry; evictionScore: number }>,
+    scoredEntries: Array<{ entry: CognitiveCacheEntry; evictionScore: number }>,
     targetCount: number,
     policy: ReplacementPolicy
-  ): CognitiveCache Entry[] {
-    const toEvict: CognitiveCache Entry[] = [];
+  ): CognitiveCacheEntry[] {
+    const toEvict: CognitiveCacheEntry[] = [];
 
     switch (policy) {
       case ReplacementPolicy.COGNITIVE_LRU:
         // Evict least recently used with cognitive adjustments
         const lruSorted = scoredEntries.sort((a, b) =>
-          a.entry.metadata.lastAccess - b.entry.metadata.lastAccess
+          a.entry.lastAccess - b.entry.lastAccess
         );
         toEvict.push(...lruSorted.slice(0, targetCount).map(s => s.entry));
         break;
@@ -492,9 +508,28 @@ export class ReinforcementLearningCache {
   }
 
   /**
+   * Update access patterns for learning optimization
+   */
+  private updateAccessPatterns(entry: CognitiveCacheEntry, context?: CacheContext): void {
+    entry.accessCount++;
+    entry.lastAccess = Date.now();
+    
+    // Update contextual patterns
+    if (context?.userContext) {
+      entry.accessPattern.userPatterns[context.userContext] = 
+        (entry.accessPattern.userPatterns[context.userContext] || 0) + 1;
+    }
+    
+    if (context?.expectedUse) {
+      entry.accessPattern.operationTypes[context.expectedUse] = 
+        (entry.accessPattern.operationTypes[context.expectedUse] || 0) + 1;
+    }
+  }
+
+  /**
    * Physics-aware state management
    */
-  private updatePhysicsState(entry: CognitiveCache Entry | null, action: 'access' | 'store' | 'eviction'): void {
+  private updatePhysicsState(entry: CognitiveCacheEntry | null, action: 'access' | 'store' | 'eviction'): void {
     switch (action) {
       case 'access':
         if (entry) {
@@ -531,17 +566,17 @@ export class ReinforcementLearningCache {
     this.physicsState.viscosity = 0.5 + 0.3 * Math.sin(Date.now() / 10000); // Oscillating viscosity
   }
 
-  private calculatePhysicsAlignment(entry: CognitiveCache Entry): number {
+  private calculatePhysicsAlignment(entry: CognitiveCacheEntry): number {
     // Calculate how well this entry aligns with current physics state
     let alignment = 0;
 
     // Momentum alignment
-    if (this.physicsState.momentum[0] > 0.5 && entry.metadata.accessCount > 5) {
+    if (this.physicsState.momentum[0] > 0.5 && entry.accessCount > 5) {
       alignment += 0.3;
     }
 
     // Temperature alignment (prefer high-activity entries when hot)
-    if (this.physicsState.temperature > 0.6 && entry.metadata.lastAccess > Date.now() - 300000) {
+    if (this.physicsState.temperature > 0.6 && entry.lastAccess > Date.now() - 300000) {
       alignment += 0.2;
     }
 
@@ -556,7 +591,7 @@ export class ReinforcementLearningCache {
   /**
    * Multi-dimensional hashtable indexing
    */
-  private indexInMultiDimensionalHash(entry: CognitiveCache Entry): void {
+  private indexInMultiDimensionalHash(entry: CognitiveCacheEntry): void {
     const id = entry.id;
 
     // Temporal indexing
@@ -595,11 +630,11 @@ export class ReinforcementLearningCache {
     this.multiDimHash.spatial.set(id, spatialPos);
   }
 
-  private calculateSpatialPosition(entry: CognitiveCache Entry): { x: number; y: number; z: number } {
+  private calculateSpatialPosition(entry: CognitiveCacheEntry): { x: number; y: number; z: number } {
     // Calculate 3D position based on entry characteristics
     const x = (entry.metadata.priority * 2 - 1) * 100; // -100 to 100
     const y = (entry.metadata.cognitiveValue * 2 - 1) * 100;
-    const z = (entry.metadata.accessCount / 50 - 1) * 100;
+    const z = (entry.accessCount / 50 - 1) * 100;
 
     return { x, y, z };
   }
@@ -634,7 +669,7 @@ export class ReinforcementLearningCache {
   /**
    * NES Memory Bank optimization integration
    */
-  private async optimizeNESMemoryBanks(entry: CognitiveCache Entry): Promise<void> {
+  private async optimizeNESMemoryBanks(entry: CognitiveCacheEntry): Promise<any> {
     // Determine optimal NES memory bank based on entry characteristics
     let bankRegion: 'PRG_ROM' | 'CHR_ROM' | 'RAM' | 'PPU_MEMORY' | 'SPRITE_MEMORY';
 
@@ -657,7 +692,7 @@ export class ReinforcementLearningCache {
       data: entry.data,
       priority: entry.metadata.priority * 10, // Scale to NES priority range
       memoryUsage: entry.metadata.memoryWeight * 1024, // Convert to bytes
-      lastAccessed: entry.metadata.lastAccess,
+      lastAccessed: entry.lastAccess,
       nesRegion: bankRegion
     };
 
@@ -665,12 +700,12 @@ export class ReinforcementLearningCache {
     try {
       await nesCacheOrchestrator.clearRegion(bankRegion); // Clear if needed
       // Would implement proper NES integration here
-    } catch (error) {
+    } catch (error: any) {
       console.warn('NES integration error:', error);
     }
   }
 
-  private mapToNESType(entry: CognitiveCache Entry): 'yorha-component' | 'gpu-animation' | 'canvas-state' | 'webgpu-shader' | 'ui-theme' {
+  private mapToNESType(entry: CognitiveCacheEntry): 'yorha-component' | 'gpu-animation' | 'canvas-state' | 'webgpu-shader' | 'ui-theme' {
     const tags = entry.metadata.semanticTags;
 
     if (tags.includes('yorha') || tags.includes('component')) return 'yorha-component';
@@ -721,7 +756,7 @@ export class ReinforcementLearningCache {
   /**
    * Learning and pattern recognition
    */
-  private updateLearningPatterns(entry: CognitiveCache Entry): void {
+  private updateLearningPatterns(entry: CognitiveCacheEntry): void {
     const patternKey = this.generatePatternKey(entry);
 
     if (!this.learningPatterns.has(patternKey)) {
@@ -739,12 +774,12 @@ export class ReinforcementLearningCache {
     pattern.frequency++;
 
     // Update pattern metrics based on entry performance
-    if (entry.metadata.accessCount > 5) {
+    if (entry.accessCount > 5) {
       pattern.successRate = Math.min(1.0, pattern.successRate + 0.1);
     }
   }
 
-  private generatePatternKey(entry: CognitiveCache Entry): string {
+  private generatePatternKey(entry: CognitiveCacheEntry): string {
     const tags = entry.metadata.semanticTags.slice(0, 2).join('_');
     const priorityBucket = Math.floor(entry.metadata.priority * 5);
     const contextBucket = entry.metadata.userContexts[0] || 'default';
@@ -872,8 +907,8 @@ export class ReinforcementLearningCache {
   private recordCacheHit(key: string, latency: number): void {
     const entry = this.cache.get(key);
     if (entry) {
-      entry.metadata.accessCount++;
-      entry.metadata.lastAccess = Date.now();
+      entry.accessCount++;
+      entry.lastAccess = Date.now();
 
       // Reward for successful cache hit
       const reward = 10 - Math.min(5, latency / 10); // Higher reward for faster access
@@ -887,7 +922,7 @@ export class ReinforcementLearningCache {
     this.updateQValue(state, 'miss', -2);
   }
 
-  private recordEvictionFeedback(entry: CognitiveCache Entry, outcome: string): void {
+  private recordEvictionFeedback(entry: CognitiveCacheEntry, outcome: string): void {
     const reward = outcome === 'evicted' ? -1 : 2;
     this.updateQValue(this.encodeState(), entry.id, reward);
   }
@@ -916,7 +951,7 @@ export class ReinforcementLearningCache {
     }
   }
 
-  private removeFromMultiDimensionalHash(entry: CognitiveCache Entry): void {
+  private removeFromMultiDimensionalHash(entry: CognitiveCacheEntry): void {
     const id = entry.id;
 
     // Remove from all dimensional indexes
@@ -989,7 +1024,7 @@ export class ReinforcementLearningCache {
 
     for (const [key, entry] of this.cache.entries()) {
       // Remove entries that haven't been accessed in over 24 hours
-      if (now - entry.metadata.lastAccess > 86400000) {
+      if (now - entry.lastAccess > 86400000) {
         expiredEntries.push(key);
       }
     }
@@ -1077,7 +1112,7 @@ export class ReinforcementLearningCache {
     };
   }
 
-  async clearAll(): Promise<void> {
+  async clearAll(): Promise<any> {
     this.cache.clear();
     this.multiDimHash = {
       dimensions: {
@@ -1096,12 +1131,12 @@ export class ReinforcementLearningCache {
   // Recommendation engine integration
   async getRecommendations(query: string): Promise<{
     suggestions: string[];
-    relatedEntries: CognitiveCache Entry[];
+    relatedEntries: CognitiveCacheEntry[];
     confidence: number;
   }> {
     const queryEmbedding = await this.generateEmbedding(query);
     const suggestions: string[] = [];
-    const relatedEntries: CognitiveCache Entry[] = [];
+    const relatedEntries: CognitiveCacheEntry[] = [];
 
     // Find similar entries based on embeddings
     for (const entry of this.cache.values()) {

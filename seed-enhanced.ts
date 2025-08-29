@@ -4,7 +4,7 @@ import { users, cases, documents, evidence } from './sveltekit-frontend/src/lib/
 import { VectorService } from './sveltekit-frontend/src/lib/server/services/vector.service';
 import bcrypt from 'bcryptjs';
 
-async function seed() {
+async function seed(): Promise<any> {
   console.log('🌱 Starting database seed...');
 
   try {
@@ -148,7 +148,7 @@ async function seed() {
           { title: doc.title, caseId: doc.caseId }
         );
         console.log(`✅ Embeddings stored for: ${doc.title}`);
-      } catch (error) {
+      } catch (error: any) {
         console.log(`⚠️  Could not store embeddings for ${doc.title} - Ollama may not be running`);
       }
     }
@@ -205,7 +205,7 @@ async function seed() {
     console.log('  Admin: admin@prosecutor.local (password: demo123)');
     console.log('  User: user@prosecutor.local (password: demo123)');
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Seed failed:', error);
     throw error;
   }

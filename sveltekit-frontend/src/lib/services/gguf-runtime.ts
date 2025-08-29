@@ -132,13 +132,13 @@ export interface GGUFPerformanceMetrics {
 }
 
 // Worker Message Types
-interface WorkerMessage {
+export interface WorkerMessage {
   type: 'LOAD_MODEL' | 'INFERENCE' | 'GET_STATUS' | 'SHUTDOWN' | 'HEALTH_CHECK';
   id?: string;
   data?: unknown;
 }
 
-interface WorkerResponse {
+export interface WorkerResponse {
   type: 'MODEL_LOADED' | 'INFERENCE_COMPLETE' | 'INFERENCE_ERROR' | 'STATUS' | 'HEALTH_STATUS';
   id?: string;
   success?: boolean;
@@ -147,7 +147,7 @@ interface WorkerResponse {
 }
 
 // Worker State
-interface WorkerState {
+export interface WorkerState {
   id: string;
   worker: Worker;
   status: 'idle' | 'busy' | 'loading' | 'error';
@@ -310,7 +310,7 @@ export class GGUFRuntimeService extends EventEmitter {
       console.log('✅ GGUF Runtime initialized successfully');
       this.emit('initialized', { modelInfo: this.modelInfo });
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ GGUF Runtime initialization failed:', error);
       this.isInitializing = false;
       this.modelStatus.set({ 
@@ -380,7 +380,7 @@ export class GGUFRuntimeService extends EventEmitter {
       }
       
       return false;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('GPU detection failed:', error);
       return false;
     }
@@ -408,7 +408,7 @@ export class GGUFRuntimeService extends EventEmitter {
           memoryUsage: 0
         };
 
-        worker.onmessage = (event) => {
+        worker.onmessage = (event: any) => {
           this.handleWorkerMessage(workerState.id, event.data);
         };
 
@@ -420,7 +420,7 @@ export class GGUFRuntimeService extends EventEmitter {
         };
 
         this.workers.push(workerState);
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Failed to create worker ${i}:`, error);
       }
     }
@@ -541,7 +541,7 @@ export class GGUFRuntimeService extends EventEmitter {
                 auditTrail: true
               }
             };
-          } catch (error) {
+          } catch (error: any) {
             workerMetrics.processedRequests++;
             throw new Error(\`Inference failed: \${error.message}\`);
           }
@@ -727,7 +727,7 @@ export class GGUFRuntimeService extends EventEmitter {
               self.postMessage({ type: 'SHUTDOWN_COMPLETE', id });
               break;
           }
-        } catch (error) {
+        } catch (error: any) {
           self.postMessage({ 
             type: 'INFERENCE_ERROR', 
             id, 
@@ -828,7 +828,7 @@ export class GGUFRuntimeService extends EventEmitter {
       await new Promise((resolve) => setTimeout(resolve, 500));
       console.log('✅ FlashAttention2 initialized with memory optimization');
       
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ FlashAttention2 initialization failed, using standard attention:', error);
       this.config.flashAttention = false;
     }
@@ -1266,7 +1266,7 @@ export class GGUFRuntimeService extends EventEmitter {
         memoryUsage: 0
       };
 
-      newWorker.onmessage = (event) => {
+      newWorker.onmessage = (event: any) => {
         this.handleWorkerMessage(workerId, event.data);
       };
 
@@ -1284,7 +1284,7 @@ export class GGUFRuntimeService extends EventEmitter {
       
       console.log(`🔄 Worker ${workerId} restarted successfully`);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to restart worker ${workerId}:`, error);
       throw error;
     }
@@ -1355,7 +1355,7 @@ export class GGUFRuntimeService extends EventEmitter {
       console.log('✅ GGUF Runtime shutdown complete');
       this.emit('shutdown');
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error during shutdown:', error);
       throw error;
     }

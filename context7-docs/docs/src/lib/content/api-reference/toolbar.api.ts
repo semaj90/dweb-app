@@ -9,8 +9,8 @@ import {
 	OnChangeStringOrArrayProp,
 	OrientationProp,
 	StringOrArrayStringProp,
-} from "./extended-types/shared/index.js";
-import { ToggleRootStateDataAttr } from "./extended-types/toggle/index.js";
+} from './extended-types/shared/index';
+import { ToggleRootStateDataAttr } from './extended-types/toggle/index';
 import {
 	orientationDataAttr,
 	typeSingleOrMultipleProp,
@@ -25,7 +25,7 @@ import {
 	defineSimpleDataAttr,
 	defineStringProp,
 	defineUnionProp,
-} from "../utils.js";
+} from '../utils';
 
 const root = defineComponentApiSchema<ToolbarRootPropsWithoutHTML>({
 	title: "Root",

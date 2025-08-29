@@ -8,7 +8,7 @@ import { and, desc, ilike, or, sql } from "drizzle-orm";
 
 import { db } from "$lib/server/db/index";
 
-import type { RequestHandler } from "./$types.js";
+import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ url }) => {
   try {
@@ -71,14 +71,14 @@ export const GET: RequestHandler = async ({ url }) => {
       query,
       totalResults: results.length,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Evidence search error:", error);
     return json({ error: "Search failed" }, { status: 500 });
   }
 };
 
 // Fast text search on evidence metadata
-async function searchEvidenceText(query: string, options: any) {
+async function searchEvidenceText(query: string, options: any): Promise<any> {
   const { caseId, evidenceType, limit } = options;
   const whereConditions = [];
 
@@ -117,7 +117,7 @@ async function searchEvidenceText(query: string, options: any) {
     .limit(limit);
 }
 // Deep content search using Qdrant
-async function searchEvidenceContent(query: string, options: any) {
+async function searchEvidenceContent(query: string, options: any): Promise<any> {
   const { caseId, evidenceType, limit } = options;
 
   try {
@@ -168,13 +168,13 @@ async function searchEvidenceContent(query: string, options: any) {
         contentMatch: qdrantMatch?.payload.content_snippet || null,
       };
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Qdrant search failed, falling back to PostgreSQL:", error);
     return await searchEvidenceSemantic(query, options);
   }
 }
 // PostgreSQL vector search
-async function searchEvidenceSemantic(query: string, options: any) {
+async function searchEvidenceSemantic(query: string, options: any): Promise<any> {
   const { caseId, evidenceType, limit } = options;
   const queryEmbedding = await generateEmbedding(query);
 
@@ -205,7 +205,7 @@ async function searchEvidenceSemantic(query: string, options: any) {
     .limit(limit);
 }
 // Hybrid search combining all methods
-async function searchEvidenceHybrid(query: string, options: any) {
+async function searchEvidenceHybrid(query: string, options: any): Promise<any> {
   const { limit } = options;
 
   // Run searches in parallel for speed

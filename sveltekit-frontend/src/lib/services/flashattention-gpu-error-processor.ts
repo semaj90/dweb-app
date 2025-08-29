@@ -1,6 +1,6 @@
 import { concurrentSearch } from './concurrent-indexeddb-search';
 
-interface FlashAttentionConfig {
+export interface FlashAttentionConfig {
   gpu_device: number;
   memory_limit: number;
   attention_heads: number;
@@ -10,7 +10,7 @@ interface FlashAttentionConfig {
   optimization_level: 'O1' | 'O2' | 'O3';
 }
 
-interface GPUErrorBatch {
+export interface GPUErrorBatch {
   id: string;
   errors: TypeScriptError[];
   priority: 'low' | 'medium' | 'high' | 'critical';
@@ -19,7 +19,7 @@ interface GPUErrorBatch {
   expected_tokens: number;
 }
 
-interface TypeScriptError {
+export interface TypeScriptError {
   code: string;
   message: string;
   file: string;
@@ -29,7 +29,7 @@ interface TypeScriptError {
   category: 'syntax' | 'type' | 'import' | 'binding' | 'svelte5' | 'unknown';
 }
 
-interface GPUProcessingResult {
+export interface GPUProcessingResult {
   batchId: string;
   fixes: ErrorFix[];
   performance: {
@@ -41,7 +41,7 @@ interface GPUProcessingResult {
   status: 'completed' | 'partial' | 'failed';
 }
 
-interface ErrorFix {
+export interface ErrorFix {
   errorId: string;
   originalCode: string;
   fixedCode: string;
@@ -79,7 +79,7 @@ export class FlashAttentionGPUErrorProcessor {
       this.isInitialized = true;
       console.log('⚡ FlashAttention2 GPU Error Processor initialized');
       console.log(`🎯 GPU Device: ${this.config.gpu_device}, Memory: ${this.config.memory_limit}MB`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize GPU processor:', error);
       throw error;
     }
@@ -149,7 +149,7 @@ export class FlashAttentionGPUErrorProcessor {
       console.log(`🎯 Generated ${fixes.length} fixes with ${result.performance.tokens_per_second.toFixed(1)} tokens/sec`);
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Error processing batch ${batchId}:`, error);
       return {
         batchId,
@@ -336,7 +336,7 @@ Provide ONLY the corrected code snippet that fixes this specific error. Do not i
         const metrics = await response.json();
         return metrics.utilization || 0;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Could not get GPU utilization:', error);
     }
     return 0;
@@ -349,7 +349,7 @@ Provide ONLY the corrected code snippet that fixes this specific error. Do not i
         const status = await response.json();
         return status.used_mb || 0;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Could not get memory usage:', error);
     }
     return 0;
@@ -499,7 +499,7 @@ Provide ONLY the corrected code snippet that fixes this specific error. Do not i
         const status = await response.json();
         return status.cuda_available && status.devices.length > 0;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ GPU status check failed:', error);
     }
     return false;

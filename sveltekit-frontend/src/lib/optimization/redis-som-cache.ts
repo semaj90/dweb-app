@@ -7,7 +7,7 @@ import { EventEmitter } from "events";
 
 
 // === Neural Network Self-Organizing Map for Cache Intelligence ===
-interface SOMNode {
+export interface SOMNode {
   weights: Float64Array;
   activation: number;
   cluster_id: number;
@@ -15,7 +15,7 @@ interface SOMNode {
   last_update: number;
 }
 
-interface CacheEntry {
+export interface CacheEntry {
   key: string;
   value: any;
   ttl: number;

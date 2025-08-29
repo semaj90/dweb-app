@@ -4,7 +4,7 @@
  */
 import { binaryEncoder } from './binary-encoding';
 
-async function testBinaryEncoding() {
+async function testBinaryEncoding(): Promise<any> {
   console.log('🧪 Testing Binary Encoding Middleware...\n');
 
   // Test data
@@ -62,7 +62,7 @@ async function testBinaryEncoding() {
 
     console.log('\n✅ All tests passed!');
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Test failed:', error);
   }
 }

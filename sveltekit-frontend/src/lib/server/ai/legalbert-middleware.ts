@@ -1,15 +1,15 @@
-import { logger } from "./logger.js";
+import { logger } from './logger';
 import crypto from "crypto";
 
 // lib/server/ai/legalbert-middleware.ts
 // LegalBERT middleware for specialized legal embeddings and analysis
 
 // Type interfaces will be defined below
-import { generateEmbedding } from "./embeddings-simple.js";
+import { generateEmbedding } from './embeddings-simple';
 
 // Type definitions will be defined later in file
 
-interface LegalEmbeddingResult {
+export interface LegalEmbeddingResult {
   embedding: number[];
   model: string;
   dimensions: number;
@@ -28,7 +28,7 @@ async function withRetry<T>(fn: () => Promise<T>, retries: number = 3): Promise<
   for (let i = 0; i < retries; i++) {
     try {
       return await fn();
-    } catch (error) {
+    } catch (error: any) {
       if (i === retries - 1) throw error;
       await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, i)));
     }
@@ -76,7 +76,7 @@ const LEGAL_ENTITY_TYPES = {
 } as const;
 
 // Legal text analysis results
-interface LegalAnalysisResult {
+export interface LegalAnalysisResult {
   entities: Array<{
     text: string;
     type: keyof typeof LEGAL_ENTITY_TYPES;
@@ -113,7 +113,7 @@ interface LegalAnalysisResult {
 }
 
 // LegalBERT embedding result
-interface LegalEmbeddingResult {
+export interface LegalEmbeddingResult {
   embedding: number[];
   dimensions: number;
   model: string;
@@ -127,7 +127,7 @@ interface LegalEmbeddingResult {
 }
 
 // Legal document classification
-interface LegalClassificationResult {
+export interface LegalClassificationResult {
   documentType: string;
   confidence: number;
   subCategories: Array<{
@@ -163,7 +163,7 @@ export class LegalBERTMiddleware {
       } else {
         throw new Error('Model test failed');
       }
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[LegalBERT] Initialization failed:', error);
       // Fallback to basic embedding model
       this.modelConfig = LEGALBERT_MODELS.local;
@@ -222,7 +222,7 @@ export class LegalBERTMiddleware {
       metrics.histogram('legalbert_embedding_time', result.processingTime);
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[LegalBERT] Embedding generation failed:', error);
       metrics.increment('legalbert_embedding_errors');
 
@@ -281,7 +281,7 @@ export class LegalBERTMiddleware {
       metrics.histogram('legalbert_analysis_time', Date.now() - startTime);
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[LegalBERT] Text analysis failed:', error);
       return this.generateFallbackAnalysis(text);
     }
@@ -295,7 +295,7 @@ export class LegalBERTMiddleware {
       const classification = await this.performDocumentClassification(text);
       metrics.increment('legalbert_classifications');
       return classification;
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[LegalBERT] Document classification failed:', error);
       return this.generateFallbackClassification(text);
     }
@@ -337,7 +337,7 @@ export class LegalBERTMiddleware {
           legal_concepts,
         },
       };
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[LegalBERT] Similarity calculation failed:', error);
       return {
         similarity: 0.5,
@@ -916,7 +916,7 @@ export class LegalBERTMiddleware {
           cacheSize: this.cache.size,
         },
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: 'unhealthy',
         details: {

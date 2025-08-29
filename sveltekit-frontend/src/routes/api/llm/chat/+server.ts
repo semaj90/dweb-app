@@ -21,7 +21,7 @@ export const POST: RequestHandler = async ({ request }) => {
       context: context || {},
       timestamp: new Date().toISOString(),
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("LLM chat error:", error);
     return json({ error: "Failed to process chat message" }, { status: 500 });
   }

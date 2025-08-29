@@ -21,7 +21,7 @@ describe('autocomplete', async () => {
 
   const ac = createAutocomplete(uno)
 
-  async function enumerateSuggestions(inputs: string[]) {
+  async function enumerateSuggestions(inputs: string[]): Promise<any> {
     return Object.fromEntries(await Promise.all(inputs.map(async input => [
       input,
       (await ac.suggest(input)).slice(0, 10).join(' '),
@@ -220,7 +220,7 @@ describe('autocomplete with attributify prefix', async () => {
 
   const ac = createAutocomplete(uno)
 
-  async function enumerateSuggestions(inputs: string[]) {
+  async function enumerateSuggestions(inputs: string[]): Promise<any> {
     return Object.fromEntries(await Promise.all(inputs.map(async input => [
       input,
       (await ac.suggest(input)).slice(0, 10).join(' '),

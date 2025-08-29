@@ -23,7 +23,7 @@ export const POST: RequestHandler = async ({ request }) => {
       default:
         return json({ success: false, error: 'Invalid action' }, { status: 400 });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('CRUD test error:', error);
     return json({ success: false, error: error.message }, { status: 500 });
   }
@@ -58,7 +58,7 @@ export const GET: RequestHandler = async () => {
       },
       stats
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('CRUD GET test error:', error);
     return json({ success: false, error: error.message }, { status: 500 });
   }

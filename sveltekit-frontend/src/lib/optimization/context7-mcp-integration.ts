@@ -5,11 +5,11 @@
  */
 
 import { EventEmitter } from "events";
-import type { EnhancedOptimizationSuite, EnhancedPerformanceMetrics } from "./index.js";
-import { createEnhancedOptimizationSuite } from "./index.js";
+import type { EnhancedOptimizationSuite, EnhancedPerformanceMetrics } from './index';
+import { createEnhancedOptimizationSuite } from './index';
 
 // === Context7 MCP Tool Integration Types ===
-interface Context7MCPRequest {
+export interface Context7MCPRequest {
   tool:
     | "analyze-stack"
     | "generate-best-practices"
@@ -31,7 +31,7 @@ interface Context7MCPRequest {
   };
 }
 
-interface Context7MCPResponse {
+export interface Context7MCPResponse {
   success: boolean;
   data?: unknown;
   error?: string;
@@ -43,7 +43,7 @@ interface Context7MCPResponse {
   };
 }
 
-interface OptimizationRecommendation {
+export interface OptimizationRecommendation {
   category: "memory" | "performance" | "cache" | "docker" | "json" | "vscode";
   title: string;
   description: string;
@@ -86,7 +86,7 @@ export class Context7MCPOptimizationIntegrator extends EventEmitter {
         suite_ready: true,
         baseline_metrics: this.performance_baseline,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Context7 MCP integration initialization failed:", error);
       this.emit("integration_error", error);
     }
@@ -284,7 +284,7 @@ export class Context7MCPOptimizationIntegrator extends EventEmitter {
 
       this.emit("context7_request_complete", { request, response });
       return response;
-    } catch (error) {
+    } catch (error: any) {
       const errorResponse: Context7MCPResponse = {
         success: false,
         error: error instanceof Error ? error.message : String(error),
@@ -560,7 +560,7 @@ const suite = createEnhancedOptimizationSuite();
         code_example: `
 // SvelteKit optimization
 import { preloadData } from '$app/navigation';
-export const load = async ({ depends }) => {
+export const load = async ({ depends }): Promise<any> => {
   depends('app:data');
   return await loadOptimizedData();
 };`,

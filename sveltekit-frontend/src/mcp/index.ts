@@ -5,15 +5,15 @@
  */
 
 // Export MCP Tools
-export { CasesMCPTool, casesMCPTool } from './cases.mcp.js';
-export { EvidenceMCPTool, evidenceMCPTool } from './evidence.mcp.js';
-export { UsersMCPTool, usersMCPTool } from './users.mcp.js';
-export { AIAnalysisMCPTool, aiAnalysisMCPTool } from './ai-analysis.mcp.js';
+export { CasesMCPTool, casesMCPTool } from './cases.mcp';
+export { EvidenceMCPTool, evidenceMCPTool } from './evidence.mcp';
+export { UsersMCPTool, usersMCPTool } from './users.mcp';
+export { AIAnalysisMCPTool, aiAnalysisMCPTool } from './ai-analysis.mcp';
 
 // Export shared interfaces
 export type {
   MCPToolResponse
-} from './cases.mcp.js';
+} from './cases.mcp';
 
 // Export specific parameter interfaces for each tool
 export type {
@@ -21,21 +21,21 @@ export type {
   CaseUpdateParams,
   CaseSearchParams,
   EvidenceAddParams
-} from './cases.mcp.js';
+} from './cases.mcp';
 
 export type {
   EvidenceCreateParams,
   EvidenceUpdateParams,
   EvidenceSearchParams,
   EvidenceVectorSearchParams
-} from './evidence.mcp.js';
+} from './evidence.mcp';
 
 export type {
   UserCreateParams,
   UserUpdateParams,
   UserSearchParams,
   UserProfileMatchParams
-} from './users.mcp.js';
+} from './users.mcp';
 
 export type {
   DocumentAnalysisParams,
@@ -43,7 +43,7 @@ export type {
   SimilaritySearchParams,
   BatchAnalysisParams,
   RiskAssessmentParams
-} from './ai-analysis.mcp.js';
+} from './ai-analysis.mcp';
 
 // Utility type for all MCP tools
 export interface MCPToolsCollection {

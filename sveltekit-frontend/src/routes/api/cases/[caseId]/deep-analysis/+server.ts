@@ -108,7 +108,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
             Case Title: ${currentCase.title}
             Case Description: ${currentCase.description}
             Recent Activities: ${recentActivities.map((a) => a.title).join(", ") || "None"}
-            Recent Evidence: ${recentEvidence.map((e) => e.fileName || e.title).join(", ") || "None"}
+            Recent Evidence: ${recentEvidence.map((e: any) => e.fileName || e.title).join(", ") || "None"}
             Relevant Case Fragments: ${relevantFragments || "None"}
             Relevant Evidence Summaries: ${relevantEvidenceSummaries || "None"}
         `.trim();
@@ -192,7 +192,7 @@ ws ::= ([ \t\n]*)
               output: parsedResponse,
               source: "Local LLM (JSON)",
             };
-          } catch (e) {
+          } catch (e: any) {
             // Fallback if JSON parsing fails despite the grammar (very unlikely)
             console.error(
               "Local LLM output was not valid JSON:",
@@ -220,7 +220,7 @@ ws ::= ([ \t\n]*)
     });
 
     return json({ success: true, analysisResults });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in deep analysis endpoint:", error);
     return json({ error: "Failed to perform deep analysis" }, { status: 500 });
   }

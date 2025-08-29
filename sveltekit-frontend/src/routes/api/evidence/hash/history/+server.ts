@@ -69,7 +69,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         : "Hash verification failed - file may have been modified",
       verifiedAt: new Date().toISOString(),
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error recording hash verification:", error);
     return json(
       {
@@ -118,7 +118,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
     const verifications = await query;
 
     return json(verifications);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching hash verification history:", error);
     return json(
       { error: "Failed to fetch verification history" },

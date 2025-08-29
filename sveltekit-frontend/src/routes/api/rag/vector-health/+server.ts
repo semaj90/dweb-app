@@ -2,7 +2,7 @@ import { json } from "@sveltejs/kit";
 import { db, documents, embeddings } from "drizzle-orm";
 import { sql } from 'drizzle-orm';
 
-export const GET = async () => {
+export const GET = async (): Promise<any> => {
   try {
     const TARGET_DIM = parseInt(import.meta.env.EMBEDDING_DIM || import.meta.env.VECTOR_DIM || '768', 10);
 

@@ -14,7 +14,7 @@ export const POST: RequestHandler = async ({ request }) => {
     ];
 
     return json({ suggestions });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Title suggestion error:", error);
     return json(
       { error: "Failed to generate title suggestions" },

@@ -1,17 +1,17 @@
 #!/usr/bin/env tsx
 // Vector Data Sync Script
 // Syncs existing database documents with vector embeddings and Qdrant
-import { db, isPostgreSQL } from "../src/lib/server/db/index.js";
-import { qdrant } from "../src/lib/server/vector/qdrant.js";
-import { syncDocumentEmbeddings } from "../src/lib/server/ai/embeddings.js";
-import { generateEmbedding } from "../src/lib/server/ai/embeddings-simple.js";
+import { db, isPostgreSQL } from '$lib/server/db/index';
+import { qdrant } from '$lib/server/vector/qdrant';
+import { syncDocumentEmbeddings } from '$lib/server/ai/embeddings';
+import { generateEmbedding } from '$lib/server/ai/embeddings-simple';
 import { sql } from "drizzle-orm";
 import { config } from "dotenv";
 
 // Load environment variables
 config();
 
-interface SyncStats {
+export interface SyncStats {
   total: number;
   updated: number;
   errors: number;
@@ -156,7 +156,7 @@ async function syncEmbeddings(
           }
 
           stats.updated++;
-        } catch (error) {
+        } catch (error: any) {
           console.error(`     ❌ Error processing ${doc.id}:`, error);
           stats.errors++;
         }
@@ -172,13 +172,13 @@ async function syncEmbeddings(
       `   ✅ Completed: ${stats.updated} updated, ${stats.errors} errors, ${stats.skipped} skipped`,
     );
     return stats;
-  } catch (error) {
+  } catch (error: any) {
     console.error(`❌ Failed to sync ${type}:`, error);
     throw error;
   }
 }
 
-async function main() {
+async function main(): Promise<any> {
   console.log("🔄 Starting Vector Data Sync...\n");
 
   try {
@@ -245,7 +245,7 @@ async function main() {
           totalStats.updated += stats.updated;
           totalStats.errors += stats.errors;
           totalStats.skipped += stats.skipped;
-        } catch (error) {
+        } catch (error: any) {
           console.error(`Failed to sync ${type}:`, error);
           totalStats.errors++;
         }
@@ -271,7 +271,7 @@ async function main() {
       console.log("   Test with: POST /api/search/vector");
       console.log("   Or try the Ask AI feature in the web interface");
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("\n❌ Sync failed:", error);
     console.log("\nTroubleshooting:");
     console.log("  • Ensure database is running and accessible");

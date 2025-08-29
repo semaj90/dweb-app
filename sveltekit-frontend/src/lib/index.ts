@@ -8,14 +8,14 @@
 
 // SvelteKit 2 Polyfills - Import first to ensure module availability
 import './polyfills.js';
-import { barrelStore } from './stores/barrel-functions.js';
+import { barrelStore } from './stores/barrel-functions';
 
 // Enhanced Type Definitions - Import to register module augmentations
 import './types/drizzle-enhanced.js';
 import './types/lokijs-enhanced.js';
 
 // ===== ALL COMPONENTS (COMPREHENSIVE BARREL EXPORT) =====
-export * from './components/index.js';
+export * from './components/index';
 
 // ===== UTILITIES & TYPES =====
 export { 
@@ -118,7 +118,7 @@ export {
   lokiCollectionMethods,
   configurationProperties,
   utilityFunctions
-} from './stores/barrel-functions.js';
+} from './stores/barrel-functions';
 
 // ===== DATABASE COMPATIBILITY LAYER =====
 export {
@@ -131,7 +131,7 @@ export {
   enhanceResultWithTypes,
   entityEnhancers,
   createTypeSafeQuery
-} from './database/drizzle-compatibility-fix.js';
+} from './database/drizzle-compatibility-fix';
 
 // Make barrel store globally available
 if (typeof globalThis !== 'undefined') {
@@ -141,7 +141,7 @@ if (typeof globalThis !== 'undefined') {
 // ===== ENHANCED SERVICES & STORES =====
 
 // Global User Store with Svelte 5 Runes
-export { default as globalUserStore } from './stores/global-user-store.svelte.js';
+export { default as globalUserStore } from './stores/global-user-store.svelte';
 
 // Search Services with Fuse.js Integration
 export { 
@@ -151,7 +151,7 @@ export {
   searchComponents, 
   searchDocumentation, 
   searchDemos 
-} from './services/search-service.js';
+} from './services/search-service';
 
 // Hybrid Vector Operations
 export { 
@@ -159,7 +159,7 @@ export {
   hybridSearch, 
   syncVectorData, 
   getVectorSystemHealth 
-} from './services/hybrid-vector-operations.js';
+} from './services/hybrid-vector-operations';
 
 // Search Types
 export type {
@@ -168,7 +168,7 @@ export type {
   SearchOptions,
   SearchFilter,
   SearchState
-} from './types/search.types.js';
+} from './types/search.types';
 
 // Default export for convenience
 export default {

@@ -2,12 +2,12 @@
 // Provides comprehensive legal research capabilities
 
 import { json } from '@sveltejs/kit';
-import { db } from '$lib/database/postgres.js';
-import { legalDocuments } from '$lib/database/schema/legal-documents.js';
+import { db } from '$lib/database/postgres';
+import { legalDocuments } from '$lib/database/schema/legal-documents';
 import type { RequestHandler } from './$types';
 import type { SearchResult, RerankedResults } from '$lib/types/search-types';
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const {
       query,
@@ -65,7 +65,7 @@ export const POST: RequestHandler = async ({ request }) => {
       suggestions: generateResearchSuggestions(query, enhancedResults)
     });
 
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('Legal research error:', error);
     return json(
       { error: 'Legal research failed', details: error.message },
@@ -74,7 +74,7 @@ export const POST: RequestHandler = async ({ request }) => {
   }
 };
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
   try {
     const researchId = url.searchParams.get('id');
     const recent = url.searchParams.get('recent');
@@ -100,7 +100,7 @@ export const GET: RequestHandler = async ({ url }) => {
     const stats = await getResearchStatistics();
     return json(stats);
 
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('Legal research retrieval error:', error);
     return json(
       { error: 'Failed to retrieve research data', details: error.message },
@@ -181,7 +181,7 @@ async function performLegalSearch(
       }
     }));
 
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('Database search error:', error);
     return [];
   }
@@ -208,7 +208,7 @@ async function rerankLegalResults(query: string, results: SearchResult[]): Promi
       method: 'legal-cross-encoder'
     };
 
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.warn('Reranking failed, returning original results:', error);
     return {
       rerankedResults: results, // Return as rerankedResults
@@ -233,7 +233,7 @@ async function enhanceWithLegalContext(results: SearchResult[], query: string): 
 
 // Utility functions
 
-function calculateRelevanceScore(query: string, document: unknown): number {
+function calculateRelevanceScore(query: string, document: any): number {
   const queryTerms = query.toLowerCase().split(/\s+/);
   const documentText = (document.title + ' ' + document.content).toLowerCase();
   
@@ -300,7 +300,7 @@ function extractRelevantExcerpt(query: string, content: string): string {
   return bestSentence.substring(0, 200) + (bestSentence.length > 200 ? '...' : '');
 }
 
-function extractLegalContext(content: string): unknown {
+function extractLegalContext(content: string): any {
   return {
     statutes: extractStatutes(content),
     cases: extractCases(content),

@@ -222,7 +222,7 @@ export default async function init(inlineConfig: RuntimeOptions = {}): Promise<v
     return styleElement
   }
 
-  async function updateStyle() {
+  async function updateStyle(): Promise<any> {
     const currentToken = [...tokens]
     const result = await uno.generate(currentToken)
 
@@ -241,7 +241,7 @@ export default async function init(inlineConfig: RuntimeOptions = {}): Promise<v
     }
   }
 
-  async function extract(str: string) {
+  async function extract(str: string): Promise<any> {
     const tokenSize = tokens.size
     await uno.applyExtractors(str, undefined, tokens)
     if (tokenSize !== tokens.size)

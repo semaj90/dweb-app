@@ -3,13 +3,13 @@
 
 export type PipelineStage = 'gpu' | 'wasm' | 'embedding' | 'retrieval' | 'llm' | 'final';
 
-interface StageStats { samples: number[]; sum: number; count: number; anomalies?: number; anomalyTimestamps?: number[] }
+export interface StageStats { samples: number[]; sum: number; count: number; anomalies?: number; anomalyTimestamps?: number[] }
 const STAGES: PipelineStage[] = ['gpu','wasm','embedding','retrieval','llm','final'];
 const stageData: Record<PipelineStage, StageStats> = STAGES.reduce((acc, s) => { acc[s] = { samples: [], sum: 0, count: 0, anomalies: 0, anomalyTimestamps: [] }; return acc; }, {} as any);
 
 let dedupeHits = 0; let dedupeMisses = 0;
 const autosolveDurations: number[] = [];
-interface QuicMetricsShape { total_connections: number; total_streams: number; total_errors: number; avg_latency_ms: number; timestamp: number; latencies: number[]; errorsWindow: number[] }
+export interface QuicMetricsShape { total_connections: number; total_streams: number; total_errors: number; avg_latency_ms: number; timestamp: number; latencies: number[]; errorsWindow: number[] }
 let quicMetrics: QuicMetricsShape = { total_connections: 0, total_streams: 0, total_errors: 0, avg_latency_ms: 0, timestamp: Date.now(), latencies: [], errorsWindow: [] };
 // Error budget accounting (simple in-memory counters resettable via process restart)
 let quicP99BudgetBreaches = 0; // increments when p99 above threshold during update call (optional external call site)

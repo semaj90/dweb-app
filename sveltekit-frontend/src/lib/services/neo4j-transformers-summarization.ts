@@ -129,7 +129,7 @@ export class Neo4jTransformersSummarization {
       this.isInitialized = true;
       console.log('✅ Neo4j transformers pipeline initialized successfully');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Neo4j initialization failed:', error);
       throw error;
     }
@@ -159,7 +159,7 @@ export class Neo4jTransformersSummarization {
       try {
         await this.session!.run(query);
         console.log(`✅ Schema query executed: ${query.slice(0, 50)}...`);
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`⚠️ Schema query failed (may already exist): ${query.slice(0, 50)}...`);
       }
     }
@@ -179,7 +179,7 @@ export class Neo4jTransformersSummarization {
       const healthyProtocols = Object.entries(vectorHealth).filter(([, v]) => v.status === 'healthy').length;
       console.log(`  ✅ Vector Proxy: ${healthyProtocols}/3 protocols healthy`);
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Service integration test failed:', error);
     }
   }
@@ -241,7 +241,7 @@ export class Neo4jTransformersSummarization {
       console.log(`🎯 Document processing complete (${processingTime.toFixed(2)}ms)`);
       return result;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Document processing failed:', error);
       throw error;
     }
@@ -267,7 +267,7 @@ export class Neo4jTransformersSummarization {
 
       return summaryResult.answer || 'Summary could not be generated';
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Summary generation failed:', error);
       return 'Summary generation failed due to processing error';
     }
@@ -326,7 +326,7 @@ export class Neo4jTransformersSummarization {
       console.log(`🎯 Extracted ${uniqueEntities.length} unique entities`);
       return uniqueEntities;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Entity extraction failed:', error);
       return this.extractEntitiesWithRegex(content);
     }
@@ -425,7 +425,7 @@ export class Neo4jTransformersSummarization {
         relationships.push(...this.extractHeuristicRelationships(entities, content));
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ AI relationship extraction failed, using heuristic fallback:', error);
       relationships.push(...this.extractHeuristicRelationships(entities, content));
     }
@@ -606,7 +606,7 @@ export class Neo4jTransformersSummarization {
       console.log(`🌐 Graph storage complete: ${graphNodes.length} nodes, ${relationships.length} relationships`);
       return graphNodes;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Graph storage failed:', error);
       throw error;
     }
@@ -649,7 +649,7 @@ export class Neo4jTransformersSummarization {
 
       console.log('📊 Vector embeddings stored successfully');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Vector embedding storage failed:', error);
       // Don't throw - this is not critical for main processing
     }
@@ -769,7 +769,7 @@ export class Neo4jTransformersSummarization {
             });
           }
 
-        } catch (error) {
+        } catch (error: any) {
           console.warn(`⚠️ Failed to fetch document ${docId}:`, error);
         }
       }
@@ -777,7 +777,7 @@ export class Neo4jTransformersSummarization {
       console.log(`📊 Document search complete: ${searchResults.length} results`);
       return searchResults;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Document search failed:', error);
       throw error;
     }
@@ -848,7 +848,7 @@ export class Neo4jTransformersSummarization {
         relationshipPaths: []
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to get document connections:', error);
       throw error;
     }
@@ -931,7 +931,7 @@ export class Neo4jTransformersSummarization {
       console.log(`✅ Graph-enhanced analysis complete (confidence: ${result.confidence})`);
       return result;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Graph-enhanced analysis failed:', error);
       throw error;
     }
@@ -1011,7 +1011,7 @@ export class Neo4jTransformersSummarization {
         status.performance.documentsProcessed = docCountResult.records[0]?.get('count')?.toNumber() || 0;
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Status check failed:', error);
     }
 
@@ -1035,7 +1035,7 @@ export class Neo4jTransformersSummarization {
       
       this.isInitialized = false;
       console.log('🧹 Neo4j transformers pipeline cleaned up');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Cleanup failed:', error);
     }
   }

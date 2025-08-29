@@ -13,7 +13,7 @@ describe('transformApply', async () => {
     ],
   })
 
-  async function transform(content: string) {
+  async function transform(content: string): Promise<any> {
     const s = new MagicString(content)
 
     const transformed = (await transformApply({ s, uno, applyVariables: ['--at-apply'] })).toString()

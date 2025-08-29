@@ -1,7 +1,7 @@
 import { flashAttentionProcessor } from './flashattention-gpu-error-processor';
 import { concurrentSearch } from './concurrent-indexeddb-search';
 
-interface WindowsService {
+export interface WindowsService {
   name: string;
   displayName: string;
   executable: string;
@@ -12,7 +12,7 @@ interface WindowsService {
   healthEndpoint?: string;
 }
 
-interface ServiceHealth {
+export interface ServiceHealth {
   serviceName: string;
   isHealthy: boolean;
   responseTime: number;
@@ -102,7 +102,7 @@ export class NativeWindowsServiceManager {
       
       this.isInitialized = true;
       console.log('✅ Native Windows Service Manager initialized');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize service manager:', error);
       throw error;
     }
@@ -121,7 +121,7 @@ export class NativeWindowsServiceManager {
           service.status = 'stopped';
           console.log(`⚠️ ${service.displayName} is not running`);
         }
-      } catch (error) {
+      } catch (error: any) {
         service.status = 'error';
         console.error(`❌ Error checking ${service.displayName}:`, error);
       }
@@ -136,7 +136,7 @@ export class NativeWindowsServiceManager {
           signal: AbortSignal.timeout(5000)
         });
         return response.ok;
-      } catch (error) {
+      } catch (error: any) {
         return false;
       }
     } else {
@@ -152,7 +152,7 @@ export class NativeWindowsServiceManager {
         signal: AbortSignal.timeout(2000)
       });
       return true;
-    } catch (error) {
+    } catch (error: any) {
       return false;
     }
   }
@@ -183,7 +183,7 @@ export class NativeWindowsServiceManager {
         console.error(`❌ Failed to start ${service.displayName}`);
         return false;
       }
-    } catch (error) {
+    } catch (error: any) {
       service.status = 'error';
       console.error(`❌ Error starting ${service.displayName}:`, error);
       return false;
@@ -236,7 +236,7 @@ export class NativeWindowsServiceManager {
         }
         
         await new Promise(resolve => setTimeout(resolve, 2000));
-      } catch (error) {
+      } catch (error: any) {
         results.failed.push(serviceName);
         console.error(`❌ Failed to start ${serviceName}:`, error);
       }
@@ -270,7 +270,7 @@ export class NativeWindowsServiceManager {
       service.pid = undefined;
       console.log(`✅ ${service.displayName} stopped successfully`);
       return true;
-    } catch (error) {
+    } catch (error: any) {
       service.status = 'error';
       console.error(`❌ Error stopping ${service.displayName}:`, error);
       return false;
@@ -356,7 +356,7 @@ export class NativeWindowsServiceManager {
 
       await concurrentSearch.indexDocuments(serviceDocuments);
       console.log('✅ Service definitions indexed for search');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to integrate concurrent search:', error);
     }
   }
@@ -377,7 +377,7 @@ export class NativeWindowsServiceManager {
       console.log(`   - Tokens/second: ${result.performance.tokens_per_second.toFixed(1)}`);
       
       await this.storeProcessingResults(result);
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ GPU error processing failed:', error);
     }
   }
@@ -422,7 +422,7 @@ export class NativeWindowsServiceManager {
         } else {
           failed.push(serviceName);
         }
-      } catch (error) {
+      } catch (error: any) {
         failed.push(serviceName);
         console.error(`❌ Deployment failed for ${serviceName}:`, error);
       }
@@ -533,7 +533,7 @@ pause
       console.log(`   - Memory efficiency: ${(benchmarkResult.memory_efficiency * 100).toFixed(1)}%`);
       console.log(`   - Accuracy score: ${(benchmarkResult.accuracy_score * 100).toFixed(1)}%`);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Comprehensive startup failed:', error);
       throw error;
     }

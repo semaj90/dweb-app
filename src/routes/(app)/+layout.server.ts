@@ -1,7 +1,7 @@
 // Layout Server Load Function
 import type { LayoutServerLoad } from './$types';
 
-export const load: LayoutServerLoad = async ({ locals }) => {
+export const load: LayoutServerLoad = async ({ locals }): Promise<any> => {
   return {
     user: locals.user ? {
       id: locals.user.id,

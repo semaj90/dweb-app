@@ -189,7 +189,7 @@ await advancedCache.set(cacheKey, encryptedData, {
       this.mcpConnectionStatus.set('connected');
       
       console.log('✅ Context7 MCP Integration initialized');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Context7 MCP Integration failed:', error);
       this.mcpConnectionStatus.set('error');
     }
@@ -250,7 +250,7 @@ await advancedCache.set(cacheKey, encryptedData, {
       recordStageLatency('enhanced-recommendations', Date.now() - startTime);
       return enhancedRecommendations;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Enhanced recommendations failed:', error);
       return [];
     }
@@ -427,11 +427,11 @@ export const integrationsStore = context7MCPIntegration.getIntegrations();
 export const mcpConnectionStatus = context7MCPIntegration.getConnectionStatus();
 
 // Export utility functions
-export async function getEnhancedRecommendations(context: RecommendationContext) {
+export async function getEnhancedRecommendations(context: RecommendationContext): Promise<any> {
   return context7MCPIntegration.generateEnhancedRecommendations(context);
 }
 
-export async function createComponentIntegration(component: string, context: string) {
+export async function createComponentIntegration(component: string, context: string): Promise<any> {
   return context7MCPIntegration.createIntegration(component, context);
 }
 

@@ -47,7 +47,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			message: 'Legal AI session created successfully'
 		});
 
-	} catch (error) {
+	} catch (error: any) {
 		console.error('[Legal AI] Session creation error:', error);
 		return json({
 			success: false,

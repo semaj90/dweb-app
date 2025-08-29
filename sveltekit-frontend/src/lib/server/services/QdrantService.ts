@@ -19,31 +19,31 @@ const env = {
 };
 
 // Simplified types for QdrantService
-interface VectorSearchResult {
+export interface VectorSearchResult {
   id: string;
   score: number;
   metadata: any;
 }
 
-interface DocumentVector {
+export interface DocumentVector {
   id: string;
   vector: number[];
   metadata?: any;
 }
 
-interface SearchOptions {
+export interface SearchOptions {
   limit?: number;
   threshold?: number;
   filter?: any;
 }
 
-interface CollectionInfo {
+export interface CollectionInfo {
   name: string;
   vectors_count: number;
   status: string;
 }
 
-interface BatchUpsertResult {
+export interface BatchUpsertResult {
   operation_id: string;
   status: string;
 }
@@ -108,7 +108,7 @@ export class QdrantService {
           }
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       logger.error("Failed to initialize collections", error);
       throw error;
     }
@@ -147,7 +147,7 @@ export class QdrantService {
 
       logger.info("Document stored in Qdrant", { id: point.id });
       return point.id.toString();
-    } catch (error) {
+    } catch (error: any) {
       logger.error("Failed to store document", error);
       throw error;
     }
@@ -195,7 +195,7 @@ export class QdrantService {
         status: "completed" as const,
         successful: true,
       } as any;
-    } catch (error) {
+    } catch (error: any) {
       logger.error("Failed to batch store documents", error);
       throw error;
     }
@@ -282,7 +282,7 @@ export class QdrantService {
           ? Number(result.payload.relevance_score || result.score)
           : result.score,
       }));
-    } catch (error) {
+    } catch (error: any) {
       logger.error("Failed to search similar documents", error);
       throw error;
     }
@@ -323,7 +323,7 @@ export class QdrantService {
           ? Number(point.payload.relevance_score || 0)
           : undefined,
       } as any;
-    } catch (error) {
+    } catch (error: any) {
       logger.error("Failed to get document", error);
       throw error;
     }
@@ -342,7 +342,7 @@ export class QdrantService {
         wait: true,
       });
       logger.info(`Deleted ${ids.length} documents from ${collection}`);
-    } catch (error) {
+    } catch (error: any) {
       logger.error("Failed to delete documents", error);
       throw error;
     }
@@ -365,7 +365,7 @@ export class QdrantService {
         wait: true,
       });
       logger.info("Updated document metadata", { id });
-    } catch (error) {
+    } catch (error: any) {
       logger.error("Failed to update metadata", error);
       throw error;
     }
@@ -388,7 +388,7 @@ export class QdrantService {
         status: info.status,
         optimizersStatus: info.optimizer_status,
       };
-    } catch (error) {
+    } catch (error: any) {
       logger.error("Failed to get collection stats", error);
       throw error;
     }
@@ -408,7 +408,7 @@ export class QdrantService {
         },
       });
       logger.info(`Optimized collection: ${collection}`);
-    } catch (error) {
+    } catch (error: any) {
       logger.error("Failed to optimize collection", error);
       throw error;
     }
@@ -424,7 +424,7 @@ export class QdrantService {
       const result = await (this.client as any).createSnapshot(collection);
       logger.info(`Created snapshot for ${collection}`, result);
       return result.name;
-    } catch (error) {
+    } catch (error: any) {
       logger.error("Failed to create snapshot", error);
       throw error;
     }
@@ -437,7 +437,7 @@ export class QdrantService {
     try {
       const collections = await this.client.getCollections();
       return collections.collections.some((c) => c.name === name);
-    } catch (error) {
+    } catch (error: any) {
       logger.error("Failed to check collection existence", error);
       return false;
     }

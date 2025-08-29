@@ -45,7 +45,7 @@ function updateTemplateCodeIfNeeded(codeUpdates: ProcessResult['codeUpdate'][], 
 
 const REMOVE_COMMENTS_TO_MAKE_GLOBAL_WRAPPING_EASY = true
 
-async function generateStyles(rulesToGenerate: ProcessResult['rulesToGenerate'], uno: UnoGenerator<object>) {
+async function generateStyles(rulesToGenerate: ProcessResult['rulesToGenerate'], uno: UnoGenerator<object>): Promise<any> {
   const shortcutsForThisComponent = Object.entries(rulesToGenerate)
   uno.config.shortcuts.push(...shortcutsForThisComponent)
 

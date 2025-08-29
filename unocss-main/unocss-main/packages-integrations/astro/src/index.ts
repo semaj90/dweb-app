@@ -10,7 +10,7 @@ import { normalizePath } from 'vite'
 
 const UNO_INJECT_ID = 'uno-astro'
 
-interface AstroVitePluginOptions {
+export interface AstroVitePluginOptions {
   injects: string[]
 }
 

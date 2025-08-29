@@ -8,7 +8,7 @@ import {
   cases,
   evidence,
   criminals
-} from "../db/schema-postgres.js";
+} from '../db/schema-postgres';
 import { eq, and, sql, or, ilike } from "drizzle-orm";
 import cuid2 from "@paralleldrive/cuid2";
 
@@ -71,19 +71,19 @@ export class VectorService {
         // Create index for better performance
         try {
           await this.qdrant.createPayloadIndex(this.collectionName, "type");
-        } catch (error) {
+        } catch (error: any) {
           console.log("Index for 'type' may already exist");
         }
 
         try {
           await this.qdrant.createPayloadIndex(this.collectionName, "case_id");
-        } catch (error) {
+        } catch (error: any) {
           console.log("Index for 'case_id' may already exist");
         }
 
         console.log(`Created Qdrant collection: ${this.collectionName}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to initialize Qdrant collection:", error);
       throw error;
     }
@@ -135,7 +135,7 @@ export class VectorService {
         .onConflictDoNothing();
 
       return embedding;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to generate embedding:", error);
 
       // Fallback: check PostgreSQL cache
@@ -211,7 +211,7 @@ export class VectorService {
         });
 
       console.log(`Stored document ${id} in vector database`);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to store document:", error);
       throw error;
     }
@@ -258,7 +258,7 @@ export class VectorService {
       await this.redis.set(cacheKey, JSON.stringify(results), 'EX', 5 * 60); // 5-minute cache
 
       return results;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Vector search failed:", error);
       throw error;
     }
@@ -299,7 +299,7 @@ export class VectorService {
       );
 
       return combinedResults.slice(0, limit);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Hybrid search failed:", error);
       throw error;
     }
@@ -353,7 +353,7 @@ export class VectorService {
           .limit(limit);
 
         results.push(
-          ...evidenceResults.map((e) => ({
+          ...evidenceResults.map((e: any) => ({
             id: e.id,
             score: 0.8,
             metadata: { type: "evidence", title: e.title, case_id: e.caseId },
@@ -390,7 +390,7 @@ export class VectorService {
       }
 
       return results;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Keyword search failed:", error);
       return [];
     }
@@ -507,7 +507,7 @@ export class VectorService {
         }));
 
       return results.slice(0, options.limit || 10);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to find similar documents:", error);
       throw error;
     }
@@ -569,7 +569,7 @@ export class VectorService {
       }
 
       console.log(`Bulk indexing completed: ${documents.length} documents`);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Bulk indexing failed:", error);
       throw error;
     }
@@ -590,7 +590,7 @@ export class VectorService {
         .where(eq(vectorMetadata.documentId, documentId));
 
       console.log(`Deleted document ${documentId}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to delete document:", error);
       throw error;
     }
@@ -618,7 +618,7 @@ export class VectorService {
       status.collection = collections.collections.some(
         (c) => c.name === this.collectionName,
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error("Qdrant health check failed:", error);
     }
 
@@ -626,7 +626,7 @@ export class VectorService {
       // Check Redis
       await this.redis.ping();
       status.redis = true;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Redis health check failed:", error);
     }
 
@@ -645,7 +645,7 @@ export class VectorService {
         documentCount: info.points_count || 0,
         collectionInfo: info,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to get collection stats:", error);
       return {
         documentCount: 0,
@@ -658,7 +658,7 @@ export class VectorService {
   async close(): Promise<void> {
     try {
       await this.redis.quit();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to close Redis connection:", error);
     }
   }

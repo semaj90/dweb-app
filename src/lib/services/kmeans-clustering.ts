@@ -436,7 +436,7 @@ export class LegalKMeansClusterer {
   // PERSISTENCE METHODS
   // =============================================================================
   
-  private async saveProgress(iteration: number): Promise<void> {
+  private async saveProgress(iteration: number): Promise<any> {
     await this.redis.hset('kmeans:training:progress', {
       iteration,
       silhouetteScore: this._silhouetteScore,
@@ -444,7 +444,7 @@ export class LegalKMeansClusterer {
     });
   }
   
-  private async saveToRedis(): Promise<void> {
+  private async saveToRedis(): Promise<any> {
     const serialized = {
       config: this.config,
       centroids: this.centroids,

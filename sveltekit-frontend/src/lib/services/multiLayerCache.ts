@@ -2,7 +2,7 @@ import crypto from "crypto";
 import Loki from 'lokijs';
 import Fuse from "fuse.js";
 import { browser } from '$app/environment';
-import type { SearchResult } from './aiPipeline.js';
+import type { SearchResult } from './aiPipeline';
 
 export interface CacheEntry {
   id: string;
@@ -102,7 +102,7 @@ export class MultiLayerCache {
       await new Promise((resolve) => {
         this.persistentDb!.loadDatabase({}, resolve);
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to initialize persistent storage:', error);
     }
   }
@@ -161,7 +161,7 @@ export class MultiLayerCache {
       // Update access time stats
       this.stats.totalAccessTime += Date.now() - startTime;
       this.stats.accessCount++;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Cache set error:', error);
       throw error;
     }
@@ -590,7 +590,7 @@ class LokiIndexedAdapter {
       request.onerror = () => {
         callback(null);
       };
-    } catch (error) {
+    } catch (error: any) {
       callback(null);
     }
   }
@@ -611,7 +611,7 @@ class LokiIndexedAdapter {
         console.error('Failed to save database');
         callback();
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Database save error:', error);
       callback();
     }
@@ -624,7 +624,7 @@ class LokiIndexedAdapter {
       request.onerror = () => reject(request.error);
       request.onsuccess = () => resolve(request.result);
 
-      request.onupgradeneeded = (event) => {
+      request.onupgradeneeded = (event: any) => {
         const db = (event.target as IDBOpenDBRequest).result;
         if (!db.objectStoreNames.contains('database')) {
           db.createObjectStore('database', { keyPath: 'id' });

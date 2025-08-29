@@ -6,19 +6,19 @@ import { getContext7MulticoreService, type RecommendationRequest, type Processin
  */
 
 // Agent interfaces (defined locally to avoid import issues)
-interface ClaudeAgentRequest {
+export interface ClaudeAgentRequest {
   prompt: string;
   context?: unknown;
   options?: unknown;
 }
 
-interface CrewAIAgentRequest {
+export interface CrewAIAgentRequest {
   prompt: string;
   context?: unknown;
   options?: unknown;
 }
 
-interface AutoGenAgentRequest {
+export interface AutoGenAgentRequest {
   prompt: string;
   context?: unknown;
   options?: unknown;

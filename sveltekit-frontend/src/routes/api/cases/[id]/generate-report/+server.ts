@@ -64,7 +64,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
       success: true,
       report: newReport[0],
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Report generation failed:", error);
     return json({ error: "Report generation failed" }, { status: 500 });
   }
@@ -82,7 +82,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
       .where(eq(reports.createdBy, locals.user.id));
 
     return json({ reports: userReports });
-  } catch (error) {
+  } catch (error: any) {
     return json({ error: "Failed to fetch reports" }, { status: 500 });
   }
 };

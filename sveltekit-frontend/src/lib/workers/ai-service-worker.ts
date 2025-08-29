@@ -16,7 +16,7 @@ import type {
 
 declare const self: DedicatedWorkerGlobalScope;
 
-interface AIProviderConfig {
+export interface AIProviderConfig {
   id: string;
   type: "ollama" | "llamacpp" | "autogen" | "crewai";
   endpoint: string;
@@ -94,7 +94,7 @@ class AIServiceWorker {
             default:
               console.warn("Unknown message type:", type);
           }
-        } catch (error) {
+        } catch (error: any) {
           this.sendError(taskId, error as Error);
         }
       },
@@ -131,7 +131,7 @@ class AIServiceWorker {
         taskId,
         payload: result,
       });
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof Error && error.name === "AbortError") {
         this.sendMessage({
           type: "TASK_CANCELLED",
@@ -164,7 +164,7 @@ class AIServiceWorker {
       try {
         const response = await this.callProvider(provider, task, signal);
         return response;
-      } catch (error) {
+      } catch (error: any) {
         lastError = error as Error;
 
         if (signal.aborted || attempt === provider.retries) {

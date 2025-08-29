@@ -11,7 +11,7 @@ import { FlashAttentionGPUErrorProcessor } from './flashattention-gpu-error-proc
 import type { FlatBufferNodeData } from './flatbuffer-node-data';
 
 // === Core Types ===
-interface GPUCacheConfig {
+export interface GPUCacheConfig {
   maxMemoryMB: number;
   cudaDeviceId: number;
   enableCompression: boolean;
@@ -26,7 +26,7 @@ interface GPUCacheConfig {
   };
 }
 
-interface CacheEntry {
+export interface CacheEntry {
   id: string;
   data: any;
   metadata: {
@@ -42,7 +42,7 @@ interface CacheEntry {
   embedding?: Float32Array;
 }
 
-interface UserHistoryEntry {
+export interface UserHistoryEntry {
   userId: string;
   sessionId: string;
   query: string;
@@ -60,7 +60,7 @@ interface UserHistoryEntry {
   };
 }
 
-interface DatabaseOrchestration {
+export interface DatabaseOrchestration {
   postgresql: {
     partitioned: boolean;
     vectorIndex: 'pgvector' | 'faiss';
@@ -131,7 +131,7 @@ export class GPUCacheOrchestrator extends EventEmitter {
       this.isInitialized = true;
       this.emit('initialized');
       console.log('🚀 GPU Cache Orchestrator initialized successfully');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize GPU Cache Orchestrator:', error);
       throw error;
     }
@@ -177,7 +177,7 @@ export class GPUCacheOrchestrator extends EventEmitter {
       const cycleTime = performance.now() - startTime;
       this.emit('eventLoopCycle', { cycleTimeMs: cycleTime, timestamp: Date.now() });
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Event loop cycle error:', error);
       this.emit('eventLoopError', error);
     }

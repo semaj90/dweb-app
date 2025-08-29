@@ -190,7 +190,7 @@ class VectorSearchService {
       setTimeout(() => this.queryCache.delete(cacheKey), this.cacheTimeout);
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Vector search failed:', error);
       throw new Error(`Search failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
@@ -295,7 +295,7 @@ class VectorSearchService {
           updatedAt: result.updatedAt
         }
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to find similar documents:', error);
       throw error;
     }
@@ -376,7 +376,7 @@ class VectorSearchService {
         coherenceScore: cluster.coherenceScore,
         topics: cluster.topics
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Document clustering failed:', error);
       throw error;
     }
@@ -451,7 +451,7 @@ class VectorSearchService {
           frequency: data.count,
           confidence: Math.min(data.count / 10, 1) // Simple confidence scoring
         }));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to generate query suggestions:', error);
       return [];
     }
@@ -484,7 +484,7 @@ class VectorSearchService {
       }).onConflictDoNothing();
 
       return embedding;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to generate query embedding:', error);
       throw error;
     }
@@ -570,7 +570,7 @@ class VectorSearchService {
         results,
         processingTime: Date.now() - startTime
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Vector search failed:', error);
       throw error;
     }
@@ -614,7 +614,7 @@ class VectorSearchService {
         results: Array.from(allResults.values()),
         processingTime: Date.now() - startTime
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Text search failed:', error);
       return { results: [], processingTime: Date.now() - startTime };
     }
@@ -750,7 +750,7 @@ class VectorSearchService {
   private async initializeFuseIndex(): Promise<void> {
     try {
       await this.updateFuseIndex();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to initialize Fuse index:', error);
     }
   }
@@ -799,7 +799,7 @@ class VectorSearchService {
       });
 
       this.lastIndexUpdate = new Date();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to update Fuse index:', error);
     }
   }
@@ -843,7 +843,7 @@ class VectorSearchService {
         .slice(0, 5);
 
       return [query, ...expansions];
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Query expansion failed:', error);
       return [query];
     }

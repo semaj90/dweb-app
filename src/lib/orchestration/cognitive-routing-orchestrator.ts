@@ -11,7 +11,7 @@ import { LegalDocumentBinarySerializer } from '../binary/flatbuffer-legal-schema
 import type { GPUEmbeddingCache, NESCacheState } from '../services/nes-cache-orchestrator';
 
 // Multi-dimensional routing decision matrix
-interface RoutingDecisionMatrix {
+export interface RoutingDecisionMatrix {
   userIntent: Float32Array;        // 64-dim user intent embedding
   systemLoad: Float32Array;       // 32-dim system resource state
   cacheState: Float32Array;       // 32-dim cache effectiveness
@@ -19,7 +19,7 @@ interface RoutingDecisionMatrix {
   realtimeMetrics: Float32Array;   // 64-dim real-time performance
 }
 
-interface CognitiveRoute {
+export interface CognitiveRoute {
   id: string;
   priority: number;
   confidence: number;
@@ -31,7 +31,7 @@ interface CognitiveRoute {
   learningWeight: number;
 }
 
-interface ReinforcementLearningState {
+export interface ReinforcementLearningState {
   qTable: Map<string, Map<string, number>>;  // State-Action value table
   rewardHistory: Array<{ state: string; action: string; reward: number; timestamp: number }>;
   explorationRate: number;
@@ -40,14 +40,14 @@ interface ReinforcementLearningState {
   lastDecision: { state: string; action: string; timestamp: number } | null;
 }
 
-interface CognitiveMemory {
+export interface CognitiveMemory {
   shortTerm: Map<string, any>;     // Recent decisions and outcomes
   workingMemory: Map<string, any>; // Active processing contexts
   longTermPatterns: Map<string, any>; // Learned behavioral patterns
   episodicMemory: Array<{ event: any; context: any; timestamp: number }>; // Specific experiences
 }
 
-interface PhysicsAwareContext {
+export interface PhysicsAwareContext {
   momentum: Float32Array;          // Directional tendency of requests
   inertia: Float32Array;          // Resistance to routing changes
   acceleration: Float32Array;     // Rate of change in patterns
@@ -564,7 +564,7 @@ export class CognitiveRoutingOrchestrator {
     latency: number;
     resourceUsage: number;
     userSatisfaction?: number;
-  }): Promise<void> {
+  }): Promise<any> {
     if (!this.reinforcementLearning.lastDecision) return;
 
     const { state, action } = this.reinforcementLearning.lastDecision;

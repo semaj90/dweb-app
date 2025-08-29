@@ -1,6 +1,6 @@
 import { createMachine, assign } from 'xstate';
 
-interface DetectiveContext {
+export interface DetectiveContext {
   selectedIds: number[];
   hypothesis: string;
   activeCase: number | null;
@@ -114,7 +114,7 @@ export const detectiveMachine = createMachine<
 
       analyzing: {
         invoke: {
-          src: async (context) => {
+          src: async (context): Promise<any> => {
             const selectedEvidence = context.evidence.filter((item) =>
               context.selectedIds.includes((item as any).id)
             );
@@ -149,7 +149,7 @@ export const detectiveMachine = createMachine<
 
       saving: {
         invoke: {
-          src: async (context) => {
+          src: async (context): Promise<any> => {
             const saveData = {
               hypothesis: context.hypothesis,
               selectedIds: context.selectedIds,

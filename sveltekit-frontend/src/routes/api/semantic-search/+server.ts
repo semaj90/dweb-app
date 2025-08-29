@@ -77,7 +77,7 @@ export const POST: RequestHandler = async ({ request }) => {
       query,
       options: { limit, threshold },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Semantic search error:", error);
     analyticsLog({
       event: "semantic_search_error",
@@ -142,7 +142,7 @@ export const GET: RequestHandler = async ({ url }) => {
       query,
       options: { limit, threshold },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Semantic search GET error:", error);
     return json(
       { error: "Failed to perform semantic search", success: false },

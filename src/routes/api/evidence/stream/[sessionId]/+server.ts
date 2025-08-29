@@ -1,7 +1,7 @@
 import { registerWsConnection } from '$lib/server/wsBroker';
 import type { RequestHandler } from '@sveltejs/kit';
 
-export const GET: RequestHandler = async ({ request, params }) => {
+export const GET: RequestHandler = async ({ request, params }): Promise<any> => {
   const { sessionId } = params;
 
   if (!sessionId) {
@@ -40,7 +40,7 @@ export const GET: RequestHandler = async ({ request, params }) => {
       }
     );
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('WebSocket upgrade error:', error);
     return new Response('WebSocket upgrade failed', { status: 500 });
   }

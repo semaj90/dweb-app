@@ -2,7 +2,7 @@
 // XState Machine for AI-Powered Intent Prediction and Prefetching
 import { createMachine, assign, sendParent, fromPromise } from "xstate";
 
-interface PrefetchContext {
+export interface PrefetchContext {
   // User behavior tracking
   userActions: Array<{
     action: string;
@@ -310,7 +310,7 @@ export const prefetchMachine = createMachine({
           processingTime
         };
         
-      } catch (error) {
+      } catch (error: any) {
         throw new Error(`Prediction failed: ${error}`);
       }
     }),
@@ -396,7 +396,7 @@ function generatePrefetchQueue(intent: string, context: PrefetchContext) {
   return queue;
 }
 
-async function prefetchEmbedding(resource: string) {
+async function prefetchEmbedding(resource: string): Promise<any> {
   // Call batch embedding service
   const response = await fetch('http://localhost:8081/batch-embed', {
     method: 'POST',
@@ -411,19 +411,19 @@ async function prefetchEmbedding(resource: string) {
   return response.ok;
 }
 
-async function prefetchDocument(resource: string) {
+async function prefetchDocument(resource: string): Promise<any> {
   // Prefetch document content
   console.log(`Prefetching document: ${resource}`);
   return true;
 }
 
-async function prefetchApiData(resource: string) {
+async function prefetchApiData(resource: string): Promise<any> {
   // Prefetch API data
   console.log(`Prefetching API data: ${resource}`);
   return true;
 }
 
-async function prefetchRoute(resource: string) {
+async function prefetchRoute(resource: string): Promise<any> {
   // Prefetch route data
   console.log(`Prefetching route: ${resource}`);
   return true;

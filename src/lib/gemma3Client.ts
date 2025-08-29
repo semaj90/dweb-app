@@ -88,7 +88,7 @@ export class Gemma3Client {
         signal: AbortSignal.timeout(10000),
       });
       return response.ok;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Health check failed:", error);
       return false;
     }
@@ -328,7 +328,7 @@ export async function detectAvailableServer(): Promise<{
           backend: info.backend || server.name,
         };
       }
-    } catch (error) {
+    } catch (error: any) {
       console.debug(`Server ${server.url} not available:`, error);
     }
   }
@@ -342,24 +342,24 @@ export function createGemma3Store() {
     // Server-side, return a mock
     return {
       subscribe: () => () => {},
-      checkHealth: async () => false,
-      askQuestion: async () => "",
-      analyzeDocument: async () => "",
-      reviewContract: async () => "",
-      generateTemplate: async () => "",
+      checkHealth: async (): Promise<any> => false,
+      askQuestion: async (): Promise<any> => "",
+      analyzeDocument: async (): Promise<any> => "",
+      reviewContract: async (): Promise<any> => "",
+      generateTemplate: async (): Promise<any> => "",
     };
   }
 
   let client = new Gemma3Client();
-  let serverInfo: unknown = null;
+  let serverInfo: any = null;
 
   return {
-    subscribe: (callback: (info: unknown) => void) => {
+    subscribe: (callback: (info: any) => void) => {
       callback(serverInfo);
       return () => {};
     },
 
-    async checkHealth() {
+    async checkHealth(): Promise<any> {
       try {
         const available = await detectAvailableServer();
         if (available) {
@@ -369,7 +369,7 @@ export function createGemma3Store() {
         }
         serverInfo = null;
         return false;
-      } catch (error) {
+      } catch (error: any) {
         console.error("Health check failed:", error);
         serverInfo = null;
         return false;

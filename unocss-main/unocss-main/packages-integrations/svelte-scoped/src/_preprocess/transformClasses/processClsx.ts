@@ -2,8 +2,8 @@ import type { UnoGenerator } from '@unocss/core'
 import type { TransformClassesOptions } from '../types'
 import type { FoundClass } from './findClasses'
 import type { ProcessResult } from './processClasses'
-import { processClassBody } from './processClassBody.js'
-import { processDirective } from './processDirective.js'
+import { processClassBody } from './processClassBody'
+import { processDirective } from './processDirective'
 
 export async function processClsx(
   cls: FoundClass,

@@ -1,6 +1,6 @@
 /// <reference types="vitest" />
 // Use vitest globals to avoid named-import type issues
-// import { benchmarkSplitter } from "../shared/text/benchmark-splitter.js";
+// import { benchmarkSplitter } from '../shared/text/benchmark-splitter';
 
 // CI performance guard: adjust threshold if environment differs.
 // Threshold chosen to allow moderate variance; failing test signals regression.

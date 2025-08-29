@@ -11,7 +11,7 @@ const FALLBACK_MODEL = 'gemma2:2b'; // lightweight alternative
 const MAX_INPUT_CHARS = 80_000;
 const REQUEST_TIMEOUT_MS = 25_000;
 
-interface SummarizeOptions {
+export interface SummarizeOptions {
   max_tokens?: number;
   mode?: 'auto' | 'bullets' | 'abstract' | 'structured';
   bullets?: number;
@@ -23,7 +23,7 @@ interface SummarizeOptions {
   clientCacheHint?: boolean; // request IndexedDB persistence hint
 }
 
-interface SummarizeResponseMeta {
+export interface SummarizeResponseMeta {
   duration: number;
   tokens: number;
   promptTokens: number;
@@ -32,27 +32,27 @@ interface SummarizeResponseMeta {
   fallbackUsed: boolean;
 }
 
-interface OllamaResponse {
+export interface OllamaResponse {
   response?: string;
   eval_count?: number;
   prompt_eval_count?: number;
   done?: boolean;
 }
 
-interface SummarizeRequest {
+export interface SummarizeRequest {
   text: string;
   type?: 'legal' | 'general';
   options?: SummarizeOptions;
 }
 
-interface StructuredSummary {
+export interface StructuredSummary {
   overview: string;
   keyPoints: string[];
   risks: string[];
   actions: string[];
 }
 
-interface SummarizeResponse {
+export interface SummarizeResponse {
   success: boolean;
   summary?: string;
   model?: string;
@@ -120,7 +120,7 @@ export const GET: RequestHandler = async () => {
       fallbackModel: FALLBACK_MODEL,
       timestamp: new Date().toISOString()
     });
-  } catch (error) {
+  } catch (error: any) {
     return json({
       ok: false,
       error: 'Ollama service unreachable',
@@ -187,7 +187,7 @@ export const POST: RequestHandler = async ({ request }) => {
     let modelUsed = model;
     const body = { model, prompt, stream: !!options.stream, options: { temperature: options.temperature ?? 0.25, top_p: 0.9, max_tokens: maxTokens } };
     let result: any;
-    const executePrimary = async () => {
+    const executePrimary = async (): Promise<any> => {
       // Streaming path
       if (body.stream) {
         const response = await withTimeout(fetch(`${OLLAMA_BASE_URL}/api/generate`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }), REQUEST_TIMEOUT_MS, 'ollama-generate');
@@ -225,7 +225,7 @@ export const POST: RequestHandler = async ({ request }) => {
     };
     try {
       result = await executePrimary();
-    } catch (err) {
+    } catch (err: any) {
       if (model !== FALLBACK_MODEL) {
         try {
           fallbackUsed = true;
@@ -300,7 +300,7 @@ export const POST: RequestHandler = async ({ request }) => {
       clientCacheHint: cacheKey && options.clientCacheHint ? { key: cacheKey, ttlMs: CACHE_CONSTANTS.TTL_MS } : undefined,
       suggestions: ['Try mode="bullets" or mode="structured" for different formats', 'Provide "bullets": N to control bullet count', 'Use smaller excerpts for more precise summaries']
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('AI summarization error:', error);
     return json({ success: false, error: 'AI summarization service temporarily unavailable', details: import.meta.env.NODE_ENV === 'development' ? String(error) : undefined, timestamp: new Date().toISOString() }, { status: 500 });
   }
@@ -313,7 +313,7 @@ export const DELETE: RequestHandler = async ({ params, url }) => {
     if (!key) return json({ success: false, error: 'Cache key required' }, { status: 400 });
     await deleteCache(key);
     return json({ success: true, deleted: key, timestamp: new Date().toISOString() });
-  } catch (err) {
+  } catch (err: any) {
     return json({ success: false, error: 'Failed to delete cache entry' }, { status: 500 });
   }
 };

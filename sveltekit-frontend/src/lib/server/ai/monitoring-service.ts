@@ -2,10 +2,10 @@
 // lib/server/ai/monitoring-service.ts
 // Comprehensive monitoring and observability for AI synthesis pipeline
 
-import { logger } from "./logger.js";
+import { logger } from './logger';
 import { EventEmitter } from "events";
 
-interface MetricData {
+export interface MetricData {
   requestId: string;
   processingTime: number;
   confidence: number;
@@ -14,14 +14,14 @@ interface MetricData {
   qualityScore: number;
 }
 
-interface AlertRule {
+export interface AlertRule {
   name: string;
   condition: (metrics: any) => boolean;
   message: string;
   severity: 'info' | 'warning' | 'critical';
 }
 
-interface PerformanceMetrics {
+export interface PerformanceMetrics {
   p50: number;
   p95: number;
   p99: number;
@@ -392,7 +392,7 @@ class MonitoringService extends EventEmitter {
             timestamp: new Date(),
           });
         }
-      } catch (error) {
+      } catch (error: any) {
         results.set(name, false);
         logger.error(`[Monitoring] Health check failed for ${name}:`, error);
       }

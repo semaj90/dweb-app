@@ -1,7 +1,7 @@
 import { setup, assign, createActor, fromPromise } from 'xstate';
 
 // Authentication context interface
-interface AuthContext {
+export interface AuthContext {
   user: {
     id?: string;
     email?: string;
@@ -59,7 +59,7 @@ type AuthEvent =
   | { type: 'PROFILE_UPDATED' }
   | { type: 'RETRY' };
 
-interface LoginData {
+export interface LoginData {
   email: string;
   password: string;
   rememberMe?: boolean;
@@ -67,7 +67,7 @@ interface LoginData {
   deviceInfo?: unknown;
 }
 
-interface RegistrationData {
+export interface RegistrationData {
   email: string;
   firstName: string;
   lastName: string;

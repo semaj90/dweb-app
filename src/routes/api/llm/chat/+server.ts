@@ -3,7 +3,7 @@ import envConfig from '../../../../../env-config.mjs';
 import type { RequestHandler } from './$types';
 
 // POST /api/llm/chat - Interactive chat with Ollama
-export const POST: RequestHandler = async ({ locals, request }) => {
+export const POST: RequestHandler = async ({ locals, request }): Promise<any> => {
   if (!locals.user) {
     throw error(401, 'Unauthorized');
   }
@@ -72,7 +72,7 @@ Assistant:`;
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Error in chat:', err);
     throw error(500, 'Failed to process chat message');
   }

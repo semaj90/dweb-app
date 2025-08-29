@@ -54,7 +54,7 @@ export class BrowserCacheManager {
         "message",
         this.handleServiceWorkerMessage.bind(this),
       );
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Failed to register sprite cache service worker:", error);
     }
   }
@@ -89,7 +89,7 @@ export class BrowserCacheManager {
         sprite.data = null; // Will be loaded from IndexedDB on access
         this.memoryCache.set(key, sprite);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Failed to load persisted sprite cache:", error);
     }
   }
@@ -183,7 +183,7 @@ export class BrowserCacheManager {
     return new Promise((resolve) => {
       const messageChannel = new MessageChannel();
 
-      messageChannel.port1.onmessage = (event) => {
+      messageChannel.port1.onmessage = (event: any) => {
         const { data } = event.data;
         resolve(data || null);
       };
@@ -218,7 +218,7 @@ export class BrowserCacheManager {
 
       request.onerror = () => resolve(null);
 
-      request.onsuccess = (event) => {
+      request.onsuccess = (event: any) => {
         const db = (event.target as IDBOpenDBRequest).result;
         const transaction = db.transaction(["sprites"], "readonly");
         const store = transaction.objectStore("sprites");
@@ -228,7 +228,7 @@ export class BrowserCacheManager {
         getRequest.onerror = () => resolve(null);
       };
 
-      request.onupgradeneeded = (event) => {
+      request.onupgradeneeded = (event: any) => {
         const db = (event.target as IDBOpenDBRequest).result;
         if (!db.objectStoreNames.contains("sprites")) {
           db.createObjectStore("sprites", { keyPath: "key" });
@@ -243,7 +243,7 @@ export class BrowserCacheManager {
 
       request.onerror = () => reject(request.error);
 
-      request.onsuccess = (event) => {
+      request.onsuccess = (event: any) => {
         const db = (event.target as IDBOpenDBRequest).result;
         const transaction = db.transaction(["sprites"], "readwrite");
         const store = transaction.objectStore("sprites");
@@ -253,7 +253,7 @@ export class BrowserCacheManager {
         transaction.onerror = () => reject(transaction.error);
       };
 
-      request.onupgradeneeded = (event) => {
+      request.onupgradeneeded = (event: any) => {
         const db = (event.target as IDBOpenDBRequest).result;
         if (!db.objectStoreNames.contains("sprites")) {
           db.createObjectStore("sprites", { keyPath: "key" });
@@ -303,7 +303,7 @@ export class BrowserCacheManager {
         }
 
         return btoa(String.fromCharCode.apply(null, Array.from(compressed)));
-      } catch (error) {
+      } catch (error: any) {
         console.warn("Compression failed, storing uncompressed:", error);
         return JSON.stringify(data);
       }
@@ -360,7 +360,7 @@ export class BrowserCacheManager {
         }
 
         return JSON.parse(jsonString);
-      } catch (error) {
+      } catch (error: any) {
         console.warn("Decompression failed:", error);
         return data;
       }
@@ -427,7 +427,7 @@ export class BrowserCacheManager {
         `${this.config.cachePrefix}index`,
         JSON.stringify(index),
       );
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Failed to update cache index:", error);
     }
   }
@@ -467,7 +467,7 @@ export class BrowserCacheManager {
         request.onsuccess = () => resolve(void 0);
         request.onerror = () => resolve(void 0);
       });
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Failed to clear IndexedDB cache:", error);
     }
 

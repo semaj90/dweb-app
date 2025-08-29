@@ -2,7 +2,7 @@ import { spawn } from 'child_process';
 import fs from 'fs/promises';
 import path from 'path';
 
-interface ErrorEntry {
+export interface ErrorEntry {
   file: string;
   line: number;
   column: number;
@@ -11,7 +11,7 @@ interface ErrorEntry {
   code?: string;
 }
 
-interface ClaudePayload {
+export interface ClaudePayload {
   task: string;
   prompt: string;
   context: {
@@ -101,7 +101,7 @@ async function createClaudePayload(output: string): Promise<ClaudePayload> {
   };
 }
 
-async function saveResults(output: string, payload: ClaudePayload) {
+async function saveResults(output: string, payload: ClaudePayload): Promise<any> {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
   const logDir = path.join(process.cwd(), '.check-logs');
   
@@ -124,7 +124,7 @@ async function saveResults(output: string, payload: ClaudePayload) {
   return { logDir, timestamp };
 }
 
-async function main() {
+async function main(): Promise<any> {
   try {
     const output = await runCheck();
     
@@ -160,7 +160,7 @@ async function main() {
       });
     }
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Error:', error);
     process.exit(1);
   }

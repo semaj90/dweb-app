@@ -216,7 +216,7 @@ export class AutoGenService {
         startTime: Date.now(),
         metadata: data.metadata || {},
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to start AutoGen conversation:", error);
       throw error;
     }
@@ -243,7 +243,7 @@ export class AutoGenService {
       }
 
       return await response.json();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to get conversation:", error);
       throw error;
     }
@@ -281,7 +281,7 @@ export class AutoGenService {
 
       const data = await response.json();
       return data.messages || [];
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to send message:", error);
       throw error;
     }
@@ -301,7 +301,7 @@ export class AutoGenService {
           },
         },
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to terminate conversation:", error);
       throw error;
     }
@@ -382,7 +382,7 @@ export class AutoGenService {
           workflowType,
         },
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Legal workflow execution failed:", error);
       throw error;
     }
@@ -425,7 +425,7 @@ export class AutoGenService {
       }
 
       return await response.json();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to get capabilities:", error);
       // Return defaults
       return {
@@ -494,7 +494,7 @@ export class AutoGenService {
         try {
           const message: AutoGenMessage = JSON.parse(event.data);
           yield message;
-        } catch (error) {
+        } catch (error: any) {
           console.error("Failed to parse streaming message:", error);
         }
       }

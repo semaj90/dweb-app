@@ -48,7 +48,7 @@ class SIMDTokenEncoder {
   }
 
   // Probe for WebGPU (browser/global) — set flag if available
-  private async initWebGPU(): Promise<void> {
+  private async initWebGPU(): Promise<any> {
     try {
       // In browsers: navigator.gpu; in some runtimes there may be a global gpu
       const maybeGPU = (globalThis as any).navigator?.gpu ?? (globalThis as any).gpu;
@@ -124,7 +124,7 @@ class SIMDTokenEncoder {
 
   // Lightweight helper to cache a token locally in Loki and/or IndexedDB (best-effort)
   // Called by higher-level code where appropriate (not auto-invoked here)
-  public async putLocalToken(key: string, value: string): Promise<void> {
+  public async putLocalToken(key: string, value: string): Promise<any> {
     try {
       if (this.lokiTokens) {
         // upsert in loki
@@ -265,7 +265,7 @@ export class LegalAICacheManager {
     avgResponseTime: 0
   };
 
-  async cacheTokens(key: string, tokens: any[], ttl: number = 3600): Promise<void> {
+  async cacheTokens(key: string, tokens: any[], ttl: number = 3600): Promise<any> {
     const startTime = Date.now();
 
     try {
@@ -286,7 +286,7 @@ export class LegalAICacheManager {
       }
 
       this.updateMetrics(Date.now() - startTime, true);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis cache error:', error);
       this.updateMetrics(Date.now() - startTime, false);
     }
@@ -318,14 +318,14 @@ export class LegalAICacheManager {
 
       this.updateMetrics(Date.now() - startTime, false);
       return null;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis get error:', error);
       this.updateMetrics(Date.now() - startTime, false);
       return null;
     }
   }
 
-  async cacheLegalDocument(documentId: string, analysis: any, ttl: number = 7200): Promise<void> {
+  async cacheLegalDocument(documentId: string, analysis: any, ttl: number = 7200): Promise<any> {
     const key = `legal:doc:${documentId}`;
     const data = {
       ...analysis,
@@ -335,7 +335,7 @@ export class LegalAICacheManager {
 
     try {
       await redis.setex(key, ttl, JSON.stringify(data));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Legal document cache error:', error);
     }
   }
@@ -344,13 +344,13 @@ export class LegalAICacheManager {
     try {
       const data = await redis.get(`legal:doc:${documentId}`);
       return data ? JSON.parse(data) : null;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Legal document get error:', error);
       return null;
     }
   }
 
-  async cacheEmbeddings(query: string, embeddings: number[], ttl: number = 1800): Promise<void> {
+  async cacheEmbeddings(query: string, embeddings: number[], ttl: number = 1800): Promise<any> {
     const key = `embeddings:${this.hashQuery(query)}`;
 
     try {
@@ -363,7 +363,7 @@ export class LegalAICacheManager {
         query,
         timestamp: Date.now()
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Embeddings cache error:', error);
     }
   }
@@ -380,13 +380,13 @@ export class LegalAICacheManager {
       const float32Array = new Float32Array(buffer.buffer);
 
       return Array.from(float32Array);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Embeddings get error:', error);
       return null;
     }
   }
 
-  async getMetrics() {
+  async getMetrics(): Promise<any> {
     return {
       ...this.metrics,
       hitRate: this.metrics.hits / (this.metrics.hits + this.metrics.misses) * 100,
@@ -436,7 +436,7 @@ export class LegalAICacheManager {
         await redis.flushdb();
         return 1;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Cache clear error:', error);
       return 0;
     }
@@ -457,10 +457,10 @@ export async function checkRedisHealth(): Promise<boolean> {
 }
 
 // Graceful shutdown
-export async function closeRedisConnection(): Promise<void> {
+export async function closeRedisConnection(): Promise<any> {
   try {
     await redis.quit();
-  } catch (error) {
+  } catch (error: any) {
     console.error('Redis shutdown error:', error);
   }
 }

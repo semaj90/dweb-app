@@ -24,7 +24,7 @@ export const GET: RequestHandler = async () => {
         health: 'GET /api/database-orchestrator/health',
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         success: false,
@@ -100,7 +100,7 @@ export const POST: RequestHandler = async ({ request }) => {
           { status: 400 }
         );
     }
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         success: false,

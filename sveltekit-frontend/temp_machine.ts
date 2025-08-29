@@ -2,7 +2,7 @@
 import { createMachine, assign, fromCallback } from 'xstate';
 import type { ProgressMsg } from '$lib/types/progress';
 
-interface UploadContext {
+export interface UploadContext {
   files: Record<string, {
     uploadProgress?: number;
     step?: string;
@@ -51,7 +51,7 @@ type UploadEvent =
           callback({ type: 'WS_OPENED' });
         };
         
-        ws.onmessage = (event) => {
+        ws.onmessage = (event: any) => {
           try {
             const msg: ProgressMsg = JSON.parse(event.data);
             
@@ -111,7 +111,7 @@ type UploadEvent =
           });
         };
         
-        ws.onclose = (event) => {
+        ws.onclose = (event: any) => {
           console.log(`🔌 WebSocket closed: ${event.code} - ${event.reason}`);
           
           callback({ type: 'WS_CLOSED' });
@@ -129,7 +129,7 @@ type UploadEvent =
           }
         };
         
-      } catch (error) {
+      } catch (error: any) {
         console.error('❌ Failed to create WebSocket connection:', error);
         callback({
           type: 'ERROR',
@@ -169,7 +169,7 @@ function createSseActor(sessionId: string) {
         callback({ type: 'WS_OPENED' });
       };
       
-      eventSource.onmessage = (event) => {
+      eventSource.onmessage = (event: any) => {
         try {
           const msg: ProgressMsg = JSON.parse(event.data);
           
@@ -223,7 +223,7 @@ function createSseActor(sessionId: string) {
         });
       };
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to create SSE connection:', error);
       callback({
         type: 'ERROR',

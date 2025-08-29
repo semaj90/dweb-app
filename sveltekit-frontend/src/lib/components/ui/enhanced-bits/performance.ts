@@ -20,7 +20,7 @@ export interface ComponentModule {
 const componentRegistry = new Map<string, () => Promise<ComponentModule>>();
 
 // Performance metrics tracking
-interface PerformanceMetrics {
+export interface PerformanceMetrics {
   componentLoadTime: number;
   renderTime: number;
   memoryUsage: number;
@@ -65,7 +65,7 @@ export async function loadComponent(name: string): Promise<ComponentModule> {
     });
 
     return module;
-  } catch (error) {
+  } catch (error: any) {
     console.error(`Failed to load component '${name}':`, error);
     throw error;
   }
@@ -108,7 +108,7 @@ export class OptimizedComponentFactory {
       this.loadedComponents.set(name, component);
       this.loadingPromises.delete(name);
       return component;
-    } catch (error) {
+    } catch (error: any) {
       this.loadingPromises.delete(name);
       throw error;
     }
@@ -218,7 +218,7 @@ export function createDebouncedSearch<T>(
           const result = await currentPromise;
           currentPromise = null;
           resolve(result);
-        } catch (error) {
+        } catch (error: any) {
           currentPromise = null;
           reject(error);
         }
@@ -448,7 +448,7 @@ export class PerformanceMonitor {
       try {
         longTaskObserver.observe({ entryTypes: ["longtask"] });
         this.observers.push(longTaskObserver);
-      } catch (e) {
+      } catch (e: any) {
         // Long task API not supported
       }
 
@@ -464,7 +464,7 @@ export class PerformanceMonitor {
       try {
         layoutShiftObserver.observe({ entryTypes: ["layout-shift"] });
         this.observers.push(layoutShiftObserver);
-      } catch (e) {
+      } catch (e: any) {
         // Layout shift API not supported
       }
     }

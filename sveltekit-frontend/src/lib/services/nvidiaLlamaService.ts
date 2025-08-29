@@ -181,7 +181,7 @@ export class NvidiaLlamaService {
       console.log('✅ NVIDIA go-llama service initialized successfully');
       this.updateStats();
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize NVIDIA Llama:', error);
       throw error;
     }
@@ -238,7 +238,7 @@ export class NvidiaLlamaService {
         }
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('NVIDIA Llama generation failed:', error);
       throw new Error(`Generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
@@ -269,7 +269,7 @@ export class NvidiaLlamaService {
         generation_time_ms: Date.now() - startTime
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('NVIDIA embeddings generation failed:', error);
       throw error;
     }
@@ -291,7 +291,7 @@ export class NvidiaLlamaService {
 
       return response.results;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Batch generation failed:', error);
       throw error;
     }
@@ -323,7 +323,7 @@ export class NvidiaLlamaService {
 
       return response;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Fine-tuning failed:', error);
       throw error;
     }
@@ -343,7 +343,7 @@ export class NvidiaLlamaService {
     try {
       const response = await productionServiceClient.execute('nvidia_llama.gpu_metrics', {});
       return response.metrics;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to get GPU metrics:', error);
       return {
         gpu_count: 1,
@@ -366,7 +366,7 @@ export class NvidiaLlamaService {
       await productionServiceClient.execute('nvidia_llama.update_config', {
         config: newConfig
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to update NVIDIA Llama config:', error);
       throw error;
     }
@@ -410,7 +410,7 @@ export class NvidiaLlamaService {
         queue_length: this.requestQueue.length
       });
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to update NVIDIA Llama stats:', error);
     }
   }
@@ -449,7 +449,7 @@ export class NvidiaLlamaService {
         item.resolve(responses[index]);
       });
 
-    } catch (error) {
+    } catch (error: any) {
       batch.forEach(item => {
         item.reject(error as Error);
       });

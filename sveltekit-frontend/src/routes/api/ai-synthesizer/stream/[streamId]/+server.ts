@@ -26,7 +26,7 @@ export const GET: RequestHandler = async ({ params, request }) => {
   const stream = new ReadableStream({
     async start(controller) {
       // Subscribe to stream updates
-      const unsubscribe = streamingService.subscribe(streamId, (event) => {
+      const unsubscribe = streamingService.subscribe(streamId, (event: any) => {
         const data = `event: ${event.type}\ndata: ${JSON.stringify(event.data)}\n\n`;
         controller.enqueue(encoder.encode(data));
 
@@ -44,7 +44,7 @@ export const GET: RequestHandler = async ({ params, request }) => {
         const heartbeat = `event: heartbeat\ndata: ${JSON.stringify({ timestamp: Date.now() })}\n\n`;
         try {
           controller.enqueue(encoder.encode(heartbeat));
-        } catch (err) {
+        } catch (err: any) {
           clearInterval(heartbeatInterval);
         }
       }, 30000);

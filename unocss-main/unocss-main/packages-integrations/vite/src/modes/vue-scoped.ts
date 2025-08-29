@@ -6,7 +6,7 @@ import { createFilter } from 'unplugin-utils'
 export function VueScopedPlugin(ctx: UnocssPluginContext): Plugin {
   let filter = createFilter([/\.vue$/], defaultPipelineExclude)
 
-  async function transformSFC(code: string) {
+  async function transformSFC(code: string): Promise<any> {
     await ctx.ready
     const { css } = await ctx.uno.generate(code)
     if (!css)

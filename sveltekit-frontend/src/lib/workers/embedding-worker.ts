@@ -89,7 +89,7 @@ if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScop
           success: true,
           data: result
         });
-      } catch (error) {
+      } catch (error: any) {
         this.postResponse({
           id,
           success: false,
@@ -127,7 +127,7 @@ if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScop
           
           // Small delay to prevent overwhelming
           await new Promise((resolve: any) => setTimeout(resolve, 10));
-        } catch (error) {
+        } catch (error: any) {
           batch.forEach((text, index) => {
             errors.push({
               index: i + index,

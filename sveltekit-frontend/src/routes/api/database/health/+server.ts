@@ -25,7 +25,7 @@ export const GET: RequestHandler = async () => {
     let initResult = null;
     try {
       initResult = await initializeDatabase();
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Database initialization error (may already be initialized):', error);
     }
 
@@ -37,7 +37,7 @@ export const GET: RequestHandler = async () => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Database health check failed:', error);
     
     return json({
@@ -71,7 +71,7 @@ export const POST: RequestHandler = async ({ request }) => {
       timestamp: new Date().toISOString()
     }, { status: 400 });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Database action failed:', error);
     
     return json({

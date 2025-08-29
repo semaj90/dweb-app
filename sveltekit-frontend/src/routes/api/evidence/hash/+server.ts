@@ -60,7 +60,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
       hash,
       evidence: evidenceResults,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error searching evidence by hash:", error);
     return json(
       {
@@ -122,7 +122,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       uploadedAt: item.uploadedAt,
       fileSize: item.fileSize,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error verifying evidence hash:", error);
     return json(
       {

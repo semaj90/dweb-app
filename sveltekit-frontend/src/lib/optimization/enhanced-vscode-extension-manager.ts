@@ -9,7 +9,7 @@
 let vscode: any;
 try {
   vscode = require("vscode");
-} catch (e) {
+} catch (e: any) {
   // Running outside VS Code context
   vscode = null;
 }
@@ -117,7 +117,7 @@ export class EnhancedVSCodeExtensionManager extends EventEmitter {
       this.recordMetrics(commandId, metrics);
       
       return { success: true, result, metrics };
-    } catch (error) {
+    } catch (error: any) {
       const endTime = performance.now();
       
       const metrics: CommandMetrics = {

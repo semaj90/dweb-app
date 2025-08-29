@@ -14,7 +14,7 @@ describe('XState Legal Case Machine - Simple Tests', () => {
       const module = await import('$lib/state/legal-case-machine.js');
       legalCaseMachine = module.legalCaseMachine;
       legalCaseSelectors = module.legalCaseSelectors;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to import machine:', error);
     }
   });

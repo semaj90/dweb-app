@@ -110,7 +110,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
         total: totalCount,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching activities:", error);
     return json({ error: "Failed to fetch activities" }, { status: 500 });
   }
@@ -156,7 +156,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       .returning();
 
     return json(newActivity, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating activity:", error);
     return json({ error: "Failed to create activity" }, { status: 500 });
   }

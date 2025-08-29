@@ -63,7 +63,7 @@ export const POST: RequestHandler = async ({ request }) => {
         timestamp: new Date().toISOString(),
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Embeddings API error:', error);
     return json(
       {

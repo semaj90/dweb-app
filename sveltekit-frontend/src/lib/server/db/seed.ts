@@ -9,7 +9,7 @@ function generateIdFromEntropySize(size: number): string {
   return generateId(size);
 }
 
-async function seed() {
+async function seed(): Promise<any> {
   console.log('🌱 Starting database seed...');
 
   try {
@@ -301,7 +301,7 @@ async function seed() {
    • Linked to John Executive criminal profile
 `);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Seed failed:', error);
     throw error;
   }

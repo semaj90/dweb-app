@@ -100,7 +100,7 @@ enum ErrorType {
   Database = 'database'
 }
 
-interface ErrorEntry {
+export interface ErrorEntry {
   id: string;
   type: ErrorType;
   file: string;
@@ -115,7 +115,7 @@ interface ErrorEntry {
   autoFixAvailable?: boolean;
 }
 
-interface BuildMetrics {
+export interface BuildMetrics {
   totalErrors: number;
   errorsByType: Record<ErrorType, number>;
   memoryUsage: NodeJS.MemoryUsage;
@@ -280,7 +280,7 @@ class VectorCacheManager {
           distance: 'Cosine'
         }
       });
-    } catch (e) {
+    } catch (e: any) {
       // Collection might already exist
     }
     
@@ -453,7 +453,7 @@ class MultiAgentOrchestrator {
 
       const json = await res.json();
       return json?.content?.[0]?.text || 'No response from Claude';
-    } catch (error) {
+    } catch (error: any) {
       console.error('Claude API error:', error);
       return { error: 'Claude API failed', details: error };
     }
@@ -479,7 +479,7 @@ class MultiAgentOrchestrator {
 
       const result = await response.json();
       return { agent: 'ollama', response: result.response };
-    } catch (error) {
+    } catch (error: any) {
       return { agent: 'ollama', error: 'Failed to connect' };
     }
   }
@@ -586,7 +586,7 @@ class MultiAgentOrchestrator {
 }
 
 // Main orchestration function
-async function runEnhancedCheckFix() {
+async function runEnhancedCheckFix(): Promise<any> {
   const startTime = Date.now();
   const initialMemory = process.memoryUsage();
   

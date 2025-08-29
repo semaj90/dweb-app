@@ -81,7 +81,7 @@ export class AuthStore {
       // Setup activity tracking
       this.setupActivityTracking();
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Auth initialization failed:', error);
       this.clearAuth();
     } finally {
@@ -122,7 +122,7 @@ export class AuthStore {
           requiresMFA: result.requiresMFA 
         };
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login error:', error);
       return { success: false, error: 'Network error during login' };
     } finally {
@@ -170,7 +170,7 @@ export class AuthStore {
           error: result.error || 'Registration failed' 
         };
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Registration error:', error);
       return { success: false, error: 'Network error during registration' };
     } finally {
@@ -189,7 +189,7 @@ export class AuthStore {
         method: 'POST',
         credentials: 'include'
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Logout error:', error);
     } finally {
       this.clearAuth();
@@ -222,7 +222,7 @@ export class AuthStore {
         this.clearAuth();
         return false;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Session check error:', error);
       this.clearAuth();
       return false;
@@ -261,7 +261,7 @@ export class AuthStore {
       } else {
         return { success: false, error: result.error || 'Profile update failed' };
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Profile update error:', error);
       return { success: false, error: 'Network error during profile update' };
     }
@@ -286,7 +286,7 @@ export class AuthStore {
         success: response.ok && result.success, 
         error: result.error 
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Password change error:', error);
       return { success: false, error: 'Network error during password change' };
     }

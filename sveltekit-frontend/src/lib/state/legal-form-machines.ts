@@ -70,7 +70,7 @@ export const AIAnalysisSchema = z.object({
 // STATE MACHINE CONTEXTS
 // ============================================================================
 
-interface DocumentUploadContext {
+export interface DocumentUploadContext {
   formData: z.infer<typeof DocumentUploadSchema> | null;
   validationErrors: Record<string, string[]>;
   uploadProgress: number;
@@ -82,7 +82,7 @@ interface DocumentUploadContext {
   maxRetries: number;
 }
 
-interface CaseCreationContext {
+export interface CaseCreationContext {
   formData: z.infer<typeof CaseCreationSchema> | null;
   validationErrors: Record<string, string[]>;
   createdCase: any | null;
@@ -92,7 +92,7 @@ interface CaseCreationContext {
   lastSaved: Date | null;
 }
 
-interface SearchContext {
+export interface SearchContext {
   query: z.infer<typeof SearchQuerySchema> | null;
   results: any[];
   validationErrors: Record<string, string[]>;
@@ -112,7 +112,7 @@ interface SearchContext {
   error: string | null;
 }
 
-interface AIAnalysisContext {
+export interface AIAnalysisContext {
   analysisData: z.infer<typeof AIAnalysisSchema> | null;
   validationErrors: Record<string, string[]>;
   analysisResults: any | null;
@@ -315,7 +315,7 @@ export const documentUploadMachine = createMachine({
       try {
         DocumentUploadSchema.parse(input);
         return true;
-      } catch (error) {
+      } catch (error: any) {
         if (error instanceof z.ZodError) {
           throw error.flatten().fieldErrors;
         }
@@ -502,7 +502,7 @@ export const caseCreationMachine = createMachine({
       try {
         CaseCreationSchema.parse(input);
         return true;
-      } catch (error) {
+      } catch (error: any) {
         if (error instanceof z.ZodError) {
           throw error.flatten().fieldErrors;
         }
@@ -661,7 +661,7 @@ export const searchMachine = createMachine({
       try {
         SearchQuerySchema.parse(input);
         return true;
-      } catch (error) {
+      } catch (error: any) {
         if (error instanceof z.ZodError) {
           throw error.flatten().fieldErrors;
         }
@@ -795,7 +795,7 @@ export const aiAnalysisMachine = createMachine({
       try {
         AIAnalysisSchema.parse(input);
         return true;
-      } catch (error) {
+      } catch (error: any) {
         if (error instanceof z.ZodError) {
           throw error.flatten().fieldErrors;
         }

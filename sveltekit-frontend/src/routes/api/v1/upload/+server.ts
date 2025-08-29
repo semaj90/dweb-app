@@ -134,7 +134,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 
     return json(uploadResponse);
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Upload API Error:', err);
     
     return error(500, {
@@ -187,7 +187,7 @@ export const GET: RequestHandler = async ({ url }) => {
           timestamp: new Date().toISOString()
         });
     }
-  } catch (err) {
+  } catch (err: any) {
     console.error('Upload GET Error:', err);
     return error(500, {
       message: 'Service unavailable',

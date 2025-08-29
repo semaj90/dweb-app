@@ -48,7 +48,7 @@ export const load: PageServerLoad = async ({ locals }) => {
       savedCitations: mockCitations,
       user: locals.user,
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error loading saved citations:", error);
     return {
       savedCitations: [],

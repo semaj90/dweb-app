@@ -5,7 +5,7 @@
 
 import { getEmbeddingRepository } from '$lib/server/embedding/embedding-repository';
 
-export const GET = async ({ url }) => {
+export const GET = async ({ url }): Promise<any> => {
   const query = url.searchParams.get('query') || '';
   if (!query.trim()) {
     return new Response('query required', { status: 400 });

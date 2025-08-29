@@ -1,7 +1,7 @@
 import { type RequestHandler,  json } from '@sveltejs/kit';
 import { readFile } from 'fs/promises';
 import { existsSync } from 'fs';
-import type { RequestHandler } from './$types.js';
+import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request }) => {
   try {
@@ -39,7 +39,7 @@ export const POST: RequestHandler = async ({ request }) => {
       lines: content.split('\n').length
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('File read error:', error);
     return json(
       { error: 'Failed to read file', details: error instanceof Error ? error.message : String(error) },

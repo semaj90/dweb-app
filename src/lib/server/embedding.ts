@@ -5,13 +5,13 @@ import { OLLAMA_API_URL } from "$env/static/private";
  * Uses Ollama's nomic-embed-text model for generating embeddings
  */
 
-interface ChunkOptions {
+export interface ChunkOptions {
   chunkSize?: number;
   chunkOverlap?: number;
   separator?: string;
 }
 
-interface TextChunk {
+export interface TextChunk {
   content: string;
   startOffset: number;
   endOffset: number;
@@ -19,7 +19,7 @@ interface TextChunk {
   chunkIndex: number;
 }
 
-interface HealthStatus {
+export interface HealthStatus {
   status: 'healthy' | 'unhealthy';
   ollamaUrl: string;
   embeddingModel: string;
@@ -75,7 +75,7 @@ class EmbeddingService {
       }
 
       return data.embedding;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error generating embedding:", error);
       throw error;
     }
@@ -92,7 +92,7 @@ class EmbeddingService {
         texts.map((text) => this.generateEmbedding(text))
       );
       return embeddings;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error generating batch embeddings:", error);
       throw error;
     }
@@ -236,7 +236,7 @@ class EmbeddingService {
       }
 
       const data = await response.json();
-      const hasEmbeddingModel = data.models?.some((model: unknown) =>
+      const hasEmbeddingModel = data.models?.some((model: any) =>
         model.name.includes(this.embeddingModel)
       );
 
@@ -248,7 +248,7 @@ class EmbeddingService {
         dimensions: this.dimensions,
         timestamp: new Date().toISOString(),
       };
-    } catch (error) {
+    } catch (error: any) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       return {
         status: "unhealthy",

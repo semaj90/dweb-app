@@ -21,7 +21,7 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
       const suggestData = await suggestResponse.json();
       initialSuggestions = suggestData.suggestions || [];
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('SSR data loading error:', error);
   }
 

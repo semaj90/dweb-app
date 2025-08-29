@@ -69,7 +69,7 @@ export class RealVectorSearchService {
       const emb = (data as any)?.embedding;
       if (!Array.isArray(emb)) throw new Error('Invalid embedding response');
       return emb as number[];
-    } catch (error) {
+    } catch (error: any) {
       console.error('Embedding generation failed:', error);
       throw new Error(`Failed to generate embedding: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
@@ -119,7 +119,7 @@ export class RealVectorSearchService {
         model: this.embeddingModel
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Vector search failed:', error);
       return {
         success: false,
@@ -159,7 +159,7 @@ export class RealVectorSearchService {
       });
 
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Document storage failed:', error);
       return false;
     }
@@ -191,7 +191,7 @@ export class RealVectorSearchService {
       }
 
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to ensure collection ${collectionName}:`, error);
       return false;
     }
@@ -215,7 +215,7 @@ export class RealVectorSearchService {
     try {
       const response = await fetch(`${this.ollamaBaseUrl}/api/tags`);
       health.ollama = response.ok;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Ollama health check failed:', error);
     }
 
@@ -223,7 +223,7 @@ export class RealVectorSearchService {
     try {
       await this.qdrantClient.getCollections();
       health.qdrant = true;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Qdrant health check failed:', error);
     }
 
@@ -241,7 +241,7 @@ export class RealVectorSearchService {
 
       const data = await response.json();
       return data.models?.map((m: any) => m.name) || [];
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to get Ollama models:', error);
       return [];
     }

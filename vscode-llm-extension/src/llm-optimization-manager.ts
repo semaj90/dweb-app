@@ -73,7 +73,7 @@ export class LLMOptimizationManager extends EventEmitter {
       vscode.window.showInformationMessage(
         `🚀 LLM Optimization initialized: ${this.workers.length} workers, streaming enabled`
       );
-    } catch (error) {
+    } catch (error: any) {
       vscode.window.showErrorMessage(`Failed to initialize LLM optimization: ${error}`);
       throw error;
     }
@@ -99,7 +99,7 @@ export class LLMOptimizationManager extends EventEmitter {
         // Fallback to main thread processing
         return this.processTokensMainThread(tokens);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('🚨 Worker processing failed, using fallback:', error);
       return this.processTokensMainThread(tokens);
     }
@@ -158,7 +158,7 @@ export class LLMOptimizationManager extends EventEmitter {
         compressedSize,
         savings: `${savings}%`
       };
-    } catch (error) {
+    } catch (error: any) {
       console.warn('🚨 Token compression failed:', error);
       return {
         compressed: false,
@@ -335,7 +335,7 @@ export class LLMOptimizationManager extends EventEmitter {
         } as any;
 
         this.workers.push(worker);
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Failed to create worker ${i}:`, error);
       }
     }

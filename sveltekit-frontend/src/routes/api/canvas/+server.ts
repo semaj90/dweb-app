@@ -56,7 +56,7 @@ export const POST: RequestHandler = async ({ request }) => {
       canvasState: result,
       message: "Canvas state saved successfully",
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Canvas save error:", error);
     return json(
       {
@@ -85,7 +85,7 @@ export const GET: RequestHandler = async ({ url }) => {
     return json({
       canvasState: canvasState[0] || null,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Canvas load error:", error);
     return json(
       {

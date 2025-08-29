@@ -83,7 +83,7 @@ export const POST: RequestHandler = async ({ request }) => {
         indexedAt: new Date().toISOString(),
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Document indexing error:", error);
     return json(
       {
@@ -171,7 +171,7 @@ export const PUT: RequestHandler = async ({ request }) => {
           summary: analysis.summary?.substring(0, 100) + "...",
         });
         successCount++;
-      } catch (error) {
+      } catch (error: any) {
         results.push({
           documentId,
           status: "error",
@@ -192,7 +192,7 @@ export const PUT: RequestHandler = async ({ request }) => {
       results,
       indexedAt: new Date().toISOString(),
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Batch indexing error:", error);
     return json(
       {
@@ -288,7 +288,7 @@ Respond in JSON format:
         ? ["legal-document", "case-evidence"]
         : undefined,
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Document analysis error:", error);
     return {
       summary: generateSummary ? `Document: ${filename}` : undefined,

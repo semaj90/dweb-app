@@ -4,7 +4,7 @@
  * Following the suggested architecture pattern for Legal AI Platform
  */
 
-import { drizzle } from 'drizzle-orm/postgres-js';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import postgres from 'postgres';
 import { eq, desc, and, sql, like } from 'drizzle-orm';
 import { l2Distance, cosineDistance } from 'drizzle-orm';
@@ -86,7 +86,7 @@ export class EvidenceMCPTool {
           hasEmbedding: !!params.embedding
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -145,7 +145,7 @@ export class EvidenceMCPTool {
           timestamp: Date.now()
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -196,7 +196,7 @@ export class EvidenceMCPTool {
           timestamp: Date.now()
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -252,7 +252,7 @@ export class EvidenceMCPTool {
           timestamp: Date.now()
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -307,7 +307,7 @@ export class EvidenceMCPTool {
           timestamp: Date.now()
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -354,7 +354,7 @@ export class EvidenceMCPTool {
           timestamp: Date.now()
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',

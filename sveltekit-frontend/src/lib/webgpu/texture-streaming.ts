@@ -18,7 +18,7 @@ const MEMORY_CONSTRAINTS = {
   PALETTE_COLORS: 52 // NES-like color palette
 } as const;
 
-interface NESTexture {
+export interface NESTexture {
   id: string;
   data: ArrayBuffer;
   width: number;
@@ -35,7 +35,7 @@ interface NESTexture {
   };
 }
 
-interface MemoryRegion {
+export interface MemoryRegion {
   name: 'RAM' | 'CHR_ROM' | 'PRG_ROM';
   size: number;
   used: number;
@@ -105,7 +105,7 @@ export class WebGPUTextureStreamer {
 
       throw new Error('Neither WebGPU nor WebGL2 available');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Texture streaming initialization failed:', error);
       return false;
     }
@@ -142,7 +142,7 @@ export class WebGPUTextureStreamer {
       
       return true;
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn('WebGPU initialization failed:', error);
       return false;
     }
@@ -168,7 +168,7 @@ export class WebGPUTextureStreamer {
 
       return true;
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn('WebGL2 initialization failed:', error);
       return false;
     }
@@ -192,7 +192,7 @@ export class WebGPUTextureStreamer {
             originalSize: textureData.byteLength,
             compressedSize: compressed.data.byteLength
           });
-        } catch (error) {
+        } catch (error: any) {
           self.postMessage({ success: false, error: error.message });
         }
       };
@@ -310,7 +310,7 @@ export class WebGPUTextureStreamer {
       console.log(`✅ Loaded texture ${id} in ${region} (${this.formatBytes(nesTexture.size)})`);
       return true;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Failed to load texture ${id}:`, error);
       return false;
     }
@@ -329,7 +329,7 @@ export class WebGPUTextureStreamer {
         reject(new Error('Compression timeout'));
       }, 5000);
 
-      this.compressionWorker!.onmessage = (e) => {
+      this.compressionWorker!.onmessage = (e: any) => {
         clearTimeout(timeout);
         if (e.data.success) {
           console.log(`🗜️ Compressed texture: ${this.formatBytes(e.data.originalSize)} → ${this.formatBytes(e.data.compressedSize)} (${e.data.compressionRatio.toFixed(2)}x)`);

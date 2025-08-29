@@ -44,19 +44,19 @@ export class EnhancedVectorService {
   }
 
   // Initialize Qdrant collections with Nomic dimensions
-  private async initializeCollections(): Promise<void> {
+  private async initializeCollections(): Promise<any> {
     try {
       for (const [name, collectionName] of Object.entries(this.collections)) {
         await this.createCollectionIfNotExists(collectionName, EMBEDDING_DIMENSION);
       }
       console.log('✅ Qdrant collections initialized with Nomic embeddings');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to initialize Qdrant collections:', error);
     }
   }
 
   // Create collection with hybrid search capabilities
-  private async createCollectionIfNotExists(name: string, vectorSize: number): Promise<void> {
+  private async createCollectionIfNotExists(name: string, vectorSize: number): Promise<any> {
     try {
       const collections = await this.qdrantClient.getCollections();
       const exists = collections.collections.some(c => c.name === name);
@@ -90,13 +90,13 @@ export class EnhancedVectorService {
 
         console.log(`Created collection: ${name} with dimension ${vectorSize}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to create collection ${name}:`, error);
     }
   }
 
   // Create payload indexes for better filtering
-  private async createPayloadIndexes(collectionName: string): Promise<void> {
+  private async createPayloadIndexes(collectionName: string): Promise<any> {
     const indexFields = ['userId', 'type', 'category', 'timestamp', 'source', 'metadata.keywords'];
 
     for (const field of indexFields) {
@@ -106,7 +106,7 @@ export class EnhancedVectorService {
           field_name: field,
           field_schema: { type: 'keyword' }
         });
-      } catch (error) {
+      } catch (error: any) {
         // Index might already exist, skip silently
         console.log(`Index for field ${field} may already exist`);
       }
@@ -135,7 +135,7 @@ export class EnhancedVectorService {
 
       const data = await response.json();
       return data.embeddings[0];
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to generate Nomic embedding:', error);
       throw error;
     }
@@ -164,15 +164,15 @@ export class EnhancedVectorService {
 
       const data = await response.json();
       return data.embeddings;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to generate batch embeddings:', error);
       throw error;
     }
   }
 
   // Enhanced text chunking for RAG
-  chunkText(text: string, metadata: unknown = {}): Array<{ text: string, metadata: unknown }> {
-    const chunks: Array<{ text: string, metadata: unknown }> = [];
+  chunkText(text: string, metadata: any = {}): Array<{ text: string, metadata: any }> {
+    const chunks: Array<{ text: string, metadata: any }> = [];
     const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
 
     let currentChunk = '';
@@ -231,9 +231,9 @@ export class EnhancedVectorService {
   async storeDocument(
     documentId: string,
     content: string,
-    metadata: unknown = {},
+    metadata: any = {},
     collectionName?: string
-  ): Promise<void> {
+  ): Promise<any> {
     try {
       const collection = collectionName || this.collections.documents;
       const chunks = this.chunkText(content, { documentId, ...metadata });
@@ -265,7 +265,7 @@ export class EnhancedVectorService {
       await this.storeDocumentInPostgres(documentId, content, chunks, embeddings, metadata);
 
       console.log(`Stored document ${documentId} with ${chunks.length} chunks`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to store document:', error);
       throw error;
     }
@@ -275,10 +275,10 @@ export class EnhancedVectorService {
   private async storeDocumentInPostgres(
     documentId: string,
     fullContent: string,
-    chunks: unknown[],
+    chunks: any[],
     embeddings: number[][],
-    metadata: unknown
-  ): Promise<void> {
+    metadata: any
+  ): Promise<any> {
     try {
       // Store main document
       await db.insert(documents).values({
@@ -310,7 +310,7 @@ export class EnhancedVectorService {
           // embedding: sql`${embeddings[i]}::vector(${EMBEDDING_DIMENSION})`
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to store document in PostgreSQL:', error);
       throw error;
     }
@@ -322,7 +322,7 @@ export class EnhancedVectorService {
     options: {
       collection?: string;
       limit?: number;
-      filter?: unknown;
+      filter?: any;
       scoreThreshold?: number;
       rerank?: boolean;
       includeMetadata?: boolean;
@@ -340,7 +340,7 @@ export class EnhancedVectorService {
     } = options;
 
     try {
-      const results: unknown[] = [];
+      const results: any[] = [];
 
       // Vector search
       if (searchType === 'vector' || searchType === 'hybrid') {
@@ -370,14 +370,14 @@ export class EnhancedVectorService {
       }
 
       return combinedResults.slice(0, limit);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Hybrid search failed:', error);
       throw error;
     }
   }
 
   // Keyword search using PostgreSQL full-text search
-  private async keywordSearch(query: string, filter: unknown, limit: number): Promise<unknown[]> {
+  private async keywordSearch(query: string, filter: any, limit: number): Promise<unknown[]> {
     try {
       // Use PostgreSQL's full-text search
       const results = await db.execute(sql`
@@ -405,14 +405,14 @@ export class EnhancedVectorService {
           documentId: row.document_id
         }
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Keyword search failed:', error);
       return [];
     }
   }
 
   // Combine and deduplicate search results
-  private combineSearchResults(results: unknown[]): unknown[] {
+  private combineSearchResults(results: any[]): any[] {
     const seen = new Set();
     const combined = [];
 
@@ -429,10 +429,10 @@ export class EnhancedVectorService {
   }
 
   // Rerank results using cross-encoder or additional scoring
-  private async rerankResults(query: string, results: unknown[], limit: number): Promise<unknown[]> {
+  private async rerankResults(query: string, results: any[], limit: number): Promise<unknown[]> {
     try {
       // Calculate additional relevance scores
-      const rerankedResults = await Promise.all(results.map(async (result) => {
+      const rerankedResults = await Promise.all(results.map(async (result): Promise<any> => {
         const text = result.payload?.chunkText || result.payload?.content || '';
 
         // Calculate various relevance scores
@@ -463,7 +463,7 @@ export class EnhancedVectorService {
       return rerankedResults
         .sort((a, b) => b.score - a.score)
         .slice(0, limit);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Reranking failed:', error);
       return results.slice(0, limit);
     }
@@ -516,7 +516,7 @@ export class EnhancedVectorService {
       // Calculate concept overlap
       const overlap = concepts.filter(c => textConcepts.includes(c)).length;
       return overlap / Math.max(concepts.length, 1);
-    } catch (error) {
+    } catch (error: any) {
       return 0.5;
     }
   }
@@ -532,7 +532,7 @@ export class EnhancedVectorService {
   }
 
   // Generate and store user embedding with Nomic
-  async generateUserEmbedding(userId: string): Promise<void> {
+  async generateUserEmbedding(userId: string): Promise<any> {
     try {
       const user = await db.query.units.findFirst({
         where: eq(units.id, userId)
@@ -589,7 +589,7 @@ export class EnhancedVectorService {
       });
 
       console.log(`User embedding generated for ${user.name} using Nomic`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to generate user embedding:', error);
       throw error;
     }
@@ -599,7 +599,7 @@ export class EnhancedVectorService {
   async findSimilarUsers(userId: string, options: {
     limit?: number;
     minSimilarity?: number;
-    filters?: unknown;
+    filters?: any;
   } = {}): Promise<unknown[]> {
     const { limit = 10, minSimilarity = 0.7, filters = {} } = options;
 
@@ -647,14 +647,14 @@ export class EnhancedVectorService {
       const combined = this.combineUserResults(qdrantResults, []);
 
       return combined;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to find similar users:', error);
       throw error;
     }
   }
 
   // Combine user search results from multiple sources
-  private combineUserResults(qdrantResults: unknown[], pgResults: unknown[]): unknown[] {
+  private combineUserResults(qdrantResults: any[], pgResults: any[]): any[] {
     const resultMap = new Map();
 
     // Add Qdrant results
@@ -699,7 +699,7 @@ export class EnhancedVectorService {
     options: {
       limit?: number;
       expandQuery?: boolean;
-      filters?: unknown;
+      filters?: any;
     } = {}
   ): Promise<unknown[]> {
     const { limit = 20, expandQuery = true, filters = {} } = options;
@@ -729,7 +729,7 @@ export class EnhancedVectorService {
 
       // Deduplicate and sort
       return this.combineSearchResults(allResults).slice(0, limit);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Semantic search failed:', error);
       throw error;
     }
@@ -762,8 +762,8 @@ export class EnhancedVectorService {
   async storeConversation(
     conversationId: string,
     messages: Array<{ role: string; content: string }>,
-    metadata: unknown = {}
-  ): Promise<void> {
+    metadata: any = {}
+  ): Promise<any> {
     try {
       // Create conversation summary
       const summary = messages
@@ -790,21 +790,21 @@ export class EnhancedVectorService {
           }
         ]
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to store conversation:', error);
       throw error;
     }
   }
 
   // Delete embeddings
-  async deleteEmbedding(collection: keyof typeof this.collections, ids: string | string[]): Promise<void> {
+  async deleteEmbedding(collection: keyof typeof this.collections, ids: string | string[]): Promise<any> {
     try {
       const idsArray = Array.isArray(ids) ? ids : [ids];
       await this.qdrantClient.delete(this.collections[collection], {
         wait: true,
         points: idsArray
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to delete embeddings:', error);
       throw error;
     }
@@ -822,7 +822,7 @@ export class EnhancedVectorService {
         status: info.status,
         config: info.config
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to get collection stats:', error);
       return null;
     }

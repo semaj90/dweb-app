@@ -29,13 +29,13 @@ import {
 	CalendarYearSelectFormatProp,
 	DateMatcherProp,
 	WeekdayFormatProp,
-} from "./extended-types/shared/index.js";
+} from './extended-types/shared/index';
 import {
 	dateValueProp,
 	onPlaceholderChangeProp,
 	typeSingleOrMultipleProp,
 	withChildProps,
-} from "./shared.js";
+} from './shared';
 import {
 	defineBooleanProp,
 	defineComponentApiSchema,
@@ -46,7 +46,7 @@ import {
 	defineStringProp,
 	defineSimplePropSchema,
 	defineUnionProp,
-} from "../utils.js";
+} from '../utils';
 
 const sharedCellDayAttrs = [
 	defineSimpleDataAttr({

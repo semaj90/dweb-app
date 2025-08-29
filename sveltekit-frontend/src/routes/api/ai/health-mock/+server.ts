@@ -37,7 +37,7 @@ export const GET: RequestHandler = async () => {
         endpoint: 'http://localhost:11434'
       };
     }
-  } catch (error) {
+  } catch (error: any) {
     healthData.services.ollama = {
       status: 'unavailable',
       error: (error as Error).message,
@@ -68,7 +68,7 @@ export const GET: RequestHandler = async () => {
         endpoint: 'http://localhost:8094'
       };
     }
-  } catch (error) {
+  } catch (error: any) {
     healthData.services.enhancedRAG = {
       status: 'unavailable',
       error: (error as Error).message,
@@ -96,7 +96,7 @@ export const GET: RequestHandler = async () => {
         endpoint: 'http://localhost:8093'
       };
     }
-  } catch (error) {
+  } catch (error: any) {
     healthData.services.uploadService = {
       status: 'unavailable',
       error: (error as Error).message,

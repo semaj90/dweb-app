@@ -9,7 +9,7 @@ import { db } from "$lib/server/db";
 import { legal_documents, cases, evidence } from "$lib/server/db/schema-postgres";
 import { sql, desc, asc, and, or, eq, ilike, inArray, count, isNotNull } from "drizzle-orm";
 import { cognitiveCacheManager } from '$lib/services/cognitive-cache-integration';
-import { getDatabaseHealth } from '../../../lib/database';
+import { getDatabaseHealth } from '$lib/database';
 import { z } from 'zod';
 
 // Query parameters schema for GET requests
@@ -45,7 +45,7 @@ const createDocumentSchema = z.object({
 /**
  * Get documents with filtering, sorting, and pagination
  */
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
   try {
     // Parse query parameters
     const params = Object.fromEntries(url.searchParams.entries());
@@ -259,7 +259,7 @@ export const GET: RequestHandler = async ({ url }) => {
       },
     });
 
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("Documents list error:", error);
 
     if (error instanceof z.ZodError) {
@@ -281,7 +281,7 @@ export const GET: RequestHandler = async ({ url }) => {
 /**
  * Create a new document (text-based, not file upload)
  */
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const body = await request.json();
     const documentData = createDocumentSchema.parse(body);
@@ -328,7 +328,7 @@ export const POST: RequestHandler = async ({ request }) => {
       processingInBackground: documentData.generateEmbeddings || documentData.generateAnalysis,
     });
 
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("Document creation error:", error);
 
     if (error instanceof z.ZodError) {
@@ -350,7 +350,7 @@ export const POST: RequestHandler = async ({ request }) => {
 /**
  * Get document statistics and analytics
  */
-export const PUT: RequestHandler = async ({ request }) => {
+export const PUT: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const { action } = await request.json();
 
@@ -375,7 +375,7 @@ export const PUT: RequestHandler = async ({ request }) => {
       }, { status: 400 });
     }
 
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("Document analytics error:", error);
 
     return json({
@@ -389,7 +389,7 @@ export const PUT: RequestHandler = async ({ request }) => {
 /**
  * Get comprehensive document analytics
  */
-async function getDocumentAnalytics() {
+async function getDocumentAnalytics(): Promise<any> {
   const [
     totalStats,
     typeStats,
@@ -463,7 +463,7 @@ async function getDocumentAnalytics() {
 /**
  * Reprocess documents that don't have embeddings or analysis
  */
-async function reprocessDocuments() {
+async function reprocessDocuments(): Promise<any> {
   try {
     // Find documents without embeddings
     const documentsToProcess = await db
@@ -504,7 +504,7 @@ async function reprocessDocuments() {
       }
     };
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Reprocessing error:', error);
     throw error;
   }
@@ -519,9 +519,9 @@ async function processDocumentAsync(
   title: string,
   generateEmbeddings: boolean,
   generateAnalysis: boolean
-): Promise<void> {
+): Promise<any> {
   try {
-    const updates: unknown = {};
+    const updates: any = {};
 
     if (generateEmbeddings) {
       // Generate embeddings
@@ -547,7 +547,7 @@ async function processDocumentAsync(
       .set(updates)
       .where(eq(legalDocuments.id, documentId));
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Background processing error:', error);
     
     // Mark as error status

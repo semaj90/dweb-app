@@ -49,7 +49,7 @@ export function createLocalFontProcessor(options?: LocalFontProcessorOptions): W
   const fontAssetsDir = resolve(cwd, options?.fontAssetsDir || 'public/assets/fonts')
   const fontServeBaseUrl = options?.fontServeBaseUrl || '/assets/fonts'
 
-  async function _downloadFont(url: string, assetPath: string) {
+  async function _downloadFont(url: string, assetPath: string): Promise<any> {
     const response = await fetch(url)
       .then(r => r.arrayBuffer())
     await fsp.mkdir(fontAssetsDir, { recursive: true })

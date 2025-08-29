@@ -6,7 +6,7 @@ import { productionLogger as logger } from '$lib/server/production-logger';
 import { dev } from '$app/environment';
 
 // Enhanced interfaces for better type safety and optimization
-interface QdrantSyncRequest {
+export interface QdrantSyncRequest {
   collection?: string;
   batchSize?: number;
   limit?: number;
@@ -18,7 +18,7 @@ interface QdrantSyncRequest {
   memoryBudget?: number;        // Memory budget in KB
 }
 
-interface CollectionRequest {
+export interface CollectionRequest {
   name: string;
   vectorSize?: number;
   distance?: "Cosine" | "Euclid" | "Dot";
@@ -37,7 +37,7 @@ interface CollectionRequest {
   };
 }
 
-interface SearchRequest {
+export interface SearchRequest {
   collection: string;
   query: number[] | string;
   limit?: number;
@@ -229,7 +229,7 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
       );
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Qdrant sync error:", error);
     
     if (error instanceof QdrantAPIError) {
@@ -349,7 +349,7 @@ export const GET: RequestHandler = async ({ url, locals, getClientAddress }) => 
         try {
           collections = await qdrant.getCollections();
           collectionInfo = await qdrant.getCollection(collection);
-        } catch (err) {
+        } catch (err: any) {
           console.error("Failed to get Qdrant collections/info:", err);
           throw new QdrantAPIError(
             'Failed to get Qdrant collections/info',
@@ -400,7 +400,7 @@ export const GET: RequestHandler = async ({ url, locals, getClientAddress }) => 
       }
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Qdrant GET error:", error);
     
     if (error instanceof QdrantAPIError) {
@@ -521,7 +521,7 @@ export const PUT: RequestHandler = async ({ request, locals, getClientAddress })
       },
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Qdrant collection creation error:", error);
     
     if (error instanceof QdrantAPIError) {
@@ -660,7 +660,7 @@ export const DELETE: RequestHandler = async ({ request, locals, getClientAddress
       },
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Qdrant collection deletion error:", error);
     
     if (error instanceof QdrantAPIError) {

@@ -4,7 +4,7 @@ import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
 import { createActor } from 'xstate';
 import { sessionMachine, sessionServices, sessionActions } from '$lib/machines/sessionMachine.js';
-import { authService, type User } from './auth.svelte.js';
+import { authService, type User } from './auth.svelte';
 
 // Session state interface
 export interface SessionState {
@@ -114,7 +114,7 @@ export class SessionManager {
       this.startHealthChecks();
       
       console.log('Session started successfully for user:', user.email);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to start session:', error);
       throw error;
     }
@@ -128,7 +128,7 @@ export class SessionManager {
       this.stopActivityTracking();
       
       console.log('Session ended successfully');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to end session:', error);
     }
   }
@@ -142,7 +142,7 @@ export class SessionManager {
     try {
       this.actor.send({ type: 'REFRESH_SESSION' });
       console.log('Session refreshed successfully');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to refresh session:', error);
       throw error;
     }
@@ -157,7 +157,7 @@ export class SessionManager {
     try {
       this.actor.send({ type: 'EXTEND_SESSION' });
       console.log('Session extended successfully');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to extend session:', error);
       throw error;
     }
@@ -186,7 +186,7 @@ export class SessionManager {
     try {
       this.actor.send({ type: 'ELEVATE_SECURITY', reason });
       console.log('Security level elevated:', reason);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to elevate security:', error);
       throw error;
     }
@@ -211,7 +211,7 @@ export class SessionManager {
     try {
       this.actor.send({ type: 'SECURITY_CHECK' });
       console.log('Security check initiated');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Security check failed:', error);
     }
   }
@@ -235,7 +235,7 @@ export class SessionManager {
         const sessionId = this.generateSessionId();
         await this.startSession(authService.state.user, sessionId);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to restore existing session:', error);
     }
   }

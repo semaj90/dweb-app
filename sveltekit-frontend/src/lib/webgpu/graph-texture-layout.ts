@@ -15,7 +15,7 @@ import { db, type GraphNode, type GraphEdge } from '../db/dexie-integration';
 // GPU DATA STRUCTURES
 // ============================================================================
 
-interface GPUNodeData {
+export interface GPUNodeData {
   position: [number, number, number]; // vec3<f32> layout coordinates
   metadata: [number, number, number, number]; // vec4<f32> packed metadata
   rankingMatrixIndex: number; // u32 index into ranking texture
@@ -24,19 +24,19 @@ interface GPUNodeData {
   neighborCount: number; // u32 count of neighbors
 }
 
-interface GPUAdjacencyData {
+export interface GPUAdjacencyData {
   nodeIds: Uint32Array; // Flattened adjacency list
   offsets: Uint32Array; // Starting positions for each node
 }
 
-interface GPUTextureData {
+export interface GPUTextureData {
   rankingTexture: GPUTexture; // rgba32float - 4x4 matrices as 4 pixels
   varianceTexture: GPUTexture; // rgba32float - variance matrices
   nodeDataBuffer: GPUBuffer; // Storage buffer for node data
   adjacencyBuffer: GPUBuffer; // Storage buffer for adjacency lists
 }
 
-interface LODLevel {
+export interface LODLevel {
   level: number;
   bounds: { x: number; y: number; width: number; height: number };
   nodeCount: number;

@@ -9,7 +9,7 @@ import { NESStyleGPUBridge } from './nes-gpu-bridge';
 const dev = true;
 
 // Define CanvasState interface locally if not exported
-interface CanvasState {
+export interface CanvasState {
   width: number;
   height: number;
   data?: Uint8ClampedArray;
@@ -177,7 +177,7 @@ export class UnifiedServiceOrchestrator {
       if (dev) {
         console.log('[Orchestrator] All services initialized successfully');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('[Orchestrator] Service initialization failed:', error);
       throw new Error(`Service initialization failed: ${error}`);
     }
@@ -250,7 +250,7 @@ export class UnifiedServiceOrchestrator {
       if (dev) {
         console.log(`[Orchestrator] Health check completed in ${healthCheckTime}ms - Status: ${this.systemHealth.overall}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('[Orchestrator] Health check failed:', error);
       this.systemHealth.overall = 'critical';
     }
@@ -474,7 +474,7 @@ export class UnifiedServiceOrchestrator {
         }
       };
 
-    } catch (error) {
+    } catch (error: any) {
       const processingTime = Date.now() - startTime;
       task.error = String(error);
       task.endTime = new Date();
@@ -513,7 +513,7 @@ export class UnifiedServiceOrchestrator {
         if (result.success) {
           return { result, success: true, servicesUsed, fallbacksTriggered };
         }
-      } catch (error) {
+      } catch (error: any) {
         fallbacksTriggered.push('wasmGPU -> quicGateway');
         if (dev) console.warn('[Orchestrator] WASM GPU failed, falling back to QUIC:', error);
       }
@@ -527,7 +527,7 @@ export class UnifiedServiceOrchestrator {
         if ((result as any).success) {
           return { result: (result as any).data, success: true, servicesUsed, fallbacksTriggered };
         }
-      } catch (error) {
+      } catch (error: any) {
         fallbacksTriggered.push('quicGateway -> llamaOllama');
         if (dev) console.warn('[Orchestrator] QUIC Gateway failed, falling back to Llama:', error);
       }
@@ -547,7 +547,7 @@ export class UnifiedServiceOrchestrator {
         if ((result as any).success) {
           return { result: (result as any).data, success: true, servicesUsed, fallbacksTriggered };
         }
-      } catch (error) {
+      } catch (error: any) {
         if (dev) console.warn('[Orchestrator] All services failed for document task:', error);
       }
     }
@@ -570,7 +570,7 @@ export class UnifiedServiceOrchestrator {
         if (result.success) {
           return { result, success: true, servicesUsed, fallbacksTriggered };
         }
-      } catch (error) {
+      } catch (error: any) {
         fallbacksTriggered.push('wasmGPU -> llamaOllama');
         if (dev) console.warn('[Orchestrator] WASM GPU inference failed, falling back to Llama:', error);
       }
@@ -592,7 +592,7 @@ export class UnifiedServiceOrchestrator {
         if ((result as any).success) {
           return { result: (result as any).data, success: true, servicesUsed, fallbacksTriggered };
         }
-      } catch (error) {
+      } catch (error: any) {
         if (dev) console.warn('[Orchestrator] All services failed for inference task:', error);
       }
     }
@@ -613,7 +613,7 @@ export class UnifiedServiceOrchestrator {
         servicesUsed.push('nesGPUBridge');
         const result = await this.nesGPUBridge.canvasStateToTensor(canvasState);
         return { result, success: true, servicesUsed, fallbacksTriggered };
-      } catch (error) {
+      } catch (error: any) {
         fallbacksTriggered.push('nesGPUBridge -> wasmGPU');
         if (dev) console.warn('[Orchestrator] NES GPU Bridge failed, falling back to WASM:', error);
       }
@@ -627,7 +627,7 @@ export class UnifiedServiceOrchestrator {
         if (result.success) {
           return { result, success: true, servicesUsed, fallbacksTriggered };
         }
-      } catch (error) {
+      } catch (error: any) {
         if (dev) console.warn('[Orchestrator] All services failed for canvas task:', error);
       }
     }
@@ -650,7 +650,7 @@ export class UnifiedServiceOrchestrator {
         if (result.success) {
           return { result, success: true, servicesUsed, fallbacksTriggered };
         }
-      } catch (error) {
+      } catch (error: any) {
         fallbacksTriggered.push('wasmGPU -> quicGateway');
         if (dev) console.warn('[Orchestrator] WASM GPU computation failed, falling back to QUIC:', error);
       }
@@ -670,7 +670,7 @@ export class UnifiedServiceOrchestrator {
         if ((result as any).success) {
           return { result: (result as any).data, success: true, servicesUsed, fallbacksTriggered };
         }
-      } catch (error) {
+      } catch (error: any) {
         if (dev) console.warn('[Orchestrator] All services failed for GPU task:', error);
       }
     }

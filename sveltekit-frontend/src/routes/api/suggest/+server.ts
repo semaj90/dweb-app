@@ -7,7 +7,7 @@ import { users, cases, evidence } from '$lib/server/db/schema-unified.js';
 import { generateEnhancedEmbedding } from '$lib/server/ai/embeddings-enhanced.js';
 import { or, ilike, sql } from 'drizzle-orm';
 
-interface Suggestion {
+export interface Suggestion {
   label: string;
   entityId: string;
   type: 'PERSON' | 'DOCUMENT' | 'CASE' | 'EVIDENCE' | 'TAG';
@@ -17,7 +17,7 @@ interface Suggestion {
   tags: string[];
 }
 
-interface SuggestResponse {
+export interface SuggestResponse {
   suggestions: Suggestion[];
   correctedQuery: string;
   explanation: string;
@@ -73,7 +73,7 @@ export const GET: RequestHandler = async ({ url, fetch }) => {
           processingTimeMs: Date.now() - startTime
         });
       }
-    } catch (e) {
+    } catch (e: any) {
       console.log('Recommendations service not available, using fallback');
     }
 
@@ -106,7 +106,7 @@ export const GET: RequestHandler = async ({ url, fetch }) => {
 
     return json(response);
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Suggestions API error:', err);
     throw error(500, 'Failed to fetch suggestions');
   }
@@ -257,7 +257,7 @@ async function searchDatabase(query: string, contextType: string, limit: number)
       });
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Database search error:', error);
   }
 
@@ -333,7 +333,7 @@ async function searchWithFuzzy(query: string, contextType: string, limit: number
         });
       });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Fuzzy search error:', error);
   }
 

@@ -4,13 +4,13 @@ import { writeFile } from "fs/promises";
 import { join } from "path";
 import { spawn } from "child_process";
 
-interface AnalyzeRequest {
+export interface AnalyzeRequest {
   caseId: string;
   evidenceFile: string;
   evidenceContent?: string;
 }
 
-interface AnalysisResult {
+export interface AnalysisResult {
   sessionId: string;
   status: "processing" | "completed" | "failed";
   step: string;
@@ -57,7 +57,7 @@ export const POST: RequestHandler = async ({ request }) => {
       message: "Evidence analysis pipeline started",
       pollUrl: `/api/evidence/analyze/${sessionId}`
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error("Analysis request failed:", err);
     throw error(500, `Analysis failed: ${err}`);
   }
@@ -101,7 +101,7 @@ async function runAnalysisPipeline(
         try {
           const result = await parseAnalysisOutputs(sessionId, caseId);
           resolve(result);
-        } catch (err) {
+        } catch (err: any) {
           reject(err);
         }
       } else {
@@ -141,7 +141,7 @@ async function parseAnalysisOutputs(
         );
         const key = file.replace(".json", "");
         outputs[key] = JSON.parse(content);
-      } catch (err) {
+      } catch (err: any) {
         console.warn(`Could not read ${file}:`, err);
       }
     }
@@ -152,7 +152,7 @@ async function parseAnalysisOutputs(
       step: "case_synthesis",
       outputs
     };
-  } catch (err) {
+  } catch (err: any) {
     return {
       sessionId,
       status: "failed",
@@ -177,7 +177,7 @@ export const GET: RequestHandler = async ({ url }) => {
   try {
     const result = await parseAnalysisOutputs(sessionId, "unknown");
     return json(result);
-  } catch (err) {
+  } catch (err: any) {
     return json({
       sessionId,
       status: "processing",

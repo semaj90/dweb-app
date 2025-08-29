@@ -2,14 +2,14 @@ import { LRUCache } from "lru-cache";
 import * as crypto from "crypto";
 
 // Define Redis interface since we don't have the actual Redis client
-interface RedisPipeline {
+export interface RedisPipeline {
   set(key: string, value: string): RedisPipeline;
   expire(key: string, seconds: number): RedisPipeline;
   sadd(key: string, ...members: string[]): RedisPipeline;
   exec(): Promise<any[]>;
 }
 
-interface Redis {
+export interface Redis {
   get(key: string): Promise<string | null>;
   set(key: string, value: string, options?: any): Promise<string>;
   del(key: string): Promise<number>;
@@ -22,14 +22,14 @@ interface Redis {
 // lib/server/ai/caching-layer.ts
 // Advanced caching layer for AI synthesis results with Redis and LRU fallback
 
-import { logger } from "./logger.js";
-interface CacheOptions {
+import { logger } from './logger';
+export interface CacheOptions {
   ttl?: number; // Time to live in seconds
   tags?: string[]; // Tags for cache invalidation
   priority?: number; // Cache priority (higher = more important)
 }
 
-interface CacheStats {
+export interface CacheStats {
   hits: number;
   misses: number;
   evictions: number;
@@ -71,7 +71,7 @@ class CachingLayer {
         // this.redis = new Redis({...})
         // Add event handlers here when implementing
       }
-    } catch (error) {
+    } catch (error: any) {
       logger.warn('[CachingLayer] Redis initialization failed, using LRU cache only:', error);
       this.redis = null;
     }
@@ -144,7 +144,7 @@ class CachingLayer {
             logger.debug(`[CachingLayer] Redis cache hit for ${key}`);
             return data;
           }
-        } catch (error) {
+        } catch (error: any) {
           logger.warn(`[CachingLayer] Redis get failed for ${key}:`, error);
         }
       }
@@ -152,7 +152,7 @@ class CachingLayer {
       this.stats.misses++;
       return null;
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error(`[CachingLayer] Get failed for ${key}:`, error);
       this.stats.misses++;
       return null;
@@ -194,7 +194,7 @@ class CachingLayer {
           
           await pipeline.exec();
           logger.debug(`[CachingLayer] Stored ${key} in Redis with TTL ${ttl}s`);
-        } catch (error) {
+        } catch (error: any) {
           logger.warn(`[CachingLayer] Redis set failed for ${key}:`, error);
         }
       }
@@ -205,7 +205,7 @@ class CachingLayer {
 
       logger.debug(`[CachingLayer] Cached ${key} with TTL ${ttl}s`);
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error(`[CachingLayer] Set failed for ${key}:`, error);
     }
   }
@@ -224,7 +224,7 @@ class CachingLayer {
               const result = await (this.redis as any).smembers(`tag:${tag}`);
               keys.push(...(Array.isArray(result) ? result : [result].filter(Boolean)));
             }
-          } catch (e) {
+          } catch (e: any) {
             // Fallback to empty keys if method doesn't exist
           }
           
@@ -234,7 +234,7 @@ class CachingLayer {
               for (const key of keys) {
                 try {
                   await this.redis.del(key);
-                } catch (e) {
+                } catch (e: any) {
                   // Continue with other keys if one fails
                 }
               }
@@ -253,7 +253,7 @@ class CachingLayer {
           }
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[CachingLayer] Tag invalidation failed:', error);
     }
   }
@@ -274,7 +274,7 @@ class CachingLayer {
       this.stats.memoryUsage = 0;
       
       logger.info('[CachingLayer] Cache cleared');
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[CachingLayer] Clear failed:', error);
     }
   }
@@ -377,7 +377,7 @@ class CachingLayer {
         if ((this.redis as any).info) {
           info = await (this.redis as any).info();
         }
-      } catch (e) {
+      } catch (e: any) {
         // Fallback for missing info method
       }
       
@@ -385,7 +385,7 @@ class CachingLayer {
         if ((this.redis as any).dbsize) {
           dbSize = await (this.redis as any).dbsize();
         }
-      } catch (e) {
+      } catch (e: any) {
         // Fallback for missing dbsize method
       }
       
@@ -393,7 +393,7 @@ class CachingLayer {
         dbSize,
         memory: info
       };
-    } catch (error) {
+    } catch (error: any) {
       return null;
     }
   }

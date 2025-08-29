@@ -19,7 +19,7 @@ export const POST: RequestHandler = async ({ request }) => {
       received: body,
       timestamp: new Date().toISOString()
     });
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: 'Failed to parse request',

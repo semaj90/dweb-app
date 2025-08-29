@@ -7,7 +7,7 @@ import { transformDirectives } from './transform'
 
 type Writeable<T> = { -readonly [P in keyof T]: T[P] }
 
-export async function handleApply(ctx: TransformerDirectivesContext, node: Rule) {
+export async function handleApply(ctx: TransformerDirectivesContext, node: Rule): Promise<any> {
   const { code, uno, options, filename } = ctx
 
   await Promise.all(
@@ -19,7 +19,7 @@ export async function handleApply(ctx: TransformerDirectivesContext, node: Rule)
   )
 }
 
-export async function parseApply({ code, uno, applyVariable }: TransformerDirectivesContext, node: Rule, childNode: CssNode) {
+export async function parseApply({ code, uno, applyVariable }: TransformerDirectivesContext, node: Rule, childNode: CssNode): Promise<any> {
   const original = code.original
 
   let body: string | undefined

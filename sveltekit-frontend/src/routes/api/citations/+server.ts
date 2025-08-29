@@ -55,7 +55,7 @@ function isValidUUID(uuid: string): boolean {
 function isDemoCase(caseId: string): boolean {
   return caseId === "demo-case-123" || caseId.startsWith("demo-");
 }
-export async function GET({ url }: RequestEvent) {
+export async function GET({ url }: RequestEvent): Promise<any> {
   const caseId = url.searchParams.get("caseId");
   const reportId = url.searchParams.get("reportId");
   const type = url.searchParams.get("type");
@@ -150,7 +150,7 @@ export async function GET({ url }: RequestEvent) {
       citations: results,
       total: results.length,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching citation points:", error);
 
     // Return sample data as fallback
@@ -161,7 +161,7 @@ export async function GET({ url }: RequestEvent) {
     });
   }
 }
-export async function POST({ request }: RequestEvent) {
+export async function POST({ request }: RequestEvent): Promise<any> {
   try {
     if (!db) {
       return json({ error: "Database not available" }, { status: 500 });
@@ -211,12 +211,12 @@ export async function POST({ request }: RequestEvent) {
       .returning();
 
     return json(newCitation, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating citation point:", error);
     return json({ error: "Failed to create citation point" }, { status: 500 });
   }
 }
-export async function PUT({ request }: RequestEvent) {
+export async function PUT({ request }: RequestEvent): Promise<any> {
   try {
     if (!db) {
       return json({ error: "Database not available" }, { status: 500 });
@@ -273,12 +273,12 @@ export async function PUT({ request }: RequestEvent) {
       .returning();
 
     return json(updatedCitation);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating citation point:", error);
     return json({ error: "Failed to update citation point" }, { status: 500 });
   }
 }
-export async function DELETE({ url }: RequestEvent) {
+export async function DELETE({ url }: RequestEvent): Promise<any> {
   try {
     if (!db) {
       return json({ error: "Database not available" }, { status: 500 });
@@ -304,7 +304,7 @@ export async function DELETE({ url }: RequestEvent) {
     await db.delete(citationPoints).where(eq(citationPoints.id, citationId));
 
     return json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error deleting citation point:", error);
     return json({ error: "Failed to delete citation point" }, { status: 500 });
   }

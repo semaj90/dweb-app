@@ -2,7 +2,7 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
 
 // Temporary lightweight stub to restore compiler health. Will be replaced with full implementation once baseline compiles.
-interface AdvancedSearchFilters {
+export interface AdvancedSearchFilters {
   query?: string;
   caseStatus?: string[];
   priority?: string[];
@@ -16,7 +16,7 @@ interface AdvancedSearchFilters {
 }
 
 // Placeholder service (replace with real advancedSearch.search)
-async function fakeSearch(filters: AdvancedSearchFilters) {
+async function fakeSearch(filters: AdvancedSearchFilters): Promise<any> {
   return {
     total: 0,
     queryTime: 0,
@@ -43,7 +43,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
     };
     const results = await fakeSearch(filters);
     return json({ success: true, data: results, timestamp: new Date().toISOString() });
-  } catch (error) {
+  } catch (error: any) {
     return json({ success: false, error: 'Search failed', message: (error as Error).message }, { status: 500 });
   }
 };
@@ -56,7 +56,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     const filters: AdvancedSearchFilters = { query, ...(customFilters || {}) };
     const results = await fakeSearch(filters);
     return json({ success: true, data: results, timestamp: new Date().toISOString() });
-  } catch (error) {
+  } catch (error: any) {
     return json({ success: false, error: 'Advanced search failed', message: (error as Error).message }, { status: 500 });
   }
 };

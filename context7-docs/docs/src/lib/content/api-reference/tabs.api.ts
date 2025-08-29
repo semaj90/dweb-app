@@ -4,8 +4,8 @@ import type {
 	TabsRootPropsWithoutHTML,
 	TabsTriggerPropsWithoutHTML,
 } from "bits-ui";
-import { OnStringValueChangeProp, OrientationProp } from "./extended-types/shared/index.js";
-import { TabsRootActivationModeProp, TabsTriggerStateProp } from "./extended-types/tabs/index.js";
+import { OnStringValueChangeProp, OrientationProp } from './extended-types/shared/index';
+import { TabsRootActivationModeProp, TabsTriggerStateProp } from './extended-types/tabs/index';
 import { withChildProps } from "$lib/content/api-reference/shared.js";
 import {
 	defineBooleanProp,
@@ -15,7 +15,7 @@ import {
 	defineFunctionProp,
 	defineSimpleDataAttr,
 	defineStringProp,
-} from "../utils.js";
+} from '../utils';
 
 const root = defineComponentApiSchema<TabsRootPropsWithoutHTML>({
 	title: "Root",

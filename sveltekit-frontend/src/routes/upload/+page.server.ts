@@ -2,7 +2,7 @@ import { fail } from "@sveltejs/kit";
 import { z } from 'zod';
 import { superValidate } from 'sveltekit-superforms/server';
 import { zod } from "sveltekit-superforms/adapters";
-import type { Actions, PageServerLoad } from './$types.js';
+import type { Actions, PageServerLoad } from './$types';
 
 const UPLOAD_SERVICE_URL = import.meta.env.UPLOAD_SERVICE_URL || 'http://localhost:8093';
 
@@ -124,7 +124,7 @@ export const actions: Actions = {
         message: 'Document uploaded successfully!'
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Upload error:', error);
       return fail(500, {
         form,

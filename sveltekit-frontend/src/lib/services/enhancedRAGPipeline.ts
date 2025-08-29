@@ -196,7 +196,7 @@ class EnhancedRAGPipeline {
       }
 
       return answer;
-    } catch (error) {
+    } catch (error: any) {
       console.error("RAG query failed:", error);
       throw new Error(
         `RAG pipeline error: ${typeof error === "object" && error && "message" in error ? (error as { message: string }).message : String(error)}`
@@ -384,7 +384,7 @@ Format your response as JSON:
         suggestedActions: parsed.suggestedActions || [],
         embedding: answerEmbedding,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Answer generation failed:", error);
 
       // Fallback response

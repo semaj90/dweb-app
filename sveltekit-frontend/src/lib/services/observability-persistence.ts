@@ -96,7 +96,7 @@ export async function loadObservabilityState(): Promise<ObservabilityState> {
     });
     
     return cached_state;
-  } catch (error) {
+  } catch (error: any) {
     console.error('[observability] Failed to load state, using defaults:', error);
     cached_state = DEFAULT_STATE;
     return DEFAULT_STATE;
@@ -110,7 +110,7 @@ export async function saveObservabilityState(state: ObservabilityState): Promise
     await writeFile(STATE_FILE, JSON.stringify(state, null, 2));
     cached_state = state;
     console.log('[observability] Saved state to disk');
-  } catch (error) {
+  } catch (error: any) {
     console.error('[observability] Failed to save state:', error);
   }
 }

@@ -4,12 +4,12 @@
  * Following the suggested architecture pattern for Legal AI Platform
  */
 
-import { drizzle } from 'drizzle-orm/postgres-js';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import postgres from 'postgres';
 import { eq, desc, and, sql } from 'drizzle-orm';
 import { documentChunks, cases, evidence, legal_documents } from '$lib/server/db/schema';
 import type { EvidenceAIAnalysis } from '$lib/types';
-import { productionServiceClient, services } from '../services/productionServiceClient.js';
+import { productionServiceClient, services } from '../services/productionServiceClient';
 
 // Database connection (based on MCP pgvector docs)
 const connectionString = process.env.DATABASE_URL!;
@@ -125,7 +125,7 @@ export class AIAnalysisMCPTool {
           timestamp: Date.now()
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -176,7 +176,7 @@ export class AIAnalysisMCPTool {
           timestamp: Date.now()
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -230,7 +230,7 @@ export class AIAnalysisMCPTool {
             similarity: result.similarity,
             similarityAnalysis
           };
-        } catch (error) {
+        } catch (error: any) {
           return {
             ...result.chunk,
             similarity: result.similarity,
@@ -250,7 +250,7 @@ export class AIAnalysisMCPTool {
           timestamp: Date.now()
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -290,7 +290,7 @@ export class AIAnalysisMCPTool {
               success: analysisResult.success,
               error: analysisResult.error
             };
-          } catch (error) {
+          } catch (error: any) {
             return {
               documentId: doc.id,
               analysis: null,
@@ -327,7 +327,7 @@ export class AIAnalysisMCPTool {
           timestamp: Date.now()
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -387,7 +387,7 @@ export class AIAnalysisMCPTool {
           timestamp: Date.now()
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',

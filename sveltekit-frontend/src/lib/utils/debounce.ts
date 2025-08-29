@@ -67,7 +67,7 @@ export function debounceAsync<T extends (...args: any[]) => Promise<any>>(
         try {
           const result = await func(...args);
           resolveList.forEach((r: any) => r(result));
-        } catch (error) {
+        } catch (error: any) {
           rejectList.forEach((r: any) => r(error));
         } finally {
           resolveList = [];

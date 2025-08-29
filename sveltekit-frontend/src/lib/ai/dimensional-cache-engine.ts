@@ -304,7 +304,7 @@ export class DimensionalCacheEngine {
       try {
         // Process queued computation
         await this.processQueuedComputation(computation);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to process queued computation:', error);
       }
     }

@@ -20,9 +20,9 @@ export interface RouteConfig {
 
 export interface ProxyResponse {
   status: number;
-  data: unknown;
+  data: any;
   encoding: EncodingFormat;
-  metrics?: unknown;
+  metrics?: any;
 }
 
 export class UnifiedAPIRouter {
@@ -307,7 +307,7 @@ export class UnifiedAPIRouter {
         headers: { 'content-type': 'application/json' }
       });
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Routing error for ${method} ${path}:`, error);
       
       return new Response(JSON.stringify({ 
@@ -418,7 +418,7 @@ export class UnifiedAPIRouter {
         encoding: 'json'
       };
       
-    } catch (error) {
+    } catch (error: any) {
       clearTimeout(timeoutId);
       throw error;
     }
@@ -435,7 +435,7 @@ export class UnifiedAPIRouter {
     });
 
     // Periodic health checks
-    setInterval(async () => {
+    setInterval(async (): Promise<any> => {
       await this.checkServiceHealth();
     }, 30000); // Check every 30 seconds
   }
@@ -443,7 +443,7 @@ export class UnifiedAPIRouter {
   /**
    * Check health of all services
    */
-  private async checkServiceHealth(): Promise<void> {
+  private async checkServiceHealth(): Promise<any> {
     const healthChecks = [
       { service: 'enhanced-rag', port: 8094, endpoint: '/health' },
       { service: 'upload', port: 8093, endpoint: '/health' },
@@ -451,14 +451,14 @@ export class UnifiedAPIRouter {
     ];
 
     await Promise.all(
-      healthChecks.map(async ({ service, port, endpoint }) => {
+      healthChecks.map(async ({ service, port, endpoint }): Promise<any> => {
         try {
           const response = await fetch(`http://localhost:${port}${endpoint}`, {
             signal: AbortSignal.timeout(5000)
           });
           
           this.serviceHealth.set(service, response.ok);
-        } catch (error) {
+        } catch (error: any) {
           this.serviceHealth.set(service, false);
           console.warn(`Health check failed for ${service}:`, error);
         }

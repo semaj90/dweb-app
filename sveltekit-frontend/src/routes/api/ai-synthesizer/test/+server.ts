@@ -58,7 +58,7 @@ export const GET: RequestHandler = async () => {
       ...results
     });
 
-  } catch (error) {
+  } catch (error: any) {
     logger.error('[Test] Integration test failed:', error);
     return json({
       success: false,
@@ -68,7 +68,7 @@ export const GET: RequestHandler = async () => {
   }
 };
 
-async function testHealthCheck() {
+async function testHealthCheck(): Promise<any> {
   const startTime = Date.now();
   
   try {
@@ -86,7 +86,7 @@ async function testHealthCheck() {
         ollama: ollamaHealth
       }
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       name: 'Health Check',
       status: 'failed',
@@ -96,7 +96,7 @@ async function testHealthCheck() {
   }
 }
 
-async function testBasicSynthesis() {
+async function testBasicSynthesis(): Promise<any> {
   const startTime = Date.now();
   
   try {
@@ -134,7 +134,7 @@ async function testBasicSynthesis() {
         qualityScore: result.metadata?.qualityScore || 0
       }
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       name: 'Basic Synthesis',
       status: 'failed',
@@ -144,7 +144,7 @@ async function testBasicSynthesis() {
   }
 }
 
-async function testCaching() {
+async function testCaching(): Promise<any> {
   const startTime = Date.now();
   
   try {
@@ -175,7 +175,7 @@ async function testCaching() {
         redisConnected: stats.redisConnected
       }
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       name: 'Caching Layer',
       status: 'failed',
@@ -185,7 +185,7 @@ async function testCaching() {
   }
 }
 
-async function testStreaming() {
+async function testStreaming(): Promise<any> {
   const startTime = Date.now();
   
   try {
@@ -218,7 +218,7 @@ async function testStreaming() {
         activeStreams: streamingService.getActiveStreams().length
       }
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       name: 'Streaming Service',
       status: 'failed',
@@ -228,7 +228,7 @@ async function testStreaming() {
   }
 }
 
-async function testOllama() {
+async function testOllama(): Promise<any> {
   const startTime = Date.now();
   
   try {
@@ -263,7 +263,7 @@ async function testOllama() {
         embeddingsWork: !!embeddingResult
       }
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       name: 'Ollama Local LLM',
       status: 'failed',
@@ -273,7 +273,7 @@ async function testOllama() {
   }
 }
 
-async function testFeedbackLoop() {
+async function testFeedbackLoop(): Promise<any> {
   const startTime = Date.now();
   
   try {
@@ -311,7 +311,7 @@ async function testFeedbackLoop() {
         modelWeights: stats.modelWeights
       }
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       name: 'Feedback Loop',
       status: 'failed',
@@ -321,7 +321,7 @@ async function testFeedbackLoop() {
   }
 }
 
-async function testMonitoring() {
+async function testMonitoring(): Promise<any> {
   const startTime = Date.now();
   
   try {
@@ -361,7 +361,7 @@ async function testMonitoring() {
         hasPrometheusMetrics: prometheusMetrics.length > 0
       }
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       name: 'Monitoring Service',
       status: 'failed',
@@ -479,7 +479,7 @@ export const POST: RequestHandler = async ({ request }) => {
       }
     });
     
-  } catch (error) {
+  } catch (error: any) {
     logger.error('[Test] Manual test failed:', error);
     return json({
       success: false,

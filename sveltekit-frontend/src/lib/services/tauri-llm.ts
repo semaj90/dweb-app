@@ -12,11 +12,11 @@ declare global {
 // Dynamic Tauri imports to prevent TypeScript errors
 let invoke: any;
 
-async function initializeTauri() {
+async function initializeTauri(): Promise<any> {
   try {
     const tauriCore = await import("@tauri-apps/api/core");
     invoke = tauriCore.invoke;
-  } catch (error) {
+  } catch (error: any) {
     console.warn("Tauri not available - using fallback implementations");
     invoke = () => Promise.reject(new Error("Tauri not available"));
   }
@@ -108,7 +108,7 @@ class TauriLLMService {
         models.length,
         "models"
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to initialize Tauri LLM service:", error);
     }
   }
@@ -174,7 +174,7 @@ class TauriLLMService {
         model.isLoaded = result;
       }
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to load model ${modelId}:`, error);
       return false;
     }
@@ -200,7 +200,7 @@ class TauriLLMService {
 
       // Return single array for single input, array of arrays for batch
       return Array.isArray(text) ? result : (result as number[][])[0];
-    } catch (error) {
+    } catch (error: any) {
       console.error("Local embedding generation failed:", error);
       throw error;
     }
@@ -233,7 +233,7 @@ class TauriLLMService {
         console.log("No suitable Gemma3 model found for available memory");
         await this.initializeFallbackModel();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to initialize Gemma3:", error);
       await this.initializeFallbackModel();
     }
@@ -308,7 +308,7 @@ class TauriLLMService {
       }
       // Use generic Tauri inference
       return await this.runGenericInference(prompt, inferenceOptions);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Inference failed:", error);
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error";
@@ -324,7 +324,7 @@ class TauriLLMService {
       }
       // Fallback for web mode
       return 8;
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Could not get system memory info, using default");
       return 8;
     }
@@ -361,7 +361,7 @@ class TauriLLMService {
       });
 
       return this.cleanGemma3Response(response);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Gemma3 inference failed:", error);
       throw error;
     }
@@ -420,7 +420,7 @@ Please provide accurate, well-reasoned responses that would be helpful to legal 
   }> {
     try {
       return await invoke("get_model_metrics", { modelId });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to get model metrics:", error);
       throw error;
     }
@@ -437,7 +437,7 @@ Please provide accurate, well-reasoned responses that would be helpful to legal 
         model.isLoaded = false;
       }
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to unload model ${modelId}:`, error);
       return false;
     }
@@ -504,7 +504,7 @@ Please provide accurate, well-reasoned responses that would be helpful to legal 
     // Generic Tauri inference implementation
     try {
       return await invoke("run_inference", { prompt, options });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Generic inference failed:", error);
       return "Generic inference failed";
     }

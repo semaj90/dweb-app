@@ -15,20 +15,20 @@ export const minio = new MinioClient({
   secretKey: MINIO_SECRET_KEY,
 });
 
-export async function ensureBucket(bucketName: string) {
+export async function ensureBucket(bucketName: string): Promise<any> {
   try {
     const exists = await minio.bucketExists(bucketName);
     if (!exists) {
       await minio.makeBucket(bucketName);
     }
     return true;
-  } catch (err) {
+  } catch (err: any) {
     console.error('MinIO ensureBucket error', err);
     throw err;
   }
 }
 
-export async function putObject(bucketName: string, objectName: string, buffer: Buffer, meta?: Record<string,string>){
+export async function putObject(bucketName: string, objectName: string, buffer: Buffer, meta?: Record<string,string>): Promise<any> {
   await ensureBucket(bucketName);
   return minio.putObject(bucketName, objectName, buffer, meta || {});
 }

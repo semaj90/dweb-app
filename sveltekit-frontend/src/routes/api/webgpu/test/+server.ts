@@ -50,7 +50,7 @@ export const POST: RequestHandler = async ({ request }) => {
       note: 'This is a server-side simulation. Actual WebGPU testing occurs in browser.',
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ WebGPU test error:', error);
     
     return json({
@@ -61,7 +61,7 @@ export const POST: RequestHandler = async ({ request }) => {
   }
 };
 
-async function simulateTextGeneration(input: string, fallback: boolean) {
+async function simulateTextGeneration(input: string, fallback: boolean): Promise<any> {
   // Simulate different device types based on fallback setting
   const deviceType = fallback 
     ? (Math.random() > 0.7 ? 'webgpu' : Math.random() > 0.5 ? 'webgl' : 'wasm')
@@ -88,7 +88,7 @@ async function simulateTextGeneration(input: string, fallback: boolean) {
   };
 }
 
-async function simulateEmbeddingGeneration(input: string) {
+async function simulateEmbeddingGeneration(input: string): Promise<any> {
   const deviceType = Math.random() > 0.6 ? 'webgpu' : 'wasm';
   
   const processingTime = deviceType === 'webgpu' ? 50 : 200;
@@ -103,14 +103,14 @@ async function simulateEmbeddingGeneration(input: string) {
 
   return {
     embedding: normalizedEmbedding,
-    dimensions: 768,
+    dimensions: 384,
     device: deviceType,
     processingTimeMs: processingTime,
     model: 'gemma3-legal-embeddings',
   };
 }
 
-async function simulateCapabilityTest() {
+async function simulateCapabilityTest(): Promise<any> {
   // Simulate browser capability detection
   const capabilities = {
     webgpuSupported: Math.random() > 0.3, // 70% chance WebGPU supported
@@ -252,7 +252,7 @@ export const GET: RequestHandler = async () => {
       timestamp: new Date().toISOString(),
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: error instanceof Error ? error.message : 'Service unavailable',

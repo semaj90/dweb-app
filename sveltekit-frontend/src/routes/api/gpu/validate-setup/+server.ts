@@ -192,7 +192,7 @@ export const GET: RequestHandler = async () => {
 
     return json(payload);
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('GPU validation error:', error);
     return json({
       ok: false,

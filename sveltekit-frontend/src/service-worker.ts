@@ -66,7 +66,7 @@ const SYNC_TAGS = {
   PERFORMANCE_METRICS: 'performance-metrics'
 };
 
-self.addEventListener('install', (event) => {
+self.addEventListener('install', (event: any) => {
   console.log('🔧 Enhanced Service Worker installing...');
 
   event.waitUntil(
@@ -86,7 +86,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
-self.addEventListener('activate', (event) => {
+self.addEventListener('activate', (event: any) => {
   console.log('✅ Enhanced Service Worker activating...');
 
   event.waitUntil(
@@ -128,7 +128,7 @@ async function initializeWebGPU(): Promise<void> {
         console.log('✅ WebGPU initialized in Service Worker');
       }
     }
-  } catch (error) {
+  } catch (error: any) {
     console.warn('⚠️ WebGPU initialization failed:', error);
   }
 }
@@ -150,7 +150,7 @@ async function initializeBackgroundProcessing(): Promise<void> {
   }, 60000); // Every minute
 }
 
-self.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', (event: any) => {
   // ignore POST requests etc
   if (event.request.method !== 'GET') return;
 
@@ -266,7 +266,7 @@ self.addEventListener('message', (event: ExtendableMessageEvent) => {
 /**
  * Enhanced background sync for GGUF runtime coordination
  */
-self.addEventListener('sync', (event) => {
+self.addEventListener('sync', (event: any) => {
   console.log('🔄 Background sync triggered:', event.tag);
 
   switch (event.tag) {
@@ -325,7 +325,7 @@ async function processInferenceQueue(): Promise<void> {
       } else {
         await processCPUInference(request);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to process inference request:', error);
     }
   }
@@ -376,7 +376,7 @@ async function processWebGPUInference(request: any): Promise<void> {
 
     console.log('✅ WebGPU legal inference completed');
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ WebGPU inference failed:', error);
   }
 }
@@ -556,7 +556,7 @@ async function uploadPerformanceMetrics(): Promise<void> {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(metrics)
     });
-  } catch (error) {
+  } catch (error: any) {
     console.warn('⚠️ Failed to upload metrics:', error);
   }
 }
@@ -593,7 +593,7 @@ async function clearAllCaches(): Promise<void> {
   console.log('🗑️ All caches cleared');
 }
 
-async function syncEvidenceUploads() {
+async function syncEvidenceUploads(): Promise<any> {
   // Enhanced evidence upload sync with GGUF runtime integration
   console.log('📎 Syncing evidence uploads with GGUF processing...');
 }

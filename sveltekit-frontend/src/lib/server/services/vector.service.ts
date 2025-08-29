@@ -77,7 +77,7 @@ export class VectorOperationsService {
         success: true,
         model: "stub-model", // TODO: Return actual model name
       };
-    } catch (error) {
+    } catch (error: any) {
       // TODO: Enhanced error handling with retry logic
       return {
         embedding: [],
@@ -124,7 +124,7 @@ export class VectorOperationsService {
       //
       // STUB: Return empty array for now
       return []; // TODO: Return actual search results
-    } catch (error) {
+    } catch (error: any) {
       console.error("Vector search error:", error);
       return [];
     }
@@ -170,7 +170,7 @@ export class VectorOperationsService {
       //
       // STUB: Return success for now
       return true; // TODO: Return actual storage result
-    } catch (error) {
+    } catch (error: any) {
       console.error("Store embedding error:", error);
       return false;
     }

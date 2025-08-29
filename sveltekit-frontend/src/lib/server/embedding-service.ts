@@ -8,11 +8,11 @@ import { db } from "./db/index";
 import { users, documentEmbeddings, caseEmbeddings } from "./db/schema-unified";
 import { eq } from "drizzle-orm";
 
-interface OllamaEmbeddingResponse {
+export interface OllamaEmbeddingResponse {
   embedding: number[];
 }
 
-interface EmbeddingOptions {
+export interface EmbeddingOptions {
   model?: string;
   dimensions?: number;
   normalize?: boolean;
@@ -75,7 +75,7 @@ export class EmbeddingService {
       }
 
       return embedding;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating embedding:', error);
       throw error;
     }
@@ -134,7 +134,7 @@ export class EmbeddingService {
         .where(eq(users.id, userId));
 
       console.log(`Generated profile embedding for user ${userId}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error generating user profile embedding for ${userId}:`, error);
       throw error;
     }
@@ -191,7 +191,7 @@ export class EmbeddingService {
         .where(eq(users.id, userId));
 
       console.log(`Generated preference embedding for user ${userId}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error generating user preference embedding for ${userId}:`, error);
       throw error;
     }
@@ -229,7 +229,7 @@ export class EmbeddingService {
       });
 
       console.log('Generated and stored document embedding');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating document embedding:', error);
       throw error;
     }
@@ -252,7 +252,7 @@ export class EmbeddingService {
       });
 
       console.log(`Generated and stored case embedding for case ${caseId}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error generating case embedding for ${caseId}:`, error);
       throw error;
     }
@@ -338,7 +338,7 @@ export class EmbeddingService {
     try {
       const response = await fetch(`${this.baseUrl}/api/tags`);
       return response.ok;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Ollama health check failed:', error);
       return false;
     }
@@ -357,7 +357,7 @@ export class EmbeddingService {
 
       const data = await response.json();
       return data.models?.map((model: any) => model.name) || [];
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching available models:', error);
       return [];
     }

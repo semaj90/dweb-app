@@ -6,14 +6,14 @@ import { users, cases, evidence } from '$lib/server/db/schema-unified.js';
 import { generateEnhancedEmbedding } from '$lib/server/ai/embeddings-enhanced.js';
 import { eq, ne, and, sql } from 'drizzle-orm';
 
-interface FOAFRequest {
+export interface FOAFRequest {
   personId: string;
   limit?: number;
   maxDepth?: number;
   caseContext?: string;
 }
 
-interface Person {
+export interface Person {
   id: string;
   name: string;
   handle: string;
@@ -23,7 +23,7 @@ interface Person {
   relationshipPath: string;
 }
 
-interface FOAFResponse {
+export interface FOAFResponse {
   people: Person[];
   summary: string;
   totalFound: number;
@@ -52,7 +52,7 @@ export const GET: RequestHandler = async ({ params, url, fetch }) => {
         const ports = await portsResponse.json();
         recommendationsPort = ports.recommendations_service || '8105';
       }
-    } catch (e) {
+    } catch (e: any) {
       console.log('Using default recommendations port');
     }
 
@@ -95,14 +95,14 @@ export const GET: RequestHandler = async ({ params, url, fetch }) => {
         const summaryData = await summaryResponse.json();
         foafData.summary = summaryData.summary;
       }
-    } catch (e) {
+    } catch (e: any) {
       console.log('LangChain summarization not available, using default summary');
     }
 
     foafData.processingTimeMs = Date.now() - startTime;
     return json(foafData);
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('FOAF API error:', err);
     throw error(500, 'Failed to fetch FOAF recommendations');
   }
@@ -139,13 +139,13 @@ export const POST: RequestHandler = async ({ params, request }) => {
     };
 
     return json(enhancedResponse);
-  } catch (err) {
+  } catch (err: any) {
     console.error('Enhanced FOAF POST error:', err);
     throw error(500, 'Failed to generate enhanced FOAF recommendations');
   }
 };
 
-interface DatabaseFOAFRecommendation {
+export interface DatabaseFOAFRecommendation {
   id: string;
   name: string;
   email?: string;
@@ -348,7 +348,7 @@ async function generateDatabaseFOAFRecommendations(
       .sort((a, b) => b.connectionStrength - a.connectionStrength)
       .slice(0, limit);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error generating database FOAF recommendations:', error);
     return [];
   }
@@ -415,11 +415,11 @@ async function enhanceRecommendationsWithEmbeddings(
             rec.metadata = { ...rec.metadata, semanticSimilarity: similarity };
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Failed to enhance recommendation ${rec.id} with embedding:`, error);
       }
     }
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Failed to enhance recommendations with embeddings:', error);
   }
 }

@@ -321,7 +321,7 @@ export class UnslothFinetuningService {
       this.isInitialized = true;
       console.log('✅ Unsloth Fine-tuning Service initialized');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Unsloth initialization failed:', error);
       this.serviceStatus.update((s: any) => ({
         ...s,
@@ -346,7 +346,7 @@ export class UnslothFinetuningService {
       }
       
       return false;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('CUDA check failed:', error);
       return false;
     }
@@ -366,7 +366,7 @@ export class UnslothFinetuningService {
         }
       }
       return false;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('RTX 3060 detection failed:', error);
       return false;
     }
@@ -385,7 +385,7 @@ export class UnslothFinetuningService {
       console.log('✅ Unsloth library ready');
       return true;
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Unsloth initialization failed:', error);
       return false;
     }
@@ -725,7 +725,7 @@ export class UnslothFinetuningService {
 
       console.log(`🎉 Fine-tuning job completed: ${job.name}`);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Fine-tuning job failed: ${job.name}`, error);
       job.status = 'failed';
       job.error = error instanceof Error ? error.message : 'Unknown error';

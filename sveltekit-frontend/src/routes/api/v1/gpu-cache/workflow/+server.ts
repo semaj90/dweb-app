@@ -114,7 +114,7 @@ export const POST: RequestHandler = async ({ request }) => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Workflow optimization error:', error);
     return json({ 
       error: 'Failed to optimize workflow',
@@ -153,7 +153,7 @@ export const GET: RequestHandler = async ({ url }) => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Workflow profiles error:', error);
     return json({ 
       error: 'Failed to retrieve workflow profiles',
@@ -205,7 +205,7 @@ export const PUT: RequestHandler = async ({ request }) => {
             sizeAfter: metrics.encodedSize
           });
         }
-      } catch (error) {
+      } catch (error: any) {
         results.encoding.failed++;
         results.encoding.details.push({
           cacheKey,
@@ -232,7 +232,7 @@ export const PUT: RequestHandler = async ({ request }) => {
             });
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         results.nesCache.failed++;
         results.nesCache.details.push({
           error: error instanceof Error ? error.message : 'NES optimization failed'
@@ -256,7 +256,7 @@ export const PUT: RequestHandler = async ({ request }) => {
           optimized: webgpuResult.processed,
           performance: webgpuResult.performance
         });
-      } catch (error) {
+      } catch (error: any) {
         results.webgpu.failed++;
         results.webgpu.details.push({
           error: error instanceof Error ? error.message : 'WebGPU optimization failed'
@@ -282,7 +282,7 @@ export const PUT: RequestHandler = async ({ request }) => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Workflow application error:', error);
     return json({ 
       error: 'Failed to apply workflow optimizations',

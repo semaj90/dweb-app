@@ -1004,8 +1004,4 @@
   }
 </style>
 
-<!-- Provide a default export to satisfy default import usage -->
-<script context="module" lang="ts">
-  import Component from './SimpleFileUpload.svelte';
-  export default Component;
-</script>
+<!-- SimpleFileUpload component - Svelte 5 compatible -->

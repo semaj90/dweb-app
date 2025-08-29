@@ -16,13 +16,13 @@ function logError(message: string, data?: any): void {
   console.error(message, data);
 }
 
-interface RateLimitEntry {
+export interface RateLimitEntry {
   count: number;
   resetTime: number;
   blocked: boolean;
 }
 
-interface SecurityConfig {
+export interface SecurityConfig {
   rateLimits: {
     general: { requests: number; windowMs: number };
     auth: { requests: number; windowMs: number };
@@ -185,7 +185,7 @@ export const securityManager = new SecurityManager();
 /**
  * Security middleware hook
  */
-export async function securityMiddleware(event: RequestEvent) {
+export async function securityMiddleware(event: RequestEvent): Promise<any> {
   const clientIP = securityManager.getClientIP(event);
   const route = event.route.id || "";
 

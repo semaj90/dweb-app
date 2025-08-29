@@ -31,7 +31,7 @@ export const documentEmbeddings = pgTable(
     documentType: text("document_type").notNull(), // 'case', 'evidence', 'note', 'report'
     chunkIndex: integer("chunk_index").notNull().default(0),
     chunkText: text("chunk_text").notNull(),
-    embedding: vector("embedding", { dimensions: 768 }), // For nomic-embed-text
+    embedding: vector("embedding", { dimensions: 384 }), // For nomic-embed-text
     metadata: jsonb("metadata")
       .default(sql`'{}'::jsonb`),
     modelUsed: text("model_used").default("nomic-embed-text"),
@@ -66,7 +66,7 @@ export const searchQueries = pgTable(
       .defaultRandom(),
     userId: text("user_id").notNull(),
     queryText: text("query_text").notNull(),
-    queryEmbedding: vector("query_embedding", { dimensions: 768 }),
+    queryEmbedding: vector("query_embedding", { dimensions: 384 }),
     searchType: text("search_type").notNull().default("semantic"), // 'semantic', 'keyword', 'hybrid'
     resultsCount: integer("results_count").default(0),
     results: jsonb("results")

@@ -4,7 +4,7 @@
  * Complements server-side CUDA acceleration
  */
 
-interface WebGPUTensorConfig {
+export interface WebGPUTensorConfig {
 	deviceType: 'discrete' | 'integrated' | 'auto';
 	powerPreference: 'high-performance' | 'low-power';
 	enableDebug: boolean;
@@ -12,7 +12,7 @@ interface WebGPUTensorConfig {
 	shaderCacheEnabled: boolean;
 }
 
-interface TensorOperation {
+export interface TensorOperation {
 	id: string;
 	type: 'vectorSimilarity' | 'embedding' | 'reduction' | 'transform';
 	inputShapes: number[][];
@@ -20,7 +20,7 @@ interface TensorOperation {
 	parameters: Record<string, unknown>;
 }
 
-interface GPUMetrics {
+export interface GPUMetrics {
 	memoryUsage: number;
 	computeUtilization: number;
 	operationsPerSecond: number;
@@ -106,7 +106,7 @@ export class WebGPUTensorAccelerator {
 			this.queue = this.device.queue;
 
 			// Set up error handling
-			this.device.addEventListener('uncapturederror', (event) => {
+			this.device.addEventListener('uncapturederror', (event: any) => {
 				this.metrics.errorCount++;
 				this.metrics.lastError = event.error.message;
 				console.error('WebGPU Error:', event.error);
@@ -122,7 +122,7 @@ export class WebGPUTensorAccelerator {
 			this.startMetricsCollection();
 
 			return true;
-		} catch (error) {
+		} catch (error: any) {
 			console.error('💥 WebGPU initialization failed:', error);
 			this.metrics.errorCount++;
 			this.metrics.lastError = error.message;
@@ -400,7 +400,7 @@ export class WebGPUTensorAccelerator {
 			
 			return cosineSimilarity;
 			
-		} catch (error) {
+		} catch (error: any) {
 			this.metrics.errorCount++;
 			this.metrics.lastError = error.message;
 			throw error;

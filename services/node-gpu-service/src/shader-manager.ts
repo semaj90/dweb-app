@@ -6,11 +6,11 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import { Logger } from './logger';
 
-interface ShaderCache {
+export interface ShaderCache {
   [name: string]: string;
 }
 
-interface ShaderConfig {
+export interface ShaderConfig {
   name: string;
   path: string;
   entryPoint: string;
@@ -59,7 +59,7 @@ export class ShaderManager {
       try {
         await this.loadShader(config);
         this.logger.debug(`✅ Loaded shader: ${config.name}`);
-      } catch (error) {
+      } catch (error: any) {
         this.logger.error(`❌ Failed to load shader ${config.name}:`, error);
         // Create fallback shader if main shader fails
         this.createFallbackShader(config.name);
@@ -75,7 +75,7 @@ export class ShaderManager {
     try {
       const shaderCode = readFileSync(shaderPath, 'utf-8');
       this.cache[config.name] = shaderCode;
-    } catch (error) {
+    } catch (error: any) {
       // If file doesn't exist, create a basic shader
       if ((error as any).code === 'ENOENT') {
         this.logger.warn(`Shader file not found: ${shaderPath}, creating basic shader`);
@@ -279,7 +279,7 @@ fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
       this.loadShader(config);
       this.logger.info(`✅ Reloaded shader: ${name}`);
       return true;
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(`❌ Failed to reload shader ${name}:`, error);
       return false;
     }

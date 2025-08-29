@@ -234,7 +234,7 @@ class ComprehensiveOllamaSummarizer {
           if (typeof comprehensiveCachingService?.initialize === 'function') {
             await comprehensiveCachingService.initialize();
           }
-        } catch (error) {
+        } catch (error: any) {
           console.warn('Caching service not available:', error);
         }
       }
@@ -244,7 +244,7 @@ class ComprehensiveOllamaSummarizer {
           if (!performanceOptimizationService?.isInitialized) {
             console.log('Performance service already initialized or not available');
           }
-        } catch (error) {
+        } catch (error: any) {
           console.warn('Performance service not available:', error);
         }
       }
@@ -258,7 +258,7 @@ class ComprehensiveOllamaSummarizer {
       this.isInitialized = true;
       console.log('✅ Comprehensive Ollama Summarizer initialized successfully');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize Comprehensive Ollama Summarizer:', error);
       throw error;
     }
@@ -342,7 +342,7 @@ class ComprehensiveOllamaSummarizer {
       
       const data = await response.json();
       this.stats.models.available = data.models?.map((m: any) => m.name) || [];
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to connect to Ollama API:', error);
     }
 
@@ -350,7 +350,7 @@ class ComprehensiveOllamaSummarizer {
     try {
       await this.langChainService.testConnection();
       this.stats.models.loaded.push(this.config.primaryModel);
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Primary model not available:', error);
     }
   }
@@ -384,7 +384,7 @@ class ComprehensiveOllamaSummarizer {
               return cached as ComprehensiveSummaryResponse;
             }
           }
-        } catch (error) {
+        } catch (error: any) {
           console.warn('Cache lookup failed:', error);
         }
       }
@@ -440,7 +440,7 @@ class ComprehensiveOllamaSummarizer {
               tags: [request.type, request.context?.caseId].filter(Boolean)
             });
           }
-        } catch (error) {
+        } catch (error: any) {
           console.warn('Cache set failed:', error);
         }
       }
@@ -450,7 +450,7 @@ class ComprehensiveOllamaSummarizer {
 
       return response;
 
-    } catch (error) {
+    } catch (error: any) {
       this.stats.performance.errorRate = 
         (this.stats.performance.errorRate * (this.stats.performance.requestsProcessed - 1) + 1) / 
         this.stats.performance.requestsProcessed;
@@ -489,7 +489,7 @@ class ComprehensiveOllamaSummarizer {
       // Fallback: Use basic Ollama service
       return await this.generateWithBasicService(request);
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Primary service failed, trying fallback:', error);
       
       if (this.config.enableFallback) {
@@ -643,7 +643,7 @@ class ComprehensiveOllamaSummarizer {
 
       return finalResponse;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Streaming summary failed:', error);
       throw error;
     }
@@ -816,7 +816,7 @@ Format your response as a structured analysis suitable for legal professionals.`
         this.stats.services.cluster.nodes = clusterStats?.activeNodes || 0;
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to update stats:', error);
     }
   }
@@ -860,7 +860,7 @@ Format your response as a structured analysis suitable for legal professionals.`
     try {
       await this.generateComprehensiveSummary(testRequest);
       console.log('✅ Warmup completed successfully');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Warmup completed with warnings:', error);
     }
   }

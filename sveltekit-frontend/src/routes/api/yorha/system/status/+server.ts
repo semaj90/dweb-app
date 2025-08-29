@@ -4,7 +4,7 @@ import { getContext7MulticoreService } from '$lib/services/context7-multicore.js
 let startTime = Date.now();
 let requestCount = 0;
 
-interface YoRHaSystemStatus {
+export interface YoRHaSystemStatus {
   database: { connected: boolean; latency: number; activeConnections: number; queryCount: number };
   backend: { healthy: boolean; uptime: number; activeServices: number; cpuUsage: number; memoryUsage: number };
   frontend: { renderFPS: number; componentCount: number; activeComponents: number; webGPUEnabled: boolean };
@@ -50,7 +50,7 @@ function collectStatus(): YoRHaSystemStatus {
       completedTasks: systemStatus.metrics.completedTasks,
       failedTasks: systemStatus.metrics.failedTasks
     };
-  } catch (error) {
+  } catch (error: any) {
     // Multicore service not available
     console.warn('Context7 multicore service not available:', error.message);
   }

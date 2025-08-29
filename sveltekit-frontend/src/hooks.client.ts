@@ -27,11 +27,11 @@ if (!dev && typeof window !== "undefined") {
 
 // Error tracking
 if (typeof window !== "undefined") {
-  window.addEventListener("error", (event) => {
+  window.addEventListener("error", (event: any) => {
     console.error("Global error:", event.error);
   });
 
-  window.addEventListener("unhandledrejection", (event) => {
+  window.addEventListener("unhandledrejection", (event: any) => {
     console.error("Unhandled promise rejection:", event.reason);
   });
 }

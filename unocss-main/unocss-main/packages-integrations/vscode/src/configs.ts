@@ -9,7 +9,7 @@ export function getConfig(scope?: ConfigurationScope): ConfigShorthandTypeMap & 
 } {
   function watchChanged(keys: (keyof ConfigShorthandTypeMap)[], callback: () => void) {
     const fullKeys = keys.map(key => configs[key].key)
-    return workspace.onDidChangeConfiguration((e) => {
+    return workspace.onDidChangeConfiguration((e: any) => {
       if (fullKeys.some(key => e.affectsConfiguration(key, scope))) {
         callback()
       }
@@ -33,7 +33,7 @@ export function getConfig(scope?: ConfigurationScope): ConfigShorthandTypeMap & 
   return object
 }
 
-async function validateLanguages(targets: string[], allLanguages: string[]) {
+async function validateLanguages(targets: string[], allLanguages: string[]): Promise<any> {
   const invalidLanguages: string[] = []
   const validLanguages = targets.filter((language) => {
     if (!allLanguages.includes(language)) {
@@ -48,7 +48,7 @@ async function validateLanguages(targets: string[], allLanguages: string[]) {
   return validLanguages
 }
 
-export async function getLanguageIds() {
+export async function getLanguageIds(): Promise<any> {
   const allLanguages = await languages.getLanguages()
   const languagesIds: string[] = getConfig().languageIds || []
 

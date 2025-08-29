@@ -123,7 +123,7 @@ export class QdrantClient {
           distance
         }
       });
-    } catch (error) {
+    } catch (error: any) {
       // Collection might already exist
       if (!error.message.includes('already exists')) {
         throw error;
@@ -167,7 +167,7 @@ export class HybridVectorService {
           'Cosine'
         );
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to initialize Qdrant collections:', error);
     }
   }
@@ -264,7 +264,7 @@ export class HybridVectorService {
           ...((typeof row.metadata === 'object' ? row.metadata : {}) || {})
         }
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.error('PgVector search failed:', error);
       return [];
     }
@@ -296,7 +296,7 @@ export class HybridVectorService {
           ...point.payload
         }
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Qdrant search failed:', error);
       return [];
     }
@@ -360,7 +360,7 @@ export class HybridVectorService {
       }));
 
       await this.qdrantClient.upsert(this.defaultCollection, points);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to sync to Qdrant:', error);
       throw error;
     }
@@ -388,7 +388,7 @@ export class HybridVectorService {
       }));
 
       await this.syncToQdrant(documents);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to sync from PgVector:', error);
       throw error;
     }
@@ -465,7 +465,7 @@ export class HybridVectorService {
         WHERE embedding IS NOT NULL
       `);
       stats.pgvector.count = parseInt(pgResult[0]?.count || '0');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to get pgvector stats:', error);
     }
 
@@ -473,7 +473,7 @@ export class HybridVectorService {
       const qdrantInfo = await this.qdrantClient.collectionInfo(this.defaultCollection);
       stats.qdrant.count = qdrantInfo.result?.points_count || 0;
       stats.qdrant.vectorSize = qdrantInfo.result?.config?.params?.vectors?.size || 0;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to get Qdrant stats:', error);
     }
 
@@ -498,6 +498,6 @@ export async function syncVectorData(): Promise<void> {
   return hybridVectorService.syncFromPgVector();
 }
 
-export async function getVectorSystemHealth() {
+export async function getVectorSystemHealth(): Promise<any> {
   return hybridVectorService.getSystemHealth();
 }

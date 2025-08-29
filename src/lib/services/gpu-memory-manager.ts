@@ -178,7 +178,7 @@ export class GPUMemoryManager extends EventEmitter {
   /**
    * Warm up model in GPU memory
    */
-  private async warmupModel(allocation: GPUMemoryAllocation): Promise<void> {
+  private async warmupModel(allocation: GPUMemoryAllocation): Promise<any> {
     const model = this.models.get(allocation.modelName)!;
     const startTime = performance.now();
 
@@ -203,7 +203,7 @@ export class GPUMemoryManager extends EventEmitter {
         }
       }, model.keepWarmMs);
       
-    } catch (error) {
+    } catch (error: any) {
       this.emit('model:warmup_failed', { 
         workerId: allocation.workerId, 
         modelName: allocation.modelName,
@@ -216,7 +216,7 @@ export class GPUMemoryManager extends EventEmitter {
   /**
    * Cool down model and free GPU memory
    */
-  async cooldownModel(workerId: string): Promise<void> {
+  async cooldownModel(workerId: string): Promise<any> {
     const allocation = this.allocations.get(workerId);
     if (!allocation) return;
 
@@ -235,7 +235,7 @@ export class GPUMemoryManager extends EventEmitter {
   /**
    * Release GPU memory allocation
    */
-  async releaseGPUMemory(workerId: string): Promise<void> {
+  async releaseGPUMemory(workerId: string): Promise<any> {
     const allocation = this.allocations.get(workerId);
     if (!allocation) return;
 
@@ -290,7 +290,7 @@ export class GPUMemoryManager extends EventEmitter {
   /**
    * Evict low-priority allocations to free memory
    */
-  private async evictLowPriorityAllocations(requiredMemory: number): Promise<void> {
+  private async evictLowPriorityAllocations(requiredMemory: number): Promise<any> {
     const allocations = Array.from(this.allocations.values());
     
     // Sort by priority and last accessed time
@@ -326,7 +326,7 @@ export class GPUMemoryManager extends EventEmitter {
   /**
    * Clean up stale allocations
    */
-  private async cleanupStaleAllocations(): Promise<void> {
+  private async cleanupStaleAllocations(): Promise<any> {
     const now = Date.now();
     const staleAllocations: string[] = [];
 
@@ -371,7 +371,7 @@ export class GPUMemoryManager extends EventEmitter {
    */
   private startGPUMonitoring(): void {
     // Monitor GPU stats every 5 seconds
-    setInterval(async () => {
+    setInterval(async (): Promise<any> => {
       try {
         const stats = await this.getGPUStats();
         this.emit('gpu:stats', stats);
@@ -393,7 +393,7 @@ export class GPUMemoryManager extends EventEmitter {
           });
         }
         
-      } catch (error) {
+      } catch (error: any) {
         this.emit('gpu:monitor_error', { 
           error: error instanceof Error ? error.message : 'Unknown error' 
         });
@@ -404,7 +404,7 @@ export class GPUMemoryManager extends EventEmitter {
   /**
    * Optimize GPU memory layout for legal AI workloads
    */
-  async optimizeForLegalWorkload(): Promise<void> {
+  async optimizeForLegalWorkload(): Promise<any> {
     // Pre-warm frequently used models
     const frequentModels = ['nomic-embed-text', 'legal-classifier'];
     
@@ -414,7 +414,7 @@ export class GPUMemoryManager extends EventEmitter {
         await this.allocateGPUMemory(preWarmWorkerId, modelName, 'low');
         
         this.emit('gpu:prewarmed', { modelName });
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Failed to pre-warm ${modelName}:`, error);
       }
     }
@@ -455,7 +455,7 @@ export class GPUMemoryManager extends EventEmitter {
   /**
    * Shutdown and cleanup
    */
-  async shutdown(): Promise<void> {
+  async shutdown(): Promise<any> {
     clearInterval(this.cleanupInterval);
     
     if (this.monitoringProcess) {

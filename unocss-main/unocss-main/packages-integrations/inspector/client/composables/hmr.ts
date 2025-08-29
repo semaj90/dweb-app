@@ -19,7 +19,7 @@ import(/* @vite-ignore */ MODULE_PATH)
       _onConfigChanged.trigger()
     })
   })
-  .catch((e) => {
+  .catch((e: any) => {
     console.error('failed to connect to client vite server, you might need to do manual refresh to see the updates')
     console.error(e)
   })

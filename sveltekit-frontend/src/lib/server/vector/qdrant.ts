@@ -1,6 +1,6 @@
 
 // --- Qdrant passthroughs for admin API (enhanced with logging) ---
-export async function getCollections() {
+export async function getCollections(): Promise<any> {
   const client = getQdrantClient();
   if (!client) {
     logger.error("Qdrant not configured", undefined, {
@@ -19,7 +19,7 @@ export async function getCollections() {
       collectionCount: collections.collections ? collections.collections.length : 0
     });
     return collections;
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Failed to get collections", error instanceof Error ? error : undefined, {
       component: 'QdrantService',
       service: 'qdrant'
@@ -28,7 +28,7 @@ export async function getCollections() {
   }
 }
 
-export async function getCollection(collection: string) {
+export async function getCollection(collection: string): Promise<any> {
   const client = getQdrantClient();
   if (!client) {
     logger.error("Qdrant not configured", undefined, {
@@ -49,7 +49,7 @@ export async function getCollection(collection: string) {
       indexedVectorsCount: (result as any).indexed_vectors_count || 0
     });
     return result;
-  } catch (error) {
+  } catch (error: any) {
     logger.error(`Failed to get collection ${collection}`, error instanceof Error ? error : undefined, {
       component: 'QdrantService',
       service: 'qdrant'
@@ -58,7 +58,7 @@ export async function getCollection(collection: string) {
   }
 }
 
-export async function createCollection(name: string, config: any) {
+export async function createCollection(name: string, config: any): Promise<any> {
   const client = getQdrantClient();
   if (!client) {
     logger.error("Qdrant not configured", undefined, {
@@ -80,7 +80,7 @@ export async function createCollection(name: string, config: any) {
       optimized: true
     });
     return result;
-  } catch (error) {
+  } catch (error: any) {
     logger.error(`Failed to create collection ${name}`, error instanceof Error ? error : undefined, {
       component: 'QdrantService',
       service: 'qdrant'
@@ -89,7 +89,7 @@ export async function createCollection(name: string, config: any) {
   }
 }
 
-export async function deleteCollection(name: string) {
+export async function deleteCollection(name: string): Promise<any> {
   const client = getQdrantClient();
   if (!client) {
     logger.error("Qdrant not configured", undefined, {
@@ -106,7 +106,7 @@ export async function deleteCollection(name: string) {
       service: 'qdrant'
     }, { collection: name });
     return result;
-  } catch (error) {
+  } catch (error: any) {
     logger.error(`Failed to delete collection ${name}`, error instanceof Error ? error : undefined, {
       component: 'QdrantService',
       service: 'qdrant'
@@ -119,7 +119,7 @@ export async function deleteCollection(name: string) {
 // Now using optimized service with cache-like logging system
 import { optimizedQdrant, qdrantOptimized } from './qdrant-optimized';
 import { QdrantClient } from "@qdrant/js-client-rest";
-import { generateEmbedding } from "../ai/embeddings-simple.js";
+import { generateEmbedding } from '../ai/embeddings-simple';
 import { productionLogger as logger } from '../production-logger';
 
 let qdrantClient: QdrantClient | null = null;
@@ -175,7 +175,7 @@ export async function initializeCollections(): Promise<void> {
           component: 'QdrantService',
           service: 'qdrant'
         });
-      } catch (error) {
+      } catch (error: any) {
         // Collection doesn't exist, create it with optimized config
         const config = {
           vectors: {
@@ -221,7 +221,7 @@ export async function initializeCollections(): Promise<void> {
         });
       }
     }
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Failed to initialize Qdrant collections", error instanceof Error ? error : undefined, {
       component: 'QdrantService',
       service: 'qdrant'
@@ -229,7 +229,7 @@ export async function initializeCollections(): Promise<void> {
   }
 }
 // Search interface
-interface SearchOptions {
+export interface SearchOptions {
   limit?: number;
   offset?: number;
   filter?: unknown;
@@ -250,7 +250,7 @@ export async function searchCases(
       threshold: options.scoreThreshold || 0.7,
       useCache: true // Enable caching for better performance
     });
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Optimized case search failed", error instanceof Error ? error : undefined, {
       component: 'QdrantService',
       service: 'qdrant'
@@ -275,7 +275,7 @@ export async function searchEvidence(
       threshold: options.scoreThreshold || 0.7,
       useCache: true // Enable caching for better performance
     });
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Optimized evidence search failed", error instanceof Error ? error : undefined, {
       component: 'QdrantService',
       service: 'qdrant'
@@ -324,7 +324,7 @@ export async function upsertCase(
       vectorDimension: embedding.length,
       payloadSize: JSON.stringify(payload).length
     });
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Failed to upsert case in Qdrant", error instanceof Error ? error : undefined, {
       component: 'QdrantService',
       service: 'qdrant'
@@ -372,7 +372,7 @@ export async function upsertEvidence(
       vectorDimension: embedding.length,
       payloadSize: JSON.stringify(payload).length
     });
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Failed to upsert evidence in Qdrant", error instanceof Error ? error : undefined, {
       component: 'QdrantService',
       service: 'qdrant'
@@ -409,7 +409,7 @@ export async function deletePoint(
       collection,
       pointId: id
     });
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Failed to delete point from Qdrant", error instanceof Error ? error : undefined, {
       component: 'QdrantService',
       service: 'qdrant'
@@ -423,7 +423,7 @@ export async function deletePoint(
 export async function isQdrantHealthy(): Promise<boolean> {
   try {
     return await qdrantOptimized.isHealthy();
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Qdrant health check failed", error instanceof Error ? error : undefined, {
       component: 'QdrantService',
       service: 'qdrant'

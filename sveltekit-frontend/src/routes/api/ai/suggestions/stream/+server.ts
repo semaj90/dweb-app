@@ -5,7 +5,7 @@ import { enhancedRAGSuggestionsService } from '$lib/services/enhanced-rag-sugges
 /**
  * Server-Sent Events endpoint for streaming AI suggestions
  */
-export async function POST({ request }: RequestEvent) {
+export async function POST({ request }: RequestEvent): Promise<any> {
   try {
     const data = await request.json();
     const {
@@ -80,7 +80,7 @@ export async function POST({ request }: RequestEvent) {
                       }
                     })}\\n\\n`));
                   }
-                } catch (error) {
+                } catch (error: any) {
                   controller.enqueue(encoder.encode(`data: ${JSON.stringify({
                     type: 'error',
                     source: 'ollama',
@@ -126,7 +126,7 @@ export async function POST({ request }: RequestEvent) {
                       }
                     })}\\n\\n`));
                   }
-                } catch (error) {
+                } catch (error: any) {
                   controller.enqueue(encoder.encode(`data: ${JSON.stringify({
                     type: 'error',
                     source: 'enhanced-rag',
@@ -149,7 +149,7 @@ export async function POST({ request }: RequestEvent) {
             timestamp: new Date().toISOString()
           })}\\n\\n`));
 
-        } catch (error) {
+        } catch (error: any) {
           // Send error message
           controller.enqueue(encoder.encode(`data: ${JSON.stringify({
             type: 'error',
@@ -166,7 +166,7 @@ export async function POST({ request }: RequestEvent) {
 
     return new Response(stream, { headers });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Streaming endpoint error:', error);
     return new Response(
       JSON.stringify({ 
@@ -184,7 +184,7 @@ export async function POST({ request }: RequestEvent) {
 /**
  * Handle GET requests for stream testing
  */
-export async function GET({ url }: RequestEvent) {
+export async function GET({ url }: RequestEvent): Promise<any> {
   const content = url.searchParams.get('content');
   const reportType = url.searchParams.get('report_type') || 'prosecution_memo';
   

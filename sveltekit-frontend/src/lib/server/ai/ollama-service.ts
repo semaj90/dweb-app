@@ -52,7 +52,7 @@ class OllamaService extends EventEmitter {
       const models = await this.listModels();
       this.availableModels = models.models?.map((m: any) => m.name) || [];
       this.emit('models-updated', this.availableModels);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to update model list:', error);
     }
   }
@@ -80,7 +80,7 @@ class OllamaService extends EventEmitter {
       const response = await fetch(`${this.baseUrl}/api/tags`);
       if (!response.ok) throw new Error('Failed to list models');
       return await response.json();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error listing models:', error);
       return { models: [] };
     }
@@ -153,7 +153,7 @@ class OllamaService extends EventEmitter {
     if (!modelName) {
       try {
         modelName = await this.selectModelForTask('generation', prompt);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Model selection failed:', error);
         // Try with legal-bert as fallback
         modelName = 'legal-bert';
@@ -258,7 +258,7 @@ class OllamaService extends EventEmitter {
         }
         
         return result;
-      } catch (error) {
+      } catch (error: any) {
         lastError = error as Error;
         console.error(`Model ${model} failed:`, error);
         
@@ -315,7 +315,7 @@ class OllamaService extends EventEmitter {
         }
 
         return result.embedding;
-      } catch (error) {
+      } catch (error: any) {
         lastError = error as Error;
         console.error(`Embedding model ${model} failed:`, error);
       }
@@ -345,7 +345,7 @@ class OllamaService extends EventEmitter {
     try {
       const analysis = JSON.parse(response.response || '{}');
       return this.formatAnalysisResult(document.id, analysis, response.model);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error parsing legal analysis:', error);
       
       // If parsing fails and we haven't tried legal-bert yet
@@ -508,7 +508,7 @@ class OllamaService extends EventEmitter {
         try {
           const result = await fn();
           resolve(result);
-        } catch (error) {
+        } catch (error: any) {
           reject(error);
         }
       });

@@ -11,11 +11,11 @@ const bundle = (selectedVersion.value === 'latest' || !selectedVersion.value)
     bundlePackages.map(p => [p, () => import(/* @vite-ignore */ `https://esm.sh/${p}@${selectedVersion.value}`)]),
   )
 
-export async function load() {
+export async function load(): Promise<any> {
   try {
     defaultConfig.value = await evaluateUserConfig(defaultConfigRaw, bundle)
   }
-  catch (e) {
+  catch (e: any) {
     console.error(e)
   }
 }

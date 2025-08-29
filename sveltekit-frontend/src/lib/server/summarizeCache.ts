@@ -80,7 +80,7 @@ export async function getFromRedis(key: string): Promise<SummarizeCacheEntry | n
     // Populate memory (without re-writing to redis) for faster subsequent access
     setInMemory(key, parsed);
     return parsed;
-  } catch (err) {
+  } catch (err: any) {
     console.error('[summarizeCache] Redis get error', err);
     return null;
   }
@@ -94,12 +94,12 @@ export function setInMemory(key: string, entry: Omit<SummarizeCacheEntry, 'lastA
   return full;
 }
 
-export async function writeThroughRedis(key: string, entry: SummarizeCacheEntry) {
+export async function writeThroughRedis(key: string, entry: SummarizeCacheEntry): Promise<any> {
   const redis = getRedisClient();
   if (!redis) return;
   try {
     await redis.set(REDIS_PREFIX + key, JSON.stringify(entry), 'EX', REDIS_TTL_SECS);
-  } catch (err) {
+  } catch (err: any) {
     console.warn('[summarizeCache] Redis set failed (non-fatal)', err);
   }
 }
@@ -112,13 +112,13 @@ export async function getCache(key: string): Promise<{ entry: SummarizeCacheEntr
   return { entry: null, source: 'miss' };
 }
 
-export async function setCache(key: string, entry: Omit<SummarizeCacheEntry, 'lastAccess'>) {
+export async function setCache(key: string, entry: Omit<SummarizeCacheEntry, 'lastAccess'>): Promise<any> {
   const full = setInMemory(key, entry);
   writeThroughRedis(key, full); // fire & forget
   return full;
 }
 
-export async function deleteCache(key: string) {
+export async function deleteCache(key: string): Promise<any> {
   memoryCache.delete(key);
   const redis = getRedisClient();
   if (redis) {

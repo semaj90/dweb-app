@@ -3,7 +3,7 @@ import { extractorArbitraryVariants } from '@unocss/extractor-arbitrary-variants
 import { expect, it } from 'vitest'
 
 it('extractorSplit', async () => {
-  async function extract(code: string) {
+  async function extract(code: string): Promise<any> {
     return [...await extractorSplit.extract?.({ code, original: code } as any) || []]
   }
 
@@ -15,7 +15,7 @@ it('extractorSplit', async () => {
 })
 
 it('extractorSplitArbitrary', async () => {
-  async function extract(code: string) {
+  async function extract(code: string): Promise<any> {
     return [...await extractorArbitraryVariants().extract!({ code, original: code } as any) || []]
   }
 

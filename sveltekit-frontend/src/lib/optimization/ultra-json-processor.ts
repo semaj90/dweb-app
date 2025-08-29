@@ -112,7 +112,7 @@ export class UltraHighPerformanceJSONProcessor extends EventEmitter {
       this.emit("initialized", { success: true });
 
       console.log("🚀 Ultra-High Performance JSON Processor initialized");
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Failed to initialize JSON processor:", error);
       this.emit("initialized", { success: false, error });
     }
@@ -265,11 +265,11 @@ export class UltraHighPerformanceJSONProcessor extends EventEmitter {
           const objects = this.extractCompleteJSONObjects(chunk);
           chunks.push(...objects);
           totalSize += chunk.length;
-        } catch (error) {
+        } catch (error: any) {
           errors.push(`Chunk ${Math.floor(i / chunkSize)}: ${error.message}`);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       errors.push(`Streaming error: ${error.message}`);
     }
 
@@ -440,7 +440,7 @@ export class UltraHighPerformanceJSONProcessor extends EventEmitter {
   private directParse(input: string): unknown {
     try {
       return JSON.parse(input);
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(`Direct parse failed: ${error.message}`);
     }
   }
@@ -551,7 +551,7 @@ export class UltraHighPerformanceJSONProcessor extends EventEmitter {
         parseTime,
         errors: []
       };
-    } catch (error) {
+    } catch (error: any) {
       const parseTime = performance.now() - startTime;
       return {
         chunks: [],
@@ -771,7 +771,7 @@ export class UltraHighPerformanceJSONProcessor extends EventEmitter {
           try {
             const objectString = chunk.slice(start, i + 1);
             objects.push(JSON.parse(objectString));
-          } catch (error) {
+          } catch (error: any) {
             // Skip invalid JSON
           }
         }

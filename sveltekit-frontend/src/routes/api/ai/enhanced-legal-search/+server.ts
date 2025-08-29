@@ -2,7 +2,7 @@
 // Provides advanced semantic search with multiple strategies and intelligent ranking
 
 import { type RequestHandler,  json } from '@sveltejs/kit';
-import { enhancedLegalSearch, type LegalSearchResult } from "../../../../lib/server/ai/enhanced-legal-search.js";
+import { enhancedLegalSearch, type LegalSearchResult } from '../../../../lib/server/ai/enhanced-legal-search';
 import { URL } from "url";
 
 // Rate limiting configuration
@@ -75,7 +75,7 @@ export const GET: RequestHandler = async ({ url, getClientAddress }) => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Enhanced legal search API error:', error);
     
     return json({
@@ -161,7 +161,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
       advancedOptions
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Enhanced legal search POST API error:', error);
     
     return json({
@@ -253,7 +253,7 @@ function calculateAdvancedAnalytics(results: LegalSearchResult[], query: string,
   };
 }
 
-async function generateAIEnhancement(query: string, topResults: LegalSearchResult[]) {
+async function generateAIEnhancement(query: string, topResults: LegalSearchResult[]): Promise<any> {
   try {
     const resultsSummary = topResults.map(r => `${r.title} (${r.category}, ${r.jurisdiction})`).join('; ');
     
@@ -270,7 +270,7 @@ async function generateAIEnhancement(query: string, topResults: LegalSearchResul
       recommendedNextSearch: topResults[0]?.category ? `${query} ${topResults[0].category}` : null
     };
     
-  } catch (error) {
+  } catch (error: any) {
     console.warn('AI enhancement generation failed:', error);
     return null;
   }

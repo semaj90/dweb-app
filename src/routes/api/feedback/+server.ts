@@ -1,6 +1,6 @@
 import type { RequestHandler } from '@sveltejs/kit';
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const payload = await request.json();
 
@@ -38,7 +38,7 @@ export const POST: RequestHandler = async ({ request }) => {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     });
-  } catch (err: unknown) {
+  } catch (err: any) {
     return new Response(JSON.stringify({ 
       ok: false, 
       error: String(err),

@@ -4,7 +4,7 @@
  */
 
 import { QdrantClient } from '@qdrant/js-client-rest';
-import { drizzle } from 'drizzle-orm/postgres-js';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import postgres from 'postgres';
 import { eq, and, sql } from 'drizzle-orm';
 import {
@@ -23,14 +23,14 @@ import {
 // CONFIGURATION
 // ============================================================================
 
-interface QdrantConfig {
+export interface QdrantConfig {
   host: string;
   port: number;
   apiKey?: string;
   timeout?: number;
 }
 
-interface PostgreSQLConfig {
+export interface PostgreSQLConfig {
   connectionString: string;
   max?: number;
   idle_timeout?: number;
@@ -63,8 +63,18 @@ export class QdrantPostgreSQLService {
         vector: {
           to: 1184,
           from: [1184],
-          serialize: (x: number[]) => `[${x.join(',')}]`,
-          parse: (x: string) => x.slice(1, -1).split(',').map(Number),
+          serialize: (x: number[]) => {
+            if (Array.isArray(x)) {
+              return `[${x.join(',')}]`;
+            }
+            return x || '[]';
+          },
+          parse: (x: string) => {
+            if (typeof x === 'string' && x.startsWith('[') && x.endsWith(']')) {
+              return x.slice(1, -1).split(',').map(Number);
+            }
+            return [];
+          },
         },
       },
     });
@@ -133,7 +143,7 @@ export class QdrantPostgreSQLService {
           },
         });
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Failed to ensure collection ${collectionName}:`, error);
       throw error;
     }
@@ -215,7 +225,7 @@ export class QdrantPostgreSQLService {
       console.log(`✅ Synced document ${documentId} to Qdrant`);
       return true;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Failed to sync document ${documentId}:`, error);
 
       // Update operation as failed
@@ -307,7 +317,7 @@ export class QdrantPostgreSQLService {
           });
         }
 
-      } catch (error) {
+      } catch (error: any) {
         console.error('PostgreSQL search error:', error);
       }
     }
@@ -354,7 +364,7 @@ export class QdrantPostgreSQLService {
           }
         }
 
-      } catch (error) {
+      } catch (error: any) {
         console.error('Qdrant search error:', error);
       }
     }
@@ -437,7 +447,7 @@ export class QdrantPostgreSQLService {
         await new Promise(resolve => setTimeout(resolve, 100));
       }
 
-    } catch (error) {
+    } catch (error: any) {
       results.errors.push(`Batch sync error: ${error.message}`);
     }
 
@@ -466,7 +476,7 @@ export class QdrantPostgreSQLService {
     try {
       await this.postgres`SELECT 1`;
       postgresql = true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('PostgreSQL health check failed:', error);
     }
 
@@ -475,7 +485,7 @@ export class QdrantPostgreSQLService {
       const collectionsResponse = await this.qdrant.getCollections();
       qdrant = true;
       collections = collectionsResponse.collections.map(c => c.name);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Qdrant health check failed:', error);
     }
 
@@ -501,7 +511,7 @@ export class QdrantPostgreSQLService {
 
       syncStatus.pendingSyncs = syncStatus.totalDocuments - syncStatus.syncedDocuments;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Sync status check failed:', error);
     }
 

@@ -1,14 +1,14 @@
 import { json } from "@sveltejs/kit";
-import { db } from "$lib/database/postgres.js";
+import { db } from '$lib/database/postgres';
 import { eq } from "drizzle-orm";
 import {
   legalDocuments,
   contentEmbeddings,
   type NewLegalDocument,
-} from "$lib/database/schema/legal-documents.js";
-import { serializeEmbedding } from "$lib/utils/embeddings.js";
-import { legalOrchestrator } from "$lib/agents/orchestrator.js";
-import { qdrantManager } from "$lib/database/qdrant.js";
+} from '$lib/database/schema/legal-documents';
+import { serializeEmbedding } from '$lib/utils/embeddings';
+import { legalOrchestrator } from '$lib/agents/orchestrator';
+import { qdrantManager } from '$lib/database/qdrant';
 import type { RequestHandler } from "./$types";
 import type { DocumentAnalysis } from "$lib/types/legal-document";
 
@@ -17,7 +17,7 @@ import type { DocumentAnalysis } from "$lib/types/legal-document";
  * Comprehensive legal document processing and analysis
  */
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const {
       content,
@@ -39,7 +39,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
     // Check if document already exists
     const existingDoc = await db.query.legalDocuments.findFirst({
-      where: (documents: unknown, { eq }: unknown) => eq(documents.fileHash, fileHash),
+      where: (documents: any, { eq }: any) => eq(documents.fileHash, fileHash),
     });
 
     if (existingDoc) {
@@ -159,7 +159,7 @@ export const POST: RequestHandler = async ({ request }) => {
         processingTime: Date.now() - new Date(insertedDoc.createdAt).getTime(),
       },
     });
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("Document analysis error:", error);
     return json(
       {
@@ -171,7 +171,7 @@ export const POST: RequestHandler = async ({ request }) => {
   }
 };
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
   try {
     const documentId = url.searchParams.get("id");
     const limit = parseInt(url.searchParams.get("limit") || "10");
@@ -226,7 +226,7 @@ export const GET: RequestHandler = async ({ url }) => {
       })
       .from(legalDocuments);
 
-    const filters: unknown[] = [];
+    const filters: any[] = [];
     if (status)
       filters.push(eq(legalDocuments.processingStatus, status as any));
     if (documentType)
@@ -246,7 +246,7 @@ export const GET: RequestHandler = async ({ url }) => {
       .limit(limit);
 
     return json({ documents });
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("Document retrieval error:", error);
     return json(
       {
@@ -290,7 +290,7 @@ async function generateDocumentEmbeddings(
         title: data.embedding, // Use same embedding for title for now
       };
     }
-  } catch (error) {
+  } catch (error: any) {
     console.warn("Embedding service unavailable, using mock embeddings");
   }
 
@@ -355,7 +355,7 @@ async function analyzeDocumentWithAI(
       processingTime: result.totalProcessingTime,
       agentUsed: result.primaryResponse.agentName,
     };
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("AI analysis failed:", error);
     return {
       entities: [],

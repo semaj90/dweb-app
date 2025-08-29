@@ -4,15 +4,15 @@ import type {
 	DateRangeFieldRootPropsWithoutHTML,
 	DateRangeFieldSegmentPropsWithoutHTML,
 } from "bits-ui";
-import { withChildProps } from "./shared.js";
-import { input as dateFieldInput, root as dateFieldRoot } from "./date-field.api.js";
+import { withChildProps } from './shared';
+import { input as dateFieldInput, root as dateFieldRoot } from './date-field.api';
 import {
 	DateOnRangeChangeProp,
 	DateRangeProp,
 	OnStartEndValueChangeProp,
-} from "./extended-types/shared/index.js";
-import { DateRangeFieldInputTypeProp } from "./extended-types/date-range-field/index.js";
-import { DateFieldSegmentPartProp } from "./extended-types/date-field/index.js";
+} from './extended-types/shared/index';
+import { DateRangeFieldInputTypeProp } from './extended-types/date-range-field/index';
+import { DateFieldSegmentPartProp } from './extended-types/date-field/index';
 import {
 	defineComponentApiSchema,
 	defineComponentPropSchema,
@@ -21,7 +21,7 @@ import {
 	defineFunctionProp,
 	defineSimpleDataAttr,
 	defineStringProp,
-} from "../utils.js";
+} from '../utils';
 
 export const root = defineComponentApiSchema<DateRangeFieldRootPropsWithoutHTML>({
 	title: "Root",

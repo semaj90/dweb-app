@@ -25,7 +25,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
       return json({ error: "Report not found" }, { status: 404 });
     }
     return json(reportResult[0]);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching report:", error);
     return json({ error: "Failed to fetch report" }, { status: 500 });
   }
@@ -92,7 +92,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
       .returning();
 
     return json(updatedReport);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating report:", error);
     return json({ error: "Failed to update report" }, { status: 500 });
   }
@@ -127,7 +127,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
       .returning();
 
     return json({ success: true, deletedReport });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error deleting report:", error);
     return json({ error: "Failed to delete report" }, { status: 500 });
   }
@@ -192,7 +192,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
       .returning();
 
     return json(updatedReport);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error patching report:", error);
     return json({ error: "Failed to update report" }, { status: 500 });
   }

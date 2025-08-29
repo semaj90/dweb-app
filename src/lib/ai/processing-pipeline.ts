@@ -1,12 +1,12 @@
-import { LangChainService } from './langchain.js';
-import { multiLayerCache } from '../cache/multi-layer-cache.js';
-import { rabbitmqService } from '../messaging/rabbitmq-service.js';
-import { dbManager } from '../database/postgres.js';
-import { db } from '../database/postgres.js';
-import * as schema from '../database/schema/legal-documents.js';
-import mammoth from 'mammoth';
+import { LangChainService } from './langchain';
+import { multiLayerCache } from '../cache/multi-layer-cache';
+import { rabbitmqService } from '../messaging/rabbitmq-service';
+import { dbManager } from '../database/postgres';
+import { db } from '../database/postgres';
+import * as schema from '../database/schema/legal-documents';
+import * as mammoth from 'mammoth';
 import pdfParse from 'pdf-parse';
-import type { AIProcessingJob } from '../messaging/rabbitmq-service.js';
+import type { AIProcessingJob } from '../messaging/rabbitmq-service';
 
 /**
  * Comprehensive AI Processing Pipeline
@@ -144,7 +144,7 @@ export class AIProcessingPipeline {
 
       return result;
 
-    } catch (error) {
+    } catch (error: any) {
       result.status = 'error';
       result.error = error instanceof Error ? error.message : 'Unknown error';
       result.metadata.processingTime = Date.now() - startTime;
@@ -159,7 +159,15 @@ export class AIProcessingPipeline {
    * Extract text from various document formats
    */
   private async extractText(upload: DocumentUpload): Promise<string> {
-    const buffer = upload.file instanceof Buffer ? upload.file : Buffer.from(await upload.file.arrayBuffer());
+    let buffer: Buffer;
+    if (upload.file instanceof Buffer) {
+      buffer = upload.file;
+    } else if (upload.file instanceof File || (upload.file as any)?.arrayBuffer) {
+      // Handle File type
+      buffer = Buffer.from(await (upload.file as File).arrayBuffer());
+    } else {
+      throw new Error('Unsupported file type');
+    }
 
     switch (upload.mimeType) {
       case 'application/pdf':
@@ -255,7 +263,7 @@ export class AIProcessingPipeline {
         console.warn('Go server processing failed, falling back to local:', goResult.error);
         await this.performLocalAnalysis(content, options, analysis);
       }
-    } catch (error) {
+    } catch (error: any) {
       // Fallback to local processing
       console.warn('Go server not available, falling back to local processing:', error);
       await this.performLocalAnalysis(content, options, analysis);
@@ -302,7 +310,7 @@ export class AIProcessingPipeline {
       jurisdiction: 'federal', // Could be enhanced with jurisdiction detection
       practiceArea: analysis.practiceArea,
       fileName: upload.filename,
-      fileSize: upload.file instanceof Buffer ? upload.file.length : upload.file.size,
+      fileSize: upload.file instanceof Buffer ? upload.file.length : (upload.file as File).size,
       mimeType: upload.mimeType,
       contentEmbedding: analysis.embeddings?.contentEmbedding,
       titleEmbedding: analysis.embeddings?.titleEmbedding,
@@ -331,7 +339,7 @@ export class AIProcessingPipeline {
   /**
    * Cache analysis results for fast retrieval
    */
-  private async cacheResults(jobId: string, document: schema.LegalDocument, analysis: any): Promise<void> {
+  private async cacheResults(jobId: string, document: schema.LegalDocument, analysis: any): Promise<any> {
     const cacheKeys = [
       `doc:${document.id}`,
       `analysis:${document.id}`,
@@ -379,7 +387,7 @@ export class AIProcessingPipeline {
     if (useCache) {
       const cacheKey = `search:${this.hashQuery(query, options)}`;
       const cached = await multiLayerCache.get(cacheKey);
-      if (cached) return cached;
+      if (cached && Array.isArray(cached)) return cached;
     }
 
     // Generate query embedding
@@ -445,7 +453,7 @@ export class AIProcessingPipeline {
   } {
     const stats = { total: 0, pending: 0, processing: 0, completed: 0, errors: 0 };
     
-    for (const result of this.processingQueue.values()) {
+    for (const result of Array.from(this.processingQueue.values())) {
       stats.total++;
       stats[result.status]++;
     }
@@ -458,7 +466,7 @@ export class AIProcessingPipeline {
   /**
    * Fallback local analysis when Go server is unavailable
    */
-  private async performLocalAnalysis(content: string, options: AnalysisOptions, analysis: any): Promise<void> {
+  private async performLocalAnalysis(content: string, options: AnalysisOptions, analysis: any): Promise<any> {
     try {
       // Generate summary
       if (options.includeSummary) {
@@ -478,7 +486,7 @@ export class AIProcessingPipeline {
         analysis.risks = await this.analyzeRisks(content);
         analysis.compliance = await this.checkCompliance(content);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Local analysis failed:', error);
       // Set minimal analysis data
       analysis.summary = 'Analysis failed';
@@ -497,7 +505,7 @@ export class AIProcessingPipeline {
       .slice(0, 20);
   }
 
-  private async initializeWorkers(): Promise<void> {
+  private async initializeWorkers(): Promise<any> {
     // Initialize RabbitMQ workers for distributed processing
     await rabbitmqService.setupAIWorkers();
   }

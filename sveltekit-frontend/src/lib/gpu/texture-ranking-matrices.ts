@@ -15,7 +15,7 @@ import { type MemoryBank } from '../memory/nes-memory-architecture';
 import { nesGPUBridge, type GPUTextureMatrix } from './nes-gpu-memory-bridge';
 import { FlatBufferNodeSerializer, type BinaryGraphData, type FlatBufferNode } from '../binary/flatbuffer-node-data';
 
-interface RankingDimension {
+export interface RankingDimension {
   readonly name: string;
   readonly weight: number;
   readonly computeShader: string;
@@ -23,7 +23,7 @@ interface RankingDimension {
   readonly workgroupSize: [number, number, number];
 }
 
-interface RankingResult {
+export interface RankingResult {
   readonly nodeId: number;
   readonly scores: Map<string, number>;
   readonly combinedScore: number;
@@ -35,7 +35,7 @@ interface RankingResult {
   };
 }
 
-interface ComputePipelineWrapper {
+export interface ComputePipelineWrapper {
   readonly pipeline: GPUComputePipeline;
   readonly bindGroupLayout: GPUBindGroupLayout;
   readonly bindGroup: GPUBindGroup;
@@ -129,7 +129,7 @@ export class TextureRankingMatrices {
         computeShaders: this.computePipelines.size
       });
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize GPU compute:', error);
     }
   }
@@ -200,7 +200,7 @@ export class TextureRankingMatrices {
         this.computePipelines.set(dimension.name, pipelineWrapper);
         console.log(`✅ Created compute pipeline for ${dimension.name}`);
 
-      } catch (error) {
+      } catch (error: any) {
         console.error(`❌ Failed to create compute pipeline for ${dimension.name}:`, error);
       }
     }
@@ -299,7 +299,7 @@ export class TextureRankingMatrices {
 
       return sortedResults;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ GPU ranking computation failed:', error);
       return this.computeCPUFallback(binaryGraphData, queryEmbedding, maxResults);
     }
@@ -402,7 +402,7 @@ export class TextureRankingMatrices {
 
       return scores;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Dimension computation failed for ${dimension.name}:`, error);
       return null;
     }
@@ -829,7 +829,7 @@ export class NESSGPUBinaryRankingPipeline {
 
       return results;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ NES-GPU Binary Pipeline failed:', error);
       throw error;
     }
@@ -943,7 +943,7 @@ export class NESSGPUBinaryRankingPipeline {
         embedding[i] = Math.random() * 0.1 - 0.05; // Small random values
       }
       return embedding;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Failed to generate query embedding, using random:', error);
       return new Float32Array(384).fill(0.01);
     }
@@ -1015,7 +1015,7 @@ export class NESSGPUBinaryRankingPipeline {
         console.log('🎯 GPU device initialized for NES-GPU binary pipeline');
         return true;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ GPU initialization failed, using CPU fallback:', error);
     }
     return false;

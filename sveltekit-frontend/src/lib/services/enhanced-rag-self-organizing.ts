@@ -255,7 +255,7 @@ export class EnhancedRAGSelfOrganizing {
 
       console.log('✅ Enhanced RAG Self-Organizing System initialized');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Enhanced RAG initialization failed:', error);
       this.systemStatus.update((s: any) => ({
         ...s,
@@ -378,7 +378,7 @@ export class EnhancedRAGSelfOrganizing {
       console.log(`✅ Document processed: ${chunks.length} chunks in ${processingTime}ms`);
       return chunkIds;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Document processing failed:', error);
       throw error;
     }
@@ -460,7 +460,7 @@ export class EnhancedRAGSelfOrganizing {
 
       return result;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Enhanced query processing failed:', error);
       throw error;
     }
@@ -521,7 +521,7 @@ export class EnhancedRAGSelfOrganizing {
       const response = await this.llamaService.generateCompletion(request);
       return this.parseLLMAnalysis(response.text);
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn('LLM analysis failed, using fallback:', error);
       return this.performFallbackAnalysis(text);
     }
@@ -585,7 +585,7 @@ export class EnhancedRAGSelfOrganizing {
           sentiment: parsed.sentiment || { score: 0, label: 'neutral' }
         };
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to parse LLM analysis:', error);
     }
 
@@ -846,7 +846,7 @@ export class EnhancedRAGSelfOrganizing {
       
       return this.parseLLMResponse(response.text);
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn('LLM analysis failed, using fallback:', error);
       return this.generateFallbackAnalysis(query, chunks);
     }

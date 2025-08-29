@@ -128,7 +128,7 @@ class ProductionIntegrationValidator {
       // Measure memory usage
       resourceUsage.memory = process.memoryUsage().heapUsed / 1024 / 1024;
 
-    } catch (error) {
+    } catch (error: any) {
       errors.push(`Redis rate limit validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
       status = 'failed';
     }
@@ -182,7 +182,7 @@ class ProductionIntegrationValidator {
 
       resourceUsage.memory = process.memoryUsage().heapUsed / 1024 / 1024;
 
-    } catch (error) {
+    } catch (error: any) {
       errors.push(`Neural Memory API validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
       status = 'failed';
     }
@@ -238,7 +238,7 @@ class ProductionIntegrationValidator {
       resourceUsage.memory = process.memoryUsage().heapUsed / 1024 / 1024;
       resourceUsage.disk = vectorTest.throughput || 0;
 
-    } catch (error) {
+    } catch (error: any) {
       errors.push(`Qdrant validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
       status = 'failed';
     }
@@ -283,7 +283,7 @@ class ProductionIntegrationValidator {
       resourceUsage.memory = process.memoryUsage().heapUsed / 1024 / 1024;
       resourceUsage.gpu = webgpuSupported ? 10 : 0; // Estimated GPU usage
 
-    } catch (error) {
+    } catch (error: any) {
       errors.push(`NES Cache validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
       status = 'degraded'; // Cache failures are non-critical
     }
@@ -327,7 +327,7 @@ class ProductionIntegrationValidator {
 
       resourceUsage.memory = process.memoryUsage().heapUsed / 1024 / 1024;
 
-    } catch (error) {
+    } catch (error: any) {
       errors.push(`Inline suggestions validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
       status = 'failed';
     }
@@ -376,7 +376,7 @@ class ProductionIntegrationValidator {
 
       resourceUsage.memory = process.memoryUsage().heapUsed / 1024 / 1024;
 
-    } catch (error) {
+    } catch (error: any) {
       errors.push(`Production logger validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
       status = 'degraded'; // Logger failures are non-critical but concerning
     }
@@ -432,7 +432,7 @@ class ProductionIntegrationValidator {
 
         resourceUsage.memory = process.memoryUsage().heapUsed / 1024 / 1024;
 
-      } catch (error) {
+      } catch (error: any) {
         errors.push(`Windows optimization validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
         status = 'degraded';
       }
@@ -474,7 +474,7 @@ class ProductionIntegrationValidator {
         status = 'degraded';
       }
 
-    } catch (error) {
+    } catch (error: any) {
       errors.push(`Service integration validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
       status = 'failed';
     }
@@ -522,7 +522,7 @@ class ProductionIntegrationValidator {
         status = 'degraded';
       }
 
-    } catch (error) {
+    } catch (error: any) {
       errors.push(`Performance benchmarking failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
       status = 'failed';
     }
@@ -546,7 +546,7 @@ class ProductionIntegrationValidator {
       // Simulate rate limit test
       await new Promise(resolve => setTimeout(resolve, 10));
       return { success: true };
-    } catch (error) {
+    } catch (error: any) {
       return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
     }
   }
@@ -570,7 +570,7 @@ class ProductionIntegrationValidator {
       await new Promise(resolve => setTimeout(resolve, 30));
       const throughput = 1000 / (Date.now() - start); // Operations per ms
       return { success: true, throughput };
-    } catch (error) {
+    } catch (error: any) {
       return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
     }
   }
@@ -591,7 +591,7 @@ class ProductionIntegrationValidator {
       // Simulate inline suggestions test
       await new Promise(resolve => setTimeout(resolve, 20));
       return { success: true };
-    } catch (error) {
+    } catch (error: any) {
       return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
     }
   }
@@ -626,7 +626,7 @@ class ProductionIntegrationValidator {
       // Simulate end-to-end workflow
       await new Promise(resolve => setTimeout(resolve, 200));
       return { success: Math.random() > 0.05 }; // 95% success rate
-    } catch (error) {
+    } catch (error: any) {
       return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
     }
   }
@@ -769,7 +769,7 @@ export async function quickHealthCheck(): Promise<{ healthy: number; total: numb
       total,
       status: healthy === total ? 'all_healthy' : healthy >= total * 0.75 ? 'mostly_healthy' : 'degraded'
     };
-  } catch (error) {
+  } catch (error: any) {
     return { healthy: 0, total: 0, status: 'failed' };
   }
 }

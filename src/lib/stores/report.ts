@@ -2,7 +2,7 @@ import { writable } from 'svelte/store';
 import type { Report } from '$lib/types';
 import { cache } from '$lib/client/cache';
 
-interface ReportStore {
+export interface ReportStore {
   items: Report[];
   currentReport: Report | null;
   loading: boolean;
@@ -61,7 +61,7 @@ function createReportStore() {
 
         return report;
 
-      } catch (error) {
+      } catch (error: any) {
         update(state => ({
           ...state,
           loading: false,
@@ -98,7 +98,7 @@ function createReportStore() {
 
         return savedReport;
 
-      } catch (error) {
+      } catch (error: any) {
         update(state => ({
           ...state,
           saving: false,
@@ -115,10 +115,10 @@ function createReportStore() {
       return async (caseId: number, reportData: Partial<Report>, delay = 2000) => {
         clearTimeout(timeoutId);
         
-        timeoutId = setTimeout(async () => {
+        timeoutId = setTimeout(async (): Promise<any> => {
           try {
             await this.save(caseId, reportData);
-          } catch (error) {
+          } catch (error: any) {
             console.warn('Auto-save failed:', error);
           }
         }, delay);
@@ -184,7 +184,7 @@ function createReportStore() {
 
         return summary;
 
-      } catch (error) {
+      } catch (error: any) {
         update(state => ({
           ...state,
           loading: false,
@@ -221,7 +221,7 @@ function createReportStore() {
 
         return report;
 
-      } catch (error) {
+      } catch (error: any) {
         update(state => ({
           ...state,
           loading: false,
@@ -258,7 +258,7 @@ function createReportStore() {
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
 
-      } catch (error) {
+      } catch (error: any) {
         update(state => ({
           ...state,
           error: error.message

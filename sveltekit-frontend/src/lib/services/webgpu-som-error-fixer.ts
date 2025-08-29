@@ -4,11 +4,11 @@
  * Author: Claude Code Integration
  */
 
-import { gpuCacheOrchestrator } from './gpu-cache-orchestrator.js';
-import type { FlatBufferNodeData } from './flatbuffer-node-data.js';
+import { gpuCacheOrchestrator } from './gpu-cache-orchestrator';
+import type { FlatBufferNodeData } from './flatbuffer-node-data';
 
 // === Error Categories from WebGPU SOM Cache ===
-interface TypeScriptError {
+export interface TypeScriptError {
   id: string;
   error: string;
   category: 'typescript' | 'import' | 'type' | 'property';
@@ -19,7 +19,7 @@ interface TypeScriptError {
   timestamp: string;
 }
 
-interface ErrorFixResult {
+export interface ErrorFixResult {
   originalError: TypeScriptError;
   fixed: boolean;
   fixApplied?: string;
@@ -130,7 +130,7 @@ callAgent: fromPromise(async ({ input }: { input: any }) => {
 
       contextTypeFix: `
 // Fix: XState context typing
-interface MachineContext {
+export interface MachineContext {
   validationErrors?: string[];
   streamingText?: string;
   message?: string;
@@ -187,10 +187,10 @@ export { default as ComponentImpl } from './component';`,
 
       contextMenuFix: `
 // Fix: Context menu component imports
-export { ContextMenu } from './context-menu-root.js';
-export { ContextMenuItem } from './context-menu-item.js';
-export { ContextMenuContent } from './context-menu-content.js';
-export { ContextMenuTrigger } from './context-menu-trigger.js';`,
+export { ContextMenu } from './context-menu-root';
+export { ContextMenuItem } from './context-menu-item';
+export { ContextMenuContent } from './context-menu-content';
+export { ContextMenuTrigger } from './context-menu-trigger';`,
 
       inputPropsFix: `
 // Fix: HTML input attributes extension
@@ -279,7 +279,7 @@ class QdrantService {
 // Fix: MinIO client typing
 import { Client as MinIOClient } from 'minio';
 
-interface MinIOService {
+export interface MinIOService {
   client: MinIOClient; // Use the class, not namespace
   initialize(): Promise<void>;
   uploadFile(bucket: string, key: string, stream: NodeJS.ReadableStream): Promise<void>;

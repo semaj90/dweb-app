@@ -1,4 +1,4 @@
-export async function compareDocuments(document1: string, document2: string) {
+export async function compareDocuments(document1: string, document2: string): Promise<any> {
   const ollamaUrl = process.env.OLLAMA_URL || "http://localhost:11434";
   const res = await fetch(`${ollamaUrl}/api/generate`, {
     method: "POST",

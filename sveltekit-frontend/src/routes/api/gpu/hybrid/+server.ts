@@ -26,7 +26,7 @@ const ROUTING_CONFIG = {
   batch_processing: { min_items: 50, prefer: 'advanced' }
 } as const;
 
-interface GPURequest {
+export interface GPURequest {
   operation: 'compute' | 'vector_similarity' | 'clustering' | 'tensor_parsing';
   data: any;
   priority: 'low' | 'medium' | 'high' | 'urgent';
@@ -34,7 +34,7 @@ interface GPURequest {
   batch_size?: number;
 }
 
-interface ServiceHealthStatus {
+export interface ServiceHealthStatus {
   service: string;
   healthy: boolean;
   response_time: number;
@@ -77,7 +77,7 @@ async function checkServiceHealth(): Promise<Record<string, ServiceHealthStatus>
           load
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         [name]: {
           service: name,
@@ -171,7 +171,7 @@ export const GET: RequestHandler = async () => {
     };
 
     return json(systemStatus);
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ GPU hybrid system status error:', error);
     return json({ error: 'Failed to get system status' }, { status: 500 });
   }
@@ -249,7 +249,7 @@ export const POST: RequestHandler = async ({ request }) => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ GPU hybrid operation error:', error);
     return json({ 
       success: false, 
@@ -276,7 +276,7 @@ export const PUT: RequestHandler = async ({ request }) => {
       timestamp: new Date().toISOString()
     });
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ GPU configuration update error:', error);
     return json({ error: 'Failed to update configuration' }, { status: 500 });
   }
@@ -298,7 +298,7 @@ export const DELETE: RequestHandler = async () => {
       timestamp: new Date().toISOString()
     });
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ GPU system shutdown error:', error);
     return json({ error: 'Failed to shutdown system' }, { status: 500 });
   }

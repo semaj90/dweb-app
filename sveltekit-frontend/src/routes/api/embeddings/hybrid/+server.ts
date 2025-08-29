@@ -11,7 +11,7 @@ import { eq, sql } from "drizzle-orm";
 import { URL } from "url";
 
 // Embedding models configuration
-interface EmbeddingModel {
+export interface EmbeddingModel {
   id: string;
   name: string;
   dimensions: number;
@@ -46,7 +46,7 @@ const EMBEDDING_MODELS: Record<string, EmbeddingModel> = {
 };
 
 // Vector storage backends
-interface VectorBackend {
+export interface VectorBackend {
   id: string;
   name: string;
   endpoint: string;
@@ -147,7 +147,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
       dimensions: embedding.length,
       cached: false,
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error("Embedding generation error:", err);
     return error(500, `Embedding generation failed: ${err.message}`);
   }
@@ -203,7 +203,7 @@ async function generatePGVectorEmbedding(
     }
 
     throw new Error("Empty embedding returned");
-  } catch (error) {
+  } catch (error: any) {
     console.warn("PGVector embedding failed:", error);
     throw error;
   }
@@ -249,7 +249,7 @@ async function generateQdrantEmbedding(
     }
 
     return { embedding, backend: "qdrant" };
-  } catch (error) {
+  } catch (error: any) {
     console.warn("Qdrant embedding failed:", error);
     throw error;
   }
@@ -265,14 +265,14 @@ async function generateHybridEmbedding(
   // Try PGVector first
   try {
     return await generatePGVectorEmbedding(content, model);
-  } catch (error) {
+  } catch (error: any) {
     console.warn("PGVector failed, trying Qdrant:", error);
   }
 
   // Fallback to Qdrant
   try {
     return await generateQdrantEmbedding(content, model);
-  } catch (error) {
+  } catch (error: any) {
     console.warn("Qdrant failed, using local fallback:", error);
   }
 
@@ -319,7 +319,7 @@ async function generateOllamaEmbedding(
     }
 
     return data.embedding;
-  } catch (error) {
+  } catch (error: any) {
     if (error.name === "AbortError") {
       throw new Error("Ollama request timed out");
     }
@@ -385,7 +385,7 @@ async function storeEmbedding(
     // Note: Database storage would be implemented here
     // await db.update(documents).set({ embeddings: embedding }).where(eq(documents.id, documentId));
     console.log(`Would store embedding for document ${documentId} using model ${model} and backend ${backend}`);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to store embedding in database:", error);
   }
 }
@@ -393,7 +393,7 @@ async function storeEmbedding(
 /**
  * Check system health
  */
-async function checkSystemHealth() {
+async function checkSystemHealth(): Promise<any> {
   const health = {
     ollama: false,
     qdrant: false,
@@ -411,7 +411,7 @@ async function checkSystemHealth() {
       health.ollama = true;
       health.models = data.models?.map((m: any) => m.name) || [];
     }
-  } catch (error) {
+  } catch (error: any) {
     console.warn("Ollama health check failed:", error);
   }
 
@@ -422,7 +422,7 @@ async function checkSystemHealth() {
       signal: AbortSignal.timeout(5000),
     });
     health.qdrant = response.ok;
-  } catch (error) {
+  } catch (error: any) {
     console.warn("Qdrant health check failed:", error);
   }
 

@@ -57,7 +57,7 @@ export interface SearchSession {
   query: string;
   searchType?: string;
   queryEmbedding?: string; // JSON string of number[]
-  results?: unknown;
+  results?: any;
   resultCount?: number;
   createdAt?: Date;
 }
@@ -68,7 +68,7 @@ export interface EmbeddingRecord {
   contentType: string;
   textContent: string;
   embedding?: string; // JSON string of number[]
-  metadata?: unknown;
+  metadata?: any;
   createdAt?: Date;
   model?: string;
 }

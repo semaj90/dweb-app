@@ -86,7 +86,7 @@ export class OllamaGemmaCacheManager {
       this.isReady = true;
       console.log('Ollama Gemma cache manager initialized successfully');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to initialize Ollama Gemma cache:', error);
       throw error;
     }
@@ -235,7 +235,7 @@ export class OllamaGemmaCacheManager {
 
           filesProcessed++;
 
-        } catch (error) {
+        } catch (error: any) {
           console.warn(`Failed to process file ${file.fsPath}:`, error);
         }
       }
@@ -245,7 +245,7 @@ export class OllamaGemmaCacheManager {
         await this.saveCache();
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Pre-caching failed:', error);
     }
 
@@ -408,7 +408,7 @@ export class OllamaGemmaCacheManager {
       const data = await response.json();
       return data.embedding || [];
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to generate embedding:', error);
       throw error;
     }
@@ -436,7 +436,7 @@ export class OllamaGemmaCacheManager {
           data.models?.map((m: any) => m.name));
       }
 
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(`Failed to connect to Ollama at ${this.config.endpoint}: ${error}`);
     }
   }
@@ -549,7 +549,7 @@ export class OllamaGemmaCacheManager {
 
       console.log(`Loaded ${this.cache.size} cache entries from storage`);
 
-    } catch (error) {
+    } catch (error: any) {
       console.log('No existing cache file found, starting fresh');
     }
   }
@@ -565,7 +565,7 @@ export class OllamaGemmaCacheManager {
       await fs.writeFile(this.cacheFile, JSON.stringify(cacheData, null, 2));
       console.log(`Saved ${cacheData.length} cache entries to storage`);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to save cache:', error);
     }
   }
@@ -609,7 +609,7 @@ export class OllamaGemmaCacheManager {
     if (this.config.enablePersistence) {
       try {
         await fs.unlink(this.cacheFile);
-      } catch (error) {
+      } catch (error: any) {
         // File might not exist
       }
     }

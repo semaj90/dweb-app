@@ -91,7 +91,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Registration API error:', err);
 
     // Handle validation errors

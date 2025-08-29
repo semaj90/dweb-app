@@ -55,7 +55,7 @@ export const GET: RequestHandler = async ({ url }) => {
     };
 
     return json(response);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Health check failed:', error);
     return json(
       {
@@ -95,7 +95,7 @@ export const POST: RequestHandler = async ({ request }) => {
       default:
         return json({ error: 'Invalid action' }, { status: 400 });
     }
-  } catch (error) {
+  } catch (error: any) {
     return json({ 
       error: 'Action failed', 
       message: error instanceof Error ? error.message : 'Unknown error' 

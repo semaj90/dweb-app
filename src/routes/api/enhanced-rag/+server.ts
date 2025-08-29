@@ -1,8 +1,8 @@
 
 import { json } from '@sveltejs/kit';
-import { db } from '$lib/services/unified-database-service.js';
-import { aiService } from '$lib/services/unified-ai-service.js';
-import { ragPipeline } from '$lib/services/enhanced-rag-pipeline.js';
+import { db } from '$lib/services/unified-database-service';
+import { aiService } from '$lib/services/unified-ai-service';
+import { ragPipeline } from '$lib/services/enhanced-rag-pipeline';
 import { documentIngestionService } from '$lib/services/document-ingestion-service';
 // Lightweight worker spawn (defer full pool integration)
 import { Worker } from 'worker_threads';
@@ -12,7 +12,7 @@ import type { RequestHandler } from './$types';
 // Initialize services on startup
 let initialized = false;
 
-async function initializeServices() {
+async function initializeServices(): Promise<any> {
   if (initialized) return true;
 
   try {
@@ -25,7 +25,7 @@ async function initializeServices() {
     initialized = true;
     console.log('✅ Enhanced RAG System fully initialized');
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Failed to initialize Enhanced RAG System:', error);
     return false;
   }
@@ -38,7 +38,7 @@ initializeServices();
  * Enhanced RAG API Endpoint
  * Handles document ingestion, querying, recommendations, and system health
  */
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const { action, data } = await request.json();
 
@@ -84,7 +84,7 @@ export const POST: RequestHandler = async ({ request }) => {
           { status: 400 }
         );
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Enhanced RAG API error:', error);
     return json(
       {
@@ -97,7 +97,7 @@ export const POST: RequestHandler = async ({ request }) => {
   }
 };
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
   try {
     const query = url.searchParams.get('q');
     const caseId = url.searchParams.get('caseId');
@@ -139,7 +139,7 @@ export const GET: RequestHandler = async ({ url }) => {
       metadata: result.metadata
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Enhanced RAG GET error:', error);
     return json(
       {
@@ -154,14 +154,14 @@ export const GET: RequestHandler = async ({ url }) => {
 
 // ============ Action Handlers ============
 
-async function handleDocumentIngestion(data: unknown) {
+async function handleDocumentIngestion(data: any): Promise<any> {
   const { documents, options = {} } = data;
   if (!documents || !Array.isArray(documents)) {
     return json({ error: 'Documents array is required', success: false }, { status: 400 });
   }
 
   try {
-    const enriched: unknown[] = [];
+    const enriched: any[] = [];
 
     for (const doc of documents) {
       // If raw path to PDF provided, parse + chunk
@@ -219,7 +219,7 @@ async function handleDocumentIngestion(data: unknown) {
   }
 }
 
-function spawnChunkingWorker(documents: unknown[]) {
+function spawnChunkingWorker(documents: any[]) {
   try {
     const workerPath = path.resolve('src/lib/workers/chunking-worker.js');
     const worker = new Worker(workerPath, { workerData: { workerId: `chunker-${Date.now()}` } });
@@ -233,7 +233,7 @@ function spawnChunkingWorker(documents: unknown[]) {
   }
 }
 
-async function handleEnhancedQuery(data: unknown) {
+async function handleEnhancedQuery(data: any): Promise<any> {
   const {
     query,
     caseId,
@@ -267,7 +267,7 @@ async function handleEnhancedQuery(data: unknown) {
         cached: result.cached || false
       }
     });
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         error: 'Enhanced query failed',
@@ -281,7 +281,7 @@ async function handleEnhancedQuery(data: unknown) {
 
 // (Removed legacy JSON streaming handler; replaced with SSE implementation below)
 
-async function handleStreamingQuery(data: unknown) {
+async function handleStreamingQuery(data: any): Promise<any> {
   const { query, caseId, userId, options = {}, enableSSE = true } = data;
   if (!query) return json({ error: 'Query is required', success: false }, { status: 400 });
 
@@ -292,9 +292,9 @@ async function handleStreamingQuery(data: unknown) {
   }
 
   const stream = new ReadableStream({
-    async start(controller) {
+    async start(controller): Promise<any> {
       const enc = new TextEncoder();
-      const send = (obj: unknown) => controller.enqueue(enc.encode(`data: ${JSON.stringify(obj)}\n\n`));
+      const send = (obj: any) => controller.enqueue(enc.encode(`data: ${JSON.stringify(obj)}\n\n`));
       try {
         send({ type: 'status', message: 'Initializing streaming RAG query', progress: 0 });
         let partial = '';
@@ -326,7 +326,7 @@ async function handleStreamingQuery(data: unknown) {
   });
 }
 
-async function handleRecommendations(data: unknown) {
+async function handleRecommendations(data: any): Promise<any> {
   const { userId, context = {}, limit = 10 } = data || {};
   if (!userId) {
     return json(
@@ -342,7 +342,7 @@ async function handleRecommendations(data: unknown) {
       recommendations: recommendations.slice(0, limit),
       count: recommendations.length
     });
-  } catch (error: unknown) {
+  } catch (error: any) {
     return json(
       { error: 'Recommendations failed', message: error.message, success: false },
       { status: 500 }
@@ -350,7 +350,7 @@ async function handleRecommendations(data: unknown) {
   }
 }
 
-async function handleDocumentAnalysis(data: unknown) {
+async function handleDocumentAnalysis(data: any): Promise<any> {
   const { document, operations = ['analyze', 'summarize'] } = data || {};
   if (!document) {
     return json(
@@ -371,7 +371,7 @@ async function handleDocumentAnalysis(data: unknown) {
         embeddings: result.embeddings?.length || 0
       }
     });
-  } catch (error: unknown) {
+  } catch (error: any) {
     return json(
       { error: 'Document analysis failed', message: error.message, success: false },
       { status: 500 }
@@ -379,7 +379,7 @@ async function handleDocumentAnalysis(data: unknown) {
   }
 }
 
-async function handleHealthCheck() {
+async function handleHealthCheck(): Promise<any> {
   try {
     const [dbHealth, aiHealth, ragHealth] = await Promise.all([
       db.getHealthStatus(),
@@ -401,7 +401,7 @@ async function handleHealthCheck() {
       },
       timestamp: new Date().toISOString()
     });
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         error: 'Health check failed',
@@ -414,7 +414,7 @@ async function handleHealthCheck() {
   }
 }
 
-async function handleHybridSearch(data: unknown) {
+async function handleHybridSearch(data: any): Promise<any> {
   const { query, caseId, limit = 10, filters = {} } = data;
 
   if (!query) {
@@ -438,7 +438,7 @@ async function handleHybridSearch(data: unknown) {
       total: results.length,
       searchType: 'hybrid'
     });
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         error: 'Hybrid search failed',
@@ -450,7 +450,7 @@ async function handleHybridSearch(data: unknown) {
   }
 }
 
-async function handleEmbedding(data: unknown) {
+async function handleEmbedding(data: any): Promise<any> {
   const { texts, model } = data;
 
   if (!texts || !Array.isArray(texts)) {
@@ -470,7 +470,7 @@ async function handleEmbedding(data: unknown) {
       dimensions: embeddings[0]?.length || 0,
       model: model || 'nomic-embed-text'
     });
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         error: 'Embedding generation failed',

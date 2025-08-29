@@ -45,7 +45,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
       return handleStandardRequest(body);
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Comprehensive summary API error:', error);
     return json(
       { 
@@ -93,7 +93,7 @@ async function handleStreamingRequest(
           controller.enqueue(encoder.encode(finalChunk));
           controller.close();
 
-        } catch (error) {
+        } catch (error: any) {
           const errorChunk = JSON.stringify({
             type: 'error',
             data: { 
@@ -116,7 +116,7 @@ async function handleStreamingRequest(
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return json(
       { error: 'Failed to initialize streaming', details: String(error) },
       { status: 500 }
@@ -159,7 +159,7 @@ async function handleStandardRequest(
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Standard request processing failed:', error);
     return json(
       { 
@@ -212,7 +212,7 @@ export const GET: RequestHandler = async ({ url }) => {
         });
     }
 
-  } catch (error) {
+  } catch (error: any) {
     return json(
       { 
         error: 'Health check failed',
@@ -241,7 +241,7 @@ export const PUT: RequestHandler = async ({ request }) => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return json(
       { 
         error: 'Configuration update failed',

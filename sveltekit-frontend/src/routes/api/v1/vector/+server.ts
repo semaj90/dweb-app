@@ -26,7 +26,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
 		const response = await routeVectorRequest(requestData, operation);
 		
 		return json(response);
-	} catch (error) {
+	} catch (error: any) {
 		console.error('Vector API error:', error);
 		return json({ 
 			error: 'Vector processing failed',
@@ -51,7 +51,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			default:
 				return json({ error: 'Unknown action' }, { status: 400 });
 		}
-	} catch (error) {
+	} catch (error: any) {
 		console.error('Vector API GET error:', error);
 		return json({ 
 			error: 'Request failed',
@@ -99,7 +99,7 @@ async function determineProcessingPath(
 				return 'cuda';
 			}
 		}
-	} catch (error) {
+	} catch (error: any) {
 		console.log('CUDA service unavailable:', error);
 	}
 	
@@ -157,7 +157,7 @@ async function processCUDA(
 			queuePosition: result.queue_position,
 			estimatedWaitTimeMs: result.estimated_wait_time_ms
 		};
-	} catch (error) {
+	} catch (error: any) {
 		console.error('CUDA processing failed:', error);
 		throw error;
 	}
@@ -249,13 +249,13 @@ async function processDefault(
 			status: 'queued',
 			estimatedWaitTimeMs: 5000 // 5 seconds estimate for CPU processing
 		};
-	} catch (error) {
+	} catch (error: any) {
 		console.error('Default processing failed:', error);
 		throw error;
 	}
 }
 
-async function getHealthStatus() {
+async function getHealthStatus(): Promise<any> {
 	try {
 		const healthChecks = await Promise.allSettled([
 			checkServiceHealth(VECTOR_SERVICE_URL),
@@ -284,7 +284,7 @@ async function getHealthStatus() {
 		}
 		
 		return json(health);
-	} catch (error) {
+	} catch (error: any) {
 		return json({
 			overall: 'unhealthy',
 			error: error instanceof Error ? error.message : String(error),
@@ -293,7 +293,7 @@ async function getHealthStatus() {
 	}
 }
 
-async function getSystemMetrics() {
+async function getSystemMetrics(): Promise<any> {
 	try {
 		const [queueMetrics, performanceMetrics] = await Promise.allSettled([
 			fetchQueueMetrics(),
@@ -307,7 +307,7 @@ async function getSystemMetrics() {
 		};
 		
 		return json(metrics);
-	} catch (error) {
+	} catch (error: any) {
 		return json({
 			error: error instanceof Error ? error.message : String(error),
 			timestamp: new Date().toISOString()
@@ -315,7 +315,7 @@ async function getSystemMetrics() {
 	}
 }
 
-async function getQueueStatus() {
+async function getQueueStatus(): Promise<any> {
 	try {
 		const response = await fetch(`${VECTOR_SERVICE_URL}/api/queue/status`);
 		if (!response.ok) {
@@ -324,7 +324,7 @@ async function getQueueStatus() {
 		
 		const queueData = await response.json();
 		return json(queueData);
-	} catch (error) {
+	} catch (error: any) {
 		return json({
 			error: 'Queue status unavailable',
 			details: error instanceof Error ? error.message : String(error)
@@ -332,7 +332,7 @@ async function getQueueStatus() {
 	}
 }
 
-async function getPerformanceMetrics() {
+async function getPerformanceMetrics(): Promise<any> {
 	const metrics = {
 		processing: {
 			totalOperations: 0,
@@ -357,35 +357,35 @@ async function getPerformanceMetrics() {
 }
 
 // Helper functions
-async function checkServiceHealth(serviceUrl: string) {
+async function checkServiceHealth(serviceUrl: string): Promise<any> {
 	const response = await fetch(`${serviceUrl}/health`);
 	return response.ok;
 }
 
-async function checkDatabaseHealth() {
+async function checkDatabaseHealth(): Promise<any> {
 	try {
 		const db = await import('$lib/server/db/drizzle');
 		// Simple query to test connection
 		await db.default.execute('SELECT 1');
 		return true;
-	} catch (error) {
+	} catch (error: any) {
 		return false;
 	}
 }
 
-async function checkRedisHealth() {
+async function checkRedisHealth(): Promise<any> {
 	// Would implement actual Redis health check
 	// For now, return true
 	return true;
 }
 
-async function fetchQueueMetrics() {
+async function fetchQueueMetrics(): Promise<any> {
 	try {
 		const response = await fetch(`${VECTOR_SERVICE_URL}/api/metrics/queues`);
 		if (response.ok) {
 			return await response.json();
 		}
-	} catch (error) {
+	} catch (error: any) {
 		console.warn('Queue metrics unavailable:', error);
 	}
 	
@@ -398,7 +398,7 @@ async function fetchQueueMetrics() {
 	};
 }
 
-async function fetchPerformanceMetrics() {
+async function fetchPerformanceMetrics(): Promise<any> {
 	return {
 		totalProcessed: 15247,
 		averageProcessingTimeMs: 234,
@@ -452,7 +452,7 @@ export const GET_STATUS: RequestHandler = async ({ params, url }) => {
 			processingTimeMs: jobData.updatedAt && jobData.createdAt ? 
 				new Date(jobData.updatedAt).getTime() - new Date(jobData.createdAt).getTime() : null
 		});
-	} catch (error) {
+	} catch (error: any) {
 		console.error('Job status query failed:', error);
 		return json({
 			error: 'Status query failed',

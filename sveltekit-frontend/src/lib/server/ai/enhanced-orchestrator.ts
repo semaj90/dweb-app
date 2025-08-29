@@ -2,8 +2,8 @@
 // Enhanced AI Synthesis Orchestrator with Full Stack Integration
 // Connects Neo4j, PostgreSQL/pgvector, XState, Redis, Ollama, and Go services
 
-import { logger } from "./logger.js";
-import { drizzle } from "drizzle-orm/postgres-js";
+import { logger } from './logger';
+import { drizzle } from "drizzle-orm/node-postgres";
 import { pgTable, text, vector, timestamp, jsonb, uuid, integer, boolean } from "drizzle-orm/pg-core";
 import type { PoolConfig } from 'pg';
 import { eq, sql } from "drizzle-orm";
@@ -16,11 +16,11 @@ import { PGVectorStore } from "@langchain/community/vectorstores/pgvector";
 import type { Document as LangChainDocumentType } from '@langchain/core/documents';
 import type { Document as LangChainDocument } from '@langchain/core/documents';
 // Import existing components
-import { aiAssistantSynthesizer } from "./ai-assistant-input-synthesizer.js";
-import { legalBERT } from "./legalbert-middleware.js";
-import { cachingLayer } from "./caching-layer.js";
-import { feedbackLoop } from "./feedback-loop.js";
-import { monitoringService } from "./monitoring-service.js";
+import { aiAssistantSynthesizer } from './ai-assistant-input-synthesizer';
+import { legalBERT } from './legalbert-middleware';
+import { cachingLayer } from './caching-layer';
+import { feedbackLoop } from './feedback-loop';
+import { monitoringService } from './monitoring-service';
 import { EventEmitter } from "events";
 
 // ===== DATABASE SCHEMA (Drizzle ORM TypeScript Safe) =====
@@ -28,7 +28,7 @@ import { EventEmitter } from "events";
 export const legalDocuments = pgTable('legal_documents', {
   id: uuid('id').defaultRandom().primaryKey(),
   content: text('content').notNull(),
-  embedding: vector('embedding', { dimensions: 768 }), // nomic-embed-text dimension
+  embedding: vector('embedding', { dimensions: 384 }), // nomic-embed-text dimension
   metadata: jsonb('metadata'),
   documentType: text('document_type'),
   caseId: text('case_id'),
@@ -203,7 +203,7 @@ QUERY: ${input.query}
   // Add LegalBERT analysis
   if (input.legalBertAnalysis) {
     prompt += `LEGAL ANALYSIS:
-- Identified Entities: ${input.legalBertAnalysis.entities.map((e) => e.text).join(', ')}
+- Identified Entities: ${input.legalBertAnalysis.entities.map((e: any) => e.text).join(', ')}
 - Legal Concepts: ${input.legalBertAnalysis.concepts.map((c) => c.concept).join(', ')}
 - Complexity Score: ${input.legalBertAnalysis.complexity.legalComplexity}
 - Jurisdiction: ${input.legalBertAnalysis.jurisdiction || 'General'}
@@ -511,7 +511,7 @@ export class EnhancedAISynthesisOrchestrator {
 
       this.initialized = true;
       logger.info('[Orchestrator] Initialization complete');
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[Orchestrator] Initialization failed:', error);
       throw error;
     }
@@ -533,7 +533,7 @@ export class EnhancedAISynthesisOrchestrator {
         this.neo4jStore = null;
       }
       logger.info('[Orchestrator] Neo4j vector store connected');
-    } catch (error) {
+    } catch (error: any) {
       logger.warn('[Orchestrator] Neo4j connection failed, will use fallback:', error);
     }
   }
@@ -574,7 +574,7 @@ export class EnhancedAISynthesisOrchestrator {
       `;
 
       logger.info('[Orchestrator] PGVector store connected with IVFFlat index');
-    } catch (error) {
+    } catch (error: any) {
       logger.warn('[Orchestrator] PGVector connection failed, will use fallback:', error);
     }
   }
@@ -688,7 +688,7 @@ export class EnhancedAISynthesisOrchestrator {
             const result = await response.json();
             logger.info(`[Enhanced RAG] Processed with GPU acceleration`);
             return result;
-          } catch (error) {
+          } catch (error: any) {
             logger.error('[Enhanced RAG] Pipeline failed:', error);
             return [];
           }
@@ -714,7 +714,7 @@ export class EnhancedAISynthesisOrchestrator {
               logger.info('[Go-Llama] Generated response');
               return result.response;
             }
-          } catch (error) {
+          } catch (error: any) {
             logger.warn('[Go-Llama] Service unavailable:', error);
           }
           return null;
@@ -775,7 +775,7 @@ export class EnhancedAISynthesisOrchestrator {
               logger.info('[Context7] Enhanced with documentation');
               return docs;
             }
-          } catch (error) {
+          } catch (error: any) {
             logger.warn('[Context7] Enhancement failed:', error);
           }
           return null;
@@ -807,7 +807,7 @@ export class EnhancedAISynthesisOrchestrator {
               logger.info('[GPU Orchestrator] Generated with RTX 3060 Ti');
               return result.response;
             }
-          } catch (error) {
+          } catch (error: any) {
             logger.warn('[GPU Orchestrator] Falling back to Ollama');
           }
 
@@ -989,7 +989,7 @@ export class EnhancedAISynthesisOrchestrator {
       await this.ensureNomicEmbedModel();
 
       logger.info('[Models] All required models ready');
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[Models] Failed to ensure models:', error);
     }
   }
@@ -1059,7 +1059,7 @@ TEMPLATE """{{ if .System }}<|system|>
 
         logger.info('[Models] gemma3:legal-latest created successfully');
       }
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[Models] Failed to ensure gemma3:legal-latest:', error);
     }
   }
@@ -1087,7 +1087,7 @@ TEMPLATE """{{ if .System }}<|system|>
 
         logger.info('[Models] nomic-embed-text pulled successfully');
       }
-    } catch (error) {
+    } catch (error: any) {
       logger.error('[Models] Failed to ensure nomic-embed-text:', error);
     }
   }
@@ -1110,7 +1110,7 @@ TEMPLATE """{{ if .System }}<|system|>
       try {
         await service.test();
         logger.info(`[Connectivity] ${service.name}: ✅ Connected`);
-      } catch (error) {
+      } catch (error: any) {
         logger.warn(`[Connectivity] ${service.name}: ⚠️ Not available`);
       }
     }

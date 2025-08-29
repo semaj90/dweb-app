@@ -88,7 +88,7 @@ export function createRecoveryConfigLoader<U extends UserConfig>() {
       lastResolved = config
       return config
     }
-    catch (e) {
+    catch (e: any) {
       if (lastResolved) {
         console.error(e)
         return lastResolved

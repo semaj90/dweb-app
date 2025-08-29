@@ -33,7 +33,7 @@ export const GET: RequestHandler = async ({ getClientAddress }) => {
     console.log('✅ MCP Health Check Passed');
     return json(response);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ MCP Health Check Failed:', error);
     
     return json({

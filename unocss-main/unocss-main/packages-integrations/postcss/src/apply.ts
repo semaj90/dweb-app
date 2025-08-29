@@ -7,7 +7,7 @@ import postcss from 'postcss'
 
 type Writeable<T> = { -readonly [P in keyof T]: T[P] }
 
-export async function parseApply(root: Root, uno: UnoGenerator, directiveName: string) {
+export async function parseApply(root: Root, uno: UnoGenerator, directiveName: string): Promise<any> {
   const promises: Promise<unknown>[] = []
   root.walkAtRules(directiveName, (rule) => {
     promises.push((async () => {

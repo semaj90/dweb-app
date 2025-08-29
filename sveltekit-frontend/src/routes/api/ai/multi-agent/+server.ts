@@ -5,12 +5,12 @@ import { URL } from "url";
 // Multi-Agent AI Orchestration API
 // Unified endpoint for Autogen, CrewAI, and vLLM integration
 
-interface LegalAnalysisRequest {
+export interface LegalAnalysisRequest {
   query: string;
   caseId?: string;
 }
 
-interface AutogenRequest {
+export interface AutogenRequest {
   query: string;
   caseId?: string;
   evidenceIds: string[];
@@ -18,7 +18,7 @@ interface AutogenRequest {
   priority: string;
 }
 
-interface WorkflowResult {
+export interface WorkflowResult {
   status: string;
   result: any;
   results?: any[];
@@ -68,7 +68,7 @@ class CrewAILegalTeam {
   }
 }
 
-interface MultiAgentRequest {
+export interface MultiAgentRequest {
   query: string;
   caseId?: string;
   evidenceIds?: string[];
@@ -85,7 +85,7 @@ interface MultiAgentRequest {
   streamResponse?: boolean;
 }
 
-interface MultiAgentResponse {
+export interface MultiAgentResponse {
   sessionId: string;
   analysisType: string;
   workflowType?: string;
@@ -269,7 +269,7 @@ export const POST: RequestHandler = async ({ request }) => {
         { status: 500 },
       );
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Multi-agent API error:", error);
     return json({ error: "Invalid request format" }, { status: 400 });
   }
@@ -278,7 +278,7 @@ export const POST: RequestHandler = async ({ request }) => {
 async function runAutogenAnalysis(
   request: MultiAgentRequest,
   sessionId: string,
-) {
+): Promise<any> {
   if (!autogenTeam) {
     throw new Error("Autogen team not initialized");
   }
@@ -318,7 +318,7 @@ async function runCrewAIWorkflow(
   );
 }
 
-async function runVLLMAnalysis(request: MultiAgentRequest, sessionId: string) {
+async function runVLLMAnalysis(request: MultiAgentRequest, sessionId: string): Promise<any> {
   const vllmEndpoint = "http://localhost:8000";
 
   try {
@@ -341,7 +341,7 @@ async function runVLLMAnalysis(request: MultiAgentRequest, sessionId: string) {
     }
 
     return await response.json();
-  } catch (error) {
+  } catch (error: any) {
     console.error("vLLM analysis failed:", error);
     throw error;
   }
@@ -350,7 +350,7 @@ async function runVLLMAnalysis(request: MultiAgentRequest, sessionId: string) {
 async function synthesizeHybridResults(
   autogenResult: any,
   crewaiResult: WorkflowResult,
-) {
+): Promise<any> {
   // Combine insights from both systems
   const combinedAnalysis = `
 ## Hybrid Multi-Agent Analysis

@@ -156,7 +156,7 @@ const ragStateMachine = {};
 export function createEnhancedRAGStore() {
   // Initialize core systems
   const somRAG = new SOMRAGSystem({
-    dimensions: 768,
+    dimensions: 384,
     mapWidth: 10,
     mapHeight: 10,
     learningRate: 0.1,
@@ -348,7 +348,7 @@ export function createEnhancedRAGStore() {
         results: optimizedResults,
         recommendations
       };
-    } catch (error) {
+    } catch (error: any) {
       const errorMessage = error instanceof Error ? error.message : "Search failed";
       state.update(s => ({ ...s, error: errorMessage }));
       ragActor.send({ type: "SEARCH_ERROR", error: errorMessage });
@@ -362,7 +362,7 @@ export function createEnhancedRAGStore() {
     }
   }
 
-  async function addDocument(document: RAGDocument) {
+  async function addDocument(document: RAGDocument): Promise<any> {
     try {
       // Generate embeddings
       const embeddings = await generateEmbeddings(document.content);
@@ -382,13 +382,13 @@ export function createEnhancedRAGStore() {
 
       // Update caching layers
       await updateCachingLayers(document, embeddings);
-    } catch (error) {
+    } catch (error: any) {
       const errorMessage = error instanceof Error ? error.message : "Failed to add document";
       state.update(s => ({ ...s, error: errorMessage }));
     }
   }
 
-  async function removeDocument(documentId: string) {
+  async function removeDocument(documentId: string): Promise<any> {
     state.update(s => ({
       ...s,
       documents: s.documents.filter((doc) => doc.id !== documentId),
@@ -405,7 +405,7 @@ export function createEnhancedRAGStore() {
     await somRAG.removeDocument(documentId);
   }
 
-  async function optimizeCache() {
+  async function optimizeCache(): Promise<any> {
     try {
       // Run neural memory optimization
       neuralMemory.optimizeMemoryAllocation();
@@ -433,12 +433,12 @@ export function createEnhancedRAGStore() {
           }
         }));
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Cache optimization failed:", error);
     }
   }
 
-  async function exportSystemState() {
+  async function exportSystemState(): Promise<any> {
     const currentState = await new Promise(resolve => {
       state.subscribe(s => resolve(s))();
     });
@@ -458,7 +458,7 @@ export function createEnhancedRAGStore() {
   }
 
   // Helper functions
-  async function checkMultiLayerCache(query: string) {
+  async function checkMultiLayerCache(query: string): Promise<any> {
     // Check layers in order of speed (L1 = fastest)
     for (let i = 1; i <= 7; i++) {
       const layer = cachingLayers[`L${i}` as keyof typeof cachingLayers];
@@ -469,7 +469,7 @@ export function createEnhancedRAGStore() {
     return null;
   }
 
-  async function cacheResultsMultiLayer(query: string, data: any) {
+  async function cacheResultsMultiLayer(query: string, data: any): Promise<any> {
     // Cache in appropriate layers based on ML predictions
     const prediction = await neuralMemory.predictMemoryUsage(5);
 
@@ -525,7 +525,7 @@ export function createEnhancedRAGStore() {
     });
   }
 
-  async function rebalanceCacheLayers() {
+  async function rebalanceCacheLayers(): Promise<any> {
     // ML-based cache layer rebalancing logic
     // Move frequently accessed items to faster layers
     // Implement LRU and predictive caching
@@ -537,7 +537,7 @@ export function createEnhancedRAGStore() {
     return new Array(768).fill(0).map(() => Math.random()); // Placeholder
   }
 
-  async function updateCachingLayers(document: RAGDocument, embeddings: number[]) {
+  async function updateCachingLayers(document: RAGDocument, embeddings: number[]): Promise<any> {
     // Update all relevant cache layers with new document
     cachingLayers.L6.set(document.id, document);
     cachingLayers.L5.set(document.id, embeddings);

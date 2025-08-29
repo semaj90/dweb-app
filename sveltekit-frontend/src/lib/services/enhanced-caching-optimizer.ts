@@ -12,7 +12,7 @@
 import { EventEmitter } from 'events';
 import { createClient, type RedisClientType } from 'redis';
 
-interface CacheWarmerConfig {
+export interface CacheWarmerConfig {
   warmupSchedule: {
     commonQueries: string[];
     documentTypes: string[];
@@ -31,7 +31,7 @@ interface CacheWarmerConfig {
   };
 }
 
-interface CacheMetrics {
+export interface CacheMetrics {
   hitRate: number;
   missRate: number;
   evictionRate: number;
@@ -42,7 +42,7 @@ interface CacheMetrics {
   lastOptimized: Date;
 }
 
-interface TTLStrategy {
+export interface TTLStrategy {
   documentType: string;
   accessFrequency: number;
   lastAccessed: Date;
@@ -135,7 +135,7 @@ export class EnhancedCachingOptimizer extends EventEmitter {
       // Subscribe to cache events for real-time optimization
       await this.setupCacheEventListeners();
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize Redis for cache optimization:', error);
       this.emit('initialization_error', error);
     }
@@ -384,7 +384,7 @@ export class EnhancedCachingOptimizer extends EventEmitter {
       this.metrics.lastOptimized = new Date();
       console.log('✅ Cache optimization cycle completed');
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Cache optimization cycle failed:', error);
       this.emit('optimization_error', error);
     }
@@ -529,7 +529,7 @@ class RequestBatcher {
           }
         });
         
-      } catch (error) {
+      } catch (error: any) {
         results.errors.push(error);
       }
     }

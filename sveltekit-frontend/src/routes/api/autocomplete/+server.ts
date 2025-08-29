@@ -153,7 +153,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
         return json(response);
 
-    } catch (err) {
+    } catch (err: any) {
         console.error('❌ Autocomplete error:', err);
         
         if (err instanceof z.ZodError) {
@@ -170,7 +170,7 @@ export const POST: RequestHandler = async ({ request }) => {
     }
 };
 
-async function getCachedSuggestions(query: string) {
+async function getCachedSuggestions(query: string): Promise<any> {
     const redis = getRedis();
     const prefixes = generatePrefixes(query);
     
@@ -183,7 +183,7 @@ async function getCachedSuggestions(query: string) {
                 const parsedSuggestions = JSON.parse(cached);
                 suggestions.push(...parsedSuggestions);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.warn(`Cache lookup failed for prefix "${prefix}":`, error);
         }
     }
@@ -196,7 +196,7 @@ async function getDatabaseSuggestions(
     context: string,
     jurisdiction: string | undefined,
     maxResults: number
-) {
+): Promise<any> {
     const db = getDB();
     
     let sql = `
@@ -242,7 +242,7 @@ async function getDatabaseSuggestions(
     return result.rows;
 }
 
-async function getSemanticSuggestions(query: string, maxResults: number) {
+async function getSemanticSuggestions(query: string, maxResults: number): Promise<any> {
     const db = getDB();
     
     // Use vector similarity search (requires embedding generation)
@@ -262,7 +262,7 @@ async function getSemanticSuggestions(query: string, maxResults: number) {
         `, [`%${query}%`, maxResults]);
         
         return result.rows;
-    } catch (error) {
+    } catch (error: any) {
         console.warn('Semantic search failed:', error);
         return [];
     }
@@ -343,7 +343,7 @@ function updateUsageStats(query: string, suggestions: any[]) {
             for (const suggestion of suggestions.slice(0, 3)) {
                 await redis.zincrby('suggestion_popularity', 1, suggestion.suggestion);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.warn('Failed to update usage stats:', error);
         }
     }, 0);
@@ -376,7 +376,7 @@ export const GET: RequestHandler = async () => {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         console.error('Autocomplete health check failed:', err);
         throw error(503, 'Autocomplete service unhealthy');
     }

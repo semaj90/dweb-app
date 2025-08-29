@@ -67,7 +67,7 @@ export class RAGBackendClient {
       });
 
       return response.status === 'healthy';
-    } catch (error) {
+    } catch (error: any) {
       this.outputChannel.appendLine(`Health check failed: ${error}`);
       return false;
     }
@@ -79,7 +79,7 @@ export class RAGBackendClient {
   async getSystemMetrics(): Promise<any> {
     try {
       return await this.makeRequest('/health/detailed');
-    } catch (error) {
+    } catch (error: any) {
       this.outputChannel.appendLine(`Failed to get system metrics: ${error}`);
       throw error;
     }
@@ -99,7 +99,7 @@ export class RAGBackendClient {
 
       this.outputChannel.appendLine(`Found ${response.results?.length || 0} results`);
       return response;
-    } catch (error) {
+    } catch (error: any) {
       this.outputChannel.appendLine(`Search failed: ${error}`);
       throw error;
     }
@@ -129,7 +129,7 @@ export class RAGBackendClient {
 
       this.outputChannel.appendLine(`Document processed: ${response.document?.id}`);
       return response;
-    } catch (error) {
+    } catch (error: any) {
       this.outputChannel.appendLine(`Upload failed: ${error}`);
       throw error;
     }
@@ -150,7 +150,7 @@ export class RAGBackendClient {
 
       this.outputChannel.appendLine(`Workflow completed in ${response.result?.metadata?.processingTime}ms`);
       return response;
-    } catch (error) {
+    } catch (error: any) {
       this.outputChannel.appendLine(`Workflow failed: ${error}`);
       throw error;
     }
@@ -172,7 +172,7 @@ export class RAGBackendClient {
       });
 
       return response;
-    } catch (error) {
+    } catch (error: any) {
       this.outputChannel.appendLine(`Chat failed: ${error}`);
       throw error;
     }
@@ -195,7 +195,7 @@ export class RAGBackendClient {
       });
 
       return response;
-    } catch (error) {
+    } catch (error: any) {
       this.outputChannel.appendLine(`Analysis failed: ${error}`);
       throw error;
     }
@@ -218,7 +218,7 @@ export class RAGBackendClient {
       });
 
       return response;
-    } catch (error) {
+    } catch (error: any) {
       this.outputChannel.appendLine(`Summarization failed: ${error}`);
       throw error;
     }
@@ -230,7 +230,7 @@ export class RAGBackendClient {
   async getRAGStats(): Promise<any> {
     try {
       return await this.makeRequest('/api/v1/rag/stats');
-    } catch (error) {
+    } catch (error: any) {
       this.outputChannel.appendLine(`Failed to get RAG stats: ${error}`);
       throw error;
     }
@@ -247,7 +247,7 @@ export class RAGBackendClient {
 
       const url = `/api/v1/documents/${id}${params.toString() ? '?' + params.toString() : ''}`;
       return await this.makeRequest(url);
-    } catch (error) {
+    } catch (error: any) {
       this.outputChannel.appendLine(`Failed to get document ${id}: ${error}`);
       throw error;
     }
@@ -273,7 +273,7 @@ export class RAGBackendClient {
 
       const url = `/api/v1/documents${params.toString() ? '?' + params.toString() : ''}`;
       return await this.makeRequest(url);
-    } catch (error) {
+    } catch (error: any) {
       this.outputChannel.appendLine(`Failed to list documents: ${error}`);
       throw error;
     }
@@ -290,7 +290,7 @@ export class RAGBackendClient {
 
       const url = `/api/v1/rag/similar/${documentId}${params.toString() ? '?' + params.toString() : ''}`;
       return await this.makeRequest(url);
-    } catch (error) {
+    } catch (error: any) {
       this.outputChannel.appendLine(`Failed to find similar documents: ${error}`);
       throw error;
     }
@@ -306,7 +306,7 @@ export class RAGBackendClient {
 
       const url = `/api/v1/rag/cache${params.toString() ? '?' + params.toString() : ''}`;
       return await this.makeRequest(url, { method: 'DELETE' });
-    } catch (error) {
+    } catch (error: any) {
       this.outputChannel.appendLine(`Failed to clear cache: ${error}`);
       throw error;
     }
@@ -353,7 +353,7 @@ export class RAGBackendClient {
           return await response.text();
         }
 
-      } catch (error) {
+      } catch (error: any) {
         lastError = error;
         this.outputChannel.appendLine(`Attempt ${attempt} failed: ${error}`);
         

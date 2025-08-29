@@ -6,7 +6,7 @@ import { tmpdir } from "os";
 const UPLOAD_DIR = join(tmpdir(), "chunked-uploads");
 
 // Assembles the final file from chunks
-export async function POST({ request }) {
+export async function POST({ request }): Promise<any> {
   try {
     const { fileId, filename } = await request.json();
 
@@ -21,7 +21,7 @@ export async function POST({ request }) {
     await rename(tempFilePath, finalFilePath); // Move the assembled file
 
     return json({ url: `/${finalFilePath}` });
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
     throw error(500, "Failed to finalize upload.");
   }

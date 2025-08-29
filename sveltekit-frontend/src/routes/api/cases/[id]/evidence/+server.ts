@@ -2,11 +2,11 @@
 // API endpoint to get evidence for a specific case
 
 import { json } from '@sveltejs/kit';
-import { drizzle } from 'drizzle-orm/postgres-js';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import postgres from 'postgres';
 import { eq, desc } from 'drizzle-orm';
 import { evidenceTable } from '$lib/server/schema.js';
-import type { RequestHandler } from './$types.js';
+import type { RequestHandler } from './$types';
 
 const sql = postgres(process.env.DATABASE_URL || 'postgresql://postgres:123456@localhost:5432/legal_ai_db');
 const db = drizzle(sql);
@@ -32,7 +32,7 @@ export const GET: RequestHandler = async ({ params }) => {
       count: evidence.length
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching evidence:', error);
     return json({ 
       error: 'Failed to fetch evidence',

@@ -20,7 +20,7 @@ export const GET: RequestHandler = async () => {
           await client.ping();
           await client.quit();
           return { status: 'healthy', responseTime: Date.now() };
-        } catch (error) {
+        } catch (error: any) {
           return { status: 'unhealthy', error: error.message };
         }
       }
@@ -42,7 +42,7 @@ export const GET: RequestHandler = async () => {
           } else {
             return { status: 'unhealthy', error: `HTTP ${response.status}` };
           }
-        } catch (error) {
+        } catch (error: any) {
           return { status: 'unhealthy', error: error.message };
         }
       }
@@ -69,7 +69,7 @@ export const GET: RequestHandler = async () => {
           } else {
             return { status: 'unhealthy', error: `HTTP ${response.status}` };
           }
-        } catch (error) {
+        } catch (error: any) {
           return { status: 'unhealthy', error: error.message };
         }
       }
@@ -92,7 +92,7 @@ export const GET: RequestHandler = async () => {
           } else {
             return { status: 'unhealthy', error: `HTTP ${response.status}` };
           }
-        } catch (error) {
+        } catch (error: any) {
           return { status: 'unhealthy', error: error.message };
         }
       }
@@ -117,7 +117,7 @@ export const GET: RequestHandler = async () => {
             avgHitRate: Math.round(avgHitRate * 100),
             stats
           };
-        } catch (error) {
+        } catch (error: any) {
           return { status: 'unhealthy', error: error.message };
         }
       }

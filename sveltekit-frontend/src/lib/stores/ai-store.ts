@@ -147,7 +147,7 @@ function createPersistedStore<T>(key: string, defaultValue: T) {
       try {
         const parsed = JSON.parse(stored);
         set(parsed);
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Failed to parse stored ${key}:`, error);
         // Keep default value on parse error
       }
@@ -246,7 +246,7 @@ export const aiStore = {
             : null,
         lastHealthCheck: Date.now(),
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.error("AI initialization failed:", error);
       aiStatus.update((state) => ({
         ...state,
@@ -329,7 +329,7 @@ export const aiStore = {
 
       aiStatus.update((state) => ({ ...state, isLoading: false }));
       return aiResponse;
-    } catch (error) {
+    } catch (error: any) {
       console.error("AI message failed:", error);
       aiStatus.update((state) => ({
         ...state,

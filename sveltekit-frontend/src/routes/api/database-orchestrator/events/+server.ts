@@ -50,11 +50,11 @@ export const GET: RequestHandler = async ({ url }) => {
     // Filter events if needed
     let filteredEvents = events;
     if (eventType) {
-      filteredEvents = events.filter((e) => e.type === eventType);
+      filteredEvents = events.filter((e: any) => e.type === eventType);
     }
     if (since) {
       const sinceDate = new Date(since);
-      filteredEvents = filteredEvents.filter((e) => new Date(e.timestamp) > sinceDate);
+      filteredEvents = filteredEvents.filter((e: any) => new Date(e.timestamp) > sinceDate);
     }
 
     // Limit results
@@ -72,7 +72,7 @@ export const GET: RequestHandler = async ({ url }) => {
       },
       timestamp: new Date().toISOString(),
     });
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         success: false,
@@ -116,7 +116,7 @@ export const POST: RequestHandler = async ({ request }) => {
       event: eventData,
       timestamp: new Date().toISOString(),
     });
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         success: false,

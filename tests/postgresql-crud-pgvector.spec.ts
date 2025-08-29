@@ -25,7 +25,7 @@ test.describe('PostgreSQL CRUD with pgvector Tests', () => {
         file TEXT,
         content TEXT,
         summary TEXT,
-        embedding vector(768),
+        embedding vector(384),
         chunk_index INTEGER DEFAULT 0,
         total_chunks INTEGER DEFAULT 1,
         tokens INTEGER,
@@ -39,7 +39,7 @@ test.describe('PostgreSQL CRUD with pgvector Tests', () => {
       CREATE TABLE IF NOT EXISTS embedding_cache (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         text_hash TEXT UNIQUE NOT NULL,
-        embedding vector(768) NOT NULL,
+        embedding vector(384) NOT NULL,
         model VARCHAR(100) NOT NULL,
         created_at TIMESTAMP DEFAULT NOW()
       )
@@ -52,7 +52,7 @@ test.describe('PostgreSQL CRUD with pgvector Tests', () => {
         ON documents USING ivfflat (embedding vector_cosine_ops) 
         WITH (lists = 100)
       `);
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Could not create ivfflat index (pgvector may not be properly installed)');
     }
   });
@@ -165,7 +165,7 @@ test.describe('PostgreSQL CRUD with pgvector Tests', () => {
       const distances = similarityResults.rows.map(row => parseFloat(row.distance));
       expect(distances[0]).toBeLessThanOrEqual(distances[distances.length - 1]);
       
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Vector similarity search failed - pgvector may not be properly configured:', error);
     }
   });
@@ -314,7 +314,7 @@ test.describe('PostgreSQL CRUD with pgvector Tests', () => {
       
       console.log(`✅ Bulk insert of 10 documents completed in ${duration}ms`);
       
-    } catch (error) {
+    } catch (error: any) {
       await dbClient.query('ROLLBACK');
       throw error;
     }

@@ -10,7 +10,7 @@ export type TensorOperation = { type: string; input: Float32Array | number[]; sh
 export type StreamingResponse = { event?: string; data?: any; final?: boolean };
 
 // QUIC Connection State
-interface QUICConnectionState {
+export interface QUICConnectionState {
 	isConnected: boolean;
 	isConnecting: boolean;
 	lastConnected: Date | null;
@@ -22,7 +22,7 @@ interface QUICConnectionState {
 }
 
 // Stream Management
-interface QUICStream {
+export interface QUICStream {
 	id: string;
 	type: 'tensor' | 'llm' | 'rag' | 'som';
 	status: 'opening' | 'active' | 'closing' | 'closed' | 'error';
@@ -35,7 +35,7 @@ interface QUICStream {
 }
 
 // Performance metrics tracking
-interface PerformanceMetrics {
+export interface PerformanceMetrics {
 	latency: number;
 	throughput: number;
 	packetLoss: number;
@@ -124,7 +124,7 @@ class QUICClient {
 
 			throw new Error(`Server health check failed: ${response.status}`);
 
-		} catch (error) {
+		} catch (error: any) {
 			console.error('❌ QUIC connection failed:', error);
 
 			this.connectionState.update(state => ({
@@ -174,7 +174,7 @@ class QUICClient {
 
 			return response;
 
-		} catch (error) {
+		} catch (error: any) {
 			const msg = error instanceof Error ? error.message : String(error);
 			console.error(`QUIC fetch failed for ${path}: ${msg}`);
 			throw new Error(msg);
@@ -213,7 +213,7 @@ class QUICClient {
 
 			return streamId;
 
-		} catch (error) {
+		} catch (error: any) {
 			const msg = error instanceof Error ? error.message : String(error);
 			this.closeStream(streamId, `Tensor operation error: ${msg}`);
 			throw new Error(msg);
@@ -250,7 +250,7 @@ class QUICClient {
 			await this.handleStreamingResponse(response, streamId, onChunk);
 			return streamId;
 
-		} catch (error) {
+		} catch (error: any) {
 			const msg = error instanceof Error ? error.message : String(error);
 			this.closeStream(streamId, `LLM analysis error: ${msg}`);
 			throw new Error(msg);
@@ -281,7 +281,7 @@ class QUICClient {
 			await this.handleStreamingResponse(response, streamId, onChunk);
 			return streamId;
 
-		} catch (error) {
+		} catch (error: any) {
 			const msg = error instanceof Error ? error.message : String(error);
 			this.closeStream(streamId, `Vector search error: ${msg}`);
 			throw new Error(msg);
@@ -306,16 +306,16 @@ class QUICClient {
 				console.log('📡 SSE connection opened');
 			};
 
-			this.eventSource.onmessage = (event) => {
+			this.eventSource.onmessage = (event: any) => {
 				try {
 					const data = JSON.parse(event.data);
 					onUpdate(data);
-				} catch (error) {
+				} catch (error: any) {
 					console.error('Failed to parse SSE message:', error);
 				}
 			};
 
-			this.eventSource.onerror = (event) => {
+			this.eventSource.onerror = (event: any) => {
 				console.error('SSE connection error:', event);
 				onError(new Error('SSE connection failed'));
 
@@ -327,7 +327,7 @@ class QUICClient {
 				}, 5000);
 			};
 
-		} catch (error) {
+		} catch (error: any) {
 			console.error('Failed to establish SSE connection:', error);
 			onError(error as Error);
 		}
@@ -379,7 +379,7 @@ class QUICClient {
 
 			this.closeStream(streamId);
 
-		} catch (error) {
+		} catch (error: any) {
 			const msg = error instanceof Error ? error.message : String(error);
 			this.closeStream(streamId, `Stream processing error: ${msg}`);
 			throw new Error(msg);
@@ -406,7 +406,7 @@ class QUICClient {
 				const parsed = JSON.parse(line);
 				onChunk(parsed, isComplete);
 			}
-		} catch (error) {
+		} catch (error: any) {
 			console.error(`Failed to process chunk in stream ${streamId}:`, error);
 		}
 	}

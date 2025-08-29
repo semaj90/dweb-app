@@ -14,7 +14,7 @@ export interface Notification {
   }>;
 }
 
-interface NotificationState {
+export interface NotificationState {
   notifications: Notification[];
 }
 

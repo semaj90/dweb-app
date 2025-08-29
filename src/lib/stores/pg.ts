@@ -14,7 +14,7 @@ function tempToPgRadius(temp = 0.3) {
 }
 
 /** Query pgvector with temperature-aware radius */
-export async function queryPgvector(vec: number[], limit = 200, temperature = 0.3) {
+export async function queryPgvector(vec: number[], limit = 200, temperature = 0.3): Promise<any> {
   const radius = tempToPgRadius(temperature);
 
   // Note: `embedding <-> $1` is distance (smaller=closer). We filter by radius and sort.
@@ -31,7 +31,7 @@ export async function queryPgvector(vec: number[], limit = 200, temperature = 0.
 
   // return items shaped for orchestrator
   return {
-    ann: rows.map((r: unknown) => ({
+    ann: rows.map((r: any) => ({
       id: String(r.id),
       text: r.text,
       metadata: r.metadata ?? {},

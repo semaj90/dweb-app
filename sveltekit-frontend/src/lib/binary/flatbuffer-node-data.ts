@@ -43,7 +43,7 @@ const FLATBUFFER_SCHEMA = {
   }
 } as const;
 
-interface FlatBufferNode {
+export interface FlatBufferNode {
   readonly id: number;
   readonly type: number;
   readonly priority: number;
@@ -56,7 +56,7 @@ interface FlatBufferNode {
   readonly metadata: ArrayBuffer | null;
 }
 
-interface BinaryGraphData {
+export interface BinaryGraphData {
   readonly nodeCount: number;
   readonly timestamp: number;
   readonly checksum: number;
@@ -207,7 +207,7 @@ export class FlatBufferNodeSerializer {
 
       return buffer;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ FlatBuffer serialization failed:', error);
       throw error;
     }
@@ -319,7 +319,7 @@ export class FlatBufferNodeSerializer {
         totalSize: buffer.byteLength
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ FlatBuffer deserialization failed:', error);
       throw error;
     }

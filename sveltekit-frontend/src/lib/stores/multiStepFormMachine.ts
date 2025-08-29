@@ -264,7 +264,7 @@ const saveToDatabase = fromPromise(
         default:
           throw new Error(`Unknown form type: ${formType}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Database save error:", error);
       throw error;
     }
@@ -312,7 +312,7 @@ const generateEmbeddings = fromPromise(
 
       const embeddings = await response.json();
       return { success: true, embeddings };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Embedding generation error:", error);
       return { success: false, error: error.message };
     }
@@ -459,7 +459,7 @@ export const multiStepFormMachine = setup({
 
               stepSchema.parse(stepData);
               return true;
-            } catch (error) {
+            } catch (error: any) {
               if (error instanceof z.ZodError) {
                 const fieldErrors: Record<string, string[]> = {};
                 error.errors.forEach((err) => {
@@ -508,7 +508,7 @@ export const multiStepFormMachine = setup({
 
               stepSchema.parse(stepData);
               return { isValid: true, errors: {} };
-            } catch (error) {
+            } catch (error: any) {
               if (error instanceof z.ZodError) {
                 const fieldErrors: Record<string, string[]> = {};
                 error.errors.forEach((err) => {

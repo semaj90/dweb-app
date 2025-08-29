@@ -116,7 +116,7 @@ export const actions: Actions = {
         throw redirect(302, '/dashboard');
       }
 
-    } catch (error) {
+    } catch (error: any) {
       // Don't catch redirects
       if (error instanceof Response) {
         throw error;

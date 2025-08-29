@@ -14,7 +14,7 @@ class LegalAIServiceClient {
       const response = await fetch(url, options);
       if (response.ok) return response;
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    } catch (error) {
+    } catch (error: any) {
       // Try fallback ports if primary fails
       for (const port of fallbackPorts) {
         try {
@@ -99,7 +99,7 @@ const LegalSearchSchema = z.object({
   includeMetadata: z.coerce.boolean().default(true)
 });
 
-interface SearchResult {
+export interface SearchResult {
   id: string;
   title: string;
   type: 'case' | 'evidence' | 'criminal' | 'document';
@@ -152,7 +152,7 @@ export const GET: RequestHandler = async ({ url }) => {
           default:
             return [];
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Error searching ${category}:`, error);
         return []; // Return empty array on error to continue with other categories
       }
@@ -170,7 +170,7 @@ export const GET: RequestHandler = async ({ url }) => {
       try {
         const vectorResults = await serviceClient.vectorSearch(query, categories, limit * 2);
         processedResults = await mergeWithVectorResults(allResults, vectorResults);
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Vector search failed, using standard results:', error);
       }
     }
@@ -198,7 +198,7 @@ export const GET: RequestHandler = async ({ url }) => {
               semanticAnalysis: analysis,
               confidence: analysis.confidence || result.score
             };
-          } catch (error) {
+          } catch (error: any) {
             return result;
           }
         });
@@ -209,7 +209,7 @@ export const GET: RequestHandler = async ({ url }) => {
           .map(result => result.value);
         
         enhancedResults = [...enhancedTop5, ...enhancedResults.slice(5)];
-      } catch (error) {
+      } catch (error: any) {
         console.warn('AI enhancement failed, using standard results:', error);
       }
     }
@@ -246,7 +246,7 @@ export const GET: RequestHandler = async ({ url }) => {
       }
     });
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('Enhanced Legal AI Search error:', error);
     
     if (error instanceof z.ZodError) {
@@ -290,7 +290,7 @@ async function searchCases(query: string, limit: number, threshold: number, vect
       try {
         const vectorResponse = await serviceClient.vectorSearch(query, ['cases'], limit);
         vectorResults = vectorResponse.results || [];
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Vector search for cases failed:', error);
       }
     }
@@ -325,7 +325,7 @@ async function searchCases(query: string, limit: number, threshold: number, vect
       attorneys: result.attorneys || []
     }));
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in enhanced case search:', error);
     // Fallback to basic search if enhanced search fails
     return await fallbackCaseSearch(query, limit);
@@ -352,7 +352,7 @@ async function searchEvidence(query: string, limit: number, threshold: number, v
         confidentiality: ['public', 'restricted', 'confidential']
       });
       documentResults = docResponse.results || [];
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Document search for evidence failed:', error);
     }
 
@@ -373,7 +373,7 @@ async function searchEvidence(query: string, limit: number, threshold: number, v
       try {
         const vectorResponse = await serviceClient.vectorSearch(query, ['evidence', 'forensics'], limit);
         vectorResults = vectorResponse.results || [];
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Vector search for evidence failed:', error);
       }
     }
@@ -409,7 +409,7 @@ async function searchEvidence(query: string, limit: number, threshold: number, v
       labAnalysis: result.labAnalysis || {}
     }));
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in enhanced evidence search:', error);
     return await fallbackEvidenceSearch(query, limit);
   }
@@ -457,7 +457,7 @@ async function searchCriminals(query: string, limit: number, threshold: number):
       associatedCases: result.associatedCases || []
     }));
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in enhanced person search:', error);
     return await fallbackPersonSearch(query, limit);
   }
@@ -499,7 +499,7 @@ async function searchDocuments(query: string, limit: number, threshold: number, 
       try {
         const vectorResponse = await serviceClient.vectorSearch(query, ['documents', 'legal-docs'], limit);
         vectorResults = vectorResponse.results || [];
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Vector search for documents failed:', error);
       }
     }
@@ -536,7 +536,7 @@ async function searchDocuments(query: string, limit: number, threshold: number, 
       legalConcepts: result.legalConcepts || []
     }));
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in enhanced document search:', error);
     return await fallbackDocumentSearch(query, limit);
   }
@@ -657,14 +657,14 @@ async function enhanceWithAI(results: SearchResult[], query: string): Promise<Se
             practiceAreaMatch: analysis.practiceAreaMatch || 'general'
           }
         };
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`AI enhancement failed for result ${result.id}:`, error);
         return result;
       }
     });
 
     return await Promise.all(enhancementPromises);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in AI enhancement:', error);
     return results;
   }
@@ -682,7 +682,7 @@ async function processRAGResults(ragResults: any, resultType: string): Promise<a
       confidence: result.confidence || result.score || 0.5,
       processingTimestamp: new Date().toISOString()
     }));
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Error processing RAG results:', error);
     return [];
   }
@@ -709,7 +709,7 @@ async function mergeWithVectorResults(primaryResults: any[], vectorResults: any[
     });
     
     return merged.sort((a, b) => (b.score || 0) - (a.score || 0));
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Error merging vector results:', error);
     return primaryResults;
   }
@@ -908,7 +908,7 @@ export const POST: RequestHandler = async ({ request }) => {
       error: 'Invalid action' 
     }, { status: 400 });
     
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: 'Failed to process request'

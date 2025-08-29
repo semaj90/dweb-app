@@ -7,7 +7,7 @@ const GO_BASE =
     import.meta.env.GO_MICROSERVICE_URL ||
     'http://localhost:8084';
 
-async function fetchWithTimeout(path: string, timeoutMs = 2500) {
+async function fetchWithTimeout(path: string, timeoutMs = 2500): Promise<any> {
     const controller = new AbortController();
     const t = setTimeout(() => controller.abort(), timeoutMs);
     try {
@@ -31,7 +31,7 @@ export const GET: RequestHandler = async () => {
                     : null
         };
         return json({ ok: true, source: 'go', memory });
-    } catch (err) {
+    } catch (err: any) {
         return json({
             ok: false,
             source: 'shim',

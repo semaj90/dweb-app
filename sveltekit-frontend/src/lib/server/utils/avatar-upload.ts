@@ -168,7 +168,7 @@ export async function handleAvatarUpload(
       fileName,
       url,
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Avatar upload error:", error);
     return {
       success: false,
@@ -197,7 +197,7 @@ export function removeAvatarFile(avatarUrl: string | null): boolean {
     }
 
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error removing avatar file:", error);
     return false;
   }

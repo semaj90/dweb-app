@@ -33,7 +33,7 @@ export function isLocalIndexReady() {
   return !!fuse;
 }
 
-export async function ensureLocalIndex(fetcher: typeof fetch = fetch, limit = 750) {
+export async function ensureLocalIndex(fetcher: typeof fetch = fetch, limit = 750): Promise<any> {
   if (fuse) return fuse; // already built
   // Try cache first
   try {
@@ -44,7 +44,7 @@ export async function ensureLocalIndex(fetcher: typeof fetch = fetch, limit = 75
       loadedFromCache = true;
       return fuse;
     }
-  } catch (e) {
+  } catch (e: any) {
     console.warn('[LocalSearch] Failed to load cache', e);
   }
 
@@ -63,11 +63,11 @@ export async function ensureLocalIndex(fetcher: typeof fetch = fetch, limit = 75
       }));
       fuse = new Fuse(documents, options);
       // Persist
-      try { await idbSet(cacheKey, documents); } catch (err) { console.warn('[LocalSearch] Cache save failed', err); }
+      try { await idbSet(cacheKey, documents); } catch (err: any) { console.warn('[LocalSearch] Cache save failed', err); }
     } else {
       fuse = new Fuse([], options);
     }
-  } catch (e) {
+  } catch (e: any) {
     console.warn('Local index build failed', e);
     fuse = new Fuse([], options);
   }

@@ -10,7 +10,7 @@ import { rabbitmqService } from '$lib/server/messaging/rabbitmq-service';
 import { workflowOrchestrator } from '$lib/machines/workflow-machine';
 
 // API Response types
-interface APIResponse<T = any> {
+export interface APIResponse<T = any> {
   success: boolean;
   data?: T;
   error?: string;
@@ -94,7 +94,7 @@ export const GET: RequestHandler = async ({ url }) => {
       default:
         return json(createResponse(false, null, `Unknown action: ${action}`));
     }
-  } catch (error) {
+  } catch (error: any) {
     return json(createResponse(false, null, error instanceof Error ? error.message : 'Unknown error'), {
       status: 500
     });
@@ -145,7 +145,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
       default:
         return json(createResponse(false, null, `Unknown action: ${action}`));
     }
-  } catch (error) {
+  } catch (error: any) {
     return json(createResponse(false, null, error instanceof Error ? error.message : 'Unknown error'), {
       status: 500
     });

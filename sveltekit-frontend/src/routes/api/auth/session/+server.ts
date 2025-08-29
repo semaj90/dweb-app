@@ -91,7 +91,7 @@ export const GET: RequestHandler = async ({ cookies }) => {
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Session validation API error:', err);
 
     // Clear potentially corrupted session cookie

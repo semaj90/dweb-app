@@ -1,12 +1,12 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { getNATSService, NATS_SUBJECTS } from '$lib/services/nats-messaging-service.js';
+import { getNATSService, NATS_SUBJECTS } from '$lib/services/nats-messaging-service';
 
 /**
  * POST /api/v1/nats/subscribe
  * Setup WebSocket subscription to NATS subjects
  */
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const { subject, options = {} } = await request.json();
 
@@ -56,7 +56,7 @@ export const POST: RequestHandler = async ({ request }) => {
       timestamp: Date.now()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('NATS subscribe API error:', error);
     return json({ 
       error: 'Failed to subscribe to subject',
@@ -69,7 +69,7 @@ export const POST: RequestHandler = async ({ request }) => {
  * DELETE /api/v1/nats/subscribe
  * Unsubscribe from NATS subject
  */
-export const DELETE: RequestHandler = async ({ request }) => {
+export const DELETE: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const { subscriptionId } = await request.json();
 
@@ -96,7 +96,7 @@ export const DELETE: RequestHandler = async ({ request }) => {
       timestamp: Date.now()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('NATS unsubscribe API error:', error);
     return json({ 
       error: 'Failed to unsubscribe',

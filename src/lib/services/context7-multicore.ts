@@ -6,7 +6,7 @@
 // Type definitions for Context7 Multicore integration
 type Context7Response = {
 	success: boolean;
-	data?: unknown;
+	data?: any;
 	error?: string;
 	processingTime: number;
 	workerId?: number;
@@ -37,7 +37,7 @@ type TensorData = {
 type ProcessingJob = {
 	id: string;
 	operation: string;
-	data: unknown;
+	data: any;
 	priority: 'high' | 'normal' | 'low';
 	timeout: number;
 	useGPU: boolean;
@@ -46,7 +46,7 @@ type ProcessingJob = {
 	assignedWorkerId?: number;
 };
 
-interface Context7MulticoreConfig {
+export interface Context7MulticoreConfig {
 	basePort: number;
 	workerCount: number;
 	enableGPU: boolean;
@@ -55,7 +55,7 @@ interface Context7MulticoreConfig {
 	loadBalancerPort: number;
 }
 
-interface GoServiceConfig {
+export interface GoServiceConfig {
 	name: string;
 	port: number;
 	type: 'llama' | 'simd' | 'tensor' | 'rag' | 'recommendation';
@@ -63,7 +63,7 @@ interface GoServiceConfig {
 	gpuEnabled?: boolean;
 }
 
-interface WorkerStatus {
+export interface WorkerStatus {
 	workerId: number;
 	port: number;
 	status: 'active' | 'idle' | 'busy' | 'error';
@@ -73,7 +73,7 @@ interface WorkerStatus {
 	capabilities: string[];
 }
 
-interface MulticoreMetrics {
+export interface MulticoreMetrics {
 	totalWorkers: number;
 	activeWorkers: number;
 	totalJobs: number;
@@ -178,7 +178,7 @@ export class Context7MulticoreService {
 
 			console.log('✅ Context7 Multicore Service initialized successfully');
 			return true;
-		} catch (error) {
+		} catch (error: any) {
 			console.error('❌ Failed to initialize Context7 Multicore Service:', error);
 			return false;
 		}
@@ -200,7 +200,7 @@ export class Context7MulticoreService {
 		}
 	}
 
-	private async initializeWorkers(): Promise<void> {
+	private async initializeWorkers(): Promise<any> {
 		for (let i = 0; i < this.config.workerCount; i++) {
 			const workerId = i + 1;
 			const port = this.config.basePort + i;
@@ -241,7 +241,7 @@ export class Context7MulticoreService {
 		console.log(`📊 Initialized ${this.metrics.activeWorkers}/${this.config.workerCount} workers`);
 	}
 
-	private async testMCPServers(): Promise<void> {
+	private async testMCPServers(): Promise<any> {
 		for (const server of this.config.mcpServers) {
 			if (!server.enabled) continue;
 
@@ -265,7 +265,7 @@ export class Context7MulticoreService {
 		}
 	}
 
-	private async testGoServices(): Promise<void> {
+	private async testGoServices(): Promise<any> {
 		for (const service of this.config.goServices) {
 			if (!service.enabled) continue;
 
@@ -291,7 +291,7 @@ export class Context7MulticoreService {
 
 	async processWithContext7(
 		operation: string,
-		data: unknown,
+		data: any,
 		options?: {
 			priority?: 'high' | 'normal' | 'low';
 			timeout?: number;
@@ -325,7 +325,7 @@ export class Context7MulticoreService {
 			worker.activeJobs++;
 
 			// Process based on operation type
-			let result: unknown;
+			let result: any;
 			switch (operation) {
 				case 'memory-graph':
 					result = await this.processMemoryGraph(worker, data);
@@ -368,7 +368,7 @@ export class Context7MulticoreService {
 				timestamp: new Date().toISOString()
 			};
 
-		} catch (error) {
+		} catch (error: any) {
 			this.updateMetrics(performance.now() - startTime, false);
 			
 			return {
@@ -398,7 +398,7 @@ export class Context7MulticoreService {
 		return availableWorkers.length > 0 ? availableWorkers[0] : null;
 	}
 
-	private async processMemoryGraph(worker: WorkerStatus, data: unknown): Promise<any> {
+	private async processMemoryGraph(worker: WorkerStatus, data: any): Promise<any> {
 		const response = await fetch(`http://localhost:${worker.port}/mcp/memory/create-relations`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
@@ -412,7 +412,7 @@ export class Context7MulticoreService {
 		return response.json();
 	}
 
-	private async processSemanticSearch(worker: WorkerStatus, data: unknown): Promise<any> {
+	private async processSemanticSearch(worker: WorkerStatus, data: any): Promise<any> {
 		const response = await fetch(`http://localhost:${worker.port}/mcp/memory/read-graph`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
@@ -426,7 +426,7 @@ export class Context7MulticoreService {
 		return response.json();
 	}
 
-	private async processErrorAnalysis(worker: WorkerStatus, data: unknown): Promise<any> {
+	private async processErrorAnalysis(worker: WorkerStatus, data: any): Promise<any> {
 		const response = await fetch(`http://localhost:${worker.port}/mcp/error-analysis/index`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
@@ -460,7 +460,7 @@ export class Context7MulticoreService {
 		return response.json();
 	}
 
-	private async processLlamaChat(data: unknown): Promise<any> {
+	private async processLlamaChat(data: any): Promise<any> {
 		const llamaService = this.config.goServices.find(s => s.type === 'llama');
 		if (!llamaService || !llamaService.enabled) {
 			throw new Error('Go-Llama service not available');
@@ -479,7 +479,7 @@ export class Context7MulticoreService {
 		return response.json();
 	}
 
-	private async processEnhancedRAG(data: unknown): Promise<any> {
+	private async processEnhancedRAG(data: any): Promise<any> {
 		const ragService = this.config.goServices.find(s => s.type === 'rag');
 		if (!ragService || !ragService.enabled) {
 			throw new Error('Enhanced RAG service not available');
@@ -498,7 +498,7 @@ export class Context7MulticoreService {
 		return response.json();
 	}
 
-	private async processGeneric(worker: WorkerStatus, operation: string, data: unknown): Promise<any> {
+	private async processGeneric(worker: WorkerStatus, operation: string, data: any): Promise<any> {
 		// Route through load balancer for generic operations
 		const response = await fetch(`${this.loadBalancerUrl}/api/process`, {
 			method: 'POST',
@@ -534,7 +534,7 @@ export class Context7MulticoreService {
 		status: string;
 		workers: WorkerStatus[];
 		metrics: MulticoreMetrics;
-		services: unknown[];
+		services: any[];
 		timestamp: string;
 	}> {
 		// Update GPU utilization if available
@@ -570,7 +570,7 @@ export class Context7MulticoreService {
 		return this.metrics.activeWorkers > 0 && this.metrics.errorRate < 0.5;
 	}
 
-	async shutdown(): Promise<void> {
+	async shutdown(): Promise<any> {
 		console.log('🛑 Shutting down Context7 Multicore Service...');
 		
 		// Cancel pending jobs

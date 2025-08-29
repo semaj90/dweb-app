@@ -30,7 +30,7 @@ export const GET: RequestHandler = async ({ request, params, url }) => {
         }
       });
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Error getting missed messages:', error);
       return new Response('Internal Server Error', { status: 500 });
     }
@@ -50,7 +50,7 @@ export const GET: RequestHandler = async ({ request, params, url }) => {
       }
     });
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ WebSocket upgrade error:', error);
     return new Response('WebSocket upgrade failed', { status: 500 });
   }
@@ -89,7 +89,7 @@ export const POST: RequestHandler = async ({ request, params }) => {
           const keepAlive = setInterval(() => {
             try {
               controller.enqueue(encoder.encode('data: {"type":"heartbeat"}\n\n'));
-            } catch (error) {
+            } catch (error: any) {
               clearInterval(keepAlive);
             }
           }, 30000);
@@ -115,7 +115,7 @@ export const POST: RequestHandler = async ({ request, params }) => {
     
     return new Response('Invalid action', { status: 400 });
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ SSE setup error:', error);
     return new Response('Internal Server Error', { status: 500 });
   }

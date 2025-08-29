@@ -1,6 +1,6 @@
 import { writable } from "svelte/store";
 
-interface AIState {
+export interface AIState {
     isLoading: boolean;
     summary: string | null;
     error: string | null;
@@ -8,14 +8,14 @@ interface AIState {
     model: string;
 }
 
-interface SummarizeRequest {
+export interface SummarizeRequest {
     content: string;
     type?: 'report' | 'evidence' | 'poi' | 'general';
     caseId?: string;
     sourceId?: string;
 }
 
-interface SummarizeResponse {
+export interface SummarizeResponse {
     summary: string;
     model: string;
     processingTime: number;
@@ -89,7 +89,7 @@ function createAIService() {
 
                 return data.summary;
 
-            } catch (err) {
+            } catch (err: any) {
                 const errorMessage = err instanceof Error ? err.message : 'Failed to generate summary';
                 
                 update(state => ({ 

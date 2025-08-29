@@ -466,7 +466,7 @@ export async function testEndpoint(path: string, method: string = 'GET'): Promis
       responseTime: Date.now() - startTime,
       status: response.status
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       available: false,
       responseTime: Date.now() - startTime,

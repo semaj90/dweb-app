@@ -56,7 +56,7 @@ export interface RagStreamOptions {
 import { writable, get } from 'svelte/store';
 // Orphaned content: import type { Readable
 
-interface InternalSSEState {
+export interface InternalSSEState {
   currentEvent?: string;
   dataLines: string[];
 }
@@ -555,7 +555,7 @@ export function createRagStreamStore(initial?: RagStreamStoreInit): RagStreamSto
     return target;
   }
 
-  async function start(opts: Omit<RagStreamGeneratorOptions, 'signal'> & { signal?: AbortSignal }) {
+  async function start(opts: Omit<RagStreamGeneratorOptions, 'signal'> & { signal?: AbortSignal }): Promise<any> {
     if (running) cancel();
     const merged: RagStreamGeneratorOptions = { ...initial, ...opts } as any;
     abortCtrl = new AbortController();
@@ -753,7 +753,7 @@ export function createRagStreamStore(initial?: RagStreamStoreInit): RagStreamSto
     return chosen.join(' ');
   }
 
-  async function interrupt(mode: 'graceful' | 'force' = 'graceful') {
+  async function interrupt(mode: 'graceful' | 'force' = 'graceful'): Promise<any> {
     // Hard cancel always aborts immediately
     const sid = get(streamIdW) || get(traceparentW);
     if (!sid) {

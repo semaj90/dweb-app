@@ -11,12 +11,12 @@ import {
 	SliderRootChildSnippetProps,
 	SliderRootOnValueChangeProp,
 	SliderTickLabelPositionProp,
-} from "./extended-types/slider/index.js";
+} from './extended-types/slider/index';
 import {
 	NumberOrArrayNumberProp,
 	OrientationProp,
 	SliderThumbPositioningProp,
-} from "./extended-types/shared/index.js";
+} from './extended-types/shared/index';
 import {
 	dirProp,
 	typeSingleOrMultipleProp,
@@ -31,7 +31,7 @@ import {
 	defineNumberProp,
 	defineSimpleDataAttr,
 	defineUnionProp,
-} from "../utils.js";
+} from '../utils';
 
 const orientationDataAttr = defineEnumDataAttr({
 	name: "orientation",

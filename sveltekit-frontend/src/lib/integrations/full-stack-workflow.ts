@@ -82,7 +82,7 @@ export class FullStackLegalAIWorkflow {
       await comprehensiveOrchestrator.initialize();
       this.systemStatus.orchestrator = true;
       console.log('✅ Agent Orchestrator: Ready');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Agent Orchestrator failed to initialize:', error);
       this.systemStatus.orchestrator = false;
     }
@@ -93,7 +93,7 @@ export class FullStackLegalAIWorkflow {
       await flashAttentionMulticoreBridge.initialize();
       this.systemStatus.flashattention = true;
       console.log('✅ FlashAttention2 + Multicore Bridge: Ready');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ FlashAttention2 Bridge failed to initialize:', error);
       this.systemStatus.flashattention = false;
     }
@@ -115,7 +115,7 @@ export class FullStackLegalAIWorkflow {
         attempts++;
       }
       console.warn('⚠️ Context7 Multicore Service: Timeout waiting for workers');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Context7 Multicore Service failed to initialize:', error);
       this.systemStatus.multicore = false;
     }

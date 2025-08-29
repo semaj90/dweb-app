@@ -10,7 +10,7 @@ import { cases, evidence, documents, chatMessages } from '$lib/db/schema';
 import { eq, and, sql, desc } from 'drizzle-orm';
 import { redis } from '$lib/server/cache/redis-service';
 
-interface SearchRequest {
+export interface SearchRequest {
   query: string;
   limit?: number;
   threshold?: number;
@@ -18,7 +18,7 @@ interface SearchRequest {
   evidenceTypes?: string[];
 }
 
-interface VectorSearchResult {
+export interface VectorSearchResult {
   id: string;
   title: string;
   content: string;
@@ -35,7 +35,7 @@ interface VectorSearchResult {
   };
 }
 
-interface RAGResponse {
+export interface RAGResponse {
   answer: string;
   confidence: number;
   sources: VectorSearchResult[];
@@ -177,7 +177,7 @@ export const POST: RequestHandler = async ({ params, request, getClientAddress }
     console.log(`✅ Vector search completed: ${vectorSearchResults.length} results found`);
     return json(response);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error(`❌ POST /api/v1/cases/${params.caseId}/search error:`, error);
     return json({
       success: false,
@@ -201,7 +201,7 @@ export const GET: RequestHandler = async ({ params, url, getClientAddress }) => 
     const historyData = searchHistory.map(entry => {
       try {
         return JSON.parse(entry);
-      } catch (e) {
+      } catch (e: any) {
         return null;
       }
     }).filter(Boolean);
@@ -221,7 +221,7 @@ export const GET: RequestHandler = async ({ params, url, getClientAddress }) => 
 
     return json(response);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error(`❌ GET /api/v1/cases/${params.caseId}/search/history error:`, error);
     return json({
       success: false,
@@ -254,7 +254,7 @@ async function generateQueryEmbedding(query: string): Promise<number[] | null> {
     const result = await response.json();
     return result.embedding || null;
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to generate query embedding:', error);
     return null;
   }
@@ -391,7 +391,7 @@ Please provide a comprehensive answer based only on the evidence provided. If th
       tokensUsed: result.tokensUsed
     };
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to generate RAG response:', error);
     return null;
   }

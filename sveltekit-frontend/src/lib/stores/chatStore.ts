@@ -285,7 +285,7 @@ export const chatActions = {
           legalContext: data.legalContext,
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error sending message:", error);
       chatStore.update((state) => ({
         ...state,
@@ -384,7 +384,7 @@ export const chatActions = {
       } else {
         chatStore.update((state) => ({ ...state, modelStatus: "error" }));
       }
-    } catch (error) {
+    } catch (error: any) {
       chatStore.update((state) => ({ ...state, modelStatus: "error" }));
     }
   },
@@ -508,7 +508,7 @@ function getContextInjection() {
 }
 
 // Handle streaming responses
-async function handleStreamingResponse(response: Response) {
+async function handleStreamingResponse(response: Response): Promise<any> {
   if (!response.body) return;
 
   chatStore.update((state) => ({ ...state, isStreaming: true }));
@@ -548,7 +548,7 @@ async function handleStreamingResponse(response: Response) {
         return { ...state, messages };
       });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Streaming error:", error);
     chatStore.update((state) => ({
       ...state,
@@ -558,7 +558,7 @@ async function handleStreamingResponse(response: Response) {
 }
 
 // === XSTATE-LIKE COMPATIBILITY ===
-interface XStateCompatibleState {
+export interface XStateCompatibleState {
   context: ChatContext;
   matches: (state: string) => boolean;
 }
@@ -612,7 +612,7 @@ export const legalActions = {
         }));
         return precedents;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error searching precedents:", error);
     }
     return null;
@@ -631,7 +631,7 @@ export const legalActions = {
         const analysis = await response.json();
         return analysis;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error analyzing document:", error);
     }
     return null;
@@ -649,7 +649,7 @@ export const legalActions = {
       if (response.ok) {
         return await response.json();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error extracting entities:", error);
     }
     return null;
@@ -668,7 +668,7 @@ export const persistenceHelpers = {
           JSON.stringify(state.conversations),
         );
         localStorage.setItem("chat-settings", JSON.stringify(state.settings));
-      } catch (error) {
+      } catch (error: any) {
         console.warn("Failed to save chat data to localStorage:", error);
       }
     });
@@ -700,7 +700,7 @@ export const persistenceHelpers = {
           ? { ...state.settings, ...JSON.parse(settings) }
           : state.settings,
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.warn("Failed to load chat data from localStorage:", error);
     }
   },

@@ -138,7 +138,7 @@ export const reportActions = {
   removeEvidence: (evidenceId: string) => {
     report.update((r) => ({
       ...r,
-      attachedEvidence: r.attachedEvidence.filter((e) => e.id !== evidenceId),
+      attachedEvidence: r.attachedEvidence.filter((e: any) => e.id !== evidenceId),
       metadata: { ...r.metadata, updatedAt: new Date() },
     }));
     editorState.update((s) => ({ ...s, hasUnsavedChanges: true }));

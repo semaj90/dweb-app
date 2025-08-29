@@ -30,7 +30,7 @@ const JOB_STATUS_KEY = 'jobs:status:';
 const JOB_RESULT_KEY = 'jobs:result:';
 const JOB_PROGRESS_KEY = 'jobs:progress:';
 
-export async function POST({ request }) {
+export async function POST({ request }): Promise<any> {
   try {
     // Parse and validate request
     const body = await request.json();
@@ -133,7 +133,7 @@ export async function POST({ request }) {
       steps: jobPayload.steps
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Job creation error:', error);
     
     if (error instanceof z.ZodError) {
@@ -145,7 +145,7 @@ export async function POST({ request }) {
 }
 
 // Get job status
-export async function GET({ url }) {
+export async function GET({ url }): Promise<any> {
   const jobId = url.searchParams.get('jobId');
   
   if (!jobId) {
@@ -183,17 +183,17 @@ export async function GET({ url }) {
 
     // Redis has more up-to-date info for active jobs
     if (redisStatus) {
-      const redisData = JSON.parse(redisStatus);
+      const redisData = JSON.parse(redisStatus.toString());
       status = redisData.status;
       currentStep = redisData.currentStep;
     }
 
     if (redisProgress) {
-      progress = parseInt(redisProgress);
+      progress = parseInt(redisProgress.toString());
     }
 
     if (redisResult) {
-      result = JSON.parse(redisResult);
+      result = JSON.parse(redisResult.toString());
     }
 
     // Get document info
@@ -226,7 +226,7 @@ export async function GET({ url }) {
       } : null
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Job status check error:', error);
     return json({ error: 'Internal server error' }, { status: 500 });
   }
@@ -252,14 +252,14 @@ async function getQueuePosition(queueName: string, jobId: string): Promise<numbe
     // For simplicity, return a rough estimate
     // In production, you'd scan the queue to find exact position
     return Math.min(queueLength, 10);
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Queue position check failed:', error);
     return -1;
   }
 }
 
 // Cleanup function (called by cleanup worker)
-export async function DELETE({ url }) {
+export async function DELETE({ url }): Promise<any> {
   const jobId = url.searchParams.get('jobId');
   
   if (!jobId) {
@@ -287,7 +287,7 @@ export async function DELETE({ url }) {
 
     return json({ success: true });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Job cleanup error:', error);
     return json({ error: 'Internal server error' }, { status: 500 });
   }

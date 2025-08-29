@@ -120,7 +120,7 @@ export class NESCacheOrchestrator {
           console.log('✅ WebGPU initialized for NES Cache Orchestrator');
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('WebGPU not available, falling back to CPU caching:', error);
     }
   }
@@ -258,7 +258,7 @@ export class NESCacheOrchestrator {
         const propsBuffer = this.createGPUBufferFromProps(componentData.props);
         if (propsBuffer) gpuBuffers.push(propsBuffer.buffer);
 
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Failed to create WebGPU pipeline for YoRHa component:', error);
       }
     }
@@ -427,7 +427,7 @@ export class NESCacheOrchestrator {
 
       console.log(`✅ Cached WebGPU shader: ${shaderData.name}`);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to cache WebGPU shader:', error);
     }
   }
@@ -641,7 +641,7 @@ export class NESCacheOrchestrator {
       });
 
       return { buffer };
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to create GPU buffer from props:', error);
       return null;
     }

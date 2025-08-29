@@ -14,7 +14,7 @@ import { legalAIGPUQueue } from '$lib/services/gpu-job-queue';
 import { legalAIHealthMonitor } from '$lib/services/process-health-monitor';
 
 // GET /api/v1/gpu-orchestrator - System status and capabilities
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
   try {
     const action = url.searchParams.get('action') || 'status';
     
@@ -134,7 +134,7 @@ export const GET: RequestHandler = async ({ url }) => {
         }, { status: 400 });
     }
     
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -144,7 +144,7 @@ export const GET: RequestHandler = async ({ url }) => {
 };
 
 // POST /api/v1/gpu-orchestrator - Execute GPU operations
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const { operation, payload, options = {} } = await request.json();
     
@@ -202,7 +202,7 @@ export const POST: RequestHandler = async ({ request }) => {
                 priority: op.priority || options.priority || 'medium'
               });
               return { success: true, result: opResult, operation: op.operation };
-            } catch (error) {
+            } catch (error: any) {
               return { 
                 success: false, 
                 error: error instanceof Error ? error.message : 'Unknown error',
@@ -239,7 +239,7 @@ export const POST: RequestHandler = async ({ request }) => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: error instanceof Error ? error.message : 'Operation failed',
@@ -249,7 +249,7 @@ export const POST: RequestHandler = async ({ request }) => {
 };
 
 // PATCH /api/v1/gpu-orchestrator - System management operations  
-export const PATCH: RequestHandler = async ({ request }) => {
+export const PATCH: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const { action, parameters = {} } = await request.json();
     
@@ -308,7 +308,7 @@ export const PATCH: RequestHandler = async ({ request }) => {
         }, { status: 400 });
     }
 
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: error instanceof Error ? error.message : 'Management operation failed',
@@ -318,7 +318,7 @@ export const PATCH: RequestHandler = async ({ request }) => {
 };
 
 // DELETE /api/v1/gpu-orchestrator - Cleanup operations
-export const DELETE: RequestHandler = async ({ request }) => {
+export const DELETE: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const { target, parameters = {} } = await request.json();
     
@@ -360,7 +360,7 @@ export const DELETE: RequestHandler = async ({ request }) => {
         }, { status: 400 });
     }
 
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: error instanceof Error ? error.message : 'Cleanup operation failed',

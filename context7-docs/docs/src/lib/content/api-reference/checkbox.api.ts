@@ -3,13 +3,13 @@ import type {
 	CheckboxGroupPropsWithoutHTML,
 	CheckboxRootPropsWithoutHTML,
 } from "bits-ui";
-import { checkboxChildDefinition, checkboxChildrenDefinition, withChildProps } from "./shared.js";
+import { checkboxChildDefinition, checkboxChildrenDefinition, withChildProps } from './shared';
 import {
 	CheckboxGroupOnValueChangeProp,
 	CheckboxRootOnCheckedChangeProp,
 	CheckboxRootOnIndeterminateChangeProp,
 	CheckboxRootStateDataAttr,
-} from "./extended-types/checkbox/index.js";
+} from './extended-types/checkbox/index';
 import {
 	defineBooleanProp,
 	defineComponentApiSchema,
@@ -18,7 +18,7 @@ import {
 	defineSimpleDataAttr,
 	defineStringProp,
 	defineSimplePropSchema,
-} from "../utils.js";
+} from '../utils';
 
 export const root = defineComponentApiSchema<CheckboxRootPropsWithoutHTML>({
 	title: "Root",

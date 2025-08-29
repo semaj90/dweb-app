@@ -5,30 +5,30 @@ import { copilotOrchestrator } from "$lib/utils/mcp-helpers";
 // Phase 10: Semantic Search Audit API Endpoint (Context7) - REAL IMPLEMENTATION
 // This endpoint uses real Context7 semantic search, logging, and agent triggers.
 
-interface SemanticAuditResult {
+export interface SemanticAuditResult {
   id: string;
   score: number;
   content: string;
 }
 
-interface AuditLogEntry {
+export interface AuditLogEntry {
   timestamp: string;
   query: string;
   results: SemanticAuditResult[];
 }
 
-interface AgentTrigger {
+export interface AgentTrigger {
   type: string;
   data: any;
 }
 
-interface Context7SearchOptions {
+export interface Context7SearchOptions {
   threshold?: number;
   maxResults?: number;
 }
 
 // Real: log audit results using Context7AgentOrchestrator
-async function logAuditResult(results: SemanticAuditResult[]) {
+async function logAuditResult(results: SemanticAuditResult[]): Promise<any> {
   // Use the real Context7 orchestrator for logging
   for (const result of results) {
     const logEntry: AuditLogEntry = {
@@ -45,7 +45,7 @@ async function logAuditResult(results: SemanticAuditResult[]) {
 }
 
 // Real: trigger agent actions using Context7 MCP integration
-async function triggerAgentActions(auditResults: SemanticAuditResult[]) {
+async function triggerAgentActions(auditResults: SemanticAuditResult[]): Promise<any> {
   const triggeredAgents: AgentTrigger[] = [];
 
   for (const result of auditResults) {
@@ -81,7 +81,7 @@ async function triggerAgentActions(auditResults: SemanticAuditResult[]) {
         result.agentTriggered = true;
 
         console.log(`[Real Agent Trigger] Completed ${action} for ${result.todoId}:`, completedTrigger.result?.substring(0, 100) + '...');
-      } catch (error) {
+      } catch (error: any) {
         console.error(`[Real Agent Trigger] Failed ${action} for ${result.todoId}:`, error);
         result.agentTriggered = false;
       }
@@ -153,7 +153,7 @@ export const POST: RequestHandler = async ({ request }) => {
       headers: { "Content-Type": "application/json" },
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("[Real Semantic Audit] Error:", error);
 
     // Log the error using Context7 orchestrator

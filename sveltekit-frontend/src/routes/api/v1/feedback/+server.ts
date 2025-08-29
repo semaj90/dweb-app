@@ -70,7 +70,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
           try {
             const ratingId = await feedbackLoopService.collectRating(rating);
             results.push({ success: true, ratingId, rating: rating.interactionId });
-          } catch (error) {
+          } catch (error: any) {
             results.push({ 
               success: false, 
               error: error instanceof Error ? error.message : 'Unknown error',
@@ -93,7 +93,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
           error: 'Invalid action. Supported actions: rate, batch_rate' 
         }, { status: 400 });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Feedback API Error:', error);
     return json({ 
       error: error instanceof Error ? error.message : 'Internal server error' 
@@ -151,7 +151,7 @@ export const GET: RequestHandler = async ({ url }) => {
           error: 'Invalid action. Supported actions: recommendations, metrics, health' 
         }, { status: 400 });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Feedback API Error:', error);
     return json({ 
       error: error instanceof Error ? error.message : 'Internal server error' 

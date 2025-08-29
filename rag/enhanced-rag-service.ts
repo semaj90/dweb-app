@@ -4,8 +4,8 @@
  * for intelligent document retrieval and generation
  */
 
-import { legalRAG } from '../sveltekit-frontend/src/lib/ai/langchain-rag.js';
-import { context7Service } from '../sveltekit-frontend/src/lib/services/context7Service.js';
+import { legalRAG } from '../sveltekit-frontend/src/lib/ai/langchain-rag';
+import { context7Service } from '../sveltekit-frontend/src/lib/services/context7Service';
 
 // Interface definitions for cache and cluster managers
 export interface OllamaGemmaCacheInterface {
@@ -224,7 +224,7 @@ export class EnhancedRAGService {
       }
 
       console.log('🎉 Enhanced RAG Service initialization complete');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Enhanced features initialization failed, using fallback mode:', error);
     }
   }
@@ -412,7 +412,7 @@ Auto-Fix Performance Optimizations:
         }
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Enhanced RAG service query failed:', error);
 
       return {
@@ -478,7 +478,7 @@ Auto-Fix Performance Optimizations:
         documentId: result.documentId || `doc_${Date.now()}`
       };
 
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown upload error'
@@ -503,7 +503,7 @@ Auto-Fix Performance Optimizations:
         indexHealth: 'healthy' // Default to healthy status
       };
 
-    } catch (error) {
+    } catch (error: any) {
       return {
         totalDocuments: 0,
         totalQueries: 0,
@@ -569,7 +569,7 @@ Auto-Fix Performance Optimizations:
     for (const query of commonQueries) {
       try {
         await this.ollamaGemmaCache!.getEmbedding(query, 'legal_common_queries');
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Failed to pre-cache query: ${query}`, error);
       }
     }

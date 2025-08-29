@@ -218,7 +218,7 @@ const integrityVerificationService = fromPromise(
         verificationResults.aiAnalysisScore = aiResult.integrityScore || 0;
         verificationResults.riskAssessment = aiResult.riskLevel || "medium";
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn(
         "AI verification failed, using manual verification only:",
         error

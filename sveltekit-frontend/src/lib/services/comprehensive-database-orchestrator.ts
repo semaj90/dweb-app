@@ -236,7 +236,7 @@ export function splitIntoSentences(text: string, options?: unknown): string[] {
   // Import the enhanced splitter lazily to avoid circular dependencies
   try {
     return splitSentencesEnhanced(text);
-  } catch (err) {
+  } catch (err: any) {
     // Fallback to basic regex split if enhanced splitter unavailable
     console.warn('[orchestrator] Enhanced splitter unavailable, using fallback:', err.message);
     return text
@@ -255,7 +255,7 @@ export async function generateMMRSummary(
   try {
     const { generateMMRSummary } = await import('./mmr-summary-generator');
     return await generateMMRSummary(documents, query, config);
-  } catch (err) {
+  } catch (err: any) {
     console.warn('[orchestrator] MMR summary generator unavailable, using fallback:', err.message);
 
     // Simple fallback: extract first few sentences from most relevant document
@@ -298,7 +298,7 @@ export async function processRAGPipeline(
   try {
     const { processLegalQuery } = await import('./rag-pipeline-integrator');
     return await processLegalQuery(query, documents, config);
-  } catch (err) {
+  } catch (err: any) {
     console.warn('[orchestrator] RAG pipeline unavailable, using fallback:', err.message);
 
     // Fallback: simple search and summarize
@@ -333,7 +333,7 @@ export async function createPatchStream(
     const { AdvancedPatchStreamer } = await import('./advanced-patch-streaming');
     const streamer = new AdvancedPatchStreamer(options?.config);
     return await streamer.createPatchStream(target, initialData, options);
-  } catch (err) {
+  } catch (err: any) {
     console.warn('[orchestrator] Patch streaming unavailable, using fallback:', err.message);
 
     // Fallback: simple readable stream
@@ -362,7 +362,7 @@ export async function synthesizeAIInput(
   try {
     const { aiAssistantInputSynthesizer } = await import('./ai-assistant-input-synthesizer');
     return await aiAssistantInputSynthesizer.synthesizeInput(query, context);
-  } catch (err) {
+  } catch (err: any) {
     console.warn('[orchestrator] AI input synthesizer unavailable, using fallback:', err.message);
 
     // Fallback synthesis
@@ -416,7 +416,7 @@ export async function analyzeLegalText(
   try {
     const { legalBERT } = await import('../server/ai/legalbert-middleware');
     return await legalBERT.analyzeLegalText(text);
-  } catch (err) {
+  } catch (err: any) {
     console.warn('[orchestrator] LegalBERT middleware unavailable, using fallback:', err.message);
 
     // Basic fallback analysis
@@ -488,7 +488,7 @@ export async function processAIAssistantQuery(
           try {
             const doc = await orchestrator.queryDatabase({ where: { id: docId } }, 'documents');
             return doc[0] || null;
-          } catch (err) {
+          } catch (err: any) {
             return null;
           }
         })
@@ -547,7 +547,7 @@ export async function processAIAssistantQuery(
     };
 
     return result;
-  } catch (err) {
+  } catch (err: any) {
     console.error('[orchestrator] AI assistant pipeline failed:', err);
 
     return {
@@ -575,7 +575,7 @@ export async function rerankSearchResults(
     const { CrossEncoderReranker } = await import('./cross-encoder-reranker');
     const reranker = new CrossEncoderReranker();
     return await reranker.rerankResults(query, results, config);
-  } catch (err) {
+  } catch (err: any) {
     console.warn(
       '[orchestrator] Cross-encoder reranking unavailable, using fallback:',
       err.message

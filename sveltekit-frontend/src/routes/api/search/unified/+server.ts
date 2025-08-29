@@ -151,7 +151,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       suggestions: [] // TODO: Add AI-generated suggestions
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Unified search API error:', error);
 
     if (error instanceof z.ZodError) {
@@ -205,7 +205,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
       headers: { 'Content-Type': 'application/json' }
     }), locals } as any);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Unified search GET API error:', error);
     return json(
       { success: false, error: 'Search failed' }, 

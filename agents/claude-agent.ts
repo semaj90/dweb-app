@@ -3,7 +3,7 @@
  * Interfaces with Anthropic Claude API for legal AI analysis
  */
 
-import { context7Service } from '../sveltekit-frontend/src/lib/services/context7Service.js';
+import { context7Service } from '../sveltekit-frontend/src/lib/services/context7Service';
 
 export interface ClaudeAgentConfig {
   apiKey: string;
@@ -118,7 +118,7 @@ Areas: ${Object.keys(autoFixResult.fixes).filter(key =>
         }
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Claude agent execution failed:', error);
       
       return {

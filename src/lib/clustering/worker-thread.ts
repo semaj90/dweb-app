@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { parentPort, workerData } from 'node:worker_threads';
 import { performance } from 'node:perf_hooks';
 
@@ -8,30 +7,30 @@ import { performance } from 'node:perf_hooks';
  */
 
 // Type definitions
-interface WorkerTask {
+export interface WorkerTask {
   id: string;
   type: keyof typeof taskProcessors;
-  payload: unknown;
+  payload: any;
 }
 
-interface WorkerResult {
+export interface WorkerResult {
   taskId: string;
   success: boolean;
-  result?: unknown;
+  result?: any;
   error?: string;
   processingTime: number;
   workerId: string;
   memoryUsage: number;
 }
 
-interface DocumentAnalysisPayload {
+export interface DocumentAnalysisPayload {
   content: string;
   documentType: string;
   analysisType: string;
   regulations?: string[];
 }
 
-interface VectorSearchPayload {
+export interface VectorSearchPayload {
   queryVector: number[];
   targetVectors: Array<{
     id: string;
@@ -41,18 +40,18 @@ interface VectorSearchPayload {
   threshold?: number;
 }
 
-interface AIInferencePayload {
+export interface AIInferencePayload {
   prompt: string;
   modelType: string;
   parameters: Record<string, any>;
 }
 
-interface DataProcessingPayload {
+export interface DataProcessingPayload {
   operation: string;
-  data: unknown;
+  data: any;
 }
 
-interface LegalEntity {
+export interface LegalEntity {
   persons: string[];
   organizations: string[];
   locations: string[];
@@ -62,7 +61,7 @@ interface LegalEntity {
   citations: string[];
 }
 
-interface ClassificationFeatures {
+export interface ClassificationFeatures {
   hasContractLanguage: boolean;
   hasSignatureBlocks: boolean;
   hasMotionLanguage: boolean;
@@ -75,27 +74,27 @@ interface ClassificationFeatures {
   hasLegalTerms: number;
 }
 
-interface DocumentClassification {
+export interface DocumentClassification {
   predictedType: string;
   confidence: number;
   features: ClassificationFeatures;
   alternativeTypes: Array<{ type: string; confidence: number }>;
 }
 
-interface RiskItem {
+export interface RiskItem {
   type: string;
   severity: 'low' | 'medium' | 'high';
   description: string;
   keywords: string[];
 }
 
-interface RiskAssessment {
+export interface RiskAssessment {
   totalRisks: number;
   highRiskCount: number;
   risks: RiskItem[];
 }
 
-interface ComplianceCheck {
+export interface ComplianceCheck {
   overallCompliance: 'unknown' | 'compliant' | 'partial' | 'non-compliant';
   checksPassed: number;
   checksTotal: number;
@@ -103,7 +102,7 @@ interface ComplianceCheck {
   recommendations: string[];
 }
 
-interface SentimentAnalysis {
+export interface SentimentAnalysis {
   sentiment: number;
   label: 'positive' | 'negative' | 'neutral';
   confidence: number;
@@ -111,13 +110,13 @@ interface SentimentAnalysis {
   negativeCount: number;
 }
 
-interface TextClassification {
+export interface TextClassification {
   class: string;
   confidence: number;
   allScores: Record<string, number>;
 }
 
-interface Citation {
+export interface Citation {
   fullCitation: string;
   plaintiff: string;
   defendant: string;
@@ -126,21 +125,21 @@ interface Citation {
   page: string;
 }
 
-interface DocumentSummary {
+export interface DocumentSummary {
   summary: string;
   keyPoints: string[];
   wordCount: number;
   entities: LegalEntity;
 }
 
-interface MergedDocuments {
+export interface MergedDocuments {
   mergedContent: string;
   documentCount: number;
   totalLength: number;
   mergedAt: string;
 }
 
-interface FullAnalysisResult {
+export interface FullAnalysisResult {
   entities: LegalEntity;
   classification: DocumentClassification;
   risks: RiskAssessment;
@@ -188,9 +187,9 @@ parentPort?.on('message', async (task: WorkerTask) => {
       memoryUsage: endMemory.heapUsed
     };
 
-    parentPort?.postMessage(response);
+    self.postMessage(response);
 
-  } catch (error) {
+  } catch (error: any) {
     const endTime = performance.now();
     const endMemory = process.memoryUsage();
 
@@ -203,7 +202,7 @@ parentPort?.on('message', async (task: WorkerTask) => {
       memoryUsage: endMemory.heapUsed
     };
 
-    parentPort?.postMessage(response);
+    self.postMessage(response);
   }
 });
 
@@ -778,7 +777,7 @@ console.log(`✅ Worker thread ${workerId} initialized and ready for tasks`);
 // Health check message
 setInterval(() => {
   const memoryUsage = process.memoryUsage();
-  parentPort?.postMessage({
+  self.postMessage({
     type: 'health_check',
     workerId,
     memoryUsage: memoryUsage.heapUsed,

@@ -52,7 +52,7 @@ export const relayAuthService = {
       // return (await res.json()) as RelayUser;
       
       return null;
-    } catch (error) {
+    } catch (error: any) {
       console.error('RelayAuthService: Error getting user by email:', error);
       return null;
     }
@@ -62,7 +62,7 @@ export const relayAuthService = {
   async validatePassword(user: RelayUser, password: string): Promise<boolean> {
     try {
       return await bcrypt.compare(password, user.passwordHash);
-    } catch (error) {
+    } catch (error: any) {
       console.error('RelayAuthService: Error validating password:', error);
       return false;
     }
@@ -95,7 +95,7 @@ export const relayAuthService = {
       
       console.log('✅ Demo user registered:', newUser.email);
       return newUser;
-    } catch (error) {
+    } catch (error: any) {
       console.error('RelayAuthService: Error registering user:', error);
       throw error;
     }
@@ -118,7 +118,7 @@ export const relayAuthService = {
       
       console.log('✅ Manual session created:', sessionId);
       return session;
-    } catch (error) {
+    } catch (error: any) {
       console.error('RelayAuthService: Error creating session:', error);
       throw error;
     }
@@ -143,7 +143,7 @@ export const relayAuthService = {
       });
 
       return { user: demoUser, session };
-    } catch (error) {
+    } catch (error: any) {
       console.error('RelayAuthService: Error in demo authentication:', error);
       return null;
     }
@@ -165,7 +165,7 @@ export const relayAuthService = {
       // Simple health check - if we can create a demo user object, service is "healthy"
       const demoUser = await this.getUserByEmail('demo@legalai.gov');
       return demoUser !== null;
-    } catch (error) {
+    } catch (error: any) {
       console.error('RelayAuthService: Health check failed:', error);
       return false;
     }

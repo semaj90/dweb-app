@@ -54,7 +54,7 @@ export const GET: RequestHandler = async ({ url }) => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Cluster status error:', error);
     
     return json({

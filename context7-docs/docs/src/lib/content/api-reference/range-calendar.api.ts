@@ -1,5 +1,5 @@
 import type { RangeCalendarRootPropsWithoutHTML } from "bits-ui";
-import { valueDateRangeChangeFn, valueDateRangeProp } from "./shared.js";
+import { valueDateRangeChangeFn, valueDateRangeProp } from './shared';
 import {
 	root as calendarRoot,
 	createCalendarCellSchema,
@@ -15,15 +15,15 @@ import {
 	createCalendarNextButtonSchema,
 	createCalendarPrevButtonSchema,
 	createCalendarYearSelectSchema,
-} from "./calendar.api.js";
-import { root as rangeFieldRoot } from "./date-range-field.api.js";
+} from './calendar.api';
+import { root as rangeFieldRoot } from './date-range-field.api';
 
 import {
 	defineBooleanProp,
 	defineComponentApiSchema,
 	defineNumberProp,
 	defineSimpleDataAttr,
-} from "../utils.js";
+} from '../utils';
 
 export const root = defineComponentApiSchema<RangeCalendarRootPropsWithoutHTML>({
 	title: "Root",

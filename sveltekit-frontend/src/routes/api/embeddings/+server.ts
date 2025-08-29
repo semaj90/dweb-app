@@ -21,18 +21,18 @@ async function syncDocumentEmbeddings(
 }
 
 // Single embedding request
-interface EmbeddingRequest {
+export interface EmbeddingRequest {
   text: string;
   model?: string;
 }
 // Batch embedding request
-interface BatchEmbeddingRequest {
+export interface BatchEmbeddingRequest {
   texts: string[];
   model?: string;
   batchSize?: number;
 }
 // Sync request for database documents
-interface SyncRequest {
+export interface SyncRequest {
   type?: "cases" | "evidence" | "documents" | "all";
   limit?: number;
   forceRegenerate?: boolean;
@@ -72,7 +72,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         text: text.substring(0, 100) + (text.length > 100 ? "..." : ""),
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Embedding generation error:", error);
     return json(
       {
@@ -121,7 +121,7 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
         dimensions: embeddings[0]?.length || 0,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Batch embedding generation error:", error);
     return json(
       {
@@ -225,7 +225,7 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
         type,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Embedding sync error:", error);
     return json(
       {
@@ -259,7 +259,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
         },
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Embeddings status error:", error);
     return json(
       {

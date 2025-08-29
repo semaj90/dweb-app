@@ -167,7 +167,7 @@ export class AIAssistantManager {
       });
 
       console.log('Message sent to AI assistant:', message);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to send message:', error);
       throw error;
     }
@@ -259,7 +259,7 @@ export class AIAssistantManager {
     try {
       this.actor.send({ type: 'CHECK_CLUSTER_HEALTH' });
       console.log('Cluster health check initiated');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to check cluster health:', error);
     }
   }
@@ -276,7 +276,7 @@ export class AIAssistantManager {
         topic
       });
       console.log('Context7 analysis initiated for topic:', topic);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to analyze with Context7:', error);
       throw error;
     }
@@ -355,7 +355,7 @@ export class AIAssistantManager {
       } else {
         throw new Error('Invalid conversation file format');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to import conversation:', error);
       throw error;
     }
@@ -386,7 +386,7 @@ export class AIAssistantManager {
         return data.models?.map((model: any) => model.name) || [];
       }
       return ['gemma3-legal', 'nomic-embed-text', 'deeds-web']; // Fallback
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to fetch available models:', error);
       return ['gemma3-legal', 'nomic-embed-text', 'deeds-web']; // Fallback
     }

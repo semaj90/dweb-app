@@ -130,7 +130,7 @@ export class ContextLoader {
       }
     }
 
-    const load = async () => {
+    const load = async (): Promise<any> => {
       log.appendLine('\n-----------')
       log.appendLine(`🛠 Resolving config for ${dir}`)
 

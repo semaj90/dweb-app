@@ -14,14 +14,14 @@ import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 // ONNX Runtime for Legal-BERT
 import * as ort from 'onnxruntime-node';
 
-interface SummarizationRequest {
+export interface SummarizationRequest {
   text: string;
   context?: string;
   style?: 'brief' | 'detailed' | 'technical';
   maxTokens?: number;
 }
 
-interface SummarizationResponse {
+export interface SummarizationResponse {
   summary: string;
   keyPoints: string[];
   confidence: number;
@@ -76,7 +76,7 @@ Summary:`,
       });
 
       console.log('✅ LangChain initialized with Ollama integration');
-    } catch (error) {
+    } catch (error: any) {
       console.error('⚠️ LangChain initialization failed:', error);
     }
   }
@@ -86,7 +86,7 @@ Summary:`,
       // TODO: Load Legal-BERT ONNX model when available
       // this.legalBertSession = await ort.InferenceSession.create('./models/legal-bert.onnx');
       console.log('⚠️ Legal-BERT ONNX model not yet available - using LangChain fallback');
-    } catch (error) {
+    } catch (error: any) {
       console.error('⚠️ Legal-BERT ONNX initialization failed:', error);
     }
   }
@@ -130,7 +130,7 @@ Summary:`,
         model: 'ollama-gemma3-legal',
         processingTimeMs: Date.now() - startTime,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('LangChain summarization error:', error);
       return this.fallbackSummary(request, startTime);
     }
@@ -230,7 +230,7 @@ Summary:`,
             
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify(result));
-          } catch (error) {
+          } catch (error: any) {
             res.writeHead(400, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'Invalid request' }));
           }

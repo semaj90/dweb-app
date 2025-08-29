@@ -9,7 +9,7 @@ const logQueue = {
   }
 };
 
-export async function POST({ request }) {
+export async function POST({ request }): Promise<any> {
   try {
     const logData = await request.json();
     console.log('Received log data:', logData);
@@ -18,7 +18,7 @@ export async function POST({ request }) {
     await logQueue.add('processLog', logData);
 
     return json({ status: 'success', message: 'Log received and queued' }, { status: 200 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error processing log:', error);
     return json({ status: 'error', message: 'Failed to process log' }, { status: 500 });
   }

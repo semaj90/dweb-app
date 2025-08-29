@@ -97,7 +97,7 @@ export const POST: RequestHandler = async ({ request }) => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('❌ Document update loop error:', err);
     
     if (err instanceof Error && 'status' in err) {
@@ -153,7 +153,7 @@ export const GET: RequestHandler = async ({ url }) => {
         throw error(400, `Unknown action: ${action}`);
     }
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('❌ Update loop status error:', err);
     
     return json({
@@ -191,7 +191,7 @@ export const PATCH: RequestHandler = async ({ request }) => {
               success: true,
               result
             });
-          } catch (err) {
+          } catch (err: any) {
             batchResults.push({
               documentId,
               success: false,
@@ -225,7 +225,7 @@ export const PATCH: RequestHandler = async ({ request }) => {
         throw error(400, `Unknown batch action: ${action}`);
     }
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('❌ Batch operation error:', err);
     
     if (err instanceof Error && 'status' in err) {

@@ -8,7 +8,7 @@ let tauriInvoke: any = null;
 let tauriListen: any = null;
 
 // Lazy load Tauri APIs only when needed and in browser
-async function loadTauriAPI() {
+async function loadTauriAPI(): Promise<any> {
   if (typeof window === "undefined" || !isTauri || tauriInvoke) return;
 
   try {
@@ -16,7 +16,7 @@ async function loadTauriAPI() {
     const { listen } = await import("@tauri-apps/api/event");
     tauriInvoke = invoke;
     tauriListen = listen;
-  } catch (error) {
+  } catch (error: any) {
     console.warn("Failed to load Tauri APIs:", error);
   }
 }
@@ -139,7 +139,7 @@ export class TauriAPI {
   }
 }
 // Event listeners for Tauri events
-export async function setupTauriEventListeners() {
+export async function setupTauriEventListeners(): Promise<any> {
   if (!isTauri) return;
 
   await loadTauriAPI();
@@ -154,7 +154,7 @@ export async function setupTauriEventListeners() {
   });
 }
 // Initialize Tauri integration
-export async function initializeTauri() {
+export async function initializeTauri(): Promise<any> {
   if (isTauri) {
     console.log("Running in Tauri desktop app");
     await setupTauriEventListeners();

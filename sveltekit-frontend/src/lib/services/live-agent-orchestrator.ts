@@ -107,7 +107,7 @@ export class LiveAgentOrchestrator {
       } else {
         health['go-backend'] = 'down';
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Go backend health check failed:', error);
       health['go-backend'] = 'down';
     }
@@ -124,7 +124,7 @@ export class LiveAgentOrchestrator {
       } else {
         health['ollama-direct'] = 'degraded';
       }
-    } catch (error) {
+    } catch (error: any) {
       health['ollama-direct'] = 'down';
     }
 
@@ -141,11 +141,11 @@ export class LiveAgentOrchestrator {
         this.connectionStatus.set('connected');
       };
 
-      this.sseConnection.onmessage = (event) => {
+      this.sseConnection.onmessage = (event: any) => {
         try {
           const response: AgentResponse = JSON.parse(event.data);
           this.handleAgentResponse(response);
-        } catch (error) {
+        } catch (error: any) {
           console.error('SSE message parsing error:', error);
         }
       };
@@ -154,7 +154,7 @@ export class LiveAgentOrchestrator {
         console.error('SSE connection error:', error);
         this.connectionStatus.set('error');
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to initialize SSE:', error);
     }
   }
@@ -169,11 +169,11 @@ export class LiveAgentOrchestrator {
         this.connectionStatus.set('connected');
       };
 
-      this.wsConnection.onmessage = (event) => {
+      this.wsConnection.onmessage = (event: any) => {
         try {
           const response: AgentResponse = JSON.parse(event.data);
           this.handleAgentResponse(response);
-        } catch (error) {
+        } catch (error: any) {
           console.error('WebSocket message parsing error:', error);
         }
       };
@@ -187,7 +187,7 @@ export class LiveAgentOrchestrator {
         console.log('WebSocket connection closed');
         this.connectionStatus.set('disconnected');
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to initialize WebSocket:', error);
     }
   }
@@ -286,7 +286,7 @@ export class LiveAgentOrchestrator {
         confidence: result.confidence || 0.8
       };
 
-    } catch (error) {
+    } catch (error: any) {
       return {
         id: request.id,
         agent: agentName,
@@ -542,22 +542,22 @@ export function createAgentRequest(
   };
 }
 
-export async function quickAnalyze(text: string, agents?: string[]) {
+export async function quickAnalyze(text: string, agents?: string[]): Promise<any> {
   const request = createAgentRequest('analyze', { text }, { agents });
   return liveAgentOrchestrator.orchestrateAgents(request);
 }
 
-export async function quickSummarize(text: string, agents?: string[]) {
+export async function quickSummarize(text: string, agents?: string[]): Promise<any> {
   const request = createAgentRequest('summarize', { text }, { agents });
   return liveAgentOrchestrator.orchestrateAgents(request);
 }
 
-export async function quickEmbed(text: string, agents?: string[]) {
+export async function quickEmbed(text: string, agents?: string[]): Promise<any> {
   const request = createAgentRequest('embed', { text }, { agents });
   return liveAgentOrchestrator.orchestrateAgents(request);
 }
 
-export async function quickSearch(query: string, agents?: string[]) {
+export async function quickSearch(query: string, agents?: string[]): Promise<any> {
   const request = createAgentRequest('search', { query }, { agents });
   return liveAgentOrchestrator.orchestrateAgents(request);
 }

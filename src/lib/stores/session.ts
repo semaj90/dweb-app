@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 
-interface User {
+export interface User {
   id: number;
   email: string;
   firstName?: string;
@@ -12,7 +12,7 @@ interface User {
   isActive: boolean;
 }
 
-interface SessionStore {
+export interface SessionStore {
   user: User | null;
   authenticated: boolean;
   loading: boolean;
@@ -60,7 +60,7 @@ function createSessionStore() {
 
         return user;
 
-      } catch (error) {
+      } catch (error: any) {
         update(state => ({
           ...state,
           loading: false,
@@ -73,12 +73,12 @@ function createSessionStore() {
     },
 
     // Logout
-    logout: async () => {
+    logout: async (): Promise<any> => {
       update(state => ({ ...state, loading: true }));
 
       try {
         await fetch('/api/auth/logout', { method: 'POST' });
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Logout request failed:', error);
       }
 
@@ -86,7 +86,7 @@ function createSessionStore() {
     },
 
     // Check authentication status
-    checkAuth: async () => {
+    checkAuth: async (): Promise<any> => {
       update(state => ({ ...state, loading: true }));
 
       try {
@@ -109,7 +109,7 @@ function createSessionStore() {
           return null;
         }
 
-      } catch (error) {
+      } catch (error: any) {
         set(initialState);
         return null;
       }
@@ -139,7 +139,7 @@ function createSessionStore() {
 
         return updatedUser;
 
-      } catch (error) {
+      } catch (error: any) {
         update(state => ({
           ...state,
           loading: false,

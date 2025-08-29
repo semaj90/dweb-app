@@ -95,11 +95,11 @@ class DocumentUpdateNotificationManager {
         }, 30000);
       };
 
-      this.ws.onmessage = (event) => {
+      this.ws.onmessage = (event: any) => {
         try {
           const notification: UpdateNotification = JSON.parse(event.data);
           this.handleNotification(notification);
-        } catch (error) {
+        } catch (error: any) {
           console.warn('Failed to parse notification:', error);
         }
       };
@@ -132,7 +132,7 @@ class DocumentUpdateNotificationManager {
         }));
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to create WebSocket connection:', error);
       
       documentUpdateNotifications.update((state: any) => ({

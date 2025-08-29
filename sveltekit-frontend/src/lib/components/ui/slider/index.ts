@@ -13,7 +13,7 @@ export const SliderTick = null; // Slider?.Tick;
 export const Slider = null;
 
 // Common props interface
-interface CommonProps {
+export interface CommonProps {
   className?: string;
   [key: string]: any;
 }

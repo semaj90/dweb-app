@@ -6,14 +6,14 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { json } from "@sveltejs/kit";
 import { URL } from "url";
 
-interface GoMicroserviceConfig {
+export interface GoMicroserviceConfig {
   baseUrl: string;
   timeout: number;
   retries: number;
   enableCache: boolean;
 }
 
-interface ProcessDocumentRequest {
+export interface ProcessDocumentRequest {
   content: string;
   document_type: string;
   practice_area?: string;
@@ -21,7 +21,7 @@ interface ProcessDocumentRequest {
   metadata?: Record<string, any>;
 }
 
-interface SearchRequest {
+export interface SearchRequest {
   query: string;
   limit?: number;
   filters?: Record<string, string>;
@@ -76,7 +76,7 @@ class GoMicroserviceClient {
         }
 
         return await response.json();
-      } catch (error) {
+      } catch (error: any) {
         console.warn(
           `Attempt ${attempt} failed for ${endpoint}:`,
           error.message
@@ -142,7 +142,7 @@ export const GET: RequestHandler = async ({ url }) => {
       },
       { status: 400 }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("Health check failed:", error);
 
     return json(
@@ -394,7 +394,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
           { status: 400 }
         );
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error(`API action failed (${action}):`, error);
 
     return json(

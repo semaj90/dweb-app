@@ -2,7 +2,7 @@ import type { IconifyJSON } from '@iconify/types'
 import type { CustomIconLoader, IconCustomizations, InlineCollection } from '@iconify/utils'
 import type { Awaitable, CSSObject } from '@unocss/core'
 
-interface IconMeta {
+export interface IconMeta {
   collection: string
   name: string
   svg: string

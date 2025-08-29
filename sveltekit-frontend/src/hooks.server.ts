@@ -27,7 +27,7 @@ function devLog(...parts: any[]) {
       // keep last 200 entries
       if ((globalThis as any)._devLogs.length > 200) (globalThis as any)._devLogs.length = 200;
     }
-  } catch (e) {
+  } catch (e: any) {
     // no-op
   }
   console.log(...parts);
@@ -128,7 +128,7 @@ const loggingHandle: Handle = async ({ event, resolve }) => {
   let ip: string;
   try {
     ip = event.getClientAddress();
-  } catch (error) {
+  } catch (error: any) {
     // Fallback for development environment where client address might not be available
     ip = event.request.headers.get('x-forwarded-for') || 
          event.request.headers.get('x-real-ip') || 
@@ -164,7 +164,7 @@ const loggingHandle: Handle = async ({ event, resolve }) => {
 
     return response;
 
-  } catch (error) {
+  } catch (error: any) {
     const responseTime = Date.now() - startTime;
     requestMetrics.errorCount++;
 
@@ -260,7 +260,7 @@ const sessionHandle: Handle = async ({ event, resolve }) => {
     } else {
       devLog('[hooks] No session ID in cookies');
     }
-  } catch (error) {
+  } catch (error: any) {
     console.warn('[hooks] Lucia session validation failed:', error?.message || error);
     // Fallback to Redis session lookup for backward compatibility (if available)
     const sessionId =
@@ -349,7 +349,7 @@ const customFetch: HandleFetch = async ({ request, fetch, event }) => {
     }
 
     return response;
-  } catch (error) {
+  } catch (error: any) {
     console.error(`❌ Fetch error for ${request.url}:`, error);
     throw error;
   }
@@ -377,7 +377,7 @@ process.on('SIGTERM', async () => {
       // minioService doesn't need explicit disconnect
     ]);
     console.log('👋 Services shut down gracefully');
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Error during shutdown:', error);
   }
   process.exit(0);

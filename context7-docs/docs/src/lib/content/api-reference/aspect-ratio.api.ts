@@ -1,6 +1,6 @@
 import type { AspectRatioRootPropsWithoutHTML } from "bits-ui";
-import { withChildProps } from "./shared.js";
-import { defineComponentApiSchema, defineNumberProp, defineSimpleDataAttr } from "../utils.js";
+import { withChildProps } from './shared';
+import { defineComponentApiSchema, defineNumberProp, defineSimpleDataAttr } from '../utils';
 
 const root = defineComponentApiSchema<AspectRatioRootPropsWithoutHTML>({
 	title: "Root",

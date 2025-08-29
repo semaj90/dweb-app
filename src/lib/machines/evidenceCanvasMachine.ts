@@ -12,7 +12,7 @@ import type {
 
 export interface EvidenceCanvasContext {
   // Canvas state
-  canvas: unknown | null;
+  canvas: any | null;
   evidenceNodes: EvidenceNode[];
   selectedNodes: string[];
   clipboard: EvidenceNode[];
@@ -52,7 +52,7 @@ export interface EvidenceCanvasContext {
 
 export type EvidenceCanvasEvent = 
   // Canvas operations
-  | { type: 'INITIALIZE_CANVAS'; canvas: unknown; caseId?: string; userId?: string }
+  | { type: 'INITIALIZE_CANVAS'; canvas: any; caseId?: string; userId?: string }
   | { type: 'ADD_EVIDENCE_NODE'; evidenceData: EvidenceData; position: { x: number; y: number } }
   | { type: 'SELECT_NODE'; nodeId: string; multiSelect?: boolean }
   | { type: 'DESELECT_ALL' }
@@ -80,7 +80,7 @@ export type EvidenceCanvasEvent =
   | { type: 'WS_CONNECT' }
   | { type: 'WS_CONNECTED' }
   | { type: 'WS_DISCONNECTED'; reason?: string }
-  | { type: 'WS_MESSAGE'; data: unknown }
+  | { type: 'WS_MESSAGE'; data: any }
   | { type: 'WS_ERROR'; error: string }
   | { type: 'WS_RETRY_CONNECTION' }
   
@@ -565,7 +565,7 @@ const evidenceCanvasMachine = createMachine<
 }, {
   // Service implementations
   services: {
-    initializeCanvasServices: async (context) => {
+    initializeCanvasServices: async (context): Promise<any> => {
       // Initialize WebGPU capabilities
       let webgpu = null;
       if ('gpu' in navigator) {
@@ -581,7 +581,7 @@ const evidenceCanvasMachine = createMachine<
               limits: adapter.limits
             };
           }
-        } catch (error) {
+        } catch (error: any) {
           console.warn('WebGPU initialization failed:', error);
           webgpu = { available: false, features: [], limits: {} };
         }
@@ -600,14 +600,14 @@ const evidenceCanvasMachine = createMachine<
           ws.onerror = reject;
           setTimeout(reject, 1000); // 1 second timeout
         });
-      } catch (error) {
+      } catch (error: any) {
         console.warn('WebSocket test failed:', error);
       }
       
       return { webgpu, wsConnected };
     },
     
-    loadCanvasData: async (context, event) => {
+    loadCanvasData: async (context, event): Promise<any> => {
       if ('data' in event && event.data) {
         return event.data;
       }
@@ -621,7 +621,7 @@ const evidenceCanvasMachine = createMachine<
       return response.json();
     },
     
-    processEvidenceRequest: async (context, event) => {
+    processEvidenceRequest: async (context, event): Promise<any> => {
       const request = context.processingQueue[0];
       if (!request) {
         throw new Error('No processing request in queue');
@@ -647,7 +647,7 @@ const evidenceCanvasMachine = createMachine<
       return response.json();
     },
     
-    performCanvasAnalysis: async (context, event) => {
+    performCanvasAnalysis: async (context, event): Promise<any> => {
       const canvasData = {
         canvas_json: context.canvas?.toJSON?.() || null,
         evidence_nodes: context.evidenceNodes,
@@ -695,7 +695,7 @@ const evidenceCanvasMachine = createMachine<
       };
     },
     
-    connectToWebSocket: async (context) => {
+    connectToWebSocket: async (context): Promise<any> => {
       return new Promise((resolve, reject) => {
         const ws = new WebSocket('ws://localhost:8090/canvas');
         
@@ -732,7 +732,7 @@ const evidenceCanvasMachine = createMachine<
       }
     },
     
-    saveCanvasData: async (context) => {
+    saveCanvasData: async (context): Promise<any> => {
       const canvasData = {
         canvas_json: context.canvas?.toJSON?.() || null,
         evidence_nodes: context.evidenceNodes,
@@ -761,7 +761,7 @@ const evidenceCanvasMachine = createMachine<
       });
     },
     
-    exportCanvas: async (context, event) => {
+    exportCanvas: async (context, event): Promise<any> => {
       const format = event.format;
       const canvasData = {
         canvas_json: context.canvas?.toJSON?.() || null,
@@ -795,7 +795,7 @@ const evidenceCanvasMachine = createMachine<
       }
     },
     
-    importEvidenceFiles: async (context, event) => {
+    importEvidenceFiles: async (context, event): Promise<any> => {
       const files = event.files;
       for (const file of files) {
         // Process each file

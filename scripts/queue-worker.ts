@@ -4,10 +4,10 @@
 import dotenv from 'dotenv';
 import { and, eq, sql } from 'drizzle-orm';
 import nodemailer from 'nodemailer';
-import { db } from '../src/lib/yorha/db';
-import { achievements, missions, units, userAchievements, userActivity, userMissions } from '../src/lib/yorha/db/schema';
-import { QueueService } from '../src/lib/yorha/services/queue.service';
-import { VectorService } from '../src/lib/yorha/services/vector.service';
+import { db } from '$lib/yorha/db';
+import { achievements, missions, units, userAchievements, userActivity, userMissions } from '$lib/yorha/db/schema';
+import { QueueService } from '$lib/yorha/services/queue.service';
+import { VectorService } from '$lib/yorha/services/vector.service';
 
 dotenv.config();
 
@@ -29,7 +29,7 @@ const emailTransporter = (process.env.SMTP_USER && process.env.SMTP_PASS)
   : null;
 
 // Email processor
-async function processEmailQueue() {
+async function processEmailQueue(): Promise<any> {
   console.log('📧 Starting email queue processor...');
 
   await queueService.consume('email', async (message) => {
@@ -52,7 +52,7 @@ async function processEmailQueue() {
         default:
           console.warn('Unknown email type:', message.type);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Email processing error:', error);
       throw error; // Will cause message to be requeued
     }
@@ -60,7 +60,7 @@ async function processEmailQueue() {
 }
 
 // Achievement processor
-async function processAchievementQueue() {
+async function processAchievementQueue(): Promise<any> {
   console.log('🏆 Starting achievement queue processor...');
 
   await queueService.consume('achievements', async (message) => {
@@ -80,7 +80,7 @@ async function processAchievementQueue() {
         default:
           console.warn('Unknown achievement action:', message.action);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Achievement processing error:', error);
       throw error;
     }
@@ -88,7 +88,7 @@ async function processAchievementQueue() {
 }
 
 // Activity processor
-async function processActivityQueue() {
+async function processActivityQueue(): Promise<any> {
   console.log('📊 Starting activity queue processor...');
 
   await queueService.consume('activity', async (message) => {
@@ -113,7 +113,7 @@ async function processActivityQueue() {
         type: message.type,
         timestamp: message.timestamp
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Activity processing error:', error);
       throw error;
     }
@@ -121,7 +121,7 @@ async function processActivityQueue() {
 }
 
 // Mission processor
-async function processMissionQueue() {
+async function processMissionQueue(): Promise<any> {
   console.log('🎯 Starting mission queue processor...');
 
   await queueService.consume('missions', async (message) => {
@@ -147,7 +147,7 @@ async function processMissionQueue() {
         default:
           console.warn('Unknown mission action:', message.action);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Mission processing error:', error);
       throw error;
     }
@@ -155,7 +155,7 @@ async function processMissionQueue() {
 }
 
 // Vector processing queue
-async function processVectorQueue() {
+async function processVectorQueue(): Promise<any> {
   console.log('🔢 Starting vector processing queue...');
 
   await queueService.consume('vectorProcessing', async (message) => {
@@ -181,7 +181,7 @@ async function processVectorQueue() {
         default:
           console.warn('Unknown vector task type:', message.type);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Vector processing error:', error);
       throw error;
     }
@@ -190,7 +190,7 @@ async function processVectorQueue() {
 
 // Helper functions
 
-async function sendWelcomeEmail(data: unknown) {
+async function sendWelcomeEmail(data: unknown): Promise<any> {
   const html = `
     <!DOCTYPE html>
     <html>
@@ -243,7 +243,7 @@ async function sendWelcomeEmail(data: unknown) {
   console.log(`Welcome email sent to ${data.to}`);
 }
 
-async function sendPasswordResetEmail(data: unknown) {
+async function sendPasswordResetEmail(data: unknown): Promise<any> {
   const html = `
     <!DOCTYPE html>
     <html>
@@ -297,17 +297,17 @@ async function sendPasswordResetEmail(data: unknown) {
   console.log(`Password reset email sent to ${data.to}`);
 }
 
-async function sendAchievementEmail(data: unknown) {
+async function sendAchievementEmail(data: unknown): Promise<any> {
   // Implementation for achievement unlock emails
   console.log('Sending achievement email:', data);
 }
 
-async function sendMissionCompleteEmail(data: unknown) {
+async function sendMissionCompleteEmail(data: unknown): Promise<any> {
   // Implementation for mission completion emails
   console.log('Sending mission complete email:', data);
 }
 
-async function checkAchievements(userId: string, type: string) {
+async function checkAchievements(userId: string, type: string): Promise<any> {
   console.log(`Checking achievements for user ${userId}, type: ${type}`);
 
   // Get user stats
@@ -364,7 +364,7 @@ async function checkAchievements(userId: string, type: string) {
   }
 }
 
-async function unlockAchievement(userId: string, achievementId: string) {
+async function unlockAchievement(userId: string, achievementId: string): Promise<any> {
   console.log(`Unlocking achievement ${achievementId} for user ${userId}`);
 
   // Check if already exists
@@ -426,7 +426,7 @@ async function unlockAchievement(userId: string, achievementId: string) {
   }
 }
 
-async function updateAchievementProgress(userId: string, achievementId: string, progress: number) {
+async function updateAchievementProgress(userId: string, achievementId: string, progress: number): Promise<any> {
   const existing = await db.query.userAchievements.findFirst({
     where: and(
       eq(userAchievements.userId, userId),
@@ -447,7 +447,7 @@ async function updateAchievementProgress(userId: string, achievementId: string, 
   }
 }
 
-async function updateUserStats(userId: string, activityType: string) {
+async function updateUserStats(userId: string, activityType: string): Promise<any> {
   console.log(`Updating stats for user ${userId}, activity: ${activityType}`);
 
   // Update specific stats based on activity type
@@ -484,7 +484,7 @@ async function updateUserStats(userId: string, activityType: string) {
   }
 }
 
-async function checkLevelUp(userId: string) {
+async function checkLevelUp(userId: string): Promise<any> {
   const user = await db.query.units.findFirst({
     where: eq(units.id, userId)
   });
@@ -540,7 +540,7 @@ async function checkLevelUp(userId: string) {
   }
 }
 
-async function startMission(userId: string, missionId: string) {
+async function startMission(userId: string, missionId: string): Promise<any> {
   await db.insert(userMissions).values({
     userId,
     missionId,
@@ -556,7 +556,7 @@ async function startMission(userId: string, missionId: string) {
   });
 }
 
-async function completeMission(userId: string, missionId: string, score: number) {
+async function completeMission(userId: string, missionId: string, score: number): Promise<any> {
   const userMission = await db.query.userMissions.findFirst({
     where: and(
       eq(userMissions.userId, userId),
@@ -598,7 +598,7 @@ async function completeMission(userId: string, missionId: string, score: number)
   await checkLevelUp(userId);
 }
 
-async function abandonMission(userId: string, missionId: string) {
+async function abandonMission(userId: string, missionId: string): Promise<any> {
   await db.update(userMissions)
     .set({ status: 'abandoned' })
     .where(and(
@@ -608,7 +608,7 @@ async function abandonMission(userId: string, missionId: string) {
     ));
 }
 
-async function updateMissionProgress(userId: string, missionId: string, progress: unknown) {
+async function updateMissionProgress(userId: string, missionId: string, progress: unknown): Promise<any> {
   await db.update(userMissions)
     .set({ progress })
     .where(and(
@@ -618,7 +618,7 @@ async function updateMissionProgress(userId: string, missionId: string, progress
     ));
 }
 
-async function generateMissionEmbedding(missionId: string) {
+async function generateMissionEmbedding(missionId: string): Promise<any> {
   const mission = await db.query.missions.findFirst({
     where: eq(missions.id, missionId)
   });
@@ -629,7 +629,7 @@ async function generateMissionEmbedding(missionId: string) {
 }
 
 // Main worker function
-async function startWorker() {
+async function startWorker(): Promise<any> {
   console.log('🚀 Starting YoRHa Queue Worker...');
   console.log('====================================');
 
@@ -659,7 +659,7 @@ async function startWorker() {
       process.exit(0);
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Failed to start queue worker:', error);
     process.exit(1);
   }

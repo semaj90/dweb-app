@@ -149,7 +149,7 @@ export class CompleteServiceRouter {
       
       return isHealthy;
       
-    } catch (error) {
+    } catch (error: any) {
       console.warn(`Health check failed for ${serviceName}:`, error);
       this.healthCache.set(serviceName, { status: false, timestamp: now });
       service.status = 'stopped';
@@ -245,7 +245,7 @@ export class CompleteServiceRouter {
         protocol: 'HTTP'
       };
 
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',

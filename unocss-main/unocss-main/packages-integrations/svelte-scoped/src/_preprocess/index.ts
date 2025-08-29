@@ -81,7 +81,7 @@ export function UnocssSveltePreprocess(options: UnocssSveltePreprocessOptions = 
   }
 }
 
-async function getGenerator(config: UserConfig, unoContextFromVite?: SvelteScopedContext) {
+async function getGenerator(config: UserConfig, unoContextFromVite?: SvelteScopedContext): Promise<any> {
   if (unoContextFromVite) {
     await unoContextFromVite.ready
     return unoContextFromVite.uno

@@ -8,7 +8,7 @@ import { createClient } from 'redis';
 // Redis client for worker communication
 let redisClient: ReturnType<typeof createClient> | null = null;
 
-async function getRedisClient() {
+async function getRedisClient(): Promise<any> {
   if (!redisClient) {
     redisClient = createClient({
       url: process.env.REDIS_URL || 'redis://localhost:6379',
@@ -26,7 +26,7 @@ async function triggerWorkerProcessing(caseId: string, options: {
   userId: string;
   trigger: string;
   metadata?: any;
-}) {
+}): Promise<any> {
   const redis = await getRedisClient();
   const correlationId = `case-${caseId}-${Date.now()}`;
   
@@ -83,7 +83,7 @@ const searchCasesSchema = z.object({
 });
 
 // GET - List cases with advanced search and filtering
-export const GET: RequestHandler = async (event) => {
+export const GET: RequestHandler = async (event: any) => {
   return withApiHandler(async ({ url, locals }) => {
     // Get user from session
     const user = locals.user;
@@ -131,7 +131,7 @@ export const GET: RequestHandler = async (event) => {
           vectorSearchUsed: validatedParams.useVectorSearch
         } : null
       };
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof z.ZodError) {
         throw CommonErrors.ValidationFailed('search parameters', error.errors[0]?.message || 'Invalid parameters');
       }
@@ -141,7 +141,7 @@ export const GET: RequestHandler = async (event) => {
 };
 
 // POST - Create new case
-export const POST: RequestHandler = async (event) => {
+export const POST: RequestHandler = async (event: any) => {
   return withApiHandler(async ({ request, locals }) => {
     // Get authenticated user
     const user = locals.user;
@@ -190,7 +190,7 @@ export const POST: RequestHandler = async (event) => {
           timestamp: new Date().toISOString()
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof Error && error.message.includes('duplicate')) {
         throw CommonErrors.BadRequest('Case with similar details already exists');
       }
@@ -202,7 +202,7 @@ export const POST: RequestHandler = async (event) => {
 // Additional endpoints
 
 // PUT - Update existing case
-export const PUT: RequestHandler = async (event) => {
+export const PUT: RequestHandler = async (event: any) => {
   return withApiHandler(async ({ request, url, locals }) => {
     const user = locals.user;
     if (!user) {
@@ -225,7 +225,7 @@ export const PUT: RequestHandler = async (event) => {
         case: updatedCase,
         message: 'Case updated successfully'
       };
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof Error && error.message.includes('not found')) {
         throw CommonErrors.NotFound('Case');
       }

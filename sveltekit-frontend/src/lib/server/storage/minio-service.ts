@@ -75,7 +75,7 @@ export class MinIOService {
         region: MINIO_CONFIG.region
       });
       console.log('📦 MinIO client initialized with endpoint:', `${MINIO_CONFIG.useSSL ? 'https' : 'http'}://${MINIO_CONFIG.endPoint}:${MINIO_CONFIG.port}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ MinIO client initialization failed:', error);
       throw error;
     }
@@ -106,7 +106,7 @@ export class MinIOService {
       this.isInitialized = true;
       console.log('✅ MinIO service fully initialized with', bucketsArray.length, 'buckets');
       return true;
-    } catch (error) {
+    } catch (error: any) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       
       // Enhanced error diagnosis
@@ -132,7 +132,7 @@ export class MinIOService {
           await this.client.makeBucket(bucket, MINIO_CONFIG.region);
           console.log(`✅ Created bucket: ${bucket}`);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error(`❌ Failed to create bucket ${bucket}:`, error);
       }
     }
@@ -197,7 +197,7 @@ export class MinIOService {
         metadata
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('File upload error:', error);
       return {
         success: false,
@@ -215,7 +215,7 @@ export class MinIOService {
   async getFileUrl(bucket: string, fileName: string, expires: number = 24 * 60 * 60): Promise<string> {
     try {
       return await this.client.presignedGetObject(bucket, fileName, expires);
-    } catch (error) {
+    } catch (error: any) {
       console.error('URL generation error:', error);
       return '';
     }
@@ -225,7 +225,7 @@ export class MinIOService {
     try {
       await this.client.removeObject(bucket, fileName);
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('File deletion error:', error);
       return false;
     }
@@ -270,7 +270,7 @@ export class MinIOService {
         }
       };
       
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: 'unhealthy',
         details: {

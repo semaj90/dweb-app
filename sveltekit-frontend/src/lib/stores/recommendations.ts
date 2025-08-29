@@ -197,7 +197,7 @@ export const recommendationActions = {
         isAnalyzing: false
       }));
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Recommendation generation failed:', error);
       recommendationStore.update(state => ({
         ...state,
@@ -234,7 +234,7 @@ export const recommendationActions = {
         behaviorInsights: response.insights || state.behaviorInsights
       }));
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Behavior analysis failed:', error);
     }
   },
@@ -262,7 +262,7 @@ export const recommendationActions = {
         activeRecommendations: state.activeRecommendations.filter(r => r.id !== recommendationId)
       }));
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to accept recommendation:', error);
     }
   },
@@ -290,7 +290,7 @@ export const recommendationActions = {
         };
       });
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to dismiss recommendation:', error);
     }
   },
@@ -313,7 +313,7 @@ export const recommendationActions = {
         behaviorInsights: response.insights || state.behaviorInsights
       }));
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load user analytics:', error);
       recommendationStore.update(state => ({
         ...state,
@@ -367,7 +367,7 @@ export const recommendationActions = {
         }
       }));
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to check models status:', error);
     }
   },

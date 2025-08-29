@@ -19,7 +19,7 @@ export class AIAssistant {
       });
       const data = await response.json();
       this.response.set(data.response);
-    } catch (error) {
+    } catch (error: any) {
       this.response.set("Error connecting to AI");
     } finally {
       this.isLoading.set(false);

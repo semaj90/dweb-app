@@ -7,7 +7,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { db } from '$lib/server/db';
-import { 
+import {
   users, userProfiles, cases, criminals, evidence, legalDocuments,
   reports, personsOfInterest, ragMessages, ragSessions,
   contentEmbeddings, caseEmbeddings, evidenceVectors, userAiQueries
@@ -16,9 +16,61 @@ import { eq, desc, asc, like, sql, and, or } from 'drizzle-orm';
 import { apiOrchestrator } from '$lib/services/api-orchestrator';
 
 // Entity mapping for dynamic CRUD operations
+// Small helpers used by the request handlers below:
+// - validate entity names
+// - resolve a table for an entity
+// - build simple WHERE clauses from filters
+// - build lightweight text-search clauses for common entities
+
+function isValidEntity(name?: string | null): boolean {
+  return !!name && !!(entityMap as any)?.[name];
+}
+
+function getTableForEntity(entity: string) {
+  if (!entity) throw new Error('Entity required');
+  const table = (entityMap as any)[entity];
+  if (!table) throw new Error(`Unknown entity: ${entity}`);
+  return table;
+}
+
+// Convert a simple filters object into an array of drizzle WHERE conditions.
+// - Strings containing '%' are treated as LIKE patterns.
+// - Other values use equality.
+function buildWhereClauses(filters: Record<string, any> | undefined, table: any) {
+  if (!filters || typeof filters !== 'object') return [];
+  return Object.entries(filters).flatMap(([key, value]) => {
+    if (value === undefined || value === null) return [];
+    // @ts-ignore dynamic column access
+    const column = table[key];
+    if (!column) return [];
+    if (typeof value === 'string' && value.includes('%')) {
+      return [like(column, value)];
+    }
+    return [eq(column, value)];
+  });
+}
+
+// Lightweight text-search clause builder used in list/search handlers.
+// Returns an array of drizzle conditions (often a single `or(...)`) or [].
+function buildSearchClause(entity: string, query: string, table: any) {
+  if (!query) return [];
+  if (entity === 'cases') {
+    // @ts-ignore
+    return [or(like(table.title, `%${query}%`), like(table.description, `%${query}%`), like(table.status, `%${query}%`))];
+  }
+  if (entity === 'evidence') {
+    // @ts-ignore
+    return [or(like(table.title, `%${query}%`), like(table.description, `%${query}%`), like(table.evidenceType, `%${query}%`))];
+  }
+  if (entity === 'legalDocuments') {
+    // @ts-ignore
+    return [or(like(table.title, `%${query}%`), like(table.content, `%${query}%`), like(table.documentType, `%${query}%`))];
+  }
+  return [];
+}
 const entityMap = {
   users,
-  userProfiles, 
+  userProfiles,
   cases,
   criminals,
   evidence,
@@ -35,17 +87,17 @@ const entityMap = {
 
 type EntityName = keyof typeof entityMap;
 
-interface CrudRequest {
+export interface CrudRequest {
   action: 'create' | 'read' | 'update' | 'delete' | 'list' | 'search' | 'vector_search';
   entity: EntityName;
   id?: string;
   data?: any;
   filters?: Record<string, any>;
-  pagination?: { 
-    page?: number; 
-    limit?: number; 
-    sortBy?: string; 
-    sortOrder?: 'asc' | 'desc' 
+  pagination?: {
+    page?: number;
+    limit?: number;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc'
   };
   search?: {
     query: string;
@@ -55,7 +107,7 @@ interface CrudRequest {
   };
 }
 
-interface ApiResponse<T = any> {
+export interface ApiResponse<T = any> {
   success: boolean;
   data?: T;
   error?: string;
@@ -70,7 +122,7 @@ interface ApiResponse<T = any> {
 
 export const GET: RequestHandler = async ({ url, request }) => {
   const startTime = Date.now();
-  
+
   try {
     // Parse query parameters for GET requests
     const entity = url.searchParams.get('entity') as EntityName;
@@ -83,8 +135,8 @@ export const GET: RequestHandler = async ({ url, request }) => {
     const searchQuery = url.searchParams.get('search');
 
     if (!entity || !entityMap[entity]) {
-      return error(400, { 
-        message: `Invalid entity: ${entity}. Available: ${Object.keys(entityMap).join(', ')}` 
+      return error(400, {
+        message: `Invalid entity: ${entity}. Available: ${Object.keys(entityMap).join(', ')}`
       });
     }
 
@@ -94,12 +146,12 @@ export const GET: RequestHandler = async ({ url, request }) => {
     switch (action) {
       case 'read':
         if (!id) return error(400, { message: 'ID required for read operation' });
-        
+
         result = await db.select().from(table).where(eq(table.id, id)).limit(1);
         if (result.length === 0) {
           return error(404, { message: `${entity} with ID ${id} not found` });
         }
-        
+
         return json({
           success: true,
           data: result[0],
@@ -119,7 +171,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
 
         // Get paginated results
         const query = db.select().from(table).orderBy(orderBy).limit(limit).offset(offset);
-        
+
         // Add search if provided
         if (searchQuery && entity === 'cases') {
           query.where(
@@ -152,10 +204,10 @@ export const GET: RequestHandler = async ({ url, request }) => {
 
       case 'search':
         if (!searchQuery) return error(400, { message: 'Search query required' });
-        
+
         // Basic text search for now - can be enhanced with vector search
         let searchResult: any[] = [];
-        
+
         if (entity === 'cases') {
           searchResult = await db.select().from(cases)
             .where(
@@ -199,7 +251,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
 
       case 'vector_search':
         if (!searchQuery) return error(400, { message: 'Search query required for vector search' });
-        
+
         // Use the API orchestrator to perform vector search via Go services
         try {
           const vectorResponse = await apiOrchestrator.routeRequest(
@@ -235,15 +287,15 @@ export const GET: RequestHandler = async ({ url, request }) => {
 
         } catch (vectorError) {
           console.error('Vector search error:', vectorError);
-          
+
           // Fallback to regular search if vector search fails
           return json({
             success: true,
             data: [],
             error: 'Vector search unavailable, falling back to text search',
-            metadata: { 
+            metadata: {
               processingTime: Date.now() - startTime,
-              fallback: true 
+              fallback: true
             }
           } satisfies ApiResponse);
         }
@@ -252,9 +304,9 @@ export const GET: RequestHandler = async ({ url, request }) => {
         return error(400, { message: `Invalid action: ${action}` });
     }
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('CRUD GET error:', err);
-    return error(500, { 
+    return error(500, {
       message: 'Internal server error',
       details: err instanceof Error ? err.message : String(err)
     });
@@ -263,14 +315,14 @@ export const GET: RequestHandler = async ({ url, request }) => {
 
 export const POST: RequestHandler = async ({ request }) => {
   const startTime = Date.now();
-  
+
   try {
     const body: CrudRequest = await request.json();
     const { action, entity, data, id } = body;
 
     if (!entity || !entityMap[entity]) {
-      return error(400, { 
-        message: `Invalid entity: ${entity}. Available: ${Object.keys(entityMap).join(', ')}` 
+      return error(400, {
+        message: `Invalid entity: ${entity}. Available: ${Object.keys(entityMap).join(', ')}`
       });
     }
 
@@ -280,7 +332,7 @@ export const POST: RequestHandler = async ({ request }) => {
     switch (action) {
       case 'create':
         if (!data) return error(400, { message: 'Data required for create operation' });
-        
+
         // Add timestamps for create
         const createData = {
           ...data,
@@ -321,7 +373,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
       case 'update':
         if (!id || !data) return error(400, { message: 'ID and data required for update operation' });
-        
+
         // Add updated timestamp
         const updateData = {
           ...data,
@@ -342,7 +394,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
       case 'delete':
         if (!id) return error(400, { message: 'ID required for delete operation' });
-        
+
         result = await db.delete(table).where(eq(table.id, id)).returning();
 
         if (result.length === 0) {
@@ -359,9 +411,9 @@ export const POST: RequestHandler = async ({ request }) => {
         return error(400, { message: `Invalid action: ${action}` });
     }
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('CRUD POST error:', err);
-    return error(500, { 
+    return error(500, {
       message: 'Internal server error',
       details: err instanceof Error ? err.message : String(err)
     });
@@ -372,7 +424,7 @@ export const PUT: RequestHandler = async ({ request, url }) => {
   // PUT maps to update action
   const body = await request.json();
   const id = url.searchParams.get('id') || body.id;
-  
+
   return POST({
     request: new Request(request.url, {
       method: 'POST',

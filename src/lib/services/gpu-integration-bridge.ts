@@ -162,7 +162,7 @@ export class GPUIntegrationBridge {
         }
       };
 
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         documentId: '',
@@ -254,7 +254,7 @@ export class GPUIntegrationBridge {
         }
       };
 
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         answer: `Error processing query: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -327,7 +327,7 @@ export class GPUIntegrationBridge {
   /**
    * Get comprehensive processing statistics
    */
-  async getProcessingStats() {
+  async getProcessingStats(): Promise<any> {
     const [
       cacheStats,
       queueStats,

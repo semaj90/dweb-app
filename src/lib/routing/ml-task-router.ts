@@ -36,7 +36,7 @@ export interface TaskRequest {
     id: string;
     type: string;
     priority: 'low' | 'medium' | 'high' | 'urgent';
-    payload: unknown;
+    payload: any;
     metadata: {
         userAgent?: string;
         sessionId?: string;
@@ -125,7 +125,7 @@ export class MLTaskRouter extends EventEmitter {
     /**
      * Start the ML task routing system
      */
-    async start(): Promise<void> {
+    async start(): Promise<any> {
         try {
             console.log('🧠 Starting ML Task Routing System...');
 
@@ -159,7 +159,7 @@ export class MLTaskRouter extends EventEmitter {
                 timestamp: new Date()
             });
 
-        } catch (error) {
+        } catch (error: any) {
             console.error('❌ Failed to start ML task routing system:', error);
             throw error;
         }
@@ -220,7 +220,7 @@ export class MLTaskRouter extends EventEmitter {
             
             return finalDecision;
 
-        } catch (error) {
+        } catch (error: any) {
             console.error(`❌ Failed to route task ${task.id}:`, error);
             
             // Fallback routing
@@ -272,7 +272,7 @@ export class MLTaskRouter extends EventEmitter {
             
             return result;
 
-        } catch (error) {
+        } catch (error: any) {
             const executionTime = performance.now() - startTime;
             
             console.error(`❌ Task ${task.id} failed:`, error);
@@ -489,7 +489,7 @@ export class MLTaskRouter extends EventEmitter {
     /**
      * Discover available services
      */
-    private async discoverServices(): Promise<void> {
+    private async discoverServices(): Promise<any> {
         console.log('🔍 Discovering available services...');
 
         const healthCheckPromises = Array.from(this.services.values()).map(service =>
@@ -537,7 +537,7 @@ export class MLTaskRouter extends EventEmitter {
             });
             return response.ok;
 
-        } catch (error) {
+        } catch (error: any) {
             console.error(`Health check failed for ${service.name}:`, error);
             return false;
         }
@@ -887,7 +887,7 @@ export class MLTaskRouter extends EventEmitter {
     /**
      * Handle service scaling events
      */
-    private handleServiceScaling(scalingData: unknown): void {
+    private handleServiceScaling(scalingData: any): void {
         console.log('📈 Handling service scaling:', scalingData);
         
         // Update service capacities based on scaling events
@@ -932,7 +932,7 @@ export class MLTaskRouter extends EventEmitter {
         return await advancedCacheManager.get(cacheKey) as RoutingDecision | null;
     }
 
-    private async cacheRoutingDecision(task: TaskRequest, decision: RoutingDecision): Promise<void> {
+    private async cacheRoutingDecision(task: TaskRequest, decision: RoutingDecision): Promise<any> {
         const cacheKey = `routing:${task.type}:${JSON.stringify(task.features)}`;
         await advancedCacheManager.set(cacheKey, decision, { ttl: this.config.routingCacheTimeout });
     }
@@ -942,7 +942,7 @@ export class MLTaskRouter extends EventEmitter {
         this.analytics.averageRoutingTime = (this.analytics.averageRoutingTime + routingTime) / 2;
     }
 
-    private async updateTaskMetrics(task: TaskRequest, decision: RoutingDecision, metrics: unknown): Promise<void> {
+    private async updateTaskMetrics(task: TaskRequest, decision: RoutingDecision, metrics: any): Promise<any> {
         const serviceMetrics = this.taskHistory.get(decision.selectedService.id) || [];
         serviceMetrics.push({
             taskId: task.id,
@@ -961,7 +961,7 @@ export class MLTaskRouter extends EventEmitter {
         this.taskHistory.set(decision.selectedService.id, serviceMetrics);
     }
 
-    private async updateRoutingModel(task: TaskRequest, decision: RoutingDecision, outcome: unknown): Promise<void> {
+    private async updateRoutingModel(task: TaskRequest, decision: RoutingDecision, outcome: any): Promise<any> {
         const model = this.routingModels.get(decision.routingMetadata?.modelUsed);
         if (model) {
             model.predictions++;
@@ -970,16 +970,16 @@ export class MLTaskRouter extends EventEmitter {
         }
     }
 
-    private estimateResponseSize(result: unknown): number {
+    private estimateResponseSize(result: any): number {
         return JSON.stringify(result).length;
     }
 
-    private handleCacheMetrics(metrics: unknown): void {
+    private handleCacheMetrics(metrics: any): void {
         // Use cache metrics to inform routing decisions
         this.analytics.cacheHitRate = metrics.hitRate;
     }
 
-    private async trainInitialModels(): Promise<void> {
+    private async trainInitialModels(): Promise<any> {
         console.log('🧠 Training initial ML routing models...');
         // In production, this would load historical data and train models
         console.log('✅ Initial model training completed');
@@ -997,12 +997,12 @@ export class MLTaskRouter extends EventEmitter {
         }, this.config.metricsCollectionInterval);
     }
 
-    private async updateModelsWithRecentData(): Promise<void> {
+    private async updateModelsWithRecentData(): Promise<any> {
         // Update models with recent performance data
         console.log('🔄 Updating ML models with recent data...');
     }
 
-    private async collectAndEmitMetrics(): Promise<void> {
+    private async collectAndEmitMetrics(): Promise<any> {
         const metrics = {
             ...this.analytics,
             services: Object.fromEntries(
@@ -1145,11 +1145,11 @@ class PriorityQueueManager {
 
     constructor(private config: RoutingConfig) {}
 
-    async start(): Promise<void> {
+    async start(): Promise<any> {
         console.log('📋 Priority queue manager started');
     }
 
-    async enqueue(task: TaskRequest, decision: RoutingDecision): Promise<void> {
+    async enqueue(task: TaskRequest, decision: RoutingDecision): Promise<any> {
         const queueKey = `${task.type}:${decision.selectedService.id}`;
         const queue = this.queues.get(queueKey) || [];
         
@@ -1192,7 +1192,7 @@ class PriorityQueueManager {
 class RoutingPerformanceTracker {
     constructor(private config: RoutingConfig) {}
 
-    async start(): Promise<void> {
+    async start(): Promise<any> {
         console.log('📊 Routing performance tracker started');
     }
 }

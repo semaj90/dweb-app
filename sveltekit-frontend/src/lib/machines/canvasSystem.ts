@@ -6,7 +6,7 @@ import type {
   InteractiveCanvasState,
 } from "$lib/types/canvas";
 
-interface CanvasContext {
+export interface CanvasContext {
   nodes: CanvasNode[];
   connections: CanvasConnection[];
   selectedNode: string | null;

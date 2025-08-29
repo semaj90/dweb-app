@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * CUDA GPU Acceleration System
  *
@@ -34,7 +33,7 @@ export type GPUDevice = {
     powerLimit: number;
     temperature: number;
     utilization: { gpu: number; memory: number; encoder: number; decoder: number };
-    processes: unknown[];
+    processes: any[];
     isAvailable: boolean;
     lastActivity: Date;
 };
@@ -42,8 +41,8 @@ export type GPUDevice = {
 export type GPUWorkload = {
     type: string;
     memoryRequirement: number;
-    inputData: unknown;
-    parameters?: unknown;
+    inputData: any;
+    parameters?: any;
     priority?: 'low' | 'normal' | 'high' | 'urgent';
     estimatedDuration?: number;
 };
@@ -59,7 +58,7 @@ export type GPUMemoryStats = {
     poolMemory: number;
     cacheMemory: number;
     peakUsage: number;
-    allocations: unknown[];
+    allocations: any[];
     fragmentationRatio: number;
     allocationCount: number;
     deallocationCount: number;
@@ -82,9 +81,9 @@ export type BatchProcessingJob = {
     id: string;
     type: string;
     deviceId: number;
-    memoryAllocation: unknown;
-    inputData: unknown;
-    parameters?: unknown;
+    memoryAllocation: any;
+    inputData: any;
+    parameters?: any;
     priority: string;
     estimatedDuration: number;
     createdAt: Date;
@@ -128,7 +127,7 @@ export interface GPUWorkloadQueue {
     memoryRequirement: number;
     preferredDevice?: number;
     dependencies?: string[];
-    callback?: (result: unknown) => void;
+    callback?: (result: any) => void;
 }
 
 export class CUDAAccelerator extends EventEmitter {
@@ -171,7 +170,7 @@ export class CUDAAccelerator extends EventEmitter {
     /**
      * Initialize CUDA subsystem and GPU devices
      */
-    async initialize(): Promise<void> {
+    async initialize(): Promise<any> {
         if (this.isInitialized) {
             console.log('⚠️ CUDA accelerator already initialized');
             return;
@@ -215,7 +214,7 @@ export class CUDAAccelerator extends EventEmitter {
                 timestamp: new Date()
             });
 
-        } catch (error) {
+        } catch (error: any) {
             console.error('❌ Failed to initialize CUDA acceleration:', error);
             throw error;
         }
@@ -224,7 +223,7 @@ export class CUDAAccelerator extends EventEmitter {
     /**
      * Detect and configure available GPU devices
      */
-    private async detectGPUDevices(): Promise<void> {
+    private async detectGPUDevices(): Promise<any> {
         // Simulate GPU device detection - in production would use actual CUDA APIs
         const simulatedDevices = Array.from({ length: this.config.deviceCount }, (_, i) => ({
             id: i,
@@ -264,7 +263,7 @@ export class CUDAAccelerator extends EventEmitter {
     /**
      * Initialize memory pools for each GPU device
      */
-    private async initializeMemoryPools(): Promise<void> {
+    private async initializeMemoryPools(): Promise<any> {
         for (const [deviceId, device] of this.devices) {
             const memoryStats: GPUMemoryStats = {
                 deviceId,
@@ -293,7 +292,7 @@ export class CUDAAccelerator extends EventEmitter {
     /**
      * Load essential CUDA kernels for AI workloads
      */
-    private async loadEssentialKernels(): Promise<void> {
+    private async loadEssentialKernels(): Promise<any> {
         const essentialKernels = [
             this.createMatrixMultiplicationKernel(),
             this.createVectorAdditionKernel(),
@@ -414,7 +413,7 @@ export class CUDAAccelerator extends EventEmitter {
                 performanceMetrics: this.getDeviceMetrics(deviceId)
             };
 
-        } catch (error) {
+        } catch (error: any) {
             console.error(`❌ GPU workload execution failed (${jobId}):`, error);
 
             // Clean up failed job
@@ -450,7 +449,7 @@ export class CUDAAccelerator extends EventEmitter {
 
             // Execute workloads in parallel across available GPUs
             const batchResults = await Promise.allSettled(
-                Object.entries(groupedWorkloads).map(async ([type, typeWorkloads]) => {
+                Object.entries(groupedWorkloads).map(async ([type, typeWorkloads]): Promise<any> => {
                     if (this.config.enableMultiGPU && this.devices.size > 1) {
                         return this.executeBatchMultiGPU(type, typeWorkloads);
                     } else {
@@ -481,7 +480,7 @@ export class CUDAAccelerator extends EventEmitter {
 
             return results;
 
-        } catch (error) {
+        } catch (error: any) {
             console.error(`❌ Batch processing failed (${batchId}):`, error);
             throw error;
         }
@@ -759,7 +758,7 @@ export class CUDAAccelerator extends EventEmitter {
     /**
      * Collect performance metrics from all devices
      */
-    private async collectPerformanceMetrics(): Promise<void> {
+    private async collectPerformanceMetrics(): Promise<any> {
         for (const [deviceId, device] of this.devices) {
             const memoryStats = this.memoryPools.get(deviceId);
 
@@ -815,7 +814,7 @@ export class CUDAAccelerator extends EventEmitter {
      * Helper Methods
      */
 
-    private async compileKernel(kernel: CUDAKernel): Promise<void> {
+    private async compileKernel(kernel: CUDAKernel): Promise<any> {
         // Simulate kernel compilation
         await new Promise(resolve => setTimeout(resolve, 100));
         kernel.compiled = true;
@@ -977,7 +976,7 @@ export class CUDAAccelerator extends EventEmitter {
         return results.flat();
     }
 
-    private simulateGEMM(matrixA: unknown, matrixB: unknown, alpha: number, beta: number): unknown {
+    private simulateGEMM(matrixA: any, matrixB: any, alpha: number, beta: number): any {
         // Simulate GEMM operation
         return {
             rows: matrixA.rows,
@@ -986,22 +985,22 @@ export class CUDAAccelerator extends EventEmitter {
         };
     }
 
-    private async executeLinearLayer(input: unknown, layer: unknown): Promise<any> {
+    private async executeLinearLayer(input: any, layer: any): Promise<any> {
         // Simulate linear layer computation
         return input.map(x => x * layer.weight + layer.bias);
     }
 
-    private async executeConvolutionLayer(input: unknown, layer: unknown): Promise<any> {
+    private async executeConvolutionLayer(input: any, layer: any): Promise<any> {
         // Simulate convolution layer
         return input;
     }
 
-    private async executeAttentionLayer(input: unknown, layer: unknown): Promise<any> {
+    private async executeAttentionLayer(input: any, layer: any): Promise<any> {
         // Simulate attention layer
         return input;
     }
 
-    private async executeActivationLayer(input: unknown, activation: string): Promise<any> {
+    private async executeActivationLayer(input: any, activation: string): Promise<any> {
         switch (activation) {
             case 'relu':
                 return input.map(x => Math.max(0, x));
@@ -1038,7 +1037,7 @@ export class CUDAAccelerator extends EventEmitter {
         return activeDeviceJobs.length * 1000; // Simplified calculation
     }
 
-    private async updateDeviceUtilization(deviceId: number, executionTime: number): Promise<void> {
+    private async updateDeviceUtilization(deviceId: number, executionTime: number): Promise<any> {
         const device = this.devices.get(deviceId);
         if (device) {
             // Update utilization based on execution time
@@ -1054,7 +1053,7 @@ export class CUDAAccelerator extends EventEmitter {
         return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
     }
 
-    private getDeviceMetrics(deviceId: number): unknown {
+    private getDeviceMetrics(deviceId: number): any {
         return this.performanceMetrics
             .filter(m => m.deviceId === deviceId)
             .slice(-10); // Last 10 metrics
@@ -1063,7 +1062,7 @@ export class CUDAAccelerator extends EventEmitter {
     /**
      * Get system status
      */
-    getStatus(): unknown {
+    getStatus(): any {
         return {
             initialized: this.isInitialized,
             deviceCount: this.devices.size,
@@ -1093,7 +1092,7 @@ export class CUDAAccelerator extends EventEmitter {
     /**
      * Shutdown CUDA accelerator
      */
-    async shutdown(): Promise<void> {
+    async shutdown(): Promise<any> {
         if (!this.isInitialized) return;
 
         console.log('🛑 Shutting down CUDA accelerator...');
@@ -1127,7 +1126,7 @@ class GPULoadBalancer {
         this.config = config;
     }
 
-    async initialize(devices: Map<number, GPUDevice>): Promise<void> {
+    async initialize(devices: Map<number, GPUDevice>): Promise<any> {
         this.devices = devices;
     }
 
@@ -1178,7 +1177,7 @@ class GPUMemoryManager {
         this.config = config;
     }
 
-    async initializePool(deviceId: number, poolSize: number): Promise<void> {
+    async initializePool(deviceId: number, poolSize: number): Promise<any> {
         // Initialize memory pool for device
         console.log(`💾 Initializing memory pool for device ${deviceId}: ${poolSize} bytes`);
     }
@@ -1197,11 +1196,11 @@ class GPUMemoryManager {
         return allocation;
     }
 
-    async deallocateMemory(deviceId: number, allocationId: string): Promise<void> {
+    async deallocateMemory(deviceId: number, allocationId: string): Promise<any> {
         this.allocations.delete(allocationId);
     }
 
-    async cleanupPool(deviceId: number): Promise<void> {
+    async cleanupPool(deviceId: number): Promise<any> {
         // Clean up memory pool for device
         const deviceAllocations = Array.from(this.allocations.values())
             .filter(alloc => alloc.deviceId === deviceId);
@@ -1217,19 +1216,19 @@ class GPUMemoryManager {
  */
 class GPUProfiler {
     private config: CUDAAcceleratorConfig;
-    private profileData: unknown[] = [];
+    private profileData: any[] = [];
 
     constructor(config: CUDAAcceleratorConfig) {
         this.config = config;
     }
 
-    async initialize(): Promise<void> {
+    async initialize(): Promise<any> {
         if (this.config.enableProfiling) {
             console.log('📊 GPU profiler initialized');
         }
     }
 
-    async recordExecution(job: BatchProcessingJob, executionTime: number, result: unknown): Promise<void> {
+    async recordExecution(job: BatchProcessingJob, executionTime: number, result: any): Promise<any> {
         if (!this.config.enableProfiling) return;
 
         const profile = {
@@ -1250,7 +1249,7 @@ class GPUProfiler {
         }
     }
 
-    getProfileData(): unknown[] {
+    getProfileData(): any[] {
         return this.profileData;
     }
 }
@@ -1270,7 +1269,7 @@ export class GPUOrchestratorClient {
     /**
      * Initialize connection to GPU orchestrator
      */
-    async initialize(): Promise<void> {
+    async initialize(): Promise<any> {
         try {
             const response = await fetch(`${this.baseUrl}/health`);
             if (response.ok) {
@@ -1280,7 +1279,7 @@ export class GPUOrchestratorClient {
             } else {
                 throw new Error(`GPU Orchestrator unavailable: ${response.status}`);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('❌ GPU Orchestrator connection failed:', error);
             this.isConnected = false;
             throw error;
@@ -1418,7 +1417,7 @@ export class GPUOrchestratorClient {
     /**
      * Cleanup resources
      */
-    async shutdown(): Promise<void> {
+    async shutdown(): Promise<any> {
         // Wait for active jobs to complete
         if (this.activeJobs.size > 0) {
             console.log(`🔄 Waiting for ${this.activeJobs.size} active jobs to complete...`);
@@ -1435,11 +1434,11 @@ export class GPUOrchestratorClient {
 export const cudaAccelerator = new GPUOrchestratorClient();
 
 // Legacy compatibility - initialize the new orchestrator client
-export const initializeGPUAcceleration = async () => {
+export const initializeGPUAcceleration = async (): Promise<any> => {
     try {
         await cudaAccelerator.initialize();
         return true;
-    } catch (error) {
+    } catch (error: any) {
         console.error('GPU acceleration initialization failed:', error);
         return false;
     }

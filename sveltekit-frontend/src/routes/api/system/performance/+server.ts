@@ -3,7 +3,7 @@ import { json } from '@sveltejs/kit';
 import { productionLogger } from '$lib/server/production-logger';
 import os from "os";
 
-interface PerformanceMetrics {
+export interface PerformanceMetrics {
   timestamp: string;
   system: {
     uptime: number;
@@ -221,7 +221,7 @@ export const GET: RequestHandler = async ({ url }) => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     productionLogger.error('Performance metrics collection failed', {
       error: error instanceof Error ? error.message : 'Unknown error',
       processingTime: Date.now() - startTime,
@@ -237,7 +237,7 @@ export const GET: RequestHandler = async ({ url }) => {
 };
 
 // Gather Legal AI Platform specific metrics
-async function gatherPlatformMetrics() {
+async function gatherPlatformMetrics(): Promise<any> {
   // Simulate service health checks and metrics
   return {
     services: {
@@ -290,7 +290,7 @@ async function gatherPlatformMetrics() {
 }
 
 // Run performance benchmarks
-async function runPerformanceBenchmarks() {
+async function runPerformanceBenchmarks(): Promise<any> {
   const startTime = Date.now();
   
   // Simulate various performance tests
@@ -454,7 +454,7 @@ export const POST: RequestHandler = async ({ request }) => {
           availableActions: ['gc', 'benchmark', 'clear_cache'],
         }, { status: 400 });
     }
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: 'Performance action failed',

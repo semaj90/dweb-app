@@ -5,14 +5,14 @@
 
 import type { LegalDocument } from './types/legal';
 
-interface SummaryRequest {
+export interface SummaryRequest {
   documents: LegalDocument[];
   query?: string;
   maxLength?: number;
   diversityLambda?: number;
 }
 
-interface SummaryResult {
+export interface SummaryResult {
   summary: string;
   selectedSentences?: string[];
   relevanceScores?: number[];
@@ -31,7 +31,7 @@ interface SummaryResult {
   };
 }
 
-interface MMRConfig {
+export interface MMRConfig {
   lambda: number; // Balance between relevance and diversity (0.0 to 1.0)
   maxSummaryLength: number; // Maximum characters in summary
   maxSentences: number; // Maximum sentences to include
@@ -39,7 +39,7 @@ interface MMRConfig {
   relevanceWeight: number; // Weight for relevance scoring
 }
 
-interface ScoredSentence {
+export interface ScoredSentence {
   text: string;
   relevanceScore: number;
   diversityScore: number;
@@ -97,7 +97,7 @@ export class MMRSummaryGenerator {
           ...summary.metadata,
         },
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('[MMR] Summary generation failed:', error);
       throw new Error(`MMR summary generation failed: ${error.message}`);
     }
@@ -116,7 +116,7 @@ export class MMRSummaryGenerator {
         docSentences.forEach((sentence, index) => {
           sentences.push(`${doc.id}:${index}:${sentence}`);
         });
-      } catch (error) {
+      } catch (error: any) {
         console.warn('[MMR] Fallback to basic splitting for doc:', doc.id);
         // Fallback to basic sentence splitting
         const basicSentences = doc.content.split(/[.!?]+/).filter((s) => s.trim().length > 10);
@@ -300,7 +300,7 @@ export class MMRSummaryGenerator {
           return embeddings;
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('[MMR] Embedding generation failed, using lexical similarity');
     }
 
@@ -436,7 +436,7 @@ export async function testMMRSummaryGeneration(): Promise<boolean> {
     });
 
     return isValid;
-  } catch (error) {
+  } catch (error: any) {
     console.error('[test] MMR summary generation failed:', error);
     return false;
   }

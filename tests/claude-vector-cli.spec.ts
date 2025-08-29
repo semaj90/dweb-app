@@ -26,7 +26,7 @@ test.describe('Claude Vector Integration CLI Tests', () => {
     try {
       await dbClient.query(`DELETE FROM documents WHERE file LIKE '%test%' OR file LIKE '%demo%'`);
       await dbClient.query(`DELETE FROM embedding_cache WHERE model LIKE '%test%'`);
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Cleanup warning:', error);
     }
     await dbClient.end();
@@ -200,7 +200,7 @@ This document tests the embedding and indexing functionality.`;
       try {
         await fs.unlink(testFilePath);
         await fs.rmdir(tempDir);
-      } catch (error) {
+      } catch (error: any) {
         console.warn('⚠️ Temp file cleanup failed:', error);
       }
     }
@@ -359,7 +359,7 @@ This document tests the embedding and indexing functionality.`;
           await fs.unlink(path.join(tempDir, file.name));
         }
         await fs.rmdir(tempDir);
-      } catch (error) {
+      } catch (error: any) {
         console.warn('⚠️ Temp directory cleanup failed:', error);
       }
     }
@@ -403,7 +403,7 @@ This document tests the embedding and indexing functionality.`;
       expect(vectorTest.rows[0].distance).toBeDefined();
       console.log(`✅ Vector operations working (test distance: ${vectorTest.rows[0].distance})`);
       
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Vector operations may not be fully configured:', error);
     }
   });

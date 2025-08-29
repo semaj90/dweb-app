@@ -8,10 +8,10 @@ import { redirect } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { users, cases, evidence, legal_documents } from '$lib/server/db/schema-postgres';
 import { eq, desc, sql, count, and, or } from 'drizzle-orm';
-import { getDatabaseHealth } from '../../../lib/database';
+import { getDatabaseHealth } from '$lib/database';
 import { cognitiveCacheManager } from '$lib/services/cognitive-cache-integration';
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load: PageServerLoad = async ({ locals }): Promise<any> => {
   // Authentication check
   if (!locals.user) {
     throw redirect(302, '/login');
@@ -149,7 +149,7 @@ export const load: PageServerLoad = async ({ locals }) => {
         )
         .orderBy(sql`${users.profile_embedding} <=> ${userProfile[0].profileEmbedding}`)
         .limit(5);
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Vector similarity search failed:', error);
       similarProfessionals = [];
     }

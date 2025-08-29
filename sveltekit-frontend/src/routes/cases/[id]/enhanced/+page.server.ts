@@ -28,7 +28,7 @@ export const load: PageServerLoad = async ({ params }) => {
       case: caseData,
       evidence: evidenceList,
     };
-  } catch (err) {
+  } catch (err: any) {
     console.error("Error loading case data:", err);
     throw error(500, "Failed to load case data");
   }

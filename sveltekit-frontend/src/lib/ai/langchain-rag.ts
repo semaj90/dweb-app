@@ -209,7 +209,7 @@ Only return the queries, one per line.`),
         addDocuments: async (docs: LangChainDocumentType[]) => {}
       } as QdrantVectorStore;
       console.log("✅ Legal RAG vector store initialized");
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Failed to initialize vector store:", error);
       throw error;
     }
@@ -340,7 +340,7 @@ Only return the queries, one per line.`),
           usedCompression: useCompression,
         },
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error in RAG query:", error);
       return {
         answer:
@@ -393,7 +393,7 @@ Only return the queries, one per line.`),
         `✅ Indexed ${chunks.length} chunks for document ${metadata.documentId}`
       );
       return (ids as unknown as string[]) || [];
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error indexing document:", error);
       throw new Error(
         `Document indexing failed: ${error instanceof Error ? error.message : "Unknown error"}`
@@ -531,7 +531,7 @@ Only return the queries, one per line.`),
         collectionExists,
         documentsCount: (info as any)?.result?.points_count || 0,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: "unhealthy",
         vectorStoreConnected: !!this.vectorStore,
@@ -586,7 +586,7 @@ Only return the queries, one per line.`),
         documentId,
         chunks: 1,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",
@@ -619,7 +619,7 @@ Only return the queries, one per line.`),
         indexStatus: health.status === "healthy" ? "healthy" : "degraded",
         uptime: Date.now() - process.uptime() * 1000,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to get system stats:", error);
       return {
         documentCount: 0,

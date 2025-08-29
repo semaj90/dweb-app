@@ -21,7 +21,7 @@ if (!databaseUrl) {
 export default defineConfig({
   // ===== SCHEMA DISCOVERY - BEST PRACTICES =====
 
-  // Use only the enhanced schema for clean generation
+  // Use the enhanced unified schema as base
   schema: [
     './src/lib/server/db/enhanced-unified-schema.ts', // Enhanced schema with Qdrant
   ],

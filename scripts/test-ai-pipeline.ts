@@ -13,7 +13,7 @@ import { multiLayerCache } from '../sveltekit-frontend/src/lib/services/multiLay
 import { langChainService } from '../sveltekit-frontend/src/lib/ai/langchain-ollama-service';
 
 // Types
-interface TestResult {
+export interface TestResult {
   name: string;
   success: boolean;
   duration: number;
@@ -21,7 +21,7 @@ interface TestResult {
   details?: unknown;
 }
 
-interface TestSuite {
+export interface TestSuite {
   name: string;
   tests: TestResult[];
   totalTime: number;
@@ -601,7 +601,7 @@ class AITestSuite {
       
       suite.passed++;
       console.log(chalk.green(`  ✓ ${testName} (${Math.round(duration)}ms)`));
-    } catch (error) {
+    } catch (error: any) {
       const duration = performance.now() - testStart;
       
       suite.tests.push({
@@ -631,7 +631,7 @@ class AITestSuite {
 
       // Generate report
       this.generateReport();
-    } catch (error) {
+    } catch (error: any) {
       console.error(chalk.red('\n❌ Test suite failed to complete:'), error);
       process.exit(1);
     }
@@ -721,7 +721,7 @@ class AITestSuite {
 }
 
 // Run the test suite
-async function main() {
+async function main(): Promise<any> {
   const testSuite = new AITestSuite();
   await testSuite.runAllTests();
 }

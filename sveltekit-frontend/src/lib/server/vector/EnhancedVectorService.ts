@@ -11,7 +11,7 @@ import {
   criminals,
   embeddingCache,
   vectorMetadata
-} from "../db/schema-postgres-enhanced.js";
+} from '../db/schema-postgres-enhanced';
 import { eq, sql } from "drizzle-orm";
 
 export class EnhancedVectorService {
@@ -45,7 +45,7 @@ export class EnhancedVectorService {
 
       try {
         await this.qdrant.createPayloadIndex(this.collectionName, "type");
-      } catch (error) {
+      } catch (error: any) {
         console.log("Index for 'type' may already exist");
       }
     }
@@ -151,7 +151,7 @@ export class EnhancedVectorService {
       await this.qdrant.getCollections();
       await this.redis.ping();
       return { qdrant: true, redis: true };
-    } catch (error) {
+    } catch (error: any) {
       return { qdrant: false, redis: false, error: error.message };
     }
   }

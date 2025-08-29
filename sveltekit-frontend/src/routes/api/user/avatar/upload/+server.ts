@@ -95,7 +95,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       avatarUrl,
       message: "Avatar uploaded successfully",
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Avatar upload error:", error);
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error";
@@ -118,7 +118,7 @@ export const DELETE: RequestHandler = async ({ locals }) => {
       success: true,
       message: "Avatar removed successfully",
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Avatar removal error:", error);
     return json({ error: "Removal failed" }, { status: 500 });
   }

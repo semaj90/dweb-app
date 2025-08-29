@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Advanced Multi-Layer Caching System
  * 
@@ -102,7 +101,7 @@ export interface CacheLayerInterface {
     get(key: string): Promise<CacheValue | null>;
     set(key: string, value: CacheValue, ttl?: number): Promise<boolean>;
     delete(key: string): Promise<boolean>;
-    clear(): Promise<void>;
+    clear(): Promise<any>;
     getStats(): Promise<CacheStats>;
     isHealthy(): Promise<boolean>;
 }
@@ -287,7 +286,7 @@ export class AdvancedCacheManager extends EventEmitter {
     /**
      * Start the advanced cache system
      */
-    async start(): Promise<void> {
+    async start(): Promise<any> {
         try {
             console.log('🚀 Starting Advanced Cache Manager...');
 
@@ -324,7 +323,7 @@ export class AdvancedCacheManager extends EventEmitter {
                 timestamp: new Date()
             });
 
-        } catch (error) {
+        } catch (error: any) {
             console.error('❌ Failed to start cache manager:', error);
             throw error;
         }
@@ -387,7 +386,7 @@ export class AdvancedCacheManager extends EventEmitter {
 
             return value;
 
-        } catch (error) {
+        } catch (error: any) {
             console.error(`❌ Cache get error for key ${key}:`, error);
             this.metrics.errors++;
             return null;
@@ -423,13 +422,13 @@ export class AdvancedCacheManager extends EventEmitter {
             const targetLayers = options.layers || await this.selectOptimalLayers(key, 'write', finalValue);
 
             // Execute write strategy
-            const writePromises = targetLayers.map(async (layerName) => {
+            const writePromises = targetLayers.map(async (layerName): Promise<any> => {
                 const layer = this.layers.get(layerName);
                 if (!layer) return false;
 
                 try {
                     return await layer.set(key, finalValue, ttl);
-                } catch (error) {
+                } catch (error: any) {
                     console.error(`❌ Write error to layer ${layerName}:`, error);
                     return false;
                 }
@@ -450,7 +449,7 @@ export class AdvancedCacheManager extends EventEmitter {
 
             return successCount > 0;
 
-        } catch (error) {
+        } catch (error: any) {
             console.error(`❌ Cache set error for key ${key}:`, error);
             this.metrics.errors++;
             return false;
@@ -487,7 +486,7 @@ export class AdvancedCacheManager extends EventEmitter {
 
             return successCount > 0;
 
-        } catch (error) {
+        } catch (error: any) {
             console.error(`❌ Cache delete error for key ${key}:`, error);
             this.metrics.errors++;
             return false;
@@ -547,7 +546,7 @@ export class AdvancedCacheManager extends EventEmitter {
     /**
      * Analyze data characteristics for intelligent caching
      */
-    private analyzeDataCharacteristics(key: string, value?: CacheValue): unknown {
+    private analyzeDataCharacteristics(key: string, value?: CacheValue): any {
         const keyLower = key.toLowerCase();
         const valueSize = value ? JSON.stringify(value).length : 0;
 
@@ -589,7 +588,7 @@ export class AdvancedCacheManager extends EventEmitter {
     /**
      * Promote cached value to higher priority layers
      */
-    private async promoteToHigherLayers(key: string, value: CacheValue, hitLayer: string): Promise<void> {
+    private async promoteToHigherLayers(key: string, value: CacheValue, hitLayer: string): Promise<any> {
         const hitLayerPriority = this.getLayerPriority(hitLayer);
         const higherLayers = Array.from(this.layers.entries())
             .filter(([name, layer]) => this.getLayerPriority(name) < hitLayerPriority)
@@ -599,12 +598,12 @@ export class AdvancedCacheManager extends EventEmitter {
 
         // Promote asynchronously
         Promise.all(
-            higherLayers.map(async (layerName) => {
+            higherLayers.map(async (layerName): Promise<any> => {
                 const layer = this.layers.get(layerName);
                 if (layer) {
                     try {
                         await layer.set(key, value);
-                    } catch (error) {
+                    } catch (error: any) {
                         console.error(`Promotion error to layer ${layerName}:`, error);
                     }
                 }
@@ -634,13 +633,13 @@ export class AdvancedCacheManager extends EventEmitter {
     /**
      * Start individual cache layer
      */
-    private async startCacheLayer(layer: CacheLayerInterface): Promise<void> {
+    private async startCacheLayer(layer: CacheLayerInterface): Promise<any> {
         try {
             if (typeof (layer as any).start === 'function') {
                 await (layer as any).start();
             }
             console.log(`✅ Cache layer ${layer.name} started`);
-        } catch (error) {
+        } catch (error: any) {
             console.error(`❌ Failed to start cache layer ${layer.name}:`, error);
         }
     }
@@ -716,7 +715,7 @@ export class AdvancedCacheManager extends EventEmitter {
     /**
      * Perform initial cache warming
      */
-    private async performCacheWarming(): Promise<void> {
+    private async performCacheWarming(): Promise<any> {
         if (!this.config.enablePredictiveLoading) return;
         
         console.log('🔥 Performing initial cache warming...');
@@ -745,7 +744,7 @@ export class AdvancedCacheManager extends EventEmitter {
     /**
      * Collect and emit metrics
      */
-    private async collectAndEmitMetrics(): Promise<void> {
+    private async collectAndEmitMetrics(): Promise<any> {
         try {
             // Collect layer-specific stats
             const layerStats = new Map();
@@ -763,7 +762,7 @@ export class AdvancedCacheManager extends EventEmitter {
 
             this.emit('metricsCollected', currentMetrics);
 
-        } catch (error) {
+        } catch (error: any) {
             console.error('❌ Error collecting cache metrics:', error);
         }
     }
@@ -771,7 +770,7 @@ export class AdvancedCacheManager extends EventEmitter {
     /**
      * Perform analytics
      */
-    private async performAnalytics(): Promise<void> {
+    private async performAnalytics(): Promise<any> {
         try {
             // Analyze access patterns
             const hotKeys = this.identifyHotKeys();
@@ -788,7 +787,7 @@ export class AdvancedCacheManager extends EventEmitter {
 
             this.emit('analyticsGenerated', analyticsData);
 
-        } catch (error) {
+        } catch (error: any) {
             console.error('❌ Error performing cache analytics:', error);
         }
     }
@@ -814,7 +813,7 @@ export class AdvancedCacheManager extends EventEmitter {
     /**
      * Analyze performance and trigger optimizations
      */
-    private analyzePerformance(metrics: unknown): void {
+    private analyzePerformance(metrics: any): void {
         // Low hit rate analysis
         if (metrics.hitRate < 0.8) {
             console.log(`⚠️ Low cache hit rate detected: ${(metrics.hitRate * 100).toFixed(1)}%`);
@@ -883,7 +882,7 @@ export class AdvancedCacheManager extends EventEmitter {
     /**
      * Identify inefficient patterns
      */
-    private identifyInefficientPatterns(): unknown[] {
+    private identifyInefficientPatterns(): any[] {
         const patterns = [];
         
         // Keys with high miss rates
@@ -903,7 +902,7 @@ export class AdvancedCacheManager extends EventEmitter {
     /**
      * Generate optimization recommendations
      */
-    private generateOptimizationRecommendations(): unknown[] {
+    private generateOptimizationRecommendations(): any[] {
         const recommendations = [];
 
         // Hit rate recommendations
@@ -948,7 +947,7 @@ export class AdvancedCacheManager extends EventEmitter {
     /**
      * Get comprehensive cache status
      */
-    getStatus(): unknown {
+    getStatus(): any {
         return {
             layers: Array.from(this.layers.keys()),
             metrics: this.metrics,
@@ -966,7 +965,7 @@ export class AdvancedCacheManager extends EventEmitter {
     /**
      * Clear all caches
      */
-    async clearAll(): Promise<void> {
+    async clearAll(): Promise<any> {
         const clearPromises = Array.from(this.layers.values()).map(layer => 
             layer.clear().catch(error => {
                 console.error(`Clear error in layer ${layer.name}:`, error);
@@ -992,15 +991,15 @@ class CacheCoherenceManager extends EventEmitter {
         super();
     }
 
-    async start(): Promise<void> {
+    async start(): Promise<any> {
         console.log('🔄 Cache coherence manager started');
     }
 
-    async recordWrite(key: string, layers: string[], value: CacheValue): Promise<void> {
+    async recordWrite(key: string, layers: string[], value: CacheValue): Promise<any> {
         // Track write operations for coherence
     }
 
-    async recordDelete(key: string): Promise<void> {
+    async recordDelete(key: string): Promise<any> {
         // Track delete operations for coherence
     }
 }
@@ -1013,11 +1012,11 @@ class CachePreloadingEngine extends EventEmitter {
         super();
     }
 
-    async start(): Promise<void> {
+    async start(): Promise<any> {
         console.log('🔥 Cache preloading engine started');
     }
 
-    async performInitialWarming(): Promise<void> {
+    async performInitialWarming(): Promise<any> {
         // Perform initial cache warming
     }
 }
@@ -1049,7 +1048,7 @@ class CachePredictiveEngine extends EventEmitter {
         super();
     }
 
-    async start(): Promise<void> {
+    async start(): Promise<any> {
         console.log('🔮 Cache predictive engine started');
     }
 
@@ -1075,11 +1074,11 @@ class CachePredictiveEngine extends EventEmitter {
         };
     }
 
-    async predictAndPreload(key: string): Promise<void> {
+    async predictAndPreload(key: string): Promise<any> {
         // Implement predictive preloading logic
     }
 
-    private findMostUsedLayer(history: unknown[]): string {
+    private findMostUsedLayer(history: any[]): string {
         const layerCounts = history.reduce((counts, h) => {
             counts[h.layer] = (counts[h.layer] || 0) + 1;
             return counts;
@@ -1098,7 +1097,7 @@ class MemoryCacheLayer implements CacheLayerInterface {
     ttl: number;
     private cache: Map<string, { value: CacheValue; expires: number; accessed: number }> = new Map();
 
-    constructor(config: unknown) {
+    constructor(config: any) {
         this.priority = config.priority;
         this.capacity = config.capacity;
         this.ttl = config.ttl;
@@ -1135,7 +1134,7 @@ class MemoryCacheLayer implements CacheLayerInterface {
         return this.cache.delete(key);
     }
 
-    async clear(): Promise<void> {
+    async clear(): Promise<any> {
         this.cache.clear();
     }
 
@@ -1160,7 +1159,7 @@ class RedisCacheLayer implements CacheLayerInterface {
     capacity: number;
     ttl: number;
 
-    constructor(config: unknown) {
+    constructor(config: any) {
         this.priority = config.priority;
         this.capacity = config.capacity;
         this.ttl = config.ttl;
@@ -1181,7 +1180,7 @@ class RedisCacheLayer implements CacheLayerInterface {
         return true;
     }
 
-    async clear(): Promise<void> {
+    async clear(): Promise<any> {
         // Implement Redis clear
     }
 
@@ -1201,7 +1200,7 @@ class PostgresCacheLayer implements CacheLayerInterface {
     capacity: number;
     ttl: number;
 
-    constructor(config: unknown) {
+    constructor(config: any) {
         this.priority = config.priority;
         this.capacity = config.capacity;
         this.ttl = config.ttl;
@@ -1210,7 +1209,7 @@ class PostgresCacheLayer implements CacheLayerInterface {
     async get(key: string): Promise<CacheValue | null> { return null; }
     async set(key: string, value: CacheValue, ttl?: number): Promise<boolean> { return true; }
     async delete(key: string): Promise<boolean> { return true; }
-    async clear(): Promise<void> {}
+    async clear(): Promise<any> {}
     async getStats(): Promise<CacheStats> { return { size: 0, capacity: this.capacity, hitRate: 0, averageAccessTime: 0 }; }
     async isHealthy(): Promise<boolean> { return true; }
 }
@@ -1221,7 +1220,7 @@ class VectorCacheLayer implements CacheLayerInterface {
     capacity: number;
     ttl: number;
 
-    constructor(config: unknown) {
+    constructor(config: any) {
         this.priority = config.priority;
         this.capacity = config.capacity;
         this.ttl = config.ttl;
@@ -1230,7 +1229,7 @@ class VectorCacheLayer implements CacheLayerInterface {
     async get(key: string): Promise<CacheValue | null> { return null; }
     async set(key: string, value: CacheValue, ttl?: number): Promise<boolean> { return true; }
     async delete(key: string): Promise<boolean> { return true; }
-    async clear(): Promise<void> {}
+    async clear(): Promise<any> {}
     async getStats(): Promise<CacheStats> { return { size: 0, capacity: this.capacity, hitRate: 0, averageAccessTime: 0 }; }
     async isHealthy(): Promise<boolean> { return true; }
 }
@@ -1241,7 +1240,7 @@ class FileSystemCacheLayer implements CacheLayerInterface {
     capacity: number;
     ttl: number;
 
-    constructor(config: unknown) {
+    constructor(config: any) {
         this.priority = config.priority;
         this.capacity = config.capacity;
         this.ttl = config.ttl;
@@ -1250,7 +1249,7 @@ class FileSystemCacheLayer implements CacheLayerInterface {
     async get(key: string): Promise<CacheValue | null> { return null; }
     async set(key: string, value: CacheValue, ttl?: number): Promise<boolean> { return true; }
     async delete(key: string): Promise<boolean> { return true; }
-    async clear(): Promise<void> {}
+    async clear(): Promise<any> {}
     async getStats(): Promise<CacheStats> { return { size: 0, capacity: this.capacity, hitRate: 0, averageAccessTime: 0 }; }
     async isHealthy(): Promise<boolean> { return true; }
 }
@@ -1261,7 +1260,7 @@ class CDNCacheLayer implements CacheLayerInterface {
     capacity: number;
     ttl: number;
 
-    constructor(config: unknown) {
+    constructor(config: any) {
         this.priority = config.priority;
         this.capacity = config.capacity;
         this.ttl = config.ttl;
@@ -1270,7 +1269,7 @@ class CDNCacheLayer implements CacheLayerInterface {
     async get(key: string): Promise<CacheValue | null> { return null; }
     async set(key: string, value: CacheValue, ttl?: number): Promise<boolean> { return true; }
     async delete(key: string): Promise<boolean> { return true; }
-    async clear(): Promise<void> {}
+    async clear(): Promise<any> {}
     async getStats(): Promise<CacheStats> { return { size: 0, capacity: this.capacity, hitRate: 0, averageAccessTime: 0 }; }
     async isHealthy(): Promise<boolean> { return true; }
 }
@@ -1281,7 +1280,7 @@ class BrowserCacheLayer implements CacheLayerInterface {
     capacity: number;
     ttl: number;
 
-    constructor(config: unknown) {
+    constructor(config: any) {
         this.priority = config.priority;
         this.capacity = config.capacity;
         this.ttl = config.ttl;
@@ -1290,7 +1289,7 @@ class BrowserCacheLayer implements CacheLayerInterface {
     async get(key: string): Promise<CacheValue | null> { return null; }
     async set(key: string, value: CacheValue, ttl?: number): Promise<boolean> { return true; }
     async delete(key: string): Promise<boolean> { return true; }
-    async clear(): Promise<void> {}
+    async clear(): Promise<any> {}
     async getStats(): Promise<CacheStats> { return { size: 0, capacity: this.capacity, hitRate: 0, averageAccessTime: 0 }; }
     async isHealthy(): Promise<boolean> { return true; }
 }

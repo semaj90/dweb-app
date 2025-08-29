@@ -13,7 +13,7 @@ export interface ModalConfig {
   onConfirm?: (...args: any[]) => void;
 }
 
-interface ModalState {
+export interface ModalState {
   modals: ModalConfig[];
   activeModal: string | null;
 }

@@ -30,7 +30,7 @@ export const GET: RequestHandler = async ({ locals, request }) => {
       success: true,
       data: healthData,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Health API error:", error);
     return json(
       {

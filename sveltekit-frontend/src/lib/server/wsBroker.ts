@@ -34,7 +34,7 @@ export async function initializeWsBroker(): Promise<void> {
           // Send to local WebSocket connections
           sendWsMessageToSessionLocal(sessionId, msg);
           
-        } catch (error) {
+        } catch (error: any) {
           console.error('❌ Error parsing Redis pub/sub message:', error);
         }
       }
@@ -50,7 +50,7 @@ export async function initializeWsBroker(): Promise<void> {
     
     console.log('✅ WebSocket broker initialized with Redis pub/sub');
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Failed to initialize WebSocket broker:', error);
     // Continue without Redis - local only mode
   }
@@ -92,7 +92,7 @@ export function registerWsConnection(sessionId: string, ws: WebSocket): void {
       sessionId,
       timestamp: new Date().toISOString()
     }));
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Error sending connection confirmation:', error);
   }
 }
@@ -119,7 +119,7 @@ function sendWsMessageToSessionLocal(sessionId: string, msg: ProgressMsg): void 
       } else {
         sessionSet.delete(ws); // Clean up dead connections
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Error sending WebSocket message to session ${sessionId}:`, error);
       sessionSet.delete(ws); // Remove failed connection
     }
@@ -140,7 +140,7 @@ export function sendWsMessageToSession(sessionId: string, msg: ProgressMsg): voi
         sessionId,
         ...msg
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Error publishing to Redis:', error);
     }
   }
@@ -161,7 +161,7 @@ export function sendWsMessageToSession(sessionId: string, msg: ProgressMsg): voi
         .expire(key, 3600)
         .exec();
         
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Error storing message in Redis:', error);
     }
   }
@@ -189,7 +189,7 @@ export async function getMissedMessages(sessionId: string, since?: string): Prom
       .filter(msg => !since || new Date(msg.timestamp) > new Date(since))
       .reverse(); // Return in chronological order
       
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Error getting missed messages:', error);
     return [];
   }
@@ -250,7 +250,7 @@ export async function closeWsBroker(): Promise<void> {
     
     console.log('✅ WebSocket broker closed gracefully');
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Error closing WebSocket broker:', error);
   }
 }

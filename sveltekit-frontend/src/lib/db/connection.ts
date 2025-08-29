@@ -1,5 +1,5 @@
 // Database connection for Legal AI platform
-import { drizzle } from 'drizzle-orm/postgres-js';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import postgres from 'postgres';
 // Database configuration - using environment variables or defaults
 const DATABASE_URL = import.meta.env.DATABASE_URL || 'postgresql://legal_admin:123456@localhost:5432/legal_ai_db';
@@ -25,7 +25,7 @@ export async function testConnection(): Promise<boolean> {
   try {
     await client`SELECT 1`;
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Database connection failed:', error);
     return false;
   }

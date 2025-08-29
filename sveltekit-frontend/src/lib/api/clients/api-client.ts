@@ -67,7 +67,7 @@ export async function apiFetch<T = unknown>(
         });
       }
       return out;
-        } catch (err) {
+        } catch (err: any) {
       // Augment error with context (safe, non-enumerable)
       if (err && typeof err === 'object') {
         try {

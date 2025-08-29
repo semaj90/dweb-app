@@ -2,7 +2,7 @@
 import { spawn } from 'child_process';
 import fs from 'fs/promises';
 
-interface ServiceStatus {
+export interface ServiceStatus {
   name: string;
   status: 'running' | 'error' | 'not_running';
   port?: number;
@@ -22,7 +22,7 @@ async function checkService(name: string, url: string, port: number): Promise<Se
       port,
       error: response.ok ? undefined : `HTTP ${response.status}`
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       name,
       status: 'not_running',
@@ -52,7 +52,7 @@ async function checkEnvironment(): Promise<void> {
         const testUrl = 'http://localhost:5432'; // This will fail but shows if port is open
         await fetch(testUrl, { signal: AbortSignal.timeout(1000) });
         results.push({ name: service.name, status: 'running', port: service.port });
-      } catch (error) {
+      } catch (error: any) {
         // Try to connect via psql command if available
         try {
           const psqlTest = spawn('"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe"', 

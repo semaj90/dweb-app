@@ -2,7 +2,7 @@
 // Legal Case Store - Svelte 5 Runes Implementation
 
 // Define types locally since they're not available
-interface LegalCase {
+export interface LegalCase {
   id: string;
   title: string;
   caseNumber: string;
@@ -12,13 +12,13 @@ interface LegalCase {
   confidentialityLevel: number;
 }
 
-interface LegalDocument {
+export interface LegalDocument {
   id: string;
   name: string;
   type: string;
 }
 
-interface AIInsights {
+export interface AIInsights {
   findings?: any[];
   riskAssessment?: {
     score: number;
@@ -27,7 +27,7 @@ interface AIInsights {
   complianceChecks?: any[];
 }
 
-interface AuditLogEntry {
+export interface AuditLogEntry {
   id: string;
   type: string;
   entityType: string;
@@ -37,7 +37,7 @@ interface AuditLogEntry {
   details?: any;
 }
 
-interface User {
+export interface User {
   id: string;
   clearanceLevel: number;
   role: string;
@@ -90,7 +90,7 @@ export function createLegalCaseStore() {
   const auditService = new LegalAuditService();
 
   // Actions
-  async function loadCases() {
+  async function loadCases(): Promise<any> {
     loading.cases = true;
     try {
       const response = await fetch("/api/cases");
@@ -104,7 +104,7 @@ export function createLegalCaseStore() {
         userId: currentUser?.id || "unknown",
         details: { count: data.length },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to load cases:", error);
       throw error;
     } finally {
@@ -112,7 +112,7 @@ export function createLegalCaseStore() {
     }
   }
 
-  async function selectCase(legalCase: LegalCase) {
+  async function selectCase(legalCase: LegalCase): Promise<any> {
     (selectedCase as any) = legalCase;
 
     await auditService.logAction({
@@ -158,7 +158,7 @@ export function createLegalCaseStore() {
           riskScore: insights.riskAssessment?.score,
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Case analysis failed:", error);
 
       await auditService.logAction({
@@ -208,7 +208,7 @@ export function createLegalCaseStore() {
           riskLevel: insights.riskAssessment?.level,
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Document analysis failed:", error);
 
       await auditService.logAction({
@@ -225,7 +225,7 @@ export function createLegalCaseStore() {
     }
   }
 
-  async function updateCaseStatus(caseId: string, newStatus: "active" | "pending" | "closed" | "archived") {
+  async function updateCaseStatus(caseId: string, newStatus: "active" | "pending" | "closed" | "archived"): Promise<any> {
     const caseIndex = cases.findIndex((c) => c.id === caseId);
     if (caseIndex === -1) return;
 
@@ -246,7 +246,7 @@ export function createLegalCaseStore() {
         userId: currentUser?.id || "unknown",
         details: { oldStatus, newStatus },
       });
-    } catch (error) {
+    } catch (error: any) {
       // Rollback on failure
       cases[caseIndex].status = oldStatus;
       throw error;

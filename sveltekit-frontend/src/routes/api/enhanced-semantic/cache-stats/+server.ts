@@ -37,7 +37,7 @@ export const GET: RequestHandler = async () => {
 			source: 'Enhanced Semantic Architecture'
 		});
 		
-	} catch (error) {
+	} catch (error: any) {
 		console.error('Cache Stats API Error:', error);
 		
 		// Fallback: Mock cache statistics
@@ -100,7 +100,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		const data = await response.json();
 		return json(data);
 		
-	} catch (error) {
+	} catch (error: any) {
 		console.error('Cache Management POST Error:', error);
 		
 		// Fallback cache management

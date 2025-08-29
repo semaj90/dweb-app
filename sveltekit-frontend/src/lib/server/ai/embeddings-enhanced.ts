@@ -5,7 +5,7 @@
 
 import { cacheEmbedding, getCachedEmbedding } from "$lib/server/cache/redis";
 
-interface EnhancedEmbeddingOptions {
+export interface EnhancedEmbeddingOptions {
   provider?: "auto" | "nomic-embed" | "tauri-legal-bert" | "tauri-bert";
   cache?: boolean;
   maxTokens?: number;
@@ -14,7 +14,7 @@ interface EnhancedEmbeddingOptions {
   useExtraction?: boolean;
 }
 
-interface EmbeddingResult {
+export interface EmbeddingResult {
   embedding: number[];
   metadata: {
     provider: string;
@@ -47,7 +47,7 @@ async function generateNomicEmbedding(text: string): Promise<number[]> {
 
     const data = await response.json();
     return data.embedding;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Nomic embedding generation failed:', error);
     throw error;
   }
@@ -183,7 +183,7 @@ export async function generateEnhancedEmbedding(
     }
 
     return isArray ? results : results[0];
-  } catch (error) {
+  } catch (error: any) {
     console.error("Enhanced embedding generation failed:", error);
     throw error;
   }
@@ -213,7 +213,7 @@ export async function generateBatchEmbeddingsEnhanced(
       if (onProgress) {
         onProgress(Math.min(i + batchSize, texts.length), texts.length);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Batch ${i}-${i + batchSize} failed:`, error);
       // Add empty embeddings for failed items
       for (let j = 0; j < batch.length; j++) {

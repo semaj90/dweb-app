@@ -11,7 +11,7 @@ import {
   PROTOCOL_CONFIG,
   type ServiceConfig,
   type ProtocolRoute
-} from '../config/multi-protocol-routes.js';
+} from '../config/multi-protocol-routes';
 
 export type ProtocolType = 'http' | 'grpc' | 'quic' | 'ws';
 export type ServiceResponse<T = any> = {
@@ -149,7 +149,7 @@ class ProductionServiceClient {
           latency,
           service: route.service
         };
-      } catch (error) {
+      } catch (error: any) {
         lastError = error as Error;
         console.warn(`Protocol ${protocol} failed for ${endpoint}:`, error);
         
@@ -229,7 +229,7 @@ class ProductionServiceClient {
             }
           };
           
-          ws.onmessage = (event) => {
+          ws.onmessage = (event: any) => {
             clearTimeout(timer);
             ws.close();
             resolve(JSON.parse(event.data));
@@ -369,7 +369,7 @@ class ProductionServiceClient {
             
             clearTimeout(timeoutId);
             this.updateHealthStatus(serviceName, 'http', response.ok, 0);
-          } catch (error) {
+          } catch (error: any) {
             this.updateHealthStatus(serviceName, 'http', false, 0);
           }
         }
@@ -458,7 +458,7 @@ class ProductionServiceClient {
     const url = 'ws://localhost:8212/api/v1/state/events';
     const ws = new WebSocket(url);
     
-    ws.onmessage = (event) => {
+    ws.onmessage = (event: any) => {
       callback(JSON.parse(event.data));
     };
     

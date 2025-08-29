@@ -6,7 +6,7 @@
 
 import type { RequestHandler } from './$types';
 import { json, error } from '@sveltejs/kit';
-import { ExistingUserAuthService as UserAuthService } from '$lib/server/db/existing-user-operations.js';
+import { ExistingUserAuthService as UserAuthService } from '$lib/server/db/existing-user-operations';
 import { cognitiveCacheManager } from '$lib/services/cognitive-cache-integration';
 import { z } from 'zod';
 import { dev } from '$app/environment';
@@ -31,7 +31,7 @@ const registerSchema = z.object({
   marketingConsent: z.boolean().default(false)
 });
 
-export const POST: RequestHandler = async ({ request, getClientAddress, cookies }) => {
+export const POST: RequestHandler = async ({ request, getClientAddress, cookies }): Promise<any> => {
   try {
     // Parse and validate request body
     const body = await request.json().catch(() => ({}));
@@ -163,7 +163,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress, cookies 
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Registration API error:', err);
 
     // Handle validation errors
@@ -206,7 +206,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress, cookies 
 };
 
 // OPTIONS handler for CORS preflight requests
-export const OPTIONS: RequestHandler = async () => {
+export const OPTIONS: RequestHandler = async (): Promise<any> => {
   return new Response(null, {
     status: 200,
     headers: {

@@ -1,7 +1,7 @@
 
 import { json } from "@sveltejs/kit";
 
-export const GET = async () => {
+export const GET = async (): Promise<any> => {
   try {
     // Check if service is available
     const isAvailable = await ollamaService.healthCheck();
@@ -15,7 +15,7 @@ export const GET = async () => {
       if (response.ok) {
         ollamaDetails = await response.json();
       }
-    } catch (error) {
+    } catch (error: any) {
       // Ollama not accessible
     }
 
@@ -41,7 +41,7 @@ export const GET = async () => {
         ollamaDirectEndpoint: "/api/ai/ollama-gemma3",
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         status: "error",
@@ -53,7 +53,7 @@ export const GET = async () => {
   }
 };
 
-export const POST = async ({ request }) => {
+export const POST = async ({ request }): Promise<any> => {
   try {
     const { prompt = "What are the key elements of a valid contract?" } =
       await request.json();
@@ -112,7 +112,7 @@ export const POST = async ({ request }) => {
         { status: 500 },
       );
     }
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         status: "error",

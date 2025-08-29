@@ -13,7 +13,7 @@ import { serviceHealthMonitor } from '$lib/monitoring/service-health-monitor';
 // Initialize systems if not already done
 let systemInitialized = false;
 
-async function ensureSystemInitialized() {
+async function ensureSystemInitialized(): Promise<any> {
   if (!systemInitialized) {
     console.log('[RAG API] Initializing production systems...');
     
@@ -22,7 +22,7 @@ async function ensureSystemInitialized() {
       serviceHealthMonitor.startMonitoring(30000); // 30 second intervals
       systemInitialized = true;
       console.log('[RAG API] ✅ Systems initialized successfully');
-    } catch (err) {
+    } catch (err: any) {
       console.error('[RAG API] ❌ System initialization failed:', err);
       throw err;
     }
@@ -33,7 +33,7 @@ async function ensureSystemInitialized() {
  * Process document through RAG pipeline
  * POST /api/rag/orchestrate
  */
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   await ensureSystemInitialized();
 
   try {
@@ -63,7 +63,7 @@ export const POST: RequestHandler = async ({ request }) => {
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('[RAG API] ❌ Document processing failed:', err);
     
     return error(500, {
@@ -77,7 +77,7 @@ export const POST: RequestHandler = async ({ request }) => {
  * Query RAG system
  * GET /api/rag/orchestrate?query=...&caseId=...
  */
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
   await ensureSystemInitialized();
 
   try {
@@ -107,7 +107,7 @@ export const GET: RequestHandler = async ({ url }) => {
       ...result
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('[RAG API] ❌ RAG query failed:', err);
     
     return error(500, {
@@ -121,7 +121,7 @@ export const GET: RequestHandler = async ({ url }) => {
  * Get system health status
  * PATCH /api/rag/orchestrate (health check)
  */
-export const PATCH: RequestHandler = async () => {
+export const PATCH: RequestHandler = async (): Promise<any> => {
   try {
     await ensureSystemInitialized();
 
@@ -162,7 +162,7 @@ export const PATCH: RequestHandler = async () => {
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('[RAG API] ❌ Health check failed:', err);
     
     return error(500, {
@@ -176,7 +176,7 @@ export const PATCH: RequestHandler = async () => {
  * System management commands
  * DELETE /api/rag/orchestrate (cleanup/reset)
  */
-export const DELETE: RequestHandler = async ({ url }) => {
+export const DELETE: RequestHandler = async ({ url }): Promise<any> => {
   try {
     const action = url.searchParams.get('action');
     
@@ -204,7 +204,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
         return error(400, { message: 'Invalid action. Supported: cleanup, restart-monitoring' });
     }
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('[RAG API] ❌ System management failed:', err);
     
     return error(500, {

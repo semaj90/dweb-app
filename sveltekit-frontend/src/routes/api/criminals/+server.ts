@@ -90,7 +90,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
         total: totalCount,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching criminals:", error);
     return json({ error: "Failed to fetch criminals" }, { status: 500 });
   }
@@ -147,7 +147,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       .returning();
 
     return json(newCriminal, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating criminal record:", error);
     return json({ error: "Failed to create criminal record" }, { status: 500 });
   }

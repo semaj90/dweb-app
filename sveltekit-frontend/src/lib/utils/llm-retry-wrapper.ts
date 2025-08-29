@@ -32,11 +32,11 @@ const todoAutogen = {
   }
 };
 
-const retryLLMCall = async (fn: () => Promise<any>, model: string, prompt: string, retries: number) => {
+const retryLLMCall = async (fn: (): Promise<any> => Promise<any>, model: string, prompt: string, retries: number) => {
   for (let i = 0; i < retries; i++) {
     try {
       return await fn();
-    } catch (error) {
+    } catch (error: any) {
       if (i === retries - 1) throw error;
       await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
     }
@@ -317,7 +317,7 @@ export async function* streamLLM(
           if (data.response) {
             yield data.response;
           }
-        } catch (error) {
+        } catch (error: any) {
           // Skip malformed JSON
         }
       }

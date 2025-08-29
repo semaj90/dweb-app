@@ -49,7 +49,7 @@ export function verifyToken(
       userId: decoded.userId,
       email: decoded.email,
     };
-  } catch (error) {
+  } catch (error: any) {
     return null;
   }
 }

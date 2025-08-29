@@ -63,7 +63,7 @@ enum ErrorType {
   Database = 'database'
 }
 
-interface ErrorEntry {
+export interface ErrorEntry {
   id: string;
   type: ErrorType;
   file: string;
@@ -77,7 +77,7 @@ interface ErrorEntry {
   autoFixAvailable?: boolean;
 }
 
-interface BuildMetrics {
+export interface BuildMetrics {
   totalErrors: number;
   errorsByType: Record<ErrorType, number>;
   memoryUsage: NodeJS.MemoryUsage;
@@ -179,7 +179,7 @@ Format your response as structured JSON with clear action items.`;
         model: config.model,
         success: true
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Local LLM analysis failed:', error);
       return {
         agent: 'gemma3-legal',
@@ -206,7 +206,7 @@ Format your response as structured JSON with clear action items.`;
 
       const result = await response.json();
       return result.embedding;
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Embedding generation failed:', error);
       return null;
     }
@@ -214,7 +214,7 @@ Format your response as structured JSON with clear action items.`;
 }
 
 // Main orchestration function
-async function runEnhancedCheckFix() {
+async function runEnhancedCheckFix(): Promise<any> {
   const startTime = Date.now();
   const initialMemory = process.memoryUsage();
   
@@ -229,7 +229,7 @@ async function runEnhancedCheckFix() {
       Object.assign(settings, vscodeGpuSettings);
       fs.writeFileSync(vscodeSettingsPath, JSON.stringify(settings, null, 2));
       console.log('✅ VS Code GPU optimizations applied');
-    } catch (e) {
+    } catch (e: any) {
       console.warn('⚠️ Failed to update VS Code settings:', e.message);
     }
   }
@@ -427,7 +427,7 @@ function generateActionPlan(errors: ErrorEntry[], llmResults: unknown): unknown 
       if (llmSuggestions.suggestions) {
         plan.automated = [...plan.automated, ...llmSuggestions.suggestions.slice(0, 3)];
       }
-    } catch (e) {
+    } catch (e: any) {
       // LLM response wasn't JSON, extract text suggestions
       if (typeof llmResults.response === 'string') {
         const lines = llmResults.response.split('\n');

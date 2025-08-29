@@ -28,7 +28,7 @@ test.describe('SvelteKit Development Server Endpoints', () => {
         console.log('✅ SvelteKit application structure detected');
       }
       
-    } catch (error) {
+    } catch (error: any) {
       if ((error as Error).message.includes('net::ERR_CONNECTION_REFUSED')) {
         test.skip(true, 'SvelteKit dev server not running - start with: npm run dev');
       } else {
@@ -67,7 +67,7 @@ test.describe('SvelteKit Development Server Endpoints', () => {
         }
       }
       
-    } catch (error) {
+    } catch (error: any) {
       if ((error as Error).message.includes('net::ERR_CONNECTION_REFUSED')) {
         test.skip();
       } else {
@@ -126,7 +126,7 @@ test.describe('SvelteKit Development Server Endpoints', () => {
         console.log('ℹ️ No obvious chat interface found - may be on a different route');
       }
       
-    } catch (error) {
+    } catch (error: any) {
       if ((error as Error).message.includes('net::ERR_CONNECTION_REFUSED')) {
         test.skip();
       } else {
@@ -172,7 +172,7 @@ test.describe('SvelteKit Development Server Endpoints', () => {
         }
       }
       
-    } catch (error) {
+    } catch (error: any) {
       if ((error as Error).message.includes('net::ERR_CONNECTION_REFUSED')) {
         test.skip();
       } else {
@@ -226,7 +226,7 @@ test.describe('SvelteKit Development Server Endpoints', () => {
         console.log('ℹ️ No file upload interface found - may be on a different route');
       }
       
-    } catch (error) {
+    } catch (error: any) {
       if ((error as Error).message.includes('net::ERR_CONNECTION_REFUSED')) {
         test.skip();
       } else {
@@ -275,7 +275,7 @@ test.describe('SvelteKit Development Server Endpoints', () => {
         console.log(`✅ ${viewport.name} (${viewport.width}x${viewport.height}) layout verified`);
       }
       
-    } catch (error) {
+    } catch (error: any) {
       if ((error as Error).message.includes('net::ERR_CONNECTION_REFUSED')) {
         test.skip();
       } else {
@@ -341,7 +341,7 @@ test.describe('SvelteKit Development Server Endpoints', () => {
         console.log('✅ No console errors or warnings detected');
       }
       
-    } catch (error) {
+    } catch (error: any) {
       if ((error as Error).message.includes('net::ERR_CONNECTION_REFUSED')) {
         test.skip();
       } else {

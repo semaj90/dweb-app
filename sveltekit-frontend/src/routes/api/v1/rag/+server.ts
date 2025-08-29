@@ -101,7 +101,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress, url }) =
 
     return json(ragResponse);
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('RAG API Error:', err);
     
     return error(500, {
@@ -144,7 +144,7 @@ export const GET: RequestHandler = async ({ url }) => {
           timestamp: new Date().toISOString()
         });
     }
-  } catch (err) {
+  } catch (err: any) {
     console.error('RAG GET Error:', err);
     return error(500, {
       message: 'Service unavailable',
@@ -272,7 +272,7 @@ async function checkDimensionalCache(query: string, userId?: string): Promise<an
     }
     
     return { hit: false };
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Cache check failed:', error);
     return { hit: false };
   }
@@ -310,7 +310,7 @@ async function storeDimensionalCache(query: string, results: any, userId?: strin
       }),
       signal: AbortSignal.timeout(5000) // 5s timeout
     });
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Cache storage failed:', error);
     // Don't throw - caching is optional
   }
@@ -362,7 +362,7 @@ async function handleHealthCheck(): Promise<Response> {
       protocols: ['HTTP', 'gRPC', 'QUIC'],
       timestamp: new Date().toISOString()
     });
-  } catch (err) {
+  } catch (err: any) {
     return json({
       service: 'Enhanced RAG API',
       status: 'error',
@@ -401,7 +401,7 @@ async function handleStats(): Promise<Response> {
       },
       timestamp: new Date().toISOString()
     });
-  } catch (err) {
+  } catch (err: any) {
     return json({
       service: 'Enhanced RAG API',
       statistics: null,
@@ -431,7 +431,7 @@ async function handleModels(): Promise<Response> {
       },
       timestamp: new Date().toISOString()
     });
-  } catch (err) {
+  } catch (err: any) {
     return json({
       service: 'Enhanced RAG API',
       models: null,

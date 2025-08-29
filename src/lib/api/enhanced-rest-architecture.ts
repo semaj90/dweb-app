@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Enhanced REST Architecture Types and Interfaces
 // Provides type definitions for clustering and document processing
 
@@ -11,7 +10,7 @@ export interface KMeansConfig {
 }
 
 export interface KMeansClusterer {
-  fit(data: number[][]): Promise<void>;
+  fit(data: number[][]): Promise<any>;
   predict(data: number[][]): Promise<number[]>;
   getCentroids(): number[][];
   silhouetteScore(): Promise<number>;
@@ -20,14 +19,14 @@ export interface KMeansClusterer {
 export interface ClusterResult {
   clusterId: number;
   centroid: number[];
-  members: unknown[];
+  members: any[];
   size: number;
   inertia: number;
 }
 
 export interface DocumentCluster {
   id: string;
-  documents: unknown[];
+  documents: any[];
   centroid: number[];
   keywords: string[];
   summary: string;
@@ -43,7 +42,7 @@ export interface SOMConfig {
 }
 
 export interface SelfOrganizingMap {
-  train(data: number[][]): Promise<void>;
+  train(data: number[][]): Promise<any>;
   map(data: number[]): Promise<[number, number]>;
   getWeights(): number[][][];
   quantizationError(): number;
@@ -52,15 +51,15 @@ export interface SelfOrganizingMap {
 export interface RESTEndpoint {
   path: string;
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
-  handler: (req: unknown, res: unknown) => Promise<void>;
-  middleware?: unknown[];
+  handler: (req: any, res: any) => Promise<any>;
+  middleware?: any[];
   rateLimit?: {
     windowMs: number;
     max: number;
   };
   cache?: {
     ttl: number;
-    key: (req: unknown) => string;
+    key: (req: any) => string;
   };
 }
 
@@ -137,7 +136,7 @@ export interface BatchResponse<T = any> {
 export interface WebSocketMessage {
   type: 'subscribe' | 'unsubscribe' | 'message' | 'error' | 'ping' | 'pong';
   channel?: string;
-  data?: unknown;
+  data?: any;
   timestamp: number;
 }
 
@@ -164,7 +163,7 @@ export interface RateLimitConfig {
   statusCode?: number;
   skipSuccessfulRequests?: boolean;
   skipFailedRequests?: boolean;
-  keyGenerator?: (req: unknown) => string;
+  keyGenerator?: (req: any) => string;
 }
 
 export interface SecurityConfig {
@@ -178,7 +177,7 @@ export interface SecurityConfig {
   rateLimit: RateLimitConfig;
   authentication: {
     type: 'jwt' | 'oauth' | 'apikey' | 'basic';
-    config: unknown;
+    config: any;
   };
 }
 
@@ -197,14 +196,14 @@ export interface MonitoringConfig {
 
 export class RESTArchitecture {
   private endpoints: Map<string, RESTEndpoint>;
-  private middleware: unknown[];
+  private middleware: any[];
   private config: {
     security?: SecurityConfig;
     cache?: CacheConfig;
     monitoring?: MonitoringConfig;
   };
 
-  constructor(config?: unknown) {
+  constructor(config?: any) {
     this.endpoints = new Map();
     this.middleware = [];
     this.config = config || {};
@@ -215,11 +214,11 @@ export class RESTArchitecture {
     this.endpoints.set(key, endpoint);
   }
 
-  use(middleware: unknown): void {
+  use(middleware: any): void {
     this.middleware.push(middleware);
   }
 
-  async handleRequest(method: string, path: string, req: unknown, res: unknown): Promise<void> {
+  async handleRequest(method: string, path: string, req: any, res: any): Promise<any> {
     const key = `${method}:${path}`;
     const endpoint = this.endpoints.get(key);
     
@@ -246,7 +245,7 @@ export class RESTArchitecture {
 
       // Execute handler
       await endpoint.handler(req, res);
-    } catch (error) {
+    } catch (error: any) {
       res.status(500).json({
         success: false,
         error: error instanceof Error ? error.message : 'Internal server error'

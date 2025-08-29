@@ -6,7 +6,7 @@ import crypto from "crypto";
  */
 
 import { createMachine, assign, fromPromise } from "xstate";
-// TODO: Fix import - // Orphaned content: import {  import type { EvidenceProcessingContext } from './evidenceProcessingMachine.js';
+// TODO: Fix import - // Orphaned content: import {  import type { EvidenceProcessingContext } from './evidenceProcessingMachine';
 
 // Types for document upload
 export interface DocumentUploadContext {

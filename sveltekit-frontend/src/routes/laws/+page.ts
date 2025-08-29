@@ -113,7 +113,7 @@ export const load: PageLoad = async ({ fetch, url, depends }) => {
       }
     };
     
-  } catch (err) {
+  } catch (err: any) {
     console.error('Failed to load laws page data:', err);
     error(500, 'Failed to load page data');
   }

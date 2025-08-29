@@ -27,7 +27,7 @@ export function GlobalModeDevPlugin(ctx: UnocssPluginContext): Plugin[] {
   let resolved = false
   let resolvedWarnTimer: TimeoutTimer
 
-  async function generateCSS(layer: string) {
+  async function generateCSS(layer: string): Promise<any> {
     await flushTasks()
     let result: GenerateResult
     let tokensSize = tokens.size
@@ -86,7 +86,7 @@ export function GlobalModeDevPlugin(ctx: UnocssPluginContext): Plugin[] {
     }
   }
 
-  async function setWarnTimer() {
+  async function setWarnTimer(): Promise<any> {
     if (
       !resolved
       && !resolvedWarnTimer
@@ -201,7 +201,7 @@ try {
     console.warn('[unocss-hmr]', 'failed to get unocss hash, hmr might not work')
   else
     await import.meta.hot.send('${WS_EVENT_PREFIX}', ['${layer}']);
-} catch (e) {
+} catch (e: any) {
   console.warn('[unocss-hmr]', e)
 }
 if (!import.meta.url.includes('?'))

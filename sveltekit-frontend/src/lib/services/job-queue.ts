@@ -2,27 +2,27 @@ import { Queue, Worker, Job, type JobsOptions } from "bullmq";
 import Redis from "ioredis";
 
 // Job types for the legal document processing pipeline
-interface BaseJobData {
+export interface BaseJobData {
   uploadId: string;
   caseId: string;
   timestamp: string;
   priority: 'low' | 'normal' | 'high' | 'critical';
 }
 
-interface DocumentExtractionJob extends BaseJobData {
+export interface DocumentExtractionJob extends BaseJobData {
   filename: string;
   contentType: string;
   storageUrl: string;
   extractionType: 'pdf' | 'image' | 'video' | 'audio' | 'text';
 }
 
-interface EmbeddingJob extends BaseJobData {
+export interface EmbeddingJob extends BaseJobData {
   textChunks: string[];
   chunkMetadata: Array<{ page?: number; timestamp?: number; coordinates?: [number, number, number, number] }>;
   embeddingModel: 'sentence-transformers' | 'ollama' | 'openai';
 }
 
-interface TensorProcessingJob extends BaseJobData {
+export interface TensorProcessingJob extends BaseJobData {
   tensorData: number[];
   dimensions: [number, number, number, number]; // 4D tensor
   operation: 'tricubic' | 'som_cluster' | 'attention' | 'convolution';
@@ -30,7 +30,7 @@ interface TensorProcessingJob extends BaseJobData {
   haloSize?: number;
 }
 
-interface VectorIndexJob extends BaseJobData {
+export interface VectorIndexJob extends BaseJobData {
   embeddings: number[][];
   metadata: Array<{ docId: string; chunkId: string; text: string; [key: string]: unknown }>;
   indexType: 'qdrant' | 'pgvector' | 'faiss';
@@ -231,7 +231,7 @@ export class LegalAIJobQueue {
         nextStage: 'embedding-generation',
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Document extraction failed:', error);
       throw error;
     }
@@ -288,7 +288,7 @@ export class LegalAIJobQueue {
         nextStage: 'vector-indexing',
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Embedding generation failed:', error);
       throw error;
     }
@@ -362,7 +362,7 @@ export class LegalAIJobQueue {
         outputSize: tensorResult.output_data?.length || 0,
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Tensor processing failed:', error);
       throw error;
     }
@@ -428,7 +428,7 @@ export class LegalAIJobQueue {
         status: 'completed',
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Vector indexing failed:', error);
       throw error;
     }

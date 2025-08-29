@@ -208,7 +208,7 @@ export const evidenceProcessingMachine = setup({
             ),
             timestamp: new Date(),
           };
-        } catch (error) {
+        } catch (error: any) {
           throw new Error(`AI processing failed: ${(error as Error).message}`);
         }
       },
@@ -234,7 +234,7 @@ export const evidenceProcessingMachine = setup({
 
           if (!response.ok) throw new Error("Vector search failed");
           return await response.json();
-        } catch (error) {
+        } catch (error: any) {
           // Return empty results on failure
           return { matches: [] };
         }
@@ -264,7 +264,7 @@ export const evidenceProcessingMachine = setup({
 
           if (!response.ok) throw new Error("Relationship discovery failed");
           return await response.json();
-        } catch (error) {
+        } catch (error: any) {
           // Return empty relationships on failure
           return { nodes: [], connections: [] };
         }
@@ -295,7 +295,7 @@ export const evidenceProcessingMachine = setup({
             : "critical";
 
         return { health: healthStatus, details: checks };
-      } catch (error) {
+      } catch (error: any) {
         return { health: "critical", details: [], error: (error as Error).message };
       }
     }),
@@ -306,7 +306,7 @@ export const evidenceProcessingMachine = setup({
         if (!response.ok) throw new Error("Cache sync failed");
         const result = await response.json();
         return { cacheOperations: result.operations || 0 };
-      } catch (error) {
+      } catch (error: any) {
         return { cacheOperations: 0, error: (error as Error).message };
       }
     }),
@@ -717,7 +717,7 @@ export const graphRelationshipsStore = derived(
 
 export const systemHealthStore = derived(evidenceProcessingStore, ($store) => ({
   health: $store.context?.systemHealth || "unknown",
-  errors: $store.context?.errors?.filter((e) => !e.resolved) || [],
+  errors: $store.context?.errors?.filter((e: any) => !e.resolved) || [],
   cacheHits: $store.context?.cacheHits || 0,
   lastSync: $store.context?.lastSync,
 }));
@@ -735,7 +735,7 @@ export const streamingStore = writable({
 // INITIALIZATION HELPERS
 // ======================================================================
 
-export async function initializeEnhancedMachines() {
+export async function initializeEnhancedMachines(): Promise<any> {
   if (!browser) return null;
 
   try {
@@ -757,7 +757,7 @@ export async function initializeEnhancedMachines() {
     return {
       evidenceActor,
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to initialize enhanced machines:", error);
     throw error;
   }

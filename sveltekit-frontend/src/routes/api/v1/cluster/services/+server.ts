@@ -4,7 +4,7 @@
  */
 
 import { type RequestHandler,  json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types.js';
+import type { RequestHandler } from './$types';
 import { productionServiceRegistry, GO_SERVICES_REGISTRY, type ServiceDefinition } from '$lib/../../../../lib/services/production-service-registry.js';
 import { context7OrchestrationService } from '$lib/../../../../lib/services/context7-orchestration-integration.js';
 
@@ -56,7 +56,7 @@ export const GET: RequestHandler = async ({ url }) => {
     };
 
     return json(response);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Services query failed:', error);
     return json(
       {
@@ -135,7 +135,7 @@ async function handleStartServices(serviceNames: string[], options?: unknown): P
         success: healthy,
         message: healthy ? 'Service is running' : 'Service failed to start'
       };
-    } catch (error) {
+    } catch (error: any) {
       results[serviceName] = {
         success: false,
         message: error instanceof Error ? error.message : 'Unknown error'

@@ -1,14 +1,14 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load: PageServerLoad = async ({ locals }): Promise<any> => {
   // Check authentication - in production, verify session
   // For demo, we'll allow access
   return {};
 };
 
 export const actions: Actions = {
-  default: async ({ request, locals }) => {
+  default: async ({ request, locals }): Promise<any> => {
     const data = await request.formData();
     const title = data.get('title')?.toString();
     const description = data.get('description')?.toString();
@@ -94,7 +94,7 @@ export const actions: Actions = {
         caseData: newCase
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Case creation error:', error);
       return fail(500, {
         message: 'An error occurred while creating the case. Please try again.',

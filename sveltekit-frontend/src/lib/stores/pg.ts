@@ -9,7 +9,7 @@ function tempToPgRadius(temp = 0.3) {
   return minRadius + (maxRadius - minRadius) * t;
 }
 
-export async function queryPgvector(vec: number[], limit = 200, temperature = 0.3) {
+export async function queryPgvector(vec: number[], limit = 200, temperature = 0.3): Promise<any> {
   const radius = tempToPgRadius(temperature);
   const rows = (
     await pool.query(

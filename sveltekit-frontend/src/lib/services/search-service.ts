@@ -194,7 +194,7 @@ export class EnhancedSearchService {
         const content = await response.text();
         this.searchIndex.goBinaries = GoBinariesCatalogParser.parseMarkdown(content);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load Go binaries catalog:', error);
     }
   }
@@ -210,7 +210,7 @@ export class EnhancedSearchService {
         const content = await response.text();
         this.searchIndex.components = this.parseComponentsFromAppdir(content);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load components:', error);
     }
   }
@@ -242,7 +242,7 @@ export class EnhancedSearchService {
             metadata: { type: 'documentation', file }
           });
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Failed to load ${file}:`, error);
       }
     }

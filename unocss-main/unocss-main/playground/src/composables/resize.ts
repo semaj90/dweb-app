@@ -150,7 +150,7 @@ export function useResize(element: MaybeElementRef, options: UseResizeOptions = 
     }
   }
 
-  async function onPointerUp(evt: PointerEvent) {
+  async function onPointerUp(evt: PointerEvent): Promise<any> {
     if (!target.value)
       return
 
@@ -233,7 +233,7 @@ export function useResize(element: MaybeElementRef, options: UseResizeOptions = 
     evt.preventDefault()
   }
 
-  async function onPointerDown(evt: PointerEvent) {
+  async function onPointerDown(evt: PointerEvent): Promise<any> {
     if (!target.value)
       return
 

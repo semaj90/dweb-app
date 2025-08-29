@@ -29,7 +29,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			session: newSession
 		});
 
-	} catch (error) {
+	} catch (error: any) {
 		console.error('Error creating chat session:', error);
 		return json({ 
 			error: 'Failed to create chat session',
@@ -67,7 +67,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			return json({ sessions });
 		}
 
-	} catch (error) {
+	} catch (error: any) {
 		console.error('Error fetching chat sessions:', error);
 		return json({ 
 			error: 'Failed to fetch chat sessions',

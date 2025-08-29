@@ -16,13 +16,13 @@ const dbConfig = {
 const OLLAMA_URL = 'http://localhost:11434';
 const EMBED_MODEL = 'nomic-embed-text';
 
-interface EmbeddingResult {
+export interface EmbeddingResult {
   embedding: number[];
   model: string;
   timestamp: Date;
 }
 
-interface DocumentChunk {
+export interface DocumentChunk {
   file: string;
   content: string;
   chunkIndex: number;
@@ -56,7 +56,7 @@ class ClaudeVectorIntegration {
         file TEXT,
         content TEXT,
         summary TEXT,
-        embedding vector(768),
+        embedding vector(384),
         chunk_index INTEGER DEFAULT 0,
         total_chunks INTEGER DEFAULT 1,
         tokens INTEGER,
@@ -71,7 +71,7 @@ class ClaudeVectorIntegration {
       CREATE TABLE IF NOT EXISTS embedding_cache (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         text_hash TEXT UNIQUE NOT NULL,
-        embedding vector(768) NOT NULL,
+        embedding vector(384) NOT NULL,
         model VARCHAR(100) NOT NULL,
         created_at TIMESTAMP DEFAULT NOW()
       )
@@ -285,7 +285,7 @@ class ClaudeVectorIntegration {
     for (const file of files) {
       try {
         await this.embedFile(file);
-      } catch (error) {
+      } catch (error: any) {
         console.error(`❌ Error embedding ${file}:`, error);
       }
     }
@@ -310,7 +310,7 @@ class ClaudeVectorIntegration {
 }
 
 // CLI Interface
-async function main() {
+async function main(): Promise<any> {
   const integration = new ClaudeVectorIntegration();
   
   try {
@@ -408,7 +408,7 @@ Examples:
   npm run vector:claude search "How does evidence validation work?"
         `);
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Error:', error);
     process.exit(1);
   } finally {

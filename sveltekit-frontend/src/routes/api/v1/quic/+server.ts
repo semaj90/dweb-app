@@ -3,7 +3,7 @@
  * Provides centralized management, health monitoring, and configuration for all QUIC services
  */
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types.js';
+import type { RequestHandler } from './$types';
 
 const QUIC_SERVICES_CONFIG = {
   gateway: {
@@ -158,7 +158,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
     return json(clusterStatus);
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('QUIC services status check failed:', err);
     error(500, {
       message: 'Failed to check QUIC services status',
@@ -215,7 +215,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('QUIC services command execution failed:', err);
     error(500, {
       message: 'Command execution failed',
@@ -256,7 +256,7 @@ export const PUT: RequestHandler = async ({ request }) => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('QUIC configuration update failed:', err);
     error(500, {
       message: 'Configuration update failed',
@@ -295,7 +295,7 @@ async function checkServiceHealth(
         try {
           const healthData = await primaryResponse.json();
           metrics = healthData.metrics || {};
-        } catch (e) {
+        } catch (e: any) {
           // Metrics parsing failed, continue without metrics
         }
       }
@@ -319,7 +319,7 @@ async function checkServiceHealth(
           try {
             const healthData = await fallbackResponse.json();
             metrics = healthData.metrics || {};
-          } catch (e) {
+          } catch (e: any) {
             // Metrics parsing failed, continue without metrics
           }
         }

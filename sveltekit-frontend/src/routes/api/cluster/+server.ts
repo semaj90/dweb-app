@@ -3,7 +3,7 @@ import { json } from "@sveltejs/kit";
 
 const DEFAULT_CLUSTER_URL = "http://localhost:8090";
 
-export const GET = async () => {
+export const GET = async (): Promise<any> => {
   const baseUrl = import.meta.env.CLUSTER_BASE_URL || DEFAULT_CLUSTER_URL;
   try {
     const res = await fetch(`${baseUrl}/health`);
@@ -15,7 +15,7 @@ export const GET = async () => {
   }
 };
 
-export const POST = async ({ request }) => {
+export const POST = async ({ request }): Promise<any> => {
   const baseUrl = import.meta.env.CLUSTER_BASE_URL || DEFAULT_CLUSTER_URL;
   try {
     const body = await request.json();

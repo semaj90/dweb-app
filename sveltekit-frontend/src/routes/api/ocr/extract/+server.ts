@@ -112,7 +112,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
     return json(result);
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('OCR processing error:', err);
     throw error(500, `OCR processing failed: ${err.message}`);
   }

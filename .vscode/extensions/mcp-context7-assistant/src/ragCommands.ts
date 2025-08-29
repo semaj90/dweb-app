@@ -94,7 +94,7 @@ export class RAGCommandProvider {
         await this.showSearchResults(results, query);
       });
 
-    } catch (error) {
+    } catch (error: any) {
       vscode.window.showErrorMessage(`Search failed: ${error}`);
       this.outputChannel.appendLine(`Search error: ${error}`);
     }
@@ -147,7 +147,7 @@ export class RAGCommandProvider {
         await this.showAnalysisResults(analysis, document.fileName);
       });
 
-    } catch (error) {
+    } catch (error: any) {
       vscode.window.showErrorMessage(`Analysis failed: ${error}`);
       this.outputChannel.appendLine(`Analysis error: ${error}`);
     }
@@ -195,7 +195,7 @@ export class RAGCommandProvider {
         await this.showSummaryResults(summary, selectedText.length);
       });
 
-    } catch (error) {
+    } catch (error: any) {
       vscode.window.showErrorMessage(`Summarization failed: ${error}`);
       this.outputChannel.appendLine(`Summarization error: ${error}`);
     }
@@ -271,7 +271,7 @@ export class RAGCommandProvider {
         );
       });
 
-    } catch (error) {
+    } catch (error: any) {
       vscode.window.showErrorMessage(`Upload failed: ${error}`);
       this.outputChannel.appendLine(`Upload error: ${error}`);
     }
@@ -314,7 +314,7 @@ export class RAGCommandProvider {
         });
       }
 
-    } catch (error) {
+    } catch (error: any) {
       vscode.window.showErrorMessage(`Chat failed: ${error}`);
       this.outputChannel.appendLine(`Chat error: ${error}`);
     }
@@ -368,7 +368,7 @@ export class RAGCommandProvider {
         await this.showWorkflowResults(result, 'Document Analysis');
       });
 
-    } catch (error) {
+    } catch (error: any) {
       vscode.window.showErrorMessage(`Workflow failed: ${error}`);
       this.outputChannel.appendLine(`Workflow error: ${error}`);
     }
@@ -424,7 +424,7 @@ export class RAGCommandProvider {
         await this.showWorkflowResults(result, 'Legal Research');
       });
 
-    } catch (error) {
+    } catch (error: any) {
       vscode.window.showErrorMessage(`Legal research failed: ${error}`);
       this.outputChannel.appendLine(`Legal research error: ${error}`);
     }
@@ -453,7 +453,7 @@ export class RAGCommandProvider {
         await vscode.window.showTextDocument(statusDoc);
       });
 
-    } catch (error) {
+    } catch (error: any) {
       vscode.window.showErrorMessage(`Failed to get system status: ${error}`);
     }
   }
@@ -472,7 +472,7 @@ export class RAGCommandProvider {
       
       await vscode.window.showTextDocument(statsDoc);
 
-    } catch (error) {
+    } catch (error: any) {
       vscode.window.showErrorMessage(`Failed to get RAG stats: ${error}`);
     }
   }
@@ -493,7 +493,7 @@ export class RAGCommandProvider {
         `Cache cleared: ${result.message || 'Success'}`
       );
 
-    } catch (error) {
+    } catch (error: any) {
       vscode.window.showErrorMessage(`Failed to clear cache: ${error}`);
     }
   }
@@ -627,7 +627,7 @@ export class RAGCommandProvider {
     try {
       const results = await this.ragClient.searchDocuments(searchQuery);
       await this.showSearchResults(results, selectedText.substring(0, 100) + '...');
-    } catch (error) {
+    } catch (error: any) {
       vscode.window.showErrorMessage(`Similar content search failed: ${error}`);
     }
   }
@@ -674,7 +674,7 @@ export class RAGCommandProvider {
         const result = await this.ragClient.executeWorkflow(workflowRequest);
         await this.showWorkflowResults(result, 'Case Preparation');
       });
-    } catch (error) {
+    } catch (error: any) {
       vscode.window.showErrorMessage(`Case preparation failed: ${error}`);
     }
   }
@@ -716,7 +716,7 @@ export class RAGCommandProvider {
         const result = await this.ragClient.executeWorkflow(workflowRequest);
         await this.showWorkflowResults(result, 'Contract Review');
       });
-    } catch (error) {
+    } catch (error: any) {
       vscode.window.showErrorMessage(`Contract review failed: ${error}`);
     }
   }

@@ -89,7 +89,7 @@ class VectorPipelineTest {
 
       return this.testResults;
 
-    } catch (err) {
+    } catch (err: any) {
       this.testResults.status = 'failed';
       this.testResults.error = err instanceof Error ? err.message : 'Unknown error';
       this.testResults.totalTime = Date.now() - startTime;
@@ -116,7 +116,7 @@ class VectorPipelineTest {
 
       console.log(`✅ Ollama connected: ${testEmbedding.length} dimensions`);
       
-    } catch (err) {
+    } catch (err: any) {
       this.testResults.steps.ollama = {
         status: 'failed',
         error: err instanceof Error ? err.message : 'Connection failed'
@@ -164,7 +164,7 @@ class VectorPipelineTest {
 
       console.log(`✅ Created test user and ${testCases.length} cases`);
 
-    } catch (err) {
+    } catch (err: any) {
       this.testResults.steps.testData = {
         status: 'failed',
         error: err instanceof Error ? err.message : 'Test data creation failed'
@@ -227,7 +227,7 @@ class VectorPipelineTest {
 
       console.log(`✅ Embedded ${embeddedDocs.length} documents`);
 
-    } catch (err) {
+    } catch (err: any) {
       this.testResults.steps.embedding = {
         status: 'failed',
         error: err instanceof Error ? err.message : 'Embedding failed'
@@ -291,7 +291,7 @@ class VectorPipelineTest {
 
       console.log(`✅ Executed ${searchResults.length} search queries`);
 
-    } catch (err) {
+    } catch (err: any) {
       this.testResults.steps.search = {
         status: 'failed',
         error: err instanceof Error ? err.message : 'Search failed'
@@ -319,7 +319,7 @@ class VectorPipelineTest {
 
       console.log(`✅ MCP integration working: ${mcpTest[0].count} vectors`);
 
-    } catch (err) {
+    } catch (err: any) {
       this.testResults.steps.mcp = {
         status: 'failed',
         error: err instanceof Error ? err.message : 'MCP integration failed'
@@ -361,7 +361,7 @@ class VectorPipelineTest {
 
       console.log(`✅ Performance analysis complete`);
 
-    } catch (err) {
+    } catch (err: any) {
       console.warn('⚠️ Performance analysis failed:', err);
       this.testResults.performance = { error: 'Failed to analyze performance' };
     }
@@ -385,7 +385,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
     return json({ error: 'Unknown action' }, { status: 400 });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('❌ Test pipeline error:', err);
     return json({
       error: 'Pipeline test failed',
@@ -427,7 +427,7 @@ export const GET: RequestHandler = async () => {
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     return json({
       status: 'not_ready',
       error: err instanceof Error ? err.message : 'Unknown error',

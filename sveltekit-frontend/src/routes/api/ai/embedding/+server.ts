@@ -35,7 +35,7 @@ export const POST: RequestHandler = async ({ request }) => {
       embedding = data.data[0].embedding;
     }
     return json({ embedding });
-  } catch (error) {
+  } catch (error: any) {
     return json({ error: "Failed to get embedding" }, { status: 500 });
   }
 };

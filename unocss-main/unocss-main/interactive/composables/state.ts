@@ -41,12 +41,12 @@ export const userConfigRaw = useLocalStorage('unocss-docs-config', '')
 export const userConfigLoading = ref(true)
 export const userConfig = ref<UserConfig | undefined>()
 
-async function load() {
+async function load(): Promise<any> {
   userConfigLoading.value = true
   try {
     userConfig.value = await evaluateUserConfig(userConfigRaw.value || defaultConfigRaw, unocssBundle)
   }
-  catch (e) {
+  catch (e: any) {
     console.error(e)
   }
   finally {

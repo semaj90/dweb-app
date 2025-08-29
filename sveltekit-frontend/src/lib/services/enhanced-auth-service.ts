@@ -149,7 +149,7 @@ export class EnhancedAuthService {
         session
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login error:', error);
       return { success: false, error: 'An unexpected error occurred' };
     }
@@ -233,7 +233,7 @@ export class EnhancedAuthService {
         session
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Registration error:', error);
       return { success: false, error: 'Registration failed. Please try again.' };
     }
@@ -257,7 +257,7 @@ export class EnhancedAuthService {
           metadata: { sessionId }
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Logout error:', error);
     }
   }
@@ -296,7 +296,7 @@ export class EnhancedAuthService {
 
       return { success: true, user };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Email verification error:', error);
       return { success: false, error: 'Verification failed' };
     }
@@ -341,7 +341,7 @@ export class EnhancedAuthService {
 
       return { success: true };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Password reset request error:', error);
       return { success: false, error: 'Failed to process password reset request' };
     }
@@ -395,7 +395,7 @@ export class EnhancedAuthService {
 
       return { success: true, user };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Password reset error:', error);
       return { success: false, error: 'Password reset failed' };
     }
@@ -431,7 +431,7 @@ export class EnhancedAuthService {
         securitySettings: this.securitySettings
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Security summary error:', error);
       return null;
     }
@@ -516,7 +516,7 @@ export class EnhancedAuthService {
   private async logAuthEvent(log: Omit<NewUserAuditLog, 'id' | 'createdAt'>): Promise<void> {
     try {
       await db.insert(userAuditLogs).values(log);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to log auth event:', error);
     }
   }

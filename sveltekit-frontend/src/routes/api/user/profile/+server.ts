@@ -36,7 +36,7 @@ export const GET: RequestHandler = async ({ locals }) => {
         avatarUrl: user.avatarUrl || "/images/default-avatar.png",
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Profile fetch error:", error);
     return json({ error: "Failed to fetch profile" }, { status: 500 });
   }
@@ -84,7 +84,7 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
       },
       message: "Profile updated successfully",
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Profile update error:", error);
     return json({ error: "Failed to update profile" }, { status: 500 });
   }

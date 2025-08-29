@@ -6,7 +6,7 @@ import { ollama, MODELS } from '$lib/ai/ollama';
 import { vectorDB } from '$lib/ai/vector-db';
 import { langchain } from '$lib/ai/langchain';
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const { 
       message, 
@@ -22,7 +22,7 @@ export const POST: RequestHandler = async ({ request }) => {
     }
     
     let response: string;
-    let sources: unknown[] = [];
+    let sources: any[] = [];
     
     if (useRAG) {
       // Use RAG with vector search
@@ -32,7 +32,7 @@ export const POST: RequestHandler = async ({ request }) => {
       });
       
       response = result.text;
-      sources = result.sourceDocuments?.map((doc: unknown) => ({
+      sources = result.sourceDocuments?.map((doc: any) => ({
         content: doc.pageContent.substring(0, 200) + '...',
         metadata: doc.metadata
       })) || [];
@@ -59,7 +59,7 @@ export const POST: RequestHandler = async ({ request }) => {
       timestamp: new Date()
     });
     
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('Chat API error:', error);
     return json({ 
       error: 'Failed to generate response' 
@@ -68,7 +68,7 @@ export const POST: RequestHandler = async ({ request }) => {
 };
 
 // GET endpoint for chat history
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
   try {
     const caseId = url.searchParams.get('caseId');
     const limit = parseInt(url.searchParams.get('limit') || '50');
@@ -81,7 +81,7 @@ export const GET: RequestHandler = async ({ url }) => {
     
     return json({ history });
     
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('Chat history error:', error);
     return json({ 
       error: 'Failed to fetch chat history' 

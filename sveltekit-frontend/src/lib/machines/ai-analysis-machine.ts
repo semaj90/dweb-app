@@ -198,7 +198,7 @@ export const aiAnalysisMachine = createMachine({
                       analysisResults = data.analysis;
                       tokensUsed = data.tokensUsed || 0;
                     }
-                  } catch (e) {
+                  } catch (e: any) {
                     console.warn('Failed to parse SSE data:', e);
                   }
                 }

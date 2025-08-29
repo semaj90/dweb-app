@@ -187,7 +187,7 @@ class GoMicroserviceClient {
         
         return result;
         
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Go service call attempt ${attempt + 1} failed:`, error);
         
         if (attempt === retries - 1) {
@@ -224,7 +224,7 @@ class GoMicroserviceClient {
       
       return await response.json();
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Go service health check failed:', error);
       return { status: 'unhealthy', gpu_available: false };
     }
@@ -259,7 +259,7 @@ class GoMicroserviceClient {
       const newHealth = await this.healthCheck();
       return newHealth.status === 'healthy';
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to start Go service:', error);
       return false;
     }
@@ -356,7 +356,7 @@ export class GoServiceManager {
       
       return true;
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to start Go service:', error);
       return false;
     }

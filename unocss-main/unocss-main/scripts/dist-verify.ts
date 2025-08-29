@@ -2,7 +2,7 @@ import fs from 'node:fs/promises'
 import process from 'node:process'
 import { glob } from 'tinyglobby'
 
-export async function verifyDist() {
+export async function verifyDist(): Promise<any> {
   const cjsFiles = await glob([
     'packages-*/*/dist/**/*.d.ts',
     'packages-*/*/dist/**/*.d.cts',

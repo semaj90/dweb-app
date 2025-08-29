@@ -75,7 +75,7 @@ export class FlashAttention2RTX3060Service {
 
       this.isInitialized = true;
       console.log('✅ FlashAttention2 RTX 3060 Ti service initialized');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ GPU initialization failed, falling back to CPU', error);
       this.config.enableGPUOptimization = false;
       this.isInitialized = true;
@@ -135,7 +135,7 @@ export class FlashAttention2RTX3060Service {
         processingTime,
         memoryUsage: memoryAfter - memoryBefore
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ FlashAttention2 processing failed:', error);
       throw new Error(`FlashAttention2 processing failed: ${error.message}`);
     }
@@ -471,7 +471,7 @@ export class GPUErrorProcessor {
       console.log(`✅ GPU error processing complete (confidence: ${result.confidence.toFixed(2)})`);
       return result;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ GPU error processing failed:', error);
       return {
         resolved: false,
@@ -543,7 +543,7 @@ export class GPUErrorProcessor {
     if (errorContext.errorMessage.includes('CUDA')) {
       return {
         suggestion: 'CUDA runtime error. Check RTX 3060 Ti driver and CUDA toolkit installation.',
-        fixCode: `// GPU error recovery:\ntry {\n  await initializeGPU();\n} catch (error) {\n  console.warn('GPU unavailable, using CPU fallback');\n  config.enableGPUOptimization = false;\n}`,
+        fixCode: `// GPU error recovery:\ntry {\n  await initializeGPU();\n} catch (error: any) {\n  console.warn('GPU unavailable, using CPU fallback');\n  config.enableGPUOptimization = false;\n}`,
         confidence: 0.85
       };
     }
@@ -589,7 +589,7 @@ export class GPUErrorProcessor {
   ): Promise<{ suggestion: string; fixCode?: string; confidence: number }> {
     return {
       suggestion: 'Inference error. Check model parameters and input formatting.',
-      fixCode: `// Inference error recovery:\nconst safeInference = async (input: string) => {\n  try {\n    return await model.generate(input);\n  } catch (error) {\n    console.warn('Inference failed, using fallback');\n    return await fallbackModel.generate(input);\n  }\n};`,
+      fixCode: `// Inference error recovery:\nconst safeInference = async (input: string): Promise<any> => {\n  try {\n    return await model.generate(input);\n  } catch (error: any) {\n    console.warn('Inference failed, using fallback');\n    return await fallbackModel.generate(input);\n  }\n};`,
       confidence: 0.7
     };
   }

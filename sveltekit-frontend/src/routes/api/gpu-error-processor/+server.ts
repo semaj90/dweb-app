@@ -6,7 +6,7 @@
 import { type RequestHandler, json } from '@sveltejs/kit';
 import { spawn } from 'child_process';
 
-interface ProcessResult {
+export interface ProcessResult {
 	success: boolean;
 	output: string;
 	errors: string;
@@ -14,7 +14,7 @@ interface ProcessResult {
 	exitCode: number;
 }
 
-interface ErrorProcessingStats {
+export interface ErrorProcessingStats {
 	totalErrors: number;
 	processedErrors: number;
 	fixedErrors: number;
@@ -87,7 +87,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
 			default:
 				return json({ error: 'Invalid action' }, { status: 400 });
 		}
-	} catch (error) {
+	} catch (error: any) {
 		console.error('GPU Error Processor API error:', error);
 		return json(
 			{
@@ -99,7 +99,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
 	}
 };
 
-async function handleTypeScriptCheck() {
+async function handleTypeScriptCheck(): Promise<any> {
 	console.log('🔍 Running TypeScript check...');
 
 	const result = await runTypeScriptCheck();
@@ -122,7 +122,7 @@ async function handleTypeScriptCheck() {
 	});
 }
 
-async function handleErrorProcessing(request: Request) {
+async function handleErrorProcessing(request: Request): Promise<any> {
 	console.log('⚡ Processing errors with GPU orchestrator...');
 
 	const body = await request.json().catch(() => ({}));
@@ -166,7 +166,7 @@ async function handleErrorProcessing(request: Request) {
 			recommendations: mockResults.recommendations,
 			timestamp: new Date().toISOString()
 		});
-	} catch (error) {
+	} catch (error: any) {
 		console.error('Error processing failed:', error);
 		return json(
 			{
@@ -179,7 +179,7 @@ async function handleErrorProcessing(request: Request) {
 	}
 }
 
-async function handleSystemTest() {
+async function handleSystemTest(): Promise<any> {
 	console.log('🧪 Running system test...');
 
 	const testResults = {
@@ -219,7 +219,7 @@ async function handleSystemTest() {
 			status: allPassed ? 'All tests passed' : 'Some tests failed',
 			timestamp: new Date().toISOString()
 		});
-	} catch (error) {
+	} catch (error: any) {
 		return json({
 			success: false,
 			results: testResults,
@@ -228,7 +228,7 @@ async function handleSystemTest() {
 	}
 }
 
-async function handleStatsRequest() {
+async function handleStatsRequest(): Promise<any> {
 	// Mock statistics
 	const stats = {
 		system: {
@@ -252,7 +252,7 @@ async function handleStatsRequest() {
 	return json(stats);
 }
 
-async function simulateGPUProcessing(tscOutput: string, options: any) {
+async function simulateGPUProcessing(tscOutput: string, options: any): Promise<any> {
 	// Simulate processing delay
 	await new Promise((resolve) => setTimeout(resolve, 100));
 

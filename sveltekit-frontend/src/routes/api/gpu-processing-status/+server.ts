@@ -1,7 +1,7 @@
 import { type RequestHandler,  json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
-interface GPUProcessingStatus {
+export interface GPUProcessingStatus {
   stage: string;
   progress: number;
   services: {
@@ -33,7 +33,7 @@ async function checkOllamaStatus(): Promise<boolean> {
       signal: AbortSignal.timeout(3000)
     });
     return response.ok;
-  } catch (error) {
+  } catch (error: any) {
     return false;
   }
 }
@@ -50,7 +50,7 @@ async function checkModels(): Promise<{ gemma3Legal: boolean; nomicEmbed: boolea
       gemma3Legal: modelNames.some((name: string) => name.includes('gemma3-legal')),
       nomicEmbed: modelNames.some((name: string) => name.includes('nomic-embed-text'))
     };
-  } catch (error) {
+  } catch (error: any) {
     return { gemma3Legal: false, nomicEmbed: false };
   }
 }
@@ -95,7 +95,7 @@ async function runTypeScriptCheck(): Promise<{ total: number; sample: string[] }
     } else {
       return { total: 9000, sample: ['Estimated error count (browser mode)'] };
     }
-  } catch (error) {
+  } catch (error: any) {
     return { total: 0, sample: [`Error running check: ${error}`] };
   }
 }
@@ -145,7 +145,7 @@ export const GET: RequestHandler = async () => {
       message: 'GPU processing status retrieved successfully',
       typeScriptSample: typeScriptCheck.sample
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Status check failed:', error);
     
     return json({
@@ -213,7 +213,7 @@ export const POST: RequestHandler = async ({ request }) => {
       default:
         return json({ success: false, error: 'Invalid action' }, { status: 400 });
     }
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error'

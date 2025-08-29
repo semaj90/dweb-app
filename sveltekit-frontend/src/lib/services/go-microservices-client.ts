@@ -189,7 +189,7 @@ export class GoMicroservicesClient {
         }
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('RAG query failed:', error);
       return {
         success: false,
@@ -235,7 +235,7 @@ export class GoMicroservicesClient {
         }
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('GPU processing failed:', error);
       return {
         success: false,
@@ -281,7 +281,7 @@ export class GoMicroservicesClient {
         }
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('File upload failed:', error);
       return {
         success: false,
@@ -348,7 +348,7 @@ export class GoMicroservicesClient {
       });
       
       return healthy;
-    } catch (error) {
+    } catch (error: any) {
       this.healthCache.set(service.name, {
         healthy: false,
         lastCheck: Date.now()
@@ -374,7 +374,7 @@ export class GoMicroservicesClient {
       const data = await response.json();
       return { success: true, data };
       
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Service call failed to ${service.name}:`, error);
       return {
         success: false,
@@ -403,7 +403,7 @@ export class GoMicroservicesClient {
       }
       
       return null;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Cache get failed:', error);
       return null;
     }
@@ -419,7 +419,7 @@ export class GoMicroservicesClient {
       if (typeof localStorage !== 'undefined') {
         localStorage.setItem(fullKey, JSON.stringify({ data: value, expiry }));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Cache set failed:', error);
     }
   }

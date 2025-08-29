@@ -389,7 +389,7 @@ let transition = 'ease-in-out duration-300'
 
     // origin HTML tags not include `mr-1 px2`
     expect(await match(uno, `<Tabs
-    @edit="(e) => handleEdit()"
+    @edit="(e: any) => handleEdit()"
     mr-1 px2
     type="editable-card"
     size="small"

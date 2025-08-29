@@ -63,7 +63,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
       metadata: pdfMetadata,
       note: "This is a mock response. In production, actual PDF generation would occur here.",
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error initiating PDF export:", error);
     return json({ error: "Failed to initiate PDF export" }, { status: 500 });
   }

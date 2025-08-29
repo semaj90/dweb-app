@@ -1,4 +1,5 @@
 import { pgTable, serial, varchar, text, integer, timestamp, jsonb, vector, boolean, real } from 'drizzle-orm/pg-core';
+import { eq } from 'drizzle-orm';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
@@ -40,7 +41,7 @@ export const documentChunks = pgTable('document_chunks', {
   chunkIndex: integer('chunk_index').notNull(),
   content: text('content').notNull(),
   wordCount: integer('word_count').notNull(),
-  embedding: vector('embedding', { dimensions: 768 }), // nomic-embed-text dimensions
+  embedding: vector('embedding', { dimensions: 384 }), // nomic-embed-text dimensions
   metadata: jsonb('metadata'), // Contains entities, concepts, etc.
   createdAt: timestamp('created_at').notNull().defaultNow()
 });
@@ -81,7 +82,7 @@ export const ragQueries = pgTable('rag_queries', {
   uuid: varchar('uuid', { length: 36 }).notNull().unique(),
   caseId: integer('case_id').references(() => cases.id),
   query: text('query').notNull(),
-  queryEmbedding: vector('query_embedding', { dimensions: 768 }),
+  queryEmbedding: vector('query_embedding', { dimensions: 384 }),
   response: text('response'),
   model: varchar('model', { length: 50 }).notNull(),
   tokensUsed: integer('tokens_used'),
@@ -104,46 +105,46 @@ export const ragQueryResults = pgTable('rag_query_results', {
 });
 
 // Zod schemas for validation
-export const insertCaseSchema = createInsertSchema(cases, {
+export const insertCaseSchema = createInsertSchema(cases).extend({
   title: z.string().min(1).max(255),
   status: z.enum(['active', 'archived', 'deleted']),
-  metadata: z.record(z.any()).optional()
+  metadata: z.record(z.string(), z.any()).optional()
 });
 
 export const selectCaseSchema = createSelectSchema(cases);
 
-export const insertDocumentSchema = createInsertSchema(documents, {
+export const insertDocumentSchema = createInsertSchema(documents).extend({
   filename: z.string().min(1).max(255),
   originalName: z.string().min(1).max(255),
   contentType: z.string().min(1).max(100),
   fileSize: z.number().positive(),
   minioPath: z.string().min(1).max(500),
   processingStatus: z.enum(['pending', 'processing', 'completed', 'failed']),
-  metadata: z.record(z.any()).optional()
+  metadata: z.record(z.string(), z.any()).optional()
 });
 
 export const selectDocumentSchema = createSelectSchema(documents);
 
-export const insertDocumentChunkSchema = createInsertSchema(documentChunks, {
+export const insertDocumentChunkSchema = createInsertSchema(documentChunks).extend({
   content: z.string().min(1),
   wordCount: z.number().positive(),
   embedding: z.array(z.number()).length(768).optional(),
-  metadata: z.record(z.any()).optional()
+  metadata: z.record(z.string(), z.any()).optional()
 });
 
 export const selectDocumentChunkSchema = createSelectSchema(documentChunks);
 
-export const insertProcessingJobSchema = createInsertSchema(processingJobs, {
+export const insertProcessingJobSchema = createInsertSchema(processingJobs).extend({
   jobType: z.enum(['ingest', 'reprocess', 'delete']),
   status: z.enum(['queued', 'processing', 'completed', 'failed']),
   currentStep: z.string().optional(),
   progress: z.number().min(0).max(100),
-  result: z.record(z.any()).optional()
+  result: z.record(z.string(), z.any()).optional()
 });
 
 export const selectProcessingJobSchema = createSelectSchema(processingJobs);
 
-export const insertRAGQuerySchema = createInsertSchema(ragQueries, {
+export const insertRAGQuerySchema = createInsertSchema(ragQueries).extend({
   query: z.string().min(1),
   queryEmbedding: z.array(z.number()).length(768).optional(),
   response: z.string().optional(),
@@ -152,7 +153,7 @@ export const insertRAGQuerySchema = createInsertSchema(ragQueries, {
   processingTimeMs: z.number().optional(),
   similarityThreshold: z.number().min(0).max(1),
   resultsCount: z.number().optional(),
-  userFeedback: z.record(z.any()).optional()
+  userFeedback: z.record(z.string(), z.any()).optional()
 });
 
 export const selectRAGQuerySchema = createSelectSchema(ragQueries);
@@ -181,7 +182,7 @@ export type NewRAGQueryResult = typeof ragQueryResults.$inferInsert;
 
 // Helper functions for common operations
 export const getDocumentsByCase = (db: any, caseId: number) => {
-  return db.select().from(documents).where(documents.caseId.eq(caseId));
+  return db.select().from(documents).where(eq(documents.caseId, caseId));
 };
 
 export const getDocumentChunksWithSimilarity = (

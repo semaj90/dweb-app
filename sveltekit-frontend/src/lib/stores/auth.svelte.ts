@@ -88,7 +88,7 @@ export class AuthService {
         authState.user = null;
         authState.isAuthenticated = false;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Auth initialization error:', error);
       authState.error = 'Failed to initialize authentication';
       authState.user = null;
@@ -165,7 +165,7 @@ export class AuthService {
 
         return { success: false, error: result.error };
       }
-    } catch (error) {
+    } catch (error: any) {
       const errorMessage = 'Network error during login';
       authState.error = errorMessage;
       console.error('Login error:', error);
@@ -232,7 +232,7 @@ export class AuthService {
         authState.error = result.error;
         return { success: false, error: result.error };
       }
-    } catch (error) {
+    } catch (error: any) {
       const errorMessage = 'Network error during registration';
       authState.error = errorMessage;
       console.error('Registration error:', error);
@@ -278,7 +278,7 @@ export class AuthService {
 
       // Redirect to login page
       await goto('/login');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Logout error:', error);
       // Still clear state on error
       authState.user = null;
@@ -325,7 +325,7 @@ export class AuthService {
         authState.error = result.error;
         return { success: false, error: result.error };
       }
-    } catch (error) {
+    } catch (error: any) {
       const errorMessage = 'Failed to update profile';
       authState.error = errorMessage;
       console.error('Profile update error:', error);

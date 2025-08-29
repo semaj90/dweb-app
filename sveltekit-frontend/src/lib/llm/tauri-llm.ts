@@ -2,11 +2,11 @@
 // Optional Tauri import - fallback for web environments
 let invoke: any;
 
-async function initializeTauri() {
+async function initializeTauri(): Promise<any> {
   try {
     const { invoke: tauriInvoke } = await import("@tauri-apps/api/core");
     invoke = tauriInvoke;
-  } catch (error) {
+  } catch (error: any) {
     console.warn("Tauri not available - using fallback implementations");
     invoke = () => Promise.reject(new Error("Tauri not available"));
   }

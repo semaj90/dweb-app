@@ -12,7 +12,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types.js';
+import type { RequestHandler } from './$types';
 import { jsonbLegalService } from '$lib/services/jsonb-legal-service.js';
 import { logger } from '$lib/logging/structured-logger.js';
 import { z } from 'zod';
@@ -202,7 +202,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
       default:
         throw error(404, `Endpoint not found: ${path}`);
     }
-  } catch (err) {
+  } catch (err: any) {
     const duration = performance.now() - startTime;
     const errorMessage = err instanceof Error ? err.message : 'Unknown error';
     
@@ -466,7 +466,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
       default:
         throw error(404, `Operation not found: ${operation}`);
     }
-  } catch (err) {
+  } catch (err: any) {
     const duration = performance.now() - startTime;
     let errorMessage = 'Unknown error';
     let statusCode = 500;
@@ -625,7 +625,7 @@ export const PUT: RequestHandler = async ({ request, url }) => {
     } else {
       throw error(404, `Operation not found: ${operation}/${action}`);
     }
-  } catch (err) {
+  } catch (err: any) {
     const duration = performance.now() - startTime;
     let errorMessage = 'Unknown error';
     let statusCode = 500;
@@ -706,7 +706,7 @@ export const PATCH: RequestHandler = async ({ request }) => {
         timestamp: new Date().toISOString()
       }
     });
-  } catch (err) {
+  } catch (err: any) {
     const duration = performance.now() - startTime;
     const errorMessage = err instanceof Error ? err.message : 'Unknown error';
     

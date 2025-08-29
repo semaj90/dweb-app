@@ -12,7 +12,7 @@ const env = process.env || {};
  *
  * @type {import('./$types').RequestHandler}
  */
-export async function GET({ url }) {
+export async function GET({ url }): Promise<any> {
   try {
     // Get query parameters for context filtering
     const contextType = url.searchParams.get("type") || "legal";
@@ -104,7 +104,7 @@ export async function GET({ url }) {
       timestamp: new Date().toISOString(),
       version: "1.0.0",
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Context API error:", error);
     return json(
       {
@@ -120,7 +120,7 @@ export async function GET({ url }) {
 /**
  * POST endpoint for updating context with AI interactions
  */
-export async function POST({ request }) {
+export async function POST({ request }): Promise<any> {
   try {
     const { contextUpdate, interactionType } = await request.json();
 
@@ -135,7 +135,7 @@ export async function POST({ request }) {
       success: true,
       message: "Context updated successfully",
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Context update error:", error);
     return json(
       {

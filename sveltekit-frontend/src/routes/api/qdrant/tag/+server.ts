@@ -128,7 +128,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       default:
         return json({ error: "Invalid action" }, { status: 400 });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Qdrant API error:", error);
     return json(
       {
@@ -141,7 +141,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 };
 
 // Initialize Qdrant collections
-async function initializeCollections() {
+async function initializeCollections(): Promise<any> {
   try {
     const collections = await qdrantClient.getCollections();
     const existingCollections =
@@ -189,11 +189,11 @@ async function initializeCollections() {
     }
     // Create search indices for better performance
     await createSearchIndices();
-  } catch (error) {
+  } catch (error: any) {
     console.warn("Collection initialization failed:", error);
   }
 }
-async function createSearchIndices() {
+async function createSearchIndices(): Promise<any> {
   try {
     // Create payload indices for filtering
     const indexFields = [
@@ -211,17 +211,17 @@ async function createSearchIndices() {
             field_name: field,
             field_schema: field === "tags" ? "keyword" : "keyword",
           });
-        } catch (error) {
+        } catch (error: any) {
           // Index might already exist, continue
         }
       }
     }
-  } catch (error) {
+  } catch (error: any) {
     console.warn("Index creation failed:", error);
   }
 }
 // Tag a document with vector embeddings
-async function tagDocument(data: any, userId: string) {
+async function tagDocument(data: any, userId: string): Promise<any> {
   try {
     const { id, vector, payload } = data;
 
@@ -259,7 +259,7 @@ async function tagDocument(data: any, userId: string) {
       status: response.status,
       message: "Document tagged successfully",
     });
-  } catch (error) {
+  } catch (error: any) {
     throw error;
   }
 }
@@ -268,7 +268,7 @@ async function createTagEmbeddings(
   tags: string[],
   documentId: string,
   userId: string
-) {
+): Promise<any> {
   try {
     const tagEmbeddings = await Promise.all(
       tags.map(async (tag) => {
@@ -299,7 +299,7 @@ async function createTagEmbeddings(
               },
             };
           }
-        } catch (error) {
+        } catch (error: any) {
           console.warn(`Tag embedding failed for: ${tag}`, error);
         }
         return null;
@@ -314,12 +314,12 @@ async function createTagEmbeddings(
         points: validEmbeddings,
       });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.warn("Tag embedding creation failed:", error);
   }
 }
 // Search documents using vector similarity
-async function searchDocuments(data: any, userId: string) {
+async function searchDocuments(data: any, userId: string): Promise<any> {
   try {
     const { vector, text, filters = {}, limit = 20, threshold = 0.7 } = data;
 
@@ -400,12 +400,12 @@ async function searchDocuments(data: any, userId: string) {
         threshold,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     throw error;
   }
 }
 // Batch tag multiple documents
-async function batchTagDocuments(data: any, userId: string) {
+async function batchTagDocuments(data: any, userId: string): Promise<any> {
   try {
     const { documents } = data;
 
@@ -442,7 +442,7 @@ async function batchTagDocuments(data: any, userId: string) {
           operation_id: response.operation_id,
           status: response.status,
         });
-      } catch (error) {
+      } catch (error: any) {
         errors.push({
           batchIndex: Math.floor(i / batchSize),
           error: error instanceof Error ? error.message : "Unknown error",
@@ -457,12 +457,12 @@ async function batchTagDocuments(data: any, userId: string) {
       results,
       errors,
     });
-  } catch (error) {
+  } catch (error: any) {
     throw error;
   }
 }
 // Update document tags
-async function updateDocumentTags(data: any, userId: string) {
+async function updateDocumentTags(data: any, userId: string): Promise<any> {
   try {
     const { documentId, tags, vector } = data;
 
@@ -518,12 +518,12 @@ async function updateDocumentTags(data: any, userId: string) {
       success: true,
       message: "Document tags updated successfully",
     });
-  } catch (error) {
+  } catch (error: any) {
     throw error;
   }
 }
 // Delete document and associated tags
-async function deleteDocument(data: any, userId: string) {
+async function deleteDocument(data: any, userId: string): Promise<any> {
   try {
     const { documentId } = data;
 
@@ -554,12 +554,12 @@ async function deleteDocument(data: any, userId: string) {
       success: true,
       message: "Document deleted successfully",
     });
-  } catch (error) {
+  } catch (error: any) {
     throw error;
   }
 }
 // Get similar documents
-async function getSimilarDocuments(data: any, userId: string) {
+async function getSimilarDocuments(data: any, userId: string): Promise<any> {
   try {
     const { documentId, limit = 10 } = data;
 
@@ -601,12 +601,12 @@ async function getSimilarDocuments(data: any, userId: string) {
         payload: doc.payload,
       })),
     });
-  } catch (error) {
+  } catch (error: any) {
     throw error;
   }
 }
 // Get collection statistics
-async function getCollectionStats(userId: string) {
+async function getCollectionStats(userId: string): Promise<any> {
   try {
     const stats: any = {};
 
@@ -625,7 +625,7 @@ async function getCollectionStats(userId: string) {
           vectorSize: info.config?.params?.vectors?.size || 0,
           status: info.status || "unknown",
         };
-      } catch (error) {
+      } catch (error: any) {
         stats[name] = { error: "Failed to get stats" };
       }
     }
@@ -634,7 +634,7 @@ async function getCollectionStats(userId: string) {
       collections: stats,
       timestamp: new Date().toISOString(),
     });
-  } catch (error) {
+  } catch (error: any) {
     throw error;
   }
 }
@@ -655,7 +655,7 @@ async function generateTextEmbedding(text: string): Promise<number[]> {
     }
     const data = await response.json();
     return data.embedding;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Text embedding generation failed:", error);
     throw new Error("Failed to generate text embedding");
   }
@@ -692,7 +692,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
       default:
         return json({ error: "Invalid action" }, { status: 400 });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Qdrant GET error:", error);
     return json(
       {
@@ -704,7 +704,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
   }
 };
 
-async function getDocument(documentId: string, userId: string) {
+async function getDocument(documentId: string, userId: string): Promise<any> {
   const document = await qdrantClient.retrieve(COLLECTIONS.EVIDENCE, {
     ids: [documentId],
     with_payload: true,
@@ -725,7 +725,7 @@ async function getDocument(documentId: string, userId: string) {
 async function listDocuments(
   userId: string,
   options: { caseId?: string; limit: number }
-) {
+): Promise<any> {
   const filter = {
     must: [{ key: "userId", match: { value: userId } }],
   };
@@ -749,7 +749,7 @@ async function listDocuments(
       })) || [],
   });
 }
-async function getUserTags(userId: string) {
+async function getUserTags(userId: string): Promise<any> {
   const tags = await qdrantClient.scroll(COLLECTIONS.TAGS, {
     filter: {
       must: [{ key: "userId", match: { value: userId } }],
@@ -777,7 +777,7 @@ async function getUserTags(userId: string) {
     tags: sortedTags,
   });
 }
-async function getHealthStatus() {
+async function getHealthStatus(): Promise<any> {
   try {
     const health = await qdrantClient.getCollections();
     return json({
@@ -786,7 +786,7 @@ async function getHealthStatus() {
       collections: health.collections?.length || 0,
       timestamp: new Date().toISOString(),
     });
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       status: "unhealthy",

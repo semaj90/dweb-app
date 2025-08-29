@@ -16,7 +16,7 @@ export interface ChatMessage {
     model?: string;
     protocol?: string;
     processingTime?: number;
-    sources?: unknown[];
+    sources?: any[];
     tokens?: number;
   };
 }
@@ -62,14 +62,14 @@ export interface ChatContext {
 
 // Chat events
 export type ChatEvent =
-  | { type: 'CREATE_SESSION'; title?: string; context?: unknown }
+  | { type: 'CREATE_SESSION'; title?: string; context?: any }
   | { type: 'LOAD_SESSION'; sessionId: string }
   | { type: 'DELETE_SESSION'; sessionId: string }
   | { type: 'UPDATE_MESSAGE'; message: string }
   | { type: 'SEND_MESSAGE' }
   | { type: 'CANCEL_MESSAGE' }
   | { type: 'RETRY_MESSAGE'; messageId: string }
-  | { type: 'MESSAGE_DELIVERED'; messageId: string; response: unknown }
+  | { type: 'MESSAGE_DELIVERED'; messageId: string; response: any }
   | { type: 'MESSAGE_ERROR'; messageId: string; error: string }
   | { type: 'START_TYPING' }
   | { type: 'STOP_TYPING' }
@@ -107,7 +107,7 @@ const defaultContext: ChatContext = {
 
 // Services for chat machine
 const chatServices = {
-  sendMessage: async (context: ChatContext, event: unknown) => {
+  sendMessage: async (context: ChatContext, event: any) => {
     const { currentSession, currentMessage, settings } = context;
     if (!currentSession || !currentMessage.trim()) {
       throw new Error('No active session or empty message');
@@ -167,12 +167,12 @@ const chatServices = {
         protocol: result.metadata?.protocolUsed || 'unknown'
       };
 
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(`Message failed: ${error.message}`);
     }
   },
 
-  loadSession: async (context: ChatContext, event: unknown) => {
+  loadSession: async (context: ChatContext, event: any) => {
     try {
       // Load session from storage (localStorage, IndexedDB, or API)
       const sessionData = localStorage.getItem(`chat_session_${event.sessionId}`);
@@ -181,7 +181,7 @@ const chatServices = {
       }
 
       return JSON.parse(sessionData);
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(`Failed to load session: ${error.message}`);
     }
   },
@@ -205,16 +205,16 @@ const chatServices = {
       }
 
       localStorage.setItem('chat_sessions', JSON.stringify(updatedSessions));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to save session:', error);
     }
   },
 
-  loadSessions: async () => {
+  loadSessions: async (): Promise<any> => {
     try {
       const sessionsData = localStorage.getItem('chat_sessions');
       return sessionsData ? JSON.parse(sessionsData) : [];
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load sessions:', error);
       return [];
     }
@@ -254,7 +254,7 @@ export const chatMachine = createMachine({
           target: 'active',
           actions: [
             assign({
-              currentSession: (_, event) => event.data,
+              currentSession: (_, event) => event?.output || null,
               connectionStatus: 'connected'
             }),
             'addToSessions'
@@ -280,7 +280,7 @@ export const chatMachine = createMachine({
           on: {
             UPDATE_MESSAGE: {
               actions: assign({
-                currentMessage: (_, event) => event.message
+                currentMessage: (_, event) => event?.message || ''
               })
             },
             SEND_MESSAGE: {
@@ -354,29 +354,29 @@ export const chatMachine = createMachine({
   on: {
     CONNECTION_STATUS: {
       actions: assign({
-        connectionStatus: (_, event) => event.status,
-        isConnected: (_, event) => event.status === 'connected'
+        connectionStatus: (_, event) => event?.status || 'disconnected',
+        isConnected: (_, event) => (event?.status || 'disconnected') === 'connected'
       })
     }
   }
-}, {
-  services: chatServices,
+}).provide({
   guards: {
-    hasMessage: (context) => context.currentMessage.trim().length > 0
+    hasMessage: ({ context }) => context.currentMessage?.trim()?.length > 0
   },
+  actors: chatServices,
   actions: {
     loadSessions: assign({
-      sessions: async () => await chatServices.loadSessions()
+      sessions: () => []
     }),
 
     createSession: assign({
-      currentSession: (context, event) => ({
+      currentSession: ({ context, event }) => ({
         id: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        title: event.title || `Chat ${new Date().toLocaleString()}`,
+        title: event?.title || `Chat ${new Date().toLocaleString()}`,
         createdAt: Date.now(),
         updatedAt: Date.now(),
         messages: [],
-        context: event.context || {}
+        context: event?.context || {}
       })
     }),
 
@@ -386,7 +386,7 @@ export const chatMachine = createMachine({
     }),
 
     addToSessions: assign({
-      sessions: (context) => {
+      sessions: ({ context }) => {
         const existing = context.sessions.find(s => s.id === context.currentSession?.id);
         if (existing) return context.sessions;
         return [...context.sessions, context.currentSession!];
@@ -394,7 +394,7 @@ export const chatMachine = createMachine({
     }),
 
     createUserMessage: assign({
-      currentSession: (context) => {
+      currentSession: ({ context }) => {
         if (!context.currentSession) return context.currentSession;
 
         const userMessage: ChatMessage = {
@@ -418,10 +418,10 @@ export const chatMachine = createMachine({
     }),
 
     addAssistantMessage: assign({
-      currentSession: (context, event) => {
+      currentSession: ({ context, event }) => {
         if (!context.currentSession) return context.currentSession;
 
-        const { userMessage, assistantMessage } = event.data;
+        const { userMessage, assistantMessage } = event?.output || {};
         const messages = [...context.currentSession.messages];
         
         // Update user message status
@@ -442,8 +442,8 @@ export const chatMachine = createMachine({
     }),
 
     updatePerformanceMetrics: assign({
-      performance: (context, event) => {
-        const { processingTime, protocol } = event.data;
+      performance: ({ context, event }) => {
+        const { processingTime, protocol } = event?.output || {};
         const perf = context.performance;
         
         return {
@@ -459,11 +459,11 @@ export const chatMachine = createMachine({
     }),
 
     handleMessageError: assign({
-      currentSession: (context, event) => {
+      currentSession: ({ context, event }) => {
         if (!context.currentSession) return context.currentSession;
 
         const messages = [...context.currentSession.messages];
-        const lastUserMessage = messages.findLast(m => m.role === 'user');
+        const lastUserMessage = messages.reverse().find(m => m.role === 'user');
         
         if (lastUserMessage) {
           const index = messages.indexOf(lastUserMessage);
@@ -489,11 +489,11 @@ export const chatMachine = createMachine({
 
     deleteSession: assign({
       currentSession: null,
-      sessions: (context, event) => {
-        const filtered = context.sessions.filter(s => s.id !== event.sessionId);
+      sessions: ({ context, event }) => {
+        const filtered = context.sessions.filter(s => s.id !== event?.sessionId);
         
         // Remove from storage
-        localStorage.removeItem(`chat_session_${event.sessionId}`);
+        localStorage.removeItem(`chat_session_${event?.sessionId}`);
         localStorage.setItem('chat_sessions', JSON.stringify(filtered));
         
         return filtered;
@@ -501,7 +501,7 @@ export const chatMachine = createMachine({
     }),
 
     clearSessionHistory: assign({
-      currentSession: (context) => {
+      currentSession: ({ context }) => {
         if (!context.currentSession) return context.currentSession;
         
         return {
@@ -513,21 +513,21 @@ export const chatMachine = createMachine({
     }),
 
     updateSettings: assign({
-      settings: (context, event) => ({
+      settings: ({ context, event }) => ({
         ...context.settings,
-        ...event.settings
+        ...event?.settings
       })
     }),
 
     prepareRetry: assign({
-      currentMessage: (context, event) => {
-        const message = context.currentSession?.messages.find(m => m.id === event.messageId);
+      currentMessage: ({ context, event }) => {
+        const message = context.currentSession?.messages.find(m => m.id === event?.messageId);
         return message?.content || context.currentMessage;
       }
     }),
 
     cancelMessage: assign({
-      currentSession: (context) => {
+      currentSession: ({ context }) => {
         if (!context.currentSession) return context.currentSession;
 
         const messages = context.currentSession.messages.filter(m => m.status !== 'sending');
@@ -540,12 +540,12 @@ export const chatMachine = createMachine({
       }
     }),
 
-    saveSession: async (context) => {
+    saveSession: async ({ context }): Promise<any> => {
       await chatServices.saveSession(context);
     },
 
-    exportSession: (context, event) => {
-      const session = context.sessions.find(s => s.id === event.sessionId);
+    exportSession: ({ context, event }) => {
+      const session = context.sessions.find(s => s.id === event?.sessionId);
       if (!session) return;
 
       const exportData = {
@@ -566,8 +566,8 @@ export const chatMachine = createMachine({
       URL.revokeObjectURL(url);
     },
 
-    handleError: (context, event) => {
-      console.error('Chat machine error:', event.data);
+    handleError: ({ context, event }) => {
+      console.error('Chat machine error:', event?.output);
     }
   }
 });
@@ -577,7 +577,7 @@ export type ChatService = InterpreterFrom<typeof chatMachine>;
 
 // Helper functions for common operations
 export const chatActions = {
-  createSession: (title?: string, context?: unknown) => ({
+  createSession: (title?: string, context?: any) => ({
     type: 'CREATE_SESSION' as const,
     title,
     context
@@ -619,10 +619,10 @@ export const chatActions = {
 
 // Selectors for derived state
 export const chatSelectors = {
-  isIdle: (state: unknown) => state.matches('idle'),
-  isActive: (state: unknown) => state.matches('active'),
-  isSending: (state: unknown) => state.matches('active.sending'),
-  isReady: (state: unknown) => state.matches('active.ready'),
+  isIdle: (state: any) => state.matches('idle'),
+  isActive: (state: any) => state.matches('active'),
+  isSending: (state: any) => state.matches('active.sending'),
+  isReady: (state: any) => state.matches('active.ready'),
   
   canSendMessage: (context: ChatContext) => 
     context.currentMessage.trim().length > 0 && context.isConnected,

@@ -3,8 +3,8 @@
 
 import { z } from "zod";
 import crypto from "crypto";
-import type { RAGConfiguration } from './types.js';
-import { logger } from './logger.js';
+import type { RAGConfiguration } from './types';
+import { logger } from './logger';
 
 // === ENVIRONMENT VALIDATION ===
 
@@ -59,7 +59,7 @@ const EnvSchema = z.object({
 function parseEnvironment() {
   try {
     return EnvSchema.parse(process.env);
-  } catch (error) {
+  } catch (error: any) {
     logger.error('Environment validation failed:', error);
     throw new Error('Invalid environment configuration');
   }
@@ -135,7 +135,7 @@ export function withRetry<T>(
         const result = await operation();
         resolve(result);
         return;
-      } catch (error) {
+      } catch (error: any) {
         lastError = error as Error;
         
         if (attempt === maxRetries) {
@@ -251,7 +251,7 @@ class CircuitBreaker {
       const result = await operation();
       this.onSuccess();
       return result;
-    } catch (error) {
+    } catch (error: any) {
       this.onFailure();
       throw error;
     }
@@ -371,7 +371,7 @@ export function measureTime(operation: string) {
         const result = await method.apply(this, args);
         metrics.recordTiming(operation, Date.now() - start);
         return result;
-      } catch (error) {
+      } catch (error: any) {
         metrics.recordTiming(`${operation}_error`, Date.now() - start);
         throw error;
       }
@@ -447,7 +447,7 @@ export async function checkServiceHealth(name: string, checkFn: () => Promise<an
       status: 'healthy',
       responseTime: Date.now() - start,
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       service: name,
       status: 'unhealthy',

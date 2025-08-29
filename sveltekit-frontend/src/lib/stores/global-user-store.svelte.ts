@@ -12,7 +12,7 @@ import type {
 
 // ===== CORE USER STATE =====
 
-interface GlobalUserState {
+export interface GlobalUserState {
   // Authentication
   user: User | null;
   session: Session | null;
@@ -42,7 +42,7 @@ interface GlobalUserState {
   pendingChanges: number;
 }
 
-interface UserProfile {
+export interface UserProfile {
   id: string;
   email: string;
   firstName?: string;
@@ -56,7 +56,7 @@ interface UserProfile {
   updatedAt: Date;
 }
 
-interface UserPreferences {
+export interface UserPreferences {
   theme: 'light' | 'dark' | 'yorha' | 'nes';
   language: string;
   timezone: string;
@@ -80,7 +80,7 @@ interface UserPreferences {
   };
 }
 
-interface AIMessage {
+export interface AIMessage {
   id: string;
   sessionId?: string;
   role: 'user' | 'assistant' | 'system';
@@ -93,7 +93,7 @@ interface AIMessage {
   tokensUsed?: number;
 }
 
-interface SessionMetrics {
+export interface SessionMetrics {
   startTime: Date;
   duration: number;
   queriesCount: number;
@@ -102,14 +102,14 @@ interface SessionMetrics {
   topTopics: string[];
 }
 
-interface EmbeddingCache {
+export interface EmbeddingCache {
   textHash: string;
   embedding: number[];
   model: string;
   createdAt: Date;
 }
 
-interface SearchQuery {
+export interface SearchQuery {
   query: string;
   results: number;
   timestamp: Date;
@@ -226,7 +226,7 @@ export const globalUserStore = {
         const profile = await response.json();
         globalUserState.profile = profile;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load user profile:', error);
     }
   },
@@ -238,7 +238,7 @@ export const globalUserStore = {
         const preferences = await response.json();
         globalUserState.preferences = { ...defaultPreferences, ...preferences };
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load user preferences:', error);
     }
   },
@@ -256,7 +256,7 @@ export const globalUserStore = {
         });
         
         await this.syncToDatabase();
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to update preferences:', error);
       }
     }
@@ -304,7 +304,7 @@ export const globalUserStore = {
           tokensUsed: message.tokensUsed
         })
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to store AI message:', error);
     }
   },
@@ -362,7 +362,7 @@ export const globalUserStore = {
         const recommendations = await response.json();
         globalUserState.recommendations = recommendations;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load recommendations:', error);
     }
   },
@@ -382,7 +382,7 @@ export const globalUserStore = {
         const analytics = await response.json();
         globalUserState.analytics = analytics;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load analytics:', error);
     }
   },
@@ -396,7 +396,7 @@ export const globalUserStore = {
         const patterns = await response.json();
         globalUserState.patterns = patterns;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load user patterns:', error);
     }
   },
@@ -475,7 +475,7 @@ export const globalUserStore = {
       } else {
         globalUserState.syncStatus = 'error';
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Sync failed:', error);
       globalUserState.syncStatus = 'error';
     }

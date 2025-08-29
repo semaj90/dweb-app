@@ -7,7 +7,7 @@
 import { performance } from 'perf_hooks';
 
 // === Vertex Buffer Types ===
-interface VertexData {
+export interface VertexData {
   positions: Float32Array;    // x, y, z coordinates
   normals: Float32Array;      // Normal vectors
   colors: Float32Array;       // RGB(A) color data
@@ -15,7 +15,7 @@ interface VertexData {
   indices: Uint32Array;       // Vertex indices for triangulation
 }
 
-interface GeometryFeatures {
+export interface GeometryFeatures {
   boundingBox: {
     min: { x: number; y: number; z: number };
     max: { x: number; y: number; z: number };
@@ -27,7 +27,7 @@ interface GeometryFeatures {
   symmetry: number;   // 0-1 symmetry score
 }
 
-interface ImageAnalysisResult {
+export interface ImageAnalysisResult {
   vertexBuffers: VertexData;
   geometryFeatures: GeometryFeatures;
   embedding: Float32Array;
@@ -46,7 +46,7 @@ interface ImageAnalysisResult {
   };
 }
 
-interface CUDAProcessingOptions {
+export interface CUDAProcessingOptions {
   enableCUDAAcceleration: boolean;
   useFlashAttention: boolean;
   batchSize: number;
@@ -54,7 +54,7 @@ interface CUDAProcessingOptions {
   optimizeForRTX3060Ti: boolean;
 }
 
-interface WebGPUConfig {
+export interface WebGPUConfig {
   device: GPUDevice | null;
   queue: GPUCommandEncoder | null;
   shaderModules: Map<string, GPUShaderModule>;
@@ -106,7 +106,7 @@ export class VertexBufferImageAnalyzer {
       this.isInitialized = true;
       console.log('✅ Vertex Buffer Image Analyzer initialized');
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize Vertex Buffer Image Analyzer:', error);
       throw error;
     }
@@ -222,7 +222,7 @@ export class VertexBufferImageAnalyzer {
       
       return result;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Image analysis error:', error);
       throw error;
     }
@@ -271,7 +271,7 @@ export class VertexBufferImageAnalyzer {
         indices: new Uint32Array(result.indices)
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ CUDA processing failed, falling back to WebGPU:', error);
       return this.extractVertexBuffersWithWebGPU(imageData);
     }
@@ -363,7 +363,7 @@ export class VertexBufferImageAnalyzer {
         indices: new Uint32Array(indices)
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ WebGPU processing failed, falling back to CPU:', error);
       return this.extractVertexBuffersWithCPU(imageData);
     }
@@ -730,7 +730,7 @@ export class VertexBufferImageAnalyzer {
       
       return embedding;
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Embedding generation error:', error);
       return new Float32Array(384); // Return zero embedding on error
     }
@@ -820,7 +820,7 @@ export class VertexBufferImageAnalyzer {
       this.webGPUConfig.device = device;
       
       console.log('✅ WebGPU initialized for vertex processing');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('WebGPU initialization failed:', error);
     }
   }
@@ -831,7 +831,7 @@ export class VertexBufferImageAnalyzer {
       if (response.ok) {
         console.log('✅ CUDA service connection established');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ CUDA service not available:', error);
     }
   }

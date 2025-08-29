@@ -5,7 +5,7 @@ import {
   assign, createMachine, fromCallback
 } from "xstate";
 
-interface UploadContext {
+export interface UploadContext {
   files: Record<string, {
     uploadProgress?: number;
     step?: string;
@@ -91,7 +91,7 @@ export const uploadMachine = createMachine({
                 sendBack({ type: 'WS_OPENED' });
               };
 
-              ws.onmessage = (event) => {
+              ws.onmessage = (event: any) => {
                 try {
                   const msg: ProgressMsg = JSON.parse(event.data);
                   console.log('📨 WebSocket message:', msg);
@@ -163,7 +163,7 @@ export const uploadMachine = createMachine({
                 sendBack({ type: 'ERROR', error });
               };
 
-            } catch (error) {
+            } catch (error: any) {
               console.error('❌ Failed to create WebSocket:', error);
               sendBack({ type: 'ERROR', error });
             }
@@ -225,7 +225,7 @@ export const uploadMachine = createMachine({
               sendBack({ type: 'WS_OPENED' });
             };
 
-            eventSource.onmessage = (event) => {
+            eventSource.onmessage = (event: any) => {
               try {
                 const msg: ProgressMsg = JSON.parse(event.data);
                 console.log('📨 SSE message:', msg);
@@ -283,7 +283,7 @@ export const uploadMachine = createMachine({
               sendBack({ type: 'ERROR', error });
             };
 
-          } catch (error) {
+          } catch (error: any) {
             console.error('❌ Failed to create SSE:', error);
             sendBack({ type: 'ERROR', error });
           }
@@ -408,7 +408,7 @@ export const uploadMachine = createMachine({
 
               sendBack({ type: 'DONE', output: { success: true } });
 
-            } catch (error) {
+            } catch (error: any) {
               sendBack({ type: 'ERROR', error });
             }
           })();

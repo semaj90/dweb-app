@@ -8,7 +8,7 @@ import { performance } from 'perf_hooks';
 import { EventEmitter } from 'events';
 
 // === PageRank Configuration ===
-interface PageRankConfig {
+export interface PageRankConfig {
   dampingFactor: number;
   maxIterations: number;
   convergenceThreshold: number;
@@ -19,7 +19,7 @@ interface PageRankConfig {
 }
 
 // === Graph Data Structures ===
-interface GraphNode {
+export interface GraphNode {
   id: string;
   type: 'document' | 'case' | 'evidence' | 'person' | 'concept';
   metadata: {
@@ -43,7 +43,7 @@ interface GraphNode {
   };
 }
 
-interface GraphEdge {
+export interface GraphEdge {
   source: string;
   target: string;
   weight: number;
@@ -57,7 +57,7 @@ interface GraphEdge {
   };
 }
 
-interface SimilarityQuery {
+export interface SimilarityQuery {
   queryVector?: Float32Array;
   queryText?: string;
   queryNodeId?: string;
@@ -79,7 +79,7 @@ interface SimilarityQuery {
   offset: number;
 }
 
-interface SimilarityResult {
+export interface SimilarityResult {
   node: GraphNode;
   scores: {
     pageRank: number;
@@ -140,7 +140,7 @@ export class PageRankSimilarityRetrieval extends EventEmitter {
       this.isInitialized = true;
       console.log(`✅ PageRank system initialized with ${this.graph.size} nodes and ${this.getTotalEdges()} edges`);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize PageRank system:', error);
       throw error;
     }
@@ -364,7 +364,7 @@ export class PageRankSimilarityRetrieval extends EventEmitter {
       this.emit('pageRankComplete', { scores, processingTime });
       return scores;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ PageRank calculation error:', error);
       throw error;
     }
@@ -424,7 +424,7 @@ export class PageRankSimilarityRetrieval extends EventEmitter {
         throw new Error(`GPU PageRank failed: ${response.status}`);
       }
       
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ GPU PageRank failed, falling back to CPU:', error);
       return this.calculatePageRankWithCPU();
     }
@@ -589,7 +589,7 @@ export class PageRankSimilarityRetrieval extends EventEmitter {
 
       return paginatedResults;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Similarity search error:', error);
       throw error;
     }
@@ -835,7 +835,7 @@ export class PageRankSimilarityRetrieval extends EventEmitter {
         const result = await response.json();
         return new Float32Array(result.embedding);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Embedding generation failed:', error);
     }
     

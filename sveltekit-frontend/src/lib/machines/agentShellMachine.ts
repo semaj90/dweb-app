@@ -1,10 +1,10 @@
 // XState Machine for AI Agent Shell with Production Go Services Integration
 import { createMachine, assign } from "xstate";
-import { goServiceClient, type RAGResponse, type UploadResponse } from "../services/goServiceClient.js";
-import { productionServiceClient, services } from "../services/productionServiceClient.js";
+import { goServiceClient, type RAGResponse, type UploadResponse } from '../services/goServiceClient';
+import { productionServiceClient, services } from '../services/productionServiceClient';
 
 // Define context and event types
-interface AgentShellContext {
+export interface AgentShellContext {
   input: string;
   response: string;
   jobId?: string;
@@ -150,7 +150,7 @@ export const agentShellServices = {
       // Use production service client with automatic protocol selection
       const response = await services.queryRAG(input, { userId, caseId });
       return response.response || response.data?.response || 'No response';
-    } catch (error) {
+    } catch (error: any) {
       console.error("Production agent call failed, falling back to legacy:", error);
       // Fallback to legacy service
       try {
@@ -172,7 +172,7 @@ export const agentShellServices = {
       // Use production RAG service for semantic search
       const response = await services.queryRAG(`semantic_search: ${query}`, { userId, caseId });
       return response;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Production semantic search failed, falling back:", error);
       try {
         return await goServiceClient.semanticSearch(query, userId, { caseId });
@@ -188,7 +188,7 @@ export const agentShellServices = {
       // Use production upload service
       const response = await services.uploadFile(file, { userId, caseId });
       return response;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Production upload failed, falling back:", error);
       try {
         return await goServiceClient.uploadFile({
@@ -211,7 +211,7 @@ export const agentShellServices = {
         production: productionHealth,
         legacy: await goServiceClient.checkServiceHealth()
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Production health check failed:", error);
       // Fallback to legacy health check
       try {
@@ -235,7 +235,7 @@ export const agentShellActions = {
         targetFile: event.targetFile,
       });
       console.log("Patch accepted:", result);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Patch acceptance failed:", error);
     }
   },
@@ -249,7 +249,7 @@ export const agentShellActions = {
         feedback: event.feedback,
       });
       console.log("Rating submitted:", result);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Rating submission failed:", error);
     }
   },

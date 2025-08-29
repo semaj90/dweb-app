@@ -92,7 +92,7 @@ export async function queueDocumentProcessing(
 /**
  * Get job status and result
  */
-export async function getJobStatus(jobId: string) {
+export async function getJobStatus(jobId: string): Promise<any> {
   const job = await documentQueue.getJob(jobId);
   
   if (!job) {
@@ -128,7 +128,7 @@ export async function getJobStatus(jobId: string) {
 /**
  * Get queue statistics
  */
-export async function getQueueStats() {
+export async function getQueueStats(): Promise<any> {
   const [waiting, active, completed, failed] = await Promise.all([
     documentQueue.getWaiting(),
     documentQueue.getActive(), 
@@ -156,7 +156,7 @@ export async function cancelJob(jobId: string): Promise<boolean> {
       return true;
     }
     return false;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error canceling job:', error);
     return false;
   }

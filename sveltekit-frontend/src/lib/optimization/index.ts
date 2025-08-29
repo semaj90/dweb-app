@@ -585,7 +585,7 @@ export class EnhancedPerformanceMonitor {
         // Monitor service worker performance
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Browser metrics collection failed:', error);
     }
   }
@@ -604,7 +604,7 @@ export class EnhancedPerformanceMonitor {
       this.recordMetric('node_cpu_user', cpuUsage.user);
       this.recordMetric('node_cpu_system', cpuUsage.system);
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Server metrics collection failed:', error);
     }
   }

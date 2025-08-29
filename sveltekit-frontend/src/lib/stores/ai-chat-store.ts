@@ -269,7 +269,7 @@ class AIChatStore {
       });
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error('RAG service error:', error);
 
       chatStore.update(state => {
@@ -299,7 +299,7 @@ class AIChatStore {
           if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error('Fetch failed:', error);
           throw error;
         }
@@ -312,7 +312,7 @@ class AIChatStore {
       });
 
       return isHealthy;
-    } catch (error) {
+    } catch (error: any) {
       chatStore.update(state => {
         state.connectionStatus = 'disconnected';
         state.lastError = 'RAG service unavailable';
@@ -346,7 +346,7 @@ class AIChatStore {
       if (state.currentSession) {
         localStorage.setItem(STORAGE_KEYS.CURRENT_SESSION, state.currentSession.id);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to save chat data:', error);
     }
   }
@@ -387,7 +387,7 @@ class AIChatStore {
           return state;
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load chat data:', error);
     }
   }

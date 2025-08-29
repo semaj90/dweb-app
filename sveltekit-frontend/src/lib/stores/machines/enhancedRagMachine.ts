@@ -2,7 +2,7 @@
 import { createMachine, assign } from "xstate";
 import { writable } from "svelte/store";
 
-interface RagContext {
+export interface RagContext {
   query: string;
   results: any[];
   error: string | null;

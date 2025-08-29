@@ -9,7 +9,7 @@ it('extractorSvelte uses regular split with non .svelte files', async () => {
     ],
   })
 
-  async function extract(code: string) {
+  async function extract(code: string): Promise<any> {
     return Array.from(await uno.applyExtractors(code))
   }
 
@@ -31,7 +31,7 @@ it('extractorSvelte uses svelte-specific split with .svelte files', async () => 
     ],
   })
 
-  async function extract(code: string) {
+  async function extract(code: string): Promise<any> {
     return Array.from(await uno.applyExtractors(code, 'file.svelte'))
   }
 

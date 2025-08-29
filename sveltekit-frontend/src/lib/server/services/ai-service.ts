@@ -4,7 +4,7 @@ import { eq, desc, sql } from "drizzle-orm";
 import type { NewUserAiQuery, NewAutoTag, NewDocumentChunk } from "../db/schema-postgres";
 import { generateIdFromEntropySize } from "lucia";
 import crypto from 'crypto';
-import { db } from "../database/index.js";
+import { db } from '../database/index';
 
 export interface AIAnalysisResult {
   summary: string;
@@ -112,7 +112,7 @@ export class AIService {
         queryId
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('AI query processing failed:', error);
       
       // Log failed query
@@ -187,7 +187,7 @@ export class AIService {
 
       return analysis;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Evidence analysis failed:', error);
       throw error;
     }
@@ -226,7 +226,7 @@ export class AIService {
         documentId: row.document_id as string
       }));
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Vector search failed:', error);
       return [];
     }
@@ -266,7 +266,7 @@ export class AIService {
         similarity: row.similarity as number
       }));
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Similar query search failed:', error);
       return [];
     }
@@ -300,7 +300,7 @@ export class AIService {
 
       return embedding;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Embedding generation failed:', error);
       throw error;
     }
@@ -341,7 +341,7 @@ export class AIService {
       const [inserted] = await db.insert(userAiQueries).values(queryData).returning();
       return inserted.id;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Query logging failed:', error);
       throw error;
     }
@@ -369,7 +369,7 @@ export class AIService {
 
       await db.insert(autoTags).values(tagData);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Auto-tag generation failed:', error);
       throw error;
     }
@@ -403,7 +403,7 @@ export class AIService {
 
       await db.insert(documentChunks).values(chunkData);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Document chunk storage failed:', error);
       throw error;
     }

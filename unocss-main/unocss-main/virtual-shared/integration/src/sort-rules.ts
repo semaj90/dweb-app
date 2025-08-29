@@ -1,7 +1,7 @@
 import type { UnoGenerator } from '@unocss/core'
 import { collapseVariantGroup, notNull, parseVariantGroup } from '@unocss/core'
 
-export async function sortRules(rules: string, uno: UnoGenerator) {
+export async function sortRules(rules: string, uno: UnoGenerator): Promise<any> {
   const unknown: string[] = []
 
   // enable details for variant handlers

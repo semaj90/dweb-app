@@ -158,7 +158,7 @@ export class ProductionServiceClient {
         default:
           throw new Error(`Unsupported tier: ${tier}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn(`Operation ${operation} failed on ${tier}, attempting fallback`);
       
       // Try fallback if available
@@ -260,13 +260,13 @@ export class ProductionServiceClient {
         ws.send(JSON.stringify({ operation, data }));
       };
 
-      ws.onmessage = (event) => {
+      ws.onmessage = (event: any) => {
         clearTimeout(timeout);
         try {
           const result = JSON.parse(event.data);
           ws.close();
           resolve(result);
-        } catch (error) {
+        } catch (error: any) {
           reject(new Error('Invalid WebSocket response'));
         }
       };

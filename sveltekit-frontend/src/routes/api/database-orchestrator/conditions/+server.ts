@@ -24,7 +24,7 @@ export const GET: RequestHandler = async () => {
       orchestrator_running: status.isRunning,
       timestamp: new Date().toISOString(),
     });
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         success: false,
@@ -69,7 +69,7 @@ export const POST: RequestHandler = async ({ request }) => {
       condition,
       timestamp: new Date().toISOString(),
     });
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         success: false,
@@ -104,7 +104,7 @@ export const DELETE: RequestHandler = async ({ params }) => {
       conditionId: id,
       timestamp: new Date().toISOString(),
     });
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         success: false,

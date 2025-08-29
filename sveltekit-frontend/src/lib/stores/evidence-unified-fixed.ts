@@ -51,7 +51,7 @@ export interface Evidence {
   };
 }
 
-interface EvidenceStoreState {
+export interface EvidenceStoreState {
   evidence: Evidence[];
   isLoading: boolean;
   error: string | null;
@@ -90,7 +90,7 @@ class UnifiedEvidenceStore {
 
     try {
       await this.connectWebSocket();
-    } catch (error) {
+    } catch (error: any) {
       console.warn("WebSocket failed, using polling fallback");
     }
   }
@@ -117,11 +117,11 @@ class UnifiedEvidenceStore {
         );
       };
 
-      this.websocket.onmessage = (event) => {
+      this.websocket.onmessage = (event: any) => {
         try {
           const message = JSON.parse(event.data);
           this.handleRealtimeUpdate(message);
-        } catch (error) {
+        } catch (error: any) {
           console.error("WebSocket message error:", error);
         }
       };
@@ -142,7 +142,7 @@ class UnifiedEvidenceStore {
       this.websocket.onerror = (error) => {
         console.error("WebSocket connection error:", error);
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to create WebSocket:", error);
       throw error;
     }
@@ -162,7 +162,7 @@ class UnifiedEvidenceStore {
         case "EVIDENCE_UPDATED":
           this.store.update((s) => ({
             ...s,
-            evidence: s.evidence.map((e) =>
+            evidence: s.evidence.map((e: any) =>
               e.id === data.id ? { ...e, ...data } : e,
             ),
           }));
@@ -170,7 +170,7 @@ class UnifiedEvidenceStore {
         case "EVIDENCE_DELETED":
           this.store.update((s) => ({
             ...s,
-            evidence: s.evidence.filter((e) => e.id !== data.id),
+            evidence: s.evidence.filter((e: any) => e.id !== data.id),
           }));
           break;
       }
@@ -250,10 +250,10 @@ class UnifiedEvidenceStore {
   public async updateEvidence(evidenceId: string, updates: Partial<Evidence>) {
     let originalEvidence: Evidence | undefined;
     this.store.update((s) => {
-      originalEvidence = s.evidence.find((e) => e.id === evidenceId);
+      originalEvidence = s.evidence.find((e: any) => e.id === evidenceId);
       return {
         ...s,
-        evidence: s.evidence.map((e) =>
+        evidence: s.evidence.map((e: any) =>
           e.id === evidenceId ? { ...e, ...updates } : e,
         ),
       };
@@ -274,7 +274,7 @@ class UnifiedEvidenceStore {
       if (originalEvidence) {
         this.store.update((s) => ({
           ...s,
-          evidence: s.evidence.map((e) =>
+          evidence: s.evidence.map((e: any) =>
             e.id === evidenceId ? originalEvidence! : e,
           ),
           error: error.message,
@@ -287,10 +287,10 @@ class UnifiedEvidenceStore {
   public async deleteEvidence(evidenceId: string) {
     let originalEvidence: Evidence | undefined;
     this.store.update((s) => {
-      originalEvidence = s.evidence.find((e) => e.id === evidenceId);
+      originalEvidence = s.evidence.find((e: any) => e.id === evidenceId);
       return {
         ...s,
-        evidence: s.evidence.filter((e) => e.id !== evidenceId),
+        evidence: s.evidence.filter((e: any) => e.id !== evidenceId),
       };
     });
 
@@ -326,7 +326,7 @@ class UnifiedEvidenceStore {
           lastUpdated: new Date().toISOString(),
         }),
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to save to localStorage:", error);
     }
   }
@@ -350,7 +350,7 @@ class UnifiedEvidenceStore {
           });
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to load from localStorage:", error);
     }
   }

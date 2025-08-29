@@ -231,7 +231,7 @@ async function vectorSearch(
       isConfidential: row.isConfidential,
       searchType: 'vector',
     }));
-  } catch (err) {
+  } catch (err: any) {
     console.error('[Search] Vector search error:', err);
     return [];
   }
@@ -294,7 +294,7 @@ async function keywordSearch(query: string, limit: number, filters: any): Promis
       isConfidential: row.isConfidential,
       searchType: 'keyword',
     }));
-  } catch (err) {
+  } catch (err: any) {
     console.error('[Search] Keyword search error:', err);
     return [];
   }
@@ -470,7 +470,7 @@ export const GET: RequestHandler = async () => {
         .from(legal_documents)
         .where(legal_documents.content_embedding.isNotNull());
       embeddingCount = embResult?.count || 0;
-    } catch (err) {
+    } catch (err: any) {
       console.warn('[Search] Failed to count documents:', err);
     }
 
@@ -479,7 +479,7 @@ export const GET: RequestHandler = async () => {
     try {
       await cognitiveCacheManager.get({ key: 'health_check', type: 'legal-data', context: { action: 'health-test' } });
       cacheStatus = true;
-    } catch (err) {
+    } catch (err: any) {
       console.warn('[Search] Cognitive cache health check failed:', err);
     }
 

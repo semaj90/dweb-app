@@ -12,7 +12,7 @@ export interface Note {
 export async function listNotes(): Promise<Note[]> {
   try {
     return await apiFetch<Note[]>("/api/notes");
-  } catch (err) {
+  } catch (err: any) {
     if (typeof console !== "undefined") {
       console.warn("[note-service] listNotes failed, returning empty array", err);
     }

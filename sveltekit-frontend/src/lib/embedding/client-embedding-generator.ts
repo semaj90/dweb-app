@@ -32,7 +32,7 @@ export class ClientEmbeddingGenerator {
       await new Promise((resolve, reject) => {
         const timeout = setTimeout(() => reject(new Error('Worker initialization timeout')), 30000);
         
-        this.worker!.onmessage = (event) => {
+        this.worker!.onmessage = (event: any) => {
           if (event.data.type === 'initialized') {
             clearTimeout(timeout);
             this.initialized = true;
@@ -53,7 +53,7 @@ export class ClientEmbeddingGenerator {
 
       console.log(`Client embedding generator initialized with ${this.embedModel}`);
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to initialize embedding generator:', error);
       this.initialized = false;
       return false;
@@ -76,7 +76,7 @@ export class ClientEmbeddingGenerator {
           reject(new Error('Embedding generation timeout'));
         }, 60000); // 60 second timeout
 
-        this.worker!.onmessage = (event) => {
+        this.worker!.onmessage = (event: any) => {
           clearTimeout(timeout);
           
           if (event.data.success) {
@@ -96,7 +96,7 @@ export class ClientEmbeddingGenerator {
           }
         });
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Embedding generation failed:', error);
       return null;
     }
@@ -110,7 +110,7 @@ export class ClientEmbeddingGenerator {
       // Construct legal-optimized text for embedding
       const embeddingText = this.prepareLegalText(document);
       return await this.generateEmbedding(embeddingText);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Legal document embedding failed:', error);
       return null;
     }
@@ -132,7 +132,7 @@ export class ClientEmbeddingGenerator {
           reject(new Error('Batch embedding timeout'));
         }, 120000); // 2 minute timeout for batches
 
-        this.worker!.onmessage = (event) => {
+        this.worker!.onmessage = (event: any) => {
           clearTimeout(timeout);
           
           if (event.data.success) {
@@ -156,7 +156,7 @@ export class ClientEmbeddingGenerator {
           }
         });
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Batch embedding generation failed:', error);
       return [];
     }
@@ -169,7 +169,7 @@ export class ClientEmbeddingGenerator {
     try {
       const embeddingText = this.prepareEvidenceText(evidence);
       return await this.generateEmbedding(embeddingText);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Evidence embedding failed:', error);
       return null;
     }
@@ -309,7 +309,7 @@ export class ClientEmbeddingGenerator {
       return new Promise((resolve) => {
         const timeout = setTimeout(() => resolve(null), 5000);
 
-        this.worker!.onmessage = (event) => {
+        this.worker!.onmessage = (event: any) => {
           if (event.data.type === 'memory_stats') {
             clearTimeout(timeout);
             resolve(event.data.stats);
@@ -318,7 +318,7 @@ export class ClientEmbeddingGenerator {
 
         this.worker!.postMessage({ type: 'get_memory_stats' });
       });
-    } catch (error) {
+    } catch (error: any) {
       return null;
     }
   }

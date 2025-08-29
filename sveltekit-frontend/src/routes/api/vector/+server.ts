@@ -110,7 +110,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
           { status: 400 }
         );
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Vector API error:", error);
 
     if (error instanceof z.ZodError) {
@@ -148,7 +148,7 @@ export const GET: RequestHandler = async () => {
         dimension: parseInt(import.meta.env.EMBEDDING_DIMENSION || "768"),
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         success: false,

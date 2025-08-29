@@ -17,7 +17,7 @@ import { advancedCacheManager } from '$lib/caching/advanced-cache-manager';
 import type { CacheValue } from '$lib/ai/types';
 
 // GET - Retrieve cache data, status, and analytics
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
     try {
         const action = url.searchParams.get('action');
         const key = url.searchParams.get('key');
@@ -56,14 +56,14 @@ export const GET: RequestHandler = async ({ url }) => {
             default:
                 return getCacheDashboard();
         }
-    } catch (err) {
+    } catch (err: any) {
         console.error('❌ Advanced caching API error:', err);
         return error(500, `Server error: ${err.message}`);
     }
 };
 
 // POST - Cache operations and configuration
-export const POST: RequestHandler = async ({ request, url }) => {
+export const POST: RequestHandler = async ({ request, url }): Promise<any> => {
     try {
         const action = url.searchParams.get('action');
         const body = await request.json();
@@ -99,14 +99,14 @@ export const POST: RequestHandler = async ({ request, url }) => {
             default:
                 return error(400, 'Invalid action specified');
         }
-    } catch (err) {
+    } catch (err: any) {
         console.error('❌ Advanced caching API error:', err);
         return error(500, `Server error: ${err.message}`);
     }
 };
 
 // PUT - Update cache configuration
-export const PUT: RequestHandler = async ({ request }) => {
+export const PUT: RequestHandler = async ({ request }): Promise<any> => {
     try {
         const { config, strategy, policy } = await request.json();
         
@@ -124,14 +124,14 @@ export const PUT: RequestHandler = async ({ request }) => {
         
         return error(400, 'No valid update data provided');
         
-    } catch (err) {
+    } catch (err: any) {
         console.error('❌ Update cache error:', err);
         return error(500, `Update error: ${err.message}`);
     }
 };
 
 // DELETE - Remove cache entries and clear caches
-export const DELETE: RequestHandler = async ({ url }) => {
+export const DELETE: RequestHandler = async ({ url }): Promise<any> => {
     try {
         const key = url.searchParams.get('key');
         const layer = url.searchParams.get('layer');
@@ -146,7 +146,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
         }
         
         return error(400, 'Key or clear type is required');
-    } catch (err) {
+    } catch (err: any) {
         console.error('❌ Delete cache error:', err);
         return error(500, `Delete error: ${err.message}`);
     }
@@ -156,7 +156,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
  * Cache Value Operations
  */
 
-async function getCacheValue(key: string | null) {
+async function getCacheValue(key: string | null): Promise<any> {
     if (!key) {
         return error(400, 'Cache key is required');
     }
@@ -182,12 +182,12 @@ async function getCacheValue(key: string | null) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Failed to get cache value: ${err.message}`);
     }
 }
 
-async function setCacheValue(data: unknown) {
+async function setCacheValue(data: any): Promise<any> {
     const { key, value, options = {} } = data;
     
     if (!key || value === undefined) {
@@ -218,12 +218,12 @@ async function setCacheValue(data: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Failed to set cache value: ${err.message}`);
     }
 }
 
-async function deleteCacheKey(key: string) {
+async function deleteCacheKey(key: string): Promise<any> {
     const startTime = performance.now();
     
     try {
@@ -240,7 +240,7 @@ async function deleteCacheKey(key: string) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Failed to delete cache key: ${err.message}`);
     }
 }
@@ -249,7 +249,7 @@ async function deleteCacheKey(key: string) {
  * Cache System Management
  */
 
-async function startCacheSystem(config: unknown) {
+async function startCacheSystem(config: any): Promise<any> {
     try {
         await advancedCacheManager.start();
         
@@ -260,7 +260,7 @@ async function startCacheSystem(config: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Failed to start cache system: ${err.message}`);
     }
 }
@@ -480,7 +480,7 @@ function getColdKeys() {
  * Cache Operations
  */
 
-async function optimizeCache(optimizationData: unknown) {
+async function optimizeCache(optimizationData: any): Promise<any> {
     const { strategy = 'auto', target = 'performance' } = optimizationData;
     
     try {
@@ -510,12 +510,12 @@ async function optimizeCache(optimizationData: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Cache optimization failed: ${err.message}`);
     }
 }
 
-async function warmCache(warmingData: unknown) {
+async function warmCache(warmingData: any): Promise<any> {
     const { keys = [], strategy = 'predictive' } = warmingData;
     
     try {
@@ -539,12 +539,12 @@ async function warmCache(warmingData: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Cache warming failed: ${err.message}`);
     }
 }
 
-async function preloadCache(preloadData: unknown) {
+async function preloadCache(preloadData: any): Promise<any> {
     const { patterns = [], priority = 'medium' } = preloadData;
     
     try {
@@ -565,12 +565,12 @@ async function preloadCache(preloadData: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Cache preloading failed: ${err.message}`);
     }
 }
 
-async function analyzeCache(analysisData: unknown) {
+async function analyzeCache(analysisData: any): Promise<any> {
     const { timeWindow = '1h', includePredictions = true } = analysisData;
     
     try {
@@ -607,12 +607,12 @@ async function analyzeCache(analysisData: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Cache analysis failed: ${err.message}`);
     }
 }
 
-async function predictCacheNeeds(predictionData: unknown) {
+async function predictCacheNeeds(predictionData: any): Promise<any> {
     const { horizon = '1h', confidence = 0.8 } = predictionData;
     
     try {
@@ -644,12 +644,12 @@ async function predictCacheNeeds(predictionData: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Cache prediction failed: ${err.message}`);
     }
 }
 
-async function testCachePerformance(testData: unknown) {
+async function testCachePerformance(testData: any): Promise<any> {
     const { operations = 1000, concurrency = 10, testType = 'mixed' } = testData;
     
     try {
@@ -686,7 +686,7 @@ async function testCachePerformance(testData: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Performance test failed: ${err.message}`);
     }
 }
@@ -695,7 +695,7 @@ async function testCachePerformance(testData: unknown) {
  * Configuration Management
  */
 
-async function configureLayer(layerData: unknown) {
+async function configureLayer(layerData: any): Promise<any> {
     const { layerName, config } = layerData;
     
     if (!layerName || !config) {
@@ -723,12 +723,12 @@ async function configureLayer(layerData: unknown) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Layer configuration failed: ${err.message}`);
     }
 }
 
-async function updateCacheConfiguration(config: unknown) {
+async function updateCacheConfiguration(config: any): Promise<any> {
     console.log('🔧 Updating cache configuration:', config);
     
     return json({
@@ -740,7 +740,7 @@ async function updateCacheConfiguration(config: unknown) {
     });
 }
 
-async function updateCacheStrategy(strategy: unknown) {
+async function updateCacheStrategy(strategy: any): Promise<any> {
     console.log('📊 Updating cache strategy:', strategy);
     
     return json({
@@ -751,7 +751,7 @@ async function updateCacheStrategy(strategy: unknown) {
     });
 }
 
-async function updateCachePolicy(policy: unknown) {
+async function updateCachePolicy(policy: any): Promise<any> {
     console.log('📋 Updating cache policy:', policy);
     
     return json({
@@ -766,7 +766,7 @@ async function updateCachePolicy(policy: unknown) {
  * Cache Clearing Operations
  */
 
-async function clearCache(clearType: string, layer?: string | null) {
+async function clearCache(clearType: string, layer?: string | null): Promise<any> {
     const startTime = performance.now();
     
     try {
@@ -810,7 +810,7 @@ async function clearCache(clearType: string, layer?: string | null) {
             timestamp: new Date().toISOString()
         });
         
-    } catch (err) {
+    } catch (err: any) {
         return error(500, `Cache clearing failed: ${err.message}`);
     }
 }

@@ -4,8 +4,8 @@
  */
 
 const dev = process.env.NODE_ENV === 'development';
-import { getConfig } from '../config/unified-config.js';
-import type { LoggingConfig } from '../config/unified-config.js';
+import { getConfig } from '../config/unified-config';
+import type { LoggingConfig } from '../config/unified-config';
 
 // Log levels in order of severity
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
@@ -80,7 +80,7 @@ class WindowsPerformanceMonitor {
           freeMemory: Math.round(require('os').freemem() / 1024 / 1024)
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       return { error: 'Failed to collect Windows metrics' };
     }
   }
@@ -446,7 +446,7 @@ export class ProductionLogger {
         await this.handleLogRotation();
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to flush logs to file:', error);
       // Re-add entries to buffer for retry
       this.logBuffer.unshift(...this.logBuffer);
@@ -487,7 +487,7 @@ export class ProductionLogger {
         fs.renameSync(this.config.file.path, rotatedFile);
 
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Log rotation failed:', error);
     }
   }
@@ -530,7 +530,7 @@ export class ProductionLogger {
         }
       });
 
-    } catch (error) {
+    } catch (error: any) {
       this.error('Failed to collect logger metrics', error instanceof Error ? error : undefined);
     }
   }

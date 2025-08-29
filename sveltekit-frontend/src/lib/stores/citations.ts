@@ -150,7 +150,7 @@ function createCitationStore() {
             recentCitations: data.recentCitations || [],
           }));
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to load citations:", error);
       }
     },
@@ -174,7 +174,7 @@ function createCitationStore() {
           }));
           return savedCitation;
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to save citation:", error);
       }
       return null;

@@ -127,7 +127,7 @@ export async function exportCases(
       errors: [],
       warnings: [],
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Export failed:", error);
     return {
       success: false,
@@ -168,7 +168,7 @@ export async function exportEvidence(
             exportedBy: "current_user",
             totalRecords: processedData.length,
             chainOfCustody: true,
-            integrityHashes: processedData.map((e) => ({
+            integrityHashes: processedData.map((e: any) => ({
               id: e.id,
               hash: e.hash,
             })),
@@ -209,7 +209,7 @@ export async function exportEvidence(
       errors: [],
       warnings: [],
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Evidence export failed:", error);
     return {
       success: false,
@@ -256,7 +256,7 @@ export async function importCases(
         } else {
           skipped++;
         }
-      } catch (error) {
+      } catch (error: any) {
         errors.push(`Failed to import case "${caseData.title}": ${error}`);
         skipped++;
       }
@@ -284,7 +284,7 @@ export async function importCases(
         failed: skipped,
       },
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       success: false,
       imported: 0,
@@ -322,7 +322,7 @@ function applyEvidenceFilters(
   evidence: any[],
   filters: Record<string, any>,
 ): unknown[] {
-  return evidence.filter((e) => {
+  return evidence.filter((e: any) => {
     return Object.entries(filters).every(([key, value]) => {
       if (!value) return true;
 
@@ -398,7 +398,7 @@ async function generateExcel(data: any[]): Promise<Blob> {
 }
 async function includeEvidenceFiles(evidence: any[]): Promise<unknown[]> {
   // In production, this would fetch and include actual file data
-  return evidence.map((e) => ({
+  return evidence.map((e: any) => ({
     ...e,
     fileIncluded: !!e.filePath,
     fileSize: e.fileSize || 0,

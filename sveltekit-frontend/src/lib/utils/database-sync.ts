@@ -123,7 +123,7 @@ export class DatabaseSyncManager {
 
       options.onSuccess?.(result);
       return result;
-    } catch (error) {
+    } catch (error: any) {
       options.onError?.(error as Error);
       throw error;
     } finally {
@@ -173,7 +173,7 @@ export class DatabaseSyncManager {
 
       options.onSuccess?.(result);
       return result;
-    } catch (error) {
+    } catch (error: any) {
       options.onError?.(error as Error);
       throw error;
     } finally {
@@ -220,7 +220,7 @@ export class DatabaseSyncManager {
 
       options.onSuccess?.(result);
       return result;
-    } catch (error) {
+    } catch (error: any) {
       options.onError?.(error as Error);
       throw error;
     } finally {
@@ -259,7 +259,7 @@ export class DatabaseSyncManager {
 
       options.onSuccess?.(result);
       return result;
-    } catch (error) {
+    } catch (error: any) {
       options.onError?.(error as Error);
       throw error;
     } finally {
@@ -297,7 +297,7 @@ export class DatabaseSyncManager {
 
       options.onSuccess?.(result);
       return result;
-    } catch (error) {
+    } catch (error: any) {
       options.onError?.(error as Error);
       throw error;
     } finally {
@@ -337,7 +337,7 @@ export class DatabaseSyncManager {
             break;
         }
         results.push({ success: true, result });
-      } catch (error) {
+      } catch (error: any) {
         results.push({ success: false, error });
       }
     }
@@ -432,7 +432,7 @@ export class DatabaseSyncManager {
         // If not ok and we have retries left, wait and try again
         await this.delay(options.retryDelay || 1000);
         attempt++;
-      } catch (error) {
+      } catch (error: any) {
         if (attempt === maxAttempts - 1) {
           throw error;
         }

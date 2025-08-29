@@ -45,19 +45,64 @@
  */
 
 import { createMachine, assign, fromPromise, fromCallback } from "xstate";
-import { productionServiceRegistry, getServiceUrl, getOptimalServiceForRoute } from// TODO: Integrate with centralized types from ../types/xstate.js
-// import type { AIAssistantEvent, AIAssistantContext, ConversationEntry } from "../types/xstate.js";
+import { productionServiceRegistry, getServiceUrl, getOptimalServiceForRoute } from "$lib/services/production-service-registry.js";
+import { NATSMessagingService } from "$lib/services/nats-messaging-service.js";
+import { semanticAnalyzer } from "$lib/services/enhanced-rag-semantic-analyzer.js";
+// TODO: Integrate with centralized types from ../types/xstate.js
+// import type { AIAssistantEvent, AIAssistantContext, ConversationEntry } from '../types/xstate';
 
-  // Local type definitions (TODO: migrate to centralized types)
-  interface ConversationEntry {
+// Create natsMessaging alias for compatibility
+const natsMessaging = new NATSMessagingService();
+
+// Missing type definitions
+export interface AIInteraction {
+  id: string;
+  type: string;
+  content: string;
+  timestamp: Date;
+  sessionId?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface RAGQuery {
+  query: string;
+  context?: string; // Fixed to match enhanced-rag-semantic-analyzer expectation
+  caseId?: string;
+  documentId?: string;
+  threshold?: number;
+  filters?: any;
+}
+
+export interface RAGResponse {
+  response: string;
+  sources: any[];
+  confidence: number;
+  processingTime: number;
+  tokensUsed?: number;
+  totalFound?: number;
+  results?: any[];
+}
+
+export interface DocumentType {
+  id: string;
+  title: string;
+  filename: string;
+  fileSize: number;
+  extractedText: string;
+  isIndexed: boolean;
+  metadata?: Record<string, unknown>;
+}
+
+// Local type definitions (TODO: migrate to centralized types)
+export interface ConversationEntry {
   id: string;
   type: 'user' | 'assistant' | 'system';
   content: string;
   timestamp: Date;
-  metadata ?: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
 }
 
-interface AIAssistantContext {
+export interface AIAssistantContext {
   // Core query state
   currentQuery: string;
   response: string;
@@ -86,7 +131,7 @@ interface AIAssistantContext {
   context7Cache: Map<string, any>;
 
   // Multi-modal Processing
-  currentDocuments: Document[];
+  currentDocuments: DocumentType[];
   currentImages: any[];
   processingQueue: any[];
   workerPool: any;
@@ -171,9 +216,10 @@ type AIAssistantEvent =
   | { type: "COLLABORATION_USER_JOINED"; user: any }
   | { type: "COLLABORATION_USER_LEFT"; user: any }
   | { type: "CACHE_CLEAR" }
+  | { type: "PERFORMANCE_RESET" }
   | { type: "ERROR_RECOVER"; errorId?: string };
 
-interface Context7Analysis {
+export interface Context7Analysis {
   suggestions: string[];
   codeExamples: any[];
   documentation: string;
@@ -182,7 +228,7 @@ interface Context7Analysis {
   apiEndpoints: string[];
 }
 
-interface ImageAnalysis {
+export interface ImageAnalysis {
   id: string;
   url: string;
   type: 'document' | 'evidence' | 'chart' | 'diagram';
@@ -195,7 +241,7 @@ interface ImageAnalysis {
   };
 }
 
-interface ProcessingJob {
+export interface ProcessingJob {
   id: string;
   type: 'document_analysis' | 'image_ocr' | 'semantic_analysis' | 'embedding_generation' | 'legal_analysis';
   status: 'pending' | 'processing' | 'completed' | 'failed' | 'retrying';
@@ -209,7 +255,7 @@ interface ProcessingJob {
   updatedAt: Date;
 }
 
-interface ServiceHealthStatus {
+export interface ServiceHealthStatus {
   database: { postgres: boolean; qdrant: boolean; neo4j: boolean; redis: boolean };
   ai: { ollama: boolean; enhanced_rag: boolean; context7: boolean };
   microservices: { available: number; total: number; failing: string[] };
@@ -217,7 +263,7 @@ interface ServiceHealthStatus {
   storage: { minio: boolean; filesystem: boolean };
 }
 
-interface CollaborationUser {
+export interface CollaborationUser {
   id: string;
   name: string;
   role: string;
@@ -226,7 +272,7 @@ interface CollaborationUser {
   cursor?: { line: number; column: number };
 }
 
-interface PerformanceMetrics {
+export interface PerformanceMetrics {
   totalQueries: number;
   totalTokens: number;
   averageResponseTime: number;
@@ -269,7 +315,7 @@ interface PerformanceMetrics {
   sampleCount: number;
 }
 
-interface CacheStatus {
+export interface CacheStatus {
   enabled: boolean;
   hitRate: number;
   size: number;
@@ -302,7 +348,7 @@ interface CacheStatus {
   evictionsPerSecond: number;
 }
 
-interface ExtendedError {
+export interface ExtendedError {
   message: string;
   code: string;
   type: 'network' | 'database' | 'ai' | 'processing' | 'validation' | 'auth' | 'permission';
@@ -313,7 +359,7 @@ interface ExtendedError {
   context?: string;
 }
 
-interface LegalAnalysisResult {
+export interface LegalAnalysisResult {
   entities: Array<{ text: string; type: string; confidence: number }>;
   concepts: Array<{ concept: string; relevance: number; category: string }>;
   precedents: Array<{ caseId: string; similarity: number; citation: string }>;
@@ -325,7 +371,7 @@ interface LegalAnalysisResult {
   recommendations: string[];
 }
 
-interface EvidenceItem {
+export interface EvidenceItem {
   id: string;
   type: string;
   hash: string;
@@ -334,7 +380,7 @@ interface EvidenceItem {
   verified: boolean;
 }
 
-interface CaseContext {
+export interface CaseContext {
   caseId: string;
   title: string;
   status: string;
@@ -348,7 +394,7 @@ interface CaseContext {
 // AIAssistantEvent now imported from centralized types
 
 // Additional type definitions for enhanced functionality
-interface ModelDefinition {
+export interface ModelDefinition {
   name: string;
   type: 'legal' | 'general' | 'code' | 'multimodal';
   maxTokens: number;
@@ -357,61 +403,61 @@ interface ModelDefinition {
   gpuRequired?: boolean;
 }
 
-interface DatabaseMetrics {
+export interface DatabaseMetrics {
   queryLatency: number;
   connectionPool: { active: number; idle: number; waiting: number };
   indexEfficiency: number;
   cacheHitRatio: number;
 }
 
-interface VectorIndexStatus {
+export interface VectorIndexStatus {
   documentsIndexed: number;
   indexSize: number;
   lastUpdate: Date;
   rebuildProgress: number;
 }
 
-interface Context7CacheEntry {
+export interface Context7CacheEntry {
   content: string;
   timestamp: Date;
   hitCount: number;
   ttl: number;
 }
 
-interface LayerCacheStats {
+export interface LayerCacheStats {
   hits: number;
   misses: number;
   size: number;
   maxSize: number;
 }
 
-interface WebWorkerPool {
+export interface WebWorkerPool {
   executeTask(task: any): Promise<any>;
   terminate(): void;
 }
 
-interface LoadBalancerState {
+export interface LoadBalancerState {
   algorithm: 'round_robin' | 'least_connections' | 'weighted' | 'adaptive';
   healthyServices: Map<string, ServiceHealthInfo>;
   failedServices: Set<string>;
   lastUpdate: Date;
 }
 
-interface CircuitBreakerState {
+export interface CircuitBreakerState {
   state: 'closed' | 'open' | 'half_open';
   failureCount: number;
   lastFailure: Date;
   nextAttempt: Date;
 }
 
-interface LiveSession {
+export interface LiveSession {
   sessionId: string;
   participants: string[];
   documentId: string;
   lastActivity: Date;
 }
 
-interface ResourceMetrics {
+export interface ResourceMetrics {
   memoryPressure: 'low' | 'medium' | 'high' | 'critical';
   cpuThrottle: boolean;
   diskSpaceWarning: boolean;
@@ -419,7 +465,7 @@ interface ResourceMetrics {
   thermalState: 'nominal' | 'fair' | 'serious' | 'critical';
 }
 
-interface BenchmarkSuite {
+export interface BenchmarkSuite {
   lastRun: Date;
   vectorSearchBenchmark: { averageLatency: number; throughput: number };
   aiInferenceBenchmark: { averageLatency: number; throughput: number };
@@ -427,14 +473,14 @@ interface BenchmarkSuite {
   overallScore: number;
 }
 
-interface LegalGraphState {
+export interface LegalGraphState {
   nodeCount: number;
   edgeCount: number;
   lastUpdate: Date;
   graphDensity: number;
 }
 
-interface PrecedentAnalysisResult {
+export interface PrecedentAnalysisResult {
   caseId: string;
   similarity: number;
   relevance: number;
@@ -442,7 +488,7 @@ interface PrecedentAnalysisResult {
   summary: string;
 }
 
-interface MultiModalResult {
+export interface MultiModalResult {
   id: string;
   type: 'text_image' | 'text_audio' | 'image_audio' | 'multimodal';
   confidence: number;
@@ -450,42 +496,42 @@ interface MultiModalResult {
   processingTime: number;
 }
 
-interface InferenceStreamState {
+export interface InferenceStreamState {
   active: boolean;
   streamId: string | null;
   tokensPerSecond: number;
   currentModel: string | null;
 }
 
-interface MemoryPoolState {
+export interface MemoryPoolState {
   allocated: number;
   available: number;
   fragments: number;
   largestBlock: number;
 }
 
-interface BufferManagerState {
+export interface BufferManagerState {
   vectorBuffers: number;
   textBuffers: number;
   imageBuffers: number;
   totalAllocated: number;
 }
 
-interface GCMetrics {
+export interface GCMetrics {
   collections: number;
   totalMemoryFreed: number;
   lastGC: number;
   averageGCTime: number;
 }
 
-interface SecurityContext {
+export interface SecurityContext {
   userId: string | null;
   permissions: string[];
   securityLevel: 'minimal' | 'standard' | 'enhanced' | 'maximum';
   encryptionEnabled: boolean;
 }
 
-interface AuditEntry {
+export interface AuditEntry {
   timestamp: Date;
   action: string;
   userId?: string;
@@ -493,39 +539,39 @@ interface AuditEntry {
   result: 'success' | 'failure' | 'warning';
 }
 
-interface AccessControlState {
+export interface AccessControlState {
   allowedOperations: Set<string>;
   deniedOperations: Set<string>;
   rateLimits: Map<string, RateLimit>;
 }
 
-interface RateLimit {
+export interface RateLimit {
   requests: number;
   windowMs: number;
   remaining: number;
   resetTime: Date;
 }
 
-interface AttachmentData {
+export interface AttachmentData {
   id: string;
   type: 'file' | 'image' | 'link' | 'code';
   content: any;
   metadata: any;
 }
 
-interface ReactionData {
+export interface ReactionData {
   type: string;
   userId: string;
   timestamp: Date;
 }
 
-interface ThreadingData {
+export interface ThreadingData {
   parentId?: string;
   replies: string[];
   depth: number;
 }
 
-interface ServiceHealthInfo {
+export interface ServiceHealthInfo {
   lastCheck: Date;
   responseTime: number;
   status: 'healthy' | 'degraded' | 'unhealthy';
@@ -572,7 +618,7 @@ class GPUProcessor {
       this.isInitialized = true;
       console.log('GPU processing initialized successfully');
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to initialize GPU processing:', error);
       return false;
     }
@@ -665,7 +711,7 @@ class MultiLayerCache {
         this.l1Cache.set(key, stored);
         return stored;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('L2 cache miss:', error);
     }
 
@@ -679,7 +725,7 @@ class MultiLayerCache {
     // Store in L2 (IndexedDB)
     try {
       await this.setInIndexedDB(key, value, ttl);
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to store in L2 cache:', error);
     }
 
@@ -765,7 +811,7 @@ class MultiLayerCache {
     if (!layer || layer === 'all' || layer === 'l2') {
       try {
         await this.clearIndexedDB();
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Failed to clear L2 cache:', error);
       }
     }
@@ -804,7 +850,7 @@ function safeNow() {
     if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
       return performance.now();
     }
-  } catch (e) {
+  } catch (e: any) {
     console.warn('Performance API not available, falling back to Date.now()');
   }
   return Date.now();
@@ -1213,7 +1259,7 @@ export const aiAssistantMachine = createMachine({
                 console.log('📡 NATS messaging connected successfully');
                 break;
               }
-            } catch (error) {
+            } catch (error: any) {
               console.warn(`NATS connection attempt ${4 - natsRetries} failed:`, error);
               natsRetries--;
               if (natsRetries > 0) {
@@ -1244,7 +1290,7 @@ export const aiAssistantMachine = createMachine({
               databaseMetrics.cacheHitRatio = dbData.cacheHitRatio || 0.85;
               console.log(`🗄️  PostgreSQL connected (${databaseMetrics.queryLatency.toFixed(2)}ms latency)`);
             }
-          } catch (error) {
+          } catch (error: any) {
             console.warn('Database health check failed:', error);
           }
 
@@ -1258,7 +1304,7 @@ export const aiAssistantMachine = createMachine({
             if (context7Available) {
               console.log('📚 Context7 documentation service available');
             }
-          } catch (error) {
+          } catch (error: any) {
             console.warn('Context7 not available:', error);
           }
 
@@ -1291,12 +1337,12 @@ export const aiAssistantMachine = createMachine({
                     vectorIndexStatus.indexSize = legalCollection.vectors_count || 0;
                   }
                 }
-              } catch (error) {
+              } catch (error: any) {
                 console.warn('Could not fetch vector index status:', error);
               }
               console.log(`🔍 Vector search enabled (${vectorIndexStatus.documentsIndexed} documents indexed)`);
             }
-          } catch (error) {
+          } catch (error: any) {
             console.warn('Qdrant vector search not available:', error);
           }
 
@@ -1319,7 +1365,7 @@ export const aiAssistantMachine = createMachine({
               }
               console.log(`🤖 AI Models available: ${availableModels.length} models loaded`);
             }
-          } catch (error) {
+          } catch (error: any) {
             console.warn('Could not fetch available models:', error);
           }
 
@@ -1453,7 +1499,7 @@ export const aiAssistantMachine = createMachine({
             docs.implementation = impl;
             docs.analysis = analysis;
             docs.migration = migration;
-          } catch (e) {
+          } catch (e: any) {
             // best-effort only
           }
 
@@ -1620,7 +1666,7 @@ export const aiAssistantMachine = createMachine({
                     caseContext = await caseResponse.json();
                     enhancedQuery = `${query}\n\nCase Context: ${caseContext.title}`;
                   }
-                } catch (error) {
+                } catch (error: any) {
                   console.warn('Failed to load case context:', error);
                 }
               }
@@ -1662,7 +1708,7 @@ export const aiAssistantMachine = createMachine({
                   if (context7Analysis.documentation) {
                     enhancedQuery = `${query}\n\nContext7 Documentation:\n${context7Analysis.documentation.substring(0, 1000)}`;
                   }
-                } catch (error) {
+                } catch (error: any) {
                   console.warn('Context7 analysis failed:', error);
                 }
               }
@@ -1887,7 +1933,7 @@ export const aiAssistantMachine = createMachine({
                   semanticAnalysis: responseData.semanticAnalysis,
                   legalAnalysis: responseData.legalAnalysis
                 };
-              } catch (error) {
+              } catch (error: any) {
                 console.error('AI response generation failed:', error);
                 throw new Error(`AI generation failed: ${error}`);
               }
@@ -2022,7 +2068,7 @@ export const aiAssistantMachine = createMachine({
                   fileSize: (event as any).output.fileSize,
                   extractedText: (event as any).output.extractedText,
                   isIndexed: false
-                } as Document
+                } as DocumentType
               ],
               isProcessing: () => false
             }),
@@ -2083,7 +2129,7 @@ export const aiAssistantMachine = createMachine({
                 extractedText = ocrResult.text || '';
                 ocrConfidence = ocrResult.confidence || 0;
               }
-            } catch (error) {
+            } catch (error: any) {
               console.warn('OCR processing failed:', error);
             }
           }
@@ -2589,7 +2635,7 @@ export const aiAssistantMachine = createMachine({
             };
 
             return analysis;
-          } catch (error) {
+          } catch (error: any) {
             console.error('Context7 analysis failed:', error);
             throw error;
           }
@@ -2719,7 +2765,7 @@ export const aiAssistantMachine = createMachine({
             }));
           };
 
-          ws.onmessage = (event) => {
+          ws.onmessage = (event: any) => {
             try {
               const data = JSON.parse(event.data);
               if (data.chunk) {
@@ -2729,7 +2775,7 @@ export const aiAssistantMachine = createMachine({
               } else if (data.error) {
                 sendBack({ type: 'error', error: data.error });
               }
-            } catch (error) {
+            } catch (error: any) {
               console.error('Stream parsing error:', error);
             }
           };
@@ -2839,7 +2885,7 @@ export const aiAssistantMachine = createMachine({
             }
             benchmarkResults.vectorSearchBenchmark.averageLatency = (safeNow() - vectorStartTime) / 10;
             benchmarkResults.vectorSearchBenchmark.throughput = 10000 / benchmarkResults.vectorSearchBenchmark.averageLatency;
-          } catch (error) {
+          } catch (error: any) {
             console.warn('Vector search benchmark failed:', error);
           }
 
@@ -2858,7 +2904,7 @@ export const aiAssistantMachine = createMachine({
             }
             benchmarkResults.aiInferenceBenchmark.averageLatency = (safeNow() - aiStartTime) / 5;
             benchmarkResults.aiInferenceBenchmark.throughput = 5000 / benchmarkResults.aiInferenceBenchmark.averageLatency;
-          } catch (error) {
+          } catch (error: any) {
             console.warn('AI inference benchmark failed:', error);
           }
 
@@ -2870,7 +2916,7 @@ export const aiAssistantMachine = createMachine({
             }
             benchmarkResults.databaseBenchmark.averageLatency = (safeNow() - dbStartTime) / 20;
             benchmarkResults.databaseBenchmark.throughput = 20000 / benchmarkResults.databaseBenchmark.averageLatency;
-          } catch (error) {
+          } catch (error: any) {
             console.warn('Database benchmark failed:', error);
           }
 
@@ -3004,7 +3050,7 @@ export const aiAssistantMachine = createMachine({
                   type: 'processDocument',
                   data: { documentId, analysisType }
                 });
-              } catch (error) {
+              } catch (error: any) {
                 console.error(`Failed to analyze document ${documentId}:`, error);
                 return { documentId, error: error.message };
               }

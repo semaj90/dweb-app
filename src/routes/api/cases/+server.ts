@@ -5,7 +5,7 @@ import { eq, desc } from 'drizzle-orm';
 import type { RequestHandler } from './$types';
 
 // GET /api/cases - List cases for authenticated user
-export const GET: RequestHandler = async ({ locals, url }) => {
+export const GET: RequestHandler = async ({ locals, url }): Promise<any> => {
   if (!locals.user) {
     throw error(401, 'Unauthorized');
   }
@@ -32,14 +32,14 @@ export const GET: RequestHandler = async ({ locals, url }) => {
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Error fetching cases:', err);
     throw error(500, 'Failed to fetch cases');
   }
 };
 
 // POST /api/cases - Create new case
-export const POST: RequestHandler = async ({ locals, request }) => {
+export const POST: RequestHandler = async ({ locals, request }): Promise<any> => {
   if (!locals.user) {
     throw error(401, 'Unauthorized');
   }
@@ -70,7 +70,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
       data: newCase
     }, { status: 201 });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Error creating case:', err);
     throw error(500, 'Failed to create case');
   }

@@ -78,7 +78,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       stats,
       message: `Processed ${results.length} item(s) for bulk hash operations`,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Bulk hash operation failed:", error);
     return json(
       {
@@ -111,12 +111,12 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
     const stats = {
       totalEvidence: recentEvidence.length,
-      withHashes: recentEvidence.filter((e) => e.hash).length,
-      withoutHashes: recentEvidence.filter((e) => !e.hash).length,
+      withHashes: recentEvidence.filter((e: any) => e.hash).length,
+      withoutHashes: recentEvidence.filter((e: any) => !e.hash).length,
       hashCoverage:
         recentEvidence.length > 0
           ? (
-              (recentEvidence.filter((e) => e.hash).length /
+              (recentEvidence.filter((e: any) => e.hash).length /
                 recentEvidence.length) *
               100
             ).toFixed(1)
@@ -128,7 +128,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
       stats,
       recentEvidence: recentEvidence.slice(0, 10), // Return 10 most recent
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to get bulk hash status:", error);
     return json(
       {

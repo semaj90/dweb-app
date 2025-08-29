@@ -1,8 +1,8 @@
 
 import type { ServerLoad, Actions } from "@sveltejs/kit";
 import { redirect } from "@sveltejs/kit";
-import { cases, criminals } from "../../lib/server/db/schema-postgres.js";
-import { db } from "../../lib/server/db/index.js";
+import { cases, criminals } from '../../lib/server/db/schema-postgres';
+import { db } from '../../lib/server/db/index';
 
 export const load: ServerLoad = async ({ locals }) => {
   // Session information for dashboard display

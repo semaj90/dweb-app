@@ -181,7 +181,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
         return json(validatedResponse);
 
-    } catch (err) {
+    } catch (err: any) {
         console.error('❌ Evidence enhancement error:', err);
         
         if (err instanceof z.ZodError) {
@@ -198,7 +198,7 @@ export const POST: RequestHandler = async ({ request }) => {
     }
 };
 
-async function analyzeEvidence(evidenceText: string, evidenceType: string) {
+async function analyzeEvidence(evidenceText: string, evidenceType: string): Promise<any> {
     try {
         // Use LLM to analyze the evidence
         const analysisPrompt = `You are a legal evidence analyst. Analyze the following ${evidenceType} evidence and provide a structured assessment.
@@ -243,7 +243,7 @@ Consider:
                 return JSON.parse(jsonMatch[0]);
             }
         }
-    } catch (error) {
+    } catch (error: any) {
         console.warn('LLM analysis failed, using fallback:', error);
     }
 
@@ -256,7 +256,7 @@ Consider:
     };
 }
 
-async function suggestLabels(evidenceText: string, caseContext?: unknown) {
+async function suggestLabels(evidenceText: string, caseContext?: unknown): Promise<any> {
     const db = getDB();
     
     try {
@@ -312,13 +312,13 @@ async function suggestLabels(evidenceText: string, caseContext?: unknown) {
 
         return labels.slice(0, CONFIG.enhancement.maxSuggestions);
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('Label suggestion failed:', error);
         return [];
     }
 }
 
-async function extractEntities(evidenceText: string) {
+async function extractEntities(evidenceText: string): Promise<any> {
     try {
         const entityPrompt = `Extract legal entities from this text. Respond with ONLY a JSON array in this format:
 [
@@ -357,7 +357,7 @@ ${evidenceText}`;
                 return entities.filter((e: any) => e.confidence >= 0.5);
             }
         }
-    } catch (error) {
+    } catch (error: any) {
         console.warn('Entity extraction failed:', error);
     }
 
@@ -401,7 +401,7 @@ function getContext(text: string, entity: string): string {
     return text.substring(start, end).trim();
 }
 
-async function findSimilarEvidence(evidenceText: string, caseContext?: unknown) {
+async function findSimilarEvidence(evidenceText: string, caseContext?: unknown): Promise<any> {
     const db = getDB();
     
     try {
@@ -448,13 +448,13 @@ async function findSimilarEvidence(evidenceText: string, caseContext?: unknown) 
             .sort((a, b) => b.similarity_score - a.similarity_score)
             .slice(0, 5);
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('Similar evidence search failed:', error);
         return [];
     }
 }
 
-async function analyzeProsecutionValue(evidenceText: string, caseContext?: unknown) {
+async function analyzeProsecutionValue(evidenceText: string, caseContext?: unknown): Promise<any> {
     try {
         const analysisPrompt = `As a prosecution strategist, analyze this evidence for its prosecution value:
 
@@ -500,7 +500,7 @@ Focus on:
                 return JSON.parse(jsonMatch[0]);
             }
         }
-    } catch (error) {
+    } catch (error: any) {
         console.warn('Prosecution analysis failed:', error);
     }
 
@@ -528,7 +528,7 @@ async function generateEmbedding(text: string): Promise<number[]> {
             const data = await response.json();
             return data.embedding;
         }
-    } catch (error) {
+    } catch (error: any) {
         console.warn('Embedding generation failed:', error);
     }
 
@@ -565,7 +565,7 @@ function categorizeLegalPhrase(phrase: string): string {
     }
 }
 
-async function cacheEnhancementResults(evidenceText: string, results: any) {
+async function cacheEnhancementResults(evidenceText: string, results: any): Promise<any> {
     try {
         const redis = getRedis();
         const cacheKey = `enhancement:${Buffer.from(evidenceText).toString('base64').substring(0, 32)}`;
@@ -574,7 +574,7 @@ async function cacheEnhancementResults(evidenceText: string, results: any) {
             results,
             timestamp: new Date().toISOString()
         }));
-    } catch (error) {
+    } catch (error: any) {
         console.warn('Failed to cache enhancement results:', error);
     }
 }
@@ -623,7 +623,7 @@ export const GET: RequestHandler = async () => {
             ]
         });
 
-    } catch (err) {
+    } catch (err: any) {
         console.error('Enhancement stats error:', err);
         throw error(500, 'Unable to fetch enhancement statistics');
     }

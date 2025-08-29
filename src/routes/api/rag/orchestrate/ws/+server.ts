@@ -32,7 +32,7 @@ setInterval(() => {
   });
 }, 5 * 60 * 1000);
 
-export const GET: RequestHandler = async ({ url, request }) => {
+export const GET: RequestHandler = async ({ url, request }): Promise<any> => {
   // Check if this is a WebSocket upgrade request
   const upgradeHeader = request.headers.get('upgrade');
   if (!upgradeHeader || upgradeHeader !== 'websocket') {
@@ -249,7 +249,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('[WebSocket] ❌ Connection failed:', error);
     return new Response('WebSocket connection failed', { status: 500 });
   }

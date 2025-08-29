@@ -185,7 +185,7 @@ const webglVertexStreamingService = fromCallback(({ sendBack, receive, input }) 
   streamLoop();
   
   // Cleanup on stop
-  receive((event) => {
+  receive((event: any) => {
     if (event.type === "STOP_STREAMING") {
       streamingActive = false;
       if (vertexBuffer) {
@@ -233,7 +233,7 @@ const enhancedRAGService = fromPromise(async ({ input }) => {
       orchestrationData: orchestrationResult,
       processingTime: Date.now()
     };
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(`Enhanced RAG query failed: ${error}`);
   }
 });
@@ -244,7 +244,7 @@ const apiCoordinationService = fromCallback(({ sendBack, receive }) => {
   let redisConnections: any[] = [];
   let natsChannels: any[] = [];
   
-  receive((event) => {
+  receive((event: any) => {
     switch (event.type) {
       case "API_COORDINATION_START":
         coordinationActive = true;

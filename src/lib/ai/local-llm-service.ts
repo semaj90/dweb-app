@@ -5,7 +5,7 @@ export class LocalLLMService {
   private ollamaUrl = 'http://localhost:11434';
   private modelName = 'gemma3-legal:latest'; // Your custom Gemma3 model
   
-  async initialize() {
+  async initialize(): Promise<any> {
     // Check if Ollama is running and model is loaded
     try {
       const response = await fetch(`${this.ollamaUrl}/api/tags`);
@@ -18,7 +18,7 @@ export class LocalLLMService {
       }
       
       console.log('✅ Local LLM Service initialized with Gemma3');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to initialize LLM service:', error);
       throw error;
     }
@@ -42,7 +42,7 @@ export class LocalLLMService {
       
       const data = await response.json();
       return new Float32Array(data.embedding);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Embedding error:', error);
       // Fallback to a simple hash-based embedding for testing
       return this.generateFallbackEmbedding(text);
@@ -99,7 +99,7 @@ export class LocalLLMService {
           tokensUsed: data.total_duration,
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Analysis error:', error);
       throw error;
     }
@@ -127,7 +127,7 @@ export class LocalLLMService {
       
       const data = await response.json();
       return data.message.content;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Chat error:', error);
       throw error;
     }

@@ -217,7 +217,7 @@ export const searchMachine = createMachine({
                 const history = [...new Set([context.query, ...context.searchHistory])].slice(0, 10);
                 try {
                   localStorage.setItem('legal-ai:search-history', JSON.stringify(history));
-                } catch (e) {
+                } catch (e: any) {
                   console.warn('Failed to save search history:', e);
                 }
               }

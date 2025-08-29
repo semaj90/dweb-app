@@ -6,14 +6,14 @@
 import { type RequestHandler,  json } from '@sveltejs/kit';
 import { URL } from "url";
 
-interface ServiceStatus {
+export interface ServiceStatus {
   name: string;
   status: 'healthy' | 'warning' | 'error';
   response_time?: number;
   details?: unknown;
 }
 
-interface HealthResponse {
+export interface HealthResponse {
   overall_status: 'healthy' | 'warning' | 'error';
   timestamp: string;
   services: ServiceStatus[];

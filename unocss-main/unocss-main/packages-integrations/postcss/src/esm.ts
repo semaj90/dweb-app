@@ -41,7 +41,7 @@ export function createPlugin(options: UnoPostcssPluginOptions) {
   let last_config_mtime = 0
   const targetRE = new RegExp(Object.values(directiveMap).join('|'))
 
-  return async function plugin(root: Root, result: Result) {
+  return async function plugin(root: Root, result: Result): Promise<any> {
     const from = result.opts.from?.split('?')[0]
 
     if (!from)

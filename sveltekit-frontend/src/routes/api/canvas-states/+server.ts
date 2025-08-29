@@ -4,7 +4,7 @@ import type { RequestEvent } from "@sveltejs/kit";
 import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db/index";
 
-export async function GET({ url, locals }: RequestEvent) {
+export async function GET({ url, locals }: RequestEvent): Promise<any> {
   try {
     if (!locals.user) {
       return json({ error: "Not authenticated" }, { status: 401 });
@@ -85,12 +85,12 @@ export async function GET({ url, locals }: RequestEvent) {
         },
       });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching canvas states:", error);
     return json({ error: "Failed to fetch canvas states" }, { status: 500 });
   }
 }
-export async function POST({ request, locals }: RequestEvent) {
+export async function POST({ request, locals }: RequestEvent): Promise<any> {
   try {
     if (!locals.user) {
       return json({ error: "Not authenticated" }, { status: 401 });
@@ -122,12 +122,12 @@ export async function POST({ request, locals }: RequestEvent) {
       .returning();
 
     return json(newCanvasState, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating canvas state:", error);
     return json({ error: "Failed to create canvas state" }, { status: 500 });
   }
 }
-export async function PUT({ request, locals }: RequestEvent) {
+export async function PUT({ request, locals }: RequestEvent): Promise<any> {
   try {
     if (!locals.user) {
       return json({ error: "Not authenticated" }, { status: 401 });
@@ -167,12 +167,12 @@ export async function PUT({ request, locals }: RequestEvent) {
       .returning();
 
     return json(updatedCanvasState);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating canvas state:", error);
     return json({ error: "Failed to update canvas state" }, { status: 500 });
   }
 }
-export async function DELETE({ url, locals }: RequestEvent) {
+export async function DELETE({ url, locals }: RequestEvent): Promise<any> {
   try {
     if (!locals.user) {
       return json({ error: "Not authenticated" }, { status: 401 });
@@ -201,13 +201,13 @@ export async function DELETE({ url, locals }: RequestEvent) {
       .returning();
 
     return json({ success: true, deletedCanvasState });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error deleting canvas state:", error);
     return json({ error: "Failed to delete canvas state" }, { status: 500 });
   }
 }
 // PATCH endpoint for partial updates
-export async function PATCH({ request, url, locals }: RequestEvent) {
+export async function PATCH({ request, url, locals }: RequestEvent): Promise<any> {
   try {
     if (!locals.user) {
       return json({ error: "Not authenticated" }, { status: 401 });
@@ -262,7 +262,7 @@ export async function PATCH({ request, url, locals }: RequestEvent) {
       .returning();
 
     return json(updatedCanvasState);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error patching canvas state:", error);
     return json({ error: "Failed to update canvas state" }, { status: 500 });
   }

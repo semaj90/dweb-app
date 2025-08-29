@@ -35,17 +35,17 @@ async function getCachedHealthyLlmEndpoint(
     cachedLlmEndpoint = endpoint;
     endpointCacheTime = now;
     return endpoint;
-  } catch (err) {
+  } catch (err: any) {
     cachedLlmEndpoint = null;
     throw err;
   }
 }
 
 // Import missing dependencies
-import { getHealthyLlmEndpoint, CLIENT_ENV } from './utils/environment-service.js';
+import { getHealthyLlmEndpoint, CLIENT_ENV } from './utils/environment-service';
 
 // LLM Provider interface definition
-interface LLMProviderConfig {
+export interface LLMProviderConfig {
   name: string;
   endpoint: string;
   models: string[];
@@ -162,7 +162,7 @@ class EnhancedAIService {
           break;
       }
       return isArray ? result : result[0];
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Embedding generation failed with ${provider}:`, error);
 
       // Fallback logic
@@ -217,7 +217,7 @@ class EnhancedAIService {
           break;
       }
       return response;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`LLM generation failed with ${provider}:`, error);
 
       // Fallback logic
@@ -273,7 +273,7 @@ class EnhancedAIService {
         summary,
         riskAssessment,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Legal document analysis failed:", error);
       throw error;
     }
@@ -319,7 +319,7 @@ class EnhancedAIService {
             classification: classification,
             summary: summary,
           });
-        } catch (error) {
+        } catch (error: any) {
           results.push({
             id: doc.id,
             embedding: [],
@@ -352,7 +352,7 @@ class EnhancedAIService {
             embedding,
             summary,
           });
-        } catch (error) {
+        } catch (error: any) {
           results.push({
             id: doc.id,
             embedding: [],
@@ -550,7 +550,7 @@ Consider jurisdiction-specific laws and regulations. Always clarify if you need 
         } else {
           return data.choices?.[0]?.message?.content || "No response generated";
         }
-      } catch (err) {
+      } catch (err: any) {
         lastError = err;
         // On first error, force endpoint refresh and retry
         if (!triedRefresh) {

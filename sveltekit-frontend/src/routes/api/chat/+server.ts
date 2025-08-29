@@ -3,12 +3,12 @@ import { type RequestHandler,  error } from '@sveltejs/kit';
 const OLLAMA_URL = import.meta.env.OLLAMA_URL || 'http://localhost:11434';
 const OLLAMA_MODEL = import.meta.env.OLLAMA_MODEL || 'gemma3-legal';
 
-interface ChatMessage {
+export interface ChatMessage {
   role: 'system' | 'user' | 'assistant';
   content: string;
 }
 
-interface ChatRequest {
+export interface ChatRequest {
   messages: ChatMessage[];
   stream?: boolean;
   temperature?: number;
@@ -77,7 +77,7 @@ export const POST: RequestHandler = async ({ request }) => {
         start(controller) {
           const reader = ollamaResponse.body!.getReader();
           
-          async function pump() {
+          async function pump(): Promise<any> {
             try {
               while (true) {
                 const { done, value } = await reader.read();
@@ -170,7 +170,7 @@ export const POST: RequestHandler = async ({ request }) => {
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Chat API error:', err);
     
     if (err instanceof Error && 'status' in err) {
@@ -203,7 +203,7 @@ export const GET: RequestHandler = async () => {
     } else {
       throw new Error(`HTTP ${response.status}`);
     }
-  } catch (err) {
+  } catch (err: any) {
     return new Response(JSON.stringify({
       status: 'error',
       error: err instanceof Error ? err.message : 'Unknown error',

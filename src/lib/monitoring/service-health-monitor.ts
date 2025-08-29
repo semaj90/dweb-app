@@ -274,7 +274,7 @@ export class ServiceHealthMonitor extends EventEmitter {
   /**
    * Perform health check on all services
    */
-  private async performHealthCheck(): Promise<void> {
+  private async performHealthCheck(): Promise<any> {
     const timestamp = Date.now();
     const healthPromises = Array.from(this.services.entries()).map(
       ([name, service]) => this.checkServiceHealth(name, service, timestamp)
@@ -294,7 +294,7 @@ export class ServiceHealthMonitor extends EventEmitter {
     serviceName: string, 
     service: ServiceEndpoint, 
     timestamp: number
-  ): Promise<void> {
+  ): Promise<any> {
     const startTime = Date.now();
     let responseTime = 0;
     let status: 'healthy' | 'unhealthy' | 'degraded' = 'unhealthy';
@@ -321,7 +321,7 @@ export class ServiceHealthMonitor extends EventEmitter {
         status = 'unhealthy';
       }
 
-    } catch (error) {
+    } catch (error: any) {
       responseTime = Date.now() - startTime;
       status = 'unhealthy';
       console.warn(`[Health Monitor] ⚠️ ${serviceName} health check failed:`, error);

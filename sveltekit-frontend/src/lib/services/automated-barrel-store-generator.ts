@@ -94,7 +94,7 @@ export class AutomatedBarrelStoreGenerator {
         const implementation = await this.fetchItemImplementation(item);
         resolution.implementations.set(item, implementation);
         this.resolutionCache.set(item, implementation);
-      } catch (error) {
+      } catch (error: any) {
         // Create fallback implementation
         const fallback = this.createFallbackImplementation(item);
         resolution.fallbacks.set(item, fallback);
@@ -128,7 +128,7 @@ export class AutomatedBarrelStoreGenerator {
       // Apply best practices from documentation
       await this.extractBestPractices(integration);
 
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Context7 integration failed, using fallbacks:', error);
     }
 

@@ -12,7 +12,7 @@
 
 declare const self: DedicatedWorkerGlobalScope;
 
-interface SIMDWorkerMessage {
+export interface SIMDWorkerMessage {
   type: 'process_batch_simd' | 'process_simd' | 'initialize_simd';
   jobId: string;
   operations?: any[];
@@ -73,7 +73,7 @@ class SIMDWorker {
         default:
           throw new Error(`Unknown message type: ${type}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       self.postMessage({ 
         jobId, 
         result: null, 

@@ -18,7 +18,7 @@ const skipMap = {
   '// @unocss-skip': ['// @unocss-skip-start\n', '\n// @unocss-skip-end'],
 }
 
-export async function activate(ext: ExtensionContext) {
+export async function activate(ext: ExtensionContext): Promise<any> {
   // Neither Jiti2 nor Tsx supports running in VS Code yet
   // We have to use Jiti1 for now
   process.env.IMPORTX_LOADER = 'jiti-v1'
@@ -88,7 +88,7 @@ async function rootRegister(
   ext: ExtensionContext,
   root: string[],
   status: StatusBarItem,
-) {
+): Promise<any> {
   log.appendLine('📂 roots search mode.')
 
   const config = getConfig()
@@ -126,7 +126,7 @@ async function rootRegister(
     'unocss.config.ts',
   ]
 
-  const registerUnocss = async (url = window.activeTextEditor?.document.uri.fsPath) => {
+  const registerUnocss = async (url = window.activeTextEditor?.document.uri.fsPath): Promise<any> => {
     if (!url)
       return
 

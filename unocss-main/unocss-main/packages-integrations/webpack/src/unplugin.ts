@@ -143,7 +143,7 @@ export function unplugin<Theme extends object>(configOrPath?: WebpackPluginOptio
     } as UnpluginOptions as Required<ResolvedUnpluginOptions>
 
     let lastTokenSize = tokens.size
-    async function updateModules() {
+    async function updateModules(): Promise<any> {
       if (!plugin.__vfsModules)
         return
 

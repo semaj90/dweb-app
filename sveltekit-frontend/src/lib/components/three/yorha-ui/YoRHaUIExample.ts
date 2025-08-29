@@ -249,7 +249,7 @@ export class YoRHaUIExample {
     formLayout.addChild(messageInput, { alignSelf: 'stretch' });
 
     // Add event listeners
-    nameInput.addEventListener('input', (event) => {
+    nameInput.addEventListener('input', (event: any) => {
       console.log('Name input:', event.data?.value);
     });
 

@@ -21,7 +21,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
     const result = await response.json();
     return json(result);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Document processing failed:", error);
     return json(
       {

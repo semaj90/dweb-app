@@ -8,9 +8,9 @@
 import { glob } from 'glob';
 import path from 'path';
 import fetch from 'node-fetch';
-import { allEndpoints, smokeConfig } from '../smoke.config.js';
+import { allEndpoints, smokeConfig } from '../smoke.config';
 
-interface RouteTest {
+export interface RouteTest {
   route: string;
   method: 'GET' | 'POST';
   expectedStatus: number[];
@@ -142,7 +142,7 @@ async function testRoute(test: RouteTest, baseUrl: string): Promise<{success: bo
   }
 }
 
-async function main() {
+async function main(): Promise<any> {
   console.log('\n🧪 Comprehensive Route Testing Suite');
   console.log('=====================================');
   

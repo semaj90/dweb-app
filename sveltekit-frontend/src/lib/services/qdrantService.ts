@@ -136,7 +136,7 @@ export class QdrantService {
     try {
       const collections = await this.client.getCollections();
       return { status: 'ok', collections: collections.collections.map((c:any) => c.name) };
-    } catch (err) {
+    } catch (err: any) {
       return { status: 'error', error: (err as any).message };
     }
   }
@@ -158,7 +158,7 @@ export class QdrantService {
       this.collections$.set(collections.collections.map((c: any) => c.name));
 
       console.log('🔗 Qdrant connected successfully');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Qdrant connection failed:', error);
       this.connectionStatus$.set('error');
       this.isConnected = false;
@@ -480,7 +480,7 @@ export class QdrantService {
       const taggingResult = JSON.parse(data.response);
 
       return this.parseLegalLLMTags(taggingResult);
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Legal auto-tagging failed, using fallback:', error);
       return this.fallbackLegalTags(content, document);
     }
@@ -676,7 +676,7 @@ Return a JSON object with this enhanced structure:
       const taggingResult = JSON.parse(data.response);
 
       return this.parseLLMTags(taggingResult);
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Auto-tagging failed, using fallback:', error);
       return this.fallbackTags(content, metadata);
     }
@@ -854,7 +854,7 @@ Return a JSON object with this structure:
 
       const data = await response.json();
       return data.embedding;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Embedding generation failed:', error);
       return new Array(384).fill(0); // Fallback zero vector
     }
@@ -887,7 +887,7 @@ Return a JSON object with this structure:
         collections: info,
         total_points: info.reduce((sum, col) => sum + (col.points_count || 0), 0),
       };
-    } catch (error) {
+    } catch (error: any) {
       return { status: 'error', error: error.message };
     }
   }

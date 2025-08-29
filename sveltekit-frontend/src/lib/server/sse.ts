@@ -1,4 +1,4 @@
-import { logger } from "./logger.js";
+import { logger } from './logger';
 import stream from "stream";
 
 // lib/server/sse.ts
@@ -41,7 +41,7 @@ export class SSE {
         const writer = stream.getWriter();
         writer.write(this.encoder.encode(message));
         writer.releaseLock();
-      } catch (error) {
+      } catch (error: any) {
         logger.error(`[SSE] Failed to send to client ${clientId}:`, error);
         this.clients.delete(clientId);
       }
@@ -55,7 +55,7 @@ export class SSE {
     for (const [clientId, stream] of this.clients) {
       try {
         stream.close();
-      } catch (error) {
+      } catch (error: any) {
         // Ignore close errors
       }
     }
@@ -68,7 +68,7 @@ export class SSE {
         const writer = stream.getWriter();
         writer.write(this.encoder.encode(`:heartbeat\n\n`));
         writer.releaseLock();
-      } catch (error) {
+      } catch (error: any) {
         clearInterval(interval);
       }
     }, 30000); // Every 30 seconds

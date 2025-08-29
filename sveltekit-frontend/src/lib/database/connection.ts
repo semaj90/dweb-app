@@ -44,7 +44,7 @@ export async function testDatabaseConnection(): Promise<{
         timestamp: new Date().toISOString(),
       },
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       success: false,
       message: `Database connection failed: ${(error as Error).message}`,
@@ -62,7 +62,7 @@ export async function vectorSimilaritySearch(
   queryEmbedding: number[],
   limit: number = 10,
   threshold: number = 0.8
-) {
+): Promise<any> {
   try {
     const tableName = table === 'documents' ? 'documents' : 'search_index';
     
@@ -86,7 +86,7 @@ export async function vectorSimilaritySearch(
       results: result.rows,
       count: result.rows.length,
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       success: false,
       error: (error as Error).message,
@@ -107,7 +107,7 @@ export async function hybridSemanticSearch(
     caseId?: string;
     userId?: string;
   } = {}
-) {
+): Promise<any> {
   const { limit = 10, threshold = 0.7, entityTypes, caseId, userId } = options;
 
   try {
@@ -165,7 +165,7 @@ export async function hybridSemanticSearch(
       query,
       queryEmbedding: queryEmbedding.slice(0, 5), // Only return first 5 dimensions for debugging
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       success: false,
       error: (error as Error).message,
@@ -177,7 +177,7 @@ export async function hybridSemanticSearch(
 }
 
 // Initialize database with extensions and basic setup
-export async function initializeDatabase() {
+export async function initializeDatabase(): Promise<any> {
   try {
     console.log('🔄 Initializing database...');
 
@@ -199,7 +199,7 @@ export async function initializeDatabase() {
     }
 
     return health;
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Database initialization error:', error);
     return {
       success: false,
@@ -209,11 +209,11 @@ export async function initializeDatabase() {
 }
 
 // Graceful shutdown
-export async function closeDatabaseConnection() {
+export async function closeDatabaseConnection(): Promise<any> {
   try {
     await pool.end();
     console.log('✅ Database connection pool closed');
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Error closing database connection:', error);
   }
 }

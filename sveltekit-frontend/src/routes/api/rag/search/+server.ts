@@ -7,7 +7,7 @@ import { db, documents, embeddings, searchSessions } from "$lib/server/database"
 import { desc, eq, sql } from 'drizzle-orm';
 
 // Generate embedding for search query
-async function generateQueryEmbedding(query: string) {
+async function generateQueryEmbedding(query: string): Promise<any> {
   try {
     const embeddingResponse = await fetch('/api/ai/embeddings', {
       method: 'POST',
@@ -19,14 +19,14 @@ async function generateQueryEmbedding(query: string) {
       const result = await embeddingResponse.json();
       return result.embedding;
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to generate query embedding:', error);
   }
   return null;
 }
 
 // Perform vector similarity search
-async function vectorSearch(queryEmbedding: number[], limit: number, threshold: number) {
+async function vectorSearch(queryEmbedding: number[], limit: number, threshold: number): Promise<any> {
   try {
     // Use PostgreSQL vector similarity search
     const similarResults = await db
@@ -46,14 +46,14 @@ async function vectorSearch(queryEmbedding: number[], limit: number, threshold: 
       .limit(limit);
 
     return similarResults;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Vector search failed:', error);
     return [];
   }
 }
 
 // Perform text-based search
-async function textSearch(query: string, limit: number) {
+async function textSearch(query: string, limit: number): Promise<any> {
   try {
     const textResults = await db
       .select({
@@ -73,7 +73,7 @@ async function textSearch(query: string, limit: number) {
       similarity: 0.8, // Fixed similarity for text search
       searchType: 'text'
     }));
-  } catch (error) {
+  } catch (error: any) {
     console.error('Text search failed:', error);
     return [];
   }
@@ -150,7 +150,7 @@ export const POST: RequestHandler = async ({ request }) => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('RAG search error:', error);
     return json(
       {

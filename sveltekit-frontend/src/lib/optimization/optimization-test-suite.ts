@@ -10,11 +10,11 @@ import {
   type EnhancedPerformanceMetrics,
   createEnhancedOptimizationSuite, 
   optimizeForLegalAIProduction 
-} from "./index.js";
-import { createContext7MCPIntegration } from "./context7-mcp-integration.js";
+} from './index';
+import { createContext7MCPIntegration } from './context7-mcp-integration';
 
 // === Test Result Types ===
-interface TestResult {
+export interface TestResult {
   name: string;
   passed: boolean;
   duration_ms: number;
@@ -27,7 +27,7 @@ interface TestResult {
   };
 }
 
-interface TestSuite {
+export interface TestSuite {
   name: string;
   tests: TestResult[];
   passed: number;
@@ -36,7 +36,7 @@ interface TestSuite {
   overall_passed: boolean;
 }
 
-interface ValidationReport {
+export interface ValidationReport {
   timestamp: string;
   environment: {
     node_version: string;
@@ -97,7 +97,7 @@ export class OptimizationTestSuite {
           passed: true,
           duration_ms: performance.now() - start
         });
-      } catch (error) {
+      } catch (error: any) {
         tests.push({
           name: 'VS Code Extension Initialization',
           passed: false,
@@ -124,7 +124,7 @@ export class OptimizationTestSuite {
           try {
             await (this.suite!.vscode as any)?.executeCommand?.(command);
             successful_commands++;
-          } catch (error) {
+          } catch (error: any) {
             // Individual command failures are acceptable
           }
         }
@@ -141,7 +141,7 @@ export class OptimizationTestSuite {
             success_rate: success_rate * 100
           }
         });
-      } catch (error) {
+      } catch (error: any) {
         tests.push({
           name: 'Command Execution Performance',
           passed: false,
@@ -167,7 +167,7 @@ export class OptimizationTestSuite {
             commands_registered: stats.commands
           }
         });
-      } catch (error) {
+      } catch (error: any) {
         tests.push({
           name: 'Memory Usage Monitoring',
           passed: false,
@@ -212,7 +212,7 @@ export class OptimizationTestSuite {
           duration_ms: performance.now() - start,
           details: { retrieved_value: retrieved }
         });
-      } catch (error) {
+      } catch (error: any) {
         tests.push({
           name: 'Basic Cache Operations',
           passed: false,
@@ -250,7 +250,7 @@ export class OptimizationTestSuite {
             recommendations_generated: recommendations.length
           }
         });
-      } catch (error) {
+      } catch (error: any) {
         tests.push({
           name: 'Self-Organizing Map Clustering',
           passed: false,
@@ -285,7 +285,7 @@ export class OptimizationTestSuite {
             items_cached: after_stats.cache.size
           }
         });
-      } catch (error) {
+      } catch (error: any) {
         tests.push({
           name: 'Memory Pressure Handling',
           passed: false,
@@ -335,7 +335,7 @@ export class OptimizationTestSuite {
             memory_allocated_gb: Math.round(stats.total_memory_allocated / (1024 * 1024 * 1024))
           }
         });
-      } catch (error) {
+      } catch (error: any) {
         tests.push({
           name: 'Container Resource Monitoring',
           passed: false,
@@ -366,7 +366,7 @@ export class OptimizationTestSuite {
             efficiency_change: after_stats.efficiency_score - before_stats.efficiency_score
           }
         });
-      } catch (error) {
+      } catch (error: any) {
         tests.push({
           name: 'Optimization Preset Application',
           passed: false,
@@ -394,7 +394,7 @@ export class OptimizationTestSuite {
             has_resource_limits: dockerCompose.includes('resources:')
           }
         });
-      } catch (error) {
+      } catch (error: any) {
         tests.push({
           name: 'Docker Compose Generation',
           passed: false,
@@ -449,7 +449,7 @@ export class OptimizationTestSuite {
             improvement: this.test_data.large_json.length / stats.parse_time_ms // chars per ms
           }
         });
-      } catch (error) {
+      } catch (error: any) {
         tests.push({
           name: 'JSON Parsing Performance',
           passed: false,
@@ -480,7 +480,7 @@ export class OptimizationTestSuite {
             wasm_acceleration: stats.wasm_acceleration
           }
         });
-      } catch (error) {
+      } catch (error: any) {
         tests.push({
           name: 'JSON Compression',
           passed: false,
@@ -505,7 +505,7 @@ export class OptimizationTestSuite {
             note: wasm_initialized ? 'WebAssembly acceleration available' : 'Using JavaScript fallback'
           }
         });
-      } catch (error) {
+      } catch (error: any) {
         tests.push({
           name: 'WebAssembly Initialization',
           passed: false,
@@ -554,7 +554,7 @@ export class OptimizationTestSuite {
             context7_success: response.success
           }
         });
-      } catch (error) {
+      } catch (error: any) {
         tests.push({
           name: 'Stack Analysis with Optimization',
           passed: false,
@@ -580,7 +580,7 @@ export class OptimizationTestSuite {
             expected_improvement: response.performance_impact?.expected_improvement || 0
           }
         });
-      } catch (error) {
+      } catch (error: any) {
         tests.push({
           name: 'Best Practices Generation',
           passed: false,
@@ -609,7 +609,7 @@ export class OptimizationTestSuite {
             implementation_steps: analysis.implementation_plan.length
           }
         });
-      } catch (error) {
+      } catch (error: any) {
         tests.push({
           name: 'Comprehensive Analysis',
           passed: false,
@@ -664,7 +664,7 @@ export class OptimizationTestSuite {
         try {
           await (this.suite.vscode as any)?.executeCommand?.(command);
           successful_commands++;
-        } catch (error) {
+        } catch (error: any) {
           // Continue with other commands
         }
       }

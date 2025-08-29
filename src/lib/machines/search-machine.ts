@@ -94,7 +94,7 @@ export type SearchEvent =
   | { type: 'SAVE_QUERY'; name?: string }
   | { type: 'LOAD_SAVED_QUERY'; query: string }
   | { type: 'UPDATE_SETTINGS'; settings: Partial<SearchContext['settings']> }
-  | { type: 'SEARCH_COMPLETE'; results: unknown }
+  | { type: 'SEARCH_COMPLETE'; results: any }
   | { type: 'SEARCH_ERROR'; error: string };
 
 // Default context
@@ -132,7 +132,7 @@ const defaultContext: SearchContext = {
 
 // Services for search machine
 const searchServices = {
-  performSearch: async (context: SearchContext, event: unknown) => {
+  performSearch: async (context: SearchContext, event: any) => {
     const startTime = performance.now();
 
     try {
@@ -163,7 +163,7 @@ const searchServices = {
         cached: searchResult.cached || false
       };
 
-    } catch (error) {
+    } catch (error: any) {
       // Fallback to local search if multi-protocol fails
       console.warn('Multi-protocol search failed, falling back to local search:', error);
       return await searchServices.performLocalSearch(context);
@@ -214,7 +214,7 @@ const searchServices = {
       });
 
       return suggestions || [];
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Suggestion generation failed:', error);
       return generateLocalSuggestions(context.query, context.recentQueries);
     }
@@ -256,7 +256,7 @@ const searchServices = {
 };
 
 // Helper functions
-async function performLocalDocumentSearch(query: string, options: unknown) {
+async function performLocalDocumentSearch(query: string, options: any): Promise<any> {
   // Simulate local search - in practice this would query your local database
   return {
     documents: [],
@@ -271,7 +271,7 @@ function generateLocalSuggestions(query: string, recentQueries: string[]) {
     .slice(0, 5);
 }
 
-function downloadJSON(data: unknown, filename: string) {
+function downloadJSON(data: any, filename: string) {
   const blob = new Blob([JSON.stringify(data, null, 2)], {
     type: 'application/json'
   });
@@ -525,7 +525,7 @@ export const searchMachine = createMachine({
     }),
 
     generateSuggestions: assign({
-      suggestions: async (context) => {
+      suggestions: async (context): Promise<any> => {
         return await searchServices.generateSuggestions(context);
       }
     }),

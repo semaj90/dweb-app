@@ -3,8 +3,8 @@ import {
 	OnChangeStringOrArrayProp,
 	OrientationProp,
 	StringOrArrayStringProp,
-} from "./extended-types/shared/index.js";
-import { ToggleRootStateDataAttr } from "./extended-types/toggle/index.js";
+} from './extended-types/shared/index';
+import { ToggleRootStateDataAttr } from './extended-types/toggle/index';
 import { typeSingleOrMultipleProp, withChildProps } from "$lib/content/api-reference/shared.js";
 import {
 	defineBooleanProp,
@@ -15,7 +15,7 @@ import {
 	defineSimpleDataAttr,
 	defineStringProp,
 	defineUnionProp,
-} from "../utils.js";
+} from '../utils';
 
 const root = defineComponentApiSchema<ToggleGroupRootPropsWithoutHTML>({
 	title: "Root",

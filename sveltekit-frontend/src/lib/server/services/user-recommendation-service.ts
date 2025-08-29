@@ -111,7 +111,7 @@ export class UserRecommendationService {
       }
 
       return queryId;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to store AI chat interaction:', error);
       throw new Error('Failed to store chat interaction');
     }
@@ -142,7 +142,7 @@ export class UserRecommendationService {
       });
 
       return sessionId;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to create RAG session:', error);
       throw new Error('Failed to create session');
     }
@@ -174,7 +174,7 @@ export class UserRecommendationService {
           queriesPerSession: sessionStats.avgQueriesPerSession,
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to analyze user patterns:', error);
       throw new Error('Pattern analysis failed');
     }
@@ -201,7 +201,7 @@ export class UserRecommendationService {
       recommendations.push(...topicRecs);
 
       return recommendations.slice(0, limit);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to generate recommendations:', error);
       return [];
     }
@@ -247,7 +247,7 @@ export class UserRecommendationService {
         userSatisfaction: this.calculateSatisfactionScore(successRate, stats.avgProcessingTime || 0),
         improvementSuggestions: this.generateImprovementSuggestions(stats, topTopics)
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to get chat analytics:', error);
       throw new Error('Analytics retrieval failed');
     }

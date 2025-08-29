@@ -2,8 +2,8 @@
  * Enhanced Sentence Splitter for text processing (shared)
  */
 
-interface SplitterOptions { minLength?: number; maxLength?: number; minFragmentLength?: number; mergeThreshold?: number; streamBufferSize?: number; headingPatterns?: RegExp[]; }
-interface StreamingContext { buffer: string; processedSentences: string[]; }
+export interface SplitterOptions { minLength?: number; maxLength?: number; minFragmentLength?: number; mergeThreshold?: number; streamBufferSize?: number; headingPatterns?: RegExp[]; }
+export interface StreamingContext { buffer: string; processedSentences: string[]; }
 
 export class EnhancedSentenceSplitter {
   private minLength: number; private maxLength: number; private minFragmentLength: number; private mergeThreshold: number; private streamBufferSize: number; private customAbbreviations: Set<string>; private abbreviationRegexes: { abbr: string; regex: RegExp }[]; private headingPatterns: RegExp[];

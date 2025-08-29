@@ -117,7 +117,7 @@ export class PostgreSQLQdrantSyncService {
       } else {
         this.log(`Qdrant collection exists: ${this.config.collectionName}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(`Failed to setup Qdrant collection: ${error.message}`);
     }
   }
@@ -154,7 +154,7 @@ export class PostgreSQLQdrantSyncService {
       this.log(`Synced: ${this.stats.syncedToQdrant}, Skipped: ${this.stats.skippedNoEmbedding}, Errors: ${this.stats.errors}`);
 
       return this.stats;
-    } catch (error) {
+    } catch (error: any) {
       this.log(`Full rebuild failed: ${error.message}`);
       throw error;
     }
@@ -183,7 +183,7 @@ export class PostgreSQLQdrantSyncService {
 
       this.log(`Incremental sync completed in ${this.stats.durationMs}ms`);
       return this.stats;
-    } catch (error) {
+    } catch (error: any) {
       this.log(`Incremental sync failed: ${error.message}`);
       throw error;
     }
@@ -201,7 +201,7 @@ export class PostgreSQLQdrantSyncService {
       }
 
       return await this.syncSingleEvidence(evidenceItem);
-    } catch (error) {
+    } catch (error: any) {
       this.log(`Failed to sync evidence ${evidenceId}: ${error.message}`);
       return false;
     }
@@ -219,7 +219,7 @@ export class PostgreSQLQdrantSyncService {
       }
 
       return await this.syncSingleDocument(docData);
-    } catch (error) {
+    } catch (error: any) {
       this.log(`Failed to sync document ${documentId}: ${error.message}`);
       return false;
     }
@@ -234,7 +234,7 @@ export class PostgreSQLQdrantSyncService {
       await this.qdrant.deleteCollection(this.config.collectionName);
       await this.ensureCollection();
       this.log(`Cleared Qdrant collection: ${this.config.collectionName}`);
-    } catch (error) {
+    } catch (error: any) {
       this.log(`Failed to clear Qdrant collection: ${error.message}`);
     }
   }
@@ -469,7 +469,7 @@ export class PostgreSQLQdrantSyncService {
 
       this.stats.syncedToQdrant++;
       return true;
-    } catch (error) {
+    } catch (error: any) {
       this.stats.errors++;
       this.log(`Failed to sync evidence ${evidenceItem.id}: ${error.message}`);
       return false;
@@ -513,7 +513,7 @@ export class PostgreSQLQdrantSyncService {
 
       this.stats.syncedToQdrant++;
       return true;
-    } catch (error) {
+    } catch (error: any) {
       this.stats.errors++;
       this.log(`Failed to sync document ${docData.embedding?.id}: ${error.message}`);
       return false;
@@ -547,7 +547,7 @@ export class PostgreSQLQdrantSyncService {
       // Check PostgreSQL
       await db.execute(sql`SELECT 1`);
       health.postgresql = true;
-    } catch (error) {
+    } catch (error: any) {
       this.log(`PostgreSQL health check failed: ${error.message}`);
     }
 
@@ -559,7 +559,7 @@ export class PostgreSQLQdrantSyncService {
       // Check collection
       const collections = await this.qdrant.getCollections();
       health.collection = collections.collections.some(c => c.name === this.config.collectionName);
-    } catch (error) {
+    } catch (error: any) {
       this.log(`Qdrant health check failed: ${error.message}`);
     }
 
@@ -657,7 +657,7 @@ export class PostgreSQLQdrantSyncService {
       this.log(`🔍 WASM search completed: ${results.length} results in ${retrievalTime}ms`);
       return results;
 
-    } catch (error) {
+    } catch (error: any) {
       this.log(`❌ WASM-optimized search failed: ${error.message}`);
       throw error;
     }
@@ -709,7 +709,7 @@ export class PostgreSQLQdrantSyncService {
 
       return results;
 
-    } catch (error) {
+    } catch (error: any) {
       this.log(`❌ WASM batch search failed: ${error.message}`);
       throw error;
     }
@@ -757,7 +757,7 @@ export class PostgreSQLQdrantSyncService {
 
       this.log(`📝 Stored WASM inference result: ${metadata.inferenceId}`);
 
-    } catch (error) {
+    } catch (error: any) {
       this.log(`❌ Failed to store WASM inference result: ${error.message}`);
     }
   }

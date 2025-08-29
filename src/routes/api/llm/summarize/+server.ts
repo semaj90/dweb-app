@@ -3,7 +3,7 @@ import envConfig from '../../../../../env-config.mjs';
 import type { RequestHandler } from './$types';
 
 // POST /api/llm/summarize - Summarize text using Ollama
-export const POST: RequestHandler = async ({ locals, request }) => {
+export const POST: RequestHandler = async ({ locals, request }): Promise<any> => {
   if (!locals.user) {
     throw error(401, 'Unauthorized');
   }
@@ -66,7 +66,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Error generating summary:', err);
     throw error(500, 'Failed to generate summary');
   }

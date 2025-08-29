@@ -356,7 +356,9 @@
              ondragover={handleDragOver}
              ondragleave={handleDragLeave}
              ondrop={handleDrop}
-             class:drag-over={dragOver}>
+             class:drag-over={dragOver}
+             role="region"
+             aria-label="Evidence file drop zone">
           <div class="upload-icon">📤</div>
           <div class="upload-text">Drop file or click to browse</div>
           <div class="upload-hint">Images, videos, or PDF documents</div>
@@ -567,6 +569,13 @@
 
   .nav-icon {
     margin-right: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    width: 14px;
+    height: 14px;
+    line-height: 1;
   }
 
   .nav-count {
@@ -891,9 +900,14 @@
   }
 
   .modal-icon {
-    font-size: 16px;
-    margin-right: 10px;
+    font-size: 20px;
+    margin-right: 12px;
     color: #d4af37;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
   }
 
   .modal-title {
@@ -941,9 +955,15 @@
   }
 
   .upload-icon {
-    font-size: 32px;
+    font-size: 48px;
     color: #666;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    line-height: 1;
   }
 
   .upload-text {
@@ -1135,8 +1155,9 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
-    width: 16px;
-    height: 16px;
+    font-size: 16px;
+    width: 18px;
+    height: 18px;
+    line-height: 1;
   }
 </style>

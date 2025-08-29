@@ -204,7 +204,7 @@ export const GET: RequestHandler = async ({ params, url }) => {
     console.log(`[API] Document ${docId} processed successfully with ${relatedDocuments.length} related docs`);
     return json(response);
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('[API] Document fetch failed:', err);
     throw error(500, `Failed to fetch document: ${err instanceof Error ? err.message : 'Unknown error'}`);
   }

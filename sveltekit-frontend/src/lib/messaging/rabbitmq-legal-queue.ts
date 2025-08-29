@@ -15,7 +15,7 @@ import { nesMemory, type LegalDocument } from '../memory/nes-memory-architecture
 import { textureRankingMatrices, type RankingResult } from '../gpu/texture-ranking-matrices';
 import { FlatBufferNodeSerializer } from '../binary/flatbuffer-node-data';
 
-interface RabbitMQConnection {
+export interface RabbitMQConnection {
   readonly host: string;
   readonly port: number;
   readonly username: string;
@@ -24,7 +24,7 @@ interface RabbitMQConnection {
   readonly ssl: boolean;
 }
 
-interface LegalDocumentMessage {
+export interface LegalDocumentMessage {
   readonly messageId: string;
   readonly documentId: string;
   readonly operation: 'process' | 'analyze' | 'rank' | 'store' | 'retrieve';
@@ -42,7 +42,7 @@ interface LegalDocumentMessage {
   readonly retryCount: number;
 }
 
-interface QueueConfiguration {
+export interface QueueConfiguration {
   readonly name: string;
   readonly durable: boolean;
   readonly exclusive: boolean;
@@ -52,7 +52,7 @@ interface QueueConfiguration {
   readonly messageTTL: number;
 }
 
-interface LegalProcessingResult {
+export interface LegalProcessingResult {
   readonly success: boolean;
   readonly documentId: string;
   readonly operation: string;
@@ -164,7 +164,7 @@ export class RabbitMQLegalQueue {
         this.handleConnectionOpen();
       };
       
-      this.connection.onmessage = (event) => {
+      this.connection.onmessage = (event: any) => {
         this.handleMessage(event);
       };
       
@@ -178,7 +178,7 @@ export class RabbitMQLegalQueue {
         this.handleConnectionClose();
       };
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize RabbitMQ connection:', error);
       this.scheduleReconnect();
     }
@@ -220,7 +220,7 @@ export class RabbitMQLegalQueue {
       
       console.log('🚀 RabbitMQ queues and consumers initialized');
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to setup queues and consumers:', error);
     }
   }
@@ -298,7 +298,7 @@ export class RabbitMQLegalQueue {
       
       console.log(`📤 Published ${operation} message for document ${document.id} to queue ${queueName}`);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Failed to publish document message:`, error);
       throw error;
     }
@@ -378,7 +378,7 @@ export class RabbitMQLegalQueue {
       // Acknowledge message
       await this.acknowledgeMessage(message.messageId);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Document processing failed for ${message.documentId}:`, error);
       
       await this.sendProcessingResult({
@@ -425,7 +425,7 @@ export class RabbitMQLegalQueue {
       
       await this.acknowledgeMessage(message.messageId);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ GPU compute failed:`, error);
       await this.handleProcessingError(message, error);
     }
@@ -456,7 +456,7 @@ export class RabbitMQLegalQueue {
       
       await this.acknowledgeMessage(message.messageId);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Ranking computation failed:`, error);
       await this.handleProcessingError(message, error);
     }
@@ -478,7 +478,7 @@ export class RabbitMQLegalQueue {
       
       await this.acknowledgeMessage(message.messageId);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Memory allocation handling failed:`, error);
     }
   }
@@ -657,7 +657,7 @@ export class RabbitMQLegalQueue {
         }
       }
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to handle message:', error);
     }
   }

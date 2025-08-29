@@ -7,9 +7,9 @@ const SIMD_URL = process.env.SIMD_URL || 'http://localhost:8081';
 
 // Minimal in-memory cache placeholder
 const _cache = new Map<string, any>();
-async function setCache(k: string, v: any) { _cache.set(k, { v, ts: Date.now() }); }
+async function setCache(k: string, v: any): Promise<any> { _cache.set(k, { v, ts: Date.now() }); }
 
-async function processTask(msg: { content: Buffer } | null) {
+async function processTask(msg: { content: Buffer } | null): Promise<any> {
   if (!msg) return;
   try {
     const task = JSON.parse(msg.content.toString());
@@ -24,13 +24,13 @@ async function processTask(msg: { content: Buffer } | null) {
 
     await setCache(documentId, { status: "complete", data });
     console.log(`✓ Summarized and cached ${documentId}`);
-  } catch (e) {
+  } catch (e: any) {
     const err = e as Error;
     console.error("Worker error:", (err && err.message) || e);
   }
 }
 
-async function start() {
+async function start(): Promise<any> {
   const connection = await connect(RABBITMQ_URL);
   const channel = await connection.createChannel();
   await channel.assertQueue(QUEUE_NAME, { durable: true });
@@ -41,7 +41,7 @@ async function start() {
   });
 }
 
-start().catch((e) => {
+start().catch((e: any) => {
   console.error("Failed to start worker:", e);
   process.exit(1);
 });

@@ -344,7 +344,7 @@ class KeyboardShortcutsService {
       
       await shortcut.action();
       
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Shortcut execution failed: ${shortcut.id}`, error);
     }
   }
@@ -354,7 +354,7 @@ class KeyboardShortcutsService {
     // Try to connect to remote control WebSocket
     try {
       await this.connectToRemoteServer('ws://localhost:8085/keyboard-remote');
-    } catch (error) {
+    } catch (error: any) {
       console.log('🔌 Remote control server not available, continuing in local mode');
     }
   }
@@ -370,11 +370,11 @@ class KeyboardShortcutsService {
         this.isConnectedStore.set(true);
       };
       
-      ws.onmessage = (event) => {
+      ws.onmessage = (event: any) => {
         try {
           const command = JSON.parse(event.data) as RemoteCommand;
           this.executeRemoteCommand(command);
-        } catch (error) {
+        } catch (error: any) {
           console.error('❌ Invalid remote command:', error);
         }
       };
@@ -389,7 +389,7 @@ class KeyboardShortcutsService {
         this.isConnectedStore.set(false);
       };
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to connect to remote control server:', error);
       this.isConnectedStore.set(false);
     }

@@ -62,7 +62,7 @@ export class EnhancedContext7Service {
       });
 
       return this.parseLegalAnalysis(response);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Context7 legal document analysis failed:', error);
       throw new Error(`Legal document analysis failed: ${error.message}`);
     }
@@ -84,7 +84,7 @@ export class EnhancedContext7Service {
       });
 
       return this.parseComplianceReport(response, framework);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Context7 compliance report generation failed:', error);
       throw new Error(`Compliance report generation failed: ${error.message}`);
     }
@@ -106,7 +106,7 @@ export class EnhancedContext7Service {
       });
 
       return this.parseLegalPrecedents(response);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Context7 legal precedent suggestion failed:', error);
       throw new Error(`Legal precedent suggestion failed: ${error.message}`);
     }
@@ -126,7 +126,7 @@ export class EnhancedContext7Service {
       });
 
       return this.parseLegalEntities(response);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Context7 legal entity extraction failed:', error);
       throw new Error(`Legal entity extraction failed: ${error.message}`);
     }
@@ -143,7 +143,7 @@ export class EnhancedContext7Service {
       });
 
       return response.text || response;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Context7 stack analysis failed:', error);
       throw new Error(`Stack analysis failed: ${error.message}`);
     }
@@ -159,7 +159,7 @@ export class EnhancedContext7Service {
       });
 
       return response.text || response;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Context7 best practices generation failed:', error);
       throw new Error(`Best practices generation failed: ${error.message}`);
     }
@@ -176,7 +176,7 @@ export class EnhancedContext7Service {
       });
 
       return response.text || response;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Context7 integration suggestion failed:', error);
       throw new Error(`Integration suggestion failed: ${error.message}`);
     }
@@ -213,7 +213,7 @@ export class EnhancedContext7Service {
       };
 
       return orchestrationResult;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Legal orchestration failed:', error);
       throw new Error(`Legal orchestration failed: ${error.message}`);
     }
@@ -229,7 +229,7 @@ export class EnhancedContext7Service {
       
       const mockMCPResponse = await this.simulateMCPCall(toolName, args);
       return mockMCPResponse;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`MCP tool call failed: ${toolName}`, error);
       throw error;
     }

@@ -3,8 +3,8 @@
  * Coordinates multiple AI agents for complex legal analysis
  */
 
-import { AutogenLegalTeam } from '../sveltekit-frontend/src/lib/ai/autogen-legal-agents.js';
-import { context7Service } from '../sveltekit-frontend/src/lib/services/context7Service.js';
+import { AutogenLegalTeam } from '../sveltekit-frontend/src/lib/ai/autogen-legal-agents';
+import { context7Service } from '../sveltekit-frontend/src/lib/services/context7Service';
 
 export interface AutoGenAgentConfig {
   ollamaEndpoint: string;
@@ -141,7 +141,7 @@ export class AutoGenAgent {
         }
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('AutoGen agent execution failed:', error);
       
       return {

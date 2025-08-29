@@ -6,7 +6,7 @@
 import { writable, derived, readable } from 'svelte/store';
 // Orphaned content: import type { VectorSearchResult, RAGContext
 import {
-productionServiceClient } from "../services/productionServiceClient.js";
+productionServiceClient } from '../services/productionServiceClient';
 
 export interface VectorSearchState {
   // Search State
@@ -137,7 +137,7 @@ export const vectorSearchActions = {
         ]
       }));
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Vector search failed:', error);
       vectorSearchStore.update(state => ({
         ...state,
@@ -194,7 +194,7 @@ export const vectorSearchActions = {
         isGeneratingResponse: false
       }));
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('RAG query failed:', error);
       vectorSearchStore.update(state => ({
         ...state,
@@ -233,7 +233,7 @@ export const vectorSearchActions = {
         isSearching: false
       }));
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Similar cases search failed:', error);
       vectorSearchStore.update(state => ({
         ...state,
@@ -283,7 +283,7 @@ export const vectorSearchActions = {
         ...state,
         vectorDbConnected: response.ok && data.status === 'healthy'
       }));
-    } catch (error) {
+    } catch (error: any) {
       vectorSearchStore.update(state => ({
         ...state,
         vectorDbConnected: false

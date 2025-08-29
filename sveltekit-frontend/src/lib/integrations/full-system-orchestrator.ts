@@ -1,11 +1,11 @@
-import { analyzeCurrentErrors } from "../../context7-multicore-error-analysis.js";
+import { analyzeCurrentErrors } from '../../context7-multicore-error-analysis';
 /**
  * Full System Orchestrator
  * Comprehensive integration of all services using Context7 MCP patterns
  * Coordinates FlashAttention2, Phase 13 integration, and multicore error analysis
  */
 
-import { phase13Integration, initializePhase13, getSystemHealth } from "./phase13-full-integration.js";
+import { phase13Integration, initializePhase13, getSystemHealth } from './phase13-full-integration';
 import flashAttention2Service from "../services/flash-attention2-service";
 
 export interface SystemOrchestrationConfig {
@@ -118,7 +118,7 @@ export class FullSystemOrchestrator {
       console.log(`📊 Services online: ${result.performance.servicesOnline}/${result.performance.totalServices}`);
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Full System Orchestration failed:', error);
       result.errors.push(`Orchestration failed: ${error.message}`);
       return result;
@@ -163,7 +163,7 @@ export class FullSystemOrchestrator {
       } else {
         result.errors.push('FlashAttention2 service failed to initialize');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ FlashAttention2 initialization failed:', error);
       result.errors.push(`FlashAttention2 error: ${error.message}`);
     }
@@ -194,7 +194,7 @@ export class FullSystemOrchestrator {
 
       // Merge Phase 13 recommendations
       result.recommendations.push(...systemHealth.recommendations.map(r => r.suggested));
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Phase 13 integration failed:', error);
       result.errors.push(`Phase 13 error: ${error.message}`);
     }
@@ -280,7 +280,7 @@ export class FullSystemOrchestrator {
 
       console.log('✅ Context7 multicore error analysis completed');
       console.log(`📊 Analysis found ${mockAnalysisResult.total_estimated_errors} total errors across ${mockAnalysisResult.category_analysis.length} categories`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Error analysis failed:', error);
       result.errors.push(`Error analysis error: ${error.message}`);
     }
@@ -315,7 +315,7 @@ export class FullSystemOrchestrator {
       };
 
       console.log(`✅ Auto-remediation completed: ${remediationResults.length} categories processed`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Auto-remediation failed:', error);
       result.errors.push(`Auto-remediation error: ${error.message}`);
     }
@@ -368,7 +368,7 @@ export class FullSystemOrchestrator {
       }
 
       result.success = result.fixesApplied > 0;
-    } catch (error) {
+    } catch (error: any) {
       result.details.push(`Remediation failed: ${error.message}`);
     }
 
@@ -462,7 +462,7 @@ export class FullSystemOrchestrator {
     try {
       await flashAttention2Service.cleanup();
       console.log('✅ System cleanup completed');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Cleanup error:', error);
     }
     
@@ -501,7 +501,7 @@ export async function initializeCompleteSystem(): Promise<OrchestrationResult> {
     }
     
     return result;
-  } catch (error) {
+  } catch (error: any) {
     console.error('💥 Complete system initialization failed:', error);
     throw error;
   }

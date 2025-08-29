@@ -30,7 +30,7 @@ export function autoPrefixer(style: CSSStyleDeclaration): Postprocessor {
     return rawName
   }
 
-  return ({ entries }) => entries.forEach((e) => {
+  return ({ entries }) => entries.forEach((e: any) => {
     if (!e[0].startsWith('--'))
       e[0] = autoPrefix(e[0])
   })

@@ -10,7 +10,7 @@ import { existsSync } from 'fs';
 import { readFile, writeFile } from 'fs/promises';
 import path from 'path';
 
-interface DeploymentConfig {
+export interface DeploymentConfig {
   enforceGemma3Legal: boolean;
   enableFlashAttention: boolean;
   gpuOptimization: boolean;
@@ -24,7 +24,7 @@ interface DeploymentConfig {
   };
 }
 
-interface DeploymentStatus {
+export interface DeploymentStatus {
   orchestrator: 'running' | 'stopped' | 'error';
   errorProcessor: 'running' | 'stopped' | 'error';
   flashAttention: 'enabled' | 'disabled' | 'error';
@@ -59,7 +59,7 @@ export const POST: RequestHandler = async ({ request }) => {
       default:
         return error(400, 'Invalid action. Use deploy, start, stop, or status.');
     }
-  } catch (err) {
+  } catch (err: any) {
     console.error('❌ GPU orchestration deployment error:', err);
     return error(500, `Deployment failed: ${err.message}`);
   }
@@ -69,7 +69,7 @@ export const GET: RequestHandler = async () => {
   try {
     const status = await getOrchestrationStatus();
     return json(status);
-  } catch (err) {
+  } catch (err: any) {
     console.error('❌ Failed to get orchestration status:', err);
     return error(500, `Status check failed: ${err.message}`);
   }
@@ -78,7 +78,7 @@ export const GET: RequestHandler = async () => {
 /**
  * Deploy the complete GPU-accelerated orchestration system
  */
-async function deployOrchestrationSystem(config?: Partial<DeploymentConfig>) {
+async function deployOrchestrationSystem(config?: Partial<DeploymentConfig>): Promise<any> {
   const deploymentConfig: DeploymentConfig = {
     enforceGemma3Legal: true,
     enableFlashAttention: true,
@@ -138,7 +138,7 @@ async function deployOrchestrationSystem(config?: Partial<DeploymentConfig>) {
 /**
  * Validate that only gemma3-legal and nomic-embed models are available
  */
-async function validateModelConstraints(config: DeploymentConfig) {
+async function validateModelConstraints(config: DeploymentConfig): Promise<any> {
   console.log('🔍 Validating model constraints...');
 
   try {
@@ -184,7 +184,7 @@ async function validateModelConstraints(config: DeploymentConfig) {
 /**
  * Initialize the NodeJS orchestrator with model enforcement
  */
-async function initializeNodeJSOrchestrator(config: DeploymentConfig) {
+async function initializeNodeJSOrchestrator(config: DeploymentConfig): Promise<any> {
   console.log('🏗️ Initializing NodeJS orchestrator...');
 
   // Check if orchestrator service file exists
@@ -200,7 +200,7 @@ async function initializeNodeJSOrchestrator(config: DeploymentConfig) {
 /**
  * Start the GPU error processor service
  */
-async function startErrorProcessorService(config: DeploymentConfig) {
+async function startErrorProcessorService(config: DeploymentConfig): Promise<any> {
   console.log('🔧 Starting GPU error processor service...');
 
   try {
@@ -211,7 +211,7 @@ async function startErrorProcessorService(config: DeploymentConfig) {
     } else {
       console.log('⚠️ GPU service not responding, will start embedded');
     }
-  } catch (error) {
+  } catch (error: any) {
     console.log('⚠️ Starting embedded GPU error processor');
   }
 }
@@ -219,7 +219,7 @@ async function startErrorProcessorService(config: DeploymentConfig) {
 /**
  * Configure MCP integration with model constraints
  */
-async function configureMCPIntegration(config: DeploymentConfig) {
+async function configureMCPIntegration(config: DeploymentConfig): Promise<any> {
   console.log('🔗 Configuring MCP integration...');
 
   try {
@@ -238,7 +238,7 @@ async function configureMCPIntegration(config: DeploymentConfig) {
 /**
  * Verify FlashAttention GPU processing capabilities
  */
-async function verifyFlashAttentionGPU() {
+async function verifyFlashAttentionGPU(): Promise<any> {
   console.log('⚡ Verifying FlashAttention GPU processing...');
 
   try {
@@ -250,7 +250,7 @@ async function verifyFlashAttentionGPU() {
     } else {
       console.warn('⚠️ FlashAttention GPU test failed, CPU fallback available');
     }
-  } catch (error) {
+  } catch (error: any) {
     console.warn('⚠️ FlashAttention verification failed:', error.message);
   }
 }
@@ -258,7 +258,7 @@ async function verifyFlashAttentionGPU() {
 /**
  * Update the deployment report with current status
  */
-async function updateDeploymentReport(config: DeploymentConfig) {
+async function updateDeploymentReport(config: DeploymentConfig): Promise<any> {
   console.log('📝 Updating deployment report...');
 
   const reportPath = path.resolve(process.cwd(), '.vscode/gpu-mcp-orchestra-report.json');
@@ -293,7 +293,7 @@ async function updateDeploymentReport(config: DeploymentConfig) {
   try {
     await writeFile(reportPath, JSON.stringify(report, null, 2));
     console.log('✅ Deployment report updated');
-  } catch (error) {
+  } catch (error: any) {
     console.warn('⚠️ Failed to update deployment report:', error.message);
   }
 }
@@ -301,7 +301,7 @@ async function updateDeploymentReport(config: DeploymentConfig) {
 /**
  * Start the orchestration system services
  */
-async function startOrchestrationSystem() {
+async function startOrchestrationSystem(): Promise<any> {
   console.log('🚀 Starting orchestration system...');
 
   try {
@@ -324,7 +324,7 @@ async function startOrchestrationSystem() {
           status: response.ok ? 'running' : 'error',
           available: true
         });
-      } catch (error) {
+      } catch (error: any) {
         serviceStatus.push({
           name: service.name,
           port: service.port,
@@ -342,7 +342,7 @@ async function startOrchestrationSystem() {
       timestamp: new Date().toISOString()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Failed to start orchestration system:', error);
     return json({
       success: false,
@@ -355,7 +355,7 @@ async function startOrchestrationSystem() {
 /**
  * Stop the orchestration system
  */
-async function stopOrchestrationSystem() {
+async function stopOrchestrationSystem(): Promise<any> {
   console.log('🛑 Stopping orchestration system...');
 
   return json({
@@ -514,7 +514,7 @@ export const deployComplete = async (): Promise<any> => {
       await step.action();
       results.push({ step: step.name, status: 'success' });
       console.log(`✅ ${step.name} completed`);
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ ${step.name} failed:`, error);
       results.push({ 
         step: step.name, 

@@ -19,9 +19,9 @@ import {
 	OpenClosedProp,
 	SingleOrMultipleProp,
 	StringOrArrayStringProp,
-} from "./extended-types/shared/index.js";
-import { ComboboxScrollAlignmentProp } from "./extended-types/combobox/index.js";
-import { DelayProp, ItemsProp } from "./extended-types/select/index.js";
+} from './extended-types/shared/index';
+import { ComboboxScrollAlignmentProp } from './extended-types/combobox/index';
+import { DelayProp, ItemsProp } from './extended-types/select/index';
 import {
 	arrowProps,
 	childrenSnippet,
@@ -52,7 +52,7 @@ import {
 	defineSimpleDataAttr,
 	defineStringProp,
 	defineUnionProp,
-} from "../utils.js";
+} from '../utils';
 
 const stateDataAttr = defineEnumDataAttr({
 	name: "state",

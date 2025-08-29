@@ -1,7 +1,7 @@
 import { env } from '$env/dynamic/private';
 import type { Connection, Channel, Message } from 'amqplib';
 
-interface DocumentProcessingJob {
+export interface DocumentProcessingJob {
   documentId: string;
   s3Key: string;
   s3Bucket: string;
@@ -15,7 +15,7 @@ interface DocumentProcessingJob {
   timestamp: string;
 }
 
-interface RabbitMQConfig {
+export interface RabbitMQConfig {
   url: string;
   queues: {
     documentProcessing: string;
@@ -100,7 +100,7 @@ class RabbitMQService {
       this.isConnected = true;
       console.log('✅ RabbitMQ connected and configured');
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to connect to RabbitMQ:', error);
       throw error;
     }
@@ -162,7 +162,7 @@ class RabbitMQService {
         return false;
       }
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error publishing document processing job:', error);
       return false;
     }
@@ -202,7 +202,7 @@ class RabbitMQService {
       
       return stats;
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error getting queue stats:', error);
       return {};
     }
@@ -219,7 +219,7 @@ class RabbitMQService {
       console.log(`🗑️ Queue purged: ${queueName}`);
       return true;
       
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error purging queue ${queueType}:`, error);
       return false;
     }
@@ -247,7 +247,7 @@ class RabbitMQService {
         queues: queueStats
       };
       
-    } catch (error) {
+    } catch (error: any) {
       return {
         healthy: false,
         queues: {},

@@ -7,17 +7,17 @@ import { randomBytes } from "crypto";
  */
 
 // import type { AITask } from "$lib/types/ai-worker.js"; // Commented out due to module resolution
-// import { aiWorkerManager } from "./ai-worker-manager.js"; // Commented out due to module resolution
+// import { aiWorkerManager } from './ai-worker-manager'; // Commented out due to module resolution
 
 // Define interfaces locally
-interface AITask {
+export interface AITask {
   id: string;
   type: string;
   data: any;
   priority?: number;
 }
 
-interface DocumentRecord {
+export interface DocumentRecord {
   id: string;
   content: string;
   metadata: any;
@@ -166,7 +166,7 @@ class VectorIntelligenceService {
       this.state.systemHealth = "excellent";
 
       console.log("✅ Vector Intelligence Service initialized successfully");
-    } catch (error) {
+    } catch (error: any) {
       console.error(
         "❌ Failed to initialize Vector Intelligence Service:",
         error,
@@ -203,7 +203,7 @@ class VectorIntelligenceService {
 
       console.log(`📊 Found ${enhancedResults.length} semantic matches`);
       return enhancedResults;
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Semantic search failed:", error);
       return [];
     }
@@ -248,7 +248,7 @@ class VectorIntelligenceService {
         `✨ Generated ${rankedRecommendations.length} intelligent recommendations`,
       );
       return rankedRecommendations;
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Recommendation generation failed:", error);
       return [];
     }
@@ -280,7 +280,7 @@ class VectorIntelligenceService {
       }
 
       throw new Error("Invalid analysis response");
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Semantic analysis failed:", error);
       return this.createFallbackAnalysis(content);
     }
@@ -305,7 +305,7 @@ class VectorIntelligenceService {
       this.state.lastUpdateTime = Date.now();
 
       console.log("✅ Vector index updated successfully");
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Vector index update failed:", error);
       throw error;
     }
@@ -349,7 +349,7 @@ class VectorIntelligenceService {
       }
 
       console.log("✅ Vector database initialized");
-    } catch (error) {
+    } catch (error: any) {
       console.warn("⚠️ Vector DB not available, using fallback storage");
       // Fall back to local storage or alternative solution
     }
@@ -365,7 +365,7 @@ class VectorIntelligenceService {
 
       this.state.modelConfidence = 0.9;
       console.log("✅ Embedding model loaded successfully");
-    } catch (error) {
+    } catch (error: any) {
       console.warn("⚠️ Using fallback embedding approach");
       this.state.modelConfidence = 0.6;
     }
@@ -381,7 +381,7 @@ class VectorIntelligenceService {
       }
 
       console.log(`📚 Indexed ${documents.length} existing documents`);
-    } catch (error) {
+    } catch (error: any) {
       console.warn("⚠️ Could not build initial document index:", error);
     }
   }
@@ -413,7 +413,7 @@ class VectorIntelligenceService {
         this.vectorCache.set(cacheKey, embedding);
         return embedding;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn("⚠️ Embedding generation failed, using fallback");
     }
 
@@ -446,7 +446,7 @@ class VectorIntelligenceService {
         const data = await response.json();
         return this.formatVectorResults(data.result);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn("⚠️ Vector search failed, using fallback");
     }
 

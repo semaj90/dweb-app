@@ -73,7 +73,7 @@ export class WebAssemblyAccelerator {
       );
       this.compileCache.set(cacheKey, wasmBytes);
       return wasmBytes;
-    } catch (error) {
+    } catch (error: any) {
       console.error("WASM compilation failed:", error);
       throw new Error(
         `Failed to compile ${functionName} to WebAssembly: ${error}`
@@ -124,7 +124,7 @@ export class WebAssemblyAccelerator {
       }
 
       return wasmModule;
-    } catch (error) {
+    } catch (error: any) {
       console.error("WASM module loading failed:", error);
       throw error;
     }
@@ -158,7 +158,7 @@ export class WebAssemblyAccelerator {
         `WASM function ${functionName} executed in ${endTime - startTime}ms`
       );
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`WASM function ${functionName} failed:`, error);
       throw error;
     }
@@ -202,7 +202,7 @@ export class WebAssemblyAccelerator {
       module.exports.free(resultPtr);
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.warn("SIMD JSON parsing failed, falling back to native:", error);
       return JSON.parse(jsonString);
     }
@@ -421,7 +421,7 @@ export function accelerateWithWasm(moduleId: string, wasmFunction: string) {
           wasmFunction,
           ...args
         );
-      } catch (error) {
+      } catch (error: any) {
         console.warn(
           `WASM acceleration failed for ${propertyKey}, falling back to JS:`,
           error

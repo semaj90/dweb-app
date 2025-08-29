@@ -1,0 +1,256 @@
+# Unified Snake_Case PostgreSQL Schema Summary - 08/28/2025
+
+## 🎯 **SCHEMA ARCHITECTURE OVERVIEW**
+
+### **Design Philosophy**
+- **Single Source of Truth**: One unified schema file that exactly matches the PostgreSQL database structure
+- **Snake_Case Convention**: Follows PostgreSQL standard naming (user_id, created_at, etc.)
+- **Type-Safe Operations**: Full TypeScript inference for all database operations
+- **Rich Metadata Support**: JSONB columns with typed TypeScript interfaces
+
+---
+
+## 📊 **CORE AUTH TABLES**
+
+### **1. Users Table** (`users`)
+**Purpose**: Central user management with legal professional metadata
+```typescript
+Key Fields:
+- id: uuid (primary key)
+- email: text (unique, not null)
+- hashed_password: text
+- first_name, last_name: text
+- role: text (default: 'user')
+- department, jurisdiction: text (legal context)
+- permissions: jsonb (flexible permission system)
+- profile_embedding: vector (AI-powered user profiling)
+- metadata: jsonb (extensible user data)
+```
+
+**Legal Professional Fields**:
+- `practice_areas`: JSONB array of legal specializations
+- `bar_number`: Professional license identifier  
+- `firm_name`: Legal organization
+- `jurisdiction`: Geographic/legal authority
+
+### **2. Sessions Table** (`sessions`)
+**Purpose**: Authentication session management
+- Lucia v3 compatible structure
+- Automatic expiration handling
+- User relationship via foreign key
+
+### **3. User Profiles Table** (`user_profiles`)
+**Purpose**: Extended user information
+- One-to-many relationship with users
+- JSONB for addresses and preferences
+- Flexible profile data storage
+
+---
+
+## ⚖️ **LEGAL DOMAIN TABLES**
+
+### **1. Cases Table** (`cases`)
+**Purpose**: Legal case management
+```typescript
+Key Features:
+- case_number: Unique case identifier
+- status: Workflow state (active, closed, etc.)
+- priority: Case urgency level
+- case_type: Legal category
+- metadata: JSONB for case-specific data
+```
+
+### **2. Evidence Table** (`evidence`) - **RICH METADATA SYSTEM**
+**Purpose**: File and digital evidence management with type-specific metadata
+
+#### **Evidence Types Enum**:
+`'PDF' | 'IMAGE' | 'VIDEO' | 'AUDIO' | 'TEXT' | 'LINK' | 'UNKNOWN'`
+
+#### **Rich Metadata Types**:
+```typescript
+// PDF-specific metadata
+PdfMetadata: {
+  kind: 'PDF';
+  pageCount: number;
+  author?: string;
+  title?: string;
+  isEncrypted: boolean;
+}
+
+// Image-specific metadata  
+ImageMetadata: {
+  kind: 'IMAGE';
+  resolution: { width: number; height: number };
+  format: 'jpeg' | 'png' | 'gif' | 'webp';
+  hasAlphaChannel: boolean;
+}
+
+// Video-specific metadata
+VideoMetadata: {
+  kind: 'VIDEO';
+  durationSeconds: number;
+  resolution: { width: number; height: number };
+  codec: string;
+  frameRate: number;
+}
+```
+
+#### **Storage & Processing Fields**:
+- `file_url`: Access URL for the evidence file
+- `storage_key`: S3/cloud storage identifier
+- `file_hash`: Integrity verification
+- `embedding`: Vector representation for AI search
+
+### **3. Legal Documents Table** (`legal_documents`)
+**Purpose**: Text-based legal documents
+- Content storage with full-text search capability
+- Document type classification
+- Vector embeddings for semantic search
+
+### **4. Reports Table** (`reports`)
+**Purpose**: Generated reports and analysis
+- User and case associations
+- Status workflow (draft, final, etc.)
+- Flexible metadata for report-specific data
+
+---
+
+## 🧠 **AI/ML INTEGRATION TABLES**
+
+### **Vectors Table** (`vectors`)
+**Purpose**: Centralized vector embedding tracking
+```typescript
+Features:
+- entity_type: 'evidence', 'legal_documents', etc.
+- entity_id: Reference to the source record
+- embedding: Vector representation
+- model: AI model used ('nomic-embed-text', etc.)
+```
+
+**AI Integration Points**:
+1. **Automatic Embedding Generation**: When evidence/documents are created
+2. **Semantic Search**: Vector similarity queries across all content types  
+3. **Cross-Entity Relationships**: Find related items across different tables
+4. **Model Versioning**: Track which AI models generated which embeddings
+
+---
+
+## 🔗 **RELATIONSHIP ARCHITECTURE**
+
+### **User-Centric Design**:
+```
+users (1) → (many) sessions
+users (1) → (many) user_profiles  
+users (1) → (many) cases
+users (1) → (many) evidence (as uploader)
+users (1) → (many) reports
+```
+
+### **Case-Centric Design**:
+```
+cases (1) → (many) evidence
+cases (1) → (many) legal_documents
+cases (1) → (many) reports
+```
+
+### **Cross-Entity AI Relationships**:
+```
+Any Entity → vectors (via entity_type + entity_id)
+Vector similarity → Related entities across all types
+```
+
+---
+
+## 🚀 **INTEGRATION BENEFITS**
+
+### **1. Centralized CRUD API Compatibility**
+- Single `/api/v1/crud` endpoint handles all entities
+- Dynamic entity routing via `entityMap`
+- Type-safe operations with automatic validation
+
+### **2. Rich Metadata Queries**
+```sql
+-- Find PDF documents with >10 pages
+SELECT * FROM evidence 
+WHERE evidence_type = 'PDF' 
+AND (metadata->>'pageCount')::int > 10;
+
+-- Find high-resolution images
+SELECT * FROM evidence 
+WHERE evidence_type = 'IMAGE'
+AND (metadata->'resolution'->>'width')::int > 1920;
+```
+
+### **3. Vector Search Integration**
+- Automatic embedding generation via `apiOrchestrator`
+- Cross-entity semantic search
+- AI-powered content recommendations
+
+### **4. Type Safety & Developer Experience**
+```typescript
+// Full TypeScript inference
+type EvidenceRecord = typeof evidence.$inferSelect;
+type NewEvidence = typeof evidence.$inferInsert;
+
+// Rich metadata typing
+const pdfEvidence: NewEvidence = {
+  title: "Contract",
+  evidence_type: "PDF",
+  metadata: {
+    kind: "PDF",           // Type-checked
+    pageCount: 12,         // Type-checked
+    isEncrypted: false     // Type-checked
+  }
+};
+```
+
+---
+
+## 📈 **SCALABILITY FEATURES**
+
+### **Indexing Strategy**:
+- **User Operations**: email, role, is_active
+- **Case Management**: user_id, status, case_number
+- **Evidence Handling**: case_id, evidence_type, uploader_id
+- **Vector Operations**: entity_type + entity_id composite index
+
+### **Performance Optimizations**:
+- **JSONB Indexing**: GIN indexes on metadata columns for fast queries
+- **Vector Indexing**: HNSW indexes for embedding similarity search
+- **Soft Deletes**: `deleted_at` columns for data retention
+- **Audit Trails**: `created_at`, `updated_at` timestamps
+
+---
+
+## 🔐 **SECURITY & COMPLIANCE**
+
+### **Data Protection**:
+- **User Privacy**: Separate profiles table for sensitive data
+- **Session Security**: Automatic expiration and cleanup
+- **Audit Logging**: Full timestamp tracking
+- **Permission System**: Flexible JSONB-based permissions
+
+### **Legal Compliance**:
+- **Chain of Custody**: Evidence uploader tracking
+- **Data Integrity**: File hashing and verification
+- **Jurisdiction Support**: Multi-jurisdiction case handling
+- **Professional Standards**: Bar number and firm tracking
+
+---
+
+## 🛠️ **IMPLEMENTATION STATUS**
+
+### **✅ Completed**:
+- Snake_case schema matching PostgreSQL database
+- Rich metadata type definitions
+- Comprehensive relationship mapping  
+- Vector integration architecture
+- Type inference for all entities
+
+### **🔗 Integration Points**:
+- **Authentication**: Compatible with existing user/session system
+- **CRUD API**: Ready for `/api/v1/crud` operations
+- **Vector Search**: Prepared for AI/ML pipeline integration
+- **File Upload**: Schema supports complete file lifecycle
+
+**Result**: Production-ready schema that bridges PostgreSQL best practices with modern TypeScript development, providing both performance and type safety for complex legal AI operations.

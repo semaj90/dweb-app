@@ -233,7 +233,7 @@ export const legalAIMachine = setup({
             uptime: Date.now()
           }
         };
-      } catch (error) {
+      } catch (error: any) {
         console.error('System status check failed:', error);
         return {
           connected: false,
@@ -259,7 +259,7 @@ export const legalAIMachine = setup({
         } else {
           throw new Error(response.error || 'Authentication failed');
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Authentication error:', error);
         throw new Error('Authentication service unavailable');
       }
@@ -289,7 +289,7 @@ export const legalAIMachine = setup({
           console.warn('Failed to load cases:', response.error);
           return [];
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error loading cases:', error);
         return [];
       }
@@ -312,7 +312,7 @@ export const legalAIMachine = setup({
         } else {
           throw new Error(response.error || 'AI query failed');
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('AI query error:', error);
         throw new Error('AI service unavailable');
       }

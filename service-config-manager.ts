@@ -12,7 +12,7 @@ import { performance } from 'perf_hooks';
 
 const require = createRequire(import.meta.url);
 
-interface ServiceDefinition {
+export interface ServiceDefinition {
   name: string;
   version: string;
   description: string;
@@ -126,13 +126,13 @@ interface ServiceDefinition {
   };
 }
 
-interface ServiceRegistry {
+export interface ServiceRegistry {
   services: Map<string, ServiceDefinition>;
   instances: Map<string, ServiceInstance[]>;
   endpoints: Map<string, ServiceEndpoint>;
 }
 
-interface ServiceInstance {
+export interface ServiceInstance {
   id: string;
   serviceName: string;
   status: 'pending' | 'running' | 'stopping' | 'stopped' | 'error';
@@ -154,7 +154,7 @@ interface ServiceInstance {
   };
 }
 
-interface ServiceEndpoint {
+export interface ServiceEndpoint {
   serviceName: string;
   url: string;
   protocol: string;
@@ -207,7 +207,7 @@ export class ServiceConfigManager extends EventEmitter {
       }
       
       this.emit('configLoaded', this.registry.services.size);
-    } catch (error) {
+    } catch (error: any) {
       console.log('No existing config found, will generate default');
     }
   }
@@ -570,7 +570,7 @@ export class ServiceConfigManager extends EventEmitter {
       try {
         await this.loadConfiguration();
         this.emit('configReloaded');
-      } catch (error) {
+      } catch (error: any) {
         this.emit('configError', error);
       }
     });

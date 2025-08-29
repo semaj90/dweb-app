@@ -18,7 +18,7 @@ let grpc: any = null;
 if (!browser) {
   try {
     grpc = await import('@grpc/grpc-js');
-  } catch (error) {
+  } catch (error: any) {
     console.warn('gRPC module not available, using fallback');
   }
 }
@@ -246,7 +246,7 @@ export class AISuggestionsGRPCClient {
       
       this.isConnected = true;
       console.log('AI Suggestions gRPC client connected successfully');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to connect to AI Suggestions gRPC service:', error);
       throw new Error(`gRPC connection failed: ${error}`);
     }
@@ -264,7 +264,7 @@ export class AISuggestionsGRPCClient {
       // In a real implementation, this would be a gRPC call
       // For now, we'll fall back to HTTP as a bridge
       return await this.httpFallback('/api/ai/suggestions', request);
-    } catch (error) {
+    } catch (error: any) {
       console.error('gRPC generateSuggestions failed:', error);
       throw error;
     }
@@ -281,7 +281,7 @@ export class AISuggestionsGRPCClient {
     try {
       // In a real implementation, this would be a gRPC call
       return await this.httpFallback('/api/ai/suggestions/contextual', request);
-    } catch (error) {
+    } catch (error: any) {
       console.error('gRPC generateContextualSuggestions failed:', error);
       throw error;
     }
@@ -298,7 +298,7 @@ export class AISuggestionsGRPCClient {
     try {
       // In a real implementation, this would be a gRPC call
       return await this.httpFallback('/api/ai/suggestions/rate', rating);
-    } catch (error) {
+    } catch (error: any) {
       console.error('gRPC rateSuggestion failed:', error);
       throw error;
     }
@@ -321,7 +321,7 @@ export class AISuggestionsGRPCClient {
       })}`);
 
       yield* this.handleStreamingResponse(eventSource);
-    } catch (error) {
+    } catch (error: any) {
       console.error('gRPC streamSuggestions failed:', error);
       throw error;
     }
@@ -346,7 +346,7 @@ export class AISuggestionsGRPCClient {
       }
 
       return await response.json();
-    } catch (error) {
+    } catch (error: any) {
       console.error('HTTP fallback failed:', error);
       throw error;
     }
@@ -361,11 +361,11 @@ export class AISuggestionsGRPCClient {
         const messageQueue: SuggestionResponse[] = [];
         let isComplete = false;
 
-        eventSource.onmessage = (event) => {
+        eventSource.onmessage = (event: any) => {
           try {
             const response: SuggestionResponse = JSON.parse(event.data);
             messageQueue.push(response);
-          } catch (error) {
+          } catch (error: any) {
             console.error('Failed to parse streaming response:', error);
           }
         };
@@ -408,7 +408,7 @@ export class AISuggestionsGRPCClient {
       // In a real implementation, you would call a health check gRPC method
       const response = await fetch('/api/ai/suggestions/health');
       return response.ok;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Health check failed:', error);
       return false;
     }
@@ -423,7 +423,7 @@ export class AISuggestionsGRPCClient {
         // In a real implementation, you would close the gRPC client
         this.isConnected = false;
         console.log('AI Suggestions gRPC client disconnected');
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error disconnecting gRPC client:', error);
       }
     }

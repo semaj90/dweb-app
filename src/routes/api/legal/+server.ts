@@ -4,7 +4,7 @@ import type { RequestHandler } from './$types';
 
 const GO_BACKEND = 'http://localhost:8080';
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }): Promise<any> => {
     const { endpoint, ...payload } = await request.json();
     
     const response = await fetch(`${GO_BACKEND}/${endpoint}`, {
@@ -21,7 +21,7 @@ export const POST: RequestHandler = async ({ request }) => {
     return json(await response.json());
 };
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
     const endpoint = url.searchParams.get('endpoint') || 'health';
     
     const response = await fetch(`${GO_BACKEND}/${endpoint}`);

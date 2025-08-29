@@ -119,7 +119,7 @@ describe('Vector Pipeline Integration', () => {
       expect(response.ok).toBe(true);
       expect(health.status).toBe('healthy');
       expect(health.service).toBe('enhanced-rag');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Enhanced RAG service not available for testing:', error);
     }
   });
@@ -136,7 +136,7 @@ describe('Vector Pipeline Integration', () => {
       });
       
       expect(response.status).toBeLessThan(500); // Should not be a server error
-    } catch (error) {
+    } catch (error: any) {
       console.warn('GPU compute endpoint not available for testing:', error);
     }
   });

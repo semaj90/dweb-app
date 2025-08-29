@@ -4,7 +4,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
-interface TestResult {
+export interface TestResult {
   test: string;
   status: 'success' | 'error' | 'warning';
   data?: any;
@@ -23,7 +23,7 @@ export const GET: RequestHandler = async ({ url }) => {
       try {
         const config = {
           model: 'nomic-embed-text:latest',
-          dimensions: 768, // Corrected dimensions
+          dimensions: 384, // Corrected dimensions
           batchSize: 32,
           enableGpuAcceleration: true,
           enableCaching: true,
@@ -42,7 +42,7 @@ export const GET: RequestHandler = async ({ url }) => {
           },
           duration: Date.now() - startTime
         });
-      } catch (error) {
+      } catch (error: any) {
         results.push({
           test: 'embedding_service_config',
           status: 'error',
@@ -77,7 +77,7 @@ export const GET: RequestHandler = async ({ url }) => {
           },
           duration: Date.now() - startTime
         });
-      } catch (error) {
+      } catch (error: any) {
         results.push({
           test: 'embedding_generation',
           status: 'error',
@@ -143,7 +143,7 @@ export const GET: RequestHandler = async ({ url }) => {
           },
           duration: Date.now() - startTime
         });
-      } catch (error) {
+      } catch (error: any) {
         results.push({
           test: 'document_chunking',
           status: 'error',
@@ -194,7 +194,7 @@ export const GET: RequestHandler = async ({ url }) => {
           },
           duration: Date.now() - startTime
         });
-      } catch (error) {
+      } catch (error: any) {
         results.push({
           test: 'similarity_search',
           status: 'error',
@@ -228,11 +228,11 @@ export const GET: RequestHandler = async ({ url }) => {
             analysis,
             embedding_enhanced: true,
             semantic_enrichment: 'legal NLP pipeline integration',
-            vector_dimensions: 768
+            vector_dimensions: 384
           },
           duration: Date.now() - startTime
         });
-      } catch (error) {
+      } catch (error: any) {
         results.push({
           test: 'legal_analysis_integration',
           status: 'error',
@@ -264,7 +264,7 @@ export const GET: RequestHandler = async ({ url }) => {
           data: performanceData,
           duration: Date.now() - startTime
         });
-      } catch (error) {
+      } catch (error: any) {
         results.push({
           test: 'performance_metrics',
           status: 'error',
@@ -290,7 +290,7 @@ export const GET: RequestHandler = async ({ url }) => {
       },
       configuration: {
         model: 'nomic-embed-text:latest',
-        vector_dimensions: 768,
+        vector_dimensions: 384,
         gpu_acceleration: 'RTX 3060 Ti optimized',
         batch_processing: 'enabled',
         legal_analysis: 'sentence-transformer integration',
@@ -307,7 +307,7 @@ export const GET: RequestHandler = async ({ url }) => {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: error instanceof Error ? error.message : String(error),
@@ -330,7 +330,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
         chunks_created: Math.ceil((content?.length || 0) / 1000),
         embeddings_generated: Math.ceil((content?.length || 0) / 1000),
         processing_time: '1.2 seconds',
-        vector_dimensions: 768,
+        vector_dimensions: 384,
         storage_status: 'simulated - would store in PostgreSQL',
         legal_analysis: {
           complexity: 'moderate',
@@ -353,7 +353,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
       timestamp: new Date().toISOString()
     }, { status: 400 });
 
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: error instanceof Error ? error.message : String(error),

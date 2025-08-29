@@ -79,7 +79,7 @@ export class EnhancedOCRProcessor {
         "eng"
       );
       console.log("✅ Tesseract initialized successfully");
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Failed to initialize Tesseract:", error);
     }
   }
@@ -103,7 +103,7 @@ export class EnhancedOCRProcessor {
 
       result.processing_time = Date.now() - startTime;
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Document processing failed:", error);
       throw error;
     }
@@ -178,7 +178,7 @@ export class EnhancedOCRProcessor {
         },
         processing_time: 0, // Will be set by caller
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ PDF processing error:", error);
       throw error;
     }
@@ -247,7 +247,7 @@ export class EnhancedOCRProcessor {
         file_size: buffer.length,
         content_type: "application/pdf",
       };
-    } catch (error) {
+    } catch (error: any) {
       console.warn("⚠️ Could not extract PDF metadata:", error);
       return {
         page_count: 1,
@@ -269,7 +269,7 @@ export class EnhancedOCRProcessor {
         .toFile(enhancedPath);
 
       return enhancedPath;
-    } catch (error) {
+    } catch (error: any) {
       console.warn("⚠️ Image enhancement failed, using original:", error);
       return imagePath;
     }
@@ -331,7 +331,7 @@ export class EnhancedOCRProcessor {
         if (fs.existsSync(filePath)) {
           fs.unlinkSync(filePath);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`⚠️ Failed to cleanup temp file ${filePath}:`, error);
       }
     });
@@ -356,7 +356,7 @@ export class EnhancedOCRProcessor {
         console.log(
           `✅ Completed processing ${path.basename(filePath)} in ${result.processing_time}ms`
         );
-      } catch (error) {
+      } catch (error: any) {
         console.error(
           `❌ Failed to process ${path.basename(filePath)}:`,
           error

@@ -5,7 +5,7 @@ import axios from 'axios'; // You might need to 'npm install axios'
 
 const GO_FILE_PROCESSOR_URL = 'http://localhost:8081/process-files'; // Assuming Go service runs on 8081
 
-export async function POST({ request }) {
+export async function POST({ request }): Promise<any> {
     try {
         const { directoryPath } = await request.json();
 
@@ -35,7 +35,7 @@ export async function POST({ request }) {
             return json({ status: 'error', message: 'Go microservice failed to process files', details: goResponse.data }, { status: goResponse.status });
         }
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error in indexing start endpoint:', error);
         return json({ status: 'error', message: 'Failed to initiate indexing', error: error.message }, { status: 500 });
     }

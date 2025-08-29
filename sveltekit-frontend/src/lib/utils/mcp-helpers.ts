@@ -88,7 +88,7 @@ const agentRegistry: Record<
           result: `AutoGen agent (mock): Analyzed "${prompt}" - would provide legal research workflow results`,
         };
       }
-    } catch (error) {
+    } catch (error: any) {
       return {
         agent: "autogen",
         result: `AutoGen agent error: ${error}`,
@@ -109,7 +109,7 @@ const agentRegistry: Record<
       } else {
         throw new Error(`CrewAI legal team not available for prompt: ${prompt}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       return {
         agent: "crewai",
         result: `CrewAI agent error: ${error}`,
@@ -144,7 +144,7 @@ const agentRegistry: Record<
       } else {
         throw new Error("Ollama request failed");
       }
-    } catch (error) {
+    } catch (error: any) {
       return {
         agent: "copilot",
         result: `Copilot agent (mock): Code analysis for "${prompt}" - would provide coding suggestions and optimizations`,
@@ -178,7 +178,7 @@ const agentRegistry: Record<
       } else {
         throw new Error("Legal model request failed");
       }
-    } catch (error) {
+    } catch (error: any) {
       return {
         agent: "claude",
         result: `Claude agent (mock): Legal analysis for "${prompt}" - would provide detailed legal insights and case analysis`,
@@ -212,7 +212,7 @@ const agentRegistry: Record<
       } else {
         throw new Error("RAG request failed");
       }
-    } catch (error) {
+    } catch (error: any) {
       return {
         agent: "rag",
         result: `RAG agent (mock): Enhanced retrieval for "${prompt}" - would provide context-aware document analysis`,
@@ -228,7 +228,7 @@ const agentRegistry: Record<
 export async function copilotOrchestrator(
   prompt: string,
   options: OrchestrationOptions = {}
-) {
+): Promise<any> {
   let results: any = {};
 
   // Step 1: Semantic Search
@@ -271,7 +271,7 @@ export async function copilotOrchestrator(
             options.context
           );
           results.agentResults.push(agentResult);
-        } catch (err) {
+        } catch (err: any) {
           results.agentResults.push({ agent, error: String(err) });
         }
       } else {
@@ -727,7 +727,7 @@ export function getUnslothBestPractices(): string {
 
 // Stub implementations for missing MCP and agent functions
 // Production: Integrate with Context7 MCP semantic search
-export async function semanticSearch(query: string) {
+export async function semanticSearch(query: string): Promise<any> {
   try {
     // Use the real semantic search endpoint
     const response = await fetch("http://localhost:3000/api/semantic-search", {
@@ -742,14 +742,14 @@ export async function semanticSearch(query: string) {
 
     const data = await response.json();
     return data.results || [];
-  } catch (error) {
+  } catch (error: any) {
     console.error("semanticSearch error:", error);
     return [{ error: String(error) }];
   }
 }
 
 // Production: Integrate with MCP memory server
-export async function mcpMemoryReadGraph() {
+export async function mcpMemoryReadGraph(): Promise<any> {
   try {
     // TODO: Replace with real MCP memory server call when available
     // For now, return mock structure that matches expected format
@@ -760,13 +760,13 @@ export async function mcpMemoryReadGraph() {
         value: "Context7 memory graph integration ready",
       },
     ];
-  } catch (error) {
+  } catch (error: any) {
     return [{ error: String(error) }];
   }
 }
 
 // Enhanced Context7 MCP codebase analysis
-export async function mcpCodebaseAnalyze(prompt: string) {
+export async function mcpCodebaseAnalyze(prompt: string): Promise<any> {
   // Node.js/ESM alias import is not supported in CJS build. Provide fallback for CJS/Node.js usage.
   try {
     // Fallback: Return a stub/mock result for Node.js/require usage
@@ -783,27 +783,27 @@ export async function mcpCodebaseAnalyze(prompt: string) {
         ],
       },
     ];
-  } catch (error) {
+  } catch (error: any) {
     return [{ error: String(error) }];
   }
 }
 
 // Production: Integrate with MCP get_changed_files
-export async function getChangedFiles() {
+export async function getChangedFiles(): Promise<any> {
   try {
     // TODO: Implement MCP SDK integration when available
     return ["file1.ts", "file2.svelte"];
-  } catch (error) {
+  } catch (error: any) {
     return [{ error: String(error) }];
   }
 }
 
 // Production: Integrate with MCP directory reading
-export async function mcpReadDirectory(path: string) {
+export async function mcpReadDirectory(path: string): Promise<any> {
   try {
     // TODO: Implement MCP SDK integration when available
     return [`Read directory: ${path}`];
-  } catch (error) {
+  } catch (error: any) {
     return [{ error: String(error) }];
   }
 }
@@ -827,32 +827,32 @@ const crewAIService = {
 // Production: Read error log from MCP and append to MCP_TODO_LOG.md
 const MCP_TODO_LOG_PATH = "../../../../MCP_TODO_LOG.md";
 
-export async function mcpReadErrorLog() {
+export async function mcpReadErrorLog(): Promise<any> {
   try {
     // Read the error log file
     const log = await fs.readFile(MCP_TODO_LOG_PATH, "utf-8");
     return log.split(/\r?\n/).filter(Boolean);
-  } catch (error) {
+  } catch (error: any) {
     return [{ error: String(error) }];
   }
 }
 
 // Append error or lost context to MCP_TODO_LOG.md
-export async function mcpLogErrorOrContextLoss(message: string) {
+export async function mcpLogErrorOrContextLoss(message: string): Promise<any> {
   const entry = `- [${new Date().toISOString()}] ${message}\n`;
   try {
     await fs.appendFile(MCP_TODO_LOG_PATH, entry, "utf-8");
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to log MCP error/context loss:", error);
   }
 }
 
 // Production: Rank errors using MCP
-export async function mcpRankErrors(errorLog: any) {
+export async function mcpRankErrors(errorLog: any): Promise<any> {
   try {
     // TODO: Implement MCP SDK integration when available
     return ["Critical error: Example ranked error"];
-  } catch (error) {
+  } catch (error: any) {
     return [{ error: String(error) }];
   }
 }
@@ -864,14 +864,14 @@ export function synthesizeLLMOutputs(results: any) {
 }
 
 // Production: Suggest best practices using Microsoft Docs via MCP
-export async function mcpSuggestBestPractices(results: any) {
+export async function mcpSuggestBestPractices(results: any): Promise<any> {
   try {
     // TODO: Implement MCP SDK integration when available
     return [
       "Best practice: Always use Drizzle ORM",
       "Best practice: Use SSR for sensitive data",
     ];
-  } catch (error) {
+  } catch (error: any) {
     return [{ error: String(error) }];
   }
 }

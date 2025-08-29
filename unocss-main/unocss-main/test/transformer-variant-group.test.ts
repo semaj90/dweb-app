@@ -8,7 +8,7 @@ import { describe, expect, it } from 'vitest'
 const transformer = transformerVariantGroup()
 
 describe('transformer-variant-group', () => {
-  async function transform(code: string) {
+  async function transform(code: string): Promise<any> {
     const s = new MagicString(code)
     const result = await transformer.transform(s, '', {} as UnocssPluginContext)
     return { transformed: s.toString(), annotations: result!.highlightAnnotations }
@@ -40,7 +40,7 @@ describe('transformer-variant-group', () => {
   })
 
   it('vue file with strict sep', async () => {
-    async function transform(code: string) {
+    async function transform(code: string): Promise<any> {
       const s = new MagicString(code)
       expandVariantGroup(s, [':'])
       return s.toString()

@@ -4,10 +4,10 @@
  */
 
 import { json } from '@sveltejs/kit';
-import { bestPracticesService } from '$lib/services/best-practices-service.js';
+import { bestPracticesService } from '$lib/services/best-practices-service';
 import type { RequestHandler } from './$types';
 
-export const POST: RequestHandler = async ({ request, url }) => {
+export const POST: RequestHandler = async ({ request, url }): Promise<any> => {
   try {
     const body = await request.json().catch(() => ({}));
     
@@ -40,7 +40,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Best practices generation failed:', error);
     
     return json({
@@ -54,7 +54,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
   }
 };
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }): Promise<any> => {
   try {
     const limit = parseInt(url.searchParams.get('limit') || '10');
     
@@ -70,7 +70,7 @@ export const GET: RequestHandler = async ({ url }) => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to retrieve stored reports:', error);
     
     return json({
@@ -84,7 +84,7 @@ export const GET: RequestHandler = async ({ url }) => {
   }
 };
 
-export const OPTIONS: RequestHandler = async () => {
+export const OPTIONS: RequestHandler = async (): Promise<any> => {
   return new Response(null, {
     status: 204,
     headers: {

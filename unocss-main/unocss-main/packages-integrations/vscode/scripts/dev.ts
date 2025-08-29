@@ -1,6 +1,6 @@
 import fs from 'fs-extra'
 
-async function run() {
+async function run(): Promise<any> {
   // Change package.json name to "unocss" temporary
   // as VS Code will append it with the publisher, causing the dev extension fail to override the production extension.
   const json = await fs.readJSON(new URL('../package.json', import.meta.url))

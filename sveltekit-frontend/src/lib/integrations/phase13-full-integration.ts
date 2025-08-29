@@ -14,7 +14,7 @@ import {
 } from '$lib/utils/mcp-helpers';
 
 // Integration Guide Implementation
-interface IntegrationConfig {
+export interface IntegrationConfig {
   enableRealTimeServices: boolean;
   enableProductionDatabase: boolean;
   enableAdvancedAI: boolean;
@@ -22,7 +22,7 @@ interface IntegrationConfig {
   dockerServicesEnabled: boolean;
 }
 
-interface ServiceHealth {
+export interface ServiceHealth {
   database: boolean;
   redis: boolean;
   ollama: boolean;
@@ -191,7 +191,7 @@ export class Phase13IntegrationManager {
           this.serviceHealth.redis = true;
           console.log('✅ Alternative Redis configuration enabled');
         }
-      } catch (error) {
+      } catch (error: any) {
         console.log('⚡ Redis optimization failed, using memory cache');
       }
     }
@@ -204,7 +204,7 @@ export class Phase13IntegrationManager {
           this.serviceHealth.database = true;
           console.log('✅ Database optimization enabled');
         }
-      } catch (error) {
+      } catch (error: any) {
         console.log('⚡ Database optimization failed, using mock data');
       }
     }
@@ -248,7 +248,7 @@ export class Phase13IntegrationManager {
         this.serviceHealth.database = true;
         console.log('✅ PostgreSQL connection established');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ PostgreSQL connection failed, enabling fallback mode');
     }
 
@@ -293,7 +293,7 @@ export class Phase13IntegrationManager {
       if (enhancedRAGAvailable) {
         console.log('✅ Enhanced RAG service available');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Enhanced RAG service unavailable');
     }
 
@@ -349,7 +349,7 @@ export class Phase13IntegrationManager {
         aiConfig.services.uploadService.available = true;
         console.log('✅ Upload service available');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Upload service unavailable');
     }
 
@@ -495,7 +495,7 @@ export class Phase13IntegrationManager {
         signal: AbortSignal.timeout(3000)
       });
       return response.ok;
-    } catch (error) {
+    } catch (error: any) {
       return false;
     }
   }
@@ -571,7 +571,7 @@ export class Phase13IntegrationManager {
         action: `Applied ${suggestion.type} suggestion`,
         result: orchestrationResult
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to apply suggestion:', error);
       return {
         success: false,
@@ -606,7 +606,7 @@ export async function initializePhase13(): Promise<void> {
     } else {
       console.warn('⚠️ Phase 13 integration completed with warnings');
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Phase 13 integration failed:', error);
   }
 }

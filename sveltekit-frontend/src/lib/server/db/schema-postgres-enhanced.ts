@@ -41,8 +41,8 @@ export const cases = pgTable(
     metadata: jsonb("metadata").default({}),
 
     // Vector embeddings
-    titleEmbedding: vector("title_embedding", { dimensions: 768 }),
-    contentEmbedding: vector("content_embedding", { dimensions: 768 }),
+    titleEmbedding: vector("title_embedding", { dimensions: 384 }),
+    contentEmbedding: vector("content_embedding", { dimensions: 384 }),
 
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -93,8 +93,8 @@ export const evidence = pgTable(
   summaryType: text("summary_type"), // key_points | narrative | prosecutorial
 
     // Vector embeddings
-    titleEmbedding: vector("title_embedding", { dimensions: 768 }),
-    contentEmbedding: vector("content_embedding", { dimensions: 768 }),
+    titleEmbedding: vector("title_embedding", { dimensions: 384 }),
+    contentEmbedding: vector("content_embedding", { dimensions: 384 }),
 
     // Evidence board positioning
     boardPosition: jsonb("board_position").default({ x: 0, y: 0 }),
@@ -154,7 +154,7 @@ export const criminals = pgTable(
     metadata: jsonb("metadata").default({}),
 
     // Vector embeddings
-    profileEmbedding: vector("profile_embedding", { dimensions: 768 }),
+    profileEmbedding: vector("profile_embedding", { dimensions: 384 }),
 
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -228,7 +228,7 @@ export const embeddingCache = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
     textHash: text("text_hash").notNull().unique(),
-    embedding: vector("embedding", { dimensions: 768 }).notNull(),
+    embedding: vector("embedding", { dimensions: 384 }).notNull(),
     model: text("model").notNull().default("nomic-embed-text"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },

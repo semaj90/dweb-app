@@ -11,9 +11,9 @@
  */
 
 import { createMachine, assign, fromPromise } from 'xstate';
-import { rabbitMQIntegration, type LegalAIMessage } from '../messaging/rabbitmq-xstate-integration.js';
-import { postgresqlQdrantSync } from './postgresql-qdrant-sync.js';
-import { vertexBufferImageAnalyzer } from './vertex-buffer-image-analyzer.js';
+import { rabbitMQIntegration, type LegalAIMessage } from '../messaging/rabbitmq-xstate-integration';
+import { postgresqlQdrantSync } from './postgresql-qdrant-sync';
+import { vertexBufferImageAnalyzer } from './vertex-buffer-image-analyzer';
 
 // WebAssembly inference types
 export interface WASMInferenceConfig {
@@ -284,7 +284,7 @@ export class WASMInferenceRAGService {
         instance: this.wasmInstance
       };
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ WebAssembly initialization failed:', error);
       throw error;
     }
@@ -383,7 +383,7 @@ export class WASMInferenceRAGService {
       console.log(`✅ WASM inference completed: ${request.id} (${processingTime.toFixed(2)}ms)`);
       return result;
       
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ WASM inference failed for ${request.id}:`, error);
       throw error;
     }
@@ -421,7 +421,7 @@ export class WASMInferenceRAGService {
       console.log(`📚 Retrieved ${results.length} relevant documents for WASM inference`);
       return results;
       
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ WASM RAG retrieval error:', error);
       
       // Fallback to the existing enhanced RAG service if available
@@ -461,7 +461,7 @@ export class WASMInferenceRAGService {
       const embedding = await legalNLP.embedText(query);
       return Array.isArray(embedding) ? embedding : Array.from(embedding as any);
       
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Sentence transformer not available, using mock embedding:', error);
       
       // Generate a mock embedding for development (384 dimensions for nomic-embed-text)
@@ -518,7 +518,7 @@ export class WASMInferenceRAGService {
         tokens
       };
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('WASM inference execution error:', error);
       throw error;
     }
@@ -542,7 +542,7 @@ export class WASMInferenceRAGService {
       });
       console.log(`🏷️ Triggered auto-tagging for inference: ${inferenceId}`);
       
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ Auto-tagging trigger failed:', error);
     }
   }

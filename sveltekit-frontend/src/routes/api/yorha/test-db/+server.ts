@@ -39,7 +39,7 @@ export const POST: RequestHandler = async ({ request }) => {
             version: vectorVersion[0]?.extversion || null,
             status: vectorTest.length > 0 ? "available" : "not_installed"
           };
-        } catch (error) {
+        } catch (error: any) {
           results.results.pgvector = {
             installed: false,
             error: error.message,
@@ -132,7 +132,7 @@ export const POST: RequestHandler = async ({ request }) => {
             vectorLength: testVector.length,
             status: "success"
           };
-        } catch (error) {
+        } catch (error: any) {
           results.results.vector = {
             error: error.message,
             status: "error"

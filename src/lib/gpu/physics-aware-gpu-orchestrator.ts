@@ -11,7 +11,7 @@ import { reinforcementLearningCache } from '../caching/reinforcement-learning-ca
 import { multiDimensionalRoutingMatrix } from '../routing/multidimensional-routing-matrix';
 
 // Physics-aware processing units
-interface PhysicsProcessingUnit {
+export interface PhysicsProcessingUnit {
   id: string;
   type: 'compute' | 'render' | 'ai' | 'memory' | 'network';
   capacity: number;
@@ -35,7 +35,7 @@ interface PhysicsProcessingUnit {
 }
 
 // Advanced GPU workload with physics properties
-interface PhysicsAwareWorkload {
+export interface PhysicsAwareWorkload {
   id: string;
   type: 'embedding' | 'inference' | 'training' | 'search' | 'analysis';
   priority: number;
@@ -64,7 +64,7 @@ interface PhysicsAwareWorkload {
 }
 
 // GPU cluster with physics simulation
-interface GPUCluster {
+export interface GPUCluster {
   id: string;
   units: Map<string, PhysicsProcessingUnit>;
   topology: 'mesh' | 'torus' | 'hypercube' | 'adaptive';
@@ -75,16 +75,21 @@ interface GPUCluster {
     potentialEnergy: number;
     entropy: number;
     coherence: number;
+    emergentBehaviors: string[];
+    temperature: number;
+    thermalCapacity: number;
   };
   loadBalancing: {
     algorithm: 'physics' | 'cognitive' | 'hybrid';
     efficiency: number;
     adaptationRate: number;
   };
+  assignedWorkloads: any[];
+  maxConcurrency: number;
 }
 
 // Intelligent scheduling with physics and cognition
-interface CognitiveScheduler {
+export interface CognitiveScheduler {
   queuedWorkloads: PhysicsAwareWorkload[];
   activeWorkloads: Map<string, { workload: PhysicsAwareWorkload; unit: string; startTime: number }>;
   completedWorkloads: Array<{ workload: PhysicsAwareWorkload; duration: number; efficiency: number; timestamp: number }>;
@@ -96,7 +101,7 @@ interface CognitiveScheduler {
 }
 
 // Advanced optimization algorithms
-interface PhysicsOptimization {
+export interface PhysicsOptimization {
   algorithm: 'simulated_annealing' | 'genetic' | 'particle_swarm' | 'cognitive_field';
   parameters: {
     temperature: number;
@@ -204,7 +209,7 @@ export class PhysicsAwareGPUOrchestrator {
     };
   }
 
-  private async setupWebGPU(): Promise<void> {
+  private async setupWebGPU(): Promise<any> {
     try {
       if ('gpu' in navigator) {
         const adapter = await navigator.gpu.requestAdapter({
@@ -223,7 +228,7 @@ export class PhysicsAwareGPUOrchestrator {
           console.log('✅ Physics-Aware GPU Orchestrator: WebGPU initialized');
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('WebGPU initialization failed, falling back to CPU:', error);
     }
   }
@@ -239,13 +244,18 @@ export class PhysicsAwareGPUOrchestrator {
         kineticEnergy: 0,
         potentialEnergy: 0,
         entropy: 0.5,
-        coherence: 0.8
+        coherence: 0.8,
+        emergentBehaviors: [],
+        temperature: 0.5,
+        thermalCapacity: 1.0
       },
       loadBalancing: {
         algorithm: 'hybrid',
         efficiency: 0.75,
         adaptationRate: 0.1
-      }
+      },
+      assignedWorkloads: [],
+      maxConcurrency: 8
     };
 
     // Create processing units with physics properties
@@ -646,6 +656,30 @@ export class PhysicsAwareGPUOrchestrator {
       this.emergentIntelligenceCalculation();
       this.updateMetrics();
     }, 5000);
+  }
+
+  private updateThermalDynamics(): void {
+    // Update thermal states of GPU clusters based on workload and physics
+    for (const cluster of this.clusters.values()) {
+      // Calculate heat generation from current workload
+      const workloadIntensity = cluster.assignedWorkloads.length / cluster.maxConcurrency;
+      const heatGeneration = workloadIntensity * 0.1;
+      
+      // Apply thermal dynamics
+      cluster.physics.temperature += heatGeneration;
+      
+      // Cool down over time (heat dissipation)
+      cluster.physics.temperature *= 0.95;
+      
+      // Thermal throttling effects
+      if (cluster.physics.temperature > 0.8) {
+        cluster.loadBalancing.efficiency *= 0.9; // Reduce efficiency due to thermal throttling
+        console.warn(`🌡️ Thermal throttling detected on cluster ${cluster.id}`);
+      }
+      
+      // Update thermal capacity based on temperature
+      cluster.physics.thermalCapacity = Math.max(0.1, 1.0 - cluster.physics.temperature * 0.5);
+    }
   }
 
   private processCognitiveMemory(): void {
@@ -1530,10 +1564,11 @@ export class PhysicsAwareGPUOrchestrator {
     };
   }
 
-  async shutdown(): Promise<void> {
+  async shutdown(): Promise<any> {
     // Clean up GPU resources
     if (this.webgpuDevice) {
-      this.webgpuDevice.destroy();
+      // GPUDevice doesn't have a destroy method - it's automatically cleaned up
+      this.webgpuDevice = null;
     }
 
     // Clear all workloads

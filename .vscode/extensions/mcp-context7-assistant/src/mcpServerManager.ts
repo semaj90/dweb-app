@@ -4,33 +4,33 @@ import { MCPServerStatus, MCPToolResult } from "./types";
 import { StatusBarManager } from "./statusBarManager";
 
 // Enhanced RAG System Integration
-interface EnhancedRAGService {
+export interface EnhancedRAGService {
   query(request: unknown): Promise<any>;
   batchQuery(queries: unknown[]): Promise<unknown[]>;
   uploadDocument(filePath: string, options?: unknown): Promise<any>;
   getEnhancedStats(): unknown;
 }
 
-interface ClusterManager {
+export interface ClusterManager {
   executeTask(task: unknown): Promise<any>;
   getClusterStats(): unknown;
   initialize(): Promise<void>;
 }
 
-interface OllamaGemmaCache {
+export interface OllamaGemmaCache {
   getEmbedding(text: string, context?: string): Promise<number[]>;
   querySimilar(query: unknown): Promise<any>;
   getCacheStats(): unknown;
   initialize(): Promise<void>;
 }
 
-interface MCPMemoryGraph {
+export interface MCPMemoryGraph {
   createRelations(entities: unknown[]): Promise<any>;
   readGraph(query?: string): Promise<any>;
   searchNodes(query: string): Promise<any>;
 }
 
-interface MCPContext7Tools {
+export interface MCPContext7Tools {
   getLibraryDocs(libraryId: string, topic?: string): Promise<any>;
   resolveLibraryId(libraryName: string): Promise<string>;
   analyzeTechStack(component: string, context?: string): Promise<any>;
@@ -84,7 +84,7 @@ export class MCPServerManager {
         const ragModule = await import("../../../rag/enhanced-rag-service.js");
         this.enhancedRAGService = ragModule.enhancedRAGService;
         console.log("✅ Enhanced RAG Service initialized");
-      } catch (error) {
+      } catch (error: any) {
         console.warn("⚠️ Enhanced RAG Service not available:", error);
         this.enhancedRAGService = this.createMockRAGService();
       }
@@ -97,7 +97,7 @@ export class MCPServerManager {
         this.clusterManager = clusterModule.nodeClusterManager;
         await this.clusterManager.initialize();
         console.log("✅ Cluster Manager initialized");
-      } catch (error) {
+      } catch (error: any) {
         console.warn("⚠️ Cluster Manager not available:", error);
         this.clusterManager = this.createMockClusterManager();
       }
@@ -108,7 +108,7 @@ export class MCPServerManager {
         this.ollamaGemmaCache = cacheModule.ollamaGemmaCache;
         await this.ollamaGemmaCache.initialize();
         console.log("✅ Ollama Gemma Cache initialized");
-      } catch (error) {
+      } catch (error: any) {
         console.warn("⚠️ Ollama Gemma Cache not available:", error);
         this.ollamaGemmaCache = this.createMockCache();
       }
@@ -120,7 +120,7 @@ export class MCPServerManager {
       this.context7Tools = this.createContext7ToolsAdapter();
 
       console.log("🎉 Enhanced RAG System initialization complete");
-    } catch (error) {
+    } catch (error: any) {
       console.error("💥 Enhanced RAG System initialization failed:", error);
     }
   }
@@ -182,7 +182,7 @@ export class MCPServerManager {
           );
         }
       });
-    } catch (error) {
+    } catch (error: any) {
       vscode.window.showErrorMessage(`Failed to start MCP Server: ${error}`);
     }
   }
@@ -326,7 +326,7 @@ export class MCPServerManager {
 
       this.status.lastActivity = new Date();
       return result;
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",
@@ -404,7 +404,7 @@ export class MCPServerManager {
         },
         executionTime: 0,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: `Memory relations creation failed: ${error}`,
@@ -427,7 +427,7 @@ export class MCPServerManager {
         },
         executionTime: 0,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: `Memory graph read failed: ${error}`,
@@ -449,7 +449,7 @@ export class MCPServerManager {
         },
         executionTime: 0,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: `Memory node search failed: ${error}`,
@@ -477,7 +477,7 @@ export class MCPServerManager {
         },
         executionTime: 0,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: `Library docs retrieval failed: ${error}`,
@@ -501,7 +501,7 @@ export class MCPServerManager {
         },
         executionTime: 0,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: `Library ID resolution failed: ${error}`,
@@ -542,7 +542,7 @@ export class MCPServerManager {
         },
         executionTime: result.metadata.processingTime || 0,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: `Enhanced RAG query failed: ${error}`,
@@ -570,7 +570,7 @@ export class MCPServerManager {
         },
         executionTime: 0,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: `Enhanced RAG batch query failed: ${error}`,
@@ -605,7 +605,7 @@ export class MCPServerManager {
         },
         executionTime: 0,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: `Enhanced RAG upload failed: ${error}`,
@@ -648,7 +648,7 @@ export class MCPServerManager {
         },
         executionTime: 0,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: `Claude agent orchestration failed: ${error}`,
@@ -680,7 +680,7 @@ export class MCPServerManager {
         },
         executionTime: 0,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: `CrewAI agent orchestration failed: ${error}`,
@@ -712,7 +712,7 @@ export class MCPServerManager {
         },
         executionTime: 0,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: `AutoGen agent orchestration failed: ${error}`,
@@ -740,7 +740,7 @@ export class MCPServerManager {
         },
         executionTime: 0,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: `Stack analysis failed: ${error}`,
@@ -761,7 +761,7 @@ export class MCPServerManager {
         },
         executionTime: 0,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: `Best practices generation failed: ${error}`,
@@ -786,7 +786,7 @@ export class MCPServerManager {
         },
         executionTime: 0,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: `Integration suggestion failed: ${error}`,
@@ -825,7 +825,7 @@ export class MCPServerManager {
         data: thinkingResult,
         executionTime: 0,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: `Sequential thinking failed: ${error}`,
@@ -873,7 +873,7 @@ export class MCPServerManager {
         },
         executionTime: 0,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: `Command execution failed: ${error}`,
@@ -1113,7 +1113,7 @@ export class MCPServerManager {
         },
       });
       return result;
-    } catch (error) {
+    } catch (error: any) {
       return {
         output: `Mock Claude agent response for: ${args.prompt}`,
         score: 0.85,
@@ -1139,7 +1139,7 @@ export class MCPServerManager {
         },
       });
       return result;
-    } catch (error) {
+    } catch (error: any) {
       return {
         output: `Mock CrewAI agent response for: ${args.prompt}`,
         score: 0.82,
@@ -1167,7 +1167,7 @@ export class MCPServerManager {
         },
       });
       return result;
-    } catch (error) {
+    } catch (error: any) {
       return {
         output: `Mock AutoGen agent response for: ${args.prompt}`,
         score: 0.88,

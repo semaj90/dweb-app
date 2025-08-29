@@ -2,9 +2,9 @@ import { EventEmitter } from "events";
 // Context7 Autosolve Integration - Complete TypeScript Error Fixing with AI
 // Integrates Context7 best practices with automatic error resolution
 
-import { orchestrator, databaseOrchestrator, type DatabaseOrchestratorConfig } from "../utils/comprehensive-orchestrator.js";
+import { orchestrator, databaseOrchestrator, type DatabaseOrchestratorConfig } from '../utils/comprehensive-orchestrator';
 // Define minimal EventLoopCondition interface locally (placeholder) since orchestrator is a stub
-interface EventLoopCondition {
+export interface EventLoopCondition {
   id: string;
   type: string;
   condition: any;
@@ -13,7 +13,7 @@ interface EventLoopCondition {
   metadata?: Record<string, any>;
 }
 
-interface AutosolveResult {
+export interface AutosolveResult {
   error_count: number;
   fixes_applied: number;
   ai_recommendations: string[];
@@ -22,7 +22,7 @@ interface AutosolveResult {
   timestamp: Date;
 }
 
-interface TypeScriptError {
+export interface TypeScriptError {
   file: string;
   line: number;
   column: number;
@@ -135,7 +135,7 @@ export class Context7AutosolveIntegration {
 
       console.log(`✅ Autosolve cycle ${this.autosolveCycle} completed:`, result);
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Autosolve cycle failed:', error);
 
       const failedResult: AutosolveResult = {
@@ -179,7 +179,7 @@ export class Context7AutosolveIntegration {
           response_code: response.status,
           endpoint,
         };
-      } catch (error) {
+      } catch (error: any) {
         healthResults[service] = {
           status: 'error',
           error: error.message,
@@ -192,7 +192,7 @@ export class Context7AutosolveIntegration {
     try {
       await (databaseOrchestrator as any).queryDatabase?.({}, 'cases');
       healthResults['postgresql'] = { status: 'healthy', connection: 'active' };
-    } catch (error) {
+    } catch (error: any) {
       healthResults['postgresql'] = { status: 'error', error: error.message };
     }
 
@@ -214,7 +214,7 @@ export class Context7AutosolveIntegration {
 
       const checkResult = await response.json();
       return this.parseTypeScriptErrors(checkResult.output || '');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error getting TypeScript errors:', error);
       return [];
     }
@@ -263,7 +263,7 @@ export class Context7AutosolveIntegration {
 
       const result = await response.json();
       return result.recommendations || [];
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error getting AI recommendations:', error);
       return this.getFallbackRecommendations(errors);
     }
@@ -352,7 +352,7 @@ export class Context7AutosolveIntegration {
 Error patterns:
 ${errors
   .slice(0, 5)
-  .map((e) => `- ${e.code}: ${e.message}`)
+  .map((e: any) => `- ${e.code}: ${e.message}`)
   .join('\n')}
 
 Provide a brief summary and recommendations for improvement.`;
@@ -375,7 +375,7 @@ Provide a brief summary and recommendations for improvement.`;
       return (
         result.response || `Fixed ${fixesApplied}/${errors.length} TypeScript errors successfully.`
       );
-    } catch (error) {
+    } catch (error: any) {
       return `Autosolve Summary: Fixed ${fixesApplied}/${errors.length} TypeScript errors. Summary generation failed: ${error.message}`;
     }
   }
@@ -471,7 +471,7 @@ Provide a brief summary and recommendations for improvement.`;
         'autosolve_results'
       );
       return history;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error getting autosolve history:', error);
       return [];
     }

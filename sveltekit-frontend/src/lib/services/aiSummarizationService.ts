@@ -7,7 +7,7 @@ import { dev } from "$app/environment";
 // AI Summarization Service for Case Management
 // Integrates with local LLM to generate comprehensive case reports
 
-interface CaseData {
+export interface CaseData {
   id: string;
   title: string;
   description: string | null;
@@ -15,7 +15,7 @@ interface CaseData {
   activities: CaseActivity[];
   metadata: Record<string, any>;
 }
-interface CaseActivity {
+export interface CaseActivity {
   id: string;
   activityType: string;
   title: string;
@@ -23,7 +23,7 @@ interface CaseActivity {
   status: string;
   completedAt?: Date;
 }
-interface AISummaryReport {
+export interface AISummaryReport {
   id: string;
   caseId: string;
   reportType:
@@ -46,7 +46,7 @@ interface AISummaryReport {
   createdAt: Date;
   updatedAt: Date;
 }
-interface CanvasElement {
+export interface CanvasElement {
   id: string;
   type: "text" | "evidence" | "timeline" | "connection" | "note";
   position: { x: number; y: number };
@@ -93,7 +93,7 @@ class AISummarizationService {
       );
 
       return report;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error generating case summary:", error);
       throw new Error("Failed to generate AI case summary");
     }
@@ -122,7 +122,7 @@ class AISummarizationService {
         this.generateEvidenceCanvasElements(evidenceItems);
 
       return report;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error generating evidence analysis:", error);
       throw new Error("Failed to generate evidence analysis");
     }
@@ -149,7 +149,7 @@ class AISummarizationService {
       report.canvasElements = this.generateStrategyCanvasElements(caseData);
 
       return report;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error generating prosecution strategy:", error);
       throw new Error("Failed to generate prosecution strategy");
     }
@@ -173,7 +173,7 @@ class AISummarizationService {
       report.canvasElements = this.generateTimelineCanvasElements(activities);
 
       return report;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error generating timeline summary:", error);
       throw new Error("Failed to generate timeline summary");
     }
@@ -188,7 +188,7 @@ Case Description: ${caseData.description || "No description provided"}
 EVIDENCE SUMMARY:
 ${caseData.evidence
   .map(
-    (e) => `
+    (e: any) => `
 - ${e.title} (${e.evidenceType})
   Description: ${e.description || "No description"}
   Type: ${e.fileType || "Unknown"}
@@ -301,7 +301,7 @@ CASE: ${caseData.title}
 DESCRIPTION: ${caseData.description}
 
 AVAILABLE EVIDENCE: ${caseData.evidence.length} items
-KEY EVIDENCE TYPES: ${Array.from(new Set(caseData.evidence.map((e) => e.evidenceType))).join(", ")}
+KEY EVIDENCE TYPES: ${Array.from(new Set(caseData.evidence.map((e: any) => e.evidenceType))).join(", ")}
 
 CASE ACTIVITIES: ${caseData.activities.length} activities
 COMPLETED ACTIVITIES: ${caseData.activities.filter((a) => a.status === "completed").length}
@@ -418,7 +418,7 @@ Structure as comprehensive timeline JSON analysis.
       }
       const data = await response.json();
       return data.response || "";
-    } catch (error) {
+    } catch (error: any) {
       console.error("LLM API call failed:", error);
       throw error;
     }
@@ -675,7 +675,7 @@ Structure as comprehensive timeline JSON analysis.
 
     // Evidence strategy branches
     const evidenceTypes = Array.from(
-      new Set(caseData.evidence.map((e) => e.evidenceType)),
+      new Set(caseData.evidence.map((e: any) => e.evidenceType)),
     );
     evidenceTypes.forEach((type, index) => {
       const angle = (index / evidenceTypes.length) * 2 * Math.PI;

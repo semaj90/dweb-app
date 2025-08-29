@@ -5,7 +5,7 @@ import type {
 	AccordionRootPropsWithoutHTML,
 	AccordionTriggerPropsWithoutHTML,
 } from "bits-ui";
-import { disabledDataAttr, forceMountProp, orientationDataAttr, withChildProps } from "./shared.js";
+import { disabledDataAttr, forceMountProp, orientationDataAttr, withChildProps } from './shared';
 import {
 	HeaderLevelProp,
 	OnChangeStringOrArrayProp,
@@ -13,8 +13,8 @@ import {
 	OrientationProp,
 	SingleOrMultipleProp,
 	StringOrArrayStringProp,
-} from "./extended-types/shared/index.js";
-import { ContentChildSnippetProps } from "./extended-types/accordion/index.js";
+} from './extended-types/shared/index';
+import { ContentChildSnippetProps } from './extended-types/accordion/index';
 import {
 	defineBooleanProp,
 	defineComponentApiSchema,
@@ -25,7 +25,7 @@ import {
 	defineSimpleDataAttr,
 	defineStringProp,
 	defineUnionProp,
-} from "../utils.js";
+} from '../utils';
 
 const stateDataAttr = defineEnumDataAttr({
 	name: "state",

@@ -80,7 +80,7 @@ class QuickRAGCache {
   }
 }
 
-async function runQuickCheck() {
+async function runQuickCheck(): Promise<any> {
   const startTime = Date.now();
   
   // Initialize RAG cache
@@ -190,7 +190,7 @@ async function runCheck(): Promise<string> {
   });
 }
 
-async function updateVSCodeGPU() {
+async function updateVSCodeGPU(): Promise<any> {
   const settingsPath = path.join(vscodeDir, 'settings.json');
   
   if (fs.existsSync(settingsPath)) {
@@ -205,13 +205,13 @@ async function updateVSCodeGPU() {
       
       fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
       console.log('✅ VS Code GPU settings updated');
-    } catch (error) {
+    } catch (error: any) {
       console.warn('⚠️ VS Code GPU update skipped');
     }
   }
 }
 
-async function generateQuickReport(errors: unknown[], stats: unknown, duration: number, buildLog: string) {
+async function generateQuickReport(errors: unknown[], stats: unknown, duration: number, buildLog: string): Promise<any> {
   const criticalErrors = errors.filter(e => e.severity === 'error');
   const warnings = errors.filter(e => e.severity === 'warning');
   

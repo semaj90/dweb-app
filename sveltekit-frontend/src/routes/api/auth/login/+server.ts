@@ -80,7 +80,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress, cookies 
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('Login API error:', err);
 
     // Handle validation errors

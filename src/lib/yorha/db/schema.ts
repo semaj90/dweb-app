@@ -57,7 +57,7 @@ export const units = pgTable('units', {
   achievementsUnlocked: integer('achievements_unlocked').default(0).notNull(),
   
   // Vector embedding for AI features (Nomic dimensions) - TODO: Re-enable when pgvector is properly configured
-  // embedding: vector('embedding', { dimensions: 768 }),
+  // embedding: vector('embedding', { dimensions: 384 }),
   
   // Security
   twoFactorEnabled: boolean('two_factor_enabled').default(false).notNull(),
@@ -271,7 +271,7 @@ export const documents = pgTable('documents', {
   tags: text('tags').array(),
   
   // Vector embedding for document (Nomic dimensions) - TODO: Re-enable when pgvector is properly configured
-  // embedding: vector('embedding', { dimensions: 768 }),
+  // embedding: vector('embedding', { dimensions: 384 }),
   
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull()
@@ -293,7 +293,7 @@ export const documentChunks = pgTable('document_chunks', {
   metadata: jsonb('metadata').default({}).notNull(),
   
   // Vector embedding for chunk (Nomic dimensions) - TODO: Re-enable when pgvector is properly configured
-  // embedding: vector('embedding', { dimensions: 768 }),
+  // embedding: vector('embedding', { dimensions: 384 }),
   
   createdAt: timestamp('created_at').defaultNow().notNull()
 }, (table) => ({
@@ -313,7 +313,7 @@ export const conversations = pgTable('conversations', {
   metadata: jsonb('metadata').default({}).notNull(),
   
   // Summary embedding for conversation (Nomic dimensions) - TODO: Re-enable when pgvector is properly configured
-  // embedding: vector('embedding', { dimensions: 768 }),
+  // embedding: vector('embedding', { dimensions: 384 }),
   
   lastMessageAt: timestamp('last_message_at').defaultNow().notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -336,7 +336,7 @@ export const knowledgeBase = pgTable('knowledge_base', {
   metadata: jsonb('metadata').default({}).notNull(),
   
   // Vector embedding (Nomic dimensions) - TODO: Re-enable when pgvector is properly configured
-  // embedding: vector('embedding', { dimensions: 768 }),
+  // embedding: vector('embedding', { dimensions: 384 }),
   
   views: integer('views').default(0).notNull(),
   helpful: integer('helpful').default(0).notNull(),

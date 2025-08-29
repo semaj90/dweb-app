@@ -20,19 +20,143 @@
  */
 
 import { EventEmitter } from 'events';
-import type { 
-    AgentNode,
-    AgentPlacement,
-    ScalingPolicy,
-    LoadBalancingStrategy,
-    ServiceRegistry,
-    DistributedLock,
-    AgentScalingConfig,
-    ServerHealth,
-    AgentHealth,
-    ScalingMetrics,
-    PlacementDecision 
-} from '$lib/ai/types';
+// Note: These types will be created when the AI system is fully implemented
+// import type { 
+//     AgentNode,
+//     AgentPlacement,
+//     ScalingPolicy,
+//     LoadBalancingStrategy,
+//     ServiceRegistry,
+//     DistributedLock,
+//     AgentScalingConfig,
+//     ServerHealth,
+//     AgentHealth,
+//     ScalingMetrics,
+//     PlacementDecision 
+// } from '$lib/ai/types';
+
+// Mock implementations for development
+export interface AgentNode {
+    serverId: string;
+    serverAddress: string;
+    status: string;
+    capabilities: string[];
+    resources: {
+        cpu: { total: number; used: number; available: number };
+        memory: { total: number; used: number; available: number };
+        disk: { total: number; used: number; available: number };
+        network: { bandwidth: number; latency: number };
+    };
+    agents: string[];
+    lastHeartbeat: Date;
+    metadata: {
+        region: string;
+        zone: string;
+        nodeVersion: string;
+    };
+}
+
+export interface AgentPlacement {
+    agentId: string;
+    agentType: string;
+    serverId: string;
+    serverAddress: string;
+    status: string;
+    createdAt: Date;
+    deployedAt?: Date;
+    stoppedAt?: Date;
+    failedAt?: Date;
+    resources?: {
+        cpu: number;
+        memory: number;
+        disk: number;
+    };
+    migratedFrom?: string;
+    error?: string;
+}
+
+export interface ScalingPolicy {
+    agentType: string;
+    minInstances: number;
+    maxInstances: number;
+    scaleUpThreshold: number;
+    scaleDownThreshold: number;
+    scaleUpCooldown: number;
+    scaleDownCooldown: number;
+    metrics: string[];
+    enabled: boolean;
+}
+
+type LoadBalancingStrategy = 'round-robin' | 'least-connections' | 'weighted' | 'cpu-based' | 'memory-based';
+
+export interface ServiceRegistry {
+    [key: string]: AgentNode;
+}
+
+export interface DistributedLock {
+    lockId: string;
+    resource: string;
+    owner: string;
+    acquiredAt: Date;
+    expiresAt: Date;
+}
+
+export interface AgentScalingConfig {
+    serverNodes: string[];
+    redisUrl?: string;
+    enableAutoScaling?: boolean;
+    enableLoadBalancing?: boolean;
+    enableHealthMonitoring?: boolean;
+    scalingInterval?: number;
+    healthCheckInterval?: number;
+    placementStrategy?: string;
+    loadBalancingStrategy?: LoadBalancingStrategy;
+    maxAgentsPerServer?: number;
+    minAgentsPerServer?: number;
+    scaleUpThreshold?: number;
+    scaleDownThreshold?: number;
+    agentTypes: string[];
+}
+
+export interface ServerHealth {
+    serverId: string;
+    status: string;
+    lastCheck: Date;
+    lastFailure?: Date;
+    responseTime: number;
+    errorCount: number;
+    consecutiveFailures: number;
+}
+
+export interface AgentHealth {
+    agentId: string;
+    status: string;
+    resourceUsage: number;
+    lastHeartbeat: Date;
+    errorRate: number;
+    responseTime: number;
+}
+
+export interface ScalingMetrics {
+    agentType: string;
+    previousCount: number;
+    targetCount: number;
+    actualCount: number;
+    scalingActions: any[];
+    scalingTime: number;
+    timestamp: number;
+}
+
+export interface PlacementDecision {
+    agentType: string;
+    currentCount: number;
+    targetCount: number;
+    shouldScale: boolean;
+    reason: string;
+    metrics: any;
+    confidence: number;
+    timestamp: number;
+}
 
 export class HorizontalAgentScaler extends EventEmitter {
     private serviceRegistry: Map<string, AgentNode> = new Map();
@@ -46,7 +170,7 @@ export class HorizontalAgentScaler extends EventEmitter {
     private coordinationService: CoordinationService;
     private config: AgentScalingConfig;
 
-    constructor(config: AgentScalingConfig = {}) {
+    constructor(config: Partial<AgentScalingConfig> = {}) {
         super();
         
         this.config = {
@@ -99,7 +223,7 @@ export class HorizontalAgentScaler extends EventEmitter {
     /**
      * Start the scaling system
      */
-    async start(): Promise<void> {
+    async start(): Promise<any> {
         try {
             console.log('🚀 Starting Horizontal Agent Scaling System...');
             
@@ -128,7 +252,7 @@ export class HorizontalAgentScaler extends EventEmitter {
                 timestamp: new Date()
             });
             
-        } catch (error) {
+        } catch (error: any) {
             console.error('❌ Failed to start scaling system:', error);
             throw error;
         }
@@ -151,7 +275,7 @@ export class HorizontalAgentScaler extends EventEmitter {
                 const currentPlacements = this.getCurrentPlacements(agentType);
                 const currentCount = currentPlacements.length;
                 
-                let scalingActions: unknown[] = [];
+                let scalingActions: any[] = [];
                 
                 if (targetCount > currentCount) {
                     // Scale up
@@ -187,7 +311,7 @@ export class HorizontalAgentScaler extends EventEmitter {
                 await this.releaseScalingLock(lockId);
             }
             
-        } catch (error) {
+        } catch (error: any) {
             console.error(`❌ Failed to scale ${agentType} agents:`, error);
             throw error;
         }
@@ -197,7 +321,7 @@ export class HorizontalAgentScaler extends EventEmitter {
      * Scale up agents
      */
     private async scaleUp(agentType: string, count: number): Promise<unknown[]> {
-        const actions: unknown[] = [];
+        const actions: any[] = [];
         
         for (let i = 0; i < count; i++) {
             const placement = await this.placementEngine.findOptimalPlacement(agentType);
@@ -239,7 +363,7 @@ export class HorizontalAgentScaler extends EventEmitter {
      * Scale down agents
      */
     private async scaleDown(agentType: string, count: number): Promise<unknown[]> {
-        const actions: unknown[] = [];
+        const actions: any[] = [];
         const currentPlacements = this.getCurrentPlacements(agentType);
         
         // Sort by resource usage or health to remove least optimal agents first
@@ -268,7 +392,7 @@ export class HorizontalAgentScaler extends EventEmitter {
                 
                 console.log(`🔽 Removed ${agentType} agent ${placement.agentId} from ${placement.serverId}`);
                 
-            } catch (error) {
+            } catch (error: any) {
                 console.error(`❌ Failed to remove agent ${placement.agentId}:`, error);
             }
         }
@@ -279,7 +403,7 @@ export class HorizontalAgentScaler extends EventEmitter {
     /**
      * Deploy agent to specific server
      */
-    private async deployAgent(placement: AgentPlacement): Promise<void> {
+    private async deployAgent(placement: AgentPlacement): Promise<any> {
         try {
             // Simulate agent deployment - in production, this would use:
             // - Container orchestration (Docker/Kubernetes)
@@ -311,7 +435,7 @@ export class HorizontalAgentScaler extends EventEmitter {
             
             console.log(`🚀 Deployed agent ${placement.agentId} to ${placement.serverId}`);
             
-        } catch (error) {
+        } catch (error: any) {
             placement.status = 'failed';
             placement.error = error.message;
             throw error;
@@ -321,7 +445,7 @@ export class HorizontalAgentScaler extends EventEmitter {
     /**
      * Shutdown agent gracefully
      */
-    private async shutdownAgent(agentId: string): Promise<void> {
+    private async shutdownAgent(agentId: string): Promise<any> {
         const placement = this.agentPlacements.get(agentId);
         if (!placement) return;
         
@@ -339,7 +463,7 @@ export class HorizontalAgentScaler extends EventEmitter {
             
             console.log(`🛑 Shutdown agent ${agentId} successfully`);
             
-        } catch (error) {
+        } catch (error: any) {
             console.error(`❌ Failed to shutdown agent ${agentId}:`, error);
             placement.status = 'failed';
             throw error;
@@ -349,7 +473,7 @@ export class HorizontalAgentScaler extends EventEmitter {
     /**
      * Initialize service registry
      */
-    private async initializeServiceRegistry(): Promise<void> {
+    private async initializeServiceRegistry(): Promise<any> {
         console.log('📋 Initializing service registry...');
         
         for (const serverAddress of this.config.serverNodes) {
@@ -418,10 +542,10 @@ export class HorizontalAgentScaler extends EventEmitter {
      * Start auto-scaling monitoring
      */
     private startAutoScaling(): void {
-        setInterval(async () => {
+        setInterval(async (): Promise<any> => {
             try {
                 await this.evaluateScalingDecisions();
-            } catch (error) {
+            } catch (error: any) {
                 console.error('❌ Auto-scaling evaluation error:', error);
             }
         }, this.config.scalingInterval);
@@ -432,8 +556,8 @@ export class HorizontalAgentScaler extends EventEmitter {
     /**
      * Evaluate scaling decisions based on metrics
      */
-    private async evaluateScalingDecisions(): Promise<void> {
-        for (const [agentType, policy] of this.scalingPolicies) {
+    private async evaluateScalingDecisions(): Promise<any> {
+        for (const [agentType, policy] of Array.from(this.scalingPolicies.entries())) {
             if (!policy.enabled) continue;
             
             try {
@@ -444,7 +568,7 @@ export class HorizontalAgentScaler extends EventEmitter {
                     await this.scaleAgents(agentType, decision.targetCount);
                 }
                 
-            } catch (error) {
+            } catch (error: any) {
                 console.error(`❌ Scaling evaluation error for ${agentType}:`, error);
             }
         }
@@ -455,14 +579,14 @@ export class HorizontalAgentScaler extends EventEmitter {
      */
     private async makeScalingDecision(
         agentType: string, 
-        metrics: unknown, 
+        metrics: any, 
         policy: ScalingPolicy
     ): Promise<PlacementDecision> {
         const currentCount = this.getCurrentPlacements(agentType).length;
-        const avgCpuUsage = metrics.cpu_usage || 0;
-        const avgMemoryUsage = metrics.memory_usage || 0;
-        const queueLength = metrics.queue_length || 0;
-        const avgResponseTime = metrics.response_time || 0;
+        const avgCpuUsage = (metrics as any)?.cpu_usage || 0;
+        const avgMemoryUsage = (metrics as any)?.memory_usage || 0;
+        const queueLength = (metrics as any)?.queue_length || 0;
+        const avgResponseTime = (metrics as any)?.response_time || 0;
         
         // Calculate composite load score
         const loadScore = Math.max(avgCpuUsage, avgMemoryUsage);
@@ -517,7 +641,7 @@ export class HorizontalAgentScaler extends EventEmitter {
     /**
      * Handle server failure
      */
-    private async handleServerFailure(serverId: string): Promise<void> {
+    private async handleServerFailure(serverId: string): Promise<any> {
         console.log(`💥 Server failure detected: ${serverId}`);
         
         const failedAgents = Array.from(this.agentPlacements.values())
@@ -525,7 +649,7 @@ export class HorizontalAgentScaler extends EventEmitter {
         
         console.log(`🔄 Migrating ${failedAgents.length} agents from failed server`);
         
-        for (const agent of failedAgents) {
+        for (const agent of Array.from(failedAgents)) {
             try {
                 // Remove failed agent
                 this.agentPlacements.delete(agent.agentId);
@@ -551,7 +675,7 @@ export class HorizontalAgentScaler extends EventEmitter {
                     console.log(`✅ Migrated agent ${agent.agentId} → ${replacementAgent.agentId}`);
                 }
                 
-            } catch (error) {
+            } catch (error: any) {
                 console.error(`❌ Failed to migrate agent ${agent.agentId}:`, error);
             }
         }
@@ -567,7 +691,7 @@ export class HorizontalAgentScaler extends EventEmitter {
     /**
      * Handle individual agent failure
      */
-    private async handleAgentFailure(agentId: string): Promise<void> {
+    private async handleAgentFailure(agentId: string): Promise<any> {
         console.log(`💥 Agent failure detected: ${agentId}`);
         
         const placement = this.agentPlacements.get(agentId);
@@ -587,7 +711,7 @@ export class HorizontalAgentScaler extends EventEmitter {
                 await this.scaleAgents(placement.agentType, policy.minInstances);
             }
             
-        } catch (error) {
+        } catch (error: any) {
             console.error(`❌ Failed to handle agent failure ${agentId}:`, error);
         }
     }
@@ -604,7 +728,7 @@ export class HorizontalAgentScaler extends EventEmitter {
         return `server-${address.replace(/[:.]/g, '-')}`;
     }
 
-    private getAgentConfiguration(agentType: string): unknown {
+    private getAgentConfiguration(agentType: string): any {
         return {
             type: agentType,
             version: '1.0.0',
@@ -642,7 +766,7 @@ export class HorizontalAgentScaler extends EventEmitter {
         return lockId;
     }
 
-    private async releaseScalingLock(lockId: string): Promise<void> {
+    private async releaseScalingLock(lockId: string): Promise<any> {
         this.distributedLocks.delete(lockId);
     }
 
@@ -662,18 +786,18 @@ export class HorizontalAgentScaler extends EventEmitter {
         };
     }
 
-    private async performGracefulShutdown(agentId: string): Promise<void> {
+    private async performGracefulShutdown(agentId: string): Promise<any> {
         // Simulate graceful shutdown with timeout
         console.log(`🛑 Performing graceful shutdown for ${agentId}`);
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
-    private async storeScalingMetrics(metrics: ScalingMetrics): Promise<void> {
+    private async storeScalingMetrics(metrics: ScalingMetrics): Promise<any> {
         // Store in JSONB format for analysis
         console.log(`📊 Storing scaling metrics: ${JSON.stringify(metrics, null, 2)}`);
     }
 
-    private async storeAgentDeployment(deployment: unknown): Promise<void> {
+    private async storeAgentDeployment(deployment: any): Promise<any> {
         // Store deployment info in JSONB format
         console.log(`🚀 Storing deployment info: ${JSON.stringify(deployment, null, 2)}`);
     }
@@ -681,7 +805,7 @@ export class HorizontalAgentScaler extends EventEmitter {
     /**
      * Public API methods
      */
-    getScalingStatus(): unknown {
+    getScalingStatus(): any {
         const totalAgents = this.agentPlacements.size;
         const agentsByType = {};
         const agentsByServer = {};
@@ -720,16 +844,16 @@ class LoadBalancer {
 
     constructor(private config: AgentScalingConfig) {}
 
-    async start(): Promise<void> {
+    async start(): Promise<any> {
         console.log('⚖️ Load balancer started');
     }
 
-    async registerAgent(placement: AgentPlacement): Promise<void> {
+    async registerAgent(placement: AgentPlacement): Promise<any> {
         this.agents.set(placement.agentId, placement);
         console.log(`⚖️ Registered agent ${placement.agentId} for load balancing`);
     }
 
-    async unregisterAgent(agentId: string): Promise<void> {
+    async unregisterAgent(agentId: string): Promise<any> {
         this.agents.delete(agentId);
         console.log(`⚖️ Unregistered agent ${agentId} from load balancing`);
     }
@@ -784,7 +908,7 @@ class HealthMonitor extends EventEmitter {
         super();
     }
 
-    async start(): Promise<void> {
+    async start(): Promise<any> {
         if (this.config.enableHealthMonitoring) {
             setInterval(() => {
                 this.performHealthChecks();
@@ -793,7 +917,7 @@ class HealthMonitor extends EventEmitter {
         console.log('🏥 Health monitor started');
     }
 
-    private async performHealthChecks(): Promise<void> {
+    private async performHealthChecks(): Promise<any> {
         // Simulate health checks
         const randomFailure = Math.random() < 0.01; // 1% chance of failure
         
@@ -813,7 +937,7 @@ class CoordinationService extends EventEmitter {
         super();
     }
 
-    async start(): Promise<void> {
+    async start(): Promise<any> {
         // Simulate leader election
         setTimeout(() => {
             this.emit('leaderElected', 'scaling-coordinator-1');

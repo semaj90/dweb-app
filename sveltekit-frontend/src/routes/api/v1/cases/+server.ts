@@ -21,7 +21,7 @@ const updateCaseSchema = z.object({
 });
 
 // Create new case
-export async function POST({ request }) {
+export async function POST({ request }): Promise<any> {
   try {
     const body = await request.json();
     const { id, title, description, status, metadata } = createCaseSchema.parse(body);
@@ -50,7 +50,7 @@ export async function POST({ request }) {
       }
     }, { status: 201 });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Case creation error:', error);
     
     if (error instanceof z.ZodError) {
@@ -66,7 +66,7 @@ export async function POST({ request }) {
 }
 
 // List cases with optional filtering
-export async function GET({ url }) {
+export async function GET({ url }): Promise<any> {
   try {
     const status = url.searchParams.get('status');
     const limit = Math.min(parseInt(url.searchParams.get('limit') || '50'), 100);
@@ -164,14 +164,14 @@ export async function GET({ url }) {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Case listing error:', error);
     return json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
 // Update existing case
-export async function PATCH({ request, url }) {
+export async function PATCH({ request, url }): Promise<any> {
   const caseId = url.searchParams.get('id');
   
   if (!caseId) {
@@ -216,7 +216,7 @@ export async function PATCH({ request, url }) {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Case update error:', error);
     
     if (error instanceof z.ZodError) {
@@ -228,7 +228,7 @@ export async function PATCH({ request, url }) {
 }
 
 // Delete case (soft delete by default)
-export async function DELETE({ url }) {
+export async function DELETE({ url }): Promise<any> {
   const caseId = url.searchParams.get('id');
   const hard = url.searchParams.get('hard') === 'true';
   
@@ -281,7 +281,7 @@ export async function DELETE({ url }) {
       });
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Case deletion error:', error);
     return json({ error: 'Internal server error' }, { status: 500 });
   }

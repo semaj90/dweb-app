@@ -187,7 +187,7 @@ export const cases = pgTable('cases', {
 
 \`\`\`typescript
 // RAG document processing
-export async function processLegalDocument(content: string) {
+export async function processLegalDocument(content: string): Promise<any> {
   const embedding = await generateEmbedding(content);
   const similarDocs = await semanticSearch(embedding);
   return { embedding, similarDocs };

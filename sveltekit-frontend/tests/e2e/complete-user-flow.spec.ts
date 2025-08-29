@@ -16,7 +16,7 @@ const testUser = {
 };
 
 // Helper function to wait for navigation and loading
-async function waitForPageLoad(page: Page) {
+async function waitForPageLoad(page: Page): Promise<any> {
   await page.waitForLoadState('networkidle');
   await page.waitForSelector('body', { state: 'attached' });
 }

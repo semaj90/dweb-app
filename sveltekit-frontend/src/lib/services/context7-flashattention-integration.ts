@@ -167,7 +167,7 @@ export class Context7FlashAttentionIntegration {
       this.isInitialized = true;
       console.log('✅ Context7 + FlashAttention Integration ready');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Integration initialization failed:', error);
     }
   }
@@ -192,7 +192,7 @@ export class Context7FlashAttentionIntegration {
         autoGenConnected: orchestraStatus.initialized,
         orchestratorOnline: nodeStatus.initialized
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         context7Active: false,
         autoGenConnected: false,
@@ -247,7 +247,7 @@ export class Context7FlashAttentionIntegration {
       console.log('✅ Enhanced error analysis completed');
       return enhancedAnalysis;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Enhanced error analysis failed:', error);
       throw error;
     }
@@ -374,7 +374,7 @@ export class Context7FlashAttentionIntegration {
           });
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('AutoGen recommendations failed, using fallback:', error);
       
       // Fallback recommendations
@@ -574,7 +574,7 @@ export class Context7FlashAttentionIntegration {
 }
 
 // Interface for processing tasks
-interface ProcessingTask {
+export interface ProcessingTask {
   id: string;
   type: string;
   data: any;

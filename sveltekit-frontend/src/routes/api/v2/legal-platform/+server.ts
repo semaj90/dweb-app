@@ -52,7 +52,7 @@ const GO_SERVICES = {
 };
 
 // Request Types
-interface LegalPlatformRequest {
+export interface LegalPlatformRequest {
   action: 'create' | 'read' | 'update' | 'delete' | 'search' | 'process' | 'analyze';
   entity: 'case' | 'evidence' | 'criminal' | 'document' | 'search' | 'upload' | 'ai';
   data?: any;
@@ -84,7 +84,7 @@ async function callGoService(
     }
 
     return await response.json();
-  } catch (err) {
+  } catch (err: any) {
     console.error(`Error calling ${service} service:`, err);
     throw new Error(`Failed to communicate with ${service} service`);
   }
@@ -113,7 +113,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
       default:
         throw error(400, `Unknown entity: ${req.entity}`);
     }
-  } catch (err) {
+  } catch (err: any) {
     console.error('API Error:', err);
     throw error(500, err instanceof Error ? err.message : 'Internal server error');
   }
@@ -138,7 +138,7 @@ export const GET: RequestHandler = async ({ url }) => {
 };
 
 // Case Management Operations
-async function handleCaseOperations(req: LegalPlatformRequest) {
+async function handleCaseOperations(req: LegalPlatformRequest): Promise<any> {
   switch (req.action) {
     case 'create':
       const newCase = await db.insert(cases).values({
@@ -222,7 +222,7 @@ async function handleCaseOperations(req: LegalPlatformRequest) {
 }
 
 // Evidence Management Operations
-async function handleEvidenceOperations(req: LegalPlatformRequest) {
+async function handleEvidenceOperations(req: LegalPlatformRequest): Promise<any> {
   switch (req.action) {
     case 'create':
       const newEvidence = await db.insert(evidence).values({
@@ -286,7 +286,7 @@ async function handleEvidenceOperations(req: LegalPlatformRequest) {
 }
 
 // Criminal Records Operations
-async function handleCriminalOperations(req: LegalPlatformRequest) {
+async function handleCriminalOperations(req: LegalPlatformRequest): Promise<any> {
   switch (req.action) {
     case 'create':
       const newCriminal = await db.insert(criminals).values({
@@ -329,7 +329,7 @@ async function handleCriminalOperations(req: LegalPlatformRequest) {
 }
 
 // Document Operations
-async function handleDocumentOperations(req: LegalPlatformRequest) {
+async function handleDocumentOperations(req: LegalPlatformRequest): Promise<any> {
   switch (req.action) {
     case 'create':
       const newDocument = await db.insert(legalDocuments).values({
@@ -377,7 +377,7 @@ async function handleDocumentOperations(req: LegalPlatformRequest) {
 }
 
 // Search Operations (Vector + Traditional)
-async function handleSearchOperations(req: LegalPlatformRequest) {
+async function handleSearchOperations(req: LegalPlatformRequest): Promise<any> {
   const { query, type = 'semantic', limit = 10 } = req.data;
   
   try {
@@ -394,7 +394,7 @@ async function handleSearchOperations(req: LegalPlatformRequest) {
       data: searchResults,
       message: 'Search completed successfully'
     });
-  } catch (err) {
+  } catch (err: any) {
     // Fallback to traditional database search
     const fallbackResults = await db.select()
       .from(cases)
@@ -414,7 +414,7 @@ async function handleSearchOperations(req: LegalPlatformRequest) {
 }
 
 // Upload Operations
-async function handleUploadOperations(req: LegalPlatformRequest) {
+async function handleUploadOperations(req: LegalPlatformRequest): Promise<any> {
   try {
     const uploadResult = await callGoService('upload_service', '/upload', 'POST', req.data);
     
@@ -423,13 +423,13 @@ async function handleUploadOperations(req: LegalPlatformRequest) {
       data: uploadResult,
       message: 'Upload processed successfully'
     });
-  } catch (err) {
+  } catch (err: any) {
     throw error(500, `Upload service error: ${err instanceof Error ? err.message : 'Unknown error'}`);
   }
 }
 
 // AI Operations (Enhanced RAG, GPU Compute, SOM Training)
-async function handleAIOperations(req: LegalPlatformRequest) {
+async function handleAIOperations(req: LegalPlatformRequest): Promise<any> {
   const { operation, data } = req.data;
   
   try {
@@ -462,7 +462,7 @@ async function handleAIOperations(req: LegalPlatformRequest) {
       data: result,
       message: `AI operation ${operation} completed successfully`
     });
-  } catch (err) {
+  } catch (err: any) {
     throw error(500, `AI service error: ${err instanceof Error ? err.message : 'Unknown error'}`);
   }
 }

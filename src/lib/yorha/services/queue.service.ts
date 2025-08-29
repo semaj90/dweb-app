@@ -33,7 +33,7 @@ export class QueueService {
   }
 
   // Connect to RabbitMQ
-  private async connect(): Promise<void> {
+  private async connect(): Promise<any> {
     if (this.isConnecting) return;
     this.isConnecting = true;
 
@@ -57,7 +57,7 @@ export class QueueService {
 
       console.log('✅ Connected to RabbitMQ');
       this.isConnecting = false;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to connect to RabbitMQ:', error);
       this.isConnecting = false;
       this.reconnect();
@@ -75,7 +75,7 @@ export class QueueService {
   }
 
   // Set up exchanges and queues
-  private async setupInfrastructure(): Promise<void> {
+  private async setupInfrastructure(): Promise<any> {
     if (!this.channel) return;
 
     // Create exchanges
@@ -102,7 +102,7 @@ export class QueueService {
   }
 
   // Publish message to queue
-  async publishMessage(queue: keyof typeof this.queues, message: unknown): Promise<void> {
+  async publishMessage(queue: keyof typeof this.queues, message: any): Promise<any> {
     if (!this.channel) {
       console.error('RabbitMQ channel not available');
       return;
@@ -118,14 +118,14 @@ export class QueueService {
       });
 
       console.log(`Message published to ${queueName}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to publish message to ${queue}:`, error);
       throw error;
     }
   }
 
   // Publish to exchange
-  async publishToExchange(exchange: keyof typeof this.exchanges, routingKey: string, message: unknown): Promise<void> {
+  async publishToExchange(exchange: keyof typeof this.exchanges, routingKey: string, message: any): Promise<any> {
     if (!this.channel) {
       console.error('RabbitMQ channel not available');
       return;
@@ -141,7 +141,7 @@ export class QueueService {
       });
 
       console.log(`Message published to exchange ${exchangeName} with routing key ${routingKey}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to publish to exchange ${exchange}:`, error);
       throw error;
     }
@@ -150,9 +150,9 @@ export class QueueService {
   // Consume messages from queue
   async consume(
     queue: keyof typeof this.queues,
-    handler: (message: unknown) => Promise<void>,
+    handler: (message: any) => Promise<any>,
     options: { prefetch?: number } = {}
-  ): Promise<void> {
+  ): Promise<any> {
     if (!this.channel) {
       console.error('RabbitMQ channel not available');
       return;
@@ -166,7 +166,7 @@ export class QueueService {
         await this.channel.prefetch(options.prefetch);
       }
 
-      await this.channel.consume(queueName, async (msg) => {
+      await this.channel.consume(queueName, async (msg): Promise<any> => {
         if (!msg) return;
 
         try {
@@ -177,7 +177,7 @@ export class QueueService {
           if (this.channel) {
             this.channel.ack(msg);
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error(`Error processing message from ${queueName}:`, error);
           
           // Reject message and requeue
@@ -188,14 +188,14 @@ export class QueueService {
       });
 
       console.log(`Started consuming from ${queueName}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to consume from ${queue}:`, error);
       throw error;
     }
   }
 
   // Batch publish messages
-  async batchPublish(messages: Array<{ queue: keyof typeof this.queues; content: unknown }>): Promise<void> {
+  async batchPublish(messages: Array<{ queue: keyof typeof this.queues; content: any }>): Promise<any> {
     if (!this.channel) {
       console.error('RabbitMQ channel not available');
       return;
@@ -211,9 +211,9 @@ export class QueueService {
   // Create delayed message
   async publishDelayedMessage(
     queue: keyof typeof this.queues,
-    message: unknown,
+    message: any,
     delayMs: number
-  ): Promise<void> {
+  ): Promise<any> {
     if (!this.channel) {
       console.error('RabbitMQ channel not available');
       return;
@@ -237,7 +237,7 @@ export class QueueService {
       });
 
       console.log(`Delayed message published to ${delayedQueueName} with ${delayMs}ms delay`);
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to publish delayed message:`, error);
       throw error;
     }
@@ -258,14 +258,14 @@ export class QueueService {
         messageCount: stats.messageCount,
         consumerCount: stats.consumerCount
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to get queue stats for ${queue}:`, error);
       return null;
     }
   }
 
   // Close connection
-  async close(): Promise<void> {
+  async close(): Promise<any> {
     if (this.reconnectTimeout) {
       clearTimeout(this.reconnectTimeout);
       this.reconnectTimeout = null;

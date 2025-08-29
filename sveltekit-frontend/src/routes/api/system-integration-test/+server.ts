@@ -62,7 +62,7 @@ export const GET: RequestHandler = async ({ url }) => {
       summary: generateTestSummary(testResults),
       timestamp: new Date().toISOString(),
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ System integration test failed:', error);
 
     return json(
@@ -114,7 +114,7 @@ export const POST: RequestHandler = async ({ request }) => {
           { status: 400 }
         );
     }
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         success: false,
@@ -151,7 +151,7 @@ async function testCoreServices(): Promise<any> {
         response_time: Date.now(),
         url: service.url,
       };
-    } catch (error) {
+    } catch (error: any) {
       results[service.name] = {
         status: 'error',
         error: error.message,
@@ -181,7 +181,7 @@ async function testDatabaseConnectivity(): Promise<any> {
           status: response.ok ? 'healthy' : 'unhealthy',
           response_code: response.status,
         };
-      } catch (error) {
+      } catch (error: any) {
         results[test.name] = {
           status: 'error',
           error: error.message,
@@ -197,7 +197,7 @@ async function testDatabaseConnectivity(): Promise<any> {
         ? 'healthy'
         : 'degraded',
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       status: 'error',
       error: error.message,
@@ -231,7 +231,7 @@ async function testAPIEndpoints(): Promise<any> {
         response_code: response.status,
         path: endpoint.path,
       };
-    } catch (error) {
+    } catch (error: any) {
       results[endpoint.name] = {
         status: 'error',
         error: error.message,
@@ -262,7 +262,7 @@ async function testContext7Integration(): Promise<any> {
         status: statusResponse.ok ? 'pass' : 'fail',
         response_code: statusResponse.status,
       });
-    } catch (error) {
+    } catch (error: any) {
       context7Tests.push({
         test: 'context7_status',
         status: 'error',
@@ -284,7 +284,7 @@ async function testContext7Integration(): Promise<any> {
         status: autosolveResponse.ok ? 'pass' : 'fail',
         response_code: autosolveResponse.status,
       });
-    } catch (error) {
+    } catch (error: any) {
       context7Tests.push({
         test: 'autosolve_integration',
         status: 'error',
@@ -296,7 +296,7 @@ async function testContext7Integration(): Promise<any> {
       tests: context7Tests,
       overall_status: context7Tests.every((t) => t.status === 'pass') ? 'healthy' : 'degraded',
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       status: 'error',
       error: error.message,
@@ -323,7 +323,7 @@ async function testAutosolveSystem(): Promise<any> {
         status: healthResponse.ok ? 'pass' : 'fail',
         response_code: healthResponse.status,
       });
-    } catch (error) {
+    } catch (error: any) {
       autosolveTests.push({
         test: 'autosolve_health',
         status: 'error',
@@ -345,7 +345,7 @@ async function testAutosolveSystem(): Promise<any> {
         status: tsResponse.ok ? 'pass' : 'fail',
         response_code: tsResponse.status,
       });
-    } catch (error) {
+    } catch (error: any) {
       autosolveTests.push({
         test: 'typescript_check',
         status: 'error',
@@ -357,7 +357,7 @@ async function testAutosolveSystem(): Promise<any> {
       tests: autosolveTests,
       overall_status: autosolveTests.some((t) => t.status === 'pass') ? 'partial' : 'unavailable',
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       status: 'error',
       error: error.message,
@@ -366,7 +366,7 @@ async function testAutosolveSystem(): Promise<any> {
 }
 
 // Quick health check
-async function quickHealthCheck() {
+async function quickHealthCheck(): Promise<any> {
   const startTime = Date.now();
 
   const healthChecks = await Promise.allSettled([
@@ -400,7 +400,7 @@ async function quickHealthCheck() {
 }
 
 // Test autosolve pipeline
-async function testAutosolvePipeline() {
+async function testAutosolvePipeline(): Promise<any> {
   try {
     const pipelineTest = await fetch('http://localhost:5173/api/context7-autosolve', {
       method: 'POST',
@@ -417,7 +417,7 @@ async function testAutosolvePipeline() {
       response_code: pipelineTest.status,
       timestamp: new Date().toISOString(),
     });
-  } catch (error) {
+  } catch (error: any) {
     return json(
       {
         success: false,

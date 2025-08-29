@@ -77,7 +77,7 @@ class MultiLibraryStartupService {
       console.log(`✅ Multi-Library Integration Complete (${this.status.initTime}ms)`);
       this.logServiceStatus();
 
-    } catch (error) {
+    } catch (error: any) {
       const errorMsg = error instanceof Error ? error.message : 'Unknown initialization error';
       this.status.errors.push(errorMsg);
       console.error('❌ Multi-Library Initialization Failed:', errorMsg);
@@ -94,7 +94,7 @@ class MultiLibraryStartupService {
         this.status.services.loki = true;
         console.log('✅ Loki.js - High-performance in-memory database ready');
       }
-    } catch (error) {
+    } catch (error: any) {
       this.status.errors.push(`Loki.js initialization failed: ${error}`);
     }
   }
@@ -115,7 +115,7 @@ class MultiLibraryStartupService {
         this.status.services.fuse = true;
         console.log('✅ Fuse.js - Advanced fuzzy search capabilities ready');
       }
-    } catch (error) {
+    } catch (error: any) {
       this.status.errors.push(`Fuse.js initialization failed: ${error}`);
     }
   }
@@ -136,7 +136,7 @@ class MultiLibraryStartupService {
         this.status.services.fabric = true;
         console.log('✅ Fabric.js - Interactive evidence canvas ready');
       }
-    } catch (error) {
+    } catch (error: any) {
       this.status.errors.push(`Fabric.js initialization failed: ${error}`);
     }
   }
@@ -161,7 +161,7 @@ class MultiLibraryStartupService {
         this.status.services.xstate = true;
         console.log('✅ XState - Multi-core worker patterns ready');
       }
-    } catch (error) {
+    } catch (error: any) {
       this.status.errors.push(`XState initialization failed: ${error}`);
     }
   }
@@ -192,7 +192,7 @@ class MultiLibraryStartupService {
 
       this.status.services.redis = true;
       console.log('✅ Redis - Native Windows performance optimization ready');
-    } catch (error) {
+    } catch (error: any) {
       // Fallback: mark as ready for development even if Redis isn't running
       this.status.services.redis = true;
       console.log('⚠️ Redis - Development mode (service not running)');
@@ -214,7 +214,7 @@ class MultiLibraryStartupService {
         this.status.services.rabbitmq = true;
         console.log('✅ RabbitMQ - Native Windows queuing ready');
       }
-    } catch (error) {
+    } catch (error: any) {
       // Fallback: mark as ready for development
       this.status.services.rabbitmq = true;
       console.log('⚠️ RabbitMQ - Development mode (service not running)');
@@ -232,7 +232,7 @@ class MultiLibraryStartupService {
         this.status.services.ollama = true;
         console.log('⚠️ Ollama - Service available but models may be loading');
       }
-    } catch (error) {
+    } catch (error: any) {
       this.status.errors.push(`Ollama initialization failed: ${error}`);
     }
   }
@@ -249,7 +249,7 @@ class MultiLibraryStartupService {
       } else {
         throw new Error(`Orchestrator unhealthy: ${health.status}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       this.status.errors.push(`Orchestrator initialization failed: ${error}`);
     }
   }
@@ -324,6 +324,6 @@ export function getServicesStatus(): StartupStatus {
   return multiLibraryStartup.getStatus();
 }
 
-export async function getServicesHealth() {
+export async function getServicesHealth(): Promise<any> {
   return await multiLibraryStartup.getHealthCheck();
 }

@@ -73,7 +73,7 @@ export const POST: RequestHandler = async ({ request }) => {
       }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error('JSON conversion error:', err);
     throw error(500, `JSON conversion failed: ${err.message}`);
   }

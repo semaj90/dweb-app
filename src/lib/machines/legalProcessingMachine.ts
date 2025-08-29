@@ -50,17 +50,17 @@ export interface LegalProcessingContext {
 }
 
 // Define service response interfaces
-interface PreprocessResponse {
+export interface PreprocessResponse {
   suggestions: Array<string>;
 }
 
-interface ProcessResponse {
+export interface ProcessResponse {
   results: Array<any>;
   synthesizedAnswer: string;
   recommendations: Array<any>;
 }
 
-interface HistoryResponse {
+export interface HistoryResponse {
   history: Array<any>;
 }
 
@@ -126,13 +126,13 @@ export const legalProcessingMachine = createMachine({
 }, {
   actions: {
     setQuery: assign({
-      query: (_, event: unknown) => {
+      query: (_, event: any) => {
         if (event?.type === 'SUBMIT_QUERY') {
           return event.query;
         }
         return '';
       },
-      userId: (_, event: unknown) => {
+      userId: (_, event: any) => {
         if (event?.type === 'SUBMIT_QUERY') {
           return event.userId || null;
         }
@@ -140,27 +140,27 @@ export const legalProcessingMachine = createMachine({
       }
     }),
     setDidYouMean: assign({
-      didYouMean: (_, event: unknown) => {
+      didYouMean: (_, event: any) => {
         const data = event.data as PreprocessResponse;
         return data.suggestions || [];
       }
     }),
     setResults: assign({
-      results: (_, event: unknown) => {
+      results: (_, event: any) => {
         const data = event.data as ProcessResponse;
         return data.results || [];
       },
-      synthesizedAnswer: (_, event: unknown) => {
+      synthesizedAnswer: (_, event: any) => {
         const data = event.data as ProcessResponse;
         return data.synthesizedAnswer || '';
       },
-      recommendations: (_, event: unknown) => {
+      recommendations: (_, event: any) => {
         const data = event.data as ProcessResponse;
         return data.recommendations || [];
       }
     }),
     setError: assign({
-      errors: (ctx: unknown, event: unknown) => [...(ctx.errors || []), event.data]
+      errors: (ctx: any, event: any) => [...(ctx.errors || []), event.data]
     }),
     clearErrors: assign({ errors: [] }),
     resetContext: assign({
@@ -174,7 +174,7 @@ export const legalProcessingMachine = createMachine({
       synthesizedAnswer: ''
     }),
     updateQuery: assign({
-      query: (_, event: unknown) => {
+      query: (_, event: any) => {
         if (event?.type === 'REFINE') {
           return event.query;
         }
@@ -184,7 +184,7 @@ export const legalProcessingMachine = createMachine({
     setHistory: assign({
       // Handle history data if needed
     }),
-    recordActivity: (args: unknown) => {
+    recordActivity: (args: any) => {
       const context = args.context as LegalProcessingContext;
       if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
         navigator.serviceWorker.ready.then(reg =>

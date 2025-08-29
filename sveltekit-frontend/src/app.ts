@@ -6,7 +6,7 @@ import './app.css';
 // Initialize global error handling for better debugging
 if (typeof window !== 'undefined') {
   // Enhanced error handling for development
-  window.addEventListener('error', (event) => {
+  window.addEventListener('error', (event: any) => {
     console.error('Global error:', event.error);
     
     // Log component-related errors with more context
@@ -22,7 +22,7 @@ if (typeof window !== 'undefined') {
   });
 
   // Handle unhandled promise rejections
-  window.addEventListener('unhandledrejection', (event) => {
+  window.addEventListener('unhandledrejection', (event: any) => {
     console.error('Unhandled promise rejection:', event.reason);
     
     // Prevent default browser behavior for known recoverable errors
@@ -47,7 +47,7 @@ if (typeof window !== 'undefined') {
         });
       });
       observer.observe({ entryTypes: ['navigation'] });
-    } catch (err) {
+    } catch (err: any) {
       console.warn('Performance monitoring not available:', err);
     }
   }

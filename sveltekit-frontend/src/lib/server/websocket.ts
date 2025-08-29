@@ -63,7 +63,7 @@ export function setupWebSocketServer(server: any) {
       try {
         const message = JSON.parse(data.toString());
         handleWebSocketMessage(caseId, message, ws, user);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Invalid WebSocket message:", error);
       }
     });
@@ -189,7 +189,7 @@ function broadcastToCase(
     if (ws !== excludeConnection && ws.readyState === ws.OPEN) {
       try {
         ws.send(messageStr);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to send WebSocket message:", error);
         connections.delete(ws);
       }

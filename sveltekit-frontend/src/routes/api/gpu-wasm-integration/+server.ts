@@ -9,7 +9,7 @@ import { gpuServiceIntegration, GPUServiceUtils, type GPUProcessingTask, type GP
 import { llvmWasmBridge, initializeLLVMIntegration, type LLVMWASMBridge } from '$lib/wasm/llvm-wasm-bridge';
 import { flashAttention2Service, gpuErrorProcessor, type GPUErrorContext } from '$lib/services/flashattention2-rtx3060';
 
-interface IntegrationStatus {
+export interface IntegrationStatus {
   gpuService: {
     available: boolean;
     initialized: boolean;
@@ -57,7 +57,7 @@ async function initializeServices(): Promise<void> {
     ]);
     
     console.log('✅ GPU/WASM integration services initialized');
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Service initialization failed:', error);
     throw error;
   }
@@ -86,7 +86,7 @@ export const GET: RequestHandler = async ({ url }) => {
       default:
         return json({ error: 'Invalid action parameter' }, { status: 400 });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('GPU/WASM Integration API error:', error);
     return json({
       error: 'Service unavailable',
@@ -127,7 +127,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
       default:
         return json({ error: 'Invalid action parameter' }, { status: 400 });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('GPU/WASM Integration API error:', error);
     return json({
       error: 'Processing failed',
@@ -180,7 +180,7 @@ async function getIntegrationStatus(): Promise<IntegrationStatus> {
         integrationScore
       }
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Failed to get integration status:', error);
     throw error;
   }
@@ -205,7 +205,7 @@ function calculateIntegrationScore(metrics: {
   return score / maxScore;
 }
 
-async function getHealthCheck() {
+async function getHealthCheck(): Promise<any> {
   const status = await getIntegrationStatus();
   
   return {
@@ -222,7 +222,7 @@ async function getHealthCheck() {
   };
 }
 
-async function getModuleInformation() {
+async function getModuleInformation(): Promise<any> {
   const wasmModules = llvmWasmBridge.getModuleStats();
   const gpuStatus = await gpuServiceIntegration.getStatus();
   
@@ -243,7 +243,7 @@ async function getModuleInformation() {
   };
 }
 
-async function getPerformanceMetrics() {
+async function getPerformanceMetrics(): Promise<any> {
   const status = await getIntegrationStatus();
   
   return {
@@ -272,7 +272,7 @@ async function getPerformanceMetrics() {
   };
 }
 
-async function handleProcessing(body: any) {
+async function handleProcessing(body: any): Promise<any> {
   const { type, data, priority = 'medium', metadata = {} } = body;
   
   if (!type || !data) {
@@ -299,7 +299,7 @@ async function handleProcessing(body: any) {
   });
 }
 
-async function handleLegalAnalysis(body: any) {
+async function handleLegalAnalysis(body: any): Promise<any> {
   const { text, context = [], analysisType = 'legal' } = body;
   
   if (!text || typeof text !== 'string') {
@@ -351,7 +351,7 @@ async function handleLegalAnalysis(body: any) {
     };
     
     return json(response);
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: 'Legal analysis failed',
@@ -360,7 +360,7 @@ async function handleLegalAnalysis(body: any) {
   }
 }
 
-async function handleEmbeddingGeneration(body: any) {
+async function handleEmbeddingGeneration(body: any): Promise<any> {
   const { texts, dimensions = 384 } = body;
   
   if (!texts || !Array.isArray(texts)) {
@@ -405,7 +405,7 @@ async function handleEmbeddingGeneration(body: any) {
       source,
       timestamp: new Date().toISOString()
     });
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: 'Embedding generation failed',
@@ -414,7 +414,7 @@ async function handleEmbeddingGeneration(body: any) {
   }
 }
 
-async function handleErrorProcessing(body: any) {
+async function handleErrorProcessing(body: any): Promise<any> {
   const { errorContext } = body;
   
   if (!errorContext) {
@@ -430,7 +430,7 @@ async function handleErrorProcessing(body: any) {
       result,
       timestamp: new Date().toISOString()
     });
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: 'Error processing failed',
@@ -439,7 +439,7 @@ async function handleErrorProcessing(body: any) {
   }
 }
 
-async function handleWASMCompilation(body: any) {
+async function handleWASMCompilation(body: any): Promise<any> {
   const { moduleId, sources, options = {} } = body;
   
   if (!moduleId || !sources) {
@@ -473,7 +473,7 @@ async function handleWASMCompilation(body: any) {
       },
       timestamp: new Date().toISOString()
     });
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: 'WASM compilation failed',
@@ -482,7 +482,7 @@ async function handleWASMCompilation(body: any) {
   }
 }
 
-async function handleIntegrationTest(body: any) {
+async function handleIntegrationTest(body: any): Promise<any> {
   const { testType = 'comprehensive' } = body;
   
   try {
@@ -496,7 +496,7 @@ async function handleIntegrationTest(body: any) {
     try {
       const gpuTest = await GPUServiceUtils.testIntegration();
       results.tests.gpuService = gpuTest;
-    } catch (error) {
+    } catch (error: any) {
       results.tests.gpuService = {
         success: false,
         details: error instanceof Error ? error.message : String(error)
@@ -513,7 +513,7 @@ async function handleIntegrationTest(body: any) {
         success: true,
         details: `Processed ${testText.length} characters in ${wasmTest.processingTime.toFixed(2)}ms`
       };
-    } catch (error) {
+    } catch (error: any) {
       results.tests.wasmBridge = {
         success: false,
         details: error instanceof Error ? error.message : String(error)
@@ -527,7 +527,7 @@ async function handleIntegrationTest(body: any) {
         success: flashStatus.initialized,
         details: `GPU enabled: ${flashStatus.gpuEnabled}, Memory optimization: ${flashStatus.memoryOptimization}`
       };
-    } catch (error) {
+    } catch (error: any) {
       results.tests.flashAttention = {
         success: false,
         details: error instanceof Error ? error.message : String(error)
@@ -544,7 +544,7 @@ async function handleIntegrationTest(body: any) {
     };
     
     return json(results);
-  } catch (error) {
+  } catch (error: any) {
     return json({
       success: false,
       error: 'Integration test failed',

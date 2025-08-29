@@ -8,7 +8,7 @@ const nodeCrypto = () => {
   try { return require("crypto"); } catch { return null; }
 };
 
-async function toArrayBuffer(buf: Buffer | Uint8Array | ArrayBuffer) {
+async function toArrayBuffer(buf: Buffer | Uint8Array | ArrayBuffer): Promise<any> {
   if (buf instanceof ArrayBuffer) return buf;
   if (buf instanceof Uint8Array) return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
   return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);

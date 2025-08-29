@@ -1,5 +1,5 @@
 import loki from 'lokijs';
-import Fuse from 'fuse.js';
+import Fuse from 'fuse';
 
 // Initialize LokiJS database
 const db = new loki('legal_ai_cache.db');
@@ -242,7 +242,7 @@ export const persistCache = {
       if (saved) {
         try {
           db.loadJSON(saved);
-        } catch (error) {
+        } catch (error: any) {
           console.warn('Failed to load cache from localStorage:', error);
         }
       }

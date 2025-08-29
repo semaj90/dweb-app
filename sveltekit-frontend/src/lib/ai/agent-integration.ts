@@ -26,10 +26,10 @@ export async function triggerAgentActions(
 // TODO: Add functions to resolve library IDs, create relations, and orchestrate multi-agent workflows using Context7 APIs.
 // Example:
 // import { mcp_memory_create_relations, mcp_context7_resolve-library-id } from '#context7';
-// export async function wireUpContext7Agents(...) { ... }// Phase 10: Agent Integration (CrewAI/Autogen) - stub
+// export async function wireUpContext7Agents(...): Promise<any> { ... }// Phase 10: Agent Integration (CrewAI/Autogen) - stub
 // TODO: Replace with real agent orchestration after test
 
-export async function triggerAgentAction(auditResult: any) {
+export async function triggerAgentAction(auditResult: any): Promise<any> {
   // Example: Use Context7 helpers to relate audit result to agent action
   const libId = await resolveLibraryId(auditResult.step);
   // Dynamic import to avoid circular dependencies
