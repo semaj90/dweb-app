@@ -1,10 +1,11 @@
+import type { RequestHandler } from './$types';
+
 /**
  * GPU-Accelerated Orchestration Deployment API
  * Deploys the complete orchestration system with model enforcement
  */
 
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from '@sveltejs/kit';
 import { spawn } from 'child_process';
 import { existsSync } from 'fs';
 import { readFile, writeFile } from 'fs/promises';

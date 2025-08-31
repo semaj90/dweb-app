@@ -28,7 +28,7 @@
     onOpenChange,
     variant = 'default',
     size = 'default',
-    class: className,
+    class: class,
     title,
     description,
     children,
@@ -76,7 +76,7 @@
 
   // Computed classes
   let contentClass = $derived(
-    cn(contentVariants({ variant, size }), className)
+    cn(contentVariants({ variant, size }), class)
   );
 </script>
 

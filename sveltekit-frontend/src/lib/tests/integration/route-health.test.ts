@@ -84,7 +84,7 @@ describe('API Route Health Tests', () => {
           delete: vi.fn()
         },
         fetch: global.fetch
-      } as unknown as RequestEvent;
+      } as any as RequestEvent;
 
       const response = await GET(mockEvent);
       const data = await response.json();
@@ -115,7 +115,7 @@ describe('API Route Health Tests', () => {
           delete: vi.fn()
         },
         fetch: global.fetch
-      } as unknown as RequestEvent;
+      } as any as RequestEvent;
 
       const response = await GET(mockEvent);
       const data = await response.json();
@@ -141,7 +141,7 @@ describe('API Route Health Tests', () => {
           delete: vi.fn()
         },
         fetch: global.fetch
-      } as unknown as RequestEvent;
+      } as any as RequestEvent;
 
       const response = await GET(mockEvent);
       const data = await response.json();
@@ -166,7 +166,7 @@ describe('API Route Health Tests', () => {
           delete: vi.fn()
         },
         fetch: global.fetch
-      } as unknown as RequestEvent;
+      } as any as RequestEvent;
 
       const response = await GET(mockEvent);
       const data = await response.json();
@@ -191,7 +191,7 @@ describe('API Route Health Tests', () => {
           delete: vi.fn()
         },
         fetch: global.fetch
-      } as unknown as RequestEvent;
+      } as any as RequestEvent;
 
       const response = await GET(mockEvent);
       const data = await response.json();
@@ -214,7 +214,7 @@ describe('API Route Health Tests', () => {
           delete: vi.fn()
         },
         fetch: global.fetch
-      } as unknown as RequestEvent;
+      } as any as RequestEvent;
 
       const response = await GET(mockEvent);
       const data = await response.json();
@@ -260,7 +260,7 @@ describe('API Route Health Tests', () => {
           delete: vi.fn()
         },
         fetch: global.fetch
-      } as unknown as RequestEvent;
+      } as any as RequestEvent;
 
       const response = await POST(mockEvent);
       expect(response.status).toBe(200);
@@ -285,7 +285,7 @@ describe('API Route Health Tests', () => {
           delete: vi.fn()
         },
         fetch: global.fetch
-      } as unknown as RequestEvent;
+      } as any as RequestEvent;
 
       const response = await POST(mockEvent);
       expect(response.status).toBe(400);
@@ -326,7 +326,7 @@ describe('API Route Health Tests', () => {
           delete: vi.fn()
         },
         fetch: global.fetch
-      } as unknown as RequestEvent;
+      } as any as RequestEvent;
 
       const response = await POST(mockEvent);
       const data = await response.json();
@@ -357,7 +357,7 @@ describe('API Route Health Tests', () => {
           delete: vi.fn()
         },
         fetch: global.fetch
-      } as unknown as RequestEvent;
+      } as any as RequestEvent;
 
       const response = await POST(mockEvent);
       expect(response.status).toBe(500);
@@ -399,7 +399,7 @@ describe('API Route Health Tests', () => {
           delete: vi.fn()
         },
         fetch: global.fetch
-      } as unknown as RequestEvent;
+      } as any as RequestEvent;
 
       const response = await POST(mockEvent);
       const data = await response.json();
@@ -430,7 +430,7 @@ describe('API Route Health Tests', () => {
           delete: vi.fn()
         },
         fetch: global.fetch
-      } as unknown as RequestEvent;
+      } as any as RequestEvent;
 
       const response = await POST(mockEvent);
       expect(response.status).toBe(400);
@@ -454,7 +454,7 @@ describe('API Route Health Tests', () => {
           delete: vi.fn()
         },
         fetch: global.fetch
-      } as unknown as RequestEvent;
+      } as any as RequestEvent;
 
       const response = await GET(mockEvent);
       const endTime = Date.now();
@@ -484,7 +484,7 @@ describe('API Route Health Tests', () => {
           delete: vi.fn()
         },
         fetch: global.fetch
-      } as unknown as RequestEvent;
+      } as any as RequestEvent;
 
       const response = await POST(mockEvent);
       expect(response.status).toBe(400);
@@ -508,7 +508,7 @@ describe('API Route Health Tests', () => {
           delete: vi.fn()
         },
         fetch: global.fetch
-      } as unknown as RequestEvent;
+      } as any as RequestEvent;
 
       const response = await POST(mockEvent);
       expect(response.status).toBe(400);

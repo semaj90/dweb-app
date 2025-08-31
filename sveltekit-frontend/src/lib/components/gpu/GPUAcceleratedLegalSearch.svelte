@@ -3,7 +3,7 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Button } from '$lib/components/ui/button';
+	import Button from '$lib/components/ui/Button.svelte';
 	
 	// Svelte 5 runes for reactive state
 	let query = $state('');

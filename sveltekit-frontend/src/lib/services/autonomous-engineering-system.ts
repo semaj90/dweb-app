@@ -636,7 +636,7 @@ Please provide:
     }
   }
 
-  private async semanticSearchForIssues(query: string): Promise<unknown[]> {
+  private async semanticSearchForIssues(query: string): Promise<any[]> {
     if (this.semanticSearchCache.has(query)) {
       return this.semanticSearchCache.get(query);
     }
@@ -661,7 +661,7 @@ Please provide:
     }
   }
 
-  private async semanticSearchForBestPractices(query: string): Promise<unknown[]> {
+  private async semanticSearchForBestPractices(query: string): Promise<any[]> {
     try {
       const response = await fetch(
         `${this.mcpEndpoint}/api/semantic/best-practices`,
@@ -793,7 +793,7 @@ Please provide:
 
   private async waitForConversationCompletion(
     conversationId: string,
-  ): Promise<unknown[]> {
+  ): Promise<any[]> {
     // Wait for AutoGen conversation completion
     let attempts = 0;
     const maxAttempts = 24; // 2 minutes with 5-second intervals

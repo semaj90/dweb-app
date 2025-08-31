@@ -1,9 +1,10 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Feedback Loop API Endpoint
  * Provides rating collection, user pattern analysis, and training data management
  */
 
-import { json, type RequestHandler } from '@sveltejs/kit';
 import { feedbackLoopService } from '$lib/services/feedback-loop-service';
 
 export const POST: RequestHandler = async ({ request, url }) => {

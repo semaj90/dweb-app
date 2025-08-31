@@ -33,8 +33,8 @@
 <div
   class="space-y-4"
   role="tooltip"
-  onmouseenter={handleMouseEnter}
-  onmouseleave={handleMouseLeave}
+  on:mouseenter={handleMouseEnter}
+  on:mouseleave={handleMouseLeave}
 >
   {@render children?.()}
   {#if showTooltip && content}

@@ -235,7 +235,7 @@ https://svelte.dev/e/expected_token -->
           type="file"
           accept=".pdf"
           multiple
-          onchange={handleFileUpload}
+          change={handleFileUpload}
           class="hidden"
           id="pdf-upload"
         />
@@ -400,7 +400,7 @@ https://svelte.dev/e/expected_token -->
       <p class="text-gray-300 mb-4">Generate comprehensive Playwright tests for this processing pipeline</p>
 
       <button
-        onclick={generatePlaywrightTests}
+        click={generatePlaywrightTests}
         disabled={!ocrResults.length || isProcessing}
         class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg transition-colors"
       >
@@ -417,7 +417,7 @@ https://svelte.dev/e/expected_token -->
       {/if}
 
       <button
-        onclick={async () => {
+        click={async () => {
           if (!jsonOutput) return;
           if (aiReady === false) return;
 

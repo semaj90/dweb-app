@@ -1,6 +1,7 @@
-import type { RequestHandler } from '@sveltejs/kit';
 
 import { json } from "@sveltejs/kit";
+import type { RequestHandler } from './$types';
+
 
 const REPORT_TEMPLATES = {
   "case-summary": {

@@ -1,5 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+
 
 // Import all our AI suggestion services
 import { testOllamaIntegration } from '$lib/services/ollama-suggestions-service.js';

@@ -1,8 +1,9 @@
-import type { RequestHandler } from '@sveltejs/kit';
 
 import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db/index";
 import { eq, and } from "drizzle-orm";
+import type { RequestHandler } from './$types';
+
 
 export const POST: RequestHandler = async ({ params, request, locals }) => {
   if (!locals.user) {

@@ -95,7 +95,7 @@
 			<!-- Interactive Demo -->
 			<Card class="p-6 space-y-4 col-span-full lg:col-span-2">
 				<h3 class="text-xl font-semibold">Interactive Demo</h3>
-				<form onsubmit={preventDefault(handleSubmit)} class="space-y-4">
+				<form submit={preventDefault(handleSubmit)} class="space-y-4">
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<Input
 							bind:value={name}

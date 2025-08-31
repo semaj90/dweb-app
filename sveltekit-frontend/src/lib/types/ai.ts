@@ -31,3 +31,23 @@ export interface SemanticEntity {
   end?: number;
   metadata?: Record<string, unknown>;
 }
+
+// Context7 integration types
+export interface OrchestrationOptions {
+  enabled: boolean;
+  priority: 'low' | 'medium' | 'high';
+  timeout?: number;
+  retries?: number;
+}
+
+export interface MCPToolRequest {
+  tool: string;
+  args: Record<string, unknown>;
+  context?: Record<string, unknown>;
+}
+
+export interface EnhancedRAGEngine {
+  query: (prompt: string, options?: Record<string, unknown>) => Promise<AIResponse>;
+  search: (query: string) => Promise<VectorSearchResult[]>;
+  analyze: (content: string) => Promise<SemanticEntity[]>;
+}

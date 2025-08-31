@@ -3,6 +3,8 @@ import { canvasLayouts } from "$lib/server/db/schema-canvas";
 import type { RequestEvent } from "@sveltejs/kit";
 import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db/index";
+import type { RequestHandler } from './$types';
+
 
 export async function GET({ url, locals }: RequestEvent): Promise<any> {
   try {

@@ -1,5 +1,6 @@
+import type { RequestHandler } from './$types';
+
 // Friend-of-a-Friend (FOAF) API endpoint - SSR compatible
-import type { RequestHandler } from '@sveltejs/kit';
 import { json, error } from '@sveltejs/kit';
 import { db } from '$lib/server/db/index.js';
 import { users, cases, evidence } from '$lib/server/db/schema-unified.js';

@@ -3,7 +3,7 @@
   Using Bits UI v2 + Superforms + XState + MCP GPU Orchestrator
 -->
 <script lang="ts">
-  import { $props, $state } from 'svelte';
+  // runtime helpers ($props, $state, $derived, $effect) are available in runes mode — do not import them
   import { enhance } from '$app/forms';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
@@ -21,7 +21,7 @@
   import { authMachine } from '$lib/machines/auth-machine';
   import { mcpGPUOrchestrator } from '$lib/services/mcp-gpu-orchestrator';
   import { z } from 'zod';
-  
+
   // Form schema
   const loginSchema = z.object({
     email: z.string().email('Please enter a valid email address'),
@@ -37,11 +37,11 @@
     enableGPUAuth?: boolean;
   }
 
-  let { 
-    data, 
-    redirectTo = '/dashboard', 
+  let {
+    data,
+    redirectTo = '/dashboard',
     showRegistration = true,
-    enableGPUAuth = true 
+    enableGPUAuth = true
   }: Props = $props();
 
   // Form state
@@ -71,7 +71,7 @@
       if (enableGPUAuth) {
         try {
           gpuAuthStatus = 'processing';
-          
+
           // Use MCP GPU orchestrator for enhanced security analysis
           const securityCheck = await mcpGPUOrchestrator.dispatchGPUTask({
             id: `auth_${Date.now()}`,
@@ -127,10 +127,10 @@
     },
     onResult: ({ result }) => {
       isLoading = false;
-      
+
       if (result.type === 'success') {
         const data = result.data as any;
-        
+
         if (data?.requiresTwoFactor) {
           showTwoFactor = true;
           successMessage = 'Please enter your two-factor authentication code.';
@@ -173,7 +173,7 @@
       ctx.font = '14px Arial';
       ctx.fillText('Device fingerprint', 2, 2);
     }
-    
+
     const fingerprint = {
       userAgent: navigator.userAgent,
       language: navigator.language,
@@ -182,14 +182,14 @@
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       canvas: canvas.toDataURL()
     };
-    
+
     return btoa(JSON.stringify(fingerprint));
   }
 
   // Handle social login
   async function handleSocialLogin(provider: 'google' | 'github') {
     isLoading = true;
-    
+
     try {
       // Redirect to OAuth provider
       window.location.href = `/auth/oauth/${provider}`;
@@ -290,7 +290,7 @@
             <button
               type="button"
               class="absolute inset-y-0 right-0 pr-3 flex items-center"
-              on:click={togglePasswordVisibility}
+              click={togglePasswordVisibility}
               disabled={isLoading}
             >
               {#if showPassword}
@@ -336,9 +336,9 @@
       </div>
 
       <!-- Submit Button -->
-      <Button 
-        type="submit" 
-        class="w-full" 
+      <Button
+        type="submit"
+        class="w-full"
         disabled={isLoading || $submitting}
       >
         {#if isLoading || $submitting}
@@ -351,8 +351,8 @@
 
       <!-- Forgot Password Link -->
       <div class="text-center">
-        <a 
-          href="/auth/forgot-password" 
+        <a
+          href="/auth/forgot-password"
           class="text-sm text-primary hover:underline"
           tabindex={isLoading ? -1 : 0}
         >
@@ -373,8 +373,8 @@
 
     <!-- Social Login Buttons -->
     <div class="grid grid-cols-2 gap-4 mt-6">
-      <Button 
-        variant="outline" 
+      <Button
+        variant="outline"
         on:click={() => handleSocialLogin('google')}
         disabled={isLoading}
       >
@@ -386,9 +386,9 @@
         </svg>
         Google
       </Button>
-      
-      <Button 
-        variant="outline" 
+
+      <Button
+        variant="outline"
         on:click={() => handleSocialLogin('github')}
         disabled={isLoading}
       >
@@ -404,8 +404,8 @@
       <div class="mt-6 text-center">
         <p class="text-sm text-muted-foreground">
           Don't have an account?
-          <a 
-            href="/auth/register" 
+          <a
+            href="/auth/register"
             class="text-primary hover:underline font-medium"
             tabindex={isLoading ? -1 : 0}
           >

@@ -1,7 +1,7 @@
 import { getUserById } from './db/queries';
 
 import type { RequestEvent } from "@sveltejs/kit";
-import { signJWT, verifyJWT } from './authUtils';
+import { signJWT, verifyJWT, type JWTPayload } from './authUtils';
 
 // In-memory session store (for development)
 const sessions = new Map<string, Session>();
@@ -23,7 +23,7 @@ export async function validateSessionToken(
 ): Promise<{ session: Session | null; user: User | null }> {
   try {
     // Try JWT token validation
-    const payload = verifyJWT(token);
+    const payload = verifyJWT(token) as JWTPayload | null;
     if (payload && payload.userId) {
       const user = await getUserById(payload.userId);
       if (user) {

@@ -6,6 +6,8 @@ import { chatMessages, chatRecommendations } from '$lib/server/db/schema-unified
 import { generateEnhancedEmbedding } from '$lib/server/ai/embeddings-enhanced.js';
 import { eq } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
+import type { RequestHandler } from './$types';
+
 
 // Import our new AI suggestion services
 import { generateOllamaSuggestions, type OllamaSuggestion } from '$lib/services/ollama-suggestions-service.js';

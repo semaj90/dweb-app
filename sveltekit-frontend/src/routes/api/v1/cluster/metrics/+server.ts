@@ -1,10 +1,10 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Cluster Metrics API
  * Comprehensive metrics for all services, protocols, and Context7 integration
  */
 
-import { type RequestHandler,  json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 import { productionAPIClient } from '$lib/../../../../lib/api/production-client.js';
 import { context7OrchestrationService } from '$lib/../../../../lib/services/context7-orchestration-integration.js';
 import { PROTOCOL_TIERS } from '$lib/../../../../lib/services/production-service-registry.js';

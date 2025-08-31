@@ -1,6 +1,7 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
 import { librarySyncService } from "$lib/services/library-sync-service";
+import type { RequestHandler } from './$types';
+
 
 // GET /api/agent-logs - Get recent agent logs
 export const GET: RequestHandler = async ({ url }) => {

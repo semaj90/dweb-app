@@ -16,7 +16,7 @@
 
   const classes = $derived([
     'nier-card-title',
-    className
+    class
   ].filter(Boolean).join(' '));
 </script>
 

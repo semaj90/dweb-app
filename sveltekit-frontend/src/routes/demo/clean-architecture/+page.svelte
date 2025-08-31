@@ -456,7 +456,7 @@
         <h2 class="text-xl font-semibold text-gray-900">Cases</h2>
         <button
           class="btn btn-primary px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          onclick={() => showCreateForm = true}
+          click={() => showCreateForm = true}
           disabled={isLoading}
         >
           Create Case
@@ -477,7 +477,7 @@
             <div
               class="case-card p-4 border border-gray-200 rounded-lg hover:border-blue-300 cursor-pointer transition-colors"
               class:selected={selectedCase?.id === caseItem.id}
-              onclick={() => loadCase(caseItem.id)}
+              click={() => loadCase(caseItem.id)}
             >
               <div class="flex justify-between items-start mb-2">
                 <h3 class="font-medium text-gray-900">{caseItem.title}</h3>
@@ -532,14 +532,14 @@
             <div class="flex space-x-2">
               <button
                 class="btn btn-search px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
-                onclick={() => { showSearchModal = true; loadSearchHistory(); }}
+                click={() => { showSearchModal = true; loadSearchHistory(); }}
                 disabled={isLoading}
               >
                 Search Evidence
               </button>
               <button
                 class="btn btn-secondary px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-                onclick={() => showUploadModal = true}
+                click={() => showUploadModal = true}
                 disabled={isLoading}
               >
                 Upload Evidence
@@ -624,7 +624,7 @@
     <div class="modal-content bg-white rounded-lg p-6 w-full max-w-md">
       <h2 class="text-xl font-semibold mb-4">Create New Case</h2>
       
-      <form onsubmit={async (e) => { e.preventDefault(); await createCase(); }}>
+      <form submit={async (e) => { e.preventDefault(); await createCase(); }}>
         <div class="form-group mb-4">
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Case Title *
@@ -685,7 +685,7 @@
         <div class="flex justify-end space-x-3">
           <button
             type="button"
-            onclick={() => showCreateForm = false}
+            click={() => showCreateForm = false}
             class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
             disabled={isLoading}
           >
@@ -710,14 +710,14 @@
     <div class="modal-content bg-white rounded-lg p-6 w-full max-w-md">
       <h2 class="text-xl font-semibold mb-4">Upload Evidence</h2>
       
-      <form onsubmit={async (e) => { e.preventDefault(); await handleFileUpload(); }}>
+      <form submit={async (e) => { e.preventDefault(); await handleFileUpload(); }}>
         <div class="form-group mb-4">
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Select File *
           </label>
           <input
             type="file"
-            onchange={handleFileSelect}
+            change={handleFileSelect}
             required
             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.mp4,.avi,.zip"
@@ -750,7 +750,7 @@
         <div class="flex justify-end space-x-3">
           <button
             type="button"
-            onclick={() => { showUploadModal = false; uploadFile = null; uploadProgress = 0; }}
+            click={() => { showUploadModal = false; uploadFile = null; uploadProgress = 0; }}
             class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
             disabled={isLoading}
           >
@@ -776,7 +776,7 @@
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-semibold">Search Evidence - {selectedCase?.title}</h2>
         <button 
-          onclick={() => { showSearchModal = false; clearSearch(); }}
+          click={() => { showSearchModal = false; clearSearch(); }}
           class="text-gray-500 hover:text-black text-2xl"
         >
           &times;
@@ -784,7 +784,7 @@
       </div>
 
       <!-- Search Form -->
-      <form onsubmit={async (e) => { e.preventDefault(); await performSearch(); }}>
+      <form submit={async (e) => { e.preventDefault(); await performSearch(); }}>
         <div class="flex gap-4 mb-6">
           <div class="flex-1">
             <input
@@ -812,7 +812,7 @@
           {#if searchResults.length > 0}
             <button
               type="button"
-              onclick={clearSearch}
+              click={clearSearch}
               class="px-4 py-3 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200"
             >
               Clear
@@ -899,7 +899,7 @@
             {#each searchHistory.slice(0, 5) as historyItem (historyItem.timestamp)}
               <button
                 class="w-full text-left p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
-                onclick={() => { searchQuery = historyItem.query; performSearch(); }}
+                click={() => { searchQuery = historyItem.query; performSearch(); }}
               >
                 <div class="font-medium text-sm text-gray-900">{historyItem.query}</div>
                 <div class="text-xs text-gray-500 mt-1">

@@ -151,7 +151,7 @@
             enableAI={true}
             maxResults={15}
             autoSearch={true}
-            onselect={handleSearchSelect}
+            on:select={handleSearchSelect}
           />
         </CardContent>
       </Card>

@@ -125,7 +125,7 @@
               aiSuggestions={demoConfig.aiSuggestions}
               maxResults={demoConfig.maxResults}
               similarityThreshold={demoConfig.similarityThreshold}
-              className="w-full"
+              class="w-full"
               on:select={handleSearchSelect}
               on:search={handleSearchQuery}
               on:clear={handleClear}
@@ -138,7 +138,7 @@
             <div class="flex flex-wrap gap-3">
               <button
                 class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                on:click={runDemoSearch}
+                click={runDemoSearch}
               >
                 <Zap class="mr-2 h-4 w-4" />
                 Try Demo Search
@@ -150,7 +150,7 @@
                     ? 'border-green-500 text-green-700 bg-green-50 hover:bg-green-100' 
                     : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
                 }`}
-                on:click={toggleVectorSearch}
+                click={toggleVectorSearch}
               >
                 <Database class="mr-2 h-4 w-4" />
                 Vector Search: {demoConfig.enableVectorSearch ? 'ON' : 'OFF'}
@@ -162,7 +162,7 @@
                     ? 'border-purple-500 text-purple-700 bg-purple-50 hover:bg-purple-100'
                     : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
                 }`}
-                on:click={toggleAISuggestions}
+                click={toggleAISuggestions}
               >
                 <Zap class="mr-2 h-4 w-4" />
                 AI Suggestions: {demoConfig.aiSuggestions ? 'ON' : 'OFF'}
@@ -256,7 +256,7 @@
                       type="checkbox"
                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                       checked={demoConfig.categories.includes(category)}
-                      on:change={(e) => {
+                      change={(e) => {
                         if (e.target.checked) {
                           demoConfig.categories = [...demoConfig.categories, category];
                         } else {
@@ -339,7 +339,7 @@
                     ? 'bg-blue-50 text-blue-700 border border-blue-200'
                     : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
                 }`}
-                on:click={() => {
+                click={() => {
                   const searchInput = document.querySelector('input[type="text"]') as HTMLInputElement;
                   if (searchInput) {
                     searchInput.value = searchTerm;

@@ -443,4 +443,3 @@ export const caseManagementMachine = createMachine({
 
 // Export types
 export type CaseManagementState = StateFrom<typeof caseManagementMachine>;
-export type { CaseManagementContext, CaseManagementEvent };

@@ -1,8 +1,9 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Self-Prompting AI System for Prosecutors
  * Generates contextual suggestions based on case data and workflow
  */
-import { type RequestHandler,  json } from '@sveltejs/kit';
 
 export const POST: RequestHandler = async ({ request }) => {
   try {

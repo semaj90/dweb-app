@@ -12,4 +12,5 @@ export { default as SelectSeparator } from './SelectSeparator.svelte';
 export { default as Select } from './SelectRoot.svelte';
 
 // Types
-export type * from './types';
+// Type exports live in `./types` (TS-only). Removed `export type` from JS barrel to keep this file valid JS.
+

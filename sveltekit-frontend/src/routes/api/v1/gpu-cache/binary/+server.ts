@@ -1,9 +1,10 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Binary-Optimized GPU Shader Cache API
  * Combines GPU shader caching with binary encoding middleware for maximum performance
  */
 
-import { json, type RequestHandler } from '@sveltejs/kit';
 import { binaryGPUShaderCache } from '../../../../../lib/services/gpu-shader-cache-binary-extension';
 import { binaryEncoder } from '../../../../../lib/middleware/binary-encoding';
 

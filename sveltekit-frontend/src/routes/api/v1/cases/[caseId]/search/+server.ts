@@ -1,10 +1,11 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Case-specific Vector Search API - PostgreSQL pgvector + RAG Integration
  * Semantic search within case evidence using stored embeddings
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 import { db } from '$lib/server/db/client';
 import { cases, evidence, documents, chatMessages } from '$lib/db/schema';
 import { eq, and, sql, desc } from 'drizzle-orm';

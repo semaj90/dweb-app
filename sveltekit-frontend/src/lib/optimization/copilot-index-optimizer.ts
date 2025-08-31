@@ -821,5 +821,3 @@ export const copilotIndexOptimizer = new CopilotIndexOptimizer({
   compressionRatio: 0.8,
 });
 
-// Export types
-export type { OptimizationConfig, Context7Pattern };

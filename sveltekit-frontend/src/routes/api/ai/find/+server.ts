@@ -1,10 +1,11 @@
 
+import type { RequestHandler } from './$types';
+
 /**
  * AI-Powered Find API with Context7 MCP Integration
  * Advanced semantic search with LLM enhancement and memory graph updates
  */
 
-import { type RequestHandler,  json } from '@sveltejs/kit';
 import { copilotOrchestrator, generateMCPPrompt, commonMCPQueries, semanticSearch, mcpMemoryReadGraph } from "$lib/utils/mcp-helpers";
 
 // Define the types locally since they're not exported from mcp-helpers
@@ -160,7 +161,7 @@ async function performDatabaseSearch(
   type: string, 
   maxResults: number,
   confidenceThreshold: number
-): Promise<unknown[]> {
+): Promise<any[]> {
   // Mock data for testing without database connection
   const mockCases = [
     {

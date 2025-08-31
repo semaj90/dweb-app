@@ -1,8 +1,9 @@
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { db } from '$lib/server/db/index.js';
-import { cases, evidence, criminals, persons_of_interest } from '$lib/server/db/schema-postgres.js';
+import { db } from '$lib/server/db/index.ts';
+import { cases, evidence, criminals, persons_of_interest } from '$lib/server/db/schema-postgres.ts';
 import { count, eq } from 'drizzle-orm';
+import type { RequestHandler } from './$types';
+
 
 export const GET: RequestHandler = async ({ url }) => {
   try {
@@ -33,8 +34,8 @@ export const GET: RequestHandler = async ({ url }) => {
 
     const activeCases = activeCasesResult[0]?.count || 0;
     const evidenceItems = evidenceItemsResult[0]?.count || 0;
-    const personsOfInterest = personsOfInterestResult[0]?.count || 0;
-    const criminals = criminalsResult[0]?.count || 0;
+    const personsOfInterestCount = personsOfInterestResult[0]?.count || 0;
+    const criminalsCount = criminalsResult[0]?.count || 0;
 
     // Recent activity count (last 24 hours)
     const recentActivity = activeCases + evidenceItems; // Simplified calculation
@@ -42,7 +43,7 @@ export const GET: RequestHandler = async ({ url }) => {
     const stats = {
       activeCases,
       evidenceItems,
-      personsOfInterest: personsOfInterest + criminals, // Combine POI and criminals
+      personsOfInterest: personsOfInterestCount + criminalsCount, // Combine POI and criminals
       recentActivity,
       loading: false
     };

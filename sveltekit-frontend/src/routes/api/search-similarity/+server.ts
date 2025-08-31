@@ -1,7 +1,8 @@
-import { json, type RequestHandler } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { evidence } from '$lib/server/db/schema';
 import { sql } from 'drizzle-orm';
+import type { RequestHandler } from './$types';
+
 
 // Assumes pgvector extension is enabled and evidence table has a 'embedding' vector column
 async function vectorSearch(queryVector: number[], topK: number): Promise<any> {

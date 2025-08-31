@@ -137,7 +137,7 @@
 
       <div class="flex justify-center gap-4 animate-fade-in" style="animation-delay: 0.4s">
         <button
-          on:click={() => showAIAssistant = true}
+          click={() => showAIAssistant = true}
           class="nier-button-digital px-6 py-3"
         >
           <span class="mr-2">🤖</span>
@@ -193,10 +193,10 @@
         {#each sampleCases as caseData}
           <CaseCard
             case={caseData}
-            onview={handleViewCase}
-            onedit={handleEditCase}
-            onarchive={handleArchiveCase}
-            ondelete={handleDeleteCase}
+            on:view={handleViewCase}
+            on:edit={handleEditCase}
+            on:archive={handleArchiveCase}
+            on:delete={handleDeleteCase}
           />
         {/each}
       </div>
@@ -275,7 +275,7 @@
 
   <!-- Floating Action Button -->
   <button
-    on:click={() => showAIAssistant = true}
+    click={() => showAIAssistant = true}
     class="fixed bottom-6 right-6 w-14 h-14 bg-nier-gradient-digital rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-110 nier-transition animate-digital-glow"
     aria-label="Open AI Assistant"
   >

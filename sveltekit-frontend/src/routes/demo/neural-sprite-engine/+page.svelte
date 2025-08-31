@@ -470,7 +470,7 @@ https://svelte.dev/e/js_parse_error -->
               class="scenario-btn"
               class:active={selectedDemo === scenario.id}
               style="border-color: {scenario.color}"
-              on:click={() => { selectedDemo = scenario.id; resetDemo(); }}
+              click={() => { selectedDemo = scenario.id; resetDemo(); }}
             >
               <div class="scenario-name">{scenario.name}</div>
               <div class="scenario-desc">{scenario.description}</div>
@@ -499,17 +499,17 @@ https://svelte.dev/e/js_parse_error -->
         <h3>🎮 Playback Controls</h3>
         <div class="control-buttons">
           {#if !isPlaying}
-            <button class="nes-btn primary" on:click={playDemo}>
+            <button class="nes-btn primary" click={playDemo}>
               <Play size="16" />
               Play Demo
             </button>
           {:else}
-            <button class="nes-btn secondary" on:click={stopDemo}>
+            <button class="nes-btn secondary" click={stopDemo}>
               <Pause size="16" />
               Pause
             </button>
           {/if}
-          <button class="nes-btn reset" on:click={resetDemo}>
+          <button class="nes-btn reset" click={resetDemo}>
             <Square size="16" />
             Reset
           </button>

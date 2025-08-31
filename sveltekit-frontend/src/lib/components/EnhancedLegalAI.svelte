@@ -485,7 +485,7 @@
 </div>
 
 <!-- Process Results Dialog -->
-<Dialog.Root open={showProcessDialog} onopenchange={(open) => showProcessDialog = open}>
+<Dialog.Root open={showProcessDialog} on:openchange={(open) => showProcessDialog = open}>
   <Dialog.Portal>
     <Dialog.Overlay class="fixed inset-0 bg-black/50 z-40" />
     <Dialog.Content
@@ -594,7 +594,7 @@
 </Dialog.Root>
 
 <!-- Search Results Dialog -->
-<Dialog.Root open={showSearchDialog} onopenchange={(open) => showSearchDialog = open}>
+<Dialog.Root open={showSearchDialog} on:openchange={(open) => showSearchDialog = open}>
   <Dialog.Portal>
     <Dialog.Overlay class="fixed inset-0 bg-black/50 z-40" />
     <Dialog.Content

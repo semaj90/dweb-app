@@ -242,7 +242,7 @@
               <input
                 type="checkbox"
                 checked={formData.reviewed_sections.includes(criterion.id)}
-                onchange={() => toggleSectionReview(criterion.id)}
+                change={() => toggleSectionReview(criterion.id)}
                 class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
               />
             </div>

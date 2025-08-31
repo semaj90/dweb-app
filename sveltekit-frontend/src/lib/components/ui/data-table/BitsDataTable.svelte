@@ -124,7 +124,7 @@
   }
 </script>
 
-<div class={cn('legal-data-table w-full space-y-4', className)}>
+<div className={cn('legal-data-table w-full space-y-4', className)}>
   <!-- Header -->
   <div class="flex items-center justify-between">
     {#if title}
@@ -172,20 +172,20 @@
                 <input
                   type="checkbox"
                   checked={selectedRows.size === paginatedData.length && paginatedData.length > 0}
-                  onchange={toggleSelectAll}
+                  on:change={toggleSelectAll}
                   class="rounded border-yorha-border"
                 />
               </th>
             {/if}
             {#each columns as column}
               <th 
-                class={cn(
+                className={cn(
                   'px-3 py-3 text-left text-xs font-medium text-yorha-text-secondary uppercase tracking-wider font-mono',
                   column.sortable && 'cursor-pointer hover:text-yorha-text-primary',
-                  column.class
+                  column.className
                 )}
                 style={column.width ? `width: ${column.width}` : undefined}
-                on:click={() => handleSort(column)}
+                click={() => handleSort(column)}
               >
                 <div class="flex items-center gap-1">
                   {column.label}
@@ -213,23 +213,23 @@
                 onRowClick && 'cursor-pointer',
                 selectedRows.has(index) && 'bg-yorha-primary/5'
               )}
-              on:click={() => onRowClick?.(row)}
+              click={() => onRowClick?.(row)}
             >
               {#if selectable}
                 <td class="p-3">
                   <input
                     type="checkbox"
                     checked={selectedRows.has(index)}
-                    onchange={() => toggleRowSelection(index)}
+                    change={() => toggleRowSelection(index)}
                     on:click={(e) => e.stopPropagation()}
                     class="rounded border-yorha-border"
                   />
                 </td>
               {/if}
               {#each columns as column}
-                <td class={cn(
+                <td className={cn(
                   'px-3 py-3 text-sm text-yorha-text-primary font-mono whitespace-nowrap',
-                  column.class
+                  column.className
                 )}>
                   {#if column.render}
                     {@html column.render(row[column.key], row)}

@@ -142,8 +142,8 @@ https://svelte.dev/e/js_parse_error -->
     dropTargetStyle,
     dropFromOthersDisabled
   }}
-  onconsider={handleDndConsider}
-  onfinalize={handleDndFinalize}
+  on:consider={handleDndConsider}
+  on:finalize={handleDndFinalize}
   style="--column-width: {columnWidth}px; --gutter: {gutter}px;"
 >
   {#each items as item, index (item.id)}

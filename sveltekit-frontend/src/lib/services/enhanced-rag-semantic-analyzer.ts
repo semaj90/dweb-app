@@ -490,7 +490,7 @@ class EnhancedRAGSemanticAnalyzer {
   private async searchVectorDB(
     queryEmbedding: number[],
     filters?: RAGQuery['filters']
-  ): Promise<unknown[]> {
+  ): Promise<any[]> {
     try {
       const searchPayload = {
         vector: queryEmbedding,
@@ -563,7 +563,7 @@ class EnhancedRAGSemanticAnalyzer {
   /**
    * Placeholder methods for traditional keyword search and result merging
    */
-  private async searchKeywords(query: string, filters?: RAGQuery['filters']): Promise<unknown[]> {
+  private async searchKeywords(query: string, filters?: RAGQuery['filters']): Promise<any[]> {
     // Implementation would perform traditional keyword search
     return [];
   }
@@ -572,7 +572,7 @@ class EnhancedRAGSemanticAnalyzer {
     vectorResults: any[],
     keywordResults: any[],
     query: RAGQuery
-  ): Promise<unknown[]> {
+  ): Promise<any[]> {
     // Implementation would merge and rank results from different sources
     return [];
   }

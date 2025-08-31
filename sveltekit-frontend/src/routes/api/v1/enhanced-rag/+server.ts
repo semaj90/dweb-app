@@ -1,9 +1,12 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Enhanced RAG API - Direct Integration with Go Microservices
  * Provides seamless integration with Enhanced RAG Go service (port 8094)
  */
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+
+import { ensureError } from '$lib/utils/ensure-error';
 import { vectorOperations } from '$lib/server/db/vector-operations.js';
 
 const ENHANCED_RAG_CONFIG = {
@@ -177,7 +180,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
     
     // Validate request
     if (!ragRequest.query || ragRequest.query.trim().length === 0) {
-      error(400, { message: 'Query is required and cannot be empty' });
+      error(400, ensureError({ message: 'Query is required and cannot be empty' }));
     }
 
     // Prepare Enhanced RAG request
@@ -244,17 +247,17 @@ export const POST: RequestHandler = async ({ request, url }) => {
 
         } catch (vectorError) {
           console.error('Vector operations fallback also failed:', vectorError);
-          error(503, {
+          error(503, ensureError({
             message: 'Enhanced RAG service and vector fallback both unavailable',
             ragError: ragError instanceof Error ? ragError.message : 'Unknown',
             vectorError: vectorError instanceof Error ? vectorError.message : 'Unknown'
-          });
+          }));
         }
       } else {
-        error(503, {
+        error(503, ensureError({
           message: 'Enhanced RAG service unavailable',
           error: ragError instanceof Error ? ragError.message : 'Unknown error'
-        });
+        }));
       }
     }
 
@@ -284,10 +287,10 @@ export const POST: RequestHandler = async ({ request, url }) => {
 
   } catch (err: any) {
     console.error('Enhanced RAG operation failed:', err);
-    error(500, {
+    error(500, ensureError({
       message: 'Enhanced RAG operation failed',
       error: err instanceof Error ? err.message : 'Unknown error'
-    });
+    }));
   }
 };
 
@@ -301,7 +304,7 @@ export const PUT: RequestHandler = async ({ request }) => {
     const metadata = formData.get('metadata') ? JSON.parse(formData.get('metadata') as string) : {};
 
     if (!file) {
-      error(400, { message: 'File is required' });
+      error(400, ensureError({ message: 'File is required' }));
     }
 
     // Upload to upload service
@@ -334,10 +337,10 @@ export const PUT: RequestHandler = async ({ request }) => {
 
   } catch (err: any) {
     console.error('Document upload for RAG failed:', err);
-    error(500, {
+    error(500, ensureError({
       message: 'Document upload failed',
       error: err instanceof Error ? err.message : 'Unknown error'
-    });
+    }));
   }
 };
 
@@ -349,7 +352,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
     const documentId = url.searchParams.get('documentId');
     
     if (!documentId) {
-      error(400, { message: 'Document ID is required' });
+      error(400, ensureError({ message: 'Document ID is required' }));
     }
 
     const deleteResponse = await fetch(`${ENHANCED_RAG_CONFIG.baseUrl}/api/rag/documents/${documentId}`, {
@@ -375,9 +378,9 @@ export const DELETE: RequestHandler = async ({ url }) => {
 
   } catch (err: any) {
     console.error('Document deletion from RAG failed:', err);
-    error(500, {
+    error(500, ensureError({
       message: 'Document deletion failed',
       error: err instanceof Error ? err.message : 'Unknown error'
-    });
+    }));
   }
 };

@@ -1,4 +1,5 @@
-import type { RequestHandler } from '@sveltejs/kit';
+
+import type { RequestHandler } from './$types';
 
 /**
  * Hybrid Vector Embedding API - PGVector + Qdrant + Local LLM Integration

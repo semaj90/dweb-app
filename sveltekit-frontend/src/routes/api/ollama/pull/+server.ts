@@ -1,5 +1,6 @@
-import { json, type RequestHandler } from '@sveltejs/kit';
 import stream from 'stream';
+import type { RequestHandler } from './$types';
+
 
 const OLLAMA_BASE = import.meta.env.OLLAMA_HOST || "http://localhost:11434";
 

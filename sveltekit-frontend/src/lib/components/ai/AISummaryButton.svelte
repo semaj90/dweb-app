@@ -30,7 +30,7 @@
 
 <button
   class="space-y-4"
-  on:click={() => getSummary(props.text)}
+  click={() => getSummary(props.text)}
   disabled={loading}
 >
   {#if loading}

@@ -2,7 +2,7 @@
   import VectorPipelineDemo from '$lib/components/demo/VectorPipelineDemo.svelte';
   import type { PageData } from './$types';
 
-  export let data: PageData;
+  const { data } = $props() as { data: PageData };
 </script>
 
 <svelte:head>
@@ -17,7 +17,7 @@
         Vector Pipeline Demo
       </h1>
       <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-        Interactive demonstration of our XState-powered vector processing pipeline that orchestrates 
+        Interactive demonstration of our XState-powered vector processing pipeline that orchestrates
         data flow from PostgreSQL through Redis Streams to Go microservices, CUDA workers, and Qdrant vector database.
       </p>
     </div>
@@ -28,7 +28,7 @@
     <div class="mt-12 max-w-4xl mx-auto">
       <div class="bg-white rounded-lg shadow-lg p-8">
         <h2 class="text-2xl font-bold mb-6">Technical Architecture</h2>
-        
+
         <div class="space-y-6">
           <div>
             <h3 class="text-lg font-semibold mb-2">Pipeline Flow</h3>

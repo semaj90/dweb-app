@@ -1,4 +1,5 @@
-import { json, type RequestHandler } from '@sveltejs/kit';
+
+import type { RequestHandler } from './$types';
 
 // Base URL for Go GPU status service (fallback to localhost)
 const GO_BASE =

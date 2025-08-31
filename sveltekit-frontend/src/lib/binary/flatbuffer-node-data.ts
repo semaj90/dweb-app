@@ -456,6 +456,4 @@ export class FlatBufferNodeSerializer {
   }
 }
 
-// Export types
-export type { FlatBufferNode, BinaryGraphData };
 export { FLATBUFFER_SCHEMA };

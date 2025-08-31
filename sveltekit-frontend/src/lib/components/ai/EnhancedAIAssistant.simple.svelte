@@ -108,14 +108,14 @@ Would you like me to elaborate on any of these aspects?`,
       <div class="container mx-auto px-4">
         <button
           class="container mx-auto px-4"
-          on:click={() => (showSettings = !showSettings)}
+          click={() => (showSettings = !showSettings)}
           title="Settings"
         >
           <Settings class="container mx-auto px-4" />
         </button>
         <button
           class="container mx-auto px-4"
-          on:click={() => clearMessages()}
+          click={() => clearMessages()}
           title="Clear conversation"
         >
           <Trash2 class="container mx-auto px-4" />
@@ -137,7 +137,7 @@ Would you like me to elaborate on any of these aspects?`,
               {#each message.references as reference}
                 <button
                   class="container mx-auto px-4"
-                  on:click={() => handleReferenceClick(reference)}
+                  click={() => handleReferenceClick(reference)}
                 >
                   <Quote class="container mx-auto px-4" />
                   <span class="container mx-auto px-4">{reference.title}</span>
@@ -160,7 +160,7 @@ Would you like me to elaborate on any of these aspects?`,
     </div>
 
     <!-- Input -->
-    <form class="container mx-auto px-4" onsubmit|preventDefault={handleSubmit}>
+    <form class="container mx-auto px-4" on:submit|preventDefault={handleSubmit}>
       <div class="container mx-auto px-4">
         <input
           type="text"
@@ -185,7 +185,7 @@ Would you like me to elaborate on any of these aspects?`,
     <div class="container mx-auto px-4">
       <div class="container mx-auto px-4">
         <h4 class="container mx-auto px-4">AI Assistant Settings</h4>
-        <button class="container mx-auto px-4" on:click={() => (showSettings = false)}
+        <button class="container mx-auto px-4" click={() => (showSettings = false)}
           >×</button
         >
       </div>
@@ -244,8 +244,8 @@ Would you like me to elaborate on any of these aspects?`,
   {#if showCitationDialog}
     <div
       class="container mx-auto px-4"
-      on:click={() => (showCitationDialog = false)}
-      onkeydown={(e) => {
+      click={() => (showCitationDialog = false)}
+      on:keydown={(e) => {
         if (e.key === "Escape") {
           showCitationDialog = false;
         }
@@ -269,12 +269,12 @@ Would you like me to elaborate on any of these aspects?`,
           </div>
 
           <div class="container mx-auto px-4">
-            <button class="container mx-auto px-4" on:click={() => insertCitation()}>
+            <button class="container mx-auto px-4" click={() => insertCitation()}>
               Insert Citation
             </button>
             <button
               class="container mx-auto px-4"
-              on:click={() => navigator.clipboard.writeText(selectedCitation)}
+              click={() => navigator.clipboard.writeText(selectedCitation)}
             >
               Copy to Clipboard
             </button>
@@ -284,7 +284,7 @@ Would you like me to elaborate on any of these aspects?`,
         <div class="container mx-auto px-4">
           <button
             class="container mx-auto px-4"
-            on:click={() => (showCitationDialog = false)}
+            click={() => (showCitationDialog = false)}
           >
             Close
           </button>

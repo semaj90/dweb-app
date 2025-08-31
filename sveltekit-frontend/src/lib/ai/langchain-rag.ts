@@ -392,7 +392,7 @@ Only return the queries, one per line.`),
       console.log(
         `✅ Indexed ${chunks.length} chunks for document ${metadata.documentId}`
       );
-      return (ids as unknown as string[]) || [];
+      return (ids as any as string[]) || [];
     } catch (error: any) {
       console.error("Error indexing document:", error);
       throw new Error(

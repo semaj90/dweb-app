@@ -482,5 +482,3 @@ export const enhancedCaseManagementMachine = createMachine({
 // Type for the machine
 export type EnhancedCaseManagementMachine = StateFrom<typeof enhancedCaseManagementMachine>;
 
-// Export context and event types for use in components
-export type { EnhancedCaseManagementContext, EnhancedCaseManagementEvent };

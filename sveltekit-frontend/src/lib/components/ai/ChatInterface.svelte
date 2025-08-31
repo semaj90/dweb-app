@@ -375,7 +375,7 @@
           loading={$isLoading}
           premium={true}
           size="sm"
-          ontoggle={handleThinkingToggle}
+          on:toggle={handleThinkingToggle}
         />
         
         {#if caseId}
@@ -479,8 +479,8 @@
   {#if $showProactivePrompt}
     <div class="mx-auto px-4 max-w-7xl">
       <ProactivePrompt
-        onaccept={handleProactiveResponse}
-        ondismiss={() => showProactivePrompt.set(false)}
+        on:accept={handleProactiveResponse}
+        on:dismiss={() => showProactivePrompt.set(false)}
       />
     </div>
   {/if}
@@ -496,8 +496,8 @@
             ? "Ask for detailed analysis... (Enter to send, Shift+Enter for new line)"
             : "Type your message... (Enter to send, Shift+Enter for new line)"}
           class="mx-auto px-4 max-w-7xl"
-          onkeydown={handleKeyDown}
-          oninput={autoResize}
+          on:keydown={handleKeyDown}
+          on:input={autoResize}
           disabled={$isLoading}
         />
       </div>

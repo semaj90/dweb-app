@@ -117,14 +117,14 @@
 </script>
 
 {#if show}
-  <div class="feedback-overlay" onclick={close} onkeydown={(e) => e.key === 'Enter' && close()} role="button" tabindex="0">
-    <div class="feedback-widget" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.key === 'Enter' && e.stopPropagation()} role="dialog" aria-labelledby="feedback-title" tabindex="0">
+  <div class="feedback-overlay" click={close} keydown={(e) => e.key === 'Enter' && close()} role="button" tabindex="0">
+    <div class="feedback-widget" click={(e) => e.stopPropagation()} on:keydown={(e) => e.key === 'Enter' && e.stopPropagation()} role="dialog" aria-labelledby="feedback-title" tabindex="0">
       {#if !isSubmitted}
         <div class="feedback-header">
           <h3 id="feedback-title" class="feedback-title">
             Rate {ratingTypeLabels[ratingType]}
           </h3>
-          <button class="close-button" onclick={close} aria-label="Close feedback">×</button>
+          <button class="close-button" click={close} aria-label="Close feedback">×</button>
         </div>
 
         <div class="feedback-content">
@@ -134,7 +134,7 @@
               {#each [1, 2, 3, 4, 5] as star}
                 <button
                   class="star {rating >= star ? 'active' : ''}"
-                  onclick={() => setRating(star)}
+                  on:click={() => setRating(star)}
                   aria-label="Rate {star} stars"
                 >
                   ★
@@ -160,7 +160,7 @@
             <div class="feedback-actions">
               <button
                 class="submit-button"
-                onclick={submitFeedback}
+                click={submitFeedback}
                 disabled={isSubmitting}
               >
                 {#if isSubmitting}

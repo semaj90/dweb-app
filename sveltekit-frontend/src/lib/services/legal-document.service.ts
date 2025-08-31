@@ -18,7 +18,7 @@ export interface DocumentRepository {
 export interface AIAnalysisService {
   analyze(document: LegalDocument): Promise<AIInsights>;
   summarize(content: string): Promise<string>;
-  extractEntities(content: string): Promise<unknown[]>;
+  extractEntities(content: string): Promise<any[]>;
 }
 
 export interface ComplianceService {

@@ -81,7 +81,7 @@
       
       ws = new WebSocket(wsUrl);
       
-      ws.onopen = () => {
+      ws.on:open=() => {
         console.log('WebSocket connected');
         isOnline.set(true);
         
@@ -103,7 +103,7 @@
         }
       };
 
-      ws.onclose = () => {
+      ws.on:close=() => {
         console.log('WebSocket disconnected');
         isOnline.set(false);
         scheduleReconnect();
@@ -302,7 +302,7 @@
       <button 
         type="button"
         disabled={readonly}
-        on:click={resetCanvas}
+        click={resetCanvas}
         aria-label="Create new canvas"
       >
         New Canvas
@@ -316,7 +316,7 @@
     <div class="toolbar-right">
       <span 
         class="status" 
-        class:online={$isOnline}
+        class:on:line={$isOnline}
         aria-label={$isOnline ? 'Connected' : 'Disconnected'}
       >
         {$isOnline ? 'Online' : 'Offline'}
@@ -332,9 +332,9 @@
       role="img"
       aria-label="Interactive canvas for creating and editing nodes"
       tabindex={readonly ? -1 : 0}
-      on:click={handleCanvasClick}
-      ondrop={handleFileDrop}
-      ondragover={handleDragOver}
+      click={handleCanvasClick}
+      on:drop={handleFileDrop}
+      on:dragover={handleDragOver}
     ></canvas>
 
     <aside class="evidence-panel" aria-label="Evidence files">

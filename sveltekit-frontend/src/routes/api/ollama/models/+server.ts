@@ -1,10 +1,11 @@
 import type { OllamaTagsResponse, OllamaModel } from "$lib/types/ollama";
+import type { RequestHandler } from './$types';
+
 /**
  * Ollama Models API Endpoint
  * Manages available models, status, and pulling new models
  */
 
-import { type RequestHandler,  json } from '@sveltejs/kit';
 
 const OLLAMA_BASE_URL = import.meta.env.OLLAMA_URL || 'http://localhost:11434';
 

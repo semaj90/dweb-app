@@ -142,7 +142,7 @@ export function connectRealtimeWS(
   url = typeof location !== "undefined"
     ? (() => {
         const env =
-          (import.meta as unknown as { env?: Record<string, string> }).env ??
+          (import.meta as any as { env?: Record<string, string> }).env ??
           {};
         const explicit = env["VITE_WS_URL"];
         return explicit || `${location.origin.replace(/^http/, "ws")}/api/ws`;
@@ -161,7 +161,7 @@ export function connectRealtimeWS(
           ws?.readyState === WebSocket.OPEN &&
           ws.send(JSON.stringify({ type: "ping" })),
         25_000
-      ) as unknown as number;
+      ) as any as number;
     };
     ws.onclose = () => {
       connectionStatus = "disconnected";

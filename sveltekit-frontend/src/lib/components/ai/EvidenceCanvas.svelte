@@ -128,7 +128,7 @@
 </script>
 
 <div class="toolbar">
-  <button on:click={analyzeCanvas} disabled={analyzing}
+  <button click={analyzeCanvas} disabled={analyzing}
     >{analyzing ? "Analyzing…" : "Analyze Canvas"}</button
   >
   <label

@@ -1,9 +1,10 @@
-import { json, type RequestHandler } from '@sveltejs/kit';
 import { createValidator, quickHealthCheck, type IntegrationValidationReport } from '$lib/services/production-integration-validator';
 import { getConfig } from '$lib/config/unified-config';
 import { redisRateLimit } from '$lib/server/redisRateLimit';
 import { productionLogger } from '$lib/server/production-logger';
 import { dev } from '$app/environment';
+import type { RequestHandler } from './$types';
+
 
 /**
  * Production System Validation API

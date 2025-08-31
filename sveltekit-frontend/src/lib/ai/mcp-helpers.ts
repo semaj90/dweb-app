@@ -309,7 +309,7 @@ export async function getLibraryDocs(
 }
 
 // Enhanced semantic search using Context7 MCP server
-export async function semanticSearch(query: string): Promise<unknown[]> {
+export async function semanticSearch(query: string): Promise<any[]> {
   try {
     const response = await fetch("http://localhost:3000/api/semantic-search", {
       method: "POST",

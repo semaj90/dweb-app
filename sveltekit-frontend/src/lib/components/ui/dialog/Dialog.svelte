@@ -44,7 +44,7 @@
 </script>
 
 <!-- keyboard handling on window for accessibility -->
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window keydown={handleKeydown} />
 
 <!-- optional trigger -->
 <slot name="trigger" />
@@ -54,7 +54,7 @@
   <div
     class="fixed inset-0 z-40 flex items-center justify-center bg-black/50"
     transition:fade={{ duration: 200, easing: quadOut }}
-    on:click={handleOutsideClick}
+    click={handleOutsideClick}
     role="presentation"
   >
     <melt>  <slot name="window-handle-keydown" /></melt>
@@ -70,7 +70,7 @@
       aria-labelledby={title ? "dialog-title" : undefined}
       aria-describedby={description ? "dialog-description" : undefined}
       tabindex={-1}
-      on:click|stopPropagation
+      click|stopPropagation
     >
       <!-- header -->
       <div class="flex items-start justify-between gap-4">
@@ -90,7 +90,7 @@
         {#if showClose}
           <button
             class="rounded p-1 hover:bg-slate-100 dark:hover:bg-slate-800"
-            on:click={close}
+            click={close}
             aria-label="Close dialog"
           >
             <X size="20" />

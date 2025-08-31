@@ -6,10 +6,10 @@
   }
 
   let { children }: Props = $props();
-  let className: string = '';
+  let class: string = '';
   ;
 </script>
 
-<div class="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground {className}">
+<div class="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground {class}">
   {@render children?.()}
 </div>

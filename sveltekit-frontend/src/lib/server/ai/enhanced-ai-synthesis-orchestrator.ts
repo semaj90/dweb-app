@@ -141,8 +141,8 @@ const orchestrationMachine = createMachine({
     embeddings: null as number[] | null,
     neo4jResults: null as Document[] | null,
     pgVectorResults: null as Document[] | null,
-    ragResults: null as unknown[] | null,
-    rankedResults: null as unknown[] | null, // Add rankedResults to context
+    ragResults: null as any[] | null,
+    rankedResults: null as any[] | null, // Add rankedResults to context
     legalBertAnalysis: null as any | null,
     ollamaResponse: null as string | null,
     finalSynthesis: null as AutoSolveResult | null,

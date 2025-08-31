@@ -1,3 +1,5 @@
+import type { RequestHandler } from './$types';
+
 /**
  * QUIC AI Stream API - Real-time AI Streaming Service
  * Provides AI streaming with WebSocket + HTTP/3 support and session management
@@ -5,7 +7,8 @@
  * Backends: Ollama (11434), Enhanced RAG (8094)
  */
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+
+import { ensureError } from '$lib/utils/ensure-error';
 
 const QUIC_AI_STREAM_CONFIG = {
   primaryPort: 8447,    // QUIC HTTP/3
@@ -142,15 +145,15 @@ export const POST: RequestHandler = async ({ request, url }) => {
 
     // Validate AI request
     if (!aiRequest.prompt || aiRequest.prompt.trim().length === 0) {
-      error(400, { message: 'Prompt is required and cannot be empty' });
+      error(400, ensureError({ message: 'Prompt is required and cannot be empty' }));
     }
 
     if (aiRequest.maxTokens && (aiRequest.maxTokens < 1 || aiRequest.maxTokens > 8192)) {
-      error(400, { message: 'Max tokens must be between 1 and 8192' });
+      error(400, ensureError({ message: 'Max tokens must be between 1 and 8192' }));
     }
 
     if (aiRequest.temperature && (aiRequest.temperature < 0 || aiRequest.temperature > 2)) {
-      error(400, { message: 'Temperature must be between 0 and 2' });
+      error(400, ensureError({ message: 'Temperature must be between 0 and 2' }));
     }
 
     // Generate session ID if not provided
@@ -196,10 +199,10 @@ export const POST: RequestHandler = async ({ request, url }) => {
 
     } catch (quicError) {
       console.error('QUIC AI Stream service failed:', quicError);
-      error(503, {
+      error(503, ensureError({
         message: 'AI streaming service unavailable',
         error: quicError instanceof Error ? quicError.message : 'Unknown error'
-      });
+      }));
     }
 
     if (!response.ok) {
@@ -239,10 +242,10 @@ export const POST: RequestHandler = async ({ request, url }) => {
 
   } catch (err: any) {
     console.error('QUIC AI Stream error:', err);
-    error(500, {
+    error(500, ensureError({
       message: 'AI streaming failed',
       error: err instanceof Error ? err.message : 'Unknown error'
-    });
+    }));
   }
 };
 
@@ -255,7 +258,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
     const useHttp3 = url.searchParams.get('http3') !== 'false';
 
     if (!sessionId) {
-      error(400, { message: 'Session ID is required' });
+      error(400, ensureError({ message: 'Session ID is required' }));
     }
 
     const targetUrl = useHttp3 
@@ -286,10 +289,10 @@ export const DELETE: RequestHandler = async ({ url }) => {
 
   } catch (err: any) {
     console.error('AI session termination error:', err);
-    error(500, {
+    error(500, ensureError({
       message: 'Session termination failed',
       error: err instanceof Error ? err.message : 'Unknown error'
-    });
+    }));
   }
 };
 
@@ -302,11 +305,11 @@ export const PUT: RequestHandler = async ({ request }) => {
 
     // Validate configuration
     if (config.maxTokens && (config.maxTokens < 1 || config.maxTokens > 8192)) {
-      error(400, { message: 'Max tokens must be between 1 and 8192' });
+      error(400, ensureError({ message: 'Max tokens must be between 1 and 8192' }));
     }
 
     if (config.timeout && (config.timeout < 5000 || config.timeout > 300000)) {
-      error(400, { message: 'Timeout must be between 5000 and 300000ms' });
+      error(400, ensureError({ message: 'Timeout must be between 5000 and 300000ms' }));
     }
 
     // Update configuration (in a real implementation, this would be persisted)
@@ -324,9 +327,9 @@ export const PUT: RequestHandler = async ({ request }) => {
 
   } catch (err: any) {
     console.error('AI stream configuration update failed:', err);
-    error(500, {
+    error(500, ensureError({
       message: 'Configuration update failed',
       error: err instanceof Error ? err.message : 'Unknown error'
-    });
+    }));
   }
 };

@@ -33,7 +33,7 @@ export async function initRustBridge(): Promise<boolean> {
     const wasm = await import('./pkg/webasm_bridge');
     await wasm.default(); // Initialize WASM module
     
-    wasmModule = wasm as unknown as WasmModule;
+    wasmModule = wasm as any as WasmModule;
     bridge = new wasmModule.WindowsServiceBridge();
     
     console.log('✅ Rust WASM bridge initialized successfully');

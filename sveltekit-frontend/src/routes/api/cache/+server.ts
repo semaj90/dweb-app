@@ -1,6 +1,7 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
 import { cacheManager } from '$lib/services/cache-layer-manager';
+import type { RequestHandler } from './$types';
+
 // Simple console logger fallback
 const logger = {
   info: (message: string, data?: any) => console.log(`[INFO] ${message}`, data || ''),

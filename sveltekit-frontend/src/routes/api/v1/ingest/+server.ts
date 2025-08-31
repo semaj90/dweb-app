@@ -1,6 +1,7 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
 import { INGEST_SERVICE_URL } from '$env/static/private';
+import type { RequestHandler } from './$types';
+
 
 /**
  * SvelteKit API proxy to Go Ingest Service (port 8227)

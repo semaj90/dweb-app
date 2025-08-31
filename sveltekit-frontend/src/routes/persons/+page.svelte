@@ -7,7 +7,7 @@
   let searchQuery = '';
   let viewMode: 'grid' | 'list' = 'grid';
   let showFilters = false;
-  
+
   // Mock persons data - replace with real API call
   let persons = [
     {
@@ -21,7 +21,7 @@
       lastUpdated: new Date().toISOString()
     },
     {
-      id: '2', 
+      id: '2',
       name: 'Jane Doe',
       alias: 'JD',
       dateOfBirth: '1975-12-08',
@@ -32,11 +32,19 @@
     }
   ];
 
-  let filteredPersons = $derived(persons.filter(person => );
-    person.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    person.alias.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    person.status.toLowerCase().includes(searchQuery.toLowerCase())
+  let filteredPersons: typeof persons = [];
+
+  const filteredPersonsDerived = $derived(() =>
+    persons.filter(person =>
+      person.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      person.alias.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      person.status.toLowerCase().includes(searchQuery.toLowerCase())
+    )
   );
+
+  $effect(() => {
+    filteredPersons = filteredPersonsDerived;
+  });
 
   onMount(() => {
     // Load persons data
@@ -119,7 +127,7 @@
             <option value="victim">Victim</option>
           </select>
         </div>
-        
+
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Case</label>
           <select class="w-full p-2 border border-gray-300 rounded-lg">
@@ -226,7 +234,7 @@
                 </p>
               </div>
             </div>
-            
+
             <div class="flex gap-2">
               <Button size="sm">
                 <Eye class="w-3 h-3 mr-1" />

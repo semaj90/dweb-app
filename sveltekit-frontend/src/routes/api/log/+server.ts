@@ -1,5 +1,7 @@
 
 import { json } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+
 
 // Simple stub for logQueue
 const logQueue = {

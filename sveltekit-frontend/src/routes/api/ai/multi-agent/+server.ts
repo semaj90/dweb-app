@@ -1,14 +1,11 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { json } from "@sveltejs/kit";
 import { URL } from "url";
+import type { LegalAnalysisRequest } from '$lib/ai/autogen-legal-agents';
+import type { RequestHandler } from './$types';
+
 
 // Multi-Agent AI Orchestration API
 // Unified endpoint for Autogen, CrewAI, and vLLM integration
-
-export interface LegalAnalysisRequest {
-  query: string;
-  caseId?: string;
-}
 
 export interface AutogenRequest {
   query: string;

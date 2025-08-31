@@ -18,7 +18,7 @@
 </script>
 
 <div class="yorha-nav-card" role="button" tabindex="0" aria-label={ariaLabel}
-  onclick={handleNavigate} onkeydown={handleKey} data-path={path}>
+  click={handleNavigate} keydown={handleKey} data-path={path}>
   <div class="yorha-nav-header">
     {#if icon}
       <svelte:component this={icon} size={28} />

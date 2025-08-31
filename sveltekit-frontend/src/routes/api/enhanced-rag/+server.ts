@@ -1,8 +1,9 @@
-import type { RequestHandler } from '@sveltejs/kit';
 
 import { json } from "@sveltejs/kit";
 import { enhancedSearchWithNeo4j } from "$lib/ai/custom-reranker";
 import { mcpContext72GetLibraryDocs } from "$lib/mcp-context72-get-library-docs";
+import type { RequestHandler } from './$types';
+
 
 // Enhanced RAG endpoint with reranker, Neo4j, memory, and docs
 export const POST: RequestHandler = async ({ request }) => {

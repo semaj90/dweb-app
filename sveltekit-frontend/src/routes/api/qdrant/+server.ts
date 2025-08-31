@@ -1,9 +1,10 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { json } from "@sveltejs/kit";
 import { qdrant, optimizedQdrant, qdrantOptimized } from "$lib/server/vector/qdrant";
 import { redisRateLimit, createRateLimitConfig } from "$lib/server/redisRateLimit";
 import { productionLogger as logger } from '$lib/server/production-logger';
 import { dev } from '$app/environment';
+import type { RequestHandler } from './$types';
+
 
 // Enhanced interfaces for better type safety and optimization
 export interface QdrantSyncRequest {

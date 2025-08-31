@@ -35,9 +35,9 @@
       class="fixed left-0 top-1/2 transform -translate-y-1/2 z-50 sidebar-trigger"
       role="button"
       tabindex={0}
-      onmouseenter={handleSidebarMouseEnter}
-      onmouseleave={handleSidebarMouseLeave}
-      onkeydown={(e) => {
+      on:mouseenter={handleSidebarMouseEnter}
+      on:mouseleave={handleSidebarMouseLeave}
+      keydown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           handleSidebarMouseEnter();
@@ -53,15 +53,15 @@
       <div
         class="sidebar-panel bg-white shadow-lg w-64 h-full fixed left-0 top-0 z-30 flex flex-col"
         role="complementary"
-        onmouseenter={handleSidebarMouseEnter}
-        onmouseleave={handleSidebarMouseLeave}
-        onkeydown={(e) => {
+        on:mouseenter={handleSidebarMouseEnter}
+        on:mouseleave={handleSidebarMouseLeave}
+        keydown={(e) => {
           if (e.key === "Escape") {
             handleSidebarMouseLeave();
           }
         }}
       >
-        <EvidencePanel {caseId} onevidencedrop={handleEvidenceDrop} />
+        <EvidencePanel {caseId} on:evidencedrop={handleEvidenceDrop} />
       </div>
     {/if}
   </div>
@@ -73,7 +73,7 @@
         bind:canvasState
         reportId={caseId}
         {evidence}
-        onevidencedrop={handleEvidenceDrop}
+        on:evidencedrop={handleEvidenceDrop}
         width={undefined}
         height={undefined}
       />

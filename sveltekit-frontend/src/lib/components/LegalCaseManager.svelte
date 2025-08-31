@@ -382,7 +382,7 @@ https://svelte.dev/e/js_parse_error -->
         'AI Analysis',
         'Review & Submit'
       ]}
-      onstepclick={(e) => goToStep(e.detail)}
+      on:stepclick={(e) => goToStep(e.detail)}
     />
   </div>
 
@@ -400,7 +400,7 @@ https://svelte.dev/e/js_parse_error -->
       <div transition:slide={{ duration: 300, easing: cubicOut }}>
         <CaseInfoForm
           bind:data={$formData.caseInfo}
-          onnext={nextStep}
+          on:next={nextStep}
           isValid={$stepValidation}
         />
       </div>
@@ -408,9 +408,9 @@ https://svelte.dev/e/js_parse_error -->
       <div transition:slide={{ duration: 300, easing: cubicOut }}>
         <DocumentUploadForm
           bind:data={$formData.documents}
-          onprocess={(e) => processDocuments(e.detail)}
-          onnext={nextStep}
-          onprev={prevStep}
+          on:process={(e) => processDocuments(e.detail)}
+          on:next={nextStep}
+          on:prev={prevStep}
           isValid={$stepValidation}
         />
       </div>
@@ -419,9 +419,9 @@ https://svelte.dev/e/js_parse_error -->
         <EvidenceAnalysisForm
           bind:data={$formData.evidence}
           ocrResults={$formData.documents.ocr_results}
-          onextract={extractEvidence}
-          onnext={nextStep}
-          onprev={prevStep}
+          on:extract={extractEvidence}
+          on:next={nextStep}
+          on:prev={prevStep}
           isValid={$stepValidation}
         />
       </div>
@@ -430,9 +430,9 @@ https://svelte.dev/e/js_parse_error -->
         <AIAnalysisForm
           bind:data={$formData.ai_analysis}
           caseData={$formData}
-          onanalyze={performAIAnalysis}
-          onnext={nextStep}
-          onprev={prevStep}
+          on:analyze={performAIAnalysis}
+          on:next={nextStep}
+          on:prev={prevStep}
           isValid={$stepValidation}
         />
       </div>
@@ -441,8 +441,8 @@ https://svelte.dev/e/js_parse_error -->
         <ReviewSubmitForm
           bind:data={$formData.review}
           fullCaseData={$formData}
-          onsubmit={submitForm}
-          onprev={prevStep}
+          on:submit={submitForm}
+          on:prev={prevStep}
           isValid={$stepValidation}
         />
       </div>

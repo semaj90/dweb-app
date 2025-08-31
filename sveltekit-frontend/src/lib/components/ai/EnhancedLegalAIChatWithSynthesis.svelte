@@ -521,7 +521,7 @@ ${caseId ? `• **Case Context:** ${caseId}` : ''}
   }
 </script>
 
-<div class="enhanced-legal-ai-chat flex flex-col h-full max-w-6xl mx-auto {className}">
+<div class="enhanced-legal-ai-chat flex flex-col h-full max-w-6xl mx-auto {class}">
   <!-- Header with Status -->
   <Card class="mb-4">
     <CardHeader class="pb-2">
@@ -744,7 +744,7 @@ ${caseId ? `• **Case Context:** ${caseId}` : ''}
       bind:this={inputElement}
       bind:value={currentInput}
       placeholder="Ask about legal matters, analyze documents, or use commands like /analyze..."
-      onkeydown={handleKeyDown}
+      on:keydown={handleKeyDown}
       disabled={isProcessing}
       class="flex-1" />
     <Button on:click={sendMessage} disabled={!currentInput.trim() || isProcessing}>

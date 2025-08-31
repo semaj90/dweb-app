@@ -399,7 +399,7 @@
 			<h2 class="text-xl font-semibold mb-4 text-blue-400">🤖 Intelligent Todo Generator</h2>
 			<div class="space-y-4">
 				<button 
-					on:click={() => fetchIntelligentTodos()}
+					click={() => fetchIntelligentTodos()}
 					disabled={$isProcessing}
 					class="btn-primary w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 disabled:opacity-50 px-4 py-2 rounded-lg font-medium transition-all"
 				>
@@ -450,7 +450,7 @@
 				</div>
 				
 				<button 
-					on:click={() => analyzeText(analysisText)}
+					click={() => analyzeText(analysisText)}
 					disabled={$isProcessing || !analysisText.trim()}
 					class="btn-secondary w-full bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 disabled:opacity-50 px-4 py-2 rounded-lg font-medium transition-all"
 				>
@@ -475,13 +475,13 @@
 
 						<div class="visualization-controls mt-3 flex space-x-2">
 							<button 
-								on:click={() => showSOMVisualization = !showSOMVisualization}
+								click={() => showSOMVisualization = !showSOMVisualization}
 								class="text-xs px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded transition-colors"
 							>
 								{showSOMVisualization ? 'Hide' : 'Show'} SOM
 							</button>
 							<button 
-								on:click={() => showPageRankGraph = !showPageRankGraph}
+								click={() => showPageRankGraph = !showPageRankGraph}
 								class="text-xs px-3 py-1 bg-purple-600 hover:bg-purple-700 rounded transition-colors"
 							>
 								{showPageRankGraph ? 'Hide' : 'Show'} PageRank
@@ -593,7 +593,7 @@
 				</div>
 
 				<button 
-					on:click={checkSystemStatus}
+					click={checkSystemStatus}
 					class="btn-danger w-full bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 px-4 py-2 rounded-lg font-medium transition-all text-sm"
 				>
 					Refresh Status
@@ -623,13 +623,13 @@
 					<label class="block text-sm font-medium mb-2">Real-time Updates</label>
 					<div class="flex space-x-2">
 						<button 
-							on:click={startRealTimeUpdates}
+							click={startRealTimeUpdates}
 							class="btn-sm bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-xs transition-colors"
 						>
 							Start
 						</button>
 						<button 
-							on:click={stopRealTimeUpdates}
+							click={stopRealTimeUpdates}
 							class="btn-sm bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-xs transition-colors"
 						>
 							Stop

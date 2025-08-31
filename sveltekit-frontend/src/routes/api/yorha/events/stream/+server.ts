@@ -1,4 +1,5 @@
-import type { RequestHandler } from '@sveltejs/kit';
+
+import type { RequestHandler } from './$types';
 
 const DEFAULT_INTERVAL = 3000;
 

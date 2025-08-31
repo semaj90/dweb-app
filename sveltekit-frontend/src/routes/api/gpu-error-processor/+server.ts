@@ -1,9 +1,10 @@
+import type { RequestHandler } from './$types';
+
 // ======================================================================
 // GPU ERROR PROCESSOR API ENDPOINT
 // Deploy and test the complete error resolution system
 // ======================================================================
 
-import { type RequestHandler, json } from '@sveltejs/kit';
 import { spawn } from 'child_process';
 
 export interface ProcessResult {

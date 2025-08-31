@@ -1,4 +1,5 @@
-import { json, type RequestHandler } from '@sveltejs/kit';
+
+import type { RequestHandler } from './$types';
 
 // Sample dynamic layout definition (would normally be DB or config driven)
 export const GET: RequestHandler = async () => {

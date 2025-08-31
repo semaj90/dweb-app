@@ -259,9 +259,9 @@
     maxSize={maxFileSize}
     accept={acceptedTypes.join(',')}
     bind:files={uploadFiles}
-    onfileschange={handleFilesChange}
-    onupload={handleFileUpload}
-    onremove={handleFileRemove}
+    on:fileschange={handleFilesChange}
+    on:upload={handleFileUpload}
+    on:remove={handleFileRemove}
     dragDropText="Drop evidence files here or click to browse"
     browseText="Browse Evidence Files"
     supportedFormats={acceptedTypes.map(type => type.replace('.', '').toUpperCase())}

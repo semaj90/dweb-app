@@ -1,10 +1,11 @@
 
+import type { RequestHandler } from './$types';
+
 /**
  * AI-Assisted Boilerplate Generation API
  * Generates legal boilerplate text based on high-performing phrase patterns
  */
 
-import { type RequestHandler,  json, error } from '@sveltejs/kit';
 import { Pool } from "pg";
 import { z } from 'zod';
 

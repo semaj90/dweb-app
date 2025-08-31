@@ -1,7 +1,8 @@
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 import { documentProcessingWorker } from '$lib/workers/document-processing-worker';
 import { rabbitMQService } from '$lib/services/rabbitmq-service';
+import type { RequestHandler } from './$types';
+
 
 export const GET: RequestHandler = async ({ url }) => {
   try {

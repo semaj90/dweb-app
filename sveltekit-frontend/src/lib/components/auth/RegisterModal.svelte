@@ -34,7 +34,7 @@
 </script>
 
 <Modal open>
-  <form onsubmit={preventDefault(handleRegister)}>
+  <form submit={preventDefault(handleRegister)}>
     <h2>Register</h2>
     {#if error}<div class="space-y-4">{error}</div>{/if}
     <input type="email" bind:value={email} placeholder="Email" required />

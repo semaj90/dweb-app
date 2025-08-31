@@ -153,7 +153,7 @@
       <div class="mt-4 space-y-2">
         <button
           type="button"
-          onclick={handleQuickLogin}
+          click={handleQuickLogin}
           disabled={isAutoLoggingIn}
           class="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-800 disabled:cursor-not-allowed text-white font-semibold py-2 px-4 rounded transition-colors flex items-center justify-center"
         >
@@ -170,7 +170,7 @@
         
         <button
           type="button"
-          onclick={handleAutoFill}
+          click={handleAutoFill}
           class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition-colors"
         >
           📝 Auto-fill Demo Credentials

@@ -1,10 +1,11 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Current User API Endpoint
  * GET /api/auth/me
  * Enhanced with PostgreSQL + pgvector + Cognitive Cache integration
  */
 
-import type { RequestHandler } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { users, cases, evidence } from '$lib/server/db/schema-postgres';
@@ -80,8 +81,9 @@ export const GET: RequestHandler = async ({ locals }) => {
 
       db.select({
         totalCases: count(cases.id),
-        activeCases: sql<number>`COUNT(CASE WHEN ${cases.status} IN ('open', 'active') THEN 1 END)`,
-        totalEvidence: sql<number>`(SELECT COUNT(*) FROM ${evidence} WHERE ${evidence.created_by} = ${userId})`
+        // cast to any to avoid strict Drizzle SQL typing during migration shimming
+        activeCases: (sql<number>`COUNT(CASE WHEN ${cases.status} IN ('open', 'active') THEN 1 END)` as any),
+        totalEvidence: (sql<number>`(SELECT COUNT(*) FROM ${evidence} WHERE ${evidence.created_by} = ${userId})` as any)
       }).from(cases).where(eq(cases.created_by, userId))
     ]);
 

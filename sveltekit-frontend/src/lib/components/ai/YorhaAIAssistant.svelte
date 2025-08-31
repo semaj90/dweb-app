@@ -265,7 +265,7 @@
 		
 		chatSocket = new WebSocket(wsUrl);
 		
-		chatSocket.onopen = () => {
+		chatSocket.on:open=() => {
 			console.log('= Connected to YorhaAI chat service');
 			isConnected = true;
 		};
@@ -279,7 +279,7 @@
 			}
 		};
 		
-		chatSocket.onclose = () => {
+		chatSocket.on:close=() => {
 			console.log('L Chat service disconnected');
 			isConnected = false;
 			chatService?.send('DISCONNECT');
@@ -297,7 +297,7 @@
 		
 		activitySocket = new WebSocket(wsUrl);
 		
-		activitySocket.onopen = () => {
+		activitySocket.on:open=() => {
 			console.log('=� Connected to activity service');
 		};
 		
@@ -829,7 +829,7 @@
 												{#each message.metadata.suggestions as suggestion}
 													<button
 														class="text-xs text-blue-400 hover:text-blue-300 underline block"
-														on:click={() => {
+														click={() => {
 															currentMessage = suggestion;
 															sendMessage();
 														}}
@@ -884,7 +884,7 @@
 							bind:value={currentMessage}
 							placeholder={streamingResponse ? "AI is responding..." : "Type your message..."}
 							disabled={!isConnected || streamingResponse}
-							onkeydown={handleKeydown}
+							on:keydown={handleKeydown}
 							data-yorha-input
 							class="flex-1"
 						/>

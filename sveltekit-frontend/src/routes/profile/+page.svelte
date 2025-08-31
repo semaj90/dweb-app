@@ -97,7 +97,7 @@
       <div class="space-y-4">
         <h2>Account Information</h2>
 
-        <form onsubmit={(e) => { e.preventDefault(); updateProfile(); }} class="space-y-4">
+        <form submit={(e) => { e.preventDefault(); updateProfile(); }} class="space-y-4">
           <div class="space-y-4">
             <div class="space-y-4">
               <label for="name">Full Name</label>

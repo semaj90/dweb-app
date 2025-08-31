@@ -5,24 +5,52 @@
 
 import type {
   ApiResponse,
-  Case,
   Evidence,
-  LegalDocument,
-  User,
-  CaseCreateRequest,
-  CaseUpdateRequest,
-  CaseSearchRequest,
-  CaseSearchResponse,
-  EvidenceCreateRequest,
-  EvidenceSearchRequest,
-  CommandSearchRequest,
-  CommandSearchResponse,
+  SearchRequest,
+  SearchResponse,
+  UserUpdateRequest,
   VectorSearchRequest,
   VectorSearchResult,
-  BulkOperationRequest,
-  BulkOperationResponse,
-  FormSubmissionResult
+  EvidenceUploadRequest,
+  EvidenceUploadResponse
 } from '$lib/types/api';
+
+// Import from user types
+import type { User } from '$lib/types/user';
+
+// Define missing types locally until they're added to api types
+interface Case {
+  id: string;
+  title: string;
+  description?: string;
+  status?: string;
+  priority?: string;
+}
+
+interface LegalDocument {
+  id: string;
+  title: string;
+  content?: string;
+  type?: string;
+}
+
+interface BulkOperationRequest {
+  operation: string;
+  ids: string[];
+  data?: any;
+}
+
+interface BulkOperationResponse {
+  success: boolean;
+  processed: number;
+  errors?: string[];
+}
+
+interface FormSubmissionResult {
+  success: boolean;
+  data?: any;
+  errors?: Record<string, string>;
+}
 
 // Base API client configuration
 const BASE_URL = '/api/v1';
@@ -374,9 +402,8 @@ export class ReactiveApiClient extends ApiClient {
 
 // Export singleton instances
 export const apiClient = new ApiClient();
-export const reactiveApiClient = new ReactiveApiClient();
 
 // Export for direct instantiation
-export { ApiClient, ReactiveApiClient };
+export { ApiClient };
 
 export default apiClient;

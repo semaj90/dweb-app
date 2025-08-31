@@ -27,7 +27,7 @@
   let { enablePhysics = $bindable() } = $props(); // boolean = true;
   let { enableStreaming = $bindable() } = $props(); // boolean = true;
   let { maxNodes = $bindable() } = $props(); // number = 10000;
-  let { className = $bindable() } = $props(); // string = '';
+  let { class = $bindable() } = $props(); // string = '';
 
   // ============================================================================
   // REACTIVE STORES
@@ -591,7 +591,7 @@
 <!-- COMPONENT TEMPLATE -->
 <!-- ============================================================================ -->
 
-<div class="legal-graph-viewer {className}" style="width: {width}px; height: {height}px;">
+<div class="legal-graph-viewer {class}" style="width: {width}px; height: {height}px;">
   <!-- Loading State -->
   {#if $isLoading}
     <div class="loading-overlay">
@@ -606,7 +606,7 @@
       <div class="error-icon">⚠️</div>
       <h3>WebGPU Error</h3>
       <p>{$error}</p>
-      <button on:click={() => window.location.reload()}>Reload Page</button>
+      <button click={() => window.location.reload()}>Reload Page</button>
     </div>
   {/if}
 
@@ -644,15 +644,15 @@
   <!-- Controls Panel -->
   {#if $canInteract}
     <div class="controls-panel">
-      <button on:click={resetCamera} title="Reset Camera">
+      <button click={resetCamera} title="Reset Camera">
         🎯
       </button>
       
-      <button on:click={togglePhysics} title="Toggle Physics" class:active={enablePhysics}>
+      <button click={togglePhysics} title="Toggle Physics" class:active={enablePhysics}>
         ⚡
       </button>
       
-      <button on:click={() => $renderState.autoRotate = !$renderState.autoRotate} 
+      <button click={() => $renderState.autoRotate = !$renderState.autoRotate} 
               title="Auto Rotate" 
               class:active={$renderState.autoRotate}>
         🔄
@@ -666,11 +666,11 @@
         <option value="precedent">Precedents</option>
       </select>
 
-      <button on:click={saveGraphState} title="Save State">
+      <button click={saveGraphState} title="Save State">
         💾
       </button>
 
-      <button on:click={async () => {
+      <button click={async () => {
         const blob = await exportImage();
         if (blob) {
           const url = URL.createObjectURL(blob);

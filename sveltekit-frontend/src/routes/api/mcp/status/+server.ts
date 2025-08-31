@@ -1,10 +1,11 @@
 
+import type { RequestHandler } from './$types';
+
 /**
  * MCP Integration Status API Endpoint
  * Provides status information about the enhanced MCP integration
  */
 
-import { type RequestHandler,  json } from '@sveltejs/kit';
 
 export const GET: RequestHandler = async ({ url, request }) => {
 	try {

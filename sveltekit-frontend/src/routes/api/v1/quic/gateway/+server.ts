@@ -1,10 +1,13 @@
+import type { RequestHandler } from './$types';
+
 /**
  * QUIC Gateway API - HTTP/3 Gateway Proxy
  * Provides high-performance HTTP/3 connectivity to SvelteKit frontend
  * Port: 8443 (QUIC), 8444 (HTTP/2 fallback)
  */
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+
+import { ensureError } from '$lib/utils/ensure-error';
 import { productionServiceClient } from '$lib/services/production-service-client.js';
 
 const QUIC_GATEWAY_CONFIG = {
@@ -139,10 +142,10 @@ export const POST: RequestHandler = async ({ request, url }) => {
 
   } catch (err: any) {
     console.error('QUIC Gateway proxy error:', err);
-    error(500, {
+    error(500, ensureError({
       message: 'Gateway proxy failed',
       error: err instanceof Error ? err.message : 'Unknown error'
-    });
+    }));
   }
 };
 
@@ -155,11 +158,11 @@ export const PUT: RequestHandler = async ({ request }) => {
 
     // Validate configuration
     if (config.primaryPort && (config.primaryPort < 1024 || config.primaryPort > 65535)) {
-      error(400, { message: 'Invalid primary port' });
+      error(400, ensureError({ message: 'Invalid primary port' }));
     }
 
     if (config.fallbackPort && (config.fallbackPort < 1024 || config.fallbackPort > 65535)) {
-      error(400, { message: 'Invalid fallback port' });
+      error(400, ensureError({ message: 'Invalid fallback port' }));
     }
 
     // Update configuration (in a real implementation, this would be persisted)
@@ -177,9 +180,9 @@ export const PUT: RequestHandler = async ({ request }) => {
 
   } catch (err: any) {
     console.error('Gateway configuration update failed:', err);
-    error(500, {
+    error(500, ensureError({
       message: 'Configuration update failed',
       error: err instanceof Error ? err.message : 'Unknown error'
-    });
+    }));
   }
 };

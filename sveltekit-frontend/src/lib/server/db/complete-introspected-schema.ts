@@ -24,7 +24,8 @@ import {
   bigint,
   date
 } from 'drizzle-orm/pg-core';
-import { relations, sql } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
+import { relations } from 'drizzle-orm/relations';
 
 // ============================================================================
 // CORE USER MANAGEMENT TABLES

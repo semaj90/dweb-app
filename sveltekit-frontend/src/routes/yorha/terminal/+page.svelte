@@ -288,7 +288,7 @@
           <span>YoRHa Terminal</span>
         </div>
         <div class="yorha-terminal-controls">
-          <button class="yorha-terminal-control" onclick={() => clearTerminal()}>
+          <button class="yorha-terminal-control" click={() => clearTerminal()}>
             <RotateCcw size={14} />
           </button>
           <button class="yorha-terminal-control">
@@ -326,7 +326,7 @@
         <input
           type="text"
           bind:value={currentInput}
-          onkeydown={handleKeydown}
+          keydown={handleKeydown}
           disabled={isExecuting}
           class="yorha-terminal-input"
           placeholder="Type command... (try 'help')"

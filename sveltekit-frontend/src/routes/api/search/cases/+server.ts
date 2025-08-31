@@ -1,4 +1,5 @@
-import type { RequestHandler } from '@sveltejs/kit';
+
+import type { RequestHandler } from './$types';
 
 // Optimized case search API endpoint
 // Supports multiple search strategies with automatic fallbacks
@@ -6,7 +7,6 @@ import { json } from "@sveltejs/kit";
 import { and, desc, ilike, or, sql } from "drizzle-orm";
 import { db, isPostgreSQL } from "$lib/server/db/index";
 
-import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ url }) => {
   try {
@@ -66,7 +66,7 @@ async function searchCasesText(
   query: string,
   limit: number,
   filters: any,
-): Promise<unknown[]> {
+): Promise<any[]> {
   try {
     const whereConditions = [
       or(

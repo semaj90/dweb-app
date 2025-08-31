@@ -1,8 +1,9 @@
 
+import type { RequestHandler } from './$types';
+
 // Document Update Loop API
 // Handles document changes with automatic re-embedding and re-ranking
 
-import { type RequestHandler,  json, error } from '@sveltejs/kit';
 import { documentUpdateLoop } from "$lib/services/documentUpdateLoop";
 import { documents } from "$lib/db/schema";
 import { URL } from "url";

@@ -1,10 +1,11 @@
 
+import type { RequestHandler } from './$types';
+
 /**
  * Auto-Complete API Endpoint
  * Provides real-time legal phrase suggestions using semantic search
  */
 
-import { type RequestHandler,  json, error } from '@sveltejs/kit';
 import { Redis } from "ioredis";
 import { z } from "zod";
 

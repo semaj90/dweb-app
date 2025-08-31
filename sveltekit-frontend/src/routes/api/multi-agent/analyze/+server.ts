@@ -1,4 +1,3 @@
-import type { RequestHandler } from '@sveltejs/kit';
 
 import { json } from "@sveltejs/kit";
 
@@ -6,6 +5,8 @@ import { promisify } from "util";
 import { writeFile, readFile, mkdir } from "drizzle-orm";
 import { existsSync } from "fs";
 import { URL } from "url";
+import type { RequestHandler } from './$types';
+
 
 const execAsync = promisify(exec);
 

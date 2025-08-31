@@ -4,11 +4,12 @@
 
 import { createMachine, assign, fromPromise, createActor } from 'xstate';
 import type { Actor, AnyMachineSnapshot } from 'xstate';
-import Loki from 'lokijs';
 import Fuse from 'fuse.js';
 // Fabric will be loaded dynamically when needed
-import Redis from 'ioredis';
-import { publishToQueue, consumeFromQueue, setupQueues } from '$lib/server/rabbitmq';
+// Dynamic imports for server-side only - prevents browser leakage
+// import Loki from 'lokijs';
+// import Redis from 'ioredis';
+// import { publishToQueue, consumeFromQueue, setupQueues } from '$lib/server/rabbitmq';
 import { gemma3LegalService } from '$lib/services/ollama-gemma3-service';
 
 // Types and Interfaces
@@ -52,7 +53,7 @@ const concurrencyMachine = createMachine({
     tasks: [],
     results: [],
     activeWorkers: 0,
-    maxWorkers: navigator.hardwareConcurrency || 4,
+    maxWorkers: (typeof navigator !== 'undefined' && navigator.hardwareConcurrency) || 4,
     queueStats: {
       pending: 0,
       processing: 0,
@@ -162,7 +163,7 @@ const concurrencyMachine = createMachine({
       ]);
       
       return {
-        maxWorkers: Math.min(16, navigator.hardwareConcurrency || 4),
+        maxWorkers: Math.min(16, (typeof navigator !== 'undefined' && navigator.hardwareConcurrency) || 4),
         status: 'ready'
       };
     }),
@@ -215,10 +216,10 @@ const concurrencyMachine = createMachine({
 // Service Orchestrator Class
 export class ConcurrencyOrchestrator {
   private actor: Actor<typeof concurrencyMachine>;
-  private lokiDB: Loki | null = null;
-  private redis: Redis | null = null;
+  private lokiDB: any | null = null;
+  private redis: any | null = null;
   private fuseSearches: Map<string, Fuse<any>> = new Map();
-  private canvasInstances: Map<string, fabric.Canvas> = new Map();
+  private canvasInstances: Map<string, any> = new Map();
   
   constructor() {
     this.actor = createActor(concurrencyMachine);
@@ -283,7 +284,7 @@ export class ConcurrencyOrchestrator {
   }
   
   // Loki.js integration methods
-  getLokiCollection(name: string): Collection<any> | null {
+  getLokiCollection(name: string): any | null {
     return this.lokiDB?.getCollection(name) || null;
   }
   
@@ -293,14 +294,19 @@ export class ConcurrencyOrchestrator {
   }
   
   // Canvas management
-  getCanvas(canvasId: string): fabric.Canvas | null {
+  getCanvas(canvasId: string): any | null {
     return this.canvasInstances.get(canvasId) || null;
   }
   
-  createCanvas(canvasId: string, element: HTMLCanvasElement): fabric.Canvas {
-    const canvas = new fabric.Canvas(element);
-    this.canvasInstances.set(canvasId, canvas);
-    return canvas;
+  async createCanvas(canvasId: string, element: HTMLCanvasElement): Promise<any> {
+    if (typeof window !== 'undefined') {
+      // Dynamic import for browser-side fabric.js
+      const { fabric } = await import('fabric');
+      const canvas = new fabric.Canvas(element);
+      this.canvasInstances.set(canvasId, canvas);
+      return canvas;
+    }
+    return null;
   }
   
   // Health check
@@ -347,9 +353,12 @@ export class ConcurrencyOrchestrator {
   
   private async checkRabbitMQHealth(): Promise<boolean> {
     try {
-      // Import and use your existing RabbitMQ health check
-      const { healthCheck } = await import('$lib/server/rabbitmq');
-      return await healthCheck();
+      // Only check RabbitMQ health on server-side
+      if (typeof window === 'undefined') {
+        const { healthCheck } = await import('$lib/server/rabbitmq');
+        return await healthCheck();
+      }
+      return false; // Return false in browser
     } catch {
       return false;
     }
@@ -490,34 +499,49 @@ async function processDatabaseTask(payload: any): Promise<any> {
 
 // Service Initialization Functions
 async function initializeLokiDB(): Promise<void> {
-  return new Promise((resolve) => {
-    const loki = new Loki('legal-ai.db', {
-      autoload: true,
-      autoloadCallback: () => {
-        console.log('✅ Loki.js initialized');
-        resolve();
-      },
-      autosave: true,
-      autosaveInterval: 10000 // 10 seconds
+  // Only initialize Loki on server-side
+  if (typeof window === 'undefined') {
+    const Loki = (await import('lokijs')).default;
+    return new Promise((resolve) => {
+      const loki = new Loki('legal-ai.db', {
+        autoload: true,
+        autoloadCallback: () => {
+          console.log('✅ Loki.js initialized');
+          resolve();
+        },
+        autosave: true,
+        autosaveInterval: 10000 // 10 seconds
+      });
     });
-  });
+  }
+  console.log('⚠️ Loki.js skipped (browser)');
 }
 
 async function initializeRedis(): Promise<void> {
-  const redis = new Redis({
-    host: 'localhost',
-    port: 6379,
-    retryDelayOnFailover: 100,
-    maxRetriesPerRequest: 3,
-    enableOfflineQueue: false
-  });
-  
-  await redis.ping();
-  console.log('✅ Redis initialized');
+  // Only initialize Redis on server-side
+  if (typeof window === 'undefined') {
+    const Redis = (await import('ioredis')).default;
+    const redis = new Redis({
+      host: 'localhost',
+      port: 6379,
+      retryDelayOnFailover: 100,
+      maxRetriesPerRequest: 3,
+      enableOfflineQueue: false
+    });
+    
+    await redis.ping();
+    console.log('✅ Redis initialized');
+    return;
+  }
+  console.log('⚠️ Redis skipped (browser)');
 }
 
 async function initializeRabbitMQ(): Promise<void> {
-  await setupQueues();
+  // Only initialize RabbitMQ on server-side
+  if (typeof window === 'undefined') {
+    const { setupQueues } = await import('$lib/server/rabbitmq');
+    await setupQueues();
+  }
   console.log('✅ RabbitMQ initialized');
 }
 
@@ -528,7 +552,8 @@ async function initializeWorkers(): Promise<void> {
     console.log('✅ Web Workers available');
   }
   
-  console.log(`✅ Worker pool initialized (${navigator.hardwareConcurrency || 4} cores)`);
+  const cores = (typeof navigator !== 'undefined' && navigator.hardwareConcurrency) || 4;
+  console.log(`✅ Worker pool initialized (${cores} cores)`);
 }
 
 // Singleton instance

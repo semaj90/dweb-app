@@ -14,7 +14,7 @@
     <div class="space-y-4">
       <div class="space-y-4">
         <button 
-          on:click={() => goto('/')}
+          click={() => goto('/')}
           class="space-y-4"
         >
           ← Back to Dashboard

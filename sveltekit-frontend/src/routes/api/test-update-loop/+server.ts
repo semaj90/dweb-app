@@ -1,8 +1,9 @@
 
+import type { RequestHandler } from './$types';
+
 // Test Full Re-embed + Re-rank Loop
 // End-to-end testing of document changes, re-embedding, and re-ranking
 
-import { type RequestHandler,  json, error } from '@sveltejs/kit';
 import { documentUpdateLoop } from "$lib/services/documentUpdateLoop";
 import { documents, documentVectors, queryVectors, cases, users } from "$lib/db/schema";
 import { URL } from "url";

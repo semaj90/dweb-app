@@ -188,8 +188,8 @@
 		<div
 			class="space-y-4"
 			class:sidebar-open={sidebarOpen}
-			ondrop={handleFileDrop}
-			ondragover={handleDragOver}
+			on:drop={handleFileDrop}
+			on:dragover={handleDragOver}
 			role="main"
 			aria-label="Interactive canvas workspace"
 		>
@@ -260,7 +260,7 @@
 									<span class="space-y-4">{upload.hash.substring(0, 12)}...{upload.hash.substring(-4)}</span>
 									<button
 										class="space-y-4"
-										on:click={() => window.open(`/evidence/hash?hash=${upload.hash}`, '_blank')}
+										click={() => window.open(`/evidence/hash?hash=${upload.hash}`, '_blank')}
 									>
 										🔍 Verify
 									</button>

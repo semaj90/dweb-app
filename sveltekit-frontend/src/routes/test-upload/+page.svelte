@@ -41,9 +41,9 @@
       enableDragDrop={true}
       enablePasteUpload={true}
       autoUpload={false}
-      onfilesadded={handleFilesAdded}
-      onuploadcomplete={handleUploadComplete}
-      onfileremoved={handleFileRemoved}
+      on:filesadded={handleFilesAdded}
+      on:uploadcomplete={handleUploadComplete}
+      on:fileremoved={handleFileRemoved}
     />
   </div>
 

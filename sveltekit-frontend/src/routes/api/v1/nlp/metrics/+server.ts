@@ -1,5 +1,5 @@
-import type { RequestHandler } from '$lib/types/server';
-import type { RequestHandler } from "@sveltejs/kit";
+
+import type { RequestHandler } from './$types';
 
 // Versioned NLP metrics endpoint aligning with FULL_STACK_INTEGRATION_COMPLETE.md docs
 export const GET: RequestHandler = async () => {

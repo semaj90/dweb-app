@@ -106,7 +106,7 @@
           <button
             use:melt={$fileItem}
             class="container mx-auto px-4"
-            on:click={() => handleSave()}
+            click={() => handleSave()}
           >
             <Save size={16} />
             Save Report
@@ -125,7 +125,7 @@
           <button
             use:melt={$fileItem}
             class="container mx-auto px-4"
-            on:click={() => handleExport()}
+            click={() => handleExport()}
           >
             <Download size={16} />
             Export
@@ -134,7 +134,7 @@
           <button
             use:melt={$fileItem}
             class="container mx-auto px-4"
-            on:click={() => handlePreview()}
+            click={() => handlePreview()}
           >
             <Eye size={16} />
             Preview
@@ -203,7 +203,7 @@
           <button
             use:melt={$viewItem}
             class="container mx-auto px-4"
-            on:click={() => toggleSidebar()}
+            click={() => toggleSidebar()}
           >
             <Sidebar size={16} />
             Toggle Sidebar
@@ -212,7 +212,7 @@
           <button
             use:melt={$viewItem}
             class="container mx-auto px-4"
-            on:click={() => toggleLayout()}
+            click={() => toggleLayout()}
           >
             <Layout size={16} />
             Switch Layout ({$report.settings.layout})
@@ -220,7 +220,7 @@
           <button
             use:melt={$viewItem}
             class="container mx-auto px-4"
-            on:click={() => toggleFullscreen()}
+            click={() => toggleFullscreen()}
           >
             {#if $reportUI.fullscreen}
               <Minimize size={16} />
@@ -242,7 +242,7 @@
       use:melt={$toolbarButton}
       class="container mx-auto px-4"
       class:unsaved={$editorState.hasUnsavedChanges}
-      on:click={() => handleSave()}
+      click={() => handleSave()}
       title="Save Report"
     >
       <Save size={16} />
@@ -253,7 +253,7 @@
     <button
       use:melt={$toolbarButton}
       class="container mx-auto px-4"
-      on:click={() => toggleSidebar()}
+      click={() => toggleSidebar()}
       title="Toggle Sidebar"
     >
       <Sidebar size={16} />
@@ -262,7 +262,7 @@
     <button
       use:melt={$toolbarButton}
       class="container mx-auto px-4"
-      on:click={() => toggleLayout()}
+      click={() => toggleLayout()}
       title="Switch Layout"
     >
       <Layout size={16} />
@@ -273,7 +273,7 @@
     <button
       use:melt={$toolbarButton}
       class="container mx-auto px-4"
-      on:click={() => handlePreview()}
+      click={() => handlePreview()}
       title="Preview Report"
     >
       <Eye size={16} />

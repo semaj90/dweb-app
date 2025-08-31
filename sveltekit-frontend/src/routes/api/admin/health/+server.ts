@@ -1,4 +1,5 @@
-import type { RequestHandler } from '@sveltejs/kit';
+
+import type { RequestHandler } from './$types';
 
 /**
  * System Health API Endpoint

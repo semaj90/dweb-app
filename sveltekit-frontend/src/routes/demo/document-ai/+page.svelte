@@ -123,7 +123,7 @@
       
       <button 
         class="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm transition-colors"
-        on:click={checkServices}
+        click={checkServices}
       >
         🔄 Refresh Status
       </button>

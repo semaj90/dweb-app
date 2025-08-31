@@ -310,7 +310,7 @@
         bind:value={currentCommand}
         class="command-input"
         disabled={isProcessing}
-        onkeydown={handleKeyDown}
+        keydown={handleKeyDown}
         placeholder=""
         spellcheck="false"
         autocomplete="off"

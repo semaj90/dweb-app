@@ -238,30 +238,30 @@ const sessionHandle: Handle = async ({ event, resolve }) => {
   (event.locals as any).user = (event.locals as any).user ?? null;
   (event.locals as any).session = (event.locals as any).session ?? null;
 
-  // Use corrected session validation
+  // Use corrected session validation with ExistingUserAuthService
   try {
-    const { validateSession } = await import('$lib/server/lucia');
+    const { ExistingUserAuthService } = await import('$lib/server/db/existing-user-operations');
     const sessionId = event.cookies.get('session_id') || event.cookies.get('session');
     
     if (sessionId) {
-      const { session, user } = await validateSession(sessionId);
+      const result = await ExistingUserAuthService.validateSession(sessionId);
       
-      if (user && session) {
-        (event.locals as any).user = user;
+      if (result.success && result.user && result.session) {
+        (event.locals as any).user = result.user;
         (event.locals as any).session = { 
-          id: session.id, 
-          user: user,
-          userId: user.id 
+          id: result.session.id, 
+          user: result.user,
+          userId: result.user.id 
         };
-        devLog('[hooks] Session found for user:', user.email);
+        devLog('[hooks] Session found for user:', result.user.email);
       } else {
-        devLog('[hooks] No valid session found');
+        devLog('[hooks] No valid session found:', result.error || 'Unknown error');
       }
     } else {
       devLog('[hooks] No session ID in cookies');
     }
   } catch (error: any) {
-    console.warn('[hooks] Lucia session validation failed:', error?.message || error);
+    console.warn('[hooks] Session validation failed:', error?.message || error);
     // Fallback to Redis session lookup for backward compatibility (if available)
     const sessionId =
       event.cookies.get('session_id') ||

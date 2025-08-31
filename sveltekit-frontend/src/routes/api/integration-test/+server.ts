@@ -1,8 +1,9 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
 import { db, testConnection, healthCheck } from '$lib/server/db';
 import { users, cases, evidence, documentChunks } from '$lib/server/db/schema-postgres';
 import { eq, sql } from 'drizzle-orm';
+import type { RequestHandler } from './$types';
+
 // import { mcpTools } from '../../../mcp/index'; // Temporarily disabled due to dependency issues
 import bcrypt from 'bcrypt';
 

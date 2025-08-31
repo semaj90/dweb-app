@@ -94,9 +94,7 @@
       'ai-confidence-90 border-green-500': confidence === 'high',
       'ai-confidence-70 border-yellow-500': confidence === 'medium',
       'ai-confidence-40 border-red-500': confidence === 'low'
-    },
-    className
-  ));
+    }, className));
 
   // Handle click events
   function handleClick() {
@@ -118,8 +116,8 @@
   class={cardClasses}
   role={clickable ? 'button' : undefined}
   tabindex={clickable ? 0 : undefined}
-  on:click={handleClick}
-  onkeydown={handleKeydown}
+  click={handleClick}
+  keydown={handleKeydown}
   data-evidence-card={evidenceCard}
   data-case-card={caseCard}
   data-ai-analysis={aiAnalysis}

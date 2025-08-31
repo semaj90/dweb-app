@@ -1,4 +1,5 @@
-import type { RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+
 // Enhanced API Route for Go Microservice Integration
 // Connects SvelteKit frontend with enhanced legal AI processing
 // Supports local Gemma3-legal GGUF model with CUDA acceleration

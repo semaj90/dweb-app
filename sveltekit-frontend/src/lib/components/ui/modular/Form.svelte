@@ -24,7 +24,7 @@
   let {
     variant = 'default',
     size = 'default',
-    class: className,
+    class: class,
     children,
     header,
     footer,
@@ -66,7 +66,7 @@
   );
 
   // Computed class names
-  let formClass = $derived(cn(formVariants({ variant, size }), className));
+  let formClass = $derived(cn(formVariants({ variant, size }), class));
 
   // Handle form submission
   function handleSubmit(event: SubmitEvent) {
@@ -82,7 +82,7 @@
   {target}
   {novalidate}
   {autocomplete}
-  onsubmit={handleSubmit}
+  submit={handleSubmit}
   {...restProps}
 >
   <!-- Form Header -->

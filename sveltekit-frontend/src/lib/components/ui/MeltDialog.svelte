@@ -135,7 +135,7 @@
 		<!-- Content -->
 		<div 
 			use:melt={$content}
-			class={cn(defaultContentClass, contentClass, className)}
+			className={cn(defaultContentClass, contentClass, className)}
 		>
 			<!-- Close button -->
 			<button

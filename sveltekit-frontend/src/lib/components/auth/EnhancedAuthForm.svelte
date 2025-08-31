@@ -21,7 +21,7 @@
     onSuccess,
     allowGuestMode = false,
     loading = false,
-    class: className,
+    class: class,
     id,
     'data-testid': testId
   }: EnhancedAuthFormProps = $props();
@@ -303,7 +303,7 @@
     />
     <Dialog.Content 
       class="fixed left-[50%] top-[50%] z-50 grid w-full max-w-md translate-x-[-50%] translate-y-[-50%] gap-6 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg"
-      onopenautofocus={(e) => {
+      on:openautofocus={(e) => {
         e.preventDefault();
         emailInput?.focus();
       }}
@@ -321,7 +321,7 @@
         </Dialog.Description>
       </div>
 
-      <form onsubmit={handleSubmit} class="space-y-4">
+      <form submit={handleSubmit} class="space-y-4">
         <!-- Success Message -->
         {#if formState.success}
           <Alert variant="default" class="border-green-200 bg-green-50 text-green-800">
@@ -425,7 +425,7 @@
             />
             <button
               type="button"
-              on:click={() => formState.showPassword = !formState.showPassword}
+              click={() => formState.showPassword = !formState.showPassword}
               class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
             >
               {#if formState.showPassword}
@@ -480,7 +480,7 @@
               />
               <button
                 type="button"
-                on:click={() => formState.showConfirmPassword = !formState.showConfirmPassword}
+                click={() => formState.showConfirmPassword = !formState.showConfirmPassword}
                 class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
               >
                 {#if formState.showConfirmPassword}
@@ -563,7 +563,7 @@
         <div class="text-center">
           <button 
             type="button"
-            on:click={toggleMode}
+            click={toggleMode}
             class="text-sm text-primary hover:underline"
             disabled={formState.loading}
           >

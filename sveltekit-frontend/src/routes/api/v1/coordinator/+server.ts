@@ -1,10 +1,11 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Unified API Layer - Master Service Coordinator Endpoints
  * RESTful API for all 38 Go microservices with comprehensive error handling
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 import { masterServiceCoordinator } from '$lib/services/master-service-coordinator.js';
 
 /**

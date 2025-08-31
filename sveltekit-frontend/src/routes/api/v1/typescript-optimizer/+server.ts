@@ -1,7 +1,8 @@
+import type { RequestHandler } from './$types';
+
 // TypeScript Error Optimizer API - Production Integration
 // Integrates with enhanced Go service for GPU-accelerated TypeScript error processing
 
-import { json, type RequestHandler } from '@sveltejs/kit';
 import type { 
 	TypeScriptError, 
 	AutoSolveRequest, 

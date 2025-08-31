@@ -92,7 +92,7 @@ export class SIMDJSONParser {
   /**
    * Parse streaming legal case data (for real-time processing)
    */
-  async parseStreamingCaseData(chunks: string[]): Promise<unknown[]> {
+  async parseStreamingCaseData(chunks: string[]): Promise<any[]> {
     const results = [];
     
     // Process chunks in parallel using SIMD

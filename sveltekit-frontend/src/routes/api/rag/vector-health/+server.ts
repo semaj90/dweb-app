@@ -1,6 +1,8 @@
 import { json } from "@sveltejs/kit";
 import { db, documents, embeddings } from "drizzle-orm";
 import { sql } from 'drizzle-orm';
+import type { RequestHandler } from './$types';
+
 
 export const GET = async (): Promise<any> => {
   try {
@@ -15,7 +17,7 @@ export const GET = async (): Promise<any> => {
 
     // Sample a few embeddings to check length
   const sample = await db.execute(sql`SELECT id, document_id, embedding FROM legal_embeddings LIMIT 25`) as any;
-    const anomalies = [] as unknown[];
+    const anomalies = [] as any[];
     let ok = 0;
     for (const row of sample.rows) {
       const vec: number[] = (row as any).embedding;

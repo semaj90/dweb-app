@@ -105,7 +105,7 @@
 <div
   class="mx-auto px-4 max-w-7xl"
   bind:this={scrollContainer}
-  onscroll={handleScroll}
+  on:scroll={handleScroll}
   role="listbox"
   aria-label="{itemType} list"
 >
@@ -122,8 +122,8 @@
         <div
           class="mx-auto px-4 max-w-7xl"
           transition:slide={{ duration: 300, easing: quintOut "
-          on:click={() => handleItemClick(item)}
-          onkeydown={(e) => e.key === "Enter" && handleItemClick(item)}
+          click={() => handleItemClick(item)}
+          on:keydown={(e) => e.key === "Enter" && handleItemClick(item)}
           role="option"
           tabindex={0}
           aria-label="{itemType} item"

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { createDialog, melt } from "melt";
-  import { $props, $state, $derived, $effect } from 'svelte';
+  // Runtime helpers like $props/$state/$derived/$effect are provided by the
+  // Svelte runes compiler and must not be imported. Remove explicit import.
   import { Bookmark, BookmarkCheck, Calendar, Edit3, Eye, Tag, User as UserIcon, X } from "lucide-svelte";
   import { marked } from "marked";
   import { writable } from "svelte/store";
@@ -203,7 +204,7 @@
                 <button
                   type="button"
                   class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded"
-                  on:click={() => startEdit()}
+                  click={() => startEdit()}
                   title="Edit Note"
                 >
                   <Edit3 class="w-5 h-5" />
@@ -212,7 +213,7 @@
                 <button
                   type="button"
                   class="px-3 py-1 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
-                  on:click={() => cancelEdit()}
+                  click={() => cancelEdit()}
                 >
                   Cancel
                 </button>
@@ -222,7 +223,7 @@
             <button
               type="button"
               class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded"
-              on:click={() => isSaved ? handleRemoveFromSaved() : handleSaveForLater()}
+              click={() => isSaved ? handleRemoveFromSaved() : handleSaveForLater()}
               title={isSaved ? "Remove from saved" : "Save for later"}
             >
               {#if isSaved}
@@ -254,7 +255,7 @@
                 {tag}
                 <button
                   type="button"
-                  on:click={() => removeTag(tag)}
+                  click={() => removeTag(tag)}
                   class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200"
                 >
                   <X class="w-3 h-3" />
@@ -264,7 +265,7 @@
 
             <input
               bind:value={newTag}
-              onkeydown={(e) => e.key === "Enter" && addTag()}
+              keydown={(e) => e.key === "Enter" && addTag()}
               class="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm min-w-20"
               placeholder="Add tag..."
             />
@@ -284,7 +285,7 @@
           <RichTextEditor
             content={editedContent}
             placeholder="Edit your note..."
-            onsave={handleEditorSave}
+            on:save={handleEditorSave}
             autoSave={false}
           />
         {:else if displayHtml}

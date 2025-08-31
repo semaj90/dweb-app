@@ -2,6 +2,8 @@
 import { error, json } from "@sveltejs/kit";
 import { mkdir, rename } from "drizzle-orm";
 import { tmpdir } from "os";
+import type { RequestHandler } from './$types';
+
 
 const UPLOAD_DIR = join(tmpdir(), "chunked-uploads");
 

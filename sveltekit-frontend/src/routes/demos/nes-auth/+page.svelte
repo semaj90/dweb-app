@@ -60,7 +60,7 @@
         <button 
           type="button" 
           class="nes-btn is-primary"
-          onclick={openAuthModal}
+          click={openAuthModal}
         >
           🎮 Launch Auth Modal
         </button>
@@ -137,7 +137,7 @@
 <NesAuthModal 
   bind:isOpen={isAuthModalOpen}
   {form}
-  onclose={closeAuthModal}
+  on:close={closeAuthModal}
 />
 
 <style>

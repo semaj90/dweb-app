@@ -1,11 +1,11 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { URL } from "url";
 
 import { reports } from "$lib/server/db/schema";
 
 import { db } from "$lib/server/db/index";
+import type { RequestHandler } from './$types';
+
 // import { citationPoints
-import type { RequestHandler } from "@sveltejs/kit";
 import { and, eq } from "drizzle-orm";
 export const GET: RequestHandler = async ({ url, locals }) => {
   try {

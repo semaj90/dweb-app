@@ -1,9 +1,10 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Cluster API Endpoint - Service Orchestration & Health
  * Routes to: cluster-http.exe:8213, modular-cluster-service-production.exe:8215
  */
 
-import { json, error, type RequestHandler } from '@sveltejs/kit';
 import { productionServiceClient } from '$lib/services/productionServiceClient';
 
 // GET handler multiplexes sub-endpoints based on trailing path segment (health|services|metrics|root)

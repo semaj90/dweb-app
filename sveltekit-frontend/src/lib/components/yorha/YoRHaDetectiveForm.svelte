@@ -64,7 +64,7 @@
   }
 </script>
 
-<form class="yorha-form" onsubmit={handleSubmit}>
+<form class="yorha-form" submit={handleSubmit}>
   <div class="form-fields">
     {#each fields as field}
       <div class="form-field">

@@ -17,6 +17,15 @@ export {
   type YoRHaTransform
 } from './YoRHaUI3D';
 
+// Anti-Aliasing Enhanced System
+export {
+  YoRHaAntiAliased3D,
+  type YoRHaAAStyle,
+  type AntiAliasingConfig,
+  type ShaderEnhancements,
+  AntiAliasingUtils
+} from './YoRHaAntiAliasing3D';
+
 // Import for local use in utility functions
 import { YoRHaButton3D } from './components/YoRHaButton3D';
 import { YoRHaPanel3D } from './components/YoRHaPanel3D';

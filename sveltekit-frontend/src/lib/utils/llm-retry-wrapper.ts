@@ -32,7 +32,7 @@ const todoAutogen = {
   }
 };
 
-const retryLLMCall = async (fn: (): Promise<any> => Promise<any>, model: string, prompt: string, retries: number) => {
+const retryLLMCall = async (fn: () => Promise<any>, model: string, prompt: string, retries: number) => {
   for (let i = 0; i < retries; i++) {
     try {
       return await fn();
@@ -59,7 +59,7 @@ export class OllamaRetryWrapper {
    * Make LLM call with automatic retry and error logging
    */
   async callLLM(
-    prompt: string, 
+    prompt: string,
     options: LLMCallOptions = {}
   ): Promise<LLMResponse> {
     const {
@@ -136,10 +136,10 @@ export class OllamaRetryWrapper {
 
         } catch (error: any) {
           clearTimeout(timeoutId);
-          
+
           // Track failures
           this.failureCount++;
-          
+
           // Log specific error types
           if (error.name === 'AbortError') {
             await todoAutogen.logPerformanceIssue('timeout', {
@@ -187,7 +187,7 @@ export class OllamaRetryWrapper {
       // Check if required models are available
       const requiredModels = Object.values(LOCAL_LLM_CONFIG.OLLAMA_MODELS);
       const availableModels = models.map((m: any) => m.name);
-      const missingModels = requiredModels.filter((model: string) => 
+      const missingModels = requiredModels.filter((model: string) =>
         !availableModels.some((available: string) => available.includes(model))
       );
 
@@ -262,7 +262,7 @@ export async function promptLLM(
     model,
     ...options
   });
-  
+
   return result.response;
 }
 

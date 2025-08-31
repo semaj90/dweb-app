@@ -1,9 +1,12 @@
+import type { RequestHandler } from './$types';
+
 /**
  * XState API Endpoint - State Management & Orchestration
  * Routes to: xstate-manager.exe:8212
  */
 
-import { type RequestHandler,  json, error } from '@sveltejs/kit';
+
+import { ensureError } from '$lib/utils/ensure-error';
 import { productionServiceClient } from "$lib/services/productionServiceClient";
 
 export interface XStateEvent {
@@ -19,7 +22,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
     const eventData: XStateEvent = await request.json();
     
     if (!eventData.type) {
-      return error(400, { message: 'Event type is required' });
+      return error(400, ensureError({ message: 'Event type is required' }));
     }
 
     // Add timestamp if not provided
@@ -110,6 +113,6 @@ export const GET: RequestHandler = async ({ url }) => {
 
   } catch (err: any) {
     console.error('XState GET Error:', err);
-    return error(503, { message: 'XState service health check failed' });
+    return error(503, ensureError({ message: 'XState service health check failed' }));
   }
 };

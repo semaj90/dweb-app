@@ -2,7 +2,7 @@
   import { getContext, onDestroy, onMount } from 'svelte';
   import type { Writable } from 'svelte/store';
 <slots>
-  let { className = $bindable() } = $props(); // string = '';
+  let { class = $bindable() } = $props(); // string = '';
 
   const { isOpen, position, close } = getContext<{
     isOpen: Writable<boolean>;
@@ -37,7 +37,7 @@
 {#if $isOpen}
   <div
     bind:this={menuElement}
-    class={className || 'context-menu-content'}
+    class={class || 'context-menu-content'}
     style="left: {$position.x}px; top: {$position.y}px;"
     role="menu"
     tabindex={-1}

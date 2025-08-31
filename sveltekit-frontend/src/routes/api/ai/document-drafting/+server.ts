@@ -1,9 +1,10 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Document Drafting Assistant API Endpoint
  * Provides AI-powered legal document drafting assistance with templates and guidance
  */
 
-import { type RequestHandler,  json } from '@sveltejs/kit';
 import { synthesizeAIInput, processAIAssistantQuery } from "$lib/services/comprehensive-database-orchestrator";
 
 export interface DocumentDraftingRequest {

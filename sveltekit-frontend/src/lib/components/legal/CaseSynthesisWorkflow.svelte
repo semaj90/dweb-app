@@ -464,7 +464,7 @@ ${synthesis.nextSteps.map(step => `- ${step}`).join('\n')}
         
         {#if $state.context.synthesisResult}
           <button
-            on:click={exportSynthesis}
+            click={exportSynthesis}
             class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
           >
             <Download class="w-4 h-4" />
@@ -510,7 +510,7 @@ ${synthesis.nextSteps.map(step => `- ${step}`).join('\n')}
                   type="checkbox"
                   class="mt-1"
                   checked={selectedDocuments.has(doc.id)}
-                  onchange={() => toggleSelection(doc.id, 'document')}
+                  change={() => toggleSelection(doc.id, 'document')}
                 />
                 <div class="flex-1">
                   <div class="font-medium text-gray-900">{doc.title}</div>
@@ -536,7 +536,7 @@ ${synthesis.nextSteps.map(step => `- ${step}`).join('\n')}
                   type="checkbox"
                   class="mt-1"
                   checked={selectedReports.has(report.id)}
-                  onchange={() => toggleSelection(report.id, 'report')}
+                  change={() => toggleSelection(report.id, 'report')}
                 />
                 <div class="flex-1">
                   <div class="font-medium text-gray-900">{report.title}</div>
@@ -558,7 +558,7 @@ ${synthesis.nextSteps.map(step => `- ${step}`).join('\n')}
           {selectedCount} items selected for synthesis
         </div>
         <button
-          on:click={startSynthesis}
+          click={startSynthesis}
           disabled={selectedCount === 0}
           class="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
@@ -596,13 +596,13 @@ ${synthesis.nextSteps.map(step => `- ${step}`).join('\n')}
       </div>
       <div class="mt-4 flex gap-3">
         <button
-          on:click={() => send({ type: 'RETRY' })}
+          click={() => send({ type: 'RETRY' })}
           class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
         >
           Retry Synthesis
         </button>
         <button
-          on:click={() => send({ type: 'RESTART' })}
+          click={() => send({ type: 'RESTART' })}
           class="px-4 py-2 border border-red-300 text-red-700 rounded-md hover:bg-red-50 transition-colors"
         >
           Start Over
@@ -800,13 +800,13 @@ ${synthesis.nextSteps.map(step => `- ${step}`).join('\n')}
       <!-- Action Buttons -->
       <div class="flex gap-4">
         <button
-          on:click={() => send({ type: 'RESTART' })}
+          click={() => send({ type: 'RESTART' })}
           class="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
         >
           New Synthesis
         </button>
         <button
-          on:click={exportSynthesis}
+          click={exportSynthesis}
           class="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
         >
           <Download class="w-4 h-4" />

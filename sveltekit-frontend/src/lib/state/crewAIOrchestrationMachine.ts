@@ -545,7 +545,7 @@ export const crewAIOrchestrationMachine = setup({
 // HELPER FUNCTIONS
 // ============================================================================
 
-async function generateContextualRecommendations(context: CrewAIContext): Promise<unknown[]> {
+async function generateContextualRecommendations(context: CrewAIContext): Promise<any[]> {
   // This would implement your self-prompting logic
   const recommendations = [];
   

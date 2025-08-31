@@ -1,9 +1,10 @@
+import type { RequestHandler } from './$types';
+
 // src/routes/api/vectors/sync/+server.ts
 // Automatic vector synchronization to Qdrant after CUDA processing
 // Triggered by Go microservice after successful vector generation
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import postgres from 'postgres';
 import { createClient } from 'redis';
@@ -106,8 +107,9 @@ class QdrantClient {
 const qdrant = new QdrantClient();
 
 export const POST: RequestHandler = async ({ request }) => {
+  let body: any;
   try {
-    const body = await request.json();
+    body = await request.json();
     const { jobId, vectorId, ownerType, ownerId, event } = body;
 
     console.log(`🔄 Syncing vector to Qdrant: ${jobId} (${event})`);

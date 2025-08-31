@@ -98,7 +98,7 @@
 		onkeyup
 	}: Props = $props();
 	
-	let inputClass = $derived(cn(inputVariants({ variant, size }), className));
+	let inputClass = $derived(cn(inputVariants({ variant, size }), class));
 	
 	type $$Props = Props;
 </script>

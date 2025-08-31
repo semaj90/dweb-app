@@ -3,6 +3,8 @@ import { citationPoints } from "$lib/server/db/unified-schema";
 import type { RequestEvent } from "@sveltejs/kit";
 import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db/index";
+import type { RequestHandler } from './$types';
+
 
 // Sample citations for when database is not available or for demo data
 const sampleCitations = [

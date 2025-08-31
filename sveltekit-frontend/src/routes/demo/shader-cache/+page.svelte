@@ -319,7 +319,7 @@
               <button
                 class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors disabled:opacity-50 text-sm"
                 disabled={$isLoading}
-                on:click={() => demonstrateColdPath(shader)}
+                click={() => demonstrateColdPath(shader)}
               >
                 {shader.key}
               </button>
@@ -338,7 +338,7 @@
               <button
                 class="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors disabled:opacity-50 text-sm"
                 disabled={$isLoading}
-                on:click={() => demonstrateHotPath(shader.key)}
+                click={() => demonstrateHotPath(shader.key)}
               >
                 {shader.key}
               </button>
@@ -356,14 +356,14 @@
             <button
               class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors disabled:opacity-50"
               disabled={$isLoading}
-              on:click={demonstratePredictivePreloading}
+              click={demonstratePredictivePreloading}
             >
               🎯 Predictive Preloading
             </button>
             <button
               class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors disabled:opacity-50"
               disabled={$isLoading}
-              on:click={demonstrateMultiDimensionalSearch}
+              click={demonstrateMultiDimensionalSearch}
             >
               🔍 Multi-Dimensional Search
             </button>
@@ -378,7 +378,7 @@
           <button
             class="w-full bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors disabled:opacity-50"
             disabled={$isLoading}
-            on:click={clearCache}
+            click={clearCache}
           >
             🧹 Clear Cache
           </button>

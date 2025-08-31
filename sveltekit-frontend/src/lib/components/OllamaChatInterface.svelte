@@ -289,7 +289,7 @@
 </script>
 
 <!-- Chat Interface -->
-<div class="ollama-chat-interface {className}">
+<div class="ollama-chat-interface {class}">
   <!-- Header with Status -->
   <Card class="mb-4">
     <CardHeader class="pb-3">
@@ -492,7 +492,7 @@
       <Input
         bind:value={message}
         placeholder="Ask the Legal AI Assistant..."
-        onkeypress={handleKeyPress}
+        on:keypress={handleKeyPress}
         disabled={isLoading || ollamaStatus !== "healthy"}
         class="pr-12"
         data-testid="chat-input"

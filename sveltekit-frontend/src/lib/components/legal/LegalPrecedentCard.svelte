@@ -117,7 +117,7 @@
   }
 </script>
 
-<div class={cn(
+<div className={cn(
   'legal-precedent-card bg-yorha-bg-secondary border border-yorha-border rounded-lg overflow-hidden',
   interactive && 'hover:border-yorha-primary/30 transition-colors',
   precedent.overruled && 'opacity-75',
@@ -138,9 +138,9 @@
       </div>
 
       <!-- Precedent Type Badge -->
-      <span class={cn(
+      <span className={cn(
         'px-2 py-1 text-xs font-mono rounded border shrink-0',
-        precedentTypeConfig[precedent.precedentType].class
+        precedentTypeConfig[precedent.precedentType].className
       )}>
         {precedentTypeConfig[precedent.precedentType].label}
       </span>
@@ -302,7 +302,7 @@
       <!-- Expand/Collapse -->
       {#if expandable}
         <button
-          on:click={() => expanded = !expanded}
+          click={() => expanded = !expanded}
           class="text-xs font-mono text-yorha-primary hover:text-yorha-accent transition-colors"
         >
           {expanded ? 'Show Less' : 'Show More'}
@@ -339,7 +339,7 @@
 
         {#if onViewFull && interactive}
           <button
-            on:click={() => onViewFull?.(precedent)}
+            click={() => onViewFull?.(precedent)}
             class="px-2 py-1 text-xs font-mono bg-yorha-primary/10 text-yorha-primary border border-yorha-primary/20 rounded hover:bg-yorha-primary/20 transition-colors"
           >
             Full Details
@@ -348,7 +348,7 @@
 
         {#if onAddToCase && interactive && currentCaseId}
           <button
-            on:click={() => onAddToCase?.(precedent)}
+            click={() => onAddToCase?.(precedent)}
             class="px-2 py-1 text-xs font-mono bg-green-500/10 text-green-400 border border-green-500/20 rounded hover:bg-green-500/20 transition-colors"
           >
             Add to Case
@@ -366,7 +366,7 @@
         <div class="flex flex-wrap gap-2">
           {#each precedent.relatedCases.slice(0, 3) as relatedCase}
             <button
-              on:click={() => onViewRelated?.(relatedCase)}
+              click={() => onViewRelated?.(relatedCase)}
               class="text-xs font-mono text-yorha-primary hover:text-yorha-accent transition-colors underline"
             >
               {relatedCase}

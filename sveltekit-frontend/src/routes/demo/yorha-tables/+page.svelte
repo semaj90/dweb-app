@@ -179,26 +179,26 @@
       <button 
         class="yorha-control-btn" 
         class:active={selectedDemo === 'table'}
-        on:click={() => selectedDemo = 'table'}
+        click={() => selectedDemo = 'table'}
       >
         BASIC TABLE
       </button>
       <button 
         class="yorha-control-btn" 
         class:active={selectedDemo === 'grid'}
-        on:click={() => selectedDemo = 'grid'}
+        click={() => selectedDemo = 'grid'}
       >
         DATA GRID
       </button>
       <button 
         class="yorha-control-btn yorha-action"
-        on:click={() => toggleLoading(selectedDemo as 'table' | 'grid')}
+        click={() => toggleLoading(selectedDemo as 'table' | 'grid')}
       >
         TEST LOADING
       </button>
       <button 
         class="yorha-control-btn yorha-warning"
-        on:click={triggerGlitch}
+        click={triggerGlitch}
       >
         GLITCH EFFECT
       </button>
@@ -230,7 +230,7 @@
               
             <button 
               class="yorha-action-btn-sm" 
-              on:click={() => mockAIAnalysis(row)}
+              click={() => mockAIAnalysis(row)}
             >
               ANALYZE
             </button>
@@ -303,7 +303,7 @@
               
             <button 
               class="yorha-action-btn" 
-              on:click={() => mockAIAnalysis(row)}
+              click={() => mockAIAnalysis(row)}
             >
               ANALYZE
             </button>

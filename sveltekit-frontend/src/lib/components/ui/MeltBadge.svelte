@@ -58,7 +58,7 @@
 		children
 	}: Props = $props();
 
-	let badgeClass = $derived(cn(badgeVariants({ variant, size }), className));
+	let badgeClass = $derived(cn(badgeVariants({ variant, size }), class));
 	let isClickable = $derived(!!onclick);
 
 	type $$Props = Props;
@@ -73,7 +73,7 @@
 		data-testid={testId || "melt-badge"}
 		type="button"
 		tabindex={0}
-		on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onclick?.(e as any); } }}
+		keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onclick?.(e as any); } }}
 	>
 		{#if children}
 			{@render children()}

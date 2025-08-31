@@ -224,7 +224,7 @@
             type="text"
             placeholder="Search evidence..."
             value={searchQuery}
-            oninput={handleSearch}
+            input={handleSearch}
             class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
@@ -234,7 +234,7 @@
         <!-- Sort dropdown -->
         <select
           value={sortBy}
-          onchange={(e) => {
+          change={(e) => {
             const value = (e.target as HTMLSelectElement)?.value;
             if (value === 'title' || value === 'evidenceType' || value === 'fileSize' || value === 'uploadedAt') {
               toggleSort(value);
@@ -347,8 +347,8 @@
           {#each filteredData as item (item.id)}
             <div
               class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4 hover:shadow-lg transition-shadow cursor-pointer {selectedItems.has(item.id) ? 'ring-2 ring-blue-500' : ''}"
-              on:click={() => toggleSelection(item)}
-              oncontextmenu={(e) => { e.preventDefault(); showContextMenu(e, item); }}
+              click={() => toggleSelection(item)}
+              on:contextmenu={(e) => { e.preventDefault(); showContextMenu(e, item); }}
             >
               <!-- Preview/Thumbnail -->
               <div
@@ -373,7 +373,7 @@
                   <input
                     type="checkbox"
                     checked={selectedItems.has(item.id)}
-                    onchange={() => toggleSelection(item)}
+                    change={() => toggleSelection(item)}
                     class="space-y-4"
                   />
                 </div>
@@ -439,14 +439,14 @@
             {@const SvelteComponent_1 = getFileIcon(item.evidenceType, item.mimeType)}
             <div
               class="space-y-4"
-              on:click={() => toggleSelection(item)}
-              oncontextmenu={(e) => { e.preventDefault(); showContextMenu(e, item); }}
+              click={() => toggleSelection(item)}
+              on:contextmenu={(e) => { e.preventDefault(); showContextMenu(e, item); }}
             >
               <!-- Selection checkbox -->
               <input
                 type="checkbox"
                 checked={selectedItems.has(item.id)}
-                onchange={() => toggleSelection(item)}
+                change={() => toggleSelection(item)}
                 class="space-y-4"
               />
 

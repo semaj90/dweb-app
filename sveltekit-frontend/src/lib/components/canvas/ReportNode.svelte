@@ -73,8 +73,8 @@ let dragStartY = 0;
       bind:this={nodeElement}
       class="space-y-4"
       style={`left: ${position.x}px; top: ${position.y}px; z-index: 10;`}
-      onmousedown={handleMouseDown}
-      onkeydown={(e) => {
+      on:mousedown={handleMouseDown}
+      keydown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           isDragging = true;
@@ -96,12 +96,12 @@ let dragStartY = 0;
   <ContextMenu.Content menu={true}>
     <ContextMenu.Item
     <ContextMenu.Item
-      onselect={() => saveCitation(window.getSelection()?.toString() || "")}
+      on:select={() => saveCitation(window.getSelection()?.toString() || "")}
     >
       <Link class="space-y-4" />
       Save as Citation
     </ContextMenu.Item>
-    <ContextMenu.Item onselect={summarizeReport}>
+    <ContextMenu.Item on:select={summarizeReport}>
       <Sparkles class="space-y-4" />
       AI Summary
     </ContextMenu.Item>

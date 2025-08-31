@@ -3,6 +3,8 @@ import { URL } from "url";
 import { json } from "@sveltejs/kit";
 
 import { personsOfInterest } from "$lib/server/db/schema-postgres";
+import type { RequestHandler } from './$types';
+
 
 export async function GET({ url }): Promise<any> {
   try {

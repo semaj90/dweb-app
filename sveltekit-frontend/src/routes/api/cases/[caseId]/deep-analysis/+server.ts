@@ -1,9 +1,10 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db/index";
 import { caseActivities, cases, evidence } from "$lib/server/db/index";
 import { eq } from "drizzle-orm";
 import { QdrantClient } from "@qdrant/js-client-rest";
+import type { RequestHandler } from './$types';
+
 
 // Environment variables fallback
 const env = process.env || {};

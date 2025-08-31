@@ -129,7 +129,7 @@ export interface ToolParameter {
 	default?: unknown;
 }
 
-export interface AgentConfig {
+export interface LLMAgentConfig {
 	maxIterations?: number;
 	timeout?: number;
 	memorySize?: number;

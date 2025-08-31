@@ -1,6 +1,7 @@
+import type { RequestHandler } from './$types';
+
 // Production Vector Search Testing API
 // Tests vector ranking, reranking, and RAG pipeline integration
-import { type RequestHandler,  json } from '@sveltejs/kit';
 import { db } from "$lib/server/db/index";
 import { vectorRankingService } from "$lib/services/vectorRankingService";
 import { enhancedRAGPipeline } from "$lib/services/enhancedRAGPipeline";
@@ -147,7 +148,7 @@ export const POST: RequestHandler = async ({ request }) => {
           topK: 5
         });
         // Normalize qdrant results to expected shape
-        const qdrantResults = (qdrantResultsRaw as unknown[] || []).map(r => ({ id: r.id, score: r.score || 0, payload: r.payload || {} }));
+        const qdrantResults = (qdrantResultsRaw as any[] || []).map(r => ({ id: r.id, score: r.score || 0, payload: r.payload || {} }));
 
         results.tests.qdrantSearch = {
           success: true,

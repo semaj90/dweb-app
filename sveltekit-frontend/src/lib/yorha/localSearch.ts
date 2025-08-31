@@ -15,7 +15,7 @@ let documents: LocalLegalDoc[] = [];
 let loadedFromCache = false;
 let cacheKey = 'yorha-local-doc-index-v1';
 
-const options: Fuse.IFuseOptions<LocalLegalDoc> = {
+const options: any = {
   keys: [
     { name: 'title', weight: 0.4 },
     { name: 'content', weight: 0.3 },

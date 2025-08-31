@@ -46,7 +46,7 @@
     try {
       ws = new WebSocket(wsUrl);
       
-      ws.onopen = () => {
+      ws.on:open=() => {
         console.log('✅ WebSocket connected on port', wsPort);
         isConnected = true;
         clearTimeout(reconnectTimeout);
@@ -71,7 +71,7 @@
         console.error('WebSocket error:', error);
       };
       
-      ws.onclose = () => {
+      ws.on:close=() => {
         console.log('WebSocket disconnected');
         isConnected = false;
         
@@ -537,16 +537,16 @@ Type your legal question or upload a document to begin!`,
       </label>
       
       <label class="file-upload">
-        <input type="file" onchange={handleFileUpload} accept=".pdf,.txt,.doc,.docx" />
+        <input type="file" change={handleFileUpload} accept=".pdf,.txt,.doc,.docx" />
         <span>📎 Upload Document</span>
       </label>
       
       {#if !currentRoom}
-        <button on:click={() => joinRoom('legal-team')} class="join-room-btn">
+        <button click={() => joinRoom('legal-team')} class="join-room-btn">
           Join Room
         </button>
       {:else}
-        <button on:click={leaveRoom} class="leave-room-btn">
+        <button click={leaveRoom} class="leave-room-btn">
           Leave Room
         </button>
       {/if}
@@ -629,7 +629,7 @@ Type your legal question or upload a document to begin!`,
           {i + 1}. {item}
         </div>
       {/each}
-      <button on:click={processBatch} class="process-batch-btn">
+      <button click={processBatch} class="process-batch-btn">
         Process Batch
       </button>
     </div>
@@ -651,7 +651,7 @@ Type your legal question or upload a document to begin!`,
   <div class="input-container">
     <textarea
       bind:value={inputMessage}
-      onkeypress={handleKeyPress}
+      on:keypress={handleKeyPress}
       placeholder={batchMode ? "Type message (Shift+Enter to add to batch)..." : "Type your legal question..."}
       class="message-input"
       rows="3"
@@ -659,13 +659,13 @@ Type your legal question or upload a document to begin!`,
     
     <div class="input-actions">
       {#if batchMode}
-        <button on:click={addToBatch} class="add-batch-btn">
+        <button click={addToBatch} class="add-batch-btn">
           ➕ Add to Batch
         </button>
       {/if}
       
       <button
-        on:click={sendMessage}
+        click={sendMessage}
         disabled={!inputMessage.trim() || !isConnected}
         class="send-button"
       >

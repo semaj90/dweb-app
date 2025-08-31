@@ -1,10 +1,13 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Enhanced RAG API Endpoint - SvelteKit 2 Production
  * Integrates with Enhanced RAG service (port 8094) and dimensional caching
  * Supports multi-protocol routing (HTTP, gRPC, QUIC) with automatic failover
  */
 
-import { json, error, type RequestHandler } from '@sveltejs/kit';
+
+import { ensureError } from '$lib/utils/ensure-error';
 import { dev } from '$app/environment';
 import type { 
   EnhancedRAGRequest, 
@@ -50,11 +53,11 @@ export const POST: RequestHandler = async ({ request, getClientAddress, url }) =
     
     // Validate required fields
     if (!body.query) {
-      return error(400, {
+      return error(400, ensureError({
         message: 'Query is required',
         code: 'MISSING_QUERY',
         requestId
-      });
+      }));
     }
 
     const context: APIRequestContext = {
@@ -104,14 +107,14 @@ export const POST: RequestHandler = async ({ request, getClientAddress, url }) =
   } catch (err: any) {
     console.error('RAG API Error:', err);
     
-    return error(500, {
+    return error(500, ensureError({
       message: 'RAG processing failed',
       error: dev ? String(err) : 'Internal server error',
       code: 'RAG_PROCESSING_ERROR',
       requestId,
       timestamp: new Date().toISOString(),
       retryable: true
-    });
+    }));
   }
 };
 
@@ -146,10 +149,10 @@ export const GET: RequestHandler = async ({ url }) => {
     }
   } catch (err: any) {
     console.error('RAG GET Error:', err);
-    return error(500, {
+    return error(500, ensureError({
       message: 'Service unavailable',
       error: dev ? String(err) : 'Internal error'
-    });
+    }));
   }
 };
 

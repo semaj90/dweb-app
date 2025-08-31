@@ -10,11 +10,11 @@
 		class?: string;
 	};
 
-	let { children, class: className, ...rest }: Props = $props();
+	let { children, class: class, ...rest }: Props = $props();
 </script>
 
 <ScrollAreaPrimitive.Root
-	class={cn("relative overflow-hidden", className)}
+	class={cn("relative overflow-hidden", class)}
 	{...rest}
 >
 	<ScrollAreaPrimitive.Viewport class="h-full w-full rounded-[inherit]">

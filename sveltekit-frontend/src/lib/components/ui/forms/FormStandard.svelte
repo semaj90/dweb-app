@@ -84,7 +84,7 @@
   aria-label={ariaLabel}
   aria-describedby={ariaDescribedBy}
   class="form-standard {variantClasses[variant]} {sizeClasses[size]} 
-         {variant !== 'inline' ? spacingClasses[spacing] : ''} {className}"
+         {variant !== 'inline' ? spacingClasses[spacing] : ''} {class}"
   {...formProps}
 >
   {#if header}

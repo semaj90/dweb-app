@@ -1,8 +1,7 @@
 <script lang="ts">
 
 
-	import type { HTMLInputAttributes } from 'svelte/elements';
-  import { $props, $derived } from 'svelte';
+		import type { HTMLInputAttributes } from 'svelte/elements';
 
 	interface Props extends Omit<HTMLInputAttributes, 'size' | 'disabled' | 'required' | 'readonly'> {
 		label?: string;
@@ -68,21 +67,21 @@
 		value = target.value;
 		oninput?.(event);
 	}
-	
+
 	function handleChange(event: Event) {
 		onchange?.(event);
 	}
-	
+
 	function handleFocus(event: FocusEvent) {
 		isFocused = true;
 		onfocus?.(event);
 	}
-	
+
 	function handleBlur(event: FocusEvent) {
 		isFocused = false;
 		onblur?.(event);
 	}
-	
+
 	function handleClear() {
 		value = '';
 		onclear?.();
@@ -170,10 +169,10 @@
 				type="password"
 				aria-invalid={hasError}
 				aria-describedby={(hasError ? errorId : '') + (hint ? ' ' + hintId : '')}
-				oninput={handleInput}
-				onchange={handleChange}
-				onfocus={handleFocus}
-				onblur={handleBlur}
+				input={handleInput}
+				change={handleChange}
+				on:focus={handleFocus}
+				on:blur={handleBlur}
 				{...restProps}
 			/>
 		{:else if type === 'email'}
@@ -189,10 +188,10 @@
 				type="email"
 				aria-invalid={hasError}
 				aria-describedby={(hasError ? errorId : '') + (hint ? ' ' + hintId : '')}
-				oninput={handleInput}
-				onchange={handleChange}
-				onfocus={handleFocus}
-				onblur={handleBlur}
+				input={handleInput}
+				change={handleChange}
+				on:focus={handleFocus}
+				on:blur={handleBlur}
 				{...restProps}
 			/>
 		{:else}
@@ -208,10 +207,10 @@
 				type="text"
 				aria-invalid={hasError}
 				aria-describedby={(hasError ? errorId : '') + (hint ? ' ' + hintId : '')}
-				oninput={handleInput}
-				onchange={handleChange}
-				onfocus={handleFocus}
-				onblur={handleBlur}
+				input={handleInput}
+				change={handleChange}
+				on:focus={handleFocus}
+				on:blur={handleBlur}
 				{...restProps}
 			/>
 		{/if}
@@ -240,7 +239,7 @@
 			<button
 				type="button"
 				class="space-y-4"
-				on:click={handleClear}
+				click={handleClear}
 				tabindex={-1}
 				aria-label="Clear input"
 			>

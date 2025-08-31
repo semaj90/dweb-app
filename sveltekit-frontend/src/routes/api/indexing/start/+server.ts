@@ -2,6 +2,8 @@ import { json } from "@sveltejs/kit";
 
 import fg from 'fast-glob'; // You might need to 'npm install fast-glob'
 import axios from 'axios'; // You might need to 'npm install axios'
+import type { RequestHandler } from './$types';
+
 
 const GO_FILE_PROCESSOR_URL = 'http://localhost:8081/process-files'; // Assuming Go service runs on 8081
 

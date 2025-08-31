@@ -6,8 +6,8 @@ import {
   boolean,
   jsonb,
   index,
+  relations,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
 
 // Authentication tables for Lucia + legal AI platform
 export const authUsers = pgTable(

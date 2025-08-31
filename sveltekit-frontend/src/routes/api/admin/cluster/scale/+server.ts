@@ -1,11 +1,12 @@
 import cluster from "node:cluster";
+import type { RequestHandler } from './$types';
+
 
 /**
  * Cluster Scaling API Endpoint
  * Handles dynamic scaling of worker processes
  */
 
-import { type RequestHandler,  json } from '@sveltejs/kit';
 
 export const POST: RequestHandler = async ({ request }) => {
   try {

@@ -1,10 +1,11 @@
+import type { RequestHandler } from './$types';
+
 /**
  * MCP API Endpoint - Tool Call Router
  * Handles all MCP tool invocations from XState machine services
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 
 // Import MCP Tools
 import * as casesMCP from '../../../../../lib/mcp/cases.mcp';

@@ -120,13 +120,14 @@ export class AIPipeline {
     
     // Store each chunk with its embedding
     for (const chunk of chunks) {
-      await db.insert(documentVectors).values({
-        documentId,
-        chunkIndex: chunk.metadata.chunkIndex,
-        content: chunk.content,
-        embedding: chunk.embedding,
-        metadata: chunk.metadata
-      });
+      // TODO: Create documentVectors table schema
+      // await db.insert(documentVectors).values({
+      //   documentId,
+      //   chunkIndex: chunk.metadata.chunkIndex,
+      //   content: chunk.content,
+      //   embedding: chunk.embedding,
+      //   metadata: chunk.metadata
+      // });
     }
 
     return {
@@ -149,22 +150,22 @@ export class AIPipeline {
     if (doc?.caseId) {
       const embedding = await ollamaService.generateEmbedding(summary);
       
-      // Update or insert case summary vector
-      await db.insert(caseSummaryVectors)
-        .values({
-          caseId: doc.caseId,
-          summary,
-          embedding,
-          confidence: 0.9 // High confidence for AI-generated summaries
-        })
-        .onConflictDoUpdate({
-          target: caseSummaryVectors.caseId,
-          set: {
-            summary,
-            embedding,
-            lastUpdated: sql`NOW()`
-          }
-        });
+      // TODO: Create caseSummaryVectors table schema
+      // await db.insert(caseSummaryVectors)
+      //   .values({
+      //     caseId: doc.caseId,
+      //     summary,
+      //     embedding,
+      //     confidence: 0.9 // High confidence for AI-generated summaries
+      //   })
+      //   .onConflictDoUpdate({
+      //     target: caseSummaryVectors.caseId,
+      //     set: {
+      //       summary,
+      //       embedding,
+      //       lastUpdated: sql`NOW()`
+      //     }
+      //   });
     }
   }
 
@@ -194,34 +195,39 @@ export class AIPipeline {
     for (const entity of entities) {
       const embedding = await ollamaService.generateEmbedding(entity);
       
-      const [node] = await db.insert(knowledgeNodes).values({
-        nodeType: 'entity',
-        nodeId: documentId,
-        label: entity,
-        embedding,
-        properties: {
-          source: 'document',
-          extractedAt: new Date()
-        }
-      }).returning();
+      // TODO: Create knowledgeNodes table schema
+      // const [node] = await db.insert(knowledgeNodes).values({
+      //   nodeType: 'entity',
+      //   nodeId: documentId,
+      //   label: entity,
+      //   embedding,
+      //   properties: {
+      //     source: 'document',
+      //     extractedAt: new Date()
+      //   }
+      // }).returning();
+      const node = null; // Placeholder
 
       // Create edge linking entity to document
       if (node) {
-        const [docNode] = await db.insert(knowledgeNodes).values({
-          nodeType: 'document',
-          nodeId: documentId,
-          label: `Document ${documentId}`,
-          embedding: await ollamaService.generateEmbedding(`Document ${documentId}`),
-          properties: {}
-        }).returning();
+        // TODO: Create knowledgeNodes table schema
+        // const [docNode] = await db.insert(knowledgeNodes).values({
+        //   nodeType: 'document',
+        //   nodeId: documentId,
+        //   label: `Document ${documentId}`,
+        //   embedding: await ollamaService.generateEmbedding(`Document ${documentId}`),
+        //   properties: {}
+        // }).returning();
+        const docNode = null; // Placeholder
 
         if (docNode) {
-          await db.insert(knowledgeEdges).values({
-            sourceId: node.id,
-            targetId: docNode.id,
-            relationship: 'extracted_from',
-            weight: 1.0
-          });
+          // TODO: Create knowledgeEdges table schema
+          // await db.insert(knowledgeEdges).values({
+          //   sourceId: node.id,
+          //   targetId: docNode.id,
+          //   relationship: 'extracted_from',
+          //   weight: 1.0
+          // });
         }
       }
     }
@@ -247,49 +253,50 @@ export class AIPipeline {
     // Search based on type
     let results: SearchResult[] = [];
     
-    if (type === 'document' || type === 'evidence') {
-      // Search document vectors
-      const searchQuery = db
-        .select({
-          id: documentVectors.id,
-          content: documentVectors.content,
-          score: sql<number>`1 - (${documentVectors.embedding} <=> ${JSON.stringify(queryEmbedding)}::vector)`,
-          metadata: documentVectors.metadata
-        })
-        .from(documentVectors)
-        .where(sql`1 - (${documentVectors.embedding} <=> ${JSON.stringify(queryEmbedding)}::vector) > ${threshold}`)
-        .orderBy(sql`${documentVectors.embedding} <=> ${JSON.stringify(queryEmbedding)}::vector`)
-        .limit(limit);
-
-      const docResults = await searchQuery;
-      results = docResults.map((r: any) => ({
-        id: r.id,
-        content: r.content,
-        score: r.score,
-        metadata: r.metadata || {}
-      }));
-    } else if (type === 'case') {
-      // Search case summaries
-      const caseQuery = db
-        .select({
-          id: caseSummaryVectors.caseId,
-          content: caseSummaryVectors.summary,
-          score: sql<number>`1 - (${caseSummaryVectors.embedding} <=> ${JSON.stringify(queryEmbedding)}::vector)`,
-          confidence: caseSummaryVectors.confidence
-        })
-        .from(caseSummaryVectors)
-        .where(sql`1 - (${caseSummaryVectors.embedding} <=> ${JSON.stringify(queryEmbedding)}::vector) > ${threshold}`)
-        .orderBy(sql`${caseSummaryVectors.embedding} <=> ${JSON.stringify(queryEmbedding)}::vector`)
-        .limit(limit);
-
-      const caseResults = await caseQuery;
-      results = caseResults.map((r: any) => ({
-        id: r.id,
-        content: r.content,
-        score: r.score * (r.confidence || 1),
-        metadata: { type: 'case_summary' }
-      }));
-    }
+    // TODO: Implement semantic search when documentVectors and caseSummaryVectors tables are created
+    // if (type === 'document' || type === 'evidence') {
+    //   // Search document vectors
+    //   const searchQuery = db
+    //     .select({
+    //       id: documentVectors.id,
+    //       content: documentVectors.content,
+    //       score: sql<number>`1 - (${documentVectors.embedding} <=> ${JSON.stringify(queryEmbedding)}::vector)`,
+    //       metadata: documentVectors.metadata
+    //     })
+    //     .from(documentVectors)
+    //     .where(sql`1 - (${documentVectors.embedding} <=> ${JSON.stringify(queryEmbedding)}::vector) > ${threshold}`)
+    //     .orderBy(sql`${documentVectors.embedding} <=> ${JSON.stringify(queryEmbedding)}::vector`)
+    //     .limit(limit);
+    //
+    //   const docResults = await searchQuery;
+    //   results = docResults.map((r: any) => ({
+    //     id: r.id,
+    //     content: r.content,
+    //     score: r.score,
+    //     metadata: r.metadata || {}
+    //   }));
+    // } else if (type === 'case') {
+    //   // Search case summaries
+    //   const caseQuery = db
+    //     .select({
+    //       id: caseSummaryVectors.caseId,
+    //       content: caseSummaryVectors.summary,
+    //       score: sql<number>`1 - (${caseSummaryVectors.embedding} <=> ${JSON.stringify(queryEmbedding)}::vector)`,
+    //       confidence: caseSummaryVectors.confidence
+    //     })
+    //     .from(caseSummaryVectors)
+    //     .where(sql`1 - (${caseSummaryVectors.embedding} <=> ${JSON.stringify(queryEmbedding)}::vector) > ${threshold}`)
+    //     .orderBy(sql`${caseSummaryVectors.embedding} <=> ${JSON.stringify(queryEmbedding)}::vector`)
+    //     .limit(limit);
+    //
+    //   const caseResults = await caseQuery;
+    //   results = caseResults.map((r: any) => ({
+    //     id: r.id,
+    //     content: r.content,
+    //     score: r.score * (r.confidence || 1),
+    //     metadata: { type: 'case_summary' }
+    //   }));
+    // }
 
     return results;
   }
@@ -301,37 +308,40 @@ export class AIPipeline {
     documentId: string,
     limit: number = 5
   ): Promise<SearchResult[]> {
+    // TODO: Implement findSimilarDocuments when documentVectors table is created
     // Get average embedding for the document
-    const [docEmbedding] = await db
-      .select({
-        avgEmbedding: sql<number[]>`AVG(${documentVectors.embedding})::vector`
-      })
-      .from(documentVectors)
-      .where(eq(documentVectors.documentId, documentId));
-
-    if (!docEmbedding?.avgEmbedding) {
-      return [];
-    }
-
-    // Find similar documents
-    const results = await db
-      .select({
-        documentId: documentVectors.documentId,
-        avgScore: sql<number>`AVG(1 - (${documentVectors.embedding} <=> ${JSON.stringify(docEmbedding.avgEmbedding)}::vector))`,
-        content: sql<string>`STRING_AGG(${documentVectors.content}, ' ' ORDER BY ${documentVectors.chunkIndex})`
-      })
-      .from(documentVectors)
-      .where(sql`${documentVectors.documentId} != ${documentId}`)
-      .groupBy(documentVectors.documentId)
-      .orderBy(sql`AVG(${documentVectors.embedding} <=> ${JSON.stringify(docEmbedding.avgEmbedding)}::vector)`)
-      .limit(limit);
-
-    return results.map((r: any) => ({
-      id: r.documentId,
-      content: r.content || '',
-      score: r.avgScore || 0,
-      metadata: { type: 'similar_document' }
-    }));
+    // const [docEmbedding] = await db
+    //   .select({
+    //     avgEmbedding: sql<number[]>`AVG(${documentVectors.embedding})::vector`
+    //   })
+    //   .from(documentVectors)
+    //   .where(eq(documentVectors.documentId, documentId));
+    //
+    // if (!docEmbedding?.avgEmbedding) {
+    //   return [];
+    // }
+    //
+    // // Find similar documents
+    // const results = await db
+    //   .select({
+    //     documentId: documentVectors.documentId,
+    //     avgScore: sql<number>`AVG(1 - (${documentVectors.embedding} <=> ${JSON.stringify(docEmbedding.avgEmbedding)}::vector))`,
+    //     content: sql<string>`STRING_AGG(${documentVectors.content}, ' ' ORDER BY ${documentVectors.chunkIndex})`
+    //   })
+    //   .from(documentVectors)
+    //   .where(sql`${documentVectors.documentId} != ${documentId}`)
+    //   .groupBy(documentVectors.documentId)
+    //   .orderBy(sql`AVG(${documentVectors.embedding} <=> ${JSON.stringify(docEmbedding.avgEmbedding)}::vector)`)
+    //   .limit(limit);
+    //
+    // return results.map((r: any) => ({
+    //   id: r.documentId,
+    //   content: r.content || '',
+    //   score: r.avgScore || 0,
+    //   metadata: { type: 'similar_document' }
+    // }));
+    
+    return []; // Placeholder until tables are created
   }
 
   /**

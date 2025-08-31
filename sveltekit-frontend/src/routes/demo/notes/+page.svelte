@@ -201,7 +201,7 @@ Priority: High
                 type="text"
                 placeholder="Add tags (comma separated)"
                 class="space-y-4"
-                onblur={(e) => {
+                on:blur={(e) => {
                   const tags = (e.target as HTMLInputElement).value.split(',').map(t => t.trim()).filter(t => t);
                   currentNote.tags = tags;
                 }}
@@ -211,8 +211,8 @@ Priority: High
             <RichTextEditor
               content={currentNote.content}
               placeholder="Start writing your note..."
-              onsave={handleEditorSave}
-              onchange={handleEditorChange}
+              on:save={handleEditorSave}
+              on:change={handleEditorChange}
               autoSave={true}
               autoSaveDelay={3000}
             />
@@ -231,7 +231,7 @@ Priority: High
             <DragDropZone
               accept="image/*,.pdf,.doc,.docx,.txt"
               maxSize={10485760}
-              onfilesdropped={handleFilesDropped}
+              on:filesdropped={handleFilesDropped}
             />
           </div>
         </div>
@@ -282,7 +282,7 @@ Priority: High
 
             <button
               type="button"
-              on:click={() => createNewNote()}
+              click={() => createNewNote()}
               class="space-y-4"
             >
               <Plus class="space-y-4" />
@@ -303,7 +303,7 @@ Priority: High
             {#each $filteredNotes as note (note.id)}
               <button
                 type="button"
-                on:click={() => viewNote(note)}
+                click={() => viewNote(note)}
                 class="space-y-4"
               >
                 <div class="space-y-4">
@@ -366,7 +366,7 @@ Priority: High
     caseId={selectedNote.caseId}
     createdAt={new Date(selectedNote.savedAt)}
     canEdit={true}
-    onsave={(event) => {
+    on:save={(event) => {
       console.log('Note updated:', event.detail);
       // Refresh the note in the list
       notesManager.saveNote(event.detail);

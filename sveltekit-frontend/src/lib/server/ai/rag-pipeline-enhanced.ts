@@ -25,7 +25,7 @@ import crypto from 'crypto';
 import Redis from 'ioredis';
 import postgres from 'postgres';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { eq, sql as drizzleSql, and, gte, desc } from 'drizzle-orm';
+import { sql, eq, and, gte, desc } from '$lib/server/db/index';
 import { Ollama } from '@langchain/community/llms/ollama';
 import { OllamaEmbeddings } from '@langchain/community/embeddings/ollama';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
@@ -960,7 +960,7 @@ export class EnhancedLegalRAGPipeline {
           const validChunks = chunkRecords.filter(record => record !== null);
 
           if (validChunks.length > 0) {
-            await this.db!.insert(schema.documentChunks).values(validChunks as unknown[]);
+            await this.db!.insert(schema.documentChunks).values(validChunks as any[]);
           }
 
           console.debug(`[RAG] Processed batch ${Math.floor(i / this.config.rag.batchSize) + 1}/${Math.ceil(chunks.length / this.config.rag.batchSize)}`);
@@ -1088,7 +1088,7 @@ export class EnhancedLegalRAGPipeline {
           1 - (dc.embedding::vector <=> ${JSON.stringify(queryEmbedding)}::vector) as similarity
         FROM document_chunks dc
         LEFT JOIN legal_documents ld ON dc.document_id = ld.id
-        WHERE ${drizzleSql.raw(vectorWhereClause)}
+        WHERE ${sql.raw(vectorWhereClause)}
         ORDER BY dc.embedding::vector <=> ${JSON.stringify(queryEmbedding)}::vector
         LIMIT ${limit * 2}
       `;
@@ -1106,7 +1106,7 @@ export class EnhancedLegalRAGPipeline {
                   plainto_tsquery('english', ${query})) as text_rank
         FROM document_chunks dc
         LEFT JOIN legal_documents ld ON dc.document_id = ld.id
-        WHERE ${drizzleSql.raw(keywordWhereClause)}
+        WHERE ${sql.raw(keywordWhereClause)}
         ORDER BY text_rank DESC
         LIMIT ${limit}
       `;

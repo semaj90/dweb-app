@@ -1,9 +1,10 @@
+import type { RequestHandler } from './$types';
+
 /**
  * User Logout API Endpoint
  * POST /api/auth/logout
  */
 
-import { json, type RequestHandler } from '@sveltejs/kit';
 import { ExistingUserAuthService as UserAuthService } from '$lib/server/db/existing-user-operations.js';
 import { dev } from '$app/environment';
 

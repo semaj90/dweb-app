@@ -1,7 +1,8 @@
+import type { RequestHandler } from './$types';
+
 // TypeScript Optimizer Benchmark Suite
 // Performance testing and comparison across different processing strategies
 
-import { json, type RequestHandler } from '@sveltejs/kit';
 import type { 
 	BenchmarkRequest, 
 	BenchmarkResult, 

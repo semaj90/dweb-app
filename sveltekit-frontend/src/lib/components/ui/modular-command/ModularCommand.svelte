@@ -193,7 +193,7 @@
 <Command.Root
   bind:open
   onOpenChange={handleOpenChange}
-  class={cn(
+  className={cn(
     'modular-command-palette',
     'flex h-full w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground',
     className
@@ -203,7 +203,7 @@
     <Search class="mr-2 h-4 w-4 shrink-0 opacity-50" />
     <Command.Input
       bind:value={query}
-      oninput={(e) => handleQueryChange(e.currentTarget.value)}
+      on:input={(e) => handleQueryChange(e.currentTarget.value)}
       {placeholder}
       class="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 font-mono"
     />

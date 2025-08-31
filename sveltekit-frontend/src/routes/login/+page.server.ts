@@ -17,7 +17,7 @@ import type { Actions, PageServerLoad } from "./$types";
 // removed: import { URL } from "url";
 
 export const load: PageServerLoad = async ({ locals, url }) => {
-  const localsTyped = locals as unknown as App.Locals;
+  const localsTyped = locals as any as App.Locals;
 
   // If user is already logged in, redirect to dashboard
   if (localsTyped.user) {

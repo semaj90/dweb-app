@@ -230,7 +230,7 @@ export class WebGPUVectorProcessor {
     evidenceType?: string,
     tags?: string[],
     limit = 10
-  ): Promise<unknown[]> {
+  ): Promise<any[]> {
     try {
       // Generate query embedding
       const queryEmbedding = await this.generateEmbedding(queryText);
@@ -275,7 +275,7 @@ export class WebGPUVectorProcessor {
    * Batch process multiple evidence files with GPU acceleration
    * Note: MinIO upload happens server-side, this handles client-side analysis
    */
-  async batchProcessEvidence(files: File[], caseId: string): Promise<unknown[]> {
+  async batchProcessEvidence(files: File[], caseId: string): Promise<any[]> {
     const results = [];
     
     // Extract text from all files first

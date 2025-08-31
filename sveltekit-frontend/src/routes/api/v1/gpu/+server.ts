@@ -1,7 +1,10 @@
+import type { RequestHandler } from './$types';
+
 // GPU Acceleration API Proxy - Legal AI Platform
 // Routes SvelteKit frontend requests to CUDA Integration Service (Port 8231)
 
-import { json, type RequestHandler } from '@sveltejs/kit';
+
+import { ensureError } from '$lib/utils/ensure-error';
 import { error } from '@sveltejs/kit';
 
 const GPU_SERVICE_URL = 'http://localhost:8231';
@@ -32,15 +35,15 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		// Validate request
 		if (!body.service || !body.operation) {
-			throw error(400, {
+			throw error(400, ensureError({
 				message: 'Invalid GPU request: service and operation are required'
-			});
+			}));
 		}
 
 		if (!body.data || !Array.isArray(body.data) || body.data.length === 0) {
-			throw error(400, {
+			throw error(400, ensureError({
 				message: 'Invalid GPU request: data array is required and cannot be empty'
-			});
+			}));
 		}
 
 		console.log(`🔥 GPU API: Processing ${body.service}/${body.operation} with ${body.data.length} data points`);

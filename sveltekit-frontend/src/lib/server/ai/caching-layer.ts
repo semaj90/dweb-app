@@ -341,7 +341,7 @@ class CachingLayer {
     let oldestKey = null;
     let oldestTime = Date.now();
     
-    for (const [key, item] of this.hotCache) {
+    for (const [key, item] of Array.from(this.hotCache.entries())) {
       if (item.lastAccess < oldestTime) {
         oldestTime = item.lastAccess;
         oldestKey = key;
@@ -403,7 +403,7 @@ class CachingLayer {
     const now = Date.now();
     const maxAge = 30 * 60 * 1000; // 30 minutes
     
-    for (const [key, item] of this.hotCache) {
+    for (const [key, item] of Array.from(this.hotCache.entries())) {
       if (now - item.lastAccess > maxAge) {
         this.hotCache.delete(key);
       }
@@ -423,6 +423,4 @@ class CachingLayer {
 // Export singleton instance
 export const cachingLayer = new CachingLayer();
 
-// Export types
-export type { CacheOptions, CacheStats };
 

@@ -1,8 +1,8 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { db } from "$lib/server/db/index";
+import type { RequestHandler } from './$types';
+
 
 // Individual Legal Document API - SvelteKit Server Endpoint
-import type { RequestHandler } from "@sveltejs/kit";
 import { json } from "@sveltejs/kit";
 
 // Import with fallback for different schema files

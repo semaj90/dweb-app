@@ -1,4 +1,5 @@
-import type { RequestHandler } from '@sveltejs/kit';
+
+import type { RequestHandler } from './$types';
 
 // Evidence search API endpoint with advanced vector capabilities
 // Supports document content search, image analysis, and multi-modal search
@@ -8,7 +9,6 @@ import { and, desc, ilike, or, sql } from "drizzle-orm";
 
 import { db } from "$lib/server/db/index";
 
-import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ url }) => {
   try {

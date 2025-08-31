@@ -146,7 +146,7 @@
     </div>
   {/snippet}
 
-  <Form method="POST" enctype="multipart/form-data" onsubmit={enhance} variant="legal">
+  <Form method="POST" enctype="multipart/form-data" on:submit={enhance} variant="legal">
     <!-- File Upload Component -->
     <div class="space-y-2">
       <Label for="file">File</Label>
@@ -157,9 +157,9 @@
         maxSize={50 * 1024 * 1024}
         accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.mp4,.mp3,.wav"
         bind:files={uploadFiles}
-        onfileschange={handleFilesChange}
-        onupload={handleFileUpload}
-        onremove={handleFileRemove}
+        on:fileschange={handleFilesChange}
+        on:upload={handleFileUpload}
+        on:remove={handleFileRemove}
         dragDropText="Drop evidence files here or click to browse"
         browseText="Browse Evidence Files"
         supportedFormats={['PDF', 'Word', 'Images', 'Video', 'Audio']}

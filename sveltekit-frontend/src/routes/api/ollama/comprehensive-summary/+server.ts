@@ -1,3 +1,5 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Comprehensive Ollama Summary API Endpoint
  * 
@@ -11,7 +13,6 @@
  * - RAG (Retrieval-Augmented Generation)
  */
 
-import { json, type RequestHandler } from '@sveltejs/kit';
 import { 
   comprehensiveOllamaSummarizer, 
   type ComprehensiveSummaryRequest,

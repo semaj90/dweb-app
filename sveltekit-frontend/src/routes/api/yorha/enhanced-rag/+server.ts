@@ -1,8 +1,9 @@
-import type { RequestHandler } from '@sveltejs/kit';
 
 import { json } from "@sveltejs/kit";
 import { enhancedSearchWithNeo4j } from "$lib/ai/custom-reranker";
 import { legalDocuments, cases, evidence } from "$lib/server/db/schema-postgres";
+import type { RequestHandler } from './$types';
+
 
 // YoRHa Enhanced RAG API
 // Integrated AI-powered legal analysis for YoRHa interface
@@ -176,7 +177,7 @@ async function performYoRHaAnalysis(
   rerankedResults: any[],
   dbResults: any[],
   analysisType: string
-): Promise<unknown[]> {
+): Promise<any[]> {
   
   // Combine all results
   const allResults = [
@@ -216,7 +217,7 @@ async function generateYoRHaRecommendations(
   query: string,
   analysisResults: any[],
   dataType: string
-): Promise<unknown[]> {
+): Promise<any[]> {
   
   // Basic recommendation logic (would be enhanced with actual AI)
   const recommendations = [

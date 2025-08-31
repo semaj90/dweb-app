@@ -23,7 +23,7 @@
     indeterminate = false,
     showPercentage = false,
     label,
-    class: className,
+    class: class,
     ...restProps
   }: Props = $props();
 
@@ -78,7 +78,7 @@
   );
 
   // Computed class names
-  let progressClass = $derived(cn(progressVariants({ variant, size }), className));
+  let progressClass = $derived(cn(progressVariants({ variant, size }), class));
   let fillClass = $derived(fillVariants({ variant }));
 
   // Indeterminate animation style

@@ -1,6 +1,7 @@
 import * as pdfjsLib from "pdfjs-dist";
-import { type RequestHandler,  json, error } from '@sveltejs/kit';
 import { createWorker } from "tesseract.js";
+import type { RequestHandler } from './$types';
+
 
 export const POST: RequestHandler = async ({ request }) => {
   try {
@@ -56,7 +57,7 @@ export const POST: RequestHandler = async ({ request }) => {
         // Need OCR for scanned pages
         const viewport = page.getViewport({ scale: 2.0 });
         const canvas = new OffscreenCanvas(viewport.width, viewport.height);
-        const context = canvas.getContext('2d') as unknown as CanvasRenderingContext2D;
+        const context = canvas.getContext('2d') as any as CanvasRenderingContext2D;
         
         await page.render({
           canvas: canvas as any,

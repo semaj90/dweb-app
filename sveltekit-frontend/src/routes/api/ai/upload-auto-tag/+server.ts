@@ -1,11 +1,12 @@
 
+import type { RequestHandler } from './$types';
+
 /**
  * Auto-Tagging API Endpoint
  * Integrates with Ollama GPU service, PostgreSQL pgvector, and Go microservice
  * Provides real-time AI analysis for document uploads
  */
 
-import { type RequestHandler,  json } from '@sveltejs/kit';
 import { aiAutoTaggingService } from "$lib/services/aiAutoTagging";
 import { goMicroservice } from "$lib/services/goMicroservice";
 import { enhancedEvidence } from "$lib/server/db/enhanced-legal-schema";

@@ -210,7 +210,7 @@
 }
 </script>
 
-<svelte:window onkeydown={handleKeydown} />
+<svelte:window keydown={handleKeydown} />
 
 <!-- Hidden trigger (we'll open programmatically) -->
 <button use:melt={$trigger} style="display: none;">Trigger</button>
@@ -244,8 +244,8 @@
             <button
               class="container mx-auto px-4"
               class:selected={globalIndex === selectedIndex}
-              on:click={() => executeCommand(command)}
-              onmouseenter={() => (selectedIndex = globalIndex)}
+              click={() => executeCommand(command)}
+              on:mouseenter={() => (selectedIndex = globalIndex)}
             >
               <svelte:component this={command.icon} size={16} />
               <span class="container mx-auto px-4">{command.label}</span>

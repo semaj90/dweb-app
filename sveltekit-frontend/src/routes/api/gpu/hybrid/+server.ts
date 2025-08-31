@@ -1,3 +1,5 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Hybrid GPU Configuration API
  * 
@@ -8,7 +10,6 @@
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 
 // Service endpoints
 const GPU_SERVICES = {

@@ -571,7 +571,7 @@
       <Button 
         variant="default" 
         class="bg-[#F7F6F2] border border-[#D1CFC7] text-[#3D3D3D] hover:bg-[#EAE8E1] font-bold px-4 py-2 flex items-center gap-2"
-        onclick={() => isNewCaseModalOpen = true}
+        on:click={() => isNewCaseModalOpen = true}
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -581,7 +581,7 @@
       <Button 
         variant="default"
         class="bg-[#F7F6F2] border border-[#D1CFC7] text-[#3D3D3D] hover:bg-[#EAE8E1] font-bold px-4 py-2 flex items-center gap-2"
-        onclick={() => handleNavigation('search')}
+        on:click={() => handleNavigation('search')}
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -591,7 +591,7 @@
       <Button 
         variant="default"
         class="bg-[#F7F6F2] border border-[#D1CFC7] text-[#3D3D3D] hover:bg-[#EAE8E1] font-bold px-4 py-2 flex items-center gap-2 {isDocumentationOpen ? 'bg-[#3D3D3D] text-[#F7F6F2]' : ''}"
-        onclick={() => isDocumentationOpen = !isDocumentationOpen}
+        on:click={() => isDocumentationOpen = !isDocumentationOpen}
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
@@ -609,37 +609,37 @@
       <nav class="space-y-2">
         <button 
           class="w-full px-4 py-2 text-left font-bold transition-colors border {activeSection === 'command-center' ? 'bg-[#3D3D3D] text-[#F7F6F2] border-[#3D3D3D]' : 'border-transparent hover:border-[#3D3D3D] hover:bg-white'}"
-          onclick={() => handleNavigation('command-center')}
+          click={() => handleNavigation('command-center')}
         >
           COMMAND CENTER
         </button>
         <button 
           class="w-full px-4 py-2 text-left font-bold transition-colors border {activeSection === 'evidence' ? 'bg-[#3D3D3D] text-[#F7F6F2] border-[#3D3D3D]' : 'border-transparent hover:border-[#3D3D3D] hover:bg-white'}"
-          onclick={() => handleNavigation('evidence')}
+          click={() => handleNavigation('evidence')}
         >
           EVIDENCE
         </button>
         <button 
           class="w-full px-4 py-2 text-left font-bold transition-colors border {activeSection === 'poi' ? 'bg-[#3D3D3D] text-[#F7F6F2] border-[#3D3D3D]' : 'border-transparent hover:border-[#3D3D3D] hover:bg-white'}"
-          onclick={() => handleNavigation('poi')}
+          click={() => handleNavigation('poi')}
         >
           PERSONS OF INTEREST
         </button>
         <button 
           class="w-full px-4 py-2 text-left font-bold transition-colors border {activeSection === 'analysis' ? 'bg-[#3D3D3D] text-[#F7F6F2] border-[#3D3D3D]' : 'border-transparent hover:border-[#3D3D3D] hover:bg-white'}"
-          onclick={() => handleNavigation('analysis')}
+          click={() => handleNavigation('analysis')}
         >
           ANALYSIS
         </button>
         <button 
           class="w-full px-4 py-2 text-left font-bold transition-colors border {activeSection === 'search' ? 'bg-[#3D3D3D] text-[#F7F6F2] border-[#3D3D3D]' : 'border-transparent hover:border-[#3D3D3D] hover:bg-white'}"
-          onclick={() => handleNavigation('search')}
+          click={() => handleNavigation('search')}
         >
           GLOBAL SEARCH
         </button>
         <button 
           class="w-full px-4 py-2 text-left font-bold transition-colors border {activeSection === 'terminal' ? 'bg-[#3D3D3D] text-[#F7F6F2] border-[#3D3D3D]' : 'border-transparent hover:border-[#3D3D3D] hover:bg-white'}"
-          onclick={() => handleNavigation('terminal')}
+          click={() => handleNavigation('terminal')}
         >
           TERMINAL
         </button>
@@ -816,7 +816,7 @@
               <Button 
                 variant="default"
                 class="bg-purple-600/10 border-purple-600/50 text-purple-800 hover:bg-purple-600/20 text-xs px-3 py-1"
-                onclick={() => activateMatrixMode()}
+                on:click={() => activateMatrixMode()}
               >
                 🕶️ ENTER MATRIX
               </Button>
@@ -825,7 +825,7 @@
                 <Button 
                   variant="default"
                   class="bg-yellow-600/10 border-yellow-600/50 text-yellow-800 hover:bg-yellow-600/20 text-xs px-3 py-1"
-                  onclick={() => consciousness.awakening = Math.min(1.0, consciousness.awakening + 0.1)}
+                  on:click={() => consciousness.awakening = Math.min(1.0, consciousness.awakening + 0.1)}
                 >
                   👑 ACCELERATE CONSCIOUSNESS
                 </Button>
@@ -835,7 +835,7 @@
                 <Button 
                   variant="default"
                   class="bg-cyan-600/10 border-cyan-600/50 text-cyan-800 hover:bg-cyan-600/20 text-xs px-3 py-1"
-                  onclick={() => visualEffects.quantumShimmer = !visualEffects.quantumShimmer}
+                  on:click={() => visualEffects.quantumShimmer = !visualEffects.quantumShimmer}
                 >
                   ⚛️ TOGGLE QUANTUM FIELD
                 </Button>
@@ -946,7 +946,7 @@
           <Button 
             variant="default"
             class="bg-[#EAE8E1] border border-[#D1CFC7] text-[#3D3D3D] hover:bg-white font-bold p-4 h-auto flex flex-col items-center gap-2"
-            onclick={() => isNewCaseModalOpen = true}
+            on:click={() => isNewCaseModalOpen = true}
           >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -956,7 +956,7 @@
           <Button 
             variant="default"
             class="bg-[#EAE8E1] border border-[#D1CFC7] text-[#3D3D3D] hover:bg-white font-bold p-4 h-auto flex flex-col items-center gap-2"
-            onclick={() => handleNavigation('evidence')}
+            on:click={() => handleNavigation('evidence')}
           >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -966,7 +966,7 @@
           <Button 
             variant="default"
             class="bg-[#EAE8E1] border border-[#D1CFC7] text-[#3D3D3D] hover:bg-white font-bold p-4 h-auto flex flex-col items-center gap-2"
-            onclick={() => handleNavigation('poi')}
+            on:click={() => handleNavigation('poi')}
           >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -976,7 +976,7 @@
           <Button 
             variant="default"
             class="bg-[#EAE8E1] border border-[#D1CFC7] text-[#3D3D3D] hover:bg-white font-bold p-4 h-auto flex flex-col items-center gap-2"
-            onclick={() => handleNavigation('analysis')}
+            on:click={() => handleNavigation('analysis')}
           >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
@@ -991,14 +991,14 @@
 
 <!-- New Case Modal - Simple HTML Modal -->
 {#if isNewCaseModalOpen}
-  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onclick={closeModal}>
-    <div class="w-full max-w-2xl bg-[#F7F6F2] border border-[#D1CFC7] p-8 font-mono" onclick={(e) => e.stopPropagation()}>
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" click={closeModal}>
+    <div class="w-full max-w-2xl bg-[#F7F6F2] border border-[#D1CFC7] p-8 font-mono" click={(e) => e.stopPropagation()}>
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold">CREATE NEW CASE FILE</h2>
-        <button onclick={() => isNewCaseModalOpen = false} class="text-gray-500 hover:text-black text-2xl">&times;</button>
+        <button click={() => isNewCaseModalOpen = false} class="text-gray-500 hover:text-black text-2xl">&times;</button>
       </div>
       
-      <form onsubmit={handleCreateCase} class="space-y-6">
+      <form submit={handleCreateCase} class="space-y-6">
         <div>
           <label for="case-title" class="block text-sm font-bold mb-2">CASE TITLE</label>
           <input 

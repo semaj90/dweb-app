@@ -68,7 +68,7 @@
 	<SearchInput 
 		{placeholder}
 		{value}
-		onsearch={handleSearch}
+		on:search={handleSearch}
 	/>
 
 	<!-- Controls -->
@@ -78,7 +78,7 @@
 			<div class="container mx-auto px-4">
 				<select
 					bind:value={selectedSort}
-					onchange={() => handleSortChange(selectedSort)}
+					change={() => handleSortChange(selectedSort)}
 					class="container mx-auto px-4"
 					aria-label="Sort by"
 				>
@@ -93,7 +93,7 @@
 			<button
 				class="container mx-auto px-4"
 				class:active={filtersOpen}
-				on:click={() => toggleFilters()}
+				click={() => toggleFilters()}
 				aria-label="Toggle filters"
 				title="Filters"
 			>
@@ -114,7 +114,7 @@
 						type="checkbox" 
 						value="image" 
 						checked={selectedFileTypes.includes('image')}
-						onchange={handleFileTypeChange}
+						change={handleFileTypeChange}
 					/>
 					Images
 				</label>
@@ -123,7 +123,7 @@
 						type="checkbox" 
 						value="document" 
 						checked={selectedFileTypes.includes('document')}
-						onchange={handleFileTypeChange}
+						change={handleFileTypeChange}
 					/>
 					Documents
 				</label>
@@ -132,7 +132,7 @@
 						type="checkbox" 
 						value="video" 
 						checked={selectedFileTypes.includes('video')}
-						onchange={handleFileTypeChange}
+						change={handleFileTypeChange}
 					/>
 					Videos
 				</label>
@@ -141,7 +141,7 @@
 						type="checkbox" 
 						value="audio" 
 						checked={selectedFileTypes.includes('audio')}
-						onchange={handleFileTypeChange}
+						change={handleFileTypeChange}
 					/>
 					Audio
 				</label>
@@ -156,7 +156,7 @@
 					class="container mx-auto px-4" 
 					aria-label="From date"
 					bind:value={dateRange.from}
-					onchange={handleDateChange}
+					change={handleDateChange}
 				/>
 				<span>to</span>
 				<input 
@@ -164,7 +164,7 @@
 					class="container mx-auto px-4" 
 					aria-label="To date"
 					bind:value={dateRange.to}
-					onchange={handleDateChange}
+					change={handleDateChange}
 				/>
 			</div>
 		</div>
@@ -173,7 +173,7 @@
 			<button 
 				type="button" 
 				class="container mx-auto px-4"
-				on:click={() => {
+				click={() => {
 					selectedFileTypes = [];
 					dateRange = { from: '', to: '' };
 					dispatchFilters();

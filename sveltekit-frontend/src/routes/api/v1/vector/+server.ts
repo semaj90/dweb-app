@@ -1,8 +1,9 @@
+import type { RequestHandler } from './$types';
+
 // Unified Vector Processing API Endpoint
 // Integrates Redis Streams + CUDA Worker + WebGPU + WASM LLM + PostgreSQL
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 import type { VectorOperationRequest, VectorOperationResponse } from '$lib/types/vector-jobs';
 
 // Environment configuration

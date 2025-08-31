@@ -52,6 +52,10 @@ class SSRCache {
       entries: Array.from(this.cache.values()).filter(entry => Date.now() <= entry.expires).length
     };
   }
+
+  static delete(key: string): boolean {
+    return this.cache.delete(key);
+  }
 }
 
 // Enhanced layout load with performance optimization
@@ -325,10 +329,10 @@ export const SSRCacheUtils = {
   clear: SSRCache.clear,
   getStats: SSRCache.getStats,
   invalidateUser: (userId: string) => {
-    SSRCache.cache.delete(`user_layout_${userId}`);
+    SSRCache.delete(`user_layout_${userId}`);
   },
   invalidateCase: (caseId: string, userId: string) => {
-    SSRCache.cache.delete(`case_${caseId}_${userId}`);
+    SSRCache.delete(`case_${caseId}_${userId}`);
   }
 };
 

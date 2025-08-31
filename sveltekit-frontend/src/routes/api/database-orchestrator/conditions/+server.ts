@@ -1,8 +1,8 @@
-import type { RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+
 // Database Orchestrator Conditions API
 // Manages event loop conditions and real-time triggers
 
-import { json, type RequestHandler } from "@sveltejs/kit";
 databaseOrchestrator // alias
 
 // GET /api/database-orchestrator/conditions - List all conditions

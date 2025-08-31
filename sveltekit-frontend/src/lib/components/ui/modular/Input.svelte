@@ -47,7 +47,7 @@
     variant = 'default',
     size = 'default',
     state = 'default',
-    class: className,
+    class: class,
     label,
     helperText,
     errorMessage,
@@ -110,7 +110,7 @@
   let inputId = $derived(restProps.id || `input-${Math.random().toString(36).substr(2, 9)}`);
   
   // Computed classes
-  let inputClass = $derived(cn(inputVariants({ variant, size, state }), className));
+  let inputClass = $derived(cn(inputVariants({ variant, size, state }), class));
   let helperClass = $derived(helperTextVariants({ state }));
 
   // Handle input events
@@ -154,10 +154,10 @@
       {readonly}
       {required}
       class={cn(inputClass, icon && 'pl-10', suffix && 'pr-12')}
-      oninput={handleInput}
-      onchange={onchange}
-      onfocus={onfocus}
-      onblur={onblur}
+      input={handleInput}
+      change={onchange}
+      on:focus={onfocus}
+      on:blur={onblur}
       {...restProps}
     />
 

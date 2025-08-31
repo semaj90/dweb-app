@@ -1,7 +1,8 @@
 import crypto from "crypto";
+import type { RequestHandler } from './$types';
+
 
 // SIMD + Redis Performance Testing API
-import { type RequestHandler,  json } from '@sveltejs/kit';
 import { simdRedisClient } from "$lib/services/simd-redis-client";
 
 // Generate test data of various sizes

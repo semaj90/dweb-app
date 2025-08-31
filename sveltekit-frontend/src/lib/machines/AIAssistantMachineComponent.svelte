@@ -165,10 +165,10 @@
           placeholder="Enter your legal AI query..."
           class="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           disabled={isProcessing}
-          onkeydown={(e) => e.key === 'Enter' && submitQuery()}
+          keydown={(e) => e.key === 'Enter' && submitQuery()}
         />
         <button
-          onclick={submitQuery}
+          click={submitQuery}
           disabled={isProcessing || !queryInput.trim()}
           class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -178,13 +178,13 @@
       
       <div class="flex gap-2">
         <button
-          onclick={toggleStreaming}
+          click={toggleStreaming}
           class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
         >
           {isStreaming ? 'Disable' : 'Enable'} Streaming
         </button>
         <button
-          onclick={clearConversation}
+          click={clearConversation}
           class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
         >
           Clear History

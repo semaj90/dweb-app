@@ -132,7 +132,10 @@ const recommendationMachine = createMachine<RecommendationMachineContext>({
     setProcessing: assign({ isProcessing: true }),
     clearProcessing: assign({ isProcessing: false }),
     updateUserContext: assign({
-      userContext: (context, event: any) => ({ ...context.userContext, ...event.data })
+      userContext: (context, event: any) => ({ 
+        ...context.userContext, 
+        ...(event?.data || {}) 
+      })
     }),
     storeRecommendations: assign({
       currentRecommendations: (context, event: any) => event.data?.recommendations || []
@@ -141,7 +144,7 @@ const recommendationMachine = createMachine<RecommendationMachineContext>({
       // Will be implemented in the service class
     },
     logError: assign({
-      error: (context, event: any) => event.data?.message || 'Unknown error',
+      error: (context, event: any) => event?.data?.message || event?.message || 'Unknown error',
       isProcessing: false
     })
   }

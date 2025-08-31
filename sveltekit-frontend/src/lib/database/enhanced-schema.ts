@@ -18,8 +18,8 @@ import {
   customType,
   type PgColumn
 } from "drizzle-orm/pg-core";
-import { sql, type SQL } from "drizzle-orm";
-import { relations } from "drizzle-orm";
+import { sql } from "drizzle-orm";
+import { relations } from "drizzle-orm/relations";
 
 // Custom vector type for pgvector
 const vector = customType<{ data: number[]; driverData: string }>({

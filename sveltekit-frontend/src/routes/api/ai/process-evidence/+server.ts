@@ -1,3 +1,5 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Enhanced AI Evidence Processing Endpoint
  * Optimized for Gemma3-legal-latest model with native Windows integration
@@ -5,7 +7,6 @@
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 import { getUser } from '$lib/server/auth';
 
 // Enhanced RAG service integration (port 8094)

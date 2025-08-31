@@ -463,7 +463,7 @@
             placeholder={isConnected ? 'Ask your legal question...' : 'Connecting to AI service...'}
             disabled={!isConnected || isLoading}
             class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            onkeydown={handleKeydown} />
+            keydown={handleKeydown} />
           <Button
             on:click={sendMessage}
             disabled={!currentMessage.trim() || !isConnected || isLoading}

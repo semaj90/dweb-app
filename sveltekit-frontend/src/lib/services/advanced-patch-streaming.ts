@@ -451,7 +451,7 @@ export class AdvancedPatchStreamer {
           this.flushBuffer(contextId);
         }
       }
-    }, this.config.flushInterval / 2) as unknown as number;
+    }, this.config.flushInterval / 2) as any as number;
   }
 
   private async flushBuffer(contextId: string): Promise<void> {

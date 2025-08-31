@@ -1,10 +1,11 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Production Logging API Endpoint
  * Handles client-side error logging and monitoring for the Legal AI Platform
  */
 
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 
 // Log levels
 type LogLevel = 'error' | 'warn' | 'info' | 'debug';

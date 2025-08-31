@@ -1,9 +1,12 @@
+import type { RequestHandler } from './$types';
+
 /**
  * SvelteKit API Route: GPU Tensor Processing
  * Integrates with Go GPU microservice and provides load balancing
  */
 
-import type { RequestHandler } from './$types';
+
+import { ensureError } from '$lib/utils/ensure-error';
 import { json, error } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 
@@ -177,26 +180,26 @@ export const POST: RequestHandler = async ({ request, getClientAddress, url }) =
     // Validate tensor data structure
     if (!tensorData.shape || !tensorData.data) {
       stats.failedRequests++;
-      throw error(400, {
+      throw error(400, ensureError({
         message: 'Invalid tensor data: missing shape or data fields'
-      });
+      }));
     }
 
     // Validate tensor shape
     if (!Array.isArray(tensorData.shape) || tensorData.shape.some((dim: any) => typeof dim !== 'number' || dim <= 0)) {
       stats.failedRequests++;
-      throw error(400, {
+      throw error(400, ensureError({
         message: 'Invalid tensor shape: must be array of positive integers'
-      });
+      }));
     }
 
     // Validate tensor data
     const expectedSize = tensorData.shape.reduce((a: number, b: number) => a * b, 1);
     if (!Array.isArray(tensorData.data) || tensorData.data.length !== expectedSize) {
       stats.failedRequests++;
-      throw error(400, {
+      throw error(400, ensureError({
         message: 'Tensor data size mismatch'
-      });
+      }));
     }
 
     // Generate cache key for consistent routing
@@ -221,9 +224,9 @@ export const POST: RequestHandler = async ({ request, getClientAddress, url }) =
 
     if (!targetService) {
       stats.failedRequests++;
-      throw error(503, {
+      throw error(503, ensureError({
         message: 'All GPU services unavailable'
-      });
+      }));
     }
 
     // Process with primary service
@@ -264,9 +267,9 @@ export const POST: RequestHandler = async ({ request, getClientAddress, url }) =
       throw err;
     }
 
-    throw error(500, {
+    throw error(500, ensureError({
       message: `Processing failed: ${(err as Error).message}`
-    });
+    }));
   }
 };
 
@@ -326,20 +329,20 @@ export const GET: RequestHandler = async ({ url }) => {
     }
   } catch (err: any) {
     console.error('Stats retrieval error:', err);
-    throw error(500, {
+    throw error(500, ensureError({
       message: `Stats retrieval failed: ${err.message}`,
       code: 'STATS_ERROR'
-    });
+    }));
   }
 };
 
 // DELETE: Clear caches and reset statistics (development only)
 export const DELETE: RequestHandler = async ({ url }) => {
   if (!dev) {
-    throw error(403, {
+    throw error(403, ensureError({
       message: 'Cache clearing only available in development mode',
       code: 'PRODUCTION_PROTECTION'
-    });
+    }));
   }
 
   try {
@@ -386,10 +389,10 @@ export const DELETE: RequestHandler = async ({ url }) => {
 
   } catch (err: any) {
     console.error('Cache clearing error:', err);
-    throw error(500, {
+    throw error(500, ensureError({
       message: `Cache clearing failed: ${err.message}`,
       code: 'CACHE_CLEAR_ERROR'
-    });
+    }));
   }
 };
 

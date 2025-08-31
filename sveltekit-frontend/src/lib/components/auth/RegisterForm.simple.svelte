@@ -305,7 +305,7 @@
             <button
               type="button"
               class="absolute inset-y-0 right-0 pr-3 flex items-center"
-              on:click={togglePasswordVisibility}
+              click={togglePasswordVisibility}
               disabled={isLoading}
             >
               {#if showPassword}
@@ -349,7 +349,7 @@
             <button
               type="button"
               class="absolute inset-y-0 right-0 pr-3 flex items-center"
-              on:click={toggleConfirmPasswordVisibility}
+              click={toggleConfirmPasswordVisibility}
               disabled={isLoading}
             >
               {#if showConfirmPassword}

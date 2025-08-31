@@ -211,7 +211,7 @@
   }
 </script>
 
-<div class="yorha-data-grid {className}" class:yorha-glitch-effect={glitchEffect}>
+<div class="yorha-data-grid {class}" class:yorha-glitch-effect={glitchEffect}>
   <!-- Grid Header -->
   <div class="yorha-grid-header">
     <div class="yorha-grid-title">DATA GRID</div>
@@ -234,7 +234,7 @@
               type="text"
               class="yorha-filter-input"
               placeholder="Filter..."
-              oninput={(e) => handleFilter(column.key, (e.target as HTMLInputElement).value)}
+              input={(e) => handleFilter(column.key, (e.target as HTMLInputElement).value)}
             />
           </div>
         {/if}
@@ -264,7 +264,7 @@
               type="checkbox"
               class="yorha-checkbox"
               checked={selectedRows.size === filteredData.length && filteredData.length > 0}
-              onchange={() => {
+              on:change={() => {
                 const filtered = filteredData;
                 if (selectedRows.size === filtered.length) {
                   selectedRows.clear();
@@ -283,7 +283,7 @@
             class:yorha-sorted-asc={sortConfig?.column === column.key && sortConfig?.direction === 'asc'}
             class:yorha-sorted-desc={sortConfig?.column === column.key && sortConfig?.direction === 'desc'}
             style:width={getColumnWidth(column)}
-            onclick={() => handleSort(column)}
+            click={() => handleSort(column)}
           >
             <div class="yorha-header-content">
               <span class="yorha-header-text">{column.title}</span>
@@ -301,7 +301,7 @@
               {#if resizable}
                 <div
                   class="yorha-resize-handle"
-                  onmousedown={(e) => handleColumnResize(column.key, e)}
+                  on:mousedown={(e) => handleColumnResize(column.key, e)}
                 ></div>
               {/if}
             </div>
@@ -326,7 +326,7 @@
                   type="checkbox"
                   class="yorha-checkbox"
                   checked={selectedRows.has(row.id)}
-                  onchange={() => toggleRowSelection(row.id)}
+                  change={() => toggleRowSelection(row.id)}
                 />
               </div>
             {/if}
@@ -337,15 +337,15 @@
                 class:yorha-editable={column.editable && editable}
                 class:yorha-editing={editingCell?.row === rowIndex && editingCell?.col === column.key}
                 style:width={getColumnWidth(column)}
-                onclick={() => startEdit(rowIndex, column.key)}
+                click={() => startEdit(rowIndex, column.key)}
               >
                 {#if editingCell?.row === rowIndex && editingCell?.col === column.key}
                   {#if column.type === 'select' && column.options}
                     <select
                       class="yorha-edit-input"
                       value={row[column.key]}
-                      onchange={(e) => handleCellEdit(rowIndex, column.key, (e.target as HTMLSelectElement).value)}
-                      onblur={() => editingCell = null}
+                      change={(e) => handleCellEdit(rowIndex, column.key, (e.target as HTMLSelectElement).value)}
+                      on:blur={() => editingCell = null}
                     >
                       {#each column.options as option}
                         <option value={option.value}>{option.label}</option>
@@ -356,17 +356,17 @@
                       type="checkbox"
                       class="yorha-checkbox"
                       checked={row[column.key]}
-                      onchange={(e) => handleCellEdit(rowIndex, column.key, (e.target as HTMLInputElement).checked)}
-                      onblur={() => editingCell = null}
+                      change={(e) => handleCellEdit(rowIndex, column.key, (e.target as HTMLInputElement).checked)}
+                      on:blur={() => editingCell = null}
                     />
                   {:else}
                     <input
                       type={column.type === 'number' ? 'number' : column.type === 'date' ? 'date' : 'text'}
                       class="yorha-edit-input"
                       value={row[column.key]}
-                      oninput={(e) => handleCellEdit(rowIndex, column.key, (e.target as HTMLInputElement).value)}
-                      onblur={() => editingCell = null}
-                      onfocusin={(e) => (e.target as HTMLInputElement).select()}
+                      input={(e) => handleCellEdit(rowIndex, column.key, (e.target as HTMLInputElement).value)}
+                      on:blur={() => editingCell = null}
+                      on:focusin={(e) => (e.target as HTMLInputElement).select()}
                     />
                   {/if}
                 {:else}

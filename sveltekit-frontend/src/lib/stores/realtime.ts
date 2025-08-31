@@ -36,7 +36,7 @@ export interface FinalResultEntry {
 export const connectionStatus = writable<string>('disconnected');
 export const stages = writable<Record<string, StageStatus>>({}); // traceId -> stage status object
 export const finalResults = writable<FinalResultEntry[]>([]); // list of final LLM outputs
-export const recentEvents = writable<unknown[]>([]); // rolling window (loosely typed)
+export const recentEvents = writable<any[]>([]); // rolling window (loosely typed)
 
 let ws: WebSocket | null = null;
 

@@ -284,7 +284,7 @@
             <button
               class="yorha-component-btn"
               class:yorha-component-active={selectedComponent === component.id}
-              onclick={() => onComponentChange(component.id)}
+              click={() => onComponentChange(component.id)}
             >
               <svelte:component this={component.icon} size={18} />
               <div class="yorha-component-info">
@@ -307,7 +307,7 @@
             <button
               class="yorha-mode-btn"
               class:yorha-mode-active={previewMode === mode.id}
-              onclick={() => previewMode = mode.id}
+              click={() => previewMode = mode.id}
             >
               <svelte:component this={mode.icon} size={16} />
               <span>{mode.label}</span>
@@ -328,11 +328,11 @@
             {#if selectedComponent === 'button'}
               <div class="yorha-config-group">
                 <label>Text</label>
-                <input type="text" bind:value={buttonConfig.text} oninput={onConfigChange} />
+                <input type="text" bind:value={buttonConfig.text} input={onConfigChange} />
               </div>
               <div class="yorha-config-group">
                 <label>Variant</label>
-                <select bind:value={buttonConfig.variant} onchange={onConfigChange}>
+                <select bind:value={buttonConfig.variant} change={onConfigChange}>
                   <option value="primary">Primary</option>
                   <option value="secondary">Secondary</option>
                   <option value="danger">Danger</option>
@@ -341,7 +341,7 @@
               </div>
               <div class="yorha-config-group">
                 <label>Size</label>
-                <select bind:value={buttonConfig.size} onchange={onConfigChange}>
+                <select bind:value={buttonConfig.size} change={onConfigChange}>
                   <option value="small">Small</option>
                   <option value="medium">Medium</option>
                   <option value="large">Large</option>
@@ -349,19 +349,19 @@
               </div>
               <div class="yorha-config-group">
                 <label class="yorha-checkbox">
-                  <input type="checkbox" bind:checked={buttonConfig.loading} onchange={onConfigChange} />
+                  <input type="checkbox" bind:checked={buttonConfig.loading} change={onConfigChange} />
                   <span>Loading</span>
                 </label>
               </div>
               <div class="yorha-config-group">
                 <label class="yorha-checkbox">
-                  <input type="checkbox" bind:checked={buttonConfig.disabled} onchange={onConfigChange} />
+                  <input type="checkbox" bind:checked={buttonConfig.disabled} change={onConfigChange} />
                   <span>Disabled</span>
                 </label>
               </div>
               <div class="yorha-config-group">
                 <label class="yorha-checkbox">
-                  <input type="checkbox" bind:checked={buttonConfig.glowEffect} onchange={onConfigChange} />
+                  <input type="checkbox" bind:checked={buttonConfig.glowEffect} change={onConfigChange} />
                   <span>Glow Effect</span>
                 </label>
               </div>
@@ -370,31 +370,31 @@
             {#if selectedComponent === 'panel'}
               <div class="yorha-config-group">
                 <label>Title</label>
-                <input type="text" bind:value={panelConfig.title} oninput={onConfigChange} />
+                <input type="text" bind:value={panelConfig.title} input={onConfigChange} />
               </div>
               <div class="yorha-config-group">
                 <label>Width</label>
-                <input type="number" bind:value={panelConfig.width} oninput={onConfigChange} />
+                <input type="number" bind:value={panelConfig.width} input={onConfigChange} />
               </div>
               <div class="yorha-config-group">
                 <label>Height</label>
-                <input type="number" bind:value={panelConfig.height} oninput={onConfigChange} />
+                <input type="number" bind:value={panelConfig.height} input={onConfigChange} />
               </div>
               <div class="yorha-config-group">
                 <label class="yorha-checkbox">
-                  <input type="checkbox" bind:checked={panelConfig.scrollable} onchange={onConfigChange} />
+                  <input type="checkbox" bind:checked={panelConfig.scrollable} change={onConfigChange} />
                   <span>Scrollable</span>
                 </label>
               </div>
               <div class="yorha-config-group">
                 <label class="yorha-checkbox">
-                  <input type="checkbox" bind:checked={panelConfig.collapsible} onchange={onConfigChange} />
+                  <input type="checkbox" bind:checked={panelConfig.collapsible} change={onConfigChange} />
                   <span>Collapsible</span>
                 </label>
               </div>
               <div class="yorha-config-group">
                 <label class="yorha-checkbox">
-                  <input type="checkbox" bind:checked={panelConfig.borderGlow} onchange={onConfigChange} />
+                  <input type="checkbox" bind:checked={panelConfig.borderGlow} change={onConfigChange} />
                   <span>Border Glow</span>
                 </label>
               </div>
@@ -403,11 +403,11 @@
             {#if selectedComponent === 'input'}
               <div class="yorha-config-group">
                 <label>Placeholder</label>
-                <input type="text" bind:value={inputConfig.placeholder} oninput={onConfigChange} />
+                <input type="text" bind:value={inputConfig.placeholder} input={onConfigChange} />
               </div>
               <div class="yorha-config-group">
                 <label>Type</label>
-                <select bind:value={inputConfig.type} onchange={onConfigChange}>
+                <select bind:value={inputConfig.type} change={onConfigChange}>
                   <option value="text">Text</option>
                   <option value="password">Password</option>
                   <option value="email">Email</option>
@@ -416,17 +416,17 @@
               </div>
               <div class="yorha-config-group">
                 <label>Value</label>
-                <input type="text" bind:value={inputConfig.value} oninput={onConfigChange} />
+                <input type="text" bind:value={inputConfig.value} input={onConfigChange} />
               </div>
               <div class="yorha-config-group">
                 <label class="yorha-checkbox">
-                  <input type="checkbox" bind:checked={inputConfig.error} onchange={onConfigChange} />
+                  <input type="checkbox" bind:checked={inputConfig.error} change={onConfigChange} />
                   <span>Error State</span>
                 </label>
               </div>
               <div class="yorha-config-group">
                 <label class="yorha-checkbox">
-                  <input type="checkbox" bind:checked={inputConfig.scanlineEffect} onchange={onConfigChange} />
+                  <input type="checkbox" bind:checked={inputConfig.scanlineEffect} change={onConfigChange} />
                   <span>Scanline Effect</span>
                 </label>
               </div>
@@ -435,11 +435,11 @@
             {#if selectedComponent === 'modal'}
               <div class="yorha-config-group">
                 <label>Title</label>
-                <input type="text" bind:value={modalConfig.title} oninput={onConfigChange} />
+                <input type="text" bind:value={modalConfig.title} input={onConfigChange} />
               </div>
               <div class="yorha-config-group">
                 <label>Size</label>
-                <select bind:value={modalConfig.size} onchange={onConfigChange}>
+                <select bind:value={modalConfig.size} change={onConfigChange}>
                   <option value="small">Small</option>
                   <option value="medium">Medium</option>
                   <option value="large">Large</option>
@@ -448,19 +448,19 @@
               </div>
               <div class="yorha-config-group">
                 <label class="yorha-checkbox">
-                  <input type="checkbox" bind:checked={modalConfig.open} onchange={onConfigChange} />
+                  <input type="checkbox" bind:checked={modalConfig.open} change={onConfigChange} />
                   <span>Open</span>
                 </label>
               </div>
               <div class="yorha-config-group">
                 <label class="yorha-checkbox">
-                  <input type="checkbox" bind:checked={modalConfig.closable} onchange={onConfigChange} />
+                  <input type="checkbox" bind:checked={modalConfig.closable} change={onConfigChange} />
                   <span>Closable</span>
                 </label>
               </div>
               <div class="yorha-config-group">
                 <label class="yorha-checkbox">
-                  <input type="checkbox" bind:checked={modalConfig.hologramEffect} onchange={onConfigChange} />
+                  <input type="checkbox" bind:checked={modalConfig.hologramEffect} change={onConfigChange} />
                   <span>Hologram Effect</span>
                 </label>
               </div>
@@ -469,13 +469,13 @@
 
           <!-- Config Actions -->
           <div class="yorha-config-actions">
-            <button class="yorha-config-btn yorha-btn-save" onclick={saveConfig}>
+            <button class="yorha-config-btn yorha-btn-save" click={saveConfig}>
               SAVE
             </button>
-            <button class="yorha-config-btn yorha-btn-reset" onclick={resetConfig}>
+            <button class="yorha-config-btn yorha-btn-reset" click={resetConfig}>
               RESET
             </button>
-            <button class="yorha-config-btn yorha-btn-export" onclick={exportConfig}>
+            <button class="yorha-config-btn yorha-btn-export" click={exportConfig}>
               EXPORT
             </button>
           </div>

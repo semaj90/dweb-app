@@ -1,9 +1,10 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Legal Workflow Optimization API
  * Integrates binary encoding, GPU caching, and NES orchestration for legal workflows
  */
 
-import { json, type RequestHandler } from '@sveltejs/kit';
 import { binaryGPUShaderCache } from '../../../../../lib/services/gpu-shader-cache-binary-extension';
 import { nesCacheOrchestrator } from '../../../../../lib/services/nes-cache-orchestrator';
 import { webgpuRAGService } from '../../../../../lib/webgpu/webgpu-rag-service';

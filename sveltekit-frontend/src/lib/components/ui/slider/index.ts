@@ -12,14 +12,14 @@ export const SliderTick = null; // Slider?.Tick;
 // Re-export placeholder
 export const Slider = null;
 
-// Common props interface
-export interface CommonProps {
+// Slider-specific common props interface
+interface SliderCommonProps {
   className?: string;
   [key: string]: any;
 }
 
 // TypeScript interface for Slider props
-export interface SliderProps extends CommonProps {
+export interface SliderProps extends SliderCommonProps {
   value?: number[];
   min?: number;
   max?: number;

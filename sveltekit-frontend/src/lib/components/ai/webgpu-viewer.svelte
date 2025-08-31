@@ -385,20 +385,20 @@ $effect(() => {
 
 <div class="webgpu-viewer">
   <div class="controls">
-    <button on:click={togglePlay} class="control-btn" title={isPlaying ? 'Pause' : 'Play'}>
+    <button click={togglePlay} class="control-btn" title={isPlaying ? 'Pause' : 'Play'}>
       {#if isPlaying}
         <Pause class="h-4 w-4" />
       {:else}
         <Play class="h-4 w-4" />
       {/if}
     </button>
-    <button on:click={resetView} class="control-btn" title="Reset View">
+    <button click={resetView} class="control-btn" title="Reset View">
       <RotateCw class="h-4 w-4" />
     </button>
-    <button on:click={zoomIn} class="control-btn" title="Zoom In">
+    <button click={zoomIn} class="control-btn" title="Zoom In">
       <ZoomIn class="h-4 w-4" />
     </button>
-    <button on:click={zoomOut} class="control-btn" title="Zoom Out">
+    <button click={zoomOut} class="control-btn" title="Zoom Out">
       <ZoomOut class="h-4 w-4" />
     </button>
     <div class="info">
@@ -411,11 +411,11 @@ $effect(() => {
     bind:this={canvas}
     width={800}
     height={600}
-    onmousedown={handleMouseDown}
-    onmousemove={handleMouseMove}
-    onmouseup={handleMouseUp}
-    onmouseleave={handleMouseUp}
-    onwheel={handleWheel}
+    on:mousedown={handleMouseDown}
+    on:mousemove={handleMouseMove}
+    on:mouseup={handleMouseUp}
+    on:mouseleave={handleMouseUp}
+    on:wheel={handleWheel}
   />
   
   {#if labels.length > 0}

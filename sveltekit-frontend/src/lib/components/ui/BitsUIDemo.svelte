@@ -107,7 +107,7 @@
     <h2 class="text-xl font-semibold text-yorha-text-primary font-mono">
       💬 Dialog Components
     </h2>
-    
+
     <!-- Dialog Trigger Button -->
     <Button
       variant="primary"
@@ -185,17 +185,17 @@
     <h2 class="text-xl font-semibold text-yorha-text-primary font-mono">
       📊 Case Management
     </h2>
-    
+
     <div class="grid gap-4">
-      {#each sampleCases as case}
+      {#each sampleCases as sampleCase}
         <div class="border border-yorha-border bg-yorha-bg-secondary rounded-lg p-4">
           <div class="flex items-center justify-between">
             <div class="space-y-1">
               <h3 class="font-medium text-yorha-text-primary font-mono">
-                {case.name}
+                {sampleCase.name}
               </h3>
               <p class="text-sm text-yorha-text-secondary font-mono">
-                {case.type} • {case.status}
+                {sampleCase.type} • {sampleCase.status}
               </p>
             </div>
             <div class="flex gap-2">

@@ -223,7 +223,7 @@
             <Input
               placeholder="Ask AI to find laws..."
               bind:value={aiSearchQuery}
-              onkeydown={handleAISearchKeydown}
+              on:keydown={handleAISearchKeydown}
               {disabled}
               class="pl-10" />
           </div>
@@ -270,7 +270,7 @@
           <Textarea
             placeholder="Ask a legal question..."
             bind:value={aiChatMessage}
-            onkeydown={handleAIChatKeydown}
+            on:keydown={handleAIChatKeydown}
             {disabled}
             rows="2"
             class="resize-none" />

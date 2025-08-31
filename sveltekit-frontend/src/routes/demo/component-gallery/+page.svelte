@@ -407,7 +407,7 @@
                 bind:content={demoContent}
                 title="Legal Analysis Demo"
                 autoSave={false}
-                onsave={(e) => console.log('Demo save:', e.detail)}
+                on:save={(e) => console.log('Demo save:', e.detail)}
               />
             </div>
           </CardContent>

@@ -148,7 +148,7 @@
   <div class="relative">
     <Search
       class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-    <Input bind:value={searchQuery} {placeholder} onkeydown={handleKeydown} class="pl-10" />
+    <Input bind:value={searchQuery} {placeholder} on:keydown={handleKeydown} class="pl-10" />
     {#if isSearching}
       <Loader2
         class="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />

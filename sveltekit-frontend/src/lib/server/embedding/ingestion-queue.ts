@@ -38,10 +38,10 @@ export async function processNext(processor: (payload: IngestionJobRequest, upda
   if (!jobId) return null;
   const status = STATUS_STORE.get(jobId);
   if (!status) return null;
-  const payload = await cache.get(`ingest:payload:${jobId}`);
-  if (!payload) {
+  const payload = await cache.get(`ingest:payload:${jobId}`) as IngestionJobRequest;
+  if (!payload || !payload.evidenceId || !payload.textContent) {
     status.status = 'failed';
-    status.error = 'Missing payload';
+    status.error = 'Missing or invalid payload';
     return status;
   }
   status.status = 'processing';

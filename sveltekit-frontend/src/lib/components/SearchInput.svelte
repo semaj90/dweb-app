@@ -60,8 +60,8 @@
 	{placeholder}
 	class="search-input"
 	type="text"
-	on:input={handleInput}
-	on:keydown={handleKeydown}
+	input={handleInput}
+	keydown={handleKeydown}
 	on:focus={handleFocus}
 	on:blur={handleBlur}
 	aria-label="Search"
@@ -70,7 +70,7 @@
   {#if value}
 	<button
 	  class="clear-button"
-	  on:click={clearValue}
+	  click={clearValue}
 	  aria-label="Clear search"
 	  type="button"
 	>

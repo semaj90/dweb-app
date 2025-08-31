@@ -1,10 +1,11 @@
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 import { db, sql } from '$lib/server/db';
 import { cases, evidence, legalDocuments, users } from '$lib/server/db';
 import { eq, and, or, ilike, desc, count } from 'drizzle-orm';
 import { vectorOps } from '$lib/server/db/enhanced-vector-operations';
 import type { CommandSearchRequest, CommandSearchResponse } from '$lib/types/api';
+import type { RequestHandler } from './$types';
+
 
 export const POST: RequestHandler = async ({ request, locals }) => {
   try {

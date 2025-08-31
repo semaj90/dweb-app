@@ -1,13 +1,15 @@
+import type { RequestHandler } from './$types';
+
 // src/routes/api/webgpu/test/+server.ts
 // WebGPU test endpoint for browser-side testing
 // Tests WebGPU compute with WASM fallback integration
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request }) => {
+  let body: any;
   try {
-    const body = await request.json();
+    body = await request.json();
     const { operation = 'generate_text', input, fallback = true } = body;
 
     // Return simulated WebGPU results since we can't run WebGPU on server-side

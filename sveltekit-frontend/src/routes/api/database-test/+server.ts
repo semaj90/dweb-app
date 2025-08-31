@@ -1,7 +1,8 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
 import { db, testConnection, healthCheck } from '$lib/server/db';
 import { sql } from 'drizzle-orm';
+import type { RequestHandler } from './$types';
+
 
 export const GET: RequestHandler = async () => {
   const results: Record<string, any> = {};

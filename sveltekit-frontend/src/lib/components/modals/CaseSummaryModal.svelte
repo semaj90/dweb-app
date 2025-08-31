@@ -163,7 +163,7 @@
     </svelte:fragment>
   </Drawer>
 {:else}
-  <Dialog.Root open={isOpen} onclose={closeModal}>
+  <Dialog.Root open={isOpen} on:close={closeModal}>
     <Dialog.Content size="lg">
       <Dialog.Header>
         <Dialog.Title>Case Summary</Dialog.Title>

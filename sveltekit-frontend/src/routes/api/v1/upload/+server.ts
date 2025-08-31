@@ -1,10 +1,13 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Enhanced Upload API Endpoint - SvelteKit 2 Production
  * Integrates with Upload service (port 8093) with advanced file processing
  * Supports document analysis, OCR, embedding generation, and metadata extraction
  */
 
-import { json, error, type RequestHandler } from '@sveltejs/kit';
+
+import { ensureError } from '$lib/utils/ensure-error';
 import { dev } from '$app/environment';
 import type { 
   EnhancedUploadRequest, 
@@ -77,30 +80,30 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
     
     // Validate file presence
     if (!file) {
-      return error(400, {
+      return error(400, ensureError({
         message: 'File is required',
         code: 'MISSING_FILE',
         requestId
-      });
+      }));
     }
 
     // Validate file size
     if (file.size > FILE_CONFIG.maxSize) {
-      return error(400, {
+      return error(400, ensureError({
         message: `File too large. Maximum size: ${FILE_CONFIG.maxSize / 1024 / 1024}MB`,
         code: 'FILE_TOO_LARGE',
         requestId
-      });
+      }));
     }
 
     // Validate file type
     if (!FILE_CONFIG.allowedTypes.includes(file.type)) {
-      return error(400, {
+      return error(400, ensureError({
         message: `File type not supported: ${file.type}`,
         code: 'UNSUPPORTED_FILE_TYPE',
         requestId,
         details: { supportedTypes: FILE_CONFIG.allowedTypes }
-      });
+      }));
     }
 
     // Extract additional parameters
@@ -137,14 +140,14 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
   } catch (err: any) {
     console.error('Upload API Error:', err);
     
-    return error(500, {
+    return error(500, ensureError({
       message: 'Upload processing failed',
       error: dev ? String(err) : 'Internal server error',
       code: 'UPLOAD_PROCESSING_ERROR',
       requestId,
       timestamp: new Date().toISOString(),
       retryable: true
-    });
+    }));
   }
 };
 
@@ -161,7 +164,7 @@ export const GET: RequestHandler = async ({ url }) => {
         return await handleHealthCheck();
       case 'status':
         if (!documentId) {
-          return error(400, { message: 'Document ID required for status check' });
+          return error(400, ensureError({ message: 'Document ID required for status check' }));
         }
         return await handleStatusCheck(documentId);
       case 'config':
@@ -189,10 +192,10 @@ export const GET: RequestHandler = async ({ url }) => {
     }
   } catch (err: any) {
     console.error('Upload GET Error:', err);
-    return error(500, {
+    return error(500, ensureError({
       message: 'Service unavailable',
       error: dev ? String(err) : 'Internal error'
-    });
+    }));
   }
 };
 

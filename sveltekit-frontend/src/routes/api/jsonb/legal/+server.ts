@@ -1,3 +1,5 @@
+import type { RequestHandler } from './$types';
+
 /**
  * JSONB Legal API Endpoints
  * 
@@ -12,7 +14,6 @@
  */
 
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 import { jsonbLegalService } from '$lib/services/jsonb-legal-service.js';
 import { logger } from '$lib/logging/structured-logger.js';
 import { z } from 'zod';

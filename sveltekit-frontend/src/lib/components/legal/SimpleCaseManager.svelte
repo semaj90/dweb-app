@@ -229,7 +229,7 @@
       
       <button 
         class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-sm transition-colors duration-200"
-        on:click={() => isCreateDialogOpen.set(true)}
+        click={() => isCreateDialogOpen.set(true)}
       >
         + Create New Case
       </button>
@@ -249,7 +249,7 @@
       </div>
       <button 
         class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-6 rounded-lg transition-colors duration-200"
-        on:click={loadCases}
+        click={loadCases}
       >
         Refresh
       </button>
@@ -271,7 +271,7 @@
           </div>
           <button 
             class="ml-auto flex-shrink-0"
-            on:click={() => error.set('')}
+            click={() => error.set('')}
           >
             <svg class="h-5 w-5 text-red-400 hover:text-red-600" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -351,13 +351,13 @@
               <div class="flex space-x-2">
                 <button 
                   class="text-blue-600 hover:text-blue-800 text-sm font-medium px-3 py-1 rounded hover:bg-blue-50 transition-colors duration-200"
-                  on:click={() => openEditDialog(caseData)}
+                  click={() => openEditDialog(caseData)}
                 >
                   Edit
                 </button>
                 <button 
                   class="text-red-600 hover:text-red-800 text-sm font-medium px-3 py-1 rounded hover:bg-red-50 transition-colors duration-200"
-                  on:click={() => deleteCase(caseData.id!)}
+                  click={() => deleteCase(caseData.id!)}
                 >
                   Delete
                 </button>
@@ -385,7 +385,7 @@
           <div class="mt-6">
             <button 
               class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
-              on:click={() => isCreateDialogOpen.set(true)}
+              click={() => isCreateDialogOpen.set(true)}
             >
               Create First Case
             </button>
@@ -398,8 +398,8 @@
 
 <!-- Create Case Modal -->
 {#if $isCreateDialogOpen}
-  <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" on:click={() => isCreateDialogOpen.set(false)}>
-    <div class="relative top-20 mx-auto p-5 border w-11/12 max-w-2xl shadow-lg rounded-md bg-white" on:click|stopPropagation>
+  <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" click={() => isCreateDialogOpen.set(false)}>
+    <div class="relative top-20 mx-auto p-5 border w-11/12 max-w-2xl shadow-lg rounded-md bg-white" click|stopPropagation>
       <div class="mt-3">
         <h3 class="text-lg font-medium text-gray-900 mb-4">Create New Case</h3>
         
@@ -482,7 +482,7 @@
             <button 
               type="button" 
               class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200"
-              on:click={() => isCreateDialogOpen.set(false)}
+              click={() => isCreateDialogOpen.set(false)}
             >
               Cancel
             </button>
@@ -502,8 +502,8 @@
 
 <!-- Edit Case Modal -->
 {#if $isEditDialogOpen}
-  <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" on:click={() => isEditDialogOpen.set(false)}>
-    <div class="relative top-20 mx-auto p-5 border w-11/12 max-w-2xl shadow-lg rounded-md bg-white" on:click|stopPropagation>
+  <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" click={() => isEditDialogOpen.set(false)}>
+    <div class="relative top-20 mx-auto p-5 border w-11/12 max-w-2xl shadow-lg rounded-md bg-white" click|stopPropagation>
       <div class="mt-3">
         <h3 class="text-lg font-medium text-gray-900 mb-4">Edit Case</h3>
         
@@ -586,7 +586,7 @@
             <button 
               type="button" 
               class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200"
-              on:click={() => isEditDialogOpen.set(false)}
+              click={() => isEditDialogOpen.set(false)}
             >
               Cancel
             </button>

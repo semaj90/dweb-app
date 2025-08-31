@@ -65,9 +65,7 @@
       !fullWidth && "mx-auto",
       !fullWidth && maxWidthClasses[maxWidth],
       paddingClasses[padding],
-      gapClasses[gap],
-      className
-    );
+      gapClasses[gap], className);
   });
 
   const headerClass = $derived(() => {

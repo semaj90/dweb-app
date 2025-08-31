@@ -264,7 +264,7 @@ This agreement may be terminated by either party with thirty (30) days written n
 							<h3 class="text-sm font-medium text-red-800">Error</h3>
 							<p class="mt-1 text-sm text-red-700">{error}</p>
 							<button 
-								on:click={loadGPUData}
+								click={loadGPUData}
 								class="mt-2 text-sm bg-red-100 text-red-800 px-3 py-1 rounded hover:bg-red-200"
 							>
 								Retry
@@ -347,7 +347,7 @@ This agreement may be terminated by either party with thirty (30) days written n
 					</div>
 
 					<button
-						on:click={processDocument}
+						click={processDocument}
 						disabled={isProcessing || !documentText.trim()}
 						class="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
 					>
@@ -381,7 +381,7 @@ This agreement may be terminated by either party with thirty (30) days written n
 					</div>
 
 					<button
-						on:click={processQuery}
+						click={processQuery}
 						disabled={isProcessing || !queryText.trim()}
 						class="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
 					>
@@ -404,7 +404,7 @@ This agreement may be terminated by either party with thirty (30) days written n
 					<div class="flex justify-between items-center mb-4">
 						<h3 class="text-lg font-semibold text-gray-900">Processing Results</h3>
 						<button
-							on:click={clearResults}
+							click={clearResults}
 							class="text-sm text-gray-600 hover:text-gray-800"
 						>
 							Clear Results

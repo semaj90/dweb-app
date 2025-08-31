@@ -10,7 +10,7 @@ import {
   evidenceVectors,
   queryVectors
 } from "$lib/db/schema";
-import { eq, sql, and, desc } from "drizzle-orm";
+import { eq, sql, and, desc } from "$lib/server/db/index";
 
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { OllamaEmbeddings } from '@langchain/community/embeddings/ollama';
@@ -297,7 +297,7 @@ export class DocumentUpdateLoop {
       const queryEmbedding = queryRecord.embedding;
       
       // Get original results (from clicked results)
-      const originalResults = (queryRecord.clickedResults as unknown[]) || [];
+      const originalResults = (queryRecord.clickedResults as any[]) || [];
 
       // Perform new search with updated embeddings
       const newSearchResults = await db

@@ -3,8 +3,6 @@
   Displays security events, system health, and security metrics
 -->
 <script lang="ts">
-  import { $derived } from 'svelte';
-
   import { Button } from "$lib/components/ui/button";
   import { notifications } from "$lib/stores/notification";
   import { getSecurityEvents, type SecurityEvent } from "$lib/utils/security";
@@ -41,17 +39,12 @@
   let loading = false;
 
   // Security metrics
-  let criticalEvents = $derived(securityEvents.filter(
-    (e) => e.severity === "critical"
-  ).length);
-  let highEvents = $derived(securityEvents.filter((e) => e.severity === "high").length);
-  let recentEvents = $derived(securityEvents.filter(
-    (e) => Date.now() - e.timestamp < 24 * 60 * 60 * 1000
-  ).length);
-  let loginAttempts = $derived(securityEvents.filter((e) => e.type === "login").length);
-  let accessDeniedEvents = $derived(securityEvents.filter(
-    (e) => e.type === "access_denied"
-  ).length);
+  // runtime helpers like $derived are provided by the runes compiler; don't import them.
+  const criticalEvents = $derived(() => securityEvents.filter((e) => e.severity === 'critical').length);
+  const highEvents = $derived(() => securityEvents.filter((e) => e.severity === 'high').length);
+  const recentEvents = $derived(() => securityEvents.filter((e) => Date.now() - e.timestamp < 24 * 60 * 60 * 1000).length);
+  const loginAttempts = $derived(() => securityEvents.filter((e) => e.type === 'login').length);
+  const accessDeniedEvents = $derived(() => securityEvents.filter((e) => e.type === 'access_denied').length);
 
   // System status
   const systemHealth = writable({
@@ -207,10 +200,12 @@
       default:
         return "text-base-content";
 }}
-  // Reactive statements
-  $: if (selectedSeverity || selectedType) {
-    filterEvents();
-}
+  // Reactive effect (runes mode): run filterEvents whenever severity/type selections change
+  $effect(() => {
+    if (selectedSeverity || selectedType) {
+      filterEvents();
+    }
+  });
 </script>
 
 <div class="container mx-auto px-4">

@@ -791,11 +791,3 @@ export class LegalBERTSemanticAnalyzer extends EventEmitter {
 // Export singleton instance
 export const legalBERTAnalyzer = new LegalBERTSemanticAnalyzer();
 
-// Export types
-export type { 
-  LegalEntity, 
-  DocumentClassification, 
-  RiskAssessment, 
-  SemanticAnalysis, 
-  StreamingUpdate 
-};

@@ -392,8 +392,8 @@
   <div
     class="mx-auto px-4 max-w-7xl"
     transition:fade={{ duration: 200  "
-    onclick|self={closeChat}
-    onkeydown={(e) => e.key === "Escape" && closeChat()}
+    onclick={(e) => { if (e.target === e.currentTarget) closeChat(); }}
+    keydown={(e) => e.key === "Escape" && closeChat()}
     role="dialog"
     aria-modal="true"
     aria-labelledby="chat-title"
@@ -419,7 +419,7 @@
             <button
               class="mx-auto px-4 max-w-7xl"
               class:active={showModeSelector}
-              on:click={() => (showModeSelector = !showModeSelector)}
+              click={() => (showModeSelector = !showModeSelector)}
               title="Select AI mode"
             >
               {#each aiModes as mode}
@@ -439,7 +439,7 @@
                   <button
                     class="mx-auto px-4 max-w-7xl"
                     class:selected={mode.id === selectedMode}
-                    on:click={() => {
+                    click={() => {
                       selectedMode = mode.id;
                       showModeSelector = false;
                     "
@@ -460,7 +460,7 @@
         <div class="mx-auto px-4 max-w-7xl">
           <button
             class="mx-auto px-4 max-w-7xl"
-            on:click={() => clearConversation()}
+            click={() => clearConversation()}
             title="Clear conversation"
             disabled={isGenerating}
           >
@@ -468,7 +468,7 @@
           </button>
           <button
             class="mx-auto px-4 max-w-7xl"
-            on:click={() => closeChat()}
+            click={() => closeChat()}
             title="Close chat"
           >
             <X size={16} />
@@ -528,7 +528,7 @@
                     {#each message.actions as action}
                       <button
                         class="mx-auto px-4 max-w-7xl"
-                        on:click={() => handleActionClick(action)}
+                        click={() => handleActionClick(action)}
                         title={action.text}
                       >
                         {action.text}
@@ -564,7 +564,7 @@
             {#each quickActions as action}
               <button
                 class="mx-auto px-4 max-w-7xl"
-                on:click={() => handleQuickAction(action.text)}
+                click={() => handleQuickAction(action.text)}
                 disabled={isGenerating}
               >
                 <svelte:component this={action.icon} size={20} />
@@ -583,7 +583,7 @@
             bind:value={currentMessage}
             placeholder="Ask about your case, evidence, or legal strategy..."
             disabled={isGenerating}
-            onkeydown={handleKeydown}
+            keydown={handleKeydown}
             rows="4"
             class="mx-auto px-4 max-w-7xl"
           ></textarea>
@@ -592,7 +592,7 @@
             class="mx-auto px-4 max-w-7xl"
             class:sending={isGenerating}
             disabled={!currentMessage.trim() || isGenerating}
-            on:click={() => sendMessage()}
+            click={() => sendMessage()}
             title="Send message"
           >
             {#if isGenerating}

@@ -15,11 +15,21 @@ export interface ServiceEndpoint {
   quic?: string;
   websocket?: string;
   health: string;
-  tier: ServiceTier;
-  status: 'active' | 'experimental' | 'disabled';
+  tier?: ServiceTier;
+  status: 'active' | 'experimental' | 'disabled' | 'maintenance';
   timeout?: number;
   retries?: number;
   metadata?: Record<string, any>;
+  // Additional endpoint configurations
+  primary?: string;
+  secondary?: string;
+  embeddings?: string;
+  host?: string;
+  port?: number;
+  database?: string;
+  server?: string;
+  monitor?: string;
+  dev?: string;
 }
 
 enum ServiceTier {
@@ -51,14 +61,15 @@ export interface MessagingEndpoint extends ProtocolEndpoint {}
 export interface FrontendEndpoint extends ProtocolEndpoint {}
 
 export interface HealthCheckResult {
-  healthy: boolean;
+  healthy?: boolean;
   status: string;
-  timestamp: Date;
+  timestamp?: Date;
   details?: any;
   error?: string;
   responseTime?: number;
-  lastCheck?: Date;
+  lastCheck?: string;
   endpoint?: string;
+  metadata?: any;
 }
 
 export interface APIRequestContext {
@@ -78,12 +89,14 @@ export interface MultiProtocolRequestOptions {
   fallbackProtocol?: ServiceTier;
   priority?: 'low' | 'medium' | 'high' | 'critical';
   enableFallback?: boolean;
+  fallback?: boolean;
   circuitBreaker?: boolean;
   cacheResponse?: boolean;
   validateResponse?: boolean;
   headers?: Record<string, string>;
   body?: any;
   context?: APIRequestContext;
+  protocol?: ServiceTier;
 }
 
 export class APIOrchestrator {
@@ -232,11 +245,13 @@ export class APIOrchestrator {
         host: 'localhost',
         port: 5432,
         database: 'legal_ai_db',
+        health: '/health',
         status: 'active'
       },
       redis: {
         host: 'localhost',
         port: 6379,
+        health: '/health',
         status: 'active'
       },
       qdrant: {
@@ -311,6 +326,7 @@ export class APIOrchestrator {
       sveltekit: {
         http: 'http://localhost:5173',
         dev: 'http://localhost:5174',
+        health: '/health',
         status: 'active'
       }
     };
@@ -339,7 +355,8 @@ export class APIOrchestrator {
     }
 
     const requestOptions: RequestInit = {
-      ...options,
+      method: options.body ? 'POST' : 'GET',
+      body: options.body ? JSON.stringify(options.body) : undefined,
       headers: {
         'Content-Type': 'application/json',
         'User-Agent': 'SvelteKit-Legal-AI-Orchestrator/2.0',
@@ -358,7 +375,7 @@ export class APIOrchestrator {
       response = await fetch(`${baseUrl}${endpoint}`, requestOptions);
       
       // Record metrics
-      this.recordMetrics(service, Date.now() - startTime, !response.ok);
+      this.recordMetrics(String(service), Date.now() - startTime, !response.ok);
       
       return response;
     } catch (fetchError) {
@@ -375,7 +392,7 @@ export class APIOrchestrator {
               signal: AbortSignal.timeout(timeout * 2) // Extended timeout for fallback
             });
             
-            this.recordMetrics(service, Date.now() - startTime, !response.ok);
+            this.recordMetrics(String(service), Date.now() - startTime, !response.ok);
             return response;
           }
         } catch (fallbackError) {
@@ -383,7 +400,7 @@ export class APIOrchestrator {
         }
       }
       
-      this.recordMetrics(service, Date.now() - startTime, true);
+      this.recordMetrics(String(service), Date.now() - startTime, true);
       throw error;
     }
   }
@@ -425,9 +442,9 @@ export class APIOrchestrator {
    */
   private async checkServiceHealth(
     serviceName: keyof ServiceEndpoints,
-    config: ProtocolEndpoint | DatabaseEndpoint | MessagingEndpoint | FrontendEndpoint
+    config: ServiceEndpoint
   ): Promise<HealthCheckResult> {
-    const cacheKey = serviceName;
+    const cacheKey = String(serviceName);
     const cached = this.healthCache.get(cacheKey);
     
     // Return cached result if less than 30 seconds old
@@ -506,76 +523,65 @@ export class APIOrchestrator {
     return {};
   }
 
+
   /**
-   * Select optimal protocol based on service configuration and preferences
+   * Select optimal protocol for service
    */
-  private selectOptimalProtocol(
-    config: ProtocolEndpoint | DatabaseEndpoint | MessagingEndpoint | FrontendEndpoint,
-    preferredProtocol?: 'auto' | 'http' | 'grpc' | 'quic' | 'websocket'
-  ): string {
-    if (preferredProtocol && preferredProtocol !== 'auto') {
-      return preferredProtocol;
+  private selectOptimalProtocol(config: ServiceEndpoint, preferred?: ServiceTier): ServiceTier {
+    // If preferred protocol is available, use it
+    if (preferred) {
+      if (preferred === ServiceTier.QUIC && config.quic) return ServiceTier.QUIC;
+      if (preferred === ServiceTier.GRPC && config.grpc) return ServiceTier.GRPC;
+      if (preferred === ServiceTier.HTTP && config.http) return ServiceTier.HTTP;
+      if (preferred === ServiceTier.WEBSOCKET && config.websocket) return ServiceTier.WEBSOCKET;
     }
 
-    // Protocol selection based on service tier and availability
-    if ('tier' in config) {
-      switch (config.tier) {
-        case ServiceTier.ULTRA_FAST:
-          if ('quic' in config && config.quic) return 'quic';
-          if ('grpc' in config && config.grpc) return 'grpc';
-          break;
-        case ServiceTier.HIGH_PERF:
-          if ('grpc' in config && config.grpc) return 'grpc';
-          break;
-        case ServiceTier.REALTIME:
-          if ('websocket' in config && config.websocket) return 'websocket';
-          break;
-      }
-    }
-
-    // Default to HTTP
-    return 'http';
+    // Default protocol selection based on availability and tier
+    if (config.quic) return ServiceTier.QUIC;
+    if (config.grpc) return ServiceTier.GRPC;
+    if (config.http) return ServiceTier.HTTP;
+    if (config.websocket) return ServiceTier.WEBSOCKET;
+    if (config.primary) return ServiceTier.HTTP; // Fallback for ollama-style configs
+    if (config.server) return ServiceTier.STANDARD; // NATS server
+    
+    return ServiceTier.HTTP; // Default fallback
   }
 
   /**
-   * Get service URL for specified protocol
+   * Get service URL for protocol
    */
-  private getServiceUrl(
-    config: ProtocolEndpoint | DatabaseEndpoint | MessagingEndpoint | FrontendEndpoint,
-    protocol: string
-  ): string | null {
+  private getServiceUrl(config: ServiceEndpoint, protocol: ServiceTier): string | null {
     switch (protocol) {
-      case 'http':
-        if ('http' in config) return config.http || null;
-        if ('primary' in config) return config.primary || null;
-        if ('monitor' in config) return config.monitor || null;
-        break;
-      case 'grpc':
-        if ('grpc' in config) return `http://${config.grpc}`;
-        break;
-      case 'quic':
-        if ('quic' in config) return `http://${config.quic}`;
-        break;
-      case 'websocket':
-        if ('websocket' in config) return config.websocket || null;
-        break;
+      case ServiceTier.QUIC:
+        return config.quic || null;
+      case ServiceTier.GRPC:
+        return config.grpc || null;
+      case ServiceTier.HTTP:
+        return config.http || config.primary || null;
+      case ServiceTier.WEBSOCKET:
+        return config.websocket || null;
+      default:
+        return config.http || config.primary || null;
     }
-    return null;
   }
 
   /**
    * Get timeout based on service tier
    */
-  private getTimeoutForTier(config: ProtocolEndpoint | DatabaseEndpoint | MessagingEndpoint | FrontendEndpoint): number {
-    if ('tier' in config) {
-      switch (config.tier) {
-        case ServiceTier.ULTRA_FAST: return 5000;  // 5s
-        case ServiceTier.HIGH_PERF: return 15000;  // 15s
-        case ServiceTier.REALTIME: return 1000;   // 1s
-        case ServiceTier.STANDARD: return 30000;  // 30s
-      }
+  private getTimeoutForTier(config: ServiceEndpoint): number {
+    if (config.timeout) return config.timeout;
+    
+    switch (config.tier) {
+      case ServiceTier.ULTRA_FAST:
+        return 1000;
+      case ServiceTier.HIGH_PERF:
+        return 3000;
+      case ServiceTier.REALTIME:
+        return 5000;
+      case ServiceTier.STANDARD:
+      default:
+        return 10000;
     }
-    return 30000; // Default 30s
   }
 
   /**
@@ -634,7 +640,7 @@ export class APIOrchestrator {
   /**
    * Get available protocols for a service
    */
-  private getAvailableProtocols(config: ProtocolEndpoint | DatabaseEndpoint | MessagingEndpoint | FrontendEndpoint): string[] {
+  private getAvailableProtocols(config: ServiceEndpoint): string[] {
     const protocols: string[] = [];
     
     if ('http' in config && config.http) protocols.push('HTTP');

@@ -489,7 +489,7 @@
             </div>
           </div>
 
-          <button on:click={nextStep} disabled={!$webgpuSupported} class="primary-button">
+          <button click={nextStep} disabled={!$webgpuSupported} class="primary-button">
             Initialize System
           </button>
         </div>
@@ -513,7 +513,7 @@
 
           <div class="action-buttons">
             <button 
-              on:click={generateSampleData} 
+              click={generateSampleData} 
               disabled={$demoState.isGeneratingData || $demoState.dataGenerated}
               class="primary-button"
             >
@@ -522,7 +522,7 @@
             </button>
             
             {#if $demoState.dataGenerated}
-              <button on:click={nextStep} class="secondary-button">
+              <button click={nextStep} class="secondary-button">
                 Continue to Storage
               </button>
             {/if}
@@ -560,11 +560,11 @@
           </div>
 
           <div class="action-buttons">
-            <button on:click={async () => { await updateDatabaseStats(); }} class="secondary-button">
+            <button click={async () => { await updateDatabaseStats(); }} class="secondary-button">
               Refresh Stats
             </button>
             
-            <button on:click={nextStep} class="primary-button">
+            <button click={nextStep} class="primary-button">
               Launch Visualization
             </button>
           </div>
@@ -586,7 +586,7 @@
                 enablePhysics={true}
                 enableStreaming={true}
                 maxNodes={1000}
-                className="demo-graph-viewer"
+                class="demo-graph-viewer"
               />
             {:else}
               <div class="visualization-placeholder">
@@ -596,20 +596,20 @@
           </div>
 
           <div class="visualization-controls">
-            <button on:click={() => $graphViewer?.resetCamera()} class="control-button">
+            <button click={() => $graphViewer?.resetCamera()} class="control-button">
               🎯 Reset Camera
             </button>
             
-            <button on:click={() => $graphViewer?.togglePhysics()} class="control-button">
+            <button click={() => $graphViewer?.togglePhysics()} class="control-button">
               ⚡ Toggle Physics
             </button>
             
-            <button on:click={() => $graphViewer?.focusOnNode('case-001')} class="control-button">
+            <button click={() => $graphViewer?.focusOnNode('case-001')} class="control-button">
               🔍 Focus on Case
             </button>
           </div>
 
-          <button on:click={nextStep} class="primary-button">
+          <button click={nextStep} class="primary-button">
             Test Vector Search
           </button>
         </div>
@@ -627,9 +627,9 @@
                 bind:value={$demoState.searchQuery}
                 placeholder="Search legal documents... (e.g., 'data breach privacy')"
                 class="search-input"
-                on:keydown={(e) => e.key === 'Enter' && performVectorSearch()}
+                keydown={(e) => e.key === 'Enter' && performVectorSearch()}
               />
-              <button on:click={performVectorSearch} class="search-button">
+              <button click={performVectorSearch} class="search-button">
                 🔍 Search
               </button>
             </div>
@@ -670,7 +670,7 @@
             </div>
           {/if}
 
-          <button on:click={nextStep} class="primary-button">
+          <button click={nextStep} class="primary-button">
             Test Server Sync
           </button>
         </div>
@@ -686,7 +686,7 @@
             <div class="status-grid">
               <div class="status-item">
                 <span class="status-label">Connection:</span>
-                <span class="status-value" class:online={$syncStatus.isOnline}>
+                <span class="status-value" class:on:line={$syncStatus.isOnline}>
                   {$syncStatus.isOnline ? 'Online' : 'Offline'}
                 </span>
               </div>
@@ -720,14 +720,14 @@
 
           <div class="action-buttons">
             <button 
-              on:click={syncToServer}
+              click={syncToServer}
               disabled={!$syncStatus.isOnline}
               class="primary-button"
             >
               Sync to Server
             </button>
             
-            <button on:click={async () => { await syncService.clearCache(); }} class="secondary-button">
+            <button click={async () => { await syncService.clearCache(); }} class="secondary-button">
               Clear Cache
             </button>
           </div>
@@ -746,7 +746,7 @@
     <!-- Navigation Controls -->
     <footer class="demo-navigation">
       <button 
-        on:click={prevStep} 
+        click={prevStep} 
         disabled={$demoState.currentStep === 1}
         class="nav-button prev"
       >
@@ -758,7 +758,7 @@
       </span>
       
       <button 
-        on:click={nextStep}
+        click={nextStep}
         disabled={$demoState.currentStep === $demoState.maxSteps}
         class="nav-button next"
       >

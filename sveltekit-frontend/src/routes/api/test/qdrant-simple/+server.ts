@@ -1,8 +1,9 @@
+import type { RequestHandler } from './$types';
+
 // Simple Qdrant Service Test API
 // Basic test without Redis dependencies
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 
 export interface TestResult {
   test: string;

@@ -1,10 +1,11 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Evidence CRUD API for Cases - PostgreSQL + Drizzle ORM Integration
  * Demonstrates nested resource CRUD with file upload support via MinIO
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 import * as casesMCP from '../../../../../../lib/mcp/cases.mcp';
 import { minioService } from '../../../../../../lib/server/storage/minio-service';
 import type { EvidenceData } from '../../../../../../lib/mcp/cases.mcp';

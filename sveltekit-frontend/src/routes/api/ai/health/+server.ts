@@ -1,6 +1,7 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
 import { logger } from "$lib/server/logger";
+import type { RequestHandler } from './$types';
+
 
 export const GET: RequestHandler = async () => {
   try {

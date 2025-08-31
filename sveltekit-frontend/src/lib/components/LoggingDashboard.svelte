@@ -165,10 +165,10 @@
         </h2>
 
         <div class="flex items-center gap-2">
-          <Button size="sm" variant="outline" onclick={exportLogs}>
+          <Button size="sm" variant="outline" on:click={exportLogs}>
             📤 Export
           </Button>
-          <Button size="sm" variant="outline" onclick={clearLogs}>
+          <Button size="sm" variant="outline" on:click={clearLogs}>
             🗑️ Clear
           </Button>
         </div>
@@ -259,7 +259,7 @@
           {#each filteredEntries as entry (entry.id)}
             <div
               class="log-entry group hover:bg-gray-800 p-2 rounded cursor-pointer transition-colors duration-150"
-              onclick={() => selectEntry(entry)}
+              click={() => selectEntry(entry)}
             >
               <div class="flex items-start gap-3">
                 <!-- Timestamp -->
@@ -303,7 +303,7 @@
 
                 <!-- Actions -->
                 <div class="opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Button size="sm" variant="ghost" onclick={(e) => { e.stopPropagation(); () => selectEntry(entry)(); }}>
+                  <Button size="sm" variant="ghost" on:click={(e) => { e.stopPropagation(); () => selectEntry(entry)(); }}>
                     👁️
                   </Button>
                 </div>
@@ -325,7 +325,7 @@
           <h3 class="text-xl font-bold text-green-400 flex items-center gap-2">
             {getLevelIcon(selectedEntry.level)} Log Entry Details
           </h3>
-          <Button variant="ghost" onclick={() => showDetails = false}>
+          <Button variant="ghost" on:click={() => showDetails = false}>
             ✕
           </Button>
         </div>
@@ -448,13 +448,13 @@
         <div class="flex gap-2 mt-6">
           <Button
             variant="outline"
-            onclick={() => {
+            on:click={() => {
               navigator.clipboard.writeText(JSON.stringify(selectedEntry, null, 2));
             }}
           >
             📋 Copy JSON
           </Button>
-          <Button variant="outline" onclick={() => showDetails = false}>
+          <Button variant="outline" on:click={() => showDetails = false}>
             Close
           </Button>
         </div>

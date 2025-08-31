@@ -26,7 +26,7 @@ declare module '$env/static/public' {
 
 // Tauri API types
 declare module '@tauri-apps/api/tauri' {
-  export function invoke(cmd: string, args?: Record<string, unknown>): Promise<unknown>;
+  export function invoke(cmd: string, args?: Record<string, unknown>): Promise<any>;
 }
 
 export {};

@@ -1,7 +1,8 @@
-import { json, type RequestHandler } from '@sveltejs/kit';
 import { getSustainedP99Info } from "$lib/services/alert-center";
 import fs from 'fs';
 import path from 'path';
+import type { RequestHandler } from './$types';
+
 
 // GET /api/v1/observability/state - Get current observability state with enhanced persistence
 export const GET: RequestHandler = async () => {

@@ -1,7 +1,8 @@
+import type { RequestHandler } from './$types';
+
 // GPU-Accelerated TypeScript Error Processing
 // NVIDIA RTX 3060 Ti optimized processing for high-performance TypeScript error fixing
 
-import { json, type RequestHandler } from '@sveltejs/kit';
 import type { 
 	OptimizedFixRequest, 
 	OptimizedFixResponse,

@@ -18,7 +18,7 @@
  * @lastModified 2025-01-20
  */
 
-import type { InferSelectModel, InferInsertModel } from "drizzle-orm";
+import type { InferSelectModel, InferInsertModel } from "drizzle-orm/table";
 import { 
   cases, 
   evidence, 
@@ -323,9 +323,10 @@ export type PaginatedResults<T> = {
 };
 
 /**
- * Legal AI Analysis Result
+ * Database Legal AI Analysis Result
+ * Used for storing legal analysis results in the database
  */
-export type LegalAnalysisResult = {
+export type DatabaseLegalAnalysisResult = {
   entityId: string;
   entityType: string;
   analysisType: string;

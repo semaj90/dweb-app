@@ -1,7 +1,8 @@
-import { json, type RequestHandler } from '@sveltejs/kit';
 import { reports } from '$lib/server/db/schema-postgres';
 import { db } from '$lib/server/db/index';
 import { eq } from 'drizzle-orm';
+import type { RequestHandler } from './$types';
+
 
 export const POST: RequestHandler = async ({ params, request, locals }) => {
   try {

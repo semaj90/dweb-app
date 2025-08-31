@@ -844,7 +844,7 @@
           <button
             class="p-2 rounded-lg bg-amber-900/20 border border-amber-400/30 hover:bg-amber-400/10 text-amber-400"
             class:animate-spin={autoRefresh}
-            onclick={toggleAutoRefresh}
+            click={toggleAutoRefresh}
             title={autoRefresh ? 'Disable auto-refresh' : 'Enable auto-refresh'}
           >
             <RefreshCw class="w-4 h-4" />
@@ -852,7 +852,7 @@
 
           <button
             class="p-2 rounded-lg bg-blue-900/20 border border-blue-400/30 hover:bg-blue-400/10 text-blue-400"
-            onclick={exportResults}
+            click={exportResults}
             title="Export test results"
           >
             <Download class="w-4 h-4" />
@@ -860,7 +860,7 @@
 
           <button
             class="p-2 rounded-lg bg-red-900/20 border border-red-400/30 hover:bg-red-400/10 text-red-400"
-            onclick={clearResults}
+            click={clearResults}
             title="Clear all results"
           >
             <Trash2 class="w-4 h-4" />
@@ -993,7 +993,7 @@
           <div class="flex flex-wrap gap-3 mb-4">
             <button
               class="px-4 py-2 rounded-lg bg-green-900/20 border border-green-400/30 hover:bg-green-400/10 text-green-400 disabled:opacity-50"
-              onclick={runAllTests}
+              click={runAllTests}
               disabled={isRunning}
             >
               <Play class="w-4 h-4 inline-block mr-2" />
@@ -1002,7 +1002,7 @@
 
             <button
               class="px-4 py-2 rounded-lg bg-gray-700/50 border border-gray-600 hover:bg-gray-600/50 text-gray-300"
-              onclick={() => showAdvanced = !showAdvanced}
+              click={() => showAdvanced = !showAdvanced}
             >
               {showAdvanced ? 'Hide Advanced' : 'Show Advanced'}
               {showAdvanced ? <ChevronDown class="w-4 h-4 inline-block ml-2" /> : <ChevronRight class="w-4 h-4 inline-block ml-2" />}
@@ -1027,7 +1027,7 @@
                   </span>
                   <button
                     class="px-3 py-1 rounded-lg bg-blue-900/20 border border-blue-400/30 hover:bg-blue-400/10 text-blue-400 disabled:opacity-50"
-                    onclick={() => runApiTest(endpoint)}
+                    click={() => runApiTest(endpoint)}
                     disabled={isRunning && currentTest?.includes(endpoint.id)}
                   >
                     {isRunning && currentTest?.includes(endpoint.id) ?
@@ -1064,7 +1064,7 @@
                   {/if}
                   <button
                     class="px-3 py-1 rounded-lg bg-purple-900/20 border border-purple-400/30 hover:bg-purple-400/10 text-purple-400 disabled:opacity-50"
-                    onclick={() => runTestSuite(suite)}
+                    click={() => runTestSuite(suite)}
                     disabled={batchTesting}
                   >
                     {suite.status === 'running' ?

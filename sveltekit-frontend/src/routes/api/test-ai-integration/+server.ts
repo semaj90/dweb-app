@@ -1,10 +1,11 @@
 
+import type { RequestHandler } from './$types';
+
 /**
  * AI Integration Test Suite
  * Comprehensive testing of all AI/MCP API endpoints
  */
 
-import { type RequestHandler,  json } from '@sveltejs/kit';
 import { copilotOrchestrator, generateMCPPrompt, commonMCPQueries, semanticSearch, mcpMemoryReadGraph, validateMCPRequest } from "$lib/utils/mcp-helpers";
 
 export interface TestResult {

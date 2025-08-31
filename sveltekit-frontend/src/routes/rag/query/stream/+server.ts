@@ -1,7 +1,8 @@
 import stream from "stream";
+import type { RequestHandler } from './$types';
+
 // SSE streaming endpoint with streamId + interrupt + optional summary
 import { createStream, recordToken, removeStream, generateSummary, getStream, cachedSummary } from '$lib/server/ragStreamRegistry';
-import type { RequestHandler } from '@sveltejs/kit';
 // Use process.env directly (avoids type issues if $env modules not generated)
 const privateEnv: Record<string, string | undefined> = (process as any).env || {};
 const EXTERNAL_SUMMARIZE = '/api/rag?action=summarize';

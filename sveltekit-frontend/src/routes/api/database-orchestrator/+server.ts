@@ -1,9 +1,9 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { eq, sql, desc  } from "drizzle-orm";
+import type { RequestHandler } from './$types';
+
 // Database Orchestrator API - Complete Integration with Event Loops and Context7
 // Provides REST API for database orchestrator management and real-time operations
 
-import { json, type RequestHandler } from "@sveltejs/kit";
 databaseOrchestrator // alias exported in orchestrator stub
 import { db } from "$lib/server/db/drizzle";
 import { cases, evidence, legalDocuments, personsOfInterest } from "drizzle-orm";

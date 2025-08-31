@@ -290,9 +290,9 @@ Features: MinIO storage, AI analysis, multi-file support, drag-drop
     <!-- File Upload Area -->
     <div 
       class="border-2 border-dashed rounded-lg p-8 text-center transition-colors {dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300'}"
-      ondragover={handleDragOver as any}
-      ondragleave={handleDragLeave as any}
-      ondrop={handleDrop as any}
+      on:dragover={handleDragOver as any}
+      on:dragleave={handleDragLeave as any}
+      on:drop={handleDrop as any}
     >
       {#if selectedFiles.length === 0}
         <Upload class="mx-auto w-12 h-12 text-gray-400 mb-4" />
@@ -306,7 +306,7 @@ Features: MinIO storage, AI analysis, multi-file support, drag-drop
           type="file"
           multiple
           accept={allowedTypes.join(',')}
-          onchange={handleFileSelect as any}
+          change={handleFileSelect as any}
           class="hidden"
           id="file-input"
         />
@@ -352,7 +352,7 @@ Features: MinIO storage, AI analysis, multi-file support, drag-drop
               type="file"
               multiple
               accept={allowedTypes.join(',')}
-              onchange={handleFileSelect as any}
+              change={handleFileSelect as any}
               class="hidden"
               id="add-more-files"
             />

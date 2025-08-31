@@ -56,7 +56,7 @@ export async function apiFetch<T = unknown>(
       const out = (
         ct.includes("application/json")
           ? await res.json()
-          : ((await res.text()) as unknown)
+          : ((await res.text()) as any)
       ) as T;
       if (t) clearTimeout(t);
       // Attach lightweight request metadata for observability (non-enumerable)

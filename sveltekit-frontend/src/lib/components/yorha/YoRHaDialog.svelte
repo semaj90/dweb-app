@@ -130,8 +130,8 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
 {#if open}
   <div
     class="yorha-dialog-backdrop"
-    on:click={handleBackdropClick}
-    onkeydown={handleKeydown}
+    click={handleBackdropClick}
+    keydown={handleKeydown}
     transition:fade={{ duration: 150 }}
     role="dialog"
     aria-modal="true"
@@ -172,7 +172,7 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
         {#if closable && !persistent}
           <button
             class="dialog-close"
-            on:click={handleClose}
+            click={handleClose}
             aria-label="Close dialog"
           >
             ✕
@@ -209,14 +209,14 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
       <!-- Actions -->
       <div class="dialog-actions">
         {#if type === "confirm" || type === "prompt"}
-          <button class="dialog-button cancel" on:click={handleCancel}>
+          <button class="dialog-button cancel" click={handleCancel}>
             <span class="button-icon">✕</span>
             Cancel
           </button>
           <button
             class="dialog-button confirm"
             style="border-color: {config.color}; color: {config.color}"
-            on:click={handleConfirm}
+            click={handleConfirm}
           >
             <span class="button-icon">✓</span>
             {type === "prompt" ? "Submit" : "Confirm"}
@@ -225,7 +225,7 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
           <button
             class="dialog-button acknowledge"
             style="border-color: {config.color}; color: {config.color}"
-            on:click={handleClose}
+            click={handleClose}
           >
             <span class="button-icon">■</span>
             OK

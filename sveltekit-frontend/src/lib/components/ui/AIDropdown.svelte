@@ -211,7 +211,7 @@ https://svelte.dev/e/js_parse_error -->
           use:melt={$item}
           class="ai-menu__item"
           class:ai-menu__item--selected={selectedItem === reportType.id}
-          on:click={() => handleItemSelect(reportType.id)}
+          click={() => handleItemSelect(reportType.id)}
           disabled={disabled || isGenerating}
           data-value={reportType.id}
         >
@@ -249,7 +249,7 @@ https://svelte.dev/e/js_parse_error -->
           class="ai-menu__item"
           class:ai-menu__item--selected={selectedItem === tool.id}
           class:ai-menu__item--disabled={tool.requiresContent && !hasContent}
-          on:click={() => handleItemSelect(tool.id, tool.requiresContent)}
+          click={() => handleItemSelect(tool.id, tool.requiresContent)}
           disabled={disabled ||
             isGenerating ||
             (tool.requiresContent && !hasContent)}

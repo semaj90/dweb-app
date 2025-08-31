@@ -1,9 +1,12 @@
+import type { RequestHandler } from './$types';
+
 /**
  * User Registration API Endpoint
  * POST /api/auth/register
  */
 
-import { json, error, type RequestHandler } from '@sveltejs/kit';
+
+import { ensureError } from '$lib/utils/ensure-error';
 import { ExistingUserAuthService as UserAuthService } from '$lib/server/db/existing-user-operations.js';
 import { z } from 'zod';
 import { dev } from '$app/environment';
@@ -61,10 +64,10 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
     });
 
     if (!result.success) {
-      throw error(400, {
+      throw error(400, ensureError({
         message: result.error || 'Registration failed',
         code: 'REGISTRATION_FAILED'
-      });
+      }));
     }
 
     // Remove sensitive information from response

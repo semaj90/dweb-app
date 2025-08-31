@@ -29,7 +29,7 @@
 <button
 	class="mx-auto px-4 max-w-7xl"
 	class:generating={isGenerating}
-	on:click={() => toggleDialog()}
+	click={() => toggleDialog()}
 	aria-label="Open AI Assistant"
 	title="AI Assistant"
 >
@@ -49,8 +49,8 @@
 	<Dialog
 		title="AI Assistant"
 		open={dialogOpen}
-		onclose={toggleDialog}
-		onairequest={handleAIRequest}
+		on:close={toggleDialog}
+		on:airequest={handleAIRequest}
 	/>
 {/if}
 

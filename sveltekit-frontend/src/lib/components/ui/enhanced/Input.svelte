@@ -19,7 +19,7 @@
 		hint,
 		icon,
 		loading = false,
-		class: className,
+		class: class,
 		id = crypto.randomUUID(),
 		value = $bindable(''),
 		...props
@@ -30,7 +30,7 @@
 		error && 'border-destructive focus:border-destructive',
 		icon && 'pl-10',
 		loading && 'pr-10',
-		className
+		class
 	].filter(Boolean).join(' '));
 </script>
 

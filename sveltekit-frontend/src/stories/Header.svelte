@@ -35,10 +35,10 @@
         <span class="welcome">
           Welcome, <b>{user.name}</b>!
         </span>
-        <Button size="small" onclick={onLogout} label="Log out" />
+        <Button size="small" on:click={onLogout} label="Log out" />
       {:else}
-        <Button size="small" onclick={onLogin} label="Log in" />
-        <Button primary size="small" onclick={onCreateAccount} label="Sign up" />
+        <Button size="small" on:click={onLogin} label="Log in" />
+        <Button primary size="small" on:click={onCreateAccount} label="Sign up" />
       {/if}
     </div>
   </div>

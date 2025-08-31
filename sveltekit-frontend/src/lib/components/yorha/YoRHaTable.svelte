@@ -165,7 +165,7 @@
   }
 </script>
 
-<div class="yorha-table-container {className}" class:yorha-table-loading={loading} class:yorha-glitch-effect={glitchEffect}>
+<div class="yorha-table-container {class}" class:yorha-table-loading={loading} class:yorha-glitch-effect={glitchEffect}>
   <!-- Table Header with Search -->
   <div class="yorha-table-header">
     <div class="yorha-table-search">
@@ -183,7 +183,7 @@
         <span class="yorha-selection-count">
           {selectedRows.size} SELECTED
         </span>
-        <button class="yorha-action-btn" on:click={() => selectedRows.clear()}>
+        <button class="yorha-action-btn" click={() => selectedRows.clear()}>
           CLEAR SELECTION
         </button>
       </div>
@@ -202,7 +202,7 @@
                 class="yorha-checkbox"
                 checked={selectedRows.size === paginatedData.length && paginatedData.length > 0}
                 indeterminate={selectedRows.size > 0 && selectedRows.size < paginatedData.length}
-                onchange={toggleAllSelection}
+                on:change={toggleAllSelection}
               />
             </th>
           {/if}
@@ -214,7 +214,7 @@
               class:yorha-sorted-asc={sortColumn === column.key && sortDirection === 'asc'}
               class:yorha-sorted-desc={sortColumn === column.key && sortDirection === 'desc'}
               style:width={column.width}
-              on:click={() => handleSort(column)}
+              click={() => handleSort(column)}
             >
               <div class="yorha-header-content">
                 <span class="yorha-header-text">{column.title}</span>
@@ -266,7 +266,7 @@
                     type="checkbox"
                     class="yorha-checkbox"
                     checked={selectedRows.has(row.id)}
-                    onchange={() => toggleRowSelection(row.id)}
+                    change={() => toggleRowSelection(row.id)}
                   />
                 </td>
               {/if}
@@ -310,14 +310,14 @@
         <button 
           class="yorha-pagination-btn"
           disabled={currentPage === 1}
-          on:click={() => currentPage = 1}
+          click={() => currentPage = 1}
         >
           ⟨⟨
         </button>
         <button 
           class="yorha-pagination-btn"
           disabled={currentPage === 1}
-          on:click={() => currentPage--}
+          click={() => currentPage--}
         >
           ⟨
         </button>
@@ -329,14 +329,14 @@
         <button 
           class="yorha-pagination-btn"
           disabled={currentPage === totalPages}
-          on:click={() => currentPage++}
+          click={() => currentPage++}
         >
           ⟩
         </button>
         <button 
           class="yorha-pagination-btn"
           disabled={currentPage === totalPages}
-          on:click={() => currentPage = totalPages}
+          click={() => currentPage = totalPages}
         >
           ⟩⟩
         </button>

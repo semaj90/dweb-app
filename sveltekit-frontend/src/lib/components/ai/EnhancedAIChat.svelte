@@ -588,7 +588,7 @@ https://svelte.dev/e/props_duplicate -->
     <div 
       bind:this={chatContainer}
       class="flex-1 overflow-y-auto p-4 space-y-4"
-      onscroll={setupAttentionTracking}
+      on:scroll={setupAttentionTracking}
     >
       {#each $messages as message (message.id)}
         <div class="flex gap-3 {message.role === 'user' ? 'justify-end' : 'justify-start'}">
@@ -598,10 +598,10 @@ https://svelte.dev/e/props_duplicate -->
               {message.role === 'user' 
                 ? 'bg-primary text-primary-foreground ml-auto' 
                 : 'bg-muted hover:bg-muted/80'}"
-            on:click={() => selectMessage(message)}
+            click={() => selectMessage(message)}
             role="button"
             tabindex="0"
-            onkeydown={(e) => e.key === 'Enter' && selectMessage(message)}
+            on:keydown={(e) => e.key === 'Enter' && selectMessage(message)}
           >
             <!-- Message Content -->
             <div class="prose prose-sm dark:prose-invert max-w-none">
@@ -722,8 +722,8 @@ https://svelte.dev/e/props_duplicate -->
           bind:value={inputText}
           placeholder="Ask your legal AI assistant..."
           class="flex-1 min-h-[40px] max-h-32 resize-none"
-          onkeydown={handleKeyPress}
-          oninput={handleInput}
+          on:keydown={handleKeyPress}
+          on:input={handleInput}
           disabled={$isLoading}
         />
         

@@ -211,10 +211,10 @@ mcp<script lang="ts">
         role="alert"
         aria-labelledby="notification-title-{notification.id}"
         aria-describedby="notification-message-{notification.id}"
-        onmouseenter={() => pauseTimer(notification)}
-        onmouseleave={() => resumeTimer(notification)}
-        onfocusin={() => pauseTimer(notification)}
-        onfocusout={() => resumeTimer(notification)}
+        on:mouseenter={() => pauseTimer(notification)}
+        on:mouseleave={() => resumeTimer(notification)}
+        on:focusin={() => pauseTimer(notification)}
+        on:focusout={() => resumeTimer(notification)}
       >
         <div
           class="container mx-auto px-4"

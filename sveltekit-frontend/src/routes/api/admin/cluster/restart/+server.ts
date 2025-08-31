@@ -1,10 +1,11 @@
 
+import type { RequestHandler } from './$types';
+
 /**
  * Cluster Restart API Endpoint
  * Handles graceful rolling restart of worker processes
  */
 
-import { type RequestHandler,  json } from '@sveltejs/kit';
 import cluster from 'node:cluster';
 
 export const POST: RequestHandler = async ({ request }) => {

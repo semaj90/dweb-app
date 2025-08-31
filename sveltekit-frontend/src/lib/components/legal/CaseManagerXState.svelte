@@ -131,10 +131,10 @@
         <h3 class="text-lg font-semibold text-red-800 mb-2">Error</h3>
         <p class="text-red-600 mb-4">{$state.context.error}</p>
         <div class="flex gap-2">
-          <Button variant="outline" size="sm" onclick={handleRetry}>
+          <Button variant="outline" size="sm" on:click={handleRetry}>
             Retry
           </Button>
-          <Button variant="ghost" size="sm" onclick={handleDismissError}>
+          <Button variant="ghost" size="sm" on:click={handleDismissError}>
             Dismiss
           </Button>
         </div>
@@ -189,7 +189,7 @@
             ></textarea>
           </div>
           
-          <Button onclick={handleCreateCase} class="w-full">
+          <Button on:click={handleCreateCase} class="w-full">
             Create Case
           </Button>
         </div>
@@ -212,7 +212,7 @@
             <div class="flex items-center gap-2">
               <select 
                 bind:value={workflowStage}
-                onchange={(e) => handleWorkflowStageChange(e.target.value)}
+                change={(e) => handleWorkflowStageChange(e.target.value)}
                 class="px-3 py-1 border border-gray-300 rounded-md text-sm"
               >
                 <option value="investigation">Investigation</option>
@@ -254,7 +254,7 @@
           {#each ['overview', 'evidence', 'analysis', 'search'] as tab}
             <button
               class="py-2 px-1 border-b-2 font-medium text-sm {activeTab === tab ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
-              onclick={() => handleTabSwitch(tab)}
+              click={() => handleTabSwitch(tab)}
             >
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
@@ -293,10 +293,10 @@
                   type="file"
                   multiple
                   bind:this={fileInput}
-                  onchange={onFileChange}
+                  change={onFileChange}
                   class="hidden"
                 />
-                <Button onclick={triggerFileUpload}>
+                <Button on:click={triggerFileUpload}>
                   Choose Files
                 </Button>
               </div>
@@ -317,7 +317,7 @@
                           </div>
                           <div class="flex gap-2">
                             <Button size="sm" variant="outline">View</Button>
-                            <Button size="sm" onclick={() => send({ type: 'SELECT_EVIDENCE', evidence: item })}>
+                            <Button size="sm" on:click={() => send({ type: 'SELECT_EVIDENCE', evidence: item })}>
                               Select
                             </Button>
                           </div>
@@ -344,14 +344,14 @@
                 <h3 class="text-lg font-semibold mb-4">AI Analysis</h3>
                 <div class="flex gap-3 mb-4">
                   <Button 
-                    onclick={handleStartAIAnalysis}
+                    on:click={handleStartAIAnalysis}
                     disabled={!canStartAIAnalysis}
                   >
                     Start AI Analysis
                   </Button>
                   <Button 
                     variant="outline"
-                    onclick={handleFindSimilarCases}
+                    on:click={handleFindSimilarCases}
                   >
                     Find Similar Cases
                   </Button>

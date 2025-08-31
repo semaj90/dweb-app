@@ -62,9 +62,7 @@
       variantClasses[variant],
       paddingClasses[padding],
       gapClasses[gap],
-      variant === 'grid' && columnClasses?.[columns],
-      className
-    );
+      variant === 'grid' && columnClasses?.[columns], className);
   });
 
   const headerClass = $derived(() => {

@@ -3,10 +3,12 @@ import { and, eq, gte } from "drizzle-orm";
 import { db } from "$lib/server/db/index";
 import { sessions } from "./db/schema-postgres";
 import bcrypt from "bcryptjs";
-import { randomBytes } from "crypto";
+// Dynamic import for server-side crypto to prevent browser leakage
+// import { randomBytes } from "crypto";
 
 // --- Helper Functions ---
-function generateId(length: number = 40): string {
+async function generateId(length: number = 40): Promise<string> {
+  const { randomBytes } = await import("crypto");
   return randomBytes(Math.ceil(length / 2))
     .toString("hex")
     .slice(0, length);
@@ -38,7 +40,7 @@ export async function createUserSession(
   ipAddress?: string,
   userAgent?: string
 ): Promise<{ sessionId: string; expiresAt: Date }> {
-  const sessionId = generateId(40);
+  const sessionId = await generateId(40);
   const expiresAt = createDate({ days });
   await db.insert(sessions).values({
     id: sessionId,

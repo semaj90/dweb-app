@@ -1,6 +1,7 @@
-import { json, type RequestHandler } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { users } from '$lib/server/db/schema-postgres';
+import type { RequestHandler } from './$types';
+
 
 export const POST: RequestHandler = async ({ request, locals }) => {
   try {

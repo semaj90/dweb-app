@@ -1,8 +1,9 @@
 
+import type { RequestHandler } from './$types';
+
 // routes/api/ai-synthesizer/test/+server.ts
 // Integration test and demo endpoint for AI synthesis system
 
-import { type RequestHandler,  json } from '@sveltejs/kit';
 import { aiAssistantSynthesizer } from "$lib/server/ai/ai-assistant-input-synthesizer";
 import { feedbackLoop } from "$lib/server/ai/feedback-loop";
 import { streamingService } from "$lib/server/ai/streaming-service";

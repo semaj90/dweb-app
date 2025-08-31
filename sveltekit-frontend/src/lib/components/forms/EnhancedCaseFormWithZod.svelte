@@ -9,15 +9,13 @@
   import { z } from 'zod';
   import { createEventDispatcher } from 'svelte';
   import { writable } from 'svelte/store';
-  import { 
-    Button, 
-    Input, 
-    Label, 
-    Textarea, 
-    Select,
-    Checkbox,
-    Card 
-  } from '$lib/components/ui';
+  import Button from '$lib/components/ui/Button.svelte';
+  import { Input } from '$lib/components/ui/input';
+  import { Label } from '$lib/components/ui/label';
+  import { Textarea } from '$lib/components/ui/textarea';
+  import { Checkbox } from '$lib/components/ui/checkbox';
+  import * as Card from '$lib/components/ui/card';
+  import * as Select from '$lib/components/ui/select';
   import { 
     AlertCircle, 
     Loader2, 
@@ -33,11 +31,11 @@
   import { createCaseCreationForm } from '$lib/forms/superforms-xstate-integration';
   import type { SuperValidated } from 'sveltekit-superforms';
 
-  let { data = $bindable() } = $props(); // SuperValidated<CaseForm>;
-  let { submitAction = $bindable() } = $props(); // string = '?/createCase';
-  let { editMode = $bindable() } = $props(); // boolean = false;
-  let { enableAutoSave = $bindable() } = $props(); // boolean = true;
-  let { enableRealTimeValidation = $bindable() } = $props(); // boolean = true;
+  export let data: any = undefined; // SuperValidated<CaseForm>;
+  export let submitAction: string = '?/createCase';
+  export let editMode: boolean = false;
+  export let enableAutoSave: boolean = true;
+  export let enableRealTimeValidation: boolean = true;
 
   const dispatch = createEventDispatcher<{
     submit: { data: CaseForm };
@@ -261,18 +259,18 @@
             <AlertCircle class="h-4 w-4" />
             <span>Priority Level *</span>
           </Label>
-          <SelectRoot bind:selected={$form.priority} name="priority">
-            <SelectTrigger class={$errors.priority ? 'border-destructive' : ''}>
-              <SelectValue placeholder="Select priority" />
-            </SelectTrigger>
-            <SelectContent>
+          <Select.Root bind:selected={$form.priority} name="priority">
+            <Select.Trigger class={$errors.priority ? 'border-destructive' : ''}>
+              <Select.Value placeholder="Select priority" />
+            </Select.Trigger>
+            <Select.Content>
               {#each priorityLevels as priority}
-                <SelectItem value={priority.value} class={priority.color}>
+                <Select.Item value={priority.value} class={priority.color}>
                   {priority.label}
-                </SelectItem>
+                </Select.Item>
               {/each}
-            </SelectContent>
-          </SelectRoot>
+            </Select.Content>
+          </Select.Root>
           {#if $errors.priority}
             <p class="text-sm text-destructive">{$errors.priority[0]}</p>
           {/if}
@@ -333,21 +331,21 @@
               <!-- Status -->
               <div class="space-y-2">
                 <Label for="status">Case Status</Label>
-                <SelectRoot bind:selected={$form.status} name="status">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
+                <Select.Root bind:selected={$form.status} name="status">
+                  <Select.Trigger>
+                    <Select.Value placeholder="Select status" />
+                  </Select.Trigger>
+                  <Select.Content>
                     {#each statusOptions as status}
-                      <SelectItem value={status.value}>
+                      <Select.Item value={status.value}>
                         <div>
                           <div class="font-medium">{status.label}</div>
                           <div class="text-sm text-muted-foreground">{status.description}</div>
                         </div>
-                      </SelectItem>
+                      </Select.Item>
                     {/each}
-                  </SelectContent>
-                </SelectRoot>
+                  </Select.Content>
+                </Select.Root>
               </div>
 
               <!-- Due Date -->
@@ -428,7 +426,7 @@
                     type="file"
                     multiple
                     accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
-                    onchange={handleFileUpload}
+                    on:change={handleFileUpload}
                     class="sr-only"
                   />
                 </Label>

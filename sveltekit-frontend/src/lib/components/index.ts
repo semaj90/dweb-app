@@ -24,8 +24,11 @@ export * from './ui/input/index';
 // export * from './ui/textarea/index';
 export * from './ui/checkbox/index';
 export * from './ui/select/index';
-export * from './ui/switch/index';
-export * from './ui/slider/index';
+// Use specific exports to avoid CommonProps conflict
+export { Switch, SwitchRoot, SwitchThumb } from './ui/switch/index';
+export type { SwitchProps } from './ui/switch/index';
+export { Slider, SliderRoot, SliderRange, SliderThumb, SliderTick } from './ui/slider/index';
+export type { SliderProps } from './ui/slider/index';
 
 // ===== NAVIGATION & INTERACTION =====
 export * from './ui/tabs/index';

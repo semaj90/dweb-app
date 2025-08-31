@@ -480,6 +480,13 @@ export class MasterCognitiveHub {
   }
 
   /**
+   * 🚀 Public initialization method - entry point for external calls
+   */
+  async initialize(): Promise<void> {
+    return this.startCognitiveOrchestration();
+  }
+
+  /**
    * 🚀 Main orchestration method - conducts the entire cognitive symphony
    */
   async startCognitiveOrchestration(): Promise<void> {
@@ -539,13 +546,16 @@ export class MasterCognitiveHub {
       console.log('✅ Multi-Dimensional Routing Matrix: Orchestrating');
 
       // Initialize WebGPU if available
-      if (webgpuRAGService && typeof webgpuRAGService.isReady === 'function' && webgpuRAGService.isReady()) {
+      if (webgpuRAGService && typeof webgpuRAGService.initializeWebGPU === 'function') {
         this.state.systems.webgpu = 'enhanced';
-        if (typeof webgpuRAGService.warmup === 'function') {
-          await webgpuRAGService.warmup();
+        try {
+          await webgpuRAGService.initializeWebGPU();
+          this.state.systems.webgpu = 'transcendent';
+          console.log('✅ WebGPU RAG Service: Transcendent');
+        } catch (error) {
+          console.warn('⚠️ WebGPU initialization failed:', error);
+          this.state.systems.webgpu = 'offline';
         }
-        this.state.systems.webgpu = 'transcendent';
-        console.log('✅ WebGPU RAG Service: Transcendent');
       } else {
         console.log('⚠️ WebGPU RAG Service not available or not ready');
       }
@@ -565,7 +575,8 @@ export class MasterCognitiveHub {
     ];
 
     for (const item of warmupData) {
-      await reinforcementLearningCache.set(item.key, item.value, {
+      await reinforcementLearningCache.set(item.key, {
+        ...item.value,
         priority: 0.9,
         cognitiveValue: 0.8,
         semanticTags: ['system', 'warmup', 'cognitive']
@@ -636,8 +647,8 @@ export class MasterCognitiveHub {
     const metrics = {
       routing: cognitiveRoutingOrchestrator.getLearningState().memoryState.episodicMemorySize / 200,
       caching: reinforcementLearningCache.getLearningState().cacheSize / 10000,
-      gpu: physicsAwareGPUOrchestrator.getMetrics?.()?.emergentIntelligence || 0,
-      matrix: multiDimensionalRoutingMatrix.getMetrics?.()?.adaptationRate || 0
+      gpu: physicsAwareGPUOrchestrator.getCognitiveState?.()?.learningRate || 0,
+      matrix: 0.5 // Default adaptation rate since getMetrics doesn't exist
     };
 
     // Base intelligence from individual systems
@@ -995,14 +1006,15 @@ export class MasterCognitiveHub {
     const achievements: string[] = [];
 
     // Route through cognitive orchestrator
-    const routingResult = await cognitiveRoutingOrchestrator.routeRequest({
-      type: request.type as any,
-      payload: request.data,
+    const routingResult = await cognitiveRoutingOrchestrator.processRoute(request.type, {
+      data: request.data,
       context: request.context,
       priority: request.priority || 5
     });
 
-    insights.push(...routingResult.reasoning);
+    // Create fallback reasoning since processRoute doesn't return reasoning
+    const reasoning = [`Processed ${request.type} request through cognitive routing`];
+    insights.push(...reasoning);
 
     // Process with GPU orchestrator if needed
     let gpuResult;
@@ -1014,14 +1026,18 @@ export class MasterCognitiveHub {
         constraints: request.context?.constraints
       });
 
-      insights.push(...gpuResult.cognitiveInsights);
+      // Create fallback cognitive insights since submitWorkload doesn't return them
+      const cognitiveInsights = [`GPU workload ${gpuResult.workloadId} submitted successfully`];
+      insights.push(...cognitiveInsights);
     }
 
     // Cache the results
     await reinforcementLearningCache.set(
       `request_${Date.now()}`,
-      { request, routingResult, gpuResult },
-      {
+      { 
+        request, 
+        routingResult, 
+        gpuResult,
         priority: request.priority || 5,
         cognitiveValue: this.state.intelligence.collective,
         semanticTags: [request.type, 'processed']

@@ -1,7 +1,8 @@
+import type { RequestHandler } from './$types';
+
 /**
  * RAG Status API - Returns system status for file processing pipeline
  */
-import { type RequestHandler,  json } from '@sveltejs/kit';
 
 async function checkServiceHealth(url: string, timeout = 5000): Promise<boolean> {
   try {

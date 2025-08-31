@@ -1,6 +1,7 @@
+import type { RequestHandler } from './$types';
+
 // Production-Quality Document Upload API
 // Integrates PostgreSQL, Qdrant, OCR, Gemma3, XState, RabbitMQ, Neo4j
-import { json, error, type RequestHandler } from '@sveltejs/kit';
 import { db } from '$lib/server/db/index';
 import { enhancedEvidence } from '$lib/server/db/enhanced-legal-schema';
 import { randomUUID } from 'crypto';
@@ -85,7 +86,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
     }
 
     // Verify case exists
-    const existingCase = await db.select().from(cases).where(eq(cases.id, caseId)).limit(1).catch(() => [] as unknown[]);
+    const existingCase = await db.select().from(cases).where(eq(cases.id, caseId)).limit(1).catch(() => [] as any[]);
     if (existingCase.length === 0) {
       logger.error(`Case not found: ${caseId}`);
       return json({ success: false, error: 'Case not found' }, { status: 404 });

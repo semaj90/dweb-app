@@ -1,9 +1,12 @@
+import type { RequestHandler } from './$types';
+
 /**
  * QUIC-Go Integration Test API
  * Tests the integration between SvelteKit QUIC endpoints and Go microservices
  */
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+
+import { ensureError } from '$lib/utils/ensure-error';
 import { goServiceManager } from '$lib/services/go-microservice-client.js';
 
 /**
@@ -180,7 +183,7 @@ export const POST: RequestHandler = async ({ request }) => {
     const { service, endpoint, payload } = testConfig;
 
     if (!service || !endpoint) {
-      error(400, { message: 'Service and endpoint are required' });
+      error(400, ensureError({ message: 'Service and endpoint are required' }));
     }
 
     let testResult: any = {};
@@ -205,7 +208,7 @@ export const POST: RequestHandler = async ({ request }) => {
       default:
         const client = goServiceManager.getClient(service as any);
         if (!client) {
-          error(400, { message: `Unknown service: ${service}` });
+          error(400, ensureError({ message: `Unknown service: ${service}` }));
         }
         testResult = await client.request(endpoint, payload);
         break;
@@ -222,9 +225,9 @@ export const POST: RequestHandler = async ({ request }) => {
 
   } catch (err: any) {
     console.error('Custom integration test failed:', err);
-    error(500, {
+    error(500, ensureError({
       message: 'Custom integration test failed',
       error: err instanceof Error ? err.message : 'Unknown error'
-    });
+    }));
   }
 };

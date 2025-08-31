@@ -556,5 +556,3 @@ export const nesGPUBridge = new NESGPUMemoryBridge({
   syncIntervalMs: 16.67 // 60 FPS
 });
 
-// Export types
-export type { GPUNodeDataFB, GPUTextureMatrix, CUDAMemoryRegion };

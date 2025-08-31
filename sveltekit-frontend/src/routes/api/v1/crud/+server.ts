@@ -1,3 +1,5 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Comprehensive CRUD REST API - Legal AI Platform
  * Integrates with PostgreSQL + pgvector using Drizzle ORM
@@ -5,14 +7,15 @@
  */
 
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+
+import { ensureError } from '$lib/utils/ensure-error';
 import { db } from '$lib/server/db';
 import {
   users, userProfiles, cases, criminals, evidence, legalDocuments,
   reports, personsOfInterest, ragMessages, ragSessions,
   contentEmbeddings, caseEmbeddings, evidenceVectors, userAiQueries
 } from '$lib/server/db/schema';
-import { eq, desc, asc, like, sql, and, or } from 'drizzle-orm';
+import { sql, eq, and, or, like, desc, asc } from '$lib/server/db/index';
 import { apiOrchestrator } from '$lib/services/api-orchestrator';
 
 // Entity mapping for dynamic CRUD operations
@@ -135,9 +138,9 @@ export const GET: RequestHandler = async ({ url, request }) => {
     const searchQuery = url.searchParams.get('search');
 
     if (!entity || !entityMap[entity]) {
-      return error(400, {
+      return error(400, ensureError({
         message: `Invalid entity: ${entity}. Available: ${Object.keys(entityMap).join(', ')}`
-      });
+      }));
     }
 
     const table = entityMap[entity];
@@ -145,11 +148,11 @@ export const GET: RequestHandler = async ({ url, request }) => {
 
     switch (action) {
       case 'read':
-        if (!id) return error(400, { message: 'ID required for read operation' });
+        if (!id) return error(400, ensureError({ message: 'ID required for read operation' }));
 
         result = await db.select().from(table).where(eq(table.id, id)).limit(1);
         if (result.length === 0) {
-          return error(404, { message: `${entity} with ID ${id} not found` });
+          return error(404, ensureError({ message: `${entity} with ID ${id} not found` }));
         }
 
         return json({
@@ -203,7 +206,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
         } satisfies ApiResponse);
 
       case 'search':
-        if (!searchQuery) return error(400, { message: 'Search query required' });
+        if (!searchQuery) return error(400, ensureError({ message: 'Search query required' }));
 
         // Basic text search for now - can be enhanced with vector search
         let searchResult: any[] = [];
@@ -250,7 +253,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
         } satisfies ApiResponse);
 
       case 'vector_search':
-        if (!searchQuery) return error(400, { message: 'Search query required for vector search' });
+        if (!searchQuery) return error(400, ensureError({ message: 'Search query required for vector search' }));
 
         // Use the API orchestrator to perform vector search via Go services
         try {
@@ -301,15 +304,15 @@ export const GET: RequestHandler = async ({ url, request }) => {
         }
 
       default:
-        return error(400, { message: `Invalid action: ${action}` });
+        return error(400, ensureError({ message: `Invalid action: ${action}` }));
     }
 
   } catch (err: any) {
     console.error('CRUD GET error:', err);
-    return error(500, {
+    return error(500, ensureError({
       message: 'Internal server error',
       details: err instanceof Error ? err.message : String(err)
-    });
+    }));
   }
 };
 
@@ -321,9 +324,9 @@ export const POST: RequestHandler = async ({ request }) => {
     const { action, entity, data, id } = body;
 
     if (!entity || !entityMap[entity]) {
-      return error(400, {
+      return error(400, ensureError({
         message: `Invalid entity: ${entity}. Available: ${Object.keys(entityMap).join(', ')}`
-      });
+      }));
     }
 
     const table = entityMap[entity];
@@ -331,7 +334,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
     switch (action) {
       case 'create':
-        if (!data) return error(400, { message: 'Data required for create operation' });
+        if (!data) return error(400, ensureError({ message: 'Data required for create operation' }));
 
         // Add timestamps for create
         const createData = {
@@ -372,7 +375,7 @@ export const POST: RequestHandler = async ({ request }) => {
         } satisfies ApiResponse);
 
       case 'update':
-        if (!id || !data) return error(400, { message: 'ID and data required for update operation' });
+        if (!id || !data) return error(400, ensureError({ message: 'ID and data required for update operation' }));
 
         // Add updated timestamp
         const updateData = {
@@ -383,7 +386,7 @@ export const POST: RequestHandler = async ({ request }) => {
         result = await db.update(table).set(updateData).where(eq(table.id, id)).returning();
 
         if (result.length === 0) {
-          return error(404, { message: `${entity} with ID ${id} not found` });
+          return error(404, ensureError({ message: `${entity} with ID ${id} not found` }));
         }
 
         return json({
@@ -393,12 +396,12 @@ export const POST: RequestHandler = async ({ request }) => {
         } satisfies ApiResponse);
 
       case 'delete':
-        if (!id) return error(400, { message: 'ID required for delete operation' });
+        if (!id) return error(400, ensureError({ message: 'ID required for delete operation' }));
 
         result = await db.delete(table).where(eq(table.id, id)).returning();
 
         if (result.length === 0) {
-          return error(404, { message: `${entity} with ID ${id} not found` });
+          return error(404, ensureError({ message: `${entity} with ID ${id} not found` }));
         }
 
         return json({
@@ -408,15 +411,15 @@ export const POST: RequestHandler = async ({ request }) => {
         } satisfies ApiResponse);
 
       default:
-        return error(400, { message: `Invalid action: ${action}` });
+        return error(400, ensureError({ message: `Invalid action: ${action}` }));
     }
 
   } catch (err: any) {
     console.error('CRUD POST error:', err);
-    return error(500, {
+    return error(500, ensureError({
       message: 'Internal server error',
       details: err instanceof Error ? err.message : String(err)
-    });
+    }));
   }
 };
 

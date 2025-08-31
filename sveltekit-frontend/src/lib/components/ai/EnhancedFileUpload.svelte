@@ -52,7 +52,7 @@
     try {
       const wsUrl = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/rag/ws/uploads`;
       statusSocket = new WebSocket(wsUrl);
-      statusSocket.onopen=() => console.debug('[UploadWS] connected');
+      statusSocket.on:open=() => console.debug('[UploadWS] connected');
       statusSocket.onmessage = (ev) => {
         try {
           const msg = JSON.parse(ev.data || '{}');
@@ -76,7 +76,7 @@
         }
       }
       statusSocket.onerror = (e) => console.warn('[UploadWS] error', e);
-      statusSocket.onclose = () => {
+      statusSocket.on:close=() => {
         console.debug('[UploadWS] closed – retrying in 5s');
         setTimeout(() => connectStatusSocket(), 5000);
       }
@@ -328,7 +328,7 @@
   function getEntries() { return machineState.value?.context?.files || []; }
 </script>
 
-<div class="enhanced-file-upload {className}">
+<div class="enhanced-file-upload {class}">
   <!-- System Status -->
   <div class="system-status mb-4 grid grid-cols-2 md:grid-cols-4 gap-2">
     <div
@@ -372,7 +372,7 @@
       type="file"
       {accept}
       multiple
-      onchange={handleFileUpload}
+      change={handleFileUpload}
       class="hidden"
       id="file-input" />
     <label for="file-input" class="upload-label">
@@ -436,7 +436,7 @@
           placeholder="Search uploaded documents with AI..."
           class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
         <button
-          on:click={handleSearch}
+          click={handleSearch}
           disabled={isSearching || !searchQuery.trim()}
           class="px-6 py-2 bg-blue-500 text-white rounded-lg disabled:opacity-50 hover:bg-blue-600 flex items-center gap-2">
           {#if isSearching}

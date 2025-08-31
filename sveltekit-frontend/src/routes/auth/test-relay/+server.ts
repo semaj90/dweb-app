@@ -1,5 +1,6 @@
-// Simple test endpoint to verify relay auth works without any imports
 import type { RequestHandler } from './$types';
+
+// Simple test endpoint to verify relay auth works without any imports
 
 export const POST: RequestHandler = async ({ cookies }) => {
   try {

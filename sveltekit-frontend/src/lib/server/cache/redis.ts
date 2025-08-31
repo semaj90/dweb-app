@@ -144,9 +144,9 @@ class CacheService {
     query: string,
     searchType: string,
     filters: any = {},
-  ): Promise<unknown[] | null> {
+  ): Promise<any[] | null> {
     const key = `search:${searchType}:${this.hashString(query)}:${this.hashString(JSON.stringify(filters))}`;
-    return this.get<unknown[]>(key);
+    return this.get<any[]>(key);
   }
   async setSearchResults(
     query: string,

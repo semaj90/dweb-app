@@ -700,5 +700,3 @@ export const simdIndexProcessor = new SIMDJSONIndexProcessor({
   overlap: 50,
 });
 
-// Export types for external use
-export type { CopilotIndex, CopilotIndexEntry, VectorEmbeddingConfig };

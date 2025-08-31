@@ -5,6 +5,8 @@ import { db } from '$lib/db/client';
 import { documents, cases } from '$lib/db/schema/rag-integration';
 import { eq } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
+import type { RequestHandler } from './$types';
+
 
 const presignedRequestSchema = z.object({
   filename: z.string().min(1).max(255),

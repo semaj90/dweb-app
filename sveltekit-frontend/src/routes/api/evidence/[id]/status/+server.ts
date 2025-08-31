@@ -1,4 +1,5 @@
-import type { RequestHandler } from '@sveltejs/kit';
+
+import type { RequestHandler } from './$types';
 
 // Simple in-memory placeholder; replace with persistent status store.
 const evidenceStatus = new Map<string, any>();

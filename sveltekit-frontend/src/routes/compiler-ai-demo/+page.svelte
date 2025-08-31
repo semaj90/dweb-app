@@ -304,8 +304,8 @@
             <button
               type="button"
               class="w-full p-3 rounded-lg bg-slate-700/50 border border-slate-600 cursor-pointer hover:bg-slate-700 transition-colors text-left"
-              on:click={() => (selectedEvent = event)}
-              onkeydown={(e) => e.key === 'Enter' && (selectedEvent = event)}
+              click={() => (selectedEvent = event)}
+              on:keydown={(e) => e.key === 'Enter' && (selectedEvent = event)}
               class:ring-2={selectedEvent?.logs[0]?.id === event.logs[0]?.id}
               class:ring-blue-500={selectedEvent?.logs[0]?.id === event.logs[0]?.id}
               aria-label="Select event: {event.logs[0]?.message || 'Unknown event'}"
@@ -354,7 +354,7 @@
             {@const IconComponent = getPatchIcon(patch)}
             <div
               class="p-3 rounded-lg bg-slate-700/50 border border-slate-600 cursor-pointer hover:bg-slate-700 transition-colors"
-              on:click={() => (selectedPatch = patch)}
+              click={() => (selectedPatch = patch)}
               class:ring-2={selectedPatch?.id === patch.id}
               class:ring-green-500={selectedPatch?.id === patch.id}>
               <div class="flex items-start gap-3">

@@ -1,9 +1,10 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { json, error } from '@sveltejs/kit';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { existsSync } from 'fs';
 import crypto from 'crypto';
+import type { RequestHandler } from './$types';
+
 
 // Document Upload + Embedding Pipeline API
 // Integrates with your existing LangChain+Ollama+pgvector infrastructure

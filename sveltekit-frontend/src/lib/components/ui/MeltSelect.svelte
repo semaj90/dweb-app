@@ -204,7 +204,7 @@
 <!-- Trigger -->
 <button
 	use:melt={$triggerElement}
-	class={cn(defaultTriggerClass, triggerClass, className)}
+	className={cn(defaultTriggerClass, triggerClass, className)}
 	{disabled}
 	aria-label={ariaLabel}
 	aria-labelledby={ariaLabelledBy}

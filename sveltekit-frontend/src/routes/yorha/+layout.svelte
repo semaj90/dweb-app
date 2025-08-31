@@ -135,7 +135,7 @@
       <div class="yorha-brand">
         <button
           class="yorha-menu-toggle"
-          onclick={() => sidebarOpen = !sidebarOpen}
+          click={() => sidebarOpen = !sidebarOpen}
           aria-label="Toggle sidebar"
         >
           <Terminal size={20} />
@@ -168,11 +168,11 @@
 
       <!-- Quick Actions -->
       <div class="yorha-quick-actions">
-        <button class="yorha-quick-btn" onclick={() => goto('/')}>
+        <button class="yorha-quick-btn" click={() => goto('/')}>
           <Home size={16} />
           <span>MAIN</span>
         </button>
-        <button class="yorha-quick-btn" onclick={() => goto('/demos')}>
+        <button class="yorha-quick-btn" click={() => goto('/demos')}>
           <FileText size={16} />
           <span>DEMOS</span>
         </button>
@@ -187,7 +187,7 @@
         <h2>NAVIGATION</h2>
         <button
           class="yorha-sidebar-close"
-          onclick={() => sidebarOpen = false}
+          click={() => sidebarOpen = false}
         >
           <ChevronLeft size={20} />
         </button>
@@ -199,7 +199,7 @@
             <button
               class="yorha-nav-link"
               class:yorha-nav-active={isActivePath(item.path)}
-              onclick={() => navigateTo(item.path)}
+              click={() => navigateTo(item.path)}
             >
               <svelte:component this={item.icon} size={18} />
               <div class="yorha-nav-content">
@@ -223,7 +223,7 @@
   {#if sidebarOpen}
     <div
       class="yorha-overlay"
-      onclick={() => sidebarOpen = false}
+      click={() => sidebarOpen = false}
     ></div>
   {/if}
 </div>

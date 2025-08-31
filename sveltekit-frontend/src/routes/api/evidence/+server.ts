@@ -1,12 +1,13 @@
 
+import type { RequestHandler } from './$types';
+
 // Enhanced Evidence API with pgvector Integration
 // Production-ready evidence management with AI analysis
 
-import { json, type RequestHandler } from '@sveltejs/kit';
 import { z } from 'zod';
 import { withApiHandler, parseRequestBody, CommonErrors, createPagination } from '../../../lib/server/api/response';
 import { db } from '../../../lib/server/db/index';
-import { eq, and, or, ilike, count, desc, asc, sql } from "drizzle-orm";
+import { sql, eq, and, or, ilike, count, desc, asc } from '$lib/server/db/index';
 import { evidence, cases } from '../../../lib/server/db/schema-postgres';
 import type { Evidence } from '../../../lib/server/db/schema-types';
 import { randomUUID } from 'crypto';
@@ -245,7 +246,7 @@ class EvidenceAIService {
   }
 
   // Semantic search - keep a safe fallback implementation to avoid direct schema assumptions
-  async semanticSearch(query: string, _caseId?: string, _limit: number = 20): Promise<unknown[]> {
+  async semanticSearch(query: string, _caseId?: string, _limit: number = 20): Promise<any[]> {
     try {
       const queryEmbedding = await this.generateEmbedding(query);
       if (!Array.isArray(queryEmbedding) || queryEmbedding.length === 0) {

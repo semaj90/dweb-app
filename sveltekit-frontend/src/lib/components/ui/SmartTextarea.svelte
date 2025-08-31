@@ -137,10 +137,10 @@
     {disabled}
     {readonly}
     class="space-y-4"
-    oninput={handleInput}
-    onkeydown={handleKeydown}
-    onblur={handleBlur}
-    onfocus={handleFocus}
+    input={handleInput}
+    keydown={handleKeydown}
+    on:blur={handleBlur}
+    on:focus={handleFocus}
   ></textarea>
 
   {#if showCommandMenu}
@@ -151,8 +151,8 @@
       <CommandMenu
         bind:this={commandMenu}
         textareaElement={textarea}
-        oninsert={handleCommandInsert}
-        onclose={() => (showCommandMenu = false)}
+        on:insert={handleCommandInsert}
+        on:close={() => (showCommandMenu = false)}
       />
     </div>
   {/if}

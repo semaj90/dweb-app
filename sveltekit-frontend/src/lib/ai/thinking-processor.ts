@@ -183,7 +183,7 @@ export class ThinkingProcessor {
   /**
    * Gets analysis history for a document
    */
-  static async getAnalysisHistory(options: { evidenceId?: string; caseId?: string; limit?: number }): Promise<unknown[]> {
+  static async getAnalysisHistory(options: { evidenceId?: string; caseId?: string; limit?: number }): Promise<any[]> {
     const params = new URLSearchParams();
     if (options.evidenceId) params.append('evidenceId', options.evidenceId);
     if (options.caseId) params.append('caseId', options.caseId);
@@ -252,9 +252,9 @@ export const LegalAnalysisUtils = {
 };
 
 /**
- * Type definitions for analysis results
+ * Document analysis result from thinking processor
  */
-export interface LegalAnalysisResult {
+export interface DocumentAnalysisResult {
   id: string;
   document_type: string;
   analysis_type: string;

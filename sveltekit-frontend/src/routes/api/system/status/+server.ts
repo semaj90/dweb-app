@@ -1,9 +1,10 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { json } from "@sveltejs/kit";
 import { goServices } from "$lib/services/go-microservices-client.js";
 import { productionLogger } from '$lib/server/production-logger';
 import net from "node:net";
 import os from "os";
+import type { RequestHandler } from './$types';
+
 
 // System Status API - Complete Health Check for Legal AI Platform
 export const GET: RequestHandler = async ({ url }) => {

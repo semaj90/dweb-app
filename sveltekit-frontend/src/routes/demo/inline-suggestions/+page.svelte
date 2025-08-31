@@ -218,7 +218,7 @@ Furthermore, the doctrine of mitigation requires that the injured party take rea
               suggestiondelay={serviceOptions.suggestionDelay}
               maxSuggestions={serviceOptions.maxSuggestions}
               class="w-full"
-              onsuggestionaccepted={handleSuggestionAccepted}
+              on:suggestionaccepted={handleSuggestionAccepted}
             />
           </CardContent>
         </Card>

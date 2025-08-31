@@ -197,7 +197,7 @@
   </div>
 
   <!-- Main Content -->
-  <Tabs value={activeTab} onvaluechange={(value) => activeTab = value}>
+  <Tabs value={activeTab} on:valuechange={(value) => activeTab = value}>
     <TabsList class="grid w-full grid-cols-5">
       <TabsTrigger value="overview">Overview</TabsTrigger>
       <TabsTrigger value="vector-demo">Vector Intelligence</TabsTrigger>
@@ -343,9 +343,9 @@
             width={800} 
             height={600} 
             caseId="demo-case-001"
-            onsave={(e) => console.log('Canvas saved:', e.detail)}
-            ondelete={(e) => console.log('Object deleted:', e.detail)}
-            onselect={(e) => console.log('Object selected:', e.detail)}
+            on:save={(e) => console.log('Canvas saved:', e.detail)}
+            on:delete={(e) => console.log('Object deleted:', e.detail)}
+            on:select={(e) => console.log('Object selected:', e.detail)}
           />
         </CardContent>
       </Card>

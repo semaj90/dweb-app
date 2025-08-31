@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { $props } from 'svelte';
+  // runtime helper $props() is provided by the runes compiler; do not import it.
 
   import { cn } from "$lib/utils";
   interface Props {
@@ -8,16 +8,16 @@
 
   let { children }: Props = $props();
 
+  // `class` is a reserved identifier in runes mode; use `className` instead.
   let className: string = "";
-  ;
+
 </script>
 
 <div
   class={cn(
     "z-50 overflow-hidden rounded-md border bg-popover px-3 py-1.5 text-sm text-popover-foreground shadow-md",
-    class
+    className
   )}
-  
 >
   {@render children?.()}
 </div>

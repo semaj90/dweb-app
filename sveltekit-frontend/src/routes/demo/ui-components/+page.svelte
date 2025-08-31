@@ -45,7 +45,7 @@
         class="p-4 rounded-lg border-2 transition-all hover:shadow-md {selectedDemo === item.id 
           ? 'border-primary bg-primary/5 shadow-md' 
           : 'border-border hover:border-primary/50'}"
-        on:click={() => selectedDemo = item.id}
+        click={() => selectedDemo = item.id}
       >
         <h3 class="font-semibold">{item.label}</h3>
         <p class="text-sm text-muted-foreground mt-1">{item.description}</p>

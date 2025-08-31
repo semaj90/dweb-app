@@ -123,8 +123,8 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
 {#if open}
   <div
     class="yorha-modal-backdrop {type}"
-    onclick={handleBackdropClick}
-    onkeydown={handleKeydown}
+    click={handleBackdropClick}
+    keydown={handleKeydown}
     transition:fade={{ duration: 200 }}
     role="dialog"
     aria-modal="true"
@@ -164,7 +164,7 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
           {#if closable && !persistent}
             <button
               class="modal-close"
-              onclick={handleClose}
+              click={handleClose}
               aria-label="Close modal"
             >
               <span class="close-icon">✕</span>
@@ -187,18 +187,18 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
             {@render footer()}
           {:else if type === "confirm"}
             <div class="modal-actions">
-              <button class="modal-button cancel" onclick={handleCancel}>
+              <button class="modal-button cancel" click={handleCancel}>
                 <span class="button-icon">✕</span>
                 Cancel
               </button>
-              <button class="modal-button confirm" onclick={handleConfirm}>
+              <button class="modal-button confirm" click={handleConfirm}>
                 <span class="button-icon">✓</span>
                 Confirm
               </button>
             </div>
           {:else if type === "alert"}
             <div class="modal-actions">
-              <button class="modal-button acknowledge" onclick={handleClose}>
+              <button class="modal-button acknowledge" click={handleClose}>
                 <span class="button-icon">■</span>
                 Acknowledge
               </button>

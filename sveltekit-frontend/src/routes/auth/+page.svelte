@@ -125,7 +125,7 @@
           class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 {authMode === 'login'
             ? 'bg-yellow-500 text-black'
             : 'text-gray-300 hover:text-white'}"
-          onclick={() => authMode = 'login'}
+          click={() => authMode = 'login'}
         >
           🔐 Login
         </button>
@@ -134,7 +134,7 @@
           class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 {authMode === 'register'
             ? 'bg-yellow-500 text-black'
             : 'text-gray-300 hover:text-white'}"
-          onclick={() => authMode = 'register'}
+          click={() => authMode = 'register'}
         >
           📝 Register
         </button>
@@ -154,7 +154,7 @@
       {/if}
 
       <!-- Auth Form -->
-      <form onsubmit={handleSubmit} class="space-y-4">
+      <form submit={handleSubmit} class="space-y-4">
         <!-- Common Fields -->
         <div>
           <label for="email" class="block text-sm font-medium text-gray-300 mb-2">
@@ -359,7 +359,7 @@
           {authMode === 'login' ? "Don't have an account?" : "Already have an account?"}
           <button
             type="button"
-            onclick={toggleAuthMode}
+            click={toggleAuthMode}
             class="text-yellow-400 hover:text-yellow-300 hover:underline ml-1 transition-colors"
           >
             {authMode === 'login' ? 'Create one here' : 'Sign in instead'}

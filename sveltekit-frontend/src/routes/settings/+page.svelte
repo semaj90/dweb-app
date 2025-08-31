@@ -328,7 +328,7 @@
             class:bg-blue-100={activeTab === "profile"}
             class:text-blue-700={activeTab === "profile"}
             class:hover:bg-gray-100={activeTab !== "profile"}
-            on:click={() => (activeTab = "profile")}
+            click={() => (activeTab = "profile")}
           >
             <UserIcon class="space-y-4" />
             Profile
@@ -340,7 +340,7 @@
             class:bg-blue-100={activeTab === "preferences"}
             class:text-blue-700={activeTab === "preferences"}
             class:hover:bg-gray-100={activeTab !== "preferences"}
-            on:click={() => (activeTab = "preferences")}
+            click={() => (activeTab = "preferences")}
           >
             <Palette class="space-y-4" />
             Preferences
@@ -352,7 +352,7 @@
             class:bg-blue-100={activeTab === "security"}
             class:text-blue-700={activeTab === "security"}
             class:hover:bg-gray-100={activeTab !== "security"}
-            on:click={() => (activeTab = "security")}
+            click={() => (activeTab = "security")}
           >
             <Shield class="space-y-4" />
             Security
@@ -364,7 +364,7 @@
             class:bg-blue-100={activeTab === "data"}
             class:text-blue-700={activeTab === "data"}
             class:hover:bg-gray-100={activeTab !== "data"}
-            on:click={() => (activeTab = "data")}
+            click={() => (activeTab = "data")}
           >
             <Download class="space-y-4" />
             Data & Privacy
@@ -421,7 +421,7 @@
                       id="avatar"
                       type="file"
                       accept="image/*"
-                      onchange={handleAvatarChange}
+                      change={handleAvatarChange}
                       class="space-y-4"
                     />
                     <Button
@@ -739,7 +739,7 @@
                       <button
                         type="button"
                         class="space-y-4"
-                        on:click={() => (showPasswords = !showPasswords)}
+                        click={() => (showPasswords = !showPasswords)}
                       >
                         {#if showPasswords}
                           <EyeOff class="space-y-4" />

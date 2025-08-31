@@ -41,7 +41,7 @@
       <h2 class="text-xl font-semibold">Modern Button (Svelte 5)</h2>
       <Button 
         variant="default"
-        onclick={handleButtonClick}
+        on:click={handleButtonClick}
       >
         Test Button (onclick)
       </Button>
@@ -97,7 +97,7 @@
             This tests melt v0.39.0 builders with Svelte 5 compatibility.
           </p>
           <button 
-            onclick={() => meltDialog.states.open.set(false)}
+            click={() => meltDialog.states.open.set(false)}
             class="px-4 py-2 border rounded hover:bg-gray-50"
           >
             Close melt Dialog

@@ -1261,7 +1261,7 @@ class UnifiedDocumentProcessor extends EventEmitter {
     }
   }
 
-  private async searchEmbeddings(queryEmbedding: number[], options: any): Promise<unknown[]> {
+  private async searchEmbeddings(queryEmbedding: number[], options: any): Promise<any[]> {
     // This would typically interface with a vector database like Qdrant or Pinecone
     // For now, return mock results
     return [

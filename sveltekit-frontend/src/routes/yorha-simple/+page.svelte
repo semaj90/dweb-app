@@ -253,25 +253,25 @@ export {};
   <!-- Quick Actions -->
   <section class="yorha-actions">
     <div class="yorha-actions-grid">
-      <button class="yorha-action-card yorha-action-primary" onclick={performRAGQuery}>
+      <button class="yorha-action-card yorha-action-primary" click={performRAGQuery}>
         <Cpu size={32} />
         <h3>ENHANCED RAG</h3>
         <p>AI-powered legal analysis</p>
       </button>
 
-      <button class="yorha-action-card yorha-action-search" onclick={performSemanticSearch}>
+      <button class="yorha-action-card yorha-action-search" click={performSemanticSearch}>
         <Search size={32} />
         <h3>VECTOR SEARCH</h3>
         <p>Semantic document retrieval</p>
       </button>
 
-      <button class="yorha-action-card yorha-action-health" onclick={performHealthCheck}>
+      <button class="yorha-action-card yorha-action-health" click={performHealthCheck}>
         <Monitor size={32} />
         <h3>SYSTEM HEALTH</h3>
         <p>Cluster monitoring</p>
       </button>
 
-      <button class="yorha-action-card yorha-action-database" onclick={performDatabaseQuery}>
+      <button class="yorha-action-card yorha-action-database" click={performDatabaseQuery}>
         <Database size={32} />
         <h3>DATABASE</h3>
         <p>Direct data access</p>
@@ -286,7 +286,7 @@ export {};
       <div class="yorha-error-content">
         <h3>SYSTEM ERROR</h3>
         <p>{error}</p>
-        <button class="yorha-error-retry" onclick={() => { error = null; fetchSystemMetrics(); }}>RETRY</button>
+        <button class="yorha-error-retry" click={() => { error = null; fetchSystemMetrics(); }}>RETRY</button>
       </div>
     </section>
   {/if}
@@ -306,7 +306,7 @@ export {};
       <h2 class="yorha-section-title">SYSTEM METRICS</h2>
       <div class="yorha-last-updated">
         <span>Last Updated: {lastUpdated.toLocaleTimeString()}</span>
-        <button class="yorha-refresh-btn" onclick={fetchSystemMetrics}>⟳</button>
+        <button class="yorha-refresh-btn" click={fetchSystemMetrics}>⟳</button>
       </div>
     </div>
     <div class="yorha-metrics-grid">
@@ -353,7 +353,7 @@ export {};
     <h2 class="yorha-section-title">INTERFACE MODULES</h2>
 
     <div class="yorha-nav-grid">
-      <button class="yorha-nav-card" onclick={() => navigateTo('/yorha/dashboard')}>
+      <button class="yorha-nav-card" click={() => navigateTo('/yorha/dashboard')}>
         <div class="yorha-nav-header">
           <Monitor size={28} />
           <h3>SYSTEM DASHBOARD</h3>
@@ -365,7 +365,7 @@ export {};
         </div>
       </button>
 
-      <button class="yorha-nav-card" onclick={() => navigateTo('/yorha/components')}>
+      <button class="yorha-nav-card" click={() => navigateTo('/yorha/components')}>
         <div class="yorha-nav-header">
           <Gamepad2 size={28} />
           <h3>3D COMPONENTS</h3>
@@ -377,7 +377,7 @@ export {};
         </div>
       </button>
 
-      <button class="yorha-nav-card" onclick={() => navigateTo('/yorha/api-test')}>
+      <button class="yorha-nav-card" click={() => navigateTo('/yorha/api-test')}>
         <div class="yorha-nav-header">
           <Settings size={28} />
           <h3>API TESTING</h3>
@@ -389,7 +389,7 @@ export {};
         </div>
       </button>
 
-      <button class="yorha-nav-card" onclick={() => navigateTo('/yorha/terminal')}>
+      <button class="yorha-nav-card" click={() => navigateTo('/yorha/terminal')}>
         <div class="yorha-nav-header">
           <Terminal size={28} />
           <h3>TERMINAL</h3>

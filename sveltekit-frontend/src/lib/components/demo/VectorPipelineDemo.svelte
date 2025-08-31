@@ -4,10 +4,10 @@
   import { vectorPipelineState, vectorPipelineActions, type VectorPipelineJob } from '$lib/machines/vector-pipeline-machine';
   import Button from '$lib/components/ui/Button.svelte';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
-  
+
   let unsubscribe: (() => void) | null = null;
   let state = $vectorPipelineState;
-  
+
   // Sample job data
   const sampleJobs: Array<Omit<VectorPipelineJob, 'jobId' | 'status' | 'progress' | 'createdAt'>> = [
     { ownerType: 'evidence', ownerId: 'evidence-001', event: 'upsert' },
@@ -57,12 +57,26 @@
     vectorPipelineActions.retryFailedJobs();
   }
 
-  // Get status indicators
-  $: pipelineStatus = state.context?.pipeline;
-  $: batchInfo = state.context?.batch;
-  $: metrics = state.context?.metrics;
-  $: currentState = typeof state.value === 'string' ? state.value : 'unknown';
-  $: errors = state.context?.errors || [];
+  // Get status indicators (runes-safe)
+  let pipelineStatus = {} as any;
+  let batchInfo = {} as any;
+  let metrics = {} as any;
+  let currentState = 'unknown';
+  let errors: string[] = [];
+
+  const pipelineStatusDerived = $derived(() => state.context?.pipeline);
+  const batchInfoDerived = $derived(() => state.context?.batch);
+  const metricsDerived = $derived(() => state.context?.metrics);
+  const currentStateDerived = $derived(() => typeof state.value === 'string' ? state.value : 'unknown');
+  const errorsDerived = $derived(() => state.context?.errors || []);
+
+  $effect(() => {
+    pipelineStatus = pipelineStatusDerived;
+    batchInfo = batchInfoDerived;
+    metrics = metricsDerived;
+    currentState = currentStateDerived;
+    errors = errorsDerived;
+  });
 
   function getStatusColor(status: boolean): string {
     return status ? 'text-green-600' : 'text-red-600';
@@ -196,8 +210,8 @@
               </div>
               {#if batchInfo && batchInfo.progress > 0}
                 <div class="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    class="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                  <div
+                    class="bg-blue-600 h-2 rounded-full transition-all duration-300"
                     style="width: {batchInfo.progress}%"
                   ></div>
                 </div>
@@ -228,8 +242,8 @@
               <div class="flex justify-between">
                 <span>Last Run:</span>
                 <span class="text-sm">
-                  {metrics?.lastProcessedAt ? 
-                    new Date(metrics.lastProcessedAt).toLocaleTimeString() : 
+                  {metrics?.lastProcessedAt ?
+                    new Date(metrics.lastProcessedAt).toLocaleTimeString() :
                     'Never'
                   }
                 </span>
@@ -267,7 +281,7 @@
                       <td class="p-2">{job.event}</td>
                       <td class="p-2">
                         <span class="px-2 py-1 rounded text-xs font-medium
-                          {job.status === 'succeeded' ? 'bg-green-100 text-green-800' : 
+                          {job.status === 'succeeded' ? 'bg-green-100 text-green-800' :
                            job.status === 'failed' ? 'bg-red-100 text-red-800' :
                            job.status === 'processing' ? 'bg-blue-100 text-blue-800' :
                            'bg-gray-100 text-gray-800'}">
@@ -293,7 +307,7 @@
           <p class="text-sm text-gray-600 mb-4">
             Test connectivity to backend services that the vector pipeline depends on:
           </p>
-          <Button 
+          <Button
             on:click={async () => {
               try {
                 const response = await fetch('http://localhost:8094/api/health');
@@ -308,7 +322,7 @@
           >
             Test Enhanced RAG (8094)
           </Button>
-          <Button 
+          <Button
             on:click={async () => {
               try {
                 const response = await fetch('http://localhost:6333/health');

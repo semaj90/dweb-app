@@ -4,7 +4,7 @@ import { EventEmitter } from "events";
 // Real-time streaming service for AI synthesis with progressive updates
 
 import { logger } from './logger';
-import { aiAssistantSynthesizer } from './ai-assistant-synthesizer';
+import { aiAssistantSynthesizer } from './ai-assistant-input-synthesizer';
 
 export interface StreamEvent {
   type: 'status' | 'progress' | 'stage' | 'source' | 'complete' | 'error' | 'heartbeat';
@@ -206,8 +206,17 @@ class StreamingService extends EventEmitter {
         // Actually call the synthesizer for the complete result
         const result = await aiAssistantSynthesizer.synthesizeInput({
           query: options.input.query,
-          context: options.input.context,
-          options: options.input.options
+          context: { userId: '', ...(options.input.context || {}) },
+          options: {
+            enableMMR: true,
+            enableCrossEncoder: true,
+            enableLegalBERT: true,
+            enableRAG: true,
+            maxSources: 5,
+            similarityThreshold: 0.7,
+            diversityLambda: 0.3,
+            ...(options.input.options || {})
+          }
         });
         
         options.onProgress?.('quality_assessment', 100, {
@@ -369,7 +378,7 @@ class StreamingService extends EventEmitter {
   private async streamRetrieval(
     input: any,
     onSource: (source: any, index: number, total: number) => void
-  ): Promise<unknown[]> {
+  ): Promise<any[]> {
     const sources = [];
     const totalSources = 10; // Simulate finding 10 sources
     
@@ -398,7 +407,7 @@ class StreamingService extends EventEmitter {
   private async streamRanking(
     sources: any[],
     onProgress: (progress: number) => void
-  ): Promise<unknown[]> {
+  ): Promise<any[]> {
     const steps = 5;
     
     for (let i = 0; i < steps; i++) {
@@ -465,7 +474,7 @@ class StreamingService extends EventEmitter {
   getActiveStreams(): unknown[] {
     const streams = [];
     
-    for (const [streamId, processing] of this.activeProcessing) {
+    for (const [streamId, processing] of Array.from(this.activeProcessing.entries())) {
       streams.push({
         streamId,
         status: processing.status,
@@ -487,7 +496,7 @@ class StreamingService extends EventEmitter {
     const maxAge = 5 * 60 * 1000; // 5 minutes
     
     // Clean up old processing records
-    for (const [streamId, processing] of this.activeProcessing) {
+    for (const [streamId, processing] of Array.from(this.activeProcessing.entries())) {
       if (processing.endTime && (now - processing.endTime > maxAge)) {
         this.activeProcessing.delete(streamId);
         this.progressTracking.delete(streamId);
@@ -496,7 +505,7 @@ class StreamingService extends EventEmitter {
     }
     
     // Clean up orphaned buffers
-    for (const [streamId, buffer] of this.streamBuffer) {
+    for (const [streamId, buffer] of Array.from(this.streamBuffer.entries())) {
       if (!this.streams.has(streamId) && buffer.length > 0) {
         const lastEvent = buffer[buffer.length - 1];
         if (lastEvent.type === 'complete' || lastEvent.type === 'error') {
@@ -518,7 +527,7 @@ class StreamingService extends EventEmitter {
    */
   async shutdown(): Promise<void> {
     // Send closing events to all active streams
-    for (const [streamId, subscribers] of this.streams) {
+    for (const [streamId, subscribers] of Array.from(this.streams.entries())) {
       const event: StreamEvent = {
         type: 'error',
         data: { message: 'Service shutting down' }
@@ -628,6 +637,5 @@ export class OllamaStreamingAdapter {
 // Export Ollama adapter
 export const ollamaAdapter = new OllamaStreamingAdapter();
 
-// Export types
-export type { StreamEvent, StreamingOptions };
+// Types are already exported as interfaces above
 

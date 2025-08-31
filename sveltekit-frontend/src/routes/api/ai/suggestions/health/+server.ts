@@ -1,5 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+
 
 // Import health check functions from our services
 import { ollamaSuggestionsService } from '$lib/services/ollama-suggestions-service.js';

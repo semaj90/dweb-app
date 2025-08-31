@@ -1,9 +1,10 @@
+import type { RequestHandler } from './$types';
+
 // src/routes/api/compute/+server.ts
 // SvelteKit API endpoint for multi-threaded job pipeline
 // Implements PostgreSQL → Redis Streams → Go microservice → CUDA worker → Qdrant
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import postgres from 'postgres';
 import { createClient } from 'redis';

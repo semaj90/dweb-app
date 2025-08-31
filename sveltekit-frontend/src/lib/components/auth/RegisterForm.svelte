@@ -3,7 +3,7 @@
   Using Bits UI v2 + Superforms + XState + MCP GPU Orchestrator
 -->
 <script lang="ts">
-  import { $props, $state, $derived } from 'svelte';
+  // runtime helpers ($props, $state, $derived, $effect) are available in runes mode — do not import them
   import { enhance } from '$app/forms';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
@@ -19,14 +19,14 @@
   import { Label } from '$lib/components/ui/label';
   import { Checkbox } from '$lib/components/ui/checkbox';
   import { Textarea } from '$lib/components/ui/textarea';
-  import { 
-    Eye, EyeOff, Shield, Loader2, AlertCircle, 
-    Zap, UserPlus, Badge, Building, Scale 
+  import {
+    Eye, EyeOff, Shield, Loader2, AlertCircle,
+    Zap, UserPlus, Badge, Building, Scale
   } from 'lucide-svelte';
   import { authMachine } from '$lib/machines/auth-machine';
   import { mcpGPUOrchestrator } from '$lib/services/mcp-gpu-orchestrator';
   import { z } from 'zod';
-  
+
   // Enhanced registration schema for legal professionals
   const registerSchema = z.object({
     email: z.string().email('Please enter a valid email address'),
@@ -34,7 +34,7 @@
     lastName: z.string().min(2, 'Last name must be at least 2 characters'),
     password: z.string()
       .min(12, 'Password must be at least 12 characters')
-      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, 
+      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
         'Password must include uppercase, lowercase, number, and special character'),
     confirmPassword: z.string(),
     role: z.enum(['prosecutor', 'investigator', 'analyst', 'admin']),
@@ -56,11 +56,11 @@
     enableGPUValidation?: boolean;
   }
 
-  let { 
-    data, 
-    redirectTo = '/dashboard', 
+  let {
+    data,
+    redirectTo = '/dashboard',
     showLogin = true,
-    enableGPUValidation = true 
+    enableGPUValidation = true
   }: Props = $props();
 
   // Form state
@@ -99,7 +99,7 @@
       if (enableGPUValidation) {
         try {
           gpuValidationStatus = 'processing';
-          
+
           // Use MCP GPU orchestrator for security analysis and validation
           const validationCheck = await mcpGPUOrchestrator.dispatchGPUTask({
             id: `register_validation_${Date.now()}`,
@@ -181,10 +181,10 @@
     },
     onResult: ({ result }) => {
       isLoading = false;
-      
+
       if (result.type === 'success') {
         const data = result.data as any;
-        
+
         if (data?.requiresVerification) {
           successMessage = 'Registration successful! Please check your email to verify your account.';
         } else if (data?.success) {
@@ -225,7 +225,7 @@
       ctx.font = '14px Arial';
       ctx.fillText('Legal AI Registration', 2, 2);
     }
-    
+
     const fingerprint = {
       userAgent: navigator.userAgent,
       language: navigator.language,
@@ -240,7 +240,7 @@
       doNotTrack: navigator.doNotTrack,
       hardwareConcurrency: navigator.hardwareConcurrency
     };
-    
+
     return btoa(JSON.stringify(fingerprint));
   }
 
@@ -258,7 +258,7 @@
 
   function calculatePasswordStrength(password: string): { score: number; feedback: string; color: string } {
     if (!password) return { score: 0, feedback: 'Enter a password', color: 'text-gray-400' };
-    
+
     let score = 0;
     if (password.length >= 12) score += 2;
     if (password.length >= 16) score += 1;
@@ -267,7 +267,7 @@
     if (/\d/.test(password)) score += 1;
     if (/[@$!%*?&]/.test(password)) score += 1;
     if (password.length >= 20) score += 1;
-    
+
     if (score < 3) return { score, feedback: 'Weak', color: 'text-red-500' };
     if (score < 5) return { score, feedback: 'Fair', color: 'text-yellow-500' };
     if (score < 7) return { score, feedback: 'Good', color: 'text-blue-500' };
@@ -482,7 +482,7 @@
               <button
                 type="button"
                 class="absolute inset-y-0 right-0 pr-3 flex items-center"
-                on:click={togglePasswordVisibility}
+                click={togglePasswordVisibility}
                 disabled={isLoading}
               >
                 {#if showPassword}
@@ -495,7 +495,7 @@
             {#if $form.password}
               <div class="mt-2 flex items-center gap-2">
                 <div class="h-2 flex-1 bg-gray-200 rounded">
-                  <div 
+                  <div
                     class="h-full rounded transition-all duration-300"
                     class:bg-red-500={passwordStrength.score < 3}
                     class:bg-yellow-500={passwordStrength.score >= 3 && passwordStrength.score < 5}
@@ -528,7 +528,7 @@
               <button
                 type="button"
                 class="absolute inset-y-0 right-0 pr-3 flex items-center"
-                on:click={toggleConfirmPasswordVisibility}
+                click={toggleConfirmPasswordVisibility}
                 disabled={isLoading}
               >
                 {#if showConfirmPassword}
@@ -586,9 +586,9 @@
       </div>
 
       <!-- Submit Button -->
-      <Button 
-        type="submit" 
-        class="w-full" 
+      <Button
+        type="submit"
+        class="w-full"
         disabled={isLoading || $submitting}
       >
         {#if isLoading || $submitting}
@@ -606,8 +606,8 @@
       <div class="mt-6 text-center">
         <p class="text-sm text-muted-foreground">
           Already have an account?
-          <a 
-            href="/auth/login" 
+          <a
+            href="/auth/login"
             class="text-primary hover:underline font-medium"
             tabindex={isLoading ? -1 : 0}
           >

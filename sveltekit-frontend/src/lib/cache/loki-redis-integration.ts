@@ -805,5 +805,3 @@ export class LokiRedisCache extends EventEmitter {
 // Export singleton instance
 export const lokiRedisCache = new LokiRedisCache();
 
-// Export types
-export type { CachedDocument, SearchResult, CacheStats };

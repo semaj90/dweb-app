@@ -1,10 +1,13 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Comprehensive Integration Test API - SvelteKit 2 Production
  * Tests all 37 Go microservices and unified API system
  * Validates Windows-native deployment and multi-protocol communication
  */
 
-import { json, error, type RequestHandler } from '@sveltejs/kit';
+
+import { ensureError } from '$lib/utils/ensure-error';
 import { dev } from '$app/environment';
 import { apiOrchestrator } from '$lib/services/api-orchestrator.js';
 import { embeddingService } from '$lib/server/embedding-service.js';
@@ -67,13 +70,13 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
   } catch (err: any) {
     console.error('Integration Test Error:', err);
     
-    return error(500, {
+    return error(500, ensureError({
       message: 'Integration test failed to run',
       error: dev ? String(err) : 'Internal server error',
       code: 'TEST_EXECUTION_ERROR',
       requestId,
       timestamp: new Date().toISOString()
-    });
+    }));
   }
 };
 
@@ -119,10 +122,10 @@ export const GET: RequestHandler = async ({ url }) => {
     }
   } catch (err: any) {
     console.error('Test API Error:', err);
-    return error(500, {
+    return error(500, ensureError({
       message: 'Test service unavailable',
       error: dev ? String(err) : 'Internal error'
-    });
+    }));
   }
 };
 

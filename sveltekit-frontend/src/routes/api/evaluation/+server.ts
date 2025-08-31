@@ -1,5 +1,6 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+
 
 /**
  * Evaluation & Metrics API Endpoints - Step 10 Integration

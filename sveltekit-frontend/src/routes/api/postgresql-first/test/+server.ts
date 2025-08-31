@@ -1,3 +1,5 @@
+import type { RequestHandler } from './$types';
+
 /**
  * PostgreSQL-First Architecture Test Endpoint
  * 
@@ -9,7 +11,6 @@
  * 5. Qdrant sync → Search index mirroring
  */
 
-import { json, type RequestHandler } from '@sveltejs/kit';
 import { db } from '$lib/server/db/index.js';
 import { evidence, documentMetadata, documentEmbeddings } from '$lib/server/db/schema-unified.js';
 import { eq, sql } from 'drizzle-orm';

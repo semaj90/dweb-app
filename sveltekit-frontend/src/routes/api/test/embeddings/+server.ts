@@ -1,8 +1,9 @@
+import type { RequestHandler } from './$types';
+
 // Nomic Embedding Service Test API
 // Tests the 768-dimensional embedding service with database integration
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 
 export interface TestResult {
   test: string;

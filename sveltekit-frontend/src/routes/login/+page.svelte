@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { $props, $state } from 'svelte';
   import { goto } from '$app/navigation';
   import { browser } from '$app/environment';
   import { authService } from '$lib/stores/auth.svelte.js';
@@ -70,8 +69,8 @@
     <!-- Modern Authentication Dialog Component -->
     <ModernAuthForm 
       bind:mode={authMode}
-      open={showAuthDialog} onopenchange={(open) => showAuthDialog = open}
-      onsuccess={handleAuthSuccess}
+      open={showAuthDialog} on:openchange={(open) => showAuthDialog = open}
+      on:success={handleAuthSuccess}
     />
 
     <div class="login-footer">

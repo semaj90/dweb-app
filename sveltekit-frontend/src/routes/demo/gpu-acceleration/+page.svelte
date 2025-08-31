@@ -280,7 +280,7 @@
       <!-- Processing Buttons -->
       <div class="space-y-4">
         <button
-          on:click={processWithCUDA}
+          click={processWithCUDA}
           disabled={$isProcessing || !$cudaHealth}
           class="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
@@ -293,7 +293,7 @@
         </button>
         
         <button
-          on:click={testFlashAttention2}
+          click={testFlashAttention2}
           disabled={$isProcessing}
           class="w-full bg-purple-600 text-white py-3 px-4 rounded-md hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
@@ -301,7 +301,7 @@
         </button>
         
         <button
-          on:click={checkGPUStatus}
+          click={checkGPUStatus}
           class="w-full bg-gray-600 text-white py-3 px-4 rounded-md hover:bg-gray-700"
         >
           🔄 Refresh GPU Status

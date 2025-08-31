@@ -108,7 +108,7 @@
   }
 </script>
 
-<div class={cn('chain-of-custody w-full space-y-4', className)}>
+<div className={cn('chain-of-custody w-full space-y-4', className)}>
   <!-- Evidence Header -->
   <div class={cn(
     'bg-yorha-bg-secondary border rounded-lg p-4',
@@ -168,9 +168,9 @@
       </div>
       <div>
         <span class="text-yorha-text-secondary">Condition:</span>
-        <span class={cn(
+        <span className={cn(
           'inline-block px-2 py-0.5 rounded text-xs',
-          conditionConfig[evidence.condition].class
+          conditionConfig[evidence.condition].className
         )}>
           {conditionConfig[evidence.condition].label}
         </span>
@@ -198,7 +198,7 @@
     {#if interactive && onTransferEvidence}
       <div class="mt-3 flex justify-end">
         <button
-          on:click={() => onTransferEvidence?.(evidence)}
+          click={() => onTransferEvidence?.(evidence)}
           class="px-4 py-2 text-sm font-mono bg-yorha-primary/10 text-yorha-primary border border-yorha-primary/20 rounded hover:bg-yorha-primary/20 transition-colors"
         >
           Transfer Custody
@@ -236,7 +236,7 @@
                 'relative flex items-start gap-4',
                 interactive && 'cursor-pointer group'
               )}
-              on:click={() => interactive && onViewDetails?.(transfer)}
+              click={() => interactive && onViewDetails?.(transfer)}
             >
               <!-- Timeline Node -->
               <div class={cn(
@@ -300,9 +300,9 @@
                     </div>
                     <div>
                       <span class="text-yorha-text-secondary">Condition:</span>
-                      <span class={cn(
+                      <span className={cn(
                         'inline-block px-1.5 py-0.5 rounded',
-                        conditionConfig[transfer.condition].class
+                        conditionConfig[transfer.condition].className
                       )}>
                         {conditionConfig[transfer.condition].label}
                       </span>
@@ -335,7 +335,7 @@
         {#if !showFullHistory && sortedTransfers.length > 3}
           <div class="text-center mt-4">
             <button 
-              on:click={() => showFullHistory = true}
+              click={() => showFullHistory = true}
               class="text-sm font-mono text-yorha-primary hover:text-yorha-accent transition-colors"
             >
               Show {sortedTransfers.length - 3} more transfer{sortedTransfers.length - 3 !== 1 ? 's' : ''}

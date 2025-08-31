@@ -143,13 +143,13 @@
     <!-- Quick Actions -->
     <div class="flex space-x-2">
       <button 
-        on:click={() => performSystemAction('refresh')}
+        click={() => performSystemAction('refresh')}
         class={yorhaClasses.button}
       >
         ↻ REFRESH
       </button>
       <button 
-        on:click={() => performSystemAction('backup')}
+        click={() => performSystemAction('backup')}
         class={yorhaClasses.buttonPrimary}
       >
         ◈ BACKUP
@@ -256,13 +256,13 @@
         </div>
         <div class="flex space-x-2">
           <button 
-            on:click={() => performSystemAction('clear_ai_queue')}
+            click={() => performSystemAction('clear_ai_queue')}
             class={yorhaClasses.buttonDanger}
           >
             CLEAR QUEUE
           </button>
           <button 
-            on:click={() => performSystemAction('restart_ai')}
+            click={() => performSystemAction('restart_ai')}
             class={yorhaClasses.button}
           >
             RESTART AI
@@ -287,13 +287,13 @@
         </div>
         <div class="flex space-x-2">
           <button 
-            on:click={() => performSystemAction('backup_now')}
+            click={() => performSystemAction('backup_now')}
             class={yorhaClasses.buttonPrimary}
           >
             BACKUP NOW
           </button>
           <button 
-            on:click={() => performSystemAction('restore')}
+            click={() => performSystemAction('restore')}
             class={yorhaClasses.button}
           >
             RESTORE
@@ -354,19 +354,19 @@
       <div class={yorhaClasses.cardHeader}>MAINTENANCE</div>
       <div class="space-y-3">
         <button 
-          on:click={() => performSystemAction('clear_cache')}
+          click={() => performSystemAction('clear_cache')}
           class="{yorhaClasses.button} w-full"
         >
           CLEAR SYSTEM CACHE
         </button>
         <button 
-          on:click={() => performSystemAction('optimize_db')}
+          click={() => performSystemAction('optimize_db')}
           class="{yorhaClasses.button} w-full"
         >
           OPTIMIZE DATABASE
         </button>
         <button 
-          on:click={() => performSystemAction('cleanup_logs')}
+          click={() => performSystemAction('cleanup_logs')}
           class="{yorhaClasses.button} w-full"
         >
           CLEANUP LOG FILES
@@ -379,19 +379,19 @@
       <div class={yorhaClasses.cardHeader}>SECURITY</div>
       <div class="space-y-3">
         <button 
-          on:click={() => performSystemAction('force_logout_all')}
+          click={() => performSystemAction('force_logout_all')}
           class="{yorhaClasses.buttonDanger} w-full"
         >
           FORCE LOGOUT ALL
         </button>
         <button 
-          on:click={() => performSystemAction('reset_sessions')}
+          click={() => performSystemAction('reset_sessions')}
           class="{yorhaClasses.buttonDanger} w-full"
         >
           RESET ALL SESSIONS
         </button>
         <button 
-          on:click={() => performSystemAction('security_scan')}
+          click={() => performSystemAction('security_scan')}
           class="{yorhaClasses.button} w-full"
         >
           SECURITY SCAN
@@ -404,19 +404,19 @@
       <div class={yorhaClasses.cardHeader}>SYSTEM CONTROL</div>
       <div class="space-y-3">
         <button 
-          on:click={() => performSystemAction('restart_services')}
+          click={() => performSystemAction('restart_services')}
           class="{yorhaClasses.buttonDanger} w-full"
         >
           RESTART SERVICES
         </button>
         <button 
-          on:click={() => performSystemAction('enable_maintenance')}
+          click={() => performSystemAction('enable_maintenance')}
           class="{yorhaClasses.button} w-full"
         >
           MAINTENANCE MODE
         </button>
         <button 
-          on:click={() => performSystemAction('generate_report')}
+          click={() => performSystemAction('generate_report')}
           class="{yorhaClasses.buttonPrimary} w-full"
         >
           SYSTEM REPORT

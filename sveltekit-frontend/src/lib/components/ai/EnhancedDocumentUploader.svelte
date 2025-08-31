@@ -439,19 +439,19 @@
 </script>
 
 <!-- Main Upload Interface -->
-<div class="enhanced-document-uploader {className}">
+<div class="enhanced-document-uploader {class}">
   <!-- Drop Zone -->
   <div
     bind:this={dropZone}
     class="drop-zone"
     class:dragging={$isDragging}
-    ondragover={handleDragOver}
-    ondragleave={handleDragLeave}
-    ondrop={handleDrop}
+    on:dragover={handleDragOver}
+    on:dragleave={handleDragLeave}
+    on:drop={handleDrop}
     role="button"
     tabindex="0"
-    on:click={() => fileInput?.click()}
-    onkeydown={(e) => e.key === "Enter" && fileInput?.click()}
+    click={() => fileInput?.click()}
+    on:keydown={(e) => e.key === "Enter" && fileInput?.click()}
   >
     <div class="drop-zone-content">
       <Upload class="drop-zone-icon" size={48} />
@@ -479,7 +479,7 @@
     type="file"
     multiple
     accept={acceptedTypes}
-    onchange={handleFileSelect}
+    change={handleFileSelect}
     class="sr-only"
   />
 

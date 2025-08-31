@@ -86,7 +86,7 @@
 
         <button
           class="w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors flex items-center justify-center gap-2"
-          on:click={() => foafModalOpen = true}
+          click={() => foafModalOpen = true}
         >
           <Users class="w-4 h-4" />
           Show Network Recommendations
@@ -122,8 +122,8 @@
           bind:query={searchQuery}
           contexttype={selectedContext}
           placeholder="Search for legal documents, cases, people..."
-          onselect={handleSuggestionSelect}
-          onsearch={handleSearch}
+          on:select={handleSuggestionSelect}
+          on:search={handleSearch}
         />
       </div>
     </div>
@@ -237,7 +237,7 @@
 <FOAFModal
   bind:open={foafModalOpen}
   personid={data.personId}
-  onclose={() => foafModalOpen = false}
+  on:close={() => foafModalOpen = false}
 />
 
 <style>

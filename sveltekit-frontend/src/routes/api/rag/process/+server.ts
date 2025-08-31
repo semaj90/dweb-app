@@ -1,6 +1,7 @@
+import type { RequestHandler } from './$types';
+
 // RAG Process API - Cleaned imports (previously corrupted)
 import pdf from 'pdf-parse';
-import { json, type RequestHandler } from '@sveltejs/kit';
 import { db, documents, embeddings } from '$lib/server/database';
 import { v4 as uuidv4 } from 'uuid';
 import { writeFile, mkdir } from 'fs/promises';

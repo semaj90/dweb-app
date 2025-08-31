@@ -182,7 +182,7 @@ export class VectorOperationsService {
   static async semanticSearch(
     query: string,
     options: any = {},
-  ): Promise<unknown[]> {
+  ): Promise<any[]> {
     console.warn(
       "semanticSearch is a stub - implement with full pgvector integration",
     );
@@ -223,7 +223,7 @@ export class VectorOperationsService {
   static async findSimilarDocuments(
     documentId: string,
     options: any = {},
-  ): Promise<unknown[]> {
+  ): Promise<any[]> {
     console.warn(
       "findSimilarDocuments is a stub - implement with full similarity search",
     );

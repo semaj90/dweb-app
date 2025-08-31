@@ -1,9 +1,10 @@
 import { evidence, db } from "$lib/server/db";
 import path from "path";
-import type { RequestHandler } from "@sveltejs/kit";
 import { json } from "@sveltejs/kit";
 import { randomUUID } from "crypto";
 import { promises as fs } from "fs";
+import type { RequestHandler } from './$types';
+
 
 export const POST: RequestHandler = async ({ request, locals, url }) => {
   const user = locals.user;

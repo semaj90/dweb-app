@@ -902,7 +902,7 @@ export class NESGPUIntegration {
           documentClass: 'contract',
           aiGenerated: false
         },
-      } as unknown as LegalDocument & {
+      } as any as LegalDocument & {
         // Additional computed properties for the UI
         combinedScore: number;
         rankingScore: number;

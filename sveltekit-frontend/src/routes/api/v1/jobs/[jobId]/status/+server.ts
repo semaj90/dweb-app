@@ -1,10 +1,11 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Job Status Polling API - Real-time Job Progress Tracking
  * Provides polling endpoint for ingestion job status updates
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 import { redis } from '$lib/server/cache/redis-service';
 
 export interface JobStatus {

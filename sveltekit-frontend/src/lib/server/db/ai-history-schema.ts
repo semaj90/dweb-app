@@ -1,5 +1,5 @@
 import { pgTable, uuid, text, timestamp, jsonb, boolean, integer, decimal } from 'drizzle-orm/pg-core';
-import { relations } from 'drizzle-orm';
+import { relations } from 'drizzle-orm/relations';
 
 // AI History Schema for Legal AI Platform
 export const aiSessions = pgTable('ai_sessions', {

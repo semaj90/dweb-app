@@ -48,7 +48,7 @@
 
   async function runSystemHealthCheck() {
     console.log('🔍 Running comprehensive system health check...');
-    
+
     const healthChecks = [
       { name: 'postgresql', endpoint: '/api/test-database-persistence' },
       { name: 'redis', endpoint: '/api/v1/cluster/health' },
@@ -71,7 +71,7 @@
 
     // Protocol availability tests
     systemHealth.protocols.http = true; // Always available in browser
-    
+
     // Test WebSocket availability
     try {
       const ws = new WebSocket('ws://localhost:4222'); // NATS WebSocket
@@ -103,7 +103,7 @@
   async function runIntegrationTests() {
     isRunningTests = true;
     testResults = [];
-    
+
     const tests = [
       {
         name: 'Create Case via REST API',
@@ -199,7 +199,7 @@
           details: result.details,
           timestamp: new Date().toISOString()
         });
-        
+
         if (result.success) {
           systemHealth.integration.passed_tests++;
         } else {
@@ -223,7 +223,7 @@
   async function testProtocolStack() {
     const protocols = ['http', 'grpc', 'quic'];
     const results = [];
-    
+
     for (const protocol of protocols) {
       try {
         let endpoint = '';
@@ -238,7 +238,7 @@
             endpoint = '/api/v1/quic/metrics';
             break;
         }
-        
+
         const response = await fetch(endpoint);
         results.push({
           protocol,
@@ -255,7 +255,7 @@
         });
       }
     }
-    
+
     return results;
   }
 
@@ -295,7 +295,7 @@
   <section class="mb-8">
     <div class="bg-[#F7F6F2] border border-[#D1CFC7] p-6 rounded">
       <h2 class="text-2xl font-bold mb-4">🏥 SYSTEM HEALTH STATUS</h2>
-      
+
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         {#each Object.entries(systemHealth.services) as [service, status]}
           <div class="bg-[#EAE8E1] border border-[#D1CFC7] p-4 rounded">
@@ -343,15 +343,15 @@
       </div>
 
       <div class="flex gap-4">
-        <Button 
-          onclick={runSystemHealthCheck}
+        <Button
+          on:click={runSystemHealthCheck}
           class="bg-blue-600 text-white hover:bg-blue-700 font-bold px-4 py-2"
         >
           🔄 REFRESH HEALTH CHECK
         </Button>
-        
-        <Button 
-          onclick={runIntegrationTests}
+
+        <Button
+          on:click={runIntegrationTests}
           disabled={isRunningTests}
           class="bg-green-600 text-white hover:bg-green-700 font-bold px-4 py-2 disabled:opacity-50"
         >
@@ -366,11 +366,11 @@
     <section class="mb-8">
       <div class="bg-[#F7F6F2] border border-[#D1CFC7] p-6 rounded">
         <h2 class="text-2xl font-bold mb-4">📊 INTEGRATION TEST RESULTS</h2>
-        
+
         <div class="mb-4">
           <div class="text-sm font-bold">
-            PASSED: <span class="text-green-600">{systemHealth.integration.passed_tests}</span> | 
-            FAILED: <span class="text-red-600">{systemHealth.integration.failed_tests}</span> | 
+            PASSED: <span class="text-green-600">{systemHealth.integration.passed_tests}</span> |
+            FAILED: <span class="text-red-600">{systemHealth.integration.failed_tests}</span> |
             TOTAL: {systemHealth.integration.total_tests}
           </div>
           {#if systemHealth.integration.last_run}
@@ -406,7 +406,7 @@
   <section class="mb-8">
     <div class="bg-[#F7F6F2] border border-[#D1CFC7] p-6 rounded">
       <h2 class="text-2xl font-bold mb-4">🎮 COMPONENT INTEGRATION DEMOS</h2>
-      
+
       <!-- Bits UI Demo with API Integration -->
       <div class="mb-6">
         <h3 class="text-lg font-bold mb-3">Bits UI + API Integration</h3>
@@ -416,7 +416,7 @@
       <!-- File Upload with Full Stack Processing -->
       <div class="mb-6">
         <h3 class="text-lg font-bold mb-3">Enhanced File Upload (Multi-Protocol)</h3>
-        <SimpleFileUpload 
+        <SimpleFileUpload
           enableOCR={true}
           enableEmbedding={true}
           enableRAG={true}
@@ -431,7 +431,7 @@
   <section class="mb-8">
     <div class="bg-[#F7F6F2] border border-[#D1CFC7] p-6 rounded">
       <h2 class="text-2xl font-bold mb-4">📚 API ENDPOINTS & PROTOCOLS</h2>
-      
+
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <h3 class="text-lg font-bold mb-3">🌐 HTTP/REST Endpoints</h3>
@@ -443,7 +443,7 @@
             <div>GET /api/v1/cluster/health - Cluster status</div>
           </div>
         </div>
-        
+
         <div>
           <h3 class="text-lg font-bold mb-3">⚡ Advanced Protocols</h3>
           <div class="text-sm space-y-1 font-mono">
@@ -454,7 +454,7 @@
           </div>
         </div>
       </div>
-      
+
       <div class="mt-6">
         <h3 class="text-lg font-bold mb-3">🗄️ Database Integration</h3>
         <div class="text-sm space-y-1">

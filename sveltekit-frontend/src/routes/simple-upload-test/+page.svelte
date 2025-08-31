@@ -54,7 +54,7 @@
   <!-- Upload Section -->
   <div class="mb-8">
     <h2 class="text-xl font-semibold mb-4">File Upload & Processing</h2>
-    <SimpleFileUpload onuploadcomplete={handleUploadComplete} />
+    <SimpleFileUpload on:uploadcomplete={handleUploadComplete} />
   </div>
 
   <!-- Search Section -->
@@ -66,10 +66,10 @@
         bind:value={searchQuery}
         placeholder="Search uploaded documents..."
         class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        onkeydown={(e) => e.key === 'Enter' && performSearch()}
+        keydown={(e) => e.key === 'Enter' && performSearch()}
       />
       <button
-        onclick={performSearch}
+        click={performSearch}
         disabled={isSearching}
         class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
       >
@@ -120,13 +120,13 @@
     <h3 class="font-medium mb-2">Quick API Tests</h3>
     <div class="flex gap-2 flex-wrap">
       <button
-        onclick={() => fetch('/api/rag/status').then(r => r.json()).then(console.log)}
+        click={() => fetch('/api/rag/status').then(r => r.json()).then(console.log)}
         class="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
       >
         Test Status API
       </button>
       <button
-        onclick={() => fetch('/api/ai/embeddings').then(r => r.json()).then(console.log)}
+        click={() => fetch('/api/ai/embeddings').then(r => r.json()).then(console.log)}
         class="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600"
       >
         Test Embeddings API

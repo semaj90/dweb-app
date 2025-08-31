@@ -120,7 +120,7 @@
 				{#each navItems as item}
 					<a
 						href={item.href}
-						onclick={(e) => handleNavigation(item.href, e)}
+						click={(e) => handleNavigation(item.href, e)}
 						class={cn(
 							"nes-legal-priority-medium yorha-3d-button",
 							currentPath === item.href && "nes-legal-priority-high"
@@ -142,7 +142,7 @@
 						theme="yorha"
 						showFilters={false}
 						maxResults={15}
-						onselect={handleSearchSelect}
+						on:select={handleSearchSelect}
 					/>
 				</div>
 			{/if}
@@ -157,7 +157,7 @@
 						<!-- AI Search Button -->
 						<button
 							class="nes-legal-priority-high yorha-3d-button neural-sprite-active search-btn"
-							onclick={toggleSearchModal}
+							click={toggleSearchModal}
 							title="Advanced Search (Ctrl+K)"
 						>
 							<Search class="w-4 h-4" />
@@ -168,7 +168,7 @@
 						<div class="user-profile-section">
 							<button
 								class="user-avatar-btn yorha-3d-button"
-								onclick={() => goto('/profile')}
+								click={() => goto('/profile')}
 								title={`${auth.user?.firstName} ${auth.user?.lastName}`}
 							>
 								{#if userAvatarUrl}
@@ -176,7 +176,7 @@
 										src={userAvatarUrl}
 										alt="User Avatar"
 										class="user-avatar"
-										onerror={() => {
+										on:error={() => {
 											// Fallback to initials if image fails to load
 											userAvatarUrl = null;
 										}}
@@ -199,7 +199,7 @@
 						<!-- Logout Button -->
 						<button
 							class="nes-legal-priority-medium yorha-3d-button logout-btn"
-							onclick={() => handleAuth('logout')}
+							click={() => handleAuth('logout')}
 							title="Logout"
 						>
 							<LogOut class="w-4 h-4" />
@@ -212,7 +212,7 @@
 						<!-- Quick Search (limited) -->
 						<button
 							class="nes-legal-priority-medium yorha-3d-button search-btn"
-							onclick={toggleSearchModal}
+							click={toggleSearchModal}
 							title="Public Search"
 						>
 							<Search class="w-4 h-4" />
@@ -222,7 +222,7 @@
 						<!-- Login Button -->
 						<button
 							class="nes-legal-priority-high yorha-3d-button login-btn"
-							onclick={() => handleAuth('login')}
+							click={() => handleAuth('login')}
 						>
 							<LogIn class="w-4 h-4" />
 							<span class="hidden md:inline ml-2">LOGIN</span>
@@ -231,7 +231,7 @@
 						<!-- Register Button -->
 						<button
 							class="nes-legal-priority-critical yorha-3d-button register-btn"
-							onclick={() => handleAuth('register')}
+							click={() => handleAuth('register')}
 						>
 							<UserPlus class="w-4 h-4" />
 							<span class="hidden md:inline ml-2">REGISTER</span>
@@ -258,7 +258,7 @@
 
 <!-- Advanced Search Modal -->
 {#if showSearchModal}
-	<div class="search-modal-overlay" onclick={(e) => e.target === e.currentTarget && (showSearchModal = false)}>
+	<div class="search-modal-overlay" click={(e) => e.target === e.currentTarget && (showSearchModal = false)}>
 		<div class="search-modal yorha-3d-panel">
 			<div class="search-modal-header">
 				<h3 class="text-lg font-bold text-yellow-400">
@@ -266,7 +266,7 @@
 				</h3>
 				<button
 					class="close-btn"
-					onclick={() => showSearchModal = false}
+					click={() => showSearchModal = false}
 					aria-label="Close search"
 				>
 					×
@@ -282,7 +282,7 @@
 					theme="yorha"
 					showFilters={auth.isAuthenticated}
 					maxResults={auth.isAuthenticated ? 50 : 10}
-					onselect={handleSearchSelect}
+					on:select={handleSearchSelect}
 				/>
 
 				{#if !auth.isAuthenticated}
@@ -293,7 +293,7 @@
 						<div class="auth-buttons mt-3">
 							<button
 								class="nes-legal-priority-high yorha-3d-button"
-								onclick={() => { handleAuth('login'); showSearchModal = false; }}
+								click={() => { handleAuth('login'); showSearchModal = false; }}
 							>
 								Login for Full Access
 							</button>

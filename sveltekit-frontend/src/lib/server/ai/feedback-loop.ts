@@ -693,6 +693,5 @@ class FeedbackLoop {
 // Export singleton instance
 export const feedbackLoop = new FeedbackLoop();
 
-// Export types
-export type { FeedbackData, InteractionData, LearningMetrics };
+// Types are already exported as interfaces above
 

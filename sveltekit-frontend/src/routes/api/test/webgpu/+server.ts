@@ -1,8 +1,9 @@
+import type { RequestHandler } from './$types';
+
 // WebGPU/WebGL Integration Test API
 // Tests WebGPU polyfill and WebGL shader cache
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 
 export interface TestResult {
   test: string;

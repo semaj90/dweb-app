@@ -305,7 +305,7 @@ Both parties acknowledge they have read and agree to these terms.`,
             </label>
             <select 
               bind:value={selectedOperation}
-              on:change={onOperationChange}
+              change={onOperationChange}
               class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="processDocument">Legal Document Processing</option>

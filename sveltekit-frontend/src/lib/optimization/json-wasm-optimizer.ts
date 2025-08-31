@@ -61,7 +61,7 @@ class JSONWebAssemblyOptimizer extends EventEmitter {
         }
       });
 
-      this.wasmModule = instance.exports as unknown as WebAssemblyModule;
+      this.wasmModule = instance.exports as any as WebAssemblyModule;
       this.initialized = true;
       this.emit('wasm_initialized');
     } catch (error: any) {

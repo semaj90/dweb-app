@@ -340,8 +340,8 @@
         bind:value={searchInput}
         {placeholder}
         class="flex-1 bg-transparent outline-none text-lg {inputClasses.includes('text-') ? '' : 'text-current'}"
-        onfocus={() => showResults = true}
-        onkeydown={(e) => {
+        on:focus={() => showResults = true}
+        on:keydown={(e) => {
           if (e.key === 'Escape') {
             showResults = false;
             searchInput = '';
@@ -352,7 +352,7 @@
       <!-- Clear Button -->
       {#if searchInput}
         <button
-          onclick={clearSearch}
+          click={clearSearch}
           class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
           aria-label="Clear search"
         >
@@ -366,7 +366,7 @@
       {#if showFilters}
             <button
               class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-              onclick={() => {/* Toggle filters panel */}}
+              click={() => {/* Toggle filters panel */}}
               aria-label="Toggle search filters"
             >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -394,7 +394,7 @@
               class:bg-gray-700={!selectedCategories.includes(category.id) && theme === 'dark'}
               class:bg-black={!selectedCategories.includes(category.id) && theme === 'yorha'}
               class:bg-opacity-50={!selectedCategories.includes(category.id) && theme === 'yorha'}
-              onclick={() => toggleCategory(category.id)}
+              click={() => toggleCategory(category.id)}
             >
               <span>{category.icon}</span>
               <span>{category.label}</span>
@@ -422,7 +422,7 @@
             {#each recentSearches.slice(0, 5) as recent}
               <button
                 class="w-full text-left p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded flex items-center gap-2"
-                onclick={() => { searchInput = recent; performSearch(); }}
+                click={() => { searchInput = recent; performSearch(); }}
               >
                 <svg class="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -442,7 +442,7 @@
             {#each trendingSearches as trending}
               <button
                 class="px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full text-sm"
-                onclick={() => selectTrendingSearch(trending)}
+                click={() => selectTrendingSearch(trending)}
               >
                 {trending}
               </button>
@@ -460,7 +460,7 @@
           {#each results as result}
             <button
               class="w-full text-left p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg border-b border-current/10 last:border-b-0 transition-colors"
-              onclick={() => selectResult(result)}
+              click={() => selectResult(result)}
             >
               <div class="flex items-start gap-3">
                 <!-- Result Type Icon -->
@@ -505,7 +505,7 @@
             {#each suggestions as suggestion}
               <button
                 class="w-full text-left p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded flex items-center gap-2"
-                onclick={() => selectSuggestion(suggestion)}
+                click={() => selectSuggestion(suggestion)}
               >
                 <svg class="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>

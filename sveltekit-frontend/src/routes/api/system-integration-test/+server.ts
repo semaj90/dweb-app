@@ -1,7 +1,8 @@
+import type { RequestHandler } from './$types';
+
 // System Integration Test - Complete Health Check and Autosolve
 // Tests all system components including Context7, MCP, database orchestrator, and autosolve
 
-import { json, type RequestHandler } from '@sveltejs/kit';
 import { testContext7Pipeline, testDatabaseOperations, runFullIntegrationTest } from "$lib/services/comprehensive-database-orchestrator";
 
 // GET /api/system-integration-test - Run comprehensive system test

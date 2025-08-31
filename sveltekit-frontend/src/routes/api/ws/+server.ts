@@ -1,7 +1,8 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { Server } from 'socket.io';
 import { dev } from "$app/environment";
 import Redis from 'ioredis';
+import type { RequestHandler } from './$types';
+
 
 // WebSocket server for real-time updates
 let io: Server | null = null;
@@ -103,9 +104,9 @@ function setupRedisSubscriptions() {
   if (!redis || !io) return;
 
   // Subscribe to job progress updates
-  redis.psubscribe('progress:*', 'result:*', 'error:*');
+  redis!.psubscribe('progress:*', 'result:*', 'error:*');
 
-  redis.on('pmessage', (pattern, channel, message) => {
+  redis!.on('pmessage', (pattern, channel, message) => {
     try {
       const data = JSON.parse(message);
       
@@ -168,7 +169,7 @@ async function trackUserAttention(socketId: string, data: any): Promise<any> {
   };
 
   // Store in Redis with expiration (1 hour)
-  await redis.setex(
+  await redis!.setex(
     `attention:${socketId}:${Date.now()}`,
     3600,
     JSON.stringify(attentionEvent)
@@ -294,7 +295,7 @@ export function closeWebSocket() {
     io = null;
   }
   if (redis) {
-    redis.disconnect();
+    redis!.disconnect();
     redis = null;
   }
 }

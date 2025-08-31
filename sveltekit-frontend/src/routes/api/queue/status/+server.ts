@@ -1,7 +1,8 @@
 
-import { type RequestHandler,  json } from '@sveltejs/kit';
 import { URL } from "url";
 import { getQueueStats, getJobStatus, cancelJob, clearCompletedJobs } from "$lib/services/queue-service";
+import type { RequestHandler } from './$types';
+
 
 /**
  * Get overall queue statistics

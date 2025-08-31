@@ -1,5 +1,5 @@
-import type { RequestHandler } from '@sveltejs/kit';
-import type { RequestHandler } from "@sveltejs/kit";
+
+import type { RequestHandler } from './$types';
 
 type ServiceMetrics = {
   total: number;

@@ -1,96 +1,109 @@
 <script lang="ts">
   import Button from '$lib/components/ui/MeltButton.svelte';
-import { onMount } from 'svelte';
+  import { onMount } from 'svelte';
 
-let response = $state('');
-let loading = $state(false);
-let error = $state('');
-let systemStatus = $state({ gpu: false, ollama: false, synthesis: false });
+  // Use plain reactive variables instead of undefined $state helper
+  let response: string = '';
+  let loading: boolean = false;
+  let error: string = '';
+  let systemStatus = { gpu: false, ollama: false, synthesis: false };
 
-async function checkSystemStatus() {
-  try {
-    const res = await fetch('/api/health');
-    const data = await res.json();
-    systemStatus = {
-      gpu: data.services.gpu === 'accelerated',
-      ollama: data.services.ollama === 'healthy',
-      synthesis: res.ok
-    };
-  } catch (e) {
-    error = 'System health check failed';
-  }
-}
-
-async function synthesize(type: 'correlation' | 'timeline' | 'compare' | 'merge') {
-  loading = true;
-  error = '';
-  
-  try {
-    const res = await fetch('/api/evidence/synthesize', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        type, 
-        evidenceIds: ['EVD-001', 'EVD-002'],
-        caseId: 'CASE-2024-001',
-        title: `${type} synthesis test`
-      })
-    });
-    
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}`);
+  async function checkSystemStatus() {
+    try {
+      const res = await fetch('/api/health');
+      const data = await res.json();
+      systemStatus = {
+        gpu: data?.services?.gpu === 'accelerated',
+        ollama: data?.services?.ollama === 'healthy',
+        synthesis: res.ok
+      };
+    } catch (e: any) {
+      error = 'System health check failed';
     }
-    
-    const data = await res.json();
-    response = JSON.stringify(data, null, 2);
-  } catch (e) {
-    error = e.message;
-    response = '';
-  } finally {
-    loading = false;
   }
-}
 
-async function testGemma3() {
-  loading = true;
-  try {
-    const res = await fetch('/api/ai/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        message: 'What are the key elements of contract law?',
-        model: 'gemma3-legal'
-      })
-    });
-    const data = await res.json();
-    response = data.response || data.error;
-  } catch (e) {
-    error = e.message;
-  } finally {
-    loading = false;
+  async function synthesize(type: 'correlation' | 'timeline' | 'compare' | 'merge') {
+    loading = true;
+    error = '';
+
+    try {
+      const res = await fetch('/api/evidence/synthesize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type,
+          evidenceIds: ['EVD-001', 'EVD-002'],
+          caseId: 'CASE-2024-001',
+          title: `${type} synthesis test`
+        })
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+
+      const data = await res.json();
+      response = JSON.stringify(data, null, 2);
+    } catch (e: any) {
+      error = e?.message ?? String(e);
+      response = '';
+    } finally {
+      loading = false;
+    }
   }
-}
 
-onMount(checkSystemStatus);
+  async function testGemma3() {
+    loading = true;
+    try {
+      const res = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: 'What are the key elements of contract law?',
+          model: 'gemma3-legal'
+        })
+      });
+      const data = await res.json();
+      response = data?.response ?? data?.error ?? JSON.stringify(data);
+    } catch (e: any) {
+      error = e?.message ?? String(e);
+    } finally {
+      loading = false;
+    }
+  }
+
+  onMount(checkSystemStatus);
 </script>
 
 <div class="p-6 max-w-4xl mx-auto">
   <h1 class="text-3xl font-bold mb-6">AI Assistant - Production Interface</h1>
-  
+
   <!-- System Status -->
   <div class="bg-gray-900 p-4 rounded-lg mb-6">
     <h2 class="text-xl mb-3">System Status</h2>
     <div class="grid grid-cols-3 gap-4">
       <div class="flex items-center gap-2">
-        <div class="w-3 h-3 rounded-full {systemStatus.gpu ? 'bg-green-500' : 'bg-red-500'}"></div>
+        <div
+          class="w-3 h-3 rounded-full"
+          class:bg-green-500={systemStatus.gpu}
+          class:bg-red-500={!systemStatus.gpu}
+        ></div>
         <span>GPU: {systemStatus.gpu ? 'Accelerated' : 'CPU Fallback'}</span>
       </div>
       <div class="flex items-center gap-2">
-        <div class="w-3 h-3 rounded-full {systemStatus.ollama ? 'bg-green-500' : 'bg-red-500'}"></div>
+        <div
+          class="w-3 h-3 rounded-full"
+          class:bg-green-500={systemStatus.ollama}
+          class:bg-red-500={!systemStatus.ollama}
+        ></div>
         <span>Ollama: {systemStatus.ollama ? 'Active' : 'Offline'}</span>
       </div>
       <div class="flex items-center gap-2">
-        <div class="w-3 h-3 rounded-full {systemStatus.synthesis ? 'bg-green-500' : 'bg-red-500'}"></div>
+        <div
+          class="w-3 h-3 rounded-full"
+          class:bg-green-500={systemStatus.synthesis}
+          class:bg-red-500={!systemStatus.synthesis}
+        ></div>
         <span>Synthesis: {systemStatus.synthesis ? 'Ready' : 'Error'}</span>
       </div>
     </div>
@@ -100,47 +113,48 @@ onMount(checkSystemStatus);
   <div class="bg-gray-800 p-4 rounded-lg mb-6">
     <h2 class="text-xl mb-3">Evidence Synthesis</h2>
     <div class="grid grid-cols-4 gap-3">
-      <Button.Root 
+      <Button
         class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded"
         on:click={() => synthesize('correlation')}
+        {disabled}
         disabled={loading}
       >
         Correlation
-      </Button.Root>
-      <Button.Root 
+      </Button>
+      <Button
         class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded"
         on:click={() => synthesize('timeline')}
         disabled={loading}
       >
         Timeline
-      </Button.Root>
-      <Button.Root 
+      </Button>
+      <Button
         class="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded"
         on:click={() => synthesize('compare')}
         disabled={loading}
       >
         Compare
-      </Button.Root>
-      <Button.Root 
+      </Button>
+      <Button
         class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded"
         on:click={() => synthesize('merge')}
         disabled={loading}
       >
         Merge
-      </Button.Root>
+      </Button>
     </div>
   </div>
 
   <!-- Gemma3 Legal Test -->
   <div class="bg-gray-800 p-4 rounded-lg mb-6">
     <h2 class="text-xl mb-3">Gemma3 Legal AI</h2>
-    <Button.Root 
+    <Button
       class="bg-red-600 hover:bg-red-700 px-6 py-2 rounded"
       on:click={testGemma3}
       disabled={loading}
     >
       Test Legal Query
-    </Button.Root>
+    </Button>
   </div>
 
   <!-- Response Display -->
@@ -159,18 +173,18 @@ onMount(checkSystemStatus);
 
   <!-- System Actions -->
   <div class="mt-6 flex gap-3">
-    <Button.Root 
+    <Button
       class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded"
       on:click={checkSystemStatus}
     >
       Refresh Status
-    </Button.Root>
-    <Button.Root 
+    </Button>
+    <Button
       class="bg-orange-600 hover:bg-orange-700 px-4 py-2 rounded"
       on:click={() => window.open('/api/health', '_blank')}
     >
       Health Check
-    </Button.Root>
+    </Button>
   </div>
 </div>
 

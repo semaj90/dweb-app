@@ -92,7 +92,7 @@
 		onkeyup
 	}: Props = $props();
 	
-	let textareaClass = $derived(cn(textareaVariants({ variant, size }), className));
+	let textareaClass = $derived(cn(textareaVariants({ variant, size }), class));
 	
 	type $$Props = Props;
 </script>

@@ -1,7 +1,8 @@
+import type { RequestHandler } from './$types';
+
 // Enhanced NATS API Integration
 // Production-ready NATS messaging endpoints with full 17-subject pattern support
 
-import { json, type RequestHandler } from '@sveltejs/kit';
 import { EnhancedNATSMessagingService } from '$lib/services/enhanced-nats-messaging';
 import type { 
 	LegalAIMessage, 

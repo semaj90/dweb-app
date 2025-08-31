@@ -68,7 +68,7 @@
 		onclick
 	}: Props = $props();
 	
-	let cardClass = $derived(cn(cardVariants({ variant, size }), className));
+	let cardClass = $derived(cn(cardVariants({ variant, size }), class));
 	
 	type $$Props = Props;
 </script>
@@ -79,7 +79,7 @@
 	data-testid={testId || "melt-card"}
 	{onclick}
 	tabindex={onclick ? 0 : undefined}
-	on:keydown={onclick ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onclick?.(e as any); } } : undefined}
+	keydown={onclick ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onclick?.(e as any); } } : undefined}
 >
 	<!-- Header -->
 	{#if header}

@@ -1,4 +1,5 @@
-import type { RequestHandler } from '$lib/types/server';
+
+import type { RequestHandler } from './$types';
 
 /**
  * Vector Intelligence Search API Endpoint

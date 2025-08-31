@@ -1,4 +1,5 @@
-import { type RequestHandler,  error } from '@sveltejs/kit';
+
+import type { RequestHandler } from './$types';
 
 const OLLAMA_URL = import.meta.env.OLLAMA_URL || 'http://localhost:11434';
 const OLLAMA_MODEL = import.meta.env.OLLAMA_MODEL || 'gemma3-legal';

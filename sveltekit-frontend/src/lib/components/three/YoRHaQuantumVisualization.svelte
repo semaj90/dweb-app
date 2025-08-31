@@ -257,25 +257,25 @@
       <div class="control-buttons">
         <button 
           class="quantum-btn {secretFeatures.quantumDebugEnabled ? 'active' : ''}"
-          onclick={toggleQuantumMode}
+          click={toggleQuantumMode}
         >
           ⚛️ Quantum
         </button>
         <button 
           class="quantum-btn {secretFeatures.aiWhispererMode ? 'active' : ''}"
-          onclick={toggleAIWhisperer}
+          click={toggleAIWhisperer}
         >
           🧠 Consciousness
         </button>
         <button 
           class="quantum-btn {secretFeatures.matrixMode ? 'active' : ''}"
-          onclick={toggleMatrixMode}
+          click={toggleMatrixMode}
         >
           🕶️ Matrix
         </button>
         <button 
           class="quantum-btn"
-          onclick={captureQuantumState}
+          click={captureQuantumState}
         >
           📸 Capture
         </button>

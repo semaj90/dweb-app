@@ -1,4 +1,5 @@
-import type { RequestHandler } from '@sveltejs/kit';
+
+import type { RequestHandler } from './$types';
 
 // Minimal placeholder implementation for legal ingest.
 // Accepts multipart form-data with pdfFiles[] and returns synthetic processing response.
@@ -47,7 +48,6 @@ export const POST: RequestHandler = async ({ request }) => {
  */
 
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 import pdf from 'pdf-parse';
 import crypto from 'crypto';
 import { v4 as uuidv4 } from 'uuid';

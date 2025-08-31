@@ -1,9 +1,10 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Session Validation API Endpoint
  * GET /api/auth/session - Check current session status
  */
 
-import { json, type RequestHandler } from '@sveltejs/kit';
 import { ExistingUserAuthService as UserAuthService } from '$lib/server/db/existing-user-operations.js';
 import { dev } from '$app/environment';
 

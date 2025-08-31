@@ -1,4 +1,5 @@
-import type { RequestHandler } from '$lib/types/server';
+
+import type { RequestHandler } from './$types';
 
 // API endpoint for vector search operations
 import VectorService from "$lib/server/services/vector-service";

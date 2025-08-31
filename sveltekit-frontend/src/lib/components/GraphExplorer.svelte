@@ -367,7 +367,7 @@
         disabled={isSearching}
       />
       <button 
-        on:click={handleSearch}
+        click={handleSearch}
         disabled={isSearching || !searchQuery.trim()}
         class="search-btn"
       >
@@ -376,13 +376,13 @@
     </div>
     
     <div class="actions">
-      <button on:click={addSampleData} class="action-btn">
+      <button click={addSampleData} class="action-btn">
         Add Sample Data
       </button>
-      <button on:click={() => updatePerformanceStats()} class="action-btn">
+      <button click={() => updatePerformanceStats()} class="action-btn">
         Refresh Stats
       </button>
-      <button on:click={clearAllData} class="action-btn danger">
+      <button click={clearAllData} class="action-btn danger">
         Clear All
       </button>
     </div>
@@ -394,7 +394,7 @@
       <h3>Interactive Graph ({nodes.length} nodes)</h3>
       <canvas 
         bind:this={canvas}
-        on:click={handleCanvasInteraction}
+        click={handleCanvasInteraction}
         width="800"
         height="600"
         class="graph-canvas"

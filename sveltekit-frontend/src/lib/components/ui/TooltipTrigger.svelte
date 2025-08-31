@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { $props } from 'svelte';
+  // runtime helper $props() is provided by the runes compiler; do not import it.
 
   interface Props {
     asChild?: unknown;
@@ -13,7 +13,7 @@
 
 
 
-
+  // `class` is reserved; use `className` instead
   let className = "";
 </script>
 

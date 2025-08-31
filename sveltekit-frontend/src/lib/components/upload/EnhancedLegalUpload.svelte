@@ -411,18 +411,18 @@
         class:is-warning={processingStage}
         role="button"
         tabindex="0"
-        ondrop={onDrop}
-        ondragover={onDragOver}
-        ondragleave={onDragLeave}
-        on:click={() => document.getElementById('file-input')?.click()}
-        onkeydown={(e) => e.key === 'Enter' && document.getElementById('file-input')?.click()}
+        on:drop={onDrop}
+        on:dragover={onDragOver}
+        on:dragleave={onDragLeave}
+        click={() => document.getElementById('file-input')?.click()}
+        on:keydown={(e) => e.key === 'Enter' && document.getElementById('file-input')?.click()}
       >
         <input
           id="file-input"
           type="file"
           name="file"
           accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.tiff"
-          onchange={onFileChange}
+          change={onFileChange}
           style="display: none"
         />
 
@@ -437,7 +437,7 @@
               <div class="file-details">
                 <div class="file-name">{selectedFile.name}</div>
                 <div class="file-size">{formatFileSize(selectedFile.size)}</div>
-                <button type="button" class="remove-file" on:click={removeFile}>
+                <button type="button" class="remove-file" click={removeFile}>
                   ✕ Remove
                 </button>
               </div>

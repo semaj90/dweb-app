@@ -100,7 +100,7 @@
           <button
             type="button"
             class="space-y-4"
-            on:click={() => handleClose(notification)}
+            click={() => handleClose(notification)}
           >
             <span class="space-y-4">Dismiss</span>
             <iconify-icon icon="ph:x" class="space-y-4"></iconify-icon>

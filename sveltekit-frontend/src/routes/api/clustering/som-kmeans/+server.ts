@@ -1,4 +1,5 @@
-import { type RequestHandler,  json, error } from '@sveltejs/kit';
+
+import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request }) => {
   try {
@@ -199,7 +200,7 @@ function generateFeatureLabels(document: any): string[] {
   return labels;
 }
 
-async function performKMeansClustering(features: any, k: number): Promise<unknown[]> {
+async function performKMeansClustering(features: any, k: number): Promise<any[]> {
   const vectors = features.vectors;
   
   // Initialize centroids randomly

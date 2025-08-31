@@ -1,8 +1,9 @@
 
+import type { RequestHandler } from './$types';
+
 // routes/api/ai-synthesizer/stream/[streamId]/+server.ts
 // Server-Sent Events endpoint for streaming AI synthesis updates
 
-import { type RequestHandler,  error } from '@sveltejs/kit';
 import { streamingService } from "$lib/server/ai/streaming-service";
 
 export const GET: RequestHandler = async ({ params, request }) => {

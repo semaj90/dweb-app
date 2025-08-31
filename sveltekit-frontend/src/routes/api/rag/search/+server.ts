@@ -1,4 +1,5 @@
-import type { RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+
 /**
  * RAG Search API - Semantic search across processed documents
  */

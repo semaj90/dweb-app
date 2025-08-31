@@ -1,10 +1,13 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Multi-Protocol API Gateway Integration
  * SvelteKit frontend integration with enhanced multi-protocol gateway
  * Provides intelligent routing and fallback capabilities
  */
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+
+import { ensureError } from '$lib/utils/ensure-error';
 
 // Protocol types and priorities
 type ProtocolType = 'quic' | 'grpc' | 'http' | 'websocket';
@@ -129,10 +132,10 @@ export const GET: RequestHandler = async ({ url }) => {
 
 	} catch (err: any) {
 		console.error('Multi-protocol gateway status check failed:', err);
-		error(500, {
+		error(500, ensureError({
 			message: 'Failed to check gateway status',
 			error: err instanceof Error ? err.message : 'Unknown error'
-		});
+		}));
 	}
 };
 
@@ -159,10 +162,10 @@ export const POST: RequestHandler = async ({ request, url }) => {
 
 	} catch (err: any) {
 		console.error('Multi-protocol request failed:', err);
-		error(500, {
+		error(500, ensureError({
 			message: 'Multi-protocol request failed',
 			error: err instanceof Error ? err.message : 'Unknown error'
-		});
+		}));
 	}
 };
 
@@ -195,10 +198,10 @@ export const PUT: RequestHandler = async ({ request }) => {
 
 	} catch (err: any) {
 		console.error('Gateway configuration update failed:', err);
-		error(500, {
+		error(500, ensureError({
 			message: 'Configuration update failed',
 			error: err instanceof Error ? err.message : 'Unknown error'
-		});
+		}));
 	}
 };
 
@@ -212,7 +215,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
 		const endpoint = pathParts[pathParts.length - 1];
 
 		if (!service || !endpoint) {
-			error(400, { message: 'Service and endpoint are required' });
+			error(400, ensureError({ message: 'Service and endpoint are required' }));
 		}
 
 		const response = await fetch(
@@ -239,10 +242,10 @@ export const DELETE: RequestHandler = async ({ url }) => {
 
 	} catch (err: any) {
 		console.error('Circuit breaker reset failed:', err);
-		error(500, {
+		error(500, ensureError({
 			message: 'Circuit breaker reset failed',
 			error: err instanceof Error ? err.message : 'Unknown error'
-		});
+		}));
 	}
 };
 

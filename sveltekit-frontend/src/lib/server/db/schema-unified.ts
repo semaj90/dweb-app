@@ -22,7 +22,7 @@ import {
 // import { vector } from 'drizzle-orm/pg-vector';
 const vector = (name: string, config: { dimensions: number }) => 
   text(name); // Fallback to text for now, will be converted to vector in SQL
-import { relations } from 'drizzle-orm';
+import { relations } from 'drizzle-orm/relations';
 
 // === FOUNDATIONAL TABLES ===
 

@@ -222,7 +222,7 @@
               id="evidence_type"
               disabled={$submitting}
               bind:value={$form.evidence_type}
-              onchange={onEvidenceTypeChange}
+              change={onEvidenceTypeChange}
             >
               <option value="UNKNOWN">🔍 Auto-detect from file</option>
               <option value="PDF">📄 PDF Document</option>
@@ -247,9 +247,9 @@
             <div
               class="nes-container {dragOver ? 'is-success' : ''} {$errors.file ? 'is-error' : ''}"
               style="padding: 30px; text-align: center; cursor: pointer;"
-              ondragover={onDragOver}
-              ondragleave={onDragLeave}
-              ondrop={onDrop}
+              on:dragover={onDragOver}
+              on:dragleave={onDragLeave}
+              on:drop={onDrop}
             >
               {#if selectedFile}
                 <div class="space-y-4">
@@ -270,7 +270,7 @@
                   
                   <button
                     type="button"
-                    onclick={() => { selectedFile = null; filePreview = null; metadata = null; }}
+                    click={() => { selectedFile = null; filePreview = null; metadata = null; }}
                     class="text-sm text-red-600 hover:text-red-800"
                   >
                     Remove file
@@ -291,7 +291,7 @@
                         id="file"
                         class="sr-only"
                         disabled={$submitting}
-                        onchange={onFileChange}
+                        change={onFileChange}
                       />
                     </label>
                   </div>
@@ -508,7 +508,7 @@
         <div style="text-align: center; margin: 20px 0;">
           <button
             type="button"
-            onclick={() => history.back()}
+            click={() => history.back()}
             disabled={$submitting}
             class="nes-btn"
           >

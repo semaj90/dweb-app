@@ -1,3 +1,5 @@
+import type { RequestHandler } from './$types';
+
 /**
  * QUIC Vector Proxy API - High-Performance Vector Operations
  * Provides vector search with intelligent caching and multi-backend routing
@@ -5,7 +7,8 @@
  * Backends: Qdrant (6333), pgvector via Enhanced RAG (8094)
  */
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+
+import { ensureError } from '$lib/utils/ensure-error';
 import { vectorOperations, type VectorSearchQuery } from '$lib/server/db/vector-operations.js';
 import { goServiceManager } from '$lib/services/go-microservice-client.js';
 
@@ -100,7 +103,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
 
     // Validate search query
     if (!searchQuery.query && !searchQuery.embedding) {
-      error(400, { message: 'Either query text or embedding vector is required' });
+      error(400, ensureError({ message: 'Either query text or embedding vector is required' }));
     }
 
     // Determine target URL
@@ -235,10 +238,10 @@ export const POST: RequestHandler = async ({ request, url }) => {
 
   } catch (err: any) {
     console.error('QUIC Vector search error:', err);
-    error(500, {
+    error(500, ensureError({
       message: 'Vector search failed',
       error: err instanceof Error ? err.message : 'Unknown error'
-    });
+    }));
   }
 };
 
@@ -280,10 +283,10 @@ export const DELETE: RequestHandler = async ({ url }) => {
 
   } catch (err: any) {
     console.error('Vector cache clear error:', err);
-    error(500, {
+    error(500, ensureError({
       message: 'Cache clear failed',
       error: err instanceof Error ? err.message : 'Unknown error'
-    });
+    }));
   }
 };
 
@@ -296,11 +299,11 @@ export const PUT: RequestHandler = async ({ request }) => {
 
     // Validate configuration
     if (config.cacheTTL && (config.cacheTTL < 10 || config.cacheTTL > 3600)) {
-      error(400, { message: 'Cache TTL must be between 10 and 3600 seconds' });
+      error(400, ensureError({ message: 'Cache TTL must be between 10 and 3600 seconds' }));
     }
 
     if (config.maxCacheSize && (config.maxCacheSize < 10 || config.maxCacheSize > 10000)) {
-      error(400, { message: 'Max cache size must be between 10 and 10000' });
+      error(400, ensureError({ message: 'Max cache size must be between 10 and 10000' }));
     }
 
     // Update configuration (in a real implementation, this would be persisted)
@@ -318,9 +321,9 @@ export const PUT: RequestHandler = async ({ request }) => {
 
   } catch (err: any) {
     console.error('Vector proxy configuration update failed:', err);
-    error(500, {
+    error(500, ensureError({
       message: 'Configuration update failed',
       error: err instanceof Error ? err.message : 'Unknown error'
-    });
+    }));
   }
 };

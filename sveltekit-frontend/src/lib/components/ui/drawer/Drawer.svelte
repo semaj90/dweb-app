@@ -28,9 +28,9 @@
     role="dialog"
     aria-modal="true"
     aria-label={title ? title : "Drawer"}
-    on:click={handleBackdropClick}
+    click={handleBackdropClick}
   >
-    <div class="drawer drawer-{size} drawer-{side}" on:click|stopPropagation>
+    <div class="drawer drawer-{size} drawer-{side}" click|stopPropagation>
       <div class="drawer-header">
         <div>
           {#if title}

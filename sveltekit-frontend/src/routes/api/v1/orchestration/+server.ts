@@ -1,7 +1,8 @@
+import type { RequestHandler } from './$types';
+
 // Comprehensive Service Orchestration System
 // Manages all 37 Go binaries with intelligent routing and health monitoring
 
-import { json, type RequestHandler } from '@sveltejs/kit';
 import { ServiceOrchestrator } from '$lib/services/service-orchestrator';
 import type { 
 	ServiceConfig, 

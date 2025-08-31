@@ -182,7 +182,7 @@
           class="flex-1"
         />
         {#if searchQuery}
-          <Button onclick={clearSearch} variant="outline" size="sm">
+          <Button on:click={clearSearch} variant="outline" size="sm">
             Clear
           </Button>
         {/if}
@@ -196,7 +196,7 @@
           <div class="space-y-2 max-h-60 overflow-y-auto">
             {#each searchResults as result}
               <button
-                onclick={() => selectEvidence(result)}
+                click={() => selectEvidence(result)}
                 class="w-full text-left p-3 rounded-md border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               >
                 <div class="flex justify-between items-start">
@@ -253,11 +253,11 @@
         </div>
 
         <div class="flex gap-2">
-          <Button onclick={analyzeWithAI} disabled={isProcessing} class="flex-1">
+          <Button on:click={analyzeWithAI} disabled={isProcessing} class="flex-1">
             <Sparkles class="w-4 h-4 mr-2" />
             {isProcessing ? 'Analyzing...' : 'Analyze with AI'}
           </Button>
-          <Button onclick={generateInsights} disabled={isProcessing} variant="outline">
+          <Button on:click={generateInsights} disabled={isProcessing} variant="outline">
             Generate Insights
           </Button>
         </div>
@@ -322,7 +322,7 @@
             <div class="space-y-2">
               {#each aiInsights.connections as connection}
                 <button
-                  onclick={() => selectConnection(connection)}
+                  click={() => selectConnection(connection)}
                   class="w-full text-left p-3 rounded-md border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                 >
                   <p class="font-medium text-gray-900 dark:text-white">
@@ -346,7 +346,7 @@
             <div class="space-y-2">
               {#each aiInsights.similarEvidence as similar}
                 <button
-                  onclick={() => selectEvidence(similar)}
+                  click={() => selectEvidence(similar)}
                   class="w-full text-left p-3 rounded-md border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                 >
                   <p class="font-medium text-gray-900 dark:text-white">

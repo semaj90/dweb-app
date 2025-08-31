@@ -5,7 +5,8 @@
 
 import { Client as MinIOClient, type BucketItem, type ItemBucketMetadata } from 'minio';
 import { extname } from 'path';
-import { randomUUID } from 'crypto';
+// Dynamic import for crypto to prevent browser leakage
+// import { randomUUID } from 'crypto';
 
 // MinIO configuration - following Redis client pattern for authentication
 const MINIO_CONFIG = {
@@ -60,7 +61,7 @@ export interface UploadResult {
 
 export class MinIOService {
   private static instance: MinIOService;
-  private client: MinIOClient;
+  private client: InstanceType<typeof MinIOClient>;
   private isInitialized = false;
 
   constructor() {
@@ -150,6 +151,8 @@ export class MinIOService {
     try {
       const fileExtension = extname(originalName).toLowerCase();
       const bucket = options.bucket || BUCKETS.DOCUMENTS;
+      // Dynamic import for server-side crypto to prevent browser leakage
+      const { randomUUID } = await import('crypto');
       const fileId = randomUUID();
       const fileName = `${fileId}${fileExtension}`;
 

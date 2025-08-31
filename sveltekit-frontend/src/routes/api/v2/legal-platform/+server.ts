@@ -1,3 +1,5 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Legal AI Platform API Router v2
  * Centralized endpoint routing to Go microservices for the full-stack legal AI platform
@@ -5,10 +7,9 @@
  */
 
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 import { db } from '$lib/server/db/drizzle';
 import { cases, evidence, criminals, legalDocuments } from '$lib/server/db/unified-schema';
-import { eq, and, or, desc, asc } from 'drizzle-orm';
+import { eq, and, or, desc, asc } from '$lib/server/db/index';
 import { createId } from '@paralleldrive/cuid2';
 
 // Go Microservice Configuration

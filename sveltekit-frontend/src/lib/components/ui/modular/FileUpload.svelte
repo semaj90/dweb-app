@@ -44,7 +44,7 @@
     accept = '*/*',
     maxFiles = 10,
     maxSize = 10 * 1024 * 1024, // 10MB
-    class: className,
+    class: class,
     disabled = false,
     files = $bindable([]),
     onfileschange,
@@ -82,7 +82,7 @@
       compoundVariants: [
         {
           variant: 'yorha',
-          className: 'text-yellow-400 font-mono'
+          class: 'text-yellow-400 font-mono'
         }
       ],
       defaultVariants: {
@@ -98,7 +98,7 @@
       uploadVariants({ variant, size }),
       isDragOver && 'border-primary-500 bg-primary-50 dark:bg-primary-900/20',
       disabled && 'opacity-50 cursor-not-allowed',
-      className
+      class
     )
   );
 
@@ -228,10 +228,10 @@
   <!-- Upload Drop Zone -->
   <div
     class={uploadClass}
-    ondragover={handleDragOver}
-    ondragleave={handleDragLeave}
-    ondrop={handleDrop}
-    onclick={handleClick}
+    on:dragover={handleDragOver}
+    on:dragleave={handleDragLeave}
+    on:drop={handleDrop}
+    click={handleClick}
     role="button"
     tabindex="0"
     aria-label="File upload area"
@@ -244,7 +244,7 @@
       {multiple}
       {disabled}
       class="sr-only"
-      onchange={handleInputChange}
+      change={handleInputChange}
     />
     
     <div class="flex flex-col items-center justify-center text-center">
@@ -326,7 +326,7 @@
               <button
                 type="button"
                 class="p-1 text-gray-400 hover:text-red-500 transition-colors"
-                onclick={() => removeFile(file.id)}
+                click={() => removeFile(file.id)}
                 aria-label="Remove file"
               >
                 <div class="i-lucide-x w-4 h-4" aria-hidden="true"></div>

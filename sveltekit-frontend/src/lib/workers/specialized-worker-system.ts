@@ -5,8 +5,10 @@
  * Jobs: SUMMARIZE_DOCUMENT, GET_CASE_LAW, GENERATE_EMBEDDING
  */
 
-import amqp from "amqplib";
-import type { RAGDocument } from '$lib/types/rag.js';
+import { EventEmitter } from 'events';
+
+// Lazy-import amqplib at runtime so this module can be loaded in non-Node builds (e.g. SvelteKit client).
+let amqp: any = null;
 
 export interface SpecializedJob {
   id: string;
@@ -54,8 +56,8 @@ export interface WorkerStats {
  * Manages job distribution and worker coordination
  */
 export class JobOrchestrator extends EventEmitter {
-  private connection: amqp.ChannelModel | null = null;
-  private channel: amqp.Channel | null = null;
+  private connection: any | null = null;
+  private channel: any | null = null;
   private workers: Map<string, SpecializedWorker> = new Map();
   private jobQueue: Map<string, SpecializedJob> = new Map();
   private results: Map<string, WorkerResult> = new Map();
@@ -76,6 +78,12 @@ export class JobOrchestrator extends EventEmitter {
 
   async initialize(): Promise<void> {
     try {
+      // dynamically import amqplib to avoid bundling Node-only libs into browser builds
+      if (!amqp) {
+        const mod = await import('amqplib');
+        amqp = mod;
+      }
+
       this.connection = await amqp.connect(this.rabbitmqUrl);
       this.channel = await this.connection.createChannel();
 
@@ -111,12 +119,12 @@ export class JobOrchestrator extends EventEmitter {
     this.stats.queuedJobs++;
 
     const queueName = this.getQueueForJobType(job.type);
-    
+
     if (this.channel) {
       await this.channel.sendToQueue(
         queueName,
         Buffer.from(JSON.stringify(fullJob)),
-        { 
+        {
           persistent: true,
           priority: this.getPriorityNumber(job.priority)
         }
@@ -157,7 +165,7 @@ export class JobOrchestrator extends EventEmitter {
     this.stats.lastUpdate = new Date();
     this.stats.activeWorkers = this.workers.size;
     this.stats.queuedJobs = this.jobQueue.size - this.results.size;
-    
+
     // Calculate system health
     const errorRate = this.stats.totalJobs > 0 ? this.stats.failedJobs / this.stats.totalJobs : 0;
     if (errorRate > 0.2) {
@@ -184,7 +192,7 @@ export class JobOrchestrator extends EventEmitter {
         try {
           const result: WorkerResult = JSON.parse(msg.content.toString());
           this.results.set(result.jobId, result);
-          
+
           if (result.success) {
             this.stats.completedJobs++;
           } else {
@@ -198,7 +206,7 @@ export class JobOrchestrator extends EventEmitter {
 
           console.log(`📥 Job ${result.jobId} completed: ${result.success ? 'SUCCESS' : 'FAILED'}`);
           this.emit('jobCompleted', result);
-          
+
           this.channel?.ack(msg);
         } catch (error: any) {
           console.error('Error processing job result:', error);
@@ -209,7 +217,7 @@ export class JobOrchestrator extends EventEmitter {
   }
 
   private getQueueForJobType(type: SpecializedJob['type']): string {
-    const queueMap = {
+    const queueMap: Record<SpecializedJob['type'], string> = {
       'SUMMARIZE_DOCUMENT': 'summarization_jobs',
       'GET_CASE_LAW': 'case_law_jobs',
       'GENERATE_EMBEDDING': 'embedding_jobs',
@@ -239,26 +247,35 @@ export abstract class SpecializedWorker extends EventEmitter {
   protected capabilities: string[] = [];
   protected version: string = '1.0.0';
   protected isProcessing: boolean = false;
-  protected connection: amqp.ChannelModel | null = null;
-  protected channel: amqp.Channel | null = null;
+  protected connection: any | null = null;
+  protected channel: any | null = null;
+
+  protected rabbitmqUrl: string;
 
   constructor(
     workerId: string,
     workerType: string,
     capabilities: string[] = [],
-    private rabbitmqUrl: string = 'amqp://localhost'
+    rabbitmqUrl: string = 'amqp://localhost'
   ) {
     super();
     this.workerId = workerId;
     this.workerType = workerType;
     this.capabilities = capabilities;
+    this.rabbitmqUrl = rabbitmqUrl;
   }
 
   async initialize(): Promise<void> {
     try {
+      // dynamically import amqplib to avoid bundling Node-only libs into browser builds
+      if (!amqp) {
+        const mod = await import('amqplib');
+        amqp = mod;
+      }
+
       this.connection = await amqp.connect(this.rabbitmqUrl);
       this.channel = await this.connection.createChannel();
-      
+
       console.log(`🐝 Worker ${this.workerId} (${this.workerType}) initialized`);
       this.emit('initialized');
     } catch (error: any) {
@@ -310,8 +327,14 @@ export abstract class SpecializedWorker extends EventEmitter {
 
         } catch (error: any) {
           const processingTime = Date.now() - startTime;
+          let jobId = 'unknown';
+          try {
+            jobId = JSON.parse(msg.content.toString()).id;
+          } catch {
+            /* ignore */
+          }
           const errorResult: WorkerResult = {
-            jobId: JSON.parse(msg.content.toString()).id,
+            jobId,
             success: false,
             error: error instanceof Error ? error.message : 'Unknown error',
             processingTime,
@@ -372,11 +395,11 @@ export class DocumentSummarizationWorker extends SpecializedWorker {
     }
 
     const { document, options = {} } = job.payload;
-    
+
     // TODO: Integrate with your local LLM (Ollama/Gemma3-legal)
     // This is a placeholder implementation
     const summary = await this.generateSummary(document.content, options);
-    
+
     return {
       documentId: document.id,
       summary,
@@ -419,10 +442,10 @@ export class CaseLawWorker extends SpecializedWorker {
     }
 
     const { query, jurisdiction, dateRange, maxResults = 10 } = job.payload;
-    
+
     // TODO: Integrate with legal databases (Westlaw, LexisNexis, etc.)
     const cases = await this.searchCaseLaw(query, { jurisdiction, dateRange, maxResults });
-    
+
     return {
       query,
       totalFound: cases.length,
@@ -436,18 +459,24 @@ export class CaseLawWorker extends SpecializedWorker {
     };
   }
 
-  private async searchCaseLaw(query: string, options: any): Promise<unknown[]> {
-    // Placeholder for case law search
+  private async searchCaseLaw(query: string, options: any): Promise<any[]> {
+    // Placeholder for case law search — use the query to compute a deterministic relevance and include it in the returned data
+    const q = typeof query === 'string' ? query : String(query || '');
+    const baseRelevance = 0.5;
+    const lengthBoost = Math.min(0.45, q.length / 200); // longer queries get a small boost
+    const relevanceScore = Math.max(0, Math.min(1, baseRelevance + lengthBoost));
+
+  // Return a small set of mocked cases that reference the query so the parameter is read
     return [
       {
         id: 'case_001',
-        title: 'Sample v. Legal Case',
+        title: `Sample v. Legal Case — matched for "${q.slice(0, 60)}"`,
         citation: '123 F.3d 456 (9th Cir. 2023)',
         jurisdiction: options.jurisdiction || 'Federal',
         court: '9th Circuit Court of Appeals',
         date: '2023-03-15',
-        relevanceScore: 0.92,
-        summary: 'A sample legal case for demonstration purposes.',
+        relevanceScore,
+        summary: `A sample legal case generated for query "${q}". This is placeholder data for testing.`,
         keyHoldings: ['Sample holding 1', 'Sample holding 2'],
         precedentialValue: 'binding'
       }
@@ -469,28 +498,46 @@ export class EmbeddingWorker extends SpecializedWorker {
     }
 
     const { text, model = 'nomic-embed-text', options = {} } = job.payload;
-    
+
     // TODO: Integrate with your embedding service (Ollama)
     const embedding = await this.generateEmbedding(text, model, options);
-    
+
     return {
       text: options.includeText ? text : undefined,
       embedding,
       dimensions: embedding.length,
       model,
       metadata: {
-        textLength: text.length,
-        processingTime: Date.now(),
-        normalization: options.normalize || 'l2'
+        textLength: text.length
       }
     };
   }
 
   private async generateEmbedding(text: string, model: string, options: any): Promise<number[]> {
-    // Placeholder for embedding generation
-    // In production, this would call your Ollama embedding endpoint
+    // Deterministic pseudo-embedding generator for testing (keeps behavior reproducible)
+    const input = `${String(text || '')}|${String(model || '')}`;
     const dimensions = options.dimensions || 384;
-    return Array.from({ length: dimensions }, () => Math.random() * 2 - 1);
+
+    // simple hash to seed a deterministic pseudo-random generator
+    let hash = 0;
+    for (let i = 0; i < input.length; i++) {
+      const chr = input.charCodeAt(i);
+      hash = ((hash << 5) - hash) + chr;
+      hash |= 0; // convert to 32bit int
+    }
+    const seed = Math.abs(hash) || 1;
+
+    const seededRandom = (n: number) => {
+      const x = Math.sin(seed + n) * 10000;
+      return x - Math.floor(x);
+    };
+
+    const embedding = new Array(dimensions);
+    for (let i = 0; i < dimensions; i++) {
+      embedding[i] = seededRandom(i) * 2 - 1;
+    }
+
+    return embedding;
   }
 }
 

@@ -1,10 +1,13 @@
+import type { RequestHandler } from './$types';
+
 /**
  * PostgreSQL + pgvector Health Check API
  * Validates database connectivity for startup validation
  */
 
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+
+import { ensureError } from '$lib/utils/ensure-error';
 import { checkDatabaseHealth, dbHealthChecker } from '$lib/server/db/health-check';
 
 export const GET: RequestHandler = async ({ url }) => {
@@ -64,9 +67,9 @@ export const GET: RequestHandler = async ({ url }) => {
         });
         
       default:
-        return error(400, { 
+        return error(400, ensureError({ 
           message: `Invalid action: ${action}. Available: health, metrics, validate, vector` 
-        });
+        }));
     }
     
   } catch (err: any) {
@@ -112,9 +115,9 @@ export const POST: RequestHandler = async ({ request }) => {
         });
         
       default:
-        return error(400, { 
+        return error(400, ensureError({ 
           message: `Invalid action: ${action}. Available: clear_cache, force_check` 
-        });
+        }));
     }
     
   } catch (err: any) {

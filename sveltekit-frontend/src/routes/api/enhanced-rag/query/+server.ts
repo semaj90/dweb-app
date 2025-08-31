@@ -1,11 +1,12 @@
 
+import type { RequestHandler } from './$types';
+
 /**
  * Enhanced RAG Query API
  * Context-aware legal document retrieval with prosecution scoring
  * Features: Semantic search, jurisdiction filtering, fact-checking integration
  */
 
-import { type RequestHandler,  json, error } from '@sveltejs/kit';
 import { v4 as uuidv4 } from "uuid";
 
 export interface RAGQueryRequest {

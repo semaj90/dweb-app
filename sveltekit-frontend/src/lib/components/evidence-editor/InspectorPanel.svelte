@@ -505,7 +505,7 @@
           {/if}
           
           <button 
-            on:click={reanalyzeWithAI}
+            click={reanalyzeWithAI}
             disabled={isLoading}
             class="container mx-auto px-4"
           >
@@ -663,7 +663,7 @@
                       {tag}
                       {#if !readOnly}
                         <button 
-                          on:click={() => removeCustomTag(tag)}
+                          click={() => removeCustomTag(tag)}
                           class="container mx-auto px-4"
                         >×</button>
                       {/if}
@@ -676,11 +676,11 @@
                     <input
                       bind:value={customTag}
                       placeholder="Add custom tag"
-                      onkeydown={(e) => e.key === 'Enter' && addCustomTag()}
+                      keydown={(e) => e.key === 'Enter' && addCustomTag()}
                       class="container mx-auto px-4"
                     />
                     <button 
-                      on:click={addCustomTag} 
+                      click={addCustomTag} 
                       class="container mx-auto px-4"
                     >Add</button>
                   </div>
@@ -712,7 +712,7 @@
                         👤 {person}
                         {#if !readOnly}
                           <button 
-                            on:click={() => removePerson(person)}
+                            click={() => removePerson(person)}
                             class="container mx-auto px-4"
                           >×</button>
                         {/if}
@@ -725,11 +725,11 @@
                       <input
                         bind:value={customPerson}
                         placeholder="Add person"
-                        onkeydown={(e) => e.key === 'Enter' && addCustomPerson()}
+                        keydown={(e) => e.key === 'Enter' && addCustomPerson()}
                         class="container mx-auto px-4"
                       />
                       <button 
-                        on:click={addCustomPerson} 
+                        click={addCustomPerson} 
                         class="container mx-auto px-4"
                       >Add</button>
                     </div>
@@ -755,7 +755,7 @@
                         📍 {location}
                         {#if !readOnly}
                           <button 
-                            on:click={() => removeLocation(location)}
+                            click={() => removeLocation(location)}
                             class="container mx-auto px-4"
                           >×</button>
                         {/if}
@@ -768,11 +768,11 @@
                       <input
                         bind:value={customLocation}
                         placeholder="Add location"
-                        onkeydown={(e) => e.key === 'Enter' && addCustomLocation()}
+                        keydown={(e) => e.key === 'Enter' && addCustomLocation()}
                         class="container mx-auto px-4"
                       />
                       <button 
-                        on:click={addCustomLocation} 
+                        click={addCustomLocation} 
                         class="container mx-auto px-4"
                       >Add</button>
                     </div>
@@ -798,7 +798,7 @@
                         🏢 {org}
                         {#if !readOnly}
                           <button 
-                            on:click={() => removeOrganization(org)}
+                            click={() => removeOrganization(org)}
                             class="container mx-auto px-4"
                           >×</button>
                         {/if}
@@ -811,11 +811,11 @@
                       <input
                         bind:value={customOrganization}
                         placeholder="Add organization"
-                        onkeydown={(e) => e.key === 'Enter' && addCustomOrganization()}
+                        keydown={(e) => e.key === 'Enter' && addCustomOrganization()}
                         class="container mx-auto px-4"
                       />
                       <button 
-                        on:click={addCustomOrganization} 
+                        click={addCustomOrganization} 
                         class="container mx-auto px-4"
                       >Add</button>
                     </div>
@@ -877,7 +877,7 @@
                         ⚡ {action}
                         {#if !readOnly}
                           <button 
-                            on:click={() => removeAction(action)}
+                            click={() => removeAction(action)}
                             class="container mx-auto px-4"
                           >×</button>
                         {/if}
@@ -890,11 +890,11 @@
                       <input
                         bind:value={customAction}
                         placeholder="Add action item"
-                        onkeydown={(e) => e.key === 'Enter' && addCustomAction()}
+                        keydown={(e) => e.key === 'Enter' && addCustomAction()}
                         class="container mx-auto px-4"
                       />
                       <button 
-                        on:click={addCustomAction} 
+                        click={addCustomAction} 
                         class="container mx-auto px-4"
                       >Add</button>
                     </div>
@@ -994,7 +994,7 @@
         {#if !readOnly}
           <div class="container mx-auto px-4">
             <button 
-              on:click={handleSave}
+              click={handleSave}
               disabled={isSaving || !hasUnsavedChanges}
               class="container mx-auto px-4"
             >

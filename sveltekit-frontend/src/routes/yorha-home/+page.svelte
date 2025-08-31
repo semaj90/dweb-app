@@ -118,10 +118,10 @@
       <h1>YoRHa Command Interface</h1>
     </div>
     <div class="header-right">
-      <button class="yorha-btn-icon" on:click={() => navigateTo('/settings')}>
+      <button class="yorha-btn-icon" click={() => navigateTo('/settings')}>
         <Settings />
       </button>
-      <button class="yorha-btn-icon" on:click={() => navigateTo('/profile')}>
+      <button class="yorha-btn-icon" click={() => navigateTo('/profile')}>
         <Gamepad2 />
       </button>
     </div>
@@ -131,31 +131,31 @@
     <nav>
       <ul>
         <li>
-          <button class="yorha-btn-sidebar" class:active={activeSection === 'dashboard'} on:click={() => activeSection.value = 'dashboard'}>
+          <button class="yorha-btn-sidebar" class:active={activeSection === 'dashboard'} click={() => activeSection.value = 'dashboard'}>
             <Monitor />
             <span>Dashboard</span>
           </button>
         </li>
         <li>
-          <button class="yorha-btn-sidebar" class:active={activeSection === 'rag-results'} on:click={() => performRAGQuery()}>
+          <button class="yorha-btn-sidebar" class:active={activeSection === 'rag-results'} click={() => performRAGQuery()}>
             <Bot />
             <span>RAG Analysis</span>
           </button>
         </li>
         <li>
-          <button class="yorha-btn-sidebar" class:active={activeSection === 'search-results'} on:click={() => performSemanticSearch()}>
+          <button class="yorha-btn-sidebar" class:active={activeSection === 'search-results'} click={() => performSemanticSearch()}>
             <Search />
             <span>Semantic Search</span>
           </button>
         </li>
         <li>
-          <button class="yorha-btn-sidebar" on:click={() => navigateTo('/documents')}>
+          <button class="yorha-btn-sidebar" click={() => navigateTo('/documents')}>
             <FileText />
             <span>Documents</span>
           </button>
         </li>
         <li>
-          <button class="yorha-btn-sidebar" on:click={() => navigateTo('/yorha-terminal')}>
+          <button class="yorha-btn-sidebar" click={() => navigateTo('/yorha-terminal')}>
             <Terminal />
             <span>Terminal</span>
           </button>

@@ -55,7 +55,7 @@
             <select
               id="document-type-selector"
               bind:value={selectedDocumentType}
-              onchange={() => switchDocumentType(selectedDocumentType)}
+              change={() => switchDocumentType(selectedDocumentType)}
               class="space-y-4"
             >
               <option value="brief">Brief</option>
@@ -67,7 +67,7 @@
 
           <!-- New Document Button -->
           <button
-            on:click={() => createNewDocument()}
+            click={() => createNewDocument()}
             class="space-y-4"
           >
             New Document
@@ -94,9 +94,9 @@
     documentType={selectedDocumentType}
     title={editorTitle}
     readonly={isReadonly}
-    onsave={handleSave}
-    onairequest={handleAIRequest}
-    oncitationadded={handleCitationAdded}
+    on:save={handleSave}
+    on:airequest={handleAIRequest}
+    on:citationadded={handleCitationAdded}
   />
 </div>
 

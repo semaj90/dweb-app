@@ -1,6 +1,28 @@
-import { CacheManager } from '$lib/server/cache/loki-cache";
+// Simple cache implementation - fallback when advanced cache is not available
+class SimpleCacheManager {
+  private cache = new Map<string, { data: any; expires: number }>();
 
-const cache = new CacheManager({ dbPath: "cache/ai-cache.db" });
+  async set(key: string, data: any, options: { ttl: number } = { ttl: 24 * 3600 * 1000 }): Promise<void> {
+    this.cache.set(key, {
+      data,
+      expires: Date.now() + options.ttl
+    });
+  }
+
+  async get(key: string): Promise<any> {
+    const entry = this.cache.get(key);
+    if (!entry) return null;
+    
+    if (Date.now() > entry.expires) {
+      this.cache.delete(key);
+      return null;
+    }
+    
+    return entry.data;
+  }
+}
+
+const cache = new SimpleCacheManager();
 
 export type CachePayload = unknown;
 

@@ -1,9 +1,12 @@
+import type { RequestHandler } from './$types';
+
 /**
  * QUIC Services Management API - Central Hub for All QUIC Services
  * Provides centralized management, health monitoring, and configuration for all QUIC services
  */
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+
+import { ensureError } from '$lib/utils/ensure-error';
 
 const QUIC_SERVICES_CONFIG = {
   gateway: {
@@ -82,7 +85,7 @@ export const GET: RequestHandler = async ({ url }) => {
     if (serviceName) {
       const serviceConfig = QUIC_SERVICES_CONFIG[serviceName as keyof typeof QUIC_SERVICES_CONFIG];
       if (!serviceConfig) {
-        error(404, { message: `Service '${serviceName}' not found` });
+        error(404, ensureError({ message: `Service '${serviceName}' not found` }));
       }
 
       const serviceStatus = await checkServiceHealth(serviceName, serviceConfig, includeMetrics, timeout);
@@ -160,10 +163,10 @@ export const GET: RequestHandler = async ({ url }) => {
 
   } catch (err: any) {
     console.error('QUIC services status check failed:', err);
-    error(500, {
+    error(500, ensureError({
       message: 'Failed to check QUIC services status',
       error: err instanceof Error ? err.message : 'Unknown error'
-    });
+    }));
   }
 };
 
@@ -178,7 +181,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
     // Validate command
     const validCommands = ['restart', 'health-check', 'clear-cache', 'update-config'];
     if (!validCommands.includes(command)) {
-      error(400, { message: `Invalid command. Valid commands: ${validCommands.join(', ')}` });
+      error(400, ensureError({ message: `Invalid command. Valid commands: ${validCommands.join(', ')}` }));
     }
 
     const results: Record<string, any> = {};
@@ -217,10 +220,10 @@ export const POST: RequestHandler = async ({ request, url }) => {
 
   } catch (err: any) {
     console.error('QUIC services command execution failed:', err);
-    error(500, {
+    error(500, ensureError({
       message: 'Command execution failed',
       error: err instanceof Error ? err.message : 'Unknown error'
-    });
+    }));
   }
 };
 
@@ -232,12 +235,12 @@ export const PUT: RequestHandler = async ({ request }) => {
     const { service, configuration } = await request.json();
 
     if (!service || !configuration) {
-      error(400, { message: 'Service name and configuration are required' });
+      error(400, ensureError({ message: 'Service name and configuration are required' }));
     }
 
     const serviceConfig = QUIC_SERVICES_CONFIG[service as keyof typeof QUIC_SERVICES_CONFIG];
     if (!serviceConfig) {
-      error(404, { message: `Service '${service}' not found` });
+      error(404, ensureError({ message: `Service '${service}' not found` }));
     }
 
     // In a real implementation, this would update the service configuration
@@ -258,10 +261,10 @@ export const PUT: RequestHandler = async ({ request }) => {
 
   } catch (err: any) {
     console.error('QUIC configuration update failed:', err);
-    error(500, {
+    error(500, ensureError({
       message: 'Configuration update failed',
       error: err instanceof Error ? err.message : 'Unknown error'
-    });
+    }));
   }
 };
 

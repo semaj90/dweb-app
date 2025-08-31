@@ -1,10 +1,13 @@
+import type { RequestHandler } from './$types';
+
 /**
  * PostgreSQL-First Worker Trigger API
  * Handles Redis events for auto-tagging and case processing
  */
 
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from '@sveltejs/kit';
+
+import { ensureError } from '$lib/utils/ensure-error';
 import { redis } from '$lib/server/cache/redis-service';
 import { z } from 'zod';
 import { db } from '$lib/server/db/index';
@@ -217,7 +220,7 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
   try {
     // TODO: Add proper admin authentication check
     // if (!locals.user || locals.user.role !== 'admin') {
-    //   return error(403, { message: 'Admin access required' });
+    //   return error(403, ensureError({ message: 'Admin access required' }));
     // }
     
     const redis = await getRedisClient();

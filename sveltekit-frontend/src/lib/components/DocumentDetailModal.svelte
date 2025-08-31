@@ -435,7 +435,7 @@
         <div class="flex items-center gap-2">
           <button
             type="button"
-            on:click={toggleGPUAnalysis}
+            click={toggleGPUAnalysis}
             class="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
             class:bg-blue-50={enableGPUAnalysis}
             class:text-blue-700={enableGPUAnalysis}
@@ -446,7 +446,7 @@
           
           <button
             type="button"
-            on:click={() => loadDocumentData(documentId, true)}
+            click={() => loadDocumentData(documentId, true)}
             class="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
             disabled={loading}
           >
@@ -455,7 +455,7 @@
           
           <button
             type="button"
-            on:click={handleClose}
+            click={handleClose}
             class="text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md p-1"
           >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -490,7 +490,7 @@
             <p class="mt-2 text-sm text-red-700">{error}</p>
             <button
               type="button"
-              on:click={() => loadDocumentData(documentId, true)}
+              click={() => loadDocumentData(documentId, true)}
               class="mt-3 text-sm text-red-800 underline hover:text-red-900"
             >
               Try again
@@ -515,7 +515,7 @@
               ] as tab}
                 <button
                   type="button"
-                  on:click={() => activeTab = tab.id}
+                  click={() => activeTab = tab.id}
                   class="py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-blue-500"
                   class:border-blue-500={activeTab === tab.id}
                   class:text-blue-600={activeTab === tab.id}
@@ -610,7 +610,7 @@
                     {#each relatedDocuments as relatedDoc (relatedDoc.id)}
                       <button
                         type="button"
-                        on:click={() => handleRelatedDocumentClick(relatedDoc)}
+                        click={() => handleRelatedDocumentClick(relatedDoc)}
                         class="w-full p-4 text-left border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                       >
                         <div class="flex items-start justify-between">
@@ -656,7 +656,7 @@
                     {#each graphConnections as connection (connection.targetId)}
                       <button
                         type="button"
-                        on:click={() => handleGraphConnectionClick(connection)}
+                        click={() => handleGraphConnectionClick(connection)}
                         class="p-4 border-l-4 rounded-r-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors {getStrengthColor(connection.relationship_strength)}"
                       >
                         <div class="flex items-start justify-between">
@@ -745,7 +745,7 @@
                   {#if !enableGPUAnalysis}
                     <button
                       type="button"
-                      on:click={toggleGPUAnalysis}
+                      click={toggleGPUAnalysis}
                       class="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       🚀 Enable GPU Analysis

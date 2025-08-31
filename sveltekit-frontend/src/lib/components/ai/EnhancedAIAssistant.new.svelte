@@ -100,12 +100,12 @@ I can provide more specific guidance if you share additional details about your 
     <div class="container mx-auto px-4">
       <button
         class="container mx-auto px-4"
-        on:click={() => (showSettings = !showSettings)}
+        click={() => (showSettings = !showSettings)}
         title="Settings"
       >
         <Settings class="container mx-auto px-4" />
       </button>
-      <button class="container mx-auto px-4" on:click={() => clearMessages()} title="Clear">
+      <button class="container mx-auto px-4" click={() => clearMessages()} title="Clear">
         <Trash2 class="container mx-auto px-4" />
       </button>
     </div>
@@ -125,7 +125,7 @@ I can provide more specific guidance if you share additional details about your 
             {#each message.references as reference}
               <button
                 class="container mx-auto px-4"
-                on:click={() => handleReferenceClick(reference)}
+                click={() => handleReferenceClick(reference)}
               >
                 <Quote class="container mx-auto px-4" />
                 <span class="container mx-auto px-4">{reference.title}</span>
@@ -148,7 +148,7 @@ I can provide more specific guidance if you share additional details about your 
   </div>
 
   <!-- Input -->
-  <form class="container mx-auto px-4" onsubmit|preventDefault={handleSubmit}>
+  <form class="container mx-auto px-4" on:submit|preventDefault={handleSubmit}>
     <input
       type="text"
       bind:value={query}
@@ -170,7 +170,7 @@ I can provide more specific guidance if you share additional details about your 
     <div class="container mx-auto px-4">
       <div class="container mx-auto px-4">
         <h4>Settings</h4>
-        <button class="container mx-auto px-4" on:click={() => (showSettings = false)}
+        <button class="container mx-auto px-4" click={() => (showSettings = false)}
           >×</button
         >
       </div>
@@ -231,14 +231,14 @@ I can provide more specific guidance if you share additional details about your 
       aria-modal="true"
       aria-labelledby="citation-dialog-title"
       tabindex={-1}
-      on:click={() => (showCitationDialog = false)}
-      onkeydown={(e) => e.key === "Escape" && (showCitationDialog = false)}
+      click={() => (showCitationDialog = false)}
+      on:keydown={(e) => e.key === "Escape" && (showCitationDialog = false)}
     >
       <div
         class="container mx-auto px-4"
         role="document"
-        onclick|stopPropagation
-        onkeydown={(e) => {
+        on:click|stopPropagation
+        keydown={(e) => {
           if (e.key === "Escape") {
             showCitationDialog = false;
           }
@@ -255,12 +255,12 @@ I can provide more specific guidance if you share additional details about your 
           </div>
 
           <div class="container mx-auto px-4">
-            <button class="container mx-auto px-4" on:click={() => insertCitation()}>
+            <button class="container mx-auto px-4" click={() => insertCitation()}>
               Insert Citation
             </button>
             <button
               class="container mx-auto px-4"
-              on:click={() => navigator.clipboard.writeText(selectedCitation)}
+              click={() => navigator.clipboard.writeText(selectedCitation)}
             >
               Copy
             </button>
@@ -270,7 +270,7 @@ I can provide more specific guidance if you share additional details about your 
         <div class="container mx-auto px-4">
           <button
             class="container mx-auto px-4"
-            on:click={() => (showCitationDialog = false)}
+            click={() => (showCitationDialog = false)}
           >
             Close
           </button>

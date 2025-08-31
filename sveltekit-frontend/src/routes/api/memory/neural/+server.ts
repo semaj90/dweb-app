@@ -1,7 +1,8 @@
-import { json, type RequestHandler } from '@sveltejs/kit';
 import { NeuralMemoryManager } from '$lib/optimization/neural-memory-manager';
 import { redisRateLimit } from '$lib/server/redisRateLimit';
 import { dev } from '$app/environment';
+import type { RequestHandler } from './$types';
+
 
 // Global manager singleton with Windows optimization
 let neuralManager: NeuralMemoryManager | null = null;

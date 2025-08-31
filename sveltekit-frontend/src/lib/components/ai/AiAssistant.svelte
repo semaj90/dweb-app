@@ -28,8 +28,12 @@
 	const getUser = getContext('user');
 	const user = typeof getUser === 'function' ? getUser() : undefined;
 
-	export let contextItems: any[] = [];
-	export let caseId: string = '';
+	interface Props {
+		contextItems?: any[];
+		caseId?: string;
+	}
+	
+	let { contextItems = [], caseId = '' }: Props = $props();
 
 	// --- Client-Side Caching with Loki.js ---
 	// Initializes a simple in-memory DB to cache summaries on the client.
@@ -50,21 +54,21 @@
 	const summaryCacheCollection = getSummaryCache();
 
 	// Component state (some are synced to XState below)
-	let summary = '';
-	let error = '';
-	let isLoading = false;
-	let isSaving = false;
-	let retryCount = 0;
-	let stream = '';
+	let summary = $state('');
+	let error = $state('');
+	let isSaving = $state(false);
+	let retryCount = $state(0);
+	let stream = $state('');
 	let enableStreaming = false; // set true if you wire streaming
 	let showSources = true;
-	let sources: any[] = [];
+	let sources = $state<any[]>([]);
 
 	// Derived booleans used in template
-	$: hasContent = contextItems.length > 0;
-	$: canSummarize = hasContent && !!user && !isLoading;
-	$: allowSave = true;
-	$: canSave = !!summary && !!user && !isSaving;
+	const hasContent = $derived(() => contextItems.length > 0);
+	const isLoading = $derived(() => state.matches('processing'));
+	const canSummarize = $derived(() => hasContent && !!user && !isLoading);
+	const allowSave = true;
+	const canSave = $derived(() => !!summary && !!user && !isSaving);
 
 	// Feedback integration variables
 	let feedbackIntegration: any;
@@ -238,27 +242,32 @@
 	const { state, send } = useMachine(aiProcessingMachine);
 
 	// --- Svelte Reactive Statements to sync state ---
-	$: isLoading = state.matches('processing');
-	$: summary = state.context.summary;
-	$: error = state.context.error;
+	$effect(() => {
+		summary = state.context.summary;
+		error = state.context.error;
+	});
 
 	// Track completion for feedback
-	$: if (summary && currentInteractionId && feedbackIntegration) {
-		feedbackIntegration.markCompleted({
-			summary: summary.substring(0, 200) + '...',
-			confidence: sources.length > 0 ? 0.9 : 0.7,
-			processingTime: Date.now() - (state.context._startTime || Date.now())
-		});
-	}
+	$effect(() => {
+		if (summary && currentInteractionId && feedbackIntegration) {
+			feedbackIntegration.markCompleted({
+				summary: summary.substring(0, 200) + '...',
+				confidence: sources.length > 0 ? 0.9 : 0.7,
+				processingTime: Date.now() - (state.context._startTime || Date.now())
+			});
+		}
+	});
 
 	// Track errors for feedback
-	$: if (error && currentInteractionId && feedbackIntegration) {
-		feedbackIntegration.markFailed({
-			errorMessage: error,
-			retryCount,
-			context: { caseId, evidenceCount: contextItems.length }
-		});
-	}
+	$effect(() => {
+		if (error && currentInteractionId && feedbackIntegration) {
+			feedbackIntegration.markFailed({
+				errorMessage: error,
+				retryCount,
+				context: { caseId, evidenceCount: contextItems.length }
+			});
+		}
+	});
 
 	function handleProcessEvidence() {
 		if (!user) return;

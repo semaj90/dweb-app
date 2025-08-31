@@ -347,7 +347,7 @@
     <Button
       variant="ghost"
       size="sm"
-      onclick={() => evidenceStore.undo()}
+      on:click={() => evidenceStore.undo()}
       disabled={!evidenceStore.canUndo()}
       title="Undo (Ctrl+Z)"
     >
@@ -357,7 +357,7 @@
     <Button
       variant="ghost"
       size="sm"
-      onclick={() => evidenceStore.redo()}
+      on:click={() => evidenceStore.redo()}
       disabled={!evidenceStore.canRedo()}
       title="Redo (Ctrl+Y)"
     >
@@ -367,7 +367,7 @@
     <Button
       variant="ghost"
       size="sm"
-      onclick={() => syncWithServer()}
+      on:click={() => syncWithServer()}
       disabled={isLoading}
       title="Sync with server"
     >
@@ -386,7 +386,7 @@
       <div class="mx-auto px-4 max-w-7xl">
         <button
           class="mx-auto px-4 max-w-7xl"
-          onclick={() => (error = null)}
+          click={() => (error = null)}
         >
           <span class="mx-auto px-4 max-w-7xl">Dismiss</span>
           ✕
@@ -445,7 +445,7 @@
         <Button
           variant="ghost"
           size="sm"
-          onclick={() => (sortOrder = sortOrder === "asc" ? "desc" : "asc")}
+          on:click={() => (sortOrder = sortOrder === "asc" ? "desc" : "asc")}
         >
           {#if sortOrder === "asc"}
             <SortAsc class="mx-auto px-4 max-w-7xl" />
@@ -462,7 +462,7 @@
       <Button
         variant="ghost"
         size="sm"
-        onclick={() => (viewMode = viewMode === "grid" ? "list" : "grid")}
+        on:click={() => (viewMode = viewMode === "grid" ? "list" : "grid")}
       >
         {#if viewMode === "grid"}
           <List class="mx-auto px-4 max-w-7xl" />
@@ -473,14 +473,14 @@
 
       <!-- Selection Actions -->
       {#if selectedEvidence.size > 0}
-        <Button variant="outline" size="sm" onclick={() => clearSelection()}>
+        <Button variant="outline" size="sm" on:click={() => clearSelection()}>
           Clear ({selectedEvidence.size})
         </Button>
 
         <Button
           variant="danger"
           size="sm"
-          onclick={() => {
+          on:click={() => {
             if (confirm(`Delete ${selectedEvidence.size} selected items?`)) {
               selectedEvidence.forEach((id) => deleteEvidence(id));
             }
@@ -490,13 +490,13 @@
           Delete
         </Button>
       {:else}
-        <Button variant="ghost" size="sm" onclick={() => selectAll()}>
+        <Button variant="ghost" size="sm" on:click={() => selectAll()}>
           Select All
         </Button>
       {/if}
 
       <!-- Add Evidence -->
-      <Button onclick={() => createEvidence()}>
+      <Button on:click={() => createEvidence()}>
         <span class="mx-auto px-4 max-w-7xl">+</span>
         Add Evidence
       </Button>
@@ -527,7 +527,7 @@
             ? "No evidence matches your current filters."
             : "No evidence has been added yet."}
         </p>
-        <Button onclick={() => createEvidence()}>Add First Evidence</Button>
+        <Button on:click={() => createEvidence()}>Add First Evidence</Button>
       </div>
     </div>
   {:else}
@@ -546,7 +546,7 @@
                 <input
                   type="checkbox"
                   checked={selectedEvidence.has(item.id)}
-                  onchange={() => toggleSelection(item.id)}
+                  change={() => toggleSelection(item.id)}
                   class="mx-auto px-4 max-w-7xl"
                 />
                 <svelte:component
@@ -567,7 +567,7 @@
                 <Button
                   variant="ghost"
                   size="sm"
-                  onclick={() => (editingEvidence = item.id)}
+                  on:click={() => (editingEvidence = item.id)}
                 >
                   <Eye class="mx-auto px-4 max-w-7xl" />
                 </Button>
@@ -575,7 +575,7 @@
                 <Button
                   variant="ghost"
                   size="sm"
-                  onclick={() => deleteEvidence(item.id)}
+                  on:click={() => deleteEvidence(item.id)}
                 >
                   <Trash2 class="mx-auto px-4 max-w-7xl" />
                 </Button>
@@ -599,7 +599,7 @@
                 <div class="mx-auto px-4 max-w-7xl">
                   <Button
                     size="sm"
-                    onclick={() =>
+                    on:click={() =>
                       updateEvidence(item.id, {
                         title: item.title,
                         description: item.description,
@@ -610,7 +610,7 @@
                   <Button
                     variant="ghost"
                     size="sm"
-                    onclick={() => (editingEvidence = null)}
+                    on:click={() => (editingEvidence = null)}
                   >
                     Cancel
                   </Button>
@@ -667,7 +667,7 @@
               >
                 <input
                   type="checkbox"
-                  onchange={(e) =>
+                  change={(e) =>
                     (e.target as HTMLInputElement).checked
                       ? selectAll()
                       : clearSelection()}
@@ -704,7 +704,7 @@
                   <input
                     type="checkbox"
                     checked={selectedEvidence.has(item.id)}
-                    onchange={() => toggleSelection(item.id)}
+                    change={() => toggleSelection(item.id)}
                     class="mx-auto px-4 max-w-7xl"
                   />
                 </td>
@@ -752,14 +752,14 @@
                     <Button
                       variant="ghost"
                       size="sm"
-                      onclick={() => (editingEvidence = item.id)}
+                      on:click={() => (editingEvidence = item.id)}
                     >
                       <Eye class="mx-auto px-4 max-w-7xl" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
-                      onclick={() => deleteEvidence(item.id)}
+                      on:click={() => deleteEvidence(item.id)}
                     >
                       <Trash2 class="mx-auto px-4 max-w-7xl" />
                     </Button>
@@ -787,7 +787,7 @@
             variant="outline"
             size="sm"
             disabled={currentPage === 0}
-            onclick={() => currentPage--}
+            on:click={() => currentPage--}
           >
             Previous
           </Button>
@@ -800,7 +800,7 @@
             variant="outline"
             size="sm"
             disabled={currentPage >= totalPages - 1}
-            onclick={() => currentPage++}
+            on:click={() => currentPage++}
           >
             Next
           </Button>

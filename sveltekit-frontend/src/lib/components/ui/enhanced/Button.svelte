@@ -17,7 +17,7 @@
 		size = 'default',
 		loading = false,
 		children,
-		class: className,
+		class: class,
 		disabled,
 		...props
 	}: Props = $props();
@@ -26,7 +26,7 @@
 </script>
 
 <button
-	class="yorha-button {buttonVariants({ variant, size })} {className || ""}"
+	class="yorha-button {buttonVariants({ variant, size })} {class || ""}"
 	disabled={isDisabled}
 	{...props}
 >

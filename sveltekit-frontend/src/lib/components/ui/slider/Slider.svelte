@@ -29,7 +29,7 @@
   value={value?.[0] ?? 0}
   class={klass}
   {disabled}
-  oninput={onInput as any} />
+  input={onInput as any} />
 
 <style>
   input[type='range'] {

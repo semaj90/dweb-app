@@ -90,8 +90,8 @@
       <MinIOUpload
         {data}
         {caseId}
-        onuploadcomplete={handleUploadComplete}
-        onuploaderror={handleUploadError}
+        on:uploadcomplete={handleUploadComplete}
+        on:uploaderror={handleUploadError}
       />
     </div>
 
@@ -135,7 +135,7 @@
           <h3>📋 Recent Uploads</h3>
           <button
             type="button"
-            on:click={loadRecentUploads}
+            click={loadRecentUploads}
             class="text-button"
           >
             {showRecentUploads ? 'Refresh' : 'Show'}

@@ -1,9 +1,10 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Legal Research API Endpoint
  * Provides comprehensive legal research capabilities with RAG integration
  */
 
-import { type RequestHandler,  json } from '@sveltejs/kit';
 import { processRAGPipeline, rerankSearchResults } from "$lib/services/comprehensive-database-orchestrator";
 
 export interface LegalResearchRequest {

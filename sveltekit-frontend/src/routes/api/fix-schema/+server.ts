@@ -1,3 +1,5 @@
+import type { RequestHandler } from './$types';
+
 // Fix database schema to match Drizzle schema
 import { json } from "@sveltejs/kit";
 import { db, sql } from "drizzle-orm";

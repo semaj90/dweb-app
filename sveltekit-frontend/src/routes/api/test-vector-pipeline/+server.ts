@@ -1,8 +1,9 @@
 
+import type { RequestHandler } from './$types';
+
 // End-to-End Vector Pipeline Test
 // Tests: Document Upload → Embedding → Search → Results
 
-import { type RequestHandler, json, error } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { users, cases, documents, documentVectors } from '$lib/server/db/schema-postgres';
 import { eq, sql, desc } from 'drizzle-orm';

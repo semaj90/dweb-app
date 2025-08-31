@@ -113,7 +113,7 @@
     <!-- Trigger Button -->
     <DatePicker.Trigger
       id={inputId}
-      class={cn(
+      className={cn(
         'flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border px-3 py-2 text-sm font-mono shadow-sm ring-offset-background focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
         variantStyles[variant],
         error && 'border-red-500 focus:ring-red-500',

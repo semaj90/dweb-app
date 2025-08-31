@@ -366,15 +366,15 @@
     <!-- Controls -->
     <div class="header-controls">
       <div class="search-container">
-  <input type="search" class="search-input" placeholder="Search legal data..." aria-label="Search legal data" bind:value={searchQuery} oninput={() => triggerSearch()} onkeydown={(e) => e.key === 'Enter' && loadData()} />
-        <button class="search-btn" onclick={() => loadData()}>SEARCH</button>
+  <input type="search" class="search-input" placeholder="Search legal data..." aria-label="Search legal data" bind:value={searchQuery} input={() => triggerSearch()} on:keydown={(e) => e.key === 'Enter' && loadData()} />
+        <button class="search-btn" click={() => loadData()}>SEARCH</button>
       </div>
 
-      <button class="analyze-btn" onclick={() => performEnhancedAnalysis(searchQuery)}>
+      <button class="analyze-btn" click={() => performEnhancedAnalysis(searchQuery)}>
         ENHANCED ANALYSIS
       </button>
 
-      <button class="terminal-btn" onclick={() => terminalActive = !terminalActive}>
+      <button class="terminal-btn" click={() => terminalActive = !terminalActive}>
         TERMINAL
       </button>
     </div>
@@ -384,19 +384,19 @@
   <nav class="tab-navigation">
     <button
       class="tab-btn {activeTab === 'documents' ? 'active' : ''}"
-      onclick={() => activeTab = 'documents'}
+      click={() => activeTab = 'documents'}
     >
       DOCUMENTS
     </button>
     <button
       class="tab-btn {activeTab === 'cases' ? 'active' : ''}"
-      onclick={() => activeTab = 'cases'}
+      click={() => activeTab = 'cases'}
     >
       CASES
     </button>
     <button
       class="tab-btn {activeTab === 'evidence' ? 'active' : ''}"
-      onclick={() => activeTab = 'evidence'}
+      click={() => activeTab = 'evidence'}
     >
       EVIDENCE
     </button>
@@ -409,7 +409,7 @@
       <section class="data-section">
         <div class="section-header">
           <h2 class="section-title">{activeTab.toUpperCase()} MANAGEMENT</h2>
-          <button class="create-btn" onclick={openCreateModal}>
+          <button class="create-btn" click={openCreateModal}>
             CREATE NEW {activeTab.toUpperCase().slice(0, -1)}
           </button>
         </div>
@@ -480,7 +480,7 @@
         title={(modalType === 'create' ? 'Create New' : 'Edit') + ' ' + activeTab.toUpperCase().slice(0, -1)}
         fields={currentFormFields}
         submitLabel={modalType === 'create' ? 'Create' : 'Update'}
-        onsubmit={(data) => {
+        on:submit={(data) => {
                     {#each rec.actionItems as action}
                       <span class="rec-action">{action}</span>
                     {/each}
@@ -503,7 +503,7 @@
         <YoRHaTerminal
           title="YoRHa Legal AI Terminal"
           isActive={terminalActive}
-          oncommand={handleTerminalCommand}
+          on:command={handleTerminalCommand}
         />
       </aside>
     {/if}
@@ -519,14 +519,14 @@
         title="{modalType === 'create' ? 'Create New' : 'Edit'} {activeTab.toUpperCase().slice(0, -1)}"
         fields={currentFormFields}
         submitLabel={modalType === 'create' ? 'Create' : 'Update'}
-        onsubmit={(data) => {
+        on:submit={(data) => {
           if (modalType === 'create') {
             createItem(activeTab, data);
           } else {
             updateItem(activeTab, modalData?.id, data);
           }
         }}
-        oncancel={closeModal}
+        on:cancel={closeModal}
       />
     </YoRHaModal>
   {/if}
@@ -537,7 +537,7 @@
       <YoRHaNotification
         type={notification.type}
         message={notification.message}
-        onclose={() => notifications = notifications.filter(n => n.id !== notification.id)}
+        on:close={() => notifications = notifications.filter(n => n.id !== notification.id)}
       />
     {/each}
   </div>

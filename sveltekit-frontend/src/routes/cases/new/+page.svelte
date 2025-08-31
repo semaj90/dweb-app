@@ -1,21 +1,15 @@
 <script lang="ts">
-  import { $props, $effect } from 'svelte';
-  interface Props {
-    form: ActionData;
-  }
-  let {
-    form
-  }: Props = $props();
-
-
-
+  // Page data (SvelteKit): receive `data` from the page's load function
   import { goto } from "$app/navigation";
   import EnhancedCaseForm from "$lib/components/forms/EnhancedCaseForm.svelte";
   import { notifications } from "$lib/stores/notification";
   import TauriAPI from "$lib/tauri";
   import type { ActionData } from "./$types";
 
-  
+  // In Svelte runes mode use the built-in $props() to access page props
+  const { form } = $props() as { form?: ActionData };
+
+
   let isSubmitting = false;
   let caseData = {};
 
@@ -85,7 +79,7 @@
       createdAt: new Date(),
       updatedAt: new Date(),
     }}
-    onsubmit={handleSubmit}
-    oncancel={handleCancel}
+    on:submit={handleSubmit}
+    on:cancel={handleCancel}
   />
 </div>

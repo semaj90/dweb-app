@@ -1,7 +1,8 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
 import { productionLogger } from '$lib/server/production-logger';
 import os from "os";
+import type { RequestHandler } from './$types';
+
 
 export interface PerformanceMetrics {
   timestamp: string;

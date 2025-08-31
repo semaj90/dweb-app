@@ -369,7 +369,7 @@
   }
 </script>
 
-<div class="som-visualization {className}">
+<div class="som-visualization {class}">
   <!-- Header -->
   <div class="header yorha-panel p-4 mb-4">
     <h2 class="text-xl font-bold text-yellow-400 mb-2">
@@ -392,7 +392,7 @@
           <div class="flex gap-2">
             <input 
               bind:value={somConfig.mapWidth}
-              onchange={updateSOMConfig}
+              change={updateSOMConfig}
               type="number" 
               min="5" 
               max="50" 
@@ -402,7 +402,7 @@
             <span class="text-gray-400 text-sm">×</span>
             <input 
               bind:value={somConfig.mapHeight}
-              onchange={updateSOMConfig}
+              change={updateSOMConfig}
               type="number" 
               min="5" 
               max="50" 
@@ -429,7 +429,7 @@
           <label class="block text-sm text-gray-300 mb-1">Clusters</label>
           <input 
             bind:value={somConfig.clusterCount}
-            onchange={updateSOMConfig}
+            change={updateSOMConfig}
             type="number" 
             min="2" 
             max="16" 
@@ -504,7 +504,7 @@
       
       <div class="space-y-3">
         <button 
-          on:click={trainWithSampleData}
+          click={trainWithSampleData}
           disabled={!isInitialized || isTraining}
           class="w-full yorha-button px-4 py-2 bg-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -512,7 +512,7 @@
         </button>
         
         <button 
-          on:click={processTestDocument}
+          click={processTestDocument}
           disabled={!isInitialized || isTraining}
           class="w-full yorha-button px-4 py-2 bg-green-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -520,7 +520,7 @@
         </button>
         
         <button 
-          on:click={exportSOMData}
+          click={exportSOMData}
           disabled={!isInitialized}
           class="w-full yorha-button px-4 py-2 bg-purple-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
         >

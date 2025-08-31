@@ -203,7 +203,7 @@
 			bind:value={query}
 			placeholder="Ask about legal concepts, cases, or technical topics..."
 			class="flex-1"
-			onkeypress={handleKeypress}
+			on:keypress={handleKeypress}
 			disabled={isSearching}
 		/>
 		<Button 
@@ -226,7 +226,7 @@
 			<div class="flex flex-wrap gap-2">
 				{#each searchHistory as item}
 					<button
-						on:click={() => selectHistoryItem(item)}
+						click={() => selectHistoryItem(item)}
 						class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
 					>
 						{item}

@@ -1,9 +1,12 @@
+import type { RequestHandler } from './$types';
+
 /**
  * AI API Endpoint - Comprehensive AI Services
  * Routes to: ai-enhanced.exe:8096, enhanced-legal-ai.exe:8202, live-agent-enhanced.exe:8200
  */
 
-import { type RequestHandler,  json, error } from '@sveltejs/kit';
+
+import { ensureError } from '$lib/utils/ensure-error';
 import { productionServiceClient } from "$lib/services/productionServiceClient";
 
 export interface AIRequest {
@@ -24,7 +27,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
     const data: AIRequest = await request.json();
     
     if (!data.userId) {
-      return error(400, { message: 'User ID is required' });
+      return error(400, ensureError({ message: 'User ID is required' }));
     }
 
     let operation: string;
@@ -33,7 +36,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
     switch (data.type) {
       case 'summary':
         if (!data.content) {
-          return error(400, { message: 'Content is required for summary' });
+          return error(400, ensureError({ message: 'Content is required for summary' }));
         }
         operation = 'ai.summary';
         serviceData = {
@@ -45,7 +48,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
 
       case 'legal':
         if (!data.document) {
-          return error(400, { message: 'Document is required for legal analysis' });
+          return error(400, ensureError({ message: 'Document is required for legal analysis' }));
         }
         operation = 'legal.process';
         serviceData = {
@@ -57,7 +60,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
 
       case 'live':
         if (!data.sessionId) {
-          return error(400, { message: 'Session ID is required for live AI' });
+          return error(400, ensureError({ message: 'Session ID is required for live AI' }));
         }
         operation = 'ai.live';
         serviceData = {
@@ -79,7 +82,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
         break;
 
       default:
-        return error(400, { message: 'Invalid AI operation type' });
+        return error(400, ensureError({ message: 'Invalid AI operation type' }));
     }
 
     const result = await productionServiceClient.execute(operation, serviceData, {
@@ -112,7 +115,7 @@ export const GET: RequestHandler = async ({ url }) => {
       const result = await productionServiceClient.execute('ai.session.status', { sessionId });
       return json({ success: true, data: result });
     } catch (err: any) {
-      return error(404, { message: 'Session not found' });
+      return error(404, ensureError({ message: 'Session not found' }));
     }
   }
 
@@ -149,7 +152,7 @@ export const GET: RequestHandler = async ({ url }) => {
       version: '1.0.0'
     });
   } catch (err: any) {
-    return error(503, { message: 'AI service health check failed' });
+    return error(503, ensureError({ message: 'AI service health check failed' }));
   }
 };
 

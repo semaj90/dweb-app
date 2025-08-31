@@ -9,14 +9,14 @@ export const SwitchThumb = null; // Switch.Thumb;
 // Re-export placeholder
 export const Switch = null;
 
-// Common props interface
-export interface CommonProps {
+// Switch-specific common props interface (local, not exported)
+interface SwitchCommonProps {
   className?: string;
   [key: string]: any;
 }
 
 // TypeScript interface for Switch props
-export interface SwitchProps extends CommonProps {
+export interface SwitchProps extends SwitchCommonProps {
   checked?: boolean;
   disabled?: boolean;
   onCheckedChange?: (checked: boolean) => void;

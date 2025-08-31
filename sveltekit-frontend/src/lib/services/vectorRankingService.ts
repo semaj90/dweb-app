@@ -290,7 +290,7 @@ export class VectorRankingService {
     // Calculate preference based on clicked results history
     let preferenceScore = 0.5;
     for (const query of userQueries) {
-      const clickedResults = query.clickedResults as unknown[] || [];
+      const clickedResults = query.clickedResults as any[] || [];
       if (clickedResults.includes(documentId)) {
         preferenceScore += 0.1;
       }

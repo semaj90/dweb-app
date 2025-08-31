@@ -326,7 +326,7 @@
                 bind:value={searchQuery}
                 placeholder="Enter your search query..."
                 class="flex-1"
-                onkeydown={(e) => e.key === 'Enter' && handleSearch()}
+                on:keydown={(e) => e.key === 'Enter' && handleSearch()}
               />
               <Button on:click={handleSearch} disabled={isLoading || !searchQuery.trim()}>
                 {#if isLoading}
@@ -391,7 +391,7 @@
               <input
                 type="file"
                 accept=".pdf"
-                onchange={(e) => uploadFile = e.target.files?.[0] || null}
+                change={(e) => uploadFile = e.target.files?.[0] || null}
                 class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
               />
             </div>

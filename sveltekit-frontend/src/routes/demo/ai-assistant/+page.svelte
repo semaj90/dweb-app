@@ -407,7 +407,7 @@ This analysis leverages the full Legal AI system capabilities including Context7
 
 				<div class="flex gap-2 mb-6">
 					<button
-						on:click={() => runAIQuery(currentQuery)}
+						click={() => runAIQuery(currentQuery)}
 						disabled={isLoading || !currentQuery.trim()}
 						class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
 					>
@@ -417,7 +417,7 @@ This analysis leverages the full Legal AI system capabilities including Context7
 						Run Query
 					</button>
 					<button
-						on:click={clearResponses}
+						click={clearResponses}
 						class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
 					>
 						Clear Results
@@ -429,7 +429,7 @@ This analysis leverages the full Legal AI system capabilities including Context7
 				<div class="space-y-2">
 					{#each demoQueries as demo}
 						<button
-							on:click={() => runAIQuery(demo.query, demo.category)}
+							click={() => runAIQuery(demo.query, demo.category)}
 							disabled={isLoading}
 							class="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
 						>

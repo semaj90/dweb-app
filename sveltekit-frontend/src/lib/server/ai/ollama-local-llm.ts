@@ -590,6 +590,5 @@ Document:\n${document}`;
 // Export singleton instance
 export const ollamaLLM = new OllamaLocalLLM();
 
-// Export types
-export type { OllamaGenerateOptions, OllamaResponse };
+// Types are already exported as interfaces above
 

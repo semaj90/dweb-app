@@ -1,9 +1,10 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Unified API Layer with JSON responses
  * Central API endpoint that orchestrates all backend services
  */
 
-import { json, type RequestHandler } from '@sveltejs/kit';
 import { redis } from '$lib/server/cache/redis-service';
 import { minioService } from '$lib/server/storage/minio-service';
 import { rabbitmqService } from '$lib/server/messaging/rabbitmq-service';

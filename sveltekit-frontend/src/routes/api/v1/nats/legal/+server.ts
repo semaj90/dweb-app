@@ -1,7 +1,8 @@
+import type { RequestHandler } from './$types';
+
 // Legal AI Specific NATS Endpoints
 // High-level API for legal AI event publishing and management
 
-import { json, type RequestHandler } from '@sveltejs/kit';
 import { EnhancedNATSMessagingService } from '$lib/services/enhanced-nats-messaging';
 import type { 
 	CaseEventData,

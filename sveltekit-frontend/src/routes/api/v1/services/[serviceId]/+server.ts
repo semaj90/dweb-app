@@ -1,10 +1,11 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Individual Service API Endpoints
  * RESTful API for individual service operations and status
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 import { masterServiceCoordinator } from '$lib/services/master-service-coordinator.js';
 import { goBinaryService } from '$lib/services/go-binary-integration.js';
 

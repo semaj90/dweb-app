@@ -1,8 +1,9 @@
-import { json, type RequestHandler } from '@sveltejs/kit';
 import { aiReports } from '$lib/server/db/schema-postgres';
 import { db } from '$lib/server/db/index';
 import { and, eq } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
+import type { RequestHandler } from './$types';
+
 
 export const POST: RequestHandler = async ({ request }) => {
   try {

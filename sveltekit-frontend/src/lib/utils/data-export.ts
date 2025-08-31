@@ -396,7 +396,7 @@ async function generateExcel(data: any[]): Promise<Blob> {
     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   });
 }
-async function includeEvidenceFiles(evidence: any[]): Promise<unknown[]> {
+async function includeEvidenceFiles(evidence: any[]): Promise<any[]> {
   // In production, this would fetch and include actual file data
   return evidence.map((e: any) => ({
     ...e,

@@ -20,7 +20,7 @@
     variant = 'default',
     size = 'default',
     padding = 'default',
-    class: className,
+    class: class,
     children,
     header,
     footer,
@@ -74,7 +74,7 @@
       cardVariants({ variant, size, padding }),
       interactive && interactiveClasses,
       hoverable && hoverableClasses,
-      className
+      class
     )
   );
 </script>

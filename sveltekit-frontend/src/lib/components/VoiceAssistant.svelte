@@ -70,7 +70,7 @@
     {:else}
       <p>Click the button and start speaking.</p>
     {/if}
-    <button on:click={() => {
+    <button click={() => {
       if (isListening) {
         recognition.stop();
         isListening = false;

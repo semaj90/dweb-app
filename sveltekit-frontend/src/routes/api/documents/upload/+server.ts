@@ -1,9 +1,10 @@
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '$lib/server/db';
 import { documents, document_processing } from '$lib/server/db/schema-postgres';
 import { rabbitMQService, createDocumentProcessingJob } from '$lib/services/rabbitmq-service';
+import type { RequestHandler } from './$types';
+
 
 const ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/png', 'text/plain'];
 const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB

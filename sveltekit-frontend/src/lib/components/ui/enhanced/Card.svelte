@@ -14,7 +14,7 @@
 		elevated = false,
 		interactive = false,
 		children,
-		class: className,
+		class: class,
 		...props
 	}: Props = $props();
 
@@ -22,7 +22,7 @@
 		'yorha-card shadcn-card',
 		elevated && 'yorha-card-elevated',
 		interactive && 'cursor-pointer hover:scale-[1.02] transition-transform duration-200',
-		className
+		class
 	].filter(Boolean).join(' '));
 </script>
 

@@ -131,7 +131,7 @@
 }}}
 </script>
 
-<svelte:window onkeydown={handleKeydown} />
+<svelte:window keydown={handleKeydown} />
 
 <div class="container mx-auto px-4">
   <div class="container mx-auto px-4">
@@ -158,8 +158,8 @@
     <Form
       bind:formApi
       options={formOptions}
-      onsubmit={handleSubmit}
-      onchange={handleFormChange}
+      on:submit={handleSubmit}
+      on:change={handleFormChange}
       submitText="Create Case"
       submitVariant="primary"
       showResetButton={true}
@@ -193,12 +193,12 @@
                 error={formErrors.title}
                 data-icon="${1}"
                 clearable
-                oninput={(e) =>
+                on:input={(e) =>
                   formApi?.setField(
                     "title",
                     (e.target as HTMLInputElement)?.value
                   )}
-                onblur={() => formApi?.touchField("title")}
+                on:blur={() => formApi?.touchField("title")}
               />
             </div>
 
@@ -218,12 +218,12 @@
                 class:border-red-300={errors.description}
                 class:border-green-300={values.description &&
                   !errors.description}
-                oninput={(e) =>
+                input={(e) =>
                   formApi.setField(
                     "description",
                     (e.target as HTMLTextAreaElement)?.value
                   )}
-                onblur={() => formApi.touchField("description")}
+                on:blur={() => formApi.touchField("description")}
               ></textarea>
               {#if errors.description}
                 <p class="container mx-auto px-4">
@@ -243,12 +243,12 @@
                 id="case-priority"
                 class="container mx-auto px-4"
                 value={values.priority || "medium"}
-                onchange={(e) =>
+                change={(e) =>
                   formApi.setField(
                     "priority",
                     (e.target as HTMLSelectElement)?.value
                   )}
-                onblur={() => formApi.touchField("priority")}
+                on:blur={() => formApi.touchField("priority")}
               >
                 <option value="low">🟢 Low</option>
                 <option value="medium">🟡 Medium</option>
@@ -264,12 +264,12 @@
                 value={values.dueDate || ""}
                 error={errors.dueDate}
                 data-icon="${1}"
-                oninput={(e) =>
+                on:input={(e) =>
                   formApi.setField(
                     "dueDate",
                     (e.target as HTMLInputElement)?.value
                   )}
-                onblur={() => formApi.touchField("dueDate")}
+                on:blur={() => formApi.touchField("dueDate")}
               />
             </div>
           </div>
@@ -291,12 +291,12 @@
                 value={values.assignedTo || ""}
                 error={errors.assignedTo}
                 data-icon="${1}"
-                oninput={(e) =>
+                on:input={(e) =>
                   formApi.setField(
                     "assignedTo",
                     (e.target as HTMLInputElement)?.value
                   )}
-                onblur={() => formApi.touchField("assignedTo")}
+                on:blur={() => formApi.touchField("assignedTo")}
               />
             </div>
 
@@ -310,12 +310,12 @@
                     error={errors.tags}
                     data-icon="${1}"
                     clearable
-                    oninput={(e) =>
+                    on:input={(e) =>
                       formApi.setField(
                         "tags",
                         (e.target as HTMLInputElement)?.value
                       )}
-                    onblur={() => formApi.touchField("tags")}
+                    on:blur={() => formApi.touchField("tags")}
                   />
                 </div>
                 <Button

@@ -127,13 +127,13 @@ export interface DocumentClassification {
   keyTerms?: string[];
 }
 
-export interface UploadAnalysisResult {
+export interface UploadProcessingResult {
   contentExtracted: boolean;
   textLength: number;
   embeddingsGenerated: boolean;
   objectsDetected?: DetectedObject[];
   ocrResults?: OCRResult[];
-  legalAnalysis?: LegalAnalysisResult;
+  legalAnalysis?: UploadAnalysisResult;
   processingTime: number;
   processingSteps: CompletedStep[];
 }
@@ -161,7 +161,7 @@ export interface OCRWord {
   boundingBox: { x: number; y: number; width: number; height: number };
 }
 
-export interface LegalAnalysisResult {
+export interface UploadAnalysisResult {
   documentType: string;
   parties: string[];
   keyDates: Date[];

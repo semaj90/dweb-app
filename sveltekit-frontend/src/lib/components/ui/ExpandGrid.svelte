@@ -29,7 +29,7 @@ https://svelte.dev/e/js_parse_error -->
 
   
               
-  let className = "";
+  let class = "";
   ;
 
   
@@ -69,10 +69,10 @@ https://svelte.dev/e/js_parse_error -->
     --expand-duration: {expandDuration};
     --easing: {easing};
   "
-  onmouseenter={handleMouseEnter}
-  onmouseleave={handleMouseLeave}
-  onfocusin={handleFocusIn}
-  onfocusout={handleFocusOut}
+  on:mouseenter={handleMouseEnter}
+  on:mouseleave={handleMouseLeave}
+  on:focusin={handleFocusIn}
+  on:focusout={handleFocusOut}
   role="grid"
   tabindex={0}
 >

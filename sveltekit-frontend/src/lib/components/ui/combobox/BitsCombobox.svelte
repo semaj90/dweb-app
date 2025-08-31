@@ -164,7 +164,7 @@
       <Combobox.Input
         id={inputId}
         placeholder={open ? searchPlaceholder : placeholder}
-        class={cn(
+        className={cn(
           'flex h-9 w-full items-center justify-between rounded-md border bg-transparent px-3 py-2 text-sm font-mono ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
           'border-yorha-border bg-yorha-bg-tertiary text-yorha-text-primary',
           'focus:ring-yorha-primary',
@@ -253,7 +253,7 @@
           {option.label}
           <button
             type="button"
-            on:click={() => removeValue(option.value)}
+            click={() => removeValue(option.value)}
             class="hover:bg-yorha-primary/20 rounded p-0.5"
           >
             <X class="w-3 h-3" />

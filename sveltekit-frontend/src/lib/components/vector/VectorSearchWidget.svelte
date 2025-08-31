@@ -151,14 +151,14 @@ Compact searchable component for embedding in other interfaces
       type="text"
       {placeholder}
       class="vector-search-input pl-10 {searchQuery ? 'pr-10' : 'pr-3'} {compact ? 'h-8 text-sm' : 'h-10'}"
-      onfocus={() => { if (searchResults.length > 0) isOpen = true; }}
+      on:focus={() => { if (searchResults.length > 0) isOpen = true; }}
     />
 
     {#if searchQuery}
       <button
         type="button"
         class="absolute inset-y-0 right-0 pr-3 flex items-center"
-        on:click={clearSearch}
+        click={clearSearch}
       >
         <X class="h-4 w-4 text-muted-foreground hover:text-foreground" />
       </button>
@@ -178,7 +178,7 @@ Compact searchable component for embedding in other interfaces
             <button
               type="button"
               class="w-full text-left p-3 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
-              on:click={() => selectResult(result)}
+              click={() => selectResult(result)}
             >
               <div class="flex items-start justify-between mb-2">
                 <div class="flex items-center gap-2">

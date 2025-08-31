@@ -123,7 +123,7 @@
       {#each demoSections as section (section.id)}
         <button
           class={tabClasses(section.id)}
-          on:click={() => currentTab = section.id}
+          click={() => currentTab = section.id}
         >
           <div class="flex items-center gap-2">
             <section.icon class="w-4 h-4" />
@@ -307,7 +307,7 @@
 
         <!-- Case Management Dialog -->
         <Dialog
-          open={dialogOpen} onopenchange={(open) => dialogOpen = open}
+          open={dialogOpen} on:openchange={(open) => dialogOpen = open}
           size="lg"
           legal
           caseManagement
@@ -374,7 +374,7 @@
 
         <!-- Evidence Upload Dialog -->
         <Dialog
-          open={evidenceDialogOpen} onopenchange={(open) => evidenceDialogOpen = open}
+          open={evidenceDialogOpen} on:openchange={(open) => evidenceDialogOpen = open}
           size="md"
           legal
           evidenceAnalysis

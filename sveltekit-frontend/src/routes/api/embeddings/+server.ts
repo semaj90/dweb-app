@@ -1,5 +1,6 @@
-import type { RequestHandler } from '$lib/types/server';
 import { json } from "@sveltejs/kit";
+import type { RequestHandler } from './$types';
+
 
 // Embeddings API Endpoint
 // Handles embedding generation and bulk embedding operations

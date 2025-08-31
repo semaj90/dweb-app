@@ -257,8 +257,8 @@
 				<div 
 					class="border-2 border-dashed border-yorha-border rounded-lg p-8 text-center transition-colors duration-200 hover:border-yorha-primary hover:bg-yorha-bg-secondary/50"
 					class:border-yorha-primary={uploadedFile}
-					ondrop={handleDrop}
-					ondragover={handleDragOver}
+					on:drop={handleDrop}
+					on:dragover={handleDragOver}
 					role="button"
 					tabindex="0"
 				>
@@ -285,7 +285,7 @@
 						type="file"
 						accept=".pdf,.png,.jpg,.jpeg,.tiff"
 						class="hidden"
-						onchange={(e) => {
+						change={(e) => {
 							const files = e.target?.files;
 							if (files && files.length > 0) {
 								uploadedFile = files[0];
@@ -350,7 +350,7 @@
 			</CardTitle>
 		</CardHeader>
 		<CardContent>
-			<form onsubmit|preventDefault={handleSubmit} class="space-y-6">
+			<form on:submit|preventDefault={handleSubmit} class="space-y-6">
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 					{#each populatedFields as field (field.name)}
 						<div class="space-y-2" transition:fade>
@@ -381,7 +381,7 @@
 									bind:value={field.value}
 									placeholder={`Enter ${field.label.toLowerCase()}...`}
 									class="min-h-[80px] bg-yorha-bg-secondary border-yorha-border text-yorha-text-primary"
-									oninput={(e) => handleFieldChange(field.name, e.target.value)}
+									on:input={(e) => handleFieldChange(field.name, e.target.value)}
 								/>
 							{:else}
 								<Input
@@ -391,7 +391,7 @@
 									class="bg-yorha-bg-secondary border-yorha-border text-yorha-text-primary"
 									class:border-yorha-danger={$formErrors[field.name]}
 									class:border-yorha-success={field.confidence && field.confidence > 0.8}
-									oninput={(e) => handleFieldChange(field.name, e.target.value)}
+									on:input={(e) => handleFieldChange(field.name, e.target.value)}
 								/>
 							{/if}
 

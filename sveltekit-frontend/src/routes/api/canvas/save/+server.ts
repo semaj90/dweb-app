@@ -1,6 +1,7 @@
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from './$types';
 import { loki } from "$lib/stores/lokiStore";
+import type { RequestHandler } from './$types';
+
 
 export const POST: RequestHandler = async ({ request, locals }) => {
   try {

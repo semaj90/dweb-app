@@ -270,7 +270,7 @@
   type="file"
   {multiple}
   accept={acceptedTypes.join(",")}
-  on:change={handleFileSelect}
+  change={handleFileSelect}
   class="hidden"
 />
 
@@ -293,8 +293,8 @@
       on:dragover={handleDragOver}
       on:dragleave={handleDragLeave}
       on:drop={handleDrop}
-      on:click={openFileDialog}
-      on:keydown={(e: KeyboardEvent) => e.key === "Enter" && openFileDialog()}
+      click={openFileDialog}
+      keydown={(e: KeyboardEvent) => e.key === "Enter" && openFileDialog()}
       role="button"
       tabindex="0"
       aria-label="File upload area"
@@ -414,7 +414,7 @@
               {#each formState.tags as tag}
                 <Badge variant="secondary" class="gap-1 inline-flex items-center">
                   <span>{tag}</span>
-                  <button type="button" class="ml-2" on:click={() => removeTag(tag)} disabled={isUploading} aria-label="Remove tag">
+                  <button type="button" class="ml-2" click={() => removeTag(tag)} disabled={isUploading} aria-label="Remove tag">
                     <X class="h-3 w-3" />
                   </button>
                 </Badge>

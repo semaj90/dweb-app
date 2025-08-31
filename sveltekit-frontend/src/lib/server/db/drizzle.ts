@@ -1,9 +1,9 @@
 
 // src/lib/server/db/drizzle.ts
-import { drizzle } from "drizzle-orm/node-postgres";
+import { drizzle } from "drizzle-orm/postgres-js";
 import { Pool } from "pg";
 import * as schema from './schema-postgres';
-import type { NodePgDatabase } from "drizzle-orm/node-postgres";
+import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 // Create a mock pool for build time
 const createMockPool = () =>
@@ -35,7 +35,7 @@ export const pool = isBuilding
     });
 
 // Properly typed database instance
-export const db: NodePgDatabase<typeof schema> = drizzle(pool, {
+export const db: PostgresJsDatabase<typeof schema> = drizzle(pool, {
   schema,
   logger: false,
 });

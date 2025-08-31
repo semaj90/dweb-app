@@ -1,8 +1,9 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { json, error } from "@sveltejs/kit";
 import { writeFile } from "fs/promises";
 import { join } from "path";
 import { spawn } from "child_process";
+import type { RequestHandler } from './$types';
+
 
 export interface AnalyzeRequest {
   caseId: string;

@@ -332,7 +332,7 @@
   });
 </script>
 
-<div class="enhanced-inline-editor {className}" class:processing={isProcessing}>
+<div class="enhanced-inline-editor {class}" class:processing={isProcessing}>
   <!-- Main editor -->
   <div
     bind:this={editorElement}
@@ -342,9 +342,9 @@
     aria-multiline="true"
     class="editor-content"
     {placeholder}
-    oninput={handleInput}
-    onkeydown={handleKeyDown}
-    onfocus={() => generateSuggestions(value, 0)}
+    input={handleInput}
+    keydown={handleKeyDown}
+    on:focus={() => generateSuggestions(value, 0)}
   >
     {value}
   </div>
@@ -366,7 +366,7 @@
     >
       <div class="suggestion-header">
         <span class="suggestion-title">AI Suggestions</span>
-        <button class="close-btn" on:click={hideSuggestions}>×</button>
+        <button class="close-btn" click={hideSuggestions}>×</button>
       </div>
       
       <div class="suggestions-list">
@@ -374,7 +374,7 @@
           <button
             class="suggestion-item"
             class:selected={index === selectedSuggestionIndex}
-            on:click={() => applySuggestion(suggestion)}
+            click={() => applySuggestion(suggestion)}
           >
             <div class="suggestion-content">
               <div class="suggestion-text">{suggestion.text}</div>

@@ -1,4 +1,7 @@
-import type { RequestHandler } from '@sveltejs/kit';
+
+
+import { ensureError } from '$lib/utils/ensure-error';
+import type { RequestHandler } from './$types';
 
 // Simplified Ollama API route for Legal AI Chat
 // SvelteKit 2.0 + Svelte 5 + Direct Ollama integration
@@ -47,14 +50,14 @@ export const POST: RequestHandler = async ({ request }) => {
 
     // Validate input
     if (!message?.trim()) {
-      throw error(400, { message: "Message is required" });
+      throw error(400, ensureError({ message: "Message is required" }));
     }
 
     // Check Ollama health
     const isHealthy = await ollamaService.isHealthy();
     if (!isHealthy) {
       logger.error("Ollama service is not healthy");
-      throw error(503, { message: "AI service is currently unavailable" });
+      throw error(503, ensureError({ message: "AI service is currently unavailable" }));
     }
 
     // Add legal AI system prompt
@@ -78,9 +81,9 @@ export const POST: RequestHandler = async ({ request }) => {
       throw err; // Re-throw SvelteKit errors
     }
 
-    throw error(500, {
+    throw error(500, ensureError({
       message: dev ? err.message : "Internal server error",
-    });
+    }));
   }
 };
 

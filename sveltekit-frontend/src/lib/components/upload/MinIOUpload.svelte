@@ -297,18 +297,18 @@
         class:has-file={$form.file}
         role="button"
         tabindex="0"
-        ondrop={handleDrop}
-        ondragover={handleDragOver}
-        ondragleave={handleDragLeave}
-        on:click={() => fileInput?.click()}
-        onkeydown={(e) => e.key === 'Enter' && fileInput?.click()}
+        on:drop={handleDrop}
+        on:dragover={handleDragOver}
+        on:dragleave={handleDragLeave}
+        click={() => fileInput?.click()}
+        on:keydown={(e) => e.key === 'Enter' && fileInput?.click()}
       >
         <input
           bind:this={fileInput}
           type="file"
           name="file"
           accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.tiff"
-          onchange={handleFileSelect}
+          change={handleFileSelect}
           style="display: none"
           disabled={disabled || $submitting}
         />
@@ -323,7 +323,7 @@
             <div class="file-info">
               <div class="file-name">{$form.file.name}</div>
               <div class="file-size">{formatFileSize($form.file.size)}</div>
-              <button type="button" class="remove-file" on:click={removeFile}>
+              <button type="button" class="remove-file" click={removeFile}>
                 ✕ Remove
               </button>
             </div>
@@ -566,7 +566,7 @@
         <button
           type="button"
           class="retry-button"
-          on:click={() => {
+          click={() => {
             if (evidenceActor) {
               processingError = null;
               uploadStatus = 'processing';

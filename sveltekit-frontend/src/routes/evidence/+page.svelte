@@ -612,7 +612,7 @@
             bind:enabled={thinkingStyleEnabled}
             premium={true}
             size="sm"
-            ontoggle={handleThinkingToggle}
+            on:toggle={handleThinkingToggle}
           />
         </div>
 
@@ -1024,7 +1024,7 @@
                   type="checkbox"
                   class="input-nes-primary w-4 h-4"
                   checked={selectedEvidence.has(evidence.id)}
-                  onchange={() => toggleEvidenceSelection(evidence.id)}
+                  change={() => toggleEvidenceSelection(evidence.id)}
                   aria-label="Select evidence {evidence.title || 'Untitled Evidence'}"
                 />
                 
@@ -1149,7 +1149,7 @@
                   type="checkbox"
                   class="mx-auto px-4 max-w-7xl"
                   checked={selectedEvidence.has(evidence.id)}
-                  onchange={() => toggleEvidenceSelection(evidence.id)}
+                  change={() => toggleEvidenceSelection(evidence.id)}
                   aria-label="Select evidence {evidence.title ||
                     'Untitled Evidence'}"
                 />
@@ -1346,7 +1346,7 @@
   bind:open={validationModal.open}
   evidence={validationModal.evidence}
   aiEvent={validationModal.aiEvent}
-  oncomplete={handleValidationComplete}
+  on:complete={handleValidationComplete}
 />
 
 <!-- AI Analysis Results Modal -->
@@ -1394,7 +1394,7 @@
         ">Save Analysis</Button>
       </div>
     </div>
-    <div class="mx-auto px-4 max-w-7xl" onclick={closeAnalysisModal}></div>
+    <div class="mx-auto px-4 max-w-7xl" click={closeAnalysisModal}></div>
   </div>
 {/if}
 
@@ -1407,8 +1407,8 @@
         multiple={true}
         maxFiles={10}
         maxFileSize={50 * 1024 * 1024}
-        onupload={handleFileUpload}
-        oncancel={() => (showAdvancedUpload = false)}
+        on:upload={handleFileUpload}
+        on:cancel={() => (showAdvancedUpload = false)}
       />
     </div>
     <div
@@ -1416,8 +1416,8 @@
       role="button"
       tabindex={0}
       aria-label="Close modal"
-      on:click={() => (showAdvancedUpload = false)}
-      onkeydown={(e) => e.key === "Escape" && (showAdvancedUpload = false)}
+      click={() => (showAdvancedUpload = false)}
+      on:keydown={(e) => e.key === "Escape" && (showAdvancedUpload = false)}
     ></div>
   </div>
 {/if}

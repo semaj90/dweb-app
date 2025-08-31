@@ -16,7 +16,7 @@
     maxFiles = 10,
     onUploadComplete,
     onUploadError,
-    class: className,
+    class: class,
     id,
     'data-testid': testId,
     formData = $bindable()
@@ -239,13 +239,13 @@
     class:bg-blue-50={dragActive}
     class:border-gray-300={!dragActive}
     class:bg-gray-50={!dragActive}
-    ondragover={handleDragOver}
-    ondragleave={handleDragLeave}
-    ondrop={handleDrop}
+    on:dragover={handleDragOver}
+    on:dragleave={handleDragLeave}
+    on:drop={handleDrop}
     role="button"
     tabindex="0"
-    on:click={() => fileInput.click()}
-    onkeydown={(e) => e.key === 'Enter' && fileInput.click()}
+    click={() => fileInput.click()}
+    on:keydown={(e) => e.key === 'Enter' && fileInput.click()}
   >
     <div class="space-y-4">
       <div class="text-4xl">📁</div>
@@ -265,7 +265,7 @@
     type="file"
     multiple
     accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.tiff,.bmp"
-    onchange={handleFileInputChange}
+    change={handleFileInputChange}
     class="hidden"
   />
 

@@ -60,7 +60,7 @@
       // Setup real-time updates via Server-Sent Events
       eventSource = new EventSource('/api/admin/cluster/events');
 
-      eventSource.onopen = () => {
+      eventSource.on:open=() => {
         isConnected = true;
         console.log('🔗 Connected to cluster monitoring');
       };

@@ -1,9 +1,10 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
 import { productionLogger } from '$lib/server/production-logger';
 import { db } from '$lib/server/db/index';
 import { users } from '$lib/server/db/schema-postgres';
 import { eq } from 'drizzle-orm';
+import type { RequestHandler } from './$types';
+
 
 export interface WorkflowTest {
   name: string;

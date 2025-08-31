@@ -469,7 +469,7 @@ https://svelte.dev/e/js_parse_error -->
 </script>
 
 <!-- Main Search Interface -->
-<div class="enhanced-vector-search {className}">
+<div class="enhanced-vector-search {class}">
   <!-- Search Header -->
   <div class="search-header">
     <div class="search-input-container">
@@ -479,7 +479,7 @@ https://svelte.dev/e/js_parse_error -->
           bind:value={$searchQuery}
           placeholder="Search legal documents with AI-powered semantic search..."
           class="search-input"
-          onkeydown={(e) => e.key === "Enter" && performSearch()}
+          on:keydown={(e) => e.key === "Enter" && performSearch()}
           disabled={$isSearching}
         />
         {#if $isSearching}
@@ -576,7 +576,7 @@ https://svelte.dev/e/js_parse_error -->
                   bind:checked={
                     $searchFilters.documentTypes.includes(type.value
                   }
-                  onchange={() => {
+                  on:change={() => {
                     searchFilters.update((f) => {
                       if (f.documentTypes.includes(type.value)) {
                         f.documentTypes = f.documentTypes.filter(
@@ -604,7 +604,7 @@ https://svelte.dev/e/js_parse_error -->
                   bind:checked={
                     $searchFilters.jurisdictions.includes(jurisdiction.value
                   }
-                  onchange={() => {
+                  on:change={() => {
                     searchFilters.update((f) => {
                       if (f.jurisdictions.includes(jurisdiction.value)) {
                         f.jurisdictions = f.jurisdictions.filter(

@@ -88,7 +88,7 @@ https://svelte.dev/e/js_parse_error -->
 
   <!-- Input area -->
   <div class="border-t p-4">
-    <form onsubmit|preventDefault={handleSubmit} class="flex space-x-2">
+    <form on:submit|preventDefault={handleSubmit} class="flex space-x-2">
       <Input
         type="text"
         placeholder="Ask about your legal case..."

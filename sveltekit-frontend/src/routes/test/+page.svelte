@@ -79,6 +79,58 @@
   function clearTests() {
     testResults = [];
   }
+
+  async function runCRUDTests() {
+    testResults = [];
+    addTestResult('🔧 Starting CRUD API tests...');
+
+    // Test 1: CRUD Health Check
+    try {
+      const response = await fetch('/test/crud');
+      if (response.ok) {
+        addTestResult('✅ CRUD route accessible');
+      } else {
+        addTestResult(`⚠️ CRUD route returned ${response.status}`);
+      }
+    } catch (error) {
+      addTestResult(`❌ CRUD route error: ${error}`);
+    }
+
+    // Test 2: API Health Check via JSON request
+    try {
+      const response = await fetch('/test/crud', {
+        headers: { 'Accept': 'application/json' }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        addTestResult('✅ CRUD API health check passed');
+        addTestResult(`   Database: ${data.health?.database?.connected ? 'Connected' : 'Offline'}`);
+      } else {
+        addTestResult(`⚠️ CRUD API health check failed: ${response.status}`);
+      }
+    } catch (error) {
+      addTestResult(`❌ CRUD API error: ${error}`);
+    }
+
+    // Test 3: DELETE endpoint test (without actually deleting)
+    try {
+      const response = await fetch('/test/crud?id=test-id', {
+        method: 'DELETE'
+      });
+      // We expect this to fail because 'test-id' doesn't exist
+      if (response.status === 404) {
+        addTestResult('✅ DELETE endpoint responds correctly to invalid ID');
+      } else if (response.status === 400) {
+        addTestResult('✅ DELETE endpoint validates required parameters');
+      } else {
+        addTestResult(`⚠️ DELETE endpoint returned unexpected status: ${response.status}`);
+      }
+    } catch (error) {
+      addTestResult(`❌ DELETE endpoint error: ${error}`);
+    }
+
+    addTestResult('🎯 CRUD API test complete!');
+  }
 </script>
 
 <svelte:head>
@@ -87,8 +139,41 @@
 
 <div class="p-8 max-w-6xl mx-auto">
   <div class="mb-8">
-    <h1 class="text-4xl font-bold mb-2">🤖 AI Agent Test Page</h1>
-    <p class="text-gray-600">Comprehensive testing for the Enhanced AI Agent Stack</p>
+    <h1 class="text-4xl font-bold mb-2">🧪 Test Navigation Hub</h1>
+    <p class="text-gray-600">Route testing, CRUD operations, SSR validation, and system health monitoring</p>
+  </div>
+
+  <!-- Quick Navigation -->
+  <div class="mb-8 p-6 border rounded-lg bg-blue-50">
+    <h2 class="text-2xl font-semibold mb-4">🛣️ Test Routes</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <a 
+        href="/test/crud" 
+        class="p-4 border-2 border-blue-200 rounded-lg hover:border-blue-400 transition-colors bg-white"
+      >
+        <div class="font-semibold text-blue-800">CRUD Test Interface</div>
+        <div class="text-sm text-gray-600">Full database operations with gaming UI</div>
+        <div class="text-xs text-gray-500 mt-1">/test/crud</div>
+      </a>
+      
+      <button 
+        onclick={() => runCRUDTests()}
+        class="p-4 border-2 border-green-200 rounded-lg hover:border-green-400 transition-colors bg-white text-left"
+      >
+        <div class="font-semibold text-green-800">CRUD API Tests</div>
+        <div class="text-sm text-gray-600">Test all CRUD endpoints</div>
+        <div class="text-xs text-gray-500 mt-1">API validation</div>
+      </button>
+      
+      <button 
+        onclick={() => runSystemTests()}
+        class="p-4 border-2 border-purple-200 rounded-lg hover:border-purple-400 transition-colors bg-white text-left"
+      >
+        <div class="font-semibold text-purple-800">System Health Check</div>
+        <div class="text-sm text-gray-600">Database, SSR, API status</div>
+        <div class="text-xs text-gray-500 mt-1">Health monitoring</div>
+      </button>
+    </div>
   </div>
 
   <!-- Status Panel -->
@@ -128,7 +213,7 @@
         placeholder="Type a message to test AI response..."
       />
       <button
-        onclick={sendTestMessage}
+        click={sendTestMessage}
         class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
         disabled={!$isAIConnected}
       >
@@ -166,13 +251,13 @@
       <h2 class="text-2xl font-semibold">🧪 System Test Results</h2>
       <div class="space-x-2">
         <button
-          onclick={runSystemTests}
+          click={runSystemTests}
           class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
         >
           Re-run Tests
         </button>
         <button
-          onclick={clearTests}
+          click={clearTests}
           class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
         >
           Clear
@@ -233,11 +318,17 @@
       <a href="/" class="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600">
         Back to App
       </a>
-      <a href="/api/ai/chat" class="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600">
+      <a href="/test/crud" class="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600">
+        CRUD Tests
+      </a>
+      <a href="/test/status" class="px-3 py-1 bg-purple-500 text-white rounded text-sm hover:bg-purple-600">
+        Route Status
+      </a>
+      <a href="/api/ai/chat" class="px-3 py-1 bg-orange-500 text-white rounded text-sm hover:bg-orange-600">
         API Health
       </a>
       <button
-        onclick={() => aiAgentStore.clearConversation()}
+        click={() => aiAgentStore.clearConversation()}
         class="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
       >
         Clear Chat

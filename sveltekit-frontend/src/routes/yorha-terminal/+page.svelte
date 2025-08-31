@@ -344,19 +344,19 @@
 			<div class="role-switcher">
 				<Button
 					class="role-btn {currentRole.value === 'detective' ? 'active' : ''}"
-					onclick={() => switchRole("detective")}
+					on:click={() => switchRole("detective")}
 				>
 					Detective
 				</Button>
 				<Button
 					class="role-btn {currentRole.value === 'prosecutor' ? 'active' : ''}"
-					onclick={() => switchRole("prosecutor")}
+					on:click={() => switchRole("prosecutor")}
 				>
 					Prosecutor
 				</Button>
 				<Button
 					class="role-btn {currentRole.value === 'admin' ? 'active' : ''}"
-					onclick={() => switchRole("admin")}
+					on:click={() => switchRole("admin")}
 				>
 					Admin
 				</Button>
@@ -382,7 +382,7 @@
 					bind:value={terminalInput.value}
 					class="terminal-input"
 					disabled={isProcessing.value}
-					on:keydown={handleKeyDown}
+					keydown={handleKeyDown}
 					placeholder=""
 					spellcheck="false"
 					autocomplete="off"
@@ -398,11 +398,11 @@
 
 	<!-- Quick Commands -->
 	<div class="quick-commands">
-		<Button onclick={() => { terminalInput.value = "help"; executeCommand(); }}>Help</Button>
-		<Button onclick={() => { terminalInput.value = "status"; executeCommand(); }}>Status</Button>
-		<Button onclick={() => { terminalInput.value = "context7"; executeCommand(); }}>Test Context7</Button>
-		<Button onclick={() => { terminalInput.value = "analyze contract dispute"; executeCommand(); }}>Sample Analysis</Button>
-		<Button onclick={() => { terminalInput.value = "clear"; executeCommand(); }}>Clear</Button>
+		<Button on:click={() => { terminalInput.value = "help"; executeCommand(); }}>Help</Button>
+		<Button on:click={() => { terminalInput.value = "status"; executeCommand(); }}>Status</Button>
+		<Button on:click={() => { terminalInput.value = "context7"; executeCommand(); }}>Test Context7</Button>
+		<Button on:click={() => { terminalInput.value = "analyze contract dispute"; executeCommand(); }}>Sample Analysis</Button>
+		<Button on:click={() => { terminalInput.value = "clear"; executeCommand(); }}>Clear</Button>
 	</div>
 </div>
 

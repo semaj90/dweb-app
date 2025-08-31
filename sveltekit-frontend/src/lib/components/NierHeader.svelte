@@ -59,7 +59,7 @@ import type { User } from '$lib/types/user';
     <div class="space-y-4">
       <button
         class="space-y-4"
-        on:click={() => handleNavigation("/")}
+        click={() => handleNavigation("/")}
         aria-label="Go to homepage"
       >
         <Palette size={24} />
@@ -71,7 +71,7 @@ import type { User } from '$lib/types/user';
     <nav class="space-y-4" aria-label="Main navigation">
       <button
         class="space-y-4"
-        on:click={() => handleNavigation("/dashboard")}
+        click={() => handleNavigation("/dashboard")}
         aria-label="Dashboard"
       >
         <Home size={18} />
@@ -80,7 +80,7 @@ import type { User } from '$lib/types/user';
 
       <button
         class="space-y-4"
-        on:click={() => handleNavigation("/cases")}
+        click={() => handleNavigation("/cases")}
         aria-label="Cases"
       >
         <FolderOpen size={18} />
@@ -89,7 +89,7 @@ import type { User } from '$lib/types/user';
 
       <button
         class="space-y-4"
-        on:click={() => handleNavigation("/interactive-canvas")}
+        click={() => handleNavigation("/interactive-canvas")}
         aria-label="Interactive Canvas"
       >
         <Palette size={18} />
@@ -98,7 +98,7 @@ import type { User } from '$lib/types/user';
 
       <button
         class="space-y-4"
-        on:click={() => handleNavigation("/evidence/hash")}
+        click={() => handleNavigation("/evidence/hash")}
         aria-label="Hash Verification"
         title="Verify evidence file integrity"
       >
@@ -112,7 +112,7 @@ import type { User } from '$lib/types/user';
       <SearchInput
         placeholder="Search cases, evidence, notes..."
         value={searchQuery}
-        onsearch={handleSearch}
+        on:search={handleSearch}
       />
     </div>
 
@@ -122,7 +122,7 @@ import type { User } from '$lib/types/user';
         <div class="space-y-4">
           <button
             class="space-y-4"
-            on:click={() => toggleUserMenu()}
+            click={() => toggleUserMenu()}
             aria-label="User menu"
             aria-expanded={userMenuOpen}
           >
@@ -143,7 +143,7 @@ import type { User } from '$lib/types/user';
             <div class="space-y-4" role="menu">
               <button
                 class="space-y-4"
-                on:click={() => handleNavigation("/profile")}
+                click={() => handleNavigation("/profile")}
                 role="menuitem"
               >
                 <UserIcon size={16} />
@@ -152,7 +152,7 @@ import type { User } from '$lib/types/user';
 
               <button
                 class="space-y-4"
-                on:click={() => handleNavigation("/settings")}
+                click={() => handleNavigation("/settings")}
                 role="menuitem"
               >
                 <Settings size={16} />
@@ -163,7 +163,7 @@ import type { User } from '$lib/types/user';
 
               <button
                 class="space-y-4"
-                on:click={() => handleLogout()}
+                click={() => handleLogout()}
                 role="menuitem"
               >
                 <LogOut size={16} />
@@ -175,7 +175,7 @@ import type { User } from '$lib/types/user';
       {:else}
         <button
           class="space-y-4"
-          on:click={() => handleNavigation("/login")}
+          click={() => handleNavigation("/login")}
           aria-label="Sign in"
         >
           Sign In
@@ -189,8 +189,8 @@ import type { User } from '$lib/types/user';
 {#if userMenuOpen}
   <div
     class="space-y-4"
-    on:click={() => closeUserMenu()}
-    onkeydown={(e) => e.key === "Escape" && closeUserMenu()}
+    click={() => closeUserMenu()}
+    on:keydown={(e) => e.key === "Escape" && closeUserMenu()}
     role="button"
     tabindex={-1}
     aria-label="Close user menu"

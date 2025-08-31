@@ -307,7 +307,7 @@
     />
     
     <button 
-      on:click={submitQuery}
+      click={submitQuery}
       disabled={$processing || !query}
       class="submit-btn"
     >
@@ -439,7 +439,7 @@
         <h4>Provide Feedback</h4>
         <div class="rating-buttons">
           {#each [1, 2, 3, 4, 5] as rating}
-            <button on:click={() => submitFeedback(rating)}>
+            <button click={() => submitFeedback(rating)}>
               {rating} Star{rating > 1 ? 's' : ''}
             </button>
           {/each}

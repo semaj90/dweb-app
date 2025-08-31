@@ -25,7 +25,7 @@ type CanvasEvent =
   | { type: "ADD_CONNECTION"; connection: CanvasConnection }
   | { type: "REMOVE_CONNECTION"; connectionId: string }
   | { type: "SAVE_STATE" }
-  | { type: "LOAD_STATE"; state: CanvasState }
+  | { type: "LOAD_STATE"; state: InteractiveCanvasState }
   | { type: "CLEAR_CANVAS" }
   | { type: "ERROR"; error: string }
   | { type: "CLEAR_ERROR" };

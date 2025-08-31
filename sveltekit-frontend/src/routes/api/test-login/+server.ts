@@ -1,3 +1,5 @@
+import type { RequestHandler } from './$types';
+
 // Test login endpoint to debug authentication
 import { json } from "@sveltejs/kit";
 

@@ -1,32 +1,116 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Go Microservices Proxy API
  * Handles routing between SvelteKit and Go services with JSON/Protocol Buffer support
  * POST /api/go - Route requests to appropriate Go microservice
  */
 
-import { json, error, type RequestHandler } from '@sveltejs/kit';
+
+import { ensureError } from '$lib/utils/ensure-error';
 import { dev } from '$app/environment';
 
-// Go microservices configuration
+// Go microservices configuration (37 services from ecosystem summary)
 const GO_SERVICES = {
+  // Tier 1: Core Services (Always Running)
   'enhanced-rag': {
     baseUrl: 'http://localhost:8094',
     healthPath: '/api/health',
     protocols: ['http', 'quic'],
     capabilities: ['ai', 'rag', 'gpu', 'som', 'xstate']
   },
-  'upload': {
+  'upload-service': {
     baseUrl: 'http://localhost:8093', 
     healthPath: '/health',
     protocols: ['http'],
     capabilities: ['file-upload', 'storage', 'processing']
   },
-  'kratos': {
+  'kratos-server': {
     baseUrl: 'http://localhost:50051',
     healthPath: '/health',
     protocols: ['grpc'],
     capabilities: ['legal-grpc', 'gpu-compute', 'search']
-  }
+  },
+  
+  // Tier 2: Advanced Services (New Implementations)
+  'advanced-cuda': {
+    baseUrl: 'http://localhost:8095',
+    healthPath: '/health',
+    protocols: ['http', 'quic', 'grpc'],
+    capabilities: ['kernel-splicing', 'attention', 'flash-attention', 'cuda-direct']
+  },
+  'dimensional-cache': {
+    baseUrl: 'http://localhost:8097',
+    healthPath: '/health',
+    protocols: ['http', 'quic'],
+    capabilities: ['multi-dimensional-cache', 'lru-eviction', 'vector-storage']
+  },
+  'xstate-manager': {
+    baseUrl: 'http://localhost:8098',
+    healthPath: '/health',
+    protocols: ['http', 'websocket'],
+    capabilities: ['idle-detection', 'state-management', 'rabbitmq-queue']
+  },
+  'module-manager': {
+    baseUrl: 'http://localhost:8099',
+    healthPath: '/health',
+    protocols: ['http', 'grpc'],
+    capabilities: ['hot-swap', 'module-loading', 'a-b-testing']
+  },
+  'recommendation-engine': {
+    baseUrl: 'http://localhost:8100',
+    healthPath: '/health',
+    protocols: ['http', 'websocket'],
+    capabilities: ['ai-recommendations', 'user-patterns', 'self-prompting']
+  },
+  
+  // Additional microservices (8101-8136 covering 37 total services)
+  'vector-service': { baseUrl: 'http://localhost:8101', healthPath: '/health', protocols: ['http', 'grpc'], capabilities: ['vector-search', 'similarity'] },
+  'load-balancer': { baseUrl: 'http://localhost:8102', healthPath: '/health', protocols: ['http', 'quic'], capabilities: ['load-balancing', 'failover'] },
+  'cluster-manager': { baseUrl: 'http://localhost:8103', healthPath: '/health', protocols: ['http', 'grpc'], capabilities: ['service-discovery', 'health-monitoring'] },
+  'gpu-indexer': { baseUrl: 'http://localhost:8104', healthPath: '/health', protocols: ['http'], capabilities: ['gpu-indexing', 'texture-processing'] },
+  'context7-error': { baseUrl: 'http://localhost:8105', healthPath: '/health', protocols: ['http'], capabilities: ['error-analysis', 'auto-fix'] },
+  'quic-gateway': { baseUrl: 'http://localhost:8106', healthPath: '/health', protocols: ['quic'], capabilities: ['quic-protocol', 'gateway'] },
+  'cuda-worker': { baseUrl: 'http://localhost:8107', healthPath: '/health', protocols: ['http'], capabilities: ['cuda-computation', 'worker-pool'] },
+  'vector-consumer': { baseUrl: 'http://localhost:8108', healthPath: '/health', protocols: ['http'], capabilities: ['vector-consumption', 'batch-processing'] },
+  'gin-upload': { baseUrl: 'http://localhost:8109', healthPath: '/health', protocols: ['http'], capabilities: ['gin-framework', 'file-upload'] },
+  'ingest-service': { baseUrl: 'http://localhost:8110', healthPath: '/health', protocols: ['http'], capabilities: ['data-ingestion', 'pipeline'] },
+  'vector-redis': { baseUrl: 'http://localhost:8111', healthPath: '/health', protocols: ['http'], capabilities: ['redis-vectors', 'caching'] },
+  'enhanced-rag-go125': { baseUrl: 'http://localhost:8112', healthPath: '/health', protocols: ['http', 'quic'], capabilities: ['go1.25', 'enhanced-rag', 'greenteagc'] },
+  'upload-service-go125': { baseUrl: 'http://localhost:8113', healthPath: '/health', protocols: ['http'], capabilities: ['go1.25', 'upload', 'optimized'] },
+  'cuda-ai-service': { baseUrl: 'http://localhost:8114', healthPath: '/health', protocols: ['http'], capabilities: ['cuda-ai', 'gpu-acceleration'] },
+  'vector-service-go125': { baseUrl: 'http://localhost:8115', healthPath: '/health', protocols: ['http'], capabilities: ['go1.25', 'vectors'] },
+  'load-balancer-go125': { baseUrl: 'http://localhost:8116', healthPath: '/health', protocols: ['http'], capabilities: ['go1.25', 'load-balancing'] },
+  'grpc-server-go125': { baseUrl: 'http://localhost:8117', healthPath: '/health', protocols: ['grpc'], capabilities: ['go1.25', 'grpc-optimized'] },
+  'rag-quic-go125': { baseUrl: 'http://localhost:8118', healthPath: '/health', protocols: ['quic'], capabilities: ['go1.25', 'quic-rag'] },
+  
+  // Protocol-specific services
+  'http-gateway': { baseUrl: 'http://localhost:8119', healthPath: '/health', protocols: ['http'], capabilities: ['http-gateway', 'routing'] },
+  'grpc-gateway': { baseUrl: 'http://localhost:8120', healthPath: '/health', protocols: ['grpc'], capabilities: ['grpc-gateway', 'transcoding'] },
+  'websocket-service': { baseUrl: 'http://localhost:8121', healthPath: '/health', protocols: ['websocket'], capabilities: ['real-time', 'events'] },
+  
+  // AI/ML specialized services
+  't5-transformer': { baseUrl: 'http://localhost:8122', healthPath: '/health', protocols: ['http'], capabilities: ['t5-processing', 'seq2seq'] },
+  'live-agent': { baseUrl: 'http://localhost:8123', healthPath: '/health', protocols: ['http', 'websocket'], capabilities: ['live-processing', 'real-time-ai'] },
+  'legal-ai': { baseUrl: 'http://localhost:8124', healthPath: '/health', protocols: ['http'], capabilities: ['legal-analysis', 'document-processing'] },
+  'multi-core-ollama': { baseUrl: 'http://localhost:8125', healthPath: '/health', protocols: ['http'], capabilities: ['ollama-cluster', 'load-balancing'] },
+  
+  // Storage and data services
+  'minio-proxy': { baseUrl: 'http://localhost:8126', healthPath: '/health', protocols: ['http'], capabilities: ['object-storage', 'file-proxy'] },
+  'postgres-proxy': { baseUrl: 'http://localhost:8127', healthPath: '/health', protocols: ['http'], capabilities: ['database-proxy', 'connection-pooling'] },
+  'neo4j-proxy': { baseUrl: 'http://localhost:8128', healthPath: '/health', protocols: ['http'], capabilities: ['graph-database', 'cypher-queries'] },
+  'qdrant-proxy': { baseUrl: 'http://localhost:8129', healthPath: '/health', protocols: ['http'], capabilities: ['vector-database', 'similarity-search'] },
+  
+  // Monitoring and observability
+  'metrics-collector': { baseUrl: 'http://localhost:8130', healthPath: '/health', protocols: ['http'], capabilities: ['metrics', 'telemetry'] },
+  'log-aggregator': { baseUrl: 'http://localhost:8131', healthPath: '/health', protocols: ['http'], capabilities: ['logging', 'aggregation'] },
+  'health-monitor': { baseUrl: 'http://localhost:8132', healthPath: '/health', protocols: ['http'], capabilities: ['health-checks', 'monitoring'] },
+  'alert-manager': { baseUrl: 'http://localhost:8133', healthPath: '/health', protocols: ['http'], capabilities: ['alerting', 'notifications'] },
+  
+  // Security and auth
+  'auth-service': { baseUrl: 'http://localhost:8134', healthPath: '/health', protocols: ['http'], capabilities: ['authentication', 'authorization'] },
+  'security-scanner': { baseUrl: 'http://localhost:8135', healthPath: '/health', protocols: ['http'], capabilities: ['security-scanning', 'vulnerability-detection'] },
+  'rate-limiter': { baseUrl: 'http://localhost:8136', healthPath: '/health', protocols: ['http'], capabilities: ['rate-limiting', 'throttling'] }
 } as const;
 
 // Request routing schema
@@ -101,28 +185,28 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 
     // Validate service
     if (!service || !GO_SERVICES[service]) {
-      throw error(400, {
+      throw error(400, ensureError({
         message: `Invalid service: ${service}. Available services: ${Object.keys(GO_SERVICES).join(', ')}`,
         code: 'INVALID_SERVICE'
-      });
+      }));
     }
 
     // Validate endpoint
     if (!endpoint) {
-      throw error(400, {
+      throw error(400, ensureError({
         message: 'Endpoint is required',
         code: 'MISSING_ENDPOINT'
-      });
+      }));
     }
 
     const serviceConfig = GO_SERVICES[service];
 
     // Protocol validation
     if (!serviceConfig.protocols.includes(protocol)) {
-      throw error(400, {
+      throw error(400, ensureError({
         message: `Service ${service} doesn't support protocol ${protocol}. Supported: ${serviceConfig.protocols.join(', ')}`,
         code: 'UNSUPPORTED_PROTOCOL'
-      });
+      }));
     }
 
     // Add client information to headers for logging

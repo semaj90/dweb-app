@@ -178,10 +178,10 @@
         class:textarea-error={showErrorState}
         class:textarea-success={showSuccessState}
         class:textarea-disabled={disabled}
-        oninput={handleInput}
-        onchange={handleChange}
-        onfocus={handleFocus}
-        onblur={handleBlur}
+        input={handleInput}
+        change={handleChange}
+        on:focus={handleFocus}
+        on:blur={handleBlur}
         aria-describedby="{name}-help {name}-error"
         aria-invalid={showErrorState}
       ></textarea>
@@ -208,10 +208,10 @@
         class:input-success={showSuccessState}
         class:input-disabled={disabled}
         class:pr-12={type === "password" && showPasswordToggle}
-        oninput={handleInput}
-        onchange={handleChange}
-        onfocus={handleFocus}
-        onblur={handleBlur}
+        input={handleInput}
+        change={handleChange}
+        on:focus={handleFocus}
+        on:blur={handleBlur}
         aria-describedby="{name}-help {name}-error"
         aria-invalid={showErrorState}
       />
@@ -221,7 +221,7 @@
         <button
           type="button"
           class="container mx-auto px-4"
-          on:click={() => togglePasswordVisibility()}
+          click={() => togglePasswordVisibility()}
           aria-label={showPassword ? "Hide password" : "Show password"}
           tabindex={-1}
         >

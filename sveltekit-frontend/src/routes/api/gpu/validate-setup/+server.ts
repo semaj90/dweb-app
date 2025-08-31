@@ -1,8 +1,9 @@
+import type { RequestHandler } from './$types';
+
 /**
  * GPU Setup Validation API - Check AI readiness for Legal PDF processing
  * Tests GPU, Ollama, and model availability
  */
-import { json, type RequestHandler } from '@sveltejs/kit';
 
 const GO_BASE = import.meta.env.GO_SERVICE_URL || import.meta.env.GO_SERVER_URL || import.meta.env.GO_MICROSERVICE_URL || "http://localhost:8084";
 

@@ -1,7 +1,8 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { json } from "@sveltejs/kit";
 import { cases } from "$lib/server/db/schema-postgres";
 import { db } from "$lib/server/db/drizzle";
+import type { RequestHandler } from './$types';
+
 
 export const GET: RequestHandler = async ({ params, locals }) => {
   try {

@@ -1,4 +1,5 @@
-import type { RequestHandler } from '@sveltejs/kit';
+
+import type { RequestHandler } from './$types';
 
 // Server-Sent Events API route for SSR-safe real-time updates
 import { createClient } from "redis";

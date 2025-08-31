@@ -89,8 +89,8 @@
 </script>
 
 <form
-  onsubmit={handleSubmit}
-  onreset={handleReset}
+  submit={handleSubmit}
+  on:reset={handleReset}
   class="space-y-6 {restProps.class || ''}"
   novalidate={restProps.novalidate}
   autocomplete={restProps.autocomplete}

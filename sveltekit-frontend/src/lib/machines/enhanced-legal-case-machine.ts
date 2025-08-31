@@ -7,7 +7,7 @@
 import { createMachine, assign, fromPromise } from 'xstate';
 import { db } from '../server/db/index';
 import { cases, evidence, legal_documents, documentChunks, users } from '../server/db/schema-postgres';
-import { eq, desc, and, sql } from 'drizzle-orm';
+import { sql, eq, and, desc } from '$lib/server/db/index';
 
 // Temporary type definition to fix import issues
 export type CaseForm = {

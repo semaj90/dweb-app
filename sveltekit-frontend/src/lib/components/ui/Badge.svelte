@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  
+
   interface Props {
     variant?: 'default' | 'secondary' | 'destructive' | 'outline';
     size?: 'default' | 'sm' | 'lg';

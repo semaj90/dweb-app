@@ -4,7 +4,7 @@
  * Production CRUD operations with multi-store vector search and persistence
  */
 import { db } from './index';
-import { sql, eq, and, desc } from 'drizzle-orm';
+import { sql, eq, and, desc } from './index';
 import { 
   cases, 
   evidence, 

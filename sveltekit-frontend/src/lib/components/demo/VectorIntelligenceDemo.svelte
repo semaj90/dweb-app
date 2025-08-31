@@ -288,7 +288,7 @@
               {#each searchHistory as query}
                 <button
                   class="w-full text-left p-2 text-sm rounded hover:bg-gray-100 transition-colors"
-                  on:click={() => useHistoryQuery(query)}
+                  click={() => useHistoryQuery(query)}
                 >
                   {query}
                 </button>

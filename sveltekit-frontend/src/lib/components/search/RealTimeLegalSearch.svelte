@@ -38,7 +38,7 @@
     enableAI?: boolean;
     maxResults?: number;
     autoSearch?: boolean;
-    className?: string;
+    class?: string;
   }
 
   let {
@@ -49,7 +49,7 @@
     enableAI = true,
     maxResults = 20,
     autoSearch = true,
-    className = ''
+    class = ''
   }: Props = $props();
 
   // Real-time search hooks
@@ -161,7 +161,7 @@
 </script>
 
 <!-- Enhanced Real-Time Search Interface -->
-<div class="real-time-search-container {className}">
+<div class="real-time-search-container {class}">
   <!-- Search Header with Status -->
   <div class="flex items-center gap-2 mb-4">
     <div class="flex-1">
@@ -225,7 +225,7 @@
           <button
             type="button"
             class="p-1 hover:bg-gray-100 rounded"
-            on:click={handleSearch}
+            click={handleSearch}
             disabled={!inputValue.trim()}
           >
             <Search class="h-4 w-4 text-gray-500" />
@@ -377,7 +377,7 @@
             <button
               type="button"
               class="block w-full text-left text-xs text-gray-600 hover:text-gray-900 py-1"
-              on:click={() => handleInputChange(query)}
+              click={() => handleInputChange(query)}
             >
               {query}
             </button>

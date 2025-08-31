@@ -1,6 +1,6 @@
-import type { RequestHandler } from '@sveltejs/kit';
-import { json, type RequestHandler } from "@sveltejs/kit";
 import orchestrator from "$lib/services/comprehensive-database-orchestrator";
+import type { RequestHandler } from './$types';
+
 // Orchestrator Startup API - Initialize and manage the comprehensive system
 // Handles startup, monitoring, and coordination of all services
 

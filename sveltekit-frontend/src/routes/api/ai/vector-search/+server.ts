@@ -1,6 +1,8 @@
 
 import { json } from '@sveltejs/kit';
 import { getEmbeddingRepository } from '../../../../lib/server/embedding/embedding-repository';
+import type { RequestHandler } from './$types';
+
 
 // Minimal vector search endpoint leveraging pgvector embedding repository
 export async function POST({ request }): Promise<any> {

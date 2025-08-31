@@ -1,10 +1,11 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Cognitive Cache API Endpoint
  * Unified interface for Reinforcement Learning Cache + GPU Shader Cache
  * Provides intelligent caching with ML-driven decision making
  */
 
-import { json, type RequestHandler } from '@sveltejs/kit';
 import { cognitiveCacheManager } from '$lib/services/cognitive-cache-integration';
 import { dev } from '$app/environment';
 

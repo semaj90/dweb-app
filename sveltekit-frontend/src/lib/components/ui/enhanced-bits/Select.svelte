@@ -142,7 +142,7 @@
 </script>
 
 <div class="select-wrapper" class:w-full={fullWidth}>
-  <SelectRoot {value} onvaluechange={handleValueChange} {disabled} type="single">
+  <SelectRoot {value} on:valuechange={handleValueChange} {disabled} type="single">
     <SelectTrigger class={triggerClasses}>
       <div class="select-value">
         {selectedLabel}

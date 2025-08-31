@@ -1,6 +1,7 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { json } from "@sveltejs/kit";
 import { testDatabaseConnection, initializeDatabase } from '$lib/database/connection';
+import type { RequestHandler } from './$types';
+
 
 export const GET: RequestHandler = async () => {
   try {

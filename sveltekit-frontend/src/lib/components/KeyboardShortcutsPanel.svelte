@@ -173,7 +173,7 @@
                       <div class="flex items-center gap-2">
                         <Switch 
                           checked={shortcut.enabled}
-                          onchange={() => toggleShortcut(shortcut)}
+                          on:change={() => toggleShortcut(shortcut)}
                         />
                         <Button 
                           size="sm" 

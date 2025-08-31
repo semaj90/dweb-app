@@ -218,7 +218,7 @@ export class ComprehensiveCachingArchitecture {
   // Legal compliance tracking
   private accessAuditLog: CacheAccessEntry[] = [];
   private privilegeViolationLog: any[] = [];
-  private complianceAlerts = writable<unknown[]>([]);
+  private complianceAlerts = writable<any[]>([]);
   
   // Encryption keys for sensitive data
   private encryptionKey: string = '';

@@ -331,25 +331,25 @@
     <nav class="demo-nav">
       <button
         class="nav-btn {currentView === 'grid' ? 'active' : ''}"
-        onclick={() => currentView = 'grid'}
+        click={() => currentView = 'grid'}
       >
         DATA GRID
       </button>
       <button
         class="nav-btn {currentView === 'analysis' ? 'active' : ''}"
-        onclick={() => currentView = 'analysis'}
+        click={() => currentView = 'analysis'}
       >
         AI ANALYSIS
       </button>
       <button
         class="nav-btn {currentView === 'form' ? 'active' : ''}"
-        onclick={() => currentView = 'form'}
+        click={() => currentView = 'form'}
       >
         DOCUMENT ENTRY
       </button>
       <button
         class="nav-btn"
-        onclick={() => modalOpen = true}
+        click={() => modalOpen = true}
       >
         CREATE NEW
       </button>
@@ -458,7 +458,7 @@
           {:else}
             <div class="no-analysis">
               <p>No analysis results available. Select a document and run analysis to see results here.</p>
-              <button class="demo-btn" onclick={() => currentView = 'grid'}>
+              <button class="demo-btn" click={() => currentView = 'grid'}>
                 Go to Document Grid
               </button>
             </div>
@@ -477,8 +477,8 @@
             fields={formFields}
             submitLabel="CREATE DOCUMENT"
             cancelLabel="ABORT"
-            onsubmit={createDocument}
-            oncancel={() => currentView = 'grid'}
+            on:submit={createDocument}
+            on:cancel={() => currentView = 'grid'}
           />
         </section>
       {/if}
@@ -489,7 +489,7 @@
       <YoRHaTerminal
         title="YoRHa Legal AI Command Terminal"
         isActive={terminalActive}
-        oncommand={handleTerminalCommand}
+        on:command={handleTerminalCommand}
       />
     </aside>
   </main>
@@ -499,7 +499,7 @@
     <YoRHaModal
       isOpen={modalOpen}
       title="Create New Legal Document"
-      onclose={() => modalOpen = false}
+      on:close={() => modalOpen = false}
     >
       <YoRHaForm
         title="Document Creation Interface"
@@ -507,8 +507,8 @@
         fields={formFields}
         submitLabel="CREATE"
         cancelLabel="CANCEL"
-        onsubmit={createDocument}
-        oncancel={() => modalOpen = false}
+        on:submit={createDocument}
+        on:cancel={() => modalOpen = false}
       />
     </YoRHaModal>
   {/if}
@@ -523,7 +523,7 @@
         </div>
         <button
           class="notification-close"
-          onclick={() => notifications = notifications.filter(n => n.id !== notification.id)}
+          click={() => notifications = notifications.filter(n => n.id !== notification.id)}
         >
           ✕
         </button>

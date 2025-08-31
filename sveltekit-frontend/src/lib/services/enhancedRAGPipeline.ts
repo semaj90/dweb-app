@@ -459,7 +459,7 @@ Format your response as JSON:
   /**
    * Self-organizing map for document clustering
    */
-  async createDocumentMap(documents: any[]): Promise<unknown[]> {
+  async createDocumentMap(documents: any[]): Promise<any[]> {
     // Generate embeddings for all documents
     const embeddings = await Promise.all(
       documents.map((doc) =>

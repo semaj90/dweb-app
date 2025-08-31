@@ -361,7 +361,7 @@
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "image/*";
-    input.onchange = (e) => {
+    input.on:change=(e) => {
       const file = (e.target as HTMLInputElement)?.files?.[0];
       if (file) {
         const reader = new FileReader();
@@ -411,7 +411,7 @@
     const input = document.createElement("input");
     input.type = "file";
     input.accept = ".json,.html";
-    input.onchange = (e) => {
+    input.on:change=(e) => {
       const file = (e.target as HTMLInputElement)?.files?.[0];
       if (file) {
         const reader = new FileReader();
@@ -458,14 +458,14 @@
     <div class="mx-auto px-4 max-w-7xl">
       <button
         class="mx-auto px-4 max-w-7xl"
-        on:click={() => saveContent()}
+        click={() => saveContent()}
         title="Save (Ctrl+S)"
       >
         <Save size="18" />
       </button>
       <button
         class="mx-auto px-4 max-w-7xl"
-        on:click={() => importDocument()}
+        click={() => importDocument()}
         title="Import Document"
       >
         <Upload size="18" />
@@ -476,11 +476,11 @@
           <ChevronDown size="14" />
         </button>
         <div class="mx-auto px-4 max-w-7xl">
-          <button on:click={() => exportDocument("html")}>Export as HTML</button
+          <button click={() => exportDocument("html")}>Export as HTML</button
           >
-          <button on:click={() => exportDocument("json")}>Export as JSON</button
+          <button click={() => exportDocument("json")}>Export as JSON</button
           >
-          <button on:click={() => exportDocument("pdf")}>Export as PDF</button>
+          <button click={() => exportDocument("pdf")}>Export as PDF</button>
         </div>
       </div>
     </div>
@@ -492,7 +492,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:disabled={!state.canUndo}
-        on:click={() => editor?.commands.undo()}
+        click={() => editor?.commands.undo()}
         title="Undo (Ctrl+Z)"
       >
         <Undo size="18" />
@@ -500,7 +500,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:disabled={!state.canRedo}
-        on:click={() => editor?.commands.redo()}
+        click={() => editor?.commands.redo()}
         title="Redo (Ctrl+Shift+Z)"
       >
         <Redo size="18" />
@@ -514,7 +514,7 @@
       <div class="mx-auto px-4 max-w-7xl">
         <select
           bind:value={state.currentFontFamily}
-          onchange={(e) =>
+          change={(e) =>
             setFontFamily((e.target as HTMLSelectElement).value)}
         >
           {#each fontFamilies as font}
@@ -526,7 +526,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:active={state.isBold}
-        on:click={() => toggleBold()}
+        click={() => toggleBold()}
         title="Bold (Ctrl+B)"
       >
         <Bold size="18" />
@@ -534,7 +534,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:active={state.isItalic}
-        on:click={() => toggleItalic()}
+        click={() => toggleItalic()}
         title="Italic (Ctrl+I)"
       >
         <Italic size="18" />
@@ -542,7 +542,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:active={state.isUnderline}
-        on:click={() => toggleUnderline()}
+        click={() => toggleUnderline()}
         title="Underline (Ctrl+U)"
       >
         <Underline size="18" />
@@ -550,7 +550,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:active={state.isStrike}
-        on:click={() => toggleStrike()}
+        click={() => toggleStrike()}
         title="Strikethrough"
       >
         <Strikethrough size="18" />
@@ -565,7 +565,7 @@
         <input
           type="color"
           bind:value={state.currentColor}
-          onchange={(e) => setTextColor((e.target as HTMLInputElement).value)}
+          change={(e) => setTextColor((e.target as HTMLInputElement).value)}
           title="Text Color"
         />
         <Type size="18" />
@@ -581,7 +581,7 @@
             <button
               class="mx-auto px-4 max-w-7xl"
               style="background-color: {color}"
-              on:click={() => setHighlight(color)}
+              click={() => setHighlight(color)}
               title={color === "transparent"
                 ? "Remove highlight"
                 : `Highlight with ${color}`}
@@ -601,7 +601,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:active={state.currentAlignment === "left"}
-        on:click={() => setAlignment("left")}
+        click={() => setAlignment("left")}
         title="Align Left"
       >
         <AlignLeft size="18" />
@@ -609,7 +609,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:active={state.currentAlignment === "center"}
-        on:click={() => setAlignment("center")}
+        click={() => setAlignment("center")}
         title="Align Center"
       >
         <AlignCenter size="18" />
@@ -617,7 +617,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:active={state.currentAlignment === "right"}
-        on:click={() => setAlignment("right")}
+        click={() => setAlignment("right")}
         title="Align Right"
       >
         <AlignRight size="18" />
@@ -625,7 +625,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:active={state.currentAlignment === "justify"}
-        on:click={() => setAlignment("justify")}
+        click={() => setAlignment("justify")}
         title="Justify"
       >
         <AlignJustify size="18" />
@@ -639,7 +639,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:active={state.isList}
-        on:click={() => editor?.chain().focus().toggleBulletList().run()}
+        click={() => editor?.chain().focus().toggleBulletList().run()}
         title="Bullet List"
       >
         <List size="18" />
@@ -647,7 +647,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:active={state.isOrderedList}
-        on:click={() => editor?.chain().focus().toggleOrderedList().run()}
+        click={() => editor?.chain().focus().toggleOrderedList().run()}
         title="Numbered List"
       >
         <ListOrdered size="18" />
@@ -655,7 +655,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:active={state.isQuote}
-        on:click={() => editor?.chain().focus().toggleBlockquote().run()}
+        click={() => editor?.chain().focus().toggleBlockquote().run()}
         title="Quote"
       >
         <Quote size="18" />
@@ -663,7 +663,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:active={state.isCode}
-        on:click={() => editor?.chain().focus().toggleCodeBlock().run()}
+        click={() => editor?.chain().focus().toggleCodeBlock().run()}
         title="Code Block"
       >
         <Code size="18" />
@@ -676,14 +676,14 @@
     <div class="mx-auto px-4 max-w-7xl">
       <button
         class="mx-auto px-4 max-w-7xl"
-        on:click={() => insertImage()}
+        click={() => insertImage()}
         title="Insert Image"
       >
         <ImageIcon size="18" />
       </button>
       <button
         class="mx-auto px-4 max-w-7xl"
-        on:click={() => insertTable()}
+        click={() => insertTable()}
         title="Insert Table"
       >
         <TableIcon size="18" />
@@ -696,7 +696,7 @@
     <div class="mx-auto px-4 max-w-7xl">
       <button
         class="mx-auto px-4 max-w-7xl"
-        on:click={() => adjustZoom(-10)}
+        click={() => adjustZoom(-10)}
         title="Zoom Out"
       >
         <ZoomOut size="18" />
@@ -704,7 +704,7 @@
       <span class="mx-auto px-4 max-w-7xl">{currentZoom}%</span>
       <button
         class="mx-auto px-4 max-w-7xl"
-        on:click={() => adjustZoom(10)}
+        click={() => adjustZoom(10)}
         title="Zoom In"
       >
         <ZoomIn size="18" />
@@ -713,7 +713,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:active={showGrid}
-        on:click={() => (showGrid = !showGrid)}
+        click={() => (showGrid = !showGrid)}
         title="Toggle Grid"
       >
         <Grid size="18" />
@@ -721,7 +721,7 @@
 
       <button
         class="mx-auto px-4 max-w-7xl"
-        on:click={() => toggleFullscreen()}
+        click={() => toggleFullscreen()}
         title="Toggle Fullscreen"
       >
         {#if isFullscreen}

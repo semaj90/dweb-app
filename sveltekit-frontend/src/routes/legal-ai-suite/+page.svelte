@@ -1,20 +1,23 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { Button } from '$lib/components/ui/button/index.js';
-  import { Input } from '$lib/components/ui/input/index.js';
+  import { onMount, onDestroy } from 'svelte';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
-  import { Badge } from '$lib/components/ui/badge/index.js';
-  import { Progress } from '$lib/components/ui/progress/index.js';
-  import { AlertCircle, Upload, Search, Brain, CheckCircle, AlertTriangle } from 'lucide-svelte';
+  import Badge from '$lib/components/ui/Badge.svelte';
+  import Progress from '$lib/components/ui/progress/Progress.svelte';
+  import { AlertCircle, UploadCloud, Search, Brain, CheckCircle, AlertTriangle } from 'lucide-svelte';
   import GPUAcceleratedLegalSearch from '$lib/components/gpu/GPUAcceleratedLegalSearch.svelte';
 
   // Svelte 5 runes for state management
   let selectedFiles = $state<File[]>([]);
   let isProcessing = $state(false);
-  let processedDocuments = $state<unknown[]>([]);
+  let processedDocuments = $state<any[]>([]);
   let ragQuery = $state('');
-  let ragResults = $state<unknown[]>([]);
-  let systemMetrics = $state({
+  let ragResults = $state<any[]>([]);
+  let systemMetrics = $state<{
+    gpuAcceleration: boolean;
+    ollamaStatus: string;
+    processingSpeed: number;
+    caseAIScore: number;
+  }>({
     gpuAcceleration: false,
     ollamaStatus: 'unknown',
     processingSpeed: 0,
@@ -24,18 +27,16 @@
   let processingSummary = $state<any>(null);
   let realTimeLogs = $state<string[]>([]);
 
-  // Computed properties
+  // Computed properties using Svelte 5 $derived runes
   let hasFiles = $derived(selectedFiles.length > 0);
   let canProcess = $derived(hasFiles && !isProcessing);
-  let totalEntities = $derived(
-    processedDocuments.reduce((sum, doc) => sum + (doc.entityCount || 0), 0)
-  );
+  let totalEntities = $derived(processedDocuments.reduce((sum, doc) => sum + (doc?.entityCount || 0), 0));
   let averageProsecutionScore = $derived(
     processedDocuments.length > 0
-      ? processedDocuments.reduce((sum, doc) => sum + (doc.prosecutionScore || 0), 0) /
-          processedDocuments.length
+      ? processedDocuments.reduce((sum, doc) => sum + (doc?.prosecutionScore || 0), 0) / processedDocuments.length
       : 0
   );
+  let canQuery = $derived(ragQuery.trim().length > 0);
 
   onMount(async () => {
     await checkSystemStatus();
@@ -45,12 +46,14 @@
 
   function handleFileSelect(event: Event) {
     const input = event.target as HTMLInputElement;
-    if (input.files) {
-      selectedFiles = Array.from(input.files).filter(
-        (file) => file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')
-      );
-      addLog(`📄 Selected ${selectedFiles.length} PDF files for processing`);
-    }
+    const files = input?.files ? Array.from(input.files) : [];
+    selectedFiles = files.filter(
+      (file) =>
+        file &&
+        (file.type === 'application/pdf' ||
+          (file.name && file.name.toLowerCase().endsWith('.pdf')))
+    );
+    addLog(`📄 Selected ${selectedFiles.length} PDF files for processing`);
   }
 
   async function processLegalDocuments() {
@@ -100,7 +103,8 @@
       } else {
         throw new Error(result.error || 'Processing failed');
       }
-    } catch (error) {
+    } catch (err) {
+      const error = err as Error;
       console.error('Document processing failed:', error);
       addLog(`❌ Processing failed: ${error.message}`);
     } finally {
@@ -147,7 +151,8 @@
       } else {
         throw new Error(result.error || 'RAG query failed');
       }
-    } catch (error) {
+    } catch (err) {
+      const error = err as Error;
       console.error('RAG query failed:', error);
       addLog(`❌ RAG query failed: ${error.message}`);
     }
@@ -165,7 +170,7 @@
         if (gpuResponse.ok) {
           const gpuStatus = await gpuResponse.json();
           systemMetrics.gpuAcceleration = gpuStatus.gpu_status?.gpu_available || false;
-          
+
           if (systemMetrics.gpuAcceleration) {
             addLog(`🔥 GPU acceleration available: ${gpuStatus.integration?.gpu_model || 'RTX 3060 Ti'}`);
             addLog(`⚡ Expected performance: ${gpuStatus.performance?.speedup_vs_cpu || '8.3x faster'}`);
@@ -183,7 +188,8 @@
       addLog(
         `🖥️ System status: Ollama ${systemMetrics.ollamaStatus}, GPU: ${systemMetrics.gpuAcceleration ? 'enabled' : 'disabled'}`
       );
-    } catch (error) {
+    } catch (err) {
+      const error = err as Error;
       systemMetrics.ollamaStatus = 'error';
       addLog(`⚠️ System check failed: ${error.message}`);
     }
@@ -199,14 +205,26 @@
     }
   }
 
+  let loggingInterval: number | null = null;
+
   function startRealTimeLogging() {
+    // Prevent multiple intervals
+    if (loggingInterval) return;
+
     // Simulate periodic system metrics updates
-    setInterval(() => {
+    loggingInterval = window.setInterval(() => {
       if (isProcessing) {
         systemMetrics.processingSpeed = Math.random() * 100 + 50; // 50-150 docs/min
       }
     }, 1000);
   }
+
+  onDestroy(() => {
+    if (loggingInterval !== null) {
+      clearInterval(loggingInterval);
+      loggingInterval = null;
+    }
+  });
 
   function clearLogs() {
     realTimeLogs = [];
@@ -316,24 +334,20 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- Document Processing Panel -->
       <Card>
-        <CardHeader>
+          <CardHeader>
           <CardTitle class="flex items-center space-x-2">
-            <Upload class="h-5 w-5" />
-            <span>Multi-PDF Document Processing</span>
+            <UploadCloud class="h-5 w-5" />
+            <span>Document Processing</span>
           </CardTitle>
         </CardHeader>
-        <CardContent class="space-y-4">
-          <!-- File Upload -->
+        <CardContent>
           <div>
-            <label for="pdf-files" class="block text-sm font-medium text-gray-700 mb-2">
-              Select Legal Documents (PDF)
-            </label>
             <input
               id="pdf-files"
               type="file"
               multiple
               accept=".pdf"
-              onchange={handleFileSelect}
+              on:change={handleFileSelect}
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
             {#if hasFiles}
               <p class="text-sm text-gray-600 mt-1">
@@ -359,18 +373,22 @@
           </div>
 
           <!-- Processing Controls -->
+          <!-- Processing Controls -->
           <div class="flex space-x-2">
-            <Button on:click={processLegalDocuments} disabled={!canProcess} class="flex-1">
+            <button
+              type="button"
+              on:click={processLegalDocuments}
+              disabled={!canProcess}
+              class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50">
               {#if isProcessing}
                 <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                Processing...
+                <span>Processing...</span>
               {:else}
-                <Upload class="h-4 w-4 mr-2" />
-                Process Documents
+                <UploadCloud class="h-4 w-4 mr-2" />
+                <span>Process Documents</span>
               {/if}
-            </Button>
+            </button>
           </div>
-
           <!-- Processing Summary -->
           {#if processingSummary}
             <div class="border-t pt-4 space-y-2">
@@ -408,25 +426,26 @@
             <span>Enhanced RAG Query</span>
           </CardTitle>
         </CardHeader>
-        <CardContent class="space-y-4">
-          <!-- Query Input -->
+        <CardContent>
           <div>
             <label for="rag-query" class="block text-sm font-medium text-gray-700 mb-2">
               Legal Query
             </label>
-            <Input
+            <input
               id="rag-query"
               bind:value={ragQuery}
               placeholder="Enter your legal question or search query..."
-              class="w-full" />
-          </div>
-
-          <!-- Query Controls -->
-          <div class="flex space-x-2">
-            <Button on:click={executeRAGQuery} disabled={!ragQuery.trim()} class="flex-1">
-              <Brain class="h-4 w-4 mr-2" />
-              Query Enhanced RAG
-            </Button>
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <div class="flex space-x-2 mt-3">
+              <button
+                type="button"
+                on:click={executeRAGQuery}
+                disabled={!canQuery}
+                class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50">
+                <Brain class="h-4 w-4 mr-2" />
+                Query Enhanced RAG
+              </button>
+            </div>
           </div>
 
           <!-- RAG Results -->
@@ -438,26 +457,26 @@
                   <div class="p-3 bg-gray-50 rounded-md">
                     <div class="flex justify-between items-start mb-2">
                       <span class="text-sm font-medium text-gray-800">
-                        {result.sourceDocument}
+                        {result.sourceDocument ?? 'Unknown Source'}
                       </span>
                       <div class="flex space-x-1">
                         <Badge variant="outline" class="text-xs">
-                          Similarity: {(result.similarity * 100).toFixed(0)}%
+                          Similarity: {((result.similarity ?? 0) * 100).toFixed(0)}%
                         </Badge>
                         <Badge
-                          variant={getFactCheckBadgeVariant(result.factCheckStatus)}
+                          variant={getFactCheckBadgeVariant(result.factCheckStatus ?? 'UNVERIFIED')}
                           class="text-xs">
-                          {result.factCheckStatus || 'N/A'}
+                          {result.factCheckStatus ?? 'N/A'}
                         </Badge>
                       </div>
                     </div>
                     <p class="text-sm text-gray-700 mb-2">
-                      {result.content.substring(0, 200)}...
+                      {(result.content ?? '').substring(0, 200)}...
                     </p>
                     <div class="flex justify-between items-center text-xs text-gray-500">
-                      <span>Jurisdiction: {result.jurisdiction}</span>
-                      <span class={getProsecutionScoreColor(result.prosecutionScore)}>
-                        Prosecution Score: {(result.prosecutionScore * 100).toFixed(0)}%
+                      <span>Jurisdiction: {result.jurisdiction ?? 'Unknown'}</span>
+                      <span class={getProsecutionScoreColor(result.prosecutionScore ?? 0)}>
+                        Prosecution Score: {((result.prosecutionScore ?? 0) * 100).toFixed(0)}%
                       </span>
                     </div>
                   </div>
@@ -497,36 +516,36 @@
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {#each processedDocuments as doc}
               <div class="p-4 border border-gray-200 rounded-lg">
-                <h4 class="font-semibold text-gray-800 mb-2">{doc.filename}</h4>
+                <h4 class="font-semibold text-gray-800 mb-2">{doc.filename ?? 'Untitled Document'}</h4>
                 <div class="space-y-1 text-sm">
                   <div class="flex justify-between">
                     <span class="text-gray-600">Jurisdiction:</span>
-                    <span class="font-medium">{doc.jurisdiction}</span>
+                    <span class="font-medium">{doc.jurisdiction ?? 'Unknown'}</span>
                   </div>
                   <div class="flex justify-between">
                     <span class="text-gray-600">Entities:</span>
-                    <span class="font-medium">{doc.entityCount}</span>
+                    <span class="font-medium">{doc.entityCount ?? 0}</span>
                   </div>
                   <div class="flex justify-between">
                     <span class="text-gray-600">Chunks:</span>
-                    <span class="font-medium">{doc.chunkCount}</span>
+                    <span class="font-medium">{doc.chunkCount ?? 0}</span>
                   </div>
                   <div class="flex justify-between">
                     <span class="text-gray-600">Prosecution Score:</span>
-                    <span class={`font-medium ${getProsecutionScoreColor(doc.prosecutionScore)}`}>
-                      {(doc.prosecutionScore * 100).toFixed(0)}%
+                    <span class={"font-medium " + getProsecutionScoreColor(doc.prosecutionScore ?? 0)}>
+                      {((doc.prosecutionScore ?? 0) * 100).toFixed(0)}%
                     </span>
                   </div>
                   <div class="flex justify-between">
                     <span class="text-gray-600">Processing Time:</span>
-                    <span class="font-medium">{doc.processingTime}ms</span>
+                    <span class="font-medium">{doc.processingTime ?? 'N/A'}{doc.processingTime ? 'ms' : ''}</span>
                   </div>
                   {#if doc.factCheckSummary}
                     <div class="mt-2 pt-2 border-t border-gray-100">
                       <div class="text-xs text-gray-600">
-                        Facts: <span class="text-green-600">{doc.factCheckSummary.verified}</span>
+                        Facts: <span class="text-green-600">{doc.factCheckSummary.verified ?? 0}</span>
                         | Disputed:
-                        <span class="text-red-600">{doc.factCheckSummary.disputed}</span>
+                        <span class="text-red-600">{doc.factCheckSummary.disputed ?? 0}</span>
                       </div>
                     </div>
                   {/if}
@@ -538,18 +557,22 @@
       </Card>
     {/if}
 
-    <!-- Real-time Logging Panel -->
+    <!-- Real-time System Logs -->
     <Card>
       <CardHeader class="flex flex-row items-center justify-between">
         <CardTitle class="flex items-center space-x-2">
           <AlertCircle class="h-5 w-5" />
           <span>Real-time System Logs</span>
         </CardTitle>
-        <Button variant="outline" size="sm" on:click={clearLogs}>Clear Logs</Button>
+        <button
+          type="button"
+          on:click={clearLogs}
+          class="px-3 py-1 border border-gray-300 text-sm rounded-md hover:bg-gray-50">
+          Clear Logs
+        </button>
       </CardHeader>
       <CardContent>
-        <div
-          class="bg-gray-900 text-green-400 p-4 rounded-md font-mono text-sm max-h-64 overflow-y-auto">
+        <div class="bg-gray-900 text-green-400 p-4 rounded-md font-mono text-sm max-h-64 overflow-y-auto">
           {#if realTimeLogs.length === 0}
             <div class="text-gray-500">No logs yet...</div>
           {:else}

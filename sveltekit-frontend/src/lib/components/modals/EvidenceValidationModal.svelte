@@ -318,7 +318,7 @@ https://svelte.dev/e/js_parse_error -->
                         {tag}
                         <button
                           type="button"
-                          on:click={() => removeTag(tag)}
+                          click={() => removeTag(tag)}
                           class="space-y-4"
                         >
                           ×
@@ -335,7 +335,7 @@ https://svelte.dev/e/js_parse_error -->
                     type="text"
                     placeholder="Add a tag..."
                     class="space-y-4"
-                    onkeydown={(e) =>
+                    keydown={(e) =>
                       e.key === "Enter" && (e.preventDefault(), addTag())}
                   />
                   <Button

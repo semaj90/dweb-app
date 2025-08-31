@@ -1,3 +1,5 @@
+import type { RequestHandler } from './$types';
+
 // src/routes/api/cases/[id]/evidence/+server.ts
 // API endpoint to get evidence for a specific case
 
@@ -6,7 +8,6 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import postgres from 'postgres';
 import { eq, desc } from 'drizzle-orm';
 import { evidenceTable } from '$lib/server/schema.js';
-import type { RequestHandler } from './$types';
 
 const sql = postgres(process.env.DATABASE_URL || 'postgresql://postgres:123456@localhost:5432/legal_ai_db');
 const db = drizzle(sql);

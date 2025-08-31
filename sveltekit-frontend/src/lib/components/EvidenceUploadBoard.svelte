@@ -42,7 +42,7 @@
     <CardContent class="space-y-4">
       <input 
         type="file" 
-        onchange={handleFileUpload}
+        change={handleFileUpload}
         accept=".txt,.pdf,.doc,.docx"
         class="block w-full text-sm"
       />

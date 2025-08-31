@@ -1,9 +1,10 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Production Health Check API
  * Comprehensive system status for all services
  */
 
-import { type RequestHandler,  json } from '@sveltejs/kit';
 import { URL } from "url";
 
 export interface ServiceStatus {

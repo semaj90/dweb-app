@@ -67,7 +67,7 @@
 	}: Props = $props();
 	
 	let isDisabled = $derived(disabled || loading);
-	let buttonClass = $derived(cn(buttonVariants({ variant, size }), className));
+	let buttonClass = $derived(cn(buttonVariants({ variant, size }), class));
 	
 	// Create melt-ui button for enhanced accessibility and interactions - conditionally
 	const meltButtonBuilder = useMelt ? createButton({

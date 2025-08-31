@@ -19,7 +19,7 @@
     maxTokens = 2048,
     onResponse,
     onError,
-    class: className,
+    class: class,
     id,
     'data-testid': testId,
     // Legacy props for compatibility
@@ -402,7 +402,7 @@ Type /help for commands`,
             </div>
 
             <button
-              on:click={() => copyMessage(message.content, i)}
+              click={() => copyMessage(message.content, i)}
               class="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-muted rounded"
             >
               {#if copiedIndex === i}
@@ -420,13 +420,13 @@ Type /help for commands`,
           <textarea
             bind:this={inputElement}
             bind:value={input}
-            onkeydown={handleKeyDown}
+            keydown={handleKeyDown}
             placeholder="Type a message or /help for commands..."
             class="flex-1 min-h-[60px] max-h-[120px] p-3 bg-muted rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary"
             disabled={isLoading}
           />
           <button
-            on:click={handleSubmit}
+            click={handleSubmit}
             disabled={isLoading || !input.trim()}
             class={cn(
               "p-3 rounded-lg transition-colors",

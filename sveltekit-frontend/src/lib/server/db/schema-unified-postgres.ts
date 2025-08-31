@@ -13,9 +13,9 @@ import {
   uuid,
   pgEnum,
   index,
-  vector
+  vector,
+  relations
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
 
 // --- Enums ---
 export const evidenceTypeEnum = pgEnum('evidence_type', [

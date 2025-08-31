@@ -1,7 +1,8 @@
-import type { RequestHandler } from '@sveltejs/kit';
 
 import { json } from "@sveltejs/kit";
 import { vectorSearch } from "$lib/server/search/vector-search";
+import type { RequestHandler } from './$types';
+
 
 export const GET: RequestHandler = async ({ url }) => {
   try {

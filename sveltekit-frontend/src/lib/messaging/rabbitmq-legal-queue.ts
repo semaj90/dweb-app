@@ -732,5 +732,3 @@ export class RabbitMQLegalQueue {
 // Export singleton instance
 export const rabbitMQLegalQueue = new RabbitMQLegalQueue();
 
-// Export types
-export type { LegalDocumentMessage, QueueConfiguration, LegalProcessingResult };

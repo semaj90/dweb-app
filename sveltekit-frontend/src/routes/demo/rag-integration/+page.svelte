@@ -31,12 +31,11 @@
   let loading = false;
   let response: RAGResponse | null = null;
   let error: string | null = null;
+  // caseId derived from route params (runes mode) but must be mutable for binding
   let caseId = '';
-
-  // Get caseId from route params if available
-  $: if ($page.params.caseId) {
-    caseId = $page.params.caseId;
-  }
+  $effect(() => {
+    caseId = $page.params.caseId ?? '';
+  });
 
   async function runRAGQuery() {
     if (!query.trim()) return;
@@ -148,7 +147,7 @@
           <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
             Ask a Legal Question
           </h3>
-          
+
           <div class="space-y-4">
             <!-- Query Input -->
             <div>
@@ -183,7 +182,7 @@
             <!-- Action Button -->
             <div class="flex justify-between items-center">
               <button
-                on:click={runRAGQuery}
+                click={runRAGQuery}
                 disabled={loading || !query.trim()}
                 class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -229,7 +228,7 @@
                 {response.metadata.model}
               </span>
             </div>
-            
+
             <div class="prose prose-gray max-w-none">
               <div class="whitespace-pre-wrap bg-gray-50 p-4 rounded-md border text-sm">
                 {response.answer}
@@ -246,7 +245,7 @@
             <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
               Sources ({response.sources.length})
             </h3>
-            
+
             <div class="space-y-4">
               {#each response.sources as source, i}
                 <div class="border border-gray-200 rounded-lg p-4">
@@ -266,17 +265,17 @@
                       ID: {source.document_id}
                     </div>
                   </div>
-                  
+
                   {#if source.title}
                     <h4 class="font-medium text-gray-900 mb-2">
                       {source.title}
                     </h4>
                   {/if}
-                  
+
                   <p class="text-sm text-gray-600">
                     {source.preview}
                   </p>
-                  
+
                   <div class="mt-2 text-xs text-gray-400">
                     Similarity Score: {source.similarity.toFixed(4)}
                   </div>
@@ -296,11 +295,11 @@
           <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
             Example Queries
           </h3>
-          
+
           <div class="space-y-2">
             {#each exampleQueries as exampleQuery}
               <button
-                on:click={() => setExampleQuery(exampleQuery)}
+                click={() => setExampleQuery(exampleQuery)}
                 class="w-full text-left p-3 text-sm bg-gray-50 hover:bg-gray-100 rounded-md transition-colors"
                 disabled={loading}
               >
@@ -317,7 +316,7 @@
           <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
             System Architecture
           </h3>
-          
+
           <div class="text-sm space-y-2">
             <div class="flex justify-between">
               <span class="text-gray-600">Frontend:</span>
@@ -350,7 +349,7 @@
             <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
               Query Metrics
             </h3>
-            
+
             <div class="text-sm space-y-2">
               <div class="flex justify-between">
                 <span class="text-gray-600">Results:</span>

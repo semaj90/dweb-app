@@ -1,4 +1,6 @@
 import { json } from "@sveltejs/kit";
+import type { RequestHandler } from './$types';
+
 // Avoid types/env modules that may not resolve in static analysis; use process.env at runtime
 
 const DEFAULT_CLUSTER_URL = "http://localhost:8090";

@@ -1,4 +1,5 @@
-import type { RequestHandler } from '@sveltejs/kit';
+
+import type { RequestHandler } from './$types';
 
 // Vector Search API Endpoint
 // Provides fast vector similarity search using pgvector + Qdrant

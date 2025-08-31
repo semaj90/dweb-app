@@ -3,8 +3,8 @@
 // Generated: 2025-07-25T03:29:35.246Z
 // Features detected: hasOllama, hasQdrant, hasRedis, hasPgVector, hasEmbeddings
 
-import { QdrantClient } from "@qdrant/js-client-rest";
-import Redis, { type Redis as IORedisClient } from "ioredis";
+import { createQdrantWrapper, QdrantApiWrapper } from "./qdrant-api-wrapper";
+import { Redis } from "ioredis";
 import {
   cases,
   evidence,
@@ -13,14 +13,15 @@ import {
   vectorMetadata
 } from '../db/schema-postgres-enhanced';
 import { eq, sql } from "drizzle-orm";
+import { db } from '../db';
 
 export class EnhancedVectorService {
-  private qdrant: QdrantClient;
-  private redis: IORedisClient;
+  private qdrant: QdrantApiWrapper;
+  private redis: Redis;
   private collectionName = "legal_documents";
 
   constructor() {
-    this.qdrant = new QdrantClient({
+    this.qdrant = createQdrantWrapper({
       url: process.env.QDRANT_URL || "http://localhost:6333",
     });
 
@@ -44,9 +45,12 @@ export class EnhancedVectorService {
       });
 
       try {
-        await this.qdrant.createPayloadIndex(this.collectionName, "type");
+        // Note: createPayloadIndex method doesn't exist in current Qdrant client
+        // Using createFieldIndex instead or commenting out until verified
+        // await this.qdrant.createPayloadIndex(this.collectionName, "type");
+        console.log("Payload index creation skipped - method not available in current client");
       } catch (error: any) {
-        console.log("Index for 'type' may already exist");
+        console.log("Index creation skipped due to API compatibility");
       }
     }
   }

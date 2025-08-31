@@ -1,13 +1,31 @@
-import type { RequestHandler } from '$lib/types/server';
-import type { RequestHandler } from "@sveltejs/kit";
-import { pollRedisHealth, getRedisMetrics } from "drizzle-orm";
-let lastPoll = 0;
+import { getRedisService } from '$lib/server/redis/redis-service';
+import type { RequestHandler } from './$types';
+
 
 export const GET: RequestHandler = async () => {
-  const now = Date.now();
-  if (now - lastPoll > 5000) { // poll at most every 5s
-    lastPoll = now;
-    try { await pollRedisHealth(); } catch {}
+  try {
+    const redisService = getRedisService();
+    
+    const metrics = {
+      connected: redisService.isConnectedToRedis(),
+      status: redisService.isConnectedToRedis() ? 'healthy' : 'disconnected',
+      timestamp: new Date().toISOString()
+    };
+
+    return new Response(JSON.stringify({ redis: metrics }), { 
+      headers: { 'Content-Type': 'application/json' } 
+    });
+  } catch (error) {
+    return new Response(JSON.stringify({ 
+      redis: { 
+        connected: false, 
+        status: 'error', 
+        error: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString()
+      } 
+    }), { 
+      status: 500,
+      headers: { 'Content-Type': 'application/json' } 
+    });
   }
-  return new Response(JSON.stringify({ redis: getRedisMetrics() }), { headers: { 'Content-Type': 'application/json' } });
 };

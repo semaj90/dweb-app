@@ -234,7 +234,7 @@
             name="title"
             type="text"
             value={formIntegration.form.get().title || ''}
-            on:input={(e) => formIntegration.form.update(data => ({ ...data, title: e.target.value }))}
+            input={(e) => formIntegration.form.update(data => ({ ...data, title: e.target.value }))}
             placeholder="e.g., Corporate Fraud Investigation - TechCorp"
             required
             class="form-input w-full p-3 bg-yorha-darker border border-yorha-accent-warm/30 rounded text-yorha-light placeholder-yorha-muted focus:border-yorha-accent-warm focus:outline-none transition-colors"
@@ -254,7 +254,7 @@
             id="case-description"
             name="description"
             value={formIntegration.form.get().description || ''}
-            on:input={(e) => formIntegration.form.update(data => ({ ...data, description: e.target.value }))}
+            input={(e) => formIntegration.form.update(data => ({ ...data, description: e.target.value }))}
             rows="4"
             placeholder="Initial details and background of the investigation..."
             class="form-input w-full p-3 bg-yorha-darker border border-yorha-accent-warm/30 rounded text-yorha-light placeholder-yorha-muted focus:border-yorha-accent-warm focus:outline-none transition-colors resize-none"
@@ -276,7 +276,7 @@
               id="case-priority"
               name="priority"
               value={formIntegration.form.get().priority || 'medium'}
-              on:change={(e) => formIntegration.form.update(data => ({ ...data, priority: e.target.value }))}
+              change={(e) => formIntegration.form.update(data => ({ ...data, priority: e.target.value }))}
               class="form-input w-full p-3 bg-yorha-darker border border-yorha-accent-warm/30 rounded text-yorha-light focus:border-yorha-accent-warm focus:outline-none transition-colors"
             >
               <option value="low">🟢 Low Priority</option>
@@ -295,7 +295,7 @@
               id="case-type"
               name="caseType"
               value={formIntegration.form.get().caseType || 'civil'}
-              on:change={(e) => formIntegration.form.update(data => ({ ...data, caseType: e.target.value }))}
+              change={(e) => formIntegration.form.update(data => ({ ...data, caseType: e.target.value }))}
               class="form-input w-full p-3 bg-yorha-darker border border-yorha-accent-warm/30 rounded text-yorha-light focus:border-yorha-accent-warm focus:outline-none transition-colors"
             >
               <option value="civil">⚖️ Civil</option>
@@ -312,7 +312,7 @@
       <div class="step-navigation flex justify-end pt-4">
         <button
           type="button"
-          onclick={nextStep}
+          click={nextStep}
           disabled={!formIntegration.form.get().title || !formIntegration.form.get().description}
           class="next-btn px-6 py-3 bg-yorha-accent-warm text-yorha-dark rounded font-bold hover:bg-yorha-accent-warm/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -336,7 +336,7 @@
               name="location"
               type="text"
               value={formIntegration.form.get().location || ''}
-              on:input={(e) => formIntegration.form.update(data => ({ ...data, location: e.target.value }))}
+              input={(e) => formIntegration.form.update(data => ({ ...data, location: e.target.value }))}
               placeholder="e.g., Downtown Financial District"
               class="form-input w-full p-3 bg-yorha-darker border border-yorha-accent-warm/30 rounded text-yorha-light placeholder-yorha-muted focus:border-yorha-accent-warm focus:outline-none transition-colors"
             />
@@ -352,7 +352,7 @@
               name="jurisdiction"
               type="text"
               value={formIntegration.form.get().jurisdiction || ''}
-              on:input={(e) => formIntegration.form.update(data => ({ ...data, jurisdiction: e.target.value }))}
+              input={(e) => formIntegration.form.update(data => ({ ...data, jurisdiction: e.target.value }))}
               placeholder="e.g., Federal, State, Local"
               class="form-input w-full p-3 bg-yorha-darker border border-yorha-accent-warm/30 rounded text-yorha-light placeholder-yorha-muted focus:border-yorha-accent-warm focus:outline-none transition-colors"
             />
@@ -371,7 +371,7 @@
               name="assignedTo"
               type="text"
               value={formIntegration.form.get().assignedTo || ''}
-              on:input={(e) => formIntegration.form.update(data => ({ ...data, assignedTo: e.target.value }))}
+              input={(e) => formIntegration.form.update(data => ({ ...data, assignedTo: e.target.value }))}
               placeholder="e.g., Agent Smith, Detective Jones"
               class="form-input w-full p-3 bg-yorha-darker border border-yorha-accent-warm/30 rounded text-yorha-light placeholder-yorha-muted focus:border-yorha-accent-warm focus:outline-none transition-colors"
             />
@@ -387,7 +387,7 @@
               name="clientName"
               type="text"
               value={formIntegration.form.get().clientName || ''}
-              on:input={(e) => formIntegration.form.update(data => ({ ...data, clientName: e.target.value }))}
+              input={(e) => formIntegration.form.update(data => ({ ...data, clientName: e.target.value }))}
               placeholder="e.g., TechCorp Industries"
               class="form-input w-full p-3 bg-yorha-darker border border-yorha-accent-warm/30 rounded text-yorha-light placeholder-yorha-muted focus:border-yorha-accent-warm focus:outline-none transition-colors"
             />
@@ -403,7 +403,7 @@
             id="case-notes"
             name="notes"
             value={formIntegration.form.get().notes || ''}
-            on:input={(e) => formIntegration.form.update(data => ({ ...data, notes: e.target.value }))}
+            input={(e) => formIntegration.form.update(data => ({ ...data, notes: e.target.value }))}
             rows="3"
             placeholder="Additional case notes, preliminary observations, or special instructions..."
             class="form-input w-full p-3 bg-yorha-darker border border-yorha-accent-warm/30 rounded text-yorha-light placeholder-yorha-muted focus:border-yorha-accent-warm focus:outline-none transition-colors resize-none"
@@ -415,14 +415,14 @@
       <div class="step-navigation flex justify-between pt-4">
         <button
           type="button"
-          onclick={previousStep}
+          click={previousStep}
           class="prev-btn px-6 py-3 border border-yorha-accent-warm/50 text-yorha-light rounded hover:bg-yorha-accent-warm/10 transition-colors"
         >
           ← Back: Basic Info
         </button>
         <button
           type="button"
-          onclick={nextStep}
+          click={nextStep}
           class="next-btn px-6 py-3 bg-yorha-accent-warm text-yorha-dark rounded font-bold hover:bg-yorha-accent-warm/90 transition-colors"
         >
           Next: Review →
@@ -491,7 +491,7 @@
       <div class="step-navigation flex justify-between pt-4">
         <button
           type="button"
-          onclick={previousStep}
+          click={previousStep}
           disabled={isSubmitting}
           class="prev-btn px-6 py-3 border border-yorha-accent-warm/50 text-yorha-light rounded hover:bg-yorha-accent-warm/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -500,7 +500,7 @@
         <div class="final-actions flex space-x-4">
           <button
             type="button"
-            onclick={() => dispatch('close')}
+            click={() => dispatch('close')}
             disabled={isSubmitting}
             class="cancel-btn px-6 py-3 border border-yorha-accent-warm/50 text-yorha-light rounded hover:bg-yorha-accent-warm/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >

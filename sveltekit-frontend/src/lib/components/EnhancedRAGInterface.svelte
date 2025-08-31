@@ -207,7 +207,7 @@ https://svelte.dev/e/js_parse_error -->
             <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
               bind:value={searchQuery}
-              onkeydown={handleKeyPress}
+              on:keydown={handleKeyPress}
               placeholder="Ask anything about your legal documents..."
               class="pl-10 pr-4 py-3 text-lg"
               disabled={ragState.isLoading}
@@ -277,7 +277,7 @@ https://svelte.dev/e/js_parse_error -->
             Did you mean:
             {#each ragState.didYouMean as suggestion, i}
               <button
-                on:click={() => selectSuggestion(suggestion)}
+                click={() => selectSuggestion(suggestion)}
                 class="text-blue-600 hover:text-blue-800 underline ml-1"
               >
                 {suggestion}

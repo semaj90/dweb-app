@@ -166,14 +166,14 @@ IN WITNESS WHEREOF, the parties have executed this MOU as of the date first writ
       class="tab px-4 py-2 font-medium {activeTab === 'analyze'
         ? 'border-b-2 border-blue-500 text-blue-600'
         : 'text-gray-500 hover:text-gray-700'}"
-      on:click={() => (activeTab = 'analyze')}>
+      click={() => (activeTab = 'analyze')}>
       Document Analysis
     </button>
     <button
       class="tab px-4 py-2 font-medium {activeTab === 'query'
         ? 'border-b-2 border-blue-500 text-blue-600'
         : 'text-gray-500 hover:text-gray-700'}"
-      on:click={() => (activeTab = 'query')}>
+      click={() => (activeTab = 'query')}>
       Enhanced RAG Query
     </button>
   </div>

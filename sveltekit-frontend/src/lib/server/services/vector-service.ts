@@ -169,7 +169,7 @@ export class VectorService {
       type?: string;
       userId?: string;
     } = {}
-  ): Promise<unknown[]> {
+  ): Promise<any[]> {
     const results = await redisVectorService.searchSimilar(embedding, {
       topK: options.limit || 10,
       threshold: options.threshold || 0.7,
@@ -195,7 +195,7 @@ export class VectorService {
       type?: string;
       userId?: string;
     } = {}
-  ): Promise<unknown[]> {
+  ): Promise<any[]> {
     const queryEmbedding = await this.generateEmbedding(query);
     return this.findSimilar(queryEmbedding, options);
   }
@@ -268,7 +268,7 @@ export class VectorService {
       threshold?: number;
       type?: string;
     } = {}
-  ): Promise<unknown[]> {
+  ): Promise<any[]> {
     return this.semanticSearch(query, options);
   }
 
@@ -278,7 +278,7 @@ export class VectorService {
   static async findSimilarDocuments(
     documentId: string,
     limit: number = 10
-  ): Promise<unknown[]> {
+  ): Promise<any[]> {
     try {
       const doc = await redisVectorService.getDocument(`doc:${documentId}`);
       if (!doc) {
@@ -321,7 +321,7 @@ export class VectorService {
   /**
    * Get user embeddings (legacy compatibility)
    */
-  static async getUserEmbeddings(userId: string): Promise<unknown[]> {
+  static async getUserEmbeddings(userId: string): Promise<any[]> {
     const results = await redisVectorService.searchSimilar(
       new Array(384).fill(0), // Dummy embedding for filtering
       {
@@ -370,7 +370,7 @@ export class VectorService {
       limit?: number;
       threshold?: number;
     } = {}
-  ): Promise<unknown[]> {
+  ): Promise<any[]> {
     return this.semanticSearch(query, options);
   }
 

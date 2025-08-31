@@ -1,10 +1,10 @@
-import type { RequestHandler } from '@sveltejs/kit';
+
+import type { RequestHandler } from './$types';
 
 /**
  * Library Sync API Endpoints - Step 6 & 7 Integration
  */
 
-import type { RequestHandler } from './$types';
 
 import { librarySyncService } from "$lib/services/library-sync-service";
 

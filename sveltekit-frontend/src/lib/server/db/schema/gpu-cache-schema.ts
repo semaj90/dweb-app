@@ -14,9 +14,9 @@ import {
   decimal,
   varchar,
   index,
-  primaryKey
+  primaryKey,
+  relations
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
 
 // === Shader Cache Tables ===
 

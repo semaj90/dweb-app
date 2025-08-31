@@ -318,4 +318,3 @@ class G0llamaService {
 
 // Export singleton instance
 export const frontendRAG = new FrontendRAGPipeline();
-export type { SemanticChunk, SIMDTensor };

@@ -1049,5 +1049,3 @@ export const nesGPUBinaryPipeline = new NESSGPUBinaryRankingPipeline();
 // Export singleton instance
 export const textureRankingMatrices = new TextureRankingMatrices();
 
-// Export types
-export type { RankingDimension, RankingResult };

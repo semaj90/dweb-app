@@ -31,7 +31,7 @@ https://svelte.dev/e/global_reference_invalid -->
   } from "$lib/ai/mcp-helpers";
   import Fuse from "fuse.js";
   import { evidenceStore } from "$lib/stores/evidence-unified";
-  
+
   // Stub for activeUsers - replace with actual implementation
   const activeUsers = writable([]);
 
@@ -245,7 +245,7 @@ https://svelte.dev/e/global_reference_invalid -->
 
 <svelte:window
   on:click={() => closeContextMenu()}
-  onkeydown={handleGlobalKeydown}
+  on:keydown={handleGlobalKeydown}
 />
 
 <div class="w-full h-full min-h-screen bg-background">
@@ -341,7 +341,7 @@ https://svelte.dev/e/global_reference_invalid -->
               <!-- Upload Zone for first column -->
               {#if column.id === "new"}
                 <UploadZone
-                  onupload={(e) => handleFileUpload(e.detail, column.id)}
+                  on:upload={(e) => handleFileUpload(e.detail, column.id)}
                 />
               {/if}
 
@@ -357,13 +357,13 @@ https://svelte.dev/e/global_reference_invalid -->
                     borderRadius: "8px",
                   },
                 }}
-                onconsider={(e) => handleDndConsider(e, column.id)}
-                onfinalize={(e) => handleDndFinalize(e, column.id)}
+                on:consider={(e) => handleDndConsider(e, column.id)}
+                on:finalize={(e) => handleDndFinalize(e, column.id)}
               >
                 {#each column.items as item (item.id)}
                   <div
                     class="cursor-grab active:cursor-grabbing transition-transform hover:scale-105"
-                    oncontextmenu={(e) => handleRightClick(e, item)}
+                    on:contextmenu={(e) => handleRightClick(e, item)}
                     role="button"
                     tabindex="0"
                   >
@@ -416,7 +416,7 @@ https://svelte.dev/e/global_reference_invalid -->
                 size={{ width: 300, height: 200 }}
                 isSelected={false}
                 isDirty={false}
-                onpositionupdate={(e) =>
+                on:positionupdate={(e) =>
                   broadcastPositionUpdate(evidence.id, e.detail.x, e.detail.y)}
               />
             </div>
@@ -427,7 +427,7 @@ https://svelte.dev/e/global_reference_invalid -->
         <div class="absolute bottom-4 right-4">
           <UploadZone
             minimal={true}
-            onupload={(e) => handleFileUpload(e.detail, "new")}
+            on:upload={(e) => handleFileUpload(e.detail, "new")}
           />
         </div>
       </div>
@@ -446,17 +446,17 @@ https://svelte.dev/e/global_reference_invalid -->
         <p class="space-y-4">Evidence Actions</p>
       </div>
       <ContextMenu.Item
-        onselect={() =>
+        on:select={() =>
           window.open(`/evidence/${contextMenu.item?.id}`, "_blank")}
         >View Details</ContextMenu.Item
       >
       <ContextMenu.Item
-        onselect={() =>
+        on:select={() =>
           (window.location.href = `/evidence/${contextMenu.item?.id}/edit`)}
         >Edit</ContextMenu.Item
       >
       <ContextMenu.Item
-        onselect={() =>
+        on:select={() =>
           contextMenu.item?.fileUrl &&
           (() => {
             const link = document.createElement("a");
@@ -466,17 +466,17 @@ https://svelte.dev/e/global_reference_invalid -->
           })()}>Download</ContextMenu.Item
       >
       <ContextMenu.Item
-        onselect={() =>
+        on:select={() =>
           console.log("Duplicate evidence:", contextMenu.item?.id)}
         >Duplicate</ContextMenu.Item
       >
       <ContextMenu.Item
-        onselect={() => {
+        on:select={() => {
           /* TODO: Audit evidence logic */
         }}>Audit (Semantic/Vector)</ContextMenu.Item
       >
       <ContextMenu.Item
-        onselect={() => {
+        on:select={() => {
           /* TODO: Trigger agent review logic */
         }}>Trigger Agent Review</ContextMenu.Item
       >
@@ -485,27 +485,27 @@ https://svelte.dev/e/global_reference_invalid -->
         <p class="space-y-4">Save/Link</p>
       </div>
       <ContextMenu.Item
-        onmouseenter={() => showMiniModal("citation")}
-        onmouseleave={hideMiniModal}
-        onselect={() => saveTo("savedcitations")}
+        on:mouseenter={() => showMiniModal("citation")}
+        on:mouseleave={hideMiniModal}
+        on:select={() => saveTo("savedcitations")}
         >Add to /savedcitations</ContextMenu.Item
       >
       <ContextMenu.Item
-        onmouseenter={() => showMiniModal("aisummary")}
-        onmouseleave={hideMiniModal}
-        onselect={() => saveTo("savedaisummaries")}
+        on:mouseenter={() => showMiniModal("aisummary")}
+        on:mouseleave={hideMiniModal}
+        on:select={() => saveTo("savedaisummaries")}
         >Add to /savedaisummaries</ContextMenu.Item
       >
       <ContextMenu.Item
-        onmouseenter={() => showMiniModal("userreport")}
-        onmouseleave={hideMiniModal}
-        onselect={() => saveTo("saveduserreports")}
+        on:mouseenter={() => showMiniModal("userreport")}
+        on:mouseleave={hideMiniModal}
+        on:select={() => saveTo("saveduserreports")}
         >Add to /saveduserreports</ContextMenu.Item
       >
       <ContextMenu.Item
-        onmouseenter={() => showMiniModal("mcpcontext")}
-        onmouseleave={hideMiniModal}
-        onselect={() => saveTo("mcpcontext")}
+        on:mouseenter={() => showMiniModal("mcpcontext")}
+        on:mouseleave={hideMiniModal}
+        on:select={() => saveTo("mcpcontext")}
         >Add to MCP Context (LLM)</ContextMenu.Item
       >
       <ContextMenu.Separator />
@@ -513,15 +513,15 @@ https://svelte.dev/e/global_reference_invalid -->
         <p class="space-y-4">Send to Case</p>
       </div>
       <ContextMenu.Item
-        onselect={() => {
+        on:select={() => {
           /* TODO: Show case selection and call sendToCase */
         }}>Send to /casesid</ContextMenu.Item
       >
       <ContextMenu.Separator />
       <ContextMenu.Item
-        onmouseenter={() => showMiniModal("find")}
-        onmouseleave={hideMiniModal}
-        onselect={findWithLLM}>Find (search/query with LLM)</ContextMenu.Item
+        on:mouseenter={() => showMiniModal("find")}
+        on:mouseleave={hideMiniModal}
+        on:select={findWithLLM}>Find (search/query with LLM)</ContextMenu.Item
       >
       {#if findModal.show}
         <div
@@ -534,7 +534,7 @@ https://svelte.dev/e/global_reference_invalid -->
                 type="text"
                 bind:value={findModal.query}
                 placeholder="Enter keywords or question..."
-                onkeydown={(e) => {
+                keydown={(e) => {
                   if (e.key === "Enter") runFindSearch();
                 }}
               />

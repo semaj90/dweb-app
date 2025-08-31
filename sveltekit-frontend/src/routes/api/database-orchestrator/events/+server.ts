@@ -1,8 +1,8 @@
-import type { RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+
 // Database Orchestrator Events API
 // Real-time event monitoring and WebSocket integration
 
-import { json, type RequestHandler } from "@sveltejs/kit";
 databaseOrchestrator // alias
 import { EventEmitter } from "events";
 

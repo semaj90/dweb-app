@@ -2,7 +2,7 @@
   import { $props } from 'svelte';
 
   interface ComponentFallbackProps {
-    className?: string;
+    class?: string;
     id?: string;
     ref?: HTMLElement | null;
     role?: string;
@@ -16,7 +16,7 @@
   }
 
   let {
-    className = '',
+    class = '',
     id = undefined,
     ref = null,
     role = undefined,
@@ -31,7 +31,7 @@
 
   // Generate fallback classes based on common patterns
   $: fallbackClasses = [
-    className,
+    class,
     variant && `variant-${variant}`,
     size && `size-${size}`,
     disabled && 'disabled',

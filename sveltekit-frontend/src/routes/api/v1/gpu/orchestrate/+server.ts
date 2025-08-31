@@ -1,10 +1,10 @@
+import type { RequestHandler } from './$types';
+
 /**
  * GPU Orchestration API - Advanced Task Dispatch & Automation
  * Handles legal document analysis, autosolve, and GPU task routing
  */
 
-import { type RequestHandler,  json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 import { mcpGPUOrchestrator } from '$lib/services/mcp-gpu-orchestrator.js';
 import { GEMMA3_LEGAL_CONFIG } from '$lib/config/gemma3-legal-config.js';
 

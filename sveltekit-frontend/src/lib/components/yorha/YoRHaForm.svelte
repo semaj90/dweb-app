@@ -146,7 +146,7 @@
   }
 </script>
 
-<div class="yorha-form" onkeydown={handleKeyDown}>
+<div class="yorha-form" keydown={handleKeyDown}>
   <!-- Form Header -->
   <div class="form-header">
     <div class="header-content">
@@ -184,7 +184,7 @@
               placeholder={field.placeholder || ''}
               disabled={field.disabled || loading}
               class="field-input"
-              oninput={(e) => handleFieldChange(field.id, (e.target as HTMLInputElement).value)}
+              input={(e) => handleFieldChange(field.id, (e.target as HTMLInputElement).value)}
             />
 
           {:else if field.type === 'textarea'}
@@ -195,7 +195,7 @@
               disabled={field.disabled || loading}
               class="field-textarea"
               rows="4"
-              oninput={(e) => handleFieldChange(field.id, (e.target as HTMLInputElement).value)}
+              input={(e) => handleFieldChange(field.id, (e.target as HTMLInputElement).value)}
             ></textarea>
 
           {:else if field.type === 'select'}
@@ -204,7 +204,7 @@
               bind:value={formData[field.id]}
               disabled={field.disabled || loading}
               class="field-select"
-              onchange={(e) => handleFieldChange(field.id, (e.target as HTMLSelectElement).value)}
+              change={(e) => handleFieldChange(field.id, (e.target as HTMLSelectElement).value)}
             >
               <option value="">{field.placeholder || 'Select an option'}</option>
               {#each field.options || [] as option}
@@ -220,7 +220,7 @@
                 bind:checked={formData[field.id]}
                 disabled={field.disabled || loading}
                 class="field-checkbox"
-                onchange={(e) => handleFieldChange(field.id, (e.target as HTMLInputElement).checked)}
+                change={(e) => handleFieldChange(field.id, (e.target as HTMLInputElement).checked)}
               />
               <div class="checkbox-indicator"></div>
               <span class="checkbox-text">{field.placeholder || field.label}</span>
@@ -237,7 +237,7 @@
                     bind:group={formData[field.id]}
                     disabled={field.disabled || loading}
                     class="field-radio"
-                    onchange={(e) => handleFieldChange(field.id, (e.target as HTMLSelectElement).value)}
+                    change={(e) => handleFieldChange(field.id, (e.target as HTMLSelectElement).value)}
                   />
                   <div class="radio-indicator"></div>
                   <span class="radio-text">{option.label}</span>
@@ -251,7 +251,7 @@
               type="file"
               disabled={field.disabled || loading}
               class="field-file"
-              onchange={(e) => handleFieldChange(field.id, (e.target as HTMLInputElement).files?.[0])}
+              change={(e) => handleFieldChange(field.id, (e.target as HTMLInputElement).files?.[0])}
             />
           {/if}
 
@@ -278,7 +278,7 @@
           type="button"
           class="form-button cancel"
           disabled={loading}
-          onclick={handleCancel}
+          click={handleCancel}
         >
           <span class="button-icon">✕</span>
           {cancelLabel}
@@ -289,7 +289,7 @@
         type="submit"
         class="form-button submit"
         disabled={loading || Object.keys(errors).length > 0}
-        onclick={handleSubmit}
+        on:click={handleSubmit}
       >
         {#if loading}
           <span class="button-spinner">◌</span>

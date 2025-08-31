@@ -2,7 +2,7 @@
 // These will be imported and added to the main unified-schema.ts
 
 import { pgTable, uuid, varchar, text, timestamp, integer, decimal, boolean, jsonb, vector } from 'drizzle-orm/pg-core';
-import { relations } from 'drizzle-orm';
+import { relations } from 'drizzle-orm/relations';
 import { users, cases, evidence, legalDocuments } from './unified-schema';
 
 // Evidence Chain of Custody

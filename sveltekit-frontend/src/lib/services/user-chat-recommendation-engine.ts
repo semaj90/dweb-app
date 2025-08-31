@@ -215,15 +215,15 @@ export class UserChatRecommendationEngine {
   private neo4jConnection = {
     connected: false,
     sessionCount: 0,
-    queryQueue: [] as unknown[]
+    queryQueue: [] as any[]
   };
 
   // RabbitMQ simulation (using in-memory queues)
   private messageQueues = {
-    ingestion: [] as unknown[],
-    processing: [] as unknown[],
-    recommendations: [] as unknown[],
-    feedback: [] as unknown[]
+    ingestion: [] as any[],
+    processing: [] as any[],
+    recommendations: [] as any[],
+    feedback: [] as any[]
   };
 
   constructor() {
@@ -670,7 +670,7 @@ export class UserChatRecommendationEngine {
     };
   }
 
-  private async performSemanticSearch(query: string, queryEmbedding?: number[]): Promise<unknown[]> {
+  private async performSemanticSearch(query: string, queryEmbedding?: number[]): Promise<any[]> {
     // Would use vector similarity search with pgvector or similar
     // For now, return fuzzy search results
     return await multiLayerCache.fuzzySearch('document', query, {

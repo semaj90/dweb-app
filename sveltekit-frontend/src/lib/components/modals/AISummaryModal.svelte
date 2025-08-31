@@ -39,7 +39,7 @@ https://svelte.dev/e/js_parse_error -->
 }
 </script>
 
-<Dialog.Root open={isOpen} onclose={closeModal}>
+<Dialog.Root open={isOpen} on:close={closeModal}>
   <Dialog.Content size="lg">
   <Dialog.Header>
     <Dialog.Title>AI Summary</Dialog.Title>

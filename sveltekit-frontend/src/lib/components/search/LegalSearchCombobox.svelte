@@ -52,7 +52,7 @@
   let { similarityThreshold = $bindable() } = $props(); // 0.7;
   let { includeMetadata = $bindable() } = $props(); // true;
   let { disabled = $bindable() } = $props(); // false;
-  let { className = $bindable() } = $props(); // "";
+  let { class = $bindable() } = $props(); // "";
   
   // State
   let open = false;
@@ -220,7 +220,7 @@
     : searchResults;
 </script>
 
-<div class={cn("relative w-full", className)}>
+<div class={cn("relative w-full", class)}>
   <Combobox.Root bind:open bind:inputValue {disabled} class="w-full">
     
     <!-- Search Input -->
@@ -254,7 +254,7 @@
         <button
           type="button"
           class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-          on:click={handleClear}
+          click={handleClear}
         >
           <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />

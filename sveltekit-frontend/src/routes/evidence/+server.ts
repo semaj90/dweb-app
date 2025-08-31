@@ -1,6 +1,8 @@
 import { json } from "@sveltejs/kit";
 
 import { randomUUID } from 'crypto';
+import type { RequestHandler } from './$types';
+
 
 // A light wrapper that accepts multipart form uploads and stores the file in MinIO under 'evidence' bucket.
 export const POST = async ({ request }): Promise<any> => {

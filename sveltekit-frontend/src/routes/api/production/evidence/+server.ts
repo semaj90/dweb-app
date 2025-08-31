@@ -1,9 +1,10 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Production Evidence Processing API
  * Smart detection and analysis pipeline
  */
 
-import { type RequestHandler,  json } from '@sveltejs/kit';
 import { URL } from "url";
 
 export interface EvidenceItem {

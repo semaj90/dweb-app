@@ -1,8 +1,9 @@
-import type { RequestHandler } from '@sveltejs/kit';
 
 import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db/drizzle";
 import { sql } from "drizzle-orm";
+import type { RequestHandler } from './$types';
+
 
 // YoRHa Database Test API
 // Tests JSON/JSONB data flow and database connectivity

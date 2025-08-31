@@ -1,4 +1,5 @@
-import { json, type RequestHandler } from '@sveltejs/kit';
+
+import type { RequestHandler } from './$types';
 
 // Placeholder orchestrator route (repaired). Full multi-agent logic will be reinstated later.
 export interface WorkflowStatus { id: string; state: string; createdAt: string }

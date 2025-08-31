@@ -1,5 +1,6 @@
 import { pgTable, uuid, varchar, text, timestamp, integer, decimal, boolean, jsonb, serial, index, vector } from 'drizzle-orm/pg-core';
-import { relations, sql } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
+import { relations } from 'drizzle-orm/relations';
 import { createId } from '@paralleldrive/cuid2';
 
 // Type definitions for complex JSON fields

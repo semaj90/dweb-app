@@ -1,3 +1,5 @@
+import type { RequestHandler } from './$types';
+
 // Debug endpoint to check and create users
 import { json } from "@sveltejs/kit";
 

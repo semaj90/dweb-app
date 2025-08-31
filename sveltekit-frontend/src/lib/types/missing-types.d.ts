@@ -163,7 +163,7 @@ export function withRetry<T>(fn: () => Promise<T>, retries?: number): Promise<T>
 export function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T>;
 
 // Production type definitions
-export interface LegalAnalysisResult {
+export interface GenericLegalAnalysisResult {
   score: number;
   confidence: number;
   categories: string[];

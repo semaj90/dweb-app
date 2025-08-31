@@ -1,6 +1,7 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { json } from "@sveltejs/kit";
 import { URL } from "url";
+import type { RequestHandler } from './$types';
+
 
 // Mock VectorService for now
 class VectorService {

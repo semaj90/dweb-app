@@ -337,7 +337,7 @@
     <div class="container mx-auto px-4">
       <button
         class="container mx-auto px-4"
-        on:click={() => sidebarOpen.update((open) => !open)}
+        click={() => sidebarOpen.update((open) => !open)}
       >
         {$sidebarOpen ? "◀" : "▶"}
         {$sidebarOpen ? "Hide" : "Show"} Sidebar
@@ -345,7 +345,7 @@
 
       <button
         class="container mx-auto px-4"
-        on:click={() => generateCaseSummary()}
+        click={() => generateCaseSummary()}
         disabled={aiGenerating}
       >
         {#if aiGenerating}
@@ -358,7 +358,7 @@
 
       <button
         class="container mx-auto px-4"
-        on:click={() => generateProsecutionStrategy()}
+        click={() => generateProsecutionStrategy()}
         disabled={aiGenerating}
       >
         📋 Prosecution Strategy
@@ -389,7 +389,7 @@
         <button
           class="container mx-auto px-4"
           class:active={$activeTab === "evidence"}
-          on:click={() => activeTab.set("evidence")}
+          click={() => activeTab.set("evidence")}
           title="Evidence List (Ctrl/Cmd + 3)"
         >
           📁 Evidence
@@ -397,7 +397,7 @@
         <button
           class="container mx-auto px-4"
           class:active={$activeTab === "reports"}
-          on:click={() => activeTab.set("reports")}
+          click={() => activeTab.set("reports")}
           title="AI Reports (Ctrl/Cmd + 4)"
         >
           📊 AI Reports
@@ -407,7 +407,7 @@
       <div class="container mx-auto px-4">
         {#if $activeTab === "evidence"}
           <div class="container mx-auto px-4">
-            <EvidenceUploader {caseId} onuploaded={handleEvidenceUploaded} />
+            <EvidenceUploader {caseId} on:uploaded={handleEvidenceUploaded} />
 
             <div class="container mx-auto px-4">
               <div class="container mx-auto px-4">
@@ -454,7 +454,7 @@
                   </div>
                   <button
                     class="container mx-auto px-4"
-                    on:click={() => canvasEditor?.addEvidenceToCanvas(evidence)}
+                    click={() => canvasEditor?.addEvidenceToCanvas(evidence)}
                   >
                     ➕
                   </button>
@@ -483,7 +483,7 @@
                 </div>
                 <button
                   class="container mx-auto px-4"
-                  on:click={() =>
+                  click={() =>
                     reportEditor?.setContent(report.richTextContent)}
                 >
                   Load into Editor
@@ -508,7 +508,7 @@
         <button
           class="container mx-auto px-4"
           class:active={$activeTab === "canvas"}
-          on:click={() => activeTab.set("canvas")}
+          click={() => activeTab.set("canvas")}
           title="Interactive Canvas (Ctrl/Cmd + 1)"
         >
           🎨 Interactive Canvas
@@ -516,7 +516,7 @@
         <button
           class="container mx-auto px-4"
           class:active={$activeTab === "editor"}
-          on:click={() => activeTab.set("editor")}
+          click={() => activeTab.set("editor")}
           title="Report Editor (Ctrl/Cmd + 2)"
         >
           📝 Report Editor
@@ -541,7 +541,7 @@
             <EnhancedCanvasEditor
               bind:this={canvasEditor}
               {caseId}
-              oncanvaschange={handleCanvasChange}
+              on:canvaschange={handleCanvasChange}
               width={1200}
               height={600}
             />
@@ -556,7 +556,7 @@
             {/if}
             <AdvancedRichTextEditor
               bind:this={reportEditor}
-              oncontentchange={handleReportChange}
+              on:contentchange={handleReportChange}
               placeholder="Write your case report, notes, or analysis here..."
             />
           </div>

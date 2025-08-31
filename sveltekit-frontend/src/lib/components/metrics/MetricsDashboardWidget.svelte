@@ -133,8 +133,8 @@
   <div class="flex items-center justify-between gap-2 flex-wrap">
     <h2 class="text-base font-semibold">AI Metrics Dashboard</h2>
     <div class="flex items-center gap-2">
-      <button class="px-2 py-1 text-xs rounded bg-slate-700 hover:bg-slate-600" onclick={refresh} disabled={loading}>{loading ? 'Refreshing…' : 'Refresh'}</button>
-      <button class="px-2 py-1 text-xs rounded {autoRefresh ? 'bg-green-700 hover:bg-green-600':'bg-slate-700 hover:bg-slate-600'}" onclick={toggleAutoRefresh}>{autoRefresh? 'Pause Auto':'Resume Auto'}</button>
+      <button class="px-2 py-1 text-xs rounded bg-slate-700 hover:bg-slate-600" click={refresh} disabled={loading}>{loading ? 'Refreshing…' : 'Refresh'}</button>
+      <button class="px-2 py-1 text-xs rounded {autoRefresh ? 'bg-green-700 hover:bg-green-600':'bg-slate-700 hover:bg-slate-600'}" click={toggleAutoRefresh}>{autoRefresh? 'Pause Auto':'Resume Auto'}</button>
       <a href="/api/v1/pipeline/recent-samples.csv" class="px-2 py-1 text-xs rounded bg-slate-700 hover:bg-slate-600" download>CSV</a>
     </div>
   </div>

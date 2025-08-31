@@ -1,10 +1,11 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Individual Case CRUD API - Clean PostgreSQL + Drizzle Implementation
  * GET, PUT, DELETE operations for specific cases
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 import { db } from '$lib/server/db/client';
 import { cases, evidence, users } from '$lib/db/schema';
 import { eq, and } from 'drizzle-orm';

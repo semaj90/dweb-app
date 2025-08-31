@@ -1,6 +1,7 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { json } from "@sveltejs/kit";
 import { ollamaService } from "$lib/services/ollama-service";
+import type { RequestHandler } from './$types';
+
 
 // Environment variables fallback
 const env = process.env || {};

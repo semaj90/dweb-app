@@ -251,8 +251,8 @@
       class="w-4 h-4"
       role="button"
       tabindex={0}
-      on:click={() => closeOnboarding()}
-      onkeydown={(e) => {
+      click={() => closeOnboarding()}
+      on:keydown={(e) => {
         if (e.key === "Escape") {
           closeOnboarding();
         }
@@ -394,7 +394,7 @@
                   class="w-4 h-4"
                   class:active={index === currentStep}
                   class:completed={index < currentStep}
-                  on:click={() => goToStep(index)}
+                  click={() => goToStep(index)}
                   aria-label="Go to step {index + 1}: {step.title}"
                 >
                   {#if index < currentStep}

@@ -1,10 +1,11 @@
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { searchService, globalSearch } from '$lib/services/search-service';
 import { hybridVectorService } from '$lib/services/hybrid-vector-operations';
 import { unifiedSearch } from '$lib/services/unified-loki-fuzzy-search.js';
 import type { SearchResult, SearchOptions } from '$lib/components/search/types';
+import type { RequestHandler } from './$types';
+
 
 const unifiedSearchSchema = z.object({
   query: z.string().min(1).max(1000),

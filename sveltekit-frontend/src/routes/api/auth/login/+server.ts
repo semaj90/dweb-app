@@ -1,9 +1,12 @@
+import type { RequestHandler } from './$types';
+
 /**
  * User Login API Endpoint
  * POST /api/auth/login
  */
 
-import { json, error, type RequestHandler } from '@sveltejs/kit';
+
+import { ensureError } from '$lib/utils/ensure-error';
 import { ExistingUserAuthService as UserAuthService } from '$lib/server/db/existing-user-operations.js';
 import { z } from 'zod';
 import { dev } from '$app/environment';
@@ -36,10 +39,10 @@ export const POST: RequestHandler = async ({ request, getClientAddress, cookies 
 
     if (!result.success) {
       // Don't reveal whether email exists or not (security best practice)
-      throw error(401, {
+      throw error(401, ensureError({
         message: 'Invalid email or password',
         code: 'AUTHENTICATION_FAILED'
-      });
+      }));
     }
 
     // Set session cookie

@@ -1,19 +1,17 @@
 <script lang="ts">
-	import type { ComponentProps, Snippet } from 'svelte';
+	// Removed unused 'Snippet' type import (Svelte does not export this type)
 	import { cva, type VariantProps } from 'class-variance-authority';
 	import { cn } from '$lib/utils';
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { melt } from '@melt-ui/svelte';
-	
-	// XState integration
-	import { useMachine } from '@xstate/svelte';
-	
+	// Dynamically import the melt action only in the browser to avoid SSR / build errors
+	let melt: any;
+
 	// User analytics and tracking
 	import { userAnalyticsStore } from '$lib/stores/analytics';
 	import { lokiButtonCache } from '$lib/services/loki-cache';
 	import { searchableButtonIndex } from '$lib/services/fuse-search';
-	
+
 	// JSON SSR rendering support
 	import type { UIJsonSSRConfig, ButtonAnalyticsEvent } from '$lib/types/ui-json-ssr';
 
@@ -61,10 +59,10 @@
 		target?: string;
 		loading?: boolean;
 		loadingText?: string;
-		class?: string;
-		children?: Snippet;
+		className?: string;
+		children?: any | string;
 		onclick?: (event: MouseEvent) => void;
-		
+
 		// Enhanced modular properties
 		id?: string;
 		analyticsCategory?: string;
@@ -75,46 +73,73 @@
 		searchKeywords?: string[];
 		cacheKey?: string;
 		role?: string;
-		'data-testid'?: string;
-		
+		dataTestid?: string;
+
 		// Melt-ui specific props
 		meltElement?: any; // For when used with other melt builders (e.g., dialog trigger)
 	}
-	
+
+	// Svelte 5 props with $props()
 	let {
 		variant = 'default',
 		size = 'default',
 		disabled = false,
 		type = 'button',
-		href,
-		target,
+		href = undefined,
+		target = undefined,
 		loading = false,
 		loadingText = 'Loading...',
-		class: className = '',
-		children,
-		onclick,
-		
-		// Enhanced modular properties
-		id = crypto.randomUUID(),
+		className = '',
+		children = undefined,
+		onclick = undefined,
+		id = (typeof globalThis !== 'undefined' && (globalThis.crypto as any)?.randomUUID)
+			? (globalThis.crypto as any).randomUUID()
+			: `melt-btn-${Math.random().toString(36).slice(2, 9)}`,
 		analyticsCategory = 'ui',
 		analyticsAction = 'click',
 		analyticsLabel = '',
-		xstateContext,
-		uiJsonConfig,
+		xstateContext = undefined,
+		uiJsonConfig = undefined,
 		searchKeywords = [],
-		cacheKey,
+		cacheKey = undefined,
 		role = 'button',
-		'data-testid': testId,
-		meltElement,
+		dataTestid = undefined,
+		meltElement = undefined,
 		...restProps
-	}: Props = $props();
-	
-	let isDisabled = $derived(disabled || loading);
-	let buttonClass = $derived(cn(buttonVariants({ variant, size }), className));
-	
-	// Basic button component props
-	type $$Props = Props;
-	
+	}: Props & Record<string, any> = $props();
+	// Collect any remaining attributes via $$restProps
+	// (removed explicit declare to avoid redeclaration errors)
+
+	// Reactive variables declared for TypeScript
+	let isDisabled: boolean = false;
+	let buttonClass: string = '';
+	let finalMeltElement: any = {};
+
+	// Reactive values
+	$: isDisabled = disabled || loading;
+	$: buttonClass = cn(buttonVariants({ variant, size }), className);
+	$: finalMeltElement = meltElement || {};
+
+	// Provide a stable action wrapper so Svelte has a defined action at compile-time
+	function maybeMelt(node: HTMLElement, params: any) {
+		let cleanup: any;
+		// Only call the real melt action if running in browser and it's available
+		if (browser && typeof melt === 'function') {
+			cleanup = melt(node, params);
+		}
+		return {
+			update(newParams: any) {
+				if (cleanup && typeof cleanup.update === 'function') cleanup.update(newParams);
+			},
+			destroy() {
+				if (cleanup) {
+					if (typeof cleanup.destroy === 'function') cleanup.destroy();
+					if (typeof cleanup === 'function') cleanup();
+				}
+			}
+		};
+	}
+
 	// Event dispatcher for component communication
 	const dispatch = createEventDispatcher<{
 		click: ButtonAnalyticsEvent;
@@ -122,11 +147,14 @@
 		cache: { key: string; action: string };
 		'm-click': MouseEvent; // Melt-ui standard event
 	}>();
-	
+
 	// Enhanced click handler with analytics and XState integration
 	function handleClick(event: MouseEvent) {
-		if (isDisabled || loading) return;
-		
+		if (isDisabled || loading) {
+			event.preventDefault();
+			return;
+		}
+
 		// Analytics tracking
 		const analyticsEvent: ButtonAnalyticsEvent = {
 			id,
@@ -138,123 +166,121 @@
 			variant,
 			size
 		};
-		
+
 		// Store analytics
 		if (browser) {
 			userAnalyticsStore.trackButtonClick(analyticsEvent);
 			dispatch('analytics', analyticsEvent);
 		}
-		
+
 		// Cache interaction if cacheKey provided
 		if (cacheKey && browser) {
 			lokiButtonCache.recordInteraction(cacheKey, analyticsEvent);
 			dispatch('cache', { key: cacheKey, action: 'click' });
 		}
-		
+
 		dispatch('click', analyticsEvent);
 		dispatch('m-click', event); // Melt-ui standard event
-		
+
 		// Call the onclick prop if provided
 		if (onclick) {
 			onclick(event);
 		}
 	}
-	
-	// Register with searchable index on mount
-	onMount(() => {
-		if (browser && searchKeywords.length > 0) {
-			searchableButtonIndex.addButton({
-				id,
-				keywords: searchKeywords,
-				variant,
-				size,
-				label: analyticsLabel,
-				element: document.getElementById(id)
-			});
+
+	onMount(async () => {
+		if (browser) {
+			// Try to dynamically import the melt action in the browser to avoid SSR/build-time issues
+			try {
+				const mod = await import('@melt-ui/svelte');
+				// Support both named export and default-export shapes, and fall back safely
+				melt = (mod as any)?.melt ?? (mod as any)?.default ?? undefined;
+			} catch {
+				// If the module isn't available, continue without the action
+				// (this avoids failing SSR/builds or optional runtime dependencies)
+				melt = undefined;
+			}
+
+			if (searchKeywords.length > 0) {
+				searchableButtonIndex.addButton({
+					id,
+					keywords: searchKeywords
+				});
+			}
 		}
 	});
-	
-	// Combine melt element attributes if provided
-	let finalMeltElement = $derived(meltElement || {});
+
 </script>
 
 {#if href}
-	<a 
-		{href} 
-		{target}
-		{id}
+	<a
+		href={href}
+		target={target}
+		id={id}
 		class={buttonClass}
-		role="button"
+		role={role}
 		tabindex="0"
 		aria-disabled={isDisabled}
-		data-testid={testId || "melt-button"}
-		use:melt={finalMeltElement}
-		onclick={handleClick}
-		{...restProps}
-	>
+		data-testid={dataTestid || 'melt-button'}
+		use:melt={melt ? finalMeltElement : undefined}
+		onclick={(e: MouseEvent) => {
+			if (isDisabled) {
+				e.preventDefault();
+				return;
+			}
+			handleClick(e);
+		}}
+		>
 		{#if loading}
-			<svg 
-				class="mr-2 h-4 w-4 animate-spin" 
-				xmlns="http://www.w3.org/2000/svg" 
-				fill="none" 
+			<svg
+				class="mr-2 h-4 w-4 animate-spin"
+				xmlns="http://www.w3.org/2000/svg"
+				fill="none"
 				viewBox="0 0 24 24"
 				aria-hidden="true"
 			>
-				<circle 
-					class="opacity-25" 
-					cx="12" 
-					cy="12" 
-					r="10" 
-					stroke="currentColor" 
-					stroke-width="4"
-				/>
-				<path 
-					class="opacity-75" 
-					fill="currentColor" 
+		use:maybeMelt={finalMeltElement}
+		on:click={handleClick}
+	>
+					fill="currentColor"
 					d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
 				/>
 			</svg>
 			{loadingText}
 		{:else}
-			{@render children?.()}
+			<slot />
+			{#if children}{children}{/if}
 		{/if}
 	</a>
 {:else}
 	<button
-		{id}
-		{type}
+		id={id}
+		type={type}
 		disabled={isDisabled}
 		class={buttonClass}
-		data-testid={testId || "melt-button"}
-		use:melt={finalMeltElement}
-		onclick={handleClick}
-		{...restProps}
+		data-testid={dataTestid || 'melt-button'}
+		use:melt={melt ? finalMeltElement : undefined}
+		on:click={handleClick}
 	>
 		{#if loading}
-			<svg 
-				class="mr-2 h-4 w-4 animate-spin" 
-				xmlns="http://www.w3.org/2000/svg" 
-				fill="none" 
+			<svg
+				class="mr-2 h-4 w-4 animate-spin"
+				xmlns="http://www.w3.org/2000/svg"
+				fill="none"
 				viewBox="0 0 24 24"
 				aria-hidden="true"
 			>
-				<circle 
-					class="opacity-25" 
-					cx="12" 
-					cy="12" 
-					r="10" 
-					stroke="currentColor" 
-					stroke-width="4"
-				/>
-				<path 
-					class="opacity-75" 
-					fill="currentColor" 
+				<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+				<path
+					class="opacity-75"
+					fill="currentColor"
 					d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
 				/>
 			</svg>
 			{loadingText}
 		{:else}
-			{@render children?.()}
+			<slot />
+			{#if children}{children}{/if}
 		{/if}
 	</button>
 {/if}

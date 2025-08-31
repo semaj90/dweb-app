@@ -294,8 +294,8 @@ let isTyping = $state(false);
   bind:isVisible={isVisible}
   bind:aiMode={aiMode}
   {isConnected}
-  ontoggle={toggleInterface}
-  onsettingsclick={() => terminalMode = !terminalMode}
+  on:toggle={toggleInterface}
+  on:settingsclick={() => terminalMode = !terminalMode}
 />
 
 <!-- Gaming AI Interface -->
@@ -311,8 +311,8 @@ let isTyping = $state(false);
       role="button"
       tabindex="0"
       aria-label="Close AI Interface"
-      on:click={() => showAIInterface = false}
-      onkeydown={e => { if (e.key === 'Enter' || e.key === ' ') showAIInterface = false; }}
+      click={() => showAIInterface = false}
+      on:keydown={e => { if (e.key === 'Enter' || e.key === ' ') showAIInterface = false; }}
     ></div>
 
     <!-- Main Interface Panel -->
@@ -348,7 +348,7 @@ let isTyping = $state(false);
         <!-- Header Controls -->
         <div class="flex items-center gap-2">
           <button
-            on:click={() => currentTheme = currentTheme === 'yorha' ? 'cyberpunk' : currentTheme === 'cyberpunk' ? 'matrix' : 'yorha'}
+            click={() => currentTheme = currentTheme === 'yorha' ? 'cyberpunk' : currentTheme === 'cyberpunk' ? 'matrix' : 'yorha'}
             class="p-2 rounded-lg hover:bg-gray-700/50 transition-colors"
             title="Switch Theme"
           >
@@ -356,7 +356,7 @@ let isTyping = $state(false);
           </button>
 
           <button
-            on:click={openNierAssistant}
+            click={openNierAssistant}
             class="p-2 rounded-lg hover:bg-gray-700/50 transition-colors"
             title="Open Full Assistant"
           >
@@ -364,7 +364,7 @@ let isTyping = $state(false);
           </button>
 
           <button
-            on:click={() => showAIInterface = false}
+            click={() => showAIInterface = false}
             class="p-2 rounded-lg hover:bg-red-500/20 transition-colors"
           >
             <X class="w-5 h-5 text-red-400" />
@@ -458,7 +458,7 @@ let isTyping = $state(false);
 
           <!-- Input Area -->
           <div class="p-4 border-t {theme.border}">
-            <form onsubmit={e => { e.preventDefault(); sendMessage(inputValue); }} class="flex gap-3">
+            <form submit={e => { e.preventDefault(); sendMessage(inputValue); }} class="flex gap-3">
               <div class="flex-1 relative">
                 <input
                   bind:value={inputValue}
@@ -485,7 +485,7 @@ let isTyping = $state(false);
             <div class="flex gap-2 mt-3">
               {#each ['analyze case', 'search evidence', 'system status', 'generate report'] as cmd}
                 <button
-                  on:click={() => { inputValue = cmd; sendMessage(cmd) }}
+                  click={() => { inputValue = cmd; sendMessage(cmd) }}
                   class="px-3 py-1 text-xs bg-gray-700/50 hover:bg-gray-600/50 {theme.secondary}
                          rounded border {theme.border} transition-colors uppercase font-mono"
                 >
@@ -509,7 +509,7 @@ let isTyping = $state(false);
               { id: 'rapid', label: 'Rapid Response', icon: Zap }
             ] as mode}
               <button
-                on:click={() => processAICommand(`switch to ${mode.label.toLowerCase()}`)}
+                click={() => processAICommand(`switch to ${mode.label.toLowerCase()}`)}
                 class="w-full flex items-center gap-3 p-3 rounded-lg border {theme.border}
                        hover:bg-gray-700/30 transition-colors text-left"
               >
@@ -550,7 +550,7 @@ let isTyping = $state(false);
   <NierAIAssistant
     bind:isOpen={showNierAssistant}
     {caseContext}
-    onclose={() => showNierAssistant = false}
+    on:close={() => showNierAssistant = false}
   />
 {/if}
 

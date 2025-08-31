@@ -185,7 +185,7 @@ https://svelte.dev/e/js_parse_error -->
   };
 </script>
 
-<svelte:window onkeydown={handleKeydown} />
+<svelte:window keydown={handleKeydown} />
 
 <div
   class="report-editor {layoutClass}"
@@ -213,15 +213,15 @@ https://svelte.dev/e/js_parse_error -->
           <div>
             <h3>Evidence Library</h3>
             <button
-              on:click={() => handleAddNewEvidence()}
+              click={() => handleAddNewEvidence()}
               title="Add new evidence"
             >
               <Plus size={16} />
             </button>
           </div>
             items={$report.attachedEvidence}
-            onresults={(results) => (evidenceSearchResults = results)}
-            onselect={handleInsertEvidence}
+            on:results={(results) => (evidenceSearchResults = results)}
+            on:select={handleInsertEvidence}
             placeholder="Search evidence..."
           />
         </section>
@@ -239,10 +239,10 @@ https://svelte.dev/e/js_parse_error -->
             >
               <EvidenceCard
                 evidence={item}
-                onview={handleViewEvidence}
-                onedit={handleEditEvidence}
-                ondelete={handleDeleteEvidence}
-                ondownload={handleDownloadEvidence}
+                on:view={handleViewEvidence}
+                on:edit={handleEditEvidence}
+                on:delete={handleDeleteEvidence}
+                on:download={handleDownloadEvidence}
                 compact={true}
               />
             </MasonryGrid>
@@ -251,10 +251,10 @@ https://svelte.dev/e/js_parse_error -->
               {#each evidenceSearchResults as evidence (evidence.id)}
                 <EvidenceCard
                   {evidence}
-                  onview={handleViewEvidence}
-                  onedit={handleEditEvidence}
-                  ondelete={handleDeleteEvidence}
-                  ondownload={handleDownloadEvidence}
+                  on:view={handleViewEvidence}
+                  on:edit={handleEditEvidence}
+                  on:delete={handleDeleteEvidence}
+                  on:download={handleDownloadEvidence}
                   compact={true}
                 />
               {/each}
@@ -304,7 +304,7 @@ https://svelte.dev/e/js_parse_error -->
         <div>
           {#if !$reportUI.sidebarOpen}
             <button
-              on:click={() => toggleSidebar()}
+              click={() => toggleSidebar()}
               title="Show sidebar"
             >
               <PanelLeftOpen size={20} />
@@ -314,14 +314,14 @@ https://svelte.dev/e/js_parse_error -->
           <input
             type="text"
             value={$report.title}
-            oninput={(e) => reportActions.updateTitle(e.currentTarget.value)}
+            input={(e) => reportActions.updateTitle(e.currentTarget.value)}
             placeholder="Report title..."
           />
         </div>
 
         <div>
           <button
-            on:click={() => switchLayout()}
+            click={() => switchLayout()}
             title="Switch layout ({$report.settings.layout})"
           >
             {#if $report.settings.layout === "single"}
@@ -334,7 +334,7 @@ https://svelte.dev/e/js_parse_error -->
           </button>
 
           <button
-            on:click={() => toggleFullscreen()}
+            click={() => toggleFullscreen()}
             title="Toggle fullscreen"
           >
             {#if $reportUI.fullscreen}
@@ -345,7 +345,7 @@ https://svelte.dev/e/js_parse_error -->
           </button>
 
           <button
-            on:click={() => (showSettingsModal = true)}
+            click={() => (showSettingsModal = true)}
             title="Settings"
           >
             <Settings size={18} />
@@ -367,7 +367,7 @@ https://svelte.dev/e/js_parse_error -->
       >
         <div class="panel-header"></div>
           <h3>Evidence</h3>
-          <button class="add-evidence-btn" on:click={() => handleAddNewEvidence()}>
+          <button class="add-evidence-btn" click={() => handleAddNewEvidence()}>
             <Plus size={16} />
           </button>
         </div>
@@ -381,25 +381,25 @@ https://svelte.dev/e/js_parse_error -->
           >
             <EvidenceCard
               evidence={item}
-              onview={handleViewEvidence}
-              onedit={handleEditEvidence}
-              ondelete={handleDeleteEvidence}
-              ondownload={handleDownloadEvidence}
+              on:view={handleViewEvidence}
+              on:edit={handleEditEvidence}
+              on:delete={handleDeleteEvidence}
+              on:download={handleDownloadEvidence}
               compact={true}
             />
   {#if showEvidenceModal}
     <EvidenceForm
       data={evidenceFormData}
       evidence={selectedEvidence}
-      onsuccess={() => {
+      on:success={() => {
         showEvidenceModal = false;
         selectedEvidence = null;
       }}
-      onerror={(e) => {
+      on:error={(e) => {
         console.error("Evidence form error:", e.detail);
         alert("Error saving evidence");
       }}
-      oncancel={() => {
+      on:cancel={() => {
         showEvidenceModal = false;
         selectedEvidence = null;
       }}
@@ -408,11 +408,11 @@ https://svelte.dev/e/js_parse_error -->
         showEvidenceModal = false;
         selectedEvidence = null;
       }}
-      onerror={(e) => {
+      on:error={(e) => {
         console.error("Evidence form error:", e.detail);
         alert("Error saving evidence");
       }}
-      oncancel={() => {
+      on:cancel={() => {
         showEvidenceModal = false;
         selectedEvidence = null;
       }}

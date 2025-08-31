@@ -4,6 +4,8 @@ import { db } from '$lib/db/client';
 import { cases, documents, insertCaseSchema, selectCaseSchema } from '$lib/db/schema/rag-integration';
 import { eq, desc, and, sql } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
+import type { RequestHandler } from './$types';
+
 
 const createCaseSchema = z.object({
   id: z.string().uuid(),

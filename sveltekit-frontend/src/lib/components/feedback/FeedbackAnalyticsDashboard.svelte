@@ -190,13 +190,13 @@
 
       <div class="header-actions">
         <div class="filters">
-          <select bind:value={selectedTimeframe} on:change={loadDashboardData} class="filter-select">
+          <select bind:value={selectedTimeframe} change={loadDashboardData} class="filter-select">
             {#each timeframeOptions as option}
               <option value={option.value}>{option.label}</option>
             {/each}
           </select>
 
-          <select bind:value={selectedRatingType} on:change={loadDashboardData} class="filter-select">
+          <select bind:value={selectedRatingType} change={loadDashboardData} class="filter-select">
             {#each ratingTypeOptions as option}
               <option value={option.value}>{option.label}</option>
             {/each}
@@ -204,7 +204,7 @@
         </div>
 
         <button 
-          on:click={() => loadDashboardData(true)} 
+          click={() => loadDashboardData(true)} 
           disabled={refreshing}
           class="action-button refresh-button"
         >
@@ -212,7 +212,7 @@
           {refreshing ? 'Refreshing...' : 'Refresh'}
         </button>
 
-        <button on:click={exportData} class="action-button export-button">
+        <button click={exportData} class="action-button export-button">
           <Download class="w-4 h-4" />
           Export Data
         </button>
@@ -227,7 +227,7 @@
         <h3 class="font-semibold">Error Loading Analytics</h3>
         <p>{error}</p>
       </div>
-      <button on:click={() => loadDashboardData()} class="retry-button">
+      <button click={() => loadDashboardData()} class="retry-button">
         <RefreshCw class="w-4 h-4" />
         Retry
       </button>

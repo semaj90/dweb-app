@@ -1,7 +1,8 @@
+import type { RequestHandler } from './$types';
+
 // Comprehensive Authentication Flow Test with GPU Acceleration
 // Tests complete integration: Auth → Session → AI → Services
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from '@sveltejs/kit';
 import { productionServiceClient, services } from '$lib/services/productionServiceClient.js';
 
 export interface AuthFlowTestResult {

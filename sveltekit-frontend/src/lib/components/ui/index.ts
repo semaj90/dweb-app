@@ -91,7 +91,7 @@ export { default as RichTextEditor } from "./RichTextEditor.svelte";
 export { default as SmartTextarea } from "./SmartTextarea.svelte";
 
 // Performance utilities
-export const preloadComponent = async (loader: (): Promise<any> => Promise<any>) => {
+export const preloadComponent = async (loader: () => Promise<any>) => {
   try {
     return await loader();
   } catch (error: any) {
@@ -112,7 +112,7 @@ export interface ComponentChoice {
 export function selectComponentLibrary(choice: ComponentLibrary = 'melt-ui'): ComponentChoice {
   return {
     library: choice,
-    reason: choice === 'melt-ui' 
+    reason: choice === 'melt-ui'
       ? 'Using melt-ui v0.39.0 for Svelte 5 compatibility'
       : 'Using bits-ui for legacy compatibility'
   };

@@ -1,10 +1,10 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Cluster Services Management API
  * Service discovery, management, and orchestration for all Go binaries
  */
 
-import { type RequestHandler,  json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 import { productionServiceRegistry, GO_SERVICES_REGISTRY, type ServiceDefinition } from '$lib/../../../../lib/services/production-service-registry.js';
 import { context7OrchestrationService } from '$lib/../../../../lib/services/context7-orchestration-integration.js';
 

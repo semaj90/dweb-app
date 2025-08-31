@@ -4,7 +4,8 @@
  */
 import { ollamaCudaService } from "./ollama-cuda-service";
 import { db, evidence, embeddingCache, cases } from "$lib/database/schema";
-import { eq, sql, and, desc, isNotNull } from "drizzle-orm";
+import { eq, sql, and, isNotNull } from "drizzle-orm";
+import { desc } from "$lib/server/db/index";
 import type { AiAnalysisResult } from "$lib/schemas/file-upload";
 import { createHash } from "crypto";
 

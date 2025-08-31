@@ -177,7 +177,7 @@
           <Button
             variant="yorha"
             class="yorha-3d-button group-hover:scale-105 transition-transform"
-            onclick={() => {
+            on:click={() => {
               dashboardFeedback?.feedback.featureUsed('view_cases', { dashboardWidget: 'active_cases' });
               window.location.href = '/cases';
             }}
@@ -196,7 +196,7 @@
           <Button
             variant="evidence"
             class="yorha-3d-button group-hover:scale-105 transition-transform"
-            onclick={() => {
+            on:click={() => {
               dashboardFeedback?.feedback.featureUsed('manage_evidence', { dashboardWidget: 'evidence_items' });
               window.location.href = '/evidence';
             }}
@@ -215,7 +215,7 @@
           <Button
             variant="success"
             class="yorha-3d-button group-hover:scale-105 transition-transform"
-            onclick={() => {
+            on:click={() => {
               dashboardFeedback?.feedback.featureUsed('start_ai_analysis', {
                 dashboardWidget: 'ai_analysis',
                 accuracyRate: '89%'

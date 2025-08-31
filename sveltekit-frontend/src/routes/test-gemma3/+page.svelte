@@ -129,7 +129,7 @@
     </div>
 
     <button
-      onclick={() => testGemma3()}
+      click={() => testGemma3()}
       disabled={isLoading || !status?.available}
       class="test-button"
     >

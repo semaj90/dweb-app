@@ -397,10 +397,10 @@
 
   <!-- Upload Modal -->
   {#if showUpload}
-    <div class="fixed inset-0 z-50 bg-black/50" on:click={() => { if (!uploadLoading) showUpload = false; }} />
+    <div class="fixed inset-0 z-50 bg-black/50" click={() => { if (!uploadLoading) showUpload = false; }} />
     <div
       class="fixed left-[50%] top-[50%] z-50 max-h-[85vh] w-[90vw] max-w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white dark:bg-gray-800 p-6 shadow-xl border border-gray-200 dark:border-gray-700"
-      on:click|stopPropagation
+      click|stopPropagation
     >
       <h2 class="text-xl font-semibold mb-6 text-gray-900 dark:text-white">Upload Evidence</h2>
 
@@ -422,7 +422,7 @@
             type="file"
             multiple
             accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.mp4,.mp3,.zip"
-            on:change={(e: Event) => {
+            change={(e: Event) => {
               const target = e.target as HTMLInputElement;
               uploadFiles = target?.files || null;
             }}

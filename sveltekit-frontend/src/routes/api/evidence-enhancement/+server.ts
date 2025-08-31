@@ -1,10 +1,11 @@
 
+import type { RequestHandler } from './$types';
+
 /**
  * Evidence Enhancement API
  * Analyzes uploaded evidence and suggests relevant labels and classifications
  */
 
-import { type RequestHandler,  json, error } from '@sveltejs/kit';
 import { Pool } from "pg";
 import { z } from "zod";
 

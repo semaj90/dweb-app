@@ -368,7 +368,7 @@
     <div class="yorha-test-controls-content">
       <button
         class="yorha-test-run-btn {isRunning ? 'running' : ''}"
-        onclick={runAllTests}
+        click={runAllTests}
         disabled={isRunning}
       >
         {#if isRunning}

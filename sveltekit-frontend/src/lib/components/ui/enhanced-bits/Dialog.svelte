@@ -97,7 +97,7 @@
   }
 </script>
 
-<BitsDialog.Root {open} onopenchange={handleOpenChange}>
+<BitsDialog.Root {open} on:openchange={handleOpenChange}>
   {@render children?.()}
 
   <!-- Portal rendering for dialog content -->

@@ -145,7 +145,7 @@
 				<button
 					class="container mx-auto px-4"
 					class:active={selectedTool === tool.id}
-					on:click={() => selectTool(tool.id)}
+					click={() => selectTool(tool.id)}
 					aria-label={tool.label}
 					title={tool.label}
 				>
@@ -164,7 +164,7 @@
 				<button
 					class="container mx-auto px-4"
 					class:active={(formatting as any)[action.id]}
-					on:click={() => toggleFormatting(action.id)}
+					click={() => toggleFormatting(action.id)}
 					aria-label={action.label}
 					title={action.label}
 					disabled={selectedTool !== 'text'}
@@ -179,7 +179,7 @@
 				<button
 					class="container mx-auto px-4"
 					class:active={formatting.textAlign === action.id}
-					on:click={() => setAlignment(action.id)}
+					click={() => setAlignment(action.id)}
 					aria-label={action.label}
 					title={action.label}
 					disabled={selectedTool !== 'text'}
@@ -194,7 +194,7 @@
 				<input
 					type="color"
 					value={formatting.color}
-					onchange={(e) => handleColorChange(e, 'color')}
+					change={(e) => handleColorChange(e, 'color')}
 					title="Text Color"
 					disabled={selectedTool !== 'text'}
 				/>
@@ -207,7 +207,7 @@
 					min="8"
 					max="72"
 					value={formatting.fontSize}
-					oninput={handleFontSizeChange}
+					input={handleFontSizeChange}
 					title="Font Size: {formatting.fontSize}px"
 					disabled={selectedTool !== 'text'}
 				/>
@@ -225,7 +225,7 @@
 				<input
 					type="color"
 					value={drawing.strokeColor}
-					onchange={(e) => handleColorChange(e, 'color')}
+					change={(e) => handleColorChange(e, 'color')}
 					title="Stroke Color"
 					disabled={!['draw', 'rectangle', 'circle'].includes(selectedTool)}
 				/>
@@ -238,7 +238,7 @@
 					min="1"
 					max="20"
 					value={drawing.strokeWidth}
-					oninput={handleStrokeWidthChange}
+					input={handleStrokeWidthChange}
 					title="Stroke Width: {drawing.strokeWidth}px"
 					disabled={!['draw', 'rectangle', 'circle'].includes(selectedTool)}
 				/>
@@ -254,7 +254,7 @@
 		<div class="container mx-auto px-4">
 			<button
 				class="container mx-auto px-4"
-				on:click={() => handleAction('undo')}
+				click={() => handleAction('undo')}
 				disabled={!canUndo}
 				aria-label="Undo"
 				title="Undo"
@@ -264,7 +264,7 @@
 
 			<button
 				class="container mx-auto px-4"
-				on:click={() => handleAction('redo')}
+				click={() => handleAction('redo')}
 				disabled={!canRedo}
 				aria-label="Redo"
 				title="Redo"
@@ -276,7 +276,7 @@
 		<div class="container mx-auto px-4">
 			<button
 				class="container mx-auto px-4"
-				on:click={() => handleAction('copy')}
+				click={() => handleAction('copy')}
 				aria-label="Copy"
 				title="Copy"
 			>
@@ -285,7 +285,7 @@
 
 			<button
 				class="container mx-auto px-4"
-				on:click={() => handleAction('delete')}
+				click={() => handleAction('delete')}
 				aria-label="Delete"
 				title="Delete"
 			>
@@ -301,7 +301,7 @@
 		<div class="container mx-auto px-4">
 			<button
 				class="container mx-auto px-4"
-				on:click={() => handleZoom(-10)}
+				click={() => handleZoom(-10)}
 				aria-label="Zoom Out"
 				title="Zoom Out"
 			>
@@ -312,7 +312,7 @@
 
 			<button
 				class="container mx-auto px-4"
-				on:click={() => handleZoom(10)}
+				click={() => handleZoom(10)}
 				aria-label="Zoom In"
 				title="Zoom In"
 			>

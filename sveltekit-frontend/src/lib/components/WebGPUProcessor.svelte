@@ -779,7 +779,7 @@ https://svelte.dev/e/js_parse_error -->
 </script>
 
 <!-- Component template -->
-<div class={`webgpu-processor ${className}`}>
+<div className={`webgpu-processor ${className}`}>
 	<!-- WebGPU Canvas -->
 	<canvas 
 		bind:this={canvas}

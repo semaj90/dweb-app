@@ -1,8 +1,9 @@
-import type { RequestHandler } from '@sveltejs/kit';
 
 import { json } from "@sveltejs/kit";
 import { vectorSearchService } from "$lib/services/vector-search";
 import { legalDocuments as documents } from "$lib/server/db/schema-postgres";
+import type { RequestHandler } from './$types';
+
 
 // Real-time document indexing endpoint
 export const POST: RequestHandler = async ({ request }) => {

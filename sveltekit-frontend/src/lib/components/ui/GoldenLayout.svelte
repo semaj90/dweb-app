@@ -68,7 +68,7 @@
 }}
 </script>
 
-<svelte:window onkeydown={handleKeydown} />
+<svelte:window keydown={handleKeydown} />
 
 <div
   class="container mx-auto px-4"
@@ -93,7 +93,7 @@
       {#if collapsible}
         <button
           class="container mx-auto px-4"
-          on:click={() => toggleSidebar()}
+          click={() => toggleSidebar()}
           title={collapsed
             ? "Expand sidebar (Ctrl+\\)"
             : "Collapse sidebar (Ctrl+\\)"}
@@ -126,7 +126,7 @@
       {#if collapsible}
         <button
           class="container mx-auto px-4"
-          on:click={() => toggleSidebar()}
+          click={() => toggleSidebar()}
           title={collapsed
             ? "Expand sidebar (Ctrl+\\)"
             : "Collapse sidebar (Ctrl+\\)"}

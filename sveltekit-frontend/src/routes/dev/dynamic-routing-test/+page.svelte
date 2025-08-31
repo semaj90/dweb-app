@@ -313,7 +313,7 @@
                 {#each categoryRoutes.slice(0, 5) as route}
                   <button
                     class="block w-full text-left text-sm text-yorha-text-secondary hover:text-yorha-accent hover:bg-yorha-bg-secondary p-1 rounded transition-colors"
-                    on:click={() => navigateToRoute(route.route)}
+                    click={() => navigateToRoute(route.route)}
                   >
                     {route.icon} {route.label}
                   </button>

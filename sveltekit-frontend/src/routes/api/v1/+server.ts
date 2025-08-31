@@ -1,10 +1,13 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Unified JSON API Router v1 - SvelteKit 2 Production Implementation
  * Integrates all 37 Go microservices with production-quality endpoints
  * Windows-native deployment with comprehensive error handling
  */
 
-import { json, error, type RequestHandler } from '@sveltejs/kit';
+
+import { ensureError } from '$lib/utils/ensure-error';
 import { dev } from '$app/environment';
 import type { 
   APIResponse, 
@@ -208,10 +211,10 @@ export const GET: RequestHandler = async ({ url }) => {
     }
   } catch (err: any) {
     console.error('API v1 Error:', err);
-    return error(500, {
+    return error(500, ensureError({
       message: 'Internal API Error',
       error: dev ? String(err) : 'Service temporarily unavailable'
-    });
+    }));
   }
 };
 

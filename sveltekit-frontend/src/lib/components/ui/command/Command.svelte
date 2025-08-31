@@ -9,7 +9,7 @@
   let { open = $bindable() } = $props(); // boolean = false;
   let { onOpenChange = $bindable() } = $props(); // ((open: boolean) => void) | undefined;
   let { placeholder = $bindable() } = $props(); // string = 'Search cases, evidence, documents...';
-  let { className = $bindable() } = $props(); // string = '';
+  let { class = $bindable() } = $props(); // string = '';
 
   const dispatch = createEventDispatcher();
 
@@ -70,7 +70,7 @@
   class={cn(
     'legal-command-palette',
     'flex h-full w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground',
-    className
+    class
   )}
 >
   <div class="flex items-center border-b px-3 legal-command-header">

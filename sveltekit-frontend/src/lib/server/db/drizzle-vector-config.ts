@@ -15,7 +15,8 @@ import {
   boolean,
   index
 } from 'drizzle-orm/pg-core';
-import { relations, sql } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
+import { relations } from 'drizzle-orm/relations';
 import { customType } from 'drizzle-orm/pg-core';
 import postgres from 'postgres';
 

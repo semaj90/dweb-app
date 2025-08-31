@@ -1,9 +1,10 @@
 
+import type { RequestHandler } from './$types';
+
 /**
  * Simple Copilot Optimization API for Testing
  */
 
-import { type RequestHandler,  json, error } from '@sveltejs/kit';
 import { URL } from "url";
 
 export const GET: RequestHandler = async ({ url }) => {

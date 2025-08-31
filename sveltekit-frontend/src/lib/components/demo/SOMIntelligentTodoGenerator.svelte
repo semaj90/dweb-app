@@ -201,7 +201,7 @@ src/hooks.server.ts(18,25): error: Database connection timeout after 5000ms
 
     <div class="flex justify-between items-center mt-4">
       <button
-        onclick={processErrors}
+        click={processErrors}
         disabled={isLoading || !somCache}
         class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-6 py-2 rounded-lg font-medium transition-colors"
       >

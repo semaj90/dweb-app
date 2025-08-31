@@ -3,7 +3,8 @@
 
 import { db } from '../db/index';
 import { cases, evidence, users, userAiQueries, ragMessages, ragSessions } from '../db/schema-postgres';
-import { eq, and, desc, sql, count } from 'drizzle-orm';
+import { eq, and, sql, count } from 'drizzle-orm';
+import { desc } from '../db/index';
 import type { User } from '../db/schema-types';
 
 // User behavior pattern interfaces

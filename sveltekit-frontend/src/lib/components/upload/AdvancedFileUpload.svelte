@@ -525,14 +525,14 @@
     class="container mx-auto px-4"
     class:drag-over={isDragOver}
     class:disabled
-    ondrop={handleDrop}
-    ondragover={handleDragOver}
-    ondragleave={handleDragLeave}
+    on:drop={handleDrop}
+    on:dragover={handleDragOver}
+    on:dragleave={handleDragLeave}
     role="button"
     tabindex={0}
     aria-label="File upload area. Click to select files or drag and drop files here."
-    on:click={() => !disabled && fileInput.click()}
-    onkeydown={(e) => {
+    click={() => !disabled && fileInput.click()}
+    on:keydown={(e) => {
       if ((e.key === "Enter" || e.key === " ") && !disabled) {
         e.preventDefault();
         fileInput.click();
@@ -601,7 +601,7 @@
     {multiple}
     {accept}
     {disabled}
-    onchange={handleFileSelect}
+    change={handleFileSelect}
     class="container mx-auto px-4"
     aria-hidden="true"
   />

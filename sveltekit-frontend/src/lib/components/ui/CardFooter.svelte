@@ -10,7 +10,7 @@
     children
   }: Props & { children?: unknown } = $props();
 
-  const classes = $derived(className);
+  const classes = $derived(class);
 </script>
 
 <div class="space-y-4">

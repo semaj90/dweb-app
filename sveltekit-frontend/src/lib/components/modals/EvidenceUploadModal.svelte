@@ -80,11 +80,11 @@
           aria-label="Evidence file drop zone"
           aria-describedby="evidence-dropzone-instructions"
           class="container mx-auto px-4"
-          ondrop={handleDrop}
-          ondragover={handleDragOver}
-          ondragleave={handleDragLeave}
-          on:click={() => fileInput?.click()}
-          onkeydown={(e) =>
+          on:drop={handleDrop}
+          on:dragover={handleDragOver}
+          on:dragleave={handleDragLeave}
+          click={() => fileInput?.click()}
+          on:keydown={(e) =>
             (e.key === "Enter" || e.key === " ") && fileInput?.click()}
         >
           <Upload class="container mx-auto px-4" />
@@ -103,7 +103,7 @@
             multiple
             class="container mx-auto px-4"
             accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt,.csv,.xlsx,.xls"
-            onchange={handleFileSelect}
+            change={handleFileSelect}
           />
         </div>
 

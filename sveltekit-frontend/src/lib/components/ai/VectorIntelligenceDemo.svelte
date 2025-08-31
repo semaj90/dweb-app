@@ -176,10 +176,10 @@
       </CardTitle>
     </CardHeader>
     <CardContent class="space-y-4">
-      <form onsubmit={handleSubmit} class="flex gap-2">
+      <form submit={handleSubmit} class="flex gap-2">
         <Input
           bind:value={query}
-          onkeydown={handleKeydown}
+          on:keydown={handleKeydown}
           placeholder="Search legal documents using natural language..."
           class="flex-1"
           disabled={isSearching}

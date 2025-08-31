@@ -1,5 +1,6 @@
-import type { RequestHandler } from '$lib/types/server';
 import { json } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+
 // import { INGEST_SERVICE_URL, MAX_BATCH_SIZE } from '$env/static/private';
 
 /**

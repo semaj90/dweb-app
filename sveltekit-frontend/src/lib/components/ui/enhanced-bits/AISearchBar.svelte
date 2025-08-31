@@ -60,7 +60,7 @@
     icon={Search}
     iconPosition="left"
     class="flex-1 vector-search-input"
-    onkeydown={handleKeyDown}
+    on:keydown={handleKeyDown}
     legal
     aiAssisted
   />

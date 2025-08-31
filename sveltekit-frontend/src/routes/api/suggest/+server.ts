@@ -1,5 +1,6 @@
+import type { RequestHandler } from './$types';
+
 // "Did You Mean?" Suggestions API - SSR compatible with fuzzy search
-import type { RequestHandler } from '@sveltejs/kit';
 import { json, error } from '@sveltejs/kit';
 import Fuse from 'fuse.js';
 import { db } from '$lib/server/db/index.js';

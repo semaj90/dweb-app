@@ -859,7 +859,7 @@ class VectorSearchService {
     };
   }
 
-  private async performKMeansClustering(documents: any[], numClusters: number): Promise<unknown[]> {
+  private async performKMeansClustering(documents: any[], numClusters: number): Promise<any[]> {
     // Simplified K-means clustering implementation
     // In production, you might want to use a more sophisticated clustering library
     return [];

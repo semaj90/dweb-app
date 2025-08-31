@@ -226,10 +226,10 @@ Additionally, we recommend exploring settlement negotiations before filing suit,
       </div>
       
       <div class="actions">
-        <button class="btn btn-outline" on:click={loadSampleDocument}>
+        <button class="btn btn-outline" click={loadSampleDocument}>
           Load Sample
         </button>
-        <button class="btn btn-outline" on:click={clearAll}>
+        <button class="btn btn-outline" click={clearAll}>
           Clear All
         </button>
       </div>
@@ -239,13 +239,13 @@ Additionally, we recommend exploring settlement negotiations before filing suit,
   <div class="tab-navigation">
     <button 
       class="tab {activeTab === 'input' ? 'active' : ''}"
-      on:click={() => activeTab = 'input'}
+      click={() => activeTab = 'input'}
     >
       📝 Document Input
     </button>
     <button 
       class="tab {activeTab === 'summary' ? 'active' : ''}"
-      on:click={() => activeTab = 'summary'}
+      click={() => activeTab = 'summary'}
       disabled={!summary && !isLoading}
     >
       📋 Summary
@@ -255,7 +255,7 @@ Additionally, we recommend exploring settlement negotiations before filing suit,
     </button>
     <button 
       class="tab {activeTab === 'analysis' ? 'active' : ''}"
-      on:click={() => activeTab = 'analysis'}
+      click={() => activeTab = 'analysis'}
       disabled={!metadata?.legalRiskAnalysis}
     >
       ⚖️ Legal Analysis
@@ -274,7 +274,7 @@ Additionally, we recommend exploring settlement negotiations before filing suit,
               id="file-input"
               type="file" 
               accept=".txt,.md,.pdf,.docx"
-              on:change={handleFileUpload}
+              change={handleFileUpload}
               hidden
             />
           </div>
@@ -330,7 +330,7 @@ Additionally, we recommend exploring settlement negotiations before filing suit,
           <div class="input-footer">
             <button 
               class="btn btn-primary btn-large"
-              on:click={handleSummarize}
+              click={handleSummarize}
               disabled={isLoading || !reportText.trim() || reportText.length < 100}
             >
               {#if isLoading}
@@ -362,7 +362,7 @@ Additionally, we recommend exploring settlement negotiations before filing suit,
             <div class="result-header">
               <h3>📋 Document Summary</h3>
               <div class="result-actions">
-                <button id="copy-btn" class="btn btn-outline" on:click={copySummary}>
+                <button id="copy-btn" class="btn btn-outline" click={copySummary}>
                   📋 Copy Summary
                 </button>
               </div>
@@ -409,7 +409,7 @@ Additionally, we recommend exploring settlement negotiations before filing suit,
           <div class="error-panel">
             <h3>❌ Processing Error</h3>
             <p>{errorMessage}</p>
-            <button class="btn btn-primary" on:click={() => activeTab = 'input'}>
+            <button class="btn btn-primary" click={() => activeTab = 'input'}>
               ← Back to Input
             </button>
           </div>

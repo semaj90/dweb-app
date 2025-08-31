@@ -207,7 +207,7 @@
       <Textarea 
         id="legal-prompt"
         bind:value={promptInput}
-        onkeydown={handleKeydown}
+        on:keydown={handleKeydown}
         placeholder="Ask a legal question (e.g., 'What are the key elements of a valid contract?', 'Explain force majeure clauses', etc.)"
         rows={4}
         class="yorha-textarea"

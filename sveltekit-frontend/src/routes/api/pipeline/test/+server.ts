@@ -1,9 +1,10 @@
+import type { RequestHandler } from './$types';
+
 // src/routes/api/pipeline/test/+server.ts
 // End-to-end pipeline testing endpoint
 // Tests PostgreSQL → Redis Streams → Go microservice → CUDA worker → Qdrant → WebGPU
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import postgres from 'postgres';
 import { createClient } from 'redis';

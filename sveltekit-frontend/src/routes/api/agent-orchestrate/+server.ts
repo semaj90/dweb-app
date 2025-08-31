@@ -1,11 +1,11 @@
-import type { RequestHandler } from '@sveltejs/kit';
+
+import type { RequestHandler } from './$types';
 
 /**
  * Agent Orchestrator API Endpoint
  * Coordinates multiple AI agents with Context7 MCP integration and auto-fix capabilities
  */
 
-import { json, type RequestHandler } from "@sveltejs/kit";
 
 import { autoGenAgent } from '../../../../../agents/autogen-agent';
 

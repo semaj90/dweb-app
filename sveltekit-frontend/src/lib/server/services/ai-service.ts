@@ -1,6 +1,7 @@
 import { OllamaService } from "$lib/services/ollamaService.js";
 import { userAiQueries, autoTags, documentChunks, embeddingCache } from "../db/schema-postgres";
-import { eq, desc, sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
+import { desc } from "../db/index";
 import type { NewUserAiQuery, NewAutoTag, NewDocumentChunk } from "../db/schema-postgres";
 import { generateIdFromEntropySize } from "lucia";
 import crypto from 'crypto';

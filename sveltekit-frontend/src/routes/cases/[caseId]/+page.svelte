@@ -152,10 +152,10 @@
               <h3 class="text-sm font-medium text-red-800">Case Loading Error</h3>
               <p class="mt-2 text-sm text-red-700">{$state.context.error}</p>
               <div class="mt-4 flex space-x-3">
-                <Button size="sm" variant="outline" onclick={handleRetry}>
+                <Button size="sm" variant="outline" on:click={handleRetry}>
                   Retry Loading
                 </Button>
-                <Button size="sm" variant="ghost" onclick={handleDismissError}>
+                <Button size="sm" variant="ghost" on:click={handleDismissError}>
                   Dismiss
                 </Button>
               </div>
@@ -218,7 +218,7 @@
               </div>
               <div class="mt-5 flex lg:mt-0 lg:ml-4">
                 <span class="sm:ml-3">
-                  <Button onclick={handleRefresh} variant="outline">
+                  <Button on:click={handleRefresh} variant="outline">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                     </svg>
@@ -228,7 +228,7 @@
                 <span class="ml-3">
                   <select 
                     bind:value={workflowStage}
-                    onchange={(e) => handleWorkflowStageChange(e.target.value)}
+                    change={(e) => handleWorkflowStageChange(e.target.value)}
                     class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
                   >
                     <option value="investigation">Investigation</option>
@@ -282,7 +282,7 @@
             ] as tab}
               <button
                 class="group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm {activeTab === tab.id ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
-                onclick={() => handleTabSwitch(tab.id)}
+                click={() => handleTabSwitch(tab.id)}
               >
                 <span class="mr-2">{tab.icon}</span>
                 {tab.label}
@@ -331,21 +331,21 @@
                     <h3 class="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
                     <div class="space-y-3">
                       <Button 
-                        onclick={triggerFileUpload}
+                        on:click={triggerFileUpload}
                         class="w-full justify-center"
                         variant="outline"
                       >
                         📎 Upload Evidence
                       </Button>
                       <Button 
-                        onclick={handleStartAIAnalysis}
+                        on:click={handleStartAIAnalysis}
                         disabled={!canStartAIAnalysis}
                         class="w-full justify-center"
                       >
                         🤖 Start AI Analysis
                       </Button>
                       <Button 
-                        onclick={handleFindSimilarCases}
+                        on:click={handleFindSimilarCases}
                         class="w-full justify-center"
                         variant="outline"
                       >
@@ -370,14 +370,14 @@
                       type="file"
                       multiple
                       bind:this={fileInput}
-                      onchange={onFileChange}
+                      change={onFileChange}
                       class="hidden"
                     />
                     <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
                       <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
                     <p class="mt-2 text-sm text-gray-600">
-                      <Button onclick={triggerFileUpload} variant="outline">
+                      <Button on:click={triggerFileUpload} variant="outline">
                         Choose files
                       </Button>
                       or drag and drop
@@ -407,7 +407,7 @@
                             </div>
                             <div class="ml-4 flex-shrink-0 flex space-x-2">
                               <Button size="sm" variant="outline">View</Button>
-                              <Button size="sm" onclick={() => send({ type: 'SELECT_EVIDENCE', evidence: item })}>
+                              <Button size="sm" on:click={() => send({ type: 'SELECT_EVIDENCE', evidence: item })}>
                                 Select
                               </Button>
                             </div>
@@ -426,7 +426,7 @@
                     <h3 class="mt-2 text-sm font-medium text-gray-900">No evidence uploaded</h3>
                     <p class="mt-1 text-sm text-gray-500">Get started by uploading your first piece of evidence.</p>
                     <div class="mt-6">
-                      <Button onclick={triggerFileUpload}>
+                      <Button on:click={triggerFileUpload}>
                         Upload Evidence
                       </Button>
                     </div>
@@ -453,14 +453,14 @@
 
                   <div class="flex space-x-4 mb-6">
                     <Button 
-                      onclick={handleStartAIAnalysis}
+                      on:click={handleStartAIAnalysis}
                       disabled={!canStartAIAnalysis || legalCaseSelectors.isInState('aiAnalysis.analyzing')($state)}
                     >
                       {legalCaseSelectors.isInState('aiAnalysis.analyzing')($state) ? 'Analyzing...' : 'Start AI Analysis'}
                     </Button>
                     <Button 
                       variant="outline"
-                      onclick={handleFindSimilarCases}
+                      on:click={handleFindSimilarCases}
                       disabled={isLoading}
                     >
                       Find Similar Cases

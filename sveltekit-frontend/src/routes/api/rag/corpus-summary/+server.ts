@@ -1,6 +1,7 @@
 
-import { type RequestHandler,  json } from '@sveltejs/kit';
 import { db } from "$lib/server/db";
+import type { RequestHandler } from './$types';
+
 
 // Fallback raw query (table created dynamically by summarization script)
 export const GET: RequestHandler = async () => {

@@ -422,7 +422,7 @@
                 max="1024"
                 step="128"
                 bind:value={vectorDimensions}
-                oninput={generateTestData}
+                input={generateTestData}
                 class="w-full"
                 disabled={isProcessing} />
             </div>
@@ -458,7 +458,7 @@
                 max="5000"
                 step="100"
                 bind:value={numDataPoints}
-                oninput={generateTestData}
+                input={generateTestData}
                 class="w-full"
                 disabled={isProcessing} />
             </div>
@@ -473,7 +473,7 @@
                 min="2"
                 max="20"
                 bind:value={numClusters}
-                oninput={generateTestData}
+                input={generateTestData}
                 class="w-full"
                 disabled={isProcessing} />
             </div>
@@ -509,7 +509,7 @@
                 max="512"
                 step="64"
                 bind:value={matrixSize}
-                oninput={generateTestData}
+                input={generateTestData}
                 class="w-full"
                 disabled={isProcessing} />
             </div>

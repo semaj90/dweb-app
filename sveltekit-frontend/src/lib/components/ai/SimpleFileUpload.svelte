@@ -681,7 +681,7 @@
         </h3>
         <button
           class="text-sm bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-full border border-blue-200 transition-colors"
-          onclick={() => uploadMachine?.send({ type: 'CHECK_SERVICES' })}
+          click={() => uploadMachine?.send({ type: 'CHECK_SERVICES' })}
         >
           Refresh Status
         </button>
@@ -738,13 +738,13 @@
   <!-- Enhanced Upload Zone -->
   <div
     class="relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 {isDragOver ? 'border-blue-400 bg-blue-50 scale-102' : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'}"
-    ondragover={handleDragOver}
-    ondragleave={handleDragLeave}
-    ondrop={handleDrop}
+    on:dragover={handleDragOver}
+    on:dragleave={handleDragLeave}
+    on:drop={handleDrop}
     role="button"
     tabindex="0"
-    onclick={() => fileInput?.click()}
-    onkeydown={(e) => e.key === 'Enter' && fileInput?.click()}
+    click={() => fileInput?.click()}
+    on:keydown={(e) => e.key === 'Enter' && fileInput?.click()}
   >
     <div class="flex flex-col items-center">
       <div class="mb-4 p-3 bg-gray-100 rounded-full">
@@ -772,7 +772,7 @@
       multiple
       {accept}
       class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-      onchange={handleFileInput}
+      change={handleFileInput}
     />
   </div>
 
@@ -885,7 +885,7 @@
             <div class="border-t pt-3">
               <button
                 class="text-sm text-blue-600 hover:text-blue-700 font-medium"
-                onclick={() => {
+                click={() => {
                   const detailsEl = document.getElementById(`details-${fileId}`);
                   if (detailsEl) {
                     detailsEl.classList.toggle('hidden');

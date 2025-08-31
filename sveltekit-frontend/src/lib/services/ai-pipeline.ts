@@ -11,7 +11,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import postgres from "postgres";
 import { Pool } from "pg";
 import type { Document } from "@langchain/core/documents";
-import { userEmbeddings } from '../server/db/schema-postgres';
+import { users, embeddingCache } from '../server/db/schema-postgres';
 import { OllamaService } from "./ollamaService";
 
 export interface SemanticSearchOptions {

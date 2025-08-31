@@ -3,7 +3,7 @@
 // Connects Neo4j, PostgreSQL/pgvector, XState, Redis, Ollama, and Go services
 
 import { logger } from './logger';
-import { drizzle } from "drizzle-orm/node-postgres";
+import { drizzle } from "drizzle-orm/postgres-js";
 import { pgTable, text, vector, timestamp, jsonb, uuid, integer, boolean } from "drizzle-orm/pg-core";
 import type { PoolConfig } from 'pg';
 import { eq, sql } from "drizzle-orm";
@@ -519,7 +519,7 @@ export class EnhancedAISynthesisOrchestrator {
 
   private async initializeNeo4j() {
     try {
-      // Initialize Neo4j store with fallback  
+      // Initialize Neo4j store with fallback
       try {
         this.neo4jStore = new (Neo4jVectorStore as any)(this.embeddings, {
           url: services.neo4j.uri,
@@ -583,7 +583,7 @@ export class EnhancedAISynthesisOrchestrator {
     // XState v5 uses provide() instead of withConfig()
     // We need to capture 'this' context for the actors
     const self = this;
-    
+
     this.machine = orchestrationMachine.provide({
       actors: {
         initializeServices: fromPromise(async () => {
@@ -723,7 +723,7 @@ export class EnhancedAISynthesisOrchestrator {
         rankWithCrossEncoder: fromPromise(async ({ input }: { input: any }) => {
           // Get the current context from the machine
           const context = input;
-          
+
           // Combine all results
           const allResults = [
             ...(context.neo4jResults || []),
@@ -821,13 +821,13 @@ export class EnhancedAISynthesisOrchestrator {
               stream: false,
             }),
           });
-          
+
           if (ollamaResponse.ok) {
             const result = await ollamaResponse.json();
             logger.info('[Ollama] Generated response with gemma3:legal-latest');
             return result.response;
           }
-          
+
           throw new Error('Ollama fallback failed');
         }),
 
@@ -1234,11 +1234,11 @@ TEMPLATE """{{ if .System }}<|system|>
 
   async processWithStreaming(query: string, options?: Record<string, any>): Promise<AsyncGenerator<any>> {
     const self = this;
-    
+
     async function* streamResults() {
       let isComplete = false;
       const events: any[] = [];
-      
+
       const service = createActor(self.machine, {
         input: {
           query,
@@ -1254,7 +1254,7 @@ TEMPLATE """{{ if .System }}<|system|>
             stage: snapshot.value,
             progress: self.calculateProgress(snapshot.value),
           });
-          
+
           if (snapshot.status === 'done' || snapshot.status === 'error') {
             isComplete = true;
           }

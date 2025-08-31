@@ -130,14 +130,14 @@
 		try {
 			wsConnection = new WebSocket('ws://localhost:40000');
 			
-			wsConnection.onopen=() => {
+			wsConnection.on:open=() => {
 				console.log('📡 WebSocket connected for real-time updates');
 			}
 			wsConnection.onmessage = (event) => {
 				const data = JSON.parse(event.data);
 				handleRealtimeUpdate(data);
 			}
-			wsConnection.onclose =() => {
+			wsConnection.on:close=() => {
 				console.log('📡 WebSocket disconnected');
 				// Attempt reconnection after 5 seconds
 				setTimeout(setupWebSocketConnection, 5000);
@@ -443,10 +443,10 @@
 					bind:value={queryInput}
 					placeholder="Enter your query..."
 					class="query-input"
-					onkeydown={(e) => e.key === 'Enter' && executeQuery()}
+					keydown={(e) => e.key === 'Enter' && executeQuery()}
 				/>
 				<button 
-					on:click={executeQuery}
+					click={executeQuery}
 					disabled={!queryInput.trim() || !selectedTool || isProcessing}
 					class="execute-button"
 				>
@@ -461,7 +461,7 @@
 				{#each $contextualSuggestions as suggestion}
 					<button 
 						class="suggestion-item suggestion-{suggestion.priority}"
-						on:click={suggestion.action}
+						click={suggestion.action}
 						disabled={isProcessing}
 					>
 						<div class="suggestion-title">{suggestion.title}</div>

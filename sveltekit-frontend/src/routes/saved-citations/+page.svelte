@@ -347,7 +347,7 @@
 </div>
 
 <!-- Add Citation Dialog -->
-<DialogRoot open={showAddDialog} onopenchange={(open) => showAddDialog = open}>
+<DialogRoot open={showAddDialog} on:openchange={(open) => showAddDialog = open}>
   <DialogContent class="sm:max-w-[425px]" overlay={{}} content={{}} openState={showAddDialog}>
     <DialogHeader>
       <DialogTitle title="Add New Citation" />
@@ -411,7 +411,7 @@
 
 <!-- Edit Citation Dialog -->
 {#if editingCitation}
-  <DialogRoot open={true} onopenchange={() => (editingCitation = null)}>
+  <DialogRoot open={true} on:openchange={() => (editingCitation = null)}>
     <DialogContent class="sm:max-w-[425px]" overlay={{}} content={{}} openState={true}>
       <DialogHeader>
         <DialogTitle title="Edit Citation" />

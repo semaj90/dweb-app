@@ -526,7 +526,7 @@
                 <div class=\"mb-3\">
                   <select 
                     class=\"block w-full px-3 py-2 border border-gray-300 rounded-md\"
-                    onchange={(e) => sampleDocument = sampleDocuments[parseInt(e.currentTarget.value)]?.content || ''}
+                    change={(e) => sampleDocument = sampleDocuments[parseInt(e.currentTarget.value)]?.content || ''}
                   >
                     {#each sampleDocuments as doc, index}
                       <option value={index}>{doc.title}</option>

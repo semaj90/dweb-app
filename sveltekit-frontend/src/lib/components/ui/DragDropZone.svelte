@@ -1,7 +1,7 @@
 <script lang="ts">
 
   import { AlertCircle, FileText, Image, Upload } from 'lucide-svelte';
-  import { $props, $state } from 'svelte';
+  // runtime helpers ($props, $state, $derived, $effect, $bindable) are provided by the compiler in runes mode
 
   interface Props {
     accept?: string;
@@ -123,7 +123,7 @@
   ondragover={handleDragOver}
   ondragleave={handleDragLeave}
   ondrop={handleDrop}
-  on:click={() => openFileDialog()}
+  onclick={() => openFileDialog()}
   role="button"
   tabindex={0}
   onkeydown={(e) => e.key === 'Enter' && openFileDialog()}

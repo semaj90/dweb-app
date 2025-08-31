@@ -875,8 +875,4 @@ Consensus output:`;
 
 export {
   CrewAILegalTeam,
-  type CrewConfig,
-  type CrewMember,
-  type Task,
-  type WorkflowResult,
 };

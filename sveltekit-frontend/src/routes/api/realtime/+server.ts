@@ -1,6 +1,6 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import stream from "stream";
-import type { RequestHandler } from "@sveltejs/kit";
+import type { RequestHandler } from './$types';
+
 
 // Minimal SSE endpoint: emits keepalive and relays posted messages to connected clients
 const clients = new Set<WritableStreamDefaultWriter<string>>();

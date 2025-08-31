@@ -1,5 +1,6 @@
-import { type RequestHandler,  json } from '@sveltejs/kit';
 import { URL } from "url";
+import type { RequestHandler } from './$types';
+
 
 // Mock legal database - in production this would connect to a real legal database
 const mockLegalDatabase = [

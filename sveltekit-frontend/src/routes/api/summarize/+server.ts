@@ -1,3 +1,5 @@
+import type { RequestHandler } from './$types';
+
 /**
  * LangChain-Powered Document Summarization API
  * 
@@ -10,7 +12,6 @@
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 
 // LangChain imports for document processing
 import { ChatOpenAI } from '@langchain/openai';

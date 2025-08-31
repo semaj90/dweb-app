@@ -308,7 +308,7 @@ export class CompilerFeedbackLoop {
   /**
    * Find similar issues using Enhanced RAG
    */
-  private async findSimilarIssues(vectors: Float32Array, clusterId?: string): Promise<unknown[]> {
+  private async findSimilarIssues(vectors: Float32Array, clusterId?: string): Promise<any[]> {
     const cluster = clusterId ? this.somClustering.getCluster(clusterId) : null;
     
     // Query RAG engine for similar compiler errors

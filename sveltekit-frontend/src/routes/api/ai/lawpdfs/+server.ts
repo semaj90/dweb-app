@@ -1,9 +1,10 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Enhanced AI Assistant API Route
  * Handles local model processing for law PDFs with gemma3-legal and nomic-embed-text
  */
 
-import { type RequestHandler,  json } from '@sveltejs/kit';
 
 export interface LawPdfRequest {
   content: string;

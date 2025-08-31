@@ -158,7 +158,7 @@
                   <TooltipTrigger asChild>
                     <button
                       class="space-y-4"
-                      on:click={() =>
+                      click={() =>
                         (format = formatOption.value as "json" | "csv" | "xml")}
                     >
                       <div class="space-y-4">{formatOption.label}</div>
@@ -280,7 +280,7 @@
                     <input
                       type="checkbox"
                       checked={selectedCaseIds.includes(caseItem.id)}
-                      onchange={() => toggleCaseSelection(caseItem.id)}
+                      change={() => toggleCaseSelection(caseItem.id)}
                       class="space-y-4"
                     />
                     <span class="space-y-4">

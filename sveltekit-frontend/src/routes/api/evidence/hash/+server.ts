@@ -1,8 +1,9 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { json } from "@sveltejs/kit";
 import { cases, evidence, users } from "$lib/server/db/schema-postgres";
 import { eq } from "drizzle-orm";
 import { db } from "$lib/server/db/index";
+import type { RequestHandler } from './$types';
+
 
 export const GET: RequestHandler = async ({ url, locals }) => {
   const userId = locals.user?.id;

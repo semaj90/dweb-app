@@ -1,9 +1,10 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { z } from "zod";
 import { withApiHandler, parseRequestBody, apiSuccess, validationError, createPagination, CommonErrors } from '$lib/server/api/response';
 import { CaseOperations } from '$lib/server/db/enhanced-operations';
 import type { Case } from '$lib/server/db/schema-postgres';
 import { createClient } from 'redis';
+import type { RequestHandler } from './$types';
+
 
 // Redis client for worker communication
 let redisClient: ReturnType<typeof createClient> | null = null;

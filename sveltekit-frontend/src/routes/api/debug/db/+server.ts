@@ -1,4 +1,6 @@
 import { json } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+
 
 export const GET = async ({ url }): Promise<any> => {
   if (process.env.NODE_ENV === 'production') {

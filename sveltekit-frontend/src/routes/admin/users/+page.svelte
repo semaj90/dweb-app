@@ -2,22 +2,33 @@
   import { onMount } from 'svelte';
   import { currentUser } from '$lib/auth/auth-store';
   import { AccessControl, ROLES, ROLE_HIERARCHY, type UserRole } from '$lib/auth/roles';
-  import type { User } from '$lib/server/db/schema-postgres';
-  
+  // The project module does not export a named `User` type; declare a local shape with a unique name for TS instead.
+  type AdminUser = {
+    id: string;
+    email: string;
+    firstName?: string | null;
+    lastName?: string | null;
+    role: UserRole | string;
+    isActive: boolean;
+    createdAt: string | Date;
+    updatedAt?: string | Date | null;
+    profile?: any;
+  };
+
   // User management state
-  let users: (User & { profile?: any })[] = [];
+  let users: (AdminUser & { profile?: any })[] = [];
   let filteredUsers: typeof users = [];
   let selectedUsers: Set<string> = new Set();
   let isLoading = true;
   let showCreateModal = false;
   let showEditModal = false;
-  let currentEditUser: typeof users[0] | null = null;
-  
+  let currentEditUser: AdminUser | null = null;
+
   // Filters and search
   let searchQuery = '';
   let roleFilter: UserRole | 'all' = 'all';
   let statusFilter: 'all' | 'active' | 'inactive' = 'all';
-  
+
   // New user form
   let newUser = {
     email: '',
@@ -27,12 +38,12 @@
     password: '',
     confirmPassword: ''
   };
-  
+
   // Pagination
   let currentPage = 1;
   let usersPerPage = 20;
   let totalPages = 1;
-  
+
   // YoRHa styling
   const yorhaClasses = {
     card: 'bg-[#1a1a1a] border border-[#333333] p-4',
@@ -42,64 +53,67 @@
     buttonDanger: 'px-4 py-2 border border-red-500 bg-red-900 text-red-100 hover:bg-red-800 transition-colors text-sm',
     input: 'bg-[#111111] border border-[#333333] px-3 py-2 text-sm w-full focus:border-[#00ff88] focus:outline-none',
     select: 'bg-[#111111] border border-[#333333] px-3 py-2 text-sm focus:border-[#00ff88] focus:outline-none',
-    table: 'w-full border-collapse',
-    tableHeader: 'border-b border-[#333333] text-left p-3 text-xs opacity-60 font-bold tracking-wider',
-    tableCell: 'border-b border-[#222222] p-3 text-sm',
-    modal: 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50',
-    modalContent: 'bg-[#1a1a1a] border border-[#333333] p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto'
+    table: 'min-w-full divide-y divide-[#222222] text-sm',
+    tableHeader: 'text-left px-3 py-2 text-xs opacity-60',
+    tableCell: 'px-3 py-2 text-sm',
+    modal: 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50',
+    modalContent: 'bg-[#0b0b0b] border border-[#333333] p-6 w-full max-w-2xl rounded'
   };
-  
-  onMount(async () => {
-    await loadUsers();
-  });
-  
-  // Apply filters and search
+
+  // Paginated users container
+  let paginatedUsers: typeof users = [];
+
+  // Use runes-friendly effect to recompute filteredUsers when dependencies change
   $: {
     filteredUsers = users.filter(user => {
-      // Search filter
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
-        const matchesSearch = 
+        const matchesSearch =
           user.email.toLowerCase().includes(query) ||
           user.firstName?.toLowerCase().includes(query) ||
           user.lastName?.toLowerCase().includes(query);
-        
+
         if (!matchesSearch) return false;
       }
-      
-      // Role filter
+
       if (roleFilter !== 'all' && user.role !== roleFilter) {
         return false;
       }
-      
-      // Status filter
+
       if (statusFilter !== 'all') {
         if (statusFilter === 'active' && !user.isActive) return false;
         if (statusFilter === 'inactive' && user.isActive) return false;
       }
-      
+
       return true;
     });
-    
-    // Update pagination
-    totalPages = Math.ceil(filteredUsers.length / usersPerPage);
-    currentPage = Math.min(currentPage, totalPages || 1);
   }
-  
-  // Paginated users
-  let paginatedUsers = $derived(filteredUsers.slice();
-    (currentPage - 1) * usersPerPage, 
-    currentPage * usersPerPage
-  );
-  
+
+  // Use an effect to update pagination values when filteredUsers, currentPage, or usersPerPage change
+  $: {
+    totalPages = Math.ceil(filteredUsers.length / usersPerPage) || 1;
+    currentPage = Math.min(currentPage, totalPages);
+
+    // Paginated users (reactive slice)
+    paginatedUsers = filteredUsers.slice(
+      (currentPage - 1) * usersPerPage,
+      currentPage * usersPerPage
+    );
+  }
+
+  // Load users on mount
+  onMount(() => {
+    loadUsers();
+  });
+
   async function loadUsers() {
     try {
       isLoading = true;
-      
+
       const response = await fetch('/api/admin/users', {
         credentials: 'include'
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         users = data.users || [];
@@ -112,13 +126,13 @@
       isLoading = false;
     }
   }
-  
+
   async function createUser() {
     if (newUser.password !== newUser.confirmPassword) {
       alert('Passwords do not match');
       return;
     }
-    
+
     try {
       const response = await fetch('/api/admin/users', {
         method: 'POST',
@@ -134,7 +148,7 @@
         }),
         credentials: 'include'
       });
-      
+
       if (response.ok) {
         await loadUsers();
         showCreateModal = false;
@@ -148,8 +162,8 @@
       alert('Network error while creating user');
     }
   }
-  
-  async function updateUser(userId: string, updates: Partial<User>) {
+
+  async function updateUser(userId: string, updates: Partial<AdminUser>) {
     try {
       const response = await fetch(`/api/admin/users/${userId}`, {
         method: 'PUT',
@@ -159,7 +173,7 @@
         body: JSON.stringify(updates),
         credentials: 'include'
       });
-      
+
       if (response.ok) {
         await loadUsers();
         showEditModal = false;
@@ -173,22 +187,30 @@
       alert('Network error while updating user');
     }
   }
-  
+
+  // Safe submit handler for the edit form to ensure currentEditUser is not null
+  function handleUpdate() {
+    if (!currentEditUser) return;
+    // omit id from updates payload
+    const { id, ...updates } = currentEditUser;
+    updateUser(id, updates as Partial<AdminUser>);
+  }
+
   async function toggleUserStatus(userId: string, isActive: boolean) {
     await updateUser(userId, { isActive });
   }
-  
+
   async function deleteUser(userId: string) {
     if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
       return;
     }
-    
+
     try {
       const response = await fetch(`/api/admin/users/${userId}`, {
         method: 'DELETE',
         credentials: 'include'
       });
-      
+
       if (response.ok) {
         await loadUsers();
       } else {
@@ -200,13 +222,13 @@
       alert('Network error while deleting user');
     }
   }
-  
+
   async function bulkAction(action: string) {
     if (selectedUsers.size === 0) {
       alert('No users selected');
       return;
     }
-    
+
     try {
       const response = await fetch('/api/admin/users/bulk', {
         method: 'POST',
@@ -219,7 +241,7 @@
         }),
         credentials: 'include'
       });
-      
+
       if (response.ok) {
         await loadUsers();
         selectedUsers.clear();
@@ -233,7 +255,7 @@
       alert('Network error during bulk action');
     }
   }
-  
+
   function resetNewUserForm() {
     newUser = {
       email: '',
@@ -244,31 +266,31 @@
       confirmPassword: ''
     };
   }
-  
-  function openEditModal(user: typeof users[0]) {
+
+  function openEditModal(user: AdminUser) {
     currentEditUser = { ...user };
     showEditModal = true;
   }
-  
-  function canManageUser(targetUser: typeof users[0]): boolean {
+
+  function canManageUser(targetUser: AdminUser): boolean {
     if (!$currentUser) return false;
-    
+
     // Can't manage yourself through this interface
     if (targetUser.id === $currentUser.id) return false;
-    
+
     // Check role hierarchy
     return AccessControl.hasHigherAuthority($currentUser.role, targetUser.role);
   }
-  
+
   function canAssignRole(role: UserRole): boolean {
     if (!$currentUser) return false;
     return AccessControl.canAssignRole($currentUser.role, role);
   }
-  
+
   function getRoleDisplayName(role: string): string {
     return ROLES[role as UserRole]?.displayName || role.replace('_', ' ').toUpperCase();
   }
-  
+
   function getRoleBadgeColor(role: string): string {
     const roleLevel = ROLES[role as UserRole]?.hierarchyLevel || 0;
     if (roleLevel >= 80) return 'border-red-500 text-red-400';
@@ -290,15 +312,15 @@
       <h1 class="text-xl font-bold">USER MANAGEMENT</h1>
       <p class="text-xs opacity-60 mt-1">MANAGE SYSTEM USERS, ROLES, AND PERMISSIONS</p>
     </div>
-    
+
     <div class="flex space-x-2">
-      <button 
+      <button
         on:click={() => showCreateModal = true}
         class={yorhaClasses.buttonPrimary}
       >
         ◈ CREATE USER
       </button>
-      <button 
+      <button
         on:click={loadUsers}
         class={yorhaClasses.button}
       >
@@ -306,21 +328,21 @@
       </button>
     </div>
   </div>
-  
+
   <!-- Filters and Search -->
   <div class={yorhaClasses.card}>
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
       <!-- Search -->
       <div>
         <label class="block text-xs opacity-60 mb-2">SEARCH USERS</label>
-        <input 
-          type="text" 
+        <input
+          type="text"
           bind:value={searchQuery}
           placeholder="Email, name..."
           class={yorhaClasses.input}
         >
       </div>
-      
+
       <!-- Role Filter -->
       <div>
         <label class="block text-xs opacity-60 mb-2">FILTER BY ROLE</label>
@@ -331,7 +353,7 @@
           {/each}
         </select>
       </div>
-      
+
       <!-- Status Filter -->
       <div>
         <label class="block text-xs opacity-60 mb-2">FILTER BY STATUS</label>
@@ -341,21 +363,21 @@
           <option value="inactive">INACTIVE</option>
         </select>
       </div>
-      
+
       <!-- Bulk Actions -->
       <div>
         <label class="block text-xs opacity-60 mb-2">BULK ACTIONS</label>
         <div class="flex space-x-1">
-          <button 
+          <button
             on:click={() => bulkAction('activate')}
-            class="{yorhaClasses.button} flex-1"
+            class={yorhaClasses.button + ' flex-1'}
             disabled={selectedUsers.size === 0}
           >
             ACTIVATE
           </button>
-          <button 
+          <button
             on:click={() => bulkAction('deactivate')}
-            class="{yorhaClasses.button} flex-1"
+            class={yorhaClasses.button + ' flex-1'}
             disabled={selectedUsers.size === 0}
           >
             DEACTIVATE
@@ -364,7 +386,7 @@
       </div>
     </div>
   </div>
-  
+
   <!-- Users Table -->
   <div class={yorhaClasses.card}>
     {#if isLoading}
@@ -378,10 +400,11 @@
           <thead>
             <tr>
               <th class={yorhaClasses.tableHeader}>
-                <input 
-                  type="checkbox" 
-                  on:change={(e) => {
-                    if (e.currentTarget?.checked) {
+                <input
+                  type="checkbox"
+                  on:change={(e: Event) => {
+                    const target = e.currentTarget as HTMLInputElement;
+                    if (target.checked) {
                       selectedUsers = new Set(paginatedUsers.map(u => u.id));
                     } else {
                       selectedUsers.clear();
@@ -403,11 +426,12 @@
               <tr class="hover:bg-[#222222]">
                 <!-- Checkbox -->
                 <td class={yorhaClasses.tableCell}>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={selectedUsers.has(user.id)}
-                    on:change={(e) => {
-                      if (e.currentTarget?.checked) {
+                    on:change={(e: Event) => {
+                      const target = e.currentTarget as HTMLInputElement;
+                      if (target.checked) {
                         selectedUsers.add(user.id);
                       } else {
                         selectedUsers.delete(user.id);
@@ -416,14 +440,14 @@
                     }}
                   >
                 </td>
-                
+
                 <!-- Status -->
                 <td class={yorhaClasses.tableCell}>
                   <span class={user.isActive ? 'text-[#00ff88]' : 'text-red-500'}>
                     {user.isActive ? '◈ ACTIVE' : '◯ INACTIVE'}
                   </span>
                 </td>
-                
+
                 <!-- User Info -->
                 <td class={yorhaClasses.tableCell}>
                   <div>
@@ -435,47 +459,47 @@
                     {/if}
                   </div>
                 </td>
-                
+
                 <!-- Role -->
                 <td class={yorhaClasses.tableCell}>
-                  <span class="px-2 py-1 border {getRoleBadgeColor(user.role)} text-xs">
+                  <span class={"px-2 py-1 border " + getRoleBadgeColor(user.role) + " text-xs"}>
                     {getRoleDisplayName(user.role)}
                   </span>
                 </td>
-                
+
                 <!-- Created -->
                 <td class={yorhaClasses.tableCell}>
                   {new Date(user.createdAt).toLocaleDateString()}
                 </td>
-                
+
                 <!-- Last Active -->
                 <td class={yorhaClasses.tableCell}>
                   <span class="opacity-60">
                     {user.updatedAt ? new Date(user.updatedAt).toLocaleDateString() : 'Never'}
                   </span>
                 </td>
-                
+
                 <!-- Actions -->
                 <td class={yorhaClasses.tableCell}>
                   <div class="flex space-x-1">
                     {#if canManageUser(user)}
-                      <button 
+                      <button
                         on:click={() => openEditModal(user)}
                         class="px-2 py-1 border border-[#333333] hover:bg-[#2a2a2a] text-xs"
                         title="Edit User"
                       >
                         ✎
                       </button>
-                      
-                      <button 
+
+                      <button
                         on:click={() => toggleUserStatus(user.id, !user.isActive)}
-                        class="px-2 py-1 border border-{user.isActive ? 'red-500' : '[#00ff88]'} text-{user.isActive ? 'red-500' : '[#00ff88]'} hover:bg-opacity-20 text-xs"
+                        class={"px-2 py-1 " + (user.isActive ? 'border border-red-500 text-red-500' : 'border border-[#00ff88] text-[#00ff88]') + " hover:bg-opacity-20 text-xs"}
                         title={user.isActive ? 'Deactivate' : 'Activate'}
                       >
                         {user.isActive ? '◯' : '◈'}
                       </button>
-                      
-                      <button 
+
+                      <button
                         on:click={() => deleteUser(user.id)}
                         class="px-2 py-1 border border-red-500 text-red-500 hover:bg-red-500 hover:text-black text-xs"
                         title="Delete User"
@@ -492,28 +516,28 @@
           </tbody>
         </table>
       </div>
-      
+
       <!-- Pagination -->
       {#if totalPages > 1}
         <div class="flex justify-between items-center mt-4 pt-4 border-t border-[#333333]">
           <div class="text-sm opacity-60">
             Showing {(currentPage - 1) * usersPerPage + 1} to {Math.min(currentPage * usersPerPage, filteredUsers.length)} of {filteredUsers.length} users
           </div>
-          
+
           <div class="flex space-x-2">
-            <button 
+            <button
               on:click={() => currentPage = Math.max(1, currentPage - 1)}
               disabled={currentPage === 1}
               class={yorhaClasses.button}
             >
               ◀ PREV
             </button>
-            
+
             <div class="flex items-center space-x-2">
               <span class="text-sm">PAGE {currentPage} OF {totalPages}</span>
             </div>
-            
-            <button 
+
+            <button
               on:click={() => currentPage = Math.min(totalPages, currentPage + 1)}
               disabled={currentPage === totalPages}
               class={yorhaClasses.button}
@@ -539,48 +563,48 @@
     <div class={yorhaClasses.modalContent}>
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-xl font-bold text-[#00ff88]">CREATE NEW USER</h2>
-        <button 
+        <button
           on:click={() => showCreateModal = false}
           class="text-2xl hover:text-red-500"
         >
           ✕
         </button>
       </div>
-      
+
       <form on:submit|preventDefault={createUser} class="space-y-4">
         <!-- Email -->
         <div>
           <label class="block text-sm font-bold mb-2">EMAIL ADDRESS</label>
-          <input 
-            type="email" 
+          <input
+            type="email"
             bind:value={newUser.email}
             required
             class={yorhaClasses.input}
             placeholder="user@example.com"
           >
         </div>
-        
+
         <!-- Names -->
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-bold mb-2">FIRST NAME</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               bind:value={newUser.firstName}
               class={yorhaClasses.input}
             >
           </div>
-          
+
           <div>
             <label class="block text-sm font-bold mb-2">LAST NAME</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               bind:value={newUser.lastName}
               class={yorhaClasses.input}
             >
           </div>
         </div>
-        
+
         <!-- Role -->
         <div>
           <label class="block text-sm font-bold mb-2">USER ROLE</label>
@@ -595,41 +619,41 @@
             {ROLES[newUser.role]?.description || ''}
           </div>
         </div>
-        
+
         <!-- Password -->
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-bold mb-2">PASSWORD</label>
-            <input 
-              type="password" 
+            <input
+              type="password"
               bind:value={newUser.password}
               required
               minlength="8"
               class={yorhaClasses.input}
             >
           </div>
-          
+
           <div>
             <label class="block text-sm font-bold mb-2">CONFIRM PASSWORD</label>
-            <input 
-              type="password" 
+            <input
+              type="password"
               bind:value={newUser.confirmPassword}
               required
               class={yorhaClasses.input}
             >
           </div>
         </div>
-        
+
         <!-- Actions -->
         <div class="flex justify-end space-x-4 pt-4">
-          <button 
+          <button
             type="button"
             on:click={() => showCreateModal = false}
             class={yorhaClasses.button}
           >
             CANCEL
           </button>
-          <button 
+          <button
             type="submit"
             class={yorhaClasses.buttonPrimary}
           >
@@ -647,47 +671,49 @@
     <div class={yorhaClasses.modalContent}>
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-xl font-bold text-[#00ff88]">EDIT USER</h2>
-        <button 
+        <button
+          type="button"
           on:click={() => showEditModal = false}
           class="text-2xl hover:text-red-500"
         >
           ✕
         </button>
       </div>
-      
-      <form on:submit|preventDefault={() => updateUser(currentEditUser.id, currentEditUser)} class="space-y-4">
+
+      <!-- Single form using handleUpdate which omits the id and sends partial updates -->
+      <form on:submit|preventDefault={handleUpdate} class="space-y-4">
         <!-- Email -->
         <div>
           <label class="block text-sm font-bold mb-2">EMAIL ADDRESS</label>
-          <input 
-            type="email" 
+          <input
+            type="email"
             bind:value={currentEditUser.email}
             required
             class={yorhaClasses.input}
           >
         </div>
-        
+
         <!-- Names -->
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-bold mb-2">FIRST NAME</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               bind:value={currentEditUser.firstName}
               class={yorhaClasses.input}
             >
           </div>
-          
+
           <div>
             <label class="block text-sm font-bold mb-2">LAST NAME</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               bind:value={currentEditUser.lastName}
               class={yorhaClasses.input}
             >
           </div>
         </div>
-        
+
         <!-- Role -->
         <div>
           <label class="block text-sm font-bold mb-2">USER ROLE</label>
@@ -699,28 +725,28 @@
             {/each}
           </select>
         </div>
-        
+
         <!-- Status -->
         <div>
           <label class="flex items-center space-x-2">
-            <input 
-              type="checkbox" 
+            <input
+              type="checkbox"
               bind:checked={currentEditUser.isActive}
             >
             <span class="text-sm font-bold">ACTIVE USER</span>
           </label>
         </div>
-        
+
         <!-- Actions -->
         <div class="flex justify-end space-x-4 pt-4">
-          <button 
+          <button
             type="button"
             on:click={() => showEditModal = false}
             class={yorhaClasses.button}
           >
             CANCEL
           </button>
-          <button 
+          <button
             type="submit"
             class={yorhaClasses.buttonPrimary}
           >

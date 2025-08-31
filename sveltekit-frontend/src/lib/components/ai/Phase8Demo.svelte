@@ -266,7 +266,7 @@
   }
 </script>
 
-<div class="phase8-demo {className}">
+<div class="phase8-demo {class}">
   <div class="demo-header yorha-panel p-6 mb-6">
     <h2 class="text-2xl font-bold text-yellow-400 mb-2">
       Phase 8: AI-Aware Matrix UI System
@@ -296,31 +296,31 @@
     <div class="demo-controls flex gap-2 mb-4">
       <button 
         class="yorha-button px-3 py-1 text-sm {currentDemo === 'reranker' ? 'bg-yellow-400 text-black' : 'bg-gray-700'}"
-        on:click={() => switchDemo('reranker')}
+        click={() => switchDemo('reranker')}
       >
         AI Reranker
       </button>
       <button 
         class="yorha-button px-3 py-1 text-sm {currentDemo === 'matrix' ? 'bg-yellow-400 text-black' : 'bg-gray-700'}"
-        on:click={() => switchDemo('matrix')}
+        click={() => switchDemo('matrix')}
       >
         Matrix Compiler
       </button>
       <button 
         class="yorha-button px-3 py-1 text-sm {currentDemo === 'lod' ? 'bg-yellow-400 text-black' : 'bg-gray-700'}"
-        on:click={() => switchDemo('lod')}
+        click={() => switchDemo('lod')}
       >
         LOD System
       </button>
       <button 
         class="yorha-button px-3 py-1 text-sm {currentDemo === 'prefetch' ? 'bg-yellow-400 text-black' : 'bg-gray-700'}"
-        on:click={() => switchDemo('prefetch')}
+        click={() => switchDemo('prefetch')}
       >
         Prefetcher
       </button>
       <button 
         class="yorha-button px-3 py-1 text-sm bg-blue-600 text-white ml-4"
-        on:click={runPerformanceTest}
+        click={runPerformanceTest}
       >
         Performance Test
       </button>

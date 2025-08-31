@@ -1,7 +1,10 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { json } from "@sveltejs/kit";
 import { caseActivities } from "$lib/server/db/schema-postgres";
 import { db } from "$lib/server/db/index";
+import { eq, sql, desc } from "drizzle-orm";
+import { or as orExpr, like } from "drizzle-orm/expressions";
+import type { RequestHandler } from './$types';
+
 
 export const GET: RequestHandler = async ({ locals, url }) => {
   try {
@@ -48,10 +51,10 @@ export const GET: RequestHandler = async ({ locals, url }) => {
     // Add search filter
     if (search) {
       filters.push(
-        or(
+        orExpr([
           like(caseActivities.title, `%${search}%`),
           like(caseActivities.description, `%${search}%`),
-        ),
+        ]),
       );
     }
 
@@ -65,40 +68,39 @@ export const GET: RequestHandler = async ({ locals, url }) => {
             ? caseActivities.status
             : sortBy === "priority"
               ? caseActivities.priority
-              : sortBy === "completedAt"
-                ? caseActivities.completedAt
-                : caseActivities.createdAt; // Default to createdAt
+              : sortBy === "scheduledFor"
+                ? caseActivities.scheduledFor
+                : sortBy === "completedAt"
+                  ? caseActivities.completedAt
+                  : caseActivities.createdAt; // Default to createdAt
+
+    // Base select query
+    const baseQuery = db.select().from(caseActivities);
 
     // Build the main query
-    const baseQuery = db.select().from(caseActivities);
-    
-    let finalQuery;
+    let finalQuery = baseQuery;
     if (filters.length > 0) {
-      finalQuery = baseQuery.where(and(...filters));
-    } else {
-      finalQuery = baseQuery;
+      finalQuery = baseQuery.where(...filters);
     }
-    
+
     const orderedQuery = finalQuery.orderBy(
       sortOrder === "asc" ? orderColumn : desc(orderColumn),
     );
-    
+
     const activityResults = await orderedQuery.limit(limit).offset(offset);
 
     // Get total count for pagination
     const baseCountQuery = db
       .select({ count: sql<number>`count(*)` })
       .from(caseActivities);
-    
-    let finalCountQuery;
+
+    let finalCountQuery = baseCountQuery;
     if (filters.length > 0) {
-      finalCountQuery = baseCountQuery.where(and(...filters));
-    } else {
-      finalCountQuery = baseCountQuery;
+      finalCountQuery = baseCountQuery.where(...filters);
     }
-    
+
     const totalCountResult = await finalCountQuery;
-    const totalCount = totalCountResult[0]?.count || 0;
+    const totalCount = totalCountResult[0]?.count ?? 0;
 
     return json({
       activities: activityResults,

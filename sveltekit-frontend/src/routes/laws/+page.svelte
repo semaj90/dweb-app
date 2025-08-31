@@ -1,26 +1,29 @@
 <script lang="ts">
-  import { $props, $state } from 'svelte';
   import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
   } from '$lib/components/ui/card';
   import { Input } from '$lib/components/ui/input/index.js';
-  import { Button } from '$lib/components/ui/button/index.js';
   import { Badge } from '$lib/components/ui/badge/index.js';
   import { Search, BookOpen, ExternalLink, Bot, MessageSquare } from 'lucide-svelte';
-  import AIToolbar from '$lib/components/ai/AIToolbar.svelte';
-  import EnhancedFuseSearch from '$lib/components/search/EnhancedFuseSearch.svelte';
+  import { onMount } from 'svelte';
 
-  let { data } = $props();
+  // In Svelte 5 (runes mode) don't use `export let` for page props — use $props()
+  const { data } = $props() as { data: any };
+
+  let EnhancedFuseSearch: any = null;
+
+  onMount(async () => {
+    EnhancedFuseSearch = (await import('$lib/components/search/EnhancedFuseSearch.svelte')).default;
+  });
 
   // Simple search state
-  let searchQuery = $state('');
-  let searchResults = $state([]);
-  let isSearching = $state(false);
+  let searchQuery: string = '';
+  let searchResults: any[] = [];
+  let isSearching: boolean = false;
 
   async function performSearch() {
     if (!searchQuery.trim()) return;
@@ -50,28 +53,26 @@
     }
   }
 
-  function handleKeydown(event) {
+  function handleKeydown(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       performSearch();
     }
   }
 
-  // AI toolbar event handlers
-  function handleAISearchResult(result) {
+  // AI toolbar event handlers (typed)
+  function handleAISearchResult(result: any) {
     console.log('AI Search Result:', result);
-    if (result.laws) {
+    if (result?.laws) {
       searchResults = result.laws;
     }
   }
 
-  function handleAIChatResult(result) {
+  function handleAIChatResult(result: any) {
     console.log('AI Chat Result:', result);
-    // Could show chat in a modal or side panel
   }
 
-  function handleAISummarizeResult(result) {
+  function handleAISummarizeResult(result: any) {
     console.log('AI Summarization Result:', result);
-    // Could show summary in a modal or notification
   }
 </script>
 
@@ -80,9 +81,11 @@
   <meta
     name="description"
     content="Browse California and state laws with AI-powered search and summaries" />
+  <!-- NES.css (optional) -->
+  <link rel="stylesheet" href="https://unpkg.com/nes.css@2.3.0/css/nes.min.css" />
 </svelte:head>
 
-<div class="container mx-auto py-8 space-y-8">
+<div class="container mx-auto py-8 space-y-8 nes-container is-rounded">
   <!-- Header -->
   <div class="text-center space-y-4">
     <h1 class="text-4xl font-bold tracking-tight">Legal Resources</h1>
@@ -91,15 +94,20 @@
     </p>
   </div>
 
-  <!-- AI Toolbar -->
-  <AIToolbar
-    onaisearch={handleAISearchResult}
-    onaichat={handleAIChatResult}
-    onaisummarize={handleAISummarizeResult} />
-
-  <!-- Enhanced Fuse.js Search -->
-  <EnhancedFuseSearch maxResults={10} />
-
+  <!-- Enhanced Fuse.js Search (client-only) -->
+  {#if EnhancedFuseSearch}
+    <${EnhancedFuseSearch}
+      maxResults={10}
+      bind:results={searchResults}
+      class="mb-4"
+      on:select={(e: CustomEvent) => {
+        const selected = e.detail;
+        if (selected?.title) {
+          searchQuery = selected.title;
+        }
+      }}
+    />
+  {/if}
   <!-- Simple Search -->
   <Card>
     <CardHeader>
@@ -111,21 +119,21 @@
     <CardContent class="space-y-4">
       <div class="flex gap-2">
         <Input
+      <div class="flex gap-2">
+        <Input
           placeholder="Search laws, codes, regulations..."
           bind:value={searchQuery}
-          onkeydown={handleKeydown}
+          on:keydown={handleKeydown}
           class="flex-1" />
-        <Button on:click={performSearch} disabled={isSearching || !searchQuery.trim()}>
+        <button on:click={performSearch} disabled={isSearching || !searchQuery.trim()} class="inline-flex items-center justify-center gap-2 rounded-md bg-primary text-primary-foreground py-2 px-3 hover:opacity-90 transition disabled:opacity-50">
           {#if isSearching}
             Loading...
           {:else}
             <Search class="h-4 w-4 mr-2" />
             Search
           {/if}
-        </Button>
+        </button>
       </div>
-    </CardContent>
-  </Card>
 
   <!-- Quick Links -->
   <div class="space-y-4">
@@ -146,16 +154,14 @@
             </div>
           </CardHeader>
           <CardContent>
-            <Button class="w-full">
-              <a
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="flex items-center gap-2">
-                <ExternalLink class="h-4 w-4" />
-                Browse {link.title}
-              </a>
-            </Button>
+            <a
+              href={link.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="w-full inline-flex items-center justify-center gap-2 rounded-md bg-primary text-primary-foreground py-2 px-3 hover:opacity-90 transition">
+              <ExternalLink class="h-4 w-4" />
+              Browse {link.title}
+            </a>
           </CardContent>
         </Card>
       {/each}
@@ -182,23 +188,21 @@
               <p class="mb-4 text-sm">{law.description}</p>
               <div class="flex gap-2">
                 <Button size="sm">
+              <div class="flex gap-2">
+                <button on:click={() => handleAISummarizeResult(law)} class="inline-flex items-center gap-2 rounded-md bg-primary text-primary-foreground px-3 py-1 text-sm">
                   <Bot class="h-4 w-4 mr-2" />
-                  AI Summary
-                </Button>
-                <Button variant="outline" size="sm">
+                  <span>AI Summary</span>
+                </button>
+                <button on:click={() => handleAIChatResult(law)} class="inline-flex items-center gap-2 rounded-md border px-3 py-1 text-sm">
                   <MessageSquare class="h-4 w-4 mr-2" />
-                  AI Chat
-                </Button>
+                  <span>AI Chat</span>
+                </button>
                 {#if law.fullTextUrl}
-                  <Button variant="outline" size="sm">
-                    <a href={law.fullTextUrl} target="_blank" rel="noopener noreferrer">
-                      Full Text
-                    </a>
-                  </Button>
+                  <a href={law.fullTextUrl} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-md border px-3 py-1 text-sm">
+                    Full Text
+                  </a>
                 {/if}
               </div>
-            </CardContent>
-          </Card>
         {/each}
       </div>
     </div>

@@ -80,7 +80,7 @@
     try {
       ws = new WebSocket('ws://localhost:8080');
       
-      ws.onopen=() => {
+      ws.on:open=() => {
         isConnected = true;
         console.log('[observability-panel] WebSocket connected');
       };
@@ -120,7 +120,7 @@
         }
       };
       
-      ws.onclose = () => {
+      ws.on:close=() => {
         isConnected = false;
         console.log('[observability-panel] WebSocket disconnected');
         // Reconnect after 5 seconds
@@ -189,7 +189,7 @@
         <span class="status-indicator {isConnected ? 'connected' : 'disconnected'}"></span>
         {isConnected ? 'Live' : 'Disconnected'}
       </div>
-      <button class="btn-toggle" on:click={() => showDetails = !showDetails}>
+      <button class="btn-toggle" click={() => showDetails = !showDetails}>
         {showDetails ? 'Hide' : 'Show'} Details
       </button>
     </div>
@@ -256,7 +256,7 @@
           <input type="checkbox" bind:checked={autoScroll} />
           Auto-scroll
         </label>
-        <button class="btn-clear" on:click={clearAlerts}>Clear</button>
+        <button class="btn-clear" click={clearAlerts}>Clear</button>
       </div>
     </div>
     

@@ -192,7 +192,7 @@
     />
     
     <Dialog.Content
-      class={cn(
+      className={cn(
         'fixed left-1/2 top-1/2 z-50 grid w-full translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg',
         sizeClasses[size],
         'modular-dialog',
@@ -226,7 +226,7 @@
           <!-- Refresh button -->
           {#if entityType && entityId}
             <button
-              on:click={refresh}
+              click={refresh}
               disabled={isLoading}
               class="p-1 rounded-sm opacity-70 hover:opacity-100 transition-opacity disabled:opacity-50 mr-2"
               title="Refresh data"
@@ -270,7 +270,7 @@
                   <p class="font-mono text-xs text-muted-foreground mt-1">{errorMessage}</p>
                 </div>
                 <button
-                  on:click={refresh}
+                  click={refresh}
                   class="px-3 py-1 text-xs bg-muted hover:bg-muted/80 rounded-md font-mono transition-colors"
                 >
                   Try Again

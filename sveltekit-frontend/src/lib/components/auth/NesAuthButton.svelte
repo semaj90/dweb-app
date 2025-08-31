@@ -71,7 +71,7 @@
 <button 
   type="button"
   class={buttonClasses}
-  onclick={openModal}
+  click={openModal}
 >
   {#if icon}{icon} {/if}{text}
 </button>
@@ -79,7 +79,7 @@
 <NesAuthModal 
   bind:isOpen={isModalOpen}
   {form}
-  onclose={closeModal}
+  on:close={closeModal}
 />
 
 <style>

@@ -172,7 +172,7 @@
   }
 </script>
 
-<div class="enhanced-ai-search {className}">
+<div class="enhanced-ai-search {class}">
   <!-- Search Header -->
   <div
     class="flex flex-col space-y-4 p-6 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700"
@@ -196,7 +196,7 @@
       <div class="flex-1 relative">
         <input
           bind:value={query}
-          onkeydown={handleKeydown}
+          keydown={handleKeydown}
           placeholder="Search legal documents with AI..."
           class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600
                  bg-white dark:bg-gray-800 text-gray-900 dark:text-white

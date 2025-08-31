@@ -111,7 +111,7 @@
       'pr-16': showCharCount && maxlength,
       'pr-20': isPassword || (icon && iconPosition === 'right' && showCharCount)
     },
-    className
+    class
   ));
 
   // Focus the input programmatically
@@ -179,7 +179,7 @@
       <button
         type="button"
         class="absolute inset-y-0 right-0 pr-3 flex items-center"
-        on:click={() => showPassword = !showPassword}
+        click={() => showPassword = !showPassword}
         tabindex="-1"
       >
         {#if showPassword}

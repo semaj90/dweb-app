@@ -84,7 +84,7 @@
       target={external ? '_blank' : undefined}
       rel={external ? 'noopener noreferrer' : undefined}
       use:melt={$trigger}
-      on:click={handleClick}
+      click={handleClick}
     >
       <span class="button-content">
         {#if loading}
@@ -108,7 +108,7 @@
       class={buttonClasses}
       target={external ? '_blank' : undefined}
       rel={external ? 'noopener noreferrer' : undefined}
-      on:click={handleClick}
+      click={handleClick}
     >
       <span class="button-content">
         {#if loading}

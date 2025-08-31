@@ -1,7 +1,8 @@
+import type { RequestHandler } from './$types';
+
 // TypeScript Batch Processor - High-Performance Batch Processing
 // Optimized for processing large numbers of TypeScript errors
 
-import { json, type RequestHandler } from '@sveltejs/kit';
 import type { 
 	OptimizedFixRequest, 
 	OptimizedFixResponse,

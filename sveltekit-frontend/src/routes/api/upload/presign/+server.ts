@@ -1,5 +1,6 @@
-import { type RequestHandler,  json } from '@sveltejs/kit';
 import { randomUUID } from "crypto";
+import type { RequestHandler } from './$types';
+
 
 // Types for upload handling
 export interface PresignRequest {

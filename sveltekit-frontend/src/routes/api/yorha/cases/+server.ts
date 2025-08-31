@@ -1,9 +1,12 @@
-import type { RequestHandler } from './$types';
+
+import { ensureError } from '$lib/utils/ensure-error';
 import { json, error } from '@sveltejs/kit';
 import { db } from '$lib/database/connection';
 import { cases, users } from '$lib/db/schema';
-import { eq, desc, and } from 'drizzle-orm';
+import { eq, and, desc } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
+import type { RequestHandler } from './$types';
+
 
 // GET - Fetch cases
 export const GET: RequestHandler = async ({ url, locals }) => {
@@ -48,9 +51,9 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
   } catch (err: any) {
     console.error('Error fetching cases:', err);
-    return error(500, {
+    return error(500, ensureError({
       message: 'Failed to fetch cases'
-    });
+    }));
   }
 };
 
@@ -61,9 +64,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     
     // Validate required fields
     if (!body.title || !body.description) {
-      return error(400, {
+      return error(400, ensureError({
         message: 'Title and description are required'
-      });
+      }));
     }
 
     // Get current user (from auth or default)
@@ -110,14 +113,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     
     // Handle specific database errors
     if (err.code === '23505') { // Unique constraint violation
-      return error(409, {
+      return error(409, ensureError({
         message: 'Case with this ID already exists'
-      });
+      }));
     }
 
-    return error(500, {
+    return error(500, ensureError({
       message: 'Failed to create case'
-    });
+    }));
   }
 };
 
@@ -127,9 +130,9 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
     const body = await request.json();
     
     if (!body.id) {
-      return error(400, {
+      return error(400, ensureError({
         message: 'Case ID is required for updates'
-      });
+      }));
     }
 
     // Check if case exists
@@ -140,9 +143,9 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
       .limit(1);
 
     if (existingCase.length === 0) {
-      return error(404, {
+      return error(404, ensureError({
         message: 'Case not found'
-      });
+      }));
     }
 
     // Prepare update data
@@ -179,9 +182,9 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
 
   } catch (err: any) {
     console.error('Error updating case:', err);
-    return error(500, {
+    return error(500, ensureError({
       message: 'Failed to update case'
-    });
+    }));
   }
 };
 
@@ -191,9 +194,9 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
     const caseId = url.searchParams.get('id');
     
     if (!caseId) {
-      return error(400, {
+      return error(400, ensureError({
         message: 'Case ID is required'
-      });
+      }));
     }
 
     // Check if case exists
@@ -204,9 +207,9 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
       .limit(1);
 
     if (existingCase.length === 0) {
-      return error(404, {
+      return error(404, ensureError({
         message: 'Case not found'
-      });
+      }));
     }
 
     // Soft delete by updating status
@@ -225,8 +228,8 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
 
   } catch (err: any) {
     console.error('Error deleting case:', err);
-    return error(500, {
+    return error(500, ensureError({
       message: 'Failed to delete case'
-    });
+    }));
   }
 };

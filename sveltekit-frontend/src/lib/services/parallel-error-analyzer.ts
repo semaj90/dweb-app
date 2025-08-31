@@ -206,7 +206,7 @@ class ParallelErrorAnalyzer {
     }
   }
 
-  async analyzeErrorsParallel(errors: any[]): Promise<unknown[]> {
+  async analyzeErrorsParallel(errors: any[]): Promise<any[]> {
     if (!errors.length) return [];
 
     console.log(`⚡ Analyzing ${errors.length} errors in parallel...`);
@@ -227,7 +227,7 @@ class ParallelErrorAnalyzer {
     return results;
   }
 
-  private async analyzeWithGPU(errors: any[]): Promise<unknown[]> {
+  private async analyzeWithGPU(errors: any[]): Promise<any[]> {
     if (!this.gpuPipeline) return [];
 
     console.log(`🚀 GPU analysis of ${errors.length} errors`);
@@ -330,13 +330,13 @@ class ParallelErrorAnalyzer {
     }
   }
 
-  private async analyzeWithWorkers(errors: any[]): Promise<unknown[]> {
+  private async analyzeWithWorkers(errors: any[]): Promise<any[]> {
     console.log(`👥 Worker analysis of ${errors.length} errors`);
 
     const batches = this.createBatches(errors, this.config.batchSize);
     const results: any[] = [];
     
-    const processBatch = async (batch: any[]): Promise<unknown[]> => {
+    const processBatch = async (batch: any[]): Promise<any[]> => {
       return new Promise((resolve) => {
         const availableWorker = this.getAvailableWorker();
         

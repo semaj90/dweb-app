@@ -20,7 +20,7 @@
       { value: 'corporate', label: 'Corporate Law' }
     ],
     useLibrary = 'melt-ui',
-    class: className,
+    class: class,
     id,
     'data-testid': testId
   }: BitsDemoProps = $props();
@@ -182,16 +182,16 @@
   <div class="mx-auto px-4 max-w-7xl">
     <h3 class="mx-auto px-4 max-w-7xl">Melt-UI Notifications Demo</h3>
     <div class="mx-auto px-4 max-w-7xl">
-      <button class="mx-auto px-4 max-w-7xl" on:click={() => showSuccessNotification()}>
+      <button class="mx-auto px-4 max-w-7xl" click={() => showSuccessNotification()}>
         Success Notification
       </button>
-      <button class="mx-auto px-4 max-w-7xl" on:click={() => showWarningNotification()}>
+      <button class="mx-auto px-4 max-w-7xl" click={() => showWarningNotification()}>
         Warning Notification
       </button>
-      <button class="mx-auto px-4 max-w-7xl" on:click={() => showErrorNotification()}>
+      <button class="mx-auto px-4 max-w-7xl" click={() => showErrorNotification()}>
         Error Notification
       </button>
-      <button class="mx-auto px-4 max-w-7xl" on:click={() => showInfoNotification()}>
+      <button class="mx-auto px-4 max-w-7xl" click={() => showInfoNotification()}>
         Info Notification
       </button>
     </div>
@@ -205,7 +205,7 @@
   <!-- Bits UI Select -->
   <div class="mx-auto px-4 max-w-7xl">
     <label class="mx-auto px-4 max-w-7xl" for="practice-area-select">Legal Practice Area</label>
-    <SelectRoot type="single" onvaluechange={() => showWarningNotification()}>
+    <SelectRoot type="single" on:valuechange={() => showWarningNotification()}>
       <SelectTrigger class="mx-auto px-4 max-w-7xl" id="practice-area-select">
         Select practice area...
       </SelectTrigger>
@@ -222,7 +222,7 @@
   </div>
   
   <!-- Bits UI Dialog -->
-  <Dialog.Root bind:open={dialogOpen} onopenchange={(open) => { if (open) showInfoNotification(); }}>
+  <Dialog.Root bind:open={dialogOpen} on:openchange={(open) => { if (open) showInfoNotification(); }}>
     <Dialog.Trigger class="mx-auto px-4 max-w-7xl">
       Case Management Options
     </Dialog.Trigger>

@@ -1,9 +1,10 @@
+import type { RequestHandler } from './$types';
+
 // Simplified and type-safe evidence processing endpoint with an in-memory processing service
 // POST: start processing -> returns sessionId and jobId
 // GET:  ?jobId=... -> returns processing status
 // DELETE: ?jobId=... -> cancels job
 
-import { json, type RequestHandler } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { evidence } from '$lib/server/db/schema-postgres';
 import { eq } from 'drizzle-orm';

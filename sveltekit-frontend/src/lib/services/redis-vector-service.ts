@@ -35,12 +35,12 @@ export class RedisVectorService {
 
     this.redis = new Redis(redisOptions);
 
-    this.redis.on("connect", () => {
+    (this.redis as any).on("connect", () => {
       this.isConnected = true;
       logger.info("Redis Vector Service connected");
     });
 
-    this.redis.on("error", (error) => {
+    (this.redis as any).on("error", (error) => {
       this.isConnected = false;
       logger.error("Redis Vector Service error", error);
     });
@@ -48,7 +48,7 @@ export class RedisVectorService {
 
   async isHealthy(): Promise<boolean> {
     try {
-      await this.redis.ping();
+      await (this.redis as any).ping();
       return this.isConnected;
     } catch (error: any) {
       logger.error("Redis health check failed", error);
@@ -65,10 +65,10 @@ export class RedisVectorService {
         timestamp: Date.now(),
       };
 
-      await this.redis.hset(`vector:${id}`, "data", JSON.stringify(vectorData));
+      await (this.redis as any).hset(`vector:${id}`, "data", JSON.stringify(vectorData));
 
       // Also store in a set for quick lookup
-      await this.redis.sadd("vectors:all", id);
+      await (this.redis as any).sadd("vectors:all", id);
 
       logger.debug(`Stored vector for ID: ${id}`);
     } catch (error: any) {
@@ -79,7 +79,7 @@ export class RedisVectorService {
 
   async getVector(id: string): Promise<DocumentVector | null> {
     try {
-      const data = await this.redis.hget(`vector:${id}`, "data");
+      const data = await (this.redis as any).hget(`vector:${id}`, "data");
       if (!data) return null;
 
       const vectorData = JSON.parse(data);
@@ -98,7 +98,7 @@ export class RedisVectorService {
   async deleteVector(id: string): Promise<void> {
     try {
       await this.redis.del(`vector:${id}`);
-      await this.redis.srem("vectors:all", id);
+      await (this.redis as any).srem("vectors:all", id);
       logger.debug(`Deleted vector for ID: ${id}`);
     } catch (error: any) {
       logger.error("Failed to delete vector", { id, error });
@@ -116,7 +116,7 @@ export class RedisVectorService {
   ): Promise<VectorSearchResult[]> {
     try {
       // This is a simple implementation - in production you'd use Redis Search or RedisAI
-      const allVectorIds = await this.redis.smembers("vectors:all");
+      const allVectorIds = await (this.redis as any).smembers("vectors:all");
       const results: VectorSearchResult[] = [];
 
       for (const id of allVectorIds) {
@@ -154,7 +154,7 @@ export class RedisVectorService {
   ): Promise<void> {
     try {
       const key = `embedding:${this.hashText(text)}:${model}`;
-      await this.redis.setex(key, 3600, JSON.stringify(embedding)); // Cache for 1 hour
+      await (this.redis as any).setex(key, 3600, JSON.stringify(embedding)); // Cache for 1 hour
     } catch (error: any) {
       logger.error("Failed to cache embedding", error);
     }
@@ -201,7 +201,7 @@ export class RedisVectorService {
   }
 
   async close(): Promise<void> {
-    await this.redis.quit();
+    await (this.redis as any).quit();
     this.isConnected = false;
   }
 }

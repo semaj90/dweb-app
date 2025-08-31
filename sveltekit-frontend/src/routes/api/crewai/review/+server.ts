@@ -1,8 +1,9 @@
 
+import type { RequestHandler } from './$types';
+
 // CrewAI Multi-Agent Document Review API
 // Orchestrates legal document analysis with multiple AI agents
 
-import { type RequestHandler,  json, error } from '@sveltejs/kit';
 import { crewAIOrchestrator, LEGAL_AGENTS, type DocumentReviewTask } from "$lib/ai/crewai-legal-agents";
 import { documents, cases } from "$lib/db/schema";
 import crypto from "crypto";

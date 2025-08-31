@@ -1,10 +1,11 @@
+import type { RequestHandler } from './$types';
+
 /**
  * AI Summary Save Endpoint
  * Saves legal AI analysis results to PostgreSQL with audit trail
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 import { getUser } from '$lib/server/auth';
 import { db } from '$lib/server/db';
 import { cases, aiAnalyses } from '$lib/server/db/schema-unified';

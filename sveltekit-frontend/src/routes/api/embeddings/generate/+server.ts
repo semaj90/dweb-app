@@ -1,4 +1,5 @@
-import type { RequestHandler } from '@sveltejs/kit';
+
+import type { RequestHandler } from './$types';
 
 // src/routes/api/embeddings/generate/+server.ts
 import { json, error } from "@sveltejs/kit";

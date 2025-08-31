@@ -228,7 +228,7 @@ class EnhancedCachingService {
     });
   }
 
-  async getCachedSearchResults(query: string, options: SearchCacheOptions = {}): Promise<unknown[] | null> {
+  async getCachedSearchResults(query: string, options: SearchCacheOptions = {}): Promise<any[] | null> {
     const cacheKey = `search:${this.hashQuery(query)}`;
     const cached = await this.get<any>(cacheKey, options);
     
@@ -262,9 +262,9 @@ class EnhancedCachingService {
     });
   }
 
-  async getCachedVectorSimilarity(queryHash: string, options: CacheOptions = {}): Promise<unknown[] | null> {
+  async getCachedVectorSimilarity(queryHash: string, options: CacheOptions = {}): Promise<any[] | null> {
     const cacheKey = `vector:${queryHash}`;
-    return await this.get<unknown[]>(cacheKey, options);
+    return await this.get<any[]>(cacheKey, options);
   }
 
   // ============================================================================
@@ -435,7 +435,7 @@ export async function cacheSearchResults(query: string, results: any[], options?
   return cachingService.cacheSearchResults(query, results, options);
 }
 
-export async function getCachedSearchResults(query: string, options?: SearchCacheOptions): Promise<unknown[] | null> {
+export async function getCachedSearchResults(query: string, options?: SearchCacheOptions): Promise<any[] | null> {
   return cachingService.getCachedSearchResults(query, options);
 }
 

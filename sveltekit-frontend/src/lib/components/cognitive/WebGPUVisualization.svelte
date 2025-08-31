@@ -479,7 +479,7 @@
       <span class="text-gray-400">FPS: {fps}</span>
       <button 
         class="bg-blue-600/20 border border-blue-600/50 text-blue-300 hover:bg-blue-600/30 px-3 py-1 rounded text-xs"
-        onclick={switchMode}
+        click={switchMode}
       >
         Switch Mode
       </button>

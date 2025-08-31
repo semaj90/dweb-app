@@ -10,9 +10,9 @@ import {
   real,
   jsonb,
   index,
+  vector,
 } from "drizzle-orm/pg-core";
-import { vector } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations } from "drizzle-orm/relations";
 
 // Enable vector extension
 // CREATE EXTENSION IF NOT EXISTS vector;

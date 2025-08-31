@@ -93,7 +93,7 @@ https://svelte.dev/e/js_parse_error -->
 <input 
   type="file" 
   bind:this={fileInput}
-  onchange={handleFileSelect}
+  change={handleFileSelect}
   multiple
   accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt"
   class="space-y-4"
@@ -103,7 +103,7 @@ https://svelte.dev/e/js_parse_error -->
   <!-- Minimal Upload Button for Canvas -->
   <button
     class="space-y-4"
-    on:click={() => openFileDialog()}
+    click={() => openFileDialog()}
     title="Upload Evidence"
     aria-label="Upload Evidence"
     tabindex={0}
@@ -114,14 +114,14 @@ https://svelte.dev/e/js_parse_error -->
   <!-- Full Upload Zone for Columns -->
   <div 
     class="space-y-4"
-    ondragover={handleDragOver}
-    ondragleave={handleDragLeave}
-    ondrop={handleDrop}
+    on:dragover={handleDragOver}
+    on:dragleave={handleDragLeave}
+    on:drop={handleDrop}
     role="button"
     tabindex={0}
     aria-label="Upload Evidence Dropzone"
-    on:click={() => openFileDialog()}
-    onkeydown={(e) => e.key === 'Enter' && openFileDialog()}
+    click={() => openFileDialog()}
+    on:keydown={(e) => e.key === 'Enter' && openFileDialog()}
   >
     {#if isUploading}
       <!-- Upload Progress -->

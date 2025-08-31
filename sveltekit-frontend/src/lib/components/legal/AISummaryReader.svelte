@@ -194,7 +194,7 @@
       <div class="flex items-center gap-2">
         <!-- Voice Toggle -->
         <button
-          on:click={toggleVoice}
+          click={toggleVoice}
           class="p-2 rounded-md hover:bg-gray-100 transition-colors"
           class:text-blue-600={$state.context.voiceEnabled}
           class:text-gray-400={!$state.context.voiceEnabled}
@@ -248,7 +248,7 @@
             </div>
           </div>
           <button
-            on:click={() => send({ type: "RETRY" })}
+            click={() => send({ type: "RETRY" })}
             class="mt-3 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm"
           >
             Retry
@@ -291,7 +291,7 @@
           >
             <div class="flex items-center gap-3">
               <button
-                on:click={toggleReading}
+                click={toggleReading}
                 class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                 disabled={!currentSection}
               >
@@ -305,7 +305,7 @@
               </button>
 
               <button
-                on:click={stopReading}
+                click={stopReading}
                 class="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-md transition-colors"
                 disabled={!isReading}
               >
@@ -314,7 +314,7 @@
 
               <div class="flex items-center gap-1">
                 <button
-                  on:click={previousSection}
+                  click={previousSection}
                   class="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-md transition-colors"
                   disabled={$state.context.currentSection === 0}
                 >
@@ -322,7 +322,7 @@
                 </button>
 
                 <button
-                  on:click={nextSection}
+                  click={nextSection}
                   class="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-md transition-colors"
                   disabled={$state.context.currentSection >=
                     $state.context.sections.length - 1}
@@ -355,7 +355,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {#each $state.context.sections as section, index}
               <button
-                on:click={() => jumpToSection(index)}
+                click={() => jumpToSection(index)}
                 class="text-left p-3 border rounded-lg transition-all hover:shadow-md"
                 class:border-blue-500={index === $state.context.currentSection}
                 class:bg-blue-50={index === $state.context.currentSection}
@@ -458,7 +458,7 @@
           <!-- Analysis Actions -->
           <div class="flex flex-wrap gap-3">
             <button
-              on:click={analyzeDocument}
+              click={analyzeDocument}
               class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
               disabled={isLoading}
             >
@@ -467,7 +467,7 @@
             </button>
 
             <button
-              on:click={synthesizeInsights}
+              click={synthesizeInsights}
               class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
               disabled={isLoading}
             >

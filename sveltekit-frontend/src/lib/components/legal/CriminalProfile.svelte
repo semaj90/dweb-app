@@ -161,7 +161,7 @@
   }
 </script>
 
-<div class={cn(
+<div className={cn(
   'criminal-profile bg-yorha-bg-secondary border border-yorha-border rounded-lg overflow-hidden',
   profile.currentStatus === 'at_large' && 'border-red-500/30',
   className
@@ -176,7 +176,7 @@
       <div class="shrink-0">
         {#if profile.identification.mugshots?.length}
           <button
-            on:click={() => onViewMugshot?.(profile.identification.mugshots[0])}
+            click={() => onViewMugshot?.(profile.identification.mugshots[0])}
             class="w-20 h-24 bg-yorha-bg-tertiary border border-yorha-border rounded overflow-hidden hover:border-yorha-primary/30 transition-colors group"
           >
             <div class="w-full h-full flex items-center justify-center text-yorha-text-secondary group-hover:text-yorha-primary">
@@ -206,7 +206,7 @@
           {@const statusInfo = statusConfig[profile.currentStatus]}
           {@const StatusIcon = statusInfo.icon}
           <div class="flex items-center gap-2">
-            <span class={cn('px-3 py-1 text-xs font-mono rounded border', statusInfo.class)}>
+            <span className={cn('px-3 py-1 text-xs font-mono rounded border', statusInfo.className)}>
               <StatusIcon class="w-3 h-3 inline mr-1" />
               {statusInfo.label}
             </span>
@@ -227,9 +227,9 @@
         <div class="flex items-center gap-4 text-xs font-mono">
           <div class="flex items-center gap-2">
             <span class="text-yorha-text-secondary">Risk Level:</span>
-            <span class={cn(
+            <span className={cn(
               'px-2 py-0.5 rounded border',
-              riskConfig[profile.riskAssessment.riskLevel].class
+              riskConfig[profile.riskAssessment.riskLevel].className
             )}>
               {riskConfig[profile.riskAssessment.riskLevel].label}
             </span>
@@ -411,9 +411,9 @@
                       {/if}
                     </div>
                   </div>
-                  <span class={cn(
+                  <span className={cn(
                     'px-2 py-1 text-xs font-mono rounded border',
-                    dispositionConfig[record.disposition].class
+                    dispositionConfig[record.disposition].className
                   )}>
                     {dispositionConfig[record.disposition].label}
                   </span>
@@ -427,7 +427,7 @@
 
                 {#if interactive && onViewFullRecord}
                   <button
-                    on:click={() => onViewFullRecord?.(record.id)}
+                    click={() => onViewFullRecord?.(record.id)}
                     class="mt-2 text-xs font-mono text-yorha-primary hover:text-yorha-accent transition-colors"
                   >
                     View Full Record
@@ -468,7 +468,7 @@
     <div class="px-4 py-3 bg-yorha-bg-tertiary border-t border-yorha-border">
       <div class="flex justify-end">
         <button
-          on:click={() => onUpdateProfile?.(profile)}
+          click={() => onUpdateProfile?.(profile)}
           class="px-4 py-2 text-sm font-mono bg-yorha-primary/10 text-yorha-primary border border-yorha-primary/20 rounded hover:bg-yorha-primary/20 transition-colors"
         >
           Update Profile

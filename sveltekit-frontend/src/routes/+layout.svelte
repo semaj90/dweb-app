@@ -1,7 +1,5 @@
 <script lang="ts">
   import '../app.css';
-  // Import NES.css for retro 8-bit styling
-  import 'nes.css/css/nes.min.css';
   import { onMount } from 'svelte';
   import { browser } from '$app/environment';
   import { performanceMonitor, errorHandler, optimizeComponent } from '$lib/utils/browser-performance';
@@ -10,6 +8,12 @@
   import { aiRecommendationEngine } from '$lib/services/ai-recommendation-engine';
   import FeedbackWidget from '$lib/components/feedback/FeedbackWidget.svelte';
   import type { FeedbackTrigger } from '$lib/types/feedback';
+  
+  // Modern bits-ui components (only import what exists)
+  import { Button } from 'bits-ui';
+  
+  // Modern button component
+  import ModernButton from '$lib/components/ui/button/Button.svelte';
 
   let { children }: { children: any } = $props();
 
@@ -18,9 +22,12 @@
   let currentFeedbackTrigger: FeedbackTrigger | null = $state(null);
   let showFeedback = $state(false);
 
-  // Create and set feedback store context
-  const store = createFeedbackStore();
-  setFeedbackStore(store);
+  // Create and set feedback store context (browser-only to avoid hydration issues)
+  let store: ReturnType<typeof createFeedbackStore>;
+  if (browser) {
+    store = createFeedbackStore();
+    setFeedbackStore(store);
+  }
 
   onMount(async () => {
     if (!browser) return;
@@ -32,15 +39,18 @@
       const { multiLibraryStartup } = await import('$lib/services/multi-library-startup');
       startupStatus = await multiLibraryStartup.initialize();
 
-      // Initialize feedback system
-      const userId = 'user_' + Date.now(); // In production, get from auth
-      const session = store.initializeSession(userId);
+      // Initialize feedback system (ensure store exists)
+      let session = null;
+      if (store) {
+        const userId = 'user_' + Date.now(); // In production, get from auth
+        session = store.initializeSession(userId);
 
-      // Track platform initialization
-      store.trackInteraction('platform_initialization', {
-        services: startupStatus?.services || {},
-        initTime: startupStatus?.initTime || 0
-      });
+        // Track platform initialization
+        store.trackInteraction('platform_initialization', {
+          services: startupStatus?.services || {},
+          initTime: startupStatus?.initTime || 0
+        });
+      }
 
       if (startupStatus?.initialized) {
         console.log('✅ YoRHa Legal AI Platform Ready');
@@ -52,16 +62,18 @@
         }, 4000);
 
         // Generate initial recommendations
-        await aiRecommendationEngine.generateEnhancedRecommendations(
-          {
-            userId: session.userId,
-            sessionId: session.id,
-            deviceType: store.userContext.deviceType,
-            userType: 'attorney' // In production, get from user profile
-          },
-          'platform startup',
-          'general'
-        );
+        if (session) {
+          await aiRecommendationEngine.generateEnhancedRecommendations(
+            {
+              userId: session.userId,
+              sessionId: session.id,
+              deviceType: store?.userContext?.deviceType || 'desktop',
+              userType: 'attorney' // In production, get from user profile
+            },
+            'platform startup',
+            'general'
+          );
+        }
 
         // Log Chrome Windows optimization status
         const compatibilityReport = errorHandler.getCompatibilityReport();
@@ -69,7 +81,7 @@
       }
     } catch (error) {
       console.error('❌ Platform initialization failed:', error);
-      store.trackInteraction('platform_error', { error: (error as Error)?.message ?? String(error) });
+      store?.trackInteraction('platform_error', { error: (error as Error)?.message ?? String(error) });
     }
 
     // Listen for feedback triggers (temporarily disabled to prevent reloading)
@@ -85,14 +97,14 @@
 
     return () => {
       // clearInterval(feedbackInterval); // disabled with feedback system
-      store.clearSession();
+      store?.clearSession();
     };
   });
 
   // Feedback handlers (use Svelte event handlers with e.detail)
   async function handleFeedbackSubmitted(event: CustomEvent) {
     const data: any = event.detail;
-    const success = await store.submitFeedback(
+    const success = await store?.submitFeedback(
       data.interactionId,
       data.rating,
       data.feedback,
@@ -103,7 +115,7 @@
       console.log('✅ Feedback submitted successfully');
       // Generate updated recommendations based on feedback
       await aiRecommendationEngine.generateEnhancedRecommendations(
-        store.userContext,
+        store?.userContext || { userId: '', sessionId: '', deviceType: 'desktop' },
         'feedback provided',
         'user_experience'
       );
@@ -122,49 +134,118 @@
   function handleFeedbackClosed() {
     showFeedback = false;
     currentFeedbackTrigger = null;
-    store.cancelFeedback();
+    store?.cancelFeedback();
   }
 </script>
 
-<!-- Multi-Library Startup Notification -->
+<!-- Modern Startup Toast Notification -->
 {#if showStartupLog && startupStatus}
-  <div class="startup-notification">
-    <div class="startup-content">
-      <h3>🚀 YoRHa Legal AI Platform</h3>
-      <p>Multi-Library Integration Complete</p>
-      <div class="startup-services">
+  <div class="fixed top-5 right-5 z-50 max-w-sm">
+    <div class="bg-nier-bg-secondary border border-nier-border-primary rounded-lg p-golden-lg shadow-lg">
+      <h3 class="text-nier-accent-warm font-bold text-lg uppercase tracking-wide mb-golden-sm">
+        🚀 YoRHa Legal AI Platform
+      </h3>
+      <p class="text-nier-text-secondary mb-golden-md text-sm">
+        Multi-Library Integration Complete
+      </p>
+      <div class="grid grid-cols-2 gap-golden-xs mb-golden-md">
         {#each Object.entries(startupStatus.services) as [service, status]}
-          <span class="service-status" class:ready={status} class:failed={!status}>
+          <span 
+            class="text-xs font-mono px-golden-xs py-1 border rounded {status ? 'border-green-500 bg-green-500/10 text-green-400' : 'border-red-500 bg-red-500/10 text-red-400'}"
+          >
             {status ? '✅' : '❌'} {service.toUpperCase()}
           </span>
         {/each}
       </div>
-      <p class="startup-time">Initialized in {startupStatus.initTime}ms</p>
+      <p class="text-nier-text-muted text-xs text-right font-mono">
+        Initialized in {startupStatus.initTime}ms
+      </p>
     </div>
   </div>
 {/if}
 
-<div class="yorha-3d-panel nes-legal-container gpu-accelerated transform-3d">
-  <header class="nes-legal-header">
-    <h1 class="nes-legal-title neural-sprite-active">YoRHa Legal AI</h1>
-    <nav class="nes-nav-main">
-      <a href="/" class="nes-legal-priority-medium yorha-3d-button">Home</a>
-      <a href="/yorha-command-center" class="nes-legal-priority-high yorha-3d-button">YoRHa Command Center</a>
-      <a href="/evidenceboard" class="nes-legal-priority-high yorha-3d-button">Evidence Board</a>
-      <a href="/demo/enhanced-rag-semantic" class="nes-legal-priority-medium yorha-3d-button">Enhanced RAG Demo</a>
-      <a href="/endpoints" class="nes-legal-priority-low yorha-3d-button">Endpoints</a>
-      <div class="auth-buttons">
-        <a href="/auth/login" class="nes-legal-priority-medium yorha-3d-button auth-btn">Login</a>
-        <a href="/auth/register" class="nes-legal-priority-medium yorha-3d-button auth-btn">Register</a>
+<div class="min-h-screen bg-nier-bg-primary text-nier-text-primary font-mono">
+  <!-- Modern Header with Golden Ratio Grid -->
+  <header class="border-b border-nier-border-muted bg-nier-bg-secondary/50 backdrop-blur-sm sticky top-0 z-40">
+    <div class="container mx-auto px-golden-lg py-golden-md">
+      <div class="flex items-center justify-between gap-golden-lg">
+        <!-- Logo Section -->
+        <div class="flex items-center gap-golden-sm">
+          <h1 class="text-nier-accent-warm font-bold text-2xl tracking-wider uppercase">
+            YoRHa Legal AI
+          </h1>
+          {#if startupStatus?.initialized}
+            <span class="bg-green-500/20 text-green-400 border-green-500/30 border text-xs px-2 py-1 rounded">
+              🟢 INTEGRATED
+            </span>
+          {:else}
+            <span class="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 border text-xs px-2 py-1 animate-pulse rounded">
+              🟡 LOADING
+            </span>
+          {/if}
+        </div>
+
+        <!-- Navigation -->
+        <nav class="hidden md:flex items-center gap-golden-sm">
+          <ModernButton 
+            href="/" 
+            variant="ghost"
+            size="sm"
+            class="text-nier-text-secondary hover:text-nier-accent-warm hover:bg-nier-bg-tertiary"
+          >
+            Home
+          </ModernButton>
+          <ModernButton 
+            href="/yorha-command-center" 
+            variant="ghost"
+            size="sm"
+            class="text-nier-text-secondary hover:text-nier-accent-warm hover:bg-nier-bg-tertiary"
+          >
+            Command Center
+          </ModernButton>
+          <ModernButton 
+            href="/evidenceboard" 
+            variant="ghost"
+            size="sm"
+            class="text-nier-text-secondary hover:text-nier-accent-warm hover:bg-nier-bg-tertiary"
+          >
+            Evidence Board
+          </ModernButton>
+          <ModernButton 
+            href="/demo/enhanced-rag-semantic" 
+            variant="ghost"
+            size="sm"
+            class="text-nier-text-secondary hover:text-nier-accent-warm hover:bg-nier-bg-tertiary"
+          >
+            RAG Demo
+          </ModernButton>
+        </nav>
+
+        <!-- Auth Buttons -->
+        <div class="flex items-center gap-golden-sm">
+          <ModernButton 
+            href="/auth/login" 
+            variant="outline"
+            size="sm"
+            class="border-nier-accent-warm text-nier-accent-warm hover:bg-nier-accent-warm hover:text-nier-bg-primary"
+          >
+            Login
+          </ModernButton>
+          <ModernButton 
+            href="/auth/register" 
+            variant="primary"
+            size="sm"
+            class="bg-gradient-to-r from-nier-accent-warm to-nier-accent-cool text-nier-bg-primary font-bold"
+          >
+            Register
+          </ModernButton>
+        </div>
       </div>
-      {#if startupStatus?.initialized}
-        <span class="nes-legal-priority-critical neural-sprite-active">🟢 INTEGRATED</span>
-      {:else}
-        <span class="nes-legal-priority-low neural-sprite-loading">🟡 LOADING</span>
-      {/if}
-    </nav>
+    </div>
   </header>
-  <main class="nes-main-content">
+
+  <!-- Main Content with Golden Ratio Spacing -->
+  <main class="container mx-auto px-golden-lg py-golden-xl min-h-[calc(100vh-theme(spacing.16))]">
     {@render children()}
   </main>
 </div>
@@ -172,8 +253,8 @@
 {#if currentFeedbackTrigger}
   <FeedbackWidget
     interactionId={currentFeedbackTrigger.interactionId}
-    sessionId={store.userContext.sessionId}
-    userId={store.userContext.userId}
+    sessionId={store?.userContext?.sessionId || ''}
+    userId={store?.userContext?.userId || ''}
     context={currentFeedbackTrigger.context}
     show={showFeedback}
     ratingType={currentFeedbackTrigger.type}
@@ -184,114 +265,69 @@
 {/if}
 
 <style>
-  /* Startup Notification Styles */
-  .startup-notification {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
-    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
-    border: 2px solid #ffd700;
-    border-radius: 8px;
-    padding: 1.5rem;
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-    animation: slideIn 0.5s ease-out;
-    max-width: 400px;
+  /* Golden Ratio Custom CSS Properties */
+  :global(:root) {
+    --golden-base: 1rem;
+    --golden-xs: calc(var(--golden-base) / 2.618); /* ~0.382rem */
+    --golden-sm: calc(var(--golden-base) / 1.618); /* ~0.618rem */
+    --golden-md: var(--golden-base); /* 1rem */
+    --golden-lg: calc(var(--golden-base) * 1.618); /* ~1.618rem */
+    --golden-xl: calc(var(--golden-base) * 2.618); /* ~2.618rem */
+    --golden-2xl: calc(var(--golden-base) * 4.236); /* ~4.236rem */
   }
-
-  .startup-content h3 {
-    margin: 0 0 0.5rem 0;
-    color: #ffd700;
-    font-size: 1.1rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+  
+  /* UnoCSS Golden Ratio Utilities */
+  :global(.p-golden-xs) { padding: var(--golden-xs); }
+  :global(.p-golden-sm) { padding: var(--golden-sm); }
+  :global(.p-golden-md) { padding: var(--golden-md); }
+  :global(.p-golden-lg) { padding: var(--golden-lg); }
+  :global(.p-golden-xl) { padding: var(--golden-xl); }
+  :global(.p-golden-2xl) { padding: var(--golden-2xl); }
+  
+  :global(.px-golden-xs) { padding-left: var(--golden-xs); padding-right: var(--golden-xs); }
+  :global(.px-golden-sm) { padding-left: var(--golden-sm); padding-right: var(--golden-sm); }
+  :global(.px-golden-md) { padding-left: var(--golden-md); padding-right: var(--golden-md); }
+  :global(.px-golden-lg) { padding-left: var(--golden-lg); padding-right: var(--golden-lg); }
+  :global(.px-golden-xl) { padding-left: var(--golden-xl); padding-right: var(--golden-xl); }
+  
+  :global(.py-golden-xs) { padding-top: var(--golden-xs); padding-bottom: var(--golden-xs); }
+  :global(.py-golden-sm) { padding-top: var(--golden-sm); padding-bottom: var(--golden-sm); }
+  :global(.py-golden-md) { padding-top: var(--golden-md); padding-bottom: var(--golden-md); }
+  :global(.py-golden-lg) { padding-top: var(--golden-lg); padding-bottom: var(--golden-lg); }
+  :global(.py-golden-xl) { padding-top: var(--golden-xl); padding-bottom: var(--golden-xl); }
+  
+  :global(.m-golden-xs) { margin: var(--golden-xs); }
+  :global(.m-golden-sm) { margin: var(--golden-sm); }
+  :global(.m-golden-md) { margin: var(--golden-md); }
+  :global(.m-golden-lg) { margin: var(--golden-lg); }
+  :global(.m-golden-xl) { margin: var(--golden-xl); }
+  :global(.m-golden-2xl) { margin: var(--golden-2xl); }
+  
+  :global(.mb-golden-xs) { margin-bottom: var(--golden-xs); }
+  :global(.mb-golden-sm) { margin-bottom: var(--golden-sm); }
+  :global(.mb-golden-md) { margin-bottom: var(--golden-md); }
+  :global(.mb-golden-lg) { margin-bottom: var(--golden-lg); }
+  :global(.mb-golden-xl) { margin-bottom: var(--golden-xl); }
+  
+  :global(.gap-golden-xs) { gap: var(--golden-xs); }
+  :global(.gap-golden-sm) { gap: var(--golden-sm); }
+  :global(.gap-golden-md) { gap: var(--golden-md); }
+  :global(.gap-golden-lg) { gap: var(--golden-lg); }
+  :global(.gap-golden-xl) { gap: var(--golden-xl); }
+  
+  /* Container responsive spacing with golden ratio */
+  :global(.container) {
+    max-width: 90rem;
+    margin: 0 auto;
   }
-
-  .startup-content p {
-    margin: 0 0 1rem 0;
-    color: #e0e0e0;
-    font-size: 0.9rem;
+  
+  /* Smooth transitions for YoRHa theme */
+  :global(*) {
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
   }
-
-  .startup-services {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.5rem;
-    margin: 1rem 0;
+  
+  /* Typography enhancements */
+  :global(.font-mono) {
+    font-family: 'JetBrains Mono', 'Roboto Mono', 'SF Mono', monospace;
   }
-
-  .service-status {
-    font-size: 0.75rem;
-    padding: 0.25rem 0.5rem;
-    border-radius: 3px;
-    border: 1px solid;
-    font-family: 'JetBrains Mono', monospace;
-  }
-
-  .service-status.ready {
-    color: #00ff41;
-    border-color: #00ff41;
-    background: rgba(0, 255, 65, 0.1);
-  }
-
-  .service-status.failed {
-    color: #ff0041;
-    border-color: #ff0041;
-    background: rgba(255, 0, 65, 0.1);
-  }
-
-  .startup-time {
-    font-size: 0.8rem !important;
-    color: #b0b0b0 !important;
-    text-align: right;
-    margin: 0.5rem 0 0 0 !important;
-  }
-
-  @keyframes slideIn {
-    from {
-      transform: translateX(100%);
-      opacity: 0;
-    }
-    to {
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
-
-  /* Auth Buttons Styles */
-  .auth-buttons {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-    margin-left: auto;
-  }
-
-  .auth-btn {
-    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%) !important;
-    color: #1a1a1a !important;
-    padding: 0.5rem 1rem !important;
-    text-decoration: none !important;
-    border-radius: 4px !important;
-    font-weight: bold !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.5px !important;
-    transition: all 0.2s ease !important;
-    border: 1px solid #ffd700 !important;
-  }
-
-  .auth-btn:hover {
-    background: linear-gradient(135deg, #ffed4e 0%, #ffd700 100%) !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 4px 8px rgba(255, 215, 0, 0.3) !important;
-  }
-
-  /* Responsive navigation */
-  .nes-nav-main {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-
-  /* These styles are handled by global CSS classes that are actually used in the template */
 </style>

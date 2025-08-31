@@ -1,10 +1,11 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Document Detail API - Complete Server-Side Integration
  * Combines Postgres+pgvector, Neo4j, and GPU acceleration for comprehensive document analysis
  * Implements the "Slow Path" from the hybrid cache architecture
  */
 
-import { json, error, type RequestHandler } from '@sveltejs/kit';
 import { enhanced_db } from '$lib/server/db/drizzle';
 import { legal_documents, evidence, cases } from '$lib/server/db/unified-schema';
 import { eq, sql, desc } from 'drizzle-orm';

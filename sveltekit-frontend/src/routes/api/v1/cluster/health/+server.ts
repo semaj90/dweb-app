@@ -1,10 +1,11 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Cluster Health Monitoring API
  * Real-time health checks for all 37 Go services + external dependencies
  */
 
-import { type RequestHandler, json } from '@sveltejs/kit';
-import { redis } from '$lib/server/cache/redis-service.js';
+import { getRedisService } from '$lib/server/redis/redis-service.js';
 import { minioService } from '$lib/server/storage/minio-service.js';
 import { rabbitmqService } from '$lib/server/messaging/rabbitmq-service.js';
 
@@ -13,8 +14,9 @@ export const GET: RequestHandler = async ({ url }) => {
   
   try {
     // Check health of available services
+    const redisService = getRedisService();
     const [redisHealth, minioHealth, rabbitmqHealth] = await Promise.all([
-      redis.healthCheck(),
+      { status: redisService.isConnectedToRedis() ? 'healthy' : 'unhealthy', details: { connected: redisService.isConnectedToRedis() } },
       minioService.healthCheck(),
       rabbitmqService.healthCheck()
     ]);
@@ -76,8 +78,9 @@ export const POST: RequestHandler = async ({ request }) => {
     switch (action) {
       case 'force_health_check':
         // Force refresh of all service health checks
+        const redisService = getRedisService();
         const [redisHealth, minioHealth, rabbitmqHealth] = await Promise.all([
-          redis.healthCheck(),
+          { status: redisService.isConnectedToRedis() ? 'healthy' : 'unhealthy', details: { connected: redisService.isConnectedToRedis() } },
           minioService.healthCheck(),
           rabbitmqService.healthCheck()
         ]);

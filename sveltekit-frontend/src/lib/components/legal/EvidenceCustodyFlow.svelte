@@ -143,7 +143,7 @@ and AI-powered verification features.
     try {
       wsConnection = new WebSocket(`ws://localhost:3000/api/websocket?room=custody-${evidenceId}`);
       
-      wsConnection.onopen = () => {
+      wsConnection.on:open=() => {
         console.log('WebSocket connected for custody workflow');
       };
       
@@ -161,7 +161,7 @@ and AI-powered verification features.
         console.error('WebSocket error:', error);
       };
       
-      wsConnection.onclose = () => {
+      wsConnection.on:close=() => {
         console.log('WebSocket connection closed');
         // Attempt to reconnect after a delay
         setTimeout(() => {
@@ -427,7 +427,7 @@ and AI-powered verification features.
           {userId}
           {evidenceId}
           {wsConnection}
-          onaddannotation={(content, position) => {
+          on:addannotation={(content, position) => {
             custodyActor.send({
               type: 'ADD_ANNOTATION',
               userId,

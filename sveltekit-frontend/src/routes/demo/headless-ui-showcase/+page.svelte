@@ -128,13 +128,13 @@
           <div class="flex gap-2 mt-4">
             <button 
               class="nes-btn is-success flex-1"
-              onclick={() => addNotification('success', `Command executed: ${inputValue || 'default'}`)}
+              click={() => addNotification('success', `Command executed: ${inputValue || 'default'}`)}
             >
               Execute
             </button>
             <button 
               class="nes-btn is-warning flex-1"
-              onclick={simulateAsyncOperation}
+              click={simulateAsyncOperation}
               disabled={isLoading}
             >
               {isLoading ? 'Processing...' : 'Async Process'}
@@ -170,7 +170,7 @@
             <Button 
               variant="default" 
               class="nes-btn is-primary"
-              onclick={() => addNotification('success', 'Bits UI Button clicked! 🎮')}
+              on:click={() => addNotification('success', 'Bits UI Button clicked! 🎮')}
             >
               Hybrid Button
             </Button>
@@ -178,7 +178,7 @@
             <Button 
               variant="outline" 
               class="nes-btn"
-              onclick={() => addNotification('warning', 'Warning: Retro mode activated!')}
+              on:click={() => addNotification('warning', 'Warning: Retro mode activated!')}
             >
               Outline + NES
             </Button>
@@ -353,7 +353,7 @@
         <div class="flex gap-2">
           <button 
             class="nes-btn is-success flex-1"
-            onclick={() => {
+            click={() => {
               addNotification('success', 'Dialog action confirmed! 🎯');
               $open = false;
             }}

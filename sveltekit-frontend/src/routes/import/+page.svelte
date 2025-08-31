@@ -350,7 +350,7 @@
           bind:this={fileInput}
           type="file"
           accept=".json,.csv,.xml"
-          onchange={handleFileInput}
+          change={handleFileInput}
           class="space-y-4"
           aria-label="Select import file"
         />

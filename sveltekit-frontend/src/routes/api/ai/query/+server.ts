@@ -1,7 +1,8 @@
 
-import { type RequestHandler,  json } from '@sveltejs/kit';
 import { aiService } from "$lib/server/services/ai-service.js";
 import { URL } from "url";
+import type { RequestHandler } from './$types';
+
 
 const querySchema = z.object({
   query: z.string().min(1).max(5000),

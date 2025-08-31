@@ -263,7 +263,7 @@
   });
 </script>
 
-<Card class="token-usage-manager {className}">
+<Card class="token-usage-manager {class}">
   <CardHeader>
     <CardTitle class="flex items-center justify-between">
       <div class="flex items-center gap-2">
@@ -289,7 +289,7 @@
         max="32000"
         step="100"
         bind:value={tokenLimit}
-        onchange={(e) => updateTokenLimit(parseInt((e.target as HTMLSelectElement).value))}
+        change={(e) => updateTokenLimit(parseInt((e.target as HTMLSelectElement).value))}
         data-testid="token-limit-slider"
         class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
       />

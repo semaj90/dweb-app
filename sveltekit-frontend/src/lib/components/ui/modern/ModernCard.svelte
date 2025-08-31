@@ -80,7 +80,7 @@
   role={clickable ? 'button' : undefined}
   tabindex={clickable ? 0 : undefined}
   on:click={handleClick}
-  onkeydown={(e) => {
+  on:keydown={(e) => {
     if (clickable && (e.key === 'Enter' || e.key === ' ')) {
       e.preventDefault();
       onclick?.();
@@ -94,7 +94,7 @@
   role={clickable ? 'button' : undefined}
   tabindex={clickable ? 0 : undefined}
   on:click={handleClick}
-  onkeydown={(e) => {
+  on:keydown={(e) => {
     if (clickable && (e.key === 'Enter' || e.key === ' ')) {
       e.preventDefault();
       onclick?.();

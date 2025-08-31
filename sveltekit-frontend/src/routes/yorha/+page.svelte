@@ -300,7 +300,7 @@
         <div class="yorha-control-panel">
           <button
             class="yorha-control-btn {showCommandInterface ? 'active' : ''}"
-            onclick={toggleCommandInterface}
+            click={toggleCommandInterface}
             aria-label="Toggle command interface"
           >
             <Terminal size={16} />
@@ -308,7 +308,7 @@
           </button>
           <button
             class="yorha-control-btn {holographicMode ? 'active' : ''}"
-            onclick={toggleHolographicMode}
+            click={toggleHolographicMode}
             aria-label="Toggle holographic mode"
           >
             <Zap size={16} />
@@ -324,7 +324,7 @@
     <div class="yorha-actions-grid">
       <button
         class="yorha-action-card yorha-action-primary"
-        onclick={() => performRAGQuery()}
+        click={() => performRAGQuery()}
         disabled={isLoading}
       >
         <Cpu size={32} />
@@ -337,7 +337,7 @@
 
       <button
         class="yorha-action-card yorha-action-search"
-        onclick={() => performSemanticSearch()}
+        click={() => performSemanticSearch()}
         disabled={isLoading}
       >
         <Search size={32} />
@@ -347,7 +347,7 @@
 
       <button
         class="yorha-action-card yorha-action-health"
-        onclick={() => checkClusterHealth()}
+        click={() => checkClusterHealth()}
         disabled={isLoading}
       >
         <Monitor size={32} />
@@ -357,7 +357,7 @@
 
       <button
         class="yorha-action-card yorha-action-database"
-        onclick={() => performSemanticSearch('database evidence')}
+        click={() => performSemanticSearch('database evidence')}
         disabled={isLoading}
       >
         <Database size={32} />
@@ -419,7 +419,7 @@
   <section class="yorha-search-box" aria-label="Semantic Search">
     <div class="yorha-search-inner max-w-6xl mx-auto">
       <label for="yorha-search" class="sr-only">Search legal documents</label>
-      <input id="yorha-search" type="search" placeholder="Search legal documents..." class="yorha-search-input" oninput={(e) => debouncedSearch((e.target as HTMLInputElement).value)} />
+      <input id="yorha-search" type="search" placeholder="Search legal documents..." class="yorha-search-input" input={(e) => debouncedSearch((e.target as HTMLInputElement).value)} />
       <div class="yorha-search-meta">
         <fieldset class="yorha-search-modes" aria-label="Search Mode">
           <legend class="sr-only">Search Mode</legend>

@@ -18,9 +18,9 @@ import { cn } from '$lib/utils';
 </script>
 
 <div
-	class={cn(
+	className={cn(
 		"relative h-2 w-full overflow-hidden rounded-full bg-secondary",
-		class
+		className
 	)}
 	role="progressbar"
 	aria-valuenow={value}

@@ -1,8 +1,9 @@
+import type { RequestHandler } from './$types';
+
 // Comprehensive AI Mix Summaries API - End-to-End Integration
 // Combines: Local LLM + Enhanced RAG + User Activity (simulated) + Fuse.js + XState Synthesis
 // Supports: Chunking, Streaming, Async Processing, Hybrid Vector Search
 
-import { json, type RequestHandler } from "@sveltejs/kit";
 // TODO: Strengthen typing & streaming implementation; current file cleaned from corruption
 import { db } from "$lib/server/db";
 import { evidence, cases, legalDocuments } from "$lib/server/db/schema-postgres";

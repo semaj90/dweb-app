@@ -19,7 +19,7 @@
     size = 'default', 
     loading = false,
     icon,
-    class: className,
+    class: class,
     children,
     disabled,
     ...restProps
@@ -63,7 +63,7 @@
     cn(
       buttonVariants({ variant, size }),
       loading && 'cursor-not-allowed',
-      className
+      class
     )
   );
 

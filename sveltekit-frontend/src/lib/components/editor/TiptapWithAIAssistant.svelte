@@ -480,7 +480,7 @@ https://svelte.dev/e/script_duplicate -->
       <div class="flex items-center justify-between mb-4">
         <h3 class="font-semibold text-gray-800">AI Assistant</h3>
         <button 
-          on:click={() => aiAssistantVisible = false}
+          click={() => aiAssistantVisible = false}
           class="text-gray-500 hover:text-gray-700"
         >
           ✕
@@ -490,7 +490,7 @@ https://svelte.dev/e/script_duplicate -->
       <!-- Quick Actions -->
       <div class="space-y-2 mb-4">
         <button 
-          on:click={startCrewAIReview}
+          click={startCrewAIReview}
           class="w-full bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700 transition-colors"
           disabled={isProcessing}
         >
@@ -498,7 +498,7 @@ https://svelte.dev/e/script_duplicate -->
         </button>
         
         <button 
-          on:click={() => generateInlineSuggestions(editor?.getHTML() || '')}
+          click={() => generateInlineSuggestions(editor?.getHTML() || '')}
           class="w-full bg-green-600 text-white px-3 py-2 rounded text-sm hover:bg-green-700 transition-colors"
         >
           Generate Suggestions
@@ -525,14 +525,14 @@ https://svelte.dev/e/script_duplicate -->
                 
                 <div class="flex space-x-1 ml-2">
                   <button 
-                    on:click={() => applySuggestion(rec)}
+                    click={() => applySuggestion(rec)}
                     class="text-green-600 hover:text-green-800 text-xs px-2 py-1 rounded"
                     title="Accept"
                   >
                     ✓
                   </button>
                   <button 
-                    on:click={() => rejectSuggestion(rec)}
+                    click={() => rejectSuggestion(rec)}
                     class="text-red-600 hover:text-red-800 text-xs px-2 py-1 rounded"
                     title="Reject"
                   >
@@ -565,13 +565,13 @@ https://svelte.dev/e/script_duplicate -->
       
       <div class="flex justify-end space-x-2">
         <button 
-          on:click={() => showSuggestions = false}
+          click={() => showSuggestions = false}
           class="text-xs text-gray-500 hover:text-gray-700 px-2 py-1"
         >
           Dismiss
         </button>
         <button 
-          on:click={() => applySuggestion({ text: currentRecommendation })}
+          click={() => applySuggestion({ text: currentRecommendation })}
           class="text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700"
         >
           Apply

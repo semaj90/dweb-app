@@ -4,7 +4,7 @@
  * Implements Phase 8 architecture with legal-specific AI enhancements
  */
 
-import { relations, sql } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import {
   boolean,
   decimal,
@@ -13,6 +13,7 @@ import {
   pgTable,
   serial,
   text,
+  relations,
   timestamp,
   uuid,
   varchar,

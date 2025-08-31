@@ -1,3 +1,5 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Evidence Upload API (Production Ready)
  * Responsibilities:
@@ -9,7 +11,6 @@
  *  - Optional AI summarization with selectable summaryType
  *  - Return consistent JSON envelope (data, meta, error)
  */
-import { json, error, type RequestHandler } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { evidence, embeddingCache } from '$lib/server/db/schema-postgres-enhanced';
 import { mkdir } from 'fs/promises';
@@ -844,7 +845,7 @@ export const GET: RequestHandler = async ({ url }) => {
       const filePath = join(UPLOAD_DIR, record.fileName!);
   const fileBuffer = await readFile(filePath);
 
-  const resp = new Response(fileBuffer as unknown as BodyInit, {
+  const resp = new Response(fileBuffer as any as BodyInit, {
         headers: {
           'Content-Type': record.mimeType!,
           'Content-Disposition': `inline; filename="${record.fileName}"`,

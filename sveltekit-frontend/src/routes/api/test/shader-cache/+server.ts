@@ -1,9 +1,10 @@
+import type { RequestHandler } from './$types';
+
 /**
  * GPU Shader Cache Integration Test Endpoint
  * Tests all aspects of the reinforcement learning shader cache system
  */
 
-import { json, type RequestHandler } from '@sveltejs/kit';
 import { gpuShaderCacheOrchestrator } from '$lib/services/gpu-shader-cache-orchestrator';
 import { dev } from '$app/environment';
 

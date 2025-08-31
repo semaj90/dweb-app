@@ -338,7 +338,7 @@
           bind:element={inputElement}
           bind:value={currentMessage}
           {placeholder}
-          onkeydown={handleKeydown}
+          on:keydown={handleKeydown}
           disabled={isLoading}
           class="flex-1" />
         <Button on:click={sendMessage} disabled={isLoading || !currentMessage.trim()}>

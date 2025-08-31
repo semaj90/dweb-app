@@ -1,8 +1,9 @@
-import type { RequestHandler } from './$types';
 
 import { personsOfInterest } from "$lib/server/db/schema-postgres";
 
 import { eq } from "drizzle-orm";
+import type { RequestHandler } from './$types';
+
 
 export const GET: RequestHandler = async ({ params }) => {
   try {

@@ -322,7 +322,7 @@
         {#each tabs as tab}
           {@const IconComponent = tab.icon}
           <button
-            on:click={() => activeTab = tab.id}
+            click={() => activeTab = tab.id}
             class={`flex items-center gap-2 px-4 py-2 text-sm font-mono rounded transition-colors ${
               activeTab === tab.id
                 ? 'bg-yorha-primary text-yorha-bg-primary'

@@ -8,7 +8,7 @@ import bcrypt from 'bcryptjs';
 import { nanoid } from 'nanoid';
 
 // Database connection with pgvector support
-const connectionString = process.env.DATABASE_URL || 
+const connectionString = process.env.DATABASE_URL ||
   `postgresql://${process.env.DATABASE_USER || 'legal_admin'}:${process.env.DATABASE_PASSWORD || '123456'}@${process.env.DATABASE_HOST || 'localhost'}:${process.env.DATABASE_PORT || '5432'}/${process.env.DATABASE_NAME || 'legal_ai_db'}`;
 
 const sql = postgres(connectionString, {
@@ -40,7 +40,11 @@ export interface ExistingUser {
   role: string;
   created_at?: Date;
   updated_at?: Date;
+  // snake_case stored column
   hashed_password?: string;
+  // camelCase alias used across application code
+  passwordHash?: string;
+  password_hash?: string;
   is_active?: boolean;
   first_name?: string;
   last_name?: string;
@@ -49,9 +53,14 @@ export interface ExistingUser {
 }
 
 export interface ExistingSession {
+  // canonical (snake_case) columns
   id: string;
   user_id: string;
   expires_at: Date;
+  // camelCase aliases expected by many callers
+  sessionId?: string;
+  expiresAt?: Date;
+  isActive?: boolean;
   created_at?: Date;
 }
 
@@ -111,10 +120,10 @@ export class ExistingUserAuthService {
       // Create user with existing schema
       const newUser = await sql`
         INSERT INTO users (
-          email, 
-          hashed_password, 
-          first_name, 
-          last_name, 
+          email,
+          hashed_password,
+          first_name,
+          last_name,
           role,
           is_active
         ) VALUES (
@@ -179,7 +188,7 @@ export class ExistingUserAuthService {
       // Get user with password
       const userResult = await sql`
         SELECT id, email, hashed_password, first_name, last_name, role, is_active
-        FROM users 
+        FROM users
         WHERE email = ${credentials.email}
       `;
 
@@ -190,7 +199,16 @@ export class ExistingUserAuthService {
         };
       }
 
-      const user = userResult[0] as ExistingUser;
+      const userData = userResult[0];
+      const user: ExistingUser = {
+        id: userData.id,
+        email: userData.email,
+        first_name: userData.first_name,
+        last_name: userData.last_name,
+        role: userData.role,
+        is_active: userData.is_active,
+        hashed_password: userData.hashed_password
+      };
 
       if (!user.is_active) {
         return {
@@ -199,8 +217,16 @@ export class ExistingUserAuthService {
         };
       }
 
-      // Verify password
-      const validPassword = await bcrypt.compare(credentials.password, user.hashed_password!);
+      // Verify password with proper validation
+      if (!user.hashed_password) {
+        return {
+          success: false,
+          error: 'Invalid credentials'
+        };
+      }
+
+      const hashedPassword = String(user.hashed_password);
+      const validPassword = await bcrypt.compare(credentials.password, hashedPassword);
       if (!validPassword) {
         return {
           success: false,
@@ -215,11 +241,19 @@ export class ExistingUserAuthService {
 
       const sessionResult = await sql`
         INSERT INTO sessions (id, user_id, expires_at)
-        VALUES (${sessionId}, ${user.id}, ${expiresAt})
+        VALUES (${sessionId}, ${user.id}, ${expiresAt.toISOString()})
         RETURNING *
       `;
 
-      const session = sessionResult[0] as ExistingSession;
+      const sessionData = sessionResult[0];
+      const session: ExistingSession = {
+        id: sessionData.id,
+        user_id: sessionData.user_id,
+        expires_at: new Date(sessionData.expires_at),
+        // fill camelCase aliases for downstream compatibility
+        sessionId: sessionData.id,
+        expiresAt: new Date(sessionData.expires_at),
+      } as ExistingSession;
 
       // Get user profile
       const profileResult = await sql`
@@ -227,13 +261,18 @@ export class ExistingUserAuthService {
       `;
       const profile = (profileResult[0] as ExistingUserProfile) || null;
 
-      // Remove password from response
+      // Provide both snake_case and camelCase password aliases and remove raw hash
+      if ((user as any).hashed_password) {
+        user.passwordHash = (user as any).hashed_password;
+        user.password_hash = (user as any).hashed_password;
+      }
       delete user.hashed_password;
 
       return {
         success: true,
         user,
-        session,
+        // return the full session object (includes camelCase aliases)
+        session: session,
         profile,
       };
 
@@ -252,7 +291,7 @@ export class ExistingUserAuthService {
   static async validateSession(sessionId: string): Promise<ServiceResult> {
     try {
       const result = await sql`
-        SELECT 
+        SELECT
           s.id as session_id,
           s.expires_at,
           u.id, u.email, u.first_name, u.last_name, u.role, u.is_active
@@ -334,7 +373,7 @@ export class ExistingUserProfileService {
   static async getUserProfile(userId: string): Promise<ServiceResult> {
     try {
       const result = await sql`
-        SELECT 
+        SELECT
           u.id, u.email, u.first_name, u.last_name, u.role, u.avatar_url,
           p.bio, p.phone, p.preferences
         FROM users u
@@ -388,8 +427,8 @@ export class ExistingUserProfileService {
       // Update user table if needed
       if (updateData.firstName || updateData.lastName || updateData.avatarUrl) {
         await sql`
-          UPDATE users 
-          SET 
+          UPDATE users
+          SET
             first_name = COALESCE(${updateData.firstName}, first_name),
             last_name = COALESCE(${updateData.lastName}, last_name),
             avatar_url = COALESCE(${updateData.avatarUrl}, avatar_url),
@@ -436,7 +475,7 @@ export class ExistingUserProfileService {
   static async deleteUser(userId: string): Promise<ServiceResult> {
     try {
       const result = await sql`
-        UPDATE users 
+        UPDATE users
         SET is_active = false, updated_at = NOW()
         WHERE id = ${userId}
       `;

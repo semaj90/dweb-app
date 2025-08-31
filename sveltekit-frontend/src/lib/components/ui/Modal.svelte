@@ -64,8 +64,8 @@
   <div
     bind:this={modalElement}
     class="modal-backdrop"
-    on:click={handleOutsideClick}
-    onkeydown={(e) => { if (e.key === 'Escape') handleClose(); }}
+    click={handleOutsideClick}
+    keydown={(e) => { if (e.key === 'Escape') handleClose(); }}
     role="presentation"
     aria-hidden="true"
     transition:fade={{ duration: 200 }}
@@ -83,7 +83,7 @@
           <button
             type="button"
             class="modal-close"
-            on:click={handleClose}
+            click={handleClose}
             aria-label="Close"
           >
             <svg

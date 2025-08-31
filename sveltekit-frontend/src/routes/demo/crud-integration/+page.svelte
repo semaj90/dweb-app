@@ -341,7 +341,7 @@
             Active Cases ({cases.length})
           </h2>
           <button 
-            onclick={loadCases}
+            click={loadCases}
             disabled={isLoading}
             class="px-3 py-1 bg-slate-100 text-slate-700 rounded-md hover:bg-slate-200 disabled:opacity-50"
           >
@@ -380,14 +380,14 @@
                   </div>
                   <div class="flex gap-2 ml-4">
                     <button 
-                      onclick={() => loadCaseDetails(case.id)}
+                      click={() => loadCaseDetails(case.id)}
                       class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs hover:bg-blue-200"
                     >
                       👁️ View
                     </button>
                     <select 
                       value={case.status}
-                      onchange={(e) => updateCaseStatus(case.id, (e.target as HTMLSelectElement).value)}
+                      change={(e) => updateCaseStatus(case.id, (e.target as HTMLSelectElement).value)}
                       class="text-xs border border-slate-300 rounded px-1 py-1"
                     >
                       <option value="open">Open</option>

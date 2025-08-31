@@ -113,14 +113,14 @@
       <div class="flex items-center space-x-3">
         <button
           class="yorha-btn yorha-btn-primary"
-          on:click={handleNewCase}
+          click={handleNewCase}
         >
           <Plus class="w-4 h-4 mr-2" />
           NEW CASE
         </button>
         <button
           class="yorha-btn yorha-btn-secondary"
-          on:click={handleGlobalSearch}
+          click={handleGlobalSearch}
         >
           <Search class="w-4 h-4 mr-2" />
           GLOBAL SEARCH
@@ -245,7 +245,7 @@
               <h2 class="yorha-card-title">ACTIVE CASES</h2>
               <button
                 class="yorha-btn yorha-btn-ghost text-sm"
-                on:click={handleViewAll}
+                click={handleViewAll}
               >
                 VIEW ALL
                 <ChevronRight class="w-4 h-4 ml-1" />

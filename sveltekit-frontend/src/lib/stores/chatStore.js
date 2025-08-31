@@ -1,24 +1,17 @@
-import { useActor } from "@xstate/svelte";
-// Orphaned content: import {
+// Minimal chatStore stub to keep build working while full implementation is fixed.
+// Exports a simple actor-like API surface used elsewhere in the app.
 
-import { serviceStatus } from "$lib/services/connectivity.js";
-import { createActor, , // Chat settings that can be adjusted through UI, const settings = {,   model: "gemma3-legal",,   temperature: 0.3,,   maxTokens: 500, } from
+import { writable } from 'svelte/store';
 
-// Create the actor instance (one per application)
-const chatActor = createActor(chatMachine, {
-  input: {
-    settings,
-    actorInput: { ping: "pong" }, // Reserved for future use
-  },
-});
+const chatActor = {
+  start: () => {},
+  send: (msg) => { console.debug('chatActor.send', msg); },
+};
 
-// Start the actor
 chatActor.start();
 
-// Global store references
-export const useChatActor = () => useActor(chatActor);
+export const useChatActor = () => ({ subscribe: (fn) => writable(null).subscribe(fn), send: chatActor.send });
 
-// Exposed actions
 export const chatActions = {
   /**
    * Send a message to the AI
@@ -26,23 +19,19 @@ export const chatActions = {
    */
   sendMessage: (message) => {
     if (!message?.trim()) return;
-    chatActor.send({ type: "SUBMIT", message });
+    chatActor.send({ type: 'SUBMIT', message });
   },
 
   /**
    * Reset the chat history
    */
-  resetChat: () => {
-    chatActor.send({ type: "RESET" });
-  },
+  resetChat: () => chatActor.send({ type: 'RESET' }),
 
   /**
    * Change chat settings
    * @param {object} newSettings - New settings object
    */
-  updateSettings: (newSettings) => {
-    chatActor.send({ type: "UPDATE_SETTINGS", settings: newSettings });
-  },
+  updateSettings: (settings) => chatActor.send({ type: 'UPDATE_SETTINGS', settings }),
 };
 
 // TODO: Add authentication integration

@@ -1,9 +1,10 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Enhanced AI Chat API Endpoint
  * Integrates AI input synthesis, LegalBERT middleware, RAG pipeline, and streaming responses
  */
 
-import type { RequestHandler } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
 
 // Enhanced request interface

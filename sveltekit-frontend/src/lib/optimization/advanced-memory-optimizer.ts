@@ -876,7 +876,7 @@ export class AdvancedMemoryOptimizer {
   /**
    * Parallel document processing using SIMD parser and worker threads
    */
-  async processDocumentsBatch(documents: string[]): Promise<unknown[]> {
+  async processDocumentsBatch(documents: string[]): Promise<any[]> {
     console.log(
       `📄 Processing ${documents.length} documents with worker threads and SIMD`
     );
@@ -884,7 +884,7 @@ export class AdvancedMemoryOptimizer {
     if (documents.length === 0) return [];
 
     const batchSize = Math.ceil(documents.length / this.maxWorkers);
-    const promises: Promise<unknown[]>[] = [];
+    const promises: Promise<any[]>[] = [];
 
     // Split documents into chunks for parallel processing
     for (
@@ -917,7 +917,7 @@ export class AdvancedMemoryOptimizer {
   private async processDocumentChunk(
     documents: string[],
     chunkIndex: number
-  ): Promise<unknown[]> {
+  ): Promise<any[]> {
     const workerId = `document-processor-${chunkIndex}`;
 
     try {

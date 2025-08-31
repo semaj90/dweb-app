@@ -140,7 +140,7 @@
               {#each filteredHistory as conversation (conversation.id)}
                 <button
                   class="space-y-4"
-                  on:click={() => loadConversation(conversation.id)}
+                  click={() => loadConversation(conversation.id)}
                 >
                   <h3 class="space-y-4">
                     {conversation.title}

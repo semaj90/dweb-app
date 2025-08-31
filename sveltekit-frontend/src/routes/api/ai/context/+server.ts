@@ -1,6 +1,8 @@
 import { URL } from "url";
 
 import { ContextService } from "$lib/services/context-service";
+import type { RequestHandler } from './$types';
+
 
 // Environment variables fallback
 const env = process.env || {};

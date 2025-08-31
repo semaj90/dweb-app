@@ -1,18 +1,25 @@
 
-import { type RequestHandler,  json } from '@sveltejs/kit';
+import { json } from '@sveltejs/kit';
 import { qdrantService } from "$lib/server/services/qdrant-service";
+import type { RequestHandler } from './$types';
+
 
 export const POST: RequestHandler = async ({ request }) => {
   try {
-    const { content, evidenceType, caseId, evidenceId, metadata = {} } = await request.json();
-    
-    const score = await qdrantService.calculateAISummaryScore(content, evidenceType, metadata);
-    
+    const { content, evidenceType = 'evidence', metadata = {} } = await request.json();
+
+    const rawScore = await qdrantService.calculateAISummaryScore(content, evidenceType, metadata);
+    const score = Number(rawScore);
+
+    if (Number.isNaN(score)) {
+      throw new Error('Invalid score returned from qdrantService');
+    }
+
     return json({
       score,
       breakdown: {
         admissibility: Math.round(score * 0.25),
-        relevance: Math.round(score * 0.25), 
+        relevance: Math.round(score * 0.25),
         quality: Math.round(score * 0.25),
         strategic: Math.round(score * 0.25)
       },
@@ -21,7 +28,7 @@ export const POST: RequestHandler = async ({ request }) => {
       lastUpdated: new Date().toISOString()
     });
   } catch (error: any) {
-    return json({ error: 'Scoring failed', details: error.message }, { status: 500 });
+    return json({ error: 'Scoring failed', details: error?.message ?? String(error) }, { status: 500 });
   }
 };
 

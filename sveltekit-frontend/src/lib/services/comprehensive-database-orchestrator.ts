@@ -570,7 +570,7 @@ export async function rerankSearchResults(
   query: string,
   results: any[],
   config?: unknown
-): Promise<unknown[]> {
+): Promise<any[]> {
   try {
     const { CrossEncoderReranker } = await import('./cross-encoder-reranker');
     const reranker = new CrossEncoderReranker();

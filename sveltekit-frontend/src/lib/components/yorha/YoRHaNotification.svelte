@@ -106,8 +106,8 @@
     bind:this={notificationElement}
   class="yorha-notification {type}"
   transition:fly="{{ x: position.includes('right') ? 150 : -150, duration: 250 }}"
-  onmouseenter={pauseAutoClose}
-  onmouseleave={resumeAutoClose}
+  on:mouseenter={pauseAutoClose}
+  on:mouseleave={resumeAutoClose}
     role="alert"
     aria-live="polite"
   >
@@ -141,7 +141,7 @@
       {#if closable}
         <button
           class="notification-close"
-          on:click={closeNotification}
+          click={closeNotification}
           aria-label="Close notification"
         >
           ✕

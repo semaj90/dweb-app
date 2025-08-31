@@ -1,9 +1,10 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Deep Legal Analysis API Endpoint
  * Provides comprehensive legal text analysis using LegalBERT and enhanced processing
  */
 
-import { type RequestHandler,  json } from '@sveltejs/kit';
 import { analyzeLegalText } from "$lib/services/comprehensive-database-orchestrator";
 
 export interface DeepAnalysisRequest {

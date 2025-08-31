@@ -290,7 +290,7 @@
         <Textarea
           bind:this={messageInput}
           bind:value={currentMessage}
-          onkeydown={handleKeydown}
+          on:keydown={handleKeydown}
           placeholder="Ask about legal documents, cases, or research..."
           disabled={isProcessing()}
           class="flex-1 min-h-[40px] max-h-[120px] resize-none"
@@ -338,7 +338,7 @@
 </Card>
 
 <!-- Settings Dialog -->
-<Dialog.Root open={showSettingsDialog} onopenchange={(open) => showSettingsDialog = open}>
+<Dialog.Root open={showSettingsDialog} on:openchange={(open) => showSettingsDialog = open}>
   <Dialog.Portal>
     <Dialog.Overlay class="fixed inset-0 z-50 bg-black/80" />
     <Dialog.Content class="fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 sm:rounded-lg">
@@ -370,7 +370,7 @@
             min={0}
             max={2}
             step={0.1}
-            onvaluechange={(values) => aiAssistantManager.setTemperature(values[0])}
+            on:valuechange={(values) => aiAssistantManager.setTemperature(values[0])}
           />
           <p class="text-xs text-gray-500">
             Lower values make responses more focused, higher values more creative
@@ -421,7 +421,7 @@
 </Dialog.Root>
 
 <!-- Export Dialog -->
-<Dialog.Root open={showExportDialog} onopenchange={(open) => showExportDialog = open}>
+<Dialog.Root open={showExportDialog} on:openchange={(open) => showExportDialog = open}>
   <Dialog.Portal>
     <Dialog.Overlay class="fixed inset-0 z-50 bg-black/80" />
     <Dialog.Content class="fixed left-[50%] top-[50%] z-50 grid w-full max-w-md translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 sm:rounded-lg">

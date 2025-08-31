@@ -1,6 +1,6 @@
-import type { RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+
 // src/routes/api/evidence/stream/[sessionId]/+server.ts
-import type { RequestHandler } from "@sveltejs/kit";
 import { registerWsConnection, getMissedMessages } from "drizzle-orm";
 import WebSocket from "ws";
 

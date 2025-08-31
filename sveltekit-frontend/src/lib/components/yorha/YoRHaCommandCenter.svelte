@@ -309,7 +309,7 @@
       {#each quickActions as action}
         <button
           class="action-card border rounded-lg p-4 text-center transition-all duration-300 hover:scale-105 hover:shadow-lg {getActionColor(action.color)} {selectedCard === action.id ? 'scale-95' : ''}"
-          onclick={() => handleQuickAction(action)}
+          click={() => handleQuickAction(action)}
         >
           <div class="text-3xl mb-2">{action.icon}</div>
           <div class="text-sm font-medium">{action.label}</div>
@@ -336,7 +336,7 @@
         categories={['cases', 'evidence', 'precedents', 'statutes', 'criminals']}
         enableVectorSearch={true}
         aiSuggestions={true}
-        onselect={(result) => {
+        on:select={(result) => {
           // Handle search result selection
           recentActivity = [{
             id: Date.now(),
@@ -383,12 +383,12 @@
 <!-- YoRHa Case Creation Modal -->
 {#if showCaseModal}
   <div class="modal-backdrop fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" 
-       onclick={handleModalBackdropClick}>
-    <div class="modal-content max-w-4xl w-full" onclick={(e) => e.stopPropagation()}>
+       click={handleModalBackdropClick}>
+    <div class="modal-content max-w-4xl w-full" click={(e) => e.stopPropagation()}>
       <YoRHaCaseForm 
-        onsuccess={handleCaseCreationSuccess}
-        onerror={handleCaseCreationError}
-        onclose={() => showCaseModal = false}
+        on:success={handleCaseCreationSuccess}
+        on:error={handleCaseCreationError}
+        on:close={() => showCaseModal = false}
       />
     </div>
   </div>

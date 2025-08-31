@@ -1,5 +1,6 @@
-import { json, type RequestHandler } from '@sveltejs/kit';
 import { FlashAttention2RTX3060Service } from '$lib/services/flashattention2-rtx3060.js';
+import type { RequestHandler } from './$types';
+
 
 // Initialize FlashAttention2 service with RTX 3060 Ti configuration
 const flashAttentionService = new FlashAttention2RTX3060Service({

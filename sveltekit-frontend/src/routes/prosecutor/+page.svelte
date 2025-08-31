@@ -282,7 +282,7 @@ Features: Case management, evidence upload, AI chat, vector search
         <EvidenceUploadComponent 
           caseId={selectedCaseId}
           enableWebGPU={webGPUEnabled}
-          onuploadcomplete={handleEvidenceUploaded}
+          on:uploadcomplete={handleEvidenceUploaded}
         />
 
         <!-- Recent Evidence -->

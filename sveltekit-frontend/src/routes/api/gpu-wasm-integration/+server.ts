@@ -1,10 +1,11 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Unified GPU/WASM Integration API Endpoint
  * Provides centralized access to GPU services and WASM bridge
  * Integrates FlashAttention2, LLVM-WASM bridge, and GPU error processor
  */
 
-import { type RequestHandler, json } from '@sveltejs/kit';
 import { gpuServiceIntegration, GPUServiceUtils, type GPUProcessingTask, type GPUServiceStatus } from '$lib/services/gpu-service-integration';
 import { llvmWasmBridge, initializeLLVMIntegration, type LLVMWASMBridge } from '$lib/wasm/llvm-wasm-bridge';
 import { flashAttention2Service, gpuErrorProcessor, type GPUErrorContext } from '$lib/services/flashattention2-rtx3060';

@@ -1,10 +1,11 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Upload Completion Webhook - MinIO → Ingestion Pipeline Trigger
  * Triggers document processing workflow after successful upload
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 import { redis } from '$lib/server/cache/redis-service';
 import { minioService } from '$lib/server/storage/minio-service';
 import { db } from '$lib/server/db/client';

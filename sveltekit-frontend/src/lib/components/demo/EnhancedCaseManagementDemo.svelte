@@ -168,7 +168,7 @@
     <Card>
       <CardHeader class="flex flex-row items-center justify-between">
         <CardTitle>Database Health</CardTitle>
-        <Button variant="outline" size="sm" onclick={refreshHealth}>
+        <Button variant="outline" size="sm" on:click={refreshHealth}>
           Refresh
         </Button>
       </CardHeader>
@@ -198,7 +198,7 @@
     <Card>
       <CardHeader class="flex flex-row items-center justify-between">
         <CardTitle>Cache Metrics</CardTitle>
-        <Button variant="outline" size="sm" onclick={refreshMetrics}>
+        <Button variant="outline" size="sm" on:click={refreshMetrics}>
           Refresh
         </Button>
       </CardHeader>
@@ -285,7 +285,7 @@
           </div>
           
           <Button 
-            onclick={createCase}
+            on:click={createCase}
             disabled={isLoading || !newCaseData.title || !newCaseData.description}
             class="w-full"
           >
@@ -309,12 +309,12 @@
               bind:value={searchQuery}
               placeholder="Search with ML-powered cognition..."
               class="w-full p-2 border rounded-md"
-              onkeydown={(e) => e.key === 'Enter' && searchCases()}
+              keydown={(e) => e.key === 'Enter' && searchCases()}
             />
           </div>
           
           <Button 
-            onclick={searchCases}
+            on:click={searchCases}
             disabled={isLoading || !searchQuery.trim()}
             class="w-full"
           >
@@ -353,7 +353,7 @@
         <div class="flex flex-wrap gap-2">
           <Button 
             variant="outline" 
-            onclick={() => loadCase('demo-case-001')}
+            on:click={() => loadCase('demo-case-001')}
             disabled={isLoading}
           >
             Load Case (Standard)
@@ -361,7 +361,7 @@
           
           <Button 
             variant="outline" 
-            onclick={() => loadCase('demo-case-002', true)}
+            on:click={() => loadCase('demo-case-002', true)}
             disabled={isLoading}
           >
             Load Case (With Prediction)
@@ -369,7 +369,7 @@
           
           <Button 
             variant="outline" 
-            onclick={() => loadCase('demo-case-003')}
+            on:click={() => loadCase('demo-case-003')}
             disabled={isLoading}
           >
             Load Case (Cache Priority)

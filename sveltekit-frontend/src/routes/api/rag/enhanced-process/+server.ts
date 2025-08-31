@@ -1,4 +1,5 @@
-import { type RequestHandler,  json, error } from '@sveltejs/kit';
+
+import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request }) => {
   try {
@@ -129,7 +130,7 @@ async function performSemanticAnalysis(content: any): Promise<any> {
   return analysis;
 }
 
-async function generateRAGRecommendations(content: any, analysis: any): Promise<unknown[]> {
+async function generateRAGRecommendations(content: any, analysis: any): Promise<any[]> {
   const recommendations = [];
   
   // Generate recommendations based on document content and semantic analysis

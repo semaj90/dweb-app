@@ -71,7 +71,7 @@ describe('SSR Context Integrity', () => {
       route: { id: '/' },
       setHeaders: vi.fn(),
       depends: vi.fn()
-    } as unknown as RequestEvent;
+    } as any as RequestEvent;
   });
 
   afterEach(() => {

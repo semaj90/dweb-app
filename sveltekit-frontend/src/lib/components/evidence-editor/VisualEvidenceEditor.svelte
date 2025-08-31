@@ -54,8 +54,8 @@
         bind:this={canvasComponent}
         {caseId}
         {readOnly}
-        onnodeselect={handleNodeSelect}
-        onnodesave={handleNodeSave}
+        on:nodeselect={handleNodeSelect}
+        on:nodesave={handleNodeSave}
       />
     </div>
     
@@ -64,7 +64,7 @@
       <InspectorPanel 
         selectedNode={currentSelectedNode}
         {readOnly}
-        onsave={handleNodeSave}
+        on:save={handleNodeSave}
       />
     </div>
     
@@ -72,7 +72,7 @@
     <div class="space-y-4">
       <AIAssistantPanel 
         selectedNode={currentSelectedNode}
-        ontagsupdate={(e) => {
+        on:tagsupdate={(e) => {
           if (currentSelectedNode) {
             currentSelectedNode.aiTags = e.detail;
             selectedNode.update(n => ({ ...n, aiTags: e.detail }));

@@ -1,9 +1,10 @@
 
 import { users } from "$lib/server/db/schema-postgres";
-import type { RequestHandler } from "@sveltejs/kit";
 import { json } from "@sveltejs/kit";
 import { and, desc, eq, like, or, sql } from "drizzle-orm";
 import { db } from "$lib/server/db/index";
+import type { RequestHandler } from './$types';
+
 
 export const GET: RequestHandler = async ({ locals, url }) => {
   try {

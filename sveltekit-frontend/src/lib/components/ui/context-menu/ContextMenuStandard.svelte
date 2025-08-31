@@ -43,7 +43,7 @@
           <ContextMenu.CheckboxItem 
             value={item.value} 
             disabled={item.disabled}
-            onselect={item.onSelect}
+            on:select={item.onSelect}
           >
             {#snippet children({ checked })}
               {#if checked}✓{/if}
@@ -54,7 +54,7 @@
           <ContextMenu.RadioItem 
             value={item.value} 
             disabled={item.disabled}
-            onselect={item.onSelect}
+            on:select={item.onSelect}
           >
             {#snippet children({ checked })}
               {#if checked}●{/if}
@@ -70,7 +70,7 @@
                   <ContextMenu.Item 
                     textValue={subItem.label}
                     disabled={subItem.disabled}
-                    onselect={subItem.onSelect}
+                    on:select={subItem.onSelect}
                   >
                     {subItem.label}
                   </ContextMenu.Item>
@@ -82,7 +82,7 @@
           <ContextMenu.Item 
             textValue={item.label}
             disabled={item.disabled}
-            onselect={item.onSelect}
+            on:select={item.onSelect}
           >
             {item.label}
           </ContextMenu.Item>

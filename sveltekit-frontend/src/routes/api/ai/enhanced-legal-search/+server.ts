@@ -1,7 +1,8 @@
+import type { RequestHandler } from './$types';
+
 // Enhanced Legal AI Search API with LangChain.js, Nomic Embed, and Vector Search
 // Provides advanced semantic search with multiple strategies and intelligent ranking
 
-import { type RequestHandler,  json } from '@sveltejs/kit';
 import { enhancedLegalSearch, type LegalSearchResult } from '../../../../lib/server/ai/enhanced-legal-search';
 import { URL } from "url";
 

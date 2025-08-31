@@ -3,20 +3,19 @@ import { building } from "$app/environment";
 import * as schema from "$lib/server/db/schema-postgres";
 import { Pool } from "pg";
 import dotenv from "dotenv";
-import {
-  drizzle, type NodePgDatabase
-} from "drizzle-orm/node-postgres";
-import { migrate } from "drizzle-orm/node-postgres/migrator";
+import { drizzle } from "drizzle-orm/postgres-js";
+import { migrate } from "drizzle-orm/postgres-js/migrator";
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { initializeQdrantCollection } from "$lib/qdrant/collection-seeder";
 
 // Load environment-specific variables
 const envFile = `.env.${process.env.NODE_ENV || "development"}`;
 dotenv.config({ path: envFile });
 
-let _db: NodePgDatabase<typeof schema> | null = null;
+let _db: PostgresJsDatabase<typeof schema> | null = null;
 let _pool: Pool | null = null;
 
-function initializeDatabase(): NodePgDatabase<typeof schema> | null {
+function initializeDatabase(): PostgresJsDatabase<typeof schema> | null {
   // Skip database initialization during SvelteKit build
   if (building) {
     console.log("Skipping database initialization during build");
@@ -57,7 +56,7 @@ function initializeDatabase(): NodePgDatabase<typeof schema> | null {
   return _db;
 }
 // Main database connection
-export const db: NodePgDatabase<typeof schema> = new Proxy({} as any, {
+export const db: PostgresJsDatabase<typeof schema> = new Proxy({} as any, {
   get(target, prop, receiver) {
     const database = initializeDatabase();
     if (!database) {

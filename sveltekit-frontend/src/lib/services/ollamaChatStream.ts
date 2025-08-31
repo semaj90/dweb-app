@@ -149,7 +149,7 @@ export class OllamaChatStreamService {
   private async performVectorSearch(
     query: string,
     threshold: number = 0.7,
-  ): Promise<unknown[]> {
+  ): Promise<any[]> {
     try {
       // Generate embedding for the query (simplified - you'd use actual embedding service)
       const queryEmbedding = await this.generateEmbedding(query);

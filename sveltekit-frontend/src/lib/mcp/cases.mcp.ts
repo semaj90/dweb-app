@@ -5,7 +5,7 @@
 
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-import { eq, desc, and, like, sql } from "drizzle-orm";
+import { sql, eq, and, like, desc } from '$lib/server/db/index';
 import * as schema from "../db/schema";
 import { redis } from "../server/cache/redis-service";
 import { minioService } from "../server/storage/minio-service";

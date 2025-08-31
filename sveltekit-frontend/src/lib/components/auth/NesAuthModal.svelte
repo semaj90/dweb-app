@@ -83,7 +83,7 @@
   bind:this={modalElement}
   class="nes-dialog"
   id="nes-auth-modal"
-  onkeydown={handleKeydown}
+  keydown={handleKeydown}
   aria-labelledby="auth-modal-title"
   aria-modal="true"
 >
@@ -95,7 +95,7 @@
     <div class="auth-tabs" role="tablist">
       <button 
         class="tab-btn {activeForm === 'signin' ? 'is-active' : ''}" 
-        onclick={() => switchForm('signin')}
+        click={() => switchForm('signin')}
         disabled={isLoading}
         role="tab"
         aria-selected={activeForm === 'signin'}
@@ -106,7 +106,7 @@
       </button>
       <button 
         class="tab-btn {activeForm === 'signup' ? 'is-active' : ''}" 
-        onclick={() => switchForm('signup')}
+        click={() => switchForm('signup')}
         disabled={isLoading}
         role="tab"
         aria-selected={activeForm === 'signup'}
@@ -204,7 +204,7 @@
             <button 
               type="button"
               class="nes-btn is-warning"
-              onclick={fillDemoCredentials}
+              click={fillDemoCredentials}
               disabled={isLoading}
               style="width: 100%;"
             >
@@ -216,7 +216,7 @@
             <button 
               type="button"
               class="nes-btn"
-              onclick={closeModal}
+              click={closeModal}
               disabled={isLoading}
             >
               Cancel
@@ -342,7 +342,7 @@
             <button 
               type="button"
               class="nes-btn is-warning"
-              onclick={fillDemoSignupCredentials}
+              click={fillDemoSignupCredentials}
               disabled={isLoading}
               style="width: 100%;"
             >
@@ -354,7 +354,7 @@
             <button 
               type="button"
               class="nes-btn"
-              onclick={closeModal}
+              click={closeModal}
               disabled={isLoading}
             >
               Cancel

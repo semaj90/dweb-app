@@ -457,7 +457,7 @@ https://svelte.dev/e/js_parse_error -->
 
           <div class="flex flex-wrap gap-3">
             <Button
-              onclick={runGGUFInference}
+              on:click={runGGUFInference}
               disabled={isProcessing || !$modelStatus.loaded}
               class="bg-blue-600 hover:bg-blue-700 text-white"
             >
@@ -465,7 +465,7 @@ https://svelte.dev/e/js_parse_error -->
             </Button>
 
             <Button
-              onclick={runWebGPUProcessing}
+              on:click={runWebGPUProcessing}
               disabled={isProcessing || !webgpuStatus.available}
               class="bg-green-600 hover:bg-green-700 text-white"
             >
@@ -473,7 +473,7 @@ https://svelte.dev/e/js_parse_error -->
             </Button>
 
             <Button
-              onclick={runNodeJSOrchestration}
+              on:click={runNodeJSOrchestration}
               disabled={isProcessing}
               class="bg-purple-600 hover:bg-purple-700 text-white"
             >
@@ -483,7 +483,7 @@ https://svelte.dev/e/js_parse_error -->
 
           <div class="mt-4 flex gap-2">
             <Button
-              onclick={clearResults}
+              on:click={clearResults}
               variant="outline"
               class="border-slate-600 text-slate-300 hover:bg-slate-700"
             >
@@ -491,7 +491,7 @@ https://svelte.dev/e/js_parse_error -->
             </Button>
 
             <Button
-              onclick={exportResults}
+              on:click={exportResults}
               variant="outline"
               class="border-slate-600 text-slate-300 hover:bg-slate-700"
             >

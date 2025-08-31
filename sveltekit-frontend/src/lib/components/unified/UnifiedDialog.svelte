@@ -319,7 +319,7 @@
     size === 'xl' ? 'max-w-4xl' :
     size === 'fullscreen' ? 'max-w-full h-full' : '',
     
-    className
+    class
   ].filter(Boolean).join(' ');
 
   let contentClasses = $derived([);

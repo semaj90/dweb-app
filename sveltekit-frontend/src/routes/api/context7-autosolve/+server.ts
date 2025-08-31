@@ -1,11 +1,11 @@
-import type { RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+
 /**
  * Enhanced Context7 Autosolve Integration API
  * Features: Chat recommendations, reinforcement learning, WebAssembly acceleration
  * Integrates: Multi-layer cache, Go binaries, CUDA processing, Neo4j knowledge graph
  */
 
-import { json, type RequestHandler } from "@sveltejs/kit";
 import { legalAIIntegration } from '../../../lib/services/quic-legal-ai-integration';
 import { vectorProxy } from '../../../lib/services/grpc-quic-vector-proxy';
 import { chatEngine } from '../../../lib/services/user-chat-recommendation-engine';

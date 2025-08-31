@@ -150,7 +150,7 @@
   ];
 </script>
 
-<svelte:window onkeydown={handleKeydown} />
+<svelte:window keydown={handleKeydown} />
 
 <div 
   class="professional-editor {isFullscreen ? 'fullscreen' : ''} {isFocusMode ? 'focus-mode' : ''}"
@@ -173,7 +173,7 @@
     <div class="header-actions">
       <button 
         class="action-btn yorha-btn yorha-btn-secondary"
-        on:click={() => showShortcuts = !showShortcuts}
+        click={() => showShortcuts = !showShortcuts}
         title="Keyboard shortcuts (Ctrl+/)"
       >
         <Keyboard class="h-4 w-4" />
@@ -181,7 +181,7 @@
       
       <button 
         class="action-btn yorha-btn yorha-btn-secondary"
-        on:click={toggleFocusMode}
+        click={toggleFocusMode}
         title="Focus mode (F10)"
       >
         {#if isFocusMode}
@@ -193,7 +193,7 @@
       
       <button 
         class="action-btn yorha-btn yorha-btn-secondary"
-        on:click={toggleFullscreen}
+        click={toggleFullscreen}
         title="Fullscreen (F11)"
       >
         {#if isFullscreen}
@@ -205,7 +205,7 @@
       
       <button 
         class="action-btn yorha-btn yorha-btn-primary"
-        on:click={saveDocument}
+        click={saveDocument}
         title="Save document (Ctrl+S)"
       >
         <Save class="h-4 w-4" />
@@ -219,7 +219,7 @@
     <div class="format-group">
       <button 
         class="format-btn yorha-btn yorha-btn-secondary"
-        on:click={() => formatText('bold')}
+        click={() => formatText('bold')}
         title="Bold (Ctrl+B)"
       >
         <strong>B</strong>
@@ -227,7 +227,7 @@
       
       <button 
         class="format-btn yorha-btn yorha-btn-secondary"
-        on:click={() => formatText('italic')}
+        click={() => formatText('italic')}
         title="Italic (Ctrl+I)"
       >
         <em>I</em>
@@ -235,7 +235,7 @@
       
       <button 
         class="format-btn yorha-btn yorha-btn-secondary"
-        on:click={() => formatText('underline')}
+        click={() => formatText('underline')}
         title="Underline"
       >
         <u>U</u>
@@ -245,7 +245,7 @@
     <div class="format-group">
       <button 
         class="format-btn yorha-btn yorha-btn-secondary"
-        on:click={() => formatText('justifyLeft')}
+        click={() => formatText('justifyLeft')}
         title="Align left"
       >
         ⟸
@@ -253,7 +253,7 @@
       
       <button 
         class="format-btn yorha-btn yorha-btn-secondary"
-        on:click={() => formatText('justifyCenter')}
+        click={() => formatText('justifyCenter')}
         title="Center"
       >
         ▤
@@ -261,7 +261,7 @@
       
       <button 
         class="format-btn yorha-btn yorha-btn-secondary"
-        on:click={() => formatText('justifyRight')}
+        click={() => formatText('justifyRight')}
         title="Align right"
       >
         ⟹
@@ -271,7 +271,7 @@
     <div class="format-group">
       <button 
         class="format-btn yorha-btn yorha-btn-secondary"
-        on:click={() => formatText('insertUnorderedList')}
+        click={() => formatText('insertUnorderedList')}
         title="Bullet list"
       >
         ⋯
@@ -279,7 +279,7 @@
       
       <button 
         class="format-btn yorha-btn yorha-btn-secondary"
-        on:click={() => formatText('insertOrderedList')}
+        click={() => formatText('insertOrderedList')}
         title="Numbered list"
       >
         ①
@@ -293,7 +293,7 @@
       bind:this={editorElement}
       class="editor-content"
       contenteditable="true"
-      oninput={updateStatistics}
+      input={updateStatistics}
       bind:innerHTML={content}
       placeholder="Start writing your document..."
     ></div>
@@ -325,8 +325,8 @@
 
 <!-- Keyboard Shortcuts Modal -->
 {#if showShortcuts}
-  <div class="shortcuts-overlay" on:click={() => showShortcuts = false}>
-    <div class="shortcuts-modal yorha-card" on:click={(e) => e.stopPropagation()}>
+  <div class="shortcuts-overlay" click={() => showShortcuts = false}>
+    <div class="shortcuts-modal yorha-card" click={(e) => e.stopPropagation()}>
       <h3 class="shortcuts-title gradient-text-primary">
         Keyboard Shortcuts
       </h3>
@@ -342,7 +342,7 @@
       
       <button 
         class="close-shortcuts yorha-btn yorha-btn-primary"
-        on:click={() => showShortcuts = false}
+        click={() => showShortcuts = false}
       >
         Close
       </button>

@@ -553,5 +553,3 @@ export class EnhancedLegalSearchService {
 // Export singleton instance
 export const enhancedLegalSearch = new EnhancedLegalSearchService();
 
-// Export types for use in other modules
-export type { LegalSearchResult, LegalSearchConfig };

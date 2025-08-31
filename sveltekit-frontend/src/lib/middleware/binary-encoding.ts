@@ -293,7 +293,7 @@ export class AdvancedBinaryEncodingService {
   /**
    * Streaming encoder for large datasets
    */
-  async *encodeStream(data: AsyncIterable<unknown>, config: BinaryStreamConfig): AsyncGenerator<{
+  async *encodeStream(data: AsyncIterable<any>, config: BinaryStreamConfig): AsyncGenerator<{
     chunk: ArrayBuffer | string;
     format: EncodingFormat;
     chunkIndex: number;

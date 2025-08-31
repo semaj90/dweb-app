@@ -422,7 +422,7 @@
           </button>
 
           <button
-            on:click={() => manualSaveDocument()}
+            click={() => manualSaveDocument()}
             class="container mx-auto px-4"
             disabled={readonly || loadingDocument || isSaving}
           >
@@ -504,7 +504,7 @@
                     <p class="container mx-auto px-4">{documentLoadError}</p>
                     <button
                       class="container mx-auto px-4"
-                      on:click={() => loadDocument()}
+                      click={() => loadDocument()}
                     >
                       Try Again
                     </button>
@@ -555,7 +555,7 @@
 
               <button
                 class="container mx-auto px-4"
-                on:click={() =>
+                click={() =>
                   insertCitation({
                     id: Math.random().toString(),
                     text: "Sample Citation",
@@ -675,7 +675,7 @@
               Cancel
             </button>
             <button
-              on:click={() => handleAIRequest()}
+              click={() => handleAIRequest()}
               class="container mx-auto px-4"
               disabled={!query.trim() || isProcessingAI}
             >

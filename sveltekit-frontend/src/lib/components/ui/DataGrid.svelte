@@ -120,7 +120,7 @@
   }
 </script>
 
-<div class={cn('modern-data-grid', className)}>
+<div class={cn('modern-data-grid', class)}>
   <!-- Header with search and filters -->
   {#if filterable}
     <div class="grid-toolbar">
@@ -153,7 +153,7 @@
               <input
                 type="checkbox"
                 checked={selectedRows.size === sortedData.length && sortedData.length > 0}
-                onchange={handleSelectAll}
+                on:change={handleSelectAll}
                 class="checkbox-input"
               />
             </th>
@@ -163,7 +163,7 @@
             <th class="header-cell">
               <button
                 class="header-button"
-                on:click={() => handleSort(column.key)}
+                click={() => handleSort(column.key)}
                 disabled={!sortable || !column.sortable}
               >
                 <span class="header-text">{column.title}</span>
@@ -217,14 +217,14 @@
                 'row-even': index % 2 === 0,
                 'row-clickable': selectable
               })}
-              on:click={() => handleRowSelect(row.id)}
+              click={() => handleRowSelect(row.id)}
             >
               {#if selectable && multiSelect}
                 <td class="select-cell">
                   <input
                     type="checkbox"
                     checked={selectedRows.has(row.id)}
-                    onchange={() => handleRowSelect(row.id)}
+                    change={() => handleRowSelect(row.id)}
                     class="checkbox-input"
                   />
                 </td>

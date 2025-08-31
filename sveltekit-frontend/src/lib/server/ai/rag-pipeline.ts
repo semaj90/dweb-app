@@ -1,4 +1,4 @@
-import { eq, sql as drizzleSql, and, gte, desc } from "drizzle-orm";
+import { eq, sql as drizzleSql, and, gte } from "drizzle-orm";
 // Fallback schema import - will gracefully degrade if schema not available
 let schema: any;
 try {
@@ -25,7 +25,7 @@ import { RunnableSequence, RunnablePassthrough } from "@langchain/core/runnables
 import { StringOutputParser } from '@langchain/core/output_parsers';
 import type { Document as LangChainDocument } from "@langchain/core/documents";
 const postgres = require("postgres");
-import { drizzle } from "drizzle-orm/node-postgres";
+import { drizzle } from "drizzle-orm/postgres-js";
 
 // Import schema directly (same path used across project). If it fails at runtime we degrade gracefully.
 

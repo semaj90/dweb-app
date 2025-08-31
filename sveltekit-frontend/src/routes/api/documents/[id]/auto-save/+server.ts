@@ -2,6 +2,8 @@ import type { RequestEvent } from "@sveltejs/kit";
 import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db/index";
 import { eq } from "drizzle-orm";
+import type { RequestHandler } from './$types';
+
 
 // Import with fallback for different schema files
 let legalDocuments: any;

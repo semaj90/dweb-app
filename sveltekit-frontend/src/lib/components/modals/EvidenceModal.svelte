@@ -91,7 +91,7 @@
         <Button on:click={handleEdit}>Edit</Button>
       </div>
     {:else}
-      <form class="flex flex-col gap-2" onsubmit|preventDefault={handleSave}>
+      <form class="flex flex-col gap-2" on:submit|preventDefault={handleSave}>
         <input name="jsonData.title" bind:value={title} placeholder="Title" class="input input-bordered" />
         <input name="jsonData.description" bind:value={description} placeholder="Description" class="input input-bordered" />
         <input name="jsonData.tags" bind:value={tagsString} placeholder="Tags (comma separated)" class="input input-bordered" />

@@ -1,10 +1,7 @@
 <script lang="ts">
-
 	import { onMount, tick } from 'svelte';
-  import { $props, $effect } from 'svelte';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { quintOut, elasticOut } from 'svelte/easing';
-	import { writable } from 'svelte/store';
 
 	// Types
 	interface Message {
@@ -25,39 +22,21 @@
 	}
 
 	// Props
-	let {
-		visible = $bindable(false),
-		minimized = $bindable(false),
-		draggable = true,
-		width = 400,
-		height = 600,
-		apiEndpoint = 'http://localhost:11434/api/generate',
-		fallbackEndpoint = 'http://localhost:8000/v1/chat/completions',
-		modelName = 'gemma3-legal:latest',
-		title = 'YoRHa Legal AI',
-		subtitle = 'Powered by Gemma3',
-		onclose,
-		onminimize,
-		onmaximize,
-		onmessage,
-		onsettingschange
-	}: {
-		visible?: boolean;
-		minimized?: boolean;
-		draggable?: boolean;
-		width?: number;
-		height?: number;
-		apiEndpoint?: string;
-		fallbackEndpoint?: string;
-		modelName?: string;
-		title?: string;
-		subtitle?: string;
-		onclose?: () => void;
-		onminimize?: () => void;
-		onmaximize?: () => void;
-		onmessage?: (event: { message: Message }) => void;
-		onsettingschange?: (event: { settings: ChatSettings }) => void;
-	} = $props();
+	export let visible: boolean = false;
+	export let minimized: boolean = false;
+	export let draggable: boolean = true;
+	export let width: number = 400;
+	export let height: number = 600;
+	export let apiEndpoint: string = 'http://localhost:11434/api/generate';
+	export let fallbackEndpoint: string = 'http://localhost:8000/v1/chat/completions';
+	export let modelName: string = 'gemma3-legal:latest';
+	export let title: string = 'YoRHa Legal AI';
+	export let subtitle: string = 'Powered by Gemma3';
+	export let onclose: (() => void) | undefined;
+	export let onminimize: (() => void) | undefined;
+	export let onmaximize: (() => void) | undefined;
+	export let onmessage: ((event: { message: Message }) => void) | undefined;
+	export let onsettingschange: ((event: { settings: ChatSettings }) => void) | undefined;
 
 	// State
 	let messages: Message[] = [];
@@ -75,19 +54,17 @@
 		temperature: 0.1,
 		maxTokens: 512,
 		topP: 0.9,
-		systemPrompt: 'You are a specialized Legal AI Assistant powered by Gemma 3. You excel at contract analysis, legal research, and providing professional legal guidance.'
+		systemPrompt:
+			'You are a specialized Legal AI Assistant powered by Gemma 3. You excel at contract analysis, legal research, and providing professional legal guidance.'
 	};
 
-	// Elements
-	let chatContainer: HTMLDivElement;
-	let messagesContainer: HTMLDivElement;
-	let inputElement: HTMLTextAreaElement;
-	let windowElement: HTMLDivElement;
-
+	// Elements (nullable for binds)
+	let messagesContainer: HTMLDivElement | null = null;
+	let inputElement: HTMLTextAreaElement | null = null;
+	let windowElement: HTMLDivElement | null = null;
 
 	// Initialize welcome message
 	onMount(() => {
-		// Progressive enhancement: Only run client-side features if available
 		if (typeof window !== 'undefined') {
 			addMessage('system', `Hello! I'm your YoRHa Legal AI Assistant powered by ${modelName}. I can help you with:
 
@@ -99,7 +76,6 @@
 
 How can I assist you with your legal needs today?`);
 
-			// Set initial position (bottom-right corner)
 			position = {
 				x: window.innerWidth - width - 20,
 				y: window.innerHeight - height - 20
@@ -107,19 +83,18 @@ How can I assist you with your legal needs today?`);
 		}
 	});
 
-	// Auto-scroll to bottom when new messages arrive (Svelte 5)
-	$effect(() => {
-		if (messages.length > 0) {
-			tick().then(() => {
-				if (messagesContainer) {
-					messagesContainer.scrollTop = messagesContainer.scrollHeight;
-				}
-			});
-		}
-	});
+	// Auto-scroll to bottom when new messages arrive
+	$: if (messages.length > 0) {
+		// use tick to wait for DOM update
+		tick().then(() => {
+			if (messagesContainer) {
+				messagesContainer.scrollTop = messagesContainer.scrollHeight;
+			}
+		});
+	}
 
 	// Add message to chat
-	function addMessage(role: Message['role'], content: string, options: Partial<Message> = {}) {
+	function addMessage(role: Message['role'], content: string, options: Partial<Message> = {}): Message {
 		const message: Message = {
 			id: crypto.randomUUID(),
 			role,
@@ -131,13 +106,6 @@ How can I assist you with your legal needs today?`);
 		messages = [...messages, message];
 		onmessage?.({ message });
 		return message;
-	}
-
-	// Update message content (for streaming)
-	function updateMessage(id: string, content: string) {
-		messages = messages.map(msg =>
-			msg.id === id ? { ...msg, content } : msg
-		);
 	}
 
 	// Send message to AI
@@ -165,16 +133,16 @@ How can I assist you with your legal needs today?`);
 
 			if (response) {
 				// Remove typing message and add real response
-				messages = messages.filter(msg => msg.id !== typingMessage.id);
+				messages = messages.filter((msg) => msg.id !== typingMessage.id);
 				addMessage('assistant', response);
 			} else {
 				throw new Error('No response from AI service');
 			}
-
 		} catch (error) {
 			console.error('Chat error:', error);
-			messages = messages.filter(msg => msg.id !== typingMessage.id);
-			addMessage('assistant', 'Sorry, I\'m having trouble connecting. Please try again.', { error: true });
+			messages = messages.filter((msg) => msg.id !== typingMessage.id);
+			addMessage('assistant', "Sorry, I'm having trouble connecting. Please try again.", { error: true });
+			isConnected = false;
 		} finally {
 			isTyping = false;
 		}
@@ -182,14 +150,12 @@ How can I assist you with your legal needs today?`);
 
 	// Call Gemma3 API directly
 	async function callGemma3API(message: string): Promise<string | null> {
-		// Progressive enhancement: Check if fetch is available
 		if (typeof fetch === 'undefined') {
 			console.warn('Fetch API not available');
 			return null;
 		}
 
 		try {
-			// Create AbortController for timeout (with fallback)
 			const controller = new AbortController();
 			const timeoutId = setTimeout(() => controller.abort(), 60000);
 
@@ -220,7 +186,7 @@ How can I assist you with your legal needs today?`);
 			}
 		} catch (error) {
 			console.warn('Primary API failed:', error);
-			isConnected = false; // Update connection status
+			isConnected = false;
 		}
 
 		return null;
@@ -241,7 +207,9 @@ How can I assist you with your legal needs today?`);
 					temperature: settings.temperature,
 					top_p: settings.topP
 				}),
-				signal: AbortSignal.timeout(60000)
+				// AbortSignal.timeout may not be available in all runtimes; keep for modern environments
+				// If unsupported, the fetch will simply run without timeout.
+				signal: (AbortSignal as any).timeout ? (AbortSignal as any).timeout(60000) : undefined
 			});
 
 			if (response.ok) {
@@ -258,8 +226,8 @@ How can I assist you with your legal needs today?`);
 	// Format prompt for Gemma3 template
 	function formatPromptForGemma3(message: string): string {
 		const conversation = messages
-			.filter(msg => msg.role !== 'system' && !msg.error)
-			.map(msg => {
+			.filter((msg) => msg.role !== 'system' && !msg.error)
+			.map((msg) => {
 				if (msg.role === 'user') {
 					return `<start_of_turn>user\n${msg.content}<end_of_turn>`;
 				} else {
@@ -289,7 +257,8 @@ How can I assist you with your legal needs today?`);
 
 	// Dragging functionality
 	function startDrag(event: MouseEvent) {
-		if (!draggable || event.target instanceof HTMLButtonElement) return;
+		if (!draggable || (event.target instanceof HTMLButtonElement)) return;
+		if (!windowElement) return;
 
 		isDragging = true;
 		const rect = windowElement.getBoundingClientRect();
@@ -308,7 +277,6 @@ How can I assist you with your legal needs today?`);
 		const newX = event.clientX - dragOffset.x;
 		const newY = event.clientY - dragOffset.y;
 
-		// Constrain to viewport
 		const maxX = window.innerWidth - width;
 		const maxY = window.innerHeight - height;
 
@@ -363,7 +331,6 @@ How can I assist you with your legal needs today?`);
 </script>
 
 {#if visible}
-	<!-- Chat Window -->
 	<aside
 		bind:this={windowElement}
 		role="dialog"
@@ -381,7 +348,6 @@ How can I assist you with your legal needs today?`);
 		in:scale={{ duration: 300, easing: elasticOut }}
 		out:scale={{ duration: 200 }}
 	>
-		<!-- Floating Particles Background -->
 		<div class="absolute inset-0 overflow-hidden pointer-events-none">
 			{#each Array(5) as _, i}
 				<div
@@ -395,24 +361,20 @@ How can I assist you with your legal needs today?`);
 			{/each}
 		</div>
 
-		<!-- Header -->
 		<header
 			class="flex items-center justify-between p-4 bg-gradient-to-r from-yorha-bg-tertiary to-yorha-bg-secondary border-b border-yorha-border cursor-move select-none relative"
-			onmousedown={startDrag}
+			on:mousedown={startDrag}
 			role="banner"
 		>
-			<!-- Scan line effect -->
 			<div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yorha-primary to-transparent animate-scan"></div>
 
 			<div class="flex items-center space-x-3">
-				<!-- Avatar -->
 				<div class="w-8 h-8 bg-gradient-to-br from-yorha-primary to-yorha-secondary flex items-center justify-center" role="img" aria-label="Legal AI Assistant">
 					<svg class="w-4 h-4 text-yorha-bg-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
 					</svg>
 				</div>
 
-				<!-- Title -->
 				<div>
 					<h1 id="chat-window-title" class="text-sm font-semibold text-yorha-text-primary">{title}</h1>
 					<div id="chat-window-description" class="flex items-center space-x-2">
@@ -433,14 +395,12 @@ How can I assist you with your legal needs today?`);
 				</div>
 			</div>
 
-			<!-- Controls -->
 			<nav class="flex items-center space-x-1" role="toolbar" aria-label="Chat window controls">
-				<!-- Settings -->
 				<button
 					type="button"
 					class="w-8 h-8 flex items-center justify-center border border-yorha-border text-yorha-text-secondary hover:border-yorha-primary hover:text-yorha-primary focus:border-yorha-primary focus:outline-none focus:ring-2 focus:ring-yorha-primary/50 transition-colors"
 					on:click={toggleSettings}
-					aria-label="{settingsOpen ? 'Close settings' : 'Open settings'}"
+					aria-label={settingsOpen ? 'Close settings' : 'Open settings'}
 					aria-expanded={settingsOpen}
 				>
 					<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -449,7 +409,6 @@ How can I assist you with your legal needs today?`);
 					</svg>
 				</button>
 
-				<!-- Minimize -->
 				<button
 					type="button"
 					class="w-8 h-8 flex items-center justify-center border border-yorha-border text-yorha-text-secondary hover:border-yorha-primary hover:text-yorha-primary focus:border-yorha-primary focus:outline-none focus:ring-2 focus:ring-yorha-primary/50 transition-colors"
@@ -465,7 +424,6 @@ How can I assist you with your legal needs today?`);
 					</svg>
 				</button>
 
-				<!-- Close -->
 				<button
 					type="button"
 					class="w-8 h-8 flex items-center justify-center border border-yorha-border text-yorha-text-secondary hover:border-red-500 hover:text-red-500 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-colors"
@@ -480,11 +438,9 @@ How can I assist you with your legal needs today?`);
 		</header>
 
 		{#if !minimized}
-			<!-- Settings Panel -->
 			{#if settingsOpen}
 				<div class="border-b border-yorha-border bg-yorha-bg-primary p-4" transition:fly={{ y: -50, duration: 200 }}>
 					<div class="space-y-3">
-						<!-- Model Selection -->
 						<div>
 							<label class="block text-xs text-yorha-text-secondary mb-1">Model</label>
 							<select bind:value={settings.model} class="w-full bg-yorha-bg-tertiary border border-yorha-border text-yorha-text-primary text-xs p-2 focus:border-yorha-primary">
@@ -493,19 +449,16 @@ How can I assist you with your legal needs today?`);
 							</select>
 						</div>
 
-						<!-- Temperature -->
 						<div>
 							<label class="block text-xs text-yorha-text-secondary mb-1">Temperature: {settings.temperature}</label>
 							<input type="range" min="0" max="1" step="0.1" bind:value={settings.temperature} class="w-full">
 						</div>
 
-						<!-- Max Tokens -->
 						<div>
 							<label class="block text-xs text-yorha-text-secondary mb-1">Max Tokens</label>
 							<input type="number" min="100" max="2048" bind:value={settings.maxTokens} class="w-full bg-yorha-bg-tertiary border border-yorha-border text-yorha-text-primary text-xs p-2 focus:border-yorha-primary">
 						</div>
 
-						<!-- Buttons -->
 						<div class="flex space-x-2">
 							<button type="button" on:click={updateSettings} class="flex-1 bg-yorha-primary text-yorha-bg-primary text-xs p-2 hover:bg-yorha-secondary transition-colors">
 								Apply
@@ -518,10 +471,9 @@ How can I assist you with your legal needs today?`);
 				</div>
 			{/if}
 
-			<!-- Messages Container -->
 			<main bind:this={messagesContainer} class="flex-1 overflow-y-auto p-4 bg-yorha-bg-primary space-y-4" role="log" aria-live="polite" aria-label="Chat conversation">
 				{#each messages as message (message.id)}
-					<article class:flex class:justify-end={message.role === 'user'} class:justify-start={message.role !== 'user'} in:fly={{ y: 20, duration: 300 }}>
+					<article class="flex" class:justify-end={message.role === 'user'} class:justify-start={message.role !== 'user'} in:fly={{ y: 20, duration: 300 }}>
 						<div
 							class="max-w-[85%] border border-yorha-border p-3 relative shadow-sm"
 							class:bg-yorha-bg-tertiary={message.role === 'user'}
@@ -568,14 +520,13 @@ How can I assist you with your legal needs today?`);
 				{/if}
 			</main>
 
-			<!-- Input Area -->
 			<footer class="border-t border-yorha-border bg-yorha-bg-secondary p-4">
-				<form class="flex space-x-3" onsubmit|preventDefault={sendMessage} role="search" aria-label="Send message to AI">
+				<form class="flex space-x-3" on:submit|preventDefault={sendMessage} role="search" aria-label="Send message to AI">
 					<textarea
 						bind:this={inputElement}
 						bind:value={inputValue}
-						onkeydown={handleKeyDown}
-						oninput={autoResize}
+						on:keydown={handleKeyDown}
+						on:input={autoResize}
 						placeholder="Ask me about contracts, liability, compliance, or any legal question..."
 						class="flex-1 bg-yorha-bg-tertiary border border-yorha-border text-yorha-text-primary placeholder-yorha-text-muted p-3 text-sm resize-none focus:border-yorha-primary focus:outline-none focus:ring-2 focus:ring-yorha-primary/50 transition-colors"
 						rows="1"
@@ -644,5 +595,3 @@ How can I assist you with your legal needs today?`);
 		animation: scan 3s linear infinite;
 	}
 </style>
-
-

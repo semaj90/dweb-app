@@ -1,5 +1,7 @@
 
 import { json } from "@sveltejs/kit";
+import type { RequestHandler } from './$types';
+
 db // Your Drizzle ORM client
 import { indexedFiles } from '$lib/db/schema/aiHistory'; // The new schema for indexed files
 

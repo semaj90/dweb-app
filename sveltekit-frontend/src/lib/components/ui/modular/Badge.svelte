@@ -17,7 +17,7 @@
   let {
     variant = 'default',
     size = 'default',
-    class: className,
+    class: class,
     children,
     icon,
     removable = false,
@@ -58,7 +58,7 @@
   );
 
   // Computed class names
-  let badgeClass = $derived(cn(badgeVariants({ variant, size }), className));
+  let badgeClass = $derived(cn(badgeVariants({ variant, size }), class));
 
   // Handle remove click
   function handleRemove(event: MouseEvent) {
@@ -83,7 +83,7 @@
     <button
       type="button"
       class="inline-flex items-center justify-center w-4 h-4 ml-1 rounded-full hover:bg-black/20 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-current"
-      onclick={handleRemove}
+      click={handleRemove}
       aria-label="Remove"
     >
       <div class="i-lucide-x w-3 h-3" aria-hidden="true"></div>

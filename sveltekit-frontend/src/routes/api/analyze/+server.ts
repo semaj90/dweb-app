@@ -1,10 +1,11 @@
+import type { RequestHandler } from './$types';
+
 // Clean, self-contained analysis endpoint that avoids referencing missing DB schema symbols.
 // - Validates input
 // - Calls local Ollama at http://localhost:11434/api/generate (if available)
 // - Returns structured JSON analysis
 // Note: Re-enable DB interactions once your drizzle schema and table symbols are available.
 
-import type { RequestHandler } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
 import { createHash } from 'crypto';
 

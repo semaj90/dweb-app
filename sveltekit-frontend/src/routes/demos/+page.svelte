@@ -412,7 +412,7 @@
         {#each demoCategories as category}
           <button 
             class="yorha-category-btn {selectedDemo === category.id ? 'active' : ''}"
-            on:click={() => scrollToCategory(category.id)}
+            click={() => scrollToCategory(category.id)}
           >
             <svelte:component this={category.icon} size={16} />
             {category.title}
@@ -441,7 +441,7 @@
 
         <div class="yorha-overview-grid">
           {#each allDemos as demo}
-            <div class="yorha-demo-card yorha-demo-card-overview" on:click={() => handleDemoNavigation(demo.path)}>
+            <div class="yorha-demo-card yorha-demo-card-overview" click={() => handleDemoNavigation(demo.path)}>
               <div class="yorha-demo-header">
                 <h3 class="yorha-demo-title">{demo.title}</h3>
                 <Badge class="{getStatusColor(demo.status)}">
@@ -476,7 +476,7 @@
 
           <div class="yorha-demos-grid">
             {#each category.demos as demo}
-              <div class="yorha-demo-card" on:click={() => handleDemoNavigation(demo.path)}>
+              <div class="yorha-demo-card" click={() => handleDemoNavigation(demo.path)}>
                 <div class="yorha-demo-header">
                   <h3 class="yorha-demo-title">{demo.title}</h3>
                   <Badge class="{getStatusColor(demo.status)}">

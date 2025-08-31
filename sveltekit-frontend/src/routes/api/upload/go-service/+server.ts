@@ -1,6 +1,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
+
 // Go Upload Service Configuration
 const GO_UPLOAD_SERVICE_URL = 'http://localhost:8093';
 const GO_UPLOAD_TIMEOUT = 30000; // 30 seconds

@@ -315,7 +315,7 @@ export async function copilotSelfPrompt(
 async function performSemanticSearch(
   prompt: string,
   context: any
-): Promise<unknown[]> {
+): Promise<any[]> {
   try {
     // Quick health check with timeout to avoid hanging
     const controller = new AbortController();
@@ -364,7 +364,7 @@ async function performSemanticSearch(
 export async function accessMemoryMCP(
   prompt: string,
   context: any
-): Promise<unknown[]> {
+): Promise<any[]> {
   try {
     // Quick timeout to avoid hanging
     const controller = new AbortController();
@@ -411,7 +411,7 @@ export async function accessMemoryMCP(
 async function orchestrateMultiAgentAnalysis(
   prompt: string,
   context: any
-): Promise<unknown[]> {
+): Promise<any[]> {
   const results: any[] = [];
   try {
     // AutoGen analysis (production)

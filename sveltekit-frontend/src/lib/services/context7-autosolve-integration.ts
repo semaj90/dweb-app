@@ -464,7 +464,7 @@ Provide a brief summary and recommendations for improvement.`;
     };
   }
 
-  async getAutosolvHistory(limit: number = 10): Promise<unknown[]> {
+  async getAutosolvHistory(limit: number = 10): Promise<any[]> {
     try {
       const history = await (databaseOrchestrator as any).queryDatabase?.(
         { limit, order_by: 'timestamp DESC' },

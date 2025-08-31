@@ -249,8 +249,8 @@ https://svelte.dev/e/js_parse_error -->
 		<CardContent>
 			<LLMProviderSelector 
 				bind:selectedProvider
-				onproviderselected={handleProviderSelected}
-				onstatuschanged={handleStatusChanged}
+				on:providerselected={handleProviderSelected}
+				on:statuschanged={handleStatusChanged}
 			/>
 		</CardContent>
 	</Card>

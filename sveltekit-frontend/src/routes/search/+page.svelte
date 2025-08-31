@@ -221,7 +221,7 @@
     <div class="space-y-4">
       <!-- Search Form -->
       <div class="space-y-4">
-        <form onsubmit={handleSearchSubmit} class="space-y-4">
+        <form submit={handleSearchSubmit} class="space-y-4">
           <!-- Main Search Input -->
           <div class="space-y-4">
             <Search
@@ -394,8 +394,8 @@
                 {@const SvelteComponent = getResultIcon(result.type)}
                 <div
                   class="space-y-4"
-                  on:click={() => handleResultClick(result)}
-                  onkeydown={(e) =>
+                  click={() => handleResultClick(result)}
+                  on:keydown={(e) =>
                     e.key === "Enter" && handleResultClick(result)}
                   role="button"
                   tabindex={0}
@@ -481,7 +481,7 @@
               <button
                 type="button"
                 class="space-y-4"
-                on:click={() => selectQuickSearch(search)}
+                click={() => selectQuickSearch(search)}
               >
                 {search}
               </button>
@@ -502,7 +502,7 @@
               <button
                 type="button"
                 class="space-y-4"
-                on:click={() => selectQuickSearch(search)}
+                click={() => selectQuickSearch(search)}
               >
                 {search}
               </button>

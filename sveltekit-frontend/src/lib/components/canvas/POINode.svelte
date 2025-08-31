@@ -198,7 +198,7 @@ import Input from "$lib/components/ui/Input.svelte";
           dispatch("updatePosition", { id: poi.id, x: posX, y: posY });
         }
       }}
-      oncontextmenu={handleContextMenu}
+      on:contextmenu={handleContextMenu}
       role="menu"
       tabindex={0}
       aria-label="POI context menu"
@@ -317,23 +317,23 @@ import Input from "$lib/components/ui/Input.svelte";
         </div>
         <div class="nier-footer flex justify-between items-center mt-4 gap-2">
           {#if isEditing}
-            <button class="nier-btn nier-btn-accent" on:click={() => saveChanges()}><Save class="w-4 h-4" /> Save</button>
-            <button class="nier-btn nier-btn-secondary" on:click={() => cancelEditing()}><X class="w-4 h-4" /> Cancel</button>
+            <button class="nier-btn nier-btn-accent" click={() => saveChanges()}><Save class="w-4 h-4" /> Save</button>
+            <button class="nier-btn nier-btn-secondary" click={() => cancelEditing()}><X class="w-4 h-4" /> Cancel</button>
           {:else}
-            <button class="nier-btn nier-btn-secondary" on:click={() => startEditing()}><Edit class="w-4 h-4" /> Edit</button>
-            <button class="nier-btn nier-btn-secondary" on:click={() => summarizePOI()}><Sparkles class="w-4 h-4" /> Summarize</button>
+            <button class="nier-btn nier-btn-secondary" click={() => startEditing()}><Edit class="w-4 h-4" /> Edit</button>
+            <button class="nier-btn nier-btn-secondary" click={() => summarizePOI()}><Sparkles class="w-4 h-4" /> Summarize</button>
           {/if}
         </div>
       </div>
     </div>
   </ContextMenu.Trigger>
   <ContextMenu.Content menu={showContextMenu} class="container mx-auto px-4">
-    <ContextMenu.Item onselect={startEditing}>
+    <ContextMenu.Item on:select={startEditing}>
       <Edit class="container mx-auto px-4" />
       Edit Profile
     </ContextMenu.Item>
 
-    <ContextMenu.Item onselect={summarizePOI}>
+    <ContextMenu.Item on:select={summarizePOI}>
       <Sparkles class="container mx-auto px-4" />
       AI Summary
     </ContextMenu.Item>
@@ -341,7 +341,7 @@ import Input from "$lib/components/ui/Input.svelte";
     <ContextMenu.Separator />
 
     <ContextMenu.Item
-      onselect={() => {
+      on:select={() => {
         threatLevel = "low";
         dispatch("update", { ...poi, threatLevel: "low" });
       }}
@@ -352,7 +352,7 @@ import Input from "$lib/components/ui/Input.svelte";
       Low
     </ContextMenu.Item>
     <ContextMenu.Item
-      onselect={() => {
+      on:select={() => {
         threatLevel = "medium";
         dispatch("update", { ...poi, threatLevel: "medium" });
       }}
@@ -363,7 +363,7 @@ import Input from "$lib/components/ui/Input.svelte";
       Medium
     </ContextMenu.Item>
     <ContextMenu.Item
-      onselect={() => {
+      on:select={() => {
         threatLevel = "high";
         dispatch("update", { ...poi, threatLevel: "high" });
       }}
@@ -376,7 +376,7 @@ import Input from "$lib/components/ui/Input.svelte";
 
     <ContextMenu.Separator />
 
-    <ContextMenu.Item onselect={() => dispatch("delete", poi.id)}>
+    <ContextMenu.Item on:select={() => dispatch("delete", poi.id)}>
       <X class="container mx-auto px-4" />
       Delete POI
     </ContextMenu.Item>

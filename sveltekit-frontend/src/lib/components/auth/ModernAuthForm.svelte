@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { $props, $state, $derived, $effect } from 'svelte';
+  // Svelte 5 runes are used directly without imports
   import { enhance } from '$app/forms';
   // import { Dialog } from 'bits-ui';
   import { Button } from '$lib/components/ui/button/index.js';
@@ -171,7 +171,7 @@
         }
     </p>
 
-      <form onsubmit={handleSubmit} class="space-y-4">
+      <form submit={handleSubmit} class="space-y-4">
         <!-- Success Message -->
         {#if success}
           <Alert variant="default" class="border-green-200 bg-green-50 text-green-800">
@@ -206,6 +206,7 @@
                 name="firstName"
                 type="text"
                 placeholder="John"
+                autocomplete="given-name"
                 bind:value={formData.firstName}
                 disabled={loading}
                 required
@@ -218,6 +219,7 @@
                 name="lastName"
                 type="text"
                 placeholder="Doe"
+                autocomplete="family-name"
                 bind:value={formData.lastName}
                 disabled={loading}
                 required
@@ -235,6 +237,7 @@
             name="email"
             type="email"
             placeholder="prosecutor@example.com"
+            autocomplete="email"
             bind:value={formData.email}
             disabled={loading}
             required
@@ -250,6 +253,7 @@
             name="password"
             type="password"
             placeholder="••••••••"
+            autocomplete={mode === 'login' ? 'current-password' : 'new-password'}
             bind:value={formData.password}
             disabled={loading}
             required
@@ -268,6 +272,7 @@
               name="confirmPassword"
               type="password"
               placeholder="••••••••"
+              autocomplete="new-password"
               bind:value={formData.confirmPassword}
               disabled={loading}
               required
@@ -298,7 +303,7 @@
         <div class="text-center">
           <button 
             type="button"
-            on:click={toggleMode}
+            click={toggleMode}
             class="text-sm text-primary hover:underline"
             disabled={loading}
           >
@@ -321,7 +326,7 @@
 
     <button 
       type="button"
-      on:click={() => open = false}
+      click={() => open = false}
       class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
     >
       <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

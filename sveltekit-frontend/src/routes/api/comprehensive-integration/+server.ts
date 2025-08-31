@@ -1,6 +1,7 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
 import { eq, sql } from "drizzle-orm";
+import type { RequestHandler } from './$types';
+
 
 // Comprehensive Integration API - Full System Integration
 // Combines database orchestrator, Context7 MCP, event loops, and fetch operations

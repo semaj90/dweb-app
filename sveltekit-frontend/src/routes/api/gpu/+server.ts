@@ -1,7 +1,8 @@
+import type { RequestHandler } from './$types';
+
 // GPU Orchestration API Routes for Legal AI Platform
 // Integrates with Go GPU Orchestrator Service (Port 8231)
 
-import { json, type RequestHandler } from '@sveltejs/kit';
 import type { 
 	GPUStatus, 
 	GPUMetrics, 

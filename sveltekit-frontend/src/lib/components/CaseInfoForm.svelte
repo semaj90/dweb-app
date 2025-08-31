@@ -108,7 +108,7 @@
     <p class="text-gray-600">Enter the basic information about this legal case</p>
   </div>
 
-  <form onsubmit|preventDefault={handleNext} class="space-y-6">
+  <form on:submit|preventDefault={handleNext} class="space-y-6">
     <!-- Case Title -->
     <div>
       <label for="title" class="block text-sm font-medium text-gray-700 mb-2">

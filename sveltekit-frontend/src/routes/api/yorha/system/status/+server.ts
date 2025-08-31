@@ -1,5 +1,6 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { getContext7MulticoreService } from '$lib/services/context7-multicore.js';
+import type { RequestHandler } from './$types';
+
 
 let startTime = Date.now();
 let requestCount = 0;

@@ -1,5 +1,6 @@
+import type { RequestHandler } from './$types';
+
 // Repaired advanced search route: previous file was heavily corrupted with concatenated import + code.
-import { json, type RequestHandler } from '@sveltejs/kit';
 
 // Temporary lightweight stub to restore compiler health. Will be replaced with full implementation once baseline compiles.
 export interface AdvancedSearchFilters {

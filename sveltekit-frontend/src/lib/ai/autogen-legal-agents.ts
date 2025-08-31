@@ -426,7 +426,4 @@ Identify any compliance issues and provide mitigation strategies.`,
 
 export {
   AutogenLegalTeam,
-  type LegalAnalysisRequest,
-  type LegalAnalysisResult,
-  type AgentConfig,
 };

@@ -1,8 +1,9 @@
-import { json, type RequestHandler } from '@sveltejs/kit';
 import { nvidiaLlamaService } from '$lib/services/nvidiaLlamaService';
 import { gpuServiceIntegration } from '$lib/services/gpu-service-integration';
 import { unifiedWASMGPUOrchestrator } from '$lib/services/unified-wasm-gpu-orchestrator';
 import { llvmWasmBridge } from '$lib/wasm/llvm-wasm-bridge';
+import type { RequestHandler } from './$types';
+
 
 /**
  * Unified GPU API Endpoint

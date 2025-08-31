@@ -1,5 +1,6 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { json, error } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+
 
 // Real OCR API endpoint with Tesseract.js and LegalBERT analysis
 const LEGAL_ENTITIES = {

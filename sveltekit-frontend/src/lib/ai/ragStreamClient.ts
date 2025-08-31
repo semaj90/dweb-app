@@ -354,7 +354,7 @@ export interface RagStreamStore {
   }>;
   traceparent: Readable<string | undefined>;
   streamId: Readable<string | undefined>;
-  patches: Readable<unknown[]>;
+  patches: Readable<any[]>;
   appliedObject?: Readable<any>; // auto-applied object derived from patches
   summary: Readable<string | undefined>;
   start: (
@@ -414,7 +414,7 @@ export function createRagStreamStore(initial?: RagStreamStoreInit): RagStreamSto
   }>({ reconnects: 0, errors: 0 });
   const traceparentW = writable<string | undefined>(undefined);
   const streamIdW = writable<string | undefined>(undefined);
-  const patchesW = writable<unknown[]>([]);
+  const patchesW = writable<any[]>([]);
   const appliedObjectW = writable<any>(initial?.patches?.initialObject ?? {});
   const summaryW = writable<string | undefined>(undefined);
   const inverseStack: any[][] = [];

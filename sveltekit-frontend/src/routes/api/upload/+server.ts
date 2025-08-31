@@ -1,4 +1,3 @@
-import type { RequestHandler } from '$lib/types/server';
 import { json } from "@sveltejs/kit";
 import { randomUUID } from "crypto";
 import { existsSync, createReadStream } from "fs";
@@ -6,6 +5,8 @@ import { mkdir, writeFile, readFile } from "fs/promises";
 import * as path from "path";
 import { db } from '../../../lib/server/db/index';
 import { evidence } from '../../../lib/server/db/schema-postgres';
+import type { RequestHandler } from './$types';
+
 
 // Ensure upload directory exists
 const UPLOAD_DIR = "./uploads";

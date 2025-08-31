@@ -1,9 +1,10 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Ollama Chat API Endpoint
  * Handles streaming and non-streaming chat requests with legal context
  */
 
-import { type RequestHandler,  json } from '@sveltejs/kit';
 import { ollamaChatStream } from "$lib/services/ollamaChatStream";
 
 export const POST: RequestHandler = async ({ request }) => {

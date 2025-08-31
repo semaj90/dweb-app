@@ -313,7 +313,7 @@ export class DatabaseSyncManager {
       data?: unknown;
       options?: SyncOptions;
     }>,
-  ): Promise<unknown[]> {
+  ): Promise<any[]> {
     const results: any[] = [];
 
     for (const op of operations) {

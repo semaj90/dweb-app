@@ -176,10 +176,10 @@
     editMode={data.editMode}
     enableAutoSave={true}
     enableRealTimeValidation={true}
-    onsubmit={handleFormSubmit}
-    onsuccess={handleFormSuccess}
-    onerror={handleFormError}
-    ondraft={handleDraftSave}
+    on:submit={handleFormSubmit}
+    on:success={handleFormSuccess}
+    on:error={handleFormError}
+    on:draft={handleDraftSave}
   />
 
   <!-- Help Text -->

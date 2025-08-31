@@ -8,25 +8,28 @@
   import { onMount } from 'svelte';
 
   // Create machine with caseId from route params
-  $: machine = createLegalCaseMachineForRoute($page);
+  // Use function form so $derived recomputes when $page changes (don't capture initial value only)
+  const machine = $derived(() => createLegalCaseMachineForRoute($page));
   const [state, send] = useMachine(machine);
 
-  // Reactive values from machine state
-  $: currentCase = $state.context.currentCase;
-  $: loading = $state.context.loading;
-  $: error = $state.context.error;
-  $: aiAnalysis = $state.context.aiAnalysis;
+  // Reactive values from machine state (converted for runes mode)
+  const currentCase = $derived(() => $state.context.currentCase);
+  const loading = $derived(() => $state.context.loading);
+  const error = $derived(() => $state.context.error);
+  const aiAnalysis = $derived(() => $state.context.aiAnalysis);
 
   let query = '';
 
   // Auto-load case when component mounts or caseId changes
-  $: if ($page.params.caseId && !currentCase?.id) {
-    send({ type: 'LOAD_CASE', caseId: $page.params.caseId, includeEvidence: true });
-  }
+  $effect(() => {
+    if ($page.params.caseId && !currentCase?.id) {
+      send({ type: 'LOAD_CASE', caseId: $page.params.caseId, includeEvidence: true });
+    }
+  });
 
   function askQuestion() {
     if (!query.trim()) return;
-    
+
     send({
       type: 'RAG_QUERY',
       query: query.trim()
@@ -49,7 +52,7 @@
   }
 
   // Machine state debugging (remove in production)
-  $: console.log('Machine state:', $state.value, $state.context);
+  $effect(() => { console.log('Machine state:', $state.value, $state.context); });
 </script>
 
 <svelte:head>
@@ -89,7 +92,7 @@
     <!-- RAG Query Section -->
     <div class="bg-white shadow rounded-lg p-6">
       <h2 class="text-lg font-medium mb-4">Ask About This Case</h2>
-      
+
       <div class="space-y-4">
         <textarea
           bind:value={query}
@@ -98,18 +101,18 @@
           placeholder="What would you like to know about this case?"
           disabled={loading}
         />
-        
+
         <div class="flex space-x-2">
           <button
-            on:click={askQuestion}
+            click={askQuestion}
             disabled={loading || !query.trim()}
             class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
           >
             Ask Question
           </button>
-          
+
           <button
-            on:click={findSimilarCases}
+            click={findSimilarCases}
             disabled={loading}
             class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
           >
@@ -123,21 +126,21 @@
         <h3 class="font-medium text-gray-900">Quick Analysis</h3>
         <div class="flex space-x-2">
           <button
-            on:click={() => startAIAnalysis('summary')}
+            click={() => startAIAnalysis('summary')}
             disabled={loading}
             class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 disabled:opacity-50"
           >
             Summarize
           </button>
           <button
-            on:click={() => startAIAnalysis('recommendation')}
+            click={() => startAIAnalysis('recommendation')}
             disabled={loading}
             class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 disabled:opacity-50"
           >
             Recommend Actions
           </button>
           <button
-            on:click={() => startAIAnalysis('similarity')}
+            click={() => startAIAnalysis('similarity')}
             disabled={loading}
             class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 disabled:opacity-50"
           >
@@ -150,7 +153,7 @@
     <!-- Results Section -->
     <div class="bg-white shadow rounded-lg p-6">
       <h2 class="text-lg font-medium mb-4">Analysis Results</h2>
-      
+
       {#if aiAnalysis.status === 'processing'}
         <div class="flex items-center text-blue-600">
           <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
@@ -165,7 +168,7 @@
               <div class="bg-gray-50 p-3 rounded text-sm">
                 {aiAnalysis.results.ragResponse.answer}
               </div>
-              
+
               {#if aiAnalysis.results.ragResponse.sources?.length}
                 <div class="mt-3">
                   <h4 class="font-medium text-gray-700 text-sm mb-2">Sources</h4>

@@ -1,10 +1,11 @@
+import type { RequestHandler } from './$types';
+
 /**
  * WebAssembly Inference Test API Endpoint
  * Tests the complete WebAssembly RAG inference pipeline
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 import { wasmInferenceMachine, WASMInferenceRAGService } from '$lib/services/webasm-inference-rag.js';
 import { rabbitMQIntegration } from '$lib/messaging/rabbitmq-xstate-integration.js';
 

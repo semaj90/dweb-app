@@ -54,7 +54,7 @@ async function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T
   return Promise.race([promise, timeout]);
 }
 
-export interface LegalAnalysisResult {
+export interface SynthesizerAnalysisResult {
   confidence: number;
   categories: string[];
   summary: string | {
@@ -623,7 +623,7 @@ export class AIAssistantInputSynthesizer {
     ]);
   }
 
-  private async extractIntent(query: string, analysis: LegalAnalysisResult): Promise<string> {
+  private async extractIntent(query: string, analysis: SynthesizerAnalysisResult): Promise<string> {
     // Intent classification based on patterns and entities
     const queryLower = query.toLowerCase();
 
@@ -656,7 +656,7 @@ export class AIAssistantInputSynthesizer {
   private async enhanceQueryWithContext(
     query: string,
     context?: SynthesizerInput['context'],
-    analysis?: LegalAnalysisResult
+    analysis?: SynthesizerAnalysisResult
   ): Promise<string> {
     let enhanced = query;
 
@@ -689,7 +689,7 @@ export class AIAssistantInputSynthesizer {
     sources: any[],
     query: string,
     lambda: number = 0.5
-  ): Promise<unknown[]> {
+  ): Promise<any[]> {
     // Implement MMR algorithm for diversity
     if (sources.length <= 1) return sources;
 
@@ -746,7 +746,7 @@ export class AIAssistantInputSynthesizer {
     return selected;
   }
 
-  private async applyCrossEncoderReranking(sources: any[], query: string): Promise<unknown[]> {
+  private async applyCrossEncoderReranking(sources: any[], query: string): Promise<any[]> {
     // Apply cross-encoder reranking using LegalBERT
     try {
       const rerankedSources = [];
@@ -1030,8 +1030,8 @@ export class AIAssistantInputSynthesizer {
       // Fallback to basic similarity
       const words1 = new Set(text1.toLowerCase().split(/\s+/));
       const words2 = new Set(text2.toLowerCase().split(/\s+/));
-      const intersection = new Set([...words1].filter((x) => words2.has(x)));
-      const union = new Set([...words1, ...words2]);
+      const intersection = new Set(Array.from(words1).filter((x) => words2.has(x)));
+      const union = new Set([...Array.from(words1), ...Array.from(words2)]);
 
       return intersection.size / union.size;
     }
@@ -1143,5 +1143,3 @@ export class AIAssistantInputSynthesizer {
 // Export singleton instance
 export const aiAssistantSynthesizer = new AIAssistantInputSynthesizer();
 
-// Export types
-export type { SynthesizerInput, SynthesizedOutput, QualityMetrics };

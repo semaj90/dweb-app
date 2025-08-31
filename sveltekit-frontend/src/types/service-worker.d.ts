@@ -2,7 +2,7 @@
 // Keeps the incremental TypeScript cleanup low-risk by declaring commonly used members
 
 declare interface ExtendableEvent extends Event {
-  waitUntil(promise: Promise<unknown>): void;
+  waitUntil(promise: Promise<any>): void;
 }
 
 declare interface FetchEvent extends ExtendableEvent {

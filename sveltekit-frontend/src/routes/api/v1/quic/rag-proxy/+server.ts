@@ -1,3 +1,5 @@
+import type { RequestHandler } from './$types';
+
 /**
  * RAG QUIC Proxy API - Enhanced RAG Service with Edge Caching
  * Provides RAG operations with edge caching, metrics, and JSON optimization
@@ -5,7 +7,8 @@
  * Backend: Upload Service (8093), Enhanced RAG (8094)
  */
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+
+import { ensureError } from '$lib/utils/ensure-error';
 
 const RAG_QUIC_CONFIG = {
   primaryPort: 8451,    // QUIC HTTP/3
@@ -153,15 +156,15 @@ export const POST: RequestHandler = async ({ request, url }) => {
 
     // Validate RAG request
     if (!ragRequest.query || ragRequest.query.trim().length === 0) {
-      error(400, { message: 'Query is required and cannot be empty' });
+      error(400, ensureError({ message: 'Query is required and cannot be empty' }));
     }
 
     if (ragRequest.maxResults && (ragRequest.maxResults < 1 || ragRequest.maxResults > 100)) {
-      error(400, { message: 'Max results must be between 1 and 100' });
+      error(400, ensureError({ message: 'Max results must be between 1 and 100' }));
     }
 
     if (ragRequest.threshold && (ragRequest.threshold < 0 || ragRequest.threshold > 1)) {
-      error(400, { message: 'Threshold must be between 0 and 1' });
+      error(400, ensureError({ message: 'Threshold must be between 0 and 1' }));
     }
 
     // Use Go microservice client instead of direct HTTP
@@ -244,10 +247,10 @@ export const POST: RequestHandler = async ({ request, url }) => {
 
     } catch (quicError) {
       console.error('RAG QUIC Proxy failed:', quicError);
-      error(503, {
+      error(503, ensureError({
         message: 'RAG service unavailable',
         error: quicError instanceof Error ? quicError.message : 'Unknown error'
-      });
+      }));
     }
 
     // Handle 304 Not Modified (cached response)
@@ -299,10 +302,10 @@ export const POST: RequestHandler = async ({ request, url }) => {
 
   } catch (err: any) {
     console.error('RAG QUIC Proxy error:', err);
-    error(500, {
+    error(500, ensureError({
       message: 'RAG operation failed',
       error: err instanceof Error ? err.message : 'Unknown error'
-    });
+    }));
   }
 };
 
@@ -316,7 +319,7 @@ export const PUT: RequestHandler = async ({ request, url }) => {
 
     // Validate document
     if (!document.id || !document.content) {
-      error(400, { message: 'Document ID and content are required' });
+      error(400, ensureError({ message: 'Document ID and content are required' }));
     }
 
     const targetUrl = useHttp3 
@@ -348,10 +351,10 @@ export const PUT: RequestHandler = async ({ request, url }) => {
 
   } catch (err: any) {
     console.error('RAG document update error:', err);
-    error(500, {
+    error(500, ensureError({
       message: 'Document update failed',
       error: err instanceof Error ? err.message : 'Unknown error'
-    });
+    }));
   }
 };
 
@@ -364,7 +367,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
     const useHttp3 = url.searchParams.get('http3') !== 'false';
 
     if (!documentId) {
-      error(400, { message: 'Document ID is required' });
+      error(400, ensureError({ message: 'Document ID is required' }));
     }
 
     const targetUrl = useHttp3 
@@ -394,10 +397,10 @@ export const DELETE: RequestHandler = async ({ url }) => {
 
   } catch (err: any) {
     console.error('RAG document deletion error:', err);
-    error(500, {
+    error(500, ensureError({
       message: 'Document deletion failed',
       error: err instanceof Error ? err.message : 'Unknown error'
-    });
+    }));
   }
 };
 

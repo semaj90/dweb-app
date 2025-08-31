@@ -56,8 +56,8 @@ function databaseInitialize() {
 export const lokiStore = writable({
   initialized: false,
   evidence: [] as Evidence[],
-  canvasStates: [] as unknown[],
-  notes: [] as unknown[],
+  canvasStates: [] as any[],
+  notes: [] as any[],
 });
 
 // Loki operations

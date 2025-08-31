@@ -1,10 +1,11 @@
 
+import type { RequestHandler } from './$types';
+
 /**
  * Phase 13 Full Integration API Endpoint
  * Comprehensive system integration management with Context7 MCP guidance
  */
 
-import { type RequestHandler,  json } from '@sveltejs/kit';
 import { URL } from "url";
 
 // Temporary fallback for service health checking

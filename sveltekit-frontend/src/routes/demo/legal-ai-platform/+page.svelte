@@ -143,7 +143,7 @@
           <div class="rounded-md shadow">
             <button 
               class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-600 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10"
-              on:click={checkSystemHealth}
+              click={checkSystemHealth}
             >
               {$healthStatus.loading ? 'Checking...' : 'Check System Health'}
             </button>
@@ -220,14 +220,14 @@
               bind:value={$chatMessage}
               placeholder="e.g., What are the key elements of a contract?"
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              on:keydown={(e) => e.key === 'Enter' && testAIChat()}
+              keydown={(e) => e.key === 'Enter' && testAIChat()}
             />
           </div>
           
           <button 
             class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50"
             disabled={$chatLoading}
-            on:click={testAIChat}
+            click={testAIChat}
           >
             {$chatLoading ? 'Processing...' : 'Send to AI'}
           </button>
@@ -257,14 +257,14 @@
               bind:value={$searchQuery}
               placeholder="e.g., contract disputes"
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              on:keydown={(e) => e.key === 'Enter' && testVectorSearch()}
+              keydown={(e) => e.key === 'Enter' && testVectorSearch()}
             />
           </div>
           
           <button 
             class="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50"
             disabled={$searchLoading}
-            on:click={testVectorSearch}
+            click={testVectorSearch}
           >
             {$searchLoading ? 'Searching...' : 'Vector Search'}
           </button>

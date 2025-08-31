@@ -1,3 +1,5 @@
+import type { RequestHandler } from './$types';
+
 // Repaired imports (file previously had fragmented 'type { RequestEvent }, { json }')
 import { json, type RequestEvent } from '@sveltejs/kit';
 import { aiReports, canvasStates, reports } from '$lib/server/db/schema-postgres';

@@ -76,7 +76,7 @@ const LEGAL_ENTITY_TYPES = {
 } as const;
 
 // Legal text analysis results
-export interface LegalAnalysisResult {
+export interface LegalBertAnalysisResult {
   entities: Array<{
     text: string;
     type: keyof typeof LEGAL_ENTITY_TYPES;
@@ -246,7 +246,7 @@ export class LegalBERTMiddleware {
   /**
    * Comprehensive legal text analysis
    */
-  async analyzeLegalText(text: string): Promise<LegalAnalysisResult> {
+  async analyzeLegalText(text: string): Promise<LegalBertAnalysisResult> {
     const startTime = Date.now();
     const textHash = this.hashText(text);
 
@@ -425,8 +425,8 @@ export class LegalBERTMiddleware {
     return processed;
   }
 
-  private async extractLegalEntities(text: string): Promise<LegalAnalysisResult['entities']> {
-    const entities: LegalAnalysisResult['entities'] = [];
+  private async extractLegalEntities(text: string): Promise<LegalBertAnalysisResult['entities']> {
+    const entities: LegalBertAnalysisResult['entities'] = [];
 
     // Case citations: 123 F.3d 456, 789 U.S. 123
     const casePattern = /\b\d{1,4}\s+[A-Z][a-z]*\.?\s*\d*[a-z]*\s+\d{1,4}\b/g;
@@ -483,8 +483,8 @@ export class LegalBERTMiddleware {
     return entities;
   }
 
-  private async extractLegalConcepts(text: string): Promise<LegalAnalysisResult['concepts']> {
-    const concepts: LegalAnalysisResult['concepts'] = [];
+  private async extractLegalConcepts(text: string): Promise<LegalBertAnalysisResult['concepts']> {
+    const concepts: LegalBertAnalysisResult['concepts'] = [];
 
     const legalConcepts = {
       contract: ['contract', 'agreement', 'terms', 'conditions', 'breach', 'performance'],
@@ -520,7 +520,7 @@ export class LegalBERTMiddleware {
     return concepts.sort((a, b) => b.relevance - a.relevance);
   }
 
-  private async analyzeLegalSentiment(text: string): Promise<LegalAnalysisResult['sentiment']> {
+  private async analyzeLegalSentiment(text: string): Promise<LegalBertAnalysisResult['sentiment']> {
     // Simple rule-based sentiment for legal text
     const positiveWords = ['granted', 'approved', 'affirmed', 'successful', 'favorable', 'upheld'];
     const negativeWords = [
@@ -557,7 +557,7 @@ export class LegalBERTMiddleware {
     };
   }
 
-  private calculateTextComplexity(text: string): LegalAnalysisResult['complexity'] {
+  private calculateTextComplexity(text: string): LegalBertAnalysisResult['complexity'] {
     const sentences = text.split(/[.!?]+/).filter((s) => s.trim().length > 0);
     const words = text.split(/\s+/).filter((w) => w.length > 0);
     const avgWordsPerSentence = words.length / sentences.length;
@@ -596,8 +596,8 @@ export class LegalBERTMiddleware {
     };
   }
 
-  private async extractKeyPhrases(text: string): Promise<LegalAnalysisResult['keyPhrases']> {
-    const phrases: LegalAnalysisResult['keyPhrases'] = [];
+  private async extractKeyPhrases(text: string): Promise<LegalBertAnalysisResult['keyPhrases']> {
+    const phrases: LegalBertAnalysisResult['keyPhrases'] = [];
 
     // Extract noun phrases and legal terms
     const legalPhrases = [
@@ -621,7 +621,7 @@ export class LegalBERTMiddleware {
     return phrases.sort((a, b) => b.importance - a.importance).slice(0, 10);
   }
 
-  private async generateLegalSummary(text: string): Promise<LegalAnalysisResult['summary']> {
+  private async generateLegalSummary(text: string): Promise<LegalBertAnalysisResult['summary']> {
     const sentences = text.split(/[.!?]+/).filter((s) => s.trim().length > 0);
 
     // Simple extractive summary - take first and most important sentences
@@ -852,7 +852,7 @@ export class LegalBERTMiddleware {
     return 'low';
   }
 
-  private generateFallbackAnalysis(text: string): LegalAnalysisResult {
+  private generateFallbackAnalysis(text: string): LegalBertAnalysisResult {
     return {
       entities: [],
       concepts: [{ concept: 'general', relevance: 0.5, category: 'unknown' }],

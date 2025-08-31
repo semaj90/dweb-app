@@ -322,7 +322,7 @@
     loading ? 'cursor-wait' : '',
     isPressed ? 'scale-95' : '',
     
-    className
+    class
   ].filter(Boolean).join(' ');
 
   // Legal confidence indicator
@@ -347,7 +347,7 @@
   <button
     use:melt={$root}
     class={baseClasses}
-    on:click={handleClick}
+    click={handleClick}
     on:mouseenter={handleMouseEnter}
     on:mouseleave={handleMouseLeave}
     {...restProps}

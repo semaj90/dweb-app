@@ -1,8 +1,9 @@
+import type { RequestHandler } from './$types';
+
 // AI Synthesizer API Route - Full Stack Integration
 // Uses Neo4j, PostgreSQL/pgvector, XState, Redis, Ollama with gemma3:legal-latest
 // TypeScript-safe with Drizzle ORM and MCP Context7 best practices
 
-import { type RequestHandler,  json, error } from '@sveltejs/kit';
 import { aiOrchestrator } from "$lib/server/ai/enhanced-ai-synthesis-orchestrator";
 import { monitoringService } from "$lib/server/ai/monitoring-service";
 import stream from "stream";

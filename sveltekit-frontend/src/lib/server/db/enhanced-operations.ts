@@ -1,9 +1,9 @@
 // Enhanced Database Operations with pgvector Integration
 // Production-ready database operations for SvelteKit 2
 
-import { db, sql } from './index';
-import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { eq, and, or, desc, asc, ilike, count, isNull, isNotNull, sql as sqlRaw, gte, lte } from 'drizzle-orm';
+import { db, sql, eq, and, or, count, like, ilike, isNull, isNotNull, ne, desc, asc } from './index';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import { gte, lte } from 'drizzle-orm';
 import {
   cases, evidence, users, legal_documents
 } from './schema-postgres';
@@ -25,7 +25,7 @@ export async function withTransaction<T>(
       return await operation(tx);
     } catch (error: any) {
       // Transaction will be rolled back automatically
-      throw error instanceof Error 
+      throw error instanceof Error
         ? CommonErrors.DatabaseError('transaction', { originalError: error.message })
         : CommonErrors.InternalError('Transaction failed');
     }
@@ -38,12 +38,12 @@ export class CaseOperations {
   async getCaseById(caseId: string, userId: string): Promise<Case | null> {
     return CaseOperations.getById(caseId, userId);
   }
-  
+
   // Instance method for compatibility with existing code
   async createCase(caseData: any): Promise<Case> {
     return CaseOperations.create(caseData);
   }
-  
+
   // Instance method for compatibility with existing code
   async searchCases(options: any): Promise<{ cases: Case[]; total: number; stats: any }> {
     const result = await CaseOperations.search({
@@ -53,7 +53,7 @@ export class CaseOperations {
       limit: options.limit,
       offset: (options.page - 1) * options.limit
     });
-    
+
     // Calculate stats
     const stats = {
       total: result.total,
@@ -67,10 +67,10 @@ export class CaseOperations {
       medium: result.cases.filter(c => c.priority === 'medium').length,
       low: result.cases.filter(c => c.priority === 'low').length
     };
-    
+
     return { ...result, stats };
   }
-  
+
   // Static method to get case by ID with user access check
   static async getById(caseId: string, userId: string): Promise<any> {
     try {
@@ -84,7 +84,7 @@ export class CaseOperations {
           )
         ))
         .limit(1);
-      
+
       return result[0] || null;
     } catch (error: any) {
       console.error('Failed to get case by ID:', error);
@@ -152,13 +152,13 @@ export class CaseOperations {
     const { query, status, priority, dateRange, assignedTo, limit = 50, offset = 0, useVectorSearch = true } = params;
 
     let conditions = [];
-    
+
     // Build WHERE conditions
     if (status && status.length > 0) {
-      conditions.push(sqlRaw`status = ANY(${status})`);
+      conditions.push(sql`status = ANY(${status})`);
     }
     if (priority && priority.length > 0) {
-      conditions.push(sqlRaw`priority = ANY(${priority})`);
+      conditions.push(sql`priority = ANY(${priority})`);
     }
     if (assignedTo) {
       conditions.push(eq(cases.userId, assignedTo));
@@ -177,24 +177,24 @@ export class CaseOperations {
       try {
         const queryEmbedding = generateSampleEmbedding(768);
         const vectorQuery = arrayToPgVector(queryEmbedding);
-        
-        const vectorResults = await db.execute(sqlRaw`
-          SELECT 
+
+        const vectorResults = await db.execute(sql`
+          SELECT
             c.*,
             (1 - (ce.embedding <=> ${vectorQuery}::vector)) as similarity_score
           FROM cases c
           LEFT JOIN case_embeddings ce ON c.id = ce.case_id
-          WHERE 
-            ${conditions.length > 0 ? sqlRaw`(${conditions.join(' AND ')}) AND` : sqlRaw``}
+          WHERE
+            ${conditions.length > 0 ? sql`(${conditions.join(' AND ')}) AND` : sql``}
             ce.embedding IS NOT NULL AND
             (1 - (ce.embedding <=> ${vectorQuery}::vector)) > 0.7
           ORDER BY similarity_score DESC
           LIMIT ${limit}
           OFFSET ${offset}
         `);
-        
+
         return {
-          cases: vectorResults as unknown as Case[],
+          cases: vectorResults as any as Case[],
           total: vectorResults.length
         };
       } catch (error: any) {
@@ -214,7 +214,7 @@ export class CaseOperations {
     }
 
     const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
-    
+
     const [results, totalCount] = await Promise.all([
       db.select({
         id: cases.id,
@@ -236,7 +236,7 @@ export class CaseOperations {
       .orderBy(desc(cases.created_at))
       .limit(limit)
       .offset(offset),
-      
+
       db.select({ count: count() })
       .from(cases)
       .where(whereClause)
@@ -271,7 +271,7 @@ export class CaseOperations {
       // Update vector embeddings if content changed
       if (updates.title || updates.description) {
         const embedding = generateSampleEmbedding(384); // Match schema dimensions
-        
+
         await tx.insert(caseEmbeddings).values({
           caseId: updatedCase.id,
           embedding: arrayToPgVector(embedding),
@@ -294,7 +294,7 @@ export class CaseOperations {
   }
 
   // Get case with related data
-  static async getWithRelations(caseId: string): Promise<Case & { 
+  static async getWithRelations(caseId: string): Promise<Case & {
     evidence: Evidence[];
     createdByUser?: User;
     leadProsecutorUser?: User;
@@ -354,7 +354,7 @@ export class EvidenceOperations {
       if (newEvidence.description || newEvidence.title) {
         const content = `${newEvidence.title} ${newEvidence.description || ''} ${newEvidence.evidenceType}`;
         const embedding = generateSampleEmbedding(768);
-        
+
         await tx.insert(evidenceVectors).values({
           evidenceId: newEvidence.id,
           content,
@@ -388,15 +388,15 @@ export class EvidenceOperations {
     const { query, caseId, evidenceTypes, tags, dateRange, limit = 50, offset = 0, useVectorSearch = true } = params;
 
     let conditions = [];
-    
+
     if (caseId) {
       conditions.push(eq(evidence.caseId, caseId));
     }
     if (evidenceTypes && evidenceTypes.length > 0) {
-      conditions.push(sqlRaw`evidence_type = ANY(${evidenceTypes})`);
+      conditions.push(sql`evidence_type = ANY(${evidenceTypes})`);
     }
     if (tags && tags.length > 0) {
-      conditions.push(sqlRaw`tags && ${tags}`);
+      conditions.push(sql`tags && ${tags}`);
     }
     if (dateRange) {
       conditions.push(
@@ -412,24 +412,24 @@ export class EvidenceOperations {
       try {
         const queryEmbedding = generateSampleEmbedding(768);
         const vectorQuery = arrayToPgVector(queryEmbedding);
-        
-        const vectorResults = await db.execute(sqlRaw`
-          SELECT 
+
+        const vectorResults = await db.execute(sql`
+          SELECT
             e.*,
             (1 - (ev.embedding <=> ${vectorQuery}::vector)) as similarity_score
           FROM evidence e
           LEFT JOIN evidence_vectors ev ON e.id = ev.evidence_id
-          WHERE 
-            ${conditions.length > 0 ? sqlRaw`(${conditions.join(' AND ')}) AND` : sqlRaw``}
+          WHERE
+            ${conditions.length > 0 ? sql`(${conditions.join(' AND ')}) AND` : sql``}
             ev.embedding IS NOT NULL AND
             (1 - (ev.embedding <=> ${vectorQuery}::vector)) > 0.7
           ORDER BY similarity_score DESC
           LIMIT ${limit}
           OFFSET ${offset}
         `);
-        
+
         return {
-          evidence: vectorResults as unknown as Evidence[],
+          evidence: vectorResults as any as Evidence[],
           total: vectorResults.length
         };
       } catch (error: any) {
@@ -449,7 +449,7 @@ export class EvidenceOperations {
     }
 
     const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
-    
+
     const [results, totalCount] = await Promise.all([
       db.select()
       .from(evidence)
@@ -457,7 +457,7 @@ export class EvidenceOperations {
       .orderBy(desc(evidence.created_at))
       .limit(limit)
       .offset(offset),
-      
+
       db.select({ count: count() })
       .from(evidence)
       .where(whereClause)
@@ -507,7 +507,7 @@ export class EvidenceOperations {
       if (updates.title || updates.description) {
         const content = `${updatedEvidence.title} ${updatedEvidence.description || ''} ${updatedEvidence.evidenceType}`;
         const embedding = generateSampleEmbedding(768);
-        
+
         await tx.insert(evidenceVectors).values({
           evidenceId: updatedEvidence.id,
           content,
@@ -559,9 +559,9 @@ export class LegalDocumentOperations {
     try {
       const queryEmbedding = generateSampleEmbedding(768);
       const vectorQuery = arrayToPgVector(queryEmbedding);
-      
-      let conditions = [sqlRaw`(1 - (embedding <=> ${vectorQuery}::vector)) > ${similarityThreshold}`];
-      
+
+      let conditions = [sql`(1 - (embedding <=> ${vectorQuery}::vector)) > ${similarityThreshold}`];
+
       if (jurisdiction) {
         conditions.push(eq(legalPrecedents.jurisdiction, jurisdiction));
       }
@@ -574,8 +574,8 @@ export class LegalDocumentOperations {
         );
       }
 
-      const results = await db.execute(sqlRaw`
-        SELECT 
+      const results = await db.execute(sql`
+        SELECT
           *,
           (1 - (embedding <=> ${vectorQuery}::vector)) as relevance_score
         FROM legal_precedents
@@ -583,14 +583,14 @@ export class LegalDocumentOperations {
         ORDER BY relevance_score DESC
         LIMIT ${limit}
       `);
-      
+
       return {
         precedents: results,
         total: results.length
       };
     } catch (error: any) {
       console.warn('Legal precedent vector search failed:', error);
-      
+
       // Fallback to text search
       const results = await db.select()
         .from(legalPrecedents)
@@ -600,11 +600,11 @@ export class LegalDocumentOperations {
               ilike(legalPrecedents.title, `%${query}%`),
               ilike(legalPrecedents.summary, `%${query}%`)
             ),
-            jurisdiction ? eq(legalPrecedents.jurisdiction, jurisdiction) : sqlRaw`1=1`
+            jurisdiction ? eq(legalPrecedents.jurisdiction, jurisdiction) : sql`1=1`
           )
         )
         .limit(limit);
-        
+
       return {
         precedents: results,
         total: results.length
@@ -630,7 +630,7 @@ export class RAGOperations {
   ): Promise<void> {
     return withTransaction(async (tx) => {
       const queryEmbedding = generateSampleEmbedding(768);
-      
+
       await tx.insert(userAiQueries).values({
         ...queryData,
         embedding: arrayToPgVector(queryEmbedding),
@@ -657,14 +657,14 @@ export class RAGOperations {
     try {
       const queryEmbedding = generateSampleEmbedding(768);
       const vectorQuery = arrayToPgVector(queryEmbedding);
-      
-      const conditions = [sqlRaw`(1 - (embedding <=> ${vectorQuery}::vector)) > 0.7`];
+
+      const conditions = [sql`(1 - (embedding <=> ${vectorQuery}::vector)) > 0.7`];
       if (userId) {
         conditions.push(eq(userAiQueries.userId, userId));
       }
 
-      const results = await db.execute(sqlRaw`
-        SELECT 
+      const results = await db.execute(sql`
+        SELECT
           query,
           response,
           confidence,
@@ -675,7 +675,7 @@ export class RAGOperations {
         ORDER BY similarity_score DESC
         LIMIT ${limit}
       `);
-      
+
       return results;
     } catch (error: any) {
       console.warn('Similar query search failed:', error);
@@ -698,11 +698,11 @@ export async function checkDatabaseHealth(): Promise<{
 
   try {
     // Test basic connection
-    await db.execute(sqlRaw`SELECT 1`);
+    await db.execute(sql`SELECT 1`);
     connected = true;
 
     // Test pgvector extension
-    await db.execute(sqlRaw`SELECT '[1,2,3]'::vector`);
+    await db.execute(sql`SELECT '[1,2,3]'::vector`);
     pgvectorEnabled = true;
   } catch (error: any) {
     errors.push(error instanceof Error ? error.message : 'Unknown database error');

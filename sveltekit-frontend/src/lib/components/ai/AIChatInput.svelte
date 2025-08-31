@@ -126,10 +126,10 @@
       class:near-limit={isNearLimit}
       class:at-limit={isAtLimit}
       rows={rows}
-      oninput={handleInput}
-      onkeydown={handleKeydown}
-      onfocus={handleFocus}
-      onblur={handleBlur}
+      input={handleInput}
+      keydown={handleKeydown}
+      on:focus={handleFocus}
+      on:blur={handleBlur}
       aria-label="Chat message input"
       spellcheck="true"
     ></textarea>

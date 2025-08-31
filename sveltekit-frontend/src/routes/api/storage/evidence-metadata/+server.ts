@@ -2,6 +2,8 @@
 import { json } from "@sveltejs/kit";
 
 import { evidence } from "$lib/server/db/schema-postgres";
+import type { RequestHandler } from './$types';
+
 
 export async function POST({ request }): Promise<any> {
   try {

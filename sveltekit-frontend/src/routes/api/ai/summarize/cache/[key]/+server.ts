@@ -1,6 +1,7 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
 import { getCache, deleteCache, redisTTL, memoryStats } from '$lib/server/summarizeCache';
+import type { RequestHandler } from './$types';
+
 
 // Introspection + invalidation route
 // GET /api/ai/summarize/cache/:key -> metadata & (optionally) summary

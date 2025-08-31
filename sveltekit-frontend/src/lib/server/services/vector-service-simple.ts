@@ -3,7 +3,8 @@
 // This is a temporary simple version to resolve TypeScript errors
 
 import { userEmbeddings } from "$lib/server/database/vector-schema-simple";
-import { desc, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
+import { desc } from "../db/index";
 import { db } from "$lib/database/schema";
 
 export interface EmbeddingOptions {
@@ -49,7 +50,7 @@ export class VectorService {
       limit?: number;
       threshold?: number;
     } = {},
-  ): Promise<unknown[]> {
+  ): Promise<any[]> {
     try {
       // TODO: Implement proper vector similarity search
       // For now, return empty array to avoid errors
@@ -62,7 +63,7 @@ export class VectorService {
   /**
    * Get embeddings for a user
    */
-  static async getUserEmbeddings(userId: string): Promise<unknown[]> {
+  static async getUserEmbeddings(userId: string): Promise<any[]> {
     try {
       const results = await db
         .select()

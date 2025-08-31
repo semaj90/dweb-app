@@ -1,6 +1,14 @@
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import crypto from "crypto";
+import * as bcrypt from "bcryptjs";
+import * as jwt from "jsonwebtoken";
+import * as crypto from "crypto";
+
+// JWT Payload type definition
+export interface JWTPayload {
+  userId: string;
+  exp: number;
+  iat?: number;
+  [key: string]: any;
+}
 
 
 const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret-key";
@@ -38,9 +46,10 @@ export function signJWT(payload: object): string {
 /**
  * Verifies a JWT token and returns the payload.
  */
-export function verifyJWT(token: string): unknown {
+export function verifyJWT(token: string): JWTPayload | null {
   try {
-    return jwt.verify(token, JWT_SECRET);
+    const payload = jwt.verify(token, JWT_SECRET);
+    return payload as JWTPayload;
   } catch (error: any) {
     return null;
   }

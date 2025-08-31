@@ -1,9 +1,10 @@
-import type { RequestHandler } from '$lib/types/server';
 import { json } from '@sveltejs/kit';
 import { withApiHandler } from '$lib/server/api/response';
 import { checkDatabaseHealth } from '$lib/server/db/enhanced-operations';
 import { SSRCache } from '$lib/server/ssr/enhanced-load';
 import net from "node:net";
+import type { RequestHandler } from './$types';
+
 
 type HttpCheck = {
   url: string;

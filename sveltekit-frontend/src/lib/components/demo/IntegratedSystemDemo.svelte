@@ -523,9 +523,9 @@
 
 <!-- Authentication Dialog -->
 <ModernAuthForm 
-  open={showAuthDialog} onopenchange={(open) => showAuthDialog = open}
+  open={showAuthDialog} on:openchange={(open) => showAuthDialog = open}
   mode="login"
-  onsuccess={handleAuthSuccess}
+  on:success={handleAuthSuccess}
 />
 
 <style>

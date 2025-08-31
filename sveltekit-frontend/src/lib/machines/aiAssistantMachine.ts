@@ -61,6 +61,12 @@ export interface AIInteraction {
   content: string;
   timestamp: Date;
   sessionId?: string;
+  prompt?: string;
+  response?: string;
+  model?: string;
+  tokensUsed?: number;
+  responseTime?: number;
+  confidence?: number;
   metadata?: Record<string, unknown>;
 }
 
@@ -71,6 +77,11 @@ export interface RAGQuery {
   documentId?: string;
   threshold?: number;
   filters?: any;
+  semantic?: {
+    useEmbeddings: boolean;
+    expandConcepts: boolean;
+    includeRelated: boolean;
+  };
 }
 
 export interface RAGResponse {
@@ -359,7 +370,7 @@ export interface ExtendedError {
   context?: string;
 }
 
-export interface LegalAnalysisResult {
+export interface AIAssistantAnalysisResult {
   entities: Array<{ text: string; type: string; confidence: number }>;
   concepts: Array<{ concept: string; relevance: number; category: string }>;
   precedents: Array<{ caseId: string; similarity: number; citation: string }>;
@@ -431,7 +442,7 @@ export interface LayerCacheStats {
   maxSize: number;
 }
 
-export interface WebWorkerPool {
+export interface IWebWorkerPool {
   executeTask(task: any): Promise<any>;
   terminate(): void;
 }

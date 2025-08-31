@@ -1,9 +1,10 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Unified Document Processing API
  * Endpoint for complete document processing pipeline
  */
 
-import { type RequestHandler,  json, error } from '@sveltejs/kit';
 import { unifiedDocumentProcessor, type DocumentProcessingConfig } from "$lib/services/unified-document-processor.js";
 
 export const POST: RequestHandler = async ({ request }) => {

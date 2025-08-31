@@ -1,5 +1,6 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { EventEmitter } from "events";
+import type { RequestHandler } from './$types';
+
 
 /**
  * Cluster Events API Endpoint (Server-Sent Events)

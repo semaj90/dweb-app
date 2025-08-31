@@ -367,7 +367,7 @@
               multiple
               accept="image/*,.pdf,.doc,.docx,.txt"
               class="hidden"
-              onchange={handleFileUpload}
+              change={handleFileUpload}
               disabled={isLoading}
             />
             <Button variant="outline" disabled={isLoading}>

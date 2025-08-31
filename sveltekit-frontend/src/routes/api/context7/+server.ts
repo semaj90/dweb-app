@@ -1,6 +1,7 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { json } from "@sveltejs/kit";
 import { databaseOrchestrator } from "$lib/services/comprehensive-database-orchestrator";
+import type { RequestHandler } from './$types';
+
 
 // Context7 MCP Server endpoints
 const MCP_ENDPOINTS = {

@@ -9,9 +9,10 @@ import {
   jsonb,
   integer,
   real,
+  relations,
 } from "drizzle-orm/pg-core";
 import { vector } from "pgvector/drizzle-orm";
-import { relations, sql } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 
 // Document embeddings for semantic search
 export const documentEmbeddings = pgTable(

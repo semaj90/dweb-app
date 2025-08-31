@@ -2,6 +2,7 @@ import { simpleAuthService } from '$lib/server/auth-simple';
 import { lucia } from '$lib/server/auth';
 import type { RequestHandler } from './$types';
 
+
 /**
  * Auto-login endpoint for demo user
  * POST /auth/login/auto

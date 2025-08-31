@@ -1,10 +1,11 @@
+import type { RequestHandler } from './$types';
+
 /**
  * Enhanced GPU Cache API Endpoint - Full Stack Integration
  * Provides RESTful interface with Binary Encoding + NES Cache + WebGPU + SOM Clustering
  * Integrates: Binary encoding, NES cache orchestrator, WebGPU RAG, SOM clustering, PostgreSQL+pgvector, Qdrant, Neo4j
  */
 
-import { json, type RequestHandler } from '@sveltejs/kit';
 import { gpuCacheOrchestrator, type GPUCacheConfig } from '$lib/services/gpu-cache-orchestrator';
 import gpuShaderCacheOrchestrator from '$lib/services/gpu-shader-cache-orchestrator';
 import { binaryGPUShaderCache } from '$lib/services/gpu-shader-cache-binary-extension';

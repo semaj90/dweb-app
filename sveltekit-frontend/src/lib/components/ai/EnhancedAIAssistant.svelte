@@ -150,14 +150,14 @@
     <div class="container mx-auto px-4">
       <button
         class="container mx-auto px-4"
-        on:click={() => (showSettings = !showSettings)}
+        click={() => (showSettings = !showSettings)}
         title="Settings"
       >
         <Settings class="container mx-auto px-4" />
       </button>
       <button
         class="container mx-auto px-4"
-        on:click={() => downloadChat()}
+        click={() => downloadChat()}
         title="Download chat"
         disabled={messages.length === 0}
       >
@@ -165,7 +165,7 @@
       </button>
       <button
         class="container mx-auto px-4"
-        on:click={() => clearChat()}
+        click={() => clearChat()}
         title="Clear chat"
         disabled={messages.length === 0}
       >
@@ -250,7 +250,7 @@
                 <li>
                   <button
                     class="container mx-auto px-4"
-                    on:click={() => showCitation(ref.citation)}
+                    click={() => showCitation(ref.citation)}
                   >
                     {ref.title}
                   </button>
@@ -279,14 +279,14 @@
     <div class="container mx-auto px-4">
       <textarea
         bind:value={query}
-        onkeydown={handleKeyDown}
+        keydown={handleKeyDown}
         {placeholder}
         rows="4"
         disabled={isLoading}
       ></textarea>
       <button
         class="container mx-auto px-4"
-        on:click={() => handleSubmit()}
+        click={() => handleSubmit()}
         disabled={!query.trim() || isLoading}
       >
         {#if isLoading}
@@ -300,7 +300,7 @@
 
   <!-- Citation Dialog -->
   {#if showCitationDialog}
-    <div class="modal-overlay" tabindex="-1" aria-modal="true" role="dialog" aria-labelledby="citation-modal-title" onkeydown={(e) => { if (e.key === 'Escape') showCitationDialog = false; }}>
+    <div class="modal-overlay" tabindex="-1" aria-modal="true" role="dialog" aria-labelledby="citation-modal-title" keydown={(e) => { if (e.key === 'Escape') showCitationDialog = false; }}>
       <div class="modal" role="document">
         <div class="modal-header">
           <h2 id="citation-modal-title" class="visually-hidden">Legal Citation</h2>
@@ -312,16 +312,16 @@
             <p>{selectedCitation}</p>
           </div>
           <div class="modal-actions">
-            <button class="btn-primary" on:click={() => insertCitation()}>
+            <button class="btn-primary" click={() => insertCitation()}>
               Insert Citation
             </button>
-            <button class="btn-secondary" on:click={() => navigator.clipboard.writeText(selectedCitation)}>
+            <button class="btn-secondary" click={() => navigator.clipboard.writeText(selectedCitation)}>
               Copy
             </button>
           </div>
         </div>
         <div class="modal-footer">
-          <button class="btn-close" on:click={() => (showCitationDialog = false)}>
+          <button class="btn-close" click={() => (showCitationDialog = false)}>
             Close
           </button>
         </div>
