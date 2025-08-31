@@ -1,5 +1,5 @@
 // Database connection and utilities for server-side operations
-import { drizzle } from 'drizzle-orm/node-postgres';
+import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import { env } from '$env/dynamic/private';
 import * as schema from './db/schema-postgres';

@@ -5,7 +5,7 @@
 CREATE DATABASE legal_ai_db;
 
 -- Create user with password
-CREATE USER legal_admin WITH ENCRYPTED PASSWORD 'LegalAI2024!';
+CREATE USER legal_admin WITH ENCRYPTED PASSWORD '123456';
 
 -- Grant privileges
 GRANT ALL PRIVILEGES ON DATABASE legal_ai_db TO legal_admin;

@@ -98,6 +98,7 @@ func NewConfig() *Config {
 	}
 }
 
+// Environment utility functions
 func getEnv(key, defaultValue string) string {
 	if value := os.Getenv(key); value != "" {
 		return value

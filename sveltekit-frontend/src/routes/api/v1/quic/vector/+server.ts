@@ -7,6 +7,7 @@ import type { RequestHandler } from './$types';
  * Backends: Qdrant (6333), pgvector via Enhanced RAG (8094)
  */
 import { json, error } from '@sveltejs/kit';
+import { randomUUID } from 'crypto';
 
 import { ensureError } from '$lib/utils/ensure-error';
 import { vectorOperations, type VectorSearchQuery } from '$lib/server/db/vector-operations.js';
@@ -117,7 +118,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
       meta: {
         useCache,
         backend,
-        requestId: crypto.randomUUID(),
+        requestId: randomUUID(),
         timestamp: Date.now()
       }
     };

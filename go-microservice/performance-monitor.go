@@ -5,31 +5,27 @@
 package main
 
 import (
-	"context"
-	"encoding/json"
 	"fmt"
 	"log"
-	"math"
 	"runtime"
 	"sync"
-	"sync/atomic"
 	"time"
 )
 
 // PerformanceMonitor manages comprehensive performance tracking
 type PerformanceMonitor struct {
-	mu                    sync.RWMutex
-	startTime             time.Time
-	collectors            map[string]MetricsCollector
-	aggregatedMetrics     *AggregatedMetrics
-	realtimeMetrics       *RealtimeMetrics
-	historicalData        *HistoricalMetrics
-	alertSystem           *AlertSystem
-	reportGenerator       *ReportGenerator
-	isRunning             bool
-	updateTicker          *time.Ticker
-	exportTicker          *time.Ticker
-	done                  chan bool
+	mu                sync.RWMutex
+	startTime         time.Time
+	collectors        map[string]MetricsCollector
+	aggregatedMetrics *AggregatedMetrics
+	realtimeMetrics   *RealtimeMetrics
+	historicalData    *HistoricalMetrics
+	alertSystem       *AlertSystem
+	reportGenerator   *ReportGenerator
+	isRunning         bool
+	updateTicker      *time.Ticker
+	exportTicker      *time.Ticker
+	done              chan bool
 }
 
 // MetricsCollector interface for different metric collection strategies
@@ -42,48 +38,150 @@ type MetricsCollector interface {
 
 // AggregatedMetrics contains all performance metrics
 type AggregatedMetrics struct {
-	SystemMetrics      *SystemMetrics      `json:"system_metrics"`
-	LlamaMetrics       *LlamaMetrics       `json:"llama_metrics"`
-	GPUMetrics         *GPUMetrics         `json:"gpu_metrics"`
-	TypeScriptMetrics  *TypeScriptMetrics  `json:"typescript_metrics"`
-	APIMetrics         *APIMetrics         `json:"api_metrics"`
-	CacheMetrics       *CacheMetrics       `json:"cache_metrics"`
-	WorkerPoolMetrics  *WorkerPoolMetrics  `json:"worker_pool_metrics"`
-	LastUpdated        time.Time           `json:"last_updated"`
-	CollectionDuration time.Duration       `json:"collection_duration"`
+	SystemMetrics      *SystemMetrics     `json:"system_metrics"`
+	LlamaMetrics       *LlamaMetrics      `json:"llama_metrics"`
+	GPUMetrics         *GPUMetrics        `json:"gpu_metrics"`
+	TypeScriptMetrics  *TypeScriptMetrics `json:"typescript_metrics"`
+	APIMetrics         *APIMetrics        `json:"api_metrics"`
+	CacheMetrics       *CacheMetrics      `json:"cache_metrics"`
+	WorkerPoolMetrics  *WorkerPoolMetrics `json:"worker_pool_metrics"`
+	LastUpdated        time.Time          `json:"last_updated"`
+	CollectionDuration time.Duration      `json:"collection_duration"`
 }
 
 // RealtimeMetrics contains real-time performance data
 type RealtimeMetrics struct {
-	CurrentRPS           float64              `json:"current_rps"`
-	AverageLatency       time.Duration        `json:"average_latency"`
-	ErrorRate            float64              `json:"error_rate"`
-	ActiveConnections    int                  `json:"active_connections"`
-	QueueDepth           int                  `json:"queue_depth"`
-	GPUUtilization       float64              `json:"gpu_utilization"`
-	MemoryUtilization    float64              `json:"memory_utilization"`
-	TokensPerSecond      float64              `json:"tokens_per_second"`
-	FixesPerSecond       float64              `json:"fixes_per_second"`
-	CacheHitRate         float64              `json:"cache_hit_rate"`
-	Timestamp            time.Time            `json:"timestamp"`
-	Alerts               []PerformanceAlert   `json:"alerts"`
+	CurrentRPS        float64            `json:"current_rps"`
+	AverageLatency    time.Duration      `json:"average_latency"`
+	ErrorRate         float64            `json:"error_rate"`
+	ActiveConnections int                `json:"active_connections"`
+	QueueDepth        int                `json:"queue_depth"`
+	GPUUtilization    float64            `json:"gpu_utilization"`
+	MemoryUtilization float64            `json:"memory_utilization"`
+	TokensPerSecond   float64            `json:"tokens_per_second"`
+	FixesPerSecond    float64            `json:"fixes_per_second"`
+	CacheHitRate      float64            `json:"cache_hit_rate"`
+	Timestamp         time.Time          `json:"timestamp"`
+	Alerts            []PerformanceAlert `json:"alerts"`
 }
 
-// SystemMetrics tracks overall system performance
+// Missing type definitions for compilation
 type SystemMetrics struct {
-	CPUUsagePercent      float64   `json:"cpu_usage_percent"`
-	MemoryUsageMB        int64     `json:"memory_usage_mb"`
-	MemoryTotalMB        int64     `json:"memory_total_mb"`
-	GoroutineCount       int       `json:"goroutine_count"`
-	GCPauseTime          time.Duration `json:"gc_pause_time"`
-	HeapAllocMB          float64   `json:"heap_alloc_mb"`
-	HeapSysMB            float64   `json:"heap_sys_mb"`
-	NumGC                uint32    `json:"num_gc"`
-	LoadAverage          float64   `json:"load_average"`
-	OpenFiles            int       `json:"open_files"`
-	NetworkConnections   int       `json:"network_connections"`
-	DiskIOReadMB         float64   `json:"disk_io_read_mb"`
-	DiskIOWriteMB        float64   `json:"disk_io_write_mb"`
+	CPU          *CPUMetrics          `json:"cpu"`
+	Memory       *MemoryMetrics       `json:"memory"`
+	Disk         *DiskMetrics         `json:"disk"`
+	Network      *NetworkMetrics      `json:"network"`
+	GPUHealth    *GPUHealthMetrics    `json:"gpu_health"`
+	Runtime      *RuntimeMetrics      `json:"runtime"`
+	Services     map[string]*ServiceMetrics `json:"services"`
+	Timestamp    time.Time            `json:"timestamp"`
+}
+
+type CPUMetrics struct {
+	UsagePercent    []float64 `json:"usage_percent"`
+	Cores           int       `json:"cores"`
+	Threads         int       `json:"threads"`
+	LoadAverage     []float64 `json:"load_average"`
+	Temperature     float64   `json:"temperature"`
+	FrequencyMHz    int       `json:"frequency_mhz"`
+	ProcessCount    int       `json:"process_count"`
+	ContextSwitches int64     `json:"context_switches"`
+}
+
+type MemoryMetrics struct {
+	TotalBytes     uint64  `json:"total_bytes"`
+	UsedBytes      uint64  `json:"used_bytes"`
+	FreeBytes      uint64  `json:"free_bytes"`
+	AvailableBytes uint64  `json:"available_bytes"`
+	UsagePercent   float64 `json:"usage_percent"`
+	UsedPercent    float64 `json:"used_percent"`
+	Total          uint64  `json:"total"`
+	Used           uint64  `json:"used"`
+	Available      uint64  `json:"available"`
+	SwapTotal      uint64  `json:"swap_total"`
+	SwapUsed       uint64  `json:"swap_used"`
+	SwapFree       uint64  `json:"swap_free"`
+	Cached         uint64  `json:"cached"`
+	Buffered       uint64  `json:"buffered"`
+}
+
+type DiskMetrics struct {
+	TotalBytes     uint64  `json:"total_bytes"`
+	UsedBytes      uint64  `json:"used_bytes"`
+	FreeBytes      uint64  `json:"free_bytes"`
+	UsagePercent   float64 `json:"usage_percent"`
+	ReadOps        uint64  `json:"read_ops"`
+	WriteOps       uint64  `json:"write_ops"`
+	ReadBytes      uint64  `json:"read_bytes"`
+	WriteBytes     uint64  `json:"write_bytes"`
+	IOPSRead       float64 `json:"iops_read"`
+	IOPSWrite      float64 `json:"iops_write"`
+}
+
+type NetworkMetrics struct {
+	BytesReceived uint64  `json:"bytes_received"`
+	BytesSent     uint64  `json:"bytes_sent"`
+	PacketsReceived uint64 `json:"packets_received"`
+	PacketsSent   uint64  `json:"packets_sent"`
+	ErrorsIn      uint64  `json:"errors_in"`
+	ErrorsOut     uint64  `json:"errors_out"`
+	DroppedIn     uint64  `json:"dropped_in"`
+	DroppedOut    uint64  `json:"dropped_out"`
+	ThroughputIn  float64 `json:"throughput_in"`
+	ThroughputOut float64 `json:"throughput_out"`
+}
+
+type GPUHealthMetrics struct {
+	DeviceCount       int     `json:"device_count"`
+	ActiveDevices     int     `json:"active_devices"`
+	TotalMemoryMB     int64   `json:"total_memory_mb"`
+	UsedMemoryMB      int64   `json:"used_memory_mb"`
+	FreeMemoryMB      int64   `json:"free_memory_mb"`
+	GPUUtilization    float64 `json:"gpu_utilization"`
+	MemoryUtilization float64 `json:"memory_utilization"`
+	Temperature       int     `json:"temperature"`
+	PowerUsage        float64 `json:"power_usage"`
+	FanSpeed          int     `json:"fan_speed"`
+	Available         bool    `json:"available"`
+}
+
+type RuntimeMetrics struct {
+	GoVersion      string        `json:"go_version"`
+	NumGoroutines  int           `json:"num_goroutines"`
+	NumCPU         int           `json:"num_cpu"`
+	GOMEMLIMIT     int64         `json:"gomemlimit"`
+	MemStats       runtime.MemStats `json:"mem_stats"`
+	GCStats        GCStats       `json:"gc_stats"`
+	Uptime         time.Duration `json:"uptime"`
+	StartTime      time.Time     `json:"start_time"`
+	GoroutineCount int           `json:"goroutine_count"`
+	HeapAllocMB    float64       `json:"heap_alloc_mb"`
+	HeapSysMB      float64       `json:"heap_sys_mb"`
+	NumGC          uint32        `json:"num_gc"`
+	GCPauseTime    time.Duration `json:"gc_pause_time"`
+}
+
+type ServiceMetrics struct {
+	ServiceName    string        `json:"service_name"`
+	Status         string        `json:"status"`
+	Uptime         time.Duration `json:"uptime"`
+	RequestCount   int64         `json:"request_count"`
+	ErrorCount     int64         `json:"error_count"`
+	LatencyP50     time.Duration `json:"latency_p50"`
+	LatencyP95     time.Duration `json:"latency_p95"`
+	LatencyP99     time.Duration `json:"latency_p99"`
+	ThroughputRPS  float64       `json:"throughput_rps"`
+	LastHealthCheck time.Time    `json:"last_health_check"`
+}
+
+type GCStats struct {
+	NumGC        uint32        `json:"num_gc"`
+	PauseTotal   time.Duration `json:"pause_total"`
+	PauseNs      []uint64      `json:"pause_ns"`
+	LastGC       time.Time     `json:"last_gc"`
+	NextGC       uint64        `json:"next_gc"`
+	EnableGC     bool          `json:"enable_gc"`
+	DebugGC      bool          `json:"debug_gc"`
 }
 
 // LlamaMetrics tracks go-llama engine performance
@@ -107,122 +205,122 @@ type LlamaMetrics struct {
 
 // GPUMetrics tracks GPU acceleration performance
 type GPUMetrics struct {
-	IsAvailable          bool          `json:"is_available"`
-	DeviceName           string        `json:"device_name"`
-	TotalMemoryMB        int64         `json:"total_memory_mb"`
-	UsedMemoryMB         int64         `json:"used_memory_mb"`
-	FreeMemoryMB         int64         `json:"free_memory_mb"`
-	MemoryUtilization    float64       `json:"memory_utilization"`
-	GPUUtilization       float64       `json:"gpu_utilization"`
-	Temperature          int           `json:"temperature"`
-	PowerUsage           float64       `json:"power_usage"`
-	ClockSpeed           int           `json:"clock_speed"`
-	CUDAKernelLaunches   int64         `json:"cuda_kernel_launches"`
-	CUDAErrors           int64         `json:"cuda_errors"`
-	TotalJobs            int64         `json:"total_jobs"`
-	CompletedJobs        int64         `json:"completed_jobs"`
-	FailedJobs           int64         `json:"failed_jobs"`
-	AverageJobTime       time.Duration `json:"average_job_time"`
-	ThroughputPerSec     float64       `json:"throughput_per_sec"`
+	IsAvailable        bool          `json:"is_available"`
+	DeviceName         string        `json:"device_name"`
+	TotalMemoryMB      int64         `json:"total_memory_mb"`
+	UsedMemoryMB       int64         `json:"used_memory_mb"`
+	FreeMemoryMB       int64         `json:"free_memory_mb"`
+	MemoryUtilization  float64       `json:"memory_utilization"`
+	GPUUtilization     float64       `json:"gpu_utilization"`
+	Temperature        int           `json:"temperature"`
+	PowerUsage         float64       `json:"power_usage"`
+	ClockSpeed         int           `json:"clock_speed"`
+	CUDAKernelLaunches int64         `json:"cuda_kernel_launches"`
+	CUDAErrors         int64         `json:"cuda_errors"`
+	TotalJobs          int64         `json:"total_jobs"`
+	CompletedJobs      int64         `json:"completed_jobs"`
+	FailedJobs         int64         `json:"failed_jobs"`
+	AverageJobTime     time.Duration `json:"average_job_time"`
+	ThroughputPerSec   float64       `json:"throughput_per_sec"`
 }
 
 // TypeScriptMetrics tracks TypeScript error processing
 type TypeScriptMetrics struct {
-	TotalErrors          int64         `json:"total_errors"`
-	FixedErrors          int64         `json:"fixed_errors"`
-	FailedFixes          int64         `json:"failed_fixes"`
-	FixSuccessRate       float64       `json:"fix_success_rate"`
-	AverageFixTime       time.Duration `json:"average_fix_time"`
-	TemplateMatches      int64         `json:"template_matches"`
-	LlamaInferences      int64         `json:"llama_inferences"`
-	GPUAccelerations     int64         `json:"gpu_accelerations"`
-	CacheHits            int64         `json:"cache_hits"`
-	CacheMisses          int64         `json:"cache_misses"`
-	CacheHitRate         float64       `json:"cache_hit_rate"`
-	ErrorTypeDistribution map[string]int64 `json:"error_type_distribution"`
+	TotalErrors            int64            `json:"total_errors"`
+	FixedErrors            int64            `json:"fixed_errors"`
+	FailedFixes            int64            `json:"failed_fixes"`
+	FixSuccessRate         float64          `json:"fix_success_rate"`
+	AverageFixTime         time.Duration    `json:"average_fix_time"`
+	TemplateMatches        int64            `json:"template_matches"`
+	LlamaInferences        int64            `json:"llama_inferences"`
+	GPUAccelerations       int64            `json:"gpu_accelerations"`
+	CacheHits              int64            `json:"cache_hits"`
+	CacheMisses            int64            `json:"cache_misses"`
+	CacheHitRate           float64          `json:"cache_hit_rate"`
+	ErrorTypeDistribution  map[string]int64 `json:"error_type_distribution"`
 	ConfidenceDistribution map[string]int64 `json:"confidence_distribution"`
-	ProcessingStrategies map[string]int64 `json:"processing_strategies"`
+	ProcessingStrategies   map[string]int64 `json:"processing_strategies"`
 }
 
 // APIMetrics tracks API endpoint performance
 type APIMetrics struct {
-	TotalRequests        int64                    `json:"total_requests"`
-	SuccessfulRequests   int64                    `json:"successful_requests"`
-	FailedRequests       int64                    `json:"failed_requests"`
-	AverageResponseTime  time.Duration            `json:"average_response_time"`
-	MedianResponseTime   time.Duration            `json:"median_response_time"`
-	P95ResponseTime      time.Duration            `json:"p95_response_time"`
-	P99ResponseTime      time.Duration            `json:"p99_response_time"`
-	RequestsPerSecond    float64                  `json:"requests_per_second"`
-	ErrorRate            float64                  `json:"error_rate"`
-	ActiveConnections    int                      `json:"active_connections"`
-	EndpointMetrics      map[string]*EndpointMetric `json:"endpoint_metrics"`
-	StatusCodeDistribution map[int]int64          `json:"status_code_distribution"`
+	TotalRequests          int64                      `json:"total_requests"`
+	SuccessfulRequests     int64                      `json:"successful_requests"`
+	FailedRequests         int64                      `json:"failed_requests"`
+	AverageResponseTime    time.Duration              `json:"average_response_time"`
+	MedianResponseTime     time.Duration              `json:"median_response_time"`
+	P95ResponseTime        time.Duration              `json:"p95_response_time"`
+	P99ResponseTime        time.Duration              `json:"p99_response_time"`
+	RequestsPerSecond      float64                    `json:"requests_per_second"`
+	ErrorRate              float64                    `json:"error_rate"`
+	ActiveConnections      int                        `json:"active_connections"`
+	EndpointMetrics        map[string]*EndpointMetric `json:"endpoint_metrics"`
+	StatusCodeDistribution map[int]int64              `json:"status_code_distribution"`
 }
 
 // EndpointMetric tracks individual endpoint performance
 type EndpointMetric struct {
-	Path                 string        `json:"path"`
-	Method               string        `json:"method"`
-	TotalRequests        int64         `json:"total_requests"`
-	AverageResponseTime  time.Duration `json:"average_response_time"`
-	ErrorRate            float64       `json:"error_rate"`
-	LastAccessed         time.Time     `json:"last_accessed"`
+	Path                string        `json:"path"`
+	Method              string        `json:"method"`
+	TotalRequests       int64         `json:"total_requests"`
+	AverageResponseTime time.Duration `json:"average_response_time"`
+	ErrorRate           float64       `json:"error_rate"`
+	LastAccessed        time.Time     `json:"last_accessed"`
 }
 
 // CacheMetrics tracks caching system performance
 type CacheMetrics struct {
-	TotalEntries         int64         `json:"total_entries"`
-	HitCount             int64         `json:"hit_count"`
-	MissCount            int64         `json:"miss_count"`
-	HitRate              float64       `json:"hit_rate"`
-	EvictionCount        int64         `json:"eviction_count"`
-	MemoryUsageMB        float64       `json:"memory_usage_mb"`
-	AverageAccessTime    time.Duration `json:"average_access_time"`
-	MostAccessedKeys     []string      `json:"most_accessed_keys"`
-	RecentlyAddedKeys    []string      `json:"recently_added_keys"`
-	ExpirationCount      int64         `json:"expiration_count"`
+	TotalEntries      int64         `json:"total_entries"`
+	HitCount          int64         `json:"hit_count"`
+	MissCount         int64         `json:"miss_count"`
+	HitRate           float64       `json:"hit_rate"`
+	EvictionCount     int64         `json:"eviction_count"`
+	MemoryUsageMB     float64       `json:"memory_usage_mb"`
+	AverageAccessTime time.Duration `json:"average_access_time"`
+	MostAccessedKeys  []string      `json:"most_accessed_keys"`
+	RecentlyAddedKeys []string      `json:"recently_added_keys"`
+	ExpirationCount   int64         `json:"expiration_count"`
 }
 
 // WorkerPoolMetrics tracks worker pool performance
 type WorkerPoolMetrics struct {
-	TotalPools           int                        `json:"total_pools"`
-	ActiveWorkers        int                        `json:"active_workers"`
-	IdleWorkers          int                        `json:"idle_workers"`
-	TotalJobs            int64                      `json:"total_jobs"`
-	CompletedJobs        int64                      `json:"completed_jobs"`
-	FailedJobs           int64                      `json:"failed_jobs"`
-	QueueLength          int                        `json:"queue_length"`
-	AverageWaitTime      time.Duration              `json:"average_wait_time"`
-	AverageProcessTime   time.Duration              `json:"average_process_time"`
-	WorkerUtilization    float64                    `json:"worker_utilization"`
-	PoolMetrics          map[string]*PoolMetric     `json:"pool_metrics"`
+	TotalPools         int                    `json:"total_pools"`
+	ActiveWorkers      int                    `json:"active_workers"`
+	IdleWorkers        int                    `json:"idle_workers"`
+	TotalJobs          int64                  `json:"total_jobs"`
+	CompletedJobs      int64                  `json:"completed_jobs"`
+	FailedJobs         int64                  `json:"failed_jobs"`
+	QueueLength        int                    `json:"queue_length"`
+	AverageWaitTime    time.Duration          `json:"average_wait_time"`
+	AverageProcessTime time.Duration          `json:"average_process_time"`
+	WorkerUtilization  float64                `json:"worker_utilization"`
+	PoolMetrics        map[string]*PoolMetric `json:"pool_metrics"`
 }
 
 // PoolMetric tracks individual pool performance
 type PoolMetric struct {
-	PoolID               string        `json:"pool_id"`
-	MaxWorkers           int           `json:"max_workers"`
-	ActiveWorkers        int           `json:"active_workers"`
-	CompletedJobs        int64         `json:"completed_jobs"`
-	AverageJobTime       time.Duration `json:"average_job_time"`
-	QueueLength          int           `json:"queue_length"`
+	PoolID         string        `json:"pool_id"`
+	MaxWorkers     int           `json:"max_workers"`
+	ActiveWorkers  int           `json:"active_workers"`
+	CompletedJobs  int64         `json:"completed_jobs"`
+	AverageJobTime time.Duration `json:"average_job_time"`
+	QueueLength    int           `json:"queue_length"`
 }
 
 // HistoricalMetrics stores time-series performance data
 type HistoricalMetrics struct {
-	mu               sync.RWMutex
-	DataPoints       []*HistoricalDataPoint `json:"data_points"`
-	MaxDataPoints    int                    `json:"max_data_points"`
-	RetentionPeriod  time.Duration          `json:"retention_period"`
-	AggregationWindow time.Duration         `json:"aggregation_window"`
+	mu                sync.RWMutex
+	DataPoints        []*HistoricalDataPoint `json:"data_points"`
+	MaxDataPoints     int                    `json:"max_data_points"`
+	RetentionPeriod   time.Duration          `json:"retention_period"`
+	AggregationWindow time.Duration          `json:"aggregation_window"`
 }
 
 // HistoricalDataPoint represents a single metrics snapshot
 type HistoricalDataPoint struct {
-	Timestamp         time.Time               `json:"timestamp"`
-	AggregatedMetrics *AggregatedMetrics      `json:"aggregated_metrics"`
-	Summary           *MetricsSummary         `json:"summary"`
+	Timestamp         time.Time          `json:"timestamp"`
+	AggregatedMetrics *AggregatedMetrics `json:"aggregated_metrics"`
+	Summary           *MetricsSummary    `json:"summary"`
 }
 
 // MetricsSummary provides high-level performance summary
@@ -248,17 +346,17 @@ type AlertSystem struct {
 
 // PerformanceAlert represents a performance alert
 type PerformanceAlert struct {
-	ID          string                 `json:"id"`
-	Type        string                 `json:"type"`
-	Severity    string                 `json:"severity"`
-	Message     string                 `json:"message"`
-	Metric      string                 `json:"metric"`
-	Value       float64                `json:"value"`
-	Threshold   float64                `json:"threshold"`
-	Timestamp   time.Time              `json:"timestamp"`
-	Resolved    bool                   `json:"resolved"`
-	ResolvedAt  *time.Time             `json:"resolved_at,omitempty"`
-	Context     map[string]interface{} `json:"context"`
+	ID         string                 `json:"id"`
+	Type       string                 `json:"type"`
+	Severity   string                 `json:"severity"`
+	Message    string                 `json:"message"`
+	Metric     string                 `json:"metric"`
+	Value      float64                `json:"value"`
+	Threshold  float64                `json:"threshold"`
+	Timestamp  time.Time              `json:"timestamp"`
+	Resolved   bool                   `json:"resolved"`
+	ResolvedAt *time.Time             `json:"resolved_at,omitempty"`
+	Context    map[string]interface{} `json:"context"`
 }
 
 // AlertThresholds defines performance alert thresholds
@@ -275,32 +373,32 @@ type AlertThresholds struct {
 
 // ReportGenerator generates performance reports
 type ReportGenerator struct {
-	mu                   sync.RWMutex
-	reportTemplates      map[string]*ReportTemplate
-	scheduledReports     map[string]*ScheduledReport
-	lastReportTime       map[string]time.Time
+	mu               sync.RWMutex
+	reportTemplates  map[string]*ReportTemplate
+	scheduledReports map[string]*ScheduledReport
+	lastReportTime   map[string]time.Time
 }
 
 // ReportTemplate defines report generation template
 type ReportTemplate struct {
-	ID              string        `json:"id"`
-	Name            string        `json:"name"`
-	Description     string        `json:"description"`
-	Metrics         []string      `json:"metrics"`
-	Format          string        `json:"format"`
-	AggregationPeriod time.Duration `json:"aggregation_period"`
-	Filters         map[string]interface{} `json:"filters"`
+	ID                string                 `json:"id"`
+	Name              string                 `json:"name"`
+	Description       string                 `json:"description"`
+	Metrics           []string               `json:"metrics"`
+	Format            string                 `json:"format"`
+	AggregationPeriod time.Duration          `json:"aggregation_period"`
+	Filters           map[string]interface{} `json:"filters"`
 }
 
 // ScheduledReport represents a scheduled performance report
 type ScheduledReport struct {
-	ID              string        `json:"id"`
-	TemplateID      string        `json:"template_id"`
-	Schedule        string        `json:"schedule"`
-	NextRun         time.Time     `json:"next_run"`
-	LastRun         *time.Time    `json:"last_run,omitempty"`
-	IsEnabled       bool          `json:"is_enabled"`
-	Recipients      []string      `json:"recipients"`
+	ID         string     `json:"id"`
+	TemplateID string     `json:"template_id"`
+	Schedule   string     `json:"schedule"`
+	NextRun    time.Time  `json:"next_run"`
+	LastRun    *time.Time `json:"last_run,omitempty"`
+	IsEnabled  bool       `json:"is_enabled"`
+	Recipients []string   `json:"recipients"`
 }
 
 // MetricsBatch contains a batch of collected metrics
@@ -332,14 +430,14 @@ func NewPerformanceMonitor() *PerformanceMonitor {
 			lastAlertTime:  make(map[string]time.Time),
 			cooldownPeriod: 5 * time.Minute,
 			thresholds: &AlertThresholds{
-				MaxLatencyMs:         5000,  // 5 seconds
-				MaxErrorRate:         0.05,  // 5%
-				MaxGPUUtilization:    0.90,  // 90%
-				MaxMemoryUtilization: 0.85,  // 85%
-				MinCacheHitRate:      0.70,  // 70%
+				MaxLatencyMs:         5000, // 5 seconds
+				MaxErrorRate:         0.05, // 5%
+				MaxGPUUtilization:    0.90, // 90%
+				MaxMemoryUtilization: 0.85, // 85%
+				MinCacheHitRate:      0.70, // 70%
 				MaxQueueDepth:        100,
-				MaxGPUTemperature:    85,    // 85°C
-				MinFixSuccessRate:    0.80,  // 80%
+				MaxGPUTemperature:    85,   // 85°C
+				MinFixSuccessRate:    0.80, // 80%
 			},
 		},
 		reportGenerator: &ReportGenerator{
@@ -465,9 +563,18 @@ func (pm *PerformanceMonitor) processMetricsBatch(batch *MetricsBatch) {
 func (pm *PerformanceMonitor) updateAggregatedMetrics() {
 	// This would aggregate metrics from all collectors
 	// For now, we'll use placeholder values
-	
+
 	if pm.aggregatedMetrics.SystemMetrics == nil {
-		pm.aggregatedMetrics.SystemMetrics = &SystemMetrics{}
+		pm.aggregatedMetrics.SystemMetrics = &SystemMetrics{
+			Timestamp: time.Now(),
+			CPU:       &CPUMetrics{},
+			Memory:    &MemoryMetrics{},
+			Disk:      &DiskMetrics{},
+			Network:   &NetworkMetrics{},
+			GPUHealth: &GPUHealthMetrics{},
+			Runtime:   &RuntimeMetrics{},
+			Services:  make(map[string]*ServiceMetrics),
+		}
 	}
 	if pm.aggregatedMetrics.LlamaMetrics == nil {
 		pm.aggregatedMetrics.LlamaMetrics = &LlamaMetrics{}
@@ -484,8 +591,8 @@ func (pm *PerformanceMonitor) updateAggregatedMetrics() {
 	}
 	if pm.aggregatedMetrics.APIMetrics == nil {
 		pm.aggregatedMetrics.APIMetrics = &APIMetrics{
-			EndpointMetrics:         make(map[string]*EndpointMetric),
-			StatusCodeDistribution:  make(map[int]int64),
+			EndpointMetrics:        make(map[string]*EndpointMetric),
+			StatusCodeDistribution: make(map[int]int64),
 		}
 	}
 	if pm.aggregatedMetrics.CacheMetrics == nil {
@@ -501,7 +608,7 @@ func (pm *PerformanceMonitor) updateAggregatedMetrics() {
 // updateRealtimeMetrics updates real-time performance metrics
 func (pm *PerformanceMonitor) updateRealtimeMetrics() {
 	now := time.Now()
-	
+
 	// Calculate real-time values from aggregated metrics
 	if pm.aggregatedMetrics.APIMetrics != nil {
 		duration := now.Sub(pm.realtimeMetrics.Timestamp).Seconds()
@@ -518,7 +625,9 @@ func (pm *PerformanceMonitor) updateRealtimeMetrics() {
 	}
 
 	if pm.aggregatedMetrics.SystemMetrics != nil {
-		pm.realtimeMetrics.MemoryUtilization = pm.aggregatedMetrics.SystemMetrics.CPUUsagePercent
+		if len(pm.aggregatedMetrics.SystemMetrics.CPU.UsagePercent) > 0 {
+			pm.realtimeMetrics.MemoryUtilization = pm.aggregatedMetrics.SystemMetrics.CPU.UsagePercent[0]
+		}
 	}
 
 	if pm.aggregatedMetrics.LlamaMetrics != nil {
@@ -539,8 +648,8 @@ func (pm *PerformanceMonitor) checkAlerts() {
 
 	// Check latency threshold
 	if pm.realtimeMetrics.AverageLatency > time.Duration(thresholds.MaxLatencyMs)*time.Millisecond {
-		pm.triggerAlert("high_latency", "warning", 
-			fmt.Sprintf("Average latency (%v) exceeds threshold (%dms)", 
+		pm.triggerAlert("high_latency", "warning",
+			fmt.Sprintf("Average latency (%v) exceeds threshold (%dms)",
 				pm.realtimeMetrics.AverageLatency, thresholds.MaxLatencyMs),
 			"average_latency",
 			float64(pm.realtimeMetrics.AverageLatency.Milliseconds()),
@@ -581,7 +690,7 @@ func (pm *PerformanceMonitor) checkAlerts() {
 // triggerAlert creates and registers a new performance alert
 func (pm *PerformanceMonitor) triggerAlert(alertType, severity, message, metric string, value, threshold float64) {
 	alertID := fmt.Sprintf("%s_%d", alertType, time.Now().Unix())
-	
+
 	// Check cooldown period
 	if lastAlert, exists := pm.alertSystem.lastAlertTime[alertType]; exists {
 		if time.Since(lastAlert) < pm.alertSystem.cooldownPeriod {
@@ -712,7 +821,7 @@ func (pm *PerformanceMonitor) exportHistoricalData() {
 			ErrorRate:         metrics.APIMetrics.ErrorRate,
 			ThroughputRPS:     metrics.APIMetrics.RequestsPerSecond,
 			GPUUtilization:    metrics.GPUMetrics.GPUUtilization,
-			MemoryUtilization: metrics.SystemMetrics.CPUUsagePercent,
+			MemoryUtilization: metrics.SystemMetrics.Memory.UsedPercent,
 			FixSuccessRate:    metrics.TypeScriptMetrics.FixSuccessRate,
 			CacheHitRate:      metrics.TypeScriptMetrics.CacheHitRate,
 		},
@@ -721,7 +830,7 @@ func (pm *PerformanceMonitor) exportHistoricalData() {
 	// Add to historical data
 	pm.historicalData.mu.Lock()
 	pm.historicalData.DataPoints = append(pm.historicalData.DataPoints, dataPoint)
-	
+
 	// Limit data points
 	if len(pm.historicalData.DataPoints) > pm.historicalData.MaxDataPoints {
 		pm.historicalData.DataPoints = pm.historicalData.DataPoints[1:]
@@ -745,7 +854,7 @@ func (pm *PerformanceMonitor) cleanupOldData() {
 
 	if len(filtered) < len(pm.historicalData.DataPoints) {
 		pm.historicalData.DataPoints = filtered
-		log.Printf("🧹 Cleaned up %d old historical data points", 
+		log.Printf("🧹 Cleaned up %d old historical data points",
 			len(pm.historicalData.DataPoints)-len(filtered))
 	}
 }
@@ -829,7 +938,7 @@ func (pm *PerformanceMonitor) checkScheduledReports() {
 // generateScheduledReport generates a scheduled performance report
 func (pm *PerformanceMonitor) generateScheduledReport(report *ScheduledReport) {
 	log.Printf("📊 Generating scheduled report: %s", report.ID)
-	
+
 	// This would generate the actual report
 	// For now, just update the schedule
 	pm.reportGenerator.mu.Lock()
@@ -865,19 +974,19 @@ func (pm *PerformanceMonitor) processAPIMetrics(metrics map[string]interface{}) 
 func (pm *PerformanceMonitor) loadDefaultReportTemplates() {
 	templates := []*ReportTemplate{
 		{
-			ID:          "daily_summary",
-			Name:        "Daily Performance Summary",
-			Description: "Daily performance overview with key metrics",
-			Metrics:     []string{"throughput", "latency", "error_rate", "gpu_utilization"},
-			Format:      "json",
+			ID:                "daily_summary",
+			Name:              "Daily Performance Summary",
+			Description:       "Daily performance overview with key metrics",
+			Metrics:           []string{"throughput", "latency", "error_rate", "gpu_utilization"},
+			Format:            "json",
 			AggregationPeriod: 24 * time.Hour,
 		},
 		{
-			ID:          "typescript_analysis",
-			Name:        "TypeScript Error Analysis",
-			Description: "Analysis of TypeScript error processing performance",
-			Metrics:     []string{"fix_success_rate", "processing_time", "error_types"},
-			Format:      "json",
+			ID:                "typescript_analysis",
+			Name:              "TypeScript Error Analysis",
+			Description:       "Analysis of TypeScript error processing performance",
+			Metrics:           []string{"fix_success_rate", "processing_time", "error_types"},
+			Format:            "json",
 			AggregationPeriod: time.Hour,
 		},
 	}
@@ -928,7 +1037,41 @@ func (smc *SystemMetricsCollector) CollectMetrics() (*MetricsBatch, error) {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
 
+	// Collect basic CPU info (simplified)
+	cpuPercents := []float64{50.0} // Placeholder - would use actual CPU monitoring
+
+	// Collect basic memory info
+	memStats := MemoryMetrics{
+		Total:       m.Sys,
+		Used:        m.Alloc,
+		Available:   m.Sys - m.Alloc,
+		UsedPercent: float64(m.Alloc) / float64(m.Sys) * 100,
+	}
+
+	// Collect runtime metrics
+	runtimeStats := RuntimeMetrics{
+		GoroutineCount: runtime.NumGoroutine(),
+		HeapAllocMB:    float64(m.Alloc) / 1024 / 1024,
+		HeapSysMB:      float64(m.Sys) / 1024 / 1024,
+		NumGC:          m.NumGC,
+		GCPauseTime:    time.Duration(m.PauseNs[(m.NumGC+255)%256]),
+	}
+
+	systemMetrics := SystemMetrics{
+		Timestamp: time.Now(),
+		CPU: &CPUMetrics{
+			UsagePercent: cpuPercents,
+			Cores:        runtime.NumCPU(),
+		},
+		Memory:  &memStats,
+		Runtime: &runtimeStats,
+		GPUHealth: &GPUHealthMetrics{
+			Available: false, // Placeholder
+		},
+	}
+
 	metrics := map[string]interface{}{
+		"system_metrics":  systemMetrics,
 		"goroutine_count": runtime.NumGoroutine(),
 		"heap_alloc_mb":   float64(m.Alloc) / 1024 / 1024,
 		"heap_sys_mb":     float64(m.Sys) / 1024 / 1024,
@@ -946,12 +1089,12 @@ func (smc *SystemMetricsCollector) CollectMetrics() (*MetricsBatch, error) {
 
 func (smc *SystemMetricsCollector) GetCollectorID() string   { return "system" }
 func (smc *SystemMetricsCollector) GetCollectorType() string { return "system" }
-func (smc *SystemMetricsCollector) Reset()                  {}
+func (smc *SystemMetricsCollector) Reset()                   {}
 
 // Additional placeholder collectors
 type LlamaMetricsCollector struct{}
 
-func NewLlamaMetricsCollector() *LlamaMetricsCollector     { return &LlamaMetricsCollector{} }
+func NewLlamaMetricsCollector() *LlamaMetricsCollector { return &LlamaMetricsCollector{} }
 func (lmc *LlamaMetricsCollector) CollectMetrics() (*MetricsBatch, error) {
 	return &MetricsBatch{CollectorID: "llama", CollectorType: "llama", Timestamp: time.Now(), Metrics: make(map[string]interface{})}, nil
 }
@@ -961,7 +1104,7 @@ func (lmc *LlamaMetricsCollector) Reset()                   {}
 
 type GPUMetricsCollector struct{}
 
-func NewGPUMetricsCollector() *GPUMetricsCollector     { return &GPUMetricsCollector{} }
+func NewGPUMetricsCollector() *GPUMetricsCollector { return &GPUMetricsCollector{} }
 func (gmc *GPUMetricsCollector) CollectMetrics() (*MetricsBatch, error) {
 	return &MetricsBatch{CollectorID: "gpu", CollectorType: "gpu", Timestamp: time.Now(), Metrics: make(map[string]interface{})}, nil
 }
@@ -971,7 +1114,9 @@ func (gmc *GPUMetricsCollector) Reset()                   {}
 
 type TypeScriptMetricsCollector struct{}
 
-func NewTypeScriptMetricsCollector() *TypeScriptMetricsCollector { return &TypeScriptMetricsCollector{} }
+func NewTypeScriptMetricsCollector() *TypeScriptMetricsCollector {
+	return &TypeScriptMetricsCollector{}
+}
 func (tmc *TypeScriptMetricsCollector) CollectMetrics() (*MetricsBatch, error) {
 	return &MetricsBatch{CollectorID: "typescript", CollectorType: "typescript", Timestamp: time.Now(), Metrics: make(map[string]interface{})}, nil
 }
@@ -981,10 +1126,35 @@ func (tmc *TypeScriptMetricsCollector) Reset()                   {}
 
 type APIMetricsCollector struct{}
 
-func NewAPIMetricsCollector() *APIMetricsCollector     { return &APIMetricsCollector{} }
+func NewAPIMetricsCollector() *APIMetricsCollector { return &APIMetricsCollector{} }
 func (amc *APIMetricsCollector) CollectMetrics() (*MetricsBatch, error) {
 	return &MetricsBatch{CollectorID: "api", CollectorType: "api", Timestamp: time.Now(), Metrics: make(map[string]interface{})}, nil
 }
 func (amc *APIMetricsCollector) GetCollectorID() string   { return "api" }
 func (amc *APIMetricsCollector) GetCollectorType() string { return "api" }
 func (amc *APIMetricsCollector) Reset()                   {}
+
+// main function to create an executable performance monitor service
+func main() {
+	// Create and start the performance monitor
+	monitor := NewPerformanceMonitor()
+
+	// Register some default collectors
+	monitor.RegisterCollector(NewSystemMetricsCollector())
+	monitor.RegisterCollector(NewLlamaMetricsCollector())
+	monitor.RegisterCollector(NewGPUMetricsCollector())
+	monitor.RegisterCollector(NewTypeScriptMetricsCollector())
+	monitor.RegisterCollector(NewAPIMetricsCollector())
+
+	// Start monitoring
+	err := monitor.Start()
+	if err != nil {
+		log.Fatalf("Failed to start performance monitor: %v", err)
+	}
+
+	log.Println("Performance Monitor started successfully")
+	log.Println("Press Ctrl+C to stop")
+
+	// Keep the service running
+	select {}
+}

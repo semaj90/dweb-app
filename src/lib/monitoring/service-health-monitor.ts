@@ -578,5 +578,4 @@ export class ServiceHealthMonitor extends EventEmitter {
 // Singleton instance
 export const serviceHealthMonitor = new ServiceHealthMonitor();
 
-// Export types and interfaces
-export type { ServiceEndpoint, HealthMetrics, AlertRule };
+// Types are already exported as interface declarations

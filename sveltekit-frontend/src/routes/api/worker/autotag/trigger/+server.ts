@@ -35,11 +35,6 @@ const WorkerTriggerSchema = z.object({
 
 type WorkerTriggerData = z.infer<typeof WorkerTriggerSchema>;
 
-async function getRedisClient(): Promise<any> {
-  await redis.connect();
-  return redis;
-}
-
 /**
  * POST /api/worker/autotag/trigger
  * Triggers PostgreSQL-first auto-tagging worker
@@ -77,8 +72,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       }
     }
     
-    // Get Redis client and send event
-    const redis = await getRedisClient();
+    // Ensure Redis connection
+    await redis.connect();
     
     // Create Redis stream event
     const eventData = {
@@ -158,7 +153,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
  */
 export const GET: RequestHandler = async ({ url }) => {
   try {
-    const redis = await getRedisClient();
+    // Ensure Redis connection
+    await redis.connect();
     const streamName = 'autotag:requests';
     
     // Get stream info
@@ -223,7 +219,8 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
     //   return error(403, ensureError({ message: 'Admin access required' }));
     // }
     
-    const redis = await getRedisClient();
+    // Ensure Redis connection
+    await redis.connect();
     const streamName = 'autotag:requests';
     
     // Get current stream info

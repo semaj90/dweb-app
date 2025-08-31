@@ -1,17 +1,27 @@
 import type { RequestHandler } from './$types';
-
-/**
- * User Registration API Endpoint
- * POST /api/auth/register
- */
-
-
+import { json, error } from '@sveltejs/kit';
 import { ensureError } from '$lib/utils/ensure-error';
 import { ExistingUserAuthService as UserAuthService } from '$lib/server/db/existing-user-operations.js';
 import { z } from 'zod';
 import { dev } from '$app/environment';
 
-// Registration request validation schema
+// Multi-protocol support
+import { redis } from '$lib/server/cache/redis-service';
+
+// Auto-tagging integration  
+interface AutoTaggingContext {
+  userId: string;
+  action: 'login' | 'register';
+  metadata: {
+    ipAddress?: string;
+    userAgent?: string;
+    timestamp: string;
+    protocol: 'rest' | 'grpc' | 'quic';
+    registrationData?: any;
+  };
+}
+
+// Registration request validation schema with multi-protocol support
 const registerSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
@@ -20,6 +30,8 @@ const registerSchema = z.object({
   role: z.enum(['attorney', 'paralegal', 'investigator', 'user']).default('user'),
   jurisdiction: z.string().optional(),
   practiceAreas: z.array(z.string()).optional(),
+  protocol: z.enum(['rest', 'grpc', 'quic']).optional().default('rest'),
+  enableAutoTagging: z.boolean().optional().default(true),
   
   // Profile information
   profileData: z.object({
@@ -47,7 +59,80 @@ const registerSchema = z.object({
   }).optional(),
 });
 
+// Multi-protocol registration functions
+async function attemptQuicRegister(userData: any): Promise<{ success: boolean; data?: any; protocol: string }> {
+  try {
+    const response = await fetch('http://localhost:8230/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData),
+      signal: AbortSignal.timeout(3000) // 3 second timeout for QUIC
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      return { success: true, data, protocol: 'quic' };
+    }
+  } catch (error) {
+    console.log('⚠️ QUIC registration failed, falling back to gRPC');
+  }
+  
+  return { success: false, protocol: 'quic' };
+}
+
+async function attemptGrpcRegister(userData: any): Promise<{ success: boolean; data?: any; protocol: string }> {
+  try {
+    const response = await fetch('http://localhost:50051/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData),
+      signal: AbortSignal.timeout(8000) // 8 second timeout for gRPC
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      return { success: true, data, protocol: 'grpc' };
+    }
+  } catch (error) {
+    console.log('⚠️ gRPC registration failed, using native PostgreSQL');
+  }
+  
+  return { success: false, protocol: 'grpc' };
+}
+
+// Auto-tagging worker trigger function for registration
+async function triggerRegistrationAutoTagging(context: AutoTaggingContext): Promise<void> {
+  try {
+    // Ensure Redis connection
+    await redis.connect();
+
+    const eventData = {
+      id: `register-${context.userId}-${Date.now()}`,
+      type: 'user_registration',
+      action: 'tag',
+      userId: context.userId,
+      metadata: JSON.stringify(context.metadata),
+      timestamp: Date.now().toString()
+    };
+
+    // Send to Redis stream for worker processing
+    const result = await redis.xAdd('autotag:requests', '*', eventData);
+    if (result) {
+      console.log(`🏷️ Auto-tagging triggered for user registration: ${context.userId} (${result})`);
+    } else {
+      console.warn(`⚠️ Auto-tagging may have failed for user registration: ${context.userId}`);
+    }
+  } catch (error) {
+    console.error('❌ Registration auto-tagging trigger failed:', error);
+    // Don't fail registration if auto-tagging fails
+  }
+}
+
 export const POST: RequestHandler = async ({ request, getClientAddress }) => {
+  const startTime = Date.now();
+  let protocol = 'rest';
+  let processingTime = 0;
+  
   try {
     // Parse and validate request body
     const body = await request.json().catch(() => ({}));
@@ -57,23 +142,98 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
     const ipAddress = getClientAddress();
     const userAgent = request.headers.get('user-agent') || undefined;
 
-    // Register user with complete profile setup
-    const result = await UserAuthService.registerUser({
-      ...validatedData,
-      profileData: validatedData.profileData,
-    });
+    // Multi-protocol registration with intelligent fallback
+    let regResult: { success: boolean; data?: any; protocol: string } = { success: false, protocol: 'rest' };
+    let pgResult: any = null;
 
-    if (!result.success) {
+    // Try requested protocol first, then fallback hierarchy: QUIC -> gRPC -> REST(PostgreSQL)
+    const preferredProtocol = validatedData.protocol || 'rest';
+    
+    switch (preferredProtocol) {
+      case 'quic':
+        protocol = 'quic';
+        try {
+          regResult = await attemptQuicRegister(validatedData);
+          if (regResult.success) {
+            processingTime = Date.now() - startTime;
+            console.log(`⚡ QUIC registration successful (${processingTime}ms)`);
+            break;
+          }
+        } catch (error) {
+          console.log('⚠️ QUIC unavailable, falling back to gRPC');
+        }
+        // Fallthrough to gRPC
+        
+      case 'grpc':
+        protocol = 'grpc';
+        try {
+          regResult = await attemptGrpcRegister(validatedData);
+          if (regResult.success) {
+            processingTime = Date.now() - startTime;
+            console.log(`🚀 gRPC registration successful (${processingTime}ms)`);
+            break;
+          }
+        } catch (error) {
+          console.log('⚠️ gRPC unavailable, using PostgreSQL');
+        }
+        // Fallthrough to PostgreSQL
+        
+      case 'rest':
+      default:
+        protocol = 'rest';
+        // Native PostgreSQL registration (most reliable)
+        pgResult = await UserAuthService.registerUser({
+          ...validatedData,
+          profileData: validatedData.profileData,
+        });
+        
+        processingTime = Date.now() - startTime;
+        console.log(`🗃️ PostgreSQL registration completed (${processingTime}ms)`);
+        
+        if (pgResult.success) {
+          regResult = { success: true, data: pgResult, protocol: 'rest' };
+        }
+        break;
+    }
+
+    // If all protocols failed, use the PostgreSQL result for error handling
+    const result = regResult.success ? regResult.data : pgResult;
+
+    if (!regResult.success || !result?.success) {
       throw error(400, ensureError({
-        message: result.error || 'Registration failed',
+        message: result?.error || 'Registration failed',
         code: 'REGISTRATION_FAILED'
       }));
+    }
+
+    // Trigger auto-tagging if enabled
+    if (validatedData.enableAutoTagging && result.user?.id) {
+      const autoTagContext: AutoTaggingContext = {
+        userId: result.user.id,
+        action: 'register',
+        metadata: {
+          ipAddress,
+          userAgent,
+          timestamp: new Date().toISOString(),
+          protocol: protocol as 'rest' | 'grpc' | 'quic',
+          registrationData: {
+            role: validatedData.role,
+            jurisdiction: validatedData.jurisdiction,
+            practiceAreas: validatedData.practiceAreas,
+            processingTime,
+            hasProfile: !!validatedData.profileData,
+          },
+        },
+      };
+
+      // Trigger auto-tagging asynchronously
+      triggerRegistrationAutoTagging(autoTagContext).catch(console.error);
     }
 
     // Remove sensitive information from response
     const { passwordHash, ...userResponse } = result.user;
     
-    // Return successful registration response
+    // Return enhanced registration response with protocol and performance info
     return json({
       success: true,
       message: 'User registered successfully',
@@ -82,14 +242,21 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
         profile: result.profile,
         hasProfile: !!result.profile,
       },
+      protocol: {
+        used: protocol,
+        processingTime: `${processingTime}ms`,
+        autoTagging: validatedData.enableAutoTagging,
+      },
       meta: {
         timestamp: new Date().toISOString(),
-        version: '1.0.0',
+        version: '2.0.0', // Updated for multi-protocol support
       }
     }, {
       status: 201,
       headers: {
         'Content-Type': 'application/json',
+        'X-Auth-Protocol': protocol,
+        'X-Processing-Time': `${processingTime}ms`,
         ...(dev && { 'Access-Control-Allow-Origin': '*' }),
       }
     });

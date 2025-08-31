@@ -1,6 +1,6 @@
 // (Removed duplicate/legacy schema and interfaces. Only the production-ready schema and type exports remain below.)
 import { pgTable, text, uuid, timestamp, integer, boolean, jsonb, vector, index, uniqueIndex } from 'drizzle-orm/pg-core';
-import { createInsertSchema, createSelectSchema } from 'drizzle-orm';
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
 /**
@@ -238,35 +238,92 @@ export const agentAnalysisCache = pgTable('agent_analysis_cache', {
 }));
 
 // Zod schemas for validation
-export const insertLegalDocumentSchema = createInsertSchema(legalDocuments, {
+export const insertLegalDocumentSchema = createInsertSchema(legalDocuments).extend({
   title: z.string().min(1).max(500),
   content: z.string().min(1),
-  documentType: z.enum(['contract', 'motion', 'evidence', 'correspondence', 'brief', 'regulation', 'case_law']),
   jurisdiction: z.string().min(1).max(100),
   fileSize: z.number().positive().optional(),
 });
 
 export const selectLegalDocumentSchema = createSelectSchema(legalDocuments);
 
-export const insertLegalCaseSchema = createInsertSchema(legalCases, {
+export const insertLegalCaseSchema = createInsertSchema(legalCases).extend({
   caseNumber: z.string().min(1).max(50),
   title: z.string().min(1).max(500),
   clientName: z.string().min(1).max(200),
   jurisdiction: z.string().min(1).max(100),
-  caseType: z.enum(['civil', 'criminal', 'administrative', 'appellate', 'arbitration']),
-  priority: z.enum(['low', 'medium', 'high', 'critical']),
-  status: z.enum(['active', 'pending', 'closed', 'archived', 'on_hold']),
 });
 
 export const selectLegalCaseSchema = createSelectSchema(legalCases);
 
-export const insertLegalEntitySchema = createInsertSchema(legalEntities, {
+export const insertLegalEntitySchema = createInsertSchema(legalEntities).extend({
   name: z.string().min(1).max(500),
-  entityType: z.enum(['person', 'corporation', 'partnership', 'llc', 'government', 'nonprofit', 'trust', 'estate']),
   primaryEmail: z.string().email().optional(),
 });
 
 export const selectLegalEntitySchema = createSelectSchema(legalEntities);
+
+// Content Embeddings table for standalone embeddings
+export const contentEmbeddings = pgTable('content_embeddings', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  documentId: uuid('document_id').references(() => legalDocuments.id, { onDelete: 'cascade' }),
+  content: text('content').notNull(),
+  embedding: vector('embedding', { dimensions: 384 }),
+  embeddingType: text('embedding_type').notNull().$type<'title' | 'content' | 'summary' | 'chunk'>(),
+  chunkIndex: integer('chunk_index'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+}, (table) => ({
+  documentIdIdx: index('content_embeddings_document_idx').on(table.documentId),
+  embeddingIdx: index('content_embeddings_embedding_idx').using('hnsw', table.embedding).with({ 'm': 16, 'ef_construction': 64 }),
+}));
+
+// Search Sessions table for tracking user searches
+export const searchSessions = pgTable('search_sessions', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  sessionId: text('session_id').notNull().unique(),
+  query: text('query').notNull(),
+  queryEmbedding: vector('query_embedding', { dimensions: 384 }),
+  filters: jsonb('filters').$type<{
+    documentTypes?: string[];
+    jurisdictions?: string[];
+    practiceAreas?: string[];
+    dateRange?: { start: string; end: string };
+  }>(),
+  results: jsonb('results').$type<{
+    documentIds: string[];
+    scores: number[];
+    totalResults: number;
+  }>(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  userId: uuid('user_id'),
+}, (table) => ({
+  sessionIdIdx: index('search_sessions_session_idx').on(table.sessionId),
+  queryIdx: index('search_sessions_query_idx').on(table.query),
+  userIdIdx: index('search_sessions_user_idx').on(table.userId),
+  queryEmbeddingIdx: index('search_sessions_query_embedding_idx').using('hnsw', table.queryEmbedding).with({ 'm': 16, 'ef_construction': 64 }),
+}));
+
+// Embeddings table for standalone embeddings management
+export const embeddings = pgTable('embeddings', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  sourceId: text('source_id').notNull(), // Can reference any type of source
+  sourceType: text('source_type').notNull().$type<'document' | 'case' | 'entity' | 'query'>(),
+  content: text('content').notNull(),
+  embedding: vector('embedding', { dimensions: 384 }),
+  model: text('model').notNull().default('nomic-embed-text'),
+  metadata: jsonb('metadata').$type<{
+    language?: string;
+    confidence?: number;
+    processedAt?: string;
+    version?: string;
+  }>(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+}, (table) => ({
+  sourceIdIdx: index('embeddings_source_id_idx').on(table.sourceId),
+  sourceTypeIdx: index('embeddings_source_type_idx').on(table.sourceType),
+  modelIdx: index('embeddings_model_idx').on(table.model),
+  embeddingIdx: index('embeddings_embedding_idx').using('hnsw', table.embedding).with({ 'm': 16, 'ef_construction': 64 }),
+}));
 
 // Type exports
 export type LegalDocument = typeof legalDocuments.$inferSelect;
@@ -279,3 +336,12 @@ export type CaseDocument = typeof caseDocuments.$inferSelect;
 export type NewCaseDocument = typeof caseDocuments.$inferInsert;
 export type AgentAnalysisCache = typeof agentAnalysisCache.$inferSelect;
 export type NewAgentAnalysisCache = typeof agentAnalysisCache.$inferInsert;
+
+// Additional table types
+export type ContentEmbedding = typeof contentEmbeddings.$inferSelect;
+export type NewContentEmbedding = typeof contentEmbeddings.$inferInsert;
+export type SearchSession = typeof searchSessions.$inferSelect;
+export type NewSearchSession = typeof searchSessions.$inferInsert;
+export type EmbeddingRecord = typeof embeddings.$inferSelect;
+export type NewEmbeddingRecord = typeof embeddings.$inferInsert;
+

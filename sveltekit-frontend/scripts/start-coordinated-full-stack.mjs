@@ -566,3 +566,38 @@ class CoordinatedFullStackOrchestrator {
   }
 
   // Utility methods
+  async waitForPort(port, timeout = 20000) {
+    const startTime = Date.now();
+
+    while (Date.now() - startTime < timeout) {
+      try {
+        const response = await fetch(`http://localhost:${port}`, {
+          method: 'HEAD',
+          timeout: 1000
+        });
+        return true;
+      } catch (error) {
+        await this.delay(500);
+      }
+    }
+
+    throw new Error(`Port ${port} not ready within ${timeout}ms`);
+  }
+
+  async checkPortAvailable(port) {
+    try {
+      const { stdout } = await execAsync(`netstat -an | findstr :${port}`);
+      return !stdout.includes('LISTENING');
+    } catch (error) {
+      return true; // If netstat fails, assume port is available
+    }
+  }
+
+  delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+}
+
+// Start the coordinated full stack
+const orchestrator = new CoordinatedFullStackOrchestrator();
+orchestrator.start().catch(console.error);

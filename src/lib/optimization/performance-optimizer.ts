@@ -31,7 +31,7 @@ import type {
     OptimizationConfig,
     MetricsHistory,
     BottleneckAnalysis
-} from '$lib/ai/types';
+} from '$lib/ai';
 
 export class PerformanceOptimizer extends EventEmitter {
     private metricsHistory: MetricsHistory[] = [];

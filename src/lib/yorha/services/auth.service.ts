@@ -8,53 +8,7 @@ import jwt from 'jsonwebtoken';
 
 // Use process.env for environment variables to avoid SvelteKit-only module import
 
-// Local minimal type definitions to avoid depending on schema type exports
-// Adjust these shapes if your schema defines more fields
-type Unit = {
-  id: string;
-  unitId: string;
-  email: string;
-  passwordHash?: string;
-  name?: string;
-  unitType?: string;
-  emailVerificationToken?: string | null;
-  emailVerified?: boolean;
-  deletedAt?: Date | null;
-  lastLoginAt?: Date | null;
-};
-
-type NewUnit = Omit<Unit, 'id'>;
-
-type Session = {
-  id: string;
-  userId: string;
-  token: string;
-  userAgent?: string | null;
-  ipAddress?: string | null;
-  expiresAt: Date;
-  lastActivityAt?: Date | null;
-  user?: Unit;
-};
-
-type NewSession = Omit<Session, 'id' | 'lastActivityAt' | 'user'>;
-
-type NewUserActivity = {
-  userId: string;
-  activityType:
-  | 'login'
-  | 'logout'
-  | 'mission_start'
-  | 'mission_complete'
-  | 'level_up'
-  | 'achievement_unlock'
-  | 'equipment_change'
-  | 'profile_update'
-  | 'combat_action'
-  | 'system_sync';
-  description?: string | null;
-  sessionId?: string | null;
-  createdAt?: Date;
-};
+import type { Unit, NewUnit, Session as DbSession, NewSession as DbNewSession, NewUserActivity } from '../db/schema';
 import { QueueService } from './queue.service';
 import { EnhancedVectorService } from './vector.service';
 const JWT_SECRET = process.env.JWT_SECRET || 'yorha-secret-key-change-in-production';
@@ -84,7 +38,7 @@ export class AuthService {
     password: string;
     name: string;
     unitType?: 'combat' | 'scanner' | 'support' | 'operator' | 'healer';
-  }): Promise<{ unit: Unit; session: Session }> {
+  }): Promise<{ unit: Unit; session: DbSession }> {
     try {
       // Check if email already exists
       const existingUnit = await db.query.units.findFirst({
@@ -157,7 +111,7 @@ export class AuthService {
   }
 
   // Login unit
-  async login(email: string, password: string): Promise<{ unit: Unit; session: Session }> {
+  async login(email: string, password: string): Promise<{ unit: Unit; session: DbSession }> {
     try {
       // Find unit by email
       const unit = await db.query.units.findFirst({
@@ -224,7 +178,7 @@ export class AuthService {
   }
 
   // Validate session
-  async validateSession(token: string): Promise<{ unit: Unit; session: Session } | null> {
+  async validateSession(token: string): Promise<{ unit: Unit; session: DbSession } | null> {
     try {
       const session = await db.query.sessions.findFirst({
         where: and(

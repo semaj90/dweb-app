@@ -46,10 +46,50 @@ interface BulkOperationResponse {
   errors?: string[];
 }
 
-interface FormSubmissionResult {
+interface FormSubmissionResult<T = any> {
   success: boolean;
-  data?: any;
+  data?: T;
   errors?: Record<string, string>;
+}
+
+interface CaseCreateRequest {
+  title: string;
+  description?: string;
+  status?: string;
+  priority?: string;
+}
+
+interface CaseUpdateRequest extends CaseCreateRequest {
+  id: string;
+}
+
+interface EvidenceCreateRequest {
+  caseId: string;
+  title: string;
+  description?: string;
+  type: string;
+  content?: string;
+}
+
+interface CaseSearchResponse {
+  cases: Case[];
+  total: number;
+  hasMore: boolean;
+  pagination: {
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+interface CommandSearchResponse {
+  results: Array<{
+    id: string;
+    title: string;
+    description: string;
+    score: number;
+  }>;
+  total: number;
 }
 
 // Base API client configuration
@@ -122,11 +162,11 @@ class ApiClient {
 
   // === CASE MANAGEMENT ===
 
-  async createCase(data: CaseCreateRequest): Promise<FormSubmissionResult<Case>> {
+  async createCase(data: CaseCreateRequest): Promise<ApiResponse<Case>> {
     return this.request<Case>('/cases', data, { method: 'POST' });
   }
 
-  async updateCase(data: CaseUpdateRequest): Promise<FormSubmissionResult<Case>> {
+  async updateCase(data: CaseUpdateRequest): Promise<ApiResponse<Case>> {
     return this.request<Case>(`/cases/${data.id}`, data, { method: 'PUT' });
   }
 
@@ -139,7 +179,17 @@ class ApiClient {
   }
 
   async searchCases(params: CaseSearchRequest): Promise<CaseSearchResponse> {
-    return this.request<Case[]>('/cases/search', params);
+    const response = await this.request<Case[]>('/cases/search', params);
+    return {
+      cases: response.data || [],
+      total: response.data?.length || 0,
+      hasMore: false,
+      pagination: {
+        page: 1,
+        limit: response.data?.length || 0,
+        totalPages: 1
+      }
+    };
   }
 
   async getSimilarCases(id: string): Promise<ApiResponse<Array<Case & { similarity: number }>>> {
@@ -198,7 +248,11 @@ class ApiClient {
   }
 
   async commandSearch(params: CommandSearchRequest): Promise<CommandSearchResponse> {
-    return this.request<CommandSearchResponse['results']>('/search/command', params);
+    const response = await this.request<Array<{ id: string; title: string; description: string; score: number; }>>('/search/command', params);
+    return {
+      results: response.data || [],
+      total: response.data?.length || 0
+    };
   }
 
   // === AI & ANALYSIS ===
@@ -218,7 +272,12 @@ class ApiClient {
   // === BULK OPERATIONS ===
 
   async bulkOperation(params: BulkOperationRequest): Promise<BulkOperationResponse> {
-    return this.request<BulkOperationResponse>('/bulk', params);
+    const response = await this.request<BulkOperationResponse>('/bulk', params);
+    return {
+      success: response.success,
+      processed: response.data?.processed || 0,
+      errors: response.data?.errors
+    };
   }
 
   // === HEALTH & METRICS ===
@@ -364,7 +423,7 @@ export class ReactiveApiClient extends ApiClient {
 
     try {
       const response = await this.searchCases(params);
-      const data = response.data!;
+      const data = response.cases;
       
       this.updateStore<Case[]>(key, {
         data,

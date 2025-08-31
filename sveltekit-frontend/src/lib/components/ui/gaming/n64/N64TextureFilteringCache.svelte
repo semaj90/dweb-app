@@ -442,7 +442,7 @@
     class:error={hasError}
     width="256"
     height="256"
-  />
+  ></canvas>
   
   <!-- Cache Status Indicator -->
   {#if showCacheStatus && cacheEntry}

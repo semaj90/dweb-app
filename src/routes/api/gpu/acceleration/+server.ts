@@ -1,6 +1,6 @@
 /**
  * GPU Acceleration API
- * 
+ *
  * RESTful API for CUDA GPU acceleration services:
  * - Workload submission and management
  * - Real-time performance monitoring
@@ -8,7 +8,71 @@
  * - Batch processing and queue management
  * - Neural network inference acceleration
  * - Vector and matrix operations
+ *
+ * Lightweight helpers and validators used by route handlers below.
  */
+
+/* Utility helpers --------------------------------------------------------- */
+
+export const API_DESCRIPTION = {
+    name: 'GPU Acceleration API',
+    version: '1.0.0',
+    description:
+        'Endpoints to submit workloads, query GPU status, run matrix/vector ops and manage the GPU workload queue.'
+};
+
+export function createId(prefix = 'id'): string {
+    return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
+export function nowISO(): string {
+    return new Date().toISOString();
+}
+
+export function formatMs(ms: number): string {
+    return `${ms.toFixed(2)}ms`;
+}
+
+export function isPlainObject(v: any): v is Record<string, any> {
+    return v !== null && typeof v === 'object' && !Array.isArray(v);
+}
+
+export function ensureArray<T>(v: any): T[] {
+    return Array.isArray(v) ? v : v ? [v] : [];
+}
+
+/* Basic validators ------------------------------------------------------- */
+
+export function validateMatrix(m: any): boolean {
+    return (
+        isPlainObject(m) &&
+        Number.isFinite(m.rows) &&
+        Number.isFinite(m.cols) &&
+        (Array.isArray(m.data) ? m.data.length === m.rows * m.cols : true)
+    );
+}
+
+export function validateModel(m: any): boolean {
+    return (
+        isPlainObject(m) &&
+        (Array.isArray(m.layers) || typeof m.parameters === 'number')
+    );
+}
+
+export function validateTokens(t: any): boolean {
+    return Array.isArray(t) && t.every((tok) => typeof tok === 'string' || typeof tok === 'number');
+}
+
+/* Lightweight error factory for handlers --------------------------------- */
+
+export function badRequest(message = 'Invalid request'): ReturnType<typeof error> {
+    // Note: `error` is imported later in the file; this factory returns the call
+    return error(400, message) as any;
+}
+
+export function notFound(message = 'Not found'): ReturnType<typeof error> {
+    return error(404, message) as any;
+}
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
@@ -25,40 +89,40 @@ export const POST: RequestHandler = async ({ request, url }): Promise<any> => {
         switch (action) {
             case 'submit-workload':
                 return await submitWorkload(body);
-            
+
             case 'submit-batch':
                 return await submitBatchWorkloads(body);
-            
+
             case 'execute-matrix-multiplication':
                 return await executeMatrixMultiplication(body);
-            
+
             case 'execute-neural-inference':
                 return await executeNeuralInference(body);
-            
+
             case 'execute-embedding-generation':
                 return await executeEmbeddingGeneration(body);
-            
+
             case 'execute-vector-operations':
                 return await executeVectorOperations(body);
-            
+
             case 'execute-convolution':
                 return await executeConvolution(body);
-            
+
             case 'execute-attention-computation':
                 return await executeAttentionComputation(body);
-            
+
             case 'initialize-cuda':
                 return await initializeCUDA(body);
-            
+
             case 'start-workload-manager':
                 return await startWorkloadManager();
-            
+
             case 'train-neural-network':
                 return await trainNeuralNetwork(body);
-            
+
             case 'optimize-hyperparameters':
                 return await optimizeHyperparameters(body);
-            
+
             default:
                 return error(400, 'Invalid action specified');
         }
@@ -76,41 +140,41 @@ export const GET: RequestHandler = async ({ url }): Promise<any> => {
         switch (action) {
             case 'status':
                 return getGPUStatus();
-            
+
             case 'workload-status':
                 const workloadId = url.searchParams.get('workloadId');
                 return getWorkloadStatus(workloadId);
-            
+
             case 'analytics':
                 return getGPUAnalytics();
-            
+
             case 'performance':
                 return getPerformanceMetrics();
-            
+
             case 'devices':
                 return getGPUDevices();
-            
+
             case 'kernels':
                 return getLoadedKernels();
-            
+
             case 'memory-usage':
                 return getMemoryUsage();
-            
+
             case 'queue-status':
                 return getQueueStatus();
-            
+
             case 'batch-analytics':
                 return getBatchAnalytics();
-            
+
             case 'execution-history':
                 return getExecutionHistory();
-            
+
             case 'resource-utilization':
                 return getResourceUtilization();
-            
+
             case 'optimization-suggestions':
                 return getOptimizationSuggestions();
-            
+
             default:
                 return getGPUDashboard();
         }
@@ -124,21 +188,21 @@ export const GET: RequestHandler = async ({ url }): Promise<any> => {
 export const PUT: RequestHandler = async ({ request }): Promise<any> => {
     try {
         const { config, optimization, device } = await request.json();
-        
+
         if (config) {
             return await updateGPUConfiguration(config);
         }
-        
+
         if (optimization) {
             return await updateOptimizationSettings(optimization);
         }
-        
+
         if (device) {
             return await updateDeviceSettings(device);
         }
-        
+
         return error(400, 'No valid update data provided');
-        
+
     } catch (err: any) {
         console.error('❌ Update GPU configuration error:', err);
         return error(500, `Update error: ${err.message}`);
@@ -151,19 +215,19 @@ export const DELETE: RequestHandler = async ({ url }): Promise<any> => {
         const workloadId = url.searchParams.get('workloadId');
         const batchId = url.searchParams.get('batchId');
         const cleanup = url.searchParams.get('cleanup');
-        
+
         if (workloadId) {
             return await cancelWorkload(workloadId);
         }
-        
+
         if (batchId) {
             return await cancelBatch(batchId);
         }
-        
+
         if (cleanup) {
             return await cleanupGPUResources(cleanup);
         }
-        
+
         return error(400, 'Workload ID, Batch ID, or cleanup type is required');
     } catch (err: any) {
         console.error('❌ Delete GPU operation error:', err);
@@ -177,13 +241,13 @@ export const DELETE: RequestHandler = async ({ url }): Promise<any> => {
 
 async function submitWorkload(workloadData: any): Promise<any> {
     const { workload } = workloadData;
-    
+
     if (!workload || !workload.type) {
         return error(400, 'Workload with type is required');
     }
 
     const startTime = performance.now();
-    
+
     try {
         // Ensure workload manager is started
         const managerStatus = gpuWorkloadManager.getStatus();
@@ -213,7 +277,7 @@ async function submitWorkload(workloadData: any): Promise<any> {
 
         const workloadId = await gpuWorkloadManager.submitWorkload(gpuWorkload);
         const submissionTime = performance.now() - startTime;
-        
+
         return json({
             success: true,
             message: 'GPU workload submitted successfully',
@@ -224,7 +288,7 @@ async function submitWorkload(workloadData: any): Promise<any> {
             queuePosition: await getWorkloadQueuePosition(workloadId),
             timestamp: new Date().toISOString()
         });
-        
+
     } catch (err: any) {
         return error(500, `Workload submission failed: ${err.message}`);
     }
@@ -232,14 +296,14 @@ async function submitWorkload(workloadData: any): Promise<any> {
 
 async function submitBatchWorkloads(batchData: any): Promise<any> {
     const { workloads } = batchData;
-    
+
     if (!Array.isArray(workloads) || workloads.length === 0) {
         return error(400, 'Workloads array is required');
     }
 
     const startTime = performance.now();
     const batchId = `gpu-batch-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
+
     try {
         // Ensure workload manager is started
         const managerStatus = gpuWorkloadManager.getStatus();
@@ -271,7 +335,7 @@ async function submitBatchWorkloads(batchData: any): Promise<any> {
 
         const workloadIds = await gpuWorkloadManager.submitBatchWorkloads(gpuWorkloads);
         const submissionTime = performance.now() - startTime;
-        
+
         return json({
             success: true,
             message: 'GPU batch workloads submitted successfully',
@@ -282,7 +346,7 @@ async function submitBatchWorkloads(batchData: any): Promise<any> {
             estimatedBatchTime: gpuWorkloads.reduce((sum, w) => sum + (w.estimatedDuration || 1000), 0) + 'ms',
             timestamp: new Date().toISOString()
         });
-        
+
     } catch (err: any) {
         return error(500, `Batch submission failed: ${err.message}`);
     }
@@ -294,13 +358,13 @@ async function submitBatchWorkloads(batchData: any): Promise<any> {
 
 async function executeMatrixMultiplication(operationData: any): Promise<any> {
     const { matrixA, matrixB, options = {} } = operationData;
-    
+
     if (!matrixA || !matrixB) {
         return error(400, 'Matrix A and Matrix B are required');
     }
 
     const startTime = performance.now();
-    
+
     try {
         const workload: GPUWorkload = {
             id: `matrix-mult-${Date.now()}`,
@@ -320,7 +384,7 @@ async function executeMatrixMultiplication(operationData: any): Promise<any> {
 
         const result = await cudaAccelerator.executeWorkload(workload);
         const totalTime = performance.now() - startTime;
-        
+
         return json({
             success: true,
             message: 'Matrix multiplication completed successfully',
@@ -338,7 +402,7 @@ async function executeMatrixMultiplication(operationData: any): Promise<any> {
             },
             timestamp: new Date().toISOString()
         });
-        
+
     } catch (err: any) {
         return error(500, `Matrix multiplication failed: ${err.message}`);
     }
@@ -346,13 +410,13 @@ async function executeMatrixMultiplication(operationData: any): Promise<any> {
 
 async function executeNeuralInference(inferenceData: any): Promise<any> {
     const { model, input, options = {} } = inferenceData;
-    
+
     if (!model || !input) {
         return error(400, 'Model and input data are required');
     }
 
     const startTime = performance.now();
-    
+
     try {
         const workload: GPUWorkload = {
             id: `neural-inference-${Date.now()}`,
@@ -373,7 +437,7 @@ async function executeNeuralInference(inferenceData: any): Promise<any> {
 
         const result = await cudaAccelerator.executeWorkload(workload);
         const totalTime = performance.now() - startTime;
-        
+
         return json({
             success: true,
             message: 'Neural network inference completed successfully',
@@ -391,7 +455,7 @@ async function executeNeuralInference(inferenceData: any): Promise<any> {
             },
             timestamp: new Date().toISOString()
         });
-        
+
     } catch (err: any) {
         return error(500, `Neural inference failed: ${err.message}`);
     }
@@ -399,13 +463,13 @@ async function executeNeuralInference(inferenceData: any): Promise<any> {
 
 async function executeEmbeddingGeneration(embeddingData: any): Promise<any> {
     const { tokens, model, options = {} } = embeddingData;
-    
+
     if (!tokens || !Array.isArray(tokens)) {
         return error(400, 'Tokens array is required');
     }
 
     const startTime = performance.now();
-    
+
     try {
         const workload: GPUWorkload = {
             id: `embedding-gen-${Date.now()}`,
@@ -425,7 +489,7 @@ async function executeEmbeddingGeneration(embeddingData: any): Promise<any> {
 
         const result = await cudaAccelerator.executeWorkload(workload);
         const totalTime = performance.now() - startTime;
-        
+
         return json({
             success: true,
             message: 'Embedding generation completed successfully',
@@ -443,7 +507,7 @@ async function executeEmbeddingGeneration(embeddingData: any): Promise<any> {
             },
             timestamp: new Date().toISOString()
         });
-        
+
     } catch (err: any) {
         return error(500, `Embedding generation failed: ${err.message}`);
     }
@@ -451,13 +515,13 @@ async function executeEmbeddingGeneration(embeddingData: any): Promise<any> {
 
 async function executeVectorOperations(vectorData: any): Promise<any> {
     const { operation, vectorA, vectorB, options = {} } = vectorData;
-    
+
     if (!operation || !vectorA) {
         return error(400, 'Operation and vector A are required');
     }
 
     const startTime = performance.now();
-    
+
     try {
         const workload: GPUWorkload = {
             id: `vector-ops-${Date.now()}`,
@@ -477,7 +541,7 @@ async function executeVectorOperations(vectorData: any): Promise<any> {
 
         const result = await cudaAccelerator.executeWorkload(workload);
         const totalTime = performance.now() - startTime;
-        
+
         return json({
             success: true,
             message: 'Vector operations completed successfully',
@@ -495,7 +559,7 @@ async function executeVectorOperations(vectorData: any): Promise<any> {
             },
             timestamp: new Date().toISOString()
         });
-        
+
     } catch (err: any) {
         return error(500, `Vector operations failed: ${err.message}`);
     }
@@ -503,13 +567,13 @@ async function executeVectorOperations(vectorData: any): Promise<any> {
 
 async function executeConvolution(convolutionData: any): Promise<any> {
     const { input, filters, options = {} } = convolutionData;
-    
+
     if (!input || !filters) {
         return error(400, 'Input and filters are required');
     }
 
     const startTime = performance.now();
-    
+
     try {
         const workload: GPUWorkload = {
             id: `convolution-${Date.now()}`,
@@ -530,7 +594,7 @@ async function executeConvolution(convolutionData: any): Promise<any> {
 
         const result = await cudaAccelerator.executeWorkload(workload);
         const totalTime = performance.now() - startTime;
-        
+
         return json({
             success: true,
             message: 'Convolution completed successfully',
@@ -548,7 +612,7 @@ async function executeConvolution(convolutionData: any): Promise<any> {
             },
             timestamp: new Date().toISOString()
         });
-        
+
     } catch (err: any) {
         return error(500, `Convolution failed: ${err.message}`);
     }
@@ -556,13 +620,13 @@ async function executeConvolution(convolutionData: any): Promise<any> {
 
 async function executeAttentionComputation(attentionData: any): Promise<any> {
     const { queries, keys, values, options = {} } = attentionData;
-    
+
     if (!queries || !keys || !values) {
         return error(400, 'Queries, keys, and values are required');
     }
 
     const startTime = performance.now();
-    
+
     try {
         const workload: GPUWorkload = {
             id: `attention-${Date.now()}`,
@@ -583,7 +647,7 @@ async function executeAttentionComputation(attentionData: any): Promise<any> {
 
         const result = await cudaAccelerator.executeWorkload(workload);
         const totalTime = performance.now() - startTime;
-        
+
         return json({
             success: true,
             message: 'Attention computation completed successfully',
@@ -602,7 +666,7 @@ async function executeAttentionComputation(attentionData: any): Promise<any> {
             },
             timestamp: new Date().toISOString()
         });
-        
+
     } catch (err: any) {
         return error(500, `Attention computation failed: ${err.message}`);
     }
@@ -614,10 +678,10 @@ async function executeAttentionComputation(attentionData: any): Promise<any> {
 
 async function initializeCUDA(initData: any): Promise<any> {
     const { config = {} } = initData;
-    
+
     try {
         // Check if already initialized
-        const status = cudaAccelerator.getStatus();
+        const status = await cudaAccelerator.getStatus();
         if (status.initialized) {
             return json({
                 success: true,
@@ -629,9 +693,9 @@ async function initializeCUDA(initData: any): Promise<any> {
 
         // Initialize with provided configuration
         await cudaAccelerator.initialize();
-        
-        const newStatus = cudaAccelerator.getStatus();
-        
+
+        const newStatus = await cudaAccelerator.getStatus();
+
         return json({
             success: true,
             message: 'CUDA accelerator initialized successfully',
@@ -640,7 +704,7 @@ async function initializeCUDA(initData: any): Promise<any> {
             kernels: newStatus.loadedKernels,
             timestamp: new Date().toISOString()
         });
-        
+
     } catch (err: any) {
         return error(500, `CUDA initialization failed: ${err.message}`);
     }
@@ -659,16 +723,16 @@ async function startWorkloadManager(): Promise<any> {
         }
 
         await gpuWorkloadManager.start();
-        
+
         const newStatus = gpuWorkloadManager.getStatus();
-        
+
         return json({
             success: true,
             message: 'GPU workload manager started successfully',
             status: newStatus,
             timestamp: new Date().toISOString()
         });
-        
+
     } catch (err: any) {
         return error(500, `Workload manager start failed: ${err.message}`);
     }
@@ -678,10 +742,10 @@ async function startWorkloadManager(): Promise<any> {
  * Status and Analytics Operations
  */
 
-function getGPUStatus() {
-    const cudaStatus = cudaAccelerator.getStatus();
+async function getGPUStatus() {
+    const cudaStatus = await cudaAccelerator.getStatus();
     const managerStatus = gpuWorkloadManager.getStatus();
-    
+
     const status = {
         cuda: {
             initialized: cudaStatus.initialized,
@@ -704,7 +768,7 @@ function getGPUStatus() {
             performance: cudaStatus.performance || {}
         }
     };
-    
+
     return json({
         success: true,
         status,
@@ -718,11 +782,11 @@ function getWorkloadStatus(workloadId: string | null) {
     }
 
     const status = gpuWorkloadManager.getWorkloadStatus(workloadId);
-    
+
     if (status.status === 'not-found') {
         return error(404, `Workload ${workloadId} not found`);
     }
-    
+
     return json({
         success: true,
         workloadStatus: status,
@@ -730,27 +794,89 @@ function getWorkloadStatus(workloadId: string | null) {
     });
 }
 
-function getGPUAnalytics() {
+async function getGPUAnalytics() {
     const managerAnalytics = gpuWorkloadManager.getAnalytics();
-    const cudaStatus = cudaAccelerator.getStatus();
-    
+    const cudaStatus = await cudaAccelerator.getStatus();
+
     const analytics = {
-        workloads: managerAnalytics,
-        devices: cudaStatus.devices,
+        // Raw sources
+        workloads: managerAnalytics || {},
+        devicesRaw: cudaStatus.devices || {},
+
+        // Per-device summaries
+        devices: Object.entries(cudaStatus.devices || {}).map(([id, dev]: [string, any]) => ({
+            id,
+            name: dev?.name || `gpu-${id}`,
+            uuid: dev?.uuid || null,
+            model: dev?.model || dev?.name || null,
+            utilization: {
+                gpu: dev?.utilization?.gpu ?? dev?.utilization ?? 0,
+                memory: dev?.utilization?.memory ?? 0
+            },
+            memory: {
+                totalMB: dev?.memory?.total ?? dev?.memoryTotalMB ?? 0,
+                usedMB: dev?.memory?.used ?? dev?.memoryUsedMB ?? 0,
+                freeMB: (dev?.memory?.total ?? dev?.memoryTotalMB ?? 0) - (dev?.memory?.used ?? dev?.memoryUsedMB ?? 0)
+            },
+            temperatureC: dev?.temperature ?? null,
+            processes: dev?.processes || []
+        })),
+
+        // Aggregated performance metrics
         performance: {
-            totalExecutions: cudaStatus.performance?.totalExecutions || 0,
-            averageUtilization: cudaStatus.performance?.averageUtilization || 0,
+            totalExecutions: cudaStatus.performance?.totalExecutions ?? managerAnalytics?.totalExecutions ?? 0,
+            averageUtilization: +(cudaStatus.performance?.averageUtilization ?? calculateOverallUtilization(cudaStatus, managerAnalytics) ?? 0),
             peakUtilization: calculatePeakUtilization(cudaStatus),
-            efficiency: calculateSystemEfficiency(managerAnalytics, cudaStatus)
+            efficiencyPercent: calculateSystemEfficiency(managerAnalytics, cudaStatus),
+            averageLatencyMs: managerAnalytics?.averageLatencyMs ?? cudaStatus.performance?.averageLatencyMs ?? 0,
+            throughputPerSec: managerAnalytics?.throughputPerSec ?? cudaStatus.performance?.throughputPerSec ?? 0
         },
+
+        // Queue and workload health
+        queue: {
+            totalQueued: managerAnalytics?.queues?.totalQueued ?? Object.values(managerAnalytics?.queues || {}).reduce((s: number, q: any) => s + (q?.length ?? 0), 0),
+            pendingBatches: managerAnalytics?.pendingBatches ?? 0,
+            completedWorkloads: managerAnalytics?.completed ?? managerAnalytics?.completedWorkloads ?? 0,
+            failedWorkloads: managerAnalytics?.failed ?? managerAnalytics?.failedWorkloads ?? 0,
+            averageQueueTimeMs: managerAnalytics?.averageQueueTimeMs ?? 0,
+            queuePerformance: managerAnalytics?.queuePerformance ?? {}
+        },
+
+        // Trends and recent events
         trends: {
-            throughput: managerAnalytics.trends?.throughputTrend || 'stable',
-            latency: managerAnalytics.trends?.latencyTrend || 'stable',
-            errors: managerAnalytics.trends?.errorTrend || 'stable'
+            throughput: managerAnalytics?.trends?.throughputTrend ?? 'stable',
+            latency: managerAnalytics?.trends?.latencyTrend ?? 'stable',
+            errors: managerAnalytics?.trends?.errorTrend ?? 'stable',
+            recentErrors: managerAnalytics?.recentErrors ?? managerAnalytics?.errors ?? []
         },
+
+        // Diagnostics and recommendations
+        diagnostics: {
+            lastUpdated: new Date().toISOString(),
+            quickChecks: {
+                cudaInitialized: !!cudaStatus.initialized,
+                deviceCount: cudaStatus.deviceCount ?? Object.keys(cudaStatus.devices || {}).length,
+                workloadManagerRunning: !!(managerAnalytics?.isRunning ?? managerAnalytics?.running)
+            },
+            memoryPressure: ((): string => {
+                const totals = Object.values(cudaStatus.devices || {}).reduce((acc: any, d: any) => {
+                    acc.total = (acc.total || 0) + (d?.memory?.total ?? 0);
+                    acc.used = (acc.used || 0) + (d?.memory?.used ?? 0);
+                    return acc;
+                }, {});
+                if (!totals.total) return 'unknown';
+                const pct = Math.round((totals.used / totals.total) * 100);
+                if (pct > 90) return 'critical';
+                if (pct > 75) return 'high';
+                if (pct > 40) return 'moderate';
+                return 'low';
+            })()
+        },
+
+        // Actionable recommendations
         recommendations: generateOptimizationRecommendations(managerAnalytics, cudaStatus)
     };
-    
+
     return json({
         success: true,
         analytics,
@@ -850,33 +976,33 @@ async function getWorkloadQueuePosition(workloadId: string): Promise<number> {
 
 function calculateOverallUtilization(cudaStatus: any, managerStatus: any): number {
     const deviceUtil = cudaStatus.performance?.averageUtilization || 0;
-    const workloadUtil = managerStatus.totalWorkloads > 0 
-        ? (managerStatus.activeWorkloads / managerStatus.totalWorkloads) * 100 
+    const workloadUtil = managerStatus.totalWorkloads > 0
+        ? (managerStatus.activeWorkloads / managerStatus.totalWorkloads) * 100
         : 0;
     return Math.round((deviceUtil + workloadUtil) / 2);
 }
 
 function calculatePeakUtilization(cudaStatus: any): number {
     if (!cudaStatus.devices) return 0;
-    
-    return Math.max(...Object.values(cudaStatus.devices).map((device: any) => 
+
+    return Math.max(...Object.values(cudaStatus.devices).map((device: any) =>
         device.utilization?.gpu || 0
     ));
 }
 
 function calculateSystemEfficiency(managerAnalytics: any, cudaStatus: any): number {
     const completionRate = managerAnalytics.queuePerformance?.normal?.completedWorkloads || 0;
-    const totalWorkloads = managerAnalytics.workloadTypes ? 
+    const totalWorkloads = managerAnalytics.workloadTypes ?
         Object.values(managerAnalytics.workloadTypes).reduce((a: number, b: number) => a + b, 0) : 1;
-    
+
     return Math.round((completionRate / totalWorkloads) * 100);
 }
 
 function generateOptimizationRecommendations(managerAnalytics: any, cudaStatus: any): any[] {
     const recommendations = [];
-    
+
     const utilizationRate = calculateOverallUtilization(cudaStatus, { totalWorkloads: 1, activeWorkloads: 0 });
-    
+
     if (utilizationRate < 30) {
         recommendations.push({
             type: 'utilization',
@@ -885,7 +1011,7 @@ function generateOptimizationRecommendations(managerAnalytics: any, cudaStatus: 
             description: `GPU utilization is low at ${utilizationRate}%. Consider increasing batch sizes or workload frequency.`
         });
     }
-    
+
     if (utilizationRate > 90) {
         recommendations.push({
             type: 'capacity',
@@ -894,7 +1020,7 @@ function generateOptimizationRecommendations(managerAnalytics: any, cudaStatus: 
             description: `GPU utilization is high at ${utilizationRate}%. Consider optimizing workloads or adding more GPU capacity.`
         });
     }
-    
+
     return recommendations;
 }
 
@@ -924,7 +1050,7 @@ async function optimizeHyperparameters(optimizationData: any): Promise<any> {
 
 async function cancelWorkload(workloadId: string): Promise<any> {
     const canceled = await gpuWorkloadManager.cancelWorkload(workloadId);
-    
+
     return json({
         success: canceled,
         message: canceled ? 'Workload canceled successfully' : 'Workload could not be canceled',
@@ -962,8 +1088,8 @@ function getPerformanceMetrics() {
     });
 }
 
-function getGPUDevices() {
-    const status = cudaAccelerator.getStatus();
+async function getGPUDevices() {
+    const status = await cudaAccelerator.getStatus();
     return json({
         success: true,
         devices: status.devices || {},
@@ -972,8 +1098,8 @@ function getGPUDevices() {
     });
 }
 
-function getLoadedKernels() {
-    const status = cudaAccelerator.getStatus();
+async function getLoadedKernels() {
+    const status = await cudaAccelerator.getStatus();
     return json({
         success: true,
         kernelCount: status.loadedKernels || 0,
@@ -1040,10 +1166,10 @@ function getOptimizationSuggestions() {
     });
 }
 
-function getGPUDashboard() {
-    const cudaStatus = cudaAccelerator.getStatus();
+async function getGPUDashboard() {
+    const cudaStatus = await cudaAccelerator.getStatus();
     const managerStatus = gpuWorkloadManager.getStatus();
-    
+
     const dashboard = {
         overview: {
             status: cudaStatus.initialized && managerStatus.isRunning ? 'operational' : 'partial',
@@ -1063,7 +1189,7 @@ function getGPUDashboard() {
             peakUtilization: calculatePeakUtilization(cudaStatus) + '%'
         }
     };
-    
+
     return json({
         success: true,
         dashboard,

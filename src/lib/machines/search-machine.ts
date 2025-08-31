@@ -1,7 +1,7 @@
 // Search State Machine with XState
 // Manages document search, filtering, and semantic search capabilities
 
-import { createMachine, assign, type InterpreterFrom } from 'xstate';
+import { createMachine, assign, setup, fromPromise, type InterpreterFrom } from 'xstate';
 import { multiProtocolRouter, routerHelpers } from '../services/multi-protocol-router';
 
 // Types for search management
@@ -338,7 +338,7 @@ function downloadBlob(blob: Blob, filename: string) {
 }
 
 // Search state machine
-export const searchMachine = createMachine({
+const searchMachineDefinition = {
   id: 'search',
   initial: 'idle',
   context: defaultContext,
@@ -369,6 +369,7 @@ export const searchMachine = createMachine({
       invoke: {
         id: 'performSearch',
         src: 'performSearch',
+        input: ({ context, event }) => ({ context, event }),
         onDone: {
           target: 'results',
           actions: [
@@ -449,6 +450,7 @@ export const searchMachine = createMachine({
       invoke: {
         id: 'loadMore',
         src: 'performSearch',
+        input: ({ context, event }) => ({ context, event }),
         onDone: {
           target: 'results',
           actions: 'appendResults'
@@ -464,6 +466,7 @@ export const searchMachine = createMachine({
       invoke: {
         id: 'exportResults',
         src: 'exportResults',
+        input: ({ context, event }) => ({ context, event }),
         onDone: {
           target: 'results',
           actions: 'handleExportComplete'
@@ -498,11 +501,55 @@ export const searchMachine = createMachine({
       actions: 'updateSettings'
     }
   }
-}, {
-  services: searchServices,
+};
+
+// Convert services to XState v5 actors
+const searchMachineWithActors = setup({
+  actors: {
+    performSearch: fromPromise(async ({ input }: { input: any }) => {
+      const { context, event } = input;
+      return await searchServices.performSearch(context, event);
+    }),
+    performLocalSearch: fromPromise(async ({ input }: { input: any }) => {
+      const { context } = input;
+      return await searchServices.performLocalSearch(context);
+    }),
+    generateSuggestions: fromPromise(async ({ input }: { input: any }) => {
+      const { context } = input;
+      return await searchServices.generateSuggestions(context);
+    }),
+    loadMoreResults: fromPromise(async ({ input }: { input: any }) => {
+      const { context } = input;
+      return await searchServices.loadMoreResults(context);
+    }),
+    exportResults: fromPromise(async ({ input }: { input: any }) => {
+      const { context, event } = input;
+      // Export functionality - can be implemented based on the event.format
+      const format = event.format || 'json';
+      const exportData = {
+        query: context.query,
+        results: context.results,
+        selectedResults: context.selectedResults,
+        totalResults: context.totalResults,
+        timestamp: new Date().toISOString()
+      };
+      
+      if (format === 'json') {
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `search-results-${Date.now()}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+      
+      return { success: true };
+    })
+  },
   guards: {
-    hasQuery: (context) => context.query.trim().length > 0,
-    hasMoreResults: (context) => {
+    hasQuery: ({ context }) => context.query.trim().length > 0,
+    hasMoreResults: ({ context }) => {
       const totalPages = Math.ceil(context.totalResults / context.pageSize);
       return context.currentPage < totalPages;
     }
@@ -525,14 +572,14 @@ export const searchMachine = createMachine({
     }),
 
     generateSuggestions: assign({
-      suggestions: async (context): Promise<any> => {
+      suggestions: async ({ context }): Promise<any> => {
         return await searchServices.generateSuggestions(context);
       }
     }),
 
     recordSearchStart: assign({
       isSearching: true,
-      performance: (context) => ({
+      performance: ({ context }) => ({
         ...context.performance,
         lastSearchTime: performance.now()
       })
@@ -558,7 +605,7 @@ export const searchMachine = createMachine({
     }),
 
     updatePerformanceMetrics: assign({
-      performance: (context, event: any) => {
+      performance: ({ context, event }) => {
         const { processingTime, protocol, cached } = event.data;
         const perf = context.performance;
 
@@ -576,7 +623,7 @@ export const searchMachine = createMachine({
     }),
 
     recordSearchHistory: assign({
-      searchHistory: (context, event: any) => {
+      searchHistory: ({ context, event }) => {
         const entry = {
           query: context.query,
           timestamp: Date.now(),
@@ -600,7 +647,7 @@ export const searchMachine = createMachine({
     }),
 
     applyFilters: assign({
-      filters: (context, event: any) => ({
+      filters: ({ context, event }) => ({
         ...context.filters,
         ...event.filters
       }),
@@ -627,7 +674,7 @@ export const searchMachine = createMachine({
     }),
 
     sortResults: assign({
-      results: (context, event: any) => {
+      results: ({ context, event }) => {
         const { sortBy, order = 'desc' } = event;
         const sorted = [...context.results].sort((a, b) => {
           let aVal: any, bVal: any;
@@ -663,7 +710,7 @@ export const searchMachine = createMachine({
     }),
 
     selectResult: assign({
-      selectedResults: (context, event: any) => {
+      selectedResults: ({ context, event }) => {
         if (context.selectedResults.includes(event.resultId)) {
           return context.selectedResults;
         }
@@ -672,12 +719,12 @@ export const searchMachine = createMachine({
     }),
 
     deselectResult: assign({
-      selectedResults: (context, event: any) =>
+      selectedResults: ({ context, event }) =>
         context.selectedResults.filter(id => id !== event.resultId)
     }),
 
     selectAllResults: assign({
-      selectedResults: (context) => context.results.map(r => r.id)
+      selectedResults: ({ context }) => context.results.map(r => r.id)
     }),
 
     clearSelection: assign({
@@ -734,7 +781,9 @@ export const searchMachine = createMachine({
       console.error('Export failed:', event.data);
     }
   }
-});
+}).createMachine(searchMachineDefinition);
+
+export const searchMachine = searchMachineWithActors;
 
 // Type for the search service
 export type SearchService = InterpreterFrom<typeof searchMachine>;

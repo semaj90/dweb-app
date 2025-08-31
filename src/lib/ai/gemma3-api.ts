@@ -1,8 +1,8 @@
 // Simple GraphQL-style API wrapper for your Gemma3 model
 // This integrates with your existing Ollama setup without heavy dependencies
 
-import { db } from '$lib/db';
-import { legalDocuments as documents, legalCases as cases } from '$lib/database/schema/legal-documents';
+import { db } from '$lib/server/db';
+import { legal_documents, cases } from '$lib/server/db';
 import { eq, sql } from 'drizzle-orm';
 
 // Simple Gemma3 client
@@ -89,7 +89,7 @@ export const gemma3Resolvers = {
     // Build analysis prompt
     const prompt = `As a legal AI assistant, analyze this case:
 Title: ${caseData.title}
-Content: ${caseData.content}
+Content: ${caseData.description}
 Analysis Type: ${analysisType}
 
 Provide a structured analysis with:
@@ -134,13 +134,13 @@ ${content.slice(0, 2000)}`;
     const embedding = await client.embed(summary);
     
     // Store in database - map to correct schema fields
-    const [doc] = await db.insert(documents).values({
+    const [doc] = await db.insert(legal_documents).values({
       title: (metadata as any).title || 'Untitled Document',
       content,
-      documentType: (metadata as any).documentType || 'evidence',
-      contentEmbedding: Array.from(embedding) as number[],
+      document_type: (metadata as any).documentType || 'evidence',
+      content_embedding: Array.from(embedding) as number[],
       jurisdiction: (metadata as any).jurisdiction || 'federal',
-      analysisResults: {
+      analysis_results: {
         entities: [],
         keyTerms: [],
         sentimentScore: 0.5,

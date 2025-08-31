@@ -23,10 +23,12 @@
   import { ScrollArea } from 'bits-ui';
   import { Toolbar } from 'bits-ui';
   import { Progress } from 'bits-ui';
+  import { Input } from 'bits-ui';
+  import { DropdownMenu } from 'bits-ui';
   
   // Gaming UI Components
   import N643DButton from '$lib/components/ui/gaming/n64/N643DButton.svelte';
-  import N64TextureFilteringCache from '$lib/components/ui/gaming/n64/N64TextureFilteringCache.svelte';
+  // import N64TextureFilteringCache from '$lib/components/ui/gaming/n64/N64TextureFilteringCache.svelte';
   import NES8BitButton from '$lib/components/ui/gaming/8bit/NES8BitButton.svelte';
   import NES8BitContainer from '$lib/components/ui/gaming/8bit/NES8BitContainer.svelte';
   
@@ -67,6 +69,24 @@
   let systemHealth = $state<any>(null);
   let apiOperationResults = $state<Record<string, any>>({});
   let recentOperations = $state<any[]>([]);
+  
+  // Authentication state management
+  let showAuthDialog = $state(false);
+  let authMode = $state<'login' | 'register'>('login');
+  let authLoading = $state(false);
+  let authError = $state<string | null>(null);
+  let currentUser = $state<any>(null);
+  let isAuthenticated = $state(false);
+  
+  // Auth form state
+  let authForm = $state({
+    email: '',
+    password: '',
+    firstName: '',
+    lastName: '',
+    role: 'user' as 'attorney' | 'paralegal' | 'investigator' | 'user',
+    rememberMe: false
+  });
 
   // Build discovered routes from file system with enhanced tracking
   let filteredRoutes = $state<any[]>([]);
@@ -422,9 +442,195 @@
     selectedRoutes = [];
   }
   
+  // Authentication functions
+  async function handleLogin() {
+    authLoading = true;
+    authError = null;
+    
+    try {
+      // Multi-protocol login with intelligent protocol selection
+      const loginPayload = {
+        email: authForm.email,
+        password: authForm.password,
+        rememberMe: authForm.rememberMe,
+        protocol: 'quic', // Try QUIC first for best performance
+        enableAutoTagging: true
+      };
+
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(loginPayload)
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        currentUser = result.data.user;
+        isAuthenticated = true;
+        showAuthDialog = false;
+        
+        // Show protocol and performance info
+        const protocolInfo = result.protocol ? 
+          ` via ${result.protocol.used.toUpperCase()} (${result.protocol.processingTime})` : '';
+        
+        // Reset form
+        authForm = {
+          email: '',
+          password: '',
+          firstName: '',
+          lastName: '',
+          role: 'user',
+          rememberMe: false
+        };
+        
+        // Add to recent operations with protocol info
+        recentOperations = [
+          { 
+            operation: `User Login${protocolInfo}`, 
+            timestamp: new Date().toISOString(), 
+            status: 'success',
+            protocol: result.protocol?.used || 'rest',
+            autoTagging: result.protocol?.autoTagging || false
+          },
+          ...recentOperations.slice(0, 4)
+        ];
+        
+        console.log('🚀 Login successful:', {
+          user: currentUser,
+          protocol: result.protocol,
+          autoTagging: result.protocol?.autoTagging
+        });
+      } else {
+        authError = result.message || 'Login failed';
+      }
+    } catch (error) {
+      authError = 'Network error during login';
+      console.error('❌ Login error:', error);
+    } finally {
+      authLoading = false;
+    }
+  }
+  
+  async function handleRegister() {
+    authLoading = true;
+    authError = null;
+    
+    try {
+      // Multi-protocol registration with comprehensive profile data
+      const registrationPayload = {
+        email: authForm.email,
+        password: authForm.password,
+        firstName: authForm.firstName,
+        lastName: authForm.lastName,
+        role: authForm.role,
+        protocol: 'quic', // Try QUIC first for best performance
+        enableAutoTagging: true,
+        profileData: {
+          preferences: {
+            theme: 'light',
+            language: 'en',
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            notifications: {
+              email: true,
+              push: true,
+              sms: false
+            },
+            aiAssistance: {
+              autoSummarize: true,
+              suggestCitations: true,
+              riskAnalysis: true
+            }
+          }
+        }
+      };
+
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(registrationPayload)
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Show protocol and performance info
+        const protocolInfo = result.protocol ? 
+          ` via ${result.protocol.used.toUpperCase()} (${result.protocol.processingTime})` : '';
+        
+        // Add registration to recent operations
+        recentOperations = [
+          { 
+            operation: `User Registration${protocolInfo}`, 
+            timestamp: new Date().toISOString(), 
+            status: 'success',
+            protocol: result.protocol?.used || 'rest',
+            autoTagging: result.protocol?.autoTagging || false
+          },
+          ...recentOperations.slice(0, 4)
+        ];
+
+        console.log('🚀 Registration successful:', {
+          user: result.data.user,
+          protocol: result.protocol,
+          autoTagging: result.protocol?.autoTagging
+        });
+
+        // Auto-login after successful registration
+        authForm.firstName = '';
+        authForm.lastName = '';
+        await handleLogin();
+      } else {
+        authError = result.message || 'Registration failed';
+      }
+    } catch (error) {
+      authError = 'Network error during registration';
+      console.error('❌ Registration error:', error);
+    } finally {
+      authLoading = false;
+    }
+  }
+  
+  async function handleLogout() {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+    
+    currentUser = null;
+    isAuthenticated = false;
+    
+    // Add to recent operations
+    recentOperations = [
+      { operation: 'User Logout', timestamp: new Date().toISOString(), status: 'success' },
+      ...recentOperations.slice(0, 4)
+    ];
+  }
+  
+  function openAuthDialog(mode: 'login' | 'register') {
+    authMode = mode;
+    authError = null;
+    showAuthDialog = true;
+  }
+  
   // Initialize system on mount
   onMount(async () => {
     await fetchSystemHealth();
+    
+    // Check if user is already authenticated
+    try {
+      const response = await fetch('/api/auth/me');
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success && result.data.user) {
+          currentUser = result.data.user;
+          isAuthenticated = true;
+        }
+      }
+    } catch (error) {
+      console.log('Not authenticated:', error);
+    }
   });
   
   // Log derived values when they change
@@ -442,7 +648,7 @@
   <div class="max-w-7xl mx-auto space-y-6 p-6">
     <!-- Enhanced Header with bits-ui v2 Toolbar Integration -->
     <div class="text-center border-b border-amber-500/30 pb-6 relative">
-      <N64TextureFilteringCache />
+      <!-- <N64TextureFilteringCache /> -->
       
       <div class="relative z-10">
         <h1 class="text-5xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600">
@@ -458,20 +664,13 @@
         <!-- bits-ui v2 Toolbar -->
         <Toolbar.Root class="flex justify-center items-center gap-2 mt-4 p-2 bg-black/20 rounded-lg border border-amber-500/30">
           <!-- Gaming Mode Toggle -->
-          <Tooltip.Root>
-            <Tooltip.Trigger asChild let:builder>
-              <Toggle.Root
-                bind:pressed={gamingMode}
-                builders={[builder]}
-                class="px-4 py-2 rounded bg-purple-600/20 border border-purple-500/40 text-purple-200 hover:bg-purple-600/30 data-[state=on]:bg-purple-600 data-[state=on]:text-white"
-              >
-                {gamingMode ? '🎮 Gaming ON' : '📱 Classic'}
-              </Toggle.Root>
-            </Tooltip.Trigger>
-            <Tooltip.Content class="bg-black/90 text-white p-2 rounded border border-amber-500/50">
-              Toggle between gaming and classic UI modes
-            </Tooltip.Content>
-          </Tooltip.Root>
+          <Toggle.Root
+            bind:pressed={gamingMode}
+            class="px-4 py-2 rounded bg-purple-600/20 border border-purple-500/40 text-purple-200 hover:bg-purple-600/30 data-[state=on]:bg-purple-600 data-[state=on]:text-white"
+            title="Toggle between gaming and classic UI modes"
+          >
+            {gamingMode ? '🎮 Gaming ON' : '📱 Classic'}
+          </Toggle.Root>
           
           <Separator.Root orientation="vertical" class="h-6 w-px bg-amber-500/40" />
           
@@ -508,16 +707,63 @@
           
           <Separator.Root orientation="vertical" class="h-6 w-px bg-amber-500/40" />
           
+          <!-- Authentication Section -->
+          {#if isAuthenticated && currentUser}
+            <!-- User Avatar Dropdown -->
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild let:builder>
+                <Button.Root
+                  builders={[builder]}
+                  class="flex items-center gap-2 px-4 py-2 bg-emerald-600/20 border border-emerald-500/40 text-emerald-200 rounded hover:bg-emerald-600/30"
+                >
+                  <div class="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                    {currentUser.firstName?.[0]?.toUpperCase() || currentUser.email[0].toUpperCase()}
+                  </div>
+                  <span class="hidden sm:inline">
+                    {currentUser.firstName || currentUser.email.split('@')[0]}
+                  </span>
+                </Button.Root>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content class="w-56 bg-gray-900/95 border border-amber-500/50 rounded p-2 z-50">
+                <DropdownMenu.Item class="w-full p-3 text-left rounded hover:bg-amber-600/20 text-white" onclick={() => goto('/profile')}>
+                  👤 Profile
+                </DropdownMenu.Item>
+                <DropdownMenu.Item class="w-full p-3 text-left rounded hover:bg-amber-600/20 text-white" onclick={() => goto('/settings')}>
+                  ⚙️ Settings
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator class="my-1 h-px bg-amber-500/30" />
+                <DropdownMenu.Item class="w-full p-3 text-left rounded hover:bg-red-600/20 text-red-300" onclick={handleLogout}>
+                  🚪 Logout
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu.Root>
+          {:else}
+            <!-- Login/Register Buttons -->
+            <Button.Root
+              onclick={() => openAuthDialog('login')}
+              class="px-4 py-2 bg-blue-600/20 border border-blue-500/40 text-blue-200 rounded hover:bg-blue-600/30"
+            >
+              🔑 Login
+            </Button.Root>
+            
+            <Button.Root
+              onclick={() => openAuthDialog('register')}
+              class="px-4 py-2 bg-green-600/20 border border-green-500/40 text-green-200 rounded hover:bg-green-600/30"
+            >
+              📝 Register
+            </Button.Root>
+          {/if}
+          
+          <Separator.Root orientation="vertical" class="h-6 w-px bg-amber-500/40" />
+          
           <!-- API Operations Dialog -->
           <Dialog.Root bind:open={showApiDialog}>
-            <Dialog.Trigger asChild let:builder>
-              <Button.Root
-                builders={[builder]}
-                class="px-4 py-2 bg-cyan-600/20 border border-cyan-500/40 text-cyan-200 rounded hover:bg-cyan-600/30"
-              >
-                🔗 API Ops
-              </Button.Root>
-            </Dialog.Trigger>
+            <Button.Root
+              onclick={() => showApiDialog = true}
+              class="px-4 py-2 bg-cyan-600/20 border border-cyan-500/40 text-cyan-200 rounded hover:bg-cyan-600/30"
+            >
+              🔗 API Ops
+            </Button.Root>
             <Dialog.Portal>
               <Dialog.Overlay class="fixed inset-0 bg-black/70 z-50" />
               <Dialog.Content class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-900 border border-amber-500/50 rounded-lg p-6 z-51 max-w-2xl w-full max-h-[80vh]">
@@ -593,28 +839,148 @@
                   </ScrollArea.Scrollbar>
                 </ScrollArea.Root>
                 
-                <Dialog.Close asChild let:builder>
-                  <Button.Root
-                    builders={[builder]}
-                    class="absolute top-2 right-2 p-2 text-gray-400 hover:text-white"
-                  >
-                    ✕
-                  </Button.Root>
-                </Dialog.Close>
+                <Button.Root
+                  onclick={() => showApiDialog = false}
+                  class="absolute top-2 right-2 p-2 text-gray-400 hover:text-white"
+                >
+                  ✕
+                </Button.Root>
+              </Dialog.Content>
+            </Dialog.Portal>
+          </Dialog.Root>
+          
+          <!-- Authentication Dialog -->
+          <Dialog.Root bind:open={showAuthDialog}>
+            <Dialog.Portal>
+              <Dialog.Overlay class="fixed inset-0 bg-black/70 z-50" />
+              <Dialog.Content class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-900 border border-amber-500/50 rounded-lg p-6 z-51 max-w-md w-full">
+                <Dialog.Title class="text-xl font-bold text-amber-300 mb-4">
+                  {authMode === 'login' ? '🔑 Login' : '📝 Register'}
+                </Dialog.Title>
+                
+                <form onsubmit={e => { e.preventDefault(); authMode === 'login' ? handleLogin() : handleRegister(); }} class="space-y-4">
+                  {#if authMode === 'register'}
+                    <div class="grid grid-cols-2 gap-2">
+                      <div>
+                        <Label.Root class="block text-sm font-medium text-gray-300 mb-1">First Name</Label.Root>
+                        <Input.Root
+                          bind:value={authForm.firstName}
+                          placeholder="John"
+                          required
+                          class="w-full px-3 py-2 bg-black/40 border border-gray-600 rounded text-white placeholder-gray-400 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                        />
+                      </div>
+                      <div>
+                        <Label.Root class="block text-sm font-medium text-gray-300 mb-1">Last Name</Label.Root>
+                        <Input.Root
+                          bind:value={authForm.lastName}
+                          placeholder="Doe"
+                          required
+                          class="w-full px-3 py-2 bg-black/40 border border-gray-600 rounded text-white placeholder-gray-400 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                        />
+                      </div>
+                    </div>
+                  {/if}
+                  
+                  <div>
+                    <Label.Root class="block text-sm font-medium text-gray-300 mb-1">Email</Label.Root>
+                    <Input.Root
+                      bind:value={authForm.email}
+                      type="email"
+                      placeholder="user@example.com"
+                      required
+                      class="w-full px-3 py-2 bg-black/40 border border-gray-600 rounded text-white placeholder-gray-400 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label.Root class="block text-sm font-medium text-gray-300 mb-1">Password</Label.Root>
+                    <Input.Root
+                      bind:value={authForm.password}
+                      type="password"
+                      placeholder="••••••••"
+                      required={authMode === 'login'}
+                      minlength={authMode === 'register' ? 8 : undefined}
+                      class="w-full px-3 py-2 bg-black/40 border border-gray-600 rounded text-white placeholder-gray-400 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                    />
+                  </div>
+                  
+                  {#if authMode === 'register'}
+                    <div>
+                      <Label.Root class="block text-sm font-medium text-gray-300 mb-1">Role</Label.Root>
+                      <Select.Root bind:selected={authForm.role}>
+                        <Select.Trigger class="w-full px-3 py-2 bg-black/40 border border-gray-600 rounded text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
+                          {authForm.role === 'attorney' ? '⚖️ Attorney' : 
+                           authForm.role === 'paralegal' ? '📋 Paralegal' :
+                           authForm.role === 'investigator' ? '🔍 Investigator' : '👤 User'}
+                        </Select.Trigger>
+                        <Select.Content class="bg-gray-900 border border-gray-600 rounded">
+                          <Select.Item value="user" class="p-2 text-white hover:bg-amber-600/20">👤 User</Select.Item>
+                          <Select.Item value="attorney" class="p-2 text-white hover:bg-amber-600/20">⚖️ Attorney</Select.Item>
+                          <Select.Item value="paralegal" class="p-2 text-white hover:bg-amber-600/20">📋 Paralegal</Select.Item>
+                          <Select.Item value="investigator" class="p-2 text-white hover:bg-amber-600/20">🔍 Investigator</Select.Item>
+                        </Select.Content>
+                      </Select.Root>
+                    </div>
+                  {/if}
+                  
+                  {#if authMode === 'login'}
+                    <div class="flex items-center">
+                      <input
+                        type="checkbox"
+                        bind:checked={authForm.rememberMe}
+                        class="mr-2 rounded bg-black/40 border-gray-600 text-amber-500 focus:ring-amber-500"
+                      />
+                      <Label.Root class="text-sm text-gray-300">Remember me</Label.Root>
+                    </div>
+                  {/if}
+                  
+                  {#if authError}
+                    <div class="p-3 bg-red-900/30 border border-red-500/50 rounded text-red-300 text-sm">
+                      {authError}
+                    </div>
+                  {/if}
+                  
+                  <div class="flex gap-2">
+                    <Button.Root
+                      type="submit"
+                      disabled={authLoading}
+                      class="flex-1 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {authLoading ? '⏳ Processing...' : authMode === 'login' ? '🔑 Login' : '📝 Register'}
+                    </Button.Root>
+                    
+                    <Button.Root
+                      type="button"
+                      onclick={() => {
+                        authMode = authMode === 'login' ? 'register' : 'login';
+                        authError = null;
+                      }}
+                      class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded"
+                    >
+                      {authMode === 'login' ? 'Register' : 'Login'}
+                    </Button.Root>
+                  </div>
+                </form>
+                
+                <Button.Root
+                  onclick={() => showAuthDialog = false}
+                  class="absolute top-2 right-2 p-2 text-gray-400 hover:text-white"
+                >
+                  ✕
+                </Button.Root>
               </Dialog.Content>
             </Dialog.Portal>
           </Dialog.Root>
           
           <!-- Settings Popover -->
           <Popover.Root bind:open={showSettings}>
-            <Popover.Trigger asChild let:builder>
-              <Button.Root
-                builders={[builder]}
-                class="px-4 py-2 bg-gray-600/20 border border-gray-500/40 text-gray-200 rounded hover:bg-gray-600/30"
-              >
-                ⚙️ Settings
-              </Button.Root>
-            </Popover.Trigger>
+            <Button.Root
+              onclick={() => showSettings = true}
+              class="px-4 py-2 bg-gray-600/20 border border-gray-500/40 text-gray-200 rounded hover:bg-gray-600/30"
+            >
+              ⚙️ Settings
+            </Button.Root>
             <Popover.Content class="p-4 bg-gray-900 border border-amber-500/50 rounded-lg min-w-[300px]">
               <h3 class="font-semibold text-amber-300 mb-3">Testing Configuration</h3>
               

@@ -153,7 +153,7 @@ export async function setJSON<T>(
 export async function getJSON<T>(key: string): Promise<T | null> {
     const client = await getRedis();
     const v = await client.get(key);
-    if (!v) return null;
+    if (!v || typeof v !== 'string') return null;
     try {
         return JSON.parse(v) as T;
     } catch {

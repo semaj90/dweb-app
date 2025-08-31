@@ -683,11 +683,11 @@ export function createPerformanceMiddleware(monitor: PerformanceMonitor) {
   };
 }
 
+// Export the class
+export { PerformanceMonitor };
+
 // Singleton instance
 export const performanceMonitor = new PerformanceMonitor();
-
-// Export types and class
-export { PerformanceMonitor, type PerformanceMetric, type SystemHealth, type AlertRule };
 
 // Auto-start monitoring in production
 if (process.env.NODE_ENV === 'production') {

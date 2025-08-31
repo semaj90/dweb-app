@@ -1,0 +1,422 @@
+[
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\old-scripts\\AI-HEALTH-CHECK.bat",
+    "mtime": "2025-07-25T13:42:20.238Z",
+    "size": 979,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\old-scripts\\BAT-FILE-ERROR-CHECKER.bat",
+    "mtime": "2025-07-25T13:12:53.841Z",
+    "size": 11913,
+    "preview": "@echo off",
+    "recommended": "archive"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\old-scripts\\COMPLETE-RAG-SETUP.bat",
+    "mtime": "2025-07-25T20:34:29.164Z",
+    "size": 4819,
+    "preview": "@echo off",
+    "recommended": "archive"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\old-scripts\\COMPLETE-STATUS.bat",
+    "mtime": "2025-07-25T13:20:46.821Z",
+    "size": 676,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\old-scripts\\CUDA-OLLAMA-SETUP.bat",
+    "mtime": "2025-07-25T13:55:31.939Z",
+    "size": 1043,
+    "preview": "@echo off",
+    "recommended": "archive"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\old-scripts\\EMERGENCY-START.bat",
+    "mtime": "2025-07-25T03:08:52.182Z",
+    "size": 110,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\old-scripts\\ERROR-FREE-LAUNCHER.bat",
+    "mtime": "2025-07-25T13:17:01.029Z",
+    "size": 1235,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\old-scripts\\FINAL-AI-MEMORY-SYSTEM-TEST.bat",
+    "mtime": "2025-07-26T00:58:28.022Z",
+    "size": 11118,
+    "preview": "@echo off",
+    "recommended": "archive"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\old-scripts\\FIX-ALL-ISSUES.bat",
+    "mtime": "2025-07-25T13:23:06.514Z",
+    "size": 542,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\old-scripts\\GPU-DETECTION.bat",
+    "mtime": "2025-07-25T13:56:21.487Z",
+    "size": 934,
+    "preview": "@echo off",
+    "recommended": "archive"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\old-scripts\\HEALTH-CHECK.bat",
+    "mtime": "2025-07-25T12:49:16.546Z",
+    "size": 763,
+    "preview": "@echo off",
+    "recommended": "archive"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\old-scripts\\MASTER-FIX-ALL.bat",
+    "mtime": "2025-07-25T13:17:01.039Z",
+    "size": 1510,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\old-scripts\\MASTER-MCP-SETUP.bat",
+    "mtime": "2025-07-19T19:38:00.911Z",
+    "size": 3081,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\old-scripts\\production-dev-setup.bat",
+    "mtime": "2025-07-19T19:38:00.929Z",
+    "size": 1880,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\old-scripts\\QUICK-ERROR-FIX.bat",
+    "mtime": "2025-07-25T03:26:54.125Z",
+    "size": 2058,
+    "preview": "@echo off",
+    "recommended": "archive"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\old-scripts\\SIMPLE-LAUNCHER.bat",
+    "mtime": "2025-07-25T03:26:27.678Z",
+    "size": 408,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\old-scripts\\SYSTEM-CHECK.bat",
+    "mtime": "2025-07-25T13:27:29.880Z",
+    "size": 626,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\old-scripts\\test-mcp-integration.bat",
+    "mtime": "2025-07-19T19:38:00.932Z",
+    "size": 1376,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\old-scripts\\UNIVERSAL-HEALTH-CHECK.bat",
+    "mtime": "2025-07-25T13:15:59.169Z",
+    "size": 1802,
+    "preview": "@echo off",
+    "recommended": "archive"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\analyze-evidence.bat",
+    "mtime": "2025-07-28T04:19:59.593Z",
+    "size": 3897,
+    "preview": "@echo off",
+    "recommended": "archive"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\maintenance\\AUTO-FIX-AND-START.bat",
+    "mtime": "2025-07-19T21:06:34.826Z",
+    "size": 481,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\maintenance\\check.bat",
+    "mtime": "2025-07-23T07:10:11.414Z",
+    "size": 3505,
+    "preview": "MANUAL INSTALLATION STEPS - GUARANTEED TO WORK",
+    "recommended": "archive"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\maintenance\\COMPLETE-SMART-SETUP-FIXED.bat",
+    "mtime": "2025-07-24T22:45:25.265Z",
+    "size": 6165,
+    "preview": "@echo off",
+    "recommended": "archive"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\maintenance\\COMPLETE-SMART-SETUP.bat",
+    "mtime": "2025-07-25T12:58:12.949Z",
+    "size": 4833,
+    "preview": "@echo off",
+    "recommended": "archive"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\maintenance\\CONTEXT7-NPM-Check-Fix.bat",
+    "mtime": "2025-07-22T06:26:50.840Z",
+    "size": 9571,
+    "preview": "@echo off",
+    "recommended": "archive"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\maintenance\\create-containers-cpu.bat",
+    "mtime": "2025-07-20T07:58:12.737Z",
+    "size": 497,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\maintenance\\create-containers-gpu.bat",
+    "mtime": "2025-07-20T07:58:19.515Z",
+    "size": 518,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\maintenance\\detective-status.bat",
+    "mtime": "2025-07-20T08:01:06.400Z",
+    "size": 237,
+    "preview": "@echo off",
+    "recommended": "archive"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\maintenance\\detective-stop-all.bat",
+    "mtime": "2025-07-20T08:01:12.990Z",
+    "size": 286,
+    "preview": "@echo off",
+    "recommended": "archive"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\maintenance\\final-fix-and-check.bat",
+    "mtime": "2025-07-19T21:06:51.395Z",
+    "size": 1020,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\maintenance\\FIX-ALL-ERRORS-NOW.bat",
+    "mtime": "2025-07-19T21:06:35.683Z",
+    "size": 796,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\maintenance\\fix-all-typescript-errors.bat",
+    "mtime": "2025-07-19T21:06:56.650Z",
+    "size": 610,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\maintenance\\fix-errors.bat",
+    "mtime": "2025-07-19T21:06:57.159Z",
+    "size": 803,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\maintenance\\Fix-NPM-Check.bat",
+    "mtime": "2025-07-22T06:27:08.440Z",
+    "size": 2172,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\maintenance\\fix-web-app-errors.bat",
+    "mtime": "2025-07-19T21:06:58.084Z",
+    "size": 3864,
+    "preview": "@echo off",
+    "recommended": "archive"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\maintenance\\generate-todo.bat",
+    "mtime": "2025-07-19T21:06:58.605Z",
+    "size": 321,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\maintenance\\Intelligent-NPM-Check-Fixer.bat",
+    "mtime": "2025-07-23T00:30:10.186Z",
+    "size": 19415,
+    "preview": "@echo off",
+    "recommended": "review"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\maintenance\\main_installation_script.bat",
+    "mtime": "2025-07-23T06:40:07.832Z",
+    "size": 3811,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\maintenance\\mcp_config_fixer.bat",
+    "mtime": "2025-07-23T12:41:58.846Z",
+    "size": 3899,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\maintenance\\Nier-CSS-Integration-Fixer-CORRECTED.bat",
+    "mtime": "2025-07-23T01:16:33.364Z",
+    "size": 6701,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\maintenance\\Nier-CSS-Integration-Fixer.bat",
+    "mtime": "2025-07-23T00:59:02.194Z",
+    "size": 12275,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\maintenance\\Phase3-Production-Implementation.bat",
+    "mtime": "2025-07-23T01:14:13.706Z",
+    "size": 21470,
+    "preview": "@echo off",
+    "recommended": "review"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\maintenance\\RUN-SYSTEM-TESTS.bat",
+    "mtime": "2025-07-19T21:06:47.203Z",
+    "size": 580,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\maintenance\\start-cpu-containers.bat",
+    "mtime": "2025-07-20T08:09:04.651Z",
+    "size": 510,
+    "preview": "��@\u0000e\u0000c\u0000h\u0000o\u0000 \u0000o\u0000f\u0000f\u0000 \u0000c\u0000d\u0000 \u0000/\u0000d\u0000 \u0000\"\u0000C\u0000:\u0000\\\u0000U\u0000s\u0000e\u0000r\u0000s\u0000\\\u0000j\u0000a\u0000m\u0000e\u0000s\u0000\\\u0000D\u0000e\u0000s\u0000k\u0000t\u0000o\u0000p\u0000\\\u0000d\u0000e\u0000e\u0000d\u0000s\u0000-\u0000w\u0000e\u0000b\u0000\\\u0000d\u0000e\u0000e\u0000d\u0000s\u0000-\u0000w\u0000e\u0000b\u0000-\u0000a\u0000p\u0000p\u0000\\\u0000s\u0000v\u0000e\u0000l\u0000t\u0000e\u0000k\u0000i\u0000t\u0000-\u0000f\u0000r\u0000o\u0000n\u0000t\u0000e\u0000n\u0000d\u0000\"\u0000 \u0000d\u0000o\u0000c\u0000k\u0000e\u0000r\u0000-\u0000c\u0000o\u0000m\u0000p\u0000o\u0000s\u0000e\u0000 \u0000u\u0000p\u0000 \u0000-\u0000d\u0000 \u0000e\u0000c\u0000h\u0000o\u0000 \u0000S\u0000e\u0000r\u0000v\u0000i\u0000c\u0000e\u0000s\u0000 \u0000s\u0000t\u0000a\u0000r\u0000t\u0000e\u0000d\u0000 \u0000o\u0000n\u0000:\u0000 \u0000e\u0000c\u0000h\u0000o\u0000 \u0000P\u0000o\u0000s\u0000t\u0000g\u0000r\u0000e\u0000S\u0000Q\u0000L\u0000:\u0000 \u0000l\u0000o\u0000c\u0000a\u0000l\u0000h\u0000o\u0000s\u0000t\u0000:\u00005\u00004\u00003\u00003\u0000 \u0000e\u0000c\u0000h\u0000o\u0000 \u0000Q\u0000d\u0000r\u0000a\u0000n\u0000t\u0000:\u0000 \u0000l\u0000o\u0000c\u0000a\u0000l\u0000h\u0000o\u0000s\u0000t\u0000:\u00006\u00003\u00003\u00004\u0000 \u0000e\u0000c\u0000h\u0000o\u0000 \u0000R\u0000e\u0000d\u0000i\u0000s\u0000:\u0000 \u0000l\u0000o\u0000c\u0000a\u0000l\u0000h\u0000o\u0000s\u0000t\u0000:\u00006\u00003\u00008\u00000\u0000 \u0000e\u0000c\u0000h\u0000o\u0000 \u0000O\u0000l\u0000l\u0000a\u0000m\u0000a\u0000:\u0000 \u0000l\u0000o\u0000c\u0000a\u0000l\u0000h\u0000o\u0000s\u0000t\u0000:\u00001\u00001\u00004\u00003\u00005\u0000 \u0000p\u0000a\u0000u\u0000s\u0000e\u0000\r\u0000",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\maintenance\\start-gpu-containers.bat",
+    "mtime": "2025-07-20T08:09:10.327Z",
+    "size": 568,
+    "preview": "��@\u0000e\u0000c\u0000h\u0000o\u0000 \u0000o\u0000f\u0000f\u0000 \u0000c\u0000d\u0000 \u0000/\u0000d\u0000 \u0000\"\u0000C\u0000:\u0000\\\u0000U\u0000s\u0000e\u0000r\u0000s\u0000\\\u0000j\u0000a\u0000m\u0000e\u0000s\u0000\\\u0000D\u0000e\u0000s\u0000k\u0000t\u0000o\u0000p\u0000\\\u0000d\u0000e\u0000e\u0000d\u0000s\u0000-\u0000w\u0000e\u0000b\u0000\\\u0000d\u0000e\u0000e\u0000d\u0000s\u0000-\u0000w\u0000e\u0000b\u0000-\u0000a\u0000p\u0000p\u0000\"\u0000 \u0000c\u0000o\u0000p\u0000y\u0000 \u0000.\u0000e\u0000n\u0000v\u0000.\u0000g\u0000p\u0000u\u0000 \u0000s\u0000v\u0000e\u0000l\u0000t\u0000e\u0000k\u0000i\u0000t\u0000-\u0000f\u0000r\u0000o\u0000n\u0000t\u0000e\u0000n\u0000d\u0000\\\u0000.\u0000e\u0000n\u0000v\u0000 \u0000/\u0000Y\u0000 \u0000d\u0000o\u0000c\u0000k\u0000e\u0000r\u0000-\u0000c\u0000o\u0000m\u0000p\u0000o\u0000s\u0000e\u0000 \u0000-\u0000f\u0000 \u0000d\u0000o\u0000c\u0000k\u0000e\u0000r\u0000-\u0000c\u0000o\u0000m\u0000p\u0000o\u0000s\u0000e\u0000.\u0000g\u0000p\u0000u\u0000.\u0000y\u0000m\u0000l\u0000 \u0000u\u0000p\u0000 \u0000-\u0000d\u0000 \u0000e\u0000c\u0000h\u0000o\u0000 \u0000G\u0000P\u0000U\u0000 \u0000s\u0000e\u0000r\u0000v\u0000i\u0000c\u0000e\u0000s\u0000 \u0000s\u0000t\u0000a\u0000r\u0000t\u0000e\u0000d\u0000 \u0000o\u0000n\u0000:\u0000 \u0000e\u0000c\u0000h\u0000o\u0000 \u0000P\u0000o\u0000s\u0000t\u0000g\u0000r\u0000e\u0000S\u0000Q\u0000L\u0000:\u0000 \u0000l\u0000o\u0000c\u0000a\u0000l\u0000h\u0000o\u0000s\u0000t\u0000:\u00005\u00004\u00003\u00004\u0000 \u0000e\u0000c\u0000h\u0000o\u0000 \u0000Q\u0000d\u0000r\u0000a\u0000n\u0000t\u0000:\u0000 \u0000l\u0000o\u0000c\u0000a\u0000l\u0000h\u0000o\u0000s\u0000t\u0000:\u00006\u00003\u00003\u00005\u0000 \u0000e\u0000c\u0000h\u0000o\u0000 \u0000O\u0000l\u0000l\u0000a\u0000m\u0000a\u0000 \u0000G\u0000P\u0000U\u0000:\u0000 \u0000l\u0000o\u0000c\u0000a\u0000l\u0000h\u0000o\u0000s\u0000t\u0000:\u00001\u00001\u00004\u00003\u00006\u0000 \u0000p\u0000a\u0000u\u0000s\u0000e\u0000\r\u0000",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\maintenance\\start-server.bat",
+    "mtime": "2025-07-19T21:07:01.960Z",
+    "size": 325,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\maintenance\\test-fixed-seed.bat",
+    "mtime": "2025-07-19T21:07:02.502Z",
+    "size": 1210,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\script_backup\\RUN-SYSTEM-TESTS.bat",
+    "mtime": "2025-07-19T21:06:47.203Z",
+    "size": 580,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\cleanup-archive\\batch-files\\APPLY-NIER-THEME.bat",
+    "mtime": "2025-07-20T22:33:45.834Z",
+    "size": 1407,
+    "preview": "@echo off",
+    "recommended": "archive"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\cleanup-archive\\batch-files\\BACKUP-AND-FIX.bat",
+    "mtime": "2025-07-24T03:12:28.418Z",
+    "size": 410,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\cleanup-archive\\batch-files\\check-and-fix.bat",
+    "mtime": "2025-07-21T02:38:40.327Z",
+    "size": 3668,
+    "preview": "@echo off",
+    "recommended": "archive"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\cleanup-archive\\batch-files\\CHECK-DATABASE-STATUS.bat",
+    "mtime": "2025-07-20T22:03:39.883Z",
+    "size": 5741,
+    "preview": "@echo off",
+    "recommended": "archive"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\cleanup-archive\\batch-files\\clear-cache-and-fix.bat",
+    "mtime": "2025-07-19T21:09:05.670Z",
+    "size": 971,
+    "preview": "@echo off",
+    "recommended": "archive"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\cleanup-archive\\batch-files\\CLEAR-CACHE.bat",
+    "mtime": "2025-07-19T21:08:45.992Z",
+    "size": 535,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\cleanup-archive\\batch-files\\COMPREHENSIVE-ERROR-FIX.bat",
+    "mtime": "2025-07-21T02:51:20.101Z",
+    "size": 7782,
+    "preview": "@echo off",
+    "recommended": "archive"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\cleanup-archive\\batch-files\\DATABASE-SUCCESS-STATUS.bat",
+    "mtime": "2025-07-20T22:05:23.159Z",
+    "size": 3222,
+    "preview": "@echo off",
+    "recommended": "archive"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\cleanup-archive\\batch-files\\ENHANCED-DOCKER-HEALTH-FIX.bat",
+    "mtime": "2025-07-21T03:30:19.930Z",
+    "size": 11612,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\cleanup-archive\\batch-files\\ENHANCED-LEGAL-AI-LAUNCHER.bat",
+    "mtime": "2025-07-19T21:08:46.476Z",
+    "size": 5283,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\cleanup-archive\\batch-files\\FIX-ALL-1000-ERRORS.bat",
+    "mtime": "2025-07-19T21:08:46.935Z",
+    "size": 1153,
+    "preview": "@echo off",
+    "recommended": "keep"
+  },
+  {
+    "path": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\cleanup-archive\\batch-files\\FIX-ALL-ERRORS.bat",
+    "mtime": "2025-07-19T21:08:47.308Z",
+    "size": 1075,
+    "preview": "@echo off",
+    "recommended": "keep"
+  }
+]

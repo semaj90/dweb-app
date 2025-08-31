@@ -1,7 +1,8 @@
 import { lucia } from '$lib/auth/session';
 import { db } from '$lib/server/db/pg';
 import { users, sessions, userAuditLogs, type User, type NewUser, type NewUserAuditLog } from '$lib/database/schema';
-import { eq, and, gte, lt, count } from 'drizzle-orm';
+import { eq, and, gte, count } from 'drizzle-orm';
+import { lt } from 'drizzle-orm/sql';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import type { RequestEvent } from '@sveltejs/kit';

@@ -54,12 +54,12 @@ async function querySimilar(query: string, options: SimilarityQueryOptions = {})
                                      FROM document_chunks
                                      ORDER BY embedding <=> ${queryEmbedding}
                                      LIMIT ${limit}`);
-  return rows.map(r => ({
-    id: r.id,
-    documentId: r.document_id,
-    documentType: r.document_type,
-    chunkIndex: r.chunk_index,
-    content: r.content,
+  return rows.map((r: any) => ({
+    id: String(r.id),
+    documentId: String(r.document_id),
+    documentType: String(r.document_type),
+    chunkIndex: Number(r.chunk_index),
+    content: String(r.content),
     score: 1 - Number(r.distance)
   }));
 }

@@ -613,4 +613,4 @@ Provide analysis in structured format:
 export const webLlamaService = new WebAssemblyLlamaService();
 
 // Export class for custom instances
-export { WebAssemblyLlamaService, type WebLlamaConfig, type WebLlamaResponse };
+export { WebAssemblyLlamaService };

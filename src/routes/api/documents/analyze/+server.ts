@@ -1,7 +1,7 @@
 
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/database/postgres';
-import { legalDocuments, type NewLegalDocument } from '$lib/database/schema/legal-documents';
+import { legalDocuments, type NewLegalDocument } from '$lib/database/schema';
 import { legalOrchestrator } from '$lib/agents/orchestrator';
 import { qdrantManager } from '$lib/database/qdrant';
 import type { RequestHandler } from './$types';
@@ -211,23 +211,32 @@ async function generateDocumentEmbeddings(
   content: string,
   title: string
 ): Promise<{ content: number[]; title: number[] }> {
-  // This would integrate with your embedding service (Ollama, OpenAI, etc.)
-  // For now, return mock embeddings
-  
-  // In production, call your embedding API:
-  // const response = await fetch('http://localhost:11434/api/embeddings', {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify({
-  //     model: 'nomic-embed-text',
-  //     prompt: content
-  //   })
-  // });
-  
-  return {
-    content: Array.from({ length: 384 }, () => Math.random() - 0.5),
-    title: Array.from({ length: 384 }, () => Math.random() - 0.5)
-  };
+  // Use the project's NomicEmbeddingsService when available; fallback to mock embeddings.
+  try {
+    const { nomicEmbeddings } = await import('$lib/ai/nomic-embeddings');
+    const [contentResult, titleResult] = await Promise.all([
+      nomicEmbeddings.embed(content),
+      nomicEmbeddings.embed(title)
+    ]);
+
+    const contentEmbedding = (contentResult as any)?.embedding ?? (contentResult as any);
+    const titleEmbedding = (titleResult as any)?.embedding ?? (titleResult as any);
+
+    return {
+      content: Array.isArray(contentEmbedding) ? contentEmbedding : (contentEmbedding as any),
+      title: Array.isArray(titleEmbedding) ? titleEmbedding : (titleEmbedding as any)
+    };
+  } catch (err: any) {
+    console.warn('Embedding generation failed, returning mock embeddings:', err);
+
+    const makeMock = (len = 384) =>
+      Array.from({ length: len }, () => Math.random() - 0.5);
+
+    return {
+      content: makeMock(384),
+      title: makeMock(384)
+    };
+  }
 }
 
 async function analyzeDocumentWithAI(
@@ -239,13 +248,13 @@ async function analyzeDocumentWithAI(
   try {
     const analysisPrompt = `
       Analyze the following legal document:
-      
+
       Document Type: ${documentType}
       Jurisdiction: ${jurisdiction}
       Practice Area: ${practiceArea || 'General'}
-      
+
       Content: ${content.substring(0, 4000)}...
-      
+
       Please provide:
       1. Key legal entities mentioned
       2. Important terms and obligations
@@ -268,7 +277,7 @@ async function analyzeDocumentWithAI(
 
     // Parse the analysis response into structured data
     const analysisText = result.synthesizedConclusion;
-    
+
     return {
       entities: extractEntities(analysisText),
       keyTerms: extractKeyTerms(analysisText),
@@ -332,7 +341,7 @@ function extractKeyTerms(text: string): string[] {
     'confidentiality', 'intellectual property', 'force majeure'
   ];
 
-  return legalTerms.filter(term => 
+  return legalTerms.filter(term =>
     text.toLowerCase().includes(term.toLowerCase())
   );
 }
@@ -341,10 +350,10 @@ function extractSentimentScore(text: string): number {
   // Simple sentiment analysis based on keyword presence
   const positiveWords = ['agree', 'benefit', 'advantage', 'profit', 'gain'];
   const negativeWords = ['breach', 'violation', 'penalty', 'damages', 'liability'];
-  
+
   const positive = positiveWords.filter(word => text.toLowerCase().includes(word)).length;
   const negative = negativeWords.filter(word => text.toLowerCase().includes(word)).length;
-  
+
   return (positive - negative) / (positive + negative + 1);
 }
 
@@ -353,7 +362,7 @@ function extractComplexityScore(text: string): number {
   const sentences = text.split(/[.!?]+/).length;
   const avgWordLength = text.split(/\s+/).reduce((sum, word) => sum + word.length, 0) / text.split(/\s+/).length;
   const legalTermDensity = extractKeyTerms(text).length / sentences;
-  
+
   return Math.min(10, Math.max(1, Math.round(avgWordLength * legalTermDensity * sentences / 100)));
 }
 

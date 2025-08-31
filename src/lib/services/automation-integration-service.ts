@@ -27,7 +27,7 @@ import type {
     ServiceHealth,
     ResourceMetrics,
     PerformanceAnalysis 
-} from '$lib/ai/types';
+} from '$lib/ai';
 
 export class AutomationIntegrationService extends EventEmitter {
     private isRunning = false;

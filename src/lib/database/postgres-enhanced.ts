@@ -1,11 +1,12 @@
 // Enhanced PostgreSQL Database Service with Drizzle ORM
 // Provides type-safe database operations with proper TypeScript support
 
-import { drizzle } from 'drizzle-orm/node-postgres';
+import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
-import { migrate } from 'drizzle-orm/node-postgres/migrator';
-import * as schema from './schema/legal-documents.ts';
-import { getSvelte5Docs, mcpContext72GetLibraryDocs } from '../../sveltekit-frontend/src/lib/mcp-context72-get-library-docs';
+import { migrate } from 'drizzle-orm/postgres-js/migrator';
+import * as schema from './schema/legal-documents';
+// Remove the problematic import - it's not needed for database operations
+// import { getSvelte5Docs, mcpContext72GetLibraryDocs } from '../../sveltekit-frontend/src/lib/mcp-context72-get-library-docs';
 
 // Database configuration
 // Uses postgres-js and drizzle-orm for type-safe PostgreSQL access in SvelteKit 2
@@ -14,17 +15,19 @@ import { getSvelte5Docs, mcpContext72GetLibraryDocs } from '../../sveltekit-fron
 // Example: Get docs for postgres-js and drizzle-orm (for developer reference)
 
 // Optionally fetch docs at runtime for developer tooling
-// (Remove or comment out in production)
+// (Removed - docs import not needed for database operations)
+/*
 (async (): Promise<any> => {
   try {
-    const drizzleDocs = await mcpContext72GetLibraryDocs('drizzle-orm/node-postgres', 'usage', { format: 'typescript', tokens: 4000 });
-    const postgresJsDocs = await mcpContext72GetLibraryDocs('postgres-js', 'usage', { format: 'typescript', tokens: 4000 });
-    console.log('Drizzle ORM Docs:', drizzleDocs.content.slice(0, 200));
-    console.log('Postgres-js Docs:', postgresJsDocs.content.slice(0, 200));
+    // const drizzleDocs = await mcpContext72GetLibraryDocs('drizzle-orm/node-postgres', 'usage', { format: 'typescript', tokens: 4000 });
+    // const postgresJsDocs = await mcpContext72GetLibraryDocs('postgres-js', 'usage', { format: 'typescript', tokens: 4000 });
+    // console.log('Drizzle ORM Docs:', drizzleDocs.content.slice(0, 200));
+    // console.log('Postgres-js Docs:', postgresJsDocs.content.slice(0, 200));
   } catch (err: any) {
     // Ignore errors in docs fetch
   }
 })();
+*/
 const connectionString = process.env.DATABASE_URL ||
   `postgresql://${process.env.DB_USER || 'postgres'}:${process.env.DB_PASSWORD || 'postgres'}@${process.env.DB_HOST || 'localhost'}:${process.env.DB_PORT || 5432}/${process.env.DB_NAME || 'legal_ai'}`;
 
@@ -33,15 +36,10 @@ const queryClient = postgres(connectionString, {
   max: 20,                    // Maximum pool connections
   idle_timeout: 30,           // Idle timeout in seconds
   connect_timeout: 10,        // Connect timeout in seconds
-  socket_timeout: 0,          // Disable socket timeout for long-running queries
   max_lifetime: 60 * 30,      // 30 minutes max connection lifetime
   ssl: process.env.NODE_ENV === 'production' ? 'require' : false,
   transform: {
     undefined: null,          // Convert undefined to null
-    column: {
-      from: postgres.camel,   // Convert snake_case to camelCase
-      to: postgres.snake      // Convert camelCase to snake_case
-    }
   },
   onnotice: process.env.NODE_ENV === 'development' ? console.log : () => {},
   debug: process.env.DEBUG_SQL === 'true',

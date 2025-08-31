@@ -1,6 +1,6 @@
 /**
  * Advanced Multi-Layer Caching System
- * 
+ *
  * Production-ready caching architecture with intelligent cache management:
  * - L1: In-Memory LRU Cache (fastest, volatile)
  * - L2: Redis Cache (fast, persistent across restarts)
@@ -9,7 +9,7 @@
  * - L5: File System Cache (large objects)
  * - L6: CDN/Edge Cache (static content)
  * - L7: Browser Cache (client-side caching)
- * 
+ *
  * Features:
  * - Intelligent cache tier selection based on data type and access patterns
  * - Automatic cache warming and preloading
@@ -22,75 +22,105 @@
  */
 
 import { EventEmitter } from 'events';
+import { performance } from 'perf_hooks';
+import { promisify } from 'util';
+import { gzip, gunzip } from 'zlib';
+const gzipAsync = promisify(gzip);
+const gunzipAsync = promisify(gunzip);
 
 // Cache Type Definitions
+
 export interface CacheEntry {
     key: string;
     value: any;
     ttl?: number;
     createdAt: number;
-    accessedAt: number;
-    hits: number;
+    lastAccessed: number;
+    accessCount: number;
+    // legacy alias
+    hits?: number;
 }
 
 export interface CacheStrategy {
     name: string;
-    maxSize: number;
-    ttl: number;
-    evictionPolicy: 'lru' | 'fifo' | 'lfu';
+    readStrategy?: string;
+    writeStrategy?: string;
+    consistencyLevel?: 'strong' | 'eventual' | 'configurable';
+    description?: string;
+    // optional strategy metadata
+    [k: string]: any;
 }
 
 export interface CacheMetrics {
+    gets: number;
+    sets: number;
+    deletes: number;
     hits: number;
     misses: number;
-    hitRate: number;
-    averageOperationTime: number;
-    totalOperations: number;
-}
-
-export interface CacheConfiguration {
-    layers: CacheLayerConfig[];
-    defaultTtl: number;
-    maxMemoryUsage: number;
-    enableCompression: boolean;
-}
-
-export interface CacheLayerConfig {
-    name: string;
-    priority: number;
-    capacity: number;
-    ttl: number;
-    enabled: boolean;
+    errors: number;
+    totalOperationTime: number;
+    hitsByLayer: Record<string, number>;
+    writesByLayer: Record<string, number>;
+    compressionSavings: number;
+    predictivePrefetches: number;
+    [k: string]: any;
 }
 
 export type CacheKey = string;
 export type CacheValue = any;
 
-export interface CachePolicy {
-    name: string;
-    rules: any[];
+export interface CacheLayerConfig {
     enabled: boolean;
-}
-
-export interface CacheStats {
-    totalSize: number;
-    hitRate: number;
-    averageOperationTime: number;
-    layer: string;
-}
-
-export interface CacheAnalytics {
-    patterns: any[];
-    predictions: any[];
-    optimization: any[];
-}
-
-export interface CacheLayer {
-    name: string;
     priority: number;
     capacity: number;
     ttl: number;
-    enabled: boolean;
+    [k: string]: any;
+}
+
+export interface CacheConfiguration {
+    // feature toggles
+    enableIntelligentTierSelection?: boolean;
+    enableCompression?: boolean;
+    enablePredictiveLoading?: boolean;
+    enableCoherence?: boolean;
+    enableAnalytics?: boolean;
+    compressionThreshold?: number;
+    defaultTTL?: number;
+    maxMemoryUsage?: number;
+    metricsInterval?: number;
+    analyticsInterval?: number;
+    preloadingStrategy?: string;
+    coherenceMode?: string;
+    // layer configs keyed by name
+    layers?: Record<string, CacheLayerConfig>;
+    [k: string]: any;
+}
+
+export interface CachePolicy {
+    name: string;
+    rules?: any[];
+    enabled?: boolean;
+    evictionStrategy?: string;
+    maxAge?: number;
+    maxSize?: number;
+    scoringFunction?: (entry: CacheEntry) => number;
+    [k: string]: any;
+}
+
+export interface CacheStats {
+    size: number;
+    capacity: number;
+    hitRate: number;
+    averageAccessTime: number;
+    [k: string]: any;
+}
+
+export interface CacheAnalytics {
+    accessPatterns: Map<string, any>;
+    keyPopularity: Map<string, any>;
+    layerEfficiency: Map<string, any>;
+    temporalPatterns: Map<string, any>;
+    [k: string]: any;
 }
 
 export interface CacheLayerInterface {
@@ -98,12 +128,14 @@ export interface CacheLayerInterface {
     priority: number;
     capacity: number;
     ttl: number;
+    start?: () => Promise<any>;
     get(key: string): Promise<CacheValue | null>;
     set(key: string, value: CacheValue, ttl?: number): Promise<boolean>;
     delete(key: string): Promise<boolean>;
     clear(): Promise<any>;
     getStats(): Promise<CacheStats>;
     isHealthy(): Promise<boolean>;
+    [k: string]: any;
 }
 
 export class AdvancedCacheManager extends EventEmitter {
@@ -120,7 +152,7 @@ export class AdvancedCacheManager extends EventEmitter {
 
     constructor(config: CacheConfiguration = {}) {
         super();
-        
+
         this.config = {
             enableIntelligentTierSelection: true,
             enableCompression: true,
@@ -291,7 +323,7 @@ export class AdvancedCacheManager extends EventEmitter {
             console.log('🚀 Starting Advanced Cache Manager...');
 
             // Start all cache layers
-            const layerPromises = Array.from(this.layers.values()).map(layer => 
+            const layerPromises = Array.from(this.layers.values()).map(layer =>
                 this.startCacheLayer(layer)
             );
             await Promise.all(layerPromises);
@@ -344,7 +376,7 @@ export class AdvancedCacheManager extends EventEmitter {
             if (useIntelligence) {
                 // Use intelligent tier selection
                 const optimalLayers = await this.selectOptimalLayers(key, 'read');
-                
+
                 for (const layerName of optimalLayers) {
                     const layer = this.layers.get(layerName);
                     if (!layer) continue;
@@ -358,7 +390,7 @@ export class AdvancedCacheManager extends EventEmitter {
             } else {
                 // Use traditional tier-by-tier approach
                 const sortedLayers = this.getSortedLayers();
-                
+
                 for (const layer of sortedLayers) {
                     value = await layer.get(key);
                     if (value !== null) {
@@ -397,11 +429,11 @@ export class AdvancedCacheManager extends EventEmitter {
      * Set value with intelligent distribution
      */
     async set(
-        key: string, 
-        value: CacheValue, 
-        options: { 
-            strategy?: string; 
-            ttl?: number; 
+        key: string,
+        value: CacheValue,
+        options: {
+            strategy?: string;
+            ttl?: number;
             layers?: string[];
             compress?: boolean;
         } = {}
@@ -461,9 +493,9 @@ export class AdvancedCacheManager extends EventEmitter {
      */
     async delete(key: string): Promise<boolean> {
         const startTime = performance.now();
-        
+
         try {
-            const deletePromises = Array.from(this.layers.values()).map(layer => 
+            const deletePromises = Array.from(this.layers.values()).map(layer =>
                 layer.delete(key).catch(error => {
                     console.error(`Delete error in layer ${layer.name}:`, error);
                     return false;
@@ -497,8 +529,8 @@ export class AdvancedCacheManager extends EventEmitter {
      * Select optimal cache layers based on data characteristics
      */
     private async selectOptimalLayers(
-        key: string, 
-        operation: 'read' | 'write', 
+        key: string,
+        operation: 'read' | 'write',
         value?: CacheValue
     ): Promise<string[]> {
         if (!this.config.enableIntelligentTierSelection) {
@@ -507,7 +539,7 @@ export class AdvancedCacheManager extends EventEmitter {
 
         const characteristics = this.analyzeDataCharacteristics(key, value);
         const accessPattern = await this.predictiveEngine.getAccessPattern(key);
-        
+
         const optimalLayers: string[] = [];
 
         // Memory layer for hot data
@@ -568,9 +600,9 @@ export class AdvancedCacheManager extends EventEmitter {
      */
     private inferDataType(key: string, value?: CacheValue): string {
         if (!value) return 'unknown';
-        
+
         const keyLower = key.toLowerCase();
-        
+
         if (keyLower.includes('image') || keyLower.includes('img')) return 'image';
         if (keyLower.includes('document') || keyLower.includes('doc')) return 'document';
         if (keyLower.includes('user') || keyLower.includes('profile')) return 'user-data';
@@ -581,7 +613,7 @@ export class AdvancedCacheManager extends EventEmitter {
         if (typeof value === 'object') return 'object';
         if (typeof value === 'string') return 'string';
         if (typeof value === 'number') return 'number';
-        
+
         return 'unknown';
     }
 
@@ -659,12 +691,12 @@ export class AdvancedCacheManager extends EventEmitter {
         const accessRecency = Date.now() - entry.lastAccessed;
         const accessFrequency = entry.accessCount;
         const ageInMs = Date.now() - entry.createdAt;
-        
+
         // Weighted score considering recency, frequency, and age
         const recencyScore = Math.max(0, 1 - (accessRecency / (24 * 60 * 60 * 1000))); // 24h window
         const frequencyScore = Math.min(1, accessFrequency / 100); // Cap at 100 accesses
         const ageScore = Math.max(0, 1 - (ageInMs / (7 * 24 * 60 * 60 * 1000))); // 7 day window
-        
+
         return recencyScore * 0.4 + frequencyScore * 0.4 + ageScore * 0.2;
     }
 
@@ -674,7 +706,7 @@ export class AdvancedCacheManager extends EventEmitter {
     private updateAccessMetrics(key: string, hitLayer: string | null, accessTime: number, isHit: boolean): void {
         this.metrics.gets++;
         this.metrics.totalOperationTime += accessTime;
-        
+
         if (isHit) {
             this.metrics.hits++;
             this.metrics.hitsByLayer[hitLayer || 'unknown'] = (this.metrics.hitsByLayer[hitLayer || 'unknown'] || 0) + 1;
@@ -689,12 +721,12 @@ export class AdvancedCacheManager extends EventEmitter {
             averageTime: 0,
             frequency: 'low'
         };
-        
+
         pattern.count++;
         pattern.lastAccess = Date.now();
         pattern.averageTime = (pattern.averageTime + accessTime) / 2;
         pattern.frequency = pattern.count > 100 ? 'high' : pattern.count > 10 ? 'medium' : 'low';
-        
+
         this.analytics.accessPatterns.set(key, pattern);
     }
 
@@ -704,7 +736,7 @@ export class AdvancedCacheManager extends EventEmitter {
     private updateWriteMetrics(key: string, layers: string[], writeTime: number, isSuccess: boolean): void {
         this.metrics.sets++;
         this.metrics.totalOperationTime += writeTime;
-        
+
         if (isSuccess) {
             layers.forEach(layer => {
                 this.metrics.writesByLayer[layer] = (this.metrics.writesByLayer[layer] || 0) + 1;
@@ -717,7 +749,7 @@ export class AdvancedCacheManager extends EventEmitter {
      */
     private async performCacheWarming(): Promise<any> {
         if (!this.config.enablePredictiveLoading) return;
-        
+
         console.log('🔥 Performing initial cache warming...');
         await this.preloadingEngine.performInitialWarming();
         console.log('✅ Cache warming completed');
@@ -747,7 +779,7 @@ export class AdvancedCacheManager extends EventEmitter {
     private async collectAndEmitMetrics(): Promise<any> {
         try {
             // Collect layer-specific stats
-            const layerStats = new Map();
+            const layerStats = new Map<string, CacheStats>();
             for (const [name, layer] of this.layers) {
                 layerStats.set(name, await layer.getStats());
             }
@@ -839,8 +871,8 @@ export class AdvancedCacheManager extends EventEmitter {
             misses: 0,
             errors: 0,
             totalOperationTime: 0,
-            hitsByLayer: {},
-            writesByLayer: {},
+            hitsByLayer: {} as Record<string, number>,
+            writesByLayer: {} as Record<string, number>,
             compressionSavings: 0,
             predictivePrefetches: 0
         };
@@ -851,10 +883,10 @@ export class AdvancedCacheManager extends EventEmitter {
      */
     private initializeAnalytics(): CacheAnalytics {
         return {
-            accessPatterns: new Map(),
-            keyPopularity: new Map(),
-            layerEfficiency: new Map(),
-            temporalPatterns: new Map()
+            accessPatterns: new Map<string, any>(),
+            keyPopularity: new Map<string, any>(),
+            layerEfficiency: new Map<string, any>(),
+            temporalPatterns: new Map<string, any>()
         };
     }
 
@@ -884,7 +916,7 @@ export class AdvancedCacheManager extends EventEmitter {
      */
     private identifyInefficientPatterns(): any[] {
         const patterns = [];
-        
+
         // Keys with high miss rates
         this.analytics.accessPatterns.forEach((pattern, key) => {
             if (pattern.count > 10 && pattern.frequency === 'low') {
@@ -966,18 +998,18 @@ export class AdvancedCacheManager extends EventEmitter {
      * Clear all caches
      */
     async clearAll(): Promise<any> {
-        const clearPromises = Array.from(this.layers.values()).map(layer => 
+        const clearPromises = Array.from(this.layers.values()).map(layer =>
             layer.clear().catch(error => {
                 console.error(`Clear error in layer ${layer.name}:`, error);
             })
         );
 
         await Promise.all(clearPromises);
-        
+
         // Reset metrics and analytics
         this.metrics = this.initializeMetrics();
         this.analytics = this.initializeAnalytics();
-        
+
         console.log('🗑️ All cache layers cleared');
         this.emit('cacheCleared', { timestamp: new Date() });
     }
@@ -987,8 +1019,10 @@ export class AdvancedCacheManager extends EventEmitter {
  * Cache Coherence Manager
  */
 class CacheCoherenceManager extends EventEmitter {
-    constructor(private config: CacheConfiguration) {
+    constructor(config: CacheConfiguration) {
         super();
+        // reference param to avoid unused-parameter errors in strict TS configs
+        void config;
     }
 
     async start(): Promise<any> {
@@ -996,10 +1030,15 @@ class CacheCoherenceManager extends EventEmitter {
     }
 
     async recordWrite(key: string, layers: string[], value: CacheValue): Promise<any> {
+        // Mark parameters as intentionally unused to satisfy linter/TS checks
+        void key;
+        void layers;
+        void value;
         // Track write operations for coherence
     }
 
     async recordDelete(key: string): Promise<any> {
+        void key;
         // Track delete operations for coherence
     }
 }
@@ -1008,8 +1047,9 @@ class CacheCoherenceManager extends EventEmitter {
  * Cache Preloading Engine
  */
 class CachePreloadingEngine extends EventEmitter {
-    constructor(private config: CacheConfiguration) {
+    constructor(config: CacheConfiguration) {
         super();
+        void config;
     }
 
     async start(): Promise<any> {
@@ -1025,16 +1065,59 @@ class CachePreloadingEngine extends EventEmitter {
  * Cache Compression Engine
  */
 class CacheCompressionEngine {
-    constructor(private config: CacheConfiguration) {}
+    private readonly config: CacheConfiguration;
+
+    constructor(config: CacheConfiguration) {
+        this.config = config;
+    }
 
     async compress(value: CacheValue): Promise<CacheValue> {
-        // Implement compression logic
-        return value; // Placeholder
+        // Use gzip to compress JSON payloads when above threshold.
+        const threshold = this.config.compressionThreshold ?? 0;
+        const raw = value === undefined ? '' : JSON.stringify(value);
+        const size = Buffer.byteLength(raw, 'utf8');
+
+        // If under threshold, return original value (no compression)
+        if (size < threshold) return value;
+
+        try {
+            const compressedBuffer = await gzipAsync(Buffer.from(raw, 'utf8'));
+            // Return a portable object indicating compressed payload (base64 encoded)
+            return {
+                __compressed: true,
+                algorithm: 'gzip',
+                data: compressedBuffer.toString('base64')
+            };
+        } catch (error: any) {
+            console.error('❌ Compression failed:', error);
+            // On failure, fall back to original value
+            return value;
+        }
     }
 
     async decompress(value: CacheValue): Promise<CacheValue> {
-        // Implement decompression logic
-        return value; // Placeholder
+        // Decompress only if it matches our compressed payload shape
+        if (
+            value &&
+            typeof value === 'object' &&
+            (value as any).__compressed === true &&
+            (value as any).algorithm === 'gzip' &&
+            typeof (value as any).data === 'string'
+        ) {
+            try {
+                const buf = Buffer.from((value as any).data, 'base64');
+                const decompressed = await gunzipAsync(buf);
+                const str = decompressed.toString('utf8');
+                return JSON.parse(str);
+            } catch (error: any) {
+                console.error('❌ Decompression failed:', error);
+                // On failure, return the original compressed payload to avoid data loss
+                return value;
+            }
+        }
+
+        // Not a compressed payload, return as-is
+        return value;
     }
 }
 
@@ -1042,10 +1125,11 @@ class CacheCompressionEngine {
  * Cache Predictive Engine
  */
 class CachePredictiveEngine extends EventEmitter {
-    private accessHistory: Map<string, unknown[]> = new Map();
+    private accessHistory: Map<string, any[]> = new Map();
 
-    constructor(private config: CacheConfiguration) {
+    constructor(config: CacheConfiguration) {
         super();
+        void config;
     }
 
     async start(): Promise<any> {
@@ -1055,37 +1139,46 @@ class CachePredictiveEngine extends EventEmitter {
     recordAccess(key: string, layer: string | null, accessTime: number): void {
         const history = this.accessHistory.get(key) || [];
         history.push({ layer, accessTime, timestamp: Date.now() });
-        
+
         // Keep only recent history
         if (history.length > 100) {
             history.splice(0, history.length - 100);
         }
-        
+
         this.accessHistory.set(key, history);
     }
 
     async getAccessPattern(key: string): Promise<any> {
-        const history = this.accessHistory.get(key) || [];
-        
+        const history: any[] = this.accessHistory.get(key) || [];
+        const sum = history.reduce((s, h) => s + (h?.accessTime || 0), 0);
+        const averageTime = history.length ? sum / history.length : 0;
+
         return {
             frequency: history.length > 50 ? 'high' : history.length > 10 ? 'medium' : 'low',
-            averageTime: history.reduce((sum, h) => sum + h.accessTime, 0) / history.length || 0,
+            averageTime,
             preferredLayer: this.findMostUsedLayer(history)
         };
     }
 
     async predictAndPreload(key: string): Promise<any> {
-        // Implement predictive preloading logic
+        // Placeholder predictive preloading logic:
+        // - compute access pattern
+        // - emit a prediction event
+        // - return the predicted pattern for callers/tests
+        const pattern = await this.getAccessPattern(key);
+        this.emit('predictionMade', { key, pattern });
+        return pattern;
     }
 
     private findMostUsedLayer(history: any[]): string {
-        const layerCounts = history.reduce((counts, h) => {
-            counts[h.layer] = (counts[h.layer] || 0) + 1;
+        const layerCounts: Record<string, number> = history.reduce((counts: Record<string, number>, h: any) => {
+            const layerKey = String(h?.layer ?? 'memory');
+            counts[layerKey] = (counts[layerKey] || 0) + 1;
             return counts;
         }, {});
 
-        return Object.entries(layerCounts)
-            .sort(([,a], [,b]) => (b as number) - (a as number))[0]?.[0] || 'memory';
+        const sorted = Object.entries(layerCounts).sort(([, a], [, b]) => (b as number) - (a as number));
+        return sorted[0]?.[0] || 'memory';
     }
 }
 
@@ -1119,14 +1212,14 @@ class MemoryCacheLayer implements CacheLayerInterface {
     async set(key: string, value: CacheValue, ttl?: number): Promise<boolean> {
         const expires = Date.now() + (ttl || this.ttl);
         this.cache.set(key, { value, expires, accessed: Date.now() });
-        
+
         // Simple LRU eviction if over capacity
         if (this.cache.size > this.capacity) {
             const oldestKey = Array.from(this.cache.entries())
                 .sort(([,a], [,b]) => a.accessed - b.accessed)[0][0];
             this.cache.delete(oldestKey);
         }
-        
+
         return true;
     }
 
@@ -1167,16 +1260,21 @@ class RedisCacheLayer implements CacheLayerInterface {
 
     async get(key: string): Promise<CacheValue | null> {
         // Implement Redis get
+        void key;
         return null;
     }
 
     async set(key: string, value: CacheValue, ttl?: number): Promise<boolean> {
         // Implement Redis set
+        void key;
+        void value;
+        void ttl;
         return true;
     }
 
     async delete(key: string): Promise<boolean> {
         // Implement Redis delete
+        void key;
         return true;
     }
 
@@ -1206,9 +1304,9 @@ class PostgresCacheLayer implements CacheLayerInterface {
         this.ttl = config.ttl;
     }
 
-    async get(key: string): Promise<CacheValue | null> { return null; }
-    async set(key: string, value: CacheValue, ttl?: number): Promise<boolean> { return true; }
-    async delete(key: string): Promise<boolean> { return true; }
+    async get(key: string): Promise<CacheValue | null> { void key; return null; }
+    async set(key: string, value: CacheValue, ttl?: number): Promise<boolean> { void key; void value; void ttl; return true; }
+    async delete(key: string): Promise<boolean> { void key; return true; }
     async clear(): Promise<any> {}
     async getStats(): Promise<CacheStats> { return { size: 0, capacity: this.capacity, hitRate: 0, averageAccessTime: 0 }; }
     async isHealthy(): Promise<boolean> { return true; }
@@ -1226,9 +1324,9 @@ class VectorCacheLayer implements CacheLayerInterface {
         this.ttl = config.ttl;
     }
 
-    async get(key: string): Promise<CacheValue | null> { return null; }
-    async set(key: string, value: CacheValue, ttl?: number): Promise<boolean> { return true; }
-    async delete(key: string): Promise<boolean> { return true; }
+    async get(key: string): Promise<CacheValue | null> { void key; return null; }
+    async set(key: string, value: CacheValue, ttl?: number): Promise<boolean> { void key; void value; void ttl; return true; }
+    async delete(key: string): Promise<boolean> { void key; return true; }
     async clear(): Promise<any> {}
     async getStats(): Promise<CacheStats> { return { size: 0, capacity: this.capacity, hitRate: 0, averageAccessTime: 0 }; }
     async isHealthy(): Promise<boolean> { return true; }
@@ -1246,9 +1344,9 @@ class FileSystemCacheLayer implements CacheLayerInterface {
         this.ttl = config.ttl;
     }
 
-    async get(key: string): Promise<CacheValue | null> { return null; }
-    async set(key: string, value: CacheValue, ttl?: number): Promise<boolean> { return true; }
-    async delete(key: string): Promise<boolean> { return true; }
+    async get(key: string): Promise<CacheValue | null> { void key; return null; }
+    async set(key: string, value: CacheValue, ttl?: number): Promise<boolean> { void key; void value; void ttl; return true; }
+    async delete(key: string): Promise<boolean> { void key; return true; }
     async clear(): Promise<any> {}
     async getStats(): Promise<CacheStats> { return { size: 0, capacity: this.capacity, hitRate: 0, averageAccessTime: 0 }; }
     async isHealthy(): Promise<boolean> { return true; }

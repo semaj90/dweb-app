@@ -5,11 +5,8 @@ import { json } from "@sveltejs/kit";
 import { db } from '$lib/database/postgres';
 import { eq, inArray } from "drizzle-orm";
 import { serializeEmbedding } from '$lib/utils/embeddings';
-import {
-  legalDocuments,
-  embeddings,
-  type NewLegalDocument,
-} from '$lib/database/schema/legal-documents';
+import { legalDocuments, embeddings } from '$lib/database/schema/legal-documents';
+import type { NewLegalDocument } from '$lib/database/schema/legal-documents';
 import type { RequestHandler } from "./$types";
 
 export const POST: RequestHandler = async ({ request }): Promise<any> => {
@@ -239,20 +236,24 @@ export const PUT: RequestHandler = async ({ request }): Promise<any> => {
           documentId,
         });
 
-      case "regenerate_embeddings":
+      case "regenerate_embeddings": {
         const document = await db.query.legalDocuments.findFirst({
-          where: (docs, { eq }) => eq(docs.id, documentId),
+          where: (docs, { eq }) => eq(docs.id, Number(documentId)),
         });
 
         if (!document) {
           return json({ error: "Document not found" }, { status: 404 });
         }
 
-        // Delete existing embeddings
-        await db.delete(embeddings);
-        // embeddings table lacks documentId column; fallback by metadata filter not supported directly here
-        // Skip filtering at DB layer; filter in memory after fetch if needed
-        // .where(...)
+        // Delete existing embeddings for this document (based on metadata.documentId)
+        const existingEmbeddings = await db.query.embeddings.findMany();
+        const idsToDelete = existingEmbeddings
+          .filter((e: any) => String(e.metadata?.documentId) === String(documentId))
+          .map((e) => e.id);
+
+        if (idsToDelete.length > 0) {
+          await db.delete(embeddings).where(inArray(embeddings.id, idsToDelete));
+        }
 
         // Generate new embeddings
         const embeddingResults = await processDocumentEmbeddings(
@@ -270,8 +271,9 @@ export const PUT: RequestHandler = async ({ request }): Promise<any> => {
           documentId,
           embeddings: embeddingResults,
         });
+      }
 
-      case "update_processing_status":
+      case "update_processing_status": {
         const { status } = params;
         await db
           .update(legalDocuments)
@@ -279,7 +281,7 @@ export const PUT: RequestHandler = async ({ request }): Promise<any> => {
             processingStatus: status,
             updatedAt: new Date(),
           })
-          .where((doc) => doc.id === documentId);
+          .where(eq(legalDocuments.id, Number(documentId)));
 
         return json({
           success: true,
@@ -287,6 +289,7 @@ export const PUT: RequestHandler = async ({ request }): Promise<any> => {
           documentId,
           status,
         });
+      }
 
       default:
         return json(
@@ -310,6 +313,7 @@ export const PUT: RequestHandler = async ({ request }): Promise<any> => {
   }
 };
 
+// Delete document handler
 export const DELETE: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const { documentId, deleteEmbeddings = true } = await request.json();
@@ -320,9 +324,15 @@ export const DELETE: RequestHandler = async ({ request }): Promise<any> => {
 
     // Delete embeddings first if requested
     if (deleteEmbeddings) {
-      await db
-        .delete(embeddings)
-        .where((emb) => (emb as any).documentId === documentId);
+      // Find embeddings for this document and delete them
+      const allEmbeddings = await db.query.embeddings.findMany();
+      const idsToDelete = allEmbeddings
+        .filter((e: any) => String(e.metadata?.documentId) === String(documentId))
+        .map((e) => e.id);
+
+      if (idsToDelete.length > 0) {
+        await db.delete(embeddings).where(inArray(embeddings.id, idsToDelete));
+      }
     }
 
     // Delete document
@@ -496,46 +506,53 @@ export const PATCH: RequestHandler = async ({ request }): Promise<any> => {
     }
 
     switch (action) {
-      case "batch_regenerate_embeddings":
-        const results = [];
+      case "batch_regenerate_embeddings": {
+        const results: Array<any> = [];
 
-        for (const docId of documentIds) {
+        for (const docIdRaw of documentIds) {
+          const docId = Number(docIdRaw);
           try {
             const document = await db.query.legalDocuments.findFirst({
               where: (docs, { eq }) => eq(docs.id, docId),
             });
 
-            if (document) {
-              // Delete existing embeddings
-              await db.delete(embeddings);
-              // Filtering by documentId in embeddings metadata not supported in schema
-              // .where(...)
-
-              // Generate new embeddings
-              const embeddingResults = await processDocumentEmbeddings(
-                docId,
-                document.content,
-                document.title,
-                params.chunkSize || 1000,
-                params.chunkOverlap || 200,
-                document.metadata || {}
-              );
-
+            if (!document) {
               results.push({
-                documentId: docId,
-                success: true,
-                embeddings: embeddingResults,
-              });
-            } else {
-              results.push({
-                documentId: docId,
+                documentId: docIdRaw,
                 success: false,
                 error: "Document not found",
               });
+              continue;
             }
+
+            // Delete existing embeddings for this document (based on metadata.documentId)
+            const allEmbeddings = await db.query.embeddings.findMany();
+            const idsToDelete = allEmbeddings
+              .filter((e: any) => String(e.metadata?.documentId) === String(docIdRaw))
+              .map((e) => e.id);
+
+            if (idsToDelete.length > 0) {
+              await db.delete(embeddings).where(inArray(embeddings.id, idsToDelete));
+            }
+
+            // Generate new embeddings
+            const embeddingResults = await processDocumentEmbeddings(
+              String(docIdRaw),
+              document.content,
+              document.title,
+              params.chunkSize || 1000,
+              params.chunkOverlap || 200,
+              document.metadata || {}
+            );
+
+            results.push({
+              documentId: docIdRaw,
+              success: true,
+              embeddings: embeddingResults,
+            });
           } catch (error: any) {
             results.push({
-              documentId: docId,
+              documentId: docIdRaw,
               success: false,
               error: error.message,
             });
@@ -552,8 +569,9 @@ export const PATCH: RequestHandler = async ({ request }): Promise<any> => {
             failed: results.filter((r) => !r.success).length,
           },
         });
+      }
 
-      case "batch_update_status":
+      case "batch_update_status": {
         const { status } = params;
 
         await db
@@ -570,6 +588,7 @@ export const PATCH: RequestHandler = async ({ request }): Promise<any> => {
           documentIds,
           newStatus: status,
         });
+      }
 
       default:
         return json(

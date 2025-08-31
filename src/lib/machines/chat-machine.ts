@@ -1,7 +1,7 @@
 // Chat State Machine with XState
 // Manages AI chat conversations, message history, and real-time communication
 
-import { createMachine, assign, type InterpreterFrom } from 'xstate';
+import { createMachine, assign, fromPromise, type InterpreterFrom } from 'xstate';
 import { ragPipeline } from '../services/enhanced-rag-pipeline';
 import { multiProtocolRouter } from '../services/multi-protocol-router';
 
@@ -105,121 +105,7 @@ const defaultContext: ChatContext = {
   }
 };
 
-// Services for chat machine
-const chatServices = {
-  sendMessage: async (context: ChatContext, event: any) => {
-    const { currentSession, currentMessage, settings } = context;
-    if (!currentSession || !currentMessage.trim()) {
-      throw new Error('No active session or empty message');
-    }
-
-    const startTime = performance.now();
-    
-    try {
-      // Create user message
-      const userMessage: ChatMessage = {
-        id: `msg_${Date.now()}_user`,
-        role: 'user',
-        content: currentMessage.trim(),
-        timestamp: Date.now(),
-        status: 'sent'
-      };
-
-      // Get conversation context for RAG
-      const conversationContext = currentSession.messages
-        .slice(-settings.contextWindow)
-        .map(msg => `${msg.role}: ${msg.content}`)
-        .join('\n');
-
-      // Send to RAG pipeline
-      const result = await ragPipeline.query(currentMessage, {
-        context: conversationContext,
-        caseId: currentSession.context?.caseId,
-        maxTokens: settings.maxTokens,
-        temperature: settings.temperature,
-        topK: settings.topK,
-        protocol: settings.preferredProtocol === 'auto' ? undefined : settings.preferredProtocol,
-        stream: context.streamingEnabled
-      });
-
-      const processingTime = performance.now() - startTime;
-
-      // Create assistant response
-      const assistantMessage: ChatMessage = {
-        id: `msg_${Date.now()}_assistant`,
-        role: 'assistant',
-        content: result.answer || result.response || 'No response generated',
-        timestamp: Date.now(),
-        status: 'delivered',
-        metadata: {
-          model: context.aiModel,
-          protocol: result.metadata?.protocolUsed,
-          processingTime,
-          sources: settings.enableSources ? result.sources : undefined,
-          tokens: result.metadata?.tokens
-        }
-      };
-
-      return {
-        userMessage,
-        assistantMessage,
-        processingTime,
-        protocol: result.metadata?.protocolUsed || 'unknown'
-      };
-
-    } catch (error: any) {
-      throw new Error(`Message failed: ${error.message}`);
-    }
-  },
-
-  loadSession: async (context: ChatContext, event: any) => {
-    try {
-      // Load session from storage (localStorage, IndexedDB, or API)
-      const sessionData = localStorage.getItem(`chat_session_${event.sessionId}`);
-      if (!sessionData) {
-        throw new Error('Session not found');
-      }
-
-      return JSON.parse(sessionData);
-    } catch (error: any) {
-      throw new Error(`Failed to load session: ${error.message}`);
-    }
-  },
-
-  saveSession: async (context: ChatContext) => {
-    if (!context.currentSession || !context.autoSave) return;
-
-    try {
-      localStorage.setItem(
-        `chat_session_${context.currentSession.id}`,
-        JSON.stringify(context.currentSession)
-      );
-
-      // Update sessions list
-      const sessionsIndex = context.sessions.findIndex(s => s.id === context.currentSession!.id);
-      const updatedSessions = [...context.sessions];
-      if (sessionsIndex >= 0) {
-        updatedSessions[sessionsIndex] = context.currentSession;
-      } else {
-        updatedSessions.push(context.currentSession);
-      }
-
-      localStorage.setItem('chat_sessions', JSON.stringify(updatedSessions));
-    } catch (error: any) {
-      console.error('Failed to save session:', error);
-    }
-  },
-
-  loadSessions: async (): Promise<any> => {
-    try {
-      const sessionsData = localStorage.getItem('chat_sessions');
-      return sessionsData ? JSON.parse(sessionsData) : [];
-    } catch (error: any) {
-      console.error('Failed to load sessions:', error);
-      return [];
-    }
-  }
-};
+// Services migrated to XState v5 actors pattern
 
 // Chat state machine
 export const chatMachine = createMachine({
@@ -254,7 +140,7 @@ export const chatMachine = createMachine({
           target: 'active',
           actions: [
             assign({
-              currentSession: (_, event) => event?.output || null,
+              currentSession: (_, event) => (event as any)?.output || null,
               connectionStatus: 'connected'
             }),
             'addToSessions'
@@ -280,7 +166,7 @@ export const chatMachine = createMachine({
           on: {
             UPDATE_MESSAGE: {
               actions: assign({
-                currentMessage: (_, event) => event?.message || ''
+                currentMessage: (_, event) => (event as any)?.message || ''
               })
             },
             SEND_MESSAGE: {
@@ -354,8 +240,8 @@ export const chatMachine = createMachine({
   on: {
     CONNECTION_STATUS: {
       actions: assign({
-        connectionStatus: (_, event) => event?.status || 'disconnected',
-        isConnected: (_, event) => (event?.status || 'disconnected') === 'connected'
+        connectionStatus: (_, event) => (event as any)?.status || 'disconnected',
+        isConnected: (_, event) => ((event as any)?.status || 'disconnected') === 'connected'
       })
     }
   }
@@ -363,7 +249,118 @@ export const chatMachine = createMachine({
   guards: {
     hasMessage: ({ context }) => context.currentMessage?.trim()?.length > 0
   },
-  actors: chatServices,
+  actors: {
+    sendMessage: fromPromise(async ({ input }: { input: { context: ChatContext; event: any } }) => {
+      const { context, event } = input;
+      const { currentSession, currentMessage, settings } = context;
+      if (!currentSession || !currentMessage.trim()) {
+        throw new Error('No active session or empty message');
+      }
+      
+      const startTime = performance.now();
+      
+      try {
+        // Create user message
+        const userMessage: ChatMessage = {
+          id: `msg_${Date.now()}_user`,
+          role: 'user',
+          content: currentMessage.trim(),
+          timestamp: Date.now(),
+          status: 'sent'
+        };
+        
+        // Get conversation context for RAG
+        const conversationContext = currentSession.messages
+          .slice(-settings.contextWindow)
+          .map(msg => `${msg.role}: ${msg.content}`)
+          .join('\n');
+          
+        // Send to RAG pipeline
+        const result = await ragPipeline.query(currentMessage, {
+          context: conversationContext,
+          caseId: currentSession.context?.caseId,
+          maxTokens: settings.maxTokens,
+          temperature: settings.temperature,
+          topK: settings.topK,
+          protocol: settings.preferredProtocol === 'auto' ? undefined : settings.preferredProtocol,
+          stream: context.streamingEnabled
+        });
+        
+        const processingTime = performance.now() - startTime;
+        
+        // Create assistant response
+        const assistantMessage: ChatMessage = {
+          id: `msg_${Date.now()}_assistant`,
+          role: 'assistant',
+          content: result.answer || result.response || 'No response generated',
+          timestamp: Date.now(),
+          status: 'delivered',
+          metadata: {
+            model: context.aiModel,
+            protocol: result.metadata?.protocolUsed,
+            processingTime,
+            sources: settings.enableSources ? result.sources : undefined,
+            tokens: result.metadata?.tokens
+          }
+        };
+        
+        return {
+          userMessage,
+          assistantMessage,
+          processingTime,
+          protocol: result.metadata?.protocolUsed || 'unknown'
+        };
+      } catch (error: any) {
+        throw new Error(`Message failed: ${error.message}`);
+      }
+    }),
+    
+    loadSession: fromPromise(async ({ input }: { input: { context: ChatContext; event: any } }) => {
+      const { event } = input;
+      try {
+        // Load session from storage (localStorage, IndexedDB, or API)
+        const sessionData = localStorage.getItem(`chat_session_${event.sessionId}`);
+        if (!sessionData) {
+          throw new Error('Session not found');
+        }
+        return JSON.parse(sessionData);
+      } catch (error: any) {
+        throw new Error(`Failed to load session: ${error.message}`);
+      }
+    }),
+    
+    saveSession: fromPromise(async ({ input }: { input: { context: ChatContext } }) => {
+      const { context } = input;
+      if (!context.currentSession || !context.autoSave) return;
+      try {
+        localStorage.setItem(
+          `chat_session_${context.currentSession.id}`,
+          JSON.stringify(context.currentSession)
+        );
+        // Update sessions list
+        const sessionsIndex = context.sessions.findIndex(s => s.id === context.currentSession!.id);
+        const updatedSessions = [...context.sessions];
+        if (sessionsIndex >= 0) {
+          updatedSessions[sessionsIndex] = context.currentSession;
+        } else {
+          updatedSessions.push(context.currentSession);
+        }
+        localStorage.setItem('chat_sessions', JSON.stringify(updatedSessions));
+      } catch (error: any) {
+        console.error('Failed to save session:', error);
+      }
+    }),
+    
+    loadSessions: fromPromise(async () => {
+      try {
+        const sessionsData = localStorage.getItem('chat_sessions');
+        return sessionsData ? JSON.parse(sessionsData) : [];
+      } catch (error: any) {
+        console.error('Failed to load sessions:', error);
+        return [];
+      }
+    })
+  },
   actions: {
     loadSessions: assign({
       sessions: () => []
@@ -372,11 +369,11 @@ export const chatMachine = createMachine({
     createSession: assign({
       currentSession: ({ context, event }) => ({
         id: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        title: event?.title || `Chat ${new Date().toLocaleString()}`,
+        title: (event as any)?.title || `Chat ${new Date().toLocaleString()}`,
         createdAt: Date.now(),
         updatedAt: Date.now(),
         messages: [],
-        context: event?.context || {}
+        context: (event as any)?.context || {}
       })
     }),
 
@@ -421,7 +418,7 @@ export const chatMachine = createMachine({
       currentSession: ({ context, event }) => {
         if (!context.currentSession) return context.currentSession;
 
-        const { userMessage, assistantMessage } = event?.output || {};
+        const { userMessage, assistantMessage } = (event as any)?.output || {};
         const messages = [...context.currentSession.messages];
         
         // Update user message status
@@ -443,7 +440,7 @@ export const chatMachine = createMachine({
 
     updatePerformanceMetrics: assign({
       performance: ({ context, event }) => {
-        const { processingTime, protocol } = event?.output || {};
+        const { processingTime, protocol } = (event as any)?.output || {};
         const perf = context.performance;
         
         return {
@@ -490,10 +487,10 @@ export const chatMachine = createMachine({
     deleteSession: assign({
       currentSession: null,
       sessions: ({ context, event }) => {
-        const filtered = context.sessions.filter(s => s.id !== event?.sessionId);
+        const filtered = context.sessions.filter(s => s.id !== (event as any)?.sessionId);
         
         // Remove from storage
-        localStorage.removeItem(`chat_session_${event?.sessionId}`);
+        localStorage.removeItem(`chat_session_${(event as any)?.sessionId}`);
         localStorage.setItem('chat_sessions', JSON.stringify(filtered));
         
         return filtered;
@@ -515,13 +512,13 @@ export const chatMachine = createMachine({
     updateSettings: assign({
       settings: ({ context, event }) => ({
         ...context.settings,
-        ...event?.settings
+        ...(event as any)?.settings
       })
     }),
 
     prepareRetry: assign({
       currentMessage: ({ context, event }) => {
-        const message = context.currentSession?.messages.find(m => m.id === event?.messageId);
+        const message = context.currentSession?.messages.find(m => m.id === (event as any)?.messageId);
         return message?.content || context.currentMessage;
       }
     }),
@@ -541,11 +538,17 @@ export const chatMachine = createMachine({
     }),
 
     saveSession: async ({ context }): Promise<any> => {
-      await chatServices.saveSession(context);
+      // Auto-save implementation
+      if (context.autoSave && context.currentSession) {
+        localStorage.setItem(
+          `chat_session_${context.currentSession.id}`,
+          JSON.stringify(context.currentSession)
+        );
+      }
     },
 
     exportSession: ({ context, event }) => {
-      const session = context.sessions.find(s => s.id === event?.sessionId);
+      const session = context.sessions.find(s => s.id === (event as any)?.sessionId);
       if (!session) return;
 
       const exportData = {
@@ -567,7 +570,7 @@ export const chatMachine = createMachine({
     },
 
     handleError: ({ context, event }) => {
-      console.error('Chat machine error:', event?.output);
+      console.error('Chat machine error:', (event as any)?.output);
     }
   }
 });
@@ -632,7 +635,7 @@ export const chatSelectors = {
   
   unreadCount: (context: ChatContext) => 
     context.sessions.reduce((count, session) => 
-      count + session.messages.filter(m => m.role === 'assistant' && !m.metadata?.read).length, 0
+      count + session.messages.filter(m => m.role === 'assistant' && !(m.metadata as any)?.read).length, 0
     ),
   
   averageResponseTime: (context: ChatContext) => 

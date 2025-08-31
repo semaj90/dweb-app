@@ -106,7 +106,7 @@ export class EnhancedAIPipeline {
 
       // Initialize PGVectorStore with proper configuration
       try {
-        this.vectorStore = await PGVectorStore.initialize(this.embeddings, {
+        this.vectorStore = new PGVectorStore(this.embeddings, {
           pool: this.pgPool,
           tableName: "legal_document_embeddings",
           columns: {
@@ -117,8 +117,8 @@ export class EnhancedAIPipeline {
           },
         });
         
-        // Ensure table exists
-        await this.vectorStore.ensureTableInDatabase();
+        // Table creation handled by migrations
+        // await this.vectorStore.ensureTableInDatabase(); // Method not available
       } catch (pgError) {
         // Fallback initialization if the above fails
         console.warn("PGVectorStore direct initialization failed, trying alternative method:", pgError);
@@ -238,7 +238,7 @@ export class EnhancedAIPipeline {
       if (userId) filter.userId = userId;
 
       // Perform vector similarity search
-      const results = await this.vectorStore.similaritySearchWithScore(
+      const results = await this.vectorStore.similaritySearch(
         query,
         limit,
         filter
@@ -246,7 +246,7 @@ export class EnhancedAIPipeline {
 
       // Transform results to our format
       const searchResults: SearchResult[] = results
-        .filter(([, score]) => score >= minSimilarity)
+        .filter((result) => (result as any).score >= minSimilarity)
         .map(([document, score]) => ({
           id: document.metadata.id || crypto.randomUUID(),
           title: document.metadata.title || "Untitled Document",

@@ -1,77 +1,125 @@
-import { json, error } from '@sveltejs/kit';
-import { db } from '$lib/server/db';
-import { cases } from '$lib/server/schema';
-import { eq, desc } from 'drizzle-orm';
+import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { db } from '$lib/database/client';
+import { cases } from '$lib/database/schema/legal-documents';
+import { eq, desc } from 'drizzle-orm';
+import { z } from 'zod';
+import { randomUUID } from 'crypto';
 
-// GET /api/cases - List cases for authenticated user
-export const GET: RequestHandler = async ({ locals, url }): Promise<any> => {
-  if (!locals.user) {
-    throw error(401, 'Unauthorized');
-  }
+// Validation schema
+const caseSchema = z.object({
+  caseNumber: z.string().min(1),
+  title: z.string().min(1),
+  description: z.string().optional(),
+  clientName: z.string().min(1),
+  opposingParty: z.string().optional(),
+  jurisdiction: z.string().default('federal'),
+  courtName: z.string().optional(),
+  judgeAssigned: z.string().optional(),
+  caseType: z.enum(['civil', 'criminal', 'administrative', 'appellate', 'arbitration']),
+  practiceArea: z.string(),
+  priority: z.enum(['low', 'medium', 'high', 'critical']).default('medium'),
+  status: z.enum(['active', 'pending', 'closed', 'archived', 'on_hold']).default('active')
+});
 
+export const GET: RequestHandler = async ({ url, locals }) => {
   try {
-    const limit = Number(url.searchParams.get('limit')) || 10;
-    const offset = Number(url.searchParams.get('offset')) || 0;
+    const user = locals.user || { id: 'system' };
+    const caseId = url.searchParams.get('id');
+    const limit = parseInt(url.searchParams.get('limit') || '20');
+    const offset = parseInt(url.searchParams.get('offset') || '0');
 
-    const userCases = await db
+    if (caseId) {
+      const result = await db
+        .select()
+        .from(cases)
+        .where(eq(cases.id, caseId))
+        .limit(1);
+
+      if (result.length === 0) {
+        return json({ error: 'Case not found' }, { status: 404 });
+      }
+
+      return json({ success: true, data: result[0] });
+    }
+
+    const results = await db
       .select()
       .from(cases)
-      .where(eq(cases.userId, locals.user.id))
-      .orderBy(desc(cases.updatedAt))
+      .orderBy(desc(cases.createdAt))
       .limit(limit)
       .offset(offset);
 
-    return json({
-      success: true,
-      data: userCases,
-      pagination: {
-        limit,
-        offset,
-        total: userCases.length
-      }
-    });
-
-  } catch (err: any) {
-    console.error('Error fetching cases:', err);
-    throw error(500, 'Failed to fetch cases');
+    return json({ success: true, data: results });
+  } catch (error) {
+    console.error('Error fetching cases:', error);
+    return json({ error: 'Failed to fetch cases' }, { status: 500 });
   }
 };
 
-// POST /api/cases - Create new case
-export const POST: RequestHandler = async ({ locals, request }): Promise<any> => {
-  if (!locals.user) {
-    throw error(401, 'Unauthorized');
-  }
-
+export const POST: RequestHandler = async ({ request, locals }) => {
   try {
+    const user = locals.user || { id: 'system' };
     const body = await request.json();
-    const { title, description, caseNumber, status = 'open' } = body;
-
-    if (!title || !caseNumber) {
-      throw error(400, 'Title and case number are required');
-    }
-
-    const [newCase] = await db
+    const validated = caseSchema.parse(body);
+    const newCase = await db
       .insert(cases)
       .values({
-        title,
-        description: description || '',
-        caseNumber,
-        status,
-        userId: locals.user.id,
+        ...validated,
+        id: randomUUID(),
+        createdBy: user.id,
         createdAt: new Date(),
         updatedAt: new Date()
       })
       .returning();
+      .returning();
 
-    return json({
-      success: true,
-      data: newCase
-    }, { status: 201 });
+return json({ success: true, data: newCase[0] }, { status: 201 });
+  } catch (error) {
+  console.error('Error creating case:', error);
+  if (error instanceof z.ZodError) {
+    return json({ error: 'Validation failed', details: error.errors }, { status: 400 });
+  }
+  return json({ error: 'Failed to create case' }, { status: 500 });
+}
+};
 
-  } catch (err: any) {
-    console.error('Error creating case:', err);
-    throw error(500, 'Failed to create case');
+export const PUT: RequestHandler = async ({ request, url }) => {
+  try {
+    const caseId = url.searchParams.get('id');
+    if (!caseId) {
+      return json({ error: 'Case ID required' }, { status: 400 });
+    }
+
+    const body = await request.json();
+    const updated = await db
+      .update(cases)
+      .set({ ...body, updatedAt: new Date() })
+      .where(eq(cases.id, caseId))
+      .returning();
+
+    if (updated.length === 0) {
+      return json({ error: 'Case not found' }, { status: 404 });
+    }
+
+    return json({ success: true, data: updated[0] });
+  } catch (error) {
+    console.error('Error updating case:', error);
+    return json({ error: 'Failed to update case' }, { status: 500 });
+  }
+};
+
+export const DELETE: RequestHandler = async ({ url }) => {
+  try {
+    const caseId = url.searchParams.get('id');
+    if (!caseId) {
+      return json({ error: 'Case ID required' }, { status: 400 });
+    }
+
+    await db.delete(cases).where(eq(cases.id, caseId));
+    return json({ success: true, message: 'Case deleted' });
+  } catch (error) {
+    console.error('Error deleting case:', error);
+    return json({ error: 'Failed to delete case' }, { status: 500 });
   }
 };

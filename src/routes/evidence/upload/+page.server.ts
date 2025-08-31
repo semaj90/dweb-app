@@ -3,9 +3,8 @@ import { fail, redirect } from '@sveltejs/kit';
 import { superValidate, message } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { fileUploadSchema } from '$lib/schemas/upload';
-import { db } from '$lib/server/database';
-import { evidence } from '$lib/server/database';
-import { documentVectors } from '$lib/db/schema/vectors';
+import { db } from '$lib/server/db';
+import { evidence } from '$lib/server/db/index';
 import { eq } from 'drizzle-orm';
 import { ollamaService } from '$lib/services/ollamaService';
 import crypto from 'crypto';
@@ -59,14 +58,13 @@ export const actions: Actions = {
 
       // Create evidence record
       const [newEvidence] = await db.insert(evidence).values({
-        caseId: form.data.caseId,
+        case_id: form.data.caseId,
         title: form.data.title,
         description: form.data.description,
-        evidenceType: form.data.type,
-        hash: hash,
-        createdBy: locals.user?.id || null,
-        tags: form.data.tags || [],
-        aiAnalysis: {
+        evidence_type: form.data.type,
+        created_by: locals.user?.id || null,
+        metadata: {
+          tags: form.data.tags || [],
           summary: extractedText || form.data.description || '',
           originalName: file.name,
           fileSize: file.size,
@@ -84,26 +82,15 @@ export const actions: Actions = {
           const embeddingResult: any = await ollamaService.embedDocument?.(extractedText /* options may be ignored by some implementations */);
           const chunks = embeddingResult?.chunks || [];
 
-          // Store document vectors
-          for (const chunk of chunks) {
-            await db.insert(documentVectors).values({
-              documentId: newEvidence.id, // Using evidence ID as document ID
-              chunkIndex: chunk.metadata.chunkIndex,
-              content: chunk.content,
-              embedding: chunk.embedding,
-              metadata: chunk.metadata
-            });
-          }
-
           // Generate AI summary
           const summary: any = await ollamaService.analyzeDocument?.(extractedText);
 
-          // Update evidence with AI analysis
+          // Update evidence with AI analysis in metadata
           await db.update(evidence)
             .set({
-              aiSummary: summary,
-              aiAnalysis: {
-                ...newEvidence.aiAnalysis as any,
+              metadata: {
+                ...(newEvidence.metadata as any),
+                aiSummary: summary,
                 embeddingGenerated: true,
                 chunksCount: chunks.length
               }

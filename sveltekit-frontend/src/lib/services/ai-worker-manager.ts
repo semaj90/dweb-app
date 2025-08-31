@@ -149,19 +149,19 @@ export class AIWorkerManager implements AIServiceWorkerManager {
 
       switch (type) {
         case "TASK_STARTED":
-          this.handleTaskStarted(taskId, workerId);
+          this.handleTaskStarted(taskId!, workerId);
           break;
         case "TASK_COMPLETED":
-          this.handleTaskCompleted(taskId, payload as AIResponse, workerId);
+          this.handleTaskCompleted(taskId!, payload as AIResponse, workerId);
           break;
         case "TASK_ERROR":
-          this.handleTaskError(taskId, payload, workerId);
+          this.handleTaskError(taskId!, payload, workerId);
           break;
         case "TASK_CANCELLED":
-          this.handleTaskCancelled(taskId, workerId);
+          this.handleTaskCancelled(taskId!, workerId);
           break;
         case "STATUS_UPDATE":
-          this.handleStatusUpdate(payload);
+          this.handleStatusUpdate(payload as WorkerStatus);
           break;
         default:
           if (this.config.enableLogging) {
@@ -555,8 +555,10 @@ export function createGenerationTask(
   providerId: string,
   options: Partial<AITask> = {},
 ): AITask {
+  const id = crypto.randomUUID();
   return {
-    taskId: crypto.randomUUID(),
+    id,
+    taskId: id,
     type: "generate",
     providerId,
     model,
@@ -574,8 +576,10 @@ export function createAnalysisTask(
   providerId: string,
   options: Partial<AITask> = {},
 ): AITask {
+  const id = crypto.randomUUID();
   return {
-    taskId: crypto.randomUUID(),
+    id,
+    taskId: id,
     type: "analyze",
     providerId,
     model,
@@ -592,8 +596,10 @@ export function createEmbeddingTask(
   providerId: string = "ollama",
   options: Partial<AITask> = {},
 ): AITask {
+  const id = crypto.randomUUID();
   return {
-    taskId: crypto.randomUUID(),
+    id,
+    taskId: id,
     type: "embed",
     providerId,
     model,

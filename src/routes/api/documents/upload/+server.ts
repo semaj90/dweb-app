@@ -1,7 +1,7 @@
 import { json, error } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 import { db } from "$lib/server/db";
-import { legal_documents, insertLegalDocumentSchema } from "$lib/server/db/schema-postgres";
+import { legalDocuments as legal_documents, insertLegalDocumentSchema } from '$lib/database/schema/legal-documents';
 import { cognitiveCacheManager } from "$lib/services/cognitive-cache-integration";
 import { eq } from "drizzle-orm";
 import { getDatabaseHealth } from "$lib/server/db";

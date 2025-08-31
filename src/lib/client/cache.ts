@@ -1,5 +1,5 @@
 import loki from 'lokijs';
-import Fuse from 'fuse';
+import Fuse from 'fuse.js';
 
 // Initialize LokiJS database
 const db = new loki('legal_ai_cache.db');

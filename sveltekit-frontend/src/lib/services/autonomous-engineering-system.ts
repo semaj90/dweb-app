@@ -7,6 +7,7 @@ import crypto from "crypto";
  */
 
 import { autoGenService } from './autogen-service';
+import { crewAIService } from './crewai-service';
 
 // Mock implementation for missing aiWorkerManager
 const aiWorkerManager = {

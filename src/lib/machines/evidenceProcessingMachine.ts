@@ -1,10 +1,9 @@
-import { createMachine, assign } from 'xstate';
-import { fromCallback } from 'xstate/lib/actors';
+import { createMachine, assign, fromCallback, setup } from 'xstate';
 import type { ProgressMsg } from '$lib/types/progress';
 
 // WebSocket actor for real-time progress updates
 function createWsActor(sessionId: string) {
-  return fromCallback((callback) => {
+  return fromCallback(({ sendBack }) => {
     console.log('Creating WebSocket connection for session:', sessionId);
     
     const wsUrl = `${window.location.origin.replace(/^http/, 'ws')}/api/evidence/stream/${sessionId}`;
@@ -12,7 +11,7 @@ function createWsActor(sessionId: string) {
     
     ws.onopen = () => {
       console.log('WebSocket connected for session:', sessionId);
-      callback({ type: 'WS_CONNECTED' });
+      sendBack({ type: 'WS_CONNECTED' });
     };
     
     ws.onmessage = (event: any) => {
@@ -22,7 +21,7 @@ function createWsActor(sessionId: string) {
         // Forward different message types as machine events
         switch (msg.type) {
           case 'upload-progress':
-            callback({ 
+            sendBack({ 
               type: 'UPLOAD_PROGRESS', 
               fileId: msg.fileId, 
               progress: msg.progress 
@@ -30,7 +29,7 @@ function createWsActor(sessionId: string) {
             break;
             
           case 'processing-step':
-            callback({ 
+            sendBack({ 
               type: 'PROCESSING_STEP', 
               fileId: msg.fileId, 
               step: msg.step, 
@@ -40,7 +39,7 @@ function createWsActor(sessionId: string) {
             break;
             
           case 'processing-complete':
-            callback({ 
+            sendBack({ 
               type: 'PROCESSING_COMPLETE', 
               fileId: msg.fileId, 
               result: msg.finalResult 
@@ -48,7 +47,7 @@ function createWsActor(sessionId: string) {
             break;
             
           case 'error':
-            callback({ 
+            sendBack({ 
               type: 'ERROR', 
               fileId: msg.fileId, 
               error: msg.error 
@@ -60,18 +59,18 @@ function createWsActor(sessionId: string) {
         }
       } catch (error: any) {
         console.error('WebSocket message parse error:', error);
-        callback({ type: 'ERROR', error: { message: 'Failed to parse WebSocket message' } });
+        sendBack({ type: 'ERROR', error: { message: 'Failed to parse WebSocket message' } });
       }
     };
     
     ws.onerror = (error) => {
       console.error('WebSocket error:', error);
-      callback({ type: 'ERROR', error: { message: 'WebSocket connection error' } });
+      sendBack({ type: 'ERROR', error: { message: 'WebSocket connection error' } });
     };
     
     ws.onclose = (event: any) => {
       console.log('WebSocket closed:', event.code, event.reason);
-      callback({ type: 'WS_CLOSED', code: event.code, reason: event.reason });
+      sendBack({ type: 'WS_CLOSED', code: event.code, reason: event.reason });
     };
     
     // Cleanup function
@@ -83,8 +82,8 @@ function createWsActor(sessionId: string) {
   });
 }
 
-// Evidence processing machine
-export const evidenceProcessingMachine = createMachine({
+// Evidence processing machine definition
+const evidenceProcessingMachineDefinition = {
   id: 'evidenceProcessing',
   initial: 'idle',
   context: {
@@ -126,7 +125,8 @@ export const evidenceProcessingMachine = createMachine({
     connecting: {
       invoke: {
         id: 'wsActor',
-        src: ({ context }) => createWsActor(context.sessionId!),
+        src: 'wsActor',
+        input: ({ context }) => ({ sessionId: context.sessionId! }),
       },
       on: {
         WS_CONNECTED: {
@@ -289,7 +289,13 @@ export const evidenceProcessingMachine = createMachine({
       entry: () => console.log('Evidence processing cancelled')
     }
   }
-}, {
+};
+
+// Setup XState v5 machine with actors
+const evidenceProcessingMachineWithActors = setup({
+  actors: {
+    wsActor: ({ input }) => createWsActor(input.sessionId)
+  },
   types: {
     events: {} as 
       | { type: 'START_PROCESSING'; sessionId: string; evidenceId: string; steps?: string[] }
@@ -304,7 +310,9 @@ export const evidenceProcessingMachine = createMachine({
       | { type: 'RECONNECT' }
       | { type: 'RESET' }
   }
-});
+}).createMachine(evidenceProcessingMachineDefinition);
+
+export const evidenceProcessingMachine = evidenceProcessingMachineWithActors;
 
 // Helper function to start evidence processing
 export async function startEvidenceProcessing(evidenceId: string, steps: string[] = ['ocr', 'embedding', 'analysis']): Promise<any> {

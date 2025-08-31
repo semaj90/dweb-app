@@ -60,14 +60,12 @@ export class AutomatedBarrelStoreGenerator {
     };
 
     // Generate stores for each package category
-    await this.generateSvelteKitBarrelStore(analysis, generation);
-    await this.generateDrizzleOrmBarrelStore(analysis, generation);
-    await this.generatePostgreSQLBarrelStore(analysis, generation);
-    await this.generateRedisBarrelStore(analysis, generation);
-    await this.generateXStateBarrelStore(analysis, generation);
-    await this.generateLangChainBarrelStore(analysis, generation);
-    await this.generateNeo4jBarrelStore(analysis, generation);
-    await this.generateWebGPUBarrelStore(analysis, generation);
+    const mockResolution = { documentation: '', examples: [], fallbacks: [] };
+    await this.generateSvelteKitStore(analysis, mockResolution, null);
+    await this.generateDatabaseStore(analysis, mockResolution, null);
+    await this.generateStateStore(analysis, mockResolution, null);
+    await this.generateAPIStore(analysis, mockResolution, null);
+    await this.generateTypeStore(analysis, mockResolution, null);
 
     return generation;
   }

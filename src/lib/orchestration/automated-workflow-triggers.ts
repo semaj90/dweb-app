@@ -27,7 +27,7 @@ import type {
     SystemAlert,
     TriggerConfig,
     AutomationRule
-} from '$lib/ai/types';
+} from '$lib/ai';
 
 export class AutomatedWorkflowEngine extends EventEmitter {
     private triggers: Map<string, WorkflowTrigger> = new Map();

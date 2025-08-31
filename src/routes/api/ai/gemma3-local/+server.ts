@@ -3,6 +3,8 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { randomUUID } from 'node:crypto';
+import { performance } from 'node:perf_hooks';
 import { gemma3Service } from '$lib/services/gemma3-local-service';
 import { evidenceProcessingMachine } from '$lib/state/evidenceProcessingMachine';
 import { interpret } from 'xstate';
@@ -130,8 +132,6 @@ async function handleGenerate(body: {
 }
 
 /**
- * Handle document analysis with full pipeline integration
- */
 async function handleDocumentAnalysis(body: {
     title: string;
     content: string;
@@ -153,6 +153,9 @@ async function handleDocumentAnalysis(body: {
         throw error(400, 'Title and content are required');
     }
 
+    // Ensure a stable documentId is available when storing or returning
+    let documentId: string | null = evidenceId || null;
+
     const startTime = performance.now();
 
     try {
@@ -168,7 +171,7 @@ async function handleDocumentAnalysis(body: {
 
         // Store results in integrated systems if requested
         if (storeResults && userId) {
-            const documentId = evidenceId || crypto.randomUUID();
+            documentId = evidenceId || randomUUID();
 
             // Parallel storage operations
             const storagePromises = [
@@ -250,7 +253,7 @@ async function handleDocumentAnalysis(body: {
             },
             storage: storeResults ? {
                 stored: storageResults?.every(r => r.status === 'fulfilled'),
-                documentId: evidenceId || crypto.randomUUID(),
+                documentId: documentId,
                 results: storageResults?.map(r => ({
                     status: r.status,
                     error: r.status === 'rejected' ? r.reason?.message : undefined
@@ -265,6 +268,8 @@ async function handleDocumentAnalysis(body: {
             message: err instanceof Error ? err.message : 'Analysis failed',
             code: 'DOCUMENT_ANALYSIS_FAILED'
         });
+    }
+}
     }
 }
 
@@ -400,7 +405,7 @@ async function handleUploadAndAnalyze(body: {
         userId,
         analysisType = 'comprehensive'
     } = body;
-
+    const documentId = randomUUID();
     if (!fileName?.trim() || !fileContent?.trim() || !userId?.trim()) {
         throw error(400, 'fileName, fileContent, and userId are required');
     }

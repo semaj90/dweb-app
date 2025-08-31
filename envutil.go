@@ -70,3 +70,19 @@ func lower(s string) string {
     }
     return string(b)
 }
+
+// main function for standalone execution (testing/validation)
+func main() {
+    // This allows the file to be run standalone for testing
+    // Example usage: go run envutil.go
+    
+    // Test the utility functions
+    println("Environment Utility Functions Loaded Successfully")
+    
+    // Example usage demonstrations
+    println("Sample usage:")
+    println("  Database URL:", getEnv("DATABASE_URL", "postgresql://localhost:5432/legal_ai"))
+    println("  Worker Count:", getEnvInt("WORKER_COUNT", 4))
+    println("  Debug Mode:", getEnvBool("DEBUG", false))
+    println("  Timeout:", getEnvDuration("TIMEOUT", 30*time.Second))
+}

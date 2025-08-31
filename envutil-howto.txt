@@ -1,0 +1,114 @@
+# envutil.go - Environment Variable Utilities
+
+## What This Code Does
+
+The `envutil.go` file provides centralized, type-safe environment variable helpers for Go applications. It eliminates code duplication by offering reusable functions to read environment variables with default fallback values.
+
+## Functions Explained
+
+### getEnvFloat(key string, def float64) float64
+
+**Purpose**: Safely reads a float64 value from an environment variable with a default fallback.
+
+**How it works**:
+1. Gets the environment variable value using `os.Getenv(key)`
+2. If the value exists and is not empty:
+   - Attempts to parse it as a float64 using `strconv.ParseFloat(v, 64)`
+   - If parsing succeeds, returns the parsed float value
+   - If parsing fails, falls back to the default value
+3. If the environment variable doesn't exist or is empty, returns the default value
+
+**Example Usage**:
+```go
+// Set environment variable: TIMEOUT_SECONDS=2.5
+timeout := getEnvFloat("TIMEOUT_SECONDS", 1.0)
+// Result: timeout = 2.5
+
+// If TIMEOUT_SECONDS is not set or invalid:
+timeout := getEnvFloat("TIMEOUT_SECONDS", 1.0) 
+// Result: timeout = 1.0 (default)
+```
+
+## Complete Function Set
+
+### getEnv(key, def string) string
+- Reads string environment variables
+- Returns default if not set or empty
+
+### getEnvInt(key string, def int) int  
+- Reads integer environment variables
+- Uses strconv.Atoi() for parsing
+- Returns default if not set or non-parsable
+
+### getEnvFloat(key string, def float64) float64
+- Reads float environment variables  
+- Uses strconv.ParseFloat() with 64-bit precision
+- Returns default if not set or non-parsable
+
+### getEnvBool(key string, def bool) bool
+- Reads boolean environment variables
+- Accepts: "1", "true", "yes", "on" (case-insensitive) for true
+- Accepts: "0", "false", "no", "off" (case-insensitive) for false
+- Returns default if not set or unrecognized
+
+### getEnvDuration(key string, def time.Duration) time.Duration
+- Reads duration environment variables
+- Uses time.ParseDuration() (e.g., "5s", "2m30s", "1h")
+- Returns default if not set or non-parsable
+
+### lower(s string) string
+- Helper function for case-insensitive boolean parsing
+- Converts string to lowercase without importing strings package
+- Optimized for performance in hot code paths
+
+## Error Handling
+
+✅ **Safe Error Handling**: All functions handle parsing errors gracefully by returning default values instead of panicking.
+
+✅ **No External Dependencies**: Uses only Go standard library (`os`, `strconv`, `time`).
+
+✅ **Type Safety**: Each function returns the correct type, eliminating runtime type errors.
+
+## Code Quality Check
+
+**Syntax**: ✅ No syntax errors
+**Logic**: ✅ Proper error handling with fallbacks  
+**Performance**: ✅ Optimized with minimal dependencies
+**Maintainability**: ✅ Clean, documented, reusable functions
+
+## Usage Examples in Legal AI Platform
+
+```go
+// Configuration examples that might use these functions:
+
+// Database connection settings
+dbTimeout := getEnvFloat("DB_TIMEOUT_SECONDS", 30.0)
+dbMaxConns := getEnvInt("DB_MAX_CONNECTIONS", 25)
+dbSSL := getEnvBool("DB_SSL_ENABLED", true)
+
+// AI model settings  
+modelTemperature := getEnvFloat("AI_MODEL_TEMPERATURE", 0.7)
+maxTokens := getEnvInt("AI_MAX_TOKENS", 2048)
+enableGPU := getEnvBool("AI_GPU_ENABLED", false)
+
+// Performance settings
+requestTimeout := getEnvDuration("HTTP_TIMEOUT", 10*time.Second)
+rateLimitRPS := getEnvFloat("RATE_LIMIT_RPS", 100.0)
+```
+
+## Benefits
+
+1. **Consistency**: Standardized way to read environment variables across the application
+2. **Safety**: Graceful handling of missing or invalid environment variables
+3. **Performance**: Lightweight with minimal overhead
+4. **Maintainability**: Centralized configuration logic
+5. **Type Safety**: Compile-time type checking for configuration values
+
+## Integration Notes
+
+This utility file is designed to be:
+- **Import-safe**: Can be imported by any Go file regardless of build tags
+- **Stdlib-only**: No external dependencies that could cause import conflicts
+- **Reusable**: Functions can be used across different Go microservices
+
+The file is particularly useful in the Legal AI Platform's microservices architecture where consistent environment variable handling is crucial for service configuration and deployment flexibility.

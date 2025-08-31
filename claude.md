@@ -365,3 +365,5 @@ The Legal AI Platform is **100% complete** and ready for immediate production de
    system instead of the deprecated <slot> approach.
 
 they said they replaced <slot> with <snippet> in svelte 5. @"svelte-complete (1).txt"  @mcp\ @sveltekit-frontend\.vscode\mcp.json @mcp-servers\ @mcp-servers\mcp-context7-wrapper.js @sveltekit-frontend\src\routes\api\context7\
+- ╭──────────────────────────────────────────────────────────────────╮│ # the Svelte component is using the old export let syntax        ││   instead of Svelte 5 runes.
+- use svelte 5 all throughout the map, check context7 docs generates best practices

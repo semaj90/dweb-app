@@ -22,21 +22,44 @@
 	}
 
 	// Props
-	export let visible: boolean = false;
-	export let minimized: boolean = false;
-	export let draggable: boolean = true;
-	export let width: number = 400;
-	export let height: number = 600;
-	export let apiEndpoint: string = 'http://localhost:11434/api/generate';
-	export let fallbackEndpoint: string = 'http://localhost:8000/v1/chat/completions';
-	export let modelName: string = 'gemma3-legal:latest';
-	export let title: string = 'YoRHa Legal AI';
-	export let subtitle: string = 'Powered by Gemma3';
-	export let onclose: (() => void) | undefined;
-	export let onminimize: (() => void) | undefined;
-	export let onmaximize: (() => void) | undefined;
-	export let onmessage: ((event: { message: Message }) => void) | undefined;
-	export let onsettingschange: ((event: { settings: ChatSettings }) => void) | undefined;
+	interface Props {
+		visible?: boolean;
+		minimized?: boolean;
+		draggable?: boolean;
+		width?: number;
+		height?: number;
+		apiEndpoint?: string;
+	}
+
+	interface AllProps extends Props {
+		fallbackEndpoint?: string;
+		modelName?: string;
+		title?: string;
+		subtitle?: string;
+		onclose?: (() => void);
+		onminimize?: (() => void);
+		onmaximize?: (() => void);
+		onmessage?: ((event: { message: Message }) => void);
+		onsettingschange?: ((event: { settings: ChatSettings }) => void);
+	}
+
+	let { 
+		visible = false, 
+		minimized = false, 
+		draggable = true, 
+		width = 400, 
+		height = 600, 
+		apiEndpoint = 'http://localhost:11434/api/generate',
+		fallbackEndpoint = 'http://localhost:8000/v1/chat/completions',
+		modelName = 'gemma3-legal:latest',
+		title = 'YoRHa Legal AI',
+		subtitle = 'Powered by Gemma3',
+		onclose,
+		onminimize,
+		onmaximize,
+		onmessage,
+		onsettingschange
+	}: AllProps = $props();
 
 	// State
 	let messages: Message[] = [];

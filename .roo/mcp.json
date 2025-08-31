@@ -28,6 +28,14 @@
         "@modelcontextprotocol/server-postgres",
         "ATABASE_URL=postgresql://legal_admin:123456@localhost:5432/legal_ai_db"
       ]
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/users/desktop/deeds-web/deeds-web-app"
+      ]
     }
   }
 }

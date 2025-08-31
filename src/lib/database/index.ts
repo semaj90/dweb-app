@@ -27,10 +27,9 @@ export {
   EnhancedLegalOrchestrator
 } from '../agents/orchestrator-enhanced';
 
-// Database Schema Types
+// Database Schema Types (consolidated export)
 export type {
   LegalDocument,
-  NewLegalDocument,
   ContentEmbedding,
   NewContentEmbedding,
   SearchSession,
@@ -38,6 +37,14 @@ export type {
   EmbeddingRecord,
   NewEmbeddingRecord
 } from './schema/legal-documents';
+
+// Import NewLegalDocument from the correct schema  
+import type {
+  NewLegalDocument
+} from '../server/db/schema-postgres';
+
+// Re-export for external use
+export type { NewLegalDocument };
 
 // Qdrant Types
 export type {
@@ -105,8 +112,17 @@ export async function getDatabaseHealth(): Promise<{
   overall: 'healthy' | 'degraded' | 'unhealthy';
 }> {
   const health = {
-    postgres: { connected: false },
-    qdrant: { connected: false, collection: '' },
+    postgres: { connected: false } as {
+      connected: boolean;
+      responseTime?: number;
+      error?: string;
+    },
+    qdrant: { connected: false, collection: '' } as {
+      connected: boolean;
+      collection: string;
+      vectorCount?: number;
+      error?: string;
+    },
     overall: 'unhealthy' as 'healthy' | 'degraded' | 'unhealthy'
   };
 
@@ -142,23 +158,12 @@ export const databaseUtils = {
    * Migrate a document from old schema to new enhanced schema
    */
   async migrateDocument(oldDocument: any): Promise<NewLegalDocument> {
-    const { schema } = await import('./schema/legal-documents.js');
-    
     return {
       title: oldDocument.title || 'Untitled Document',
       content: oldDocument.content || '',
-      documentType: oldDocument.documentType || oldDocument.document_type || 'general',
+      document_type: oldDocument.documentType || oldDocument.document_type || 'general',
       jurisdiction: oldDocument.jurisdiction || 'federal',
-      practiceArea: oldDocument.practiceArea || oldDocument.practice_area || 'general',
-      tags: oldDocument.tags || [],
-      metadata: oldDocument.metadata || {},
-      processingStatus: oldDocument.processingStatus || oldDocument.processing_status || 'pending',
-      fileHash: oldDocument.fileHash || oldDocument.file_hash,
-      fileName: oldDocument.fileName || oldDocument.file_name,
-      fileSize: oldDocument.fileSize || oldDocument.file_size,
-      mimeType: oldDocument.mimeType || oldDocument.mime_type,
-      createdAt: oldDocument.createdAt || oldDocument.created_at || new Date(),
-      updatedAt: oldDocument.updatedAt || oldDocument.updated_at || new Date()
+      analysis_results: oldDocument.metadata || {}
     };
   },
 

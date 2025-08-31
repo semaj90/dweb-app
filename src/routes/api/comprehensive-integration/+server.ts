@@ -10,7 +10,7 @@ import type { RequestHandler } from './$types';
 // System status and integration health check
 export const GET: RequestHandler = async ({ url }): Promise<any> => {
   const checkType = url.searchParams.get('check') || 'basic';
-  
+
   try {
     const systemStatus = {
       status: 'operational',
@@ -25,7 +25,7 @@ export const GET: RequestHandler = async ({ url }): Promise<any> => {
           qdrant: await checkService('http://localhost:6333', 'vector'),
           minio: await checkService('http://localhost:9000', 'storage')
         },
-        
+
         // AI Services
         ai: {
           ollama: await checkService('http://localhost:11434/api/version', 'llm'),
@@ -33,7 +33,7 @@ export const GET: RequestHandler = async ({ url }): Promise<any> => {
           semantic_pipeline: 'operational',
           intent_detection: 'operational'
         },
-        
+
         // Processing Services
         ingestion: {
           enhanced_processor: 'operational',
@@ -41,7 +41,7 @@ export const GET: RequestHandler = async ({ url }): Promise<any> => {
           event_loop: 'optimized',
           service_worker: 'enabled'
         },
-        
+
         // Frontend Integration
         sveltekit: {
           version: '2.0',
@@ -51,7 +51,7 @@ export const GET: RequestHandler = async ({ url }): Promise<any> => {
           activity_tracking: 'enabled'
         }
       },
-      
+
       // Integration workflows
       workflows: {
         document_upload_to_ai_chat: {
@@ -72,7 +72,7 @@ export const GET: RequestHandler = async ({ url }): Promise<any> => {
             'YoRHa activity tracking'
           ]
         },
-        
+
         ai_chat_with_context: {
           status: 'operational',
           features: [
@@ -88,7 +88,7 @@ export const GET: RequestHandler = async ({ url }): Promise<any> => {
           ]
         }
       },
-      
+
       // Performance metrics
       metrics: {
         avg_upload_time: '2.3s',
@@ -121,22 +121,22 @@ export const GET: RequestHandler = async ({ url }): Promise<any> => {
 export const POST: RequestHandler = async ({ request }): Promise<any> => {
   try {
     const { testType = 'full_workflow', payload } = await request.json();
-    
+
     console.log(`🧪 Running integration test: ${testType}`);
-    
+
     switch (testType) {
       case 'full_workflow':
         return json(await testFullWorkflow(payload));
-        
+
       case 'ai_pipeline':
         return json(await testAIPipeline(payload));
-        
+
       case 'multi_protocol':
         return json(await testMultiProtocol(payload));
-        
+
       case 'performance':
         return json(await testPerformance(payload));
-        
+
       default:
         return json({
           error: 'Invalid test type',
@@ -154,16 +154,26 @@ export const POST: RequestHandler = async ({ request }): Promise<any> => {
 
 // Service health check utility
 async function checkService(url: string, type: string): Promise<string> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
   try {
-    const response = await fetch(url, { 
+    const response = await fetch(url, {
       method: 'GET',
-      signal: AbortSignal.timeout(5000) // 5 second timeout
+      signal: controller.signal
     });
-    
+
+    clearTimeout(timeoutId);
     return response.ok ? 'operational' : 'degraded';
   } catch (error: any) {
-    console.warn(`Service ${type} at ${url} check failed:`, error);
+    if (error && (error as Error).name === 'AbortError') {
+      console.warn(`Service ${type} at ${url} check timed out`);
+    } else {
+      console.warn(`Service ${type} at ${url} check failed:`, error);
+    }
     return 'unavailable';
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 
@@ -174,14 +184,14 @@ async function runDetailedDiagnostics(): Promise<any> {
     uptime: process.uptime(),
     node_version: process.version,
     platform: process.platform,
-    
+
     // Database connections
     database_pools: {
       postgresql: 'active connections: 15/20',
       redis: 'connected',
       neo4j: 'session pool: 8/10'
     },
-    
+
     // AI model status
     ai_models: {
       gemma3_legal: 'loaded',
@@ -189,7 +199,7 @@ async function runDetailedDiagnostics(): Promise<any> {
       legal_bert: 'loaded',
       nomic_embed: 'loaded'
     },
-    
+
     // Storage status
     storage: {
       minio_buckets: ['legal-documents', 'case-files'],

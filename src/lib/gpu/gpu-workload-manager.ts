@@ -14,13 +14,42 @@ import { cudaAccelerator } from './cuda-accelerator';
 import { mlTaskRouter } from '$lib/routing/ml-task-router';
 import { advancedCacheManager } from '$lib/caching/advanced-cache-manager';
 import type {
-    GPUWorkload,
-    GPUWorkloadQueue,
-    BatchProcessingJob,
-    WorkloadPriority,
-    GPUResourceAllocation,
-    WorkloadSchedulingStrategy
+    GPUWorkload
 } from '$lib/ai/types';
+
+// Local type definitions specific to workload management
+export type WorkloadPriority = 'low' | 'normal' | 'medium' | 'high' | 'critical' | 'urgent';
+
+export interface GPUWorkloadQueue {
+  id: string;
+  workloads: GPUWorkload[];
+  capacity: number;
+  processing: number;
+  completed: number;
+  failed: number;
+}
+
+export interface BatchProcessingJob {
+  id: string;
+  workloads: GPUWorkload[];
+  batchSize: number;
+  status: 'pending' | 'processing' | 'completed' | 'error';
+  startTime?: number;
+  endTime?: number;
+  results?: any[];
+}
+
+export interface GPUResourceAllocation {
+  deviceId: number;
+  memoryMB: number;
+  computeUnits: number;
+  priority: WorkloadPriority;
+}
+
+export interface WorkloadSchedulingStrategy {
+  type: 'fifo' | 'priority' | 'round_robin' | 'weighted';
+  config: Record<string, any>;
+}
 
 export interface GPUWorkloadManagerConfig {
     maxQueueSize: number;
@@ -90,7 +119,7 @@ export class GPUWorkloadManager extends EventEmitter {
     private isRunning = false;
     private config: GPUWorkloadManagerConfig;
 
-    constructor(config: GPUWorkloadManagerConfig = {}) {
+    constructor(config: Partial<GPUWorkloadManagerConfig> = {}) {
         super();
 
         this.config = {
@@ -391,7 +420,7 @@ export class GPUWorkloadManager extends EventEmitter {
     /**
      * Get comprehensive workload analytics
      */
-    getAnalytics(): WorkloadAnalytics {
+    async getAnalytics(): Promise<WorkloadAnalytics> {
         const totalWorkloads = this.getTotalWorkloads();
         const queuedWorkloads = this.getTotalQueuedWorkloads();
         const activeWorkloads = this.activeWorkloads.size;
@@ -407,7 +436,7 @@ export class GPUWorkloadManager extends EventEmitter {
         }
 
         // Device utilization
-        const deviceUtilization = this.getDeviceUtilization();
+        const deviceUtilization = await this.getDeviceUtilization();
 
         // Queue performance by priority
         const queuePerformance = {
@@ -452,13 +481,13 @@ export class GPUWorkloadManager extends EventEmitter {
     private async adaptiveSchedulingCycle(): Promise<any> {
         try {
             // Check if CUDA accelerator is available for new workloads
-            const cudaStatus = cudaAccelerator.getStatus();
+            const cudaStatus = await cudaAccelerator.getStatus();
             if (!cudaStatus.initialized) {
                 return;
             }
 
             // Calculate current system load
-            const systemLoad = this.calculateSystemLoad();
+            const systemLoad = await this.calculateSystemLoad();
 
             // Determine optimal batch size based on current load
             const optimalBatchSize = this.calculateOptimalBatchSize(systemLoad);
@@ -697,8 +726,8 @@ export class GPUWorkloadManager extends EventEmitter {
         }
     }
 
-    private calculateSystemLoad(): number {
-        const cudaStatus = cudaAccelerator.getStatus();
+    private async calculateSystemLoad(): Promise<number> {
+        const cudaStatus = await cudaAccelerator.getStatus();
         const activeJobs = cudaStatus.activeJobs || 0;
         const maxJobs = this.config.maxBatchSize;
         return activeJobs / maxJobs;
@@ -744,13 +773,13 @@ export class GPUWorkloadManager extends EventEmitter {
         }, 100); // 100ms delay
     }
 
-    private getDeviceUtilization(): Record<number, number> {
-        const cudaStatus = cudaAccelerator.getStatus();
+    private async getDeviceUtilization(): Promise<Record<number, number>> {
+        const cudaStatus = await cudaAccelerator.getStatus();
         const deviceUtilization: Record<number, number> = {};
 
         if (cudaStatus.devices) {
             Object.entries(cudaStatus.devices).forEach(([deviceId, device]) => {
-                deviceUtilization[parseInt(deviceId)] = device.utilization?.gpu || 0;
+                deviceUtilization[parseInt(deviceId)] = (device as any).utilization?.gpu || 0;
             });
         }
 

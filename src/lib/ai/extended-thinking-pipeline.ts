@@ -416,7 +416,8 @@ export class ExtendedThinkingPipeline extends EventEmitter {
           console.log(`✅ Completed step: ${stepId}`);
         } else if (step) {
           step.status = 'error';
-          console.error(`❌ Step failed: ${stepId}`, result.reason);
+          const reason = result.status === 'rejected' ? result.reason : 'Unknown error';
+          console.error(`❌ Step failed: ${stepId}`, reason);
         }
       });
     }

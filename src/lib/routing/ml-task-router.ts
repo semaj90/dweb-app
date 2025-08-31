@@ -30,7 +30,7 @@ import type {
     RoutingConfig,
     ServiceCapacity,
     RoutingAnalytics
-} from '$lib/ai/types';
+} from '$lib/ai';
 
 export interface TaskRequest {
     id: string;

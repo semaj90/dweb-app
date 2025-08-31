@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db';
-import { cases, evidence, reports } from '$lib/server/db/schema-postgres';
+import { cases, evidence } from '$lib/server/db/index';
 import { eq } from 'drizzle-orm';
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';

@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { initializeQdrantCollection } from "$lib/qdrant/collection-seeder";
+// import { initializeQdrantCollection } from "$lib/qdrant/collection-seeder"; // Not available
 
 // Load environment-specific variables
 const envFile = `.env.${process.env.NODE_ENV || "development"}`;
@@ -66,10 +66,10 @@ export const db: PostgresJsDatabase<typeof schema> = new Proxy({} as any, {
   },
 });
 
-// Call Qdrant tag seeding on startup
-initializeQdrantCollection().catch((err) => {
-  console.error("Qdrant tag seeding failed:", err);
-});
+// Call Qdrant tag seeding on startup (disabled - function not available)
+// initializeQdrantCollection().catch((err) => {
+//   console.error("Qdrant tag seeding failed:", err);
+// });
 
 // Database metadata
 export const isPostgreSQL = true;

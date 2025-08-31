@@ -614,7 +614,7 @@ Respond only with valid JSON.`);
 export const legalAIService = new LegalAILangChainService();
 
 // Export class for testing
-export { LegalAILangChainService, type LangChainConfig, type AnalysisResult, type SearchResult };
+export { LegalAILangChainService };
 
 // Auto-initialize in production
 if (process.env.NODE_ENV === 'production') {

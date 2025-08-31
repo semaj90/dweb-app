@@ -385,7 +385,7 @@ export const agentOrchestrationMachine = createMachine({
                     {
                         target: 'optimization',
                         // cast to any to avoid strict XState typings issues
-                        cond: (_: any, event: any) => Boolean(event?.data?.valid),
+                        guard: (_: any, event: any) => Boolean(event?.data?.valid),
                         actions: (assign as any)({
                             currentPhase: () => 'optimization'
                         })

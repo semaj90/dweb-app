@@ -557,7 +557,7 @@ export const DEFAULT_CONFIG: ServiceEndpoints = {
     port: 5432,
     database: "legal_ai_db",
     username: "legal_admin",
-    password: "LegalAI2024!",
+    password: "123456",
   },
   qdrant: {
     baseUrl: "http://localhost:6333",

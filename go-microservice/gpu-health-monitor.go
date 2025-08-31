@@ -47,83 +47,7 @@ type AlertThresholds struct {
 	ResponseTime      int64   `json:"response_time_ms"`
 }
 
-// System Metrics
-type SystemMetrics struct {
-	Timestamp    time.Time            `json:"timestamp"`
-	CPU          CPUMetrics           `json:"cpu"`
-	Memory       MemoryMetrics        `json:"memory"`
-	Disk         DiskMetrics          `json:"disk"`
-	Network      NetworkMetrics       `json:"network"`
-	GPU          GPUMetrics           `json:"gpu"`
-	Services     map[string]ServiceMetrics `json:"services"`
-	Runtime      RuntimeMetrics       `json:"runtime"`
-}
-
-type CPUMetrics struct {
-	UsagePercent []float64 `json:"usage_percent"`
-	LoadAvg      []float64 `json:"load_avg"`
-	Cores        int       `json:"cores"`
-}
-
-type MemoryMetrics struct {
-	Total       uint64  `json:"total"`
-	Available   uint64  `json:"available"`
-	Used        uint64  `json:"used"`
-	UsedPercent float64 `json:"used_percent"`
-	Cached      uint64  `json:"cached"`
-	Buffers     uint64  `json:"buffers"`
-}
-
-type DiskMetrics struct {
-	Total       uint64  `json:"total"`
-	Free        uint64  `json:"free"`
-	Used        uint64  `json:"used"`
-	UsedPercent float64 `json:"used_percent"`
-}
-
-type NetworkMetrics struct {
-	BytesSent   uint64 `json:"bytes_sent"`
-	BytesRecv   uint64 `json:"bytes_recv"`
-	PacketsSent uint64 `json:"packets_sent"`
-	PacketsRecv uint64 `json:"packets_recv"`
-	ErrorsIn    uint64 `json:"errors_in"`
-	ErrorsOut   uint64 `json:"errors_out"`
-}
-
-type GPUMetrics struct {
-	Available       bool    `json:"available"`
-	Utilization     float64 `json:"utilization"`
-	MemoryTotal     uint64  `json:"memory_total"`
-	MemoryUsed      uint64  `json:"memory_used"`
-	MemoryFree      uint64  `json:"memory_free"`
-	Temperature     int     `json:"temperature"`
-	PowerUsage      float64 `json:"power_usage"`
-	FanSpeed        int     `json:"fan_speed"`
-	ComputeMode     string  `json:"compute_mode"`
-	DriverVersion   string  `json:"driver_version"`
-}
-
-type ServiceMetrics struct {
-	Name            string        `json:"name"`
-	Status          string        `json:"status"`
-	ResponseTime    time.Duration `json:"response_time"`
-	ErrorRate       float64       `json:"error_rate"`
-	RequestCount    int64         `json:"request_count"`
-	LastHealthCheck time.Time     `json:"last_health_check"`
-	Uptime          time.Duration `json:"uptime"`
-	CPUUsage        float64       `json:"cpu_usage"`
-	MemoryUsage     uint64        `json:"memory_usage"`
-}
-
-type RuntimeMetrics struct {
-	GoVersion    string `json:"go_version"`
-	Goroutines   int    `json:"goroutines"`
-	MemAlloc     uint64 `json:"mem_alloc"`
-	MemTotalAlloc uint64 `json:"mem_total_alloc"`
-	MemSys       uint64 `json:"mem_sys"`
-	NumGC        uint32 `json:"num_gc"`
-	GCPauseTotal uint64 `json:"gc_pause_total"`
-}
+// Shared metric types are now defined in shared-metrics-types.go
 
 // Alert Types
 type Alert struct {
@@ -352,22 +276,22 @@ func (h *HealthMonitor) collectSystemMetrics() *SystemMetrics {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
 	metrics.Runtime = RuntimeMetrics{
-		GoVersion:     runtime.Version(),
-		Goroutines:    runtime.NumGoroutine(),
-		MemAlloc:      m.Alloc,
-		MemTotalAlloc: m.TotalAlloc,
-		MemSys:        m.Sys,
-		NumGC:         m.NumGC,
-		GCPauseTotal:  m.PauseTotalNs,
+		GoroutineCount: runtime.NumGoroutine(),
+		GCPauseTime:    time.Duration(m.PauseTotalNs),
+		HeapAllocMB:    float64(m.Alloc) / 1024 / 1024,
+		HeapSysMB:      float64(m.Sys) / 1024 / 1024,
+		NumGC:          m.NumGC,
+		OpenFiles:      0, // TODO: implement file descriptor counting
+		Connections:    0, // TODO: implement connection counting
 	}
 
 	return metrics
 }
 
 // Collect GPU Metrics
-func (h *HealthMonitor) collectGPUMetrics() GPUMetrics {
+func (h *HealthMonitor) collectGPUMetrics() GPUHealthMetrics {
 	// This is a simplified version - in production you'd use NVIDIA Management Library (NVML)
-	return GPUMetrics{
+	return GPUHealthMetrics{
 		Available:     true, // Would check actual GPU availability
 		Utilization:   75.5, // Would get from NVML
 		MemoryTotal:   8589934592, // 8GB in bytes
@@ -402,8 +326,6 @@ func (h *HealthMonitor) checkAllServices() {
 }
 
 func (h *HealthMonitor) checkService(service ServiceInfo) {
-	start := time.Now()
-	
 	var status string
 	var responseTime time.Duration
 	

@@ -37,7 +37,7 @@ export interface AuthContext {
 }
 
 // Authentication events
-type AuthEvent =
+export type AuthEvent =
   | { type: 'START_LOGIN'; data: LoginData }
   | { type: 'START_REGISTRATION'; data: RegistrationData }
   | { type: 'LOGIN_SUCCESS'; data: { user: any; session: any } }

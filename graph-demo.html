@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal AI Graph Database - Server + WASM</title>
+    <style>
+        body {
+            font-family: 'Roboto Mono', monospace;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .server-section {
+            background: #e8f5e8;
+            border-color: #4caf50;
+        }
+        .wasm-section {
+            background: #e3f2fd;
+            border-color: #2196f3;
+        }
+        button {
+            background: #007acc;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #005f9f;
+        }
+        .output {
+            background: #f9f9f9;
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .status.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .status.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        h2 {
+            color: #555;
+            border-bottom: 2px solid currentColor;
+            padding-bottom: 5px;
+        }
+        .feature-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 5px 0;
+            padding-left: 20px;
+        }
+        .feature-list li:before {
+            content: "✅ ";
+            color: #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔗 Legal AI Graph Database</h1>
+        <h2>Server-Side vs WebAssembly Implementation</h2>
+        
+        <!-- Status Section -->
+        <div class="section">
+            <h3>🔧 System Status</h3>
+            <div id="systemStatus" class="status">Checking services...</div>
+            <button onclick="checkSystemStatus()">Refresh Status</button>
+        </div>
+
+        <!-- Feature Comparison -->
+        <div class="comparison">
+            <div class="section server-section">
+                <h3>🖥️ Server-Side Graph (Go Service)</h3>
+                <ul class="feature-list">
+                    <li>Full Neo4j-compatible API</li>
+                    <li>PostgreSQL + Redis backing</li>
+                    <li>Multi-user concurrent access</li>
+                    <li>Production-ready persistence</li>
+                    <li>Complex Cypher queries</li>
+                    <li>RESTful HTTP endpoints</li>
+                </ul>
+                
+                <h4>Available Endpoints:</h4>
+                <button onclick="testServerHealth()">Health Check</button>
+                <button onclick="testServerStatus()">Graph Status</button>
+                <button onclick="testLegalPrecedents()">Legal Precedents</button>
+                <button onclick="testCypherQuery()">Cypher Query</button>
+                <button onclick="createServerNode()">Create Node</button>
+                
+                <div id="serverOutput" class="output"></div>
+            </div>
+
+            <div class="section wasm-section">
+                <h3>🌐 WASM Graph (TinyGo Browser)</h3>
+                <ul class="feature-list">
+                    <li>Client-side processing</li>
+                    <li>No server dependencies</li>
+                    <li>Instant response times</li>
+                    <li>Embeddable in any webpage</li>
+                    <li>Privacy-focused (local data)</li>
+                    <li>JavaScript-compatible API</li>
+                </ul>
+                
+                <h4>Browser Functions:</h4>
+                <div id="wasmStatus" class="status error">WASM not loaded (TinyGo compile needed)</div>
+                <button onclick="initWasmGraph()" disabled id="wasmInit">Initialize WASM</button>
+                <button onclick="testWasmQuery()" disabled id="wasmQuery">Query Nodes</button>
+                <button onclick="testWasmPrecedents()" disabled id="wasmPrec">Get Precedents</button>
+                <button onclick="createWasmNode()" disabled id="wasmCreate">Create Node</button>
+                
+                <div id="wasmOutput" class="output"></div>
+            </div>
+        </div>
+
+        <!-- Integration Examples -->
+        <div class="section">
+            <h3>🔀 Integration Examples</h3>
+            <p>Both implementations are compatible with <code>neo4j-driver</code> JavaScript patterns:</p>
+            
+            <div class="output">
+// Server-side usage
+const serverGraph = {
+    async query(cypher) {
+        const response = await fetch('http://localhost:7474/api/graph/query', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query: cypher })
+        });
+        return response.json();
+    }
+};
+
+// WASM usage (when compiled)
+const wasmGraph = {
+    query(cypher) {
+        return wasmExecuteCypher(cypher);
+    },
+    createNode(id, label, properties) {
+        return wasmCreateNode(id, label, properties);
+    }
+};
+
+// Unified interface
+const graph = useWasm ? wasmGraph : serverGraph;
+const results = await graph.query('MATCH (n:Case) RETURN n');
+            </div>
+        </div>
+
+        <!-- Performance Comparison -->
+        <div class="section">
+            <h3>⚡ Performance Test</h3>
+            <button onclick="runPerformanceTest()">Run Performance Comparison</button>
+            <div id="performanceResults" class="output"></div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let wasmLoaded = false;
+        let serverAvailable = false;
+
+        // Check system status on load
+        window.onload = () => {
+            checkSystemStatus();
+        };
+
+        async function checkSystemStatus() {
+            const statusDiv = document.getElementById('systemStatus');
+            statusDiv.textContent = 'Checking services...';
+            statusDiv.className = 'status';
+
+            try {
+                // Check server graph service
+                const response = await fetch('http://localhost:7474/health');
+                const data = await response.json();
+                
+                if (response.ok && data.status === 'healthy') {
+                    serverAvailable = true;
+                    statusDiv.innerHTML = `
+                        ✅ Server Graph Service: Healthy (Port 7474)<br>
+                        📊 Nodes: ${data.nodes}, Edges: ${data.edges}<br>
+                        🔍 Queries executed: ${data.queries}<br>
+                        ${wasmLoaded ? '✅ WASM Graph: Loaded' : '⚠️ WASM Graph: Not compiled (run TinyGo build)'}
+                    `;
+                    statusDiv.className = 'status success';
+                } else {
+                    throw new Error('Server not healthy');
+                }
+            } catch (error) {
+                serverAvailable = false;
+                statusDiv.innerHTML = `
+                    ❌ Server Graph Service: Offline<br>
+                    ℹ️ Start with: cd go-microservice && ./simple-graph-service.exe<br>
+                    ${wasmLoaded ? '✅ WASM Graph: Loaded' : '⚠️ WASM Graph: Not compiled'}
+                `;
+                statusDiv.className = 'status error';
+            }
+        }
+
+        // Server-side functions
+        async function testServerHealth() {
+            const output = document.getElementById('serverOutput');
+            try {
+                const response = await fetch('http://localhost:7474/health');
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                output.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        async function testServerStatus() {
+            const output = document.getElementById('serverOutput');
+            try {
+                const response = await fetch('http://localhost:7474/api/graph/status');
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                output.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        async function testLegalPrecedents() {
+            const output = document.getElementById('serverOutput');
+            try {
+                const response = await fetch('http://localhost:7474/api/graph/legal/precedents');
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                output.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        async function testCypherQuery() {
+            const output = document.getElementById('serverOutput');
+            try {
+                const response = await fetch('http://localhost:7474/api/graph/query', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: 'MATCH (n) RETURN n' })
+                });
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                output.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        async function createServerNode() {
+            const output = document.getElementById('serverOutput');
+            try {
+                const nodeData = {
+                    id: `demo_${Date.now()}`,
+                    label: 'Demo',
+                    properties: {
+                        created_by: 'demo_page',
+                        timestamp: new Date().toISOString(),
+                        type: 'example'
+                    }
+                };
+                
+                const response = await fetch('http://localhost:7474/api/graph/nodes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(nodeData)
+                });
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                output.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        // WASM functions (would work after TinyGo compilation)
+        function initWasmGraph() {
+            const output = document.getElementById('wasmOutput');
+            if (typeof wasmGraphInit === 'function') {
+                const result = wasmGraphInit();
+                output.textContent = JSON.stringify(result, null, 2);
+                enableWasmButtons();
+            } else {
+                output.textContent = 'Error: WASM functions not available. Compile with:\ntinygo build -o graph.wasm -target wasm graph-wasm.go';
+            }
+        }
+
+        function testWasmQuery() {
+            const output = document.getElementById('wasmOutput');
+            if (typeof wasmQueryNodes === 'function') {
+                const result = wasmQueryNodes();
+                output.textContent = JSON.stringify(result, null, 2);
+            } else {
+                output.textContent = 'Error: WASM not loaded';
+            }
+        }
+
+        function testWasmPrecedents() {
+            const output = document.getElementById('wasmOutput');
+            if (typeof wasmGetLegalPrecedents === 'function') {
+                const result = wasmGetLegalPrecedents();
+                output.textContent = JSON.stringify(result, null, 2);
+            } else {
+                output.textContent = 'Error: WASM not loaded';
+            }
+        }
+
+        function createWasmNode() {
+            const output = document.getElementById('wasmOutput');
+            if (typeof wasmCreateNode === 'function') {
+                const result = wasmCreateNode(
+                    `wasm_demo_${Date.now()}`,
+                    'Demo',
+                    {
+                        created_by: 'wasm_demo',
+                        timestamp: new Date().toISOString(),
+                        browser: navigator.userAgent
+                    }
+                );
+                output.textContent = JSON.stringify(result, null, 2);
+            } else {
+                output.textContent = 'Error: WASM not loaded';
+            }
+        }
+
+        function enableWasmButtons() {
+            document.getElementById('wasmInit').disabled = false;
+            document.getElementById('wasmQuery').disabled = false;
+            document.getElementById('wasmPrec').disabled = false;
+            document.getElementById('wasmCreate').disabled = false;
+        }
+
+        async function runPerformanceTest() {
+            const output = document.getElementById('performanceResults');
+            output.textContent = 'Running performance tests...\n\n';
+
+            const iterations = 100;
+            let serverTime = 0;
+            let wasmTime = 0;
+
+            // Test server performance
+            if (serverAvailable) {
+                const startServer = performance.now();
+                for (let i = 0; i < iterations; i++) {
+                    try {
+                        await fetch('http://localhost:7474/api/graph/status');
+                    } catch (e) {
+                        break;
+                    }
+                }
+                const endServer = performance.now();
+                serverTime = endServer - startServer;
+            }
+
+            // Test WASM performance
+            if (wasmLoaded && typeof wasmQueryNodes === 'function') {
+                const startWasm = performance.now();
+                for (let i = 0; i < iterations; i++) {
+                    wasmQueryNodes();
+                }
+                const endWasm = performance.now();
+                wasmTime = endWasm - startWasm;
+            }
+
+            // Display results
+            let results = `Performance Test Results (${iterations} operations):\n\n`;
+            if (serverTime > 0) {
+                results += `🖥️ Server Graph:\n`;
+                results += `   Total: ${serverTime.toFixed(2)}ms\n`;
+                results += `   Avg per operation: ${(serverTime/iterations).toFixed(2)}ms\n`;
+                results += `   Operations/sec: ${(1000*iterations/serverTime).toFixed(0)}\n\n`;
+            } else {
+                results += `🖥️ Server Graph: Not available\n\n`;
+            }
+
+            if (wasmTime > 0) {
+                results += `🌐 WASM Graph:\n`;
+                results += `   Total: ${wasmTime.toFixed(2)}ms\n`;
+                results += `   Avg per operation: ${(wasmTime/iterations).toFixed(2)}ms\n`;
+                results += `   Operations/sec: ${(1000*iterations/wasmTime).toFixed(0)}\n\n`;
+                
+                if (serverTime > 0) {
+                    const speedup = serverTime / wasmTime;
+                    results += `⚡ WASM is ${speedup.toFixed(1)}x faster for local operations\n`;
+                }
+            } else {
+                results += `🌐 WASM Graph: Not loaded (compile needed)\n\n`;
+            }
+
+            results += `\nRecommendations:\n`;
+            results += `• Use Server Graph for: Multi-user apps, complex queries, data persistence\n`;
+            results += `• Use WASM Graph for: Client-side apps, privacy, real-time interactions\n`;
+            
+            output.textContent = results;
+        }
+    </script>
+</body>
+</html>

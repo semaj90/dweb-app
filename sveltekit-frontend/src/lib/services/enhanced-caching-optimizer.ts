@@ -548,4 +548,4 @@ class RequestBatcher {
   }
 }
 
-export { type CacheWarmerConfig, type CacheMetrics, type TTLStrategy };
+// Types already exported above as interfaces

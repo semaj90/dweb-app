@@ -1,7 +1,7 @@
 import { json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 import { db } from '$lib/database/postgres-enhanced';
-import { legalDocuments } from '$lib/database/schema/legal-documents';
+import { legalDocuments } from '$lib/database/schema';
 import { vectorSearchService, embeddingUtils } from '$lib/database/vector-operations';
 import { sql, desc, asc, and, or, eq, ilike, inArray, count } from "drizzle-orm";
 import { z } from 'zod';
@@ -223,7 +223,7 @@ export const GET: RequestHandler = async ({ url }): Promise<any> => {
     } else if (type === "filters") {
       // Get available filter values
       const filters = await getFilterOptions();
-      
+
       return json({
         success: true,
         filters
@@ -264,7 +264,7 @@ async function performTextSearch(params: z.infer<typeof searchParamsSchema>): Pr
 
   // Build filter conditions
   const filterConditions = [];
-  
+
   // Add text search condition
   filterConditions.push(
     or(
@@ -277,19 +277,19 @@ async function performTextSearch(params: z.infer<typeof searchParamsSchema>): Pr
   if (documentTypes && documentTypes.length > 0) {
     filterConditions.push(inArray(legalDocuments.documentType, documentTypes));
   }
-  
+
   if (jurisdictions && jurisdictions.length > 0) {
     filterConditions.push(inArray(legalDocuments.jurisdiction, jurisdictions));
   }
-  
+
   if (practiceAreas && practiceAreas.length > 0) {
     filterConditions.push(inArray(legalDocuments.practiceArea, practiceAreas));
   }
-  
+
   if (isConfidential !== undefined) {
     filterConditions.push(eq(legalDocuments.isConfidential, isConfidential));
   }
-  
+
   if (dateRange) {
     filterConditions.push(
       and(
@@ -377,7 +377,7 @@ function generateSnippet(content: string, query: string, maxLength: number = 200
 
   const queryWords = query.toLowerCase().split(/\s+/);
   const contentLower = content.toLowerCase();
-  
+
   // Find the first occurrence of any query word
   let earliestIndex = content.length;
   for (const word of queryWords) {
@@ -395,12 +395,12 @@ function generateSnippet(content: string, query: string, maxLength: number = 200
   // Extract snippet around the found word
   const start = Math.max(0, earliestIndex - maxLength / 2);
   const end = Math.min(content.length, start + maxLength);
-  
+
   let snippet = content.substring(start, end);
-  
+
   if (start > 0) snippet = '...' + snippet;
   if (end < content.length) snippet = snippet + '...';
-  
+
   return snippet;
 }
 
@@ -414,13 +414,13 @@ async function getFilterOptions(): Promise<any> {
       .selectDistinct({ value: legalDocuments.documentType })
       .from(legalDocuments)
       .where(eq(legalDocuments.processingStatus, 'completed')),
-    
+
     // Get distinct jurisdictions
     db
       .selectDistinct({ value: legalDocuments.jurisdiction })
       .from(legalDocuments)
       .where(eq(legalDocuments.processingStatus, 'completed')),
-    
+
     // Get distinct practice areas
     db
       .selectDistinct({ value: legalDocuments.practiceArea })

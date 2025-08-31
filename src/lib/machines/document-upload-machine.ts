@@ -1,7 +1,7 @@
 // Document Upload State Machine with XState
 // Manages file upload, processing, and validation workflows
 
-import { createMachine, assign, type InterpreterFrom } from 'xstate';
+import { createMachine, assign, fromPromise, type InterpreterFrom } from 'xstate';
 import { routerHelpers } from '$lib/services/multi-protocol-router';
 
 // Types for document upload
@@ -42,6 +42,8 @@ export interface DocumentUploadContext {
     maxConcurrentUploads: number;
     preferredProtocol: 'auto' | 'quic' | 'grpc' | 'rest';
     enableGPUProcessing: boolean;
+    enableOCR: boolean;
+    generatePreviews: boolean;
   };
   performance: {
     totalStartTime: number;
@@ -87,7 +89,9 @@ const defaultContext: DocumentUploadContext = {
     allowedTypes: ['.pdf', '.txt', '.docx', '.doc', '.json', '.md'],
     maxConcurrentUploads: 3,
     preferredProtocol: 'auto',
-    enableGPUProcessing: true
+    enableGPUProcessing: true,
+    enableOCR: true,
+    generatePreviews: true
   },
   performance: {
     totalStartTime: 0,
@@ -97,103 +101,7 @@ const defaultContext: DocumentUploadContext = {
   }
 };
 
-// Services for document upload
-const documentUploadServices = {
-  validateFile: async (context: DocumentUploadContext, event: any) => {
-    const { file } = context.currentFile!;
-    
-    // Check file size
-    if (file.size > context.settings.maxFileSize) {
-      throw new Error(`File size exceeds maximum allowed size of ${Math.round(context.settings.maxFileSize / 1024 / 1024)}MB`);
-    }
-
-    // Check file type
-    const extension = '.' + file.name.split('.').pop()?.toLowerCase();
-    if (!context.settings.allowedTypes.includes(extension)) {
-      throw new Error(`File type ${extension} is not supported. Allowed types: ${context.settings.allowedTypes.join(', ')}`);
-    }
-
-    // Check for malicious content (basic check)
-    if (file.name.includes('../') || file.name.includes('..\\')) {
-      throw new Error('Invalid file name detected');
-    }
-
-    return { valid: true, fileType: extension };
-  },
-
-  uploadDocument: async (context: DocumentUploadContext, event: any) => {
-    const { file } = context.currentFile!;
-    
-    const uploadData = {
-      title: file.name,
-      type: file.type || 'application/octet-stream',
-      caseId: event.caseId || 'default',
-      description: event.description || '',
-      tags: event.tags || [],
-      file: file,
-      processingOptions: {
-        extractText: true,
-        generateEmbeddings: true,
-        createSummary: true,
-        analyzeEntities: true,
-        enableGPU: context.settings.enableGPUProcessing
-      }
-    };
-
-    const result = await routerHelpers.documentUpload(uploadData, {
-      preferredProtocol: context.settings.preferredProtocol === 'auto' ? undefined : context.settings.preferredProtocol,
-      timeout: 120000 // 2 minutes timeout
-    });
-
-    return result;
-  },
-
-  processStage: async (context: DocumentUploadContext, event: any) => {
-    const currentStage = context.stages[context.currentStageIndex];
-    
-    // Simulate stage processing with realistic timing
-    const stageTimings = {
-      'Validation': 500,
-      'Upload': 2000,
-      'Text Extraction': 3000,
-      'Chunking': 1500,
-      'Embedding Generation': 5000,
-      'Vector Storage': 2000,
-      'Indexing': 1000,
-      'Semantic Analysis': 4000
-    };
-
-    const duration = stageTimings[currentStage.name as keyof typeof stageTimings] || 1000;
-    
-    // Simulate progress updates
-    return new Promise((resolve) => {
-      let progress = 0;
-      const interval = setInterval(() => {
-        progress += Math.random() * 20;
-        if (progress >= 100) {
-          progress = 100;
-          clearInterval(interval);
-          resolve({
-            stage: currentStage.name,
-            completed: true,
-            duration,
-            metadata: {
-              processedAt: Date.now(),
-              gpuAccelerated: context.settings.enableGPUProcessing && 
-                ['Embedding Generation', 'Semantic Analysis'].includes(currentStage.name)
-            }
-          });
-        }
-        
-        // Send progress update
-        self.postMessage?.({
-          type: 'STAGE_PROGRESS',
-          progress: Math.min(progress, 100)
-        });
-      }, duration / 10);
-    });
-  }
-};
+// Services migrated to XState v5 actors
 
 // Document upload state machine
 export const documentUploadMachine = createMachine({
@@ -378,20 +286,100 @@ export const documentUploadMachine = createMachine({
       actions: 'removeFile'
     }
   }
-}, {
-  services: documentUploadServices,
+}).provide({
+  actors: {
+    validateFile: fromPromise(async ({ input }: { input: { context: DocumentUploadContext; event: any } }) => {
+      const { context } = input;
+      const { file } = context.currentFile!;
+      
+      // Check file size
+      if (file.size > context.settings.maxFileSize) {
+        throw new Error(`File size exceeds maximum allowed size of ${Math.round(context.settings.maxFileSize / 1024 / 1024)}MB`);
+      }
+      // Check file type
+      const extension = '.' + file.name.split('.').pop()?.toLowerCase();
+      if (!context.settings.allowedTypes.includes(extension)) {
+        throw new Error(`File type ${extension} is not supported. Allowed types: ${context.settings.allowedTypes.join(', ')}`);
+      }
+      // Check for malicious content (basic check)
+      if (file.name.includes('../') || file.name.includes('..\\')) {
+        throw new Error('Invalid file name detected');
+      }
+      return { valid: true, fileType: extension };
+    }),
+
+    uploadDocument: fromPromise(async ({ input }: { input: { context: DocumentUploadContext; event: any } }) => {
+      const { context, event } = input;
+      const { file } = context.currentFile!;
+      
+      const uploadData = {
+        title: file.name,
+        type: file.type || 'application/octet-stream',
+        caseId: (event as any).caseId || 'default',
+        description: (event as any).description || '',
+        tags: (event as any).tags || [],
+        file: file,
+        processingOptions: {
+          extractText: true,
+          generateEmbeddings: true,
+          runOCR: context.settings.enableOCR,
+          generatePreview: context.settings.generatePreviews
+        }
+      };
+
+      // Use the multi-protocol router for optimized uploads
+      const response = await routerHelpers.documentUpload(uploadData) as any;
+      
+      if (!response?.success) {
+        throw new Error(response?.error || 'Upload failed');
+      }
+
+      return response;
+    }),
+
+    processStage: fromPromise(async ({ input }: { input: { context: DocumentUploadContext; event: any } }) => {
+      const { context, event } = input;
+      const currentStage = context.stages[context.currentStageIndex];
+      
+      // Simulate stage processing with appropriate timing
+      const processingTime = {
+        'File Validation': 500,
+        'Upload': 2000,
+        'Text Extraction': 1500,
+        'AI Analysis': 3000,
+        'Embedding Generation': 2500,
+        'Indexing': 1000,
+        'Finalization': 800
+      }[currentStage.name] || 1000;
+
+      // Simulate progress updates
+      for (let i = 0; i <= 100; i += 20) {
+        await new Promise(resolve => setTimeout(resolve, processingTime / 5));
+        // In a real implementation, you would emit progress events here
+      }
+
+      return {
+        stageName: currentStage.name,
+        completed: true,
+        metadata: {
+          processingTime,
+          timestamp: Date.now()
+        }
+      };
+    })
+  },
   guards: {
-    hasFilesToUpload: (context) => context.files.length > 0,
-    hasMoreFiles: (context) => {
+    hasFilesToUpload: ({ context }) => context.files.length > 0,
+    hasMoreFiles: ({ context }) => {
       const currentIndex = context.files.findIndex(f => f.id === context.currentFile?.id);
       return currentIndex < context.files.length - 1;
     },
-    hasMoreStages: (context) => context.currentStageIndex < context.stages.length - 3 // Skip last stages handled separately
+    hasMoreStages: ({ context }) => context.currentStageIndex < context.stages.length - 3 // Skip last stages handled separately
   },
   actions: {
     addFiles: assign({
-      files: (context, event) => {
-        const newFiles = event.files.map((file: File) => ({
+      files: ({ context, event }) => {
+        const newFiles = ((event as any).files || []).map((file: File) => ({
           id: `file_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
           file,
           name: file.name,
@@ -404,18 +392,18 @@ export const documentUploadMachine = createMachine({
     }),
 
     removeFile: assign({
-      files: (context, event) => context.files.filter(f => f.id !== event.fileId)
+      files: ({ context, event }) => context.files.filter(f => f.id !== (event as any).fileId)
     }),
 
     initializeUpload: assign({
-      performance: (context) => ({
+      performance: ({ context }) => ({
         ...context.performance,
         totalStartTime: Date.now()
       })
     }),
 
     selectNextFile: assign({
-      currentFile: (context) => {
+      currentFile: ({ context }) => {
         if (context.files.length === 0) return null;
         
         const processedIds = context.results.map(r => r.fileId);
@@ -431,7 +419,7 @@ export const documentUploadMachine = createMachine({
     }),
 
     setStageProcessing: assign({
-      stages: (context) => {
+      stages: ({ context }) => {
         const stages = [...context.stages];
         stages[context.currentStageIndex] = {
           ...stages[context.currentStageIndex],
@@ -443,26 +431,26 @@ export const documentUploadMachine = createMachine({
     }),
 
     completeStage: assign({
-      stages: (context, event) => {
+      stages: ({ context, event }) => {
         const stages = [...context.stages];
         stages[context.currentStageIndex] = {
           ...stages[context.currentStageIndex],
           status: 'completed',
           progress: 100,
           endTime: Date.now(),
-          metadata: event.data
+          metadata: (event as any).data
         };
         return stages;
       }
     }),
 
     setStageError: assign({
-      stages: (context, event) => {
+      stages: ({ context, event }) => {
         const stages = [...context.stages];
         stages[context.currentStageIndex] = {
           ...stages[context.currentStageIndex],
           status: 'failed',
-          error: event.data.message || 'Unknown error',
+          error: (event as any).data?.message || 'Unknown error',
           endTime: Date.now()
         };
         return stages;
@@ -470,35 +458,35 @@ export const documentUploadMachine = createMachine({
     }),
 
     updateStageProgress: assign({
-      stages: (context, event) => {
+      stages: ({ context, event }) => {
         const stages = [...context.stages];
         stages[context.currentStageIndex] = {
           ...stages[context.currentStageIndex],
-          progress: event.progress
+          progress: (event as any).progress
         };
         return stages;
       }
     }),
 
     moveToNextStage: assign({
-      currentStageIndex: (context) => context.currentStageIndex + 1
+      currentStageIndex: ({ context }) => context.currentStageIndex + 1
     }),
 
     recordFileResult: assign({
-      results: (context, event) => [
+      results: ({ context, event }) => [
         ...context.results,
         {
           fileId: context.currentFile!.id,
-          success: !event.data?.error,
-          documentId: event.data?.documentId,
-          error: event.data?.error,
-          metadata: event.data
+          success: !(event as any).data?.error,
+          documentId: (event as any).data?.documentId,
+          error: (event as any).data?.error,
+          metadata: (event as any).data
         }
       ]
     }),
 
     calculatePerformanceMetrics: assign({
-      performance: (context) => {
+      performance: ({ context }) => {
         const totalTime = Date.now() - context.performance.totalStartTime;
         const successfulFiles = context.results.filter(r => r.success).length;
         
@@ -511,9 +499,9 @@ export const documentUploadMachine = createMachine({
     }),
 
     updateSettings: assign({
-      settings: (context, event) => ({
+      settings: ({ context, event }) => ({
         ...context.settings,
-        ...event.settings
+        ...(event as any).settings
       })
     }),
 
@@ -536,8 +524,8 @@ export const documentUploadMachine = createMachine({
       stages: [...defaultStages]
     }),
 
-    setError: (context, event) => {
-      console.error('Document upload error:', event);
+    setError: ({ context, event }) => {
+      console.error('Document upload error:', (event as any));
     }
   }
 });

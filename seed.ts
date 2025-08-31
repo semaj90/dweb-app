@@ -1,5 +1,5 @@
 import { db } from './pg.config';
-import { users, cases, evidence, pois, comments } from './web-app/sveltekit-frontend/src/lib/schema';
+import { users, cases, evidence, pois, comments } from './sveltekit-frontend/src/lib/schema';
 import { hash } from 'bcryptjs';
 
 /**
@@ -12,11 +12,11 @@ async function seed(): Promise<any> {
   try {
     // Create test users
     console.log('Creating test users...');
-    
+
     const testUsers = await db.insert(users).values([
       {
         id: 'user_1',
-        email: 'detective@warden-net.com',
+        email: 'dete@warden.com',
         name: 'Detective Sarah Chen',
         role: 'detective',
         password_hash: await hash('password123', 10),
@@ -24,8 +24,8 @@ async function seed(): Promise<any> {
         updated_at: new Date()
       },
       {
-        id: 'user_2', 
-        email: 'admin@warden-net.com',
+        id: 'user_2',
+        email: 'admin@warden.com',
         name: 'Admin User',
         role: 'admin',
         password_hash: await hash('admin123', 10),
@@ -34,7 +34,7 @@ async function seed(): Promise<any> {
       },
       {
         id: 'user_3',
-        email: 'analyst@warden-net.com', 
+        email: 'analyst@warden-net.com',
         name: 'Crime Analyst Mike Rodriguez',
         role: 'analyst',
         password_hash: await hash('analyst123', 10),
@@ -45,7 +45,7 @@ async function seed(): Promise<any> {
 
     // Create test cases
     console.log('Creating test cases...');
-    
+
     const testCases = await db.insert(cases).values([
       {
         id: 'case_1',
@@ -66,7 +66,7 @@ async function seed(): Promise<any> {
         title: 'Riverside Park Vandalism',
         description: 'Multiple incidents of graffiti and property damage in Riverside Park area.',
         status: 'open',
-        priority: 'medium', 
+        priority: 'medium',
         created_by: testUsers[2].id,
         assigned_to: testUsers[0].id,
         case_type: 'vandalism',
@@ -93,7 +93,7 @@ async function seed(): Promise<any> {
 
     // Create test evidence
     console.log('Creating test evidence...');
-    
+
     const testEvidence = await db.insert(evidence).values([
       {
         id: 'evidence_1',
@@ -153,7 +153,7 @@ async function seed(): Promise<any> {
 
     // Create test POIs (Points of Interest)
     console.log('Creating test POIs...');
-    
+
     const testPOIs = await db.insert(pois).values([
       {
         id: 'poi_1',
@@ -204,7 +204,7 @@ async function seed(): Promise<any> {
 
     // Create test comments
     console.log('Creating test comments...');
-    
+
     await db.insert(comments).values([
       {
         id: 'comment_1',
@@ -247,7 +247,7 @@ async function seed(): Promise<any> {
     console.log('✅ Database seeded successfully!');
     console.log(`Created:
     - ${testUsers.length} users
-    - ${testCases.length} cases  
+    - ${testCases.length} cases
     - ${testEvidence.length} evidence items
     - ${testPOIs.length} POIs
     - 4 comments`);
@@ -264,7 +264,9 @@ async function seed(): Promise<any> {
 }
 
 // Run the seed function
-if (require.main === module) {
+declare const require: any;
+const isMain = typeof require !== 'undefined' && require.main === module;
+if (isMain) {
   seed()
     .then(() => process.exit(0))
     .catch((error) => {

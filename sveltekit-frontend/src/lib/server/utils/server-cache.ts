@@ -27,7 +27,7 @@ const cache = new SimpleCacheManager();
 export type CachePayload = unknown;
 
 export async function setCache(key: string, data: CachePayload): Promise<any> {
-  await cache.set(key, data, { contentType: "summary", ttl: 24 * 3600 * 1000 });
+  await cache.set(key, data, { ttl: 24 * 3600 * 1000 });
 }
 
 export async function getCache<T = unknown>(key: string): Promise<T | null> {

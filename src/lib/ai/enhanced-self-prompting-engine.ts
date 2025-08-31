@@ -26,6 +26,7 @@ export interface PromptContext {
     legal: LegalContext;
     errors: ErrorContext;
     performance: PerformanceContext;
+    processingTime?: number;
 }
 
 export interface CodebaseContext {
@@ -71,20 +72,21 @@ export interface PerformanceContext {
 }
 
 export interface SelfPromptOptions {
-    useMultiAgent: boolean;
-    useGPU: boolean;
-    useCUDA: boolean;
-    parallelProcessing: boolean;
-    contextualAwareness: boolean;
-    memoryIntegration: boolean;
-    semanticSearch: boolean;
-    errorAnalysis: boolean;
-    performanceOptimization: boolean;
-    realTimeUpdates: boolean;
-    distributedProcessing: boolean;
-    cacheResults: boolean;
-    maxProcessingTime: number;
-    confidenceThreshold: number;
+    useMultiAgent?: boolean;
+    useGPU?: boolean;
+    useCUDA?: boolean;
+    parallelProcessing?: boolean;
+    contextualAwareness?: boolean;
+    memoryIntegration?: boolean;
+    semanticSearch?: boolean;
+    errorAnalysis?: boolean;
+    performanceOptimization?: boolean;
+    realTimeUpdates?: boolean;
+    distributedProcessing?: boolean;
+    cacheResults?: boolean;
+    maxProcessingTime?: number;
+    confidenceThreshold?: number;
+    priority?: 'low' | 'medium' | 'high' | 'critical';
 }
 
 export interface SelfPromptResult {
@@ -134,6 +136,8 @@ export interface SynthesisResult {
     consensus: ConsensusPoint[];
     confidence: number;
     reasoning: string[];
+    recommendations?: Recommendation[];
+    processingTime?: number;
 }
 
 export type AgentType = 

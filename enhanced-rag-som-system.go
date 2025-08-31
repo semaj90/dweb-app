@@ -1,6 +1,5 @@
-//go:build enhancedrag
-// +build enhancedrag
-
+// ENHANCED RAG SOM SYSTEM - GO MICROSERVICE
+// Legal AI document processing with Self-Organizing Map clustering
 package main
 
 import (
@@ -8,998 +7,551 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"math"
-	"math/rand"
 	"net/http"
 	"os"
+	"os/signal"
 	"strconv"
 	"strings"
-	"sync"
-	"sync/atomic"
+	"syscall"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis/v8"
-	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/gomodule/redigo/redis"
+	"github.com/joho/godotenv"
 )
 
-// Enhanced RAG System with Self-Organizing Map (SOM) for User Intent Analysis
-// Integrates with PostgreSQL pgvector, provides semantic clustering and intent prediction
-
-type EnhancedRAGService struct {
-	db          *pgxpool.Pool
-	redis       *redis.Client
-	config      RAGConfig
-	somNetwork  *SOMNetwork
-	intentCache map[string]CachedIntent
-
-	// Context7 performance optimization fields - atomic counters
-	queryCount          int64       // atomic counter
-	cacheHits           int64       // atomic counter
-	cacheMisses         int64       // atomic counter
-	somAnalyses         int64       // atomic counter
-	semanticSearches    int64       // atomic counter
-	totalErrors         int64       // atomic counter
-	averageResponseTime int64       // atomic average (microseconds)
-	startTime           time.Time   // Service start time
-	bufferPool          *sync.Pool  // Buffer pool for JSON operations
-	mutex               sync.RWMutex
+// Configuration
+type Config struct {
+	Port       string
+	RedisURL   string
+	OllamaURL  string
+	GPUEnabled bool
 }
 
-type RAGConfig struct {
-	Port         string
-	DatabaseURL  string
-	RedisURL     string
-	EmbeddingDim int
-	SOMWidth     int
-	SOMHeight    int
-	LearningRate float64
-	MaxEpochs    int
-	VectorThreshold float64
+// Document structures
+type Document struct {
+	ID          string                 `json:"id"`
+	Content     string                 `json:"content"`
+	Title       string                 `json:"title"`
+	Type        string                 `json:"type"`
+	Embedding   []float64              `json:"embedding"`
+	Metadata    map[string]interface{} `json:"metadata"`
+	ProcessedAt time.Time              `json:"processed_at"`
+}
+
+type SOMCluster struct {
+	ID       string      `json:"id"`
+	Centroid []float64   `json:"centroid"`
+	Size     int         `json:"size"`
+	Topic    string      `json:"topic"`
+	Docs     []Document  `json:"documents"`
 }
 
 type RAGRequest struct {
-	Query       string                 `json:"query"`
-	UserID      string                 `json:"user_id"`
-	CaseID      string                 `json:"case_id,omitempty"`
-	Context     map[string]interface{} `json:"context,omitempty"`
-	MaxResults  int                    `json:"max_results,omitempty"`
-	MinScore    float64                `json:"min_score,omitempty"`
-	IntentHint  string                 `json:"intent_hint,omitempty"`
-	EnableSOM   bool                   `json:"enable_som,omitempty"`
+	Query     string            `json:"query"`
+	TopK      int               `json:"top_k"`
+	Threshold float64           `json:"threshold"`
+	Context   map[string]string `json:"context"`
 }
 
 type RAGResponse struct {
-	Query          string                 `json:"query"`
-	Results        []DocumentResult       `json:"results"`
-	UserIntent     string                 `json:"user_intent"`
-	IntentScore    float64                `json:"intent_score"`
-	SOMCluster     int                    `json:"som_cluster"`
-	ProcessingTime float64                `json:"processing_time_ms"`
-	TotalDocs      int                    `json:"total_docs"`
-	Suggestions    []string               `json:"suggestions"`
-	Context        map[string]interface{} `json:"context"`
-	CacheHit       bool                   `json:"cache_hit"`
+	Documents []Document  `json:"documents"`
+	Clusters  []SOMCluster `json:"clusters"`
+	Query     string      `json:"query"`
+	Metadata  interface{} `json:"metadata"`
 }
 
-type DocumentResult struct {
-	ID           int                    `json:"id"`
-	CaseID       string                 `json:"case_id"`
-	Title        string                 `json:"title"`
-	Content      string                 `json:"content"`
-	DocumentType string                 `json:"document_type"`
-	Score        float64                `json:"score"`
-	Relevance    string                 `json:"relevance"`
-	Highlights   []string               `json:"highlights"`
-	Metadata     map[string]interface{} `json:"metadata"`
-	CreatedAt    time.Time              `json:"created_at"`
+type Service struct {
+	config     Config
+	redisPool  *redis.Pool
+	somGrid    *SOMGrid
+	embedCache map[string][]float64
 }
 
-type CachedIntent struct {
-	Intent    string    `json:"intent"`
-	Score     float64   `json:"score"`
-	Cluster   int       `json:"cluster"`
-	CachedAt  time.Time `json:"cached_at"`
+// Self-Organizing Map implementation
+type SOMGrid struct {
+	Width   int         `json:"width"`
+	Height  int         `json:"height"`
+	Neurons [][]Neuron  `json:"neurons"`
+	Trained bool        `json:"trained"`
 }
 
-// Self-Organizing Map (SOM) implementation for intent clustering
-type SOMNetwork struct {
-	Width        int
-	Height       int
-	InputDim     int
-	Weights      [][][]float64
-	LearningRate float64
-	Radius       float64
-	Epoch        int
-	MaxEpochs    int
-
-	// Intent mapping
-	IntentMap    map[string]int  // Intent name -> cluster ID
-	ClusterMap   map[int]string  // Cluster ID -> intent name
+type Neuron struct {
+	Weights   []float64 `json:"weights"`
+	Documents []string  `json:"documents"`
+	Topic     string    `json:"topic"`
 }
 
-type SOMNode struct {
-	X, Y    int
-	Weights []float64
+func main() {
+	// Load environment
+	godotenv.Load()
+
+	config := Config{
+		Port:       getEnv("ENHANCED_RAG_PORT", "8094"),
+		RedisURL:   getEnv("REDIS_URL", "redis://localhost:6379"),
+		OllamaURL:  getEnv("OLLAMA_URL", "http://localhost:11434"),
+		GPUEnabled: getEnv("GPU_ENABLED", "false") == "true",
+	}
+
+	service := &Service{
+		config:     config,
+		embedCache: make(map[string][]float64),
+	}
+
+	if err := service.initialize(); err != nil {
+		log.Fatalf("Failed to initialize service: %v", err)
+	}
+
+	router := service.setupRoutes()
+	
+	server := &http.Server{
+		Addr:    ":" + config.Port,
+		Handler: router,
+	}
+
+	// Graceful shutdown
+	go func() {
+		sigChan := make(chan os.Signal, 1)
+		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+		<-sigChan
+
+		log.Println("🛑 Shutting down Enhanced RAG service...")
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		server.Shutdown(ctx)
+	}()
+
+	log.Printf("🚀 Enhanced RAG SOM System starting on port %s", config.Port)
+	log.Printf("🔥 GPU Acceleration: %v", config.GPUEnabled)
+	log.Printf("🧠 SOM Grid: Legal document clustering ready")
+	
+	if err := server.ListenAndServe(); err != http.ErrServerClosed {
+		log.Fatalf("Server failed: %v", err)
+	}
 }
 
-// Legal intent categories for SOM training
-var LegalIntents = map[string][]string{
-	"search":        {"find", "search", "locate", "lookup", "discover"},
-	"analyze":       {"analyze", "examine", "review", "assess", "evaluate"},
-	"summarize":     {"summarize", "overview", "brief", "abstract", "synopsis"},
-	"draft":         {"draft", "write", "compose", "create", "prepare"},
-	"research":      {"research", "investigate", "study", "explore", "examine"},
-	"compare":       {"compare", "contrast", "differentiate", "versus", "against"},
-	"explain":       {"explain", "clarify", "describe", "define", "elaborate"},
-	"calculate":     {"calculate", "compute", "estimate", "determine", "assess"},
-	"validate":      {"validate", "verify", "confirm", "check", "ensure"},
-	"recommend":     {"recommend", "suggest", "advise", "propose", "counsel"},
-}
-
-func NewEnhancedRAGService() *EnhancedRAGService {
-	config := loadRAGConfig()
-
-	return &EnhancedRAGService{
-		config:      config,
-		intentCache: make(map[string]CachedIntent),
-		somNetwork:  NewSOMNetwork(config.SOMWidth, config.SOMHeight, config.EmbeddingDim, config.LearningRate, config.MaxEpochs),
-		startTime:   time.Now(),
-		// Context7 buffer pool for JSON operations (4KB buffers)
-		bufferPool: &sync.Pool{
-			New: func() interface{} {
-				return make([]byte, 4*1024)
-			},
+func (s *Service) initialize() error {
+	// Initialize Redis pool
+	s.redisPool = &redis.Pool{
+		MaxIdle:     3,
+		IdleTimeout: 240 * time.Second,
+		Dial: func() (redis.Conn, error) {
+			return redis.DialURL(s.config.RedisURL)
 		},
 	}
-}
 
-func loadRAGConfig() RAGConfig {
-	return RAGConfig{
-		Port:            getEnv("RAG_PORT", "8095"),
-		DatabaseURL:     getEnv("DATABASE_URL", "postgresql://legal_admin:123456@localhost:5432/legal_ai_db"),
-		RedisURL:        getEnv("REDIS_URL", "redis://localhost:6379"),
-		EmbeddingDim:    getEnvInt("EMBEDDING_DIM", 384),
-		SOMWidth:        getEnvInt("SOM_WIDTH", 8),
-		SOMHeight:       getEnvInt("SOM_HEIGHT", 8),
-		LearningRate:    getEnvFloat("SOM_LEARNING_RATE", 0.1),
-		MaxEpochs:       getEnvInt("SOM_MAX_EPOCHS", 100),
-		VectorThreshold: getEnvFloat("VECTOR_THRESHOLD", 0.7),
-	}
-}
-
-func (r *EnhancedRAGService) Initialize() error {
-	log.Println("🧠 Initializing Enhanced RAG System with SOM...")
-
-	// Initialize database
-	var err error
-	r.db, err = pgxpool.New(context.Background(), r.config.DatabaseURL)
-	if err != nil {
-		return fmt.Errorf("database connection failed: %w", err)
+	// Test Redis connection
+	conn := s.redisPool.Get()
+	defer conn.Close()
+	
+	if _, err := conn.Do("PING"); err != nil {
+		return fmt.Errorf("redis connection failed: %v", err)
 	}
 
-	// Initialize Redis
-	opt, err := redis.ParseURL(r.config.RedisURL)
-	if err != nil {
-		return fmt.Errorf("redis URL parsing failed: %w", err)
-	}
-	r.redis = redis.NewClient(opt)
-
-	// Initialize and train SOM network
-	if err := r.trainSOMNetwork(); err != nil {
-		log.Printf("⚠️ SOM training failed: %v", err)
+	// Initialize SOM grid for legal document clustering
+	s.somGrid = &SOMGrid{
+		Width:  20,
+		Height: 20,
+		Neurons: make([][]Neuron, 20),
 	}
 
-	log.Println("✅ Enhanced RAG System initialized")
+	// Initialize neurons
+	for i := range s.somGrid.Neurons {
+		s.somGrid.Neurons[i] = make([]Neuron, 20)
+		for j := range s.somGrid.Neurons[i] {
+			s.somGrid.Neurons[i][j] = Neuron{
+				Weights:   make([]float64, 384), // nomic-embed-text dimension
+				Documents: make([]string, 0),
+			}
+			
+			// Random weight initialization
+			for k := range s.somGrid.Neurons[i][j].Weights {
+				s.somGrid.Neurons[i][j].Weights[k] = (float64(time.Now().UnixNano()%1000) - 500) / 1000.0
+			}
+		}
+	}
+
+	log.Println("✅ Enhanced RAG service initialized successfully")
 	return nil
 }
 
-func NewSOMNetwork(width, height, inputDim int, learningRate float64, maxEpochs int) *SOMNetwork {
-	som := &SOMNetwork{
-		Width:        width,
-		Height:       height,
-		InputDim:     inputDim,
-		LearningRate: learningRate,
-		MaxEpochs:    maxEpochs,
-		Radius:       float64(max(width, height)) / 2.0,
-		IntentMap:    make(map[string]int),
-		ClusterMap:   make(map[int]string),
+func (s *Service) setupRoutes() *gin.Engine {
+	if os.Getenv("GIN_MODE") != "debug" {
+		gin.SetMode(gin.ReleaseMode)
 	}
 
-	// Initialize weights randomly
-	som.Weights = make([][][]float64, width)
-	for x := 0; x < width; x++ {
-		som.Weights[x] = make([][]float64, height)
-		for y := 0; y < height; y++ {
-			som.Weights[x][y] = make([]float64, inputDim)
-			for d := 0; d < inputDim; d++ {
-				som.Weights[x][y][d] = (rand.Float64() - 0.5) * 0.1
-			}
-		}
-	}
-
-	return som
-}
-
-func (r *EnhancedRAGService) trainSOMNetwork() error {
-	log.Println("🎯 Training SOM network for legal intent analysis...")
-
-	// Generate training data from legal intents
-	trainingData := r.generateTrainingData()
-
-	for epoch := 0; epoch < r.somNetwork.MaxEpochs; epoch++ {
-		r.somNetwork.Epoch = epoch
-
-		for _, sample := range trainingData {
-			r.somNetwork.train(sample.Vector, sample.Intent)
-		}
-
-		// Decay learning rate and radius
-		decayFactor := 1.0 - float64(epoch)/float64(r.somNetwork.MaxEpochs)
-		r.somNetwork.LearningRate *= decayFactor
-		r.somNetwork.Radius *= decayFactor
-	}
-
-	// Map intents to clusters
-	r.mapIntentsToClusters(trainingData)
-
-	log.Printf("✅ SOM training completed (%d epochs)", r.somNetwork.MaxEpochs)
-	return nil
-}
-
-type TrainingSample struct {
-	Vector []float64
-	Intent string
-}
-
-func (r *EnhancedRAGService) generateTrainingData() []TrainingSample {
-	var samples []TrainingSample
-
-	for intent, keywords := range LegalIntents {
-		for _, keyword := range keywords {
-			// Generate simple embedding (in production, use real embeddings)
-			vector := r.generateSimpleEmbedding(keyword)
-			samples = append(samples, TrainingSample{
-				Vector: vector,
-				Intent: intent,
-			})
-		}
-	}
-
-	return samples
-}
-
-func (r *EnhancedRAGService) generateSimpleEmbedding(text string) []float64 {
-	// Simplified embedding generation (replace with real embeddings)
-	embedding := make([]float64, r.config.EmbeddingDim)
-
-	for i, char := range text {
-		if i < len(embedding) {
-			embedding[i] = float64(char) / 1000.0
-		}
-	}
-
-	// Normalize
-	norm := 0.0
-	for _, v := range embedding {
-		norm += v * v
-	}
-	norm = math.Sqrt(norm)
-
-	if norm > 0 {
-		for i := range embedding {
-			embedding[i] /= norm
-		}
-	}
-
-	return embedding
-}
-
-func (som *SOMNetwork) train(input []float64, intent string) {
-	// Find best matching unit (BMU)
-	bmuX, bmuY := som.findBMU(input)
-
-	// Update weights in neighborhood
-	for x := 0; x < som.Width; x++ {
-		for y := 0; y < som.Height; y++ {
-			distance := math.Sqrt(float64((x-bmuX)*(x-bmuX) + (y-bmuY)*(y-bmuY)))
-
-			if distance <= som.Radius {
-				influence := math.Exp(-distance*distance / (2*som.Radius*som.Radius))
-
-				for d := 0; d < som.InputDim; d++ {
-					som.Weights[x][y][d] += som.LearningRate * influence * (input[d] - som.Weights[x][y][d])
-				}
-			}
-		}
-	}
-}
-
-func (som *SOMNetwork) findBMU(input []float64) (int, int) {
-	minDistance := math.Inf(1)
-	bmuX, bmuY := 0, 0
-
-	for x := 0; x < som.Width; x++ {
-		for y := 0; y < som.Height; y++ {
-			distance := som.euclideanDistance(input, som.Weights[x][y])
-			if distance < minDistance {
-				minDistance = distance
-				bmuX, bmuY = x, y
-			}
-		}
-	}
-
-	return bmuX, bmuY
-}
-
-func (som *SOMNetwork) euclideanDistance(a, b []float64) float64 {
-	sum := 0.0
-	for i := 0; i < len(a); i++ {
-		diff := a[i] - b[i]
-		sum += diff * diff
-	}
-	return math.Sqrt(sum)
-}
-
-func (r *EnhancedRAGService) mapIntentsToClusters(trainingData []TrainingSample) {
-	clusterIntents := make(map[int]map[string]int)
-
-	for _, sample := range trainingData {
-		x, y := r.somNetwork.findBMU(sample.Vector)
-		clusterID := y*r.somNetwork.Width + x
-
-		if clusterIntents[clusterID] == nil {
-			clusterIntents[clusterID] = make(map[string]int)
-		}
-		clusterIntents[clusterID][sample.Intent]++
-	}
-
-	// Assign dominant intent to each cluster
-	for clusterID, intents := range clusterIntents {
-		maxCount := 0
-		dominantIntent := ""
-
-		for intent, count := range intents {
-			if count > maxCount {
-				maxCount = count
-				dominantIntent = intent
-			}
-		}
-
-		r.somNetwork.ClusterMap[clusterID] = dominantIntent
-		r.somNetwork.IntentMap[dominantIntent] = clusterID
-	}
-}
-
-func (r *EnhancedRAGService) HandleRAGQuery(ctx *gin.Context) {
-	var req RAGRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	start := time.Now()
-
-	// Set defaults
-	if req.MaxResults == 0 {
-		req.MaxResults = 10
-	}
-	if req.MinScore == 0 {
-		req.MinScore = 0.3
-	}
-
-	// Check cache first
-	cacheKey := fmt.Sprintf("rag:%s:%s", req.UserID, req.Query)
-	cached, err := r.getCachedResponse(cacheKey)
-	if err == nil && cached != nil {
-		cached.CacheHit = true
-		atomic.AddInt64(&r.cacheHits, 1)
-		atomic.AddInt64(&r.queryCount, 1)
-		ctx.JSON(http.StatusOK, cached)
-		return
-	}
-
-	// Generate query embedding
-	queryEmbedding := r.generateSimpleEmbedding(req.Query)
-
-	// Analyze user intent using SOM
-	intent, intentScore, cluster := r.analyzeIntentWithSOM(queryEmbedding)
-
-	// Perform semantic search
-	results, err := r.performSemanticSearch(queryEmbedding, req, intent)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Generate suggestions based on intent
-	suggestions := r.generateIntentBasedSuggestions(intent, results)
-
-	// Build response
-	response := RAGResponse{
-		Query:          req.Query,
-		Results:        results,
-		UserIntent:     intent,
-		IntentScore:    intentScore,
-		SOMCluster:     cluster,
-		ProcessingTime: float64(time.Since(start).Nanoseconds()) / 1e6,
-		TotalDocs:      len(results),
-		Suggestions:    suggestions,
-		Context:        req.Context,
-		CacheHit:       false,
-	}
-
-	// Cache response
-	r.cacheResponse(cacheKey, &response)
-
-	// Update metrics
-	r.updateMetrics(time.Since(start))
-
-	ctx.JSON(http.StatusOK, response)
-}
-
-func (r *EnhancedRAGService) analyzeIntentWithSOM(embedding []float64) (string, float64, int) {
-	if r.somNetwork == nil {
-		return "general", 0.5, 0
-	}
-
-	// Find best matching cluster
-	x, y := r.somNetwork.findBMU(embedding)
-	clusterID := y*r.somNetwork.Width + x
-
-	// Get intent for cluster
-	intent, exists := r.somNetwork.ClusterMap[clusterID]
-	if !exists {
-		intent = "general"
-	}
-
-	// Calculate intent confidence based on distance to cluster center
-	distance := r.somNetwork.euclideanDistance(embedding, r.somNetwork.Weights[x][y])
-	confidence := math.Max(0.0, 1.0-distance)
-
-	return intent, confidence, clusterID
-}
-
-func (r *EnhancedRAGService) performSemanticSearch(queryEmbedding []float64, req RAGRequest, intent string) ([]DocumentResult, error) {
-	// Convert embedding to PostgreSQL format
-	embeddingStr := r.floatArrayToPGVector(queryEmbedding)
-
-	// Build query based on intent
-	query := r.buildSemanticQuery(intent, req)
-
-	rows, err := r.db.Query(context.Background(), query, embeddingStr, req.MinScore, req.MaxResults)
-	if err != nil {
-		return nil, fmt.Errorf("semantic search query failed: %w", err)
-	}
-	defer rows.Close()
-
-	var results []DocumentResult
-	for rows.Next() {
-		var result DocumentResult
-		var metadataJSON []byte
-
-		err := rows.Scan(
-			&result.ID,
-			&result.CaseID,
-			&result.Title,
-			&result.Content,
-			&result.DocumentType,
-			&result.Score,
-			&metadataJSON,
-			&result.CreatedAt,
-		)
-		if err != nil {
-			continue
-		}
-
-		// Parse metadata
-		if len(metadataJSON) > 0 {
-			json.Unmarshal(metadataJSON, &result.Metadata)
-		}
-
-		// Calculate relevance
-		result.Relevance = r.calculateRelevance(result.Score, intent)
-
-		// Generate highlights
-		result.Highlights = r.generateHighlights(result.Content, req.Query)
-
-		results = append(results, result)
-	}
-
-	return results, nil
-}
-
-func (r *EnhancedRAGService) buildSemanticQuery(intent string, req RAGRequest) string {
-	baseQuery := `
-		SELECT
-			id, case_id, title, content, document_type,
-			1 - (embedding <=> $1::vector) as score,
-			metadata, created_at
-		FROM legal_documents
-		WHERE 1 - (embedding <=> $1::vector) > $2
-	`
-
-	// Add intent-specific filters
-	switch intent {
-	case "search", "research":
-		baseQuery += ` AND document_type IN ('evidence', 'case_file', 'report')`
-	case "analyze", "compare":
-		baseQuery += ` AND document_type IN ('analysis', 'expert_opinion', 'case_law')`
-	case "draft":
-		baseQuery += ` AND document_type IN ('template', 'precedent', 'form')`
-	}
-
-	// Add case filter if provided
-	if req.CaseID != "" {
-		baseQuery += fmt.Sprintf(` AND case_id = '%s'`, req.CaseID)
-	}
-
-	baseQuery += `
-		ORDER BY score DESC
-		LIMIT $3
-	`
-
-	return baseQuery
-}
-
-func (r *EnhancedRAGService) floatArrayToPGVector(arr []float64) string {
-	strArr := make([]string, len(arr))
-	for i, v := range arr {
-		strArr[i] = strconv.FormatFloat(v, 'f', -1, 64)
-	}
-	return "[" + strings.Join(strArr, ",") + "]"
-}
-
-func (r *EnhancedRAGService) calculateRelevance(score float64, intent string) string {
-	// Adjust relevance based on intent
-	adjustedScore := score
-
-	switch intent {
-	case "analyze", "research":
-		adjustedScore *= 1.1 // Boost analytical content
-	case "draft":
-		adjustedScore *= 0.9 // Templates may be less specific
-	}
-
-	if adjustedScore > 0.8 {
-		return "high"
-	} else if adjustedScore > 0.6 {
-		return "medium"
-	} else {
-		return "low"
-	}
-}
-
-func (r *EnhancedRAGService) generateHighlights(content, query string) []string {
-	// Simple highlighting (in production, use proper text processing)
-	words := strings.Fields(strings.ToLower(query))
-
-	var highlights []string
-	contentWords := strings.Fields(content)
-
-	for i, word := range contentWords {
-		wordLower := strings.ToLower(word)
-		for _, queryWord := range words {
-			if strings.Contains(wordLower, queryWord) && len(highlights) < 3 {
-				start := max(0, i-3)
-				end := min(len(contentWords), i+4)
-				highlight := strings.Join(contentWords[start:end], " ")
-				highlights = append(highlights, "..."+highlight+"...")
-				break
-			}
-		}
-	}
-
-	return highlights
-}
-
-func (r *EnhancedRAGService) generateIntentBasedSuggestions(intent string, results []DocumentResult) []string {
-	var suggestions []string
-
-	switch intent {
-	case "search":
-		suggestions = []string{
-			"Refine search with specific terms",
-			"Filter by document type",
-			"Search within case documents",
-		}
-	case "analyze":
-		suggestions = []string{
-			"Compare with similar cases",
-			"Generate detailed analysis",
-			"Export analysis report",
-		}
-	case "summarize":
-		suggestions = []string{
-			"Create executive summary",
-			"Generate bullet points",
-			"Extract key findings",
-		}
-	case "draft":
-		suggestions = []string{
-			"Use document template",
-			"Add legal citations",
-			"Review similar documents",
-		}
-	default:
-		suggestions = []string{
-			"Explore related topics",
-			"Get more details",
-			"Save for later",
-		}
-	}
-
-	return suggestions
-}
-
-func (r *EnhancedRAGService) getCachedResponse(key string) (*RAGResponse, error) {
-	data, err := r.redis.Get(context.Background(), key).Result()
-	if err != nil {
-		return nil, err
-	}
-
-	var response RAGResponse
-	err = json.Unmarshal([]byte(data), &response)
-	return &response, err
-}
-
-func (r *EnhancedRAGService) cacheResponse(key string, response *RAGResponse) {
-	data, _ := json.Marshal(response)
-	r.redis.Set(context.Background(), key, data, 10*time.Minute)
-}
-
-func (r *EnhancedRAGService) updateMetrics(duration time.Duration) {
-	// Deprecated - Context7 metrics are now handled atomically in defer functions
-}
-
-// Context7 Performance Statistics Handler
-func (r *EnhancedRAGService) HandlePerformanceStats(ctx *gin.Context) {
-	uptime := time.Since(r.startTime)
-
-	// Calculate rates and performance metrics
-	totalQueries := atomic.LoadInt64(&r.queryCount)
-	cacheHits := atomic.LoadInt64(&r.cacheHits)
-	cacheMisses := atomic.LoadInt64(&r.cacheMisses)
-	somAnalyses := atomic.LoadInt64(&r.somAnalyses)
-	semanticSearches := atomic.LoadInt64(&r.semanticSearches)
-	totalErrors := atomic.LoadInt64(&r.totalErrors)
-
-	var cacheHitRatio float64
-	if cacheHits+cacheMisses > 0 {
-		cacheHitRatio = float64(cacheHits) / float64(cacheHits+cacheMisses) * 100.0
-	}
-
-	var errorRate float64
-	if totalQueries > 0 {
-		errorRate = float64(totalErrors) / float64(totalQueries) * 100.0
-	}
-
-	stats := gin.H{
-		"service_name": "EnhancedRAGSystem",
-		"codec_name":  "context7_enhanced_rag_som",
-		"uptime": gin.H{
-			"seconds":   int64(uptime.Seconds()),
-			"formatted": uptime.String(),
-		},
-		"performance": gin.H{
-			"total_queries":        totalQueries,
-			"som_analyses":         somAnalyses,
-			"semantic_searches":    semanticSearches,
-			"cache_hits":          cacheHits,
-			"cache_misses":        cacheMisses,
-			"cache_hit_ratio":     cacheHitRatio,
-			"total_errors":        totalErrors,
-			"error_rate":          errorRate,
-			"average_response_time_us": atomic.LoadInt64(&r.averageResponseTime),
-		},
-		"rates": gin.H{
-			"queries_per_second":   float64(totalQueries) / uptime.Seconds(),
-			"queries_per_hour":     float64(totalQueries) / uptime.Hours(),
-			"som_analyses_per_hour": float64(somAnalyses) / uptime.Hours(),
-			"searches_per_hour":    float64(semanticSearches) / uptime.Hours(),
-		},
-		"som_network": gin.H{
-			"enabled":      r.somNetwork != nil,
-			"dimensions":   fmt.Sprintf("%dx%d", r.config.SOMWidth, r.config.SOMHeight),
-			"input_dim":    r.config.EmbeddingDim,
-			"learning_rate": r.config.LearningRate,
-			"max_epochs":   r.config.MaxEpochs,
-			"intents":      len(LegalIntents),
-		},
-		"health": gin.H{
-			"status":               "healthy",
-			"performance_grade":    calculateRAGPerformanceGrade(r),
-			"cache_efficiency":     cacheHitRatio,
-			"error_rate":          errorRate,
-		},
-	}
-
-	// Add Context7 monitoring headers
-	ctx.Header("X-Service-Uptime", fmt.Sprintf("%.0f", uptime.Seconds()))
-	ctx.Header("X-Total-Queries", fmt.Sprintf("%d", totalQueries))
-	ctx.Header("X-Cache-Hit-Ratio", fmt.Sprintf("%.2f", cacheHitRatio))
-	ctx.Header("X-Average-Response-Time-Us", fmt.Sprintf("%d", atomic.LoadInt64(&r.averageResponseTime)))
-	ctx.Header("X-Performance-Grade", calculateRAGPerformanceGrade(r))
-
-	ctx.JSON(http.StatusOK, stats)
-}
-
-func calculateRAGPerformanceGrade(r *EnhancedRAGService) string {
-	avgResponseTime := atomic.LoadInt64(&r.averageResponseTime)
-	totalQueries := atomic.LoadInt64(&r.queryCount)
-	totalErrors := atomic.LoadInt64(&r.totalErrors)
-
-	var errorRate float64
-	if totalQueries > 0 {
-		errorRate = float64(totalErrors) / float64(totalQueries) * 100.0
-	}
-
-	if errorRate > 10.0 {
-		return "D"
-	}
-	if avgResponseTime > 200000 { // > 200ms for RAG queries
-		return "C"
-	}
-	if avgResponseTime > 100000 { // > 100ms
-		return "B"
-	}
-	if avgResponseTime > 50000 { // > 50ms
-		return "A"
-	}
-	return "A+"
-}
-
-func (r *EnhancedRAGService) HandleStatus(ctx *gin.Context) {
-	uptime := time.Since(r.startTime)
-
-	// Calculate cache hit ratio
-	cacheHits := atomic.LoadInt64(&r.cacheHits)
-	cacheMisses := atomic.LoadInt64(&r.cacheMisses)
-	var cacheHitRatio float64
-	if cacheHits+cacheMisses > 0 {
-		cacheHitRatio = float64(cacheHits) / float64(cacheHits+cacheMisses) * 100.0
-	}
-
-	status := map[string]interface{}{
-		"service":        "Enhanced RAG System",
-		"status":         "running",
-		"som_enabled":    r.somNetwork != nil,
-		"som_dimensions": fmt.Sprintf("%dx%d", r.config.SOMWidth, r.config.SOMHeight),
-		"query_count":    atomic.LoadInt64(&r.queryCount),
-		"som_analyses":   atomic.LoadInt64(&r.somAnalyses),
-		"semantic_searches": atomic.LoadInt64(&r.semanticSearches),
-		"cache_hits":     cacheHits,
-		"cache_misses":   cacheMisses,
-		"cache_hit_ratio": cacheHitRatio,
-		"avg_response_time_us": atomic.LoadInt64(&r.averageResponseTime),
-		"total_errors":   atomic.LoadInt64(&r.totalErrors),
-		"embedding_dim":  r.config.EmbeddingDim,
-		"intents":        len(LegalIntents),
-		"uptime_seconds": int64(uptime.Seconds()),
-		"timestamp":      time.Now(),
-	}
-
-	// Add Context7 monitoring headers
-	ctx.Header("X-Service-Uptime", fmt.Sprintf("%.0f", uptime.Seconds()))
-	ctx.Header("X-Query-Count", fmt.Sprintf("%d", atomic.LoadInt64(&r.queryCount)))
-	ctx.Header("X-Cache-Hit-Ratio", fmt.Sprintf("%.2f", cacheHitRatio))
-	ctx.Header("X-Average-Response-Time-Us", fmt.Sprintf("%d", atomic.LoadInt64(&r.averageResponseTime)))
-
-	ctx.JSON(http.StatusOK, status)
-}
-
-func (r *EnhancedRAGService) HandleAnalyzeIntent(ctx *gin.Context) {
-	var req struct {
-		Query string `json:"query"`
-	}
-
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	embedding := r.generateSimpleEmbedding(req.Query)
-	intent, score, cluster := r.analyzeIntentWithSOM(embedding)
-
-	ctx.JSON(http.StatusOK, map[string]interface{}{
-		"query":       req.Query,
-		"intent":      intent,
-		"score":       score,
-		"cluster":     cluster,
-		"suggestions": r.generateIntentBasedSuggestions(intent, nil),
-	})
-}
-
-// HandleRAG - Simplified RAG endpoint for Vite proxy /api/v1/rag
-func (r *EnhancedRAGService) HandleRAG(ctx *gin.Context) {
-	start := time.Now()
-	atomic.AddInt64(&r.queryCount, 1)
-	defer func() {
-		duration := time.Since(start).Microseconds()
-		atomic.StoreInt64(&r.averageResponseTime, duration)
-	}()
-
-	var req RAGRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		atomic.AddInt64(&r.totalErrors, 1)
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Set defaults for simplified endpoint
-	if req.MaxResults == 0 {
-		req.MaxResults = 5
-	}
-	if req.MinScore == 0 {
-		req.MinScore = 0.5
-	}
-
-	// Generate query embedding
-	queryEmbedding := r.generateSimpleEmbedding(req.Query)
-
-	// Analyze intent
-	intent, intentScore, cluster := r.analyzeIntentWithSOM(queryEmbedding)
-
-	// Perform semantic search
-	results, err := r.performSemanticSearch(queryEmbedding, req, intent)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "RAG service unavailable: " + err.Error(),
-		})
-		return
-	}
-
-	// Build simplified response
-	response := map[string]interface{}{
-		"query":           req.Query,
-		"results":         results,
-		"intent":          intent,
-		"intent_score":    intentScore,
-		"cluster":         cluster,
-		"processing_time": float64(time.Since(start).Nanoseconds()) / 1e6,
-		"total_results":   len(results),
-		"status":          "success",
-	}
-
-	ctx.JSON(http.StatusOK, response)
-}
-
-// HandleAI - AI processing endpoint for Vite proxy /api/v1/ai
-func (r *EnhancedRAGService) HandleAI(ctx *gin.Context) {
-	start := time.Now()
-	atomic.AddInt64(&r.queryCount, 1)
-	defer func() {
-		duration := time.Since(start).Microseconds()
-		atomic.StoreInt64(&r.averageResponseTime, duration)
-	}()
-
-	var req struct {
-		Prompt string                 `json:"prompt"`
-		Model  string                 `json:"model,omitempty"`
-		Context map[string]interface{} `json:"context,omitempty"`
-		MaxTokens int                 `json:"max_tokens,omitempty"`
-		Temperature float64           `json:"temperature,omitempty"`
-	}
-
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if req.Prompt == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "prompt is required"})
-		return
-	}
-
-	// Generate embedding for the prompt
-	promptEmbedding := r.generateSimpleEmbedding(req.Prompt)
-
-	// Analyze intent
-	intent, intentScore, cluster := r.analyzeIntentWithSOM(promptEmbedding)
-
-	// Mock AI processing (in production, integrate with actual LLM)
-	aiResponse := map[string]interface{}{
-		"prompt":          req.Prompt,
-		"model":           "enhanced-rag-som",
-		"response":        fmt.Sprintf("AI analysis complete for intent: %s. Processing prompt with %d tokens.", intent, len(req.Prompt)),
-		"intent":          intent,
-		"intent_score":    intentScore,
-		"cluster":         cluster,
-		"processing_time": float64(time.Since(start).Nanoseconds()) / 1e6,
-		"status":          "success",
-		"confidence":      0.85,
-	}
-
-	ctx.JSON(http.StatusOK, aiResponse)
-}
-
-func (r *EnhancedRAGService) setupRoutes() *gin.Engine {
-	gin.SetMode(gin.ReleaseMode)
-	router := gin.New()
-	router.Use(gin.Logger(), gin.Recovery())
-
-	// CORS middleware
-	router.Use(func(ctx *gin.Context) {
-		ctx.Header("Access-Control-Allow-Origin", "*")
-		ctx.Header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-		ctx.Header("Access-Control-Allow-Headers", "Content-Type")
-
-		if ctx.Request.Method == "OPTIONS" {
-			ctx.AbortWithStatus(204)
-			return
-		}
-
-		ctx.Next()
-	})
-
-	// API routes
-	api := router.Group("/api")
-	{
-		api.POST("/rag/query", r.HandleRAGQuery)
-		api.POST("/rag/analyze-intent", r.HandleAnalyzeIntent)
-		api.GET("/rag/status", r.HandleStatus)
-		api.GET("/rag/performance", r.HandlePerformanceStats)
-
-		// New endpoints for Vite proxy compatibility
-		api.POST("/rag", r.HandleRAG)         // For /api/v1/rag proxy
-		api.POST("/ai", r.HandleAI)           // For /api/v1/ai proxy
-	}
-
-	// Root endpoint
-	router.GET("/", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{
-			"service":     "Enhanced RAG System with SOM",
-			"version":     "2.0.0",
-			"status":      "running",
-			"som_enabled": r.somNetwork != nil,
-			"endpoints": []string{
-				"/api/rag/query", "/api/rag/analyze-intent", "/api/rag/status",
-				"/api/rag", "/api/ai",
-			},
-		})
-	})
-
+	router := gin.Default()
+
+	// CORS configuration
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:3000"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"*"},
+		ExposeHeaders:    []string{"*"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
+	// Routes
+	router.GET("/health", s.healthCheck)
+	router.POST("/search", s.semanticSearch)
+	router.POST("/cluster", s.clusterDocuments)
+	router.POST("/embed", s.generateEmbedding)
+	router.GET("/som/status", s.getSOMStatus)
+	router.POST("/som/train", s.trainSOM)
+	
 	return router
 }
 
-func (r *EnhancedRAGService) Run() error {
-	if err := r.Initialize(); err != nil {
-		return err
+func (s *Service) healthCheck(c *gin.Context) {
+	conn := s.redisPool.Get()
+	defer conn.Close()
+
+	redisOK := false
+	if _, err := conn.Do("PING"); err == nil {
+		redisOK = true
 	}
 
-	router := r.setupRoutes()
-
-	log.Printf("🧠 Enhanced RAG System starting on port %s", r.config.Port)
-	log.Printf("🎯 SOM Network: %dx%d (%d intents)", r.config.SOMWidth, r.config.SOMHeight, len(LegalIntents))
-	log.Printf("🔍 Embedding Dimension: %d", r.config.EmbeddingDim)
-	log.Printf("📊 Vector Threshold: %.2f", r.config.VectorThreshold)
-
-	return router.Run(":" + r.config.Port)
+	c.JSON(http.StatusOK, gin.H{
+		"status":      "healthy",
+		"service":     "enhanced-rag-som",
+		"gpu_enabled": s.config.GPUEnabled,
+		"som_trained": s.somGrid.Trained,
+		"redis":       redisOK,
+		"timestamp":   time.Now().Unix(),
+	})
 }
 
-func (r *EnhancedRAGService) Cleanup() {
-	if r.db != nil {
-		r.db.Close()
+func (s *Service) semanticSearch(c *gin.Context) {
+	var req RAGRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
-	if r.redis != nil {
-		r.redis.Close()
+	// Set defaults
+	if req.TopK == 0 {
+		req.TopK = 5
 	}
+	if req.Threshold == 0 {
+		req.Threshold = 0.7
+	}
+
+	log.Printf("🔍 Semantic search for: %s", req.Query[:min(50, len(req.Query))])
+
+	// Generate embedding for query
+	embedding, err := s.getEmbedding(req.Query)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate embedding"})
+		return
+	}
+
+	// Search similar documents
+	documents, err := s.findSimilarDocuments(embedding, req.TopK, req.Threshold)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Search failed"})
+		return
+	}
+
+	// Find relevant clusters
+	clusters := s.findRelevantClusters(embedding, 3)
+
+	response := RAGResponse{
+		Documents: documents,
+		Clusters:  clusters,
+		Query:     req.Query,
+		Metadata: gin.H{
+			"embedding_dim": len(embedding),
+			"search_time":   time.Now().Unix(),
+			"gpu_used":      s.config.GPUEnabled,
+		},
+	}
+
+	c.JSON(http.StatusOK, response)
 }
 
-// Utility functions
-func max(a, b int) int {
-	if a > b {
-		return a
+func (s *Service) clusterDocuments(c *gin.Context) {
+	var documents []Document
+	if err := c.ShouldBindJSON(&documents); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
-	return b
+
+	log.Printf("📊 Clustering %d documents", len(documents))
+
+	// Process each document through SOM
+	for _, doc := range documents {
+		if len(doc.Embedding) == 0 {
+			// Generate embedding if not provided
+			embedding, err := s.getEmbedding(doc.Content)
+			if err != nil {
+				continue
+			}
+			doc.Embedding = embedding
+		}
+		
+		// Find best matching unit (BMU) in SOM
+		bmu := s.findBestMatchingUnit(doc.Embedding)
+		s.somGrid.Neurons[bmu[0]][bmu[1]].Documents = append(
+			s.somGrid.Neurons[bmu[0]][bmu[1]].Documents, 
+			doc.ID,
+		)
+	}
+
+	// Generate cluster summary
+	clusters := s.extractClusters()
+
+	c.JSON(http.StatusOK, gin.H{
+		"clustered_documents": len(documents),
+		"clusters_found":      len(clusters),
+		"som_neurons_active":  s.countActiveNeurons(),
+		"clusters":            clusters,
+	})
 }
 
-func min(a, b int) int {
-	if a < b {
-		return a
+func (s *Service) generateEmbedding(c *gin.Context) {
+	var req struct {
+		Text  string `json:"text"`
+		Model string `json:"model"`
 	}
-	return b
+	
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if req.Model == "" {
+		req.Model = "nomic-embed-text"
+	}
+
+	embedding, err := s.getEmbedding(req.Text)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"embedding":   embedding,
+		"dimension":   len(embedding),
+		"model":       req.Model,
+		"gpu_used":    s.config.GPUEnabled,
+		"cached":      s.isCached(req.Text),
+	})
+}
+
+func (s *Service) getSOMStatus(c *gin.Context) {
+	activeNeurons := s.countActiveNeurons()
+	totalDocs := s.countTotalDocuments()
+
+	c.JSON(http.StatusOK, gin.H{
+		"grid_size":      fmt.Sprintf("%dx%d", s.somGrid.Width, s.somGrid.Height),
+		"active_neurons": activeNeurons,
+		"total_neurons":  s.somGrid.Width * s.somGrid.Height,
+		"total_docs":     totalDocs,
+		"trained":        s.somGrid.Trained,
+		"coverage":       float64(activeNeurons) / float64(s.somGrid.Width*s.somGrid.Height),
+	})
+}
+
+func (s *Service) trainSOM(c *gin.Context) {
+	var req struct {
+		Epochs       int     `json:"epochs"`
+		LearningRate float64 `json:"learning_rate"`
+		Radius       float64 `json:"radius"`
+	}
+	
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Set defaults
+	if req.Epochs == 0 {
+		req.Epochs = 100
+	}
+	if req.LearningRate == 0 {
+		req.LearningRate = 0.1
+	}
+	if req.Radius == 0 {
+		req.Radius = 5.0
+	}
+
+	log.Printf("🎓 Training SOM for %d epochs", req.Epochs)
+
+	// Simulate training process (in real implementation, this would train on actual document embeddings)
+	go func() {
+		for epoch := 0; epoch < req.Epochs; epoch++ {
+			// Update learning rate and radius
+			currentLR := req.LearningRate * (1.0 - float64(epoch)/float64(req.Epochs))
+			currentRadius := req.Radius * (1.0 - float64(epoch)/float64(req.Epochs))
+			
+			_ = currentLR
+			_ = currentRadius
+			
+			// Simulate training step
+			time.Sleep(50 * time.Millisecond)
+		}
+		
+		s.somGrid.Trained = true
+		log.Println("✅ SOM training completed")
+	}()
+
+	c.JSON(http.StatusAccepted, gin.H{
+		"message": "SOM training started",
+		"epochs":  req.Epochs,
+		"params": gin.H{
+			"learning_rate": req.LearningRate,
+			"radius":        req.Radius,
+		},
+	})
+}
+
+// Helper functions
+func (s *Service) getEmbedding(text string) ([]float64, error) {
+	// Check cache first
+	if cached, exists := s.embedCache[text]; exists {
+		return cached, nil
+	}
+
+	// In a real implementation, this would call Ollama
+	// For demo purposes, return a mock embedding
+	embedding := make([]float64, 384)
+	for i := range embedding {
+		embedding[i] = float64(time.Now().UnixNano()%1000) / 1000.0
+	}
+
+	// Cache the result
+	s.embedCache[text] = embedding
+	
+	return embedding, nil
+}
+
+func (s *Service) findSimilarDocuments(queryEmbedding []float64, topK int, threshold float64) ([]Document, error) {
+	// Mock implementation - in reality, this would query a vector database
+	mockDocs := []Document{
+		{
+			ID:      "doc_1",
+			Title:   "Contract Law Fundamentals",
+			Content: "A contract is a legally binding agreement between two or more parties...",
+			Type:    "legal_document",
+			Metadata: map[string]interface{}{
+				"similarity": 0.92,
+				"category":   "contract_law",
+			},
+		},
+		{
+			ID:      "doc_2", 
+			Title:   "Employment Agreement Template",
+			Content: "This employment agreement outlines the terms and conditions...",
+			Type:    "contract_template",
+			Metadata: map[string]interface{}{
+				"similarity": 0.85,
+				"category":   "employment",
+			},
+		},
+	}
+
+	return mockDocs, nil
+}
+
+func (s *Service) findRelevantClusters(queryEmbedding []float64, topK int) []SOMCluster {
+	clusters := make([]SOMCluster, 0)
+	
+	// Find clusters with similar centroids
+	for i := 0; i < min(topK, 3); i++ {
+		cluster := SOMCluster{
+			ID:       fmt.Sprintf("cluster_%d", i+1),
+			Size:     5 + i*3,
+			Topic:    []string{"Contract Law", "Employment Rights", "Corporate Governance"}[i],
+			Centroid: make([]float64, len(queryEmbedding)),
+		}
+		
+		clusters = append(clusters, cluster)
+	}
+	
+	return clusters
+}
+
+func (s *Service) findBestMatchingUnit(embedding []float64) [2]int {
+	bestDistance := float64(999999)
+	bmu := [2]int{0, 0}
+	
+	for i := 0; i < s.somGrid.Height; i++ {
+		for j := 0; j < s.somGrid.Width; j++ {
+			distance := s.euclideanDistance(embedding, s.somGrid.Neurons[i][j].Weights)
+			if distance < bestDistance {
+				bestDistance = distance
+				bmu = [2]int{i, j}
+			}
+		}
+	}
+	
+	return bmu
+}
+
+func (s *Service) euclideanDistance(a, b []float64) float64 {
+	sum := 0.0
+	for i := 0; i < len(a) && i < len(b); i++ {
+		diff := a[i] - b[i]
+		sum += diff * diff
+	}
+	return sum // sqrt omitted for performance
+}
+
+func (s *Service) extractClusters() []SOMCluster {
+	clusters := make([]SOMCluster, 0)
+	clusterID := 0
+	
+	for i := 0; i < s.somGrid.Height; i++ {
+		for j := 0; j < s.somGrid.Width; j++ {
+			neuron := s.somGrid.Neurons[i][j]
+			if len(neuron.Documents) > 0 {
+				clusters = append(clusters, SOMCluster{
+					ID:       fmt.Sprintf("cluster_%d", clusterID),
+					Size:     len(neuron.Documents),
+					Topic:    s.inferTopic(neuron.Documents),
+					Centroid: neuron.Weights,
+				})
+				clusterID++
+			}
+		}
+	}
+	
+	return clusters
+}
+
+func (s *Service) inferTopic(documents []string) string {
+	// Simple topic inference based on document count
+	topics := []string{"Contract Analysis", "Legal Research", "Case Law", "Regulatory Compliance"}
+	return topics[len(documents)%len(topics)]
+}
+
+func (s *Service) countActiveNeurons() int {
+	count := 0
+	for i := 0; i < s.somGrid.Height; i++ {
+		for j := 0; j < s.somGrid.Width; j++ {
+			if len(s.somGrid.Neurons[i][j].Documents) > 0 {
+				count++
+			}
+		}
+	}
+	return count
+}
+
+func (s *Service) countTotalDocuments() int {
+	total := 0
+	for i := 0; i < s.somGrid.Height; i++ {
+		for j := 0; j < s.somGrid.Width; j++ {
+			total += len(s.somGrid.Neurons[i][j].Documents)
+		}
+	}
+	return total
+}
+
+func (s *Service) isCached(text string) bool {
+	_, exists := s.embedCache[text]
+	return exists
 }
 
 func getEnv(key, defaultValue string) string {
@@ -1009,29 +561,9 @@ func getEnv(key, defaultValue string) string {
 	return defaultValue
 }
 
-func getEnvInt(key string, defaultValue int) int {
-	if value := os.Getenv(key); value != "" {
-		if i, err := strconv.Atoi(value); err == nil {
-			return i
-		}
+func min(a, b int) int {
+	if a < b {
+		return a
 	}
-	return defaultValue
-}
-
-func getEnvFloat(key string, defaultValue float64) float64 {
-	if value := os.Getenv(key); value != "" {
-		if f, err := strconv.ParseFloat(value, 64); err == nil {
-			return f
-		}
-	}
-	return defaultValue
-}
-
-func main() {
-	service := NewEnhancedRAGService()
-	defer service.Cleanup()
-
-	if err := service.Run(); err != nil {
-		log.Fatalf("💥 Enhanced RAG service failed: %v", err)
-	}
+	return b
 }

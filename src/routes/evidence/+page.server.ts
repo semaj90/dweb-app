@@ -1,5 +1,5 @@
 
-import { evidence } from "$lib/server/db/schema-postgres";
+import { evidence } from "$lib/server/db/index";
 import { error, fail } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
 import { superValidate } from "sveltekit-superforms";

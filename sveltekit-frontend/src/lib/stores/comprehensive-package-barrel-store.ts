@@ -327,7 +327,7 @@ export const databaseStore = {
         port: 5432,
         database: 'legal_ai_db',
         username: 'legal_admin',
-        password: 'LegalAI2024!',
+        password: '123456',
         max: 20,
         idle_timeout: 60000,
         ssl: false,

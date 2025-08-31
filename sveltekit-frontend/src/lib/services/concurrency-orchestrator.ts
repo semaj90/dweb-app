@@ -582,5 +582,4 @@ export async function processLegalDocument(
   return concurrencyOrchestrator.submitAnalysisTask(document, analysisType);
 }
 
-// Export types for use in components
-export type { ConcurrencyTask, WorkerResult, ConcurrencyContext };
+// Types already exported above as interfaces

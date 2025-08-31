@@ -1,5 +1,5 @@
 
-import { drizzle } from 'drizzle-orm/node-postgres';
+import { drizzle } from 'drizzle-orm/postgres-js';
 import { eq, sql as drizzleSql } from 'drizzle-orm';
 import postgres from 'postgres';
 // Use fallbacks if env is not available

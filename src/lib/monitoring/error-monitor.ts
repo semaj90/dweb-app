@@ -734,9 +734,6 @@ class ProductionErrorMonitor {
 // Export singleton
 export const errorMonitor = new ProductionErrorMonitor();
 
-// Export types
-export type { ErrorMetrics, SystemHealth, AlertConfig };
-
 // SvelteKit error handler hook
 export function handleError({ error, event }: { error: Error; event: any }) {
   errorMonitor.logApiError(

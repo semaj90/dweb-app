@@ -233,7 +233,7 @@ export class RedisService {
     if (sessions.length > 0) {
       // Delete all session data
       const sessionKeys = sessions.map(sessionId => `${CACHE_KEYS.SESSION}${sessionId}`);
-      await this.redis.del(...(sessionKeys as [string, ...string[]]));
+      await this.redis.del.apply(this.redis, sessionKeys);
       
       // Clear user's session set
       await this.redis.del(`${CACHE_KEYS.USER}${userId}:sessions`);
@@ -361,6 +361,137 @@ export class RedisService {
       console.error('Rate limit check error:', error);
       // Allow request if Redis is down
       return { allowed: true, remaining: limit };
+    }
+  }
+
+  // ==================== REDIS STREAMS OPERATIONS ====================
+
+  async xAdd(stream: string, id: string, fields: Record<string, any>): Promise<string | null> {
+    try {
+      // Check if the client has stream support
+      if (typeof this.redis.xadd !== 'function') {
+        console.warn('⚠️ Redis Streams not supported in current environment, using fallback');
+        // Simulate successful operation for development
+        const mockId = `${Date.now()}-0`;
+        console.log(`🏷️ Redis stream ${stream}: Simulated entry ${mockId}`);
+        return mockId;
+      }
+
+      // Convert all field values to strings as required by Redis
+      const stringFields: Record<string, string> = {};
+      for (const [key, value] of Object.entries(fields)) {
+        stringFields[key] = typeof value === 'string' ? value : JSON.stringify(value);
+      }
+
+      const result = await this.redis.xadd(stream, id, ...Object.entries(stringFields).flat());
+      console.log(`🏷️ Redis stream ${stream}: Added entry ${result}`);
+      return result as string;
+    } catch (error: any) {
+      console.error(`❌ Redis stream ${stream} add error:`, error);
+      return null;
+    }
+  }
+
+  async xRead(streams: Record<string, string>, options: { COUNT?: number; BLOCK?: number } = {}): Promise<any[]> {
+    try {
+      const streamArgs = Object.entries(streams).reduce((acc, [stream, id]) => {
+        acc.push(stream, id);
+        return acc;
+      }, [] as string[]);
+
+      const args: (string | number)[] = [];
+      if (options.COUNT) {
+        args.push('COUNT', options.COUNT);
+      }
+      if (options.BLOCK !== undefined) {
+        args.push('BLOCK', options.BLOCK);
+      }
+      args.push('STREAMS', ...streamArgs);
+
+      const result = await this.redis.xread(...args as [string, ...string[]]);
+      return result || [];
+    } catch (error: any) {
+      console.error('Redis stream read error:', error);
+      return [];
+    }
+  }
+
+  async xReadGroup(group: string, consumer: string, streams: Record<string, string>, options: { COUNT?: number; BLOCK?: number } = {}): Promise<any[]> {
+    try {
+      const streamArgs = Object.entries(streams).reduce((acc, [stream, id]) => {
+        acc.push(stream, id);
+        return acc;
+      }, [] as string[]);
+
+      const args: (string | number)[] = ['GROUP', group, consumer];
+      if (options.COUNT) {
+        args.push('COUNT', options.COUNT);
+      }
+      if (options.BLOCK !== undefined) {
+        args.push('BLOCK', options.BLOCK);
+      }
+      args.push('STREAMS', ...streamArgs);
+
+      const result = await this.redis.xreadgroup(...args as [string, ...string[]]);
+      return result || [];
+    } catch (error: any) {
+      console.error('Redis stream group read error:', error);
+      return [];
+    }
+  }
+
+  async xGroupCreate(stream: string, group: string, id: string = '$', mkStream: boolean = true): Promise<boolean> {
+    try {
+      const args = [stream, group, id];
+      if (mkStream) {
+        args.push('MKSTREAM');
+      }
+      await this.redis.xgroup('CREATE', ...args);
+      console.log(`🏷️ Redis stream group created: ${stream}:${group}`);
+      return true;
+    } catch (error: any) {
+      if (error.message && error.message.includes('BUSYGROUP')) {
+        console.log(`🏷️ Redis stream group already exists: ${stream}:${group}`);
+        return true; // Group already exists
+      }
+      console.error('Redis stream group create error:', error);
+      return false;
+    }
+  }
+
+  async xInfoStream(stream: string): Promise<any> {
+    try {
+      // Check if the client has stream support
+      if (typeof this.redis.xinfo !== 'function') {
+        console.warn('⚠️ Redis Streams info not supported, using fallback');
+        return null;
+      }
+
+      const result = await this.redis.xinfo('STREAM', stream);
+      return result;
+    } catch (error: any) {
+      console.error(`Redis stream info error for ${stream}:`, error);
+      return null;
+    }
+  }
+
+  async xRevRange(stream: string, end: string, start: string, options: { COUNT?: number } = {}): Promise<any[]> {
+    try {
+      // Check if the client has stream support
+      if (typeof this.redis.xrevrange !== 'function') {
+        console.warn('⚠️ Redis Streams xrevrange not supported, using fallback');
+        return [];
+      }
+
+      const args = [stream, end, start];
+      if (options.COUNT) {
+        args.push('COUNT', options.COUNT.toString());
+      }
+      const result = await this.redis.xrevrange(...args);
+      return result || [];
+    } catch (error: any) {
+      console.error(`Redis stream reverse range error for ${stream}:`, error);
+      return [];
     }
   }
 

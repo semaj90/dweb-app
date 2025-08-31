@@ -456,14 +456,14 @@ export class CopilotIndexOptimizer {
     // Train with all embeddings
     for (const entry of entries) {
       await somRAG.trainIncremental(Array.from(entry.embedding), {
-        source: entry.source,
+        source: entry.metadata.source,
         type: 'document',
         jurisdiction: 'unknown',
         practiceArea: ['general'],
         confidentialityLevel: 1,
         lastModified: new Date(),
-        fileSize: entry.fileSize,
-        language: 'en',
+        fileSize: entry.metadata.fileSize,
+        language: entry.language,
         tags: [],
         id: entry.id,
         content: entry.content,

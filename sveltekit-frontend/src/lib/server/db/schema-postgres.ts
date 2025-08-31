@@ -89,7 +89,6 @@ export const cases = pgTable('cases', {
   priority: varchar('priority', { length: 20 }).default('medium').notNull(),
   assigned_attorney: uuid('assigned_attorney').references(() => users.id),
   createdBy: uuid('created_by').references(() => users.id),
-  userId: uuid('created_by').references(() => users.id), // alias for createdBy
   assignedTo: uuid('assigned_to').references(() => users.id),
   metadata: jsonb('metadata').default({}),
   created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
@@ -99,13 +98,11 @@ export const cases = pgTable('cases', {
 export const evidence = pgTable('evidence', {
   id: uuid('id').primaryKey().defaultRandom(),
   case_id: uuid('case_id').references(() => cases.id, { onDelete: 'cascade' }),
-  caseId: uuid('case_id').references(() => cases.id, { onDelete: 'cascade' }), // alias for compatibility
   title: varchar('title', { length: 255 }).notNull(),
   content: text('content'), // evidence content
   description: text('description'),
   evidence_type: varchar('evidence_type', { length: 100 }).notNull(),
-  evidenceType: varchar('evidence_type', { length: 100 }), // alias for evidence_type
-  type: varchar('type', { length: 100 }), // alias for evidence_type
+  type: varchar('type', { length: 100 }), // separate field for general type classification
   createdBy: uuid('created_by').references(() => users.id),
   metadata: jsonb('metadata').default({}),
   created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
@@ -362,10 +359,66 @@ export const caseTimeline = pgTable('case_timeline', {
   metadata: jsonb('metadata').default({})
 });
 
+// === FEEDBACK AND ANALYTICS TABLES ===
+export const userRatings = pgTable('user_ratings', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  user_id: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
+  content_id: uuid('content_id'),
+  content_type: varchar('content_type', { length: 100 }),
+  rating: varchar('rating', { length: 20 }),
+  feedback: text('feedback'),
+  timestamp: timestamp('timestamp', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
+});
+
+export const interactionHistory = pgTable('interaction_history', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  user_id: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
+  action: varchar('action', { length: 255 }),
+  context: jsonb('context').default({}),
+  timestamp: timestamp('timestamp', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
+});
+
+export const trainingData = pgTable('training_data', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  source_type: varchar('source_type', { length: 100 }),
+  data: jsonb('data'),
+  labels: jsonb('labels'),
+  created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
+});
+
+export const userBehaviorPatterns = pgTable('user_behavior_patterns', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  user_id: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
+  pattern_type: varchar('pattern_type', { length: 100 }),
+  pattern_data: jsonb('pattern_data'),
+  confidence: varchar('confidence', { length: 20 }),
+  created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
+});
+
+export const feedbackMetrics = pgTable('feedback_metrics', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  metric_name: varchar('metric_name', { length: 255 }),
+  metric_value: varchar('metric_value', { length: 255 }),
+  context: jsonb('context').default({}),
+  timestamp: timestamp('timestamp', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
+});
+
 // Type exports for new tables
 export type CaseDocument = typeof caseDocuments.$inferSelect;
 export type CaseActivity = typeof caseActivities.$inferSelect;
 export type CaseTimeline = typeof caseTimeline.$inferSelect;
+export type UserRating = typeof userRatings.$inferSelect;
+export type InteractionHistory = typeof interactionHistory.$inferSelect;
+export type TrainingData = typeof trainingData.$inferSelect;
+export type UserBehaviorPattern = typeof userBehaviorPatterns.$inferSelect;
+export type FeedbackMetric = typeof feedbackMetrics.$inferSelect;
+
+// New type exports for Drizzle inserts
+export type NewUserRating = typeof userRatings.$inferInsert;
+export type NewInteractionHistory = typeof interactionHistory.$inferInsert;
+export type NewTrainingData = typeof trainingData.$inferInsert;
+export type NewUserBehaviorPattern = typeof userBehaviorPatterns.$inferInsert;
+export type NewFeedbackMetric = typeof feedbackMetrics.$inferInsert;
 
 // Compatibility named exports / aliases for varied import patterns used in the codebase
 export const legalDocuments = legal_documents;

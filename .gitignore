@@ -122,6 +122,9 @@ go-microservice/bin/
 qdrant-extracted/
 storage/
 
+# Ignore granular payload_index files under storage collections (large runtime data)
+storage/collections/**/payload_index/*
+
 # Auto-ignore large binaries added by assistant
 *.exe
 
@@ -186,3 +189,6 @@ go-microservice\rag-kratos.exe
 
 # keep locally: go-microservice\enhanced-rag.exe
 go-microservice\enhanced-rag.exe
+
+# Local server environment
+server.env

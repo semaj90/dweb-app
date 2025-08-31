@@ -272,7 +272,7 @@ export class AIServiceWorkerManager {
 
 	private isWorkerSuitableForTask(workerStatus: WorkerStatus, task: AITask): boolean {
 		const preferredProviders = this.getPreferredProvidersForType(workerStatus.type);
-		return preferredProviders.includes(task.provider.id) || workerStatus.type === 'general';
+		return preferredProviders.includes(task.providerId || '') || workerStatus.type === 'general';
 	}
 
 	private assignTaskToWorker(workerId: string, task: AITask): void {

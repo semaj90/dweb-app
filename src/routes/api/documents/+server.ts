@@ -6,11 +6,54 @@
 import { json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 import { db } from "$lib/server/db";
-import { legal_documents, cases, evidence } from "$lib/server/db/schema-postgres";
+import { legalDocuments as legal_documents } from '$lib/database/schema/legal-documents';
+import { cases, evidence } from "$lib/server/db/index";
 import { sql, desc, asc, and, or, eq, ilike, inArray, count, isNotNull } from "drizzle-orm";
-import { cognitiveCacheManager } from '$lib/services/cognitive-cache-integration';
+import { cognitiveCache as cognitiveCacheManager } from '$lib/services/cognitive-cache-integration';
 import { getDatabaseHealth } from '$lib/database';
 import { z } from 'zod';
+
+// Local vector search service shim (attempts cognitive cache first, falls back to DB)
+const vectorSearchService = {
+  getVectorStats: async () => {
+    try {
+      // Prefer the cognitive cache manager if it exposes stats
+      if (cognitiveCacheManager && typeof (cognitiveCacheManager as any).getIndexStats === 'function') {
+        const stats = await (cognitiveCacheManager as any).getIndexStats();
+        return {
+          totalVectors: stats.totalVectors ?? 0,
+          averageDimension: stats.averageDimension ?? 384,
+          indexStatus: stats.indexStatus ?? 'unknown'
+        };
+      }
+    } catch (err) {
+      console.warn('cognitiveCacheManager.getIndexStats failed:', err);
+    }
+
+    // Fallback: derive simple stats from the database
+    try {
+      const [totalResult] = await db
+        .select({ total: count() })
+        .from(legal_documents)
+        .where(sql`${legal_documents.content_embedding} IS NOT NULL`);
+
+      const totalVectors = Number((totalResult as any).total ?? 0);
+
+      return {
+        totalVectors,
+        averageDimension: 384,
+        indexStatus: totalVectors > 0 ? 'available' : 'empty'
+      };
+    } catch (dbErr) {
+      console.error('vectorSearchService fallback DB stats failed:', dbErr);
+      return {
+        totalVectors: 0,
+        averageDimension: 384,
+        indexStatus: 'unknown'
+      };
+    }
+  }
+};
 
 // Query parameters schema for GET requests
 const listParamsSchema = z.object({
@@ -39,7 +82,7 @@ const createDocumentSchema = z.object({
   isConfidential: z.boolean().default(false),
   generateEmbeddings: z.boolean().default(true),
   generateAnalysis: z.boolean().default(true),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
 /**
@@ -49,7 +92,7 @@ export const GET: RequestHandler = async ({ url }): Promise<any> => {
   try {
     // Parse query parameters
     const params = Object.fromEntries(url.searchParams.entries());
-    
+
     // Convert string parameters to appropriate types
     const queryParams = {
       ...params,
@@ -119,87 +162,88 @@ export const GET: RequestHandler = async ({ url }): Promise<any> => {
 
     switch (listParams.sortBy) {
       case 'created':
-        orderBy = orderDirection(legalDocuments.createdAt);
+        orderBy = orderDirection(legal_documents.created_at);
         break;
       case 'updated':
-        orderBy = orderDirection(legalDocuments.updatedAt);
+        orderBy = orderDirection(legal_documents.updated_at);
         break;
       case 'title':
-        orderBy = orderDirection(legalDocuments.title);
+        orderBy = orderDirection(legal_documents.title);
         break;
       case 'type':
-        orderBy = orderDirection(legalDocuments.documentType);
+        orderBy = orderDirection(legal_documents.document_type);
         break;
       case 'size':
-        orderBy = orderDirection(legalDocuments.fileSize);
+        orderBy = orderDirection(legal_documents.file_size);
         break;
       default:
-        orderBy = desc(legalDocuments.updatedAt);
+        orderBy = desc(legal_documents.updated_at);
     }
 
     // Get total count
     const [countResult] = await db
       .select({ count: count() })
-      .from(legalDocuments)
+      .from(legal_documents)
       .where(filterConditions.length > 0 ? and(...filterConditions) : undefined);
 
     // Get documents
     const documents = await db
       .select({
-        id: legalDocuments.id,
-        title: legalDocuments.title,
-        content: listParams.includeContent ? legalDocuments.content : sql`''`.as('content'),
-        documentType: legalDocuments.documentType,
-        jurisdiction: legalDocuments.jurisdiction,
-        practiceArea: legalDocuments.practiceArea,
-        fileName: legalDocuments.fileName,
-        fileSize: legalDocuments.fileSize,
-        mimeType: legalDocuments.mimeType,
-        fileHash: legalDocuments.fileHash,
-        processingStatus: legalDocuments.processingStatus,
-        isConfidential: legalDocuments.isConfidential,
-        retentionDate: legalDocuments.retentionDate,
-        createdAt: legalDocuments.createdAt,
-        updatedAt: legalDocuments.updatedAt,
-        createdBy: legalDocuments.createdBy,
-        lastModifiedBy: legalDocuments.lastModifiedBy,
-        analysisResults: listParams.includeAnalysis ? legalDocuments.analysisResults : sql`NULL`.as('analysisResults'),
-        // Check if embeddings exist
-        hasContentEmbedding: sql`CASE WHEN ${legalDocuments.contentEmbedding} IS NOT NULL THEN true ELSE false END`.as('hasContentEmbedding'),
-        hasTitleEmbedding: sql`CASE WHEN ${legalDocuments.titleEmbedding} IS NOT NULL THEN true ELSE false END`.as('hasTitleEmbedding'),
+        id: legal_documents.id,
+        title: legal_documents.title,
+        content: listParams.includeContent ? legal_documents.content : sql`''`.as('content'),
+        documentType: legal_documents.document_type,
+        jurisdiction: legal_documents.jurisdiction,
+        practiceArea: legal_documents.practice_area,
+        fileName: legal_documents.file_name,
+        fileSize: legal_documents.file_size,
+        mimeType: legal_documents.mime_type,
+        fileHash: legal_documents.file_hash,
+        processingStatus: legal_documents.processing_status,
+        isConfidential: legal_documents.is_confidential,
+        retentionDate: legal_documents.retention_date,
+        createdAt: legal_documents.created_at,
+        updatedAt: legal_documents.updated_at,
+        createdBy: legal_documents.created_by,
+        lastModifiedBy: legal_documents.last_modified_by,
+        analysisResults: listParams.includeAnalysis ? legal_documents.analysis_results : sql`NULL`.as('analysisResults'),
+        // Check if embeddings exist (aliased for later mapping)
+        hasContentEmbedding: sql`CASE WHEN ${legal_documents.content_embedding} IS NOT NULL THEN true ELSE false END`.as('hasContentEmbedding'),
+        hasTitleEmbedding: sql`CASE WHEN ${legal_documents.title_embedding} IS NOT NULL THEN true ELSE false END`.as('hasTitleEmbedding'),
       })
-      .from(legalDocuments)
+      .from(legal_documents)
       .where(filterConditions.length > 0 ? and(...filterConditions) : undefined)
       .orderBy(orderBy)
       .limit(listParams.limit)
       .offset(listParams.offset);
 
-    // Get case associations for each document
+    // Get case associations for each document (using evidence as association table)
     const documentIds = documents.map(doc => doc.id);
     const caseAssociations = documentIds.length > 0 ? await db
       .select({
-        documentId: caseDocuments.documentId,
-        caseId: caseDocuments.caseId,
-        caseTitle: legalCases.title,
-        caseNumber: legalCases.caseNumber,
-        relationship: caseDocuments.relationship,
-        importance: caseDocuments.importance,
+        documentId: evidence.document_id,
+        caseId: evidence.case_id,
+        caseTitle: cases.title,
+        caseNumber: cases.case_number,
+        relationship: evidence.relationship,
+        importance: evidence.importance,
       })
-      .from(caseDocuments)
-      .innerJoin(legalCases, eq(caseDocuments.caseId, legalCases.id))
-      .where(inArray(caseDocuments.documentId, documentIds)) : [];
+      .from(evidence)
+      .innerJoin(cases, eq(evidence.case_id, cases.id))
+      .where(inArray(evidence.document_id, documentIds)) : [];
 
     // Group case associations by document ID
     const casesByDocument = caseAssociations.reduce((acc, assoc) => {
-      if (!acc[assoc.documentId]) {
-        acc[assoc.documentId] = [];
+      const docId = (assoc as any).documentId;
+      if (!acc[docId]) {
+        acc[docId] = [];
       }
-      acc[assoc.documentId].push({
-        caseId: assoc.caseId,
-        caseTitle: assoc.caseTitle,
-        caseNumber: assoc.caseNumber,
-        relationship: assoc.relationship,
-        importance: assoc.importance,
+      acc[docId].push({
+        caseId: (assoc as any).caseId,
+        caseTitle: (assoc as any).caseTitle,
+        caseNumber: (assoc as any).caseNumber,
+        relationship: (assoc as any).relationship,
+        importance: (assoc as any).importance,
       });
       return acc;
     }, {} as Record<string, unknown[]>);
@@ -208,26 +252,26 @@ export const GET: RequestHandler = async ({ url }): Promise<any> => {
     const formattedDocuments = documents.map(doc => ({
       id: doc.id,
       title: doc.title,
-      content: doc.content || null,
-      documentType: doc.documentType,
-      jurisdiction: doc.jurisdiction,
-      practiceArea: doc.practiceArea,
-      fileName: doc.fileName,
-      fileSize: doc.fileSize,
-      mimeType: doc.mimeType,
-      fileHash: doc.fileHash,
-      processingStatus: doc.processingStatus,
-      isConfidential: doc.isConfidential,
-      retentionDate: doc.retentionDate,
-      createdAt: doc.createdAt,
-      updatedAt: doc.updatedAt,
-      createdBy: doc.createdBy,
-      lastModifiedBy: doc.lastModifiedBy,
-      analysisResults: doc.analysisResults,
-      hasEmbeddings: doc.hasContentEmbedding && doc.hasTitleEmbedding,
+      content: (doc as any).content || null,
+      documentType: (doc as any).documentType,
+      jurisdiction: (doc as any).jurisdiction,
+      practiceArea: (doc as any).practiceArea,
+      fileName: (doc as any).fileName,
+      fileSize: (doc as any).fileSize,
+      mimeType: (doc as any).mimeType,
+      fileHash: (doc as any).fileHash,
+      processingStatus: (doc as any).processingStatus,
+      isConfidential: (doc as any).isConfidential,
+      retentionDate: (doc as any).retentionDate,
+      createdAt: (doc as any).createdAt,
+      updatedAt: (doc as any).updatedAt,
+      createdBy: (doc as any).createdBy,
+      lastModifiedBy: (doc as any).lastModifiedBy,
+      analysisResults: (doc as any).analysisResults,
+      hasEmbeddings: (doc as any).hasContentEmbedding && (doc as any).hasTitleEmbedding,
       embeddingStatus: {
-        hasContentEmbedding: doc.hasContentEmbedding,
-        hasTitleEmbedding: doc.hasTitleEmbedding,
+        hasContentEmbedding: (doc as any).hasContentEmbedding,
+        hasTitleEmbedding: (doc as any).hasTitleEmbedding,
       },
       associatedCases: casesByDocument[doc.id] || [],
       caseCount: (casesByDocument[doc.id] || []).length,
@@ -237,12 +281,12 @@ export const GET: RequestHandler = async ({ url }): Promise<any> => {
       success: true,
       documents: formattedDocuments,
       pagination: {
-        total: countResult.count,
+        total: (countResult as any).count,
         limit: listParams.limit,
         offset: listParams.offset,
-        hasMore: listParams.offset + listParams.limit < countResult.count,
+        hasMore: listParams.offset + listParams.limit < (countResult as any).count,
         page: Math.floor(listParams.offset / listParams.limit) + 1,
-        totalPages: Math.ceil(countResult.count / listParams.limit),
+        totalPages: Math.ceil((countResult as any).count / listParams.limit),
       },
       filters: {
         documentType: listParams.documentType,
@@ -288,23 +332,23 @@ export const POST: RequestHandler = async ({ request }): Promise<any> => {
 
     // Create document record
     const [insertedDoc] = await db
-      .insert(legalDocuments)
+      .insert(legal_documents)
       .values({
         title: documentData.title,
         content: documentData.content,
-        documentType: documentData.documentType,
+        document_type: documentData.documentType,
         jurisdiction: documentData.jurisdiction,
-        practiceArea: documentData.practiceArea,
-        isConfidential: documentData.isConfidential,
-        processingStatus: 'processing',
-        createdBy: null, // TODO: Add user authentication
+        practice_area: documentData.practiceArea,
+        is_confidential: documentData.isConfidential,
+        processing_status: 'processing',
+        created_by: null, // TODO: Add user authentication
       })
       .returning();
 
     // Process embeddings and analysis in background if requested
     if (documentData.generateEmbeddings || documentData.generateAnalysis) {
       processDocumentAsync(
-        insertedDoc.id,
+        (insertedDoc as any).id,
         documentData.content,
         documentData.title,
         documentData.generateEmbeddings,
@@ -315,14 +359,14 @@ export const POST: RequestHandler = async ({ request }): Promise<any> => {
     return json({
       success: true,
       document: {
-        id: insertedDoc.id,
-        title: insertedDoc.title,
-        documentType: insertedDoc.documentType,
-        jurisdiction: insertedDoc.jurisdiction,
-        practiceArea: insertedDoc.practiceArea,
-        processingStatus: insertedDoc.processingStatus,
-        isConfidential: insertedDoc.isConfidential,
-        createdAt: insertedDoc.createdAt,
+        id: (insertedDoc as any).id,
+        title: (insertedDoc as any).title,
+        documentType: (insertedDoc as any).document_type,
+        jurisdiction: (insertedDoc as any).jurisdiction,
+        practiceArea: (insertedDoc as any).practice_area,
+        processingStatus: (insertedDoc as any).processing_status,
+        isConfidential: (insertedDoc as any).is_confidential,
+        createdAt: (insertedDoc as any).created_at,
       },
       message: "Document created successfully",
       processingInBackground: documentData.generateEmbeddings || documentData.generateAnalysis,
@@ -401,32 +445,32 @@ async function getDocumentAnalytics(): Promise<any> {
     db
       .select({
         total: count(),
-        confidential: count(sql`CASE WHEN ${legalDocuments.isConfidential} = true THEN 1 END`),
-        withEmbeddings: count(sql`CASE WHEN ${legalDocuments.contentEmbedding} IS NOT NULL THEN 1 END`),
-        withAnalysis: count(sql`CASE WHEN ${legalDocuments.analysisResults} IS NOT NULL THEN 1 END`),
-        avgFileSize: sql`AVG(${legalDocuments.fileSize})`.as('avgFileSize'),
-        totalSize: sql`SUM(${legalDocuments.fileSize})`.as('totalSize'),
+        confidential: count(sql`CASE WHEN ${legal_documents.is_confidential} = true THEN 1 END`),
+        withEmbeddings: count(sql`CASE WHEN ${legal_documents.content_embedding} IS NOT NULL THEN 1 END`),
+        withAnalysis: count(sql`CASE WHEN ${legal_documents.analysis_results} IS NOT NULL THEN 1 END`),
+        avgFileSize: sql`AVG(${legal_documents.file_size})`.as('avgFileSize'),
+        totalSize: sql`SUM(${legal_documents.file_size})`.as('totalSize'),
       })
-      .from(legalDocuments),
+      .from(legal_documents),
 
     // Document type distribution
     db
       .select({
-        documentType: legalDocuments.documentType,
+        documentType: legal_documents.document_type,
         count: count()
       })
-      .from(legalDocuments)
-      .groupBy(legalDocuments.documentType)
+      .from(legal_documents)
+      .groupBy(legal_documents.document_type)
       .orderBy(desc(count())),
 
     // Processing status distribution
     db
       .select({
-        status: legalDocuments.processingStatus,
+        status: legal_documents.processing_status,
         count: count()
       })
-      .from(legalDocuments)
-      .groupBy(legalDocuments.processingStatus)
+      .from(legal_documents)
+      .groupBy(legal_documents.processing_status)
       .orderBy(desc(count())),
 
     // Vector search statistics
@@ -435,17 +479,17 @@ async function getDocumentAnalytics(): Promise<any> {
     // Recent activity (last 30 days)
     db
       .select({
-        date: sql`DATE(${legalDocuments.createdAt})`.as('date'),
+        date: sql`DATE(${legal_documents.created_at})`.as('date'),
         count: count()
       })
-      .from(legalDocuments)
-      .where(sql`${legalDocuments.createdAt} >= NOW() - INTERVAL '30 days'`)
-      .groupBy(sql`DATE(${legalDocuments.createdAt})`)
-      .orderBy(sql`DATE(${legalDocuments.createdAt})`)
+      .from(legal_documents)
+      .where(sql`${legal_documents.created_at} >= NOW() - INTERVAL '30 days'`)
+      .groupBy(sql`DATE(${legal_documents.created_at})`)
+      .orderBy(sql`DATE(${legal_documents.created_at})`)
   ]);
 
   return {
-    totals: totalStats[0],
+    totals: (totalStats as any)[0],
     distribution: {
       byType: typeStats,
       byStatus: statusStats,
@@ -468,18 +512,18 @@ async function reprocessDocuments(): Promise<any> {
     // Find documents without embeddings
     const documentsToProcess = await db
       .select({
-        id: legalDocuments.id,
-        title: legalDocuments.title,
-        content: legalDocuments.content,
+        id: legal_documents.id,
+        title: legal_documents.title,
+        content: legal_documents.content,
       })
-      .from(legalDocuments)
+      .from(legal_documents)
       .where(
         and(
-          eq(legalDocuments.processingStatus, 'completed'),
+          eq(legal_documents.processing_status, 'completed'),
           or(
-            sql`${legalDocuments.contentEmbedding} IS NULL`,
-            sql`${legalDocuments.titleEmbedding} IS NULL`,
-            sql`${legalDocuments.analysisResults} IS NULL`
+            sql`${legal_documents.content_embedding} IS NULL`,
+            sql`${legal_documents.title_embedding} IS NULL`,
+            sql`${legal_documents.analysis_results} IS NULL`
           )
         )
       )
@@ -488,7 +532,7 @@ async function reprocessDocuments(): Promise<any> {
     // Start background processing for each document
     const processed = await Promise.allSettled(
       documentsToProcess.map(doc =>
-        processDocumentAsync(doc.id, doc.content, doc.title, true, true)
+        processDocumentAsync((doc as any).id, (doc as any).content, (doc as any).title, true, true)
       )
     );
 
@@ -527,9 +571,9 @@ async function processDocumentAsync(
       // Generate embeddings
       const contentEmbedding = await generateEmbedding(content);
       const titleEmbedding = await generateEmbedding(title);
-      
-      updates.contentEmbedding = contentEmbedding;
-      updates.titleEmbedding = titleEmbedding;
+
+      updates.content_embedding = contentEmbedding;
+      updates.title_embedding = titleEmbedding;
     }
 
     if (generateAnalysis) {
@@ -539,25 +583,25 @@ async function processDocumentAsync(
     }
 
     // Update document with processing results
-    updates.processingStatus = 'completed';
-    updates.updatedAt = new Date();
+    updates.processing_status = 'completed';
+    updates.updated_at = new Date();
 
     await db
-      .update(legalDocuments)
+      .update(legal_documents)
       .set(updates)
-      .where(eq(legalDocuments.id, documentId));
+      .where(eq(legal_documents.id, documentId));
 
   } catch (error: any) {
     console.error('Background processing error:', error);
-    
+
     // Mark as error status
     await db
-      .update(legalDocuments)
-      .set({ 
-        processingStatus: 'error',
-        updatedAt: new Date()
+      .update(legal_documents)
+      .set({
+        processing_status: 'error',
+        updated_at: new Date()
       })
-      .where(eq(legalDocuments.id, documentId));
+      .where(eq(legal_documents.id, documentId));
   }
 }
 
