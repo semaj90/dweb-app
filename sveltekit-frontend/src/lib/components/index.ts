@@ -18,8 +18,9 @@ export { Button as EnhancedButton, Card as EnhancedCard, Input as EnhancedInput 
 export * from './ui/modern/index';
 
 // ===== FORM COMPONENTS =====
-export * from './ui/form/index';
-export * from './ui/input/index';
+// Selective form exports to avoid conflicts
+export { Form as ComponentForm, FormStandard as ComponentFormStandard } from './ui/form/index';
+export { Input as ComponentInput } from './ui/input/index';
 // Textarea export handled by base UI components
 // export * from './ui/textarea/index';
 export * from './ui/checkbox/index';

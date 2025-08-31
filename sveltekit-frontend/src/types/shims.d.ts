@@ -30,3 +30,19 @@ declare module '*/*' {
   const whatever: any;
   export default whatever;
 }
+
+// Project shim references added by codemod assistant
+/// <reference path="../lib/shims/drizzle-orm-shim.d.ts" />
+/// <reference path="../lib/shims/ioredis-shim.d.ts" />
+/// <reference path="../lib/shims/svelte-env-shim.d.ts" />
+
+// Broad wildcard shims
+declare module '*-service' {
+  const _x: any;
+  export default _x;
+}
+
+declare module '*-worker' {
+  const _x: any;
+  export default _x;
+}

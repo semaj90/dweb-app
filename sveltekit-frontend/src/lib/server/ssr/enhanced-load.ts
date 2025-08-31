@@ -59,7 +59,7 @@ class SSRCache {
 }
 
 // Enhanced layout load with performance optimization
-export const createEnhancedLayoutLoad = (): LayoutServerLoad => {
+export const createEnhancedLayoutLoad = () => {
   return async ({ locals, url, request }) => {
     const startTime = Date.now();
     const metrics: SSRMetrics = { loadTime: 0, dbQueries: 0, cacheHits: 0, errors: [] };
@@ -190,7 +190,7 @@ export const createEnhancedLayoutLoad = (): LayoutServerLoad => {
 };
 
 // Enhanced page load factory for cases
-export const createEnhancedCasePageLoad = (): PageServerLoad => {
+export const createEnhancedCasePageLoad = () => {
   return async ({ params, locals, url, parent }) => {
     const startTime = Date.now();
     const metrics: SSRMetrics = { loadTime: 0, dbQueries: 0, cacheHits: 0, errors: [] };

@@ -305,6 +305,22 @@
       }
     },
     {
+      "label": "npm run dev:full",
+      "type": "shell",
+      "command": "cmd",
+      "args": ["/c", "cd ../../deeds-web-app && START-LEGAL-AI.bat"],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated"
+      }
+    },
+    {
       "label": "🚀 START-LEGAL-AI.bat - Complete System",
       "type": "shell",
       "command": "cmd",
@@ -485,6 +501,87 @@
         "-Command",
         "$services = @('PostgreSQL (5432)', 'Redis (6379)', 'Qdrant (6333)', 'MinIO (9000)', 'Neo4j (7474)', 'Ollama (11434)'); Write-Host '📊 Checking System Health...' -ForegroundColor Cyan; ForEach ($service in $services) { $port = ($service -split '\\(')[1] -replace '\\)', ''; try { $connection = Test-NetConnection -ComputerName localhost -Port $port -InformationLevel Quiet -WarningAction SilentlyContinue; if ($connection) { Write-Host \"✅ $service - Running\" -ForegroundColor Green; } else { Write-Host \"❌ $service - Not responding\" -ForegroundColor Red; } } catch { Write-Host \"❌ $service - Error checking\" -ForegroundColor Red; } }"
       ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "🧠 Memory Dashboard",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "memory:dashboard"],
+      "options": {
+        "cwd": "../../deeds-web-app"
+      },
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "📊 Start Memory Monitor API",
+      "type": "shell",
+      "command": "node",
+      "args": ["scripts/memory-monitor-api.cjs"],
+      "options": {
+        "cwd": "../../deeds-web-app"
+      },
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated"
+      },
+      "isBackground": true
+    },
+    {
+      "label": "🔧 Memory System Optimizer",
+      "type": "shell",
+      "command": "powershell",
+      "args": ["-ExecutionPolicy", "Bypass", "-File", "scripts/memory-optimizer.ps1"],
+      "options": {
+        "cwd": "../../deeds-web-app"
+      },
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "🚀 START-MEMORY-SYSTEM.bat",
+      "type": "shell",
+      "command": "cmd",
+      "args": ["/c", "START-MEMORY-SYSTEM.bat"],
+      "options": {
+        "cwd": "../../deeds-web-app"
+      },
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "📈 System Health Check",
+      "type": "shell",
+      "command": "node",
+      "args": ["scripts/check-all-errors.js"],
+      "options": {
+        "cwd": "../../deeds-web-app"
+      },
       "group": "test",
       "presentation": {
         "echo": true,

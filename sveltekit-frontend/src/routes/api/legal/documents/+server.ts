@@ -5,6 +5,7 @@ import type { RequestHandler } from './$types';
 import { db } from "$lib/server/db/index";
 import { json } from "@sveltejs/kit";
 import { URL } from "url";
+import { eq, desc, like, or } from "drizzle-orm";
 
 // Import with fallback for different schema files
 let schema: any = {};

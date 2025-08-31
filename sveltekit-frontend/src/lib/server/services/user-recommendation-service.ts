@@ -168,7 +168,7 @@ export class UserRecommendationService {
         frequentCases: queryStats.frequentCases,
         preferredTopics: topicAnalysis.topics,
         queryComplexity: queryStats.complexity,
-        usageFrequency: sessionStats.frequency,
+        usageFrequency: sessionStats.frequency as "high" | "low" | "medium",
         timePatterns: {
           mostActiveHours: sessionStats.activeHours,
           averageSessionLength: sessionStats.avgSessionLength,

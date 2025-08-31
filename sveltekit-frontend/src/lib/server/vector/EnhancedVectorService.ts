@@ -79,7 +79,7 @@ export class EnhancedVectorService {
     const embedding = result.embedding;
 
     // Cache for 24 hours - using modern Redis syntax
-    await this.redis.set(cacheKey, JSON.stringify(embedding), 'EX', 86400);
+    await this.redis.setex(cacheKey, 86400, JSON.stringify(embedding));
 
     return embedding;
   }

@@ -14,7 +14,7 @@ try {
   vscode = null;
 }
 
-import { EventEmitter } from "$lib/utils/events";
+import { EventEmitter } from "events";
 
 export interface CommandMetrics {
   commandId: string;

@@ -1,0 +1,4 @@
+src/routes/api/clustering/som/train/+server.ts(18,50): error TS1005: ')' expected.
+src/routes/api/gpu/devices/+server.ts(4,16): error TS1109: Expression expected.
+src/routes/api/gpu/metrics/+server.ts(4,16): error TS1109: Expression expected.
+src/routes/api/gpu/temperature/+server.ts(4,16): error TS1109: Expression expected.

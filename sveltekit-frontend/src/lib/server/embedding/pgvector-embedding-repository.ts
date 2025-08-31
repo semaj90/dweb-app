@@ -12,7 +12,7 @@ const DEFAULT_MODEL = 'nomic-embed-text';
 
 async function embedContent(text: string, model: string): Promise<number[]> {
   const emb = await getEmbedding(text);
-  return Array.isArray(emb) ? emb : (emb && typeof emb === 'object' && 'embedding' in emb ? emb.embedding as number[] : []);
+  return Array.isArray(emb) ? emb : (emb && typeof emb === 'object' && 'embedding' in emb ? (emb as any).embedding as number[] : []);
 }
 
 async function enqueueIngestion(job: IngestionJobRequest): Promise<IngestionJobStatus> {
@@ -54,7 +54,7 @@ async function querySimilar(query: string, options: SimilarityQueryOptions = {})
                                      FROM document_chunks
                                      ORDER BY embedding <=> ${queryEmbedding}
                                      LIMIT ${limit}`);
-  return rows.rows.map(r => ({
+  return rows.map(r => ({
     id: r.id,
     documentId: r.document_id,
     documentType: r.document_type,

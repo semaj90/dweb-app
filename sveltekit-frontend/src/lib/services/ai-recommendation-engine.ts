@@ -60,7 +60,7 @@ export interface QueryEnhancement {
 
 // XState Machine Context for Recommendation Engine
 export interface RecommendationMachineContext {
-  userContext: UserFeedbackContext;
+  userContext?: UserFeedbackContext;
   currentRecommendations: FeedbackRecommendation[];
   lokiDb: Loki | null;
   workerClient: Worker | null;
@@ -70,7 +70,7 @@ export interface RecommendationMachineContext {
 }
 
 // XState Machine for Recommendation Engine State Management
-const recommendationMachine = createMachine<RecommendationMachineContext>({
+const recommendationMachine = createMachine({
   id: 'recommendationEngine',
   initial: 'initializing',
   context: {
@@ -226,7 +226,7 @@ class AIRecommendationEngine {
   constructor() {
     // Initialize Loki.js database
     this.lokiDb = new Loki('recommendations.db', {
-      adapter: new Loki.LokiMemoryAdapter(),
+      adapter: new (Loki as any).LokiMemoryAdapter(),
       autoload: true,
       autoloadCallback: this.onDbLoad.bind(this),
       autosave: true,

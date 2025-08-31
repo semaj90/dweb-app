@@ -233,7 +233,7 @@ export class RedisService {
     if (sessions.length > 0) {
       // Delete all session data
       const sessionKeys = sessions.map(sessionId => `${CACHE_KEYS.SESSION}${sessionId}`);
-      await this.redis.del(...sessionKeys);
+      await this.redis.del(...(sessionKeys as [string, ...string[]]));
       
       // Clear user's session set
       await this.redis.del(`${CACHE_KEYS.USER}${userId}:sessions`);

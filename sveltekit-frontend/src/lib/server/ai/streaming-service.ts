@@ -206,7 +206,7 @@ class StreamingService extends EventEmitter {
         // Actually call the synthesizer for the complete result
         const result = await aiAssistantSynthesizer.synthesizeInput({
           query: options.input.query,
-          context: { userId: '', ...(options.input.context || {}) },
+          context: { userId: '', ...((options.input.context || {}) as Record<string, any>) },
           options: {
             enableMMR: true,
             enableCrossEncoder: true,
@@ -215,7 +215,7 @@ class StreamingService extends EventEmitter {
             maxSources: 5,
             similarityThreshold: 0.7,
             diversityLambda: 0.3,
-            ...(options.input.options || {})
+            ...((options.input.options || {}) as Record<string, any>)
           }
         });
         

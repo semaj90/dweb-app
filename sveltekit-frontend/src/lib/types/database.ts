@@ -6,6 +6,10 @@ import {
   criminals,
   evidence,
   users,
+  legal_documents,
+  documentChunks,
+  userAiQueries,
+  autoTags,
 } from "$lib/server/db/schema-postgres";
 
 // Database model types (inferred from schema)
@@ -20,6 +24,18 @@ export type NewEvidence = InferInsertModel<typeof evidence>;
 
 export type DatabaseUser = InferSelectModel<typeof users>;
 export type NewUser = InferInsertModel<typeof users>;
+
+export type LegalDocument = InferSelectModel<typeof legal_documents>;
+export type NewLegalDocument = InferInsertModel<typeof legal_documents>;
+
+export type DocumentChunk = InferSelectModel<typeof documentChunks>;
+export type NewDocumentChunk = InferInsertModel<typeof documentChunks>;
+
+export type UserAiQuery = InferSelectModel<typeof userAiQueries>;
+export type NewUserAiQuery = InferInsertModel<typeof userAiQueries>;
+
+export type AutoTag = InferSelectModel<typeof autoTags>;
+export type NewAutoTag = InferInsertModel<typeof autoTags>;
 
 // Define Profile and Session types manually since they may not be in the schema
 export interface Profile {

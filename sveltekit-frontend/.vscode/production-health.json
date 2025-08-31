@@ -1,0 +1,18 @@
+{
+  "services": {
+    "frontend": true,
+    "ollama": true,
+    "context7": true,
+    "enhancedRag": true,
+    "postgresql": true
+  },
+  "score": 33.7,
+  "optimizations": {
+    "productionConfig": false,
+    "caching": false,
+    "monitoring": false,
+    "nodeOptimization": true
+  },
+  "timestamp": "2025-08-28 21:53:45",
+  "status": "POOR"
+}

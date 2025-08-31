@@ -4,7 +4,8 @@
  * Supports full-text search, filters, and suggestions
  */
 
-import { db, type SQL, and, gte, like, lte, or, sql } from "$lib/server/db/index";
+import { db, and, gte, like, lte, or, sql } from "$lib/server/db/index";
+import type { SQL } from "drizzle-orm/sql";
 import { cases, evidence } from "$lib/server/db/schema-postgres";
 
 export interface SearchFilters {

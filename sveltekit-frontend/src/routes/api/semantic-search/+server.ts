@@ -3,7 +3,8 @@ import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db/pg";
 import { sql } from "drizzle-orm";
 import type { RequestHandler } from './$types';
-
+import { legalDocuments } from "$lib/server/db/schema-postgres";
+import { nomicEmbeddings } from "$lib/services/nomic-embedding-service";
 
 // Use Nomic embeddings with 768 dimensions (Nomic's default)
 const EMBEDDING_DIMENSION = 768;

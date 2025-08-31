@@ -116,13 +116,16 @@ declare global {
   type DocumentCache = any;
   type ReinforcementLearningCache = any;
   type PGVectorStore = {
-    ensureTableInDatabase?: any;
-    similaritySearchWithScore?: any;
+    ensureTableInDatabase?: () => Promise<void>;
+    similaritySearchWithScore?: (query: string, limit?: number) => Promise<Array<[any, number]>>;
+    addDocuments?: (docs: any[]) => Promise<void>;
+    delete?: (options?: any) => Promise<void>;
     [key: string]: any;
   };
   type QueryResult = {
     content: string;
     score: number;
+    sources?: any[];
   };
 }
 

@@ -814,3 +814,6 @@ Legacy Svelte 3/4    New Svelte 5 Runes Equivalent
 let cou= 0; $: doubled = count * 2;    let count = $state; let doubled = $derived(count * 2);
 $: console.log(count);    $effect(() => { console.log(count); }$: if (count > 10) alert("too big!");    $effect((> { if (count > 10) alert("too big!"); });) =);
 (0)nt
+- ╭───────────────────────────────────────────────────────────────────────────────────────────────────────╮│ # Understood. The SvelteKit frontend might use camelCase while the database uses snake_case. This is  ││   a common pattern where the frontend transforms snake_case database fields to camelCase for          ││     JavaScript conventions.                                                                           ││                                                                                                       ││
+- ╭──────────────────────────────────────────────────────────────────╮│ # the Svelte component is using the old export let syntax        ││   instead of Svelte 5 runes.
+- use svelte 5 all throughout the map, check context7 docs generates best practices

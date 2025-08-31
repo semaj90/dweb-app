@@ -25,7 +25,7 @@ import crypto from 'crypto';
 import Redis from 'ioredis';
 import postgres from 'postgres';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { sql, eq, and, gte, desc } from '$lib/server/db/index';
+import { sql, eq, and, gte, desc } from 'drizzle-orm';
 import { Ollama } from '@langchain/community/llms/ollama';
 import { OllamaEmbeddings } from '@langchain/community/embeddings/ollama';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
@@ -33,8 +33,8 @@ import { PromptTemplate } from '@langchain/core/prompts';
 import { RunnableSequence, RunnablePassthrough } from '@langchain/core/runnables';
 import { StringOutputParser } from '@langchain/core/output_parsers';
 import type { Document } from '@langchain/core/documents';
-import * as schema from '$lib/db/unified-schema';
-import type { LegalDocument, DocumentChunk, UserAiQuery, AutoTag } from '$lib/db/schema-types';
+import * as schema from '$lib/server/db/schema-postgres';
+import type { LegalDocument, DocumentChunk, UserAiQuery, AutoTag } from '$lib/types/database';
 
 // ===== CONFIGURATION & CONSTANTS =====
 
@@ -875,7 +875,7 @@ export class EnhancedLegalRAGPipeline {
 
       // Start transaction for document creation
       const [document] = await this.db!.transaction(async (tx) => {
-        const [doc] = await tx.insert(schema.legalDocuments)
+        const [doc] = await tx.insert(schema.legal_documents)
           .values({
             title,
             content: content.substring(0, 10000), // Preview content
@@ -907,9 +907,9 @@ export class EnhancedLegalRAGPipeline {
         `${title}\n${content.substring(0, 2000)}`
       );
 
-      await this.db!.update(schema.legalDocuments)
+      await this.db!.update(schema.legal_documents)
         .set({ embedding: JSON.stringify(docEmbedding) })
-        .where(eq(schema.legalDocuments.id, document.id));
+        .where(eq(schema.legal_documents.id, document.id));
 
       // Smart legal chunking
       const chunks = await this.chunker.chunkDocument(content, documentType);

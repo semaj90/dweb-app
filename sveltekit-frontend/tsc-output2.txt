@@ -1,0 +1,1 @@
+src/routes/api/clustering/som/train/+server.ts(18,50): error TS1005: ')' expected.

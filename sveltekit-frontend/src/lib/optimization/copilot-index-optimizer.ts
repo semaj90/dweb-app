@@ -6,7 +6,7 @@ import type { RAGSearchResult } from "$lib/types/rag";
  */
 
 import { simdIndexProcessor, type CopilotIndex, type CopilotIndexEntry } from "./simd-json-index-processor";
-import { enhancedRAGStore } from "$lib/stores/enhanced-rag";
+import { enhancedRAGStore } from "$lib/stores/enhanced-rag-store";
 
 // Context7 MCP integration patterns
 export interface Context7Pattern {
@@ -456,6 +456,15 @@ export class CopilotIndexOptimizer {
     // Train with all embeddings
     for (const entry of entries) {
       await somRAG.trainIncremental(Array.from(entry.embedding), {
+        source: entry.source,
+        type: 'document',
+        jurisdiction: 'unknown',
+        practiceArea: ['general'],
+        confidentialityLevel: 1,
+        lastModified: new Date(),
+        fileSize: entry.fileSize,
+        language: 'en',
+        tags: [],
         id: entry.id,
         content: entry.content,
         metadata: entry.metadata,

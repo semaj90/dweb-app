@@ -23,14 +23,6 @@ if (!browser) {
   }
 }
 
-export interface ClientOptions {
-  [key: string]: any;
-}
-
-export interface ServiceError extends Error {
-  code?: number;
-  details?: string;
-}
 
 // Types based on our protobuf schema
 export interface SuggestionRequest {

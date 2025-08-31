@@ -1,0 +1,2 @@
+src/routes/api/clustering/som/train/+server.ts(19,1): error TS1135: Argument expression expected.
+src/routes/api/clustering/som/train/+server.ts(35,50): error TS1005: ')' expected.

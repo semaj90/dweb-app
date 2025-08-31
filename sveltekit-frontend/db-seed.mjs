@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { drizzle } from 'drizzle-orm/node-postgres';
+import { drizzle } from 'drizzle-orm/postgres-js';
 import pkg from 'pg';
 const { Pool } = pkg;
 import { hash } from '@node-rs/argon2';
@@ -8,7 +8,7 @@ import { hash } from '@node-rs/argon2';
 // Database connection - try different user credentials
 const dbConfigs = [
   'postgresql://postgres:123456@localhost:5432/legal_ai_db',
-  'postgresql://postgres:postgres@localhost:5432/legal_ai_db', 
+  'postgresql://postgres:postgres@localhost:5432/legal_ai_db',
   'postgresql://legal_admin:123456@localhost:5432/legal_ai_db',
   'postgresql://legal_admin:LegalAI2024!@localhost:5432/legal_ai_db'
 ];
@@ -21,7 +21,7 @@ async function connectToDatabase() {
     try {
       pool = new Pool({ connectionString: config });
       db = drizzle(pool);
-      
+
       // Test the connection
       await pool.query('SELECT 1 as test');
       console.log('✅ Database connection successful with:', config.replace(/:[^:@]*@/, ':****@'));
@@ -82,7 +82,7 @@ async function seed() {
         isActive: true,
       },
       {
-        email: 'detective@legal.ai', 
+        email: 'detective@legal.ai',
         name: 'Jane Detective',
         firstName: 'Jane',
         lastName: 'Detective',
@@ -92,7 +92,7 @@ async function seed() {
       },
       {
         email: 'admin@legal.ai',
-        name: 'Admin User', 
+        name: 'Admin User',
         firstName: 'Admin',
         lastName: 'User',
         role: 'admin',
@@ -141,7 +141,7 @@ async function seed() {
         description: 'Data breach and identity theft case with international connections. Over 100,000 personal records compromised including SSNs, credit card numbers, and personal identifying information.',
         priority: 'medium',
         status: 'open',
-        category: 'cybercrime', 
+        category: 'cybercrime',
         dangerScore: 60,
         createdBy: insertedUsers[1]?.id,
         aiSummary: 'Large-scale data breach affecting consumers across multiple states. Evidence suggests sophisticated APT group involvement.',
@@ -152,7 +152,7 @@ async function seed() {
         title: 'White Collar Crime',
         description: 'Corporate embezzlement case with extensive document evidence. CFO suspected of diverting company funds to personal accounts over 3-year period.',
         priority: 'high',
-        status: 'open', 
+        status: 'open',
         category: 'embezzlement',
         dangerScore: 45,
         createdBy: insertedUsers[0]?.id,
@@ -176,7 +176,7 @@ async function seed() {
       }
     }
 
-    // Seed evidence  
+    // Seed evidence
     console.log('🔍 Creating evidence...');
     if (insertedCases.length > 0) {
       const seedEvidence = [
@@ -197,7 +197,7 @@ async function seed() {
         },
         {
           caseId: insertedCases[1]?.id,
-          title: 'Server Logs', 
+          title: 'Server Logs',
           description: 'Access logs showing unauthorized data access and exfiltration. Evidence of SQL injection attacks and privilege escalation.',
           evidenceType: 'digital_evidence',
           tags: ['logs', 'unauthorized_access', 'data_exfiltration'],
@@ -253,7 +253,7 @@ async function seed() {
    📄 Legal Documents: Attempted with pgvector support
 
 🔐 Test Login Credentials:
-   prosecutor@legal.ai / password123  
+   prosecutor@legal.ai / password123
    detective@legal.ai / password123
    admin@legal.ai / password123
 

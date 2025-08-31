@@ -194,6 +194,18 @@ export default defineConfig(async ({ mode }) => {
     clearScreen: false,
   plugins: [
     superFormsCompat(),
+    // Alias Drizzle node-postgres imports to a local shim that re-exports
+    // the postgres-js adapter. This prevents runtime adapter mismatches
+    // when some modules import 'drizzle-orm/node-postgres' while the
+    // application uses the 'postgres' (postgres-js) client.
+    {
+      name: 'drizzle-node-postgres-alias',
+      configResolved(config: any) {
+        config.resolve = config.resolve || {};
+        config.resolve.alias = config.resolve.alias || {};
+        config.resolve.alias['drizzle-orm/node-postgres'] = resolve(__dirname, 'src/lib/shims/drizzle-node-postgres.ts');
+      }
+    },
     {
       name: 'superforms-transform',
       transform(code: string, id: string) {

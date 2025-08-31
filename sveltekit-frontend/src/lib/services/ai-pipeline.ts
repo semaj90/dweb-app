@@ -106,7 +106,7 @@ export class EnhancedAIPipeline {
 
       // Initialize PGVectorStore with proper configuration
       try {
-        this.vectorStore = new PGVectorStore(this.embeddings, {
+        this.vectorStore = await PGVectorStore.initialize(this.embeddings, {
           pool: this.pgPool,
           tableName: "legal_document_embeddings",
           columns: {

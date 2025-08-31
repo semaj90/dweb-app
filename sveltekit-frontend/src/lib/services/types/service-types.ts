@@ -8,17 +8,21 @@ import type { Writable } from 'svelte/store';
 // Core AI Service Types
 export interface AITask {
   id: string;
-  type: 'embedding' | 'summarization' | 'analysis' | 'search' | 'classification';
+  taskId?: string;
+  type: 'embedding' | 'summarization' | 'analysis' | 'search' | 'classification' | 'generate' | 'analyze' | 'embed';
   priority: 'low' | 'medium' | 'high' | 'critical';
-  data: Record<string, unknown>;
+  data?: Record<string, unknown>;
   context?: {
     userId?: string;
     caseId?: string;
     documentId?: string;
   };
   timestamp: number;
-  retries: number;
-  maxRetries: number;
+  retries?: number;
+  maxRetries?: number;
+  providerId?: string;
+  model?: string;
+  prompt?: string;
 }
 
 export interface AIResponse<T = unknown> {
@@ -40,21 +44,29 @@ export interface AIResponse<T = unknown> {
 }
 
 export interface WorkerMessage {
-  type: 'task' | 'result' | 'error' | 'status';
+  type: 'task' | 'result' | 'error' | 'status' | 'TASK_STARTED' | 'TASK_COMPLETED' | 'TASK_ERROR' | 'TASK_CANCELLED' | 'STATUS_UPDATE' | 'PROCESS_AI_TASK' | 'UPDATE_PROVIDER_CONFIG' | 'CANCEL_TASK' | 'GET_STATUS';
   payload: AITask | AIResponse | WorkerStatus;
   timestamp: number;
+  taskId?: string;
 }
 
 export interface WorkerStatus {
-  id: string;
-  status: 'idle' | 'busy' | 'error' | 'terminated';
+  id?: string;
+  status?: 'idle' | 'busy' | 'error' | 'terminated';
   currentTask?: string;
-  performance: {
+  performance?: {
     tasksCompleted: number;
     averageProcessingTime: number;
     errorRate: number;
   };
-  lastActivity: number;
+  lastActivity?: number;
+  activeRequests?: number;
+  queueLength?: number;
+  providers?: any[];
+  maxConcurrent?: number;
+  uptime?: number;
+  totalProcessed?: number;
+  errors?: number;
 }
 
 // Vector Search Types

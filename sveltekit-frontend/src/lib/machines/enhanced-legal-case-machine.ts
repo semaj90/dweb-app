@@ -7,7 +7,7 @@
 import { createMachine, assign, fromPromise } from 'xstate';
 import { db } from '../server/db/index';
 import { cases, evidence, legal_documents, documentChunks, users } from '../server/db/schema-postgres';
-import { sql, eq, and, desc } from '$lib/server/db/index';
+import { sql, eq, and, desc } from 'drizzle-orm';
 
 // Temporary type definition to fix import issues
 export type CaseForm = {
@@ -692,7 +692,11 @@ export const enhancedLegalCaseMachine = createMachine({
       try {
         // Get case embedding (computed from case content)
         const caseChunks = await db
-          .select()
+          .select({
+            embedding: documentChunks.embedding,
+            chunkId: documentChunks.id,
+            evidenceId: evidence.id
+          })
           .from(documentChunks)
           .innerJoin(evidence, eq(documentChunks.document_id, evidence.id))
           .where(eq(evidence.case_id, input.caseId));
@@ -701,8 +705,8 @@ export const enhancedLegalCaseMachine = createMachine({
           return [];
         }
         
-        // Average embeddings for case representation - fix property access
-        const caseEmbedding = computeAverageEmbedding(caseChunks.map(c => c.document_chunks?.embedding || []));
+        // Average embeddings for case representation
+        const caseEmbedding = computeAverageEmbedding(caseChunks.map(c => c.embedding || []));
         
         // Find similar cases using cosine similarity
         const similarCases = await db.execute(
