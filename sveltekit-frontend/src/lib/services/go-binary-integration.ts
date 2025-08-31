@@ -68,7 +68,7 @@ export class GoBinaryIntegrationService {
   private config: GoBinaryConfig;
   private redisConfig: RedisNativeConfig;
   private cudaConfig: CUDAProcessingConfig;
-  private requestQueue: Map<string, GoBinaryRequest> = new Map();
+  private requestMap: Map<string, GoBinaryRequest> = new Map();
   private responseCache: Map<string, GoBinaryResponse> = new Map();
   private connectionPool: Map<string, any> = new Map();
   private isInitialized = false;
@@ -330,7 +330,7 @@ export class GoBinaryIntegrationService {
       if (useCache) {
         const cacheKey = this.generateCacheKey(request);
         const cachedResponse = await this.getFromRedisCache(cacheKey);
-        
+
         if (cachedResponse) {
           return {
             ...cachedResponse,
@@ -340,8 +340,8 @@ export class GoBinaryIntegrationService {
         }
       }
 
-      // Queue request for processing
-      this.requestQueue.set(request.id, request);
+      // Queue request for processing (internal Map -> requestMap)
+      this.requestMap.set(request.id, request);
       this.updateRequestQueueStore();
 
       // Execute request
@@ -354,7 +354,7 @@ export class GoBinaryIntegrationService {
       }
 
       // Remove from queue
-      this.requestQueue.delete(request.id);
+      this.requestMap.delete(request.id);
       this.updateRequestQueueStore();
 
       // Update metrics
@@ -363,7 +363,7 @@ export class GoBinaryIntegrationService {
       return response;
 
     } catch (error: any) {
-      this.requestQueue.delete(request.id);
+      this.requestMap.delete(request.id);
       this.updateRequestQueueStore();
 
       const errorResponse: GoBinaryResponse = {
@@ -415,12 +415,12 @@ export class GoBinaryIntegrationService {
         body = msgpack.encode(request.data); // Using msgpack as protobuf substitute
         contentType = 'application/x-protobuf';
         break;
-      
+
       case 'msgpack':
         body = msgpack.encode(request.data);
         contentType = 'application/x-msgpack';
         break;
-      
+
       case 'json':
       default:
         body = JSON.stringify(request.data);
@@ -497,7 +497,7 @@ export class GoBinaryIntegrationService {
     try {
       // Simulate Redis SET with TTL
       this.responseCache.set(key, response);
-      
+
       // Simulate TTL with setTimeout
       setTimeout(() => {
         this.responseCache.delete(key);
@@ -516,7 +516,7 @@ export class GoBinaryIntegrationService {
       endpoint: request.endpoint,
       data: request.data
     };
-    
+
     // Create hash of key data
     const jsonString = JSON.stringify(keyData);
     let hash = 0;
@@ -525,7 +525,7 @@ export class GoBinaryIntegrationService {
       hash = ((hash << 5) - hash) + char;
       hash = hash & hash; // Convert to 32-bit integer
     }
-    
+
     return `${this.redisConfig.keyPrefix}${request.service}:${Math.abs(hash)}`;
   }
 
@@ -551,7 +551,7 @@ export class GoBinaryIntegrationService {
 
     for (const service of services) {
       try {
-        const response = await fetch(service.url, { 
+        const response = await fetch(service.url, {
           method: 'GET',
           signal: AbortSignal.timeout(5000)
         });
@@ -612,7 +612,7 @@ export class GoBinaryIntegrationService {
    * Update service status
    */
   private async updateServiceStatus(): Promise<void> {
-    if (this.requestQueue.size < 5) { // Only check if not too busy
+    if (this.requestMap.size < 5) { // Only check if not too busy
       const status = await this.checkServiceStatus();
       this.serviceStatus.set(status);
     }
@@ -626,7 +626,7 @@ export class GoBinaryIntegrationService {
     this.processingMetrics.update(metrics => ({
       ...metrics,
       totalRequests: metrics.totalRequests + 1,
-      successRate: response.success 
+      successRate: response.success
         ? (metrics.successRate * 0.9) + (1 * 0.1)
         : (metrics.successRate * 0.9) + (0 * 0.1),
       avgResponseTime: (metrics.avgResponseTime * 0.9) + (response.processingTime * 0.1),
@@ -640,12 +640,12 @@ export class GoBinaryIntegrationService {
    * Update request queue store
    */
   private updateRequestQueueStore(): void {
-    const requests = Array.from(this.requestQueue.values())
+    const requests = Array.from(this.requestMap.values())
       .sort((a, b) => {
         const priorityOrder = { critical: 4, high: 3, medium: 2, low: 1 };
         return (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
       });
-    
+
     this.requestQueue.set(requests);
   }
 
@@ -671,7 +671,7 @@ export class GoBinaryIntegrationService {
         computeCapability: this.cudaConfig.computeCapability
       },
       queues: {
-        active: this.requestQueue.size,
+          active: this.requestMap.size,
         cached: this.responseCache.size
       }
     };
@@ -681,11 +681,11 @@ export class GoBinaryIntegrationService {
    * Cleanup resources
    */
   public async cleanup(): Promise<void> {
-    this.requestQueue.clear();
+    this.requestMap.clear();
     this.responseCache.clear();
     this.connectionPool.clear();
     this.isInitialized = false;
-    
+
     console.log('🧹 Go Binary Integration Service cleaned up');
   }
 }
@@ -700,7 +700,7 @@ export const goBinaryStatus = derived(
     services: $services,
     metrics: $metrics,
     healthy: Object.values($services).every(status => status === true),
-    performance: $metrics.successRate > 0.9 ? 'excellent' : 
+    performance: $metrics.successRate > 0.9 ? 'excellent' :
                 $metrics.successRate > 0.7 ? 'good' : 'poor'
   })
 );

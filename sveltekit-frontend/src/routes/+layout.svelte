@@ -8,10 +8,10 @@
   import { aiRecommendationEngine } from '$lib/services/ai-recommendation-engine';
   import FeedbackWidget from '$lib/components/feedback/FeedbackWidget.svelte';
   import type { FeedbackTrigger } from '$lib/types/feedback';
-  
+
   // Modern bits-ui components (only import what exists)
   import { Button } from 'bits-ui';
-  
+
   // Modern button component
   import ModernButton from '$lib/components/ui/button/Button.svelte';
 
@@ -23,7 +23,7 @@
   let showFeedback = $state(false);
 
   // Create and set feedback store context (browser-only to avoid hydration issues)
-  let store: ReturnType<typeof createFeedbackStore>;
+  let store: ReturnType<typeof createFeedbackStore> = $state();
   if (browser) {
     store = createFeedbackStore();
     setFeedbackStore(store);
@@ -150,7 +150,7 @@
       </p>
       <div class="grid grid-cols-2 gap-golden-xs mb-golden-md">
         {#each Object.entries(startupStatus.services) as [service, status]}
-          <span 
+          <span
             class="text-xs font-mono px-golden-xs py-1 border rounded {status ? 'border-green-500 bg-green-500/10 text-green-400' : 'border-red-500 bg-red-500/10 text-red-400'}"
           >
             {status ? '✅' : '❌'} {service.toUpperCase()}
@@ -187,32 +187,32 @@
 
         <!-- Navigation -->
         <nav class="hidden md:flex items-center gap-golden-sm">
-          <ModernButton 
-            href="/" 
+          <ModernButton
+            href="/"
             variant="ghost"
             size="sm"
             class="text-nier-text-secondary hover:text-nier-accent-warm hover:bg-nier-bg-tertiary"
           >
             Home
           </ModernButton>
-          <ModernButton 
-            href="/yorha-command-center" 
+          <ModernButton
+            href="/yorha-command-center"
             variant="ghost"
             size="sm"
             class="text-nier-text-secondary hover:text-nier-accent-warm hover:bg-nier-bg-tertiary"
           >
             Command Center
           </ModernButton>
-          <ModernButton 
-            href="/evidenceboard" 
+          <ModernButton
+            href="/evidenceboard"
             variant="ghost"
             size="sm"
             class="text-nier-text-secondary hover:text-nier-accent-warm hover:bg-nier-bg-tertiary"
           >
             Evidence Board
           </ModernButton>
-          <ModernButton 
-            href="/demo/enhanced-rag-semantic" 
+          <ModernButton
+            href="/demo/enhanced-rag-semantic"
             variant="ghost"
             size="sm"
             class="text-nier-text-secondary hover:text-nier-accent-warm hover:bg-nier-bg-tertiary"
@@ -223,16 +223,16 @@
 
         <!-- Auth Buttons -->
         <div class="flex items-center gap-golden-sm">
-          <ModernButton 
-            href="/auth/login" 
+          <ModernButton
+            href="/auth/login"
             variant="outline"
             size="sm"
             class="border-nier-accent-warm text-nier-accent-warm hover:bg-nier-accent-warm hover:text-nier-bg-primary"
           >
             Login
           </ModernButton>
-          <ModernButton 
-            href="/auth/register" 
+          <ModernButton
+            href="/auth/register"
             variant="primary"
             size="sm"
             class="bg-gradient-to-r from-nier-accent-warm to-nier-accent-cool text-nier-bg-primary font-bold"
@@ -275,7 +275,7 @@
     --golden-xl: calc(var(--golden-base) * 2.618); /* ~2.618rem */
     --golden-2xl: calc(var(--golden-base) * 4.236); /* ~4.236rem */
   }
-  
+
   /* UnoCSS Golden Ratio Utilities */
   :global(.p-golden-xs) { padding: var(--golden-xs); }
   :global(.p-golden-sm) { padding: var(--golden-sm); }
@@ -283,49 +283,49 @@
   :global(.p-golden-lg) { padding: var(--golden-lg); }
   :global(.p-golden-xl) { padding: var(--golden-xl); }
   :global(.p-golden-2xl) { padding: var(--golden-2xl); }
-  
+
   :global(.px-golden-xs) { padding-left: var(--golden-xs); padding-right: var(--golden-xs); }
   :global(.px-golden-sm) { padding-left: var(--golden-sm); padding-right: var(--golden-sm); }
   :global(.px-golden-md) { padding-left: var(--golden-md); padding-right: var(--golden-md); }
   :global(.px-golden-lg) { padding-left: var(--golden-lg); padding-right: var(--golden-lg); }
   :global(.px-golden-xl) { padding-left: var(--golden-xl); padding-right: var(--golden-xl); }
-  
+
   :global(.py-golden-xs) { padding-top: var(--golden-xs); padding-bottom: var(--golden-xs); }
   :global(.py-golden-sm) { padding-top: var(--golden-sm); padding-bottom: var(--golden-sm); }
   :global(.py-golden-md) { padding-top: var(--golden-md); padding-bottom: var(--golden-md); }
   :global(.py-golden-lg) { padding-top: var(--golden-lg); padding-bottom: var(--golden-lg); }
   :global(.py-golden-xl) { padding-top: var(--golden-xl); padding-bottom: var(--golden-xl); }
-  
+
   :global(.m-golden-xs) { margin: var(--golden-xs); }
   :global(.m-golden-sm) { margin: var(--golden-sm); }
   :global(.m-golden-md) { margin: var(--golden-md); }
   :global(.m-golden-lg) { margin: var(--golden-lg); }
   :global(.m-golden-xl) { margin: var(--golden-xl); }
   :global(.m-golden-2xl) { margin: var(--golden-2xl); }
-  
+
   :global(.mb-golden-xs) { margin-bottom: var(--golden-xs); }
   :global(.mb-golden-sm) { margin-bottom: var(--golden-sm); }
   :global(.mb-golden-md) { margin-bottom: var(--golden-md); }
   :global(.mb-golden-lg) { margin-bottom: var(--golden-lg); }
   :global(.mb-golden-xl) { margin-bottom: var(--golden-xl); }
-  
+
   :global(.gap-golden-xs) { gap: var(--golden-xs); }
   :global(.gap-golden-sm) { gap: var(--golden-sm); }
   :global(.gap-golden-md) { gap: var(--golden-md); }
   :global(.gap-golden-lg) { gap: var(--golden-lg); }
   :global(.gap-golden-xl) { gap: var(--golden-xl); }
-  
+
   /* Container responsive spacing with golden ratio */
   :global(.container) {
     max-width: 90rem;
     margin: 0 auto;
   }
-  
+
   /* Smooth transitions for YoRHa theme */
   :global(*) {
     transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
   }
-  
+
   /* Typography enhancements */
   :global(.font-mono) {
     font-family: 'JetBrains Mono', 'Roboto Mono', 'SF Mono', monospace;
