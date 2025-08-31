@@ -81,7 +81,15 @@
       "Bash(timeout 30 npm run check:ultra-fast)",
       "Bash(dir:*)",
       "Bash(timeout:*)",
-      "Bash(cmd /c:*)"
+      "Bash(cmd /c:*)",
+      "Bash(set PGPASSWORD=123456)",
+      "Bash(PGPASSWORD=123456 psql -U postgres -h localhost -d legal_ai_db -f production-migration.sql)",
+      "Bash(PGPASSWORD=123456 psql -U postgres -h localhost -d legal_ai_db -f ../production-migration.sql)",
+      "Bash(PGPASSWORD=123456 psql -U postgres -d legal_ai_db -c \"SELECT COUNT(*) as total_tables FROM information_schema.tables WHERE table_schema = ''public'';\")",
+      "Bash(call COMPLETE-SYSTEM-TEST.bat)",
+      "Bash(PGPASSWORD=123456 psql -U postgres -d legal_ai_db -c \"SELECT ''Database connection: OK'', COUNT(*) as table_count FROM information_schema.tables WHERE table_schema = ''public'';\")",
+      "Bash(npm run start:production:*)",
+      "Bash(npm run:*)"
     ],
     "deny": [],
     "ask": [],

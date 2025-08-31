@@ -1,0 +1,175 @@
+{
+  "summary": {
+    "total": 16,
+    "passed": 12,
+    "failed": 4,
+    "warnings": 0,
+    "successRate": "75.00%",
+    "timestamp": "2025-08-31T04:20:32.355Z",
+    "configuration": "Gemma3:legal + nomic-embed-text + Windows Native"
+  },
+  "alignment": {
+    "aiModels": "Gemma3:legal (7.3GB) + nomic-embed-text (274MB)",
+    "platform": "Windows Native (no Docker)",
+    "database": "PostgreSQL + pgvector + JSONB",
+    "frontend": "SvelteKit 2 + Svelte 5",
+    "services": "Native Windows services"
+  },
+  "details": [
+    {
+      "timestamp": "2025-08-31T04:20:23.578Z",
+      "level": "INFO",
+      "message": "🔍 Starting Architecture Alignment Verification"
+    },
+    {
+      "timestamp": "2025-08-31T04:20:23.580Z",
+      "level": "INFO",
+      "message": "Base directory: C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend"
+    },
+    {
+      "timestamp": "2025-08-31T04:20:23.580Z",
+      "level": "INFO",
+      "message": "Verifying: Gemma3:legal + nomic-embed-text + Windows Native"
+    },
+    {
+      "timestamp": "2025-08-31T04:20:23.581Z",
+      "level": "INFO",
+      "message": "=== Testing Gemma3:legal Model Configuration ==="
+    },
+    {
+      "timestamp": "2025-08-31T04:20:23.615Z",
+      "level": "PASS",
+      "message": "✅ PASS: Ollama Service Available - http://localhost:11434"
+    },
+    {
+      "timestamp": "2025-08-31T04:20:23.649Z",
+      "level": "PASS",
+      "message": "✅ PASS: Gemma3:legal Model Available - gemma3-legal:latest (7.3GB)"
+    },
+    {
+      "timestamp": "2025-08-31T04:20:23.649Z",
+      "level": "PASS",
+      "message": "✅ PASS: nomic-embed-text Model Available - nomic-embed-text:latest (274MB)"
+    },
+    {
+      "timestamp": "2025-08-31T04:20:23.649Z",
+      "level": "PASS",
+      "message": "✅ PASS: Gemma3:legal Quantization Level - Q4_K_M (expected: Q4_K_M)"
+    },
+    {
+      "timestamp": "2025-08-31T04:20:23.649Z",
+      "level": "PASS",
+      "message": "✅ PASS: Gemma3:legal Model Family - gemma3"
+    },
+    {
+      "timestamp": "2025-08-31T04:20:23.649Z",
+      "level": "PASS",
+      "message": "✅ PASS: Nomic-embed Model Format - gguf (expected: gguf)"
+    },
+    {
+      "timestamp": "2025-08-31T04:20:23.649Z",
+      "level": "INFO",
+      "message": "=== Testing Windows Native Services Configuration ==="
+    },
+    {
+      "timestamp": "2025-08-31T04:20:24.548Z",
+      "level": "DEBUG",
+      "message": "✓ Ollama service running on port 11434"
+    },
+    {
+      "timestamp": "2025-08-31T04:20:25.077Z",
+      "level": "DEBUG",
+      "message": "✓ PostgreSQL service running on port 5432"
+    },
+    {
+      "timestamp": "2025-08-31T04:20:29.690Z",
+      "level": "WARN",
+      "message": "✗ Redis service not running on port 6379"
+    },
+    {
+      "timestamp": "2025-08-31T04:20:29.690Z",
+      "level": "PASS",
+      "message": "✅ PASS: Windows Native Services - 2/3 services running"
+    },
+    {
+      "timestamp": "2025-08-31T04:20:29.710Z",
+      "level": "ERROR",
+      "message": "Command failed [Windows service check]: sc query ollama"
+    },
+    {
+      "timestamp": "2025-08-31T04:20:29.710Z",
+      "level": "INFO",
+      "message": "=== Testing Complete API Ecosystem Alignment ==="
+    },
+    {
+      "timestamp": "2025-08-31T04:20:29.711Z",
+      "level": "PASS",
+      "message": "✅ PASS: Architecture Documentation Available - 2/3 summary files found"
+    },
+    {
+      "timestamp": "2025-08-31T04:20:29.711Z",
+      "level": "FAIL",
+      "message": "❌ FAIL: Gemma3:legal Referenced in Architecture - Model specified in documentation"
+    },
+    {
+      "timestamp": "2025-08-31T04:20:29.711Z",
+      "level": "FAIL",
+      "message": "❌ FAIL: nomic-embed-text Referenced in Architecture - Embedding model specified in documentation"
+    },
+    {
+      "timestamp": "2025-08-31T04:20:29.711Z",
+      "level": "FAIL",
+      "message": "❌ FAIL: Windows Native Configuration Documented - Native Windows deployment specified"
+    },
+    {
+      "timestamp": "2025-08-31T04:20:29.711Z",
+      "level": "INFO",
+      "message": "=== Testing Service Integration Matrix ==="
+    },
+    {
+      "timestamp": "2025-08-31T04:20:29.745Z",
+      "level": "ERROR",
+      "message": "Command failed [Ollama API availability]: curl -s -o /dev/null -w \"%{http_code}\" http://localhost:11434/api/version"
+    },
+    {
+      "timestamp": "2025-08-31T04:20:29.745Z",
+      "level": "WARN",
+      "message": "✗ Ollama API not responding"
+    },
+    {
+      "timestamp": "2025-08-31T04:20:32.038Z",
+      "level": "ERROR",
+      "message": "Command failed [SvelteKit Frontend availability]: curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173"
+    },
+    {
+      "timestamp": "2025-08-31T04:20:32.038Z",
+      "level": "PASS",
+      "message": "✅ PASS: pgvector Integration in Schema - Vector columns configured for embeddings"
+    },
+    {
+      "timestamp": "2025-08-31T04:20:32.038Z",
+      "level": "PASS",
+      "message": "✅ PASS: JSONB Support in Schema - JSONB columns configured for metadata"
+    },
+    {
+      "timestamp": "2025-08-31T04:20:32.039Z",
+      "level": "INFO",
+      "message": "=== Testing Performance and Configuration Alignment ==="
+    },
+    {
+      "timestamp": "2025-08-31T04:20:32.103Z",
+      "level": "PASS",
+      "message": "✅ PASS: RTX 3060 Ti GPU Available - Hardware matches architecture specification"
+    },
+    {
+      "timestamp": "2025-08-31T04:20:32.354Z",
+      "level": "FAIL",
+      "message": "❌ FAIL: Node.js Version Compatible - v22.17.1 (modern version required)"
+    },
+    {
+      "timestamp": "2025-08-31T04:20:32.355Z",
+      "level": "PASS",
+      "message": "✅ PASS: Key Dependencies Available - 4/4 required packages found"
+    }
+  ]
+}

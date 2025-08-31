@@ -210,10 +210,10 @@
 
 ### **📋 Deployment Instructions**
 
-**1. Database Setup:**
+**1. Database Migration (Using Existing legal_ai_db):**
 ```sql
-psql -U postgres -c "CREATE DATABASE legal_ai;"
-psql -U postgres -d legal_ai -f production-migration.sql
+-- Run in pgAdmin or psql connected to legal_ai_db
+psql -U postgres -d legal_ai_db -f production-migration.sql
 ```
 
 **2. System Startup:**
