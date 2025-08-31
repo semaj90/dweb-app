@@ -1,10 +1,12 @@
 
 import { users } from "$lib/server/db/index";
 import { eq } from 'drizzle-orm';
+import { apiResponse, transformUserForFrontend } from '$lib/utils/case-transform';
 
-import type { RequestHandler } from "@sveltejs/kit";
 import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db/index";
+import type { RequestHandler } from './$types';
+
 
 export const GET: RequestHandler = async ({ locals }) => {
   const authUser = locals.user;
@@ -12,28 +14,35 @@ export const GET: RequestHandler = async ({ locals }) => {
     return json({ error: "Not authenticated" }, { status: 401 });
   }
   try {
+    // Query using actual database column names (snake_case)
     const user = await db.query.users.findFirst({
       where: eq(users.id, locals.user.id),
       columns: {
         id: true,
         email: true,
-        name: true,
-        firstName: true,
-        lastName: true,
+        username: true,          // database field
+        first_name: true,        // database field
+        last_name: true,         // database field  
         role: true,
-        avatarUrl: true,
-        createdAt: true,
+        avatar_url: true,        // database field
+        created_at: true,        // database field
+        updated_at: true,        // database field
+        is_active: true,         // database field
+        email_verified: true,    // database field
       },
     });
 
     if (!user) {
       return json({ error: "User not found" }, { status: 404 });
     }
+    // Transform snake_case database fields to camelCase for frontend
+    const frontendUser = transformUserForFrontend(user);
+    
     return json({
       success: true,
       user: {
-        ...user,
-        avatarUrl: user.avatarUrl || "/images/default-avatar.png",
+        ...frontendUser,
+        avatarUrl: frontendUser.avatarUrl || "/images/default-avatar.png",
       },
     });
   } catch (error: any) {
@@ -47,40 +56,48 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
     return json({ error: "Not authenticated" }, { status: 401 });
   }
   try {
-    const { name, email, firstName, lastName } = await request.json();
+    // Frontend sends camelCase data
+    const frontendData = await request.json();
+    const { firstName, lastName, email } = frontendData;
 
-    if (!email || !name) {
-      return json({ error: "Name and email are required" }, { status: 400 });
+    if (!email) {
+      return json({ error: "Email is required" }, { status: 400 });
     }
-    // Update user profile in database
+
+    // Update user profile in database using snake_case fields
     const [updatedUser] = await db
       .update(users)
       .set({
-        name,
         email,
-        firstName: firstName || "",
-        lastName: lastName || "",
+        first_name: firstName || "",      // snake_case for database
+        last_name: lastName || "",        // snake_case for database  
+        updated_at: new Date(),           // snake_case for database
       })
       .where(eq(users.id, locals.user.id))
       .returning({
         id: users.id,
         email: users.email,
-        name: users.name,
-        firstName: users.firstName,
-        lastName: users.lastName,
+        username: users.username,
+        first_name: users.first_name,     // snake_case database field
+        last_name: users.last_name,       // snake_case database field
         role: users.role,
-        avatarUrl: users.avatarUrl,
-        createdAt: users.createdAt,
+        avatar_url: users.avatar_url,     // snake_case database field
+        created_at: users.created_at,     // snake_case database field
+        updated_at: users.updated_at,     // snake_case database field
       });
 
     if (!updatedUser) {
       return json({ error: "Failed to update profile" }, { status: 500 });
     }
+
+    // Transform snake_case database result to camelCase for frontend
+    const frontendUser = transformUserForFrontend(updatedUser);
+    
     return json({
       success: true,
       user: {
-        ...updatedUser,
-        avatarUrl: updatedUser.avatarUrl || "/images/default-avatar.svg",
+        ...frontendUser,
+        avatarUrl: frontendUser.avatarUrl || "/images/default-avatar.svg",
       },
       message: "Profile updated successfully",
     });

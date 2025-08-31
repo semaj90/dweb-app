@@ -1,5 +1,6 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import { json, error } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+
 // Enhanced Document Search API with PostgreSQL + pgvector + Cognitive Cache
 import { db, getDatabaseHealth } from '$lib/server/db';
 import { legal_documents, evidence, cases } from '$lib/server/db/schema-postgres';
@@ -165,7 +166,7 @@ async function vectorSearch(
   limit: number,
   threshold: number,
   filters: any
-): Promise<unknown[]> {
+): Promise<any[]> {
   try {
     console.log('[Search] Performing pgvector similarity search');
 
@@ -238,7 +239,7 @@ async function vectorSearch(
 }
 
 // Full-text keyword search
-async function keywordSearch(query: string, limit: number, filters: any): Promise<unknown[]> {
+async function keywordSearch(query: string, limit: number, filters: any): Promise<any[]> {
   try {
     console.log('[Search] Performing PostgreSQL full-text search');
 
@@ -307,7 +308,7 @@ async function hybridSearch(
   limit: number,
   threshold: number,
   filters: any
-): Promise<unknown[]> {
+): Promise<any[]> {
   console.log('[Search] Performing hybrid search');
 
   // Perform both searches in parallel
@@ -362,7 +363,7 @@ async function semanticSearch(
   limit: number,
   threshold: number,
   filters: any
-): Promise<unknown[]> {
+): Promise<any[]> {
   console.log('[Search] Performing semantic search with context');
 
   // Get vector results first

@@ -1,6 +1,7 @@
 
+import type { RequestHandler } from './$types';
+
 // src/routes/api/documents/+server.ts
-import { type RequestHandler,  json } from '@sveltejs/kit';
 import { URL } from "url";
 
 const GO_SERVICE = 'http://localhost:8080';
