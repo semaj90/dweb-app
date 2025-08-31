@@ -41,6 +41,15 @@ declare module '$lib/server/db/index' {
   export const eq: any;
   export const desc: any;
   export const count: any;
+  export const drizzle: any;
+  export const Database: any;
+  export const sql: any;
+  export const and: any;
+  export const gte: any;
+  export const like: any;
+  export const lte: any;
+  export const or: any;
+  export const SQL: any;
   const _default: any;
   export default _default;
 }
