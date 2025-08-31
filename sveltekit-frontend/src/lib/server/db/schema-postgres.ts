@@ -15,7 +15,7 @@ import {
   index
 } from 'drizzle-orm/pg-core';
 import { vector } from 'pgvector/drizzle-orm';
-import { relations } from 'drizzle-orm';
+import { relations } from 'drizzle-orm/relations';
 
 // === USERS TABLE ===
 // Maps exactly to PostgreSQL users table with snake_case columns
@@ -306,3 +306,70 @@ export type DatabaseUserAttributes = Omit<User, 'id'>;
 export type NewUserAiQuery = typeof userAiQueries.$inferInsert;
 export type NewAutoTag = typeof autoTags.$inferInsert;
 export type NewDocumentChunk = typeof documentChunks.$inferInsert;
+
+// Compatibility type aliases (some files expect PascalCase type names)
+export type Case = typeof cases.$inferSelect;
+export type Evidence = typeof evidence.$inferSelect;
+export type LegalDocument = typeof legal_documents.$inferSelect;
+export type DocumentChunk = typeof documentChunks.$inferSelect;
+export type Report = typeof reports.$inferSelect;
+export type Statute = typeof statutes.$inferSelect;
+export type LegalAnalysisSession = typeof legalAnalysisSessions.$inferSelect;
+export type UserAiQuery = typeof userAiQueries.$inferSelect;
+export type AutoTagType = typeof autoTags.$inferSelect;
+export type CaseScoreType = typeof caseScores.$inferSelect;
+export type RagSessionType = typeof ragSessions.$inferSelect;
+export type RagMessageType = typeof ragMessages.$inferSelect;
+export type VectorMetadataType = typeof vectorMetadata.$inferSelect;
+export type Criminal = typeof criminals.$inferSelect;
+export type PersonOfInterest = typeof personsOfInterest.$inferSelect;
+export type CanvasState = typeof canvasStates.$inferSelect;
+export type EmbeddingCache = typeof embeddingCache.$inferSelect;
+export type UserProfile = typeof userProfiles.$inferSelect;
+
+// Missing tables referenced in CRUD endpoints
+export const caseDocuments = pgTable('case_documents', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  caseId: uuid('case_id').references(() => cases.id, { onDelete: 'cascade' }).notNull(),
+  title: varchar('title', { length: 255 }).notNull(),
+  document_type: varchar('document_type', { length: 100 }).notNull(),
+  file_path: varchar('file_path', { length: 500 }),
+  file_size: varchar('file_size', { length: 50 }),
+  mime_type: varchar('mime_type', { length: 100 }),
+  content: text('content'),
+  metadata: jsonb('metadata').default({}),
+  created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
+  updated_at: timestamp('updated_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
+});
+
+export const caseActivities = pgTable('case_activities', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  caseId: uuid('case_id').references(() => cases.id, { onDelete: 'cascade' }).notNull(),
+  type: varchar('type', { length: 100 }).notNull(),
+  description: text('description').notNull(),
+  userId: uuid('user_id').references(() => users.id),
+  timestamp: timestamp('timestamp', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
+  metadata: jsonb('metadata').default({})
+});
+
+export const caseTimeline = pgTable('case_timeline', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  caseId: uuid('case_id').references(() => cases.id, { onDelete: 'cascade' }).notNull(),
+  event: varchar('event', { length: 255 }).notNull(),
+  description: text('description'),
+  timestamp: timestamp('timestamp', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
+  type: varchar('type', { length: 50 }).default('event'),
+  metadata: jsonb('metadata').default({})
+});
+
+// Type exports for new tables
+export type CaseDocument = typeof caseDocuments.$inferSelect;
+export type CaseActivity = typeof caseActivities.$inferSelect;
+export type CaseTimeline = typeof caseTimeline.$inferSelect;
+
+// Compatibility named exports / aliases for varied import patterns used in the codebase
+export const legalDocuments = legal_documents;
+export const document_chunks = documentChunks;
+export const documents = legal_documents;
+export const persons_of_interest = personsOfInterest;
+export const embedding_cache = embeddingCache;

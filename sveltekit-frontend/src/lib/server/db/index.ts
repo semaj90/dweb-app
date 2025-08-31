@@ -1,18 +1,63 @@
 // Central DB export surface - re-export canonical schema and selected auth artifacts
+// Export everything from the canonical schema module (primary surface)
 export * from './schema-postgres';
+
+// Explicit named re-exports for compatibility with varied import styles across
+// the codebase. Some files import specific symbols from
+// "$lib/server/db/schema-postgres" or expect particular camelCase/snake_case
+// aliases; exporting them here makes the central `db` index a reliable shim.
+export {
+  users,
+  sessions,
+  cases,
+  evidence,
+  legal_documents,
+  documentChunks,
+  embeddingCache,
+  keys,
+  userProfiles,
+  reports,
+  statutes,
+  legalAnalysisSessions,
+  userAiQueries,
+  autoTags,
+  caseDocuments,
+  caseActivities,
+  caseTimeline,
+  caseScores,
+  ragSessions,
+  ragMessages,
+  vectorMetadata,
+  criminals,
+  personsOfInterest,
+  canvasStates,
+  caseDocuments as case_documents,
+  documentChunks as document_chunks,
+  legal_documents as legalDocuments,
+  personsOfInterest as persons_of_interest,
+  embeddingCache as embedding_cache
+} from './schema-postgres';
+
+// Provide camelCase and common alias re-exports for modules that expect different
+// naming conventions. This reduces the number of files that need editing.
+export { users as Users, users as UsersTable } from './schema-postgres';
+export { cases as Cases, cases as CaseTable } from './schema-postgres';
+export { caseActivities as case_activities, caseActivities as CaseActivities } from './schema-postgres';
+export { personsOfInterest as persons_of_interest_alias, personsOfInterest as PersonsOfInterest } from './schema-postgres';
+export { legal_documents as legalDocuments_alias, legal_documents as Documents } from './schema-postgres';
 
 import * as schema from "./schema-postgres";
 
 // === INFERRED TABLE TYPES ===
 // Clean TypeScript types derived from Drizzle table definitions
-import type { 
-  users, 
-  sessions, 
-  cases, 
-  evidence, 
-  legal_documents, 
+import type {
+  users,
+  sessions,
+  cases,
+  evidence,
+  legal_documents,
   documentChunks,
-  embeddingCache 
+  embeddingCache
 } from './schema-postgres';
 
 // Select types (for reading data from database)
@@ -33,14 +78,17 @@ export type InsertLegalDocument = typeof legal_documents.$inferInsert;
 export type InsertDocumentChunk = typeof documentChunks.$inferInsert;
 export type InsertEmbeddingCache = typeof embeddingCache.$inferInsert;
 // Database connection and schema exports
-import { drizzle } from 'drizzle-orm/node-postgres';
-import postgres from 'postgres';
-import { sql, eq, and, or, desc, asc, count, like, ilike, isNull, isNotNull, ne, SQL } from 'drizzle-orm';
+// Use the postgres-js adapter since this project uses the `postgres` (porsager) client
+// (importing node-postgres here caused runtime errors like "client.query is not a function").
+import { drizzle } from 'drizzle-orm/postgres-js';
+import { sql, eq, and, or, count, like, ilike, isNull, isNotNull, ne, gte, lte } from 'drizzle-orm';
+// Import ordering functions from specific submodule
+import { desc, asc } from 'drizzle-orm/sql/expressions/select';
 
 // Re-export sql and common query helpers for convenience across server code
-export { sql, eq, and, or, desc, asc, count, like, ilike, isNull, isNotNull, ne };
-// Export SQL type for utilities that reference it
-export type { SQL };
+export { sql, eq, and, or, count, like, ilike, isNull, isNotNull, ne, gte, lte, desc, asc };
+// Export SQL type for utilities that reference it - use lowercase
+export type SQL = typeof sql;
 
 // Database type helper - exported first to avoid temporal dead zone
 export const isPostgreSQL = true;
@@ -51,7 +99,8 @@ export const fullSchema = schema;
 // Create the connection
 const connectionString = process.env.DATABASE_URL || 'postgresql://legal_admin:123456@localhost:5432/legal_ai_db';
 
-// For query purposes
+// For query purposes - use ESM import
+import postgres from 'postgres';
 const queryClient = postgres(connectionString);
 export const db = drizzle(queryClient, { schema: fullSchema });
 
@@ -138,7 +187,7 @@ export type DocumentType = 'evidence' | 'case_file' | 'report' | 'transcript' | 
 // Table name constants for dynamic queries
 export const TABLE_NAMES = {
   USERS: 'users',
-  SESSIONS: 'sessions', 
+  SESSIONS: 'sessions',
   CASES: 'cases',
   EVIDENCE: 'evidence',
   LEGAL_DOCUMENTS: 'legal_documents',
@@ -168,4 +217,4 @@ export interface DatabaseConfig {
 export type {
   InferSelectModel,
   InferInsertModel
-} from 'drizzle-orm';
+} from 'drizzle-orm/table';
