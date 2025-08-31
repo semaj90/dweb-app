@@ -147,6 +147,9 @@ go-microservice/enhanced-rag.exe
 # Explicitly ignore large installer archives and local extracted binaries
 /neo4j-community-*.zip
 /minio.exe
+
+# Backups created by the TypeScript auto-fixer — keep out of the repo
+typescript-backup/
 /qdrant-extracted/
 /qdrant-windows/
 /services/neo4j.zip

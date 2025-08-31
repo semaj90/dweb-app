@@ -1,8 +1,5 @@
-import type { RequestHandler } from '@sveltejs/kit';
-// Enhanced Document Ingestion API
-// Processes legal documents and stores them with embeddings
-
-import { json, type RequestHandler } from "@sveltejs/kit";
+import { json } from "@sveltejs/kit";
+import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request }) => {
   try {

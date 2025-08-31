@@ -1,4 +1,3 @@
-import type { RequestHandler } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
 const SUMMARIZER_BASE =
@@ -24,7 +23,7 @@ export const POST: RequestHandler = async ({ request }) => {
     return new Response(JSON.stringify({ ok: false, error: msg }), {
       status: 502,
       headers: { "content-type": "application/json" },
-    }) as unknown as Response;
+    }) as any as Response;
   });
 
   if (!(upstream instanceof Response)) {
