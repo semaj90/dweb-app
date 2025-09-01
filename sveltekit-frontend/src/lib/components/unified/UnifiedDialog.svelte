@@ -96,9 +96,9 @@
   });
 
   // WebGPU animation state
-  let canvas: HTMLCanvasElement;
-  let gpu: GPU | null = null;
-  let device: GPUDevice | null = null;
+let canvas = $state<HTMLCanvasElement;
+  let gpu: GPU | null >(null);
+let device = $state<GPUDevice | null >(null);
   let animationFrame: number;
   
   // Memory-efficient state (NES constraints: 8KB)
@@ -356,18 +356,18 @@
 
     <!-- Overlay -->
     <div
-      use:melt={$overlay}
+      <!-- <!-- use:melt={$overlay}
       class="fixed inset-0 bg-black/50 backdrop-blur-sm"
-      transition:fade={{ duration: 150 }}
+      transitifade={{ duration: 150 }}
     />
 
     <!-- Dialog Container -->
     <div class={dialogClasses}>
       <!-- Dialog Content -->
       <div
-        use:melt={$dialogContent}
+        <!-- <!-- use:melt={$dialogContent}
         class={contentClasses}
-        transition:scale={{ 
+        transitiscale={{ 
           duration: 200, 
           easing: cubicInOut,
           start: 0.95
@@ -382,7 +382,7 @@
                 class="w-6 h-6 rounded-full border-2 border-white shadow-sm flex items-center justify-center text-xs font-bold text-white"
                 style="background-color: {user.color};"
                 title={user.name}
-                transition:fly={{ x: 20, duration: 300 }}
+                transitifly={{ x: 20, duration: 300 }}
               >
                 {user.name.charAt(0).toUpperCase()}
               </div>
@@ -399,7 +399,7 @@
         {#if title}
           <div class="px-6 py-4 border-b border-gray-200">
             <h2 
-              use:melt={$dialogTitle}
+              <!-- <!-- use:melt={$dialogTitle}
               class="text-lg font-semibold text-gray-900 flex items-center gap-3"
             >
               {@render title()}
@@ -453,7 +453,7 @@
           <!-- Default footer with close button -->
           <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-3">
             <UnifiedButton
-              use:melt={$close}
+              <!-- <!-- use:melt={$close}
               variant="secondary"
               size="sm"
             >
@@ -464,7 +464,7 @@
 
         <!-- Close button -->
         <button
-          use:melt={$close}
+          <!-- <!-- use:melt={$close}
           class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -477,7 +477,7 @@
           <div 
             class="absolute pointer-events-none z-10"
             style="left: {cursor.x}px; top: {cursor.y}px; color: {cursor.color};"
-            transition:fade={{ duration: 200 }}
+            transitifade={{ duration: 200 }}
           >
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
               <path d="M7 2L17 12L12 13L13 18L7 2Z"/>

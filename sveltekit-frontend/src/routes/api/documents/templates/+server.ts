@@ -1,7 +1,8 @@
 
 import type { RequestEvent } from "@sveltejs/kit";
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
+import { URL } from "url";
 
 
 // Document templates with pre-filled content

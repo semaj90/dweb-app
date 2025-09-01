@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * Enhanced RAG API Endpoint - SvelteKit 2 Production
@@ -16,6 +16,8 @@ import type {
   ServiceEndpoints 
 } from '$lib/types/api.js';
 import { embeddingService } from '$lib/server/embedding-service.js';
+import crypto from "crypto";
+import { URL } from "url";
 
 // Enhanced RAG Service Configuration
 const ENHANCED_RAG_CONFIG = {

@@ -4,6 +4,7 @@
  */
 
 import { productionServiceRegistry, getOptimalServiceForRoute, type ServiceDefinition } from '$lib/services/production-service-registry.js';
+import { URL } from "url";
 
 export interface ServiceRequest {
   route: string;

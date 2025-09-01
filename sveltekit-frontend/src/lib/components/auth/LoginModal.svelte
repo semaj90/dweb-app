@@ -2,9 +2,8 @@
   import { $props } from 'svelte';
 
   import { Button } from "$lib/components/ui/button";
-  import { createDialog, melt } from "melt";
+  import { Dialog as BitsDialog } from "bits-ui";
   import { createEventDispatcher } from "svelte";
-  import { writable } from "svelte/store";
   import { superForm } from "sveltekit-superforms";
 
   let { data, open = false } = $props();
@@ -20,87 +19,78 @@
 }
   );
 
-  // FIX 1: The 'open' property for createDialog must be a writable store.
-  // We create an internal store and sync it with the 'open' prop.
-  const openStore = writable(open);
-
-const {
-  elements: { trigger, overlay, content, title, close },
-  states: { open: isMeltOpen },
-} = createDialog({
-  open: openStore,
-  onOpenChange: (nextOpen: boolean) => {
-    open = nextOpen;
+  function handleOpenChange(isOpen: boolean) {
+    open = isOpen;
     if (!open) {
       dispatch("close");
     }
-  },
-});
-
-  // This reactive statement ensures that if the parent changes
-  // the 'open' prop, our internal store is updated.
-  $: if ($openStore !== open) {
-    $openStore = open;
-}
+  }
 </script>
 
-<button use:melt={$trigger} style="display: none;">Open Modal</button>
+<BitsDialog.Root {open} onOpenChange={handleOpenChange}>
+  <BitsDialog.Trigger style="display: none;">Open Modal</BitsDialog.Trigger>
+  
+  <BitsDialog.Portal>
+    <BitsDialog.Overlay class="fixed inset-0 bg-black/50 z-50" />
+    <BitsDialog.Content class="fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 bg-white p-6 shadow-lg sm:rounded-lg">
+      <BitsDialog.Title class="text-xl font-semibold mb-4">Login</BitsDialog.Title>
+      
+      <form method="POST" action="?/login" use:enhance>
+        <div class="space-y-4">
+          <div>
+            <label for="email" class="block text-sm font-medium mb-2">Email</label>
+            <input
+              type="email"
+              name="email"
+              id="email"
+              bind:value={$form.email}
+              placeholder="Email"
+              required
+              aria-invalid={$errors.email ? "true" : undefined}
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {#if $errors.email}
+              <span class="text-red-500 text-sm">{$errors.email}</span>
+            {/if}
+          </div>
 
-{#if $isMeltOpen}
-  <div use:melt={$overlay} class="container mx-auto px-4"></div>
-  <div use:melt={$content} class="container mx-auto px-4">
-    <h2 use:melt={$title} class="container mx-auto px-4">Login</h2>
-    <button use:melt={$close} class="container mx-auto px-4">X</button>
+          <div>
+            <label for="password" class="block text-sm font-medium mb-2">Password</label>
+            <input
+              type="password"
+              name="password"
+              id="password"
+              bind:value={$form.password}
+              placeholder="Password"
+              required
+              aria-invalid={$errors.password ? "true" : undefined}
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {#if $errors.password}
+              <span class="text-red-500 text-sm">{$errors.password}</span>
+            {/if}
+          </div>
 
-    <form class="container mx-auto px-4" method="POST" action="?/login" use:enhance>
-      <div class="container mx-auto px-4">
-        <label for="email" class="container mx-auto px-4">Email</label>
-        <input
-          type="email"
-          name="email"
-          id="email"
-          bind:value={$form.email}
-          placeholder="Email"
-          required
-          aria-invalid={$errors.email ? "true" : undefined}
-          class="container mx-auto px-4"
-        />
-        {#if $errors.email}<span class="container mx-auto px-4"
-            >{$errors.email}</span
-          >{/if}
-
-        <label for="password" class="container mx-auto px-4">Password</label>
-        <input
-          type="password"
-          name="password"
-          id="password"
-          bind:value={$form.password}
-          placeholder="Password"
-          required
-          aria-invalid={$errors.password ? "true" : undefined}
-          class="container mx-auto px-4"
-        />
-        {#if $errors.password}<span class="container mx-auto px-4"
-            >{$errors.password}</span
-          >{/if}
-
-        {#if message}<div class="container mx-auto px-4">{message}</div>{/if}
-        {#if $message}<div class="container mx-auto px-4">{$message}</div>{/if}
-      <div class="container mx-auto px-4">
-        <Button
-          type="button"
-          variant="ghost"
-          on:click={() => ($isMeltOpen = false)}
-        >
-          Cancel
-        </Button>
-        <Button type="submit" disabled={$submitting}>
-          {#if $submitting}Logging in...{:else}Login{/if}
-        </Button>
-      </div>
-    </form>
-  </div>
-{/if}
+          {#if message}<div class="text-red-500 text-sm">{message}</div>{/if}
+          {#if $message}<div class="text-red-500 text-sm">{$message}</div>{/if}
+          
+          <div class="flex justify-end gap-2 mt-6">
+            <Button
+              type="button"
+              variant="ghost"
+              on:on:on:click={() => handleOpenChange(false)}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={$submitting}>
+              {#if $submitting}Logging in...{:else}Login{/if}
+            </Button>
+          </div>
+        </div>
+      </form>
+    </BitsDialog.Content>
+  </BitsDialog.Portal>
+</BitsDialog.Root>
 
 <style>
   /* @unocss-include */

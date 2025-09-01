@@ -382,6 +382,6 @@ export class CrudClient {
 
 // Export singleton instance
 export const crudClient = new CrudClient();
-
+;
 // Export error class
 export { CrudApiError };

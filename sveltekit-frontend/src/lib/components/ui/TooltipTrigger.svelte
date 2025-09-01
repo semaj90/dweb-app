@@ -14,7 +14,7 @@
 
 
   // `class` is reserved; use `className` instead
-  let className = "";
+let className = $state("");
 </script>
 
 {#if asChild}

@@ -419,17 +419,14 @@ const createCaseStore = () => {
 };
 
 export const caseStore = createCaseStore();
-
+;
 // Derived stores
 export const activeCaseId = derived(caseStore, ($cases) => $cases.activeCaseId);
 export const activeCase = derived(caseStore, ($cases) => $cases.activeCase);
 export const filteredCases = derived(caseStore, ($cases) => $cases.cases);
 export const casesLoading = derived(caseStore, ($cases) => $cases.isLoading);
 export const casesError = derived(caseStore, ($cases) => $cases.error);
-export const casesPagination = derived(
-  caseStore,
-  ($cases) => $cases.pagination
-);
+export const casesPagination = derived(caseStore, ($cases) => $cases.pagination);
 
 // Initialize cases when authenticated
 if (browser) {

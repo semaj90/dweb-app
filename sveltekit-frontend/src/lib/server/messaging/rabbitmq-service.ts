@@ -8,10 +8,10 @@ import type { Connection, Channel, Message } from 'amqplib';
 
 // RabbitMQ configuration
 const RABBITMQ_CONFIG = {
-  url: process.env.RABBITMQ_URL || 'amqp://localhost:5672',
-  username: process.env.RABBITMQ_USERNAME || 'guest',
-  password: process.env.RABBITMQ_PASSWORD || 'guest',
-  vhost: process.env.RABBITMQ_VHOST || '/',
+  url: import.meta.env.RABBITMQ_URL || 'amqp://localhost:5672',
+  username: import.meta.env.RABBITMQ_USERNAME || 'guest',
+  password: import.meta.env.RABBITMQ_PASSWORD || 'guest',
+  vhost: import.meta.env.RABBITMQ_VHOST || '/',
   heartbeat: 60
 };
 

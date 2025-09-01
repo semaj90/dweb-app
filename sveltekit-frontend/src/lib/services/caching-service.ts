@@ -2,11 +2,11 @@
 // Enhanced Caching Service - Production Implementation
 // Integrated with NES-Style Cache Orchestrator and Advanced Caching
 
-import type { Writable } from "svelte/store";
+import type {     Writable     } from 'svelte/store';
 import { writable } from "svelte/store";
 
 // Import advanced cache manager for L1-L7 caching integration
-import type { AdvancedCacheManager } from '../../lib/caching/advanced-cache-manager';
+import type { AdvancedCacheManager } from '$lib/caching/advanced-cache-manager';
 
 // ============================================================================
 // CACHE SERVICE INTERFACE
@@ -382,7 +382,7 @@ class EnhancedCachingService {
 // ============================================================================
 
 export const cachingService = new EnhancedCachingService();
-
+;
 // ============================================================================
 // NES CACHE ORCHESTRATOR INTEGRATION HELPERS
 // ============================================================================

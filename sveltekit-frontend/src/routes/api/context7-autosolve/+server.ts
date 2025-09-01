@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * Enhanced Context7 Autosolve Integration API
@@ -6,13 +6,15 @@ import type { RequestHandler } from './$types';
  * Integrates: Multi-layer cache, Go binaries, CUDA processing, Neo4j knowledge graph
  */
 
-import { legalAIIntegration } from '../../../lib/services/quic-legal-ai-integration';
-import { vectorProxy } from '../../../lib/services/grpc-quic-vector-proxy';
-import { chatEngine } from '../../../lib/services/user-chat-recommendation-engine';
-import { multiLayerCache } from '../../../lib/services/multiLayerCache';
-import { goBinaryService } from '../../../lib/services/go-binary-integration';
-import { context7FlashAttentionIntegration } from '../../../lib/services/context7-flashattention-integration';
-import { analyzeCurrentErrors } from '../../../context7-multicore-error-analysis';
+import { legalAIIntegration } from '../../../lib/services/quic-legal-ai-integration.js';
+import { vectorProxy } from '../../../lib/services/grpc-quic-vector-proxy.js';
+import { chatEngine } from '../../../lib/services/user-chat-recommendation-engine.js';
+import { multiLayerCache } from '../../../lib/services/multiLayerCache.js';
+import { goBinaryService } from '../../../lib/services/go-binary-integration.js';
+import { context7FlashAttentionIntegration } from '../../../lib/services/context7-flashattention-integration.js';
+import { analyzeCurrentErrors } from '../../../context7-multicore-error-analysis.js';
+import crypto from "crypto";
+import { URL } from "url";
 
 // Configuration for the enhanced autosolve system
 const ENHANCED_AUTOSOLVE_CONFIG = {

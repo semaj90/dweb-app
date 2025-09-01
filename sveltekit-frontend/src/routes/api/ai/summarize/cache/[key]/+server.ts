@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { getCache, deleteCache, redisTTL, memoryStats } from '$lib/server/summarizeCache';
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
+import { URL } from "url";
 
 
 // Introspection + invalidation route

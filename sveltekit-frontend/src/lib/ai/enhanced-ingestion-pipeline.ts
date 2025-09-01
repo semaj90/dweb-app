@@ -23,8 +23,8 @@ import { resolveLibraryId, getLibraryDocs } from '$lib/mcp-context72-get-library
 const copilotOrchestrator = async (prompt: string, options: any): Promise<any> => ({
   selfPrompt: "Mock copilot analysis completed",
 });
-import type { DocumentEmbedding } from './som-rag-system';
-import { SelfOrganizingMapRAG } from './som-rag-system';
+import type { DocumentEmbedding } from './som-rag-system.js';
+import { SelfOrganizingMapRAG } from './som-rag-system.js';
 import { QdrantService } from '$lib/server/services/qdrant-service';
 import { Pool } from 'pg';
 
@@ -190,7 +190,7 @@ export class EnhancedIngestionPipeline {
       url: config.qdrantUrl || "http://localhost:6333",
     });
     this.pgPool = new Pool({
-      connectionString: config.pgConnectionString || process.env.DATABASE_URL,
+      connectionString: config.pgConnectionString || import.meta.env.DATABASE_URL,
     });
     this.redisClient = createClient({
       url: config.redisUrl || "redis://localhost:6379",

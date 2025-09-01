@@ -193,13 +193,13 @@
 
         <div class="space-y-4">
           {#if !demoMode}
-            <Button on:click={() => startDemoMode()}>
+            <Button on:on:click={() => startDemoMode()}>
               <Activity class="space-y-4" />
               Start Demo
             </Button>
           {/if}
 
-          <Button variant="outline" on:click={() => clearAllEvidence()}>
+          <Button variant="outline" on:on:click={() => clearAllEvidence()}>
             <Database class="space-y-4" />
             Clear All
           </Button>
@@ -386,7 +386,7 @@
                 size="sm"
                 variant="outline"
                 class="space-y-4"
-                on:click={() => (selectedTypes = ["video", "image"])}
+                on:on:click={() => (selectedTypes = ["video", "image"])}
               >
                 Visual Evidence
               </Button>
@@ -394,7 +394,7 @@
                 size="sm"
                 variant="outline"
                 class="space-y-4"
-                on:click={() => (selectedTypes = ["testimony", "document"])}
+                on:on:click={() => (selectedTypes = ["testimony", "document"])}
               >
                 Testimonial
               </Button>
@@ -402,7 +402,7 @@
                 size="sm"
                 variant="outline"
                 class="space-y-4"
-                on:click={() => {
+                on:on:click={() => {
                   selectedTypes = [];
                   searchQuery = "";
                 }}

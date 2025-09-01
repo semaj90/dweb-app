@@ -18,21 +18,21 @@
   let { maxHeight = $bindable() } = $props(); // "400px";
   let { showReferences = $bindable() } = $props(); // true;
   export const enableVoiceInput = false;
-
+;
   const dispatch = createEventDispatcher();
 
   // State
-  let query = "";
-  let isLoading = false;
-  let messages: any[] = [];
-  let showSettings = false;
-  let showCitationDialog = false;
-  let selectedCitation = "";
-  let selectedModel = "gpt-4";
-  let searchThreshold = 0.7;
-  let maxResults = 5;
-  let temperature = 0.7;
-  let enabledSources = ["cases", "statutes", "regulations", "secondary"];
+let query = $state("");
+let isLoading = $state(false);
+let messages = $state<any[] >([]);
+let showSettings = $state(false);
+let showCitationDialog = $state(false);
+let selectedCitation = $state("");
+let selectedModel = $state("gpt-4");
+let searchThreshold = $state(0.7);
+let maxResults = $state(5);
+let temperature = $state(0.7);
+let enabledSources = $state(["cases", "statutes", "regulations", "secondary"]);
 
   // Mock AI response
   async function handleSubmit() {
@@ -108,14 +108,14 @@ Would you like me to elaborate on any of these aspects?`,
       <div class="container mx-auto px-4">
         <button
           class="container mx-auto px-4"
-          click={() => (showSettings = !showSettings)}
+          on:onclick={() => (showSettings = !showSettings)}
           title="Settings"
         >
           <Settings class="container mx-auto px-4" />
         </button>
         <button
           class="container mx-auto px-4"
-          click={() => clearMessages()}
+          on:onclick={() => clearMessages()}
           title="Clear conversation"
         >
           <Trash2 class="container mx-auto px-4" />
@@ -137,7 +137,7 @@ Would you like me to elaborate on any of these aspects?`,
               {#each message.references as reference}
                 <button
                   class="container mx-auto px-4"
-                  click={() => handleReferenceClick(reference)}
+                  on:onclick={() => handleReferenceClick(reference)}
                 >
                   <Quote class="container mx-auto px-4" />
                   <span class="container mx-auto px-4">{reference.title}</span>
@@ -185,7 +185,7 @@ Would you like me to elaborate on any of these aspects?`,
     <div class="container mx-auto px-4">
       <div class="container mx-auto px-4">
         <h4 class="container mx-auto px-4">AI Assistant Settings</h4>
-        <button class="container mx-auto px-4" click={() => (showSettings = false)}
+        <button class="container mx-auto px-4" on:onclick={() => (showSettings = false)}
           >×</button
         >
       </div>
@@ -244,8 +244,8 @@ Would you like me to elaborate on any of these aspects?`,
   {#if showCitationDialog}
     <div
       class="container mx-auto px-4"
-      click={() => (showCitationDialog = false)}
-      on:keydown={(e) => {
+      on:onclick={() => (showCitationDialog = false)}
+      keydown={(e) => {
         if (e.key === "Escape") {
           showCitationDialog = false;
         }
@@ -269,12 +269,12 @@ Would you like me to elaborate on any of these aspects?`,
           </div>
 
           <div class="container mx-auto px-4">
-            <button class="container mx-auto px-4" click={() => insertCitation()}>
+            <button class="container mx-auto px-4" on:onclick={() => insertCitation()}>
               Insert Citation
             </button>
             <button
               class="container mx-auto px-4"
-              click={() => navigator.clipboard.writeText(selectedCitation)}
+              on:onclick={() => navigator.clipboard.writeText(selectedCitation)}
             >
               Copy to Clipboard
             </button>
@@ -284,7 +284,7 @@ Would you like me to elaborate on any of these aspects?`,
         <div class="container mx-auto px-4">
           <button
             class="container mx-auto px-4"
-            click={() => (showCitationDialog = false)}
+            on:onclick={() => (showCitationDialog = false)}
           >
             Close
           </button>

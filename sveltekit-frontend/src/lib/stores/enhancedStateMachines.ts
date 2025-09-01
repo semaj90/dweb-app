@@ -678,12 +678,12 @@ export const evidenceProcessingStore = writable({
 // Derived stores for easy component access
 export const currentlyProcessingStore = derived(
   evidenceProcessingStore,
-  ($store) => $store.context?.evidenceQueue[0] || null,
+  ($store) => $store.context?.evidenceQueue[0] || null
 );
 
 export const processingResultsStore = derived(
   evidenceProcessingStore,
-  ($store) => Array.from($store.context?.processingResults.values() || []),
+  ($store) => Array.from($store.context?.processingResults?.values?.() || [])
 );
 
 export const aiRecommendationsStore = derived(
@@ -691,28 +691,27 @@ export const aiRecommendationsStore = derived(
   ($store) => {
     const analysis = $store.context?.aiAnalysis;
     if (!analysis) return [];
-
     return Array.from(analysis.values()).flatMap(
-      (a) =>
-        a.suggestedActions?.map((action) => ({
+      (a: any) =>
+        a.suggestedActions?.map((action: string) => ({
           id: crypto.randomUUID(),
           type: "suggested_action",
           content: action,
           confidence: a.confidenceScore,
           source: a.processingModel,
-        })) || [],
+        })) || []
     );
-  },
+  }
 );
 
 export const vectorSimilarityStore = derived(
   evidenceProcessingStore,
-  ($store) => $store.context?.vectorMatches || [],
+  ($store) => $store.context?.vectorMatches || []
 );
 
 export const graphRelationshipsStore = derived(
   evidenceProcessingStore,
-  ($store) => $store.context?.graphRelationships || [],
+  ($store) => $store.context?.graphRelationships || []
 );
 
 export const systemHealthStore = derived(evidenceProcessingStore, ($store) => ({

@@ -4,8 +4,9 @@
  */
 
 import { Driver, Session, Record, auth, driver } from 'neo4j-driver';
-import { langChainOllamaService } from './langchain-ollama-llama-integration';
-import { vectorProxy } from './grpc-quic-vector-proxy';
+import { langChainOllamaService } from './langchain-ollama-llama-integration.js';
+import { vectorProxy } from './grpc-quic-vector-proxy.js';
+import crypto from "crypto";
 
 export interface DocumentSummary {
   id: string;

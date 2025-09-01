@@ -35,13 +35,13 @@ https://svelte.dev/e/js_parse_error -->
   } from "lucide-svelte";
 
   // State
-  let editorComponent: RichTextEditor;
-  let cleanupAutoSave: (() => void) | undefined;
-  let evidenceSearchResults: any[] = [];
-  let selectedEvidence: any = null;
-  let showEvidenceModal = false;
-  let showSettingsModal = false;
-  let evidenceFormData: any = null; // For the evidence form
+let editorComponent = $state<RichTextEditor;
+  let cleanupAutoSave: (() >(> void) | undefined);
+let evidenceSearchResults = $state<any[] >([]);
+let selectedEvidence = $state<any >(null);
+let showEvidenceModal = $state(false);
+let showSettingsModal = $state(false);
+let evidenceFormData = $state<any >(null); // For the evidence form
 
   // Reactive layout classes
   let layoutClass = $derived(
@@ -204,7 +204,7 @@ https://svelte.dev/e/js_parse_error -->
       <aside
         class="editor-sidebar"
         style="width: {$reportUI.sidebarWidth}px"
-        transition:fly={{ x: -300, duration: 300, easing: quintOut }}
+        transitifly={{ x: -300, duration: 300, easing: quintOut }}
       >
         <!-- Evidence Search -->
         <section class="sidebar-section">
@@ -213,15 +213,15 @@ https://svelte.dev/e/js_parse_error -->
           <div>
             <h3>Evidence Library</h3>
             <button
-              click={() => handleAddNewEvidence()}
+              on:onclick={() => handleAddNewEvidence()}
               title="Add new evidence"
             >
               <Plus size={16} />
             </button>
           </div>
             items={$report.attachedEvidence}
-            on:results={(results) => (evidenceSearchResults = results)}
-            on:select={handleInsertEvidence}
+            results={(results) => (evidenceSearchResults = results)}
+            select={handleInsertEvidence}
             placeholder="Search evidence..."
           />
         </section>
@@ -239,10 +239,10 @@ https://svelte.dev/e/js_parse_error -->
             >
               <EvidenceCard
                 evidence={item}
-                on:view={handleViewEvidence}
-                on:edit={handleEditEvidence}
-                on:delete={handleDeleteEvidence}
-                on:download={handleDownloadEvidence}
+                view={handleViewEvidence}
+                edit={handleEditEvidence}
+                delete={handleDeleteEvidence}
+                download={handleDownloadEvidence}
                 compact={true}
               />
             </MasonryGrid>
@@ -251,10 +251,10 @@ https://svelte.dev/e/js_parse_error -->
               {#each evidenceSearchResults as evidence (evidence.id)}
                 <EvidenceCard
                   {evidence}
-                  on:view={handleViewEvidence}
-                  on:edit={handleEditEvidence}
-                  on:delete={handleDeleteEvidence}
-                  on:download={handleDownloadEvidence}
+                  view={handleViewEvidence}
+                  edit={handleEditEvidence}
+                  delete={handleDeleteEvidence}
+                  download={handleDownloadEvidence}
                   compact={true}
                 />
               {/each}
@@ -304,7 +304,7 @@ https://svelte.dev/e/js_parse_error -->
         <div>
           {#if !$reportUI.sidebarOpen}
             <button
-              click={() => toggleSidebar()}
+              on:onclick={() => toggleSidebar()}
               title="Show sidebar"
             >
               <PanelLeftOpen size={20} />
@@ -321,7 +321,7 @@ https://svelte.dev/e/js_parse_error -->
 
         <div>
           <button
-            click={() => switchLayout()}
+            on:onclick={() => switchLayout()}
             title="Switch layout ({$report.settings.layout})"
           >
             {#if $report.settings.layout === "single"}
@@ -334,7 +334,7 @@ https://svelte.dev/e/js_parse_error -->
           </button>
 
           <button
-            click={() => toggleFullscreen()}
+            on:onclick={() => toggleFullscreen()}
             title="Toggle fullscreen"
           >
             {#if $reportUI.fullscreen}
@@ -345,7 +345,7 @@ https://svelte.dev/e/js_parse_error -->
           </button>
 
           <button
-            click={() => (showSettingsModal = true)}
+            on:onclick={() => (showSettingsModal = true)}
             title="Settings"
           >
             <Settings size={18} />
@@ -363,11 +363,11 @@ https://svelte.dev/e/js_parse_error -->
     {#if $report.settings.layout === "dual"}
       <aside
         class="evidence-panel"
-        transition:fly={{ x: 300, duration: 300, easing: quintOut }}
+        transitifly={{ x: 300, duration: 300, easing: quintOut }}
       >
         <div class="panel-header"></div>
           <h3>Evidence</h3>
-          <button class="add-evidence-btn" click={() => handleAddNewEvidence()}>
+          <button class="add-evidence-btn" on:onclick={() => handleAddNewEvidence()}>
             <Plus size={16} />
           </button>
         </div>
@@ -381,25 +381,25 @@ https://svelte.dev/e/js_parse_error -->
           >
             <EvidenceCard
               evidence={item}
-              on:view={handleViewEvidence}
-              on:edit={handleEditEvidence}
-              on:delete={handleDeleteEvidence}
-              on:download={handleDownloadEvidence}
+              view={handleViewEvidence}
+              edit={handleEditEvidence}
+              delete={handleDeleteEvidence}
+              download={handleDownloadEvidence}
               compact={true}
             />
   {#if showEvidenceModal}
     <EvidenceForm
       data={evidenceFormData}
       evidence={selectedEvidence}
-      on:success={() => {
+      success={() => {
         showEvidenceModal = false;
         selectedEvidence = null;
       }}
-      on:error={(e) => {
+      error={(e) => {
         console.error("Evidence form error:", e.detail);
         alert("Error saving evidence");
       }}
-      on:cancel={() => {
+      cancel={() => {
         showEvidenceModal = false;
         selectedEvidence = null;
       }}
@@ -408,11 +408,11 @@ https://svelte.dev/e/js_parse_error -->
         showEvidenceModal = false;
         selectedEvidence = null;
       }}
-      on:error={(e) => {
+      error={(e) => {
         console.error("Evidence form error:", e.detail);
         alert("Error saving evidence");
       }}
-      on:cancel={() => {
+      cancel={() => {
         showEvidenceModal = false;
         selectedEvidence = null;
       }}

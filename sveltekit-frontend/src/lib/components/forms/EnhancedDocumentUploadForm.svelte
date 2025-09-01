@@ -269,7 +269,7 @@
           <Button
             variant="ghost"
             size="sm"
-            on:click={handleSaveDraft}
+            on:on:click={handleSaveDraft}
             disabled={$isSubmitting}
           >
             <Save size={16} />
@@ -277,7 +277,7 @@
           <Button
             variant="ghost"
             size="sm"
-            on:click={handleReset}
+            on:on:click={handleReset}
             disabled={$isSubmitting}
           >
             <RotateCcw size={16} />
@@ -311,13 +311,13 @@
       <div
         class="drop-zone"
         class:drag-active={dragActive}
-        on:drop={handleDrop}
-        on:dragover={handleDragOver}
-        on:dragleave={handleDragLeave}
+        ondrop={handleDrop}
+        ondragover={handleDragOver}
+        ondragleave={handleDragLeave}
         role="button"
         tabindex="0"
-        click={() => fileInput?.click()}
-        on:keydown={(e) => e.key === "Enter" && fileInput?.click()}
+        on:onclick={() => fileInput?.click()}
+        keydown={(e) => e.key === "Enter" && fileInput?.click()}
       >
         {#if selectedFile}
           <div class="selected-file">
@@ -453,7 +453,7 @@
             <Input
               id="tags"
               value={$formData.tags.join(", ")}
-              on:input={(e) => {
+              input={(e) => {
                 const value = e.currentTarget.value;
                 $formData.tags = value
                   .split(",")
@@ -543,7 +543,7 @@
               <Button
                 variant="outline"
                 size="sm"
-                on:click={() => actor.send({ type: "RETRY" })}
+                on:on:click={() => actor.send({ type: "RETRY" })}
                 disabled={contextValue.retryCount >= contextValue.maxRetries}
               >
                 Retry ({contextValue.maxRetries - contextValue.retryCount} attempts
@@ -554,7 +554,7 @@
                 <Button
                   variant="ghost"
                   size="sm"
-                  on:click={() => actor.send({ type: "SKIP_PROCESSING" })}
+                  on:on:click={() => actor.send({ type: "SKIP_PROCESSING" })}
                   class="ml-2"
                 >
                   Skip AI Processing
@@ -596,7 +596,7 @@
       <div class="flex gap-3">
         <Button
           variant="outline"
-          on:click={handleReset}
+          on:on:click={handleReset}
           disabled={$isSubmitting}
         >
           Reset Form

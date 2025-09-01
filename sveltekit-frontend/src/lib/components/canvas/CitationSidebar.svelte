@@ -12,10 +12,9 @@
   let { citations = $bindable() } = $props(); // Citation[] = [];
 
   const dispatch = createEventDispatcher();
-
-  let searchQuery = "";
-  let selectedCategory = "all";
-  let filteredCitations: Citation[] = [];
+let searchQuery = $state("");
+let selectedCategory = $state("all");
+let filteredCitations = $state<Citation[] >([]);
 
   // Categories for filtering
   const categories = [
@@ -107,7 +106,7 @@
               <Button
                 variant="ghost"
                 size="sm"
-                on:click={() => toggleFavorite(citation)}
+                on:on:click={() => toggleFavorite(citation)}
                 class="container mx-auto px-4"
               >
                 <Star class="container mx-auto px-4" />
@@ -116,7 +115,7 @@
               <Button
                 variant="ghost"
                 size="sm"
-                on:click={() => copyCitation(citation)}
+                on:on:click={() => copyCitation(citation)}
                 title="Copy citation"
               >
                 <Copy class="container mx-auto px-4" />
@@ -125,7 +124,7 @@
               <Button
                 variant="ghost"
                 size="sm"
-                on:click={() => deleteCitation(citation)}
+                on:on:click={() => deleteCitation(citation)}
                 title="Delete citation"
                 class="container mx-auto px-4"
               >
@@ -161,8 +160,8 @@
             draggable={true}
             role="button"
             tabindex={0}
-            on:dragstart={(e) => handleDragStart(e, citation)}
-            on:keydown={(e) => {
+            ondragstart={(e) => handleDragStart(e, citation)}
+            keydown={(e) => {
               if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
                 // For keyboard users, trigger a click event instead
@@ -197,7 +196,7 @@
           <Button
             variant="secondary"
             size="sm"
-            on:click={() => {
+            on:on:click={() => {
               searchQuery = "";
               selectedCategory = "all";
             "

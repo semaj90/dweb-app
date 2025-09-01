@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import type { RequestHandler } from './$types';
 
 // Enhanced API Route for Go Microservice Integration

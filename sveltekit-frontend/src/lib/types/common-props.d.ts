@@ -17,3 +17,4 @@ export interface CommonProps {
 
 // Utility to merge class + className while preserving optional chaining.
 export function mergeClass(base?: string, extra?: string): string | undefined;
+;

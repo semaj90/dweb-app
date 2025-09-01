@@ -1,16 +1,17 @@
 
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 // Enhanced Evidence API with pgvector Integration
 // Production-ready evidence management with AI analysis
 
 import { z } from 'zod';
-import { withApiHandler, parseRequestBody, CommonErrors, createPagination } from '../../../lib/server/api/response';
-import { db } from '../../../lib/server/db/index';
+import { withApiHandler, parseRequestBody, CommonErrors, createPagination } from '../../../lib/server/api/response.js';
+import { db } from '../../../lib/server/db/index.js';
 import { sql, eq, and, or, ilike, count, desc, asc } from '$lib/server/db/index';
-import { evidence, cases } from '../../../lib/server/db/schema-postgres';
-import type { Evidence } from '../../../lib/server/db/schema-types';
+import { evidence, cases } from '../../../lib/server/db/schema-postgres.js';
+import type { Evidence } from '../../../lib/server/db/schema-types.js';
 import { randomUUID } from 'crypto';
+import { URL } from "url";
 
 // Enhanced AI analysis service
 

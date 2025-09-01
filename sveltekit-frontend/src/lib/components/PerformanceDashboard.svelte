@@ -95,11 +95,11 @@
     <div class="space-y-4">
       <button 
         class="space-y-4"
-        click={() => toggleAutoRefresh()}
+        on:onclick={() => toggleAutoRefresh()}
       >
         {autoRefresh ? '🔄 Auto Refresh On' : '⏸️ Auto Refresh Off'}
       </button>
-      <button class="space-y-4" click={() => loadMetrics()}>
+      <button class="space-y-4" on:onclick={() => loadMetrics()}>
         🔄 Refresh Now
       </button>
     </div>

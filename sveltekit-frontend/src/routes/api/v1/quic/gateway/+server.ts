@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * QUIC Gateway API - HTTP/3 Gateway Proxy
@@ -9,6 +9,7 @@ import { json, error } from '@sveltejs/kit';
 
 import { ensureError } from '$lib/utils/ensure-error';
 import { productionServiceClient } from '$lib/services/production-service-client.js';
+import { URL } from "url";
 
 const QUIC_GATEWAY_CONFIG = {
   primaryPort: 8443,    // QUIC HTTP/3

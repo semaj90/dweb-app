@@ -1,10 +1,11 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 // Repaired imports (file previously had fragmented 'type { RequestEvent }, { json }')
 import { json, type RequestEvent } from '@sveltejs/kit';
 import { aiReports, canvasStates, reports } from '$lib/server/db/schema-postgres';
 import { db } from '$lib/server/db/index';
 import { eq, and, or, like, desc, sql } from 'drizzle-orm';
+import { URL } from "url";
 
 export async function GET({ url, locals }: RequestEvent): Promise<any> {
   try {

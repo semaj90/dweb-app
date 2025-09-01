@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * QUIC AI Stream API - Real-time AI Streaming Service
@@ -9,6 +9,8 @@ import type { RequestHandler } from './$types';
 import { json, error } from '@sveltejs/kit';
 
 import { ensureError } from '$lib/utils/ensure-error';
+import crypto from "crypto";
+import { URL } from "url";
 
 const QUIC_AI_STREAM_CONFIG = {
   primaryPort: 8447,    // QUIC HTTP/3

@@ -823,7 +823,7 @@ Please provide:
 
 // Singleton instance
 export const autonomousEngineeringSystem = new AutonomousEngineeringSystem();
-
+;
 // Helper functions for common use cases
 export async function solveWebAppProblems(
   description: string,

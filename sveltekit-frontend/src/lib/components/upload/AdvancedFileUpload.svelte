@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { $props } from 'svelte';
-
   import { browser } from "$app/environment";
   import Button from "$lib/components/ui/Button.svelte";
   import { notifications } from "$lib/stores/notification";
@@ -23,38 +21,60 @@
 
   const dispatch = createEventDispatcher();
 
-  // Props
-  let { multiple = $bindable() } = $props(); // true;
-  let { accept = $bindable() } = $props(); // "*/*";
-  let { maxFileSize = $bindable() } = $props(); // 100 * 1024 * 1024; // 100MB
-  let { maxTotalSize = $bindable() } = $props(); // 500 * 1024 * 1024; // 500MB
-  let { maxFiles = $bindable() } = $props(); // 10;
-  let { allowedTypes = $bindable() } = $props(); // string[] = [];
-  let { uploadUrl = $bindable() } = $props(); // "/api/upload";
-  let { chunkSize = $bindable() } = $props(); // 1024 * 1024; // 1MB chunks for large files
-  let { enableChunking = $bindable() } = $props(); // true;
-  let { enablePreview = $bindable() } = $props(); // true;
-  export const enableDragDrop = true;
-  let { enablePasteUpload = $bindable() } = $props(); // true;
-  let { enableCameraCapture = $bindable() } = $props(); // false;
-  let { enableAudioRecording = $bindable() } = $props(); // false;
-  let { autoUpload = $bindable() } = $props(); // false;
-  let { compressionQuality = $bindable() } = $props(); // 0.8;
-  let { enableCompression = $bindable() } = $props(); // true;
-  let { showProgress = $bindable() } = $props(); // true;
-  let { disabled = $bindable() } = $props(); // false;
+  // Props using Svelte 5 syntax
+  let {
+    multiple = true,
+    accept = "*/*",
+    maxFileSize = 100 * 1024 * 1024, // 100MB
+    maxTotalSize = 500 * 1024 * 1024, // 500MB
+    maxFiles = 10,
+    allowedTypes = [],
+    uploadUrl = "/api/upload",
+    chunkSize = 1024 * 1024, // 1MB chunks for large files
+    enableChunking = true,
+    enablePreview = true,
+    enableDragDrop = true,
+    enablePasteUpload = true,
+    enableCameraCapture = false,
+    enableAudioRecording = false,
+    autoUpload = false,
+    compressionQuality = 0.8,
+    enableCompression = true,
+    showProgress = true,
+    disabled = false
+  }: {
+    multiple?: boolean;
+    accept?: string;
+    maxFileSize?: number;
+    maxTotalSize?: number;
+    maxFiles?: number;
+    allowedTypes?: string[];
+    uploadUrl?: string;
+    chunkSize?: number;
+    enableChunking?: boolean;
+    enablePreview?: boolean;
+    enableDragDrop?: boolean;
+    enablePasteUpload?: boolean;
+    enableCameraCapture?: boolean;
+    enableAudioRecording?: boolean;
+    autoUpload?: boolean;
+    compressionQuality?: number;
+    enableCompression?: boolean;
+    showProgress?: boolean;
+    disabled?: boolean;
+  } = $props();
 
-  // State
+  // State using Svelte 5 syntax
   let fileInput: HTMLInputElement;
   let dropZone: HTMLElement;
-  let files: FileUploadItem[] = [];
-  let isDragOver = false;
-  let isUploading = false;
-  let totalProgress = 0;
-  let uploadQueue: FileUploadItem[] = [];
-  let mediaRecorder: MediaRecorder | null = null;
-  let isRecording = false;
-  let recordingStream: MediaStream | null = null;
+  let files: FileUploadItem[] = $state([]);
+  let isDragOver = $state(false);
+  let isUploading = $state(false);
+  let totalProgress = $state(0);
+  let uploadQueue: FileUploadItem[] = $state([]);
+  let mediaRecorder: MediaRecorder | null = $state(null);
+  let isRecording = $state(false);
+  let recordingStream: MediaStream | null = $state(null);
 
   interface FileUploadItem {
     id: string;
@@ -491,7 +511,7 @@
   function formatFileSize(bytes: number): string {
     const units = ["B", "KB", "MB", "GB"];
     let size = bytes;
-    let unitIndex = 0;
+let unitIndex = $state(0);
 
     while (size >= 1024 && unitIndex < units.length - 1) {
       size /= 1024;
@@ -525,14 +545,14 @@
     class="container mx-auto px-4"
     class:drag-over={isDragOver}
     class:disabled
-    on:drop={handleDrop}
-    on:dragover={handleDragOver}
-    on:dragleave={handleDragLeave}
+    ondrop={handleDrop}
+    ondragover={handleDragOver}
+    ondragleave={handleDragLeave}
     role="button"
     tabindex={0}
     aria-label="File upload area. Click to select files or drag and drop files here."
-    click={() => !disabled && fileInput.click()}
-    on:keydown={(e) => {
+    on:onclick={() => !disabled && fileInput.click()}
+    keydown={(e) => {
       if ((e.key === "Enter" || e.key === " ") && !disabled) {
         e.preventDefault();
         fileInput.click();
@@ -571,7 +591,7 @@
         {#if enableCameraCapture}
           <Button
             variant="secondary"
-            on:click={handleCameraCaptureClick}
+            on:on:click={handleCameraCaptureClick}
             {disabled}
           >
             <Camera class="container mx-auto px-4" />
@@ -582,7 +602,7 @@
         {#if enableAudioRecording}
           <Button
             variant="secondary"
-            on:click={handleAudioRecordingClick}
+            on:on:click={handleAudioRecordingClick}
             {disabled}
             class={isRecording ? "bg-red-100 text-red-700" : ""}
           >
@@ -618,7 +638,7 @@
           {#if !autoUpload && files.some((f) => f.status === "pending")}
             <Button
               size="sm"
-              on:click={() => uploadFiles()}
+              on:on:click={() => uploadFiles()}
               disabled={isUploading}
             >
               {#if isUploading}
@@ -633,7 +653,7 @@
           <Button
             variant="ghost"
             size="sm"
-            on:click={() => (files = [])}
+            on:on:click={() => (files = [])}
             disabled={isUploading}
           >
             Clear All
@@ -707,7 +727,7 @@
                 <Button
                   variant="ghost"
                   size="sm"
-                  on:click={() => window.open(file.url, "_blank")}
+                  on:on:click={() => window.open(file.url, "_blank")}
                   aria-label="View {file.name}"
                 >
                   <Eye class="container mx-auto px-4" />
@@ -718,7 +738,7 @@
                 <Button
                   variant="ghost"
                   size="sm"
-                  on:click={() => retryUpload(file.id)}
+                  on:on:click={() => retryUpload(file.id)}
                   aria-label="Retry upload of {file.name}"
                 >
                   <Upload class="container mx-auto px-4" />
@@ -728,7 +748,7 @@
               <Button
                 variant="ghost"
                 size="sm"
-                on:click={() => removeFile(file.id)}
+                on:on:click={() => removeFile(file.id)}
                 disabled={file.status === "uploading"}
                 aria-label="Remove {file.name}"
               >

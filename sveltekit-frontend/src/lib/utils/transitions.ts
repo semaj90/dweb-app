@@ -3,7 +3,8 @@
 // Compatible with Pico CSS + UnoCSS setup
 
 import { cubicOut } from "svelte/easing";
-// Orphaned content: import type { TransitionConfig
+import type { TransitionConfig } from 'svelte/transition';
+// Restored TransitionConfig type import
 
 export function flyAndScale(
   node: Element,
@@ -12,7 +13,7 @@ export function flyAndScale(
     x?: number;
     start?: number;
     duration?: number;
-  } = {},
+  } = {}
 ): TransitionConfig {
   const style = getComputedStyle(node);
   const transform = style.transform === "none" ? "" : style.transform;
@@ -55,7 +56,7 @@ export function flyAndScale(
 }
 export function slideInFromBottom(
   node: Element,
-  params: { duration?: number; delay?: number } = {},
+  params: { duration?: number; delay?: number } = {}
 ): TransitionConfig {
   return {
     duration: params.duration ?? 300,
@@ -71,7 +72,7 @@ export function slideInFromBottom(
 }
 export function scaleIn(
   node: Element,
-  params: { duration?: number; start?: number } = {},
+  params: { duration?: number; start?: number } = {}
 ): TransitionConfig {
   return {
     duration: params.duration ?? 150,

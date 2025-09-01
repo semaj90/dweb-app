@@ -78,9 +78,9 @@
   }: Props = $props();
 
   // Component state
-  let canvasElement: HTMLCanvasElement | null = null;
-  let gpuDevice: GPUDevice | null = null;
-  let gpuContext: GPUCanvasContext | null = null;
+let canvasElement = $state<HTMLCanvasElement | null >(null);
+let gpuDevice = $state<GPUDevice | null >(null);
+let gpuContext = $state<GPUCanvasContext | null >(null);
   let isInitialized = $state(false);
   let isCompiling = $state(false);
   let hasError = $state(false);
@@ -112,10 +112,10 @@
   let qualityAdjustmentCount = $state(0);
   
   // Animation and monitoring
-  let animationId: number | null = null;
-  let performanceMonitorId: number | null = null;
-  let lastFrameTime = 0;
-  let frameCount = 0;
+let animationId = $state<number | null >(null);
+let performanceMonitorId = $state<number | null >(null);
+let lastFrameTime = $state(0);
+let frameCount = $state(0);
   
   // Shader source templates for YoRHa style
   const yorhaShaderTemplates = {
@@ -148,7 +148,7 @@
       
       @fragment
       fn fs_main(@location(0) uv: vec2<f32>) -> @location(0) vec4<f32> {
-        let texelSize = 1.0 / resolution;
+let texelSize = $state(1.0 / resolution);
         
         // Sample neighborhood
         let rgbNW = textureSample(inputTexture, texSampler, uv + vec2(-1.0, -1.0) * texelSize).rgb;
@@ -183,15 +183,15 @@
         );
         
         let dirReduce = max((lumaNW + lumaNE + lumaSW + lumaSE) * 0.03125, 0.0078125);
-        let rcpDirMin = 1.0 / (min(abs(dir.x), abs(dir.y)) + dirReduce);
+let rcpDirMin = $state(1.0 / (min(abs(dir.x), abs(dir.y)) + dirReduce));
         
         let finalDir = clamp(dir * rcpDirMin, vec2(-8.0), vec2(8.0)) * texelSize * patternWeight;
         
         // YoRHa-enhanced sampling with geometric consideration
-        let rgbA = 0.5 * (
+let rgbA = $state(0.5 * (
           textureSample(inputTexture, texSampler, uv + finalDir * (1.0/3.0 - 0.5)).rgb +
           textureSample(inputTexture, texSampler, uv + finalDir * (2.0/3.0 - 0.5)).rgb
-        );
+        ));
         
         let rgbB = rgbA * 0.5 + 0.25 * (
           textureSample(inputTexture, texSampler, uv + finalDir * (-0.5)).rgb +
@@ -249,7 +249,7 @@
       
       @fragment
       fn fs_main(@location(0) uv: vec2<f32>) -> @location(0) vec4<f32> {
-        let texelSize = 1.0 / vec2<f32>(textureDimensions(currentTexture));
+let texelSize = $state(1.0 / vec2<f32>(textureDimensions(currentTexture)));
         let current = textureSample(currentTexture, currentSampler, uv);
         
         // Enhanced velocity calculation for YoRHa UI elements
@@ -299,7 +299,7 @@
       
       fn detectYoRHaEdges(uv: vec2<f32>) -> vec2<f32> {
         // Enhanced edge detection for YoRHa UI patterns
-        let texelSize = 1.0 / vec2<f32>(textureDimensions(baseTexture));
+let texelSize = $state(1.0 / vec2<f32>(textureDimensions(baseTexture)));
         
         // Sample in YoRHa hexagonal pattern
         let center = textureSample(baseTexture, texSampler, uv).rgb;
@@ -536,8 +536,8 @@
     if (!adaptiveQuality || !performanceMetrics.fps) return;
     
     const fpsRatio = performanceMetrics.fps / targetFPS;
-    let newConfig = { ...aaConfig };
-    let qualityChanged = false;
+let newConfig = $state({ ...aaConfig });
+let qualityChanged = $state(false);
     
     if (fpsRatio < 0.7) {
       // Performance is poor, reduce quality
@@ -585,7 +585,7 @@
    * Start performance monitoring
    */
   function startPerformanceMonitoring(): void {
-    let frameCount = 0;
+let frameCount = $state(0);
     let lastTime = performance.now();
     
     const updateMetrics = () => {
@@ -665,7 +665,7 @@
    */
   function getShaderSource(aaType: string): string {
     const vertexShader = yorhaShaderTemplates.vertex;
-    let fragmentShader = '';
+let fragmentShader = $state('');
     
     switch (aaType) {
       case 'fxaa':
@@ -685,7 +685,7 @@
   }
 
   function generateShaderHash(source: string): string {
-    let hash = 0;
+let hash = $state(0);
     for (let i = 0; i < source.length; i++) {
       const char = source.charCodeAt(i);
       hash = ((hash << 5) - hash) + char;
@@ -695,7 +695,7 @@
   }
 
   function calculateAAQualityScore(): number {
-    let score = 0.3;
+let score = $state(0.3);
     
     switch (aaConfig.type) {
       case 'taa': score += 0.4; break;
@@ -855,11 +855,11 @@
       <div class="error-title">SHADER ERROR</div>
       <div class="error-message">{errorMessage}</div>
       <div class="error-actions">
-        <button class="retry-button" onclick={() => initializeShaderCache()}>
+        <button class="retry-button" on:on:onclick={() => initializeShaderCache()}>
           RETRY COMPILATION
         </button>
         {#if enableHotReload}
-          <button class="hotreload-button" onclick={hotReloadShader}>
+          <button class="hotreload-button" on:on:onclick={hotReloadShader}>
             HOT RELOAD
           </button>
         {/if}
@@ -892,7 +892,7 @@
   <!-- Hot Reload Controls -->
   {#if enableHotReload && enableDebugMode}
     <div class="hotreload-controls">
-      <button class="hotreload-trigger" onclick={hotReloadShader}>
+      <button class="hotreload-trigger" on:on:onclick={hotReloadShader}>
         🔥 HOT RELOAD
       </button>
       <div class="hotreload-count">{shaderHotReloadCount}</div>
@@ -983,7 +983,6 @@
     border: 1px solid rgba(186, 175, 137, 0.3);
     padding: 6px;
     font-size: 8px;
-    color: #baa
     color: #baa989;
     min-width: 120px;
     z-index: 10;

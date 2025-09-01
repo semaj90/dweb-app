@@ -21,18 +21,18 @@
   const dispatch = createEventDispatcher();
 
   // State
-  let query = "";
-  let isLoading = false;
-  let messages: any[] = [];
-  let showSettings = false;
-  let showCitationDialog = false;
-  let selectedCitation = "";
+let query = $state("");
+let isLoading = $state(false);
+let messages = $state<any[] >([]);
+let showSettings = $state(false);
+let showCitationDialog = $state(false);
+let selectedCitation = $state("");
 
   // Settings
-  let selectedModel = "gpt-4";
-  let temperature = 0.7;
-  let searchThreshold = 0.7;
-  let maxResults = 5;
+let selectedModel = $state("gpt-4");
+let temperature = $state(0.7);
+let searchThreshold = $state(0.7);
+let maxResults = $state(5);
 
   async function handleSubmit() {
     if (!query.trim() || isLoading) return;
@@ -150,14 +150,14 @@
     <div class="container mx-auto px-4">
       <button
         class="container mx-auto px-4"
-        click={() => (showSettings = !showSettings)}
+        on:onclick={() => (showSettings = !showSettings)}
         title="Settings"
       >
         <Settings class="container mx-auto px-4" />
       </button>
       <button
         class="container mx-auto px-4"
-        click={() => downloadChat()}
+        on:onclick={() => downloadChat()}
         title="Download chat"
         disabled={messages.length === 0}
       >
@@ -165,7 +165,7 @@
       </button>
       <button
         class="container mx-auto px-4"
-        click={() => clearChat()}
+        on:onclick={() => clearChat()}
         title="Clear chat"
         disabled={messages.length === 0}
       >
@@ -250,7 +250,7 @@
                 <li>
                   <button
                     class="container mx-auto px-4"
-                    click={() => showCitation(ref.citation)}
+                    on:onclick={() => showCitation(ref.citation)}
                   >
                     {ref.title}
                   </button>
@@ -286,7 +286,7 @@
       ></textarea>
       <button
         class="container mx-auto px-4"
-        click={() => handleSubmit()}
+        on:onclick={() => handleSubmit()}
         disabled={!query.trim() || isLoading}
       >
         {#if isLoading}
@@ -312,16 +312,16 @@
             <p>{selectedCitation}</p>
           </div>
           <div class="modal-actions">
-            <button class="btn-primary" click={() => insertCitation()}>
+            <button class="btn-primary" on:onclick={() => insertCitation()}>
               Insert Citation
             </button>
-            <button class="btn-secondary" click={() => navigator.clipboard.writeText(selectedCitation)}>
+            <button class="btn-secondary" on:onclick={() => navigator.clipboard.writeText(selectedCitation)}>
               Copy
             </button>
           </div>
         </div>
         <div class="modal-footer">
-          <button class="btn-close" click={() => (showCitationDialog = false)}>
+          <button class="btn-close" on:onclick={() => (showCitationDialog = false)}>
             Close
           </button>
         </div>

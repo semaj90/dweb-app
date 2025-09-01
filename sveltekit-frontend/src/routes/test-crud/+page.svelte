@@ -223,22 +223,22 @@
     </CardHeader>
     <CardContent>
       <div class="flex flex-wrap gap-3">
-        <Button onclick={runFullCRUDTest} disabled={isLoading} variant="default">
+        <Button on:on:on:click={runFullCRUDTest} disabled={isLoading} variant="default">
           {isLoading ? '⏳ Testing...' : '🚀 Run Full CRUD Test'}
         </Button>
-        <Button onclick={testGETOperations} disabled={isLoading} variant="secondary">
+        <Button on:on:on:click={testGETOperations} disabled={isLoading} variant="secondary">
           🔍 Test GET
         </Button>
-        <Button onclick={testPOSTOperation} disabled={isLoading} variant="secondary">
+        <Button on:on:on:click={testPOSTOperation} disabled={isLoading} variant="secondary">
           📝 Test POST
         </Button>
-        <Button onclick={() => testPUTOperation()} disabled={isLoading} variant="secondary">
+        <Button on:on:on:click={() => testPUTOperation()} disabled={isLoading} variant="secondary">
           ✏️ Test PUT
         </Button>
-        <Button onclick={() => testDELETEOperation()} disabled={isLoading} variant="secondary">
+        <Button on:on:on:click={() => testDELETEOperation()} disabled={isLoading} variant="secondary">
           🗑️ Test DELETE
         </Button>
-        <Button onclick={clearResults} variant="ghost">
+        <Button on:on:on:click={clearResults} variant="ghost">
           🧹 Clear Results
         </Button>
       </div>

@@ -464,7 +464,7 @@ export class FlashAttentionMulticoreBridge {
 
 // Global bridge instance
 export const flashAttentionMulticoreBridge = new FlashAttentionMulticoreBridge();
-
+;
 // Helper function for quick enhanced processing
 export async function processWithEnhancedAI(
   text: string,

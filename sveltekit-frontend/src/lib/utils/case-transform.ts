@@ -7,7 +7,7 @@
 export const COMMON_FIELD_MAPPINGS = {
   // User fields
   'first_name': 'firstName',
-  'last_name': 'lastName', 
+  'last_name': 'lastName',
   'hashed_password': 'hashedPassword',
   'email_verified': 'emailVerified',
   'is_active': 'isActive',
@@ -20,8 +20,8 @@ export const COMMON_FIELD_MAPPINGS = {
   'updated_at': 'updatedAt',
   'deleted_at': 'deletedAt',
   'avatar_url': 'avatarUrl',
-  
-  // Case fields  
+
+  // Case fields
   'case_number': 'caseNumber',
   'case_type': 'caseType',
   'legal_status': 'legalStatus',
@@ -29,7 +29,7 @@ export const COMMON_FIELD_MAPPINGS = {
   'due_date': 'dueDate',
   'priority_level': 'priorityLevel',
   'case_embedding': 'caseEmbedding',
-  
+
   // Evidence fields
   'file_path': 'filePath',
   'file_size': 'fileSize',
@@ -39,14 +39,14 @@ export const COMMON_FIELD_MAPPINGS = {
   'collection_date': 'collectionDate',
   'hash_sha256': 'hashSha256',
   'content_text': 'contentText',
-  
+
   // Common timestamp fields
   'uploaded_at': 'uploadedAt',
   'processed_at': 'processedAt',
   'analyzed_at': 'analyzedAt'
 } as const;
 
-// Reverse mapping for camelCase -> snake_case  
+// Reverse mapping for camelCase -> snake_case
 export const REVERSE_FIELD_MAPPINGS = Object.fromEntries(
   Object.entries(COMMON_FIELD_MAPPINGS).map(([snake, camel]) => [camel, snake])
 ) as Record<string, string>;
@@ -62,12 +62,12 @@ export function toCamelCase<T = any>(obj: Record<string, any>): T {
   if (typeof obj !== 'object') return obj as T;
 
   const converted: Record<string, any> = {};
-  
+
   for (const [key, value] of Object.entries(obj)) {
     // Use explicit mapping first, then fallback to auto-conversion
-    const camelKey = COMMON_FIELD_MAPPINGS[key as keyof typeof COMMON_FIELD_MAPPINGS] || 
+    const camelKey = COMMON_FIELD_MAPPINGS[key as keyof typeof COMMON_FIELD_MAPPINGS] ||
                      key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
-    
+
     // Recursively convert nested objects and arrays
     if (value && typeof value === 'object') {
       converted[camelKey] = toCamelCase(value);
@@ -75,7 +75,7 @@ export function toCamelCase<T = any>(obj: Record<string, any>): T {
       converted[camelKey] = value;
     }
   }
-  
+
   return converted as T;
 }
 
@@ -90,12 +90,12 @@ export function toSnakeCase<T = any>(obj: Record<string, any>): T {
   if (typeof obj !== 'object') return obj as T;
 
   const converted: Record<string, any> = {};
-  
+
   for (const [key, value] of Object.entries(obj)) {
     // Use explicit reverse mapping first, then fallback to auto-conversion
-    const snakeKey = REVERSE_FIELD_MAPPINGS[key] || 
+    const snakeKey = REVERSE_FIELD_MAPPINGS[key] ||
                      key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
-    
+
     // Recursively convert nested objects and arrays
     if (value && typeof value === 'object') {
       converted[snakeKey] = toSnakeCase(value);
@@ -103,7 +103,7 @@ export function toSnakeCase<T = any>(obj: Record<string, any>): T {
       converted[snakeKey] = value;
     }
   }
-  
+
   return converted as T;
 }
 
@@ -166,7 +166,7 @@ export function transformUserForDatabase(frontendUser: Partial<FrontendUser>): P
 export function drizzleSelect<T>(camelCaseFields: string[]): Record<string, boolean> {
   const snakeFields: Record<string, boolean> = {};
   camelCaseFields.forEach(field => {
-    const snakeField = REVERSE_FIELD_MAPPINGS[field] || 
+    const snakeField = REVERSE_FIELD_MAPPINGS[field] ||
                        field.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
     snakeFields[snakeField] = true;
   });
@@ -177,7 +177,7 @@ export function drizzleSelect<T>(camelCaseFields: string[]): Record<string, bool
  * Batch transformation for arrays
  */
 export function transformArray<T>(
-  items: Record<string, any>[], 
+  items: Record<string, any>[],
   transformer: (item: Record<string, any>) => T
 ): T[] {
   return items.map(transformer);

@@ -1,5 +1,5 @@
 
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 // Evidence search API endpoint with advanced vector capabilities
 // Supports document content search, image analysis, and multi-modal search
@@ -8,6 +8,7 @@ import { evidence } from "$lib/server/db/schema-postgres";
 import { and, desc, ilike, or, sql } from "drizzle-orm";
 
 import { db } from "$lib/server/db/index";
+import { URL } from "url";
 
 
 export const GET: RequestHandler = async ({ url }) => {

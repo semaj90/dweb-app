@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { json } from "@sveltejs/kit";
 import type { RequestHandler } from './$types';
 
@@ -5,7 +6,7 @@ import type { RequestHandler } from './$types';
 
 const DEFAULT_CLUSTER_URL = "http://localhost:8090";
 
-export const GET = async (): Promise<any> => {
+export const GET = (async (): Promise<any> => {
   const baseUrl = import.meta.env.CLUSTER_BASE_URL || DEFAULT_CLUSTER_URL;
   try {
     const res = await fetch(`${baseUrl}/health`);
@@ -17,7 +18,7 @@ export const GET = async (): Promise<any> => {
   }
 };
 
-export const POST = async ({ request }): Promise<any> => {
+export const POST = (async ({ request }): Promise<any> => {
   const baseUrl = import.meta.env.CLUSTER_BASE_URL || DEFAULT_CLUSTER_URL;
   try {
     const body = await request.json();

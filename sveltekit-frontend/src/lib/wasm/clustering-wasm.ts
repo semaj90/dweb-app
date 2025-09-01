@@ -206,7 +206,7 @@ export class WebAssemblyClusteringService {
 
 // Singleton instance
 export const wasmClusteringService = new WebAssemblyClusteringService();
-
+;
 // Auto-initialize WASM on module load
 if (typeof window !== 'undefined') {
   wasmClusteringService.initializeWasm().catch(console.warn);

@@ -20,19 +20,19 @@
     <!-- Programmatic navigation buttons -->
     <div class="space-x-4 mt-6">
       <button 
-        click={() => goto('/yorha-command-center')} 
+        on:onclick={() => goto('/yorha-command-center')} 
         class="bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800"
       >
         YoRHa Command Center (Button)
       </button>
       <button 
-        click={() => goto('/evidenceboard')} 
+        on:onclick={() => goto('/evidenceboard')} 
         class="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800"
       >
         Evidence Board (Button)
       </button>
       <button 
-        click={() => goto('/endpoints')} 
+        on:onclick={() => goto('/endpoints')} 
         class="bg-purple-700 text-white px-4 py-2 rounded hover:bg-purple-800"
       >
         Endpoints (Button)

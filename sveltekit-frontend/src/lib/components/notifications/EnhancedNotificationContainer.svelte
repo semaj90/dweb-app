@@ -7,22 +7,20 @@ mcp<script lang="ts">
   import { createEventDispatcher, onMount } from "svelte";
 
   const dispatch = createEventDispatcher();
-
-  let container: HTMLElement;
-  let notificationElements = new Map<string, HTMLElement>();
-  let isVisible = false;
-  let maxVisible = 5;
-  let position:
-    | "top-right"
+let container = $state<HTMLElement;
+  let notificationElements >(new Map<string, HTMLElement>());
+let isVisible = $state(false);
+let maxVisible = $state(5);
+let position = $state<| "top-right"
     | "top-left"
     | "bottom-right"
     | "bottom-left"
     | "top-center"
-    | "bottom-center" = "top-right";
-  let stackDirection: "up" | "down" = "down" as "up" | "down";
-  let pauseOnHover = true;
-  let groupSimilar = true;
-  let enableSounds = true;
+    | "bottom-center" >("top-right");
+let stackDirection = $state<"up" | "down" >("down" as "up" | "down");
+let pauseOnHover = $state(true);
+let groupSimilar = $state(true);
+let enableSounds = $state(true);
 
   // Reactive notifications list
   let visibleNotifications = $derived($notifications.notifications.slice(0, maxVisible));
@@ -193,7 +191,7 @@ mcp<script lang="ts">
       <Button
         variant="ghost"
         size="sm"
-        on:click={() => (maxVisible += 5)}
+        on:on:click={() => (maxVisible += 5)}
         class="container mx-auto px-4"
       >
         +{hiddenCount} more notifications
@@ -211,10 +209,10 @@ mcp<script lang="ts">
         role="alert"
         aria-labelledby="notification-title-{notification.id}"
         aria-describedby="notification-message-{notification.id}"
-        on:mouseenter={() => pauseTimer(notification)}
-        on:mouseleave={() => resumeTimer(notification)}
-        on:focusin={() => pauseTimer(notification)}
-        on:focusout={() => resumeTimer(notification)}
+        on:on:mouseenter={() => pauseTimer(notification)}
+        on:on:mouseleave={() => resumeTimer(notification)}
+        focusin={() => pauseTimer(notification)}
+        focusout={() => resumeTimer(notification)}
       >
         <div
           class="container mx-auto px-4"
@@ -270,7 +268,7 @@ mcp<script lang="ts">
                           variant={action.variant === "primary"
                             ? "default"
                             : "ghost"}
-                          on:click={() =>
+                          on:on:click={() =>
                             handleNotificationAction(notification, action)}
                           class="container mx-auto px-4"
                         >
@@ -286,7 +284,7 @@ mcp<script lang="ts">
                   <Button
                     variant="ghost"
                     size="sm"
-                    on:click={() => dismissNotification(notification.id)}
+                    on:on:click={() => dismissNotification(notification.id)}
                     class="container mx-auto px-4"
                     aria-label="Dismiss notification"
                   >
@@ -307,7 +305,7 @@ mcp<script lang="ts">
       <Button
         variant="ghost"
         size="sm"
-        on:click={() => dismissAll()}
+        on:on:click={() => dismissAll()}
         class="container mx-auto px-4"
       >
         Clear all ({$notifications.notifications.length})

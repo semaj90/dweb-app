@@ -5,7 +5,8 @@
  * Includes comprehensive error handling and logging
  */
 
-import { errorHandler, handleApiError, handleNetworkError, handleValidationError, type ErrorContext } from './error-handler';
+import { errorHandler, handleApiError, handleNetworkError, handleValidationError, type ErrorContext } from './error-handler.js';
+import crypto from "crypto";
 
 // Types
 export interface ApiResponse<T = any> {
@@ -471,7 +472,7 @@ class LegalPlatformClient {
 
 // Export singleton instance
 export const legalPlatformClient = new LegalPlatformClient();
-
+;
 // Export types for use in components
 export type {
   ApiResponse,

@@ -5,7 +5,8 @@ import { db } from '$lib/db/client';
 import { documents, cases } from '$lib/db/schema/rag-integration';
 import { eq } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
+import { URL } from "url";
 
 
 const presignedRequestSchema = z.object({
@@ -19,8 +20,8 @@ const minioClient = new Client({
   endPoint: 'localhost',
   port: 9000,
   useSSL: false,
-  accessKey: process.env.MINIO_ACCESS_KEY || 'minioadmin',
-  secretKey: process.env.MINIO_SECRET_KEY || 'minioadmin'
+  accessKey: import.meta.env.MINIO_ACCESS_KEY || 'minioadmin',
+  secretKey: import.meta.env.MINIO_SECRET_KEY || 'minioadmin'
 });
 
 const BUCKET_NAME = 'legal-documents';

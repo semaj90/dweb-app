@@ -8,7 +8,7 @@ import type { DistanceStrategy } from "@langchain/community/vectorstores/pgvecto
 import type { Document as LangChainDocumentType } from "@langchain/core/documents";
 import { Embeddings } from "@langchain/core/embeddings";
 import { OllamaEmbeddings } from "@langchain/ollama";
-import { db, sql, eq, and, or, desc, asc } from '../db/index';
+import { db, sql, eq, and, or, desc, asc } from '../db/index.js';
 
 // Define legal document type
 type LegalDocumentType = {
@@ -181,10 +181,10 @@ export class EnhancedLegalSearchService {
   private async initializePgVectorStore() {
     try {
       // Only attempt if database is available
-      if (process.env.DATABASE_URL) {
+      if (import.meta.env.DATABASE_URL) {
         const pgConfig = {
           postgresConnectionOptions: {
-            connectionString: process.env.DATABASE_URL,
+            connectionString: import.meta.env.DATABASE_URL,
           },
           tableName: "search_index",
           columns: {
@@ -552,4 +552,4 @@ export class EnhancedLegalSearchService {
 
 // Export singleton instance
 export const enhancedLegalSearch = new EnhancedLegalSearchService();
-
+;

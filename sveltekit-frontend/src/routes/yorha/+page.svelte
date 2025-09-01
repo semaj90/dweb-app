@@ -173,7 +173,7 @@
   async function performSemanticSearch(searchTerm: string = 'contract liability') {
     isLoading = true;
     searchResults = [];
-    let localResults: any[] = [];
+let localResults = $state<any[] >([]);
     if (isLocalIndexReady() && (searchMode === 'local' || searchMode === 'hybrid')) {
       localResults = localSearch(searchTerm, 50);
       if (searchMode === 'local') {
@@ -300,7 +300,7 @@
         <div class="yorha-control-panel">
           <button
             class="yorha-control-btn {showCommandInterface ? 'active' : ''}"
-            click={toggleCommandInterface}
+            on:onclick={toggleCommandInterface}
             aria-label="Toggle command interface"
           >
             <Terminal size={16} />
@@ -308,7 +308,7 @@
           </button>
           <button
             class="yorha-control-btn {holographicMode ? 'active' : ''}"
-            click={toggleHolographicMode}
+            on:onclick={toggleHolographicMode}
             aria-label="Toggle holographic mode"
           >
             <Zap size={16} />
@@ -324,7 +324,7 @@
     <div class="yorha-actions-grid">
       <button
         class="yorha-action-card yorha-action-primary"
-        click={() => performRAGQuery()}
+        on:onclick={() => performRAGQuery()}
         disabled={isLoading}
       >
         <Cpu size={32} />
@@ -337,7 +337,7 @@
 
       <button
         class="yorha-action-card yorha-action-search"
-        click={() => performSemanticSearch()}
+        on:onclick={() => performSemanticSearch()}
         disabled={isLoading}
       >
         <Search size={32} />
@@ -347,7 +347,7 @@
 
       <button
         class="yorha-action-card yorha-action-health"
-        click={() => checkClusterHealth()}
+        on:onclick={() => checkClusterHealth()}
         disabled={isLoading}
       >
         <Monitor size={32} />
@@ -357,7 +357,7 @@
 
       <button
         class="yorha-action-card yorha-action-database"
-        click={() => performSemanticSearch('database evidence')}
+        on:onclick={() => performSemanticSearch('database evidence')}
         disabled={isLoading}
       >
         <Database size={32} />
@@ -374,7 +374,7 @@
 
   <!-- YoRHa Command Interface (Toggle) -->
   {#if showCommandInterface}
-    <section class="yorha-command-interface" transition:slide={{ duration: 300 }}>
+    <section class="yorha-command-interface" transitislide={{ duration: 300 }}>
       <YoRHaCommandInterface
         {systemData}
         {legalSession}

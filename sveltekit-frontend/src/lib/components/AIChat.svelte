@@ -8,7 +8,7 @@ https://svelte.dev/e/js_parse_error -->
 	import { chatMachine } from '$lib/machines/chatMachine';
 
 	let chatContainer;
-	let userInput = '';
+let userInput = $state('');
 
 	const { state, send } = useMachine(chatMachine, {
 		actors: {

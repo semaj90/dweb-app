@@ -43,7 +43,7 @@ const initialState: NotificationState = {
 };
 
 export const documentUpdateNotifications = writable<NotificationState>(initialState);
-
+;
 // ============================================================================
 // WEBSOCKET MANAGER
 // ============================================================================
@@ -281,7 +281,7 @@ class DocumentUpdateNotificationManager {
 // ============================================================================
 
 export const notificationManager = browser ? new DocumentUpdateNotificationManager() : null;
-
+;
 // ============================================================================
 // UTILITY FUNCTIONS
 // ============================================================================

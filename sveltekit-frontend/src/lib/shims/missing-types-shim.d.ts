@@ -142,7 +142,7 @@ declare global {
 
 // External Library Types
 declare module '$lib/types' {
-  export type Case = any;
+  // Duplicate removed: // Duplicate removed: export type Case = any;
 }
 
 declare global {
@@ -165,4 +165,3 @@ declare global {
   }
 }
 
-export {};

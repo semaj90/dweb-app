@@ -216,3 +216,4 @@ export type NewQueueStats = typeof queueStatsTable.$inferInsert;
 // Aliases for compatibility with API routes
 export const legalDocuments = evidenceTable;
 export const contentEmbeddings = evidenceEmbeddingsTable;
+;

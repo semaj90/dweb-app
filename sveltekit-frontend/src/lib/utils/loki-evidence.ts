@@ -481,3 +481,4 @@ class LokiIndexedAdapter {
 }
 // Export singleton instance
 export const lokiEvidenceService = new LokiEvidenceService();
+;

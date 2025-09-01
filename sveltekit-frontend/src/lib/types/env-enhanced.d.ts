@@ -35,7 +35,7 @@ declare module '$env/dynamic/private' {
 }
 
 declare module '$env/dynamic/public' {
-  export const env: Record<string, string>;
+  export const env: Record<string, string | undefined>;
 }
 
 declare module '$env/static/private' {
@@ -75,13 +75,13 @@ export interface EnhancedEnv {
   POSTGRES_DB: string;
   POSTGRES_USER: string;
   POSTGRES_PASSWORD: string;
-  
+
   // Redis configuration
   REDIS_URL: string;
   REDIS_HOST: string;
   REDIS_PORT: string;
   REDIS_PASSWORD: string;
-  
+
   // AI services
   OLLAMA_URL: string;
   OLLAMA_HOST: string;
@@ -89,20 +89,20 @@ export interface EnhancedEnv {
   OPENAI_API_KEY: string;
   ANTHROPIC_API_KEY: string;
   GOOGLE_API_KEY: string;
-  
+
   // Vector database
   QDRANT_URL: string;
   QDRANT_HOST: string;
   QDRANT_PORT: string;
   QDRANT_API_KEY: string;
-  
+
   // Graph database
   NEO4J_URL: string;
   NEO4J_HOST: string;
   NEO4J_PORT: string;
   NEO4J_USERNAME: string;
   NEO4J_PASSWORD: string;
-  
+
   // Object storage
   MINIO_URL: string;
   MINIO_HOST: string;
@@ -110,18 +110,18 @@ export interface EnhancedEnv {
   MINIO_ACCESS_KEY: string;
   MINIO_SECRET_KEY: string;
   MINIO_BUCKET: string;
-  
+
   // Security
   JWT_SECRET: string;
   ENCRYPTION_KEY: string;
   API_SECRET: string;
-  
+
   // Application
   NODE_ENV: string;
   PORT: string;
   HOST: string;
   PUBLIC_API_BASE_URL: string;
-  
+
   // Development
   DEBUG: string;
   LOG_LEVEL: string;
@@ -137,21 +137,21 @@ export const envHelper = {
     }
     return defaultValue;
   },
-  
+
   // Get boolean environment variable
   getBool: (key: string, defaultValue: boolean = false): boolean => {
     const value = envHelper.get(key);
     if (!value) return defaultValue;
     return value.toLowerCase() === 'true' || value === '1';
   },
-  
+
   // Get number environment variable
   getNumber: (key: string, defaultValue: number = 0): number => {
     const value = envHelper.get(key);
     const parsed = parseInt(value, 10);
     return isNaN(parsed) ? defaultValue : parsed;
   },
-  
+
   // Get required environment variable (throws if missing)
   getRequired: (key: string): string => {
     const value = envHelper.get(key);
@@ -160,24 +160,24 @@ export const envHelper = {
     }
     return value;
   },
-  
+
   // Get database URL with validation
   getDatabaseUrl: (): string => {
-    return envHelper.get('DATABASE_URL') || 
-           envHelper.get('POSTGRES_URL') || 
+    return envHelper.get('DATABASE_URL') ||
+      envHelper.get('POSTGRES_URL') ||
            `postgresql://postgres:postgres@localhost:5432/legal_ai_db`;
   },
-  
+
   // Get Redis URL with validation
   getRedisUrl: (): string => {
-    return envHelper.get('REDIS_URL') || 
+    return envHelper.get('REDIS_URL') ||
            `redis://localhost:6379`;
   },
-  
+
   // Get Ollama URL with validation
   getOllamaUrl: (): string => {
-    return envHelper.get('OLLAMA_URL') || 
-           envHelper.get('PUBLIC_OLLAMA_URL') || 
+    return envHelper.get('OLLAMA_URL') ||
+      envHelper.get('PUBLIC_OLLAMA_URL') ||
            `http://localhost:11434`;
   }
 };

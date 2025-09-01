@@ -192,7 +192,7 @@
 
         // CUDA preprocessing for supported file types
         let preprocessedData = uploadFile.file;
-        let cudaProcessed = false;
+let cudaProcessed = $state(false);
         
         if (enableCudaAcceleration && shouldUseCudaPreprocessing(uploadFile.file)) {
           const cudaResult = await preprocessWithCuda(uploadFile.file);
@@ -435,7 +435,7 @@
     ondragover={handleDragOver}
     ondragleave={handleDragLeave}
     ondrop={handleDrop}
-    onclick={handleClickToSelect}
+    on:on:onclick={handleClickToSelect}
     role="button"
     tabindex="0"
   >
@@ -499,7 +499,7 @@
         <h4 class="font-semibold text-gray-700">Upload Queue</h4>
         <button
           class="text-xs text-red-600 hover:text-red-800"
-          onclick={clearFiles}
+          on:on:onclick={clearFiles}
           disabled={uploading}
         >
           Clear All
@@ -535,7 +535,7 @@
               {#if file.status === 'pending' || file.status === 'error'}
                 <button
                   class="text-red-600 hover:text-red-800 text-sm"
-                  onclick={() => removeFile(file.id)}
+                  on:on:onclick={() => removeFile(file.id)}
                   disabled={uploading}
                 >
                   ×

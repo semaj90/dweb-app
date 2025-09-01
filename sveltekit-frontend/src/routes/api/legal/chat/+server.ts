@@ -1,9 +1,10 @@
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 
 // Legal AI Chat API - Context7 Enhanced with Gemma3 Legal
 import { db } from "$lib/server/db/index";
+import { URL } from "url";
 
 // Mock interfaces for now
 export interface InsertLegalAnalysisSession {

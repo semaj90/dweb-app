@@ -2,6 +2,7 @@
 import { WebSocketServer } from "ws";
 import type { IncomingMessage } from "http";
 import type { Socket } from "net";  // Store active connections per case
+import { URL } from "url";
 const caseConnections = new Map<string, Set<any>>();
 
 // Mock active users per case
@@ -197,7 +198,7 @@ function broadcastToCase(
   });
 }
 // Export for manual broadcasting from API endpoints
-export function broadcastEvidenceUpdate(
+export function broadcastEvidenceUpdate(;
   caseId: string,
   type: string,
   payload: any,

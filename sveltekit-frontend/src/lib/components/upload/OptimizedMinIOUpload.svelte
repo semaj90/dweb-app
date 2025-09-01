@@ -41,13 +41,13 @@
   let uploadProgress = $state(0);
   let uploadStatus = $state<'idle' | 'uploading' | 'processing' | 'completed' | 'error'>('idle');
   let errorMessage = $state<string | null>(null);
-  let fileInput: HTMLInputElement;
+let fileInput = $state<HTMLInputElement;
 
   // Drag and drop handlers
   function handleDragOver(event: DragEvent) {
     event.preventDefault();
     if (disabled || uploading) return;
-    dragOver = true;
+    dragOver >(true);
   }
 
   function handleDragLeave(event: DragEvent) {
@@ -227,11 +227,11 @@
     class:uploading
     role="button"
     tabindex="0"
-    ondrop={handleDrop}
-    ondragover={handleDragOver}
-    ondragleave={handleDragLeave}
-    onclick={openFileDialog}
-    onkeydown={(e) => e.key === 'Enter' && openFileDialog()}
+    on:drop={handleDrop}
+    on:dragover={handleDragOver}
+    on:dragleave={handleDragLeave}
+    on:on:on:click={openFileDialog}
+    on:keydown={(e) => e.key === 'Enter' && openFileDialog()}
   >
     {#if files.length === 0}
       <div class="upload-prompt">
@@ -269,7 +269,7 @@
               <button
                 type="button"
                 class="remove-file"
-                onclick={(e) => { e.stopPropagation(); removeFile(index); }}
+                on:on:onclick={(e) => { e.stopPropagation(); removeFile(index); }}
               >
                 ✕
               </button>
@@ -310,7 +310,7 @@
       type="button"
       class="upload-button"
       disabled={files.length === 0 || uploading || disabled}
-      onclick={uploadFiles}
+      on:on:onclick={uploadFiles}
     >
       {#if uploading}
         <Loader2 class="w-4 h-4 animate-spin" />
@@ -325,7 +325,7 @@
       <button
         type="button"
         class="clear-button"
-        onclick={() => { files = []; if (fileInput) fileInput.value = ''; }}
+        on:on:onclick={() => { files = []; if (fileInput) fileInput.value = ''; }}
       >
         Clear Files
       </button>

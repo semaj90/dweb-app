@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * QUIC Services Management API - Central Hub for All QUIC Services
@@ -7,6 +7,7 @@ import type { RequestHandler } from './$types';
 import { json, error } from '@sveltejs/kit';
 
 import { ensureError } from '$lib/utils/ensure-error';
+import { URL } from "url";
 
 const QUIC_SERVICES_CONFIG = {
   gateway: {

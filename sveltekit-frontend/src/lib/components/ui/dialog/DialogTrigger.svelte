@@ -11,6 +11,6 @@
   }: Props = $props();
 </script>
 
-<button use:melt={trigger}>
+<button <!-- use:melt={trigger}>
   {@render children?.()}
 </button>

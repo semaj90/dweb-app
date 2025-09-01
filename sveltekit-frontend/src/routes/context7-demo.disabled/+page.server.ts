@@ -1,9 +1,10 @@
 import path from 'path';
-import type { PageServerLoad } from './$types';
+import type { PageServerLoad } from './$types.js';
 import { copilotSelfPrompt } from '$lib/utils/copilot-self-prompt';
 
 import { resolveLibraryId, getLibraryDocs } from '$lib/services/context7-lib-resolver';
 import fs from 'fs/promises';
+import { URL } from "url";
 
 // Load Copilot architecture context for enhanced prompting
 async function loadCopilotContext(): Promise<Record<string, string | null>> {

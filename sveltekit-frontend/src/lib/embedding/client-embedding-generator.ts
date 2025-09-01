@@ -353,7 +353,7 @@ export class ClientEmbeddingGenerator {
 
 // Singleton instance for application use
 export const clientEmbeddingGenerator = new ClientEmbeddingGenerator('nomic-embed');
-
+;
 // Utility functions for embedding management
 export class EmbeddingCache {
   private cache = new Map<string, { embedding: Float32Array; timestamp: number }>();

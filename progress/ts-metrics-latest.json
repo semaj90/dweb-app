@@ -1,0 +1,72 @@
+{
+  "timestamp": "2025-09-01T23-07-00-961Z",
+  "summary": {
+    "TS1138": 42,
+    "TS7006": 0,
+    "TS2307": 0,
+    "TS2322": 0,
+    "TS2551": 0,
+    "TS2741": 0,
+    "TS2742": 0,
+    "OTHER": 738,
+    "total": 780
+  },
+  "topCodes": [
+    {
+      "code": "TS1005",
+      "count": 334
+    },
+    {
+      "code": "TS1128",
+      "count": 209
+    },
+    {
+      "code": "TS1109",
+      "count": 117
+    },
+    {
+      "code": "TS1138",
+      "count": 42
+    },
+    {
+      "code": "TS1136",
+      "count": 24
+    },
+    {
+      "code": "TS1137",
+      "count": 19
+    },
+    {
+      "code": "TS1434",
+      "count": 13
+    },
+    {
+      "code": "TS1011",
+      "count": 7
+    },
+    {
+      "code": "TS1131",
+      "count": 6
+    },
+    {
+      "code": "TS1003",
+      "count": 4
+    },
+    {
+      "code": "TS1161",
+      "count": 2
+    },
+    {
+      "code": "TS1127",
+      "count": 2
+    },
+    {
+      "code": "TS1180",
+      "count": 1
+    }
+  ],
+  "parseErrors": {
+    "total": 771,
+    "percent": 98.85
+  }
+}

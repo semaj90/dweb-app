@@ -13,19 +13,19 @@
   let isLoading = writable(false);
 
   // Chat input
-  let messageInput = '';
-  let chatContainer: HTMLDivElement;
+let messageInput = $state('');
+let chatContainer = $state<HTMLDivElement;
 
   // Enhanced RAG service URL
-  const RAG_SERVICE_URL = 'http://localhost:8093';
+  const RAG_SERVICE_URL >('http://localhost:8093');
 
   // Initialize with welcome message
   onMount(async () => {
     // Check Enhanced RAG service connection
     try {
-      let response: Response;
+let response = $state<Response;
         try {
-          response = await fetch(`${RAG_SERVICE_URL}/health`);
+          response >(await fetch(`${RAG_SERVICE_URL}/health`));
           if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
           }
@@ -181,8 +181,7 @@ ${error.message}
   async function handleCommand(command: string) {
     const [cmd, ...args] = command.slice(1).split(' ');
     const arg = args.join(' ');
-
-    let response = '';
+let response = $state('');
 
     switch (cmd) {
       case 'help':
@@ -276,8 +275,7 @@ ${error.message}
 
   function formatRAGResponse(result: any): string {
     if (typeof result === 'string') return result;
-
-    let formatted = `🤖 **YoRHa AI Response**\n\n`;
+let formatted = $state(`🤖 **YoRHa AI Response**\n\n`);
     
     if (result.response) {
       formatted += `${result.response}\n\n`;
@@ -400,7 +398,7 @@ ${error.message}
         class="flex-1 bg-yorha-dark border border-yorha-accent-warm/50 rounded px-4 py-3 text-yorha-light placeholder-yorha-muted/70 focus:outline-none focus:border-yorha-accent-warm focus:ring-1 focus:ring-yorha-accent-warm disabled:opacity-50"
       />
       <button
-        click={sendMessage}
+        on:onclick={sendMessage}
         disabled={$isLoading || !messageInput.trim()}
         class="px-6 py-3 bg-yorha-accent-warm text-yorha-dark font-bold rounded hover:bg-yorha-accent-warm/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
       >

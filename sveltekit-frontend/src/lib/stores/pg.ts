@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { Pool } from 'pg';
 
 const pool = new Pool({ connectionString: import.meta.env.PG_CONN });

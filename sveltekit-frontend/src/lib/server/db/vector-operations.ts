@@ -3,8 +3,8 @@
  * Enhanced Vector Operations Service - PostgreSQL + pgvector + Qdrant Integration
  * Production CRUD operations with multi-store vector search and persistence
  */
-import { db } from './index';
-import { sql, eq, and, desc } from './index';
+import { db } from './index.js';
+import { sql, eq, and, desc } from './index.js';
 import { 
   cases, 
   evidence, 
@@ -14,7 +14,7 @@ import {
   embeddingCache,
   userAiQueries,
   users 
-} from './schema-postgres';
+} from './schema-postgres.js';
 import type { QdrantClient } from '@qdrant/js-client-rest';
 
 // === ENHANCED INTERFACES ===
@@ -92,8 +92,8 @@ class EnhancedVectorOperationsService {
       const { QdrantClient } = await import('@qdrant/js-client-rest');
       
       this.qdrantClient = new QdrantClient({
-        url: process.env.QDRANT_URL || 'http://localhost:6333',
-        apiKey: process.env.QDRANT_API_KEY
+        url: import.meta.env.QDRANT_URL || 'http://localhost:6333',
+        apiKey: import.meta.env.QDRANT_API_KEY
       });
       
       console.log('✅ Qdrant client initialized');
@@ -660,7 +660,7 @@ export async function testVectorOperations(): Promise<{
 
 // Create singleton instance for production use
 export const vectorOperations = new EnhancedVectorOperationsService();
-
+;
 // Export service class for direct instantiation if needed
 export { EnhancedVectorOperationsService };
 

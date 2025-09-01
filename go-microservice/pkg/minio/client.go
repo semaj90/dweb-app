@@ -1,6 +1,4 @@
-//go:build legacy
-// +build legacy
-
+// Package minio provides a thin wrapper around the MinIO Go client.
 package minio
 
 import (
@@ -12,33 +10,33 @@ import (
 	"strings"
 	"time"
 
-	"github.com/minio/minio-go/v7"
+	minioSDK "github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
-type Client struct {
-	client     *minio.Client
+ type Client struct {
+	client     *minioSDK.Client
 	bucketName string
-}
+ }
 
-type UploadResult struct {
+ type UploadResult struct {
 	ObjectName string            `json:"objectName"`
 	Size       int64             `json:"size"`
 	ETag       string            `json:"etag"`
 	URL        string            `json:"url"`
 	Metadata   map[string]string `json:"metadata"`
-}
+ }
 
-type UploadOptions struct {
+ type UploadOptions struct {
 	CaseID       string            `json:"caseId"`
 	DocumentType string            `json:"documentType"`
 	Tags         map[string]string `json:"tags"`
 	Metadata     map[string]string `json:"metadata"`
-}
+ }
 
-// NewClient creates a new MinIO client
-func NewClient(endpoint, accessKey, secretKey, bucketName string, useSSL bool) (*Client, error) {
-	minioClient, err := minio.New(endpoint, &minio.Options{
+ // NewClient creates a new MinIO client
+ func NewClient(endpoint, accessKey, secretKey, bucketName string, useSSL bool) (*Client, error) {
+	minioClient, err := minioSDK.New(endpoint, &minioSDK.Options{
 		Creds:  credentials.NewStaticV4(accessKey, secretKey, ""),
 		Secure: useSSL,
 	})
@@ -57,10 +55,10 @@ func NewClient(endpoint, accessKey, secretKey, bucketName string, useSSL bool) (
 	}
 
 	return client, nil
-}
+ }
 
-// ensureBucket creates the bucket if it doesn't exist
-func (c *Client) ensureBucket() error {
+ // ensureBucket creates the bucket if it doesn't exist
+ func (c *Client) ensureBucket() error {
 	ctx := context.Background()
 	exists, err := c.client.BucketExists(ctx, c.bucketName)
 	if err != nil {
@@ -68,7 +66,7 @@ func (c *Client) ensureBucket() error {
 	}
 
 	if !exists {
-		err = c.client.MakeBucket(ctx, c.bucketName, minio.MakeBucketOptions{})
+		err = c.client.MakeBucket(ctx, c.bucketName, minioSDK.MakeBucketOptions{})
 		if err != nil {
 			return err
 		}
@@ -76,10 +74,10 @@ func (c *Client) ensureBucket() error {
 	}
 
 	return nil
-}
+ }
 
-// UploadFile uploads a file with metadata for legal document processing
-func (c *Client) UploadFile(ctx context.Context, file multipart.File, header *multipart.FileHeader, opts UploadOptions) (*UploadResult, error) {
+ // UploadFile uploads a file with metadata for legal document processing
+ func (c *Client) UploadFile(ctx context.Context, file multipart.File, header *multipart.FileHeader, opts UploadOptions) (*UploadResult, error) {
 	// Generate unique object name with case organization
 	timestamp := time.Now().Format("2006/01/02/15-04-05")
 	objectName := fmt.Sprintf("cases/%s/%s/%s-%s",
@@ -121,7 +119,7 @@ func (c *Client) UploadFile(ctx context.Context, file multipart.File, header *mu
 	}
 
 	// Upload options
-	uploadOpts := minio.PutObjectOptions{
+	uploadOpts := minioSDK.PutObjectOptions{
 		UserMetadata: metadata,
 		UserTags:     tags,
 		ContentType:  header.Header.Get("Content-Type"),
@@ -162,11 +160,11 @@ func (c *Client) UploadFile(ctx context.Context, file multipart.File, header *mu
 	}
 
 	return result, nil
-}
+ }
 
-// GetFile retrieves a file from MinIO
-func (c *Client) GetFile(ctx context.Context, objectName string) (io.ReadCloser, *minio.ObjectInfo, error) {
-	object, err := c.client.GetObject(ctx, c.bucketName, objectName, minio.GetObjectOptions{})
+ // GetFile retrieves a file from MinIO
+ func (c *Client) GetFile(ctx context.Context, objectName string) (io.ReadCloser, *minioSDK.ObjectInfo, error) {
+	object, err := c.client.GetObject(ctx, c.bucketName, objectName, minioSDK.GetObjectOptions{})
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to get object: %w", err)
 	}
@@ -178,19 +176,19 @@ func (c *Client) GetFile(ctx context.Context, objectName string) (io.ReadCloser,
 	}
 
 	return object, &info, nil
-}
+ }
 
-// DeleteFile removes a file from MinIO
-func (c *Client) DeleteFile(ctx context.Context, objectName string) error {
-	return c.client.RemoveObject(ctx, c.bucketName, objectName, minio.RemoveObjectOptions{})
-}
+ // DeleteFile removes a file from MinIO
+ func (c *Client) DeleteFile(ctx context.Context, objectName string) error {
+	return c.client.RemoveObject(ctx, c.bucketName, objectName, minioSDK.RemoveObjectOptions{})
+ }
 
-// ListFiles lists files for a specific case
-func (c *Client) ListFiles(ctx context.Context, caseID string) ([]minio.ObjectInfo, error) {
+ // ListFiles lists files for a specific case
+ func (c *Client) ListFiles(ctx context.Context, caseID string) ([]minioSDK.ObjectInfo, error) {
 	prefix := fmt.Sprintf("cases/%s/", caseID)
 
-	var objects []minio.ObjectInfo
-	for object := range c.client.ListObjects(ctx, c.bucketName, minio.ListObjectsOptions{
+	var objects []minioSDK.ObjectInfo
+	for object := range c.client.ListObjects(ctx, c.bucketName, minioSDK.ListObjectsOptions{
 		Prefix:    prefix,
 		Recursive: true,
 	}) {
@@ -201,22 +199,22 @@ func (c *Client) ListFiles(ctx context.Context, caseID string) ([]minio.ObjectIn
 	}
 
 	return objects, nil
-}
+ }
 
-// GetPresignedUploadURL generates a presigned URL for direct browser upload
-func (c *Client) GetPresignedUploadURL(ctx context.Context, objectName string, expires time.Duration) (string, error) {
+ // GetPresignedUploadURL generates a presigned URL for direct browser upload
+ func (c *Client) GetPresignedUploadURL(ctx context.Context, objectName string, expires time.Duration) (string, error) {
 	url, err := c.client.PresignedPutObject(ctx, c.bucketName, objectName, expires)
 	if err != nil {
 		return "", fmt.Errorf("failed to generate presigned upload URL: %w", err)
 	}
 	return url.String(), nil
-}
+ }
 
-// GetObjectMetadata retrieves metadata for an object
-func (c *Client) GetObjectMetadata(ctx context.Context, objectName string) (map[string]string, error) {
-	info, err := c.client.StatObject(ctx, c.bucketName, objectName, minio.StatObjectOptions{})
+ // GetObjectMetadata retrieves metadata for an object
+ func (c *Client) GetObjectMetadata(ctx context.Context, objectName string) (map[string]string, error) {
+	info, err := c.client.StatObject(ctx, c.bucketName, objectName, minioSDK.StatObjectOptions{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get object metadata: %w", err)
 	}
 	return info.UserMetadata, nil
-}
+ }

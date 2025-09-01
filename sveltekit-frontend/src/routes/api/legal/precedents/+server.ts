@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 
 // Minimal repaired Legal Precedents API
@@ -15,6 +15,8 @@ try {
 }
 
 import { eq } from 'drizzle-orm';
+import crypto from "crypto";
+import { URL } from "url";
 
 export const GET: RequestHandler = async ({ url }) => {
     const query = url.searchParams.get('query') || '';
@@ -32,5 +34,5 @@ export const POST: RequestHandler = async ({ request }) => {
 };
 
 export const PUT: RequestHandler = async () => json({ success: true, similar: [] });
-
+;
 export const prerender = false;

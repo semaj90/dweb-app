@@ -33,13 +33,13 @@
 	let lastAnalysis = state<any>(null);
 
 	// Terminal DOM reference
-	let terminalElement: HTMLDivElement;
-	let inputElement: HTMLInputElement;
+let terminalElement = $state<HTMLDivElement;
+let inputElement = $state<HTMLInputElement;
 
-	onMount(() => {
-		inputElement?.focus();
-		const cursorInterval = setInterval(() => {
-			cursor.value = !cursor.value;
+	onMount(() >(> {
+		inputElement?.focus());
+		const cursorInterval >(setInterval(() => {
+			cursor.value = !cursor.value);
 		}, 500);
 		terminalElement?.addEventListener("click", () => {
 			inputElement?.focus();
@@ -344,19 +344,19 @@
 			<div class="role-switcher">
 				<Button
 					class="role-btn {currentRole.value === 'detective' ? 'active' : ''}"
-					on:click={() => switchRole("detective")}
+					on:on:click={() => switchRole("detective")}
 				>
 					Detective
 				</Button>
 				<Button
 					class="role-btn {currentRole.value === 'prosecutor' ? 'active' : ''}"
-					on:click={() => switchRole("prosecutor")}
+					on:on:click={() => switchRole("prosecutor")}
 				>
 					Prosecutor
 				</Button>
 				<Button
 					class="role-btn {currentRole.value === 'admin' ? 'active' : ''}"
-					on:click={() => switchRole("admin")}
+					on:on:click={() => switchRole("admin")}
 				>
 					Admin
 				</Button>
@@ -398,11 +398,11 @@
 
 	<!-- Quick Commands -->
 	<div class="quick-commands">
-		<Button on:click={() => { terminalInput.value = "help"; executeCommand(); }}>Help</Button>
-		<Button on:click={() => { terminalInput.value = "status"; executeCommand(); }}>Status</Button>
-		<Button on:click={() => { terminalInput.value = "context7"; executeCommand(); }}>Test Context7</Button>
-		<Button on:click={() => { terminalInput.value = "analyze contract dispute"; executeCommand(); }}>Sample Analysis</Button>
-		<Button on:click={() => { terminalInput.value = "clear"; executeCommand(); }}>Clear</Button>
+		<Button on:on:click={() => { terminalInput.value = "help"; executeCommand(); }}>Help</Button>
+		<Button on:on:click={() => { terminalInput.value = "status"; executeCommand(); }}>Status</Button>
+		<Button on:on:click={() => { terminalInput.value = "context7"; executeCommand(); }}>Test Context7</Button>
+		<Button on:on:click={() => { terminalInput.value = "analyze contract dispute"; executeCommand(); }}>Sample Analysis</Button>
+		<Button on:on:click={() => { terminalInput.value = "clear"; executeCommand(); }}>Clear</Button>
 	</div>
 </div>
 

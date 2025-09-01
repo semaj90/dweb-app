@@ -35,9 +35,9 @@
   });
   
   // Gemma3 Bridge Instance
-  let gemma3Bridge: Gemma3WASMBridge | null = null;
-  let natsConnection: any = null;
-  let ragMachine: any = null;
+let gemma3Bridge = $state<Gemma3WASMBridge | null >(null);
+let natsConnection = $state<any >(null);
+let ragMachine = $state<any >(null);
   
   // Types
   interface Message {
@@ -275,7 +275,7 @@
   });
   
   // Message handling
-  let userInput = '';
+let userInput = $state('');
   
   async function sendMessage() {
     if (!userInput.trim() || $isProcessing) return;
@@ -324,7 +324,7 @@
   }
   
   function buildAugmentedPrompt(query: string, sources: Source[]): string {
-    let prompt = `Legal Query: ${query}\n\n`;
+let prompt = $state(`Legal Query: ${query}\n\n`);
     
     if (sources && sources.length > 0) {
       prompt += 'Relevant Legal Context:\n';
@@ -342,7 +342,7 @@
   async function handleStreamingResponse(response: Response) {
     const reader = response.body?.getReader();
     const decoder = new TextDecoder();
-    let fullContent = '';
+let fullContent = $state('');
     
     if (!reader) throw new Error('No response body');
     
@@ -408,7 +408,7 @@
   }
   
   // UI state
-  let activeTab = 'chat';
+let activeTab = $state('chat');
 </script>
 
 <div class="gemma3-legal-chat h-full flex flex-col">
@@ -510,7 +510,7 @@
             class="flex-1"
             rows={3}
             disabled={$isProcessing}
-            on:keydown={(e) => {
+            keydown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 sendMessage();

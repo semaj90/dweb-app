@@ -61,7 +61,7 @@
   }
 
   // Real-time search as user types (debounced)
-  let debounceTimer: NodeJS.Timeout | null = null;
+let debounceTimer = $state<NodeJS.Timeout | null >(null);
   $effect(() => {
     if (searchQuery.trim()) {
       if (debounceTimer) clearTimeout(debounceTimer);
@@ -148,9 +148,9 @@
         <div class="relative flex-1">
           <Search
             class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input {placeholder} bind:value={searchQuery} on:keydown={handleKeydown} class="pl-10" />
+          <Input {placeholder} bind:value={searchQuery} keydown={handleKeydown} class="pl-10" />
         </div>
-        <Button on:click={performSearch} disabled={isSearching || !searchQuery.trim()} size="sm">
+        <Button on:on:click={performSearch} disabled={isSearching || !searchQuery.trim()} size="sm">
           {#if isSearching}
             Searching...
           {:else}
@@ -295,7 +295,7 @@
             <Button
               variant="outline"
               size="sm"
-              on:click={() => {
+              on:on:click={() => {
                 searchQuery = suggestion;
                 performSearch();
               }}>

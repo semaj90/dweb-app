@@ -113,7 +113,7 @@ export interface UnifiedPerformanceMetrics {
 /**
  * Main Unified WASM-GPU Orchestrator Class
  */
-export class UnifiedWASMGPUOrchestrator {
+export class UnifiedWASMGPUOrchestrator {;
   private config: UnifiedWASMGPUConfig;
   private nesGPUBridge: NESStyleGPUBridge | null = null;
   private ollamaService: any | null = null;
@@ -845,7 +845,7 @@ export class UnifiedWASMGPUOrchestrator {
 }
 
 // Factory function for Svelte integration
-export function createUnifiedWASMGPUOrchestrator(config?: Partial<UnifiedWASMGPUConfig>) {
+export function createUnifiedWASMGPUOrchestrator(config?: Partial<UnifiedWASMGPUConfig>) {;
   const orchestrator = new UnifiedWASMGPUOrchestrator(config);
 
   return {
@@ -875,7 +875,7 @@ export function createUnifiedWASMGPUOrchestrator(config?: Partial<UnifiedWASMGPU
 }
 
 // Global instance
-export const unifiedWASMGPUOrchestrator = new UnifiedWASMGPUOrchestrator({
+export const unifiedWASMGPUOrchestrator = new UnifiedWASMGPUOrchestrator({;
   enableNESBridge: true,
   enableOllamaIntegration: true,
   enableYoRHaProcessor: true,

@@ -35,7 +35,7 @@ export function throttle<T extends (...args: any[]) => any>(
   wait: number
 ): (...args: Parameters<T>) => void {
   let inThrottle: boolean;
-  
+
   return function executedFunction(...args: Parameters<T>) {
     if (!inThrottle) {
       func.apply(this, args);

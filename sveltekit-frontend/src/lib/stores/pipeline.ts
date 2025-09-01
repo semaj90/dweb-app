@@ -1,5 +1,7 @@
+/// <reference types="vite/client" />
 // Svelte store for real-time AI pipeline updates via WebSocket fan-out
 import { writable, derived } from "svelte/store";
+import { EventEmitter } from "events";
 // TODO: Fix import - // Orphaned content: import {  export interface PipelineEventBase { type: string; ts: number; raw: any }
 export interface EvidenceUploadEvent extends PipelineEventBase { type: 'evidence.upload' }
 export interface AIResponseEvent extends PipelineEventBase { type: 'ai.response'; llmResult?: unknown }
@@ -41,3 +43,4 @@ function createPipelineStore(){
 }
 
 export const pipeline = createPipelineStore();
+;

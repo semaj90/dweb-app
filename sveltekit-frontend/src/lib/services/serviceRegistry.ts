@@ -1,3 +1,5 @@
+import http from "http";
+import { EventEmitter } from "events";
 // Auto-generated Service Registry for Go, gRPC, QUIC, HTTP, WebSocket endpoints
 // Source: gonet12grpcquic3.txt, GO_BINARIES_CATALOG.md, FULL_STACK_INTEGRATION_COMPLETE.md
 
@@ -36,22 +38,22 @@ export const ServiceRegistry = {
     recommendationService: 'http://localhost:8223',
     simpleServer: 'http://localhost:8224',
     testServer: 'http://localhost:8225',
-    testBuild: 'http://localhost:8226',
+    testBuild: 'http://localhost:8226'
   },
   grpc: {
     grpcServer: 'localhost:50051',
-    kratosServer: 'localhost:50052',
+    kratosServer: 'localhost:50052'
   },
   quic: {
-    ragQuicProxy: 'localhost:8216',
+    ragQuicProxy: 'localhost:8216'
   },
   ws: {
     liveAgent: 'ws://localhost:8200/ws',
-    enhancedRAG: 'ws://localhost:8094/ws',
+    enhancedRAG: 'ws://localhost:8094/ws'
   },
   nats: {
     ws1: 'ws://localhost:4222',
-    ws2: 'ws://localhost:4223',
+    ws2: 'ws://localhost:4223'
   },
   proxy: {
     enhancedRAG: '/api/go/enhanced-rag',
@@ -61,7 +63,7 @@ export const ServiceRegistry = {
     xstate: '/api/go/xstate',
     nvidiaLlama: '/api/nvidia-llama',
     qdrant: '/api/qdrant',
-    llm: '/api/llm',
+    llm: '/api/llm'
   },
   endpoints: {
     ragQuery: '/api/v1/rag',
@@ -77,7 +79,7 @@ export const ServiceRegistry = {
     vectorSearch: '/api/v1/vector/search',
     graphQuery: '/api/v1/graph/query',
     context7Autosolve: '/api/context7-autosolve',
-    natsDemo: '/demos/nats-messaging',
+    natsDemo: '/demos/nats-messaging'
   },
   proto: {
     embedder: 'proto/embed.proto',
@@ -86,8 +88,8 @@ export const ServiceRegistry = {
     tensor: 'proto/tensor.proto',
     events: 'proto/events.proto',
     ingest: 'proto/ingest.proto',
-    ingestNew: 'proto/ingest_new.proto',
-  },
+    ingestNew: 'proto/ingest_new.proto'
+  }
 };
 
 // Usage: ServiceRegistry.http.enhancedRAG, ServiceRegistry.grpc.kratosServer, etc.

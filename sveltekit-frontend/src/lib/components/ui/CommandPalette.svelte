@@ -26,8 +26,8 @@
   }>();
   
   let searchInput: HTMLInputElement;
-  let searchQuery = '';
-  let selectedIndex = 0;
+let searchQuery = $state('');
+let selectedIndex = $state(0);
   
   let filteredItems = $derived(searchQuery 
     ? allItems.filter(item => 
@@ -163,7 +163,7 @@
   <!-- Backdrop -->
   <div 
     class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
-    click={close}
+    on:onclick={close}
     role="button"
     tabindex="0"
     keydown={(e) => e.key === 'Enter' && close()}
@@ -222,8 +222,8 @@
                         ? "bg-harvard-crimson text-white shadow-nier-glow"
                         : "hover:bg-nier-surface-light text-foreground"
                     )}
-                    click={() => selectItem(item)}
-                    on:mouseenter={() => selectedIndex = globalIndex}
+                    on:onclick={() => selectItem(item)}
+                    on:on:mouseenter={() => selectedIndex = globalIndex}
                   >
                     <div class="flex items-center">
                       <svelte:component 

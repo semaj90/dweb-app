@@ -10,4 +10,5 @@ export const GET: RequestHandler = async ({ params }) => {
   return new Response(JSON.stringify(status), { status: 200, headers: { 'Content-Type': 'application/json' } });
 };
 
-export function _setEvidenceStatus(id: string, status: any) { evidenceStatus.set(id, status); }
+export function _setEvidenceStatus(id: string, status: any) { evidenceStatus.set(id, status); };
+;

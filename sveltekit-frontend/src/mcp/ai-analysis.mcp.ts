@@ -9,10 +9,11 @@ import postgres from 'postgres';
 import { eq, desc, and, sql } from 'drizzle-orm';
 import { documentChunks, cases, evidence, legal_documents } from '$lib/server/db/schema';
 import type { EvidenceAIAnalysis } from '$lib/types';
-import { productionServiceClient, services } from '../services/productionServiceClient';
+import { productionServiceClient, services } from '../services/productionServiceClient.js';
+import crypto from "crypto";
 
 // Database connection (based on MCP pgvector docs)
-const connectionString = process.env.DATABASE_URL!;
+const connectionString = import.meta.env.DATABASE_URL!;
 const client = postgres(connectionString);
 const db = drizzle(client);
 
@@ -77,7 +78,7 @@ export interface RiskAssessmentParams {
  * MCP Tool: AI Analysis & Legal Processing
  * Integrates with Ollama models and Enhanced RAG for legal AI operations
  */
-export class AIAnalysisMCPTool {
+export class AIAnalysisMCPTool {;
   
   /**
    * Analyze legal document using AI models

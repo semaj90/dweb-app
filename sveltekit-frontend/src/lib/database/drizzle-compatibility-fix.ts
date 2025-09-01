@@ -25,7 +25,7 @@ export interface DrizzleCompatibilityLayer {
 }
 
 // ===== ENHANCED QUERY RESULT HANDLER =====
-export const handleQueryResult = <T>(result: any): T[] => {
+export const handleQueryResult = <T>(result: any): T[] => {;
   // Handle different result formats from Drizzle queries
   if (!result) return [];
   
@@ -72,7 +72,7 @@ export const handleQueryResult = <T>(result: any): T[] => {
 };
 
 // ===== SAFE PROPERTY ACCESS =====
-export const safePropertyAccess = <T>(obj: any, property: string, defaultValue: T): T => {
+export const safePropertyAccess = <T>(obj: any, property: string, defaultValue: T): T => {;
   if (!obj || typeof obj !== 'object') {
     return defaultValue;
   }
@@ -93,7 +93,7 @@ export const safePropertyAccess = <T>(obj: any, property: string, defaultValue: 
 };
 
 // ===== VECTOR OPERATIONS COMPATIBILITY =====
-export const vectorOperations = {
+export const vectorOperations = {;
   similarity: (vector1: number[], vector2: number[]): number => {
     if (!vector1 || !vector2 || vector1.length !== vector2.length) {
       return 0;
@@ -147,7 +147,7 @@ export const vectorOperations = {
 };
 
 // ===== CONNECTION MANAGEMENT =====
-export const ensureConnection = async (client: any): Promise<any> => {
+export const ensureConnection = async (client: any): Promise<any> => {;
   if (!client) {
     throw new Error('Database client is null or undefined');
   }
@@ -178,7 +178,7 @@ export const ensureConnection = async (client: any): Promise<any> => {
 };
 
 // ===== ENHANCED DRIZZLE COMPATIBILITY LAYER =====
-export const drizzleCompatibilityLayer: DrizzleCompatibilityLayer = {
+export const drizzleCompatibilityLayer: DrizzleCompatibilityLayer = {;
   handleQueryResult,
   ensureConnection,
   safePropertyAccess,
@@ -186,7 +186,7 @@ export const drizzleCompatibilityLayer: DrizzleCompatibilityLayer = {
 };
 
 // ===== TYPE-SAFE RESULT ENHANCER =====
-export const enhanceResultWithTypes = <T extends Record<string, any>>(
+export const enhanceResultWithTypes = <T extends Record<string, any>>(;;
   result: any,
   typeMap: Record<keyof T, any>
 ): T => {
@@ -212,7 +212,7 @@ export const enhanceResultWithTypes = <T extends Record<string, any>>(
 };
 
 // ===== COMMON DATABASE ENTITY ENHANCERS =====
-export const entityEnhancers = {
+export const entityEnhancers = {;
   // Legal document entity enhancer
   legalDocument: (doc: any) => enhanceResultWithTypes(doc, {
     id: null,
@@ -270,7 +270,7 @@ export const entityEnhancers = {
 };
 
 // ===== QUERY INTERCEPTOR FOR TYPE SAFETY =====
-export const createTypeSafeQuery = (baseQuery: any) => {
+export const createTypeSafeQuery = (baseQuery: any) => {;
   return {
     ...baseQuery,
     

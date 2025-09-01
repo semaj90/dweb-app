@@ -67,7 +67,7 @@ export interface RecommendationState {
   recommendations: Recommendation[];
   activeRecommendations: Recommendation[];
   dismissedRecommendations: Recommendation[];
-  
+
   // User Analytics
   userAnalytics: UserAnalytics | null;
   behaviorInsights: {
@@ -75,7 +75,7 @@ export interface RecommendationState {
     suggestions: string[];
     trends: Array<{ metric: string; trend: 'up' | 'down' | 'stable'; change: number }>;
   };
-  
+
   // AI Models
   isAnalyzing: boolean;
   lastAnalysisTime: number | null;
@@ -84,15 +84,15 @@ export interface RecommendationState {
     gemma3_legal: boolean;
     recommendation_engine: boolean;
   };
-  
+
   // Performance
   analyticsLatency: number;
   recommendationAccuracy: number; // User feedback based
-  
+
   // Settings
   enableRealTimeAnalysis: boolean;
   privacyLevel: 'minimal' | 'standard' | 'enhanced';
-  
+
   error: string | null;
 }
 
@@ -123,37 +123,28 @@ const initialState: RecommendationState = {
 // Core store
 export const recommendationStore = writable<RecommendationState>(initialState);
 
-// Derived stores
-export const highPriorityRecommendations = derived(
-  recommendationStore,
-  $store => $store.activeRecommendations.filter(r => 
-    r.priority === 'high' || r.priority === 'urgent'
-  ).sort((a, b) => b.confidence - a.confidence)
+// Derived stores (repaired syntax)
+export const highPriorityRecommendations = derived(recommendationStore, ($store) =>
+  $store.activeRecommendations
+    .filter(r => r.priority === 'high' || r.priority === 'urgent')
+    .sort((a, b) => b.confidence - a.confidence)
 );
 
-export const recommendationsByType = derived(
-  recommendationStore,
-  $store => {
-    const grouped: Record<string, Recommendation[]> = {};
-    $store.activeRecommendations.forEach(rec => {
-      if (!grouped[rec.type]) grouped[rec.type] = [];
-      grouped[rec.type].push(rec);
-    });
-    return grouped;
-  }
-);
+export const recommendationsByType = derived(recommendationStore, ($store) => {
+  const grouped: Record<string, Recommendation[]> = {};
+  $store.activeRecommendations.forEach(rec => {
+    if (!grouped[rec.type]) grouped[rec.type] = [];
+    grouped[rec.type].push(rec);
+  });
+  return grouped;
+});
 
-export const userProductivityScore = derived(
-  recommendationStore,
-  $store => {
-    if (!$store.userAnalytics?.performance) return 0;
-    
-    const trends = $store.userAnalytics.performance.productivityTrends;
-    if (trends.length === 0) return 0;
-    
-    return trends[trends.length - 1].score;
-  }
-);
+export const userProductivityScore = derived(recommendationStore, ($store) => {
+  if (!$store.userAnalytics?.performance) return 0;
+  const trends = $store.userAnalytics.performance.productivityTrends;
+  if (trends.length === 0) return 0;
+  return trends[trends.length - 1].score;
+});
 
 // Actions
 export const recommendationActions = {
@@ -328,7 +319,7 @@ export const recommendationActions = {
   updateAccuracyMetrics(feedback: Array<{ helpful: boolean; confidence: number }>): void {
     if (feedback.length === 0) return;
 
-    const accuracy = feedback.reduce((sum, f) => 
+    const accuracy = feedback.reduce((sum, f) =>
       sum + (f.helpful ? f.confidence : (1 - f.confidence)), 0
     ) / feedback.length;
 
@@ -357,7 +348,7 @@ export const recommendationActions = {
   async checkModelsStatus(): Promise<void> {
     try {
       const response = await productionServiceClient.execute('ai.models.status', {});
-      
+
       recommendationStore.update(state => ({
         ...state,
         aiModelsStatus: {

@@ -37,16 +37,16 @@
   let lastUpdate = $state(new Date(data.timestamp););
 
   // Data update intervals
-  let metricsInterval: ReturnType<typeof setInterval>;
-  let realtimeInterval: ReturnType<typeof setInterval>;
+let metricsInterval = $state<ReturnType<typeof setInterval>;
+let realtimeInterval = $state<ReturnType<typeof setInterval>;
 
-  onMount(async () => {
-    await loadSystemData();
+  onMount(async () >(> {
+    await loadSystemData());
     startRealTimeUpdates();
   });
 
-  onDestroy(() => {
-    if (metricsInterval) clearInterval(metricsInterval);
+  onDestroy(() >(> {
+    if (metricsInterval) clearInterval(metricsInterval));
     if (realtimeInterval) clearInterval(realtimeInterval);
   });
 

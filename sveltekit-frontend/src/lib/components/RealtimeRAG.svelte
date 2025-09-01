@@ -20,11 +20,11 @@
   });
 
   // Local component state
-  let query = '';
-  let showAdvancedOptions = false;
-  let maxResults = 5;
-  let confidenceThreshold = 0.7;
-  let selectedDocumentTypes = [];
+let query = $state('');
+let showAdvancedOptions = $state(false);
+let maxResults = $state(5);
+let confidenceThreshold = $state(0.7);
+let selectedDocumentTypes = $state([]);
   
   // Reactive state from stores
   let documents = $derived(ragStore.documents);
@@ -132,7 +132,7 @@
       
       <button
         type="button"
-        click={handleQuerySubmit}
+        on:onclick={handleQuerySubmit}
         disabled={!query.trim() || machineState.matches('querying')}
         class="absolute bottom-3 right-3 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
       >
@@ -152,7 +152,7 @@
     <div class="flex items-center justify-between mt-3">
       <button
         type="button"
-        click={() => showAdvancedOptions = !showAdvancedOptions}
+        on:onclick={() => showAdvancedOptions = !showAdvancedOptions}
         class="text-sm text-blue-600 hover:text-blue-800"
       >
         {showAdvancedOptions ? 'Hide' : 'Show'} Advanced Options
@@ -161,7 +161,7 @@
       {#if machineState.matches('success') || machineState.matches('error')}
         <button
           type="button"
-          click={() => ragMachine.send({ type: 'CLEAR' })}
+          on:onclick={() => ragMachine.send({ type: 'CLEAR' })}
           class="text-sm text-gray-600 hover:text-gray-800"
         >
           Clear Results
@@ -247,7 +247,7 @@
             {#each machineContext.sources as source}
               <div 
                 class="source-card p-4 border border-gray-200 rounded-lg hover:border-blue-300 cursor-pointer transition-colors"
-                click={() => onResultSelect?.(source)}
+                on:onclick={() => onResultSelect?.(source)}
               >
                 <div class="flex items-start justify-between">
                   <div class="flex-1">
@@ -297,7 +297,7 @@
         </p>
         <button
           type="button"
-          click={() => ragMachine.send({ type: 'RETRY' })}
+          on:onclick={() => ragMachine.send({ type: 'RETRY' })}
           class="mt-3 px-4 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700"
         >
           Retry Query

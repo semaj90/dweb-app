@@ -51,7 +51,7 @@
   let selectedRows = $state<Set<number>>(new Set());
 
   // Filter and sort data
-  const filteredData = $derived(() => {
+  let filteredData = $derived(() => {
     let filtered = [...data];
 
     // Apply search filter
@@ -80,12 +80,12 @@
   });
 
   // Paginated data
-  const paginatedData = $derived(() => {
+  let paginatedData = $derived(() => {
     const start = currentPage * pageSize;
     return filteredData.slice(start, start + pageSize);
   });
 
-  const totalPages = $derived(() => Math.ceil(filteredData.length / pageSize));
+  let totalPages = $derived(() => Math.ceil(filteredData.length / pageSize));
 
   function handleSort(column: DataTableColumn) {
     if (!column.sortable) return;
@@ -153,7 +153,7 @@
       {/if}
       
       {#if exportable}
-        <Button variant="outline" size="sm" on:click={handleExport}>
+        <Button variant="outline" size="sm" on:on:click={handleExport}>
           <Download class="w-4 h-4 mr-2" />
           Export
         </Button>
@@ -172,7 +172,7 @@
                 <input
                   type="checkbox"
                   checked={selectedRows.size === paginatedData.length && paginatedData.length > 0}
-                  on:change={toggleSelectAll}
+                  change={toggleSelectAll}
                   class="rounded border-yorha-border"
                 />
               </th>
@@ -185,7 +185,7 @@
                   column.className
                 )}
                 style={column.width ? `width: ${column.width}` : undefined}
-                click={() => handleSort(column)}
+                on:onclick={() => handleSort(column)}
               >
                 <div class="flex items-center gap-1">
                   {column.label}
@@ -213,7 +213,7 @@
                 onRowClick && 'cursor-pointer',
                 selectedRows.has(index) && 'bg-yorha-primary/5'
               )}
-              click={() => onRowClick?.(row)}
+              on:onclick={() => onRowClick?.(row)}
             >
               {#if selectable}
                 <td class="p-3">
@@ -221,7 +221,7 @@
                     type="checkbox"
                     checked={selectedRows.has(index)}
                     change={() => toggleRowSelection(index)}
-                    on:click={(e) => e.stopPropagation()}
+                    on:on:click={(e) => e.stopPropagation()}
                     class="rounded border-yorha-border"
                   />
                 </td>
@@ -260,7 +260,7 @@
           variant="outline" 
           size="sm" 
           disabled={currentPage === 0}
-          on:click={() => currentPage = Math.max(0, currentPage - 1)}
+          on:on:click={() => currentPage = Math.max(0, currentPage - 1)}
         >
           Previous
         </Button>
@@ -273,7 +273,7 @@
           variant="outline" 
           size="sm" 
           disabled={currentPage >= totalPages - 1}
-          on:click={() => currentPage = Math.min(totalPages - 1, currentPage + 1)}
+          on:on:click={() => currentPage = Math.min(totalPages - 1, currentPage + 1)}
         >
           Next
         </Button>

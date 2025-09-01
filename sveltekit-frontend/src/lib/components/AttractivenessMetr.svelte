@@ -10,8 +10,7 @@
   let { size = $bindable() } = $props(); // 'sm' | 'md' | 'lg' = 'md';
   
   const dispatch = createEventDispatcher();
-  
-  let hoveredScore: number | null = null;
+let hoveredScore = $state<number | null >(null);
   
   const descriptions = {
     1: 'Very Low',
@@ -72,9 +71,9 @@
         class:active={isActive}
         class:hovered={isHovered}
         disabled={readOnly}
-        click={() => handleRatingClick(rating)}
-        on:mouseenter={() => handleMouseEnter(rating)}
-        on:mouseleave={handleMouseLeave}
+        on:onclick={() => handleRatingClick(rating)}
+        on:on:mouseenter={() => handleMouseEnter(rating)}
+        on:on:mouseleave={handleMouseLeave}
         aria-label="Rate {rating} out of 10"
       >
         <svg

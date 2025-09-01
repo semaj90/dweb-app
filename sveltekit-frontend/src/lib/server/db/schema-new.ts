@@ -9,7 +9,7 @@ import {
   boolean,
   decimal,
   serial,
-  uuid,
+  uuid
 } from "drizzle-orm/pg-core";
 // TODO: Fix import - // Orphaned content: import { relations  // === AUTHENTICATION & USER MANAGEMENT ===
 
@@ -25,7 +25,7 @@ export const users = pgTable("users", {
   role: varchar("role", { length: 50 }).default("prosecutor").notNull(),
   isActive: boolean("is_active").default(true).notNull(),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull()
 });
 
 // === THEMES & UI CUSTOMIZATION ===
@@ -43,10 +43,10 @@ export const themes = pgTable("themes", {
   isSystem: boolean("is_system").default(false).notNull(), // Built-in vs user themes
   isPublic: boolean("is_public").default(false).notNull(), // Shareable themes
   createdBy: uuid("created_by").references(() => users.id, {
-    onDelete: "cascade",
+    onDelete: "cascade"
   }),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull()
 });
 
 export const userThemes = pgTable("user_themes", {
@@ -60,7 +60,7 @@ export const userThemes = pgTable("user_themes", {
   isActive: boolean("is_active").default(false).notNull(),
   customOverrides: jsonb("custom_overrides").default({}), // User-specific theme overrides
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull()
 });
 
 export const layoutComponents = pgTable("layout_components", {
@@ -72,31 +72,31 @@ export const layoutComponents = pgTable("layout_components", {
   jsInteractions: text("js_interactions"), // Optional JavaScript for interactions
   position: jsonb("position").notNull(), // { x, y, width, height, zIndex }
   themeId: uuid("theme_id").references(() => themes.id, {
-    onDelete: "cascade",
+    onDelete: "cascade"
   }),
   isPublic: boolean("is_public").default(false).notNull(),
   createdBy: uuid("created_by").references(() => users.id, {
-    onDelete: "cascade",
+    onDelete: "cascade"
   }),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull()
 });
 
 export const canvasLayouts = pgTable("canvas_layouts", {
   id: uuid("id").primaryKey().defaultRandom(),
   caseId: uuid("case_id").references(() => cases.id, { onDelete: "cascade" }),
   themeId: uuid("theme_id").references(() => themes.id, {
-    onDelete: "set null",
+    onDelete: "set null"
   }),
   layoutData: jsonb("layout_data").notNull(), // Complete layout configuration
   components: jsonb("components").notNull(), // Array of component IDs and positions
   metadata: jsonb("metadata").default({}),
   isTemplate: boolean("is_template").default(false).notNull(),
   createdBy: uuid("created_by").references(() => users.id, {
-    onDelete: "cascade",
+    onDelete: "cascade"
   }),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull()
 });
 
 // === CRIMINAL RECORDS ===
@@ -128,7 +128,7 @@ export const criminals = pgTable("criminals", {
   aiTags: jsonb("ai_tags").default([]).notNull(),
   createdBy: uuid("created_by").references(() => users.id),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull()
 });
 
 // === CASE MANAGEMENT ===
@@ -156,7 +156,7 @@ export const cases = pgTable("cases", {
   createdBy: uuid("created_by").references(() => users.id),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
-  closedAt: timestamp("closed_at", { mode: "date" }),
+  closedAt: timestamp("closed_at", { mode: "date" })
 });
 
 // === CASE-CRIMINAL RELATIONSHIPS ===
@@ -175,7 +175,7 @@ export const caseCriminals = pgTable("case_criminals", {
   sentencing: jsonb("sentencing").default({}).notNull(),
   notes: text("notes"),
   addedBy: uuid("added_by").references(() => users.id),
-  addedAt: timestamp("added_at", { mode: "date" }).defaultNow().notNull(),
+  addedAt: timestamp("added_at", { mode: "date" }).defaultNow().notNull()
 });
 
 // === EVIDENCE MANAGEMENT ===
@@ -209,7 +209,7 @@ export const evidence = pgTable("evidence", {
   canvasPosition: jsonb("canvas_position").default({}).notNull(), // x, y, z for 3D canvas
   uploadedBy: uuid("uploaded_by").references(() => users.id),
   uploadedAt: timestamp("uploaded_at", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull()
 });
 
 // === STATUTES & LEGAL REFERENCES ===
@@ -230,7 +230,7 @@ export const statutes = pgTable("statutes", {
   tags: jsonb("tags").default([]).notNull(),
   relatedStatutes: jsonb("related_statutes").default([]).notNull(),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull()
 });
 
 // === CASE ACTIVITIES & TIMELINE ===
@@ -253,7 +253,7 @@ export const caseActivities = pgTable("case_activities", {
   metadata: jsonb("metadata").default({}).notNull(),
   createdBy: uuid("created_by").references(() => users.id),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull()
 });
 
 // === AI & SEARCH METADATA ===
@@ -272,7 +272,7 @@ export const aiAnalyses = pgTable("ai_analyses", {
   tokens: integer("tokens"),
   cost: decimal("cost", { precision: 8, scale: 6 }), // API cost
   createdBy: uuid("created_by").references(() => users.id),
-  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull()
 });
 
 export const searchTags = pgTable("search_tags", {
@@ -284,7 +284,7 @@ export const searchTags = pgTable("search_tags", {
   confidence: decimal("confidence", { precision: 5, scale: 4 }),
   source: varchar("source", { length: 50 }), // ai_model, user, ocr, etc.
   createdBy: uuid("created_by").references(() => users.id),
-  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull()
 });
 
 // === EXPORT & REPORTING ===
@@ -327,7 +327,7 @@ export const reports = pgTable("reports", {
     .defaultNow()
     .notNull(),
   updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
-  expiresAt: timestamp("expires_at", { mode: "date" }),
+  expiresAt: timestamp("expires_at", { mode: "date" })
 });
 
 // === CANVAS STATES ===
@@ -336,7 +336,7 @@ export const canvasStates = pgTable("canvas_states", {
   id: serial("id").primaryKey(),
   title: varchar("title", { length: 255 }),
   reportId: uuid("report_id").references(() => reports.id, {
-    onDelete: "cascade",
+    onDelete: "cascade"
   }),
   caseId: uuid("case_id")
     .notNull()
@@ -355,7 +355,7 @@ export const canvasStates = pgTable("canvas_states", {
   metadata: text("metadata"),
   createdBy: uuid("created_by").references(() => users.id),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull()
 });
 
 // === CITATION POINTS ===
@@ -371,25 +371,25 @@ export const citationPoints = pgTable("citation_points", {
   tags: jsonb("tags").default([]).notNull(),
   caseId: uuid("case_id").references(() => cases.id, { onDelete: "cascade" }),
   reportId: uuid("report_id").references(() => reports.id, {
-    onDelete: "cascade",
+    onDelete: "cascade"
   }),
   evidenceId: uuid("evidence_id").references(() => evidence.id, {
-    onDelete: "set null",
+    onDelete: "set null"
   }),
   statuteId: uuid("statute_id").references(() => statutes.id, {
-    onDelete: "set null",
+    onDelete: "set null"
   }),
   aiSummary: text("ai_summary"),
   relevanceScore: decimal("relevance_score", {
     precision: 4,
-    scale: 3,
+    scale: 3
   }).default("0.0"),
   metadata: jsonb("metadata").default({}).notNull(),
   isBookmarked: boolean("is_bookmarked").default(false).notNull(),
   usageCount: integer("usage_count").default(0).notNull(),
   createdBy: uuid("created_by").references(() => users.id),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull()
 });
 
 // === HASH VERIFICATIONS ===
@@ -409,7 +409,7 @@ export const hashVerifications = pgTable("hash_verifications", {
     .notNull()
     .references(() => users.id),
   notes: text("notes"),
-  verifiedAt: timestamp("verified_at", { mode: "date" }).defaultNow().notNull(),
+  verifiedAt: timestamp("verified_at", { mode: "date" }).defaultNow().notNull()
 });
 
 // === CRIMES (legacy compatibility) ===
@@ -418,7 +418,7 @@ export const crimes = pgTable("crimes", {
   id: uuid("id").primaryKey().defaultRandom(),
   caseId: uuid("case_id").references(() => cases.id, { onDelete: "cascade" }),
   criminalId: uuid("criminal_id").references(() => criminals.id, {
-    onDelete: "cascade",
+    onDelete: "cascade"
   }),
   statuteId: uuid("statute_id").references(() => statutes.id),
   name: varchar("name", { length: 255 }).notNull(),
@@ -433,7 +433,7 @@ export const crimes = pgTable("crimes", {
   metadata: jsonb("metadata").default({}).notNull(),
   createdBy: uuid("created_by").references(() => users.id),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull()
 });
 
 // === RELATIONSHIPS ===
@@ -448,7 +448,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   criminalsCreated: many(criminals),
   aiAnalyses: many(aiAnalyses),
   searchTags: many(searchTags),
-  reports: many(reports),
+  reports: many(reports)
 }));
 
 // Sessions relations commented out - sessions table not defined in this schema
@@ -463,94 +463,94 @@ export const casesRelations = relations(cases, ({ one, many }) => ({
   leadProsecutor: one(users, {
     fields: [cases.leadProsecutor],
     references: [users.id],
-    relationName: "leadProsecutor",
+    relationName: "leadProsecutor"
   }),
   createdBy: one(users, {
     fields: [cases.createdBy],
     references: [users.id],
-    relationName: "createdBy",
+    relationName: "createdBy"
   }),
   criminals: many(caseCriminals),
   evidence: many(evidence),
-  activities: many(caseActivities),
+  activities: many(caseActivities)
 }));
 
 export const criminalsRelations = relations(criminals, ({ one, many }) => ({
   createdBy: one(users, {
     fields: [criminals.createdBy],
-    references: [users.id],
+    references: [users.id]
   }),
   cases: many(caseCriminals),
-  evidence: many(evidence),
+  evidence: many(evidence)
 }));
 
 export const caseCriminalsRelations = relations(caseCriminals, ({ one }) => ({
   case: one(cases, {
     fields: [caseCriminals.caseId],
-    references: [cases.id],
+    references: [cases.id]
   }),
   criminal: one(criminals, {
     fields: [caseCriminals.criminalId],
-    references: [criminals.id],
+    references: [criminals.id]
   }),
   addedBy: one(users, {
     fields: [caseCriminals.addedBy],
-    references: [users.id],
-  }),
+    references: [users.id]
+  })
 }));
 
 export const evidenceRelations = relations(evidence, ({ one }) => ({
   case: one(cases, {
     fields: [evidence.caseId],
-    references: [cases.id],
+    references: [cases.id]
   }),
   criminal: one(criminals, {
     fields: [evidence.criminalId],
-    references: [criminals.id],
+    references: [criminals.id]
   }),
   uploadedBy: one(users, {
     fields: [evidence.uploadedBy],
-    references: [users.id],
-  }),
+    references: [users.id]
+  })
 }));
 
 export const caseActivitiesRelations = relations(caseActivities, ({ one }) => ({
   case: one(cases, {
     fields: [caseActivities.caseId],
-    references: [cases.id],
+    references: [cases.id]
   }),
   assignedTo: one(users, {
     fields: [caseActivities.assignedTo],
     references: [users.id],
-    relationName: "assignedTo",
+    relationName: "assignedTo"
   }),
   createdBy: one(users, {
     fields: [caseActivities.createdBy],
     references: [users.id],
-    relationName: "createdBy",
-  }),
+    relationName: "createdBy"
+  })
 }));
 
 export const canvasStatesRelations = relations(canvasStates, ({ one }) => ({
   case: one(cases, {
     fields: [canvasStates.caseId],
-    references: [cases.id],
-  }),
+    references: [cases.id]
+  })
 }));
 
 export const casesRelationsExtended = relations(cases, ({ many, one }) => ({
   leadProsecutor: one(users, {
     fields: [cases.leadProsecutor],
     references: [users.id],
-    relationName: "leadProsecutor",
+    relationName: "leadProsecutor"
   }),
   createdBy: one(users, {
     fields: [cases.createdBy],
     references: [users.id],
-    relationName: "createdBy",
+    relationName: "createdBy"
   }),
   criminals: many(caseCriminals),
   evidence: many(evidence),
   activities: many(caseActivities),
-  canvasStates: many(canvasStates),
+  canvasStates: many(canvasStates)
 }));

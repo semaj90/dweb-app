@@ -14,22 +14,22 @@ export interface VectorSearchState {
   results: VectorSearchResult[];
   isSearching: boolean;
   lastSearchTime: number | null;
-  
+
   // RAG Context
   ragContext: VectorSearchResult[];
   ragResponse: string | null;
   isGeneratingResponse: boolean;
-  
+
   // Configuration
   searchThreshold: number;
   searchLimit: number;
   embeddingModel: 'nomic-embed-text' | 'nvidia-llama';
-  
+
   // Performance Metrics
   searchLatency: number;
   ragLatency: number;
   vectorDbConnected: boolean;
-  
+
   // History
   searchHistory: Array<{
     query: string;
@@ -37,7 +37,7 @@ export interface VectorSearchState {
     resultCount: number;
     latency: number;
   }>;
-  
+
   error: string | null;
 }
 
@@ -278,7 +278,7 @@ export const vectorSearchActions = {
     try {
       const response = await fetch('/api/v1/vector/health');
       const data = await response.json();
-      
+
       vectorSearchStore.update(state => ({
         ...state,
         vectorDbConnected: response.ok && data.status === 'healthy'

@@ -86,7 +86,7 @@ export interface QUICPerformanceMetrics {
 /**
  * QUIC Gateway Client Class
  */
-export class QUICGatewayClient {
+export class QUICGatewayClient {;
   private config: QUICGatewayConfig;
   private connectionPool: Map<string, any> = new Map();
   private requestCache: Map<string, any> = new Map();
@@ -633,7 +633,7 @@ export class QUICGatewayClient {
 }
 
 // Factory function for Svelte integration
-export function createQUICGatewayClient(config?: Partial<QUICGatewayConfig>) {
+export function createQUICGatewayClient(config?: Partial<QUICGatewayConfig>) {;
   const client = new QUICGatewayClient(config);
 
   return {
@@ -660,7 +660,7 @@ export function createQUICGatewayClient(config?: Partial<QUICGatewayConfig>) {
 }
 
 // Global instance
-export const quicGatewayClient = new QUICGatewayClient({
+export const quicGatewayClient = new QUICGatewayClient({;
   baseURL: 'https://localhost',
   http3Port: 8445,
   fallbackToHTTP2: true,

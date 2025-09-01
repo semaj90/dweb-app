@@ -14,19 +14,18 @@
 	}>();
 
 	const dispatch = createEventDispatcher();
-
-	let dialogElement: HTMLElement;
+let dialogElement = $state<HTMLElement;
 	let promptInput: HTMLTextAreaElement;
 	let messagesContainer: HTMLElement;
 
 	// Vibe options
-	const vibes = [
+	const vibes >([
 		{ id: 'professional', label: 'Professional', description: 'Formal and structured' },
 		{ id: 'concise', label: 'Concise', description: 'Brief and to the point' },
 		{ id: 'investigative', label: 'Investigative', description: 'Thorough and analytical' },
 		{ id: 'dramatic', label: 'Dramatic', description: 'Engaging and vivid' },
 		{ id: 'technical', label: 'Technical', description: 'Detailed and precise' }
-	];
+	]);
 
 	// Reactive state
 	let selectedVibe = $derived($aiStore.selectedVibe);
@@ -34,8 +33,7 @@
 	let response = $derived($aiStore.response);
 	let isGenerating = $derived($aiStore.isGenerating);
 	let history = $derived($aiStore.history);
-
-	let currentPrompt = '';
+let currentPrompt = $state('');
 
 	onMount(() => {
 		if (open) {
@@ -182,9 +180,9 @@
 {#if open}
 	<div 
 		class="mx-auto px-4 max-w-7xl"
-		transition:fade={{ duration: 200  "
-		click={() => handleBackdropClick()}
-		on:keydown={handleKeydown}
+		transitifade={{ duration: 200  "
+		on:onclick={() => handleBackdropClick()}
+		keydown={handleKeydown}
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="dialog-title"
@@ -193,14 +191,14 @@
 		<div 
 			class="mx-auto px-4 max-w-7xl"
 			bind:this={dialogElement}
-			transition:fly={{ y: 50, duration: 300, easing: quintOut  "
+			transitifly={{ y: 50, duration: 300, easing: quintOut  "
 		>
 			<!-- Header -->
 			<div class="mx-auto px-4 max-w-7xl">
 				<h2 id="dialog-title" class="mx-auto px-4 max-w-7xl">{title}</h2>
 				<button
 					class="mx-auto px-4 max-w-7xl"
-					click={() => handleClose()}
+					on:onclick={() => handleClose()}
 					aria-label="Close dialog"
 				>
 					<X size={20} />
@@ -214,8 +212,8 @@
 					{#each vibes as vibe}
 						<button
 							class="mx-auto px-4 max-w-7xl"
-							class:active={selectedVibe === vibe.id}
-							click={() => handleVibeChange(vibe.id)}
+						 class:active={selectedVibe === vibe.id}
+							on:onclick={() => handleVibeChange(vibe.id)}
 							title={vibe.description}
 						>
 							{vibe.label}
@@ -304,7 +302,7 @@
 					></textarea>
 					<button
 						class="mx-auto px-4 max-w-7xl"
-						click={() => handleSubmit()}
+						on:onclick={() => handleSubmit()}
 						disabled={!currentPrompt.trim() || isGenerating}
 						aria-label="Send message"
 					>
@@ -314,7 +312,7 @@
 				<div class="mx-auto px-4 max-w-7xl">
 					<span>Press Ctrl+Enter to send</span>
 					{#if history.length > 0}
-						<button class="mx-auto px-4 max-w-7xl" click={() => clearHistory()}>
+						<button class="mx-auto px-4 max-w-7xl" on:onclick={() => clearHistory()}>
 							Clear History
 						</button>
 					{/if}

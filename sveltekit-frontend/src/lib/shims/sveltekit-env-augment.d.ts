@@ -18,5 +18,5 @@ declare module '$env/static/private' {
 declare module '$env/static/public' {
   export const PUBLIC_BASE_URL: string | undefined;
   export const PUBLIC_ASSET_PATH: string | undefined;
-  export const __ENV__: Record<string, string | undefined>;
+  // Duplicate removed: // Duplicate removed: export const __ENV__: Record<string, string | undefined>;
 }

@@ -22,7 +22,7 @@
     ...restProps
   }: Props = $props();
 
-  const sectionClass = $derived(() => {
+  let sectionClass = $derived(() => {
     const baseClass = "flex flex-col";
     
     const variantClasses = {
@@ -65,7 +65,7 @@
       variant === 'grid' && columnClasses?.[columns], className);
   });
 
-  const headerClass = $derived(() => {
+  let headerClass = $derived(() => {
     return cn(
       "flex flex-col",
       gap === 'none' ? 'mb-0' :
@@ -75,7 +75,7 @@
     );
   });
 
-  const contentClass = $derived(() => {
+  let contentClass = $derived(() => {
     if (variant === 'grid') {
       return cn(
         "grid",
@@ -114,6 +114,6 @@
   {/if}
 
   <div class={contentClass}>
-    <slot />
+    {@render children}
   </div>
 </section>

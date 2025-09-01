@@ -2,10 +2,11 @@
 import { json } from "@sveltejs/kit";
 
 import { promisify } from "util";
-import { writeFile, readFile, mkdir } from "drizzle-orm";
+import { exec } from "child_process";
+import { writeFile, readFile, mkdir } from "fs/promises";
 import { existsSync } from "fs";
+import type { RequestHandler } from "@sveltejs/kit";
 import { URL } from "url";
-import type { RequestHandler } from './$types';
 
 
 const execAsync = promisify(exec);
@@ -151,22 +152,141 @@ export const GET: RequestHandler = async ({ url }) => {
       return json({ error: "Missing caseId parameter" }, { status: 400 });
     }
 
-    // In production, this would query the database
-    // For now, return empty array or mock data
-    const analyses = [];
+    // Production-ready retrieval: read analysis directories from a configurable storage directory,
+    // validate inputs to prevent path traversal, and return either a single analysis or a list.
+    try {
+      // Basic validation
+      if (!caseId) {
+        return json({ error: "Missing caseId parameter" }, { status: 400 });
+      }
+      // Allow only safe characters in caseId to avoid traversal injection
+      if (!/^[A-Za-z0-9_-]+$/.test(caseId)) {
+        return json({ error: "Invalid caseId" }, { status: 400 });
+      }
 
-    return json({
-      success: true,
-      analyses,
-      caseId,
-    });
+      // Use configurable storage dir (defaults to ./temp to remain compatible with POST)
+      const storageDir =
+        import.meta.env.ANALYSIS_STORAGE_DIR?.trim() || "./temp";
+
+      const path = await import("path");
+      const fs = await import("fs/promises");
+      const nodeFs = await import("fs");
+      const baseDir = path.resolve(storageDir);
+
+      // If storage directory doesn't exist, return empty result (no analyses yet)
+      if (!nodeFs.existsSync(baseDir)) {
+        return json({
+          success: true,
+          analyses: [],
+          caseId,
+        });
+      }
+
+      // Read entries under the storage directory
+      const dirents = await fs.readdir(baseDir, { withFileTypes: true });
+
+      // Match directories whose name follows the pattern analysis_{caseId}_{timestamp}
+      const prefix = `analysis_${caseId}_`;
+      const matchingDirs = dirents.filter(
+        (d) => d.isDirectory() && d.name.startsWith(prefix)
+      );
+
+      // Helper to safely read JSON file if present
+      const safeReadJson = async (dir: string, filename: string) => {
+        try {
+          const p = path.join(dir, filename);
+          if (!nodeFs.existsSync(p)) return undefined;
+          const txt = await fs.readFile(p, "utf8");
+          return JSON.parse(txt);
+        } catch {
+          return undefined;
+        }
+      };
+
+      const analyses: Array<any> = [];
+
+      for (const d of matchingDirs) {
+        const analysisDir = path.join(baseDir, d.name);
+
+        // Build a summary of available results without throwing on missing/corrupt files
+        const evidenceAnalysis = await safeReadJson(analysisDir, "evidence_analysis.json");
+        const personsData = await safeReadJson(analysisDir, "persons_extracted.json");
+        const caseSynthesis = await safeReadJson(analysisDir, "case_synthesis.json");
+        const neo4jUpdates = await safeReadJson(analysisDir, "neo4j_updates.json");
+
+        // Attempt to extract timestamp from directory name; fallback to file mtime
+        let timestamp: string | undefined;
+        const parts = d.name.split("_");
+        if (parts.length >= 3) {
+          // last part(s) after prefix are treated as timestamp
+          timestamp = parts.slice(2).join("_");
+          // try to normalize to ISO if it's numeric
+          if (/^\d+$/.test(timestamp)) {
+            timestamp = new Date(Number(timestamp)).toISOString();
+          }
+        }
+        if (!timestamp) {
+          try {
+            const stats = await fs.stat(analysisDir);
+            timestamp = stats.mtime.toISOString();
+          } catch {
+            timestamp = undefined;
+          }
+        }
+
+        analyses.push({
+          id: d.name,
+          caseId,
+          evidenceAnalysis,
+          personsData,
+          caseSynthesis,
+          neo4jUpdates,
+          analysisDir,
+          timestamp,
+        });
+      }
+
+      // If a specific analysisId was requested, return that one or 404
+      if (analysisId) {
+        const found = analyses.find((a) => a.id === analysisId);
+        if (!found) {
+          return json({ success: false, error: "Analysis not found" }, { status: 404 });
+        }
+        return json({ success: true, analysis: found });
+      }
+
+      // Return list (sorted by timestamp desc if available)
+      analyses.sort((a, b) => {
+        const ta = a.timestamp ? Date.parse(a.timestamp) : 0;
+        const tb = b.timestamp ? Date.parse(b.timestamp) : 0;
+        return tb - ta;
+      });
+
+      return json({
+        success: true,
+        analyses,
+        caseId,
+      });
+    } catch (error: any) {
+      console.error("Error retrieving analyses:", error);
+
+      return json(
+        {
+          success: false,
+              error: error?.message ?? String(error),
+            },
+            { status: 500 }
+          );
+    }
+
   } catch (error: any) {
-    console.error("Error retrieving analyses:", error);
+    console.error("GET handler error:", error);
 
     return json(
       {
         success: false,
-        error: error.message,
+        error: error?.message ?? String(error),
+        message: "Failed to retrieve analyses",
       },
       { status: 500 }
     );

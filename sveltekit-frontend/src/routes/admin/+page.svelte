@@ -2,11 +2,11 @@
   import { onMount } from 'svelte';
   import { currentUser } from '$lib/auth/auth-store';
   import type { PageData } from './$types';
-  
+
   let { data = $bindable() } = $props(); // PageData;
-  
-  // System metrics and status
-  let systemMetrics = {
+
+  // System metrics and status - Using $state for reactivity
+  let systemMetrics = $state({
     totalUsers: 0,
     activeUsers: 0,
     totalCases: 0,
@@ -17,19 +17,19 @@
     aiProcessingQueue: 0,
     lastBackup: 'Never',
     systemHealth: 'Unknown'
-  };
-  
-  let recentActivity: Array<{
+  });
+
+  let recentActivity = $state<Array<{
     id: string;
     type: string;
     user: string;
     action: string;
     timestamp: string;
     status: 'success' | 'warning' | 'error';
-  }> = [];
-  
-  let isLoadingMetrics = true;
-  
+  }>>([]);
+
+  let isLoadingMetrics = $state(true);
+
   // YoRHa styling classes
   const yorhaClasses = {
     card: 'bg-[#1a1a1a] border border-[#333333] p-4',
@@ -46,20 +46,20 @@
     statusWarning: 'text-yellow-500',
     statusError: 'text-red-500'
   };
-  
+
   onMount(async () => {
     await loadSystemMetrics();
     await loadRecentActivity();
   });
-  
+
   async function loadSystemMetrics() {
     try {
       isLoadingMetrics = true;
-      
+
       const response = await fetch('/api/admin/system/metrics', {
         credentials: 'include'
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         systemMetrics = { ...systemMetrics, ...data };
@@ -70,13 +70,13 @@
       isLoadingMetrics = false;
     }
   }
-  
+
   async function loadRecentActivity() {
     try {
       const response = await fetch('/api/admin/audit/recent?limit=10', {
         credentials: 'include'
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         recentActivity = data.activities || [];
@@ -85,7 +85,7 @@
       console.error('Failed to load recent activity:', error);
     }
   }
-  
+
   async function performSystemAction(action: string) {
     try {
       const response = await fetch('/api/admin/system/action', {
@@ -96,7 +96,7 @@
         body: JSON.stringify({ action }),
         credentials: 'include'
       });
-      
+
       if (response.ok) {
         // Refresh metrics after action
         await loadSystemMetrics();
@@ -106,7 +106,7 @@
       console.error('System action failed:', error);
     }
   }
-  
+
   function getStatusIcon(status: string) {
     switch (status) {
       case 'success': return '◈';
@@ -115,7 +115,7 @@
       default: return '◯';
     }
   }
-  
+
   function getHealthColor(health: string) {
     switch (health.toLowerCase()) {
       case 'excellent': return 'text-[#00ff88]';
@@ -139,24 +139,24 @@
       <h1 class="text-2xl font-bold tracking-wider">SYSTEM DASHBOARD</h1>
       <p class="text-sm opacity-60 mt-1">REAL-TIME SYSTEM MONITORING AND CONTROL</p>
     </div>
-    
+
     <!-- Quick Actions -->
     <div class="flex space-x-2">
-      <button 
-        click={() => performSystemAction('refresh')}
+      <button
+        on:on:onclick={() => performSystemAction('refresh')}
         class={yorhaClasses.button}
       >
         ↻ REFRESH
       </button>
-      <button 
-        click={() => performSystemAction('backup')}
+      <button
+        on:on:onclick={() => performSystemAction('backup')}
         class={yorhaClasses.buttonPrimary}
       >
         ◈ BACKUP
       </button>
     </div>
   </div>
-  
+
   <!-- System Metrics Grid -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
     <!-- Users Metric -->
@@ -177,7 +177,7 @@
         </div>
       </div>
     </div>
-    
+
     <!-- Cases Metric -->
     <div class={yorhaClasses.card}>
       <div class={yorhaClasses.cardHeader}>CASE STATISTICS</div>
@@ -196,7 +196,7 @@
         </div>
       </div>
     </div>
-    
+
     <!-- Evidence Metric -->
     <div class={yorhaClasses.card}>
       <div class={yorhaClasses.cardHeader}>EVIDENCE STORAGE</div>
@@ -215,213 +215,6 @@
         </div>
       </div>
     </div>
-    
+
     <!-- System Health -->
-    <div class={yorhaClasses.card}>
-      <div class={yorhaClasses.cardHeader}>SYSTEM HEALTH</div>
-      <div class="space-y-3">
-        <div>
-          <div class="text-2xl font-bold {getHealthColor(systemMetrics.systemHealth)}">
-            {isLoadingMetrics ? '...' : systemMetrics.systemHealth.toUpperCase()}
-          </div>
-          <div class={yorhaClasses.metricLabel}>OVERALL STATUS</div>
-        </div>
-        <div>
-          <div class="text-lg font-bold">
-            {isLoadingMetrics ? '...' : systemMetrics.systemUptime}
-          </div>
-          <div class={yorhaClasses.metricLabel}>SYSTEM UPTIME</div>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <!-- AI Processing Status -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <!-- AI Queue Status -->
-    <div class={yorhaClasses.card}>
-      <div class={yorhaClasses.cardHeader}>AI PROCESSING QUEUE</div>
-      <div class="space-y-4">
-        <div class="flex items-center justify-between">
-          <span>Queue Size:</span>
-          <span class="font-bold text-[#00ff88]">
-            {isLoadingMetrics ? '...' : systemMetrics.aiProcessingQueue}
-          </span>
-        </div>
-        <div class="flex items-center justify-between">
-          <span>Status:</span>
-          <span class="font-bold text-[#00ff88]">
-            {systemMetrics.aiProcessingQueue > 0 ? 'PROCESSING' : 'IDLE'}
-          </span>
-        </div>
-        <div class="flex space-x-2">
-          <button 
-            click={() => performSystemAction('clear_ai_queue')}
-            class={yorhaClasses.buttonDanger}
-          >
-            CLEAR QUEUE
-          </button>
-          <button 
-            click={() => performSystemAction('restart_ai')}
-            class={yorhaClasses.button}
-          >
-            RESTART AI
-          </button>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Backup Status -->
-    <div class={yorhaClasses.card}>
-      <div class={yorhaClasses.cardHeader}>BACKUP STATUS</div>
-      <div class="space-y-4">
-        <div class="flex items-center justify-between">
-          <span>Last Backup:</span>
-          <span class="font-bold">
-            {isLoadingMetrics ? '...' : systemMetrics.lastBackup}
-          </span>
-        </div>
-        <div class="flex items-center justify-between">
-          <span>Auto Backup:</span>
-          <span class="font-bold text-[#00ff88]">ENABLED</span>
-        </div>
-        <div class="flex space-x-2">
-          <button 
-            click={() => performSystemAction('backup_now')}
-            class={yorhaClasses.buttonPrimary}
-          >
-            BACKUP NOW
-          </button>
-          <button 
-            click={() => performSystemAction('restore')}
-            class={yorhaClasses.button}
-          >
-            RESTORE
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Recent Activity -->
-  <div class={yorhaClasses.card}>
-    <div class={yorhaClasses.cardHeader}>RECENT SYSTEM ACTIVITY</div>
-    
-    {#if recentActivity.length > 0}
-      <div class="overflow-x-auto">
-        <table class={yorhaClasses.table}>
-          <thead>
-            <tr>
-              <th class={yorhaClasses.tableHeader}>STATUS</th>
-              <th class={yorhaClasses.tableHeader}>TYPE</th>
-              <th class={yorhaClasses.tableHeader}>USER</th>
-              <th class={yorhaClasses.tableHeader}>ACTION</th>
-              <th class={yorhaClasses.tableHeader}>TIMESTAMP</th>
-            </tr>
-          </thead>
-          <tbody>
-            {#each recentActivity as activity}
-              <tr class="hover:bg-[#222222]">
-                <td class={yorhaClasses.tableCell}>
-                  <span class={activity.status === 'success' ? yorhaClasses.statusSuccess : 
-                              activity.status === 'warning' ? yorhaClasses.statusWarning : yorhaClasses.statusError}>
-                    {getStatusIcon(activity.status)}
-                  </span>
-                </td>
-                <td class={yorhaClasses.tableCell}>{activity.type.toUpperCase()}</td>
-                <td class={yorhaClasses.tableCell}>{activity.user.toUpperCase()}</td>
-                <td class={yorhaClasses.tableCell}>{activity.action}</td>
-                <td class={yorhaClasses.tableCell}>
-                  {new Date(activity.timestamp).toLocaleString()}
-                </td>
-              </tr>
-            {/each}
-          </tbody>
-        </table>
-      </div>
-    {:else}
-      <div class="text-center py-8 opacity-60">
-        <div class="text-4xl mb-4">◯</div>
-        <div>NO RECENT ACTIVITY</div>
-      </div>
-    {/if}
-  </div>
-  
-  <!-- System Actions -->
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-    <!-- Maintenance -->
-    <div class={yorhaClasses.card}>
-      <div class={yorhaClasses.cardHeader}>MAINTENANCE</div>
-      <div class="space-y-3">
-        <button 
-          click={() => performSystemAction('clear_cache')}
-          class="{yorhaClasses.button} w-full"
-        >
-          CLEAR SYSTEM CACHE
-        </button>
-        <button 
-          click={() => performSystemAction('optimize_db')}
-          class="{yorhaClasses.button} w-full"
-        >
-          OPTIMIZE DATABASE
-        </button>
-        <button 
-          click={() => performSystemAction('cleanup_logs')}
-          class="{yorhaClasses.button} w-full"
-        >
-          CLEANUP LOG FILES
-        </button>
-      </div>
-    </div>
-    
-    <!-- Security -->
-    <div class={yorhaClasses.card}>
-      <div class={yorhaClasses.cardHeader}>SECURITY</div>
-      <div class="space-y-3">
-        <button 
-          click={() => performSystemAction('force_logout_all')}
-          class="{yorhaClasses.buttonDanger} w-full"
-        >
-          FORCE LOGOUT ALL
-        </button>
-        <button 
-          click={() => performSystemAction('reset_sessions')}
-          class="{yorhaClasses.buttonDanger} w-full"
-        >
-          RESET ALL SESSIONS
-        </button>
-        <button 
-          click={() => performSystemAction('security_scan')}
-          class="{yorhaClasses.button} w-full"
-        >
-          SECURITY SCAN
-        </button>
-      </div>
-    </div>
-    
-    <!-- System Control -->
-    <div class={yorhaClasses.card}>
-      <div class={yorhaClasses.cardHeader}>SYSTEM CONTROL</div>
-      <div class="space-y-3">
-        <button 
-          click={() => performSystemAction('restart_services')}
-          class="{yorhaClasses.buttonDanger} w-full"
-        >
-          RESTART SERVICES
-        </button>
-        <button 
-          click={() => performSystemAction('enable_maintenance')}
-          class="{yorhaClasses.button} w-full"
-        >
-          MAINTENANCE MODE
-        </button>
-        <button 
-          click={() => performSystemAction('generate_report')}
-          class="{yorhaClasses.buttonPrimary} w-full"
-        >
-          SYSTEM REPORT
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
+    <div class={

@@ -49,7 +49,7 @@ export interface WebGPUCacheEntry {
   memoryFootprint: number;
 }
 
-export class NESCacheOrchestrator {
+export class NESCacheOrchestrator {;
   private advancedCache: AdvancedCacheManager;
   private basicCache = cachingService;
   private nesMemory: Map<keyof typeof NES_CACHE_CONSTRAINTS, NESCacheState[]> = new Map();

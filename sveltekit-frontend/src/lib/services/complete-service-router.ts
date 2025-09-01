@@ -416,7 +416,7 @@ export class CompleteServiceRouter {
 
 // Global service router instance
 export const serviceRouter = new CompleteServiceRouter();
-
+;
 // Export specific service functions for easy use
 export const {
   queryEnhancedRAG,

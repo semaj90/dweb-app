@@ -18,14 +18,14 @@ declare module '$lib/*' {
   export const productionAPIClient: any;
   export const PROTOCOL_TIERS: any;
   export const productionServiceRegistry: any;
-  
+
   // Database schema exports
   export const legalDocuments: any;
   export const documentChunks: any;
   export const autoTags: any;
   export const userAiQueries: any;
   export const document_chunks: any;
-  
+
   // Service exports
   export const enhancedRAGStore: any;
   export const EventEmitter: any;
@@ -38,10 +38,10 @@ declare module '$lib/*' {
   export const resolveLibraryId: any;
   export const getLibraryDocs: any;
   export const analyzeCurrentErrors: any;
-  
+
   // Additional missing exports
   export const crewAIService: any;
   export const phase13Stores: any;
 }
 
-export {};
+

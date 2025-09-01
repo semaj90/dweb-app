@@ -21,12 +21,10 @@ https://svelte.dev/e/component_invalid_directive -->
   import { Button } from "$lib/components/ui/button";
   import { Select } from "$lib/components/ui/select";
   import { Separator } from "$lib/components/ui/separator";
+let editor = $state<Editor | null >(null);
+let editorElement = $state<HTMLElement;
   
-      
-  let editor: Editor | null = null;
-  let editorElement: HTMLElement;
-  
-  onMount(() => {
+  onMount(() >(> {
     editor = new Editor({
       element: editorElement,
       extensions: [StarterKit],
@@ -36,7 +34,7 @@ https://svelte.dev/e/component_invalid_directive -->
           class: "nier-editor-content focus:outline-none"
         }
       }
-    });
+    }));
   });
   
   const fontOptions = [
@@ -54,7 +52,7 @@ https://svelte.dev/e/component_invalid_directive -->
         variant="ghost" 
         size="sm" 
         class="nier-toolbar-btn"
-        on:click={() => editor?.commands.undo()}
+        on:on:click={() => editor?.commands.undo()}
       >
         ↶
       </Button>
@@ -62,7 +60,7 @@ https://svelte.dev/e/component_invalid_directive -->
         variant="ghost" 
         size="sm" 
         class="nier-toolbar-btn"
-        on:click={() => editor?.commands.redo()}
+        on:on:click={() => editor?.commands.redo()}
       >
         ↷
       </Button>
@@ -96,7 +94,7 @@ https://svelte.dev/e/component_invalid_directive -->
         size="sm" 
         class="nier-toolbar-btn"
         class:active={editor?.isActive('bold')}
-        on:click={() => editor?.chain().focus().toggleBold().run()}
+        on:on:click={() => editor?.chain().focus().toggleBold().run()}
       >
         <strong>B</strong>
       </Button>
@@ -105,7 +103,7 @@ https://svelte.dev/e/component_invalid_directive -->
         size="sm" 
         class="nier-toolbar-btn"
         class:active={editor?.isActive('italic')}
-        on:click={() => editor?.chain().focus().toggleItalic().run()}
+        on:on:click={() => editor?.chain().focus().toggleItalic().run()}
       >
         <em>I</em>
       </Button>

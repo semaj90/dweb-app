@@ -101,7 +101,7 @@
             maxlength="64"
           />
           <button 
-            click={() => searchByHash()} 
+            on:onclick={() => searchByHash()} 
             disabled={loading || !hashInput}
             class="space-y-4"
           >
@@ -155,7 +155,7 @@
                     <div class="space-y-4">
                       <strong>Hash:</strong> {item.hash}
                       <button 
-                        click={() => copyToClipboard(item.hash)}
+                        on:onclick={() => copyToClipboard(item.hash)}
                         class="space-y-4"
                         title="Copy hash"
                       >
@@ -169,7 +169,7 @@
                     
                     <div class="space-y-4">
                       <button 
-                        click={() => verifyIntegrity(item.id)}
+                        on:onclick={() => verifyIntegrity(item.id)}
                         disabled={loading}
                         class="space-y-4"
                       >

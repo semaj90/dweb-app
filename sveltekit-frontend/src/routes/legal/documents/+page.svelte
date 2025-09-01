@@ -8,8 +8,8 @@
     created: string;
     status: "draft" | "review" | "final";
   }
-  let documents: Document[] = [];
-  let loading = true;
+let documents = $state<Document[] >([]);
+let loading = $state(true);
 
   // Mock data
   const mockDocuments: Document[] = [

@@ -1,3 +1,4 @@
+import stream from "stream";
 // Missing dependency types for TypeScript compatibility
 
 // Svelte store types
@@ -5,7 +6,7 @@ declare module 'svelte/store' {
   export interface Readable<T> {
     subscribe(fn: (value: T) => void): () => void;
   }
-  
+
   export interface Writable<T> extends Readable<T> {
     set(value: T): void;
     update(fn: (value: T) => T): void;
@@ -156,7 +157,7 @@ declare module '@xenova/transformers' {
     processor?: any;
     (input: string | string[]): Promise<any>;
   }
-  
+
   export interface PretrainedOptions {
     device?: string;
     dtype?: string;
@@ -177,7 +178,7 @@ declare module '@xenova/transformers' {
     };
   };
 
-  export function pipeline(
+  export function pipeline(;
     task: string,
     model?: string,
     options?: PretrainedOptions
@@ -251,9 +252,9 @@ declare module 'lokijs' {
     saveDatabase(dbname: string, dbstring: string, callback: (err?: Error) => void): void;
     deleteDatabase(dbname: string, callback: (err?: Error) => void): void;
   }
-  
-  export const LokiMemoryAdapter: new () => LokiMemoryAdapter;
 
+  export const LokiMemoryAdapter: new () => LokiMemoryAdapter;
+;
   export interface LokiFsAdapter {
     new (): any;
     loadDatabase(dbname: string, callback: (data: string | null) => void): void;
@@ -273,7 +274,7 @@ declare module 'lokijs' {
       serializationMethod?: 'normal' | 'pretty' | 'destructured';
       throttledSaves?: boolean;
     });
-    
+
     // Database methods
     addCollection<T = any>(name: string, options?: {
       unique?: string[];
@@ -300,7 +301,7 @@ declare module 'lokijs' {
     static LokiFSAdapter: new () => LokiFsAdapter;
     static LokiMemoryAdapter: new () => LokiMemoryAdapter;
   }
-  
+
   const loki: typeof LokiConstructor;
   export default loki;
 }
@@ -315,23 +316,23 @@ declare global {
       gc?: () => void;
     }
   }
-  
+
   interface Window {
     gc?: () => void;
   }
-  
+
   // Mock classes for complex modules
   class ShaderCache {
     constructor(context: any, options?: any);
     precompileForSprite?(sprite: any): void;
     applyTransforms?(transforms: any): void;
   }
-  
+
   class MatrixTransformLib {
     constructor(options?: any);
     generateCSSTransforms?(matrix: any): string;
   }
-  
+
   class DockerResourceOptimizer {
     constructor(options?: any);
     cacheWithCompression?(data: any): void;
@@ -356,37 +357,37 @@ declare module 'bits-ui' {
 
   // Select exports
   export namespace Select {
-    export const Root: any;
-    export const Trigger: any;
+    // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: export const Root: any;
+    // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: export const Trigger: any;
     export const Value: any;
-    export const Content: any;
+    // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: export const Content: any;
     export const Item: any;
-    export const ItemText: any;
-    export const ItemIndicator: any;
+    // Duplicate removed: // Duplicate removed: export const ItemText: any;
+    // Duplicate removed: // Duplicate removed: export const ItemIndicator: any;
     export const Input: any;
-    export const Group: any;  // Added missing Group export
+    export const Group: any;  // Added missing Group export;
     export const Label: any;
     export const Separator: any;
   }
 
   // Combobox exports
   export namespace Combobox {
-    export const Root: any;
-    export const Input: any;
-    export const Trigger: any;
-    export const Content: any;
-    export const Item: any;
-    export const ItemText: any;
-    export const ItemIndicator: any;
+    // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: export const Root: any;
+    // Duplicate removed: // Duplicate removed: export const Input: any;
+    // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: export const Trigger: any;
+    // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: export const Content: any;
+    // Duplicate removed: // Duplicate removed: export const Item: any;
+    // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: export const ItemText: any;
+    // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: export const ItemIndicator: any;
     export const HiddenInput: any;
   }
 
   // DatePicker exports
   export namespace DatePicker {
-    export const Root: any;
-    export const Trigger: any;
-    export const Content: any;
-    export const Header: any;
+    // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: export const Root: any;
+    // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: export const Trigger: any;
+    // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: export const Content: any;
+    // Duplicate removed: // Duplicate removed: export const Header: any;
     export const Heading: any;
     export const PrevButton: any;
     export const NextButton: any;
@@ -404,12 +405,12 @@ declare module 'bits-ui' {
   // Toast exports
   export namespace Toast {
     export const Provider: any;
-    export const Root: any;
-    export const Content: any;
-    export const Title: any;
-    export const Description: any;
+    // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: export const Root: any;
+    // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: export const Content: any;
+    // Duplicate removed: // Duplicate removed: export const Title: any;
+    // Duplicate removed: // Duplicate removed: export const Description: any;
     export const Action: any;
-    export const Close: any;
+    // Duplicate removed: // Duplicate removed: export const Close: any;
     export const Viewport: any;
   }
 
@@ -435,22 +436,22 @@ declare module 'fabric' {
       getElement(): HTMLCanvasElement;
       getContext(): CanvasRenderingContext2D;
     }
-    
+
     export class Object {
       constructor(options?: any);
       set(key: string, value: any): Object;
       get(key: string): any;
       toJSON(): any;
     }
-    
+
     export class Circle extends Object {
       constructor(options?: any);
     }
-    
+
     export class Line extends Object {
       constructor(points: number[], options?: any);
     }
-    
+
     export class Text extends Object {
       constructor(text: string, options?: any);
     }

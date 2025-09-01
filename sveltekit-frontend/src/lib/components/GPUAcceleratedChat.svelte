@@ -16,7 +16,7 @@
   let isConnected = $state(false);
   let isTyping = $state(false);
   let gpuStatus = $state<GPUProcessingStatus | null>(null);
-  let ws: WebSocket | null = null;
+let ws = $state<WebSocket | null >(null);
   let reconnectTimeout: NodeJS.Timeout;
   let healthCheckInterval: NodeJS.Timeout;
   let currentRoom = $state<string | null>(null);
@@ -542,11 +542,11 @@ Type your legal question or upload a document to begin!`,
       </label>
       
       {#if !currentRoom}
-        <button click={() => joinRoom('legal-team')} class="join-room-btn">
+        <button on:onclick={() => joinRoom('legal-team')} class="join-room-btn">
           Join Room
         </button>
       {:else}
-        <button click={leaveRoom} class="leave-room-btn">
+        <button on:onclick={leaveRoom} class="leave-room-btn">
           Leave Room
         </button>
       {/if}
@@ -629,7 +629,7 @@ Type your legal question or upload a document to begin!`,
           {i + 1}. {item}
         </div>
       {/each}
-      <button click={processBatch} class="process-batch-btn">
+      <button on:onclick={processBatch} class="process-batch-btn">
         Process Batch
       </button>
     </div>
@@ -651,7 +651,7 @@ Type your legal question or upload a document to begin!`,
   <div class="input-container">
     <textarea
       bind:value={inputMessage}
-      on:keypress={handleKeyPress}
+      onkeypress={handleKeyPress}
       placeholder={batchMode ? "Type message (Shift+Enter to add to batch)..." : "Type your legal question..."}
       class="message-input"
       rows="3"
@@ -659,13 +659,13 @@ Type your legal question or upload a document to begin!`,
     
     <div class="input-actions">
       {#if batchMode}
-        <button click={addToBatch} class="add-batch-btn">
+        <button on:onclick={addToBatch} class="add-batch-btn">
           ➕ Add to Batch
         </button>
       {/if}
       
       <button
-        click={sendMessage}
+        on:onclick={sendMessage}
         disabled={!inputMessage.trim() || !isConnected}
         class="send-button"
       >

@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 /**
  * Chrome Windows 3D Acceleration & Browser Performance Utilities
  * Optimizes performance for Chrome on Windows with hardware acceleration
@@ -203,7 +204,7 @@ export class BrowserErrorHandler {
 // Singleton instances
 export const performanceMonitor = new BrowserPerformanceMonitor();
 export const errorHandler = new BrowserErrorHandler();
-
+;
 // Utility functions for components
 export function optimizeComponent(element: HTMLElement): void {
   enableGPUAcceleration(element);

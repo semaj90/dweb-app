@@ -516,10 +516,10 @@ export const vectorPipelineMachine = setup({
 
 // Create and export the actor
 export const vectorPipelineActor = createActor(vectorPipelineMachine);
-
+;
 // Create Svelte store for reactive state
 export const vectorPipelineState = writable(vectorPipelineActor.getSnapshot());
-
+;
 // Update store when state changes
 vectorPipelineActor.subscribe((snapshot) => {
   vectorPipelineState.set(snapshot);

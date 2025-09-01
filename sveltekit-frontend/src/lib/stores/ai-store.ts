@@ -173,7 +173,7 @@ function createPersistedStore<T>(key: string, defaultValue: T) {
   };
 }
 
-// Main AI stores
+// Main AI stores (restored from backup - removing corruption)
 export const aiConversation = createPersistedStore<AIConversationState>(
   "ai_conversation",
   DEFAULT_CONVERSATION
@@ -193,15 +193,17 @@ export const conversationHistory = createPersistedStore<ConversationHistory[]>(
 // Derived stores for computed values
 export const isAIReady = derived(
   [aiStatus],
-  ([$aiStatus]) =>
-    $aiStatus.localModelAvailable || $aiStatus.cloudModelAvailable
+  ([$aiStatus]) => $aiStatus.localModelAvailable || $aiStatus.cloudModelAvailable
 );
 
-export const currentModelInfo = derived([aiStatus], ([$aiStatus]) => ({
-  provider: $aiStatus.currentProvider,
-  model: $aiStatus.currentModel,
-  available: $aiStatus.localModelAvailable || $aiStatus.cloudModelAvailable,
-}));
+export const currentModelInfo = derived(
+  [aiStatus],
+  ([$aiStatus]) => ({
+    provider: $aiStatus.currentProvider,
+    model: $aiStatus.currentModel,
+    available: $aiStatus.localModelAvailable || $aiStatus.cloudModelAvailable,
+  })
+);
 
 // AI store actions and utilities
 export const aiStore = {

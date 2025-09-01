@@ -34,9 +34,9 @@ https://svelte.dev/e/const_tag_invalid_placement -->
     type: string;
   }
   // Help state
-  let activeCategory = "getting-started";
-  let searchQuery = "";
-  let filteredArticles: HelpArticle[] = [];
+let activeCategory = $state("getting-started");
+let searchQuery = $state("");
+let filteredArticles = $state<HelpArticle[] >([]);
 
   // Help categories
   const categories = [
@@ -510,7 +510,7 @@ Build on previous responses:
             class:bg-green-100={activeCategory === "all"}
             class:text-green-700={activeCategory === "all"}
             class:hover:bg-gray-100={activeCategory !== "all"}
-            click={() => (activeCategory = "all")}
+            on:onclick={() => (activeCategory = "all")}
           >
             <Book class="h-5 w-5" />
             <div>
@@ -528,7 +528,7 @@ Build on previous responses:
               class:bg-green-100={activeCategory === category.id}
               class:text-green-700={activeCategory === category.id}
               class:hover:bg-gray-100={activeCategory !== category.id}
-              click={() => (activeCategory = category.id)}
+              on:onclick={() => (activeCategory = category.id)}
             >
               {@const Icon = category.icon}
               <Icon class="h-5 w-5" />

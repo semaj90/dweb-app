@@ -157,7 +157,7 @@
       </a>
       
       <button 
-        onclick={() => runCRUDTests()}
+        on:on:onclick={() => runCRUDTests()}
         class="p-4 border-2 border-green-200 rounded-lg hover:border-green-400 transition-colors bg-white text-left"
       >
         <div class="font-semibold text-green-800">CRUD API Tests</div>
@@ -166,7 +166,7 @@
       </button>
       
       <button 
-        onclick={() => runSystemTests()}
+        on:on:onclick={() => runSystemTests()}
         class="p-4 border-2 border-purple-200 rounded-lg hover:border-purple-400 transition-colors bg-white text-left"
       >
         <div class="font-semibold text-purple-800">System Health Check</div>
@@ -213,7 +213,7 @@
         placeholder="Type a message to test AI response..."
       />
       <button
-        click={sendTestMessage}
+        on:onclick={sendTestMessage}
         class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
         disabled={!$isAIConnected}
       >
@@ -251,13 +251,13 @@
       <h2 class="text-2xl font-semibold">🧪 System Test Results</h2>
       <div class="space-x-2">
         <button
-          click={runSystemTests}
+          on:onclick={runSystemTests}
           class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
         >
           Re-run Tests
         </button>
         <button
-          click={clearTests}
+          on:onclick={clearTests}
           class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
         >
           Clear
@@ -328,7 +328,7 @@
         API Health
       </a>
       <button
-        click={() => aiAgentStore.clearConversation()}
+        on:onclick={() => aiAgentStore.clearConversation()}
         class="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
       >
         Clear Chat

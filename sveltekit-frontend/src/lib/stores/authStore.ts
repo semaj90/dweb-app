@@ -240,26 +240,13 @@ const createAuthStore = () => {
 };
 
 export const authStore = createAuthStore();
-
-// Derived stores for common checks
-export const isAuthenticated = derived(
-  authStore,
-  ($auth: any) => $auth.isAuthenticated
-);
+// Derived stores for common checks (repaired syntax)
+export const isAuthenticated = derived(authStore, ($auth: any) => $auth.isAuthenticated);
 export const currentUser = derived(authStore, ($auth: any) => $auth.user);
 export const userRole = derived(authStore, ($auth: any) => $auth.user?.role);
-export const isAdmin = derived(
-  authStore,
-  ($auth: any) => $auth.user?.role === "admin"
-);
-export const isProsecutor = derived(
-  authStore,
-  ($auth: any) => $auth.user?.role === "prosecutor"
-);
-export const isDetective = derived(
-  authStore,
-  ($auth: any) => $auth.user?.role === "detective"
-);
+export const isAdmin = derived(authStore, ($auth: any) => $auth.user?.role === "admin");
+export const isProsecutor = derived(authStore, ($auth: any) => $auth.user?.role === "prosecutor");
+export const isDetective = derived(authStore, ($auth: any) => $auth.user?.role === "detective");
 
 // AI Assistant integration store
 export interface AIAssistantState {
@@ -410,20 +397,11 @@ const createAIAssistantStore = () => {
 };
 
 export const aiAssistantStore = createAIAssistantStore();
-
-// Derived stores for AI assistant
+// Derived stores for AI assistant (repaired syntax)
 export const aiEnabled = derived(aiAssistantStore, ($ai: any) => $ai.isEnabled);
-export const aiPreferences = derived(
-  aiAssistantStore,
-  ($ai: any) => $ai.preferences
-);
-export const aiContext = derived(
-  aiAssistantStore,
-  ($ai: any) => $ai.currentContext
-);
-export const recentConversations = derived(aiAssistantStore, ($ai: any) =>
-  $ai.conversationHistory.slice(0, 10)
-);
+export const aiPreferences = derived(aiAssistantStore, ($ai: any) => $ai.preferences);
+export const aiContext = derived(aiAssistantStore, ($ai: any) => $ai.currentContext);
+export const recentConversations = derived(aiAssistantStore, ($ai: any) => $ai.conversationHistory.slice(0, 10));
 
 // Note: Auth initialization is now handled server-side via hooks.server.ts
 // Client-side initialization only when explicitly needed to prevent redirect loops

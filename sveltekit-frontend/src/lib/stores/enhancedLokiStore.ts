@@ -7,7 +7,13 @@ import { browser } from "$app/environment";
 // ======================================================================
 
 import { writable, derived } from "svelte/store";
-// TODO: Fix import - // Orphaned content: import {  import type { Evidence } from '$lib/data/types.js';
+// TODO: Replace with proper import once types file restored.
+// Temporary minimal Evidence shape to satisfy references below.
+interface Evidence {
+  id: string;
+  [key: string]: any;
+}
+// Orphaned content note: original commented import removed during corruption repair.
 
 // Enhanced types for the data pipeline
 export interface CacheConfig {
@@ -796,7 +802,7 @@ class EnhancedLokiDB {
 // ======================================================================
 
 export const enhancedLokiDB = new EnhancedLokiDB();
-
+;
 export const enhancedLokiStore = writable({
   initialized: false,
   stats: {
@@ -947,3 +953,4 @@ export const enhancedLoki = {
 // Export the original API for backward compatibility
 export { loki } from "./lokiStore";
 export const lokiStore = enhancedLokiStore;
+;

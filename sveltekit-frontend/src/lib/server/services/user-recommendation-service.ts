@@ -1,11 +1,12 @@
 // User Recommendation Service with PostgreSQL Integration
 // Predictive Analytics & Self-Prompting AI Chat History
 
-import { db } from '../db/index';
-import { cases, evidence, users, userAiQueries, ragMessages, ragSessions } from '../db/schema-postgres';
+import { db } from '../db/index.js';
+import { cases, evidence, users, userAiQueries, ragMessages, ragSessions } from '../db/schema-postgres.js';
 import { eq, and, sql, count } from 'drizzle-orm';
-import { desc } from '../db/index';
-import type { User } from '../db/schema-types';
+import { desc } from '../db/index.js';
+import type { User } from '../db/schema-types.js';
+import crypto from "crypto";
 
 // User behavior pattern interfaces
 export interface UserPattern {

@@ -14,7 +14,7 @@
   const dispatch = createEventDispatcher();
 
   // Form data matching the database schema
-  let formData = {
+let formData = $state({
     title: case_?.title || "",
     description: case_?.description || "",
     caseNumber: case_?.caseNumber || "",
@@ -33,10 +33,9 @@
     assignedTeam: case_?.assignedTeam || [],
     tags: case_?.tags || [],
     metadata: case_?.metadata || {},
-  };
-
-  let loading = false;
-  let errors: Record<string, string> = {};
+  });
+let loading = $state(false);
+let errors = $state<Record<string, string> >({});
 
   // Form validation
   function validateForm() {
@@ -347,7 +346,7 @@
             keydown={(e) =>
               e.key === "Enter" && (e.preventDefault(), addTeamMember())}
           />
-          <button type="button" click={() => addTeamMember()}>Add</button>
+          <button type="button" on:onclick={() => addTeamMember()}>Add</button>
         </div>
 
         {#if formData.assignedTeam.length > 0}
@@ -355,7 +354,7 @@
             {#each formData.assignedTeam as member}
               <span class="container mx-auto px-4">
                 {member}
-                <button type="button" click={() => removeTeamMember(member)}
+                <button type="button" on:onclick={() => removeTeamMember(member)}
                   >×</button
                 >
               </span>
@@ -375,7 +374,7 @@
             keydown={(e) =>
               e.key === "Enter" && (e.preventDefault(), addTag())}
           />
-          <button type="button" click={() => addTag()}>Add</button>
+          <button type="button" on:onclick={() => addTag()}>Add</button>
         </div>
 
         {#if formData.tags.length > 0}
@@ -383,7 +382,7 @@
             {#each formData.tags as tag}
               <span class="container mx-auto px-4">
                 {tag}
-                <button type="button" click={() => removeTag(tag)}>×</button>
+                <button type="button" on:onclick={() => removeTag(tag)}>×</button>
               </span>
             {/each}
           </div>
@@ -394,7 +393,7 @@
 
   <!-- Form Actions -->
   <div class="container mx-auto px-4">
-    <button type="button" click={() => dispatch("cancel")}> Cancel </button>
+    <button type="button" on:onclick={() => dispatch("cancel")}> Cancel </button>
     <button type="submit" disabled={loading} class="container mx-auto px-4">
       {#if loading}
         Saving...

@@ -75,8 +75,8 @@ const createUserStore = () => {
 };
 
 export const user = createUserStore();
-
+;
 // Export individual functions for easier use
 export const { setUser, clearUser, updateUser, selectCase } = user;
-
+;
 export default user;

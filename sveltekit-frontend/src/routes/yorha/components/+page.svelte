@@ -71,16 +71,16 @@
   });
 
   // UI state
-  let yorhaUI: any | null = null;
-  let canvasContainer: HTMLElement;
+let yorhaUI = $state<any | null >(null);
+let canvasContainer = $state<HTMLElement;
 
   // Component variants and options
-  const componentTypes = [
+  const componentTypes >([
     { id: 'button', label: 'Button 3D', icon: Gamepad2, description: '3D interactive buttons with hover effects' },
     { id: 'panel', label: 'Panel 3D', icon: Monitor, description: 'Floating 3D panels with content areas' },
     { id: 'input', label: 'Input 3D', icon: Code, description: 'Terminal-style 3D input fields' },
     { id: 'modal', label: 'Modal 3D', icon: Layers, description: 'Holographic modal dialogs' }
-  ];
+  ]);
 
   const previewModes = [
     { id: '3d', label: '3D View', icon: Eye },
@@ -284,7 +284,7 @@
             <button
               class="yorha-component-btn"
               class:yorha-component-active={selectedComponent === component.id}
-              click={() => onComponentChange(component.id)}
+              on:onclick={() => onComponentChange(component.id)}
             >
               <svelte:component this={component.icon} size={18} />
               <div class="yorha-component-info">
@@ -307,7 +307,7 @@
             <button
               class="yorha-mode-btn"
               class:yorha-mode-active={previewMode === mode.id}
-              click={() => previewMode = mode.id}
+              on:onclick={() => previewMode = mode.id}
             >
               <svelte:component this={mode.icon} size={16} />
               <span>{mode.label}</span>
@@ -469,13 +469,13 @@
 
           <!-- Config Actions -->
           <div class="yorha-config-actions">
-            <button class="yorha-config-btn yorha-btn-save" click={saveConfig}>
+            <button class="yorha-config-btn yorha-btn-save" on:onclick={saveConfig}>
               SAVE
             </button>
-            <button class="yorha-config-btn yorha-btn-reset" click={resetConfig}>
+            <button class="yorha-config-btn yorha-btn-reset" on:onclick={resetConfig}>
               RESET
             </button>
-            <button class="yorha-config-btn yorha-btn-export" click={exportConfig}>
+            <button class="yorha-config-btn yorha-btn-export" on:onclick={exportConfig}>
               EXPORT
             </button>
           </div>

@@ -1,11 +1,11 @@
 <script lang="ts">
-  import NierThemeShowcase from '$lib/components/NierThemeShowcase.svelte'
-  import NierHeader from '$lib/components/NierHeader.svelte'
-  import CaseCard from '$lib/components/cases/CaseCard.svelte'
-  import NierAIAssistant from '$lib/components/ai/NierAIAssistant.svelte'
-  import AIAssistant from '$lib/components/AIAssistant.svelte'
-  import Button from '$lib/components/ui/MeltButton.svelte'
-  import type { User } from '$lib/types/index'
+  import NierThemeShowcase from '$lib/components/NierThemeShowcase.svelte';
+  import NierHeader from '$lib/components/NierHeader.svelte';
+  import CaseCard from '$lib/components/cases/CaseCard.svelte';
+  import NierAIAssistant from '$lib/components/ai/NierAIAssistant.svelte';
+  import AIAssistant from '$lib/components/AIAssistant.svelte';
+  import Button from '$lib/components/ui/MeltButton.svelte';
+  import type { User } from '$lib/types/index';
 
   let isDarkMode = $state(false);
   let showAIAssistant = $state(false);
@@ -137,7 +137,7 @@
 
       <div class="flex justify-center gap-4 animate-fade-in" style="animation-delay: 0.4s">
         <button
-          click={() => showAIAssistant = true}
+          on:onclick={() => showAIAssistant = true}
           class="nier-button-digital px-6 py-3"
         >
           <span class="mr-2">🤖</span>
@@ -193,10 +193,10 @@
         {#each sampleCases as caseData}
           <CaseCard
             case={caseData}
-            on:view={handleViewCase}
-            on:edit={handleEditCase}
-            on:archive={handleArchiveCase}
-            on:delete={handleDeleteCase}
+            view={handleViewCase}
+            edit={handleEditCase}
+            archive={handleArchiveCase}
+            delete={handleDeleteCase}
           />
         {/each}
       </div>
@@ -275,7 +275,7 @@
 
   <!-- Floating Action Button -->
   <button
-    click={() => showAIAssistant = true}
+    on:onclick={() => showAIAssistant = true}
     class="fixed bottom-6 right-6 w-14 h-14 bg-nier-gradient-digital rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-110 nier-transition animate-digital-glow"
     aria-label="Open AI Assistant"
   >

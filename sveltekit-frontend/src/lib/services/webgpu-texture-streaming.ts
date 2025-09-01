@@ -57,7 +57,7 @@ const RTX_3060_TI_CONFIG = {
 };
 
 // === WebGPU Texture Streaming Service ===
-export class WebGPUTextureStreamingService {
+export class WebGPUTextureStreamingService {;
   private device: GPUDevice | null = null;
   private adapter: GPUAdapter | null = null;
   private texturePool: Map<string, StreamingTextureEntry> = new Map();

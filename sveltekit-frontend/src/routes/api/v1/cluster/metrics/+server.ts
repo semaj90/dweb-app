@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * Cluster Metrics API
@@ -8,6 +8,7 @@ import type { RequestHandler } from './$types';
 import { productionAPIClient } from '$lib/../../../../lib/api/production-client.js';
 import { context7OrchestrationService } from '$lib/../../../../lib/services/context7-orchestration-integration.js';
 import { PROTOCOL_TIERS } from '$lib/../../../../lib/services/production-service-registry.js';
+import { URL } from "url";
 
 export const GET: RequestHandler = async ({ url }) => {
   const includePerformance = url.searchParams.get('performance') === 'true';

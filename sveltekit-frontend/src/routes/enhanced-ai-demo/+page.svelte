@@ -156,7 +156,7 @@
           <!-- Action Buttons -->
           <div class="flex gap-4">
             <Button
-              on:click={handleAnalyze}
+              on:on:click={handleAnalyze}
               disabled={!testQuery.trim() ||
                 processingStatus === 'processing' ||
                 !systemInitialized}
@@ -166,7 +166,7 @@
 
             <Button
               variant="outline"
-              on:click={handleClear}
+              on:on:click={handleClear}
               disabled={processingStatus === 'processing'}>
               Clear
             </Button>

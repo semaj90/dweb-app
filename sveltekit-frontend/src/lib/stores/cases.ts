@@ -3,7 +3,7 @@ import { writable, derived } from "svelte/store";
 import { browser } from "$app/environment";
 // TODO: Fix import - // Orphaned content: import {  // Case data store
 export const cases = writable<any[]>([]);
-
+;
 // Search and filter state
 export const caseSearch = writable("");
 export const caseFilters = writable({
@@ -15,25 +15,22 @@ export const caseFilters = writable({
 // Filtered cases (derived store)
 export const filteredCases = derived(
   [cases, caseSearch, caseFilters],
-  ([$cases, $search, $filters]) => {
-    return $cases.filter((case_) => {
-      const matchesSearch = case_.title
+  ([$cases, $search, $filters]) =>
+    $cases.filter((case_) => {
+      const matchesSearch = (case_.title || "")
+        .toString()
         .toLowerCase()
         .includes($search.toLowerCase());
-      const matchesStatus =
-        !$filters.status || case_.status === $filters.status;
-      const matchesPriority =
-        !$filters.priority || case_.priority === $filters.priority;
-
+      const matchesStatus = !$filters.status || case_.status === $filters.status;
+      const matchesPriority = !$filters.priority || case_.priority === $filters.priority;
       return matchesSearch && matchesStatus && matchesPriority;
-    });
-  },
+    })
 );
 
 // UI state
 export const selectedCase = writable<string | null>(null);
 export const sidebarOpen = writable(false);
-
+;
 // Functions for case management
 export const caseStore = {
   // Load cases (call from +page.server.ts load function)

@@ -35,4 +35,4 @@ declare namespace App {
   }
 }
 
-export {};
+

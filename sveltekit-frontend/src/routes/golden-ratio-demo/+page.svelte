@@ -43,7 +43,7 @@
             <Button
               variant={currentVariant === variant ? 'primary' : 'outline'}
               size="sm"
-              on:click={() => currentVariant = variant}
+              on:on:click={() => currentVariant = variant}
               class="capitalize"
             >
               {variant.replace('-', ' ')}
@@ -59,7 +59,7 @@
             <Button
               variant={currentDirection === direction ? 'primary' : 'outline'}
               size="sm"
-              on:click={() => currentDirection = direction}
+              on:on:click={() => currentDirection = direction}
               class="capitalize"
             >
               {direction}
@@ -72,7 +72,7 @@
     <div class="flex gap-phi-md mb-phi-lg">
       <Button
         variant="outline"
-        on:click={toggleDebugGrid}
+        on:on:click={toggleDebugGrid}
         class="text-phi-sm"
       >
         {showDebugGrid ? 'Hide' : 'Show'} Debug Grid

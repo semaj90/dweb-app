@@ -559,7 +559,7 @@ ${caseId ? `• **Case Context:** ${caseId}` : ''}
           </div>
 
           <!-- Settings Toggle -->
-          <Button variant="ghost" size="sm" on:click={() => (showSettings = !showSettings)}>
+          <Button variant="ghost" size="sm" on:on:click={() => (showSettings = !showSettings)}>
             <Settings class="w-4 h-4" />
           </Button>
         </div>
@@ -604,7 +604,7 @@ ${caseId ? `• **Case Context:** ${caseId}` : ''}
     bind:this={chatContainer}
     class="flex-1 overflow-y-auto space-y-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border">
     {#each $messages as message (message.id)}
-      <div class="message-bubble {message.role}" transition:fly={{ y: 20, duration: 300 }}>
+      <div class="message-bubble {message.role}" transitifly={{ y: 20, duration: 300 }}>
         <div class="flex items-start gap-3">
           <!-- Message Icon -->
           <div
@@ -720,7 +720,7 @@ ${caseId ? `• **Case Context:** ${caseId}` : ''}
 
           <!-- Message Actions -->
           <div class="flex-shrink-0 flex flex-col gap-1">
-            <Button variant="ghost" size="sm" on:click={() => copyToClipboard(message.content)}>
+            <Button variant="ghost" size="sm" on:on:click={() => copyToClipboard(message.content)}>
               <FileText class="w-3 h-3" />
             </Button>
           </div>
@@ -744,10 +744,10 @@ ${caseId ? `• **Case Context:** ${caseId}` : ''}
       bind:this={inputElement}
       bind:value={currentInput}
       placeholder="Ask about legal matters, analyze documents, or use commands like /analyze..."
-      on:keydown={handleKeyDown}
+      keydown={handleKeyDown}
       disabled={isProcessing}
       class="flex-1" />
-    <Button on:click={sendMessage} disabled={!currentInput.trim() || isProcessing}>
+    <Button on:on:click={sendMessage} disabled={!currentInput.trim() || isProcessing}>
       {#if isProcessing}
         <Loader2 class="w-4 h-4 animate-spin" />
       {:else}
@@ -758,11 +758,11 @@ ${caseId ? `• **Case Context:** ${caseId}` : ''}
 
   <!-- Analysis Panel -->
   {#if currentAnalysis && showAdvancedAnalysis}
-    <Card class="mt-4" transition:fly={{ y: 20, duration: 300 }}>
+    <Card class="mt-4" transitifly={{ y: 20, duration: 300 }}>
       <CardHeader>
         <CardTitle class="flex items-center justify-between">
           Detailed Analysis
-          <Button variant="ghost" size="sm" on:click={() => (showAdvancedAnalysis = false)}>
+          <Button variant="ghost" size="sm" on:on:click={() => (showAdvancedAnalysis = false)}>
             ×
           </Button>
         </CardTitle>

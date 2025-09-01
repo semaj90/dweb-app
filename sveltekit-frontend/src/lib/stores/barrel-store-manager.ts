@@ -346,7 +346,7 @@ export class BarrelStoreManager {
 
 // Global barrel store manager
 export const barrelStore = new BarrelStoreManager();
-
+;
 // Legal AI specific stores
 export const legalAIStores = {
   // Case management

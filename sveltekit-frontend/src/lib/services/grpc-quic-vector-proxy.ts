@@ -1,3 +1,4 @@
+import http from "http";
 /**
  * gRPC Protobuf QUIC Vector Proxy Integration
  * High-performance vector operations with Go microservices

@@ -10,9 +10,10 @@ import { eq, desc, and, sql, like } from 'drizzle-orm';
 import { l2Distance, cosineDistance } from 'drizzle-orm';
 import { evidence, cases, documentChunks } from '$lib/server/db/schema';
 import type { Evidence } from '$lib/types';
+import crypto from "crypto";
 
 // Database connection (based on MCP pgvector docs)
-const connectionString = process.env.DATABASE_URL!;
+const connectionString = import.meta.env.DATABASE_URL!;
 const client = postgres(connectionString);
 const db = drizzle(client);
 
@@ -60,7 +61,7 @@ export interface EvidenceVectorSearchParams {
  * MCP Tool: Evidence Management
  * Thin adapter wrapping Drizzle ORM operations for evidence
  */
-export class EvidenceMCPTool {
+export class EvidenceMCPTool {;
   
   /**
    * Create new evidence

@@ -83,7 +83,7 @@
 
                     <li class="flex-1 min-w-0">
                         <button
-                            click={() => handleStepClick(index)}
+                            on:onclick={() => handleStepClick(index)}
                             disabled={!isClickable}
                             class="group flex items-center w-full text-left
                                    {isClickable ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700' : 'cursor-not-allowed'}

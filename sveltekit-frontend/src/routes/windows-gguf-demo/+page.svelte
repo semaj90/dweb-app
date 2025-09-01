@@ -35,9 +35,9 @@ https://svelte.dev/e/js_parse_error -->
   let performanceMetrics = $state({ fps: 0, latency: 0, throughput: 0 });
 
   // WebGPU visualization
-  let canvas: HTMLCanvasElement;
-  let ctx: GPUCanvasContext | null = null;
-  let device: GPUDevice | null = null;
+let canvas = $state<HTMLCanvasElement;
+  let ctx: GPUCanvasContext | null >(null);
+let device = $state<GPUDevice | null >(null);
   let animationFrame: number;
 
   // Access stores directly from the service objects
@@ -457,7 +457,7 @@ https://svelte.dev/e/js_parse_error -->
 
           <div class="flex flex-wrap gap-3">
             <Button
-              on:click={runGGUFInference}
+              on:on:click={runGGUFInference}
               disabled={isProcessing || !$modelStatus.loaded}
               class="bg-blue-600 hover:bg-blue-700 text-white"
             >
@@ -465,7 +465,7 @@ https://svelte.dev/e/js_parse_error -->
             </Button>
 
             <Button
-              on:click={runWebGPUProcessing}
+              on:on:click={runWebGPUProcessing}
               disabled={isProcessing || !webgpuStatus.available}
               class="bg-green-600 hover:bg-green-700 text-white"
             >
@@ -473,7 +473,7 @@ https://svelte.dev/e/js_parse_error -->
             </Button>
 
             <Button
-              on:click={runNodeJSOrchestration}
+              on:on:click={runNodeJSOrchestration}
               disabled={isProcessing}
               class="bg-purple-600 hover:bg-purple-700 text-white"
             >
@@ -483,7 +483,7 @@ https://svelte.dev/e/js_parse_error -->
 
           <div class="mt-4 flex gap-2">
             <Button
-              on:click={clearResults}
+              on:on:click={clearResults}
               variant="outline"
               class="border-slate-600 text-slate-300 hover:bg-slate-700"
             >
@@ -491,7 +491,7 @@ https://svelte.dev/e/js_parse_error -->
             </Button>
 
             <Button
-              on:click={exportResults}
+              on:on:click={exportResults}
               variant="outline"
               class="border-slate-600 text-slate-300 hover:bg-slate-700"
             >

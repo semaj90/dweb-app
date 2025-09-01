@@ -83,7 +83,7 @@
     <button
       type="button"
       class="inline-flex items-center justify-center w-4 h-4 ml-1 rounded-full hover:bg-black/20 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-current"
-      click={handleRemove}
+      on:onclick={handleRemove}
       aria-label="Remove"
     >
       <div class="i-lucide-x w-3 h-3" aria-hidden="true"></div>

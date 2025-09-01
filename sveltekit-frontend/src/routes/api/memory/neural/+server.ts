@@ -1,7 +1,8 @@
 import { NeuralMemoryManager } from '$lib/optimization/neural-memory-manager';
 import { redisRateLimit } from '$lib/server/redisRateLimit';
 import { dev } from '$app/environment';
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
+import { URL } from "url";
 
 
 // Global manager singleton with Windows optimization

@@ -41,14 +41,14 @@ export const users = pgTable('users', {
   metadata: jsonb('metadata').default({}),
   created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
   updated_at: timestamp('updated_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
-  deleted_at: timestamp('deleted_at', { withTimezone: true, mode: 'date' }),
+  deleted_at: timestamp('deleted_at', { withTimezone: true, mode: 'date' })
 }, (table) => ({
   // Indexes matching database structure
   emailIdx: index('users_email_idx').on(table.email),
   usernameIdx: index('users_username_idx').on(table.username),
   roleIdx: index('users_role_idx').on(table.role),
   activeIdx: index('users_active_idx').on(table.is_active),
-  profileEmbeddingIdx: index('users_profile_embedding_hnsw_idx').using('hnsw', table.profile_embedding.op('vector_cosine_ops')),
+  profileEmbeddingIdx: index('users_profile_embedding_hnsw_idx').using('hnsw', table.profile_embedding.op('vector_cosine_ops'))
 }));
 
 // === SESSIONS TABLE ===
@@ -60,7 +60,7 @@ export const sessions = pgTable("sessions", {
     .references(() => users.id, { onDelete: "cascade" }),
   expires_at: timestamp("expires_at", {
     withTimezone: true,
-    mode: "date",
+    mode: "date"
   }).notNull(),
   // Additional columns for enhanced session management
   ip_address: varchar("ip_address", { length: 45 }),
@@ -68,12 +68,12 @@ export const sessions = pgTable("sessions", {
   session_context: jsonb("session_context").default({}),
   created_at: timestamp("created_at", {
     withTimezone: true,
-    mode: "date",
-  }).defaultNow().notNull(),
+    mode: "date"
+  }).defaultNow().notNull()
 }, (table) => ({
   // Indexes matching database structure (use snake_case keys)
   expires_at_idx: index('sessions_expires_at_idx').on(table.expires_at),
-  user_id_idx: index('sessions_user_id_idx').on(table.user_id),
+  user_id_idx: index('sessions_user_id_idx').on(table.user_id)
 }));
 
 // === BASIC LEGAL TABLES ===
@@ -92,22 +92,39 @@ export const cases = pgTable('cases', {
   assignedTo: uuid('assigned_to').references(() => users.id),
   metadata: jsonb('metadata').default({}),
   created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
-  updated_at: timestamp('updated_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
+  updated_at: timestamp('updated_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
 });
 
 export const evidence = pgTable('evidence', {
   id: uuid('id').primaryKey().defaultRandom(),
   case_id: uuid('case_id').references(() => cases.id, { onDelete: 'cascade' }),
   title: varchar('title', { length: 255 }).notNull(),
-  content: text('content'), // evidence content
   description: text('description'),
+  fileName: varchar('file_name', { length: 255 }),
+  originalFileName: varchar('original_file_name', { length: 255 }),
+  fileSize: varchar('file_size', { length: 50 }),
+  fileType: varchar('file_type', { length: 100 }),
+  filePath: varchar('file_path', { length: 500 }),
   evidence_type: varchar('evidence_type', { length: 100 }).notNull(),
   type: varchar('type', { length: 100 }), // separate field for general type classification
   createdBy: uuid('created_by').references(() => users.id),
+  tags: jsonb('tags').default([]),
   metadata: jsonb('metadata').default({}),
+  isPublic: boolean('is_public').default(false),
+  ocrText: text('ocr_text'),
+  contentText: text('content_text'),
+  embedding: vector('embedding', { dimensions: 384 }),
+  uploadedAt: timestamp('uploaded_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
+  processedAt: timestamp('processed_at', { withTimezone: true, mode: 'date' }),
   created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
-  updated_at: timestamp('updated_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
-});
+  updated_at: timestamp('updated_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
+}, (table) => ({
+  caseIdIdx: index('evidence_case_id_idx').on(table.case_id),
+  fileTypeIdx: index('evidence_file_type_idx').on(table.fileType),
+  uploadedAtIdx: index('evidence_uploaded_at_idx').on(table.uploadedAt),
+  embeddingIdx: index('evidence_embedding_hnsw_idx').using('hnsw', table.embedding.op('vector_cosine_ops')),
+  tagsIdx: index('evidence_tags_gin_idx').using('gin', table.tags)
+}));
 
 export const legal_documents = pgTable('legal_documents', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -115,7 +132,7 @@ export const legal_documents = pgTable('legal_documents', {
   document_type: varchar('document_type', { length: 100 }).notNull(),
   content: text('content'),
   created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
-  updated_at: timestamp('updated_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
+  updated_at: timestamp('updated_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
 });
 
 export const documentChunks = pgTable('document_chunks', {
@@ -125,23 +142,23 @@ export const documentChunks = pgTable('document_chunks', {
   chunk_index: varchar('chunk_index', { length: 50 }).notNull(),
   content: text('content').notNull(),
   embedding: vector('embedding', { dimensions: 384 }),
-  created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
+  created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
 }, (table) => ({
   documentIdIdx: index('document_chunks_document_id_idx').on(table.document_id),
-  embeddingIdx: index('document_chunks_embedding_hnsw_idx').using('hnsw', table.embedding.op('vector_cosine_ops')),
+  embeddingIdx: index('document_chunks_embedding_hnsw_idx').using('hnsw', table.embedding.op('vector_cosine_ops'))
 }));
 
 // === RELATIONS ===
 export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
-  cases: many(cases),
+  cases: many(cases)
 }));
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(users, {
     fields: [sessions.user_id],
-    references: [users.id],
-  }),
+    references: [users.id]
+  })
 }));
 
 // === LUCIA KEYS TABLE ===
@@ -158,16 +175,16 @@ export const keys = pgTable('keys', {
 export const casesRelations = relations(cases, ({ one, many }) => ({
   assignedAttorney: one(users, {
     fields: [cases.assigned_attorney],
-    references: [users.id],
+    references: [users.id]
   }),
-  evidence: many(evidence),
+  evidence: many(evidence)
 }));
 
 export const evidenceRelations = relations(evidence, ({ one }) => ({
   case: one(cases, {
     fields: [evidence.case_id],
-    references: [cases.id],
-  }),
+    references: [cases.id]
+  })
 }));
 
 // Type exports for Lucia auth compatibility

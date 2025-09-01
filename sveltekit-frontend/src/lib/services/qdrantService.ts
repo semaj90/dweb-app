@@ -6,9 +6,9 @@
 
 import { QdrantClient } from '@qdrant/js-client-rest';
 import type { PointStruct } from '@qdrant/js-client-rest';
-// Orphaned content: import type { PointStruct, Filter, SearchRequest
+// Orphaned content: import type {     PointStruct, Filter, SearchRequest
 import {
-writable, type Writable } from "svelte/store";
+writable, type Writable     } from 'svelte/store';
 
 // Qdrant configuration
 const QDRANT_HOST = 'http://localhost:6333';
@@ -90,7 +90,7 @@ export interface TagPrediction {
 export class QdrantService {
   public client: QdrantClient;
   private isConnected = false;
-  private defaultVectorSize = parseInt(process.env.VECTOR_DIM || process.env.EMBEDDING_DIM || '768', 10);
+  private defaultVectorSize = parseInt(import.meta.env.VECTOR_DIM || import.meta.env.EMBEDDING_DIM || '768', 10);
 
   // Reactive stores for UI integration
   public connectionStatus$: Writable<'connected' | 'disconnected' | 'connecting' | 'error'> =
@@ -901,3 +901,4 @@ Return a JSON object with this structure:
 
 // Singleton instance
 export const qdrantService = new QdrantService();
+;

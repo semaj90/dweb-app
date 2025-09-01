@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 /**
  * Comprehensive Error Handler and Logger
  * Production-ready error handling, logging, and monitoring for the Legal AI Platform
@@ -412,7 +413,7 @@ class ErrorHandler {
 
 // Singleton instance
 export const errorHandler = new ErrorHandler();
-
+;
 // Helper functions for common error scenarios
 export const handleApiError = (error: Error, endpoint: string, context?: Partial<ErrorContext>) => {
   return errorHandler.handleApiError(error, endpoint, context);

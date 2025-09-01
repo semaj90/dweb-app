@@ -5,13 +5,12 @@
    */
   
   import { onMount } from 'svelte';
-  
-  let serviceHealth = null;
-  let serviceStatus = 'checking...';
-  let ingestResult = null;
-  let documentTitle = 'Test Contract';
-  let documentContent = 'This is a test legal contract with indemnification clauses and termination provisions.';
-  let isProcessing = false;
+let serviceHealth = $state(null);
+let serviceStatus = $state('checking...');
+let ingestResult = $state(null);
+let documentTitle = $state('Test Contract');
+let documentContent = $state('This is a test legal contract with indemnification clauses and termination provisions.');
+let isProcessing = $state(false);
   
   async function checkServiceHealth() {
     try {
@@ -111,7 +110,7 @@
       </div>
       
       <button 
-        click={ingestDocument}
+        on:onclick={ingestDocument}
         disabled={isProcessing || serviceStatus !== 'healthy'}
         class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400"
       >

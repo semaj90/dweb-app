@@ -16,10 +16,9 @@
   import type { CaseForm } from '$lib/schemas/forms';
 
   let { data = $bindable() } = $props(); // PageData;
-  
-  let isSubmitting = false;
-  let showSuccess = false;
-  let errorMessage = '';
+let isSubmitting = $state(false);
+let showSuccess = $state(false);
+let errorMessage = $state('');
 
   // Handle form submission success
   function handleFormSuccess(event: CustomEvent<{ case: any }>) {
@@ -70,12 +69,12 @@
   });
 
   // Auto-save functionality
-  let autoSaveTimeout: NodeJS.Timeout;
+let autoSaveTimeout = $state<NodeJS.Timeout;
   
   function scheduleAutoSave(formData: CaseForm) {
     clearTimeout(autoSaveTimeout);
     
-    autoSaveTimeout = setTimeout(async () => {
+    autoSaveTimeout >(setTimeout(async () => {
       try {
         const response = await fetch('?/saveDraft', {
           method: 'POST',
@@ -83,7 +82,7 @@
             'Content-Type': 'application/json'
           },
           body: JSON.stringify(formData)
-        });
+        }));
         
         if (response.ok) {
           console.log('Auto-save successful');
@@ -108,7 +107,7 @@
         <Button 
           variant="ghost" 
           size="sm"
-          on:click={() => goto('/cases')}
+          on:on:click={() => goto('/cases')}
           class="flex items-center space-x-2"
         >
           <ArrowLeft class="h-4 w-4" />
@@ -135,7 +134,7 @@
         {#if !data.editMode}
           <Button 
             variant="outline" 
-            on:click={() => goto('/cases/templates')}
+            on:on:click={() => goto('/cases/templates')}
             class="flex items-center space-x-2"
           >
             <Save class="h-4 w-4" />
@@ -176,10 +175,10 @@
     editMode={data.editMode}
     enableAutoSave={true}
     enableRealTimeValidation={true}
-    on:submit={handleFormSubmit}
-    on:success={handleFormSuccess}
-    on:error={handleFormError}
-    on:draft={handleDraftSave}
+    submit={handleFormSubmit}
+    success={handleFormSuccess}
+    error={handleFormError}
+    draft={handleDraftSave}
   />
 
   <!-- Help Text -->

@@ -117,14 +117,14 @@
   }>>([]);
   
   // Monitoring intervals
-  let metricsInterval: number | null = null;
-  let chartUpdateInterval: number | null = null;
-  let alertCheckInterval: number | null = null;
+let metricsInterval = $state<number | null >(null);
+let chartUpdateInterval = $state<number | null >(null);
+let alertCheckInterval = $state<number | null >(null);
   
   // Chart configuration
   const maxDataPoints = 60; // Keep last 60 data points
-  let chartCanvas: HTMLCanvasElement | null = null;
-  let chartContext: CanvasRenderingContext2D | null = null;
+let chartCanvas = $state<HTMLCanvasElement | null >(null);
+let chartContext = $state<CanvasRenderingContext2D | null >(null);
   
   // Performance tuning state
   let tuningEnabled = $state(false);
@@ -625,21 +625,21 @@
     
     <div class="header-controls">
       {#if !isMonitoring}
-        <button class="control-button start" onclick={startMonitoring}>
+        <button class="control-button start" on:on:onclick={startMonitoring}>
           ▶️ START
         </button>
       {:else}
-        <button class="control-button stop" onclick={stopMonitoring}>
+        <button class="control-button stop" on:on:onclick={stopMonitoring}>
           ⏹️ STOP
         </button>
       {/if}
       
-      <button class="control-button export" onclick={exportPerformanceData}>
+      <button class="control-button export" on:on:onclick={exportPerformanceData}>
         📊 EXPORT
       </button>
       
       {#if enablePerformanceTuning}
-        <button class="control-button optimize" onclick={() => tuningEnabled = !tuningEnabled}>
+        <button class="control-button optimize" on:on:onclick={() => tuningEnabled = !tuningEnabled}>
           ⚙️ TUNE
         </button>
       {/if}
@@ -657,7 +657,7 @@
               <div class="alert-message">{alert.message}</div>
               <div class="alert-timestamp">{new Date(alert.timestamp).toLocaleTimeString()}</div>
             </div>
-            <button class="alert-dismiss" onclick={() => acknowledgeAlert(alert.id)}>
+            <button class="alert-dismiss" on:on:onclick={() => acknowledgeAlert(alert.id)}>
               ✕
             </button>
           </div>
@@ -791,7 +791,7 @@
               </div>
             </div>
             <div class="suggestion-description">{suggestion.description}</div>
-            <button class="suggestion-action" onclick={suggestion.action}>
+            <button class="suggestion-action" on:on:onclick={suggestion.action}>
               APPLY OPTIMIZATION
             </button>
           </div>
@@ -809,7 +809,7 @@
         <div class="tuning-group">
           <label class="tuning-label">Auto Optimization</label>
           <button class="toggle-button" class:active={autoOptimizationEnabled}
-                  onclick={() => autoOptimizationEnabled = !autoOptimizationEnabled}>
+                  on:on:onclick={() => autoOptimizationEnabled = !autoOptimizationEnabled}>
             {autoOptimizationEnabled ? '🟢 ON' : '⚫ OFF'}
           </button>
         </div>
@@ -826,10 +826,10 @@
         <div class="tuning-group">
           <label class="tuning-label">Cache Actions</label>
           <div class="action-buttons">
-            <button class="action-button optimize" onclick={() => enhancedGPUCache.optimizeCacheWithWASM()}>
+            <button class="action-button optimize" on:on:onclick={() => enhancedGPUCache.optimizeCacheWithWASM()}>
               🔧 OPTIMIZE
             </button>
-            <button class="action-button clear" onclick={clearCache}>
+            <button class="action-button clear" on:on:onclick={clearCache}>
               🗑️ CLEAR
             </button>
           </div>

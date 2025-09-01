@@ -11,7 +11,7 @@ import type { Document as LangChainDocument } from "@langchain/core/documents";
 import { VectorStoreRetriever } from "@langchain/core/vectorstores";
 import { BaseRetriever } from "@langchain/core/retrievers";
 import { CallbackManagerForRetrieverRun } from "@langchain/core/callbacks/manager";
-import { createHash } from 'crypto';
+// Crypto import handled dynamically to prevent SSR issues
 
 // ============================================================================
 // CONFIGURATION & TYPES
@@ -121,7 +121,8 @@ export class LangChainOllamaService {
     metadata: Record<string, any> = {}
   ): Promise<ProcessingResult> {
     const startTime = Date.now();
-    const documentId = createHash('sha256').update(content + Date.now().toString()).digest('hex').substring(0, 16);
+    // Generate documentId without crypto to avoid SSR issues
+    const documentId = `doc-${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
 
     try {
       // Split document into chunks
@@ -314,6 +315,7 @@ Answer:`;
   async testConnection(): Promise<boolean> {
     try {
       const testResponse = await this.chatModel.invoke("Hello, this is a connection test.");
+      this.isInitialized = true;
       return !!testResponse;
     } catch (error: any) {
       console.error('Connection test failed:', error);
@@ -341,5 +343,5 @@ Answer:`;
 
 // Export singleton instance for global use
 export const langChainOllamaService = new LangChainOllamaService();
-
+;
 // Note: Types are already exported as interfaces above

@@ -1,13 +1,14 @@
 
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 // Streaming (SSE) vector search endpoint.
 // Usage: GET /api/ai/vector-search/stream?query=...&limit=8&threshold=0.2&model=...&mode=simple
 // Sends events: result (per similarity row), meta (once), error (if any), done (end)
 
 import { getEmbeddingRepository } from '$lib/server/embedding/embedding-repository';
+import { URL } from "url";
 
-export const GET = async ({ url }): Promise<any> => {
+export const GET = (async ({ url }): Promise<any> => {
   const query = url.searchParams.get('query') || '';
   if (!query.trim()) {
     return new Response('query required', { status: 400 });

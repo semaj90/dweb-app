@@ -251,6 +251,6 @@ export class GoServiceClient {
 
 // Singleton instance
 export const goServiceClient = new GoServiceClient();
-
+;
 // Export types for use in agentShellMachine.ts
 export type { RAGRequest, RAGResponse, UploadRequest, UploadResponse };

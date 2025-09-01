@@ -25,21 +25,20 @@
     suggestion: string;
     wcagGuideline?: string;
   }
-
-  let auditResults: AccessibilityIssue[] = [];
-  let isAuditing = false;
-  let auditProgress = 0;
-  let totalIssues = 0;
-  let errorCount = 0;
-  let warningCount = 0;
-  let infoCount = 0;
+let auditResults = $state<AccessibilityIssue[] >([]);
+let isAuditing = $state(false);
+let auditProgress = $state(0);
+let totalIssues = $state(0);
+let errorCount = $state(0);
+let warningCount = $state(0);
+let infoCount = $state(0);
 
   // Accessibility settings
-  let highContrast = false;
-  let reducedMotion = false;
-  let largeText = false;
-  let keyboardNavigation = false;
-  let screenReaderMode = false;
+let highContrast = $state(false);
+let reducedMotion = $state(false);
+let largeText = $state(false);
+let keyboardNavigation = $state(false);
+let screenReaderMode = $state(false);
 
   onMount(() => {
     // Load saved accessibility preferences
@@ -478,8 +477,8 @@
 {#if showPanel}
   <div
     class="mx-auto px-4 max-w-7xl"
-    click={() => (showPanel = false)}
-    on:keydown={(e) => e.key === 'Escape' && (showPanel = false)}
+    on:onclick={() => (showPanel = false)}
+    keydown={(e) => e.key === 'Escape' && (showPanel = false)}
     role="dialog"
     aria-modal="true"
     aria-labelledby="accessibility-panel-title"
@@ -495,7 +494,7 @@
           <Button
             variant="ghost"
             size="sm"
-            on:click={() => (showPanel = false)}
+            on:on:click={() => (showPanel = false)}
             aria-label="Close accessibility panel"
           >
             ✕
@@ -565,7 +564,7 @@
             <h3 class="mx-auto px-4 max-w-7xl">Accessibility Audit</h3>
             <Button
               size="sm"
-              on:click={() => runAccessibilityAudit()}
+              on:on:click={() => runAccessibilityAudit()}
               disabled={isAuditing}
               class="mx-auto px-4 max-w-7xl"
             >
@@ -620,7 +619,7 @@
                 variant="outline"
                 size="sm"
                 class="mx-auto px-4 max-w-7xl"
-                on:click={() => exportAuditResults()}
+                on:on:click={() => exportAuditResults()}
               >
                 <Download class="mx-auto px-4 max-w-7xl" />
                 Export Report

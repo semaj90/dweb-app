@@ -92,13 +92,13 @@
         <div class="nes-container">
           <p class="nes-text is-primary">GAME CONTROLS</p>
           <div class="button-grid">
-            <Button.Root class="nes-btn action-btn" onclick={increaseScore}>
+            <Button.Root class="nes-btn action-btn" on:on:on:click={increaseScore}>
               A BUTTON
             </Button.Root>
-            <Button.Root class="nes-btn action-btn" onclick={decreaseHealth}>
+            <Button.Root class="nes-btn action-btn" on:on:on:click={decreaseHealth}>
               B BUTTON
             </Button.Root>
-            <Button.Root class="nes-btn start-btn" onclick={() => dialogOpen = true}>
+            <Button.Root class="nes-btn start-btn" on:on:on:click={() => dialogOpen = true}>
               START
             </Button.Root>
             <Button.Root class="nes-btn select-btn">

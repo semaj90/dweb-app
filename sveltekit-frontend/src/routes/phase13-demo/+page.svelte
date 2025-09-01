@@ -12,11 +12,11 @@
   import { CheckCircle, AlertCircle, Cpu, Database, Zap, Activity } from 'lucide-svelte';
 
   // Phase 13 system instances
-  let canvas: HTMLCanvasElement;
-  let phase13System: any = null;
-  let apiCoordinator: any = null;
-  let ragEngine: any = null;
-  let context7Integration: any = null;
+let canvas = $state<HTMLCanvasElement;
+  let phase13System: any >(null);
+let apiCoordinator = $state<any >(null);
+let ragEngine = $state<any >(null);
+let context7Integration = $state<any >(null);
 
   // Demo state
   let systemInitialized = $state(false);
@@ -398,7 +398,7 @@
           class="border border-slate-600 rounded bg-black"></canvas>
         <div class="flex flex-col gap-2">
           <Button
-            on:click={startWebGLDemo}
+            on:on:click={startWebGLDemo}
             disabled={!systemInitialized}
             variant="outline"
             class="text-white border-slate-600 hover:bg-slate-700">
@@ -424,13 +424,13 @@
             class="w-full p-3 rounded border border-slate-600 bg-slate-700 text-white placeholder-gray-400" />
           <div class="flex gap-2">
             <Button
-              on:click={performEnhancedRAGSearch}
+              on:on:click={performEnhancedRAGSearch}
               disabled={!systemInitialized || ragActive}
               class="bg-blue-600 hover:bg-blue-700">
               {ragActive ? 'Searching...' : 'Search'}
             </Button>
             <Button
-              on:click={getContext7Recommendations}
+              on:on:click={getContext7Recommendations}
               disabled={!systemInitialized}
               variant="outline"
               class="text-white border-slate-600 hover:bg-slate-700">
@@ -448,13 +448,13 @@
         <h3 class="text-lg font-semibold text-white mb-4">System Controls</h3>
         <div class="space-y-4">
           <Button
-            on:click={startAPICoordination}
+            on:on:click={startAPICoordination}
             disabled={!systemInitialized || apiActive}
             class="w-full bg-green-600 hover:bg-green-700">
             {apiActive ? 'API Active' : 'Start API Coordination'}
           </Button>
           <Button
-            on:click={runFullDemo}
+            on:on:click={runFullDemo}
             disabled={!systemInitialized}
             class="w-full bg-purple-600 hover:bg-purple-700">
             Run Full Demo
@@ -490,7 +490,7 @@
                 </span>
                 <Button
                   size="sm"
-                  on:click={() => submitPositiveFeedback(index)}
+                  on:on:click={() => submitPositiveFeedback(index)}
                   class="text-xs bg-green-600 hover:bg-green-700">
                   👍 Relevant
                 </Button>

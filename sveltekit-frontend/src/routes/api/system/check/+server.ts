@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { healthCheck } from "$lib/server/db/index.js";
 import type { RequestHandler } from './$types';
 

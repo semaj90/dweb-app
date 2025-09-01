@@ -141,7 +141,7 @@ export function copyToClipboard(text: string): Promise<void> {
 export function generateThumbnail(
   file: File,
   maxWidth: number = 150,
-  maxHeight: number = 150,
+  maxHeight: number = 150
 ): Promise<string | null> {
   return new Promise((resolve) => {
     if (!isImageFile(file.type)) {

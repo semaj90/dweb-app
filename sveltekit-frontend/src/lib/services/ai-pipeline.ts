@@ -11,7 +11,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import postgres from "postgres";
 import { Pool } from "pg";
 import type { Document } from "@langchain/core/documents";
-import { users, embeddingCache } from '../server/db/schema-postgres';
+import { users, embeddingCache } from '$lib/database/schema';
 import { OllamaService } from "./ollamaService";
 
 export interface SemanticSearchOptions {
@@ -116,7 +116,7 @@ export class EnhancedAIPipeline {
             metadataColumnName: "metadata",
           },
         });
-        
+
         // Table creation handled by migrations
         // await this.vectorStore.ensureTableInDatabase(); // Method not available
       } catch (pgError) {

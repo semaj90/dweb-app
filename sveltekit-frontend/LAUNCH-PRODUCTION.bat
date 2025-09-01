@@ -69,7 +69,6 @@ echo    👉 API Health: http://localhost:5173/api/ai/health
 echo.
 echo 💡 Tips:
 echo    - Make sure Ollama is running: ollama serve
-echo    - Pull models if needed: ollama pull gemma2:2b
 echo    - Press Ctrl+C to stop the server
 echo.
 

@@ -16,4 +16,4 @@ declare global {
   const $props: <T = any>() => T;
 }
 
-export {};
+

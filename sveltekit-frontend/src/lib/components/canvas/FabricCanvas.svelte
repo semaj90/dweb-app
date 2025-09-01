@@ -31,12 +31,12 @@
   }: Props = $props();
 
   // Fabric.js canvas instance
-  let fabricCanvas: any = null;
+let fabricCanvas = $state<any >(null);
   let canvasElement: HTMLCanvasElement;
-  let isLoading = false;
-  let selectedObject: any = null;
-  let canvasObjects: any[] = [];
-  let zoomLevel = 1;
+let isLoading = $state(false);
+let selectedObject = $state<any >(null);
+let canvasObjects = $state<any[] >([]);
+let zoomLevel = $state(1);
 
   // Evidence management
   interface EvidenceItem {
@@ -48,8 +48,7 @@
     y: number;
     metadata: Record<string, any>;
   }
-
-  let evidenceItems: EvidenceItem[] = [];
+let evidenceItems = $state<EvidenceItem[] >([]);
 
   onMount(async () => {
     // Dynamically import Fabric.js to avoid SSR issues
@@ -379,26 +378,26 @@
 
         <!-- Add Annotation -->
         {#if !readOnly}
-          <Button variant="outline" on:click={addAnnotation}>
+          <Button variant="outline" on:on:click={addAnnotation}>
             <FileText class="h-4 w-4 mr-2" />
             Add Note
           </Button>
         {/if}
 
         <!-- Zoom Controls -->
-        <Button variant="outline" on:click={zoomIn}>
+        <Button variant="outline" on:on:click={zoomIn}>
           <ZoomIn class="h-4 w-4" />
         </Button>
-        <Button variant="outline" on:click={zoomOut}>
+        <Button variant="outline" on:on:click={zoomOut}>
           <ZoomOut class="h-4 w-4" />
         </Button>
-        <Button variant="outline" on:click={resetZoom}>
+        <Button variant="outline" on:on:click={resetZoom}>
           <RotateCcw class="h-4 w-4" />
         </Button>
 
         <!-- Object Controls -->
         {#if selectedObject && !readOnly}
-          <Button variant="destructive" on:click={deleteSelected}>
+          <Button variant="destructive" on:on:click={deleteSelected}>
             <Trash2 class="h-4 w-4 mr-2" />
             Delete
           </Button>
@@ -406,13 +405,13 @@
 
         <!-- Save & Export -->
         {#if !readOnly}
-          <Button variant="default" on:click={saveCanvas}>
+          <Button variant="default" on:on:click={saveCanvas}>
             <Save class="h-4 w-4 mr-2" />
             Save
           </Button>
         {/if}
         
-        <Button variant="outline" on:click={exportCanvas}>
+        <Button variant="outline" on:on:click={exportCanvas}>
           <Download class="h-4 w-4 mr-2" />
           Export
         </Button>

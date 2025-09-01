@@ -1,16 +1,25 @@
 <script lang="ts">
-
   import { debounce } from "$lib/utils/debounce";
   import { Plus, Tag, X } from "lucide-svelte";
   import { createEventDispatcher } from "svelte";
   import { scale } from "svelte/transition";
 
-  let { tags = $bindable() } = $props(); // string[] = [];
-  let { availableTags = $bindable() } = $props(); // string[] = [];
-  let { placeholder = $bindable() } = $props(); // "Add tags...";
-  let { maxTags = $bindable() } = $props(); // 10;
-  let { allowCustomTags = $bindable() } = $props(); // true;
-  let { readonly = $bindable() } = $props(); // false;
+  // Props using Svelte 5 syntax
+  let {
+    tags = [],
+    availableTags = [],
+    placeholder = "Add tags...",
+    maxTags = 10,
+    allowCustomTags = true,
+    readonly = false
+  }: {
+    tags?: string[];
+    availableTags?: string[];
+    placeholder?: string;
+    maxTags?: number;
+    allowCustomTags?: boolean;
+    readonly?: boolean;
+  } = $props();
 
   const dispatch = createEventDispatcher<{
     change: string[];
@@ -19,11 +28,12 @@
     search: string;
   }>();
 
-  let inputValue = "";
-  let showSuggestions = false;
+  // State using Svelte 5 syntax
+  let inputValue = $state("");
+  let showSuggestions = $state(false);
   let inputElement: HTMLInputElement;
   let suggestionsContainer: HTMLElement;
-  let activeIndex = -1;
+  let activeIndex = $state(-1);
 
   let filteredSuggestions = $derived(availableTags
     .filter(
@@ -148,19 +158,19 @@
   }
 </script>
 
-<svelte:window click={handleClickOutside} />
+<svelte:window on:onclick={handleClickOutside} />
 
 <div class="mx-auto px-4 max-w-7xl" class:readonly>
   <div class="mx-auto px-4 max-w-7xl">
     {#each tags as tag (tag)}
-      <div class="mx-auto px-4 max-w-7xl" transition:scale={{ duration: 200 ">
+      <div class="mx-auto px-4 max-w-7xl" transitiscale={{ duration: 200 ">
         <Tag class="mx-auto px-4 max-w-7xl" size={14} />
         <span class="mx-auto px-4 max-w-7xl">{tag}</span>
         {#if !readonly}
           <button
             type="button"
             class="mx-auto px-4 max-w-7xl"
-            click={() => removeTag(tag)}
+            on:onclick={() => removeTag(tag)}
             aria-label="Remove {tag} tag"
           >
             <X size={12} />
@@ -176,7 +186,7 @@
           bind:value={inputValue}
           input={handleInput}
           keydown={handleKeyDown}
-          on:focus={handleFocus}
+          onfocus={handleFocus}
           class="mx-auto px-4 max-w-7xl"
           type="text"
           {placeholder}
@@ -190,7 +200,7 @@
                 type="button"
                 class="mx-auto px-4 max-w-7xl"
                 class:active={index === activeIndex}
-                click={() => handleSuggestionClick(suggestion)}
+                on:onclick={() => handleSuggestionClick(suggestion)}
                 role="option"
                 aria-selected={index === activeIndex}
               >
@@ -207,7 +217,7 @@
       <button
         type="button"
         class="mx-auto px-4 max-w-7xl"
-        click={() => addTag(inputValue)}
+        on:onclick={() => addTag(inputValue)}
         aria-label="Add custom tag: {inputValue}"
       >
         <Plus size={14} />

@@ -8,8 +8,10 @@ import { goto } from '$app/navigation';
 import { page } from '$app/stores';
 import { browser } from '$app/environment';
 import type { RouteDefinition } from '$lib/data/routes-config';
-import type { GeneratedRoute } from './dynamic-route-generator';
-import { routeRegistry } from './route-registry';
+import type { GeneratedRoute } from './dynamic-route-generator.js';
+import { routeRegistry } from './route-registry.js';
+import path from "path";
+import { URL } from "url";
 
 export interface NavigationState {
   currentPath: string;
@@ -462,10 +464,10 @@ export class DynamicNavigation {
 
 // Export singleton instance
 export const dynamicNavigation = new DynamicNavigation();
-
+;
 // Export derived stores for convenient access
 export const navigationState = dynamicNavigation.getState();
-
+;
 export const currentPath = derived(navigationState, state => state.currentPath);
 export const previousPath = derived(navigationState, state => state.previousPath);
 export const breadcrumbs = derived(navigationState, state => state.breadcrumbs);
@@ -473,13 +475,13 @@ export const canGoBack = derived(navigationState, state => state.canGoBack);
 export const canGoForward = derived(navigationState, state => state.canGoForward);
 export const isNavigating = derived(navigationState, state => state.isNavigating);
 export const navigationHistory = derived(navigationState, state => state.navigationHistory);
-
+;
 // Export convenience functions
 export function navigate(path: string, options?: NavigationOptions): Promise<void> {
   return dynamicNavigation.navigate(path, options);
 }
 
-export function navigateToRoute(
+export function navigateToRoute(;
   routeId: string,
   params?: Record<string, string>,
   options?: NavigationOptions

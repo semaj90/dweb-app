@@ -8,7 +8,7 @@
   interface AutosolveMetrics { count:number; sum:number; p50:number; p90:number; p99:number }
   interface QUICMetrics { total_connections:number; total_streams:number; total_errors:number; avg_latency_ms:number; p50?:number; p90?:number; p99?:number; error_rate_1m?:number }
   interface RedisMetrics { up:number; last_ping_ms:number; last_ok_ts?:number|null; last_error_ts?:number|null }
-  let loading = true; let error: string | null = null; let nlp: NLPStats | null = null; let nats: NATSMetricSnapshot | null = null; let pipeline: PipelineHistogram[] = []; let autosolve: AutosolveMetrics | null = null; let quic: QUICMetrics | null = null; let redis: RedisMetrics | null = null; let lastRefreshed: Date | null = null; let autoRefresh = true;
+let loading = $state(true); let error: string | null = null; let nlp: NLPStats | null = null; let nats: NATSMetricSnapshot | null = null; let pipeline: PipelineHistogram[] = []; let autosolve: AutosolveMetrics | null = null; let quic: QUICMetrics | null = null; let redis: RedisMetrics | null = null; let lastRefreshed: Date | null = null; let autoRefresh = true;
   async function fetchNLP(){
     // Prometheus text parsing from /api/v1/nlp/metrics
     const res = await fetch('/api/v1/nlp/metrics');
@@ -106,9 +106,8 @@
     } catch (e:any){ error = e.message; }
     loading = false;
   }
-
-  let interval: any;
-  onMount(()=>{ loadPersisted(); refresh(); interval = setInterval(()=>{
+let interval = $state<any;
+  onMount(()>(>{ loadPersisted()); refresh(); interval = setInterval(()=>{
     if(!autoRefresh) return; // paused
     // If QUIC metrics stale (>30s) trigger only QUIC refresh more frequently
     if (quic && Date.now() - (lastRefreshed?.getTime()||0) > 30000) { fetchQUIC().catch(()=>{}); }
@@ -133,8 +132,8 @@
   <div class="flex items-center justify-between gap-2 flex-wrap">
     <h2 class="text-base font-semibold">AI Metrics Dashboard</h2>
     <div class="flex items-center gap-2">
-      <button class="px-2 py-1 text-xs rounded bg-slate-700 hover:bg-slate-600" click={refresh} disabled={loading}>{loading ? 'Refreshing…' : 'Refresh'}</button>
-      <button class="px-2 py-1 text-xs rounded {autoRefresh ? 'bg-green-700 hover:bg-green-600':'bg-slate-700 hover:bg-slate-600'}" click={toggleAutoRefresh}>{autoRefresh? 'Pause Auto':'Resume Auto'}</button>
+      <button class="px-2 py-1 text-xs rounded bg-slate-700 hover:bg-slate-600" on:onclick={refresh} disabled={loading}>{loading ? 'Refreshing…' : 'Refresh'}</button>
+      <button class="px-2 py-1 text-xs rounded {autoRefresh ? 'bg-green-700 hover:bg-green-600':'bg-slate-700 hover:bg-slate-600'}" on:onclick={toggleAutoRefresh}>{autoRefresh? 'Pause Auto':'Resume Auto'}</button>
       <a href="/api/v1/pipeline/recent-samples.csv" class="px-2 py-1 text-xs rounded bg-slate-700 hover:bg-slate-600" download>CSV</a>
     </div>
   </div>

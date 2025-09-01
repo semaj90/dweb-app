@@ -341,7 +341,7 @@
             Active Cases ({cases.length})
           </h2>
           <button 
-            click={loadCases}
+            on:onclick={loadCases}
             disabled={isLoading}
             class="px-3 py-1 bg-slate-100 text-slate-700 rounded-md hover:bg-slate-200 disabled:opacity-50"
           >
@@ -380,7 +380,7 @@
                   </div>
                   <div class="flex gap-2 ml-4">
                     <button 
-                      click={() => loadCaseDetails(case.id)}
+                      on:onclick={() => loadCaseDetails(case.id)}
                       class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs hover:bg-blue-200"
                     >
                       👁️ View

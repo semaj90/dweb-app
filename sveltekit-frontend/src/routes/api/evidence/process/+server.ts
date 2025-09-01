@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 // Simplified and type-safe evidence processing endpoint with an in-memory processing service
 // POST: start processing -> returns sessionId and jobId
@@ -8,6 +8,8 @@ import type { RequestHandler } from './$types';
 import { db } from '$lib/server/db';
 import { evidence } from '$lib/server/db/schema-postgres';
 import { eq } from 'drizzle-orm';
+import crypto from "crypto";
+import { URL } from "url";
 
 // Type definitions for evidence processing
 type StepName = 'ocr' | 'embedding' | 'analysis' | 'classification' | 'entity_extraction' | 'similarity' | 'indexing';

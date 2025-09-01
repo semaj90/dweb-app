@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 
 /**
  * Comprehensive Error Handling System for Legal AI Application
@@ -210,7 +211,7 @@ class ErrorHandler {
 
 // Global error handler instance
 export const errorHandler = new ErrorHandler();
-
+;
 /**
  * Utility functions for error handling
  */
@@ -266,24 +267,24 @@ export function handleDatabaseError(error: any, operation: string): string {
     stack: error.stack,
     timestamp: new Date().toISOString(),
   });
-  
+
   // Return user-friendly error message
   if (error.message.includes('connection')) {
     return 'Database connection failed. Please try again later.';
   }
-  
+
   if (error.message.includes('constraint')) {
     return 'Data validation error. Please check your input.';
   }
-  
+
   if (error.message.includes('unique')) {
     return 'This record already exists. Please use different values.';
   }
-  
+
   if (error.message.includes('foreign key')) {
     return 'Referenced data not found. Please check related records.';
   }
-  
+
   return 'An unexpected database error occurred. Please try again.';
 }
 
@@ -294,11 +295,11 @@ export function validateUserSession(locals: any): unknown {
   if (!locals.user) {
     throw new Error('Authentication required');
   }
-  
+
   if (!locals.user.isActive) {
     throw new Error('Account is inactive');
   }
-  
+
   return locals.user;
 }
 
@@ -307,13 +308,13 @@ export function validateUserSession(locals: any): unknown {
  */
 export function handleAPIError(error: any, endpoint: string): Response {
   const errorMessage = handleDatabaseError(error, `API call to ${endpoint}`);
-  
+
   errorHandler.system(`API error at ${endpoint}`, {
     error: error.message,
     endpoint,
     timestamp: new Date().toISOString()
   });
-  
+
   return new Response(
     JSON.stringify({
       error: errorMessage,
@@ -332,7 +333,7 @@ export function handleAPIError(error: any, endpoint: string): Response {
  */
 export function validateForm(
   data: Record<string, any>,
-  rules: Record<string, any>,
+  rules: Record<string, any>
 ) {
   const errors: string[] = [];
 

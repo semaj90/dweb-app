@@ -210,5 +210,5 @@ function extractTextFromSlateContent(nodes: any[]): string {
 
 // Export the singleton instance
 export const aiService = createAIService();
-
+;
 // Types are already exported as interfaces above

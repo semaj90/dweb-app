@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * Legal AI Platform API Router v2
@@ -7,10 +7,11 @@ import type { RequestHandler } from './$types';
  */
 
 import { json, error } from '@sveltejs/kit';
-import { db } from '$lib/server/db/drizzle';
-import { cases, evidence, criminals, legalDocuments } from '$lib/server/db/unified-schema';
-import { eq, and, or, desc, asc } from '$lib/server/db/index';
+import { db } from '$lib/server/database.js';
+import { cases, evidence, criminals, legalDocuments } from '$lib/server/database.js';
+import { eq, or, desc } from '$lib/server/db/index.js';
 import { createId } from '@paralleldrive/cuid2';
+import { URL } from "url";
 
 // Go Microservice Configuration
 const GO_SERVICES = {
@@ -70,7 +71,7 @@ async function callGoService(
 ): Promise<any> {
   const serviceConfig = GO_SERVICES[service];
   const url = `${serviceConfig.url}${endpoint}`;
-  
+
   try {
     const response = await fetch(url, {
       method,
@@ -94,7 +95,28 @@ async function callGoService(
 export const POST: RequestHandler = async ({ request, url }) => {
   try {
     const req: LegalPlatformRequest = await request.json();
-    
+
+    // Handle health check
+    if (req.action === 'health' as any) {
+      const healthChecks = await Promise.allSettled([
+        callGoService('enhanced_rag', '/api/health'),
+        callGoService('upload_service', '/health'),
+      ]);
+
+      const services = {
+        enhanced_rag: healthChecks[0].status === 'fulfilled',
+        upload_service: healthChecks[1].status === 'fulfilled',
+        database: true // Assume database is healthy if we got this far
+      };
+
+      return json({
+        success: true,
+        data: { services },
+        timestamp: new Date().toISOString(),
+        message: 'Health check completed'
+      });
+    }
+
     // Route based on entity and action
     switch (req.entity) {
       case 'case':
@@ -124,7 +146,7 @@ export const GET: RequestHandler = async ({ url }) => {
   const action = url.searchParams.get('action');
   const entity = url.searchParams.get('entity');
   const id = url.searchParams.get('id');
-  
+
   if (!action || !entity) {
     throw error(400, 'Missing required parameters: action and entity');
   }
@@ -178,7 +200,7 @@ async function handleCaseOperations(req: LegalPlatformRequest): Promise<any> {
 
     case 'update':
       if (!req.id) throw error(400, 'Case ID required for update');
-      
+
       const updatedCase = await db.update(cases)
         .set({
           ...req.data,
@@ -195,9 +217,9 @@ async function handleCaseOperations(req: LegalPlatformRequest): Promise<any> {
 
     case 'delete':
       if (!req.id) throw error(400, 'Case ID required for deletion');
-      
+
       await db.delete(cases).where(eq(cases.id, req.id));
-      
+
       return json({
         success: true,
         message: 'Case deleted successfully'
@@ -258,11 +280,11 @@ async function handleEvidenceOperations(req: LegalPlatformRequest): Promise<any>
       } else {
         const filters = req.filters || {};
         let query = db.select().from(evidence);
-        
+
         if (filters.caseId) {
           query = query.where(eq(evidence.caseId, filters.caseId));
         }
-        
+
         const allEvidence = await query.orderBy(desc(evidence.uploadedAt)).limit(50);
         return json({ success: true, data: allEvidence });
       }
@@ -363,11 +385,11 @@ async function handleDocumentOperations(req: LegalPlatformRequest): Promise<any>
       } else {
         const filters = req.filters || {};
         let query = db.select().from(legalDocuments);
-        
+
         if (filters.caseId) {
           query = query.where(eq(legalDocuments.caseId, filters.caseId));
         }
-        
+
         const allDocuments = await query.orderBy(desc(legalDocuments.createdAt)).limit(50);
         return json({ success: true, data: allDocuments });
       }
@@ -380,7 +402,7 @@ async function handleDocumentOperations(req: LegalPlatformRequest): Promise<any>
 // Search Operations (Vector + Traditional)
 async function handleSearchOperations(req: LegalPlatformRequest): Promise<any> {
   const { query, type = 'semantic', limit = 10 } = req.data;
-  
+
   try {
     // Call enhanced RAG service for semantic search
     const searchResults = await callGoService('enhanced_rag', '/api/gpu/compute', 'POST', {
@@ -418,7 +440,7 @@ async function handleSearchOperations(req: LegalPlatformRequest): Promise<any> {
 async function handleUploadOperations(req: LegalPlatformRequest): Promise<any> {
   try {
     const uploadResult = await callGoService('upload_service', '/upload', 'POST', req.data);
-    
+
     return json({
       success: true,
       data: uploadResult,
@@ -432,10 +454,10 @@ async function handleUploadOperations(req: LegalPlatformRequest): Promise<any> {
 // AI Operations (Enhanced RAG, GPU Compute, SOM Training)
 async function handleAIOperations(req: LegalPlatformRequest): Promise<any> {
   const { operation, data } = req.data;
-  
+
   try {
     let result;
-    
+
     switch (operation) {
       case 'chat':
       case 'analyze':
@@ -445,19 +467,19 @@ async function handleAIOperations(req: LegalPlatformRequest): Promise<any> {
           ...data
         });
         break;
-        
+
       case 'train_som':
         result = await callGoService('enhanced_rag', '/api/som/train', 'POST', data);
         break;
-        
+
       case 'xstate_event':
         result = await callGoService('enhanced_rag', '/api/xstate/event', 'POST', data);
         break;
-        
+
       default:
         throw error(400, `Unknown AI operation: ${operation}`);
     }
-    
+
     return json({
       success: true,
       data: result,

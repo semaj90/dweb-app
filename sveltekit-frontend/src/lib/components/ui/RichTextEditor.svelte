@@ -42,14 +42,14 @@
             
   let element: HTMLElement;
   let editor: Editor;
-  let isReady = false;
+let isReady = $state(false);
   let autoSaveTimer: NodeJS.Timeout;
 
   // Toolbar state
-  let isBold = false;
-  let isItalic = false;
-  let isBulletList = false;
-  let isOrderedList = false;
+let isBold = $state(false);
+let isItalic = $state(false);
+let isBulletList = $state(false);
+let isOrderedList = $state(false);
 
   onMount(() => {
     editor = new Editor({
@@ -135,7 +135,7 @@
         return content.replace(/<li[^>]*>(.*?)<\/li>/g, "- $1\n") + "\n";
       })
       .replace(/<ol[^>]*>(.*?)<\/ol>/gs, (match, content) => {
-        let counter = 1;
+let counter = $state(1);
         return (
           content.replace(/<li[^>]*>(.*?)<\/li>/g, () => `${counter++}. $1\n`) +
           "\n"
@@ -194,7 +194,7 @@
 
     return { html, markdown, json };
 }
-  export function setContent(
+  export function setContent(;
     newContent: string,
     format: "html" | "json" = "html"
   ) {
@@ -235,7 +235,7 @@
     <button
       type="button"
       class="space-y-4"
-      click={() => toggleBold()}
+      on:onclick={() => toggleBold()}
       title="Bold"
     >
       <Bold class="space-y-4" />
@@ -244,7 +244,7 @@
     <button
       type="button"
       class="space-y-4"
-      click={() => toggleItalic()}
+      on:onclick={() => toggleItalic()}
       title="Italic"
     >
       <Italic class="space-y-4" />
@@ -256,7 +256,7 @@
     <button
       type="button"
       class="space-y-4"
-      click={() => toggleBulletList()}
+      on:onclick={() => toggleBulletList()}
       title="Bullet List"
     >
       <List class="space-y-4" />
@@ -265,7 +265,7 @@
     <button
       type="button"
       class="space-y-4"
-      click={() => toggleOrderedList()}
+      on:onclick={() => toggleOrderedList()}
       title="Numbered List"
     >
       <ListOrdered class="space-y-4" />
@@ -277,7 +277,7 @@
     <button
       type="button"
       class="space-y-4"
-      click={() => addImage()}
+      on:onclick={() => addImage()}
       title="Add Image"
     >
       <ImageIcon class="space-y-4" />
@@ -289,7 +289,7 @@
     <button
       type="button"
       class="space-y-4"
-      click={() => saveContent()}
+      on:onclick={() => saveContent()}
       title="Save Content"
     >
       <Save class="space-y-4" />

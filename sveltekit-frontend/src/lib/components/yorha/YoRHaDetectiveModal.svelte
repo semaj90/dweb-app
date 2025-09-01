@@ -1,7 +1,7 @@
 <!-- YoRHa Detective Modal Component -->
 <script lang="ts">
   import { onMount } from 'svelte';
-  import type { Snippet } from 'svelte';
+  import type {     Snippet     } from 'svelte';
 
   let { 
     showModal = false, 
@@ -43,7 +43,7 @@
   <!-- Modal Backdrop -->
   <div 
     class="modal-backdrop" 
-    click={handleBackdrop}
+    on:onclick={handleBackdrop}
     keydown={handleKeydown}
     role="dialog"
     aria-modal="true"
@@ -55,7 +55,7 @@
       <!-- Header -->
       <div class="modal-header">
         <h2 id="modal-title" class="modal-title">{title}</h2>
-        <button class="modal-close" click={onClose} aria-label="Close modal">
+        <button class="modal-close" on:onclick={onClose} aria-label="Close modal">
           &times;
         </button>
       </div>

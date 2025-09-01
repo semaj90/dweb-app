@@ -54,22 +54,22 @@ export async function deleteCollection(name: string): Promise<any> {
 // Qdrant vector search service
 // High-performance vector search with memory optimization
 // Now using optimized service with cache-like logging system
-import { optimizedQdrant, qdrantOptimized } from './qdrant-optimized';
-import { createQdrantWrapper, QdrantApiWrapper } from './qdrant-api-wrapper';
-import { generateEmbedding } from '../ai/embeddings-simple';
-import { productionLogger as logger } from '../production-logger';
+import { optimizedQdrant, qdrantOptimized } from './qdrant-optimized.js';
+import { createQdrantWrapper, QdrantApiWrapper } from './qdrant-api-wrapper.js';
+import { generateEmbedding } from '../ai/embeddings-simple.js';
+import { productionLogger as logger } from '../production-logger.js';
 
 let qdrantWrapper: QdrantApiWrapper | null = null;
 
 // Initialize Qdrant wrapper (enhanced API compatibility)
 function getQdrantWrapper(): QdrantApiWrapper | null {
-  if (!process.env.QDRANT_URL) {
+  if (!import.meta.env.QDRANT_URL) {
     return null;
   }
   if (!qdrantWrapper) {
     qdrantWrapper = createQdrantWrapper({
-      url: process.env.QDRANT_URL,
-      apiKey: process.env.QDRANT_API_KEY || undefined,
+      url: import.meta.env.QDRANT_URL,
+      apiKey: import.meta.env.QDRANT_API_KEY || undefined,
     });
   }
   return qdrantWrapper;

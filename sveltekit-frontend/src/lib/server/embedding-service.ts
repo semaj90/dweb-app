@@ -366,5 +366,5 @@ export class EmbeddingService {
 
 // Create singleton instance
 export const embeddingService = new EmbeddingService();
-
+;
 // Types are already exported as interfaces above

@@ -272,7 +272,7 @@
           <div class="dialog-section">
             <Button.Root 
               class="snes-btn snes-btn-primary" 
-              onclick={() => dialogOpen = true}
+              on:on:on:click={() => dialogOpen = true}
             >
               🗨️ Open Message Box
             </Button.Root>
@@ -292,7 +292,7 @@
                     <div class="dialog-actions">
                       <Button.Root 
                         class="snes-btn snes-btn-confirm" 
-                        onclick={() => dialogOpen = false}
+                        on:on:on:click={() => dialogOpen = false}
                       >
                         ✓ OK
                       </Button.Root>

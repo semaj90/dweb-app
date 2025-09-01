@@ -75,8 +75,8 @@
   const dispatch = createEventDispatcher();
 
   let isPressed = $state(false);
-  let audioContext: AudioContext | null = null;
-  let buttonElement: HTMLButtonElement | null = null;
+let audioContext = $state<AudioContext | null >(null);
+let buttonElement = $state<HTMLButtonElement | null >(null);
 
   // Create 8-bit button press sound
   const playButtonSound = async () => {
@@ -157,9 +157,9 @@
     return sizeMap[size as keyof typeof sizeMap] || sizeMap.medium;
   };
 
-  const sizeStyles = $derived(getSizeStyles(size));
-  const variantColor = $derived(getVariantColor(variant, nesVariant));
-  const pressTransform = $derived(isPressed ? `translateY(${pressDepth}px)` : 'translateY(0px)');
+  let sizeStyles = $derived(getSizeStyles(size));
+  let variantColor = $derived(getVariantColor(variant, nesVariant));
+  let pressTransform = $derived(isPressed ? `translateY(${pressDepth}px)` : 'translateY(0px)');
 </script>
 
 <BitsButton.Root
@@ -174,9 +174,9 @@
   {formtarget}
   {name}
   {value}
-  onclick={handleClick}
-  onmouseenter={handleHover}
-  onfocus={handleFocus}
+  on:on:on:click={handleClick}
+  on:on:on:mouseenter={handleHover}
+  on:focus={handleFocus}
   class="nes-8bit-button nes-btn {nesVariant} {className}"
   style="
     --button-color: {variantColor};

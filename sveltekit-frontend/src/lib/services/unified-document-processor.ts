@@ -8,6 +8,7 @@ import type { RequestHandler } from "@sveltejs/kit";
 import { legalNLP } from "$lib/services/sentence-transformer";
 import { createActor } from "xstate";
 import { EventEmitter } from "events";
+import crypto from "crypto";
 
 export interface DocumentProcessingConfig {
   enableOCR: boolean;
@@ -1417,7 +1418,7 @@ class UnifiedDocumentProcessor extends EventEmitter {
 
 // Export singleton instance
 export const unifiedDocumentProcessor = UnifiedDocumentProcessor.getInstance();
-
+;
 // Export utility functions
 export const documentProcessingUtils = {
   /**

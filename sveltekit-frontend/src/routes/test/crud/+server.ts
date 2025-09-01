@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 // API Route Handler for CRUD operations
 import { json, error } from '@sveltejs/kit';
@@ -7,6 +7,7 @@ import { json, error } from '@sveltejs/kit';
 import { db } from '$lib/server/db/index';
 import { cases } from '$lib/server/db/schema-postgres';
 import { eq } from '$lib/server/db/index';
+import { URL } from "url";
 
 // DELETE request handler
 export const DELETE: RequestHandler = async ({ url }) => {

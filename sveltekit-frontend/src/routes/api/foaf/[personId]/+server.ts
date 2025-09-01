@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 // Friend-of-a-Friend (FOAF) API endpoint - SSR compatible
 import { json, error } from '@sveltejs/kit';
@@ -6,6 +6,7 @@ import { db } from '$lib/server/db/index.js';
 import { users, cases, evidence } from '$lib/server/db/schema-unified.js';
 import { generateEnhancedEmbedding } from '$lib/server/ai/embeddings-enhanced.js';
 import { eq, ne, and, sql } from 'drizzle-orm';
+import { URL } from "url";
 
 export interface FOAFRequest {
   personId: string;

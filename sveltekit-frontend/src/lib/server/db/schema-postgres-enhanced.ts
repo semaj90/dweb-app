@@ -10,7 +10,7 @@ import {
   real,
   jsonb,
   index,
-  vector,
+  vector
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm/relations";
 
@@ -18,7 +18,7 @@ import { relations } from "drizzle-orm/relations";
 // CREATE EXTENSION IF NOT EXISTS vector;
 
 // Core tables with vector support
-export const cases = pgTable(
+export const cases = pgTable(;
   "cases",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -45,7 +45,7 @@ export const cases = pgTable(
     contentEmbedding: vector("content_embedding", { dimensions: 384 }),
 
     createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull()
   },
   (table) => ({
     userIdIdx: index("cases_user_id_idx").on(table.userId),
@@ -53,11 +53,11 @@ export const cases = pgTable(
     priorityIdx: index("cases_priority_idx").on(table.priority),
     categoryIdx: index("cases_category_idx").on(table.category),
     titleEmbeddingIdx: index("cases_title_embedding_idx").on(table.titleEmbedding),
-    contentEmbeddingIdx: index("cases_content_embedding_idx").on(table.contentEmbedding),
+    contentEmbeddingIdx: index("cases_content_embedding_idx").on(table.contentEmbedding)
   }),
 );
 
-export const evidence = pgTable(
+export const evidence = pgTable(;
   "evidence",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -100,18 +100,18 @@ export const evidence = pgTable(
     boardPosition: jsonb("board_position").default({ x: 0, y: 0 }),
 
     createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull()
   },
   (table) => ({
     caseIdIdx: index("evidence_case_id_idx").on(table.caseId),
     typeIdx: index("evidence_type_idx").on(table.evidenceType),
     admissibleIdx: index("evidence_admissible_idx").on(table.isAdmissible),
     titleEmbeddingIdx: index("evidence_title_embedding_idx").on(table.titleEmbedding),
-    contentEmbeddingIdx: index("evidence_content_embedding_idx").on(table.contentEmbedding),
+    contentEmbeddingIdx: index("evidence_content_embedding_idx").on(table.contentEmbedding)
   }),
 );
 
-export const criminals = pgTable(
+export const criminals = pgTable(;
   "criminals",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -157,46 +157,46 @@ export const criminals = pgTable(
     profileEmbedding: vector("profile_embedding", { dimensions: 384 }),
 
     createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull()
   },
   (table) => ({
     nameIdx: index("criminals_name_idx").on(table.firstName, table.lastName),
     statusIdx: index("criminals_status_idx").on(table.status),
     dangerLevelIdx: index("criminals_danger_level_idx").on(table.dangerLevel),
-    profileEmbeddingIdx: index("criminals_profile_embedding_idx").on(table.profileEmbedding),
+    profileEmbeddingIdx: index("criminals_profile_embedding_idx").on(table.profileEmbedding)
   }),
 );
 
 // Enhanced evidence connections for the board
-export const evidenceConnections = pgTable(
+export const evidenceConnections = pgTable(;
   "evidence_connections",
   {
     id: uuid("id").primaryKey().defaultRandom(),
     caseId: uuid("case_id").references(() => cases.id, { onDelete: "cascade" }),
     fromEvidenceId: uuid("from_evidence_id").references(() => evidence.id, {
-      onDelete: "cascade",
+      onDelete: "cascade"
     }),
     toEvidenceId: uuid("to_evidence_id").references(() => evidence.id, {
-      onDelete: "cascade",
+      onDelete: "cascade"
     }),
     connectionType: text("connection_type").notNull().default("related"), // related, contradicts, supports, timeline
     strength: real("strength").default(0.5), // 0-1 confidence
     description: text("description"),
     metadata: jsonb("metadata").default({}),
     createdBy: uuid("created_by").notNull(),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull()
   },
   (table) => ({
     caseIdIdx: index("evidence_connections_case_id_idx").on(table.caseId),
     fromEvidenceIdx: index("evidence_connections_from_idx").on(
       table.fromEvidenceId,
     ),
-    toEvidenceIdx: index("evidence_connections_to_idx").on(table.toEvidenceId),
+    toEvidenceIdx: index("evidence_connections_to_idx").on(table.toEvidenceId)
   }),
 );
 
 // Vector search metadata
-export const vectorMetadata = pgTable(
+export const vectorMetadata = pgTable(;
   "vector_metadata",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -207,7 +207,7 @@ export const vectorMetadata = pgTable(
     contentHash: text("content_hash").notNull(),
     embeddingModel: text("embedding_model").default("nomic-embed-text"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull()
   },
   (table) => ({
     documentIdIdx: index("vector_metadata_document_id_idx").on(
@@ -218,28 +218,28 @@ export const vectorMetadata = pgTable(
     ),
     collectionIdx: index("vector_metadata_collection_idx").on(
       table.collectionName,
-    ),
+    )
   }),
 );
 
 // Embedding cache for performance
-export const embeddingCache = pgTable(
+export const embeddingCache = pgTable(;
   "embedding_cache",
   {
     id: uuid("id").primaryKey().defaultRandom(),
     textHash: text("text_hash").notNull().unique(),
     embedding: vector("embedding", { dimensions: 384 }).notNull(),
     model: text("model").notNull().default("nomic-embed-text"),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull()
   },
   (table) => ({
     textHashIdx: index("embedding_cache_text_hash_idx").on(table.textHash),
-    embeddingIdx: index("embedding_cache_embedding_idx").on(table.embedding),
+    embeddingIdx: index("embedding_cache_embedding_idx").on(table.embedding)
   }),
 );
 
 // Conversation and message tables for AI chat
-export const conversations = pgTable(
+export const conversations = pgTable(;
   "conversations",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -248,37 +248,37 @@ export const conversations = pgTable(
     type: text("type").notNull().default("general"), // case_analysis, evidence_review, legal_research, general
     metadata: jsonb("metadata").default({}),
     createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull()
   },
   (table) => ({
     userIdIdx: index("conversations_user_id_idx").on(table.userId),
-    typeIdx: index("conversations_type_idx").on(table.type),
+    typeIdx: index("conversations_type_idx").on(table.type)
   }),
 );
 
-export const messages = pgTable(
+export const messages = pgTable(;
   "messages",
   {
     id: uuid("id").primaryKey().defaultRandom(),
     conversationId: uuid("conversation_id").references(() => conversations.id, {
-      onDelete: "cascade",
+      onDelete: "cascade"
     }),
     role: text("role").notNull(), // user, assistant, system
     content: text("content").notNull(),
     metadata: jsonb("metadata").default({}),
     createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull()
   },
   (table) => ({
     conversationIdIdx: index("messages_conversation_id_idx").on(
       table.conversationId,
     ),
-    roleIdx: index("messages_role_idx").on(table.role),
+    roleIdx: index("messages_role_idx").on(table.role)
   }),
 );
 
 // User activity and audit logging
-export const userActivity = pgTable(
+export const userActivity = pgTable(;
   "user_activity",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -289,7 +289,7 @@ export const userActivity = pgTable(
     details: jsonb("details").default({}),
     ipAddress: text("ip_address"),
     userAgent: text("user_agent"),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull()
   },
   (table) => ({
     userIdIdx: index("user_activity_user_id_idx").on(table.userId),
@@ -297,12 +297,12 @@ export const userActivity = pgTable(
     resourceTypeIdx: index("user_activity_resource_type_idx").on(
       table.resourceType,
     ),
-    createdAtIdx: index("user_activity_created_at_idx").on(table.createdAt),
+    createdAtIdx: index("user_activity_created_at_idx").on(table.createdAt)
   }),
 );
 
 // System configuration for AI models and settings
-export const systemConfig = pgTable(
+export const systemConfig = pgTable(;
   "system_config",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -313,58 +313,58 @@ export const systemConfig = pgTable(
     isEncrypted: boolean("is_encrypted").default(false),
     updatedBy: uuid("updated_by").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull()
   },
   (table) => ({
     keyIdx: index("system_config_key_idx").on(table.key),
-    categoryIdx: index("system_config_category_idx").on(table.category),
+    categoryIdx: index("system_config_category_idx").on(table.category)
   }),
 );
 
 // Relations
 export const casesRelations = relations(cases, ({ many }) => ({
   evidence: many(evidence),
-  connections: many(evidenceConnections),
+  connections: many(evidenceConnections)
 }));
 
 export const evidenceRelations = relations(evidence, ({ one, many }) => ({
   case: one(cases, {
     fields: [evidence.caseId],
-    references: [cases.id],
+    references: [cases.id]
   }),
   connectionsFrom: many(evidenceConnections, { relationName: "from" }),
-  connectionsTo: many(evidenceConnections, { relationName: "to" }),
+  connectionsTo: many(evidenceConnections, { relationName: "to" })
 }));
 
-export const evidenceConnectionsRelations = relations(
+export const evidenceConnectionsRelations = relations(;
   evidenceConnections,
   ({ one }) => ({
     case: one(cases, {
       fields: [evidenceConnections.caseId],
-      references: [cases.id],
+      references: [cases.id]
     }),
     fromEvidence: one(evidence, {
       fields: [evidenceConnections.fromEvidenceId],
       references: [evidence.id],
-      relationName: "from",
+      relationName: "from"
     }),
     toEvidence: one(evidence, {
       fields: [evidenceConnections.toEvidenceId],
       references: [evidence.id],
-      relationName: "to",
-    }),
+      relationName: "to"
+    })
   }),
 );
 
 export const conversationsRelations = relations(conversations, ({ many }) => ({
-  messages: many(messages),
+  messages: many(messages)
 }));
 
 export const messagesRelations = relations(messages, ({ one }) => ({
   conversation: one(conversations, {
     fields: [messages.conversationId],
-    references: [conversations.id],
-  }),
+    references: [conversations.id]
+  })
 }));
 
 // Export all table types for TypeScript

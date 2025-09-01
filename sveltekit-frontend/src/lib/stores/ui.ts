@@ -1,7 +1,7 @@
-import crypto from "crypto";
+// Removed Node crypto import to avoid SSR polyfill issues; using globalThis.crypto
 
 // Context menu state and store
-import type { Writable } from "svelte/store";
+import type { Writable } from 'svelte/store';
 import { writable, derived } from "svelte/store";
 import { browser } from "$app/environment";
 
@@ -37,9 +37,7 @@ export const contextMenuActions = {
 
 // Theme system
 export const theme = writable<"light" | "dark" | "auto">("auto");
-export const colorScheme = writable<"blue" | "green" | "purple" | "orange">(
-  "blue"
-);
+export const colorScheme = writable<"blue" | "green" | "purple" | "orange">("blue");
 
 export type NotificationData = {
   type: "success" | "error" | "warning" | "info";
@@ -54,7 +52,6 @@ export type Notification = NotificationData & {
 
 // UI State stores
 export const notifications = writable<Notification[]>([]);
-
 export const modals = writable<{
   [key: string]: boolean;
 }>({});
@@ -117,7 +114,15 @@ export type FormState = {
 export const uiStore = {
   // Notifications
   notify: (notification: NotificationData) => {
-    const id = crypto.randomUUID();
+    const id = (globalThis as any).crypto?.randomUUID?.() || (() => {
+      const arr = new Uint8Array(16);
+      if ((globalThis as any).crypto?.getRandomValues) {
+        (globalThis as any).crypto.getRandomValues(arr);
+      } else {
+        for (let i = 0; i < arr.length; i++) arr[i] = Math.random() * 256;
+      }
+      return Array.from(arr).map(b => b.toString(16).padStart(2, '0')).join('');
+    })();
     const fullNotification: Notification = { ...notification, id };
     notifications.update((list) => [...list, fullNotification]);
 

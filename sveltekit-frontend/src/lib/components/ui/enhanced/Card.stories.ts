@@ -19,10 +19,11 @@ const meta = {
     },
     size: {
       control: { type: 'select' },
-      options: ['sm', 'default', 'lg']
+      options: ['sm', 'default', 'lg', 'xl']
     },
-    interactive: {
-      control: { type: 'boolean' }
+    padding: {
+      control: { type: 'select' },
+      options: ['none', 'sm', 'default', 'lg']
     }
   },
   tags: ['autodocs']
@@ -33,57 +34,105 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    variant: 'default'
+    variant: 'default',
+    size: 'default'
   }
 };
 
 export const Legal: Story = {
   args: {
-    variant: 'legal'
+    variant: 'legal',
+    size: 'default'
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Legal-themed card variant for law-related content'
+      }
+    }
   }
 };
 
 export const Evidence: Story = {
   args: {
-    variant: 'evidence'
+    variant: 'evidence',
+    size: 'default'
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Evidence-themed card for evidence display'
+      }
+    }
   }
 };
 
 export const Case: Story = {
   args: {
-    variant: 'case'
-  }
-};
-
-export const Interactive: Story = {
-  args: {
-    interactive: true,
-    variant: 'default'
+    variant: 'case',
+    size: 'lg'
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Case-themed card for case management'
+      }
+    }
   }
 };
 
 export const Elevated: Story = {
   args: {
-    variant: 'elevated'
+    variant: 'elevated',
+    size: 'default'
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Elevated card with enhanced shadow'
+      }
+    }
   }
 };
 
 export const Outlined: Story = {
   args: {
-    variant: 'outlined'
+    variant: 'outlined',
+    size: 'default'
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Outlined card with border styling'
+      }
+    }
   }
 };
 
 export const Large: Story = {
   args: {
-    size: 'lg',
-    variant: 'default'
+    variant: 'default',
+    size: 'lg'
   }
 };
 
-export const Small: Story = {
+export const ExtraLarge: Story = {
   args: {
-    size: 'sm',
-    variant: 'default'
+    variant: 'default',
+    size: 'xl'
+  }
+};
+
+export const SmallPadding: Story = {
+  args: {
+    variant: 'default',
+    padding: 'sm'
+  }
+};
+
+export const LargePadding: Story = {
+  args: {
+    variant: 'default',
+    padding: 'lg'
   }
 };

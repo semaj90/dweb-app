@@ -2,7 +2,8 @@ import { json } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { users, userProfiles } from '$lib/server/db/schema-postgres';
 import { eq } from 'drizzle-orm';
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
+import { URL } from "url";
 
 
 export const GET: RequestHandler = async ({ url }) => {

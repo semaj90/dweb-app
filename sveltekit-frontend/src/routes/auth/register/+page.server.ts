@@ -1,6 +1,7 @@
+import type { PageServerLoad } from './$types.js';
 import { fail, redirect } from '@sveltejs/kit';
 import { ExistingUserAuthService } from '$lib/server/db/existing-user-operations.js';
-import type { PageServerLoad, Actions } from './$types';
+import type { PageServerLoad, Actions } from './$types.js';
 
 export const load: PageServerLoad = async () => {
   return {};
@@ -62,7 +63,7 @@ export const actions: Actions = {
         cookies.set('session_id', loginResult.session.id, {
           path: '/',
           httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
+          secure: import.meta.env.NODE_ENV === 'production',
           sameSite: 'strict',
           maxAge: 60 * 60 * 24 // 1 day
         });

@@ -56,7 +56,7 @@
   let open = $state(false);
 
   // Filter options based on search input
-  const filteredOptions = $derived(() => {
+  let filteredOptions = $derived(() => {
     if (!inputValue) return options;
     
     const query = inputValue.toLowerCase();
@@ -68,7 +68,7 @@
   });
 
   // Group options by category if categories are enabled
-  const groupedOptions = $derived(() => {
+  let groupedOptions = $derived(() => {
     if (!categories) return [{ category: null, options: filteredOptions }];
 
     const grouped = filteredOptions.reduce((acc, option) => {
@@ -87,7 +87,7 @@
   });
 
   // Find selected option(s) for display
-  const selectedOptions = $derived(() => {
+  let selectedOptions = $derived(() => {
     if (multiple && Array.isArray(value)) {
       return options.filter(option => value.includes(option.value));
     } else if (!multiple && typeof value === 'string') {
@@ -97,7 +97,7 @@
   });
 
   // Check if option can be created
-  const canCreateOption = $derived(() => {
+  let canCreateOption = $derived(() => {
     return creatable && 
            inputValue.trim() && 
            !filteredOptions.some(opt => opt.label.toLowerCase() === inputValue.toLowerCase());
@@ -253,7 +253,7 @@
           {option.label}
           <button
             type="button"
-            click={() => removeValue(option.value)}
+            on:onclick={() => removeValue(option.value)}
             class="hover:bg-yorha-primary/20 rounded p-0.5"
           >
             <X class="w-3 h-3" />

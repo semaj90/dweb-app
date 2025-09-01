@@ -236,10 +236,10 @@ function hashEvidence(evidence: any[]): string {
 
 // Create and export the actor
 export const aiGlobalActor = createActor(aiGlobalMachine);
-
+;
 // Svelte store wrapper for reactivity
 export const aiGlobalStore = writable(aiGlobalActor.getSnapshot());
-
+;
 // Subscribe to actor state changes
 aiGlobalActor.subscribe((snapshot) => {
   aiGlobalStore.set(snapshot);

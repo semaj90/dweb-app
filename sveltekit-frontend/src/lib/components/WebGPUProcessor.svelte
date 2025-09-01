@@ -201,16 +201,16 @@ https://svelte.dev/e/js_parse_error -->
 	`;
 
 	// Component variables
-	let canvas: HTMLCanvasElement;
-	let computePipelines: Map<string, GPUComputePipeline> = new Map();
-	let bufferPool: Map<string, GPUBuffer> = new Map();
-	let operationId = 0;
-	let animationFrame: number;
-	let attentionTracker: AttentionTracker | null = null;
+let canvas = $state<HTMLCanvasElement;
+	let computePipelines: Map<string, GPUComputePipeline> >(new Map());
+let bufferPool = $state<Map<string, GPUBuffer> >(new Map());
+let operationId = $state(0);
+let animationFrame = $state<number;
+let attentionTracker = $state<AttentionTracker | null >(null);
 
 	// Attention tracking class
 	class AttentionTracker {
-		private mousePositions: { x: number; y: number; timestamp: number }[] = [];
+		private mousePositions: { x: number; y: number; timestamp: number }[] >([]);
 		private scrollPositions: { y: number; timestamp: number }[] = [];
 		private focusRegions: { element: HTMLElement; weight: number }[] = [];
 		private isTracking = false;
@@ -329,7 +329,7 @@ https://svelte.dev/e/js_parse_error -->
 			const threshold = 50; // pixels
 
 			for (let i = 0; i < positions.length; i++) {
-				let found = false;
+let found = $state(false);
 				for (const region of regions) {
 					const regionCenter = (region.start + region.end) / 2;
 					const distance = Math.abs(positions[i].y - regionCenter);

@@ -74,7 +74,7 @@ export interface WASMRAGContext {
 }
 
 // XState machine for WebAssembly RAG inference
-export const wasmInferenceMachine = createMachine({
+export const wasmInferenceMachine = createMachine({;
   id: 'wasmInferenceRAG',
   initial: 'initializing',
   context: {
@@ -240,7 +240,7 @@ export const wasmInferenceMachine = createMachine({
 });
 
 // Main WebAssembly Inference RAG Service
-export class WASMInferenceRAGService {
+export class WASMInferenceRAGService {;
   private static wasmModule: WebAssembly.Module | null = null;
   private static wasmInstance: WebAssembly.Instance | null = null;
   private static isInitialized = false;
@@ -626,5 +626,5 @@ export class WASMInferenceRAGService {
 }
 
 // Export singleton for integration
-export const wasmInferenceRAGService = WASMInferenceRAGService;
+export const wasmInferenceRAGService = WASMInferenceRAGService;;
 export default WASMInferenceRAGService;

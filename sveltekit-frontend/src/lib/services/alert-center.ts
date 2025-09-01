@@ -22,14 +22,14 @@
 
 import fs from 'fs';
 import path from 'path';
-import type { NATSMessagingService } from './nats-messaging-service';
+import type { NATSMessagingService } from './nats-messaging-service.js';
 import { 
   getQUICMetrics, 
   getAggregateAnomaliesLast5m, 
   getStageBaselineSnapshot, 
   resetBudgetCounters, 
   getBudgetCounters 
-} from './pipeline-metrics';
+} from './pipeline-metrics.js';
 
 // ===== ALERT INTERFACES & TYPES =====
 
@@ -1044,7 +1044,7 @@ export class AlertCenter {
    * Schedule daily reset
    */
   private scheduleDailyReset(): void {
-    const resetHour = Number(process.env.OBS_DAILY_RESET_HOUR || 0);
+    const resetHour = Number(import.meta.env.OBS_DAILY_RESET_HOUR || 0);
     
     const msUntilNextReset = (): number => {
       const now = new Date();

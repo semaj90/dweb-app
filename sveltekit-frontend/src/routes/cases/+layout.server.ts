@@ -2,7 +2,8 @@
 import { db, cases } from "$lib/server/db/index";
 import { redirect } from "@sveltejs/kit";
 import { and, count, desc, eq, like, or } from "drizzle-orm";
-import type { LayoutServerLoad } from './$types';
+import type { LayoutServerLoad } from './$types.js';
+import { URL } from "url";
 
 // This runs for /cases and all its sub-pages
 // Perfect for loading persistent 3-column layout data

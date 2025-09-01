@@ -32,18 +32,18 @@
 		contextItems?: any[];
 		caseId?: string;
 	}
-	
+
 	let { contextItems = [], caseId = '' }: Props = $props();
 
 	// --- Client-Side Caching with Loki.js ---
 	// Initializes a simple in-memory DB to cache summaries on the client.
 	// Ensure Loki.js DB and collection are initialized only once (singleton pattern).
-	let db: Loki;
+let db = $state<Loki;
 	let lokiSummaryCache: Collection<any>;
 
 	function getSummaryCache() {
 		if (!db) {
-			db = new Loki('ai-cache.db');
+			db >(new Loki('ai-cache.db'));
 			lokiSummaryCache = db.addCollection('summaries', { indices: ['caseId'] });
 		} else if (!lokiSummaryCache) {
 			lokiSummaryCache = db.getCollection('summaries') || db.addCollection('summaries', { indices: ['caseId'] });
@@ -59,8 +59,8 @@
 	let isSaving = $state(false);
 	let retryCount = $state(0);
 	let stream = $state('');
-	let enableStreaming = false; // set true if you wire streaming
-	let showSources = true;
+let enableStreaming = $state(false); // set true if you wire streaming
+let showSources = $state(true);
 	let sources = $state<any[]>([]);
 
 	// Derived booleans used in template
@@ -71,8 +71,8 @@
 	const canSave = $derived(() => !!summary && !!user && !isSaving);
 
 	// Feedback integration variables
-	let feedbackIntegration: any;
-	let currentInteractionId: string | null = null;
+let feedbackIntegration = $state<any;
+	let currentInteractionId: string | null >(null);
 
 	const getStatusInfo = () => {
 		if (isLoading) {
@@ -369,7 +369,7 @@
 		<div class="flex flex-wrap gap-3">
 			<AnyButton
 				type="button"
-				onclick={handleSummarize}
+				on:on:click={handleSummarize}
 				aria-disabled={!canSummarize}
 				disabled={!canSummarize}
 				variant="default"
@@ -389,7 +389,7 @@
 			{#if allowSave}
 				<AnyButton
 					type="button"
-					onclick={handleSave}
+					on:on:click={handleSave}
 					aria-disabled={!canSave}
 					disabled={!canSave}
 					variant="outline"
@@ -408,7 +408,7 @@
 			{#if error && retryCount < 3}
 				<AnyButton
 					type="button"
-					onclick={handleRetry}
+					on:on:click={handleRetry}
 					variant="outline"
 					class="gap-2 text-orange-600 border-orange-600 hover:bg-orange-50"
 				>
@@ -420,7 +420,7 @@
 			{#if summary || error}
 				<AnyButton
 					type="button"
-					onclick={handleReset}
+					on:on:click={handleReset}
 					variant="ghost"
 					size="sm"
 					class="text-gray-500 hover:text-gray-700"

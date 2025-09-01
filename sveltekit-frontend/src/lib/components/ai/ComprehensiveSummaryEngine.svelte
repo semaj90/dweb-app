@@ -51,18 +51,18 @@
   });
 
   // Service Worker integration
-  let serviceWorker = null;
-  let swRegistration = null;
+let serviceWorker = $state(null);
+let swRegistration = $state(null);
 
   // UI state
-  let isProcessing = false;
-  let currentStep = '';
-  let errorMessage = '';
-  let showAdvancedOptions = false;
-  let exportFormat = 'json';
+let isProcessing = $state(false);
+let currentStep = $state('');
+let errorMessage = $state('');
+let showAdvancedOptions = $state(false);
+let exportFormat = $state('json');
 
   // Advanced configuration
-  let config = {
+let config = $state({
     chunkSize: 2000,
     temperature: 0.3,
     maxTokens: 1000,
@@ -71,17 +71,17 @@
     fusejsThreshold: 0.6,
     ragDocumentLimit: 10,
     userActivityDays: 30
-  };
+  });
 
   // Real-time metrics
-  let metrics = {
+let metrics = $state({
     llmProcessingTime: 0,
     ragRetrievalTime: 0,
     userActivityTime: 0,
     synthesisTime: 0,
     totalMemoryUsage: 0,
     gpuUtilization: 0
-  };
+  });
 
   onMount(async () => {
     await initializeServiceWorker();
@@ -437,7 +437,7 @@
       <button
         class="btn-advanced"
         class:active={showAdvancedOptions}
-        click={() => showAdvancedOptions = !showAdvancedOptions}
+        on:onclick={() => showAdvancedOptions = !showAdvancedOptions}
       >
         <Settings size="16" />
         Advanced
@@ -447,7 +447,7 @@
 
   <!-- Advanced Configuration Panel -->
   {#if showAdvancedOptions}
-    <div class="advanced-panel" transition:slide={{ duration: 300 }}>
+    <div class="advanced-panel" transitislide={{ duration: 300 }}>
       <div class="config-grid">
         <div class="config-group">
           <label>Chunk Size</label>
@@ -500,16 +500,16 @@
 
       <div class="processing-controls">
         {#if !isProcessing}
-          <button class="btn-primary" click={startComprehensiveSummary}>
+          <button class="btn-primary" on:onclick={startComprehensiveSummary}>
             <Play size="16" />
             Start Analysis
           </button>
         {:else}
-          <button class="btn-secondary" click={pauseProcessing}>
+          <button class="btn-secondary" on:onclick={pauseProcessing}>
             <Pause size="16" />
             Pause
           </button>
-          <button class="btn-danger" click={stopProcessing}>
+          <button class="btn-danger" on:onclick={stopProcessing}>
             <Square size="16" />
             Stop
           </button>
@@ -578,7 +578,7 @@
             <option value="json">JSON</option>
             <option value="txt">Text</option>
           </select>
-          <button class="btn-export" click={exportSummary} disabled={!canExport}>
+          <button class="btn-export" on:onclick={exportSummary} disabled={!canExport}>
             <Download size="16" />
             Export
           </button>

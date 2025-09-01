@@ -13,7 +13,7 @@ export interface CacheLayerInterface {
   size(): number;
 }
 
-export class AdvancedCacheManager implements CacheLayerInterface {
+export class AdvancedCacheManager implements CacheLayerInterface {;
   private cache: Map<string, any> = new Map();
   private config: CacheConfiguration;
 

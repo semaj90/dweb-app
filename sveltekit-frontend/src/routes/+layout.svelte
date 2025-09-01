@@ -2,35 +2,31 @@
   import '../app.css';
   import { onMount } from 'svelte';
   import { browser } from '$app/environment';
-  import { performanceMonitor, errorHandler, optimizeComponent } from '$lib/utils/browser-performance';
+  import { errorHandler } from '$lib/utils/browser-performance';
   import type { StartupStatus } from '$lib/services/multi-library-startup';
-  import { feedbackStore, createFeedbackStore, setFeedbackStore } from '$lib/stores/feedback-store.svelte';
+  import { createFeedbackStore, setFeedbackStore } from '$lib/stores/feedback-store.svelte';
   import { aiRecommendationEngine } from '$lib/services/ai-recommendation-engine';
   import FeedbackWidget from '$lib/components/feedback/FeedbackWidget.svelte';
   import type { FeedbackTrigger } from '$lib/types/feedback';
 
-  // Modern bits-ui components (only import what exists)
-  import { Button } from 'bits-ui';
-
   // Modern button component
   import ModernButton from '$lib/components/ui/button/Button.svelte';
 
-  let { children }: { children: any } = $props();
-
-  let startupStatus: StartupStatus | null = $state(null);
+  let startupStatus = $state<StartupStatus | null>(null);
   let showStartupLog = $state(false);
-  let currentFeedbackTrigger: FeedbackTrigger | null = $state(null);
+  let currentFeedbackTrigger = $state<FeedbackTrigger | null>(null);
   let showFeedback = $state(false);
+  let session = $state<any>(null);
 
-  // Create and set feedback store context (browser-only to avoid hydration issues)
-  let store: ReturnType<typeof createFeedbackStore> = $state();
-  if (browser) {
-    store = createFeedbackStore();
-    setFeedbackStore(store);
-  }
+  // Create store only in browser (inside onMount) to avoid hydration issues
+  let store = $state<ReturnType<typeof createFeedbackStore> | null>(null);
 
   onMount(async () => {
     if (!browser) return;
+
+    // create and set feedback store in browser
+    store = createFeedbackStore();
+    setFeedbackStore(store);
 
     console.log('🚀 Initializing YoRHa Legal AI Platform...');
 
@@ -40,7 +36,6 @@
       startupStatus = await multiLibraryStartup.initialize();
 
       // Initialize feedback system (ensure store exists)
-      let session = null;
       if (store) {
         const userId = 'user_' + Date.now(); // In production, get from auth
         session = store.initializeSession(userId);
@@ -84,19 +79,7 @@
       store?.trackInteraction('platform_error', { error: (error as Error)?.message ?? String(error) });
     }
 
-    // Listen for feedback triggers (temporarily disabled to prevent reloading)
-    // const feedbackInterval = setInterval(() => {
-    //   if (!store.isCollecting && !showFeedback) {
-    //     const trigger = store.showNextFeedback();
-    //     if (trigger) {
-    //       currentFeedbackTrigger = trigger;
-    //       showFeedback = true;
-    //     }
-    //   }
-    // }, 1000);
-
     return () => {
-      // clearInterval(feedbackInterval); // disabled with feedback system
       store?.clearSession();
     };
   });
@@ -115,7 +98,12 @@
       console.log('✅ Feedback submitted successfully');
       // Generate updated recommendations based on feedback
       await aiRecommendationEngine.generateEnhancedRecommendations(
-        store?.userContext || { userId: '', sessionId: '', deviceType: 'desktop' },
+        store?.userContext || {
+          userId: '',
+          sessionId: '',
+          deviceType: 'desktop',
+          userType: 'attorney'
+        },
         'feedback provided',
         'user_experience'
       );
@@ -172,72 +160,80 @@
         <!-- Logo Section -->
         <div class="flex items-center gap-golden-sm">
           <h1 class="text-nier-accent-warm font-bold text-2xl tracking-wider uppercase">
-            YoRHa Legal AI
+        YoRHa Legal AI
           </h1>
           {#if startupStatus?.initialized}
-            <span class="bg-green-500/20 text-green-400 border-green-500/30 border text-xs px-2 py-1 rounded">
-              🟢 INTEGRATED
-            </span>
+        <span class="bg-green-500/20 text-green-400 border-green-500/30 border text-xs px-2 py-1 rounded">
+          🟢 INTEGRATED
+        </span>
           {:else}
-            <span class="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 border text-xs px-2 py-1 animate-pulse rounded">
-              🟡 LOADING
-            </span>
+        <span class="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 border text-xs px-2 py-1 animate-pulse rounded">
+          🟡 LOADING
+        </span>
           {/if}
         </div>
 
         <!-- Navigation -->
         <nav class="hidden md:flex items-center gap-golden-sm">
           <ModernButton
-            href="/"
-            variant="ghost"
-            size="sm"
-            class="text-nier-text-secondary hover:text-nier-accent-warm hover:bg-nier-bg-tertiary"
+        href="/"
+        variant="ghost"
+        size="sm"
+        class="text-nier-text-secondary hover:text-nier-accent-warm hover:bg-nier-bg-tertiary"
           >
-            Home
+        Home
           </ModernButton>
           <ModernButton
-            href="/yorha-command-center"
-            variant="ghost"
-            size="sm"
-            class="text-nier-text-secondary hover:text-nier-accent-warm hover:bg-nier-bg-tertiary"
+        href="/yorha-command-center"
+        variant="ghost"
+        size="sm"
+        class="text-nier-text-secondary hover:text-nier-accent-warm hover:bg-nier-bg-tertiary"
           >
-            Command Center
+        Command Center
           </ModernButton>
           <ModernButton
-            href="/evidenceboard"
-            variant="ghost"
-            size="sm"
-            class="text-nier-text-secondary hover:text-nier-accent-warm hover:bg-nier-bg-tertiary"
+        href="/evidenceboard"
+        variant="ghost"
+        size="sm"
+        class="text-nier-text-secondary hover:text-nier-accent-warm hover:bg-nier-bg-tertiary"
           >
-            Evidence Board
+        Evidence Board
           </ModernButton>
           <ModernButton
-            href="/demo/enhanced-rag-semantic"
-            variant="ghost"
-            size="sm"
-            class="text-nier-text-secondary hover:text-nier-accent-warm hover:bg-nier-bg-tertiary"
+        href="/demo/enhanced-rag-semantic"
+        variant="ghost"
+        size="sm"
+        class="text-nier-text-secondary hover:text-nier-accent-warm hover:bg-nier-bg-tertiary"
           >
-            RAG Demo
+        RAG Demo
+          </ModernButton>
+          <ModernButton
+        href="/demo/nes-bits-ui"
+        variant="ghost"
+        size="sm"
+        class="text-nier-text-secondary hover:text-nier-accent-warm hover:bg-nier-bg-tertiary"
+          >
+        NES UI Demo
           </ModernButton>
         </nav>
 
         <!-- Auth Buttons -->
         <div class="flex items-center gap-golden-sm">
           <ModernButton
-            href="/auth/login"
-            variant="outline"
-            size="sm"
-            class="border-nier-accent-warm text-nier-accent-warm hover:bg-nier-accent-warm hover:text-nier-bg-primary"
+        href="/auth/login"
+        variant="outline"
+        size="sm"
+        class="border-nier-accent-warm text-nier-accent-warm hover:bg-nier-accent-warm hover:text-nier-bg-primary"
           >
-            Login
+        Login
           </ModernButton>
           <ModernButton
-            href="/auth/register"
-            variant="primary"
-            size="sm"
-            class="bg-gradient-to-r from-nier-accent-warm to-nier-accent-cool text-nier-bg-primary font-bold"
+        href="/auth/register"
+        variant="primary"
+        size="sm"
+        class="bg-gradient-to-r from-nier-accent-warm to-nier-accent-cool text-nier-bg-primary font-bold"
           >
-            Register
+        Register
           </ModernButton>
         </div>
       </div>
@@ -246,7 +242,7 @@
 
   <!-- Main Content with Golden Ratio Spacing -->
   <main class="container mx-auto px-golden-lg py-golden-xl min-h-[calc(100vh-theme(spacing.16))]">
-    {@render children()}
+    {@render children?.()}
   </main>
 </div>
 

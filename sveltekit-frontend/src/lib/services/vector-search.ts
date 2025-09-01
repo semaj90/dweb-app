@@ -349,3 +349,4 @@ export class VectorSearchService {
 
 // Export singleton instance
 export const vectorSearchService = VectorSearchService.getInstance();
+;

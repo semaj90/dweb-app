@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * PostgreSQL-First Architecture Test Endpoint
@@ -17,6 +17,7 @@ import { eq, sql } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 import { createClient } from 'redis';
 import { postgresqlQdrantSync } from '$lib/services/postgresql-qdrant-sync.js';
+import { URL } from "url";
 
 // Test data for demonstration
 const SAMPLE_EVIDENCE = {
@@ -125,7 +126,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
         if (testType === 'full') {
           try {
             const redisClient = createClient({
-              url: process.env.REDIS_URL || 'redis://localhost:6379'
+              url: import.meta.env.REDIS_URL || 'redis://localhost:6379'
             });
             
             await redisClient.connect();
@@ -388,7 +389,7 @@ async function checkSystemHealth(): Promise<any> {
 
   // Check Redis
   try {
-    const redisClient = createClient({ url: process.env.REDIS_URL || 'redis://localhost:6379' });
+    const redisClient = createClient({ url: import.meta.env.REDIS_URL || 'redis://localhost:6379' });
     await redisClient.connect();
     await redisClient.ping();
     await redisClient.disconnect();

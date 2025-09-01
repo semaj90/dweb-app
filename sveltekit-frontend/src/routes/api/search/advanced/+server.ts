@@ -1,4 +1,5 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
+import { URL } from "url";
 
 // Repaired advanced search route: previous file was heavily corrupted with concatenated import + code.
 

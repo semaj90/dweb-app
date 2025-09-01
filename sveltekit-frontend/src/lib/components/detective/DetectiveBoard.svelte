@@ -170,15 +170,14 @@ https://svelte.dev/e/global_reference_invalid -->
   async function findWithLLM() {
     openFindModal();
   }
-
-  let findModal = {
+let findModal = $state({
     show: false,
     query: "",
     results: [],
     loading: false,
     error: "",
     suggestions: [],
-  };
+  });
 
   function openFindModal() {
     findModal = {
@@ -244,7 +243,7 @@ https://svelte.dev/e/global_reference_invalid -->
 </script>
 
 <svelte:window
-  on:click={() => closeContextMenu()}
+  on:onclick={() => closeContextMenu()}
   on:keydown={handleGlobalKeydown}
 />
 
@@ -271,7 +270,7 @@ https://svelte.dev/e/global_reference_invalid -->
             <Button
               variant={viewMode === "columns" ? "default" : "outline"}
               size="sm"
-              on:click={() => switchViewMode("columns")}
+              on:on:click={() => switchViewMode("columns")}
             >
               <span class="mr-2">📋</span>
               Columns
@@ -279,7 +278,7 @@ https://svelte.dev/e/global_reference_invalid -->
             <Button
               variant={viewMode === "canvas" ? "default" : "outline"}
               size="sm"
-              on:click={() => switchViewMode("canvas")}
+              on:on:click={() => switchViewMode("canvas")}
             >
               <span class="mr-2">🎨</span>
               Canvas
@@ -485,26 +484,26 @@ https://svelte.dev/e/global_reference_invalid -->
         <p class="space-y-4">Save/Link</p>
       </div>
       <ContextMenu.Item
-        on:mouseenter={() => showMiniModal("citation")}
-        on:mouseleave={hideMiniModal}
+        on:on:mouseenter={() => showMiniModal("citation")}
+        on:on:mouseleave={hideMiniModal}
         on:select={() => saveTo("savedcitations")}
         >Add to /savedcitations</ContextMenu.Item
       >
       <ContextMenu.Item
-        on:mouseenter={() => showMiniModal("aisummary")}
-        on:mouseleave={hideMiniModal}
+        on:on:mouseenter={() => showMiniModal("aisummary")}
+        on:on:mouseleave={hideMiniModal}
         on:select={() => saveTo("savedaisummaries")}
         >Add to /savedaisummaries</ContextMenu.Item
       >
       <ContextMenu.Item
-        on:mouseenter={() => showMiniModal("userreport")}
-        on:mouseleave={hideMiniModal}
+        on:on:mouseenter={() => showMiniModal("userreport")}
+        on:on:mouseleave={hideMiniModal}
         on:select={() => saveTo("saveduserreports")}
         >Add to /saveduserreports</ContextMenu.Item
       >
       <ContextMenu.Item
-        on:mouseenter={() => showMiniModal("mcpcontext")}
-        on:mouseleave={hideMiniModal}
+        on:on:mouseenter={() => showMiniModal("mcpcontext")}
+        on:on:mouseleave={hideMiniModal}
         on:select={() => saveTo("mcpcontext")}
         >Add to MCP Context (LLM)</ContextMenu.Item
       >
@@ -519,8 +518,8 @@ https://svelte.dev/e/global_reference_invalid -->
       >
       <ContextMenu.Separator />
       <ContextMenu.Item
-        on:mouseenter={() => showMiniModal("find")}
-        on:mouseleave={hideMiniModal}
+        on:on:mouseenter={() => showMiniModal("find")}
+        on:on:mouseleave={hideMiniModal}
         on:select={findWithLLM}>Find (search/query with LLM)</ContextMenu.Item
       >
       {#if findModal.show}
@@ -540,10 +539,10 @@ https://svelte.dev/e/global_reference_invalid -->
               />
               <Button
                 size="sm"
-                on:click={runFindSearch}
+                on:on:click={runFindSearch}
                 disabled={findModal.loading}>Search</Button
               >
-              <Button size="sm" variant="outline" on:click={closeFindModal}
+              <Button size="sm" variant="outline" on:on:click={closeFindModal}
                 >Close</Button
               >
             </div>

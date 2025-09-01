@@ -15,8 +15,8 @@ export const LOCAL_LLM_CONFIG = {
   OLLAMA_MODELS: {
     LEGAL_DETAILED: "gemma3:legal-latest",
     GENERAL: "gemma3:legal-latest",
-    EMBEDDINGS: "nomic-embed-text",
-  },
+    EMBEDDINGS: "nomic-embed-text"
+},
 
   // Prevent remote downloads
   ALLOW_MODEL_DOWNLOADS: false,
@@ -25,7 +25,7 @@ export const LOCAL_LLM_CONFIG = {
   // Memory optimization for local GPU
   MAX_CONTEXT_LENGTH: 8192,
   MAX_BATCH_SIZE: 32,
-  GPU_MEMORY_FRACTION: 0.8,
+  GPU_MEMORY_FRACTION: 0.8
 } as const;
 
 /**

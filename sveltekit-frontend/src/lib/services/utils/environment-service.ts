@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 /**
  * Environment Service - SvelteKit 2 + Svelte 5 Compatible
  * Provides environment detection, LLM endpoint health, and client utilities
@@ -192,12 +193,12 @@ export function getServiceConfig(serviceName: string) {
  * Check if we're in development mode
  */
 export const isDev = (): boolean => CLIENT_ENV.dev;
-
+;
 /**
  * Check if we're running in browser
  */
 export const isBrowser = (): boolean => CLIENT_ENV.browser;
-
+;
 /**
  * Get current environment string
  */

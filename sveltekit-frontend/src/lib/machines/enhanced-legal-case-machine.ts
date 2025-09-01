@@ -36,7 +36,7 @@ export interface EnhancedLegalCaseContext {
     created_at?: Date;
     updated_at?: Date;
   } | null;
-  
+
   // Evidence Management
   evidenceList: Array<{
     id: string;
@@ -47,7 +47,7 @@ export interface EnhancedLegalCaseContext {
     created_at: Date;
     embedding_status?: 'pending' | 'processing' | 'completed' | 'failed';
   }>;
-  
+
   // AI Analysis
   aiAnalysis: {
     status: 'idle' | 'processing' | 'completed' | 'failed';
@@ -64,20 +64,20 @@ export interface EnhancedLegalCaseContext {
     };
     processingStep?: 'embedding' | 'analysis' | 'similarity_search' | 'report_generation';
   };
-  
+
   // Form state
   formData: Partial<CaseForm>;
   validationErrors: Record<string, string[]>;
-  
+
   // System state
   loading: boolean;
   error: string | null;
   retryCount: number;
   lastSyncTime?: Date;
-  
+
   // Database connection status
   dbStatus: 'connected' | 'disconnected' | 'error';
-  
+
   // Background tasks
   backgroundTasks: Array<{
     id: string;
@@ -87,14 +87,14 @@ export interface EnhancedLegalCaseContext {
   }>;
 }
 
-export type EnhancedLegalCaseEvent = 
+export type EnhancedLegalCaseEvent =
   // Case operations
   | { type: 'LOAD_CASE'; caseId: string; includeEvidence?: boolean }
   | { type: 'CREATE_CASE'; data: CaseForm }
   | { type: 'UPDATE_CASE'; caseId: string; data: Partial<CaseForm> }
   | { type: 'DELETE_CASE'; caseId: string }
-  
-  // Evidence operations  
+
+  // Evidence operations
   | { type: 'ADD_EVIDENCE'; caseId: string; evidence: {
       title: string;
       description?: string;
@@ -104,17 +104,17 @@ export type EnhancedLegalCaseEvent =
     }}
   | { type: 'REMOVE_EVIDENCE'; evidenceId: string }
   | { type: 'UPDATE_EVIDENCE'; evidenceId: string; data: any }
-  
+
   // AI Analysis operations
   | { type: 'START_AI_ANALYSIS'; caseId: string; analysisType: 'summary' | 'recommendation' | 'similarity' | 'full' }
   | { type: 'GENERATE_EMBEDDINGS'; documentId: string }
   | { type: 'FIND_SIMILAR_CASES'; caseId: string; threshold?: number }
-  
+
   // Form operations
   | { type: 'UPDATE_FORM'; data: Partial<CaseForm> }
   | { type: 'VALIDATE_FORM' }
   | { type: 'RESET_FORM' }
-  
+
   // System operations
   | { type: 'RETRY' }
   | { type: 'CANCEL' }
@@ -166,7 +166,7 @@ export const enhancedLegalCaseMachine = createMachine({
         }
       }
     },
-    
+
     idle: {
       entry: assign({ loading: false, error: null }),
       on: {
@@ -184,7 +184,7 @@ export const enhancedLegalCaseMachine = createMachine({
         SYNC_DB: 'syncing'
       }
     },
-    
+
     loadingCase: {
       entry: assign({ loading: true }),
       invoke: {
@@ -213,11 +213,11 @@ export const enhancedLegalCaseMachine = createMachine({
         }
       }
     },
-    
+
     caseLoaded: {
       on: {
         ADD_EVIDENCE: 'addingEvidence',
-        UPDATE_CASE: 'updatingCase', 
+        UPDATE_CASE: 'updatingCase',
         START_AI_ANALYSIS: 'startingAnalysis',
         GENERATE_EMBEDDINGS: 'generatingEmbeddings',
         FIND_SIMILAR_CASES: 'findingSimilarCases',
@@ -225,7 +225,7 @@ export const enhancedLegalCaseMachine = createMachine({
         REFRESH: 'loadingCase'
       }
     },
-    
+
     creatingCase: {
       entry: assign({ loading: true }),
       invoke: {
@@ -251,7 +251,7 @@ export const enhancedLegalCaseMachine = createMachine({
         }
       }
     },
-    
+
     addingEvidence: {
       entry: assign({ loading: true }),
       invoke: {
@@ -292,7 +292,7 @@ export const enhancedLegalCaseMachine = createMachine({
         }
       }
     },
-    
+
     startingAnalysis: {
       entry: assign({
         loading: true,
@@ -335,7 +335,7 @@ export const enhancedLegalCaseMachine = createMachine({
         }
       }
     },
-    
+
     generatingEmbeddings: {
       entry: assign({ loading: true }),
       invoke: {
@@ -348,9 +348,9 @@ export const enhancedLegalCaseMachine = createMachine({
             loading: false,
             error: null,
             // Update evidence embedding status
-            evidenceList: ({ context, event }) => 
-              context.evidenceList.map(e => 
-                e.id === (event as any).input.documentId 
+            evidenceList: ({ context, event }) =>
+              context.evidenceList.map(e =>
+                e.id === (event as any).input.documentId
                   ? { ...e, embedding_status: 'completed' }
                   : e
               )
@@ -365,7 +365,7 @@ export const enhancedLegalCaseMachine = createMachine({
         }
       }
     },
-    
+
     findingSimilarCases: {
       entry: assign({ loading: true }),
       invoke: {
@@ -398,7 +398,7 @@ export const enhancedLegalCaseMachine = createMachine({
         }
       }
     },
-    
+
     syncing: {
       entry: assign({ loading: true }),
       invoke: {
@@ -423,7 +423,7 @@ export const enhancedLegalCaseMachine = createMachine({
         }
       }
     },
-    
+
     systemError: {
       on: {
         RETRY: 'initializing',
@@ -438,22 +438,22 @@ export const enhancedLegalCaseMachine = createMachine({
       try {
         // Test database connection
         await db.select().from(users).limit(1);
-        
+
         // Check pgvector extension
         const vectorCheck = await db.execute(
           sql`SELECT extname FROM pg_extension WHERE extname = 'vector';`
         );
-        
+
         if (vectorCheck.length === 0) {
           throw new Error('pgvector extension not found');
         }
-        
+
         return { status: 'initialized' };
       } catch (error: any) {
         throw new Error(`Database initialization failed: ${(error as any).message}`);
       }
     }),
-    
+
     // LOAD_CASE service - Load case with optional evidence
     loadCase: fromPromise(async ({ input }: { input: { caseId: string; includeEvidence: boolean } }) => {
       try {
@@ -463,14 +463,14 @@ export const enhancedLegalCaseMachine = createMachine({
           .from(cases)
           .where(eq(cases.id, input.caseId))
           .limit(1);
-        
+
         if (caseResult.length === 0) {
           throw new Error('Case not found');
         }
-        
+
         const caseData = caseResult[0];
         let evidenceData = [];
-        
+
         // Load evidence if requested
         if (input.includeEvidence) {
           evidenceData = await db
@@ -482,7 +482,7 @@ export const enhancedLegalCaseMachine = createMachine({
               evidence_type: evidence.evidence_type,
               created_at: evidence.created_at,
               // Check embedding status from document_chunks
-              embedding_status: sql<'pending' | 'completed' | 'failed'>`CASE 
+              embedding_status: sql<'pending' | 'completed' | 'failed'>`CASE
                   WHEN EXISTS (
                     SELECT 1 FROM document_chunks
                     WHERE document_chunks.document_id = evidence.id
@@ -495,7 +495,7 @@ export const enhancedLegalCaseMachine = createMachine({
             .where(eq(evidence.case_id, input.caseId))
             .orderBy(desc(evidence.created_at));
         }
-        
+
         return {
           case: caseData,
           evidence: evidenceData
@@ -504,7 +504,7 @@ export const enhancedLegalCaseMachine = createMachine({
         throw new Error(`Failed to load case: ${(error as any).message}`);
       }
     }),
-    
+
     // Create new case
     createCase: fromPromise(async ({ input }: { input: CaseForm }) => {
       try {
@@ -517,17 +517,17 @@ export const enhancedLegalCaseMachine = createMachine({
             // Add other fields as needed
           })
           .returning();
-        
+
         return newCase;
       } catch (error: any) {
         throw new Error(`Failed to create case: ${(error as any).message}`);
       }
     }),
-    
+
     // ADD_EVIDENCE service - Add evidence with automatic embedding
-    addEvidence: fromPromise(async ({ input }: { 
-      input: { 
-        caseId: string; 
+    addEvidence: fromPromise(async ({ input }: {
+      input: {
+        caseId: string;
         evidence: {
           title: string;
           description?: string;
@@ -548,11 +548,11 @@ export const enhancedLegalCaseMachine = createMachine({
             evidence_type: input.evidence.evidence_type
           })
           .returning();
-        
+
         // If there's file content, create document chunks for embedding
         if (input.evidence.file_content) {
           const chunks = chunkText(input.evidence.file_content, 500, 50);
-          
+
           for (let i = 0; i < chunks.length; i++) {
             await db
               .insert(documentChunks)
@@ -565,7 +565,7 @@ export const enhancedLegalCaseMachine = createMachine({
               });
           }
         }
-        
+
         return {
           ...newEvidence,
           embedding_status: 'pending' as const
@@ -574,9 +574,9 @@ export const enhancedLegalCaseMachine = createMachine({
         throw new Error(`Failed to add evidence: ${(error as any).message}`);
       }
     }),
-    
+
     // START_AI_ANALYSIS service - Full AI analysis using Gemma3
-    startAIAnalysis: fromPromise(async ({ input }: { 
+    startAIAnalysis: fromPromise(async ({ input }: {
       input: { caseId: string; analysisType: 'summary' | 'recommendation' | 'similarity' | 'full' }
     }) => {
       try {
@@ -586,16 +586,16 @@ export const enhancedLegalCaseMachine = createMachine({
           .from(cases)
           .where(eq(cases.id, input.caseId))
           .limit(1);
-        
+
         if (caseData.length === 0) {
           throw new Error('Case not found');
         }
-        
+
         const evidenceData = await db
           .select()
           .from(evidence)
           .where(eq(evidence.case_id, input.caseId));
-        
+
         // Get document chunks for context
         const documentChunksData = await db
           .select()
@@ -605,14 +605,14 @@ export const enhancedLegalCaseMachine = createMachine({
               SELECT ${evidence.id} FROM ${evidence} WHERE ${evidence.case_id} = ${input.caseId}
             )`
           );
-        
+
         // Prepare context for Gemma3
         const analysisContext = {
           case: caseData[0],
           evidence: evidenceData,
           content: documentChunksData.map(chunk => chunk.content).join('\n\n')
         };
-        
+
         // Call Gemma3 for analysis (your existing Ollama setup)
         const analysisResponse = await fetch('http://localhost:11434/api/generate', {
           method: 'POST',
@@ -625,20 +625,20 @@ export const enhancedLegalCaseMachine = createMachine({
             stream: false
           })
         });
-        
+
         if (!analysisResponse.ok) {
           throw new Error('AI analysis request failed');
         }
-        
+
         const aiResult = await analysisResponse.json();
-        
+
         // Parse AI response and return structured results
         return parseAnalysisResults(aiResult.response, input.analysisType);
       } catch (error: any) {
         throw new Error(`AI analysis failed: ${(error as any).message}`);
       }
     }),
-    
+
     // Generate embeddings using nomic-embed-text
     generateEmbeddings: fromPromise(async ({ input }: { input: { documentId: string } }) => {
       try {
@@ -652,7 +652,7 @@ export const enhancedLegalCaseMachine = createMachine({
               sql`${documentChunks.embedding} IS NULL`
             )
           );
-        
+
         for (const chunk of chunks) {
           // Generate embedding using nomic-embed-text
           const embeddingResponse = await fetch('http://localhost:11436/api/embeddings', {
@@ -665,13 +665,13 @@ export const enhancedLegalCaseMachine = createMachine({
               prompt: chunk.content
             })
           });
-          
+
           if (!embeddingResponse.ok) {
             throw new Error('Embedding generation failed');
           }
-          
+
           const embeddingResult = await embeddingResponse.json();
-          
+
           // Update chunk with embedding
           await db
             .update(documentChunks)
@@ -680,13 +680,13 @@ export const enhancedLegalCaseMachine = createMachine({
             })
             .where(eq(documentChunks.id, chunk.id));
         }
-        
+
         return { status: 'completed', chunksProcessed: chunks.length };
       } catch (error: any) {
         throw new Error(`Embedding generation failed: ${(error as any).message}`);
       }
     }),
-    
+
     // Find similar cases using pgvector
     findSimilarCases: fromPromise(async ({ input }: { input: { caseId: string; threshold: number } }) => {
       try {
@@ -700,19 +700,19 @@ export const enhancedLegalCaseMachine = createMachine({
           .from(documentChunks)
           .innerJoin(evidence, eq(documentChunks.document_id, evidence.id))
           .where(eq(evidence.case_id, input.caseId));
-        
+
         if (caseChunks.length === 0) {
           return [];
         }
-        
+
         // Average embeddings for case representation
         const caseEmbedding = computeAverageEmbedding(caseChunks.map(c => c.embedding || []));
-        
+
         // Find similar cases using cosine similarity
         const similarCases = await db.execute(
           sql`
-            SELECT DISTINCT 
-              c.id, 
+            SELECT DISTINCT
+              c.id,
               c.title,
               AVG(1 - (dc.embedding <=> ${caseEmbedding})) as similarity_score
             FROM ${cases} c
@@ -726,13 +726,13 @@ export const enhancedLegalCaseMachine = createMachine({
             LIMIT 10
           `
         );
-        
+
         return similarCases;
       } catch (error: any) {
         throw new Error(`Similarity search failed: ${(error as any).message}`);
       }
     }),
-    
+
     // Sync database state
     syncDatabase: fromPromise(async () => {
       try {
@@ -750,13 +750,13 @@ export const enhancedLegalCaseMachine = createMachine({
 function chunkText(text: string, chunkSize: number, overlap: number): string[] {
   const chunks = [];
   let start = 0;
-  
+
   while (start < text.length) {
     const end = Math.min(start + chunkSize, text.length);
     chunks.push(text.slice(start, end));
     start = end - overlap;
   }
-  
+
   return chunks;
 }
 
@@ -797,18 +797,18 @@ function parseAnalysisResults(response: string, analysisType: string) {
 function computeAverageEmbedding(embeddings: any[]): string {
   // Compute average embedding vector for case representation
   if (embeddings.length === 0) return '[]';
-  
+
   // Simple averaging (you might want more sophisticated weighting)
   const dim = JSON.parse(embeddings[0]).length;
   const avgEmbedding = new Array(dim).fill(0);
-  
+
   embeddings.forEach(emb => {
     const vec = JSON.parse(emb);
     vec.forEach((val: number, i: number) => {
       avgEmbedding[i] += val / embeddings.length;
     });
   });
-  
+
   return JSON.stringify(avgEmbedding);
 }
 

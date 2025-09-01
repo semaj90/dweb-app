@@ -14,7 +14,7 @@ import { cn } from '$lib/utils';
     class: className = ''
   }: Props = $props();
 
-	const percentage = $derived(Math.min((value / max) * 100, 100));
+	let percentage = $derived(Math.min((value / max) * 100, 100));
 </script>
 
 <div

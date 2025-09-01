@@ -40,7 +40,7 @@ export const AVATAR_UPLOAD_CONFIG: UploadConfig = {
 /**
  * Comprehensive file validation for avatar uploads
  */
-export function validateAvatarFile(
+export function validateAvatarFile(;
   file: File,
   config = AVATAR_UPLOAD_CONFIG,
 ): ValidationResult {
@@ -99,7 +99,7 @@ export function validateAvatarFile(
 /**
  * Generate a secure, unique filename for avatar
  */
-export function generateAvatarFileName(
+export function generateAvatarFileName(;
   userId: string,
   originalFileName: string,
 ): string {

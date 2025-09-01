@@ -204,7 +204,7 @@
         </div>
 
         <button 
-          click={() => loadDashboardData(true)} 
+          on:onclick={() => loadDashboardData(true)} 
           disabled={refreshing}
           class="action-button refresh-button"
         >
@@ -212,7 +212,7 @@
           {refreshing ? 'Refreshing...' : 'Refresh'}
         </button>
 
-        <button click={exportData} class="action-button export-button">
+        <button on:onclick={exportData} class="action-button export-button">
           <Download class="w-4 h-4" />
           Export Data
         </button>
@@ -227,7 +227,7 @@
         <h3 class="font-semibold">Error Loading Analytics</h3>
         <p>{error}</p>
       </div>
-      <button click={() => loadDashboardData()} class="retry-button">
+      <button on:onclick={() => loadDashboardData()} class="retry-button">
         <RefreshCw class="w-4 h-4" />
         Retry
       </button>
@@ -242,7 +242,7 @@
   {:else}
     <main class="dashboard-main">
       <!-- Overview Cards -->
-      <section class="overview-section" transition:fly={{ y: 20, duration: 300 }}>
+      <section class="overview-section" transitifly={{ y: 20, duration: 300 }}>
         <div class="overview-cards">
           <!-- Total Ratings -->
           <div class="metric-card">
@@ -315,7 +315,7 @@
       </section>
 
       <!-- Rating Breakdown -->
-      <section class="breakdown-section" transition:fly={{ y: 20, duration: 300, delay: 100 }}>
+      <section class="breakdown-section" transitifly={{ y: 20, duration: 300, delay: 100 }}>
         <h2 class="section-title">Rating Breakdown by Category</h2>
         <div class="breakdown-grid">
           {#each dashboardData.breakdown || [] as category}
@@ -364,7 +364,7 @@
       </section>
 
       <!-- Insights and Recommendations -->
-      <section class="insights-section" transition:fly={{ y: 20, duration: 300, delay: 200 }}>
+      <section class="insights-section" transitifly={{ y: 20, duration: 300, delay: 200 }}>
         <div class="insights-grid">
           <!-- AI Insights -->
           <div class="insights-card">
@@ -427,7 +427,7 @@
 
       <!-- Top Issues -->
       {#if dashboardData.topIssues?.length}
-        <section class="issues-section" transition:fly={{ y: 20, duration: 300, delay: 300 }}>
+        <section class="issues-section" transitifly={{ y: 20, duration: 300, delay: 300 }}>
           <h2 class="section-title">
             <AlertCircle class="w-5 h-5 text-red-600" />
             Top Issues Reported

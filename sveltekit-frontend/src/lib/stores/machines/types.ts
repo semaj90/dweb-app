@@ -222,14 +222,14 @@ export interface UserWorkflowEvents {
 }
 
 // Machine States
-export type AIProcessingState = 
+export type AIProcessingState =
   | 'idle'
   | 'processing'
-  | 'success' 
+  | 'success'
   | 'error'
   | 'cancelled';
 
-export type DocumentState = 
+export type DocumentState =
   | 'idle'
   | 'uploading'
   | 'processing_ocr'
@@ -239,14 +239,14 @@ export type DocumentState =
   | 'complete'
   | 'error';
 
-export type GoMicroserviceState = 
+export type GoMicroserviceState =
   | 'disconnected'
   | 'connecting'
   | 'connected'
   | 'requesting'
   | 'error';
 
-export type RAGState = 
+export type RAGState =
   | 'idle'
   | 'analyzing_intent'
   | 'searching'
@@ -255,7 +255,7 @@ export type RAGState =
   | 'complete'
   | 'error';
 
-export type UserWorkflowState = 
+export type UserWorkflowState =
   | 'idle'
   | 'active'
   | 'waiting_input'

@@ -82,7 +82,7 @@
   }: SelectProps = $props();
 
   // Group options by category if they have categories
-  const groupedOptions = $derived((() => {
+  let groupedOptions = $derived((() => {
     const hasCategories = options.some(option => option.category);
 
     if (!hasCategories) {
@@ -100,7 +100,7 @@
   })());
 
   // Reactive trigger classes using $derived
-  const triggerClasses = $derived(cn(
+  let triggerClasses = $derived(cn(
     'bits-select-trigger',
     {
       'h-8 px-3 text-xs': size === 'sm',
@@ -118,7 +118,7 @@
   ));
 
   // Reactive content classes using $derived
-  const selectContentClasses = $derived(cn(
+  let selectContentClasses = $derived(cn(
     'bits-select-content',
     {
       'nier-panel-elevated shadow-xl': legal,
@@ -136,13 +136,13 @@
   }
 
   // Get selected option label
-  const selectedLabel = $derived(
+  let selectedLabel = $derived(
     options.find(option => option.value === value)?.label || placeholder
   );
 </script>
 
 <div class="select-wrapper" class:w-full={fullWidth}>
-  <SelectRoot {value} on:valuechange={handleValueChange} {disabled} type="single">
+  <SelectRoot {value} valuechange={handleValueChange} {disabled} type="single">
     <SelectTrigger class={triggerClasses}>
       <div class="select-value">
         {selectedLabel}

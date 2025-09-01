@@ -4,8 +4,7 @@
   import { aiHistory } from "$lib/stores/aiHistoryStore";
   import Fuse from "fuse.js";
   import { onMount } from "svelte";
-
-  let recommendations: any[] = [];
+let recommendations = $state<any[] >([]);
   let fuse: Fuse<any>;
 
   let history = $derived($aiHistory);

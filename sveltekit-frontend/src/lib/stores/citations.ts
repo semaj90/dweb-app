@@ -183,7 +183,7 @@ function createCitationStore() {
 }
 
 export const citationStore = createCitationStore();
-
+;
 // Sample citations for development
 const sampleCitations: Citation[] = [
   {

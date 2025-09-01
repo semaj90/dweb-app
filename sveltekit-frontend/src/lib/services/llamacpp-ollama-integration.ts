@@ -649,7 +649,7 @@ export class LlamaCppOllamaService {
 /**
  * Factory function for Svelte integration
  */
-export function createLlamaCppOllamaService(
+export function createLlamaCppOllamaService(;
   llamaConfig?: Partial<LlamaCppConfig>,
   ollamaConfig?: Partial<OllamaConfig>,
   flashAttentionConfig?: Partial<FlashAttention2Config>

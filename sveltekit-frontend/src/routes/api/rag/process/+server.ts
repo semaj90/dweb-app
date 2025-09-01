@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import type { RequestHandler } from './$types';
 
 // RAG Process API - Cleaned imports (previously corrupted)

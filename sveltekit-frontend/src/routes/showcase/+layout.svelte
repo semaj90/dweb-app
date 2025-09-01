@@ -3,5 +3,5 @@
 </script>
 
 <main>
-  <slot />
+  {@/* TODO: manual review – previously {@render children?.()} */}
 </main>

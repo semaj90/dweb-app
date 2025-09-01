@@ -71,9 +71,9 @@
 		updateCanvasDimensions();
 }
 	// Enhanced file upload state
-	let uploadProgress: { [key: string]: number } = {};
-	let uploadingFiles: { [key: string]: { name: string; size: number; hash?: string } } = {};
-	let completedUploads: { [key: string]: { name: string; hash: string; id: string } } = {};
+let uploadProgress = $state<{ [key: string]: number } >({});
+let uploadingFiles = $state<{ [key: string]: { name: string; size: number; hash?: string } } >({});
+let completedUploads = $state<{ [key: string]: { name: string; hash: string; id: string } } >({});
 
 	// Handle file drops with hash calculation
 	async function handleFileDrop(event: DragEvent) {
@@ -187,9 +187,9 @@
 		<!-- Canvas Container -->
 		<div
 			class="space-y-4"
-			class:sidebar-open={sidebarOpen}
-			on:drop={handleFileDrop}
-			on:dragover={handleDragOver}
+		 class:sidebar-open={sidebarOpen}
+			ondrop={handleFileDrop}
+			ondragover={handleDragOver}
 			role="main"
 			aria-label="Interactive canvas workspace"
 		>
@@ -260,7 +260,7 @@
 									<span class="space-y-4">{upload.hash.substring(0, 12)}...{upload.hash.substring(-4)}</span>
 									<button
 										class="space-y-4"
-										click={() => window.open(`/evidence/hash?hash=${upload.hash}`, '_blank')}
+										on:onclick={() => window.open(`/evidence/hash?hash=${upload.hash}`, '_blank')}
 									>
 										🔍 Verify
 									</button>

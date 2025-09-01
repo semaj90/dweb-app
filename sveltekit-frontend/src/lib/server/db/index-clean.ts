@@ -15,7 +15,7 @@ function initializeDatabase(): NodePgDatabase<typeof schema> | null {
   if (_db) return _db;
 
   const databaseUrl =
-    process.env.DATABASE_URL ||
+    import.meta.env.DATABASE_URL ||
     "postgresql://postgres:postgres@localhost:5432/prosecutor_db";
 
   console.log("🐘 Connecting to PostgreSQL database");

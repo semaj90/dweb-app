@@ -11,7 +11,7 @@ const singleton = { client: null as Redis | null };
 
 function getClient(): Redis {
   if (singleton.client) return singleton.client;
-  const url = process.env.REDIS_URL || 'redis://localhost:6379';
+  const url = import.meta.env.REDIS_URL || 'redis://localhost:6379';
   singleton.client = new Redis(url);
   (singleton.client as any).on?.('error', (e: any) => console.error('[redisRateLimit] error', e));
   return singleton.client;

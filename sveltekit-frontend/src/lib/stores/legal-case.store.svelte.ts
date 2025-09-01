@@ -309,3 +309,4 @@ export function createLegalCaseStore() {
 
 // Global store instance
 export const legalCaseStore = createLegalCaseStore();
+;

@@ -3,7 +3,8 @@ import { caseActivities } from "$lib/server/db/schema-postgres";
 import { db } from "$lib/server/db/index";
 import { eq, sql, desc } from "drizzle-orm";
 import { or as orExpr, like } from "drizzle-orm/expressions";
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
+import { URL } from "url";
 
 
 export const GET: RequestHandler = async ({ locals, url }) => {

@@ -434,7 +434,7 @@ export class AISuggestionsGRPCClient {
 
 // Singleton instance for the application
 export const aiSuggestionsClient = new AISuggestionsGRPCClient();
-
+;
 /**
  * Convenience functions for common operations
  */

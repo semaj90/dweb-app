@@ -919,9 +919,8 @@ class ComprehensiveCachingService {
   }
 }
 
-// Export singleton instance
-export const comprehensiveCachingService =
-  ComprehensiveCachingService.getInstance();
+// Export singleton instance (fixed syntax)
+export const comprehensiveCachingService = ComprehensiveCachingService.getInstance();
 export default comprehensiveCachingService;
 
 // Types are already exported above

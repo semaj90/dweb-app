@@ -41,14 +41,14 @@
   let error = $state<string | null>(null);
 
   // Feedback integration reference
-  let vectorSearchFeedback: any;
+let vectorSearchFeedback = $state<any;
 
   // Document type icons
-  const typeIcons = {
+  const typeIcons >({
     document: FileText,
     evidence: Briefcase,
     case: Scale,
-  };
+  });
 
   async function performSearch() {
     if (!query.trim()) return;
@@ -155,8 +155,8 @@
             bind:value={query}
             placeholder="Enter your legal search query..."
             class="flex-1"
-            on:keydown={(e) => e.key === 'Enter' && performSearch()} />
-          <Button on:click={performSearch} disabled={searching || !query.trim()}>
+            keydown={(e) => e.key === 'Enter' && performSearch()} />
+          <Button on:on:click={performSearch} disabled={searching || !query.trim()}>
             {#if searching}
               <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
               Searching...

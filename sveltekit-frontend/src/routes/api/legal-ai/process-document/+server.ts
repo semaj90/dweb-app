@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 
 import { URL } from "url";
 import { queueDocumentProcessing, getJobStatus, getQueueStats, type DocumentProcessingJobData } from "$lib/services/queue-service";

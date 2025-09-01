@@ -23,7 +23,7 @@ export const serviceStatus = writable({
 export const chatHistory = writable([]);
 export const chatLoading = writable(false);
 export const chatError = writable(null);
-
+;
 // AI features availability
 export const aiFeatures = writable({
   chat: false,

@@ -8,10 +8,10 @@
   import { Calendar, FileText, Users, Scale, Shield, AlertTriangle } from 'lucide-svelte';
   // Page state
   let activeTab = $state('data-table');
-  let toastProvider: any;
+let toastProvider = $state<any;
 
   // Sample data for components
-  const evidenceData = [
+  const evidenceData >([
     {
       id: 'EV001',
       itemNumber: 'EV-2024-001',
@@ -42,7 +42,7 @@
       custodian: 'CSI Team Lead',
       status: 'processed'
     }
-  ];
+  ]);
 
   const evidenceColumns: DataTableColumn[] = [
     { key: 'itemNumber', label: 'Item #', sortable: true, width: '120px' },
@@ -322,7 +322,7 @@
         {#each tabs as tab}
           {@const IconComponent = tab.icon}
           <button
-            click={() => activeTab = tab.id}
+            on:onclick={() => activeTab = tab.id}
             class={`flex items-center gap-2 px-4 py-2 text-sm font-mono rounded transition-colors ${
               activeTab === tab.id
                 ? 'bg-yorha-primary text-yorha-bg-primary'

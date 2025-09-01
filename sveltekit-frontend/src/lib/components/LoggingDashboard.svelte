@@ -10,18 +10,20 @@
     type LogFilter
   } from '$lib/services/logging-aggregation-service';
   import { Button } from '$lib/components/ui/button';
-  import { Card } from '$lib/components/ui/Card';
   import { Badge } from '$lib/components/ui/badge';
 
-  export let visible = true;
-  export let height = '600px';
+  // Modern Svelte 5 props via $props rune
+  let { visible = true, height = '600px' } = $props<{
+    visible?: boolean;
+    height?: string;
+  }>();
 
-  let selectedLevel: LogLevel | 'all' = 'all';
-  let selectedCategory = 'all';
-  let searchQuery = '';
-  let autoScroll = true;
-  let showDetails = false;
-  let selectedEntry: LogEntry | null = null;
+  let selectedLevel = $state<LogLevel | 'all'>('all');
+  let selectedCategory = $state('all');
+  let searchQuery = $state('');
+  let autoScroll = $state(true);
+  let showDetails = $state(false);
+  let selectedEntry = $state<LogEntry | null>(null);
 
   let filteredEntries = $derived(() => $logEntries.filter((entry: LogEntry) => {
     const matchesLevel = selectedLevel === 'all' || entry.level === selectedLevel;
@@ -35,9 +37,8 @@
 
   let categories = $derived(() => Array.from(new Set($logEntries.map((e: LogEntry) => e.category))).sort());
   let stats = $derived(() => $logStats);
-
-  let logContainer: HTMLDivElement;
-  let refreshInterval: NodeJS.Timeout;
+  let logContainer = $state<HTMLDivElement | null>(null);
+  let refreshInterval: ReturnType<typeof setInterval> | null = null;
 
   onMount(() => {
     // Auto-scroll to bottom when new entries arrive
@@ -46,7 +47,7 @@
     }
 
     // Refresh dashboard periodically
-    refreshInterval = setInterval(() => {
+  refreshInterval = setInterval(() => {
       if (autoScroll) {
         scrollToBottom();
       }
@@ -54,9 +55,7 @@
   });
 
   onDestroy(() => {
-    if (refreshInterval) {
-      clearInterval(refreshInterval);
-    }
+    if (refreshInterval) clearInterval(refreshInterval);
   });
 
   function scrollToBottom() {
@@ -165,10 +164,10 @@
         </h2>
 
         <div class="flex items-center gap-2">
-          <Button size="sm" variant="outline" on:click={exportLogs}>
+          <Button size="sm" variant="outline" onclick={exportLogs}>
             📤 Export
           </Button>
-          <Button size="sm" variant="outline" on:click={clearLogs}>
+          <Button size="sm" variant="outline" onclick={clearLogs}>
             🗑️ Clear
           </Button>
         </div>
@@ -195,7 +194,7 @@
         <div class="text-center">
           <div class="text-red-400 text-xs">Fatal</div>
           <div class="text-red-300 font-mono">{stats.entriesByLevel.fatal}</div>
-        </div>
+  <div class="w-full max-w-4xl max-h-[80vh] overflow-hidden bg-gray-900 text-white border border-gray-700 rounded-lg">
         <div class="text-center">
           <div class="text-green-400 text-xs">Rate</div>
           <div class="text-green-300 font-mono">{stats.avgLogsPerMinute}/min</div>
@@ -257,9 +256,10 @@
       {:else}
         <div class="space-y-1">
           {#each filteredEntries as entry (entry.id)}
-            <div
-              class="log-entry group hover:bg-gray-800 p-2 rounded cursor-pointer transition-colors duration-150"
-              click={() => selectEntry(entry)}
+            <button
+              type="button"
+              class="log-entry group w-full text-left hover:bg-gray-800 p-2 rounded cursor-pointer transition-colors duration-150"
+              on:click={() => selectEntry(entry)}
             >
               <div class="flex items-start gap-3">
                 <!-- Timestamp -->
@@ -303,23 +303,23 @@
 
                 <!-- Actions -->
                 <div class="opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Button size="sm" variant="ghost" on:click={(e) => { e.stopPropagation(); () => selectEntry(entry)(); }}>
+                  <Button size="sm" variant="ghost" on:click={(e) => { e.stopPropagation(); selectEntry(entry); }}>
                     👁️
                   </Button>
                 </div>
               </div>
-            </div>
+            </button>
           {/each}
         </div>
       {/if}
     </div>
   </div>
-{/if}
 
-<!-- Details Modal -->
-{#if showDetails && selectedEntry}
+  <!-- Details Modal -->
+  {#if showDetails && selectedEntry}
   <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <Card class="w-full max-w-4xl max-h-[80vh] overflow-hidden bg-gray-900 text-white border-gray-700">
+    <div class="w-full max-w-4xl max-h-[80vh] overflow-hidden bg-gray-900 text-white border border-gray-700 rounded-lg">
+      <div class="p-6">
       <div class="p-6">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-xl font-bold text-green-400 flex items-center gap-2">
@@ -332,16 +332,16 @@
 
         <!-- Entry Details -->
         <div class="space-y-4 overflow-y-auto max-h-96">
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="text-sm text-gray-400">Timestamp</label>
+  </div>
+            <div role="group" aria-label="Timestamp">
+              <div class="text-sm text-gray-400">Timestamp</div>
               <div class="font-mono text-white">
                 {new Date(selectedEntry.timestamp).toISOString()}
               </div>
             </div>
 
-            <div>
-              <label class="text-sm text-gray-400">Level</label>
+            <div role="group" aria-label="Level">
+              <div class="text-sm text-gray-400">Level</div>
               <div>
                 <Badge class={getLevelColor(selectedEntry.level)}>
                   {selectedEntry.level.toUpperCase()}
@@ -349,42 +349,42 @@
               </div>
             </div>
 
-            <div>
-              <label class="text-sm text-gray-400">Category</label>
+            <div role="group" aria-label="Category">
+              <div class="text-sm text-gray-400">Category</div>
               <div class="text-white flex items-center gap-2">
                 {getCategoryIcon(selectedEntry.category)} {selectedEntry.category}
               </div>
             </div>
 
-            <div>
-              <label class="text-sm text-gray-400">Entry ID</label>
+            <div role="group" aria-label="Entry ID">
+              <div class="text-sm text-gray-400">Entry ID</div>
               <div class="font-mono text-white text-sm">{selectedEntry.id}</div>
             </div>
 
             {#if selectedEntry.service}
-              <div>
-                <label class="text-sm text-gray-400">Service</label>
+              <div role="group" aria-label="Service">
+                <div class="text-sm text-gray-400">Service</div>
                 <div class="text-white">{selectedEntry.service}</div>
               </div>
             {/if}
 
             {#if selectedEntry.userId}
-              <div>
-                <label class="text-sm text-gray-400">User ID</label>
+              <div role="group" aria-label="User ID">
+                <div class="text-sm text-gray-400">User ID</div>
                 <div class="font-mono text-white text-sm">{selectedEntry.userId}</div>
               </div>
             {/if}
 
             {#if selectedEntry.sessionId}
-              <div>
-                <label class="text-sm text-gray-400">Session ID</label>
+              <div role="group" aria-label="Session ID">
+                <div class="text-sm text-gray-400">Session ID</div>
                 <div class="font-mono text-white text-sm">{selectedEntry.sessionId}</div>
               </div>
             {/if}
 
             {#if selectedEntry.requestId}
-              <div>
-                <label class="text-sm text-gray-400">Request ID</label>
+              <div role="group" aria-label="Request ID">
+                <div class="text-sm text-gray-400">Request ID</div>
                 <div class="font-mono text-white text-sm">{selectedEntry.requestId}</div>
               </div>
             {/if}
@@ -392,7 +392,7 @@
 
           <!-- Message -->
           <div>
-            <label class="text-sm text-gray-400">Message</label>
+            <div class="text-sm text-gray-400">Message</div>
             <div class="bg-gray-800 p-3 rounded border border-gray-600">
               <code class="text-white whitespace-pre-wrap">{selectedEntry.message}</code>
             </div>
@@ -401,7 +401,7 @@
           <!-- Data -->
           {#if selectedEntry.data}
             <div>
-              <label class="text-sm text-gray-400">Data</label>
+              <div class="text-sm text-gray-400">Data</div>
               <div class="bg-gray-800 p-3 rounded border border-gray-600 overflow-x-auto">
                 <pre class="text-green-300 text-sm"><code>{formatData(selectedEntry.data)}</code></pre>
               </div>
@@ -411,7 +411,7 @@
           <!-- Error -->
           {#if selectedEntry.error}
             <div>
-              <label class="text-sm text-gray-400">Error</label>
+              <div class="text-sm text-gray-400">Error</div>
               <div class="bg-red-900 p-3 rounded border border-red-700">
                 <div class="text-red-300 font-bold">{selectedEntry.error.message}</div>
                 {#if selectedEntry.error.stack}
@@ -424,7 +424,7 @@
           <!-- Meta -->
           {#if selectedEntry.meta}
             <div>
-              <label class="text-sm text-gray-400">Metadata</label>
+              <div class="text-sm text-gray-400">Metadata</div>
               <div class="bg-gray-800 p-3 rounded border border-gray-600 overflow-x-auto">
                 <pre class="text-blue-300 text-sm"><code>{formatData(selectedEntry.meta)}</code></pre>
               </div>
@@ -434,7 +434,7 @@
           <!-- Tags -->
           {#if selectedEntry.tags && selectedEntry.tags.length > 0}
             <div>
-              <label class="text-sm text-gray-400">Tags</label>
+              <div class="text-sm text-gray-400">Tags</div>
               <div class="flex flex-wrap gap-2 mt-2">
                 {#each selectedEntry.tags as tag}
                   <Badge variant="outline" class="text-xs">{tag}</Badge>
@@ -448,9 +448,7 @@
         <div class="flex gap-2 mt-6">
           <Button
             variant="outline"
-            on:click={() => {
-              navigator.clipboard.writeText(JSON.stringify(selectedEntry, null, 2));
-            }}
+            on:click={() => navigator.clipboard.writeText(JSON.stringify(selectedEntry, null, 2))}
           >
             📋 Copy JSON
           </Button>
@@ -459,9 +457,8 @@
           </Button>
         </div>
       </div>
-    </Card>
-  </div>
-{/if}
+    </div>
+  {/if}
 
 <style>
   .logging-dashboard {

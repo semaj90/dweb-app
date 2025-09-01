@@ -1,10 +1,10 @@
 /// <reference types="vitest" />
 // Use vitest globals to avoid named-import type issues
-// import { benchmarkSplitter } from '../shared/text/benchmark-splitter';
+// import { benchmarkSplitter } from '../shared/text/benchmark-splitter.js';
 
 // CI performance guard: adjust threshold if environment differs.
 // Threshold chosen to allow moderate variance; failing test signals regression.
-const MAX_MS_PER_DOC = parseFloat(process.env.SPLITTER_MAX_MS_PER_DOC || '3.5');
+const MAX_MS_PER_DOC = parseFloat(import.meta.env.SPLITTER_MAX_MS_PER_DOC || '3.5');
 
 describe('LegalSentenceSplitter Performance', () => {
   it('should stay within performance budget', () => {

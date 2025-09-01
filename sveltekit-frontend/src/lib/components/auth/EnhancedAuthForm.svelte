@@ -89,8 +89,7 @@
   let passwordStrength = $derived(() => {
     const password = formData.password;
     if (!password) return 0;
-    
-    let strength = 0;
+let strength = $state(0);
     if (password.length >= 8) strength += 25;
     if (/[a-z]/.test(password)) strength += 25;
     if (/[A-Z]/.test(password)) strength += 25;
@@ -303,7 +302,7 @@
     />
     <Dialog.Content 
       class="fixed left-[50%] top-[50%] z-50 grid w-full max-w-md translate-x-[-50%] translate-y-[-50%] gap-6 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg"
-      on:openautofocus={(e) => {
+      openautofocus={(e) => {
         e.preventDefault();
         emailInput?.focus();
       }}
@@ -348,7 +347,7 @@
 
         <!-- Name Fields (Register Only) -->
         {#if mode === 'register'}
-          <div class="grid grid-cols-2 gap-4" transition:scale={{ duration: 300, easing: quartOut }}>
+          <div class="grid grid-cols-2 gap-4" transitiscale={{ duration: 300, easing: quartOut }}>
             <div class="space-y-2">
               <Label for="firstName">First Name *</Label>
               <Input 
@@ -425,7 +424,7 @@
             />
             <button
               type="button"
-              click={() => formState.showPassword = !formState.showPassword}
+              on:onclick={() => formState.showPassword = !formState.showPassword}
               class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
             >
               {#if formState.showPassword}
@@ -442,7 +441,7 @@
           </div>
           
           {#if mode === 'register' && formData.password}
-            <div class="space-y-1" transition:fade={{ duration: 200 }}>
+            <div class="space-y-1" transitifade={{ duration: 200 }}>
               <div class="flex items-center justify-between text-xs">
                 <span>Password strength</span>
                 <span class={
@@ -465,7 +464,7 @@
 
         <!-- Confirm Password (Register Only) -->
         {#if mode === 'register'}
-          <div class="space-y-2" transition:scale={{ duration: 300, easing: quartOut }}>
+          <div class="space-y-2" transitiscale={{ duration: 300, easing: quartOut }}>
             <Label for="confirmPassword">Confirm Password *</Label>
             <div class="relative">
               <Input 
@@ -480,7 +479,7 @@
               />
               <button
                 type="button"
-                click={() => formState.showConfirmPassword = !formState.showConfirmPassword}
+                on:onclick={() => formState.showConfirmPassword = !formState.showConfirmPassword}
                 class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
               >
                 {#if formState.showConfirmPassword}
@@ -552,7 +551,7 @@
             type="button"
             variant="outline"
             class="w-full"
-            on:click={handleGuestLogin}
+            on:on:click={handleGuestLogin}
             disabled={formState.loading}
           >
             Continue as Guest
@@ -563,7 +562,7 @@
         <div class="text-center">
           <button 
             type="button"
-            click={toggleMode}
+            on:onclick={toggleMode}
             class="text-sm text-primary hover:underline"
             disabled={formState.loading}
           >

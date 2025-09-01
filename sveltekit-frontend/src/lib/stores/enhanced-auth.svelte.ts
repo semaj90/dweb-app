@@ -1,6 +1,7 @@
 import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
 import type { User } from '$lib/database/schema';
+import { EventEmitter } from "events";
 
 export interface AuthState {
   user: User | null;

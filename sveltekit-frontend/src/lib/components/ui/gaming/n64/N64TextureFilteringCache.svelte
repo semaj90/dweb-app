@@ -68,8 +68,8 @@
   }: Props = $props();
 
   // Component state
-  let canvasElement: HTMLCanvasElement | null = null;
-  let gpuContext: GPUCanvasContext | null = null;
+let canvasElement = $state<HTMLCanvasElement | null >(null);
+let gpuContext = $state<GPUCanvasContext | null >(null);
   let isInitialized = $state(false);
   let isLoading = $state(false);
   let hasError = $state(false);
@@ -92,9 +92,9 @@
   });
   
   // Animation state
-  let animationId: number | null = null;
-  let lastFrameTime = 0;
-  let frameCount = 0;
+let animationId = $state<number | null >(null);
+let lastFrameTime = $state(0);
+let frameCount = $state(0);
   
   // Texture filtering presets
   const filteringPresets = {
@@ -193,11 +193,11 @@
     
     try {
       // Convert texture source to appropriate format
-      let imageData: ImageData | HTMLImageElement | ArrayBuffer;
+let imageData = $state<ImageData | HTMLImageElement | ArrayBuffer;
       
-      if (typeof textureSource === 'string') {
+      if (typeof textureSource >(== 'string') {
         // Load image from URL
-        const image = new Image();
+        const image = new Image());
         image.crossOrigin = 'anonymous';
         
         await new Promise((resolve, reject) => {
@@ -285,12 +285,11 @@
     
     const currentFPS = performanceMetrics.fps;
     const fpsRatio = currentFPS / targetFPS;
-    
-    let newPreset: keyof typeof filteringPresets;
+let newPreset = $state<keyof typeof filteringPresets;
     
     if (fpsRatio < 0.7) {
       // Performance is poor, reduce quality
-      newPreset = 'performance';
+      newPreset >('performance');
     } else if (fpsRatio < 0.85) {
       // Performance is okay, use balanced
       newPreset = 'balanced';
@@ -331,7 +330,7 @@
    * Start performance monitoring loop
    */
   function startPerformanceMonitoring(): void {
-    let frameCount = 0;
+let frameCount = $state(0);
     let lastTime = performance.now();
     
     const updateMetrics = () => {
@@ -383,7 +382,7 @@
   }
 
   function calculateQualityScore(options: N64RenderingOptions): number {
-    let score = 0.3;
+let score = $state(0.3);
     
     if (options.enableBilinearFiltering) score += 0.2;
     if (options.enableTrilinearFiltering) score += 0.3;
@@ -413,12 +412,12 @@
   });
 
   // Derived states using Svelte 5 runes
-  const filteringQualityClass = $derived(
+  let filteringQualityClass = $derived(
     currentFilteringType === 'anisotropic' ? 'ultra-quality' :
     currentFilteringType === 'trilinear' ? 'high-quality' : 'standard-quality'
   );
 
-  const cacheStatusColor = $derived(
+  let cacheStatusColor = $derived(
     cacheHitRate > 0.8 ? '#00ff00' :
     cacheHitRate > 0.5 ? '#ffff00' : '#ff6600'
   );
@@ -503,7 +502,7 @@
     <div class="error-overlay">
       <div class="error-icon">⚠️</div>
       <div class="error-message">{errorMessage}</div>
-      <button class="retry-button" onclick={() => initializeTextureCache()}>
+      <button class="retry-button" on:on:onclick={() => initializeTextureCache()}>
         RETRY
       </button>
     </div>

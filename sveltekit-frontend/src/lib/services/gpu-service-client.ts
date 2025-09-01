@@ -339,7 +339,7 @@ class GPUServiceClientImpl implements GPUServiceClient {
 }
 
 // Singleton instance
-export const gpuServiceClient = new GPUServiceClientImpl();
+export const gpuServiceClient = new GPUServiceClientImpl();;
 
 // Helper functions for common operations
 export async function isGPUAvailable(): Promise<boolean> {

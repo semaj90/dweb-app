@@ -604,6 +604,6 @@ Consider jurisdiction-specific laws and regulations. Always clarify if you need 
 }
 // Export singleton instance
 export const aiService = new EnhancedAIService();
-
+;
 // Export for use in other services
 export default aiService;

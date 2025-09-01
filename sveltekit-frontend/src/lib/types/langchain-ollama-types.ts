@@ -163,7 +163,7 @@ export interface LangChainChain {
   status: ChainStatus;
 }
 
-export type ChainType = 
+export type ChainType =
   | 'conversation'
   | 'qa'
   | 'summarization'
@@ -254,7 +254,7 @@ export interface LegalDocument {
   relationships: DocumentRelationship[];
 }
 
-export type DocumentType = 
+export type DocumentType =
   | 'contract'
   | 'case_law'
   | 'statute'
@@ -438,7 +438,7 @@ export interface NamedEntity {
   metadata: Record<string, any>;
 }
 
-export type EntityLabel = 
+export type EntityLabel =
   | 'PERSON'
   | 'ORGANIZATION'
   | 'LOCATION'
@@ -503,7 +503,7 @@ export interface KeyFinding {
   relatedFindings: string[];
 }
 
-export type FindingCategory = 
+export type FindingCategory =
   | 'fact'
   | 'legal_principle'
   | 'procedural_issue'
@@ -538,7 +538,7 @@ export interface LegalIssue {
   counterarguments: Counterargument[];
 }
 
-export type IssueCategory = 
+export type IssueCategory =
   | 'constitutional'
   | 'contract'
   | 'tort'
@@ -600,7 +600,7 @@ export interface RiskCategory {
   timeline: string;
 }
 
-export type RiskType = 
+export type RiskType =
   | 'liability'
   | 'financial'
   | 'reputational'
@@ -675,7 +675,7 @@ export interface Recommendation {
   alternatives: Alternative[];
 }
 
-export type RecommendationCategory = 
+export type RecommendationCategory =
   | 'strategy'
   | 'discovery'
   | 'motion'
@@ -799,7 +799,7 @@ export interface AnalysisTimeline {
   legal_implications: string[];
 }
 
-export type TimelineCategory = 
+export type TimelineCategory =
   | 'filing'
   | 'discovery'
   | 'motion'
@@ -822,7 +822,7 @@ export interface DocumentRelationship {
   verifiedAt?: string;
 }
 
-export type RelationshipType = 
+export type RelationshipType =
   | 'amendment'
   | 'exhibits'
   | 'references'
@@ -2174,7 +2174,7 @@ export interface WorkflowStep {
   timeout: number;
 }
 
-export type StepType = 
+export type StepType =
   | 'ai_analysis'
   | 'document_processing'
   | 'email'
@@ -2184,8 +2184,8 @@ export type StepType =
   | 'loop'
   | 'parallel'
   | 'human_task'
-  | 'api_call'
-  | 'file_operation'
+  | 'api_call';
+  | 'file_operation';
   | 'notification';
 
 export interface StepConfig {

@@ -15,13 +15,12 @@
     memoryUsage: 42,
     networkLatency: 23
   });
-
-  let currentUser = {
+let currentUser = $state({
     id: 'user_001',
     name: 'Agent 2B',
     role: 'detective',
     clearanceLevel: 'high'
-  };
+  });
 
   // Load system data on mount
   onMount(async () => {

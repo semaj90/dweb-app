@@ -790,4 +790,4 @@ export class LegalBERTSemanticAnalyzer extends EventEmitter {
 
 // Export singleton instance
 export const legalBERTAnalyzer = new LegalBERTSemanticAnalyzer();
-
+;

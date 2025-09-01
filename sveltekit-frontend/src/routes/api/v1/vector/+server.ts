@@ -1,14 +1,15 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 // Unified Vector Processing API Endpoint
 // Integrates Redis Streams + CUDA Worker + WebGPU + WASM LLM + PostgreSQL
 
 import { json } from '@sveltejs/kit';
 import type { VectorOperationRequest, VectorOperationResponse } from '$lib/types/vector-jobs';
+import { URL } from "url";
 
 // Environment configuration
-const VECTOR_SERVICE_URL = process.env.VECTOR_SERVICE_URL || 'http://localhost:8095';
-const USE_WEBGPU_FALLBACK = process.env.USE_WEBGPU_FALLBACK === 'true';
+const VECTOR_SERVICE_URL = import.meta.env.VECTOR_SERVICE_URL || 'http://localhost:8095';
+const USE_WEBGPU_FALLBACK = import.meta.env.USE_WEBGPU_FALLBACK === 'true';
 
 export const POST: RequestHandler = async ({ request, url }) => {
 	const operation = url.searchParams.get('operation') || 'embedding';

@@ -91,14 +91,14 @@
 	]);
 
 	// Real-time status checking
-	let statusCheckInterval: number;
+let statusCheckInterval = $state<number;
 
-	const checkProviderStatus = async (provider: LLMProvider): Promise<LLMStatus> => {
+	const checkProviderStatus >(async (provider: LLMProvider): Promise<LLMStatus> => {
 		try {
 			const response = await fetch(`${provider.endpoint}/health`, {
 				method: 'GET',
 				timeout: 5000
-			});
+			}));
 			return response.ok ? 'online' : 'offline';
 		} catch {
 			return 'offline';
@@ -175,7 +175,7 @@
 <div class="llm-provider-selector">
 	<!-- Label -->
 	<label 
-		use:melt={$label}
+		<!-- <!-- use:melt={$label}
 		class="block text-sm font-medium text-yorha-text-primary mb-2"
 	>
 		LLM Provider
@@ -183,9 +183,9 @@
 
 	<!-- Select Trigger -->
 	<button
-		use:melt={$trigger}
+		<!-- <!-- use:melt={$trigger}
 		class="flex h-10 w-full items-center justify-between rounded-md border border-yorha-border bg-yorha-bg-secondary px-3 py-2 text-sm placeholder:text-yorha-text-tertiary focus:outline-none focus:ring-2 focus:ring-yorha-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200"
-		class:opacity-50={disabled}
+	 class:opacity-50={disabled}
 		{disabled}
 		aria-label="Select LLM Provider"
 	>
@@ -206,7 +206,7 @@
 		<!-- Dropdown Arrow -->
 		<svg 
 			class="h-4 w-4 text-yorha-text-secondary transition-transform duration-200"
-			class:rotate-180={$open}
+		 class:rotate-180={$open}
 			fill="none" 
 			stroke="currentColor" 
 			viewBox="0 0 24 24"
@@ -219,16 +219,16 @@
 	<!-- Dropdown Menu -->
 	{#if $open}
 		<div
-			use:melt={$menu}
+			<!-- <!-- use:melt={$menu}
 			class="z-50 min-w-[320px] rounded-md border border-yorha-border bg-yorha-bg-primary p-1 shadow-lg focus:outline-none"
-			transition:fly={{ y: -5, duration: 150 }}
+			transitifly={{ y: -5, duration: 150 }}
 		>
 			{#each $providers as provider (provider.id)}
 				<div
-					use:melt={$option({ value: provider, label: provider.name })}
+					<!-- <!-- use:melt={$option({ value: provider, label: provider.name })}
 					class="relative cursor-default select-none rounded-sm px-2 py-2 text-sm outline-none transition-colors duration-150"
-					class:bg-yorha-bg-secondary={$isSelected(provider)}
-					class:text-yorha-text-primary={$isSelected(provider)}
+				 class:bg-yorha-bg-secondary={$isSelected(provider)}
+				 class:text-yorha-text-primary={$isSelected(provider)}
 					class:hover:bg-yorha-bg-tertiary={!$isSelected(provider)}
 				>
 					<Card class="border-none bg-transparent">

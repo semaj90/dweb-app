@@ -20,9 +20,9 @@
 	import { evidenceStore } from "../stores/evidenceStore";
 
 	// Note: Fabric.js needs to be imported dynamically in browser
-	let fabric: any;
+let fabric = $state<any;
 	
-	let { canvasState = $bindable() } = $props(); // CanvasState | null = null;
+	let { canvasState >($bindable() } = $props()); // CanvasState | null = null;
 	let { reportId = $bindable() } = $props(); // string;
 	let { evidence = $bindable() } = $props(); // Evidence[] = [];
 	let { citationPoints = $bindable() } = $props(); // CitationPoint[] = [];
@@ -32,29 +32,29 @@
 	let { height = $bindable() } = $props(); // 600;
 
 	// Real-time evidence subscription
-	let realtimeEvidence: Evidence[] = [];
-	let unsubscribeEvidence: (() => void) | undefined;
+let realtimeEvidence = $state<Evidence[] >([]);
+let unsubscribeEvidence = $state<(() >(> void) | undefined);
 
 	let canvasElement: HTMLCanvasElement;
 	let fabricCanvas: any;
-	let isLoading = false;
-	let isDirty = false;
-	let selectedTool = 'select';
-	let selectedObject: any = null;
-	let clipboardData: any = null;
-	let autoSaveTimer: NodeJS.Timeout | null = null;
+let isLoading = $state(false);
+let isDirty = $state(false);
+let selectedTool = $state('select');
+let selectedObject = $state<any >(null);
+let clipboardData = $state<any >(null);
+let autoSaveTimer = $state<NodeJS.Timeout | null >(null);
 
 	// Drawing state
-	let isDrawing = false;
-	let drawingPath: any = null;
-	let currentColor = '#000000';
-	let currentStrokeWidth = 2;
-	let currentFontSize = 16;
+let isDrawing = $state(false);
+let drawingPath = $state<any >(null);
+let currentColor = $state('#000000');
+let currentStrokeWidth = $state(2);
+let currentFontSize = $state(16);
 
 	// Zoom and pan state
-	let zoomLevel = 1;
-	let panX = 0;
-	let panY = 0;
+let zoomLevel = $state(1);
+let panX = $state(0);
+let panY = $state(0);
 
 	// Tool options
 	const tools = [
@@ -181,9 +181,9 @@
 
 		try {
 			// Handle both string and object formats for canvasData
-			let canvasData: CanvasStateData;
-			if (typeof canvasState.canvasData === 'string') {
-				canvasData = JSON.parse(canvasState.canvasData);
+let canvasData = $state<CanvasStateData;
+			if (typeof canvasState.canvasData >(== 'string') {
+				canvasData = JSON.parse(canvasState.canvasData));
 			} else {
 				canvasData = canvasState.canvasData as CanvasStateData;
 			}
@@ -705,11 +705,11 @@
 	}
 
 	function exportCanvas(format: 'png' | 'svg' | 'pdf' = 'png') {
-		let dataUrl: string;
+let dataUrl = $state<string;
 		
 		switch (format) {
 			case 'svg':
-				dataUrl = 'data:image/svg+xml;base64,' + btoa(fabricCanvas.toSVG());
+				dataUrl >('data:image/svg+xml);base64,' + btoa(fabricCanvas.toSVG());
 				break;
 			case 'png':
 			default:
@@ -864,7 +864,7 @@
 					</div>
 					<button
 						class="mx-auto px-4 max-w-7xl"
-						click={() => addEvidenceMarker(item)}
+						on:onclick={() => addEvidenceMarker(item)}
 						disabled={readOnly}
 						title="Add evidence marker to canvas"
 					>
@@ -887,7 +887,7 @@
 					</div>
 					<button
 						class="mx-auto px-4 max-w-7xl"
-						click={() => addCitationMarker(citation)}
+						on:onclick={() => addCitationMarker(citation)}
 						disabled={readOnly}
 						title="Add citation marker to canvas"
 					>

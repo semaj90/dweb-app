@@ -2,7 +2,7 @@
   import { $props } from 'svelte';
 
   import { ContextMenu } from "bits-ui";
-  import type { Snippet } from "svelte";
+  import type {     Snippet     } from 'svelte';
   import type { WithoutChild } from "bits-ui";
 
   interface Props extends ContextMenu.RootProps {
@@ -43,7 +43,7 @@
           <ContextMenu.CheckboxItem 
             value={item.value} 
             disabled={item.disabled}
-            on:select={item.onSelect}
+            select={item.onSelect}
           >
             {#snippet children({ checked })}
               {#if checked}✓{/if}
@@ -54,7 +54,7 @@
           <ContextMenu.RadioItem 
             value={item.value} 
             disabled={item.disabled}
-            on:select={item.onSelect}
+            select={item.onSelect}
           >
             {#snippet children({ checked })}
               {#if checked}●{/if}
@@ -70,7 +70,7 @@
                   <ContextMenu.Item 
                     textValue={subItem.label}
                     disabled={subItem.disabled}
-                    on:select={subItem.onSelect}
+                    select={subItem.onSelect}
                   >
                     {subItem.label}
                   </ContextMenu.Item>
@@ -82,7 +82,7 @@
           <ContextMenu.Item 
             textValue={item.label}
             disabled={item.disabled}
-            on:select={item.onSelect}
+            select={item.onSelect}
           >
             {item.label}
           </ContextMenu.Item>

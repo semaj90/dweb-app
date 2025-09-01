@@ -3,13 +3,13 @@
  * Provides proper vector similarity search and embedding operations
  */
 
-import { db, sql } from './index';
+import { db, sql } from './index.js';
 import type { 
   chatMessages, 
   chatRecommendations, 
   evidence, 
   documentEmbeddings 
-} from './schema-unified';
+} from './schema-unified.js';
 
 export interface VectorSearchResult {
   id: string;
@@ -441,7 +441,7 @@ export async function pgvectorHealthCheck(): Promise<{
 }
 
 // Initialize on import (only in non-production)
-if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') {
+if (typeof process !== 'undefined' && import.meta.env.NODE_ENV !== 'production') {
   initializePgVector().catch(error => {
     console.warn('pgvector initialization failed:', error);
   });

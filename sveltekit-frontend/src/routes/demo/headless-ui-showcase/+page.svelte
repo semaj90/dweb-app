@@ -1,14 +1,11 @@
 <script lang="ts">
-  import { createDialog, melt, type CreateDialogProps } from '@melt-ui/svelte';
+  import { Dialog } from 'bits-ui';
   import { fade, fly } from 'svelte/transition';
   import Button from '$lib/components/ui/Button.svelte';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
   
-  // Melt UI Dialog
-  const {
-    elements: { trigger, overlay, content, title, description, close },
-    states: { open }
-  } = createDialog();
+  // Dialog state
+  let isDialogOpen = $state(false);
   
   // Bits UI components (imported from your existing library)
   let selectedValue = $state('option1');
@@ -86,7 +83,7 @@
           </p>
           
           <button 
-            use:melt={$trigger}
+            on:on:onclick={() => isDialogOpen = true}
             class="nes-btn is-primary w-full"
           >
             Open Retro Dialog
@@ -128,13 +125,13 @@
           <div class="flex gap-2 mt-4">
             <button 
               class="nes-btn is-success flex-1"
-              click={() => addNotification('success', `Command executed: ${inputValue || 'default'}`)}
+              on:onclick={() => addNotification('success', `Command executed: ${inputValue || 'default'}`)}
             >
               Execute
             </button>
             <button 
               class="nes-btn is-warning flex-1"
-              click={simulateAsyncOperation}
+              on:onclick={simulateAsyncOperation}
               disabled={isLoading}
             >
               {isLoading ? 'Processing...' : 'Async Process'}
@@ -170,7 +167,7 @@
             <Button 
               variant="default" 
               class="nes-btn is-primary"
-              on:click={() => addNotification('success', 'Bits UI Button clicked! 🎮')}
+              on:on:click={() => addNotification('success', 'Bits UI Button clicked! 🎮')}
             >
               Hybrid Button
             </Button>
@@ -178,7 +175,7 @@
             <Button 
               variant="outline" 
               class="nes-btn"
-              on:click={() => addNotification('warning', 'Warning: Retro mode activated!')}
+              on:on:click={() => addNotification('warning', 'Warning: Retro mode activated!')}
             >
               Outline + NES
             </Button>
@@ -245,7 +242,7 @@
               class:is-success={notification.type === 'success'}
               class:is-warning={notification.type === 'warning'}
               class:is-error={notification.type === 'error'}
-              transition:fly={{ y: -20, duration: 300 }}
+              transitifly={{ y: -20, duration: 300 }}
             >
               {notification.message}
             </div>
@@ -318,59 +315,60 @@
   </div>
 </div>
 
-<!-- Melt UI Dialog Implementation -->
-{#if $open}
-  <div use:melt={$overlay} 
-       class="fixed inset-0 z-50 bg-black/70"
-       transition:fade={{ duration: 150 }}>
-  </div>
-  
-  <div
-    use:melt={$content}
-    class="nes-dialog fixed left-1/2 top-1/2 z-50 w-full max-w-md transform -translate-x-1/2 -translate-y-1/2"
-    transition:fly={{ y: -50, duration: 200 }}
-  >
-    <div class="nes-container with-title is-rounded bg-nier-bg-primary">
-      <button
-        use:melt={$close}
-        class="absolute top-2 right-2 nes-btn is-error text-xs w-8 h-8 p-0"
-      >
-        ✕
-      </button>
-      
-      <h2 use:melt={$title} class="title text-nier-accent-warm">🎮 System Dialog</h2>
-      
-      <div use:melt={$description} class="space-y-4">
-        <p class="nes-text text-sm">
-          This dialog demonstrates Melt UI's headless behavior combined with NES.css retro styling 
-          and YoRHa color theming.
-        </p>
+<!-- Bits UI Dialog Implementation -->
+<Dialog.Root bind:open={isDialogOpen}>
+  <Dialog.Portal>
+    <Dialog.Overlay 
+      class="fixed inset-0 z-50 bg-black/70"
+      transition={fade}
+      transitionConfig={{ duration: 150 }}
+    />
+    
+    <Dialog.Content
+      class="nes-dialog fixed left-1/2 top-1/2 z-50 w-full max-w-md transform -translate-x-1/2 -translate-y-1/2"
+      transition={fly}
+      transitionConfig={{ y: -50, duration: 200 }}
+    >
+      <div class="nes-container with-title is-rounded bg-nier-bg-primary">
+        <Dialog.Close
+          class="absolute top-2 right-2 nes-btn is-error text-xs w-8 h-8 p-0"
+        >
+          ✕
+        </Dialog.Close>
         
-        <div class="nes-balloon from-left">
-          <p class="text-xs">The behavior is from Melt UI, the styling is from NES.css!</p>
-        </div>
+        <Dialog.Title class="title text-nier-accent-warm">🎮 System Dialog</Dialog.Title>
         
-        <div class="flex gap-2">
-          <button 
-            class="nes-btn is-success flex-1"
-            click={() => {
-              addNotification('success', 'Dialog action confirmed! 🎯');
-              $open = false;
-            }}
-          >
-            Confirm
-          </button>
-          <button 
-            use:melt={$close}
-            class="nes-btn flex-1"
-          >
-            Cancel
-          </button>
-        </div>
+        <Dialog.Description class="space-y-4">
+          <p class="nes-text text-sm">
+            This dialog demonstrates Bits UI's headless behavior combined with NES.css retro styling 
+            and YoRHa color theming.
+          </p>
+          
+          <div class="nes-balloon from-left">
+            <p class="text-xs">The behavior is from Bits UI, the styling is from NES.css!</p>
+          </div>
+          
+          <div class="flex gap-2">
+            <button 
+              class="nes-btn is-success flex-1"
+              on:on:onclick={() => {
+                addNotification('success', 'Dialog action confirmed! 🎯');
+                isDialogOpen = false;
+              }}
+            >
+              Confirm
+            </button>
+            <Dialog.Close
+              class="nes-btn flex-1"
+            >
+              Cancel
+            </Dialog.Close>
+          </div>
+        </Dialog.Description>
       </div>
-    </div>
-  </div>
-{/if}
+    </Dialog.Content>
+  </Dialog.Portal>
+</Dialog.Root>
 
 <style>
   .headless-ui-showcase {

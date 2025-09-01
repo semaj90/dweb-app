@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * SvelteKit API Route: GPU Tensor Processing
@@ -9,6 +9,7 @@ import type { RequestHandler } from './$types';
 import { ensureError } from '$lib/utils/ensure-error';
 import { json, error } from '@sveltejs/kit';
 import { dev } from '$app/environment';
+import { URL } from "url";
 
 // GPU service pool for load balancing
 const gpuServicePool = [

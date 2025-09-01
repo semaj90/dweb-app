@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 
 // Local LLM Configuration for Ollama and llama.cpp integration
 // Manages local model paths and configurations for the legal AI assistant

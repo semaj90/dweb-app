@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * Document Detail API - Complete Server-Side Integration
@@ -10,6 +10,7 @@ import { enhanced_db } from '$lib/server/db/drizzle';
 import { legal_documents, evidence, cases } from '$lib/server/db/unified-schema';
 import { eq, sql, desc } from 'drizzle-orm';
 import type { VectorSearchResult } from '$lib/server/db/enhanced-vector-operations';
+import { URL } from "url";
 
 export const GET: RequestHandler = async ({ params, url }) => {
   const docId = params.id;

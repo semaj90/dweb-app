@@ -1,22 +1,27 @@
 import { randomUUID } from 'crypto';
 import type { RequestHandler } from './$types';
-
+import { apiSuccess, apiError, validateRequest, getRequestId, withErrorHandling } from '$lib/server/api/standard-response';
 
 /**
  * Production AI Chat Endpoint
  * Routes requests to available AI services (Ollama, Enhanced RAG, etc.)
  * Provides intelligent legal AI responses with source attribution
  */
-export const POST: RequestHandler = async ({ request }) => {
-  try {
-    const { message, sessionId, context, stream, model } = await request.json();
+export const POST: RequestHandler = withErrorHandling(async (event) => {
+  const requestId = getRequestId(event);
+  const body = await event.request.json();
 
-    if (!message?.trim()) {
-      return json({
-        success: false,
-        error: 'Message is required'
-      }, { status: 400 });
-    }
+  // Validate required fields
+  const validationError = validateRequest(body, ['message']);
+  if (validationError) {
+    return apiError(validationError, 400, 'VALIDATION_ERROR', null, requestId);
+  }
+
+  const { message, sessionId, context, stream, model } = body;
+
+  if (!message?.trim()) {
+    return apiError('Message cannot be empty', 400, 'EMPTY_MESSAGE', null, requestId);
+  }
 
     const targetModel = model || 'gemma3-legal';
     const messageId = randomUUID();

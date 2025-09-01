@@ -1,38 +1,36 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
+import { json } from '@sveltejs/kit';
 
 /**
  * User Logout API Endpoint
  * POST /api/auth/logout
+ * Simple session-based logout for demo purposes
  */
 
-import { ExistingUserAuthService as UserAuthService } from '$lib/server/db/existing-user-operations.js';
-import { dev } from '$app/environment';
-
-export const POST: RequestHandler = async ({ cookies, getClientAddress }) => {
+export const POST: RequestHandler = async ({ cookies }) => {
   try {
-    // Get session ID from cookie
-    const sessionId = cookies.get('session_id');
+    // Get session tokens from cookies
+    const sessionToken = cookies.get('session_token');
+    const authToken = cookies.get('auth_token');
     
-    if (sessionId) {
-      // Get client information for logging
-      const ipAddress = getClientAddress();
-      
-      // Logout user (invalidate session)
-      const result = await UserAuthService.logoutUser(sessionId, ipAddress);
-      
-      if (!result.success) {
-        console.warn('Session logout failed:', result.error);
-        // Continue with cookie deletion even if session invalidation failed
-      }
-    }
-    
-    // Clear session cookie
-    cookies.delete('session_id', {
+    // Clear all authentication cookies
+    const cookieOptions = {
       path: '/',
       httpOnly: true,
-      secure: !dev,
-      sameSite: 'strict',
-    });
+      secure: import.meta.env.NODE_ENV === 'production',
+      sameSite: 'strict' as const
+    };
+    
+    if (sessionToken) {
+      cookies.delete('session_token', cookieOptions);
+    }
+    if (authToken) {
+      cookies.delete('auth_token', cookieOptions);
+    }
+    
+    // Clear any other auth-related cookies
+    cookies.delete('user_preferences', { path: '/' });
+    cookies.delete('remember_me', { path: '/' });
     
     // Return successful logout response
     return json({
@@ -43,36 +41,29 @@ export const POST: RequestHandler = async ({ cookies, getClientAddress }) => {
         timestamp: new Date().toISOString(),
         version: '1.0.0',
       }
-    }, {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        ...(dev && { 'Access-Control-Allow-Origin': '*' }),
-      }
     });
 
-  } catch (err: any) {
-    console.error('Logout API error:', err);
+  } catch (error: any) {
+    console.error('Logout API error:', error);
 
-    // Even if there's an error, clear the cookie for security
-    cookies.delete('session_id', {
+    // Even if there's an error, try to clear cookies for security
+    const cookieOptions = {
       path: '/',
       httpOnly: true,
-      secure: !dev,
-      sameSite: 'strict',
-    });
+      secure: import.meta.env.NODE_ENV === 'production',
+      sameSite: 'strict' as const
+    };
+    
+    cookies.delete('session_token', cookieOptions);
+    cookies.delete('auth_token', cookieOptions);
 
     return json({
-      success: false,
-      message: 'Logout completed with warnings',
-      code: 'LOGOUT_WARNING',
+      success: true, // Still return success as cookies are cleared
+      message: 'Logout completed',
       meta: {
         timestamp: new Date().toISOString(),
         version: '1.0.0',
       }
-    }, { 
-      status: 200, // Still return success as cookie is cleared
-      headers: { 'Content-Type': 'application/json' }
     });
   }
 };

@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * Service Discovery and Failover API
@@ -7,6 +7,7 @@ import type { RequestHandler } from './$types';
  */
 
 import { productionServiceClient } from '$lib/services/productionServiceClient';
+import { URL } from "url";
 
 interface ServiceInstance {
   id: string;

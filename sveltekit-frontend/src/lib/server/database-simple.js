@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 // Simplified database configuration for production
@@ -41,10 +42,10 @@ try {
 }
 
 // Table schemas (simplified)
-export const documents = 'documents'; // Table name as string for now
+export const documents = 'documents'; // Table name as string for now;
 export const embeddings = 'legal_embeddings';
 export const searchSessions = 'search_sessions';
-
+;
 // Initialize database function
 export async function initializeDatabase() {
   try {

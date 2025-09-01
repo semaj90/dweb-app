@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 <script lang="ts">
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
@@ -7,48 +8,55 @@
   import Button from '$lib/components/ui/Button.svelte';
   import Card from '$lib/components/ui/Card.svelte';
 
-  // Extract caseId from route params
-  const caseId = $derived($page.params.caseId);
-  
-  // Initialize XState machine with route-based caseId
-  const { state, send } = useMachine(legalCaseMachine, {
-    context: {
-      ...legalCaseMachine.context,
-      caseId: caseId
-    }
-  });
+  // Initialize XState machine
+  const { state, send } = useMachine(legalCaseMachine);
 
-  // Reactive selectors using the hardened machine
-  const isLoading = $derived(legalCaseSelectors.isLoading($state));
-  const hasError = $derived(legalCaseSelectors.hasError($state));
-  const currentCase = $derived(legalCaseSelectors.getCurrentCase($state));
-  const evidence = $derived(legalCaseSelectors.getEvidence($state));
-  const aiSummary = $derived(legalCaseSelectors.getAISummary($state));
-  const similarCases = $derived(legalCaseSelectors.getSimilarCases($state));
-  const activeTab = $derived(legalCaseSelectors.getActiveTab($state));
-  let workflowStage = $state(legalCaseSelectors.getWorkflowStage($state));
-  const nextActions = $derived(legalCaseSelectors.getNextActions($state));
-  const canStartAIAnalysis = $derived(legalCaseSelectors.canStartAIAnalysis($state));
-  const stats = $derived(legalCaseSelectors.getStats($state));
-  const currentState = $derived($state.value);
+  // Local variable declarations (avoid TS/Svelte errors)
+let caseId = $state<string | undefined;
+  let isLoading: boolean >(false);
+let hasError = $state<boolean >(false);
+let currentCase = $state<any >(null);
+let evidence = $state<any[] >([]);
+let aiSummary = $state<string | null >(null);
+let similarCases = $state<any[] >([]);
+let activeTab = $state<string >('overview');
+let workflowStage = $state<LegalCaseContext['workflowStage'] | undefined;
+  let nextActions: string[] >([]);
+let canStartAIAnalysis = $state<boolean >(false);
+let stats = $state<{ totalEvidence: number; processedEvidence: number; averageConfidence: number; processingTime: number } >({ totalEvidence: 0, processedEvidence: 0, averageConfidence: 0, processingTime: 0 });
+let currentState = $state<any;
+let fileInput = $state<HTMLInputElement | null >(null);
+
+  // Route param (reactively read from the page store)
+  $: caseId >($page.params.caseId);
+
+  // Reactive selectors derived from the machine state
+  $: isLoading = legalCaseSelectors.isLoading($state);
+  $: hasError = legalCaseSelectors.hasError($state);
+  $: currentCase = legalCaseSelectors.getCurrentCase($state) ?? null;
+  $: evidence = legalCaseSelectors.getEvidence($state) ?? [];
+  $: aiSummary = legalCaseSelectors.getAISummary($state);
+  $: similarCases = legalCaseSelectors.getSimilarCases($state) ?? [];
+  $: activeTab = legalCaseSelectors.getActiveTab($state);
+  $: workflowStage = legalCaseSelectors.getWorkflowStage($state);
+  $: nextActions = legalCaseSelectors.getNextActions($state) ?? [];
+  $: canStartAIAnalysis = legalCaseSelectors.canStartAIAnalysis($state);
+  $: stats = legalCaseSelectors.getStats($state) ?? { totalEvidence: 0, processedEvidence: 0, averageConfidence: 0, processingTime: 0 };
+  $: currentState = $state.value;
 
   // Auto-load case when route changes
-  $effect(() => {
-    if (caseId && caseId !== $state.context.caseId) {
-      send({ type: 'LOAD_CASE', caseId });
-    }
-  });
+  $: if (caseId && caseId !== $state.context.caseId) {
+    send({ type: 'LOAD_CASE', caseId });
+  }
 
   // Interval-based re-validation for AI progress
-  let revalidationInterval: NodeJS.Timeout | null = null;
+let revalidationInterval = $state<ReturnType<typeof setInterval> | null >(null);
 
   onMount(() => {
-    // Set up auto-revalidation for AI analysis progress
     if (currentCase && aiSummary) {
       revalidationInterval = setInterval(() => {
         if (legalCaseSelectors.isInState('aiAnalysis.analyzing')($state)) {
-          // Simulate progress updates during AI analysis
-          const currentProgress = $state.context.aiAnalysisProgress;
+          const currentProgress = $state.context.aiAnalysisProgress ?? 0;
           if (currentProgress < 100) {
             send({ type: 'AI_ANALYSIS_PROGRESS', progress: Math.min(currentProgress + 10, 95) });
           }
@@ -79,8 +87,8 @@
     send({ type: 'FIND_SIMILAR_CASES' });
   }
 
-  function handleTabSwitch(tab: LegalCaseContext['activeTab']) {
-    send({ type: 'SWITCH_TAB', tab });
+  function handleTabSwitch(tab: string) {
+    send({ type: 'SWITCH_TAB', tab: tab as LegalCaseContext['activeTab'] });
   }
 
   function handleWorkflowStageChange(stage: LegalCaseContext['workflowStage']) {
@@ -100,8 +108,6 @@
   }
 
   // File upload handler
-  let fileInput: HTMLInputElement;
-
   function triggerFileUpload() {
     fileInput?.click();
   }
@@ -120,7 +126,7 @@
 </svelte:head>
 
 <div class="case-detail-page min-h-screen bg-gray-50">
-  
+
   <!-- Breadcrumb Navigation -->
   <nav class="bg-white shadow-sm border-b">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -137,7 +143,7 @@
   </nav>
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    
+
     <!-- Error State -->
     {#if hasError}
       <Card class="mb-6 border-red-200 bg-red-50">
@@ -152,10 +158,10 @@
               <h3 class="text-sm font-medium text-red-800">Case Loading Error</h3>
               <p class="mt-2 text-sm text-red-700">{$state.context.error}</p>
               <div class="mt-4 flex space-x-3">
-                <Button size="sm" variant="outline" on:click={handleRetry}>
+                <Button size="sm" variant="outline" on:on:click={handleRetry}>
                   Retry Loading
                 </Button>
-                <Button size="sm" variant="ghost" on:click={handleDismissError}>
+                <Button size="sm" variant="ghost" on:on:click={handleDismissError}>
                   Dismiss
                 </Button>
               </div>
@@ -181,7 +187,7 @@
     <!-- Case Content -->
     {#if currentCase}
       <div class="space-y-6">
-        
+
         <!-- Case Header with Actions -->
         <Card>
           <div class="p-6">
@@ -218,7 +224,7 @@
               </div>
               <div class="mt-5 flex lg:mt-0 lg:ml-4">
                 <span class="sm:ml-3">
-                  <Button on:click={handleRefresh} variant="outline">
+                  <Button on:on:click={handleRefresh} variant="outline">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                     </svg>
@@ -226,21 +232,18 @@
                   </Button>
                 </span>
                 <span class="ml-3">
-                  <select 
+                  <select
                     bind:value={workflowStage}
-                    change={(e) => handleWorkflowStageChange(e.target.value)}
+                    onchange={(e: Event) => handleWorkflowStageChange((e.target as HTMLSelectElement).value as LegalCaseContext['workflowStage'])}
                     class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
                   >
                     <option value="investigation">Investigation</option>
                     <option value="analysis">Analysis</option>
                     <option value="preparation">Preparation</option>
                     <option value="review">Review</option>
-                    <option value="closed">Closed</option>
                   </select>
                 </span>
-              </div>
-            </div>
-            
+
             {#if currentCase.description}
               <div class="mt-6">
                 <p class="text-gray-700">{currentCase.description}</p>
@@ -254,22 +257,20 @@
                   <dt class="text-sm font-medium text-gray-500">Evidence Items</dt>
                   <dd class="text-2xl font-semibold text-gray-900">{stats.totalEvidence}</dd>
                 </div>
-                <div class="border-l-4 border-green-500 pl-4">
-                  <dt class="text-sm font-medium text-gray-500">Processed</dt>
-                  <dd class="text-2xl font-semibold text-gray-900">{stats.processedEvidence}</dd>
-                </div>
-                <div class="border-l-4 border-purple-500 pl-4">
-                  <dt class="text-sm font-medium text-gray-500">AI Confidence</dt>
-                  <dd class="text-2xl font-semibold text-gray-900">{stats.averageConfidence}%</dd>
-                </div>
-                <div class="border-l-4 border-orange-500 pl-4">
-                  <dt class="text-sm font-medium text-gray-500">Processing Time</dt>
-                  <dd class="text-2xl font-semibold text-gray-900">{stats.processingTime}ms</dd>
-                </div>
-              </dl>
+            <div class="border-l-4 border-green-500 pl-4">
+              <dt class="text-sm font-medium text-gray-500">Processed</dt>
+              <dd class="text-2xl font-semibold text-gray-900">{stats.processedEvidence}</dd>
             </div>
-          </div>
-        </Card>
+            <div class="border-l-4 border-yellow-500 pl-4">
+              <dt class="text-sm font-medium text-gray-500">Avg. Confidence</dt>
+              <dd class="text-2xl font-semibold text-gray-900">{stats.averageConfidence}%</dd>
+            </div>
+            <div class="border-l-4 border-indigo-500 pl-4">
+              <dt class="text-sm font-medium text-gray-500">Processing Time</dt>
+              <dd class="text-2xl font-semibold text-gray-900">{stats.processingTime}s</dd>
+            </div>
+          </dl>
+        </div>
 
         <!-- Navigation Tabs -->
         <div class="border-b border-gray-200">
@@ -281,13 +282,19 @@
               { id: 'search', label: 'Search', icon: '🔍' }
             ] as tab}
               <button
-                class="group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm {activeTab === tab.id ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
-                click={() => handleTabSwitch(tab.id)}
+                class={activeTab === tab.id
+                  ? 'group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm border-blue-500 text-blue-600'
+                  : 'group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}
+                on:on:onclick={() => handleTabSwitch(tab.id)}
               >
                 <span class="mr-2">{tab.icon}</span>
                 {tab.label}
                 {#if tab.badge}
-                  <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {activeTab === tab.id ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}">
+                  <span
+                    class={activeTab === tab.id
+                      ? 'ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800'
+                      : 'ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800'}
+                  >
                     {tab.badge}
                   </span>
                 {/if}
@@ -296,96 +303,87 @@
           </nav>
         </div>
 
-        <!-- Tab Content -->
-        <div class="tab-content">
-          
-          <!-- Overview Tab -->
-          {#if activeTab === 'overview'}
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div class="lg:col-span-2">
-                <Card>
-                  <div class="p-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Next Actions</h3>
-                    <div class="space-y-3">
-                      {#each nextActions as action, index}
-                        <div class="flex items-center">
-                          <div class="flex-shrink-0">
-                            <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-blue-500 text-white text-sm font-medium">
-                              {index + 1}
-                            </span>
-                          </div>
-                          <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-900">{action}</p>
+                <!-- Overview Tab -->
+                {#if activeTab === 'overview'}
+                  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2">
+                      <Card>
+                        <div class="p-6">
+                          <h3 class="text-lg font-medium text-gray-900 mb-4">Next Actions</h3>
+                          <div class="space-y-3">
+                            {#each nextActions as action, index}
+                              <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                  <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-blue-500 text-white text-sm font-medium">
+                                    {index + 1}
+                                  </span>
+                                </div>
+                                <div class="ml-4">
+                                  <p class="text-sm font-medium text-gray-900">{action}</p>
+                                </div>
+                              </div>
+                            {/each}
                           </div>
                         </div>
-                      {/each}
+                      </Card>
                     </div>
-                  </div>
-                </Card>
-              </div>
-              
-              <div class="space-y-6">
-                <!-- Quick Actions -->
-                <Card>
-                  <div class="p-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
-                    <div class="space-y-3">
-                      <Button 
-                        on:click={triggerFileUpload}
-                        class="w-full justify-center"
-                        variant="outline"
-                      >
-                        📎 Upload Evidence
-                      </Button>
-                      <Button 
-                        on:click={handleStartAIAnalysis}
-                        disabled={!canStartAIAnalysis}
-                        class="w-full justify-center"
-                      >
-                        🤖 Start AI Analysis
-                      </Button>
-                      <Button 
-                        on:click={handleFindSimilarCases}
-                        class="w-full justify-center"
-                        variant="outline"
-                      >
-                        🔍 Find Similar Cases
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-              </div>
-            </div>
-          {/if}
 
-          <!-- Evidence Tab -->
-          {#if activeTab === 'evidence'}
-            <div class="space-y-6">
-              <!-- Evidence Upload -->
-              <Card>
-                <div class="p-6">
-                  <h3 class="text-lg font-medium text-gray-900 mb-4">Upload Evidence</h3>
-                  <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
-                    <input
-                      type="file"
-                      multiple
-                      bind:this={fileInput}
-                      change={onFileChange}
-                      class="hidden"
-                    />
-                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                      <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                    <p class="mt-2 text-sm text-gray-600">
-                      <Button on:click={triggerFileUpload} variant="outline">
-                        Choose files
-                      </Button>
-                      or drag and drop
-                    </p>
-                    <p class="text-xs text-gray-500">PNG, JPG, PDF, DOCX up to 10MB each</p>
+                    <div class="space-y-6">
+                      <!-- Quick Actions -->
+                      <Card>
+                        <div class="p-6">
+                          <h3 class="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
+                          <div class="space-y-3">
+                            <Button
+                              on:on:click={triggerFileUpload}
+                              class="w-full justify-center"
+                              variant="outline"
+                            >
+                              📎 Upload Evidence
+                            </Button>
+                            <Button
+                              on:on:click={handleStartAIAnalysis}
+                              disabled={!canStartAIAnalysis}
+                              class="w-full justify-center"
+                            >
+                              🤖 Start AI Analysis
+                            </Button>
+                            <Button
+                              on:on:click={handleFindSimilarCases}
+                              class="w-full justify-center"
+                              variant="outline"
+                            >
+                              🔍 Find Similar Cases
+                            </Button>
+                          </div>
+                        </div>
+                      </Card>
+                    </div>
                   </div>
-                </div>
-              </Card>
+                {/if}
+
+                <!-- Evidence Tab -->
+                {#if activeTab === 'evidence'}
+                  <div class="space-y-6">
+                    <!-- Evidence Upload -->
+                    <Card>
+                      <div class="p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Upload Evidence</h3>
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
+                          <input
+                            type="file"
+                            multiple
+                            bind:this={fileInput}
+                            onchange={onFileChange}
+                            class="hidden"
+                          />
+                          <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                          </svg>
+                          <p class="text-xs text-gray-500">PNG, JPG, PDF, DOCX up to 10MB each</p>
+                        </div>
+                      </div>
+                    </Card>
 
               <!-- Evidence List -->
               {#if evidence.length > 0}
@@ -407,7 +405,7 @@
                             </div>
                             <div class="ml-4 flex-shrink-0 flex space-x-2">
                               <Button size="sm" variant="outline">View</Button>
-                              <Button size="sm" on:click={() => send({ type: 'SELECT_EVIDENCE', evidence: item })}>
+                              <Button size="sm" on:on:click={() => send({ type: 'SELECT_EVIDENCE', evidence: item })}>
                                 Select
                               </Button>
                             </div>
@@ -426,7 +424,7 @@
                     <h3 class="mt-2 text-sm font-medium text-gray-900">No evidence uploaded</h3>
                     <p class="mt-1 text-sm text-gray-500">Get started by uploading your first piece of evidence.</p>
                     <div class="mt-6">
-                      <Button on:click={triggerFileUpload}>
+                      <Button on:on:click={triggerFileUpload}>
                         Upload Evidence
                       </Button>
                     </div>
@@ -452,15 +450,15 @@
                   </div>
 
                   <div class="flex space-x-4 mb-6">
-                    <Button 
-                      on:click={handleStartAIAnalysis}
+                    <Button
+                      on:on:click={handleStartAIAnalysis}
                       disabled={!canStartAIAnalysis || legalCaseSelectors.isInState('aiAnalysis.analyzing')($state)}
                     >
                       {legalCaseSelectors.isInState('aiAnalysis.analyzing')($state) ? 'Analyzing...' : 'Start AI Analysis'}
                     </Button>
-                    <Button 
+                    <Button
                       variant="outline"
-                      on:click={handleFindSimilarCases}
+                      on:on:click={handleFindSimilarCases}
                       disabled={isLoading}
                     >
                       Find Similar Cases
@@ -548,7 +546,7 @@
   .animate-spin {
     animation: spin 1s linear infinite;
   }
-  
+
   @keyframes spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }

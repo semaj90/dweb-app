@@ -1,9 +1,10 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 // AI Document Processing API - Summarization, Entity Extraction, Embeddings
 // Production-ready endpoint with LangChain + Ollama integration
 
 import { json } from '@sveltejs/kit';
+import { URL } from "url";
 
 export const POST: RequestHandler = async ({ request }) => {
   try {

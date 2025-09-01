@@ -1115,7 +1115,7 @@ export class EnhancedRAGSelfOrganizing {
 /**
  * Factory function for Svelte integration
  */
-export function createEnhancedRAGSelfOrganizing(
+export function createEnhancedRAGSelfOrganizing(;
   llamaService?: LlamaCppOllamaService,
   ragConfig?: Partial<EnhancedRAGConfig>,
   somConfig?: Partial<SOMConfig>

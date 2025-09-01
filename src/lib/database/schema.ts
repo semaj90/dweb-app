@@ -37,6 +37,14 @@ export const evidenceVectors = pg.vector_metadata; // evidence vector metadata a
 export const legalDocs = pg.legal_documents;
 export const documents = pg.legal_documents;
 
+// Additional aliases discovered during TypeScript fixes
+export const documentVectors = pg.vector_metadata; // generic document vectors
+export const caseSummaryVectors = pg.vector_metadata; // case summary vectors stored in vector_metadata
+export const queryVectors = pg.user_ai_queries; // stored user query vectors / history
+export const knowledgeNodes = pg.training_data; // approximate mapping for knowledge graph nodes
+export const knowledgeEdges = pg.case_activities; // approximate mapping for knowledge graph edges
+export const recommendationCache = pg.feedback_metrics; // cache for recommendation scoring
+
 // Re-export types with camelCase names used around the codebase
 export type Evidence = pg.Evidence;
 export type NewEvidence = pg.NewEvidence;
@@ -72,6 +80,11 @@ export type Session = pg.Session;
 export type NewSession = pg.NewSession;
 export type Case = pg.Case;
 export type NewCase = pg.NewCase;
+export type NewUserRating = pg.NewUserRating;
+export type NewInteractionHistory = pg.NewInteractionHistory;
+export type NewTrainingData = pg.NewTrainingData;
+export type NewUserBehaviorPattern = pg.NewUserBehaviorPattern;
+export type NewFeedbackMetric = pg.NewFeedbackMetric;
 
 // Helper: named export of the raw server schema to support advanced usage.
 export const serverSchema = pg;

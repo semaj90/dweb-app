@@ -115,9 +115,9 @@
     return paddingMap[padding as keyof typeof paddingMap] || paddingMap.medium;
   };
 
-  const variantStyles = $derived(getVariantStyles(variant));
-  const paddingValue = $derived(getPaddingValue(padding));
-  const containerClasses = $derived([
+  let variantStyles = $derived(getVariantStyles(variant));
+  let paddingValue = $derived(getPaddingValue(padding));
+  let containerClasses = $derived([
     'nes-8bit-container',
     'nes-container',
     containerType,
@@ -142,8 +142,8 @@
     {minHeight ? `--container-min-height: ${minHeight};` : ''}
     {style}
   "
-  onclick={handleClick}
-  onmouseenter={handleHover}
+  on:on:onclick={handleClick}
+  on:on:on:mouseenter={handleHover}
   role={onClick ? 'button' : undefined}
   tabindex={onClick && !disabled ? 0 : undefined}
 >

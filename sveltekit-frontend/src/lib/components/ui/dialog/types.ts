@@ -1,4 +1,4 @@
-import type { ComponentProps, Snippet } from 'svelte';
+import type {     ComponentProps, Snippet     } from 'svelte';
 import type { Dialog } from 'bits-ui';
 
 export interface DialogProps extends ComponentProps<typeof Dialog.Root> {

@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * RAG QUIC Proxy API - Enhanced RAG Service with Edge Caching
@@ -48,6 +48,8 @@ export interface RAGResponse {
 
 // Import the Go microservice client
 import { EnhancedRAGClient, goServiceManager } from '$lib/services/go-microservice-client.js';
+import crypto from "crypto";
+import { URL } from "url";
 
 /**
  * GET /api/v1/quic/rag-proxy - RAG proxy health and metrics

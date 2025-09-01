@@ -257,7 +257,7 @@ class LegalNLPService {
 
 // Export singleton instance
 export const legalNLP = new LegalNLPService();
-
+;
 // Export types
 export type { EmbeddingResult, SimilarityResult };
 

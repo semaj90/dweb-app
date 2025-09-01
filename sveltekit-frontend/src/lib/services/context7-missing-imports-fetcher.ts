@@ -12,7 +12,7 @@ import type {
   CodeSnippet 
 } from '$lib/types/automated-resolution';
 
-export class Context7MissingImportsFetcher {
+export class Context7MissingImportsFetcher {;
   private mcpServerUrl = 'http://localhost:4001'; // MCP server endpoint
   private cache: Map<string, Context7McpResponse> = new Map();
   private libraryMappings: Map<string, string> = new Map();

@@ -3,6 +3,13 @@ import { browser } from "$app/environment";
 // Orphaned content: import Fuse from "fuse.js";
 import { derived, writable } from "svelte/store";
 
+// Lightweight Fuse fallback if real library not present (prevents build break)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const Fuse: any = (globalThis as any).Fuse || class {
+  list: any[]; keys: any[]; constructor(list: any[], options: any) { this.list = list; this.keys = options.keys?.map((k: any) => k.name) || []; }
+  search(term: string) { const lower = term.toLowerCase(); return this.list.filter(item => this.keys.some(k => String((item as any)[k] ?? '').toLowerCase().includes(lower))).map(i => ({ item: i })); }
+};
+
 // Placeholder indexedDB utilities
 const idbUtils = {
   del: async (key: string) => localStorage.removeItem(key),
@@ -38,7 +45,6 @@ export interface NoteFilters {
 
 // Main store for saved notes
 export const savedNotes = writable<SavedNote[]>([]);
-
 // Filters store
 export const noteFilters = writable<NoteFilters>({
   search: "",
@@ -133,7 +139,7 @@ class NotesManager {
     // Save to IndexedDB for offline access
     if (browser) {
       try {
-        await set(`${this.dbPrefix}${note.id}`, noteWithTimestamp);
+        await idbUtils.set(`${this.dbPrefix}${note.id}`, noteWithTimestamp);
       } catch (error: any) {
         console.warn("Failed to save note to IndexedDB:", error);
       }
@@ -146,7 +152,7 @@ class NotesManager {
 
     if (browser) {
       try {
-        await del(`${this.dbPrefix}${noteId}`);
+        await idbUtils.del(`${this.dbPrefix}${noteId}`);
       } catch (error: any) {
         console.warn("Failed to remove note from IndexedDB:", error);
       }
@@ -158,7 +164,7 @@ class NotesManager {
     if (!browser) return;
 
     try {
-      const allKeys = await keys();
+      const allKeys = await idbUtils.keys();
       const noteKeys = allKeys.filter(
         (key) => typeof key === "string" && key.startsWith(this.dbPrefix)
       );
@@ -166,7 +172,7 @@ class NotesManager {
       const notes: SavedNote[] = [];
       for (const key of noteKeys) {
         try {
-          const note = await get(key);
+          const note = await idbUtils.get(key);
           if (note && this.isValidNote(note)) {
             // Ensure savedAt is a Date object
             note.savedAt = new Date(note.savedAt);
@@ -283,7 +289,7 @@ class NotesManager {
 
 // Export singleton instance
 export const notesManager = NotesManager.getInstance();
-
+;
 // Convenience functions
 export async function saveNoteForLater(note: Omit<SavedNote, "savedAt">): Promise<any> {
   await notesManager.saveNote(note);

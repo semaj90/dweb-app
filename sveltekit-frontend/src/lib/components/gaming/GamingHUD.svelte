@@ -2,7 +2,7 @@
 
 	import { onMount } from 'svelte';
   import { $props, $state, $derived } from 'svelte';
-	import type { ComponentProps } from 'svelte';
+	import type {     ComponentProps     } from 'svelte';
 	
 	// Gaming-themed props using Svelte 5 patterns
 	interface GamingHUDProps {
@@ -79,7 +79,7 @@
 		
 		<!-- System Status -->
 		<div class="status-section">
-			<div class="status-indicator" class:on:line={isOnline} class:offline={!isOnline}>
+			<div class="status-indicator" class:line={isOnline} class:offline={!isOnline}>
 				<div class="status-dot"></div>
 				<span>{isOnline ? 'ONLINE' : 'OFFLINE'}</span>
 			</div>

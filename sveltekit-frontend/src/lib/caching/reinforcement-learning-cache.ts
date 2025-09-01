@@ -1,28 +1,46 @@
 export class ReinforcementLearningCache {
+  ;
+  private store = new Map<string, any>();
+  private hits = 0;
+  private misses = 0;
+
   async get(key: string) {
-    console.log('🔍 Reinforcement learning cache get:', key);
+    const has = this.store.has(key);
+    if (has) {
+      this.hits++;
+      return this.store.get(key);
+    }
+    this.misses++;
     return null;
   }
 
   async set(key: string, value: any) {
-    console.log('💾 Reinforcement learning cache set:', key);
+    this.store.set(key, value);
     return true;
   }
 
   async invalidate(key: string) {
-    console.log('🗑️ Reinforcement learning cache invalidate:', key);
+    this.store.delete(key);
     return true;
   }
 
   initialize() {
-    console.log('🚀 Reinforcement learning cache initialized');
+    // no-op initialization
+  }
+
+  getHitRatio() {
+    const total = this.hits + this.misses;
+    return total === 0 ? 0 : (this.hits / total) * 100;
   }
 
   getLearningState() {
+    const total = this.hits + this.misses;
+    const hitRate = total === 0 ? 0 : this.hits / total;
+    const missRate = 1 - hitRate;
     return {
-      cacheSize: 5000,
-      hitRate: 0.85,
-      missRate: 0.15,
+      cacheSize: this.store.size,
+      hitRate,
+      missRate,
       adaptationScore: 0.78,
       memoryEfficiency: 0.92
     };

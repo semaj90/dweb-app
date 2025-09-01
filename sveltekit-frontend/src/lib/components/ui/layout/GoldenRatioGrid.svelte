@@ -59,7 +59,7 @@
   const INVERSE_PHI = 0.618033988749; // 1/φ
 
   // Reactive grid classes using $derived
-  const gridClasses = $derived(cn(
+  let gridClasses = $derived(cn(
     'golden-ratio-grid',
     {
       'grid-template-areas-sidebar': variant === 'sidebar',
@@ -92,7 +92,7 @@
   ));
 
   // Calculate golden ratio proportions
-  const goldenProportions = $derived(
+  let goldenProportions = $derived(
     direction === 'horizontal' ? {
       primary: `${PHI}fr`,
       secondary: '1fr'

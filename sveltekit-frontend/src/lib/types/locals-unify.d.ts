@@ -29,7 +29,7 @@ declare namespace App {
   }
 }
 
-export {};
+
 
 // Also augment the SvelteKit module so `Locals` used in RequestEvent and routes
 // matches the canonical App.Locals above.
@@ -57,4 +57,4 @@ declare module '@sveltejs/kit' {
   }
 }
 
-export {};
+

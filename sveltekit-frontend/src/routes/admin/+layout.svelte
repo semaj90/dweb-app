@@ -7,21 +7,24 @@
   import { AccessControl } from '$lib/auth/roles';
   import type { LayoutData } from './$types';
   import type { Permission } from '$lib/auth/roles';
-  export let data: LayoutData;
+  
+  // Props using Svelte 5 syntax
+  let { data }: { data: LayoutData } = $props();
 
-  let isLoading = true;
-  let hasAdminAccess = false;
-  let glitchEffect = '';
+  // State using Svelte 5 syntax
+  let isLoading = $state(true);
+  let hasAdminAccess = $state(false);
+  let glitchEffect = $state('');
   const glitchChars = ['#', '%', '@', '◈', '◉', '◎', '⧨', '◐', '⬢'];
   // Use a cross-environment interval type to avoid Node vs DOM return-type mismatches
-  let glitchInterval: ReturnType<typeof setInterval> | null = null;
+let glitchInterval = $state<ReturnType<typeof setInterval> | null >(null);
 
   // Local snapshot of current user (subscribe to store to avoid $ pref in code)
-  let currentUserValue: { email?: string; role?: string } | null = null;
-  let unsubscribeCurrentUser: Unsubscriber | null = null;
+  let currentUserValue: { email?: string; role?: string } | null = $state(null);
+let unsubscribeCurrentUser = $state<Unsubscriber | null >(null);
 
   // Explicit subscription for page store to avoid using $page in script reactive context
-  let unsubscribePage: Unsubscriber | null = null;
+let unsubscribePage = $state<Unsubscriber | null >(null);
 
   // YoRHa Terminal styling classes
   const yorhaClasses = {
@@ -76,7 +79,7 @@
   ];
 
   // Derive visible nav items from current user permissions
-  let visibleNavItems: { path: string; label: string; icon: string; permission: Permission }[] = [];
+let visibleNavItems = $state<{ path: string; label: string; icon: string; permission: Permission }[] >([]);
 
   // Derived display values for safer template usage
   $: userEmail = currentUserValue?.email ?? '';
@@ -87,7 +90,7 @@
     : [];
 
   // Maintain current path via explicit subscription to avoid $page usage in TS logic
-  let currentPath = '';
+let currentPath = $state('');
 
   function isActivePath(itemPath: string) {
     return currentPath === itemPath || (itemPath !== '/admin' && currentPath.startsWith(itemPath + '/'));
@@ -171,7 +174,7 @@
         </div>
         <div>
           <button
-            onclick={() => AuthStore.logout()}
+            on:on:onclick={() => AuthStore.logout()}
             class="px-3 py-1 border border-red-500 text-red-500 hover:bg-red-500 hover:text-black transition-colors text-xs"
           >
             LOGOUT
@@ -212,7 +215,7 @@
           <div>REQUIRED: ADMIN OR MANAGEMENT ROLE</div>
           <div>CURRENT: {currentUserValue?.role ? currentUserValue.role.toUpperCase().replace(/_/g, ' ') : 'UNKNOWN'}</div>
         </div>
-        <slot />
+        {@render children?.()}
       </main>
     </div>
   </div>
@@ -225,7 +228,7 @@
       <div>CURRENT: {currentUserValue?.role ? currentUserValue.role.toUpperCase().replace(/_/g, ' ') : 'UNKNOWN'}</div>
     </div>
     <button
-      onclick={() => goto('/')}
+      on:on:onclick={() => goto('/')}
       class="mt-6 px-6 py-2 border border-[#333333] hover:bg-[#1a1a1a] transition-colors"
     >
       RETURN TO MAIN INTERFACE

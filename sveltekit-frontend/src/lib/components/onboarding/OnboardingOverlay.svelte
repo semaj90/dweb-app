@@ -1,79 +1,79 @@
 <script lang="ts">
-  import { $props, $derived, $effect } from 'svelte';
+// @ts-nocheck
+import { onMount } from 'svelte';
 
-  import { browser } from "$app/environment";
-  import { Button } from "$lib/components/ui/button";
-  import {
-    ArrowLeft,
-    ArrowRight,
-    Check,
-    Lightbulb,
-    MousePointer,
-    Pause,
-    Play,
-    SkipForward,
-    Target,
-    X,
-  } from 'lucide-svelte';
-  
-  
-  interface OnboardingStep {
-    id: string;
-    title: string;
-    description: string;
-    target?: string;
-    targetSelector?: string;
-    position?: 'top' | 'bottom' | 'left' | 'right' | 'center';
-    action?: () => void;
-    validate?: () => boolean;
-    type?: 'info' | 'action' | 'input' | 'success';
-    content?: string;
-    image?: string;
-    video?: string;
-  }
+import { browser } from "$app/environment";
+import { Button } from "$lib/components/ui/button";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  Lightbulb,
+  MousePointer,
+  Pause,
+  Play,
+  SkipForward,
+  Target,
+  X,
+} from 'lucide-svelte';
 
-  interface Props {
-    open?: boolean;
-    currentStep?: number;
-    steps?: OnboardingStep[];
-    autoProgress?: boolean;
-    progressDelay?: number;
-    showMinimap?: boolean;
-    allowSkip?: boolean;
-      onclose?: (event?: unknown) => void;
-    oncomplete?: (event?: unknown) => void;
-  }
 
-  let {
-    open = $bindable(false),
-    currentStep = $bindable(0),
-    steps = [],
-    autoProgress = false,
-    progressDelay = 3000,
-    showMinimap = true,
-    allowSkip = true
-  ,
-    onclose,
-    oncomplete}: Props = $props();
+interface OnboardingStep {
+  id: string;
+  title: string;
+  description: string;
+  target?: string;
+  targetSelector?: string;
+  position?: 'top' | 'bottom' | 'left' | 'right' | 'center';
+  action?: () => void;
+  validate?: () => boolean;
+  type?: 'info' | 'action' | 'input' | 'success';
+  content?: string;
+  image?: string;
+  video?: string;
+}
 
-  let overlayEl: HTMLElement;
-  let autoProgressTimer: NodeJS.Timeout;
-  let isPlaying = autoProgress;
-  let targetElement: Element | null = null;
-  let highlightBox: {
-    top: number;
-    left: number;
-    width: number;
-    height: number;
-  } | null = null;
+interface Props {
+  open?: boolean;
+  currentStep?: number;
+  steps?: OnboardingStep[];
+  autoProgress?: boolean;
+  progressDelay?: number;
+  showMinimap?: boolean;
+  allowSkip?: boolean;
+    onclose?: (event?: unknown) => void;
+  oncomplete?: (event?: unknown) => void;
+}
 
-  $effect(() => {
-    if (open && steps.length > 0) {
-      updateTargetHighlight();
-    }
-  });
+// Use exported props instead of $props / $bindable
+export let open: boolean = false;
+export let currentStep: number = 0;
+export let steps: OnboardingStep[] = [];
+export let autoProgress: boolean = false;
+export let progressDelay: number = 3000;
+export let showMinimap: boolean = true;
+export let allowSkip: boolean = true;
+export let onclose: ((event?: unknown) => void) | undefined;
+export let oncomplete: ((event?: unknown) => void) | undefined;
+;
+let overlayEl = $state<HTMLElement;
+let autoProgressTimer: number | undefined;
+let isPlaying >(autoProgress);
+let targetElement = $state<Element | null >(null);
+let highlightBox = $state<{
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+} | null >(null);
 
-  let currentStepData = $derived(steps[currentStep] || null);
+// Reactive effect replacement for $effect
+$: if (open && steps.length > 0) {
+  updateTargetHighlight();
+}
+
+// Reactive derived value for current step data
+$: currentStepData = steps[currentStep] || null;
 
   onMount(() => {
     if (browser) {
@@ -251,8 +251,8 @@
       class="w-4 h-4"
       role="button"
       tabindex={0}
-      click={() => closeOnboarding()}
-      on:keydown={(e) => {
+      on:onclick={() => closeOnboarding()}
+      keydown={(e: KeyboardEvent) => {
         if (e.key === "Escape") {
           closeOnboarding();
         }
@@ -293,7 +293,7 @@
             <Button
               variant="ghost"
               size="sm"
-              on:click={() => toggleAutoProgress()}
+              on:on:click={() => toggleAutoProgress()}
               class="w-4 h-4"
               aria-label={isPlaying
                 ? "Pause auto-progress"
@@ -310,7 +310,7 @@
           <Button
             variant="ghost"
             size="sm"
-            on:click={() => closeOnboarding()}
+            on:on:click={() => closeOnboarding()}
             aria-label="Close onboarding"
           >
             <X class="w-4 h-4" />
@@ -379,7 +379,7 @@
       <div class="w-4 h-4">
         <div class="w-4 h-4">
           {#if allowSkip}
-            <Button variant="ghost" size="sm" on:click={() => skipOnboarding()}>
+            <Button variant="ghost" size="sm" on:on:click={() => skipOnboarding()}>
               <SkipForward class="w-4 h-4" />
               Skip Tour
             </Button>
@@ -394,8 +394,8 @@
                   class="w-4 h-4"
                   class:active={index === currentStep}
                   class:completed={index < currentStep}
-                  click={() => goToStep(index)}
-                  aria-label="Go to step {index + 1}: {step.title}"
+                  on:onclick={() => goToStep(index)}
+                  aria-label={"Go to step " + (index + 1) + ": " + step.title}
                 >
                   {#if index < currentStep}
                     <Check class="w-4 h-4" />
@@ -412,14 +412,14 @@
           <Button
             variant="ghost"
             size="sm"
-            on:click={() => previousStep()}
+            on:on:click={() => previousStep()}
             disabled={currentStep === 0}
           >
             <ArrowLeft class="w-4 h-4" />
             Back
           </Button>
 
-          <Button on:click={() => nextStep()} size="sm">
+          <Button on:on:click={() => nextStep()} size="sm">
             {#if currentStep === steps.length - 1}
               <Check class="w-4 h-4" />
               Complete

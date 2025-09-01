@@ -112,7 +112,7 @@
     <Button
       variant="primary"
       size="md"
-      on:click={() => showDialog = true}
+      on:on:click={() => showDialog = true}
     >
       <Plus class="w-4 h-4 mr-2" />
       Create New Case
@@ -165,13 +165,13 @@
       {#snippet footer()}
         <Button
           variant="outline"
-          on:click={() => showDialog = false}
+          on:on:click={() => showDialog = false}
         >
           Cancel
         </Button>
         <Button
           variant="primary"
-          on:click={handleCreateCase}
+          on:on:click={handleCreateCase}
           disabled={!caseName || !clientName || !selectedCaseType}
         >
           Create Case

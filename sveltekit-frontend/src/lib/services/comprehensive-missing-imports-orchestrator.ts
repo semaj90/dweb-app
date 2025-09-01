@@ -18,7 +18,7 @@ import type {
   BarrelStoreFile 
 } from '$lib/types/automated-resolution';
 
-export class ComprehensiveMissingImportsOrchestrator {
+export class ComprehensiveMissingImportsOrchestrator {;
   private performanceMetrics: { [key: string]: number } = {};
 
   /**

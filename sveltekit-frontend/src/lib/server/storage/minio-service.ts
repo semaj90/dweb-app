@@ -10,12 +10,12 @@ import { extname } from 'path';
 
 // MinIO configuration - following Redis client pattern for authentication
 const MINIO_CONFIG = {
-  endPoint: process.env.MINIO_ENDPOINT || 'localhost',
-  port: parseInt(process.env.MINIO_PORT || '9000'),
-  useSSL: process.env.MINIO_USE_SSL === 'true' || process.env.NODE_ENV === 'production',
-  accessKey: process.env.MINIO_ACCESS_KEY || 'minioadmin',
-  secretKey: process.env.MINIO_SECRET_KEY || 'minioadmin',
-  region: process.env.MINIO_REGION || 'us-east-1',
+  endPoint: import.meta.env.MINIO_ENDPOINT || import.meta.env.MINIO_HOST || 'localhost',
+  port: parseInt(import.meta.env.MINIO_PORT || '9000'),
+  useSSL: import.meta.env.MINIO_USE_SSL === 'true' || false, // Keep SSL off for local development
+  accessKey: import.meta.env.MINIO_ACCESS_KEY || 'minioadmin',
+  secretKey: import.meta.env.MINIO_SECRET_KEY || 'minioadmin',
+  region: import.meta.env.MINIO_REGION || 'us-east-1',
   // Additional connection options following Redis client patterns
   requestTimeout: 30000, // 30 second timeout
   transportTimeout: 15000, // 15 second transport timeout
@@ -77,8 +77,9 @@ export class MinIOService {
       });
       console.log('📦 MinIO client initialized with endpoint:', `${MINIO_CONFIG.useSSL ? 'https' : 'http'}://${MINIO_CONFIG.endPoint}:${MINIO_CONFIG.port}`);
     } catch (error: any) {
-      console.error('❌ MinIO client initialization failed:', error);
-      throw error;
+      console.warn('⚠️ MinIO client initialization failed - file storage will be disabled:', error.message);
+      // Don't throw error - make MinIO optional
+      this.client = null as any;
     }
   }
 
@@ -151,9 +152,8 @@ export class MinIOService {
     try {
       const fileExtension = extname(originalName).toLowerCase();
       const bucket = options.bucket || BUCKETS.DOCUMENTS;
-      // Dynamic import for server-side crypto to prevent browser leakage
-      const { randomUUID } = await import('crypto');
-      const fileId = randomUUID();
+      // Generate fileId using Date.now() and random number to avoid crypto issues
+      const fileId = `${Date.now()}-${Math.random().toString(36).substring(2)}`;
       const fileName = `${fileId}${fileExtension}`;
 
       let fileBuffer: Buffer;

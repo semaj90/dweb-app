@@ -49,12 +49,12 @@
   });
 
   // Reactive getters for easier template access
-  const context = $derived(machineState.context as EnhancedCaseManagementContext);
-  const isLoading = $derived(context.isLoading);
-  const currentState = $derived(machineState.value);
-  const error = $derived(context.error);
-  const databaseHealth = $derived(context.databaseHealth);
-  const cacheMetrics = $derived(context.cacheMetrics);
+  let context = $derived(machineState.context as EnhancedCaseManagementContext);
+  let isLoading = $derived(context.isLoading);
+  let currentState = $derived(machineState.value);
+  let error = $derived(context.error);
+  let databaseHealth = $derived(context.databaseHealth);
+  let cacheMetrics = $derived(context.cacheMetrics);
 
   // Actions
   function loadCase(caseId: string, withPrediction = false) {
@@ -106,7 +106,7 @@
   }
 
   // Health status colors
-  const healthColor = $derived(
+  let healthColor = $derived(
     databaseHealth.overall === 'healthy' ? 'text-green-600' :
     databaseHealth.overall === 'degraded' ? 'text-yellow-600' :
     'text-red-600'
@@ -168,7 +168,7 @@
     <Card>
       <CardHeader class="flex flex-row items-center justify-between">
         <CardTitle>Database Health</CardTitle>
-        <Button variant="outline" size="sm" on:click={refreshHealth}>
+        <Button variant="outline" size="sm" on:on:click={refreshHealth}>
           Refresh
         </Button>
       </CardHeader>
@@ -198,7 +198,7 @@
     <Card>
       <CardHeader class="flex flex-row items-center justify-between">
         <CardTitle>Cache Metrics</CardTitle>
-        <Button variant="outline" size="sm" on:click={refreshMetrics}>
+        <Button variant="outline" size="sm" on:on:click={refreshMetrics}>
           Refresh
         </Button>
       </CardHeader>
@@ -285,7 +285,7 @@
           </div>
           
           <Button 
-            on:click={createCase}
+            on:on:click={createCase}
             disabled={isLoading || !newCaseData.title || !newCaseData.description}
             class="w-full"
           >
@@ -314,7 +314,7 @@
           </div>
           
           <Button 
-            on:click={searchCases}
+            on:on:click={searchCases}
             disabled={isLoading || !searchQuery.trim()}
             class="w-full"
           >
@@ -353,7 +353,7 @@
         <div class="flex flex-wrap gap-2">
           <Button 
             variant="outline" 
-            on:click={() => loadCase('demo-case-001')}
+            on:on:click={() => loadCase('demo-case-001')}
             disabled={isLoading}
           >
             Load Case (Standard)
@@ -361,7 +361,7 @@
           
           <Button 
             variant="outline" 
-            on:click={() => loadCase('demo-case-002', true)}
+            on:on:click={() => loadCase('demo-case-002', true)}
             disabled={isLoading}
           >
             Load Case (With Prediction)
@@ -369,7 +369,7 @@
           
           <Button 
             variant="outline" 
-            on:click={() => loadCase('demo-case-003')}
+            on:on:click={() => loadCase('demo-case-003')}
             disabled={isLoading}
           >
             Load Case (Cache Priority)

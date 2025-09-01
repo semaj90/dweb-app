@@ -8,7 +8,7 @@
   import { notifications } from '$lib/stores/notification';
 
   export const data = null;
-
+;
   // Form validation
   const formOptions = {
     initialValues: {
@@ -52,13 +52,13 @@
   };
 
   let formApi: any;
-  let isSubmitting = false;
+let isSubmitting = $state(false);
 
   // Store form state
-  let formValues: Record<string, any> = {};
-  let formErrors: Record<string, string> = {};
-  let isFormValid = false;
-  let isFormDirty = false;
+let formValues = $state<Record<string, any> >({});
+let formErrors = $state<Record<string, string> >({});
+let isFormValid = $state(false);
+let isFormDirty = $state(false);
 
   // Handle form changes
   function handleFormChange(event: CustomEvent) {
@@ -158,8 +158,8 @@
     <Form
       bind:formApi
       options={formOptions}
-      on:submit={handleSubmit}
-      on:change={handleFormChange}
+      submit={handleSubmit}
+      change={handleFormChange}
       submitText="Create Case"
       submitVariant="primary"
       showResetButton={true}
@@ -193,12 +193,12 @@
                 error={formErrors.title}
                 data-icon="${1}"
                 clearable
-                on:input={(e) =>
+                input={(e) =>
                   formApi?.setField(
                     "title",
                     (e.target as HTMLInputElement)?.value
                   )}
-                on:blur={() => formApi?.touchField("title")}
+                blur={() => formApi?.touchField("title")}
               />
             </div>
 
@@ -223,7 +223,7 @@
                     "description",
                     (e.target as HTMLTextAreaElement)?.value
                   )}
-                on:blur={() => formApi.touchField("description")}
+                blur={() => formApi.touchField("description")}
               ></textarea>
               {#if errors.description}
                 <p class="container mx-auto px-4">
@@ -248,7 +248,7 @@
                     "priority",
                     (e.target as HTMLSelectElement)?.value
                   )}
-                on:blur={() => formApi.touchField("priority")}
+                blur={() => formApi.touchField("priority")}
               >
                 <option value="low">🟢 Low</option>
                 <option value="medium">🟡 Medium</option>
@@ -264,12 +264,12 @@
                 value={values.dueDate || ""}
                 error={errors.dueDate}
                 data-icon="${1}"
-                on:input={(e) =>
+                input={(e) =>
                   formApi.setField(
                     "dueDate",
                     (e.target as HTMLInputElement)?.value
                   )}
-                on:blur={() => formApi.touchField("dueDate")}
+                blur={() => formApi.touchField("dueDate")}
               />
             </div>
           </div>
@@ -291,12 +291,12 @@
                 value={values.assignedTo || ""}
                 error={errors.assignedTo}
                 data-icon="${1}"
-                on:input={(e) =>
+                input={(e) =>
                   formApi.setField(
                     "assignedTo",
                     (e.target as HTMLInputElement)?.value
                   )}
-                on:blur={() => formApi.touchField("assignedTo")}
+                blur={() => formApi.touchField("assignedTo")}
               />
             </div>
 
@@ -310,12 +310,12 @@
                     error={errors.tags}
                     data-icon="${1}"
                     clearable
-                    on:input={(e) =>
+                    input={(e) =>
                       formApi.setField(
                         "tags",
                         (e.target as HTMLInputElement)?.value
                       )}
-                    on:blur={() => formApi.touchField("tags")}
+                    blur={() => formApi.touchField("tags")}
                   />
                 </div>
                 <Button
@@ -323,7 +323,7 @@
                   variant="secondary"
                   size="md"
                   data-icon="${1}"
-                  on:click={() => addTag()}
+                  on:on:click={() => addTag()}
                 >
                   Add
                 </Button>

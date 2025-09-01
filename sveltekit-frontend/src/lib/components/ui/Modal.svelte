@@ -52,7 +52,7 @@
     };
   });
   
-  const sizeClasses = $derived({
+  let sizeClasses = $derived({
     sm: 'max-w-md',
     md: 'max-w-lg',
     lg: 'max-w-2xl',
@@ -64,15 +64,15 @@
   <div
     bind:this={modalElement}
     class="modal-backdrop"
-    click={handleOutsideClick}
+    on:onclick={handleOutsideClick}
     keydown={(e) => { if (e.key === 'Escape') handleClose(); }}
     role="presentation"
     aria-hidden="true"
-    transition:fade={{ duration: 200 }}
+    transitifade={{ duration: 200 }}
   >
     <div
       class="modal-content {sizeClasses}"
-      transition:fly={{ y: 50, duration: 300 }}
+      transitifly={{ y: 50, duration: 300 }}
       role="dialog"
       aria-modal="true"
       aria-labelledby={title ? 'modal-title' : undefined}
@@ -83,7 +83,7 @@
           <button
             type="button"
             class="modal-close"
-            click={handleClose}
+            on:onclick={handleClose}
             aria-label="Close"
           >
             <svg

@@ -1,0 +1,234 @@
+{
+  "generatedAt": "2025-09-01T06:12:19.071Z",
+  "totalLinesScanned": 32491,
+  "matchedTotal": 1891,
+  "categories": [
+    {
+      "id": "duplicate_identifier",
+      "count": 0,
+      "percentageOfMatched": 0,
+      "percentageOfAllLines": 0,
+      "priority": 1,
+      "autoFix": "Rename or remove duplicate export/variable.",
+      "description": "Duplicate identifier / parse error",
+      "samples": []
+    },
+    {
+      "id": "svelte_deprecated_event_directive",
+      "count": 0,
+      "percentageOfMatched": 0,
+      "percentageOfAllLines": 0,
+      "priority": 2,
+      "autoFix": "Replace on:evt= with evt=",
+      "description": "Deprecated on: event directives (use onclick, oninput, etc.)",
+      "samples": []
+    },
+    {
+      "id": "typescript_ts_error",
+      "count": 1677,
+      "percentageOfMatched": 88.68,
+      "percentageOfAllLines": 5.16,
+      "priority": 3,
+      "autoFix": "Depends on code; run targeted TS fixer.",
+      "description": "TypeScript error (TSxxxxx)",
+      "samples": [
+        "src/lib/ai/crewai-legal-agents.ts(8,21): error TS2305: Module '\"$lib/db/schema\"' has no exported member 'aiHistory'.",
+        "src/lib/ai/moogle-graph-synthesizer.ts(567,84): error TS2554: Expected 1 arguments, but got 2.",
+        "src/lib/ai/moogle-graph-synthesizer.ts(573,19): error TS2552: Cannot find name 'chrRegion'. Did you mean 'region'?",
+        "src/lib/ai/moogle-graph-synthesizer.ts(579,11): error TS2353: Object literal may only specify known properties, and 'id' does not exist in type 'TextureRegion'.",
+        "src/lib/ai/moogle-graph-synthesizer.ts(1200,9): error TS2353: Object literal may only specify known properties, and 'metadata' does not exist in type 'TensorSlice'."
+      ]
+    },
+    {
+      "id": "svelte_non_reactive_update",
+      "count": 0,
+      "percentageOfMatched": 0,
+      "percentageOfAllLines": 0,
+      "priority": 4,
+      "autoFix": "Wrap declaration with `$state()` or convert to store.",
+      "description": "Variable updated but not declared with $state(...)",
+      "samples": []
+    },
+    {
+      "id": "svelte_deprecated_slot",
+      "count": 0,
+      "percentageOfMatched": 0,
+      "percentageOfAllLines": 0,
+      "priority": 5,
+      "autoFix": "Manual / codemod: replace <slot /> with {@render children}",
+      "description": "Deprecated <slot> element (use {@render children})",
+      "samples": []
+    },
+    {
+      "id": "a11y_issue",
+      "count": 0,
+      "percentageOfMatched": 0,
+      "percentageOfAllLines": 0,
+      "priority": 6,
+      "autoFix": "Add for/id or wrap control; supply aria attributes.",
+      "description": "Accessibility issue (label association, aria, etc.)",
+      "samples": []
+    }
+  ],
+  "unknown": {
+    "count": 214,
+    "samples": [
+      "[build-errors.log] Overload 1 of 4, '(key: number): PromiseExtended<DocumentCache>', gave the following error.",
+      "[build-errors.log] Overload 2 of 4, '(equalityCriterias: { [key: string]: any; }): PromiseExtended<DocumentCache>', gave the following error.",
+      "[build-errors.log] Overload 1 of 3, '(timeout: string | number | Timeout): void', gave the following error.",
+      "[build-errors.log] Overload 2 of 3, '(id: number): void', gave the following error.",
+      "[build-errors.log] Overload 3 of 3, '(id: number): void', gave the following error."
+    ]
+  },
+  "tsFamilies": [
+    {
+      "family": "TS2300x",
+      "count": 1234,
+      "samples": [
+        "src/lib/ai/crewai-legal-agents.ts(8,21): error TS2305: Module '\"$lib/db/schema\"' has no exported member 'aiHistory'.",
+        "src/lib/ai/moogle-graph-synthesizer.ts(579,11): error TS2353: Object literal may only specify known properties, and 'id' does not exist in type 'TextureRegion'.",
+        "src/lib/ai/moogle-graph-synthesizer.ts(1200,9): error TS2353: Object literal may only specify known properties, and 'metadata' does not exist in type 'TensorSlice'."
+      ]
+    },
+    {
+      "family": "TS2600x",
+      "count": 120,
+      "samples": [
+        "src/lib/db/schema.ts(7,10): error TS2614: Module '\"drizzle-orm\"' has no exported member 'relations'. Did you mean to use 'import relations from \"drizzle-orm\"' instead?",
+        "src/lib/graph/sora-graph-traversal.ts(10,10): error TS2614: Module '\"$lib/*\"' has no exported member 'semanticAnalysisPipeline'. Did you mean to use 'import semanticAnalysisPipeline from \"$lib/*\"' instead?",
+        "src/lib/graph/sora-graph-traversal.ts(10,41): error TS2614: Module '\"$lib/*\"' has no exported member 'SemanticAnalysisResult'. Did you mean to use 'import SemanticAnalysisResult from \"$lib/*\"' instead?"
+      ]
+    },
+    {
+      "family": "TS2700x",
+      "count": 114,
+      "samples": [
+        "src/lib/machines/graph-cache-machine.ts(4,33): error TS2724: '\"xstate\"' has no exported member named 'spawn'. Did you mean 'Spawner'?",
+        "src/lib/machines/idleDetectionMachine.ts(174,27): error TS2739: Type '{ queriesCached: any; memoryUsage: string; uptime: number; }' is missing the following properties from type 'WasmEngineStats': cacheHitRate, lastHydration",
+        "src/lib/optimization/copilot-index-optimizer.ts(470,9): error TS2740: Type '{ source: \"enhanced_local_index\" | \"context7_mcp\" | \"basic_index\"; priority: \"high\" | \"low\" | \"medium\"; relevanceScore: number; timestamp: number; fileSize: number; tokens: number; }' is missing the following properties from type '{ source: string; type: string; jurisdiction: string; practiceArea: string[]; confidentialityLevel: number; lastModified: Date; fileSize: number; language: string; tags: string[]; }': type, jurisdiction, practiceArea, confidentialityLevel, and 3 more."
+      ]
+    },
+    {
+      "family": "TS2400x",
+      "count": 97,
+      "samples": [
+        "src/lib/services/enhanced-ingest-integration.ts(12,3): error TS2440: Import declaration conflicts with local declaration of 'IngestResult'.",
+        "src/lib/services/enhanced-ingest-integration.ts(13,3): error TS2440: Import declaration conflicts with local declaration of 'BatchIngestResult'.",
+        "src/lib/services/enhanced-ingest-integration.ts(14,3): error TS2440: Import declaration conflicts with local declaration of 'ChunkingOptions'."
+      ]
+    },
+    {
+      "family": "TS2500x",
+      "count": 82,
+      "samples": [
+        "src/lib/ai/moogle-graph-synthesizer.ts(567,84): error TS2554: Expected 1 arguments, but got 2.",
+        "src/lib/ai/moogle-graph-synthesizer.ts(573,19): error TS2552: Cannot find name 'chrRegion'. Did you mean 'region'?",
+        "src/lib/ai/moogle-graph-synthesizer.ts(1428,11): error TS2554: Expected 1 arguments, but got 3."
+      ]
+    },
+    {
+      "family": "TS1200x",
+      "count": 11,
+      "samples": [
+        "src/lib/services/enhanced-gpu-cache-service.ts(687,3): error TS1241: Unable to resolve signature of method decorator when called as an expression.",
+        "src/lib/services/enhanced-gpu-cache-service.ts(687,4): error TS1270: Decorator function return type 'PropertyDescriptor' is not assignable to type 'void | (() => Promise<void>)'.",
+        "src/lib/services/langchain-ollama-llama-integration.ts(694,10): error TS1205: Re-exporting a type when 'verbatimModuleSyntax' is enabled requires using 'export type'."
+      ]
+    },
+    {
+      "family": "TS18000x",
+      "count": 6,
+      "samples": [
+        "src/lib/services/production-integration-validator.ts(299,34): error TS18004: No value exists in scope for the shorthand property 'webgpuSupported'. Either declare one or provide an initializer.",
+        "src/lib/services/user-chat-recommendation-engine.ts(108,43): error TS18048: 'event' is possibly 'undefined'.",
+        "src/lib/services/user-chat-recommendation-engine.ts(149,50): error TS18048: 'event' is possibly 'undefined'."
+      ]
+    },
+    {
+      "family": "TS1400x",
+      "count": 4,
+      "samples": [
+        "src/lib/tests/integration/editor-slash-menu.integration.test.ts(2,20): error TS1484: 'Browser' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.",
+        "src/lib/tests/integration/editor-slash-menu.integration.test.ts(2,29): error TS1484: 'Page' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.",
+        "src/lib/tests/integration/route-health.test.ts(6,10): error TS1484: 'RequestEvent' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled."
+      ]
+    },
+    {
+      "family": "TS5000x",
+      "count": 3,
+      "samples": [
+        "src/lib/tests/integration/ssr-session-integrity.test.ts(368,51): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.",
+        "src/routes/api/dashboard/stats/+server.ts(2,20): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.",
+        "src/routes/api/dashboard/stats/+server.ts(3,65): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled."
+      ]
+    },
+    {
+      "family": "TS4100x",
+      "count": 2,
+      "samples": [
+        "src/lib/wasm/llvm-wasm-bridge.ts(157,9): error TS4104: The type 'readonly [\"-msimd128\", \"-mbulk-memory\", \"-msign-ext\", \"-mmutable-globals\", \"-mnontrapping-fptoint\"]' is 'readonly' and cannot be assigned to the mutable type 'string[]'.",
+        "src/routes/api/ai/sveltekit-api-routes.ts(482,3): error TS4104: The type 'readonly ApiRoute[]' is 'readonly' and cannot be assigned to the mutable type 'ApiRoute[]'."
+      ]
+    },
+    {
+      "family": "TS1300x",
+      "count": 1,
+      "samples": [
+        "src/lib/services/caching-service.ts(126,13): error TS1345: An expression of type 'void' cannot be tested for truthiness."
+      ]
+    },
+    {
+      "family": "TS2800x",
+      "count": 1,
+      "samples": [
+        "src/lib/services/xstate-integration.ts(261,36): error TS2820: Type '\"CHECK_CLUSTER_HEALTH\"' is not assignable to type '\"STREAM_CHUNK\" | \"SEND_MESSAGE\" | \"UPLOAD_DOCUMENT\" | \"SET_PROTOCOL\" | \"CHECK_SERVICE_HEALTH\" | \"OPTIMIZE_RESOURCES\" | \"BENCHMARK_PERFORMANCE\" | \"SET_CASE_CONTEXT\" | \"CLEAR_CONVERSATION\" | ... 23 more ... | \"ERROR_RECOVER\"'. Did you mean '\"CHECK_SERVICE_HEALTH\"'?"
+      ]
+    },
+    {
+      "family": "TS6200x",
+      "count": 1,
+      "samples": [
+        "src/lib/stores/barrel-functions.ts(14,1): error TS6200: Definitions of the following identifiers conflict with those in another file: test, describe, it, expect, beforeAll, afterAll, beforeEach, afterEach"
+      ]
+    },
+    {
+      "family": "TS1100x",
+      "count": 1,
+      "samples": [
+        "src/lib/stores/comprehensive-package-barrel-store.ts(309,3): error TS1117: An object literal cannot have multiple properties with the same name."
+      ]
+    }
+  ],
+  "remediationPlan": [
+    {
+      "id": "duplicate_identifier",
+      "action": "Rename or remove duplicate export/variable.",
+      "priority": 1
+    },
+    {
+      "id": "svelte_deprecated_event_directive",
+      "action": "Replace on:evt= with evt=",
+      "priority": 2
+    },
+    {
+      "id": "typescript_ts_error",
+      "action": "Depends on code; run targeted TS fixer.",
+      "priority": 3
+    },
+    {
+      "id": "svelte_non_reactive_update",
+      "action": "Wrap declaration with `$state()` or convert to store.",
+      "priority": 4
+    },
+    {
+      "id": "svelte_deprecated_slot",
+      "action": "Manual / codemod: replace <slot /> with {@render children}",
+      "priority": 5
+    },
+    {
+      "id": "a11y_issue",
+      "action": "Add for/id or wrap control; supply aria attributes.",
+      "priority": 6
+    }
+  ]
+}

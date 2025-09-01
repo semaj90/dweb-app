@@ -1,8 +1,12 @@
-// simple_legal_cuda_server.go - Simplified CUDA gRPC Server with Integrated Cache System
+// simple_legal_cuda_server.go - Simplified CUDA gRPC/HTTP Server with Integrated Cache System
 package main
 
 import (
+	"bytes"
+	"compress/gzip"
 	"context"
+	"encoding/base64"
+	"encoding/binary"
 	"fmt"
 	"log"
 	"net/http"
@@ -44,14 +48,12 @@ type CudaServerConfig struct {
 	PostgresURL string `json:"postgres_url" env:"POSTGRES_URL" default:"postgresql://legal_admin:LegalAI2024!@localhost:5432/legal_ai_db"`
 	RedisURL    string `json:"redis_url" env:"REDIS_URL" default:"localhost:6379"`
 
-	// CUDA Configuration  
-	CudaDeviceID     int    `json:"cuda_device_id" env:"CUDA_DEVICE_ID" default:"0"`
-	CudaMemoryPool   int64  `json:"cuda_memory_pool" env:"CUDA_MEMORY_POOL" default:"2147483648"` // 2GB
-	CudaStreams      int    `json:"cuda_streams" env:"CUDA_STREAMS" default:"8"`
-	TensorCores      bool   `json:"tensor_cores" env:"TENSOR_CORES" default:"true"`
-
-	// Cache Configuration
-	CacheConfig cache.MultiLayerCacheConfig `json:"cache_config"`
+	// CUDA Configuration
+	CudaDeviceID   int           `json:"cuda_device_id" env:"CUDA_DEVICE_ID" default:"0"`
+	CudaMemoryPool int64         `json:"cuda_memory_pool" env:"CUDA_MEMORY_POOL" default:"2147483648"` // 2GB
+	CudaStreams    int           `json:"cuda_streams" env:"CUDA_STREAMS" default:"8"`
+	TensorCores    bool          `json:"tensor_cores" env:"TENSOR_CORES" default:"true"`
+	CacheConfig    cache.MultiLayerCacheConfig `json:"cache_config"`
 
 	// Performance & Limits
 	MaxWorkers        int               `json:"max_workers" env:"MAX_WORKERS"`
@@ -66,27 +68,22 @@ type CudaServerConfig struct {
 // =====================================
 
 type CudaMetricsCollector struct {
-	// Processing metrics
 	documentProcessingDuration *prometheus.HistogramVec
 	embeddingGenerationTime    *prometheus.HistogramVec
 	searchQueryDuration        *prometheus.HistogramVec
 
-	// GPU metrics
-	gpuUtilization      *prometheus.GaugeVec
-	gpuMemoryUsage      *prometheus.GaugeVec
-	gpuTemperature      *prometheus.GaugeVec
+	gpuUtilization *prometheus.GaugeVec
+	gpuMemoryUsage *prometheus.GaugeVec
+	gpuTemperature *prometheus.GaugeVec
 
-	// Request metrics
-	httpRequestsTotal     *prometheus.CounterVec
-	activeConnections     *prometheus.GaugeVec
+	httpRequestsTotal *prometheus.CounterVec
+	activeConnections *prometheus.GaugeVec
 
-	// Cache metrics
-	cacheOperations       *prometheus.CounterVec
-	cacheHitRatio         *prometheus.GaugeVec
-	cacheResponseTime     *prometheus.HistogramVec
+	cacheOperations   *prometheus.CounterVec
+	cacheHitRatio     *prometheus.GaugeVec
+	cacheResponseTime *prometheus.HistogramVec
 
-	// Error tracking
-	errorRate             *prometheus.CounterVec
+	errorRate *prometheus.CounterVec
 }
 
 func NewCudaMetricsCollector() *CudaMetricsCollector {
@@ -99,7 +96,6 @@ func NewCudaMetricsCollector() *CudaMetricsCollector {
 			},
 			[]string{"document_type", "processing_stage", "gpu_accelerated"},
 		),
-
 		embeddingGenerationTime: prometheus.NewHistogramVec(
 			prometheus.HistogramOpts{
 				Name:    "legal_cuda_embedding_generation_duration_seconds",
@@ -108,7 +104,6 @@ func NewCudaMetricsCollector() *CudaMetricsCollector {
 			},
 			[]string{"model_type", "embedding_dim", "batch_size"},
 		),
-
 		searchQueryDuration: prometheus.NewHistogramVec(
 			prometheus.HistogramOpts{
 				Name:    "legal_cuda_search_query_duration_seconds",
@@ -117,7 +112,6 @@ func NewCudaMetricsCollector() *CudaMetricsCollector {
 			},
 			[]string{"collection", "search_type", "top_k"},
 		),
-
 		gpuUtilization: prometheus.NewGaugeVec(
 			prometheus.GaugeOpts{
 				Name: "gpu_utilization_percent",
@@ -125,7 +119,6 @@ func NewCudaMetricsCollector() *CudaMetricsCollector {
 			},
 			[]string{"gpu_id", "gpu_model"},
 		),
-
 		gpuMemoryUsage: prometheus.NewGaugeVec(
 			prometheus.GaugeOpts{
 				Name: "gpu_memory_usage_bytes",
@@ -133,7 +126,6 @@ func NewCudaMetricsCollector() *CudaMetricsCollector {
 			},
 			[]string{"gpu_id", "memory_type"},
 		),
-
 		gpuTemperature: prometheus.NewGaugeVec(
 			prometheus.GaugeOpts{
 				Name: "gpu_temperature_celsius",
@@ -141,15 +133,13 @@ func NewCudaMetricsCollector() *CudaMetricsCollector {
 			},
 			[]string{"gpu_id"},
 		),
-
 		httpRequestsTotal: prometheus.NewCounterVec(
 			prometheus.CounterOpts{
-				Name: "legal_cuda_http_requests_total", 
+				Name: "legal_cuda_http_requests_total",
 				Help: "Total number of HTTP requests",
 			},
 			[]string{"method", "endpoint", "status"},
 		),
-
 		activeConnections: prometheus.NewGaugeVec(
 			prometheus.GaugeOpts{
 				Name: "legal_cuda_active_connections",
@@ -157,7 +147,6 @@ func NewCudaMetricsCollector() *CudaMetricsCollector {
 			},
 			[]string{"connection_type", "protocol"},
 		),
-
 		cacheOperations: prometheus.NewCounterVec(
 			prometheus.CounterOpts{
 				Name: "legal_cuda_cache_operations_total",
@@ -165,7 +154,6 @@ func NewCudaMetricsCollector() *CudaMetricsCollector {
 			},
 			[]string{"operation", "cache_layer", "result"},
 		),
-
 		cacheHitRatio: prometheus.NewGaugeVec(
 			prometheus.GaugeOpts{
 				Name: "legal_cuda_cache_hit_ratio",
@@ -173,7 +161,6 @@ func NewCudaMetricsCollector() *CudaMetricsCollector {
 			},
 			[]string{"cache_layer"},
 		),
-
 		cacheResponseTime: prometheus.NewHistogramVec(
 			prometheus.HistogramOpts{
 				Name:    "legal_cuda_cache_response_time_seconds",
@@ -182,7 +169,6 @@ func NewCudaMetricsCollector() *CudaMetricsCollector {
 			},
 			[]string{"cache_layer", "operation"},
 		),
-
 		errorRate: prometheus.NewCounterVec(
 			prometheus.CounterOpts{
 				Name: "legal_cuda_errors_total",
@@ -215,23 +201,14 @@ func (c *CudaMetricsCollector) RegisterMetrics() {
 // =====================================
 
 type SimpleLegalCudaService struct {
-	// Configuration
-	config *CudaServerConfig
-
-	// Database & Cache
+	config      *CudaServerConfig
 	pgPool      *pgxpool.Pool
 	redisCache  *redis.DistributedCache
 	multiCache  *cache.MultiLayerCache
-	
-	// Performance Monitoring
-	metrics *CudaMetricsCollector
-
-	// Resource Management
-	shutdownChan      chan struct{}
-	wg                sync.WaitGroup
-
-	// CUDA Device Properties (simulated)
-	deviceProps       CudaDeviceProperties
+	metrics     *CudaMetricsCollector
+	shutdownChan chan struct{}
+	wg          sync.WaitGroup
+	deviceProps CudaDeviceProperties
 }
 
 type CudaDeviceProperties struct {
@@ -258,10 +235,8 @@ func NewSimpleLegalCudaService(config *CudaServerConfig) (*SimpleLegalCudaServic
 
 	log.Printf("🚀 Initializing Simple Legal CUDA Service")
 
-	// Initialize CUDA (simulated)
 	service.initializeCUDA()
 
-	// Initialize database connection (optional)
 	if config.PostgresURL != "disabled" && config.PostgresURL != "" {
 		if err := service.initializeDatabase(); err != nil {
 			log.Printf("⚠️  Database initialization failed: %v (continuing without database)", err)
@@ -272,15 +247,11 @@ func NewSimpleLegalCudaService(config *CudaServerConfig) (*SimpleLegalCudaServic
 		log.Printf("⚠️  Database disabled - running without persistence")
 	}
 
-	// Initialize cache system (optional)
 	if err := service.initializeCache(); err != nil {
 		log.Printf("⚠️  Cache initialization failed: %v (continuing with minimal cache)", err)
 	}
 
-	// Register metrics
 	service.metrics.RegisterMetrics()
-
-	// Start background routines
 	service.startBackgroundTasks()
 
 	log.Printf("✅ Simple Legal CUDA Service initialized successfully")
@@ -292,47 +263,41 @@ func NewSimpleLegalCudaService(config *CudaServerConfig) (*SimpleLegalCudaServic
 func (s *SimpleLegalCudaService) initializeCUDA() {
 	log.Printf("🔧 Initializing CUDA Runtime...")
 
-	// Simulated device properties for RTX 3060 Ti
 	s.deviceProps = CudaDeviceProperties{
 		Name:                "RTX 3060 Ti",
 		Major:               8,
 		Minor:               6,
 		MultiProcessorCount: 38,
-		TotalGlobalMem:      8589934592, // 8GB
-		ClockRate:           1665000,    // 1.665 GHz
-		MemoryClockRate:     7001000,    // 14 Gbps effective
+		TotalGlobalMem:      8589934592,
+		ClockRate:           1665000,
+		MemoryClockRate:     7001000,
 		MemoryBusWidth:      256,
 	}
 
-	log.Printf("✅ CUDA initialized: %s (Compute %d.%d)", 
-		s.deviceProps.Name, s.deviceProps.Major, s.deviceProps.Minor)
-	log.Printf("📊 GPU Memory: %.2f GB, Multiprocessors: %d", 
-		float64(s.deviceProps.TotalGlobalMem)/1024/1024/1024, s.deviceProps.MultiProcessorCount)
+	log.Printf("✅ CUDA initialized: %s (Compute %d.%d)", s.deviceProps.Name, s.deviceProps.Major, s.deviceProps.Minor)
+	log.Printf("📊 GPU Memory: %.2f GB, Multiprocessors: %d", float64(s.deviceProps.TotalGlobalMem)/1024/1024/1024, s.deviceProps.MultiProcessorCount)
 }
 
 func (s *SimpleLegalCudaService) initializeDatabase() error {
 	log.Printf("🔧 Initializing PostgreSQL connection...")
 
-	config, err := pgxpool.ParseConfig(s.config.PostgresURL)
+	cfg, err := pgxpool.ParseConfig(s.config.PostgresURL)
 	if err != nil {
 		return fmt.Errorf("failed to parse PostgreSQL URL: %w", err)
 	}
 
-	// Configure connection pool
-	config.MaxConns = 25
-	config.MinConns = 5
-	config.MaxConnLifetime = time.Hour
-	config.MaxConnIdleTime = time.Minute * 30
+	cfg.MaxConns = 25
+	cfg.MinConns = 5
+	cfg.MaxConnLifetime = time.Hour
+	cfg.MaxConnIdleTime = time.Minute * 30
 
-	s.pgPool, err = pgxpool.NewWithConfig(context.Background(), config)
+	s.pgPool, err = pgxpool.NewWithConfig(context.Background(), cfg)
 	if err != nil {
 		return fmt.Errorf("failed to create connection pool: %w", err)
 	}
 
-	// Test connection
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
 	if err := s.pgPool.Ping(ctx); err != nil {
 		return fmt.Errorf("database ping failed: %w", err)
 	}
@@ -344,7 +309,6 @@ func (s *SimpleLegalCudaService) initializeDatabase() error {
 func (s *SimpleLegalCudaService) initializeCache() error {
 	log.Printf("🔧 Initializing Multi-Layer Cache System...")
 
-	// Initialize Redis distributed cache if enabled
 	var err error
 	if s.config.RedisURL != "disabled" && s.config.RedisURL != "" {
 		s.redisCache, err = redis.InitializeDistributedCache(s.config.RedisURL)
@@ -355,25 +319,20 @@ func (s *SimpleLegalCudaService) initializeCache() error {
 		log.Printf("⚠️  Redis disabled - running with local cache only")
 	}
 
-	// Configure multi-layer cache
 	cacheConfig := cache.MultiLayerCacheConfig{
-		// L1 Configuration (In-memory)
 		L1MaxSize:    10000,
 		L1DefaultTTL: 5 * time.Minute,
 		EnableL1:     true,
 
-		// L2 Configuration (Redis) - only if Redis is available
 		L2Address:    s.config.RedisURL,
 		L2DefaultTTL: 30 * time.Minute,
 		L2MaxRetries: 3,
 		EnableL2:     s.redisCache != nil && s.redisCache.IsEnabled(),
 
-		// L3 Configuration (PostgreSQL) - only if database is available  
 		L3DefaultTTL:      2 * time.Hour,
 		L3CleanupInterval: 1 * time.Hour,
 		EnableL3:          s.pgPool != nil,
 
-		// General settings
 		EnableMetrics: true,
 		WriteThrough:  s.pgPool != nil,
 		ReadThrough:   true,
@@ -388,23 +347,28 @@ func (s *SimpleLegalCudaService) initializeCache() error {
 	if s.redisCache != nil && s.redisCache.IsEnabled() {
 		redisEnabled = "true"
 	}
-	
+
 	dbEnabled := "false"
 	if s.pgPool != nil {
 		dbEnabled = "true"
 	}
-	
-	log.Printf("✅ Multi-Layer Cache initialized: L1=true L2=%s L3=%s", redisEnabled, dbEnabled)
 
+	log.Printf("✅ Multi-Layer Cache initialized: L1=true L2=%s L3=%s", redisEnabled, dbEnabled)
 	return nil
 }
 
 func (s *SimpleLegalCudaService) startBackgroundTasks() {
-	// Start GPU monitoring
-	go s.monitorGPUMetrics()
-	
-	// Start cache metrics collection
-	go s.monitorCacheMetrics()
+	s.wg.Add(1)
+	go func() {
+		defer s.wg.Done()
+		s.monitorGPUMetrics()
+	}()
+
+	s.wg.Add(1)
+	go func() {
+		defer s.wg.Done()
+		s.monitorCacheMetrics()
+	}()
 
 	log.Printf("✅ Background monitoring tasks started")
 }
@@ -430,11 +394,9 @@ func (s *SimpleLegalCudaService) monitorGPUMetrics() {
 	for {
 		select {
 		case <-ticker.C:
-			// Update GPU utilization metrics (simulated)
 			s.metrics.gpuUtilization.WithLabelValues("0", s.deviceProps.Name).Set(0.75)
 			s.metrics.gpuMemoryUsage.WithLabelValues("0", "used").Set(float64(s.deviceProps.TotalGlobalMem) * 0.6)
 			s.metrics.gpuTemperature.WithLabelValues("0").Set(65.0)
-
 		case <-s.shutdownChan:
 			return
 		}
@@ -448,14 +410,14 @@ func (s *SimpleLegalCudaService) monitorCacheMetrics() {
 	for {
 		select {
 		case <-ticker.C:
-			// Get cache statistics
+			if s.multiCache == nil {
+				continue
+			}
 			stats := s.multiCache.GetStats()
-			
 			s.metrics.cacheHitRatio.WithLabelValues("L1").Set(stats.L1Stats.HitRatio)
 			s.metrics.cacheHitRatio.WithLabelValues("L2").Set(stats.L2Stats.HitRatio)
 			s.metrics.cacheHitRatio.WithLabelValues("L3").Set(stats.L3Stats.HitRatio)
 			s.metrics.cacheHitRatio.WithLabelValues("total").Set(stats.Total.HitRatio)
-
 		case <-s.shutdownChan:
 			return
 		}
@@ -470,26 +432,19 @@ func main() {
 	log.Printf("🚀 Starting Simple Legal CUDA Server")
 	log.Printf("📊 Runtime: Go %s on %s/%s", runtime.Version(), runtime.GOOS, runtime.GOARCH)
 
-	// Load configuration
 	config := loadServerConfig()
 	log.Printf("⚙️  Configuration loaded - Environment: %s", config.Environment)
 
-	// Initialize service
 	service, err := NewSimpleLegalCudaService(config)
 	if err != nil {
 		log.Fatalf("❌ Service initialization failed: %v", err)
 	}
 
-	// Setup graceful shutdown
-	_, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	// Start HTTP server for REST API and metrics
-	go func() {
-		if err := startHTTPServer(service, config); err != nil {
-			log.Fatalf("❌ HTTP server failed: %v", err)
-		}
-	}()
+	// Start HTTP server and receive server instance
+	server, err := startHTTPServer(service, config)
+	if err != nil {
+		log.Fatalf("❌ Failed to start HTTP server: %v", err)
+	}
 
 	log.Printf("✅ Server started successfully")
 	log.Printf("🌐 HTTP Server: http://localhost:%s", config.HTTPPort)
@@ -500,14 +455,19 @@ func main() {
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 	<-sigChan
 
-	log.Printf("🛑 Shutdown signal received, gracefully shutting down...")
-	
-	// Signal shutdown to background tasks
+	log.Printf("🛑 Shutdown signal received, gracefully shutting down HTTP server...")
+
+	// Graceful HTTP server shutdown
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := server.Shutdown(ctx); err != nil {
+		log.Printf("⚠️  HTTP server shutdown error: %v", err)
+	}
+
+	// Signal background tasks to stop and wait
 	close(service.shutdownChan)
-	
-	// Wait for background tasks to complete
 	service.wg.Wait()
-	
+
 	// Close resources
 	if service.multiCache != nil {
 		service.multiCache.Close()
@@ -519,7 +479,6 @@ func main() {
 		service.pgPool.Close()
 	}
 
-	cancel()
 	log.Printf("✅ Simple Legal CUDA Server shutdown complete")
 }
 
@@ -534,7 +493,7 @@ func loadServerConfig() *CudaServerConfig {
 		RedisURL:    getEnv("REDIS_URL", "localhost:6379"),
 
 		CudaDeviceID:   0,
-		CudaMemoryPool: 2147483648, // 2GB
+		CudaMemoryPool: 2147483648,
 		CudaStreams:    8,
 		TensorCores:    true,
 
@@ -558,7 +517,8 @@ func loadServerConfig() *CudaServerConfig {
 	return config
 }
 
-func startHTTPServer(service *SimpleLegalCudaService, config *CudaServerConfig) error {
+// startHTTPServer starts the server in a goroutine and returns the server instance.
+func startHTTPServer(service *SimpleLegalCudaService, config *CudaServerConfig) (*http.Server, error) {
 	if config.Environment == "production" {
 		gin.SetMode(gin.ReleaseMode)
 	}
@@ -566,14 +526,37 @@ func startHTTPServer(service *SimpleLegalCudaService, config *CudaServerConfig) 
 	router := gin.New()
 	router.Use(gin.Logger(), gin.Recovery())
 
+	// Simple CORS middleware
+	router.Use(func(c *gin.Context) {
+		origin := c.Request.Header.Get("Origin")
+		allowed := false
+		for _, o := range config.CORSOrigins {
+			if o == origin {
+				allowed = true
+				break
+			}
+		}
+		if allowed {
+			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
+			c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+			c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Session-ID")
+			c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		}
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(http.StatusNoContent)
+			return
+		}
+		c.Next()
+	})
+
 	// Health endpoints
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
-			"status":    "healthy",
-			"service":   "Simple Legal CUDA Server",
-			"version":   "1.0.0",
-			"timestamp": time.Now().UTC().Format(time.RFC3339),
-			"gpu":       service.deviceProps.Name,
+			"status":        "healthy",
+			"service":       "Simple Legal CUDA Server",
+			"version":       "1.0.0",
+			"timestamp":     time.Now().UTC().Format(time.RFC3339),
+			"gpu":           service.deviceProps.Name,
 			"cache_enabled": service.multiCache != nil,
 		})
 	})
@@ -594,10 +577,10 @@ func startHTTPServer(service *SimpleLegalCudaService, config *CudaServerConfig) 
 	// GPU status
 	router.GET("/gpu/status", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
-			"device_id": config.CudaDeviceID,
-			"properties": service.deviceProps,
+			"device_id":    config.CudaDeviceID,
+			"properties":   service.deviceProps,
 			"tensor_cores": config.TensorCores,
-			"streams": config.CudaStreams,
+			"streams":      config.CudaStreams,
 		})
 	})
 
@@ -606,61 +589,206 @@ func startHTTPServer(service *SimpleLegalCudaService, config *CudaServerConfig) 
 		var req struct {
 			Text string `json:"text"`
 		}
-		
+
 		if err := c.ShouldBindJSON(&req); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		// Check cache first
 		cacheKey := fmt.Sprintf("embed:%s", req.Text)
 		sessionID := c.Request.Header.Get("Session-ID")
 		if sessionID == "" {
 			sessionID = "default"
+		package main
+
+		import (
+			"bytes"
+			"compress/gzip"
+			"context"
+			"encoding/base64"
+			"encoding/binary"
+			"fmt"
+			"log"
+			"net/http"
+			"time"
+		)
+
+		// EmbeddingGenerator is the abstraction for real CUDA/cgo or CPU fallback
+		type EmbeddingGenerator interface {
+			Generate(ctx context.Context, text string) ([]float32, error)
 		}
-		if cached, found := service.multiCache.Get(c.Request.Context(), sessionID, cacheKey); found {
-			service.metrics.cacheOperations.WithLabelValues("get", "multi_layer", "hit").Inc()
-			c.JSON(http.StatusOK, gin.H{
-				"embedding": cached,
-				"cached": true,
+
+		// CPUSimulator implements EmbeddingGenerator for testing
+		type CPUSimulator struct {
+			Dim int
+		}
+
+		func (s *CPUSimulator) Generate(ctx context.Context, text string) ([]float32, error) {
+			emb := make([]float32, s.Dim)
+			for i := range emb {
+				// Respect cancellation
+				select {
+				case <-ctx.Done():
+					return nil, ctx.Err()
+				default:
+				}
+				emb[i] = float32(i) * 0.001
+			}
+			return emb, nil
+		}
+
+		// Cache write worker job
+		type cacheJob struct {
+			ctx       context.Context
+			sessionID string
+			key       string
+			value     interface{} // store encoded payload (string) to keep small over network
+			ttlSec    int
+		}
+
+		// startCacheWriter runs background worker(s) that flush Set() to multiCache asynchronously
+		func startCacheWriter(svc *SimpleLegalCudaService, workerCount int, queueSize int) chan<- cacheJob {
+			jobs := make(chan cacheJob, queueSize)
+			for w := 0; w < workerCount; w++ {
+				go func(id int) {
+					for job := range jobs {
+						// respect shutdown
+						select {
+						case <-svc.shutdownChan:
+							return
+						default:
+						}
+						if svc.multiCache == nil {
+							continue
+						}
+						err := svc.multiCache.Set(job.ctx, job.sessionID, job.key, job.value, job.ttlSec)
+						if err != nil {
+							log.Printf("[cache-writer-%d] set error: %v", id, err)
+							if svc.metrics != nil {
+								svc.metrics.cacheOperations.WithLabelValues("set", "multi_layer", "error").Inc()
+							}
+						} else if svc.metrics != nil {
+							svc.metrics.cacheOperations.WithLabelValues("set", "multi_layer", "success").Inc()
+						}
+					}
+				}(w)
+			}
+			return jobs
+		}
+
+		// helper: float32 slice -> gzip(base64(byte[]))
+		func encodeEmbeddingGzipBase64(emb []float32) (string, error) {
+			var buf bytes.Buffer
+			// binary write floats as little-endian
+			if err := binary.Write(&buf, binary.LittleEndian, emb); err != nil {
+				return "", err
+			}
+			var gz bytes.Buffer
+			gw := gzip.NewWriter(&gz)
+			if _, err := gw.Write(buf.Bytes()); err != nil {
+				_ = gw.Close()
+				return "", err
+			}
+			if err := gw.Close(); err != nil {
+				return "", err
+			}
+			return base64.StdEncoding.EncodeToString(gz.Bytes()), nil
+		}
+
+		// Register this endpoint from startHTTPServer or init code.
+		// Assumes svc, gen (EmbeddingGenerator), and cacheJobs channel exist.
+		func registerEmbedEndpoint(router *gin.Engine, svc *SimpleLegalCudaService, gen EmbeddingGenerator, cacheJobs chan<- cacheJob, defaultTTL time.Duration) {
+			router.POST("/api/cuda/embed", func(c *gin.Context) {
+				var req struct {
+					Text string `json:"text"`
+				}
+				if err := c.ShouldBindJSON(&req); err != nil {
+					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+					return
+				}
+
+				// Trace ID - prefer incoming header, otherwise generate short id
+				traceID := c.GetHeader("X-Trace-ID")
+				if traceID == "" {
+					traceID = fmt.Sprintf("%d", time.Now().UnixNano())
+				}
+
+				cacheKey := fmt.Sprintf("embed:%x", req.Text) // simple key - consider hashing for long text
+				sessionID := c.GetHeader("Session-ID")
+				if sessionID == "" {
+					sessionID = "default"
+				}
+
+				// Cache GET (non-blocking safe check)
+				if svc.multiCache != nil {
+					if cached, found := svc.multiCache.Get(c.Request.Context(), sessionID, cacheKey); found {
+						if svc.metrics != nil {
+							svc.metrics.cacheOperations.WithLabelValues("get", "multi_layer", "hit").Inc()
+						}
+						c.JSON(http.StatusOK, gin.H{
+							"trace_id": traceID,
+							"cached":   true,
+							"encoding": "gzip+base64",
+							"data":     cached,
+						})
+						return
+					}
+					if svc.metrics != nil {
+						svc.metrics.cacheOperations.WithLabelValues("get", "multi_layer", "miss").Inc()
+					}
+				}
+
+				// Generate embedding with request context (cancels on client disconnect)
+				ctx := c.Request.Context()
+				start := time.Now()
+				emb, err := gen.Generate(ctx, req.Text)
+				if err != nil {
+					if svc.metrics != nil {
+						svc.metrics.errorRate.WithLabelValues("embed_generate", "cuda_service", "high").Inc()
+					}
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "trace_id": traceID})
+					return
+				}
+				if svc.metrics != nil {
+					svc.metrics.embeddingGenerationTime.WithLabelValues("simulator", fmt.Sprintf("%d", len(emb)), "1").Observe(time.Since(start).Seconds())
+				}
+
+				// encode embedding
+				encoded, err := encodeEmbeddingGzipBase64(emb)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "encoding failed", "trace_id": traceID})
+					return
+				}
+
+				// Async cache write: try to queue, drop with metric if queue full
+				if svc.multiCache != nil && cacheJobs != nil {
+					job := cacheJob{
+						ctx:       context.Background(), // background so async write survives request context
+						sessionID: sessionID,
+						key:       cacheKey,
+						value:     encoded,
+						ttlSec:    int(defaultTTL.Seconds()),
+					}
+					select {
+					case cacheJobs <- job:
+						if svc.metrics != nil {
+							svc.metrics.cacheOperations.WithLabelValues("set", "multi_layer", "queued").Inc()
+						}
+					default:
+						// queue full - avoid blocking; record drop
+						if svc.metrics != nil {
+							svc.metrics.cacheOperations.WithLabelValues("set", "multi_layer", "dropped").Inc()
+						}
+						log.Printf("[embed] cache queue full, skipping async set for key=%s trace=%s", cacheKey, traceID)
+					}
+				}
+
+				// Return compressed encoded embedding to client (SvelteKit can decode)
+				c.JSON(http.StatusOK, gin.H{
+					"trace_id": traceID,
+					"cached":   false,
+					"encoding": "gzip+base64",
+					"data":     encoded,
+				})
 			})
-			return
 		}
-
-		service.metrics.cacheOperations.WithLabelValues("get", "multi_layer", "miss").Inc()
-
-		// Simulate CUDA embedding generation
-		embedding := make([]float32, 768)
-		for i := range embedding {
-			embedding[i] = float32(i) * 0.001
-		}
-
-		// Cache the result
-		service.multiCache.Set(c.Request.Context(), sessionID, cacheKey, embedding, 1800) // 30 minutes
-
-		c.JSON(http.StatusOK, gin.H{
-			"embedding": embedding,
-			"cached": false,
-		})
-	})
-
-	server := &http.Server{
-		Addr:    ":" + config.HTTPPort,
-		Handler: router,
-	}
-
-	// Enable HTTP/2
-	if err := http2.ConfigureServer(server, nil); err != nil {
-		return fmt.Errorf("failed to configure HTTP/2: %w", err)
-	}
-
-	log.Printf("🌐 Simple Legal CUDA HTTP server listening on port %s", config.HTTPPort)
-	return server.ListenAndServe()
-}
-
-func getEnv(key, defaultValue string) string {
-	if value := os.Getenv(key); value != "" {
-		return value
-	}
-	return defaultValue
-}

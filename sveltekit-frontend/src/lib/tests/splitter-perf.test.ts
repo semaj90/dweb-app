@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 /// <reference types="vitest" />
 // TODO: Fix import - // Orphaned content: import {  const MAX_MS_PER_DOC = parseFloat(import.meta.env.SPLITTER_MAX_MS_PER_DOC || '3.5');
 

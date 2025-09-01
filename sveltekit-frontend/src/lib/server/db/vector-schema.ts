@@ -9,13 +9,13 @@ import {
   jsonb,
   integer,
   real,
-  relations,
+  relations
 } from "drizzle-orm/pg-core";
 import { vector } from "pgvector/drizzle-orm";
 import { sql } from "drizzle-orm";
 
 // Document embeddings for semantic search
-export const documentEmbeddings = pgTable(
+export const documentEmbeddings = pgTable(;
   "document_embeddings",
   {
     id: uuid("id")
@@ -37,7 +37,7 @@ export const documentEmbeddings = pgTable(
       .default(sql`'{}'::jsonb`),
     modelUsed: text("model_used").default("nomic-embed-text"),
     createdAt: timestamp("created_at").defaultNow(),
-    updatedAt: timestamp("updated_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow()
   },
   (table) => ({
     // Vector similarity search index
@@ -47,12 +47,12 @@ export const documentEmbeddings = pgTable(
       table.documentId,
       table.documentType,
     ),
-    createdAtIdx: index("idx_created_at").on(table.createdAt),
+    createdAtIdx: index("idx_created_at").on(table.createdAt)
   }),
 );
 
 // Search queries and their embeddings for caching
-export const searchQueries = pgTable(
+export const searchQueries = pgTable(;
   "search_queries",
   {
     id: uuid("id")
@@ -72,17 +72,17 @@ export const searchQueries = pgTable(
     resultsCount: integer("results_count").default(0),
     results: jsonb("results")
       .default(sql`'{"items": [], "totalFound": 0, "searchTime": 0}'::jsonb`),
-    createdAt: timestamp("created_at").defaultNow(),
+    createdAt: timestamp("created_at").defaultNow()
   },
   (table) => ({
     userIdx: index("idx_search_user").on(table.userId),
     queryEmbeddingIdx: index("idx_query_embedding").on(table.queryEmbedding),
-    createdAtIdx: index("idx_search_created").on(table.createdAt),
+    createdAtIdx: index("idx_search_created").on(table.createdAt)
   }),
 );
 
 // AI model configurations
-export const aiModels = pgTable(
+export const aiModels = pgTable(;
   "ai_models",
   {
     id: uuid("id")
@@ -104,19 +104,19 @@ export const aiModels = pgTable(
       .default(sql`'{}'::jsonb`),
     isActive: integer("is_active").notNull().default(1),
     createdAt: timestamp("created_at").defaultNow(),
-    updatedAt: timestamp("updated_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow()
   },
   (table) => ({
     nameIdx: index("idx_model_name").on(table.name),
     providerTypeIdx: index("idx_provider_type").on(
       table.provider,
       table.modelType,
-    ),
+    )
   }),
 );
 
 // Relations for vector tables
-export const documentEmbeddingsRelations = relations(
+export const documentEmbeddingsRelations = relations(;
   documentEmbeddings,
   ({ one }) => ({
     // Relations to main tables can be added here based on documentId and documentType

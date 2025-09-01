@@ -611,5 +611,5 @@ class MonitoringService extends EventEmitter {
 
 // Export singleton instance
 export const monitoringService = new MonitoringService();
-
+;
 // Types are already exported as interfaces above

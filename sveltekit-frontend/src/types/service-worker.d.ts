@@ -10,8 +10,7 @@ declare interface FetchEvent extends ExtendableEvent {
   respondWith(response: Response | Promise<Response>): void;
 }
 
-declare interface ExtendableMessageEvent extends ExtendableEvent, MessageEvent {
-}
+declare interface ExtendableMessageEvent extends ExtendableEvent, MessageEvent {}
 
 declare global {
   interface ServiceWorkerGlobalScope {
@@ -22,4 +21,4 @@ declare global {
   const self: ServiceWorkerGlobalScope & typeof globalThis;
 }
 
-export {};
+

@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 
 /**
  * XState Svelte Store Integration
@@ -467,7 +468,7 @@ class XStateStoreManager {
 
 // Export singleton instance and factory function
 export const xstateStore = XStateStoreManager.getInstance();
-
+;
 // Factory function for creating custom store configurations
 export function createXStateStore(config?: XStateStoreConfig) {
   return XStateStoreManager.getInstance(config);

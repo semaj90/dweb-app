@@ -46,8 +46,8 @@
   let error = $derived($state.context.error);
 
   // Voice synthesis
-  let speechSynthesis: SpeechSynthesis | null = null;
-  let currentUtterance: SpeechSynthesisUtterance | null = null;
+let speechSynthesis = $state<SpeechSynthesis | null >(null);
+let currentUtterance = $state<SpeechSynthesisUtterance | null >(null);
 
   onMount(() => {
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
@@ -194,7 +194,7 @@
       <div class="flex items-center gap-2">
         <!-- Voice Toggle -->
         <button
-          click={toggleVoice}
+          on:onclick={toggleVoice}
           class="p-2 rounded-md hover:bg-gray-100 transition-colors"
           class:text-blue-600={$state.context.voiceEnabled}
           class:text-gray-400={!$state.context.voiceEnabled}
@@ -248,7 +248,7 @@
             </div>
           </div>
           <button
-            click={() => send({ type: "RETRY" })}
+            on:onclick={() => send({ type: "RETRY" })}
             class="mt-3 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm"
           >
             Retry
@@ -260,7 +260,7 @@
           {#if $state.context.summary}
             <div
               class="bg-blue-50 border border-blue-200 rounded-lg p-4"
-              transition:fly={{ y: 20, duration: 300 }}
+              transitifly={{ y: 20, duration: 300 }}
             >
               <h4 class="font-medium text-blue-900 mb-2">Executive Summary</h4>
               <p class="text-blue-800">{$state.context.summary}</p>
@@ -271,7 +271,7 @@
           {#if $state.context.keyInsights.length > 0}
             <div
               class="bg-green-50 border border-green-200 rounded-lg p-4"
-              transition:fly={{ y: 20, duration: 300, delay: 100 }}
+              transitifly={{ y: 20, duration: 300, delay: 100 }}
             >
               <h4 class="font-medium text-green-900 mb-3">Key Insights</h4>
               <ul class="space-y-2">
@@ -291,7 +291,7 @@
           >
             <div class="flex items-center gap-3">
               <button
-                click={toggleReading}
+                on:onclick={toggleReading}
                 class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                 disabled={!currentSection}
               >
@@ -305,7 +305,7 @@
               </button>
 
               <button
-                click={stopReading}
+                on:onclick={stopReading}
                 class="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-md transition-colors"
                 disabled={!isReading}
               >
@@ -314,7 +314,7 @@
 
               <div class="flex items-center gap-1">
                 <button
-                  click={previousSection}
+                  on:onclick={previousSection}
                   class="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-md transition-colors"
                   disabled={$state.context.currentSection === 0}
                 >
@@ -322,7 +322,7 @@
                 </button>
 
                 <button
-                  click={nextSection}
+                  on:onclick={nextSection}
                   class="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-md transition-colors"
                   disabled={$state.context.currentSection >=
                     $state.context.sections.length - 1}
@@ -355,7 +355,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {#each $state.context.sections as section, index}
               <button
-                click={() => jumpToSection(index)}
+                on:onclick={() => jumpToSection(index)}
                 class="text-left p-3 border rounded-lg transition-all hover:shadow-md"
                 class:border-blue-500={index === $state.context.currentSection}
                 class:bg-blue-50={index === $state.context.currentSection}
@@ -390,7 +390,7 @@
           {#if currentSection}
             <div
               class="bg-white border border-gray-200 rounded-lg p-6"
-              transition:fly={{ y: 20, duration: 300 }}
+              transitifly={{ y: 20, duration: 300 }}
             >
               <div class="flex items-center justify-between mb-4">
                 <h4 class="text-xl font-semibold text-gray-900">
@@ -458,7 +458,7 @@
           <!-- Analysis Actions -->
           <div class="flex flex-wrap gap-3">
             <button
-              click={analyzeDocument}
+              on:onclick={analyzeDocument}
               class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
               disabled={isLoading}
             >
@@ -467,7 +467,7 @@
             </button>
 
             <button
-              click={synthesizeInsights}
+              on:onclick={synthesizeInsights}
               class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
               disabled={isLoading}
             >
@@ -478,7 +478,7 @@
 
           <!-- Analysis Results -->
           {#if $state.context.analysisResults.length > 0}
-            <div class="space-y-4" transition:fly={{ y: 20, duration: 300 }}>
+            <div class="space-y-4" transitifly={{ y: 20, duration: 300 }}>
               <h4 class="text-lg font-semibold text-gray-900">
                 Analysis Results
               </h4>
@@ -518,7 +518,7 @@
 
           <!-- Synthesis Results -->
           {#if $state.context.synthesisData}
-            <div class="space-y-6" transition:fly={{ y: 20, duration: 300 }}>
+            <div class="space-y-6" transitifly={{ y: 20, duration: 300 }}>
               <h4 class="text-lg font-semibold text-gray-900">
                 Synthesis & Strategic Analysis
               </h4>

@@ -75,11 +75,11 @@
   <div
     class="fixed inset-0 z-50 flex items-center justify-center p-4"
     style="background: rgba(0, 0, 20, {backgroundOpacity})"
-    transition:fade={{ duration: 300 }}
+    transitifade={{ duration: 300 }}
     role="dialog"
     aria-modal="true"
     aria-labelledby="modal-title"
-    click={handleClose}
+    on:onclick={handleClose}
     keydown={handleKeydown}
     tabindex="-1"
     bind:this={modalElement}
@@ -89,7 +89,7 @@
       class="relative {sizeClasses[size]} bg-gradient-to-br {typeColors[type]} 
              border-2 border-amber-400/80 shadow-2xl overflow-hidden
              {cornerClasses[cornerStyle]}"
-      transition:scale={{ duration: 400, easing: quintOut, start: 0.8 }}
+      transitiscale={{ duration: 400, easing: quintOut, start: 0.8 }}
       bind:this={contentElement}
     >
       <!-- FF-Style Corner Decorations -->
@@ -111,7 +111,7 @@
           <button
             class="absolute top-2 right-2 w-6 h-6 text-white hover:text-red-300
                    transition-colors duration-200 font-bold text-xl leading-none"
-            click={handleClose}
+            on:onclick={handleClose}
             aria-label="Close modal"
           >
             ×

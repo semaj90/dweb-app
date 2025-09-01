@@ -3,8 +3,8 @@ https://svelte.dev/e/expected_token -->
 <script lang="ts">
   import { $props, $state } from 'svelte';
 
-  import { onMount } from 'svelte'
-  import { scale, fly } from 'svelte/transition'
+  import { onMount } from 'svelte';
+  import { scale, fly } from 'svelte/transition';
   import { 
     Bot, 
     MessageCircle, 
@@ -122,7 +122,7 @@ https://svelte.dev/e/expected_token -->
       >
         {#each quickActions as action, index}
           <button
-            click={() => handleQuickAction(action.id)}
+            on:onclick={() => handleQuickAction(action.id)}
             class="group relative flex items-center gap-3 px-4 py-3 bg-gray-900/95 backdrop-blur-md border border-gray-700/50 rounded-2xl 
                    hover:border-gray-500/50 transition-all duration-200 {action.color}"
             in:scale={{ duration: 200, delay: index * 50, start: 0.8 }}
@@ -160,7 +160,7 @@ https://svelte.dev/e/expected_token -->
     <!-- Settings Button -->
     {#if isExpanded}
       <button
-        click={onSettingsClick}
+        on:onclick={onSettingsClick}
         class="p-3 bg-gray-800/90 backdrop-blur-md border border-gray-600/50 rounded-xl 
                hover:bg-gray-700/90 hover:border-gray-500/50 transition-all duration-200 group"
         in:scale={{ duration: 200, delay: 300 }}
@@ -172,9 +172,9 @@ https://svelte.dev/e/expected_token -->
     
     <!-- Main AI Button -->
     <button
-      click={() => isExpanded = !isExpanded}
-      on:mouseenter={() => isHovered = true}
-      on:mouseleave={() => isHovered = false}
+      on:onclick={() => isExpanded = !isExpanded}
+      on:on:mouseenter={() => isHovered = true}
+      on:on:mouseleave={() => isHovered = false}
       class="relative group p-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 
              border-2 border-gray-600/50 rounded-full shadow-2xl
              hover:border-gray-400/70 hover:shadow-blue-500/20 

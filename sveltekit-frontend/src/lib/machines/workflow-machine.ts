@@ -573,7 +573,7 @@ export class WorkflowOrchestrator {
 
 // Export singleton instance
 export const workflowOrchestrator = WorkflowOrchestrator.getInstance();
-
+;
 // Export machine types for use in components
 export type DocumentWorkflowState = typeof documentWorkflowMachine;
 export type CaseWorkflowState = typeof caseWorkflowMachine;

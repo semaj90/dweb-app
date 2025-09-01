@@ -2,17 +2,23 @@
   import { createEventDispatcher } from 'svelte';
   import { Search, X } from 'lucide-svelte';
 
-  export let placeholder: string = 'Search...';
-  export let value: string = '';
-  export let debounceTime: number = 300;
-  // optional callback prop (keeps compatibility with existing usage)
-  export let onsearch: ((payload?: unknown) => void) | undefined = undefined;
+  // Convert to Svelte 5 runes pattern
+  let {
+    placeholder = 'Search...',
+    value = $bindable(''),
+    debounceTime = 300,
+    onsearch = undefined
+  } = $props<{
+    placeholder?: string;
+    value?: string;
+    debounceTime?: number;
+    onsearch?: ((payload?: unknown) => void) | undefined;
+  }>();
 
   const dispatch = createEventDispatcher();
-
-  let debounceTimer: number | undefined;
-  let inputElement: HTMLInputElement | null = null;
-  let isFocused = false;
+  let debounceTimer = $state<number | undefined>(undefined);
+  let inputElement = $state<HTMLInputElement | null>(null);
+  let isFocused = $state(false);
 
   function triggerSearch() {
 	dispatch('search', { query: value });
@@ -62,15 +68,15 @@
 	type="text"
 	input={handleInput}
 	keydown={handleKeydown}
-	on:focus={handleFocus}
-	on:blur={handleBlur}
+	onfocus={handleFocus}
+	onblur={handleBlur}
 	aria-label="Search"
   />
 
   {#if value}
 	<button
 	  class="clear-button"
-	  click={clearValue}
+	  on:onclick={clearValue}
 	  aria-label="Clear search"
 	  type="button"
 	>

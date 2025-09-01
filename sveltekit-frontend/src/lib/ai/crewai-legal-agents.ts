@@ -66,7 +66,7 @@ export const legalAgents: LegalAgent[] = [
     - Risk factors and liability exposure
     - Compliance with applicable laws
     - Missing or problematic clauses
-    
+
     Provide structured analysis with confidence scores.`,
     maxTokens: 2000,
     temperature: 0.1
@@ -82,14 +82,14 @@ export const legalAgents: LegalAgent[] = [
     - Industry standard adherence
     - Legal requirement gaps
     - Recommended corrective actions
-    
+
     Flag all potential compliance issues with severity ratings.`,
     maxTokens: 1800,
     temperature: 0.05
   },
   {
     id: 'risk-assessor',
-    name: 'Legal Risk Assessment Specialist', 
+    name: 'Legal Risk Assessment Specialist',
     role: 'Risk Analysis',
     expertise: ['risk-management', 'liability-analysis', 'litigation-prevention'],
     model: 'gemma3',
@@ -98,7 +98,7 @@ export const legalAgents: LegalAgent[] = [
     - Financial exposure
     - Operational risks
     - Mitigation strategies
-    
+
     Quantify risks where possible with probability assessments.`,
     maxTokens: 1500,
     temperature: 0.2
@@ -112,7 +112,7 @@ export const legalAgents: LegalAgent[] = [
 export class CrewAILegalReviewSystem {
   private agents: Map<string, LegalAgent> = new Map();
   private activeJobs: Map<string, DocumentReviewTask> = new Map();
-  
+
   constructor() {
     legalAgents.forEach(agent => {
       this.agents.set(agent.id, agent);
@@ -121,20 +121,20 @@ export class CrewAILegalReviewSystem {
 
   async reviewDocument(task: DocumentReviewTask): Promise<AgentResponse[]> {
     this.activeJobs.set(task.taskId, task);
-    
+
     const responses: AgentResponse[] = [];
-    const assignedAgents = task.assignedAgents.length > 0 
-      ? task.assignedAgents 
+    const assignedAgents = task.assignedAgents.length > 0
+      ? task.assignedAgents
       : ['contract-analyst', 'compliance-auditor', 'risk-assessor'];
 
     // Process with all assigned agents in parallel
-    const agentPromises = assignedAgents.map(agentId => 
+    const agentPromises = assignedAgents.map(agentId =>
       this.processWithAgent(task, agentId)
     );
 
     try {
       const agentResponses = await Promise.allSettled(agentPromises);
-      
+
       agentResponses.forEach((result, index) => {
         if (result.status === 'fulfilled') {
           responses.push(result.value);
@@ -157,7 +157,7 @@ export class CrewAILegalReviewSystem {
       // Store results and trigger document update loop
       await this.storeResults(task, responses);
       documentUpdateLoop.queueDocumentUpdate(task.documentId, JSON.stringify(responses));
-      
+
       return responses;
     } finally {
       this.activeJobs.delete(task.taskId);
@@ -171,7 +171,7 @@ export class CrewAILegalReviewSystem {
     }
 
     const startTime = Date.now();
-    
+
     try {
       const ollama = new ChatOllama({
         baseUrl: "http://localhost:11434",
@@ -204,10 +204,10 @@ Please provide your analysis in the following JSON format:
 
       const response = await ollama.invoke(messages.map(m => m.content).join('\n'));
       const responseText = response.content.toString();
-      
+
       // Parse structured response
       const analysis = this.parseAgentResponse(responseText);
-      
+
       return {
         agentId,
         taskId: task.taskId,
@@ -221,7 +221,7 @@ Please provide your analysis in the following JSON format:
 
     } catch (error: any) {
       console.error(`Error processing with agent ${agentId}:`, error);
-      
+
       return {
         agentId,
         taskId: task.taskId,
@@ -261,7 +261,7 @@ Please provide your analysis in the following JSON format:
     try {
       // Store in ai_history table
       const db = (await import('$lib/server/db')).db;
-      
+
       await db.insert(aiHistory).values({
         userId: 'system', // TODO: Get from context
         prompt: `Legal document review: ${task.reviewType}`,

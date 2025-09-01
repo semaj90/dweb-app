@@ -1,0 +1,130 @@
+{
+  "timestamp": "2025-09-01T22-46-53-174Z",
+  "summary": {
+    "TS1138": 42,
+    "TS7006": 0,
+    "TS2307": 0,
+    "TS2322": 0,
+    "TS2551": 0,
+    "TS2741": 0,
+    "TS2742": 0,
+    "OTHER": 2572,
+    "total": 2614
+  },
+  "topCodes": [
+    {
+      "code": "TS1005",
+      "count": 1470
+    },
+    {
+      "code": "TS1128",
+      "count": 692
+    },
+    {
+      "code": "TS1109",
+      "count": 242
+    },
+    {
+      "code": "TS1136",
+      "count": 101
+    },
+    {
+      "code": "TS1138",
+      "count": 42
+    },
+    {
+      "code": "TS1434",
+      "count": 22
+    },
+    {
+      "code": "TS1137",
+      "count": 21
+    },
+    {
+      "code": "TS1011",
+      "count": 9
+    },
+    {
+      "code": "TS1131",
+      "count": 6
+    },
+    {
+      "code": "TS1003",
+      "count": 4
+    },
+    {
+      "code": "TS1161",
+      "count": 2
+    },
+    {
+      "code": "TS1127",
+      "count": 2
+    },
+    {
+      "code": "TS1180",
+      "count": 1
+    }
+  ],
+  "categories": {
+    "TS1138": [
+      "src/lib/forms/superforms-xstate-integration.ts(54,42): error TS1138: Parameter declaration expected.",
+      "src/lib/forms/superforms-xstate-integration.ts(186,40): error TS1138: Parameter declaration expected.",
+      "src/lib/forms/superforms-xstate-integration.ts(291,34): error TS1138: Parameter declaration expected.",
+      "src/lib/forms/superforms-xstate-integration.ts(399,38): error TS1138: Parameter declaration expected.",
+      "src/lib/optimization/context7-mcp-integration.ts(715,46): error TS1138: Parameter declaration expected.",
+      "src/lib/routing/dynamic-navigation.ts(484,33): error TS1138: Parameter declaration expected.",
+      "src/lib/routing/dynamic-route-generator.ts(373,38): error TS1138: Parameter declaration expected.",
+      "src/lib/routing/index.ts(255,28): error TS1138: Parameter declaration expected.",
+      "src/lib/routing/index.ts(291,34): error TS1138: Parameter declaration expected.",
+      "src/lib/routing/route-guards.ts(271,37): error TS1138: Parameter declaration expected.",
+      "src/lib/routing/route-guards.ts(385,38): error TS1138: Parameter declaration expected.",
+      "src/lib/routing/route-registry.ts(503,38): error TS1138: Parameter declaration expected.",
+      "src/lib/routing/unified-api-router.ts(536,38): error TS1138: Parameter declaration expected.",
+      "src/lib/server/ai/config.ts(126,30): error TS1138: Parameter declaration expected.",
+      "src/lib/server/ai/config.ts(159,32): error TS1138: Parameter declaration expected.",
+      "src/lib/server/ai/ollama-config.ts(134,42): error TS1138: Parameter declaration expected.",
+      "src/lib/server/auth/authUtils.ts(42,29): error TS1138: Parameter declaration expected.",
+      "src/lib/server/session.ts(53,39): error TS1138: Parameter declaration expected.",
+      "src/lib/server/utils/avatar-upload.ts(43,36): error TS1138: Parameter declaration expected.",
+      "src/lib/server/utils/avatar-upload.ts(102,40): error TS1138: Parameter declaration expected.",
+      "src/lib/server/websocket.ts(201,41): error TS1138: Parameter declaration expected.",
+      "src/lib/services/ai-worker-manager.ts(552,38): error TS1138: Parameter declaration expected.",
+      "src/lib/services/ai-worker-manager.ts(572,36): error TS1138: Parameter declaration expected.",
+      "src/lib/services/ai-worker-manager.ts(593,37): error TS1138: Parameter declaration expected.",
+      "src/lib/services/cache-first-architecture.ts(425,61): error TS1138: Parameter declaration expected."
+    ],
+    "TS7006": [],
+    "TS2307": [],
+    "TS2322": [],
+    "TS2551": [],
+    "TS2741": [],
+    "TS2742": [],
+    "OTHER": [
+      ".svelte-kit/types/src/routes/test-enhanced-upload/proxy+page.server.ts(27,1): error TS1136: Property assignment expected.",
+      ".svelte-kit/types/src/routes/test-enhanced-upload/proxy+page.server.ts(101,1): error TS1128: Declaration or statement expected.",
+      "src/lib/components/three/yorha-ui/NESYoRHaHybrid3D.ts(616,1): error TS1131: Property or signature expected.",
+      "src/lib/components/three/yorha-ui/NESYoRHaHybrid3D.ts(636,1): error TS1131: Property or signature expected.",
+      "src/lib/components/three/yorha-ui/NESYoRHaHybrid3D.ts(660,1): error TS1131: Property or signature expected.",
+      "src/lib/components/ui/modern/index.ts(20,30): error TS1137: Expression or comma expected.",
+      "src/lib/components/ui/modern/index.ts(25,1): error TS1128: Declaration or statement expected.",
+      "src/lib/components/ui/modern/index.ts(25,3): error TS1434: Unexpected keyword or identifier.",
+      "src/lib/components/ui/modern/index.ts(27,32): error TS1137: Expression or comma expected.",
+      "src/lib/components/ui/modern/index.ts(34,1): error TS1128: Declaration or statement expected.",
+      "src/lib/components/ui/modern/index.ts(34,3): error TS1434: Unexpected keyword or identifier.",
+      "src/lib/components/ui/modern/index.ts(36,23): error TS1137: Expression or comma expected.",
+      "src/lib/components/ui/modern/index.ts(42,1): error TS1128: Declaration or statement expected.",
+      "src/lib/components/ui/modern/index.ts(42,3): error TS1434: Unexpected keyword or identifier.",
+      "src/lib/components/ui/modular/types.ts(139,3): error TS1109: Expression expected.",
+      "src/lib/components/ui/modular/types.ts(140,3): error TS1109: Expression expected.",
+      "src/lib/config/multi-protocol-routes.ts(340,45): error TS1137: Expression or comma expected.",
+      "src/lib/config/multi-protocol-routes.ts(344,13): error TS1005: ';' expected.",
+      "src/lib/config/multi-protocol-routes.ts(345,14): error TS1005: ';' expected.",
+      "src/lib/config/multi-protocol-routes.ts(347,11): error TS1005: ';' expected.",
+      "src/lib/config/multi-protocol-routes.ts(348,11): error TS1005: ';' expected.",
+      "src/lib/config/multi-protocol-routes.ts(349,9): error TS1005: ';' expected.",
+      "src/lib/config/multi-protocol-routes.ts(350,6): error TS1128: Declaration or statement expected.",
+      "src/lib/config/multi-protocol-routes.ts(352,12): error TS1005: ';' expected.",
+      "src/lib/config/multi-protocol-routes.ts(353,4): error TS1128: Declaration or statement expected."
+    ]
+  }
+}

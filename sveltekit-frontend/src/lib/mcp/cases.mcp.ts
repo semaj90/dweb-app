@@ -6,13 +6,13 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import { sql, eq, and, like, desc } from 'drizzle-orm';
-import * as schema from "../db/schema";
-import { redis } from "../server/cache/redis-service";
-import { minioService } from "../server/storage/minio-service";
+import * as schema from '../db/schema.js';
+import { redis } from '../server/cache/redis-service.js';
+import { minioService } from '../server/storage/minio-service.js';
 
 // Database connection
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://legal_admin:123456@localhost:5432/legal_ai_db'
+  connectionString: import.meta.env.DATABASE_URL || 'postgresql://legal_admin:123456@localhost:5432/legal_ai_db'
 });
 
 const db = drizzle(pool, { schema });

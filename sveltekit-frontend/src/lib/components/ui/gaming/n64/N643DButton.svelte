@@ -92,9 +92,9 @@
   let isFocused = $state(false);
   let mouseX = $state(0);
   let mouseY = $state(0);
-  let audioContext: AudioContext | null = null;
-  let buttonElement: HTMLButtonElement | null = null;
-  let animationId: number | null = null;
+let audioContext = $state<AudioContext | null >(null);
+let buttonElement = $state<HTMLButtonElement | null >(null);
+let animationId = $state<number | null >(null);
 
   // Default to balanced N64 rendering options
   const effectiveRenderOptions: N64RenderingOptions = {
@@ -328,14 +328,14 @@
   };
 
   // Dynamic 3D transformations based on mouse position and state
-  const dynamicRotationX = $derived(rotationX + (isHovered ? mouseY * 10 : 0) + (isPressed ? 5 : 0));
-  const dynamicRotationY = $derived(rotationY + (isHovered ? mouseX * 10 : 0));
-  const dynamicRotationZ = $derived(rotationZ);
-  const dynamicScale = $derived(isPressed ? 0.95 : isHovered ? 1.05 : 1);
+  let dynamicRotationX = $derived(rotationX + (isHovered ? mouseY * 10 : 0) + (isPressed ? 5 : 0));
+  let dynamicRotationY = $derived(rotationY + (isHovered ? mouseX * 10 : 0));
+  let dynamicRotationZ = $derived(rotationZ);
+  let dynamicScale = $derived(isPressed ? 0.95 : isHovered ? 1.05 : 1);
 
-  const sizeStyles = $derived(getSizeStyles(size));
-  const materialStyles = $derived(getMaterialStyles(variant, materialType));
-  const transform3D = $derived(`
+  let sizeStyles = $derived(getSizeStyles(size));
+  let materialStyles = $derived(getMaterialStyles(variant, materialType));
+  let transform3D = $derived(`
     perspective(${perspective}px) 
     rotateX(${dynamicRotationX}deg) 
     rotateY(${dynamicRotationY}deg) 
@@ -373,12 +373,12 @@
   {form}
   {name}
   {value}
-  onclick={handleClick}
-  onmouseenter={handleHover}
-  onmouseleave={handleUnhover}
-  onmousemove={handleMouseMove}
-  onfocus={handleFocus}
-  onblur={handleBlur}
+  on:on:on:click={handleClick}
+  on:on:on:mouseenter={handleHover}
+  on:on:on:mouseleave={handleUnhover}
+  on:mousemove={handleMouseMove}
+  on:focus={handleFocus}
+  on:blur={handleBlur}
   class="n64-3d-button {className} {materialType} mesh-{meshComplexity} {getTextureFilteringClasses()}"
   style="
     --material-bg: {materialStyles.background};

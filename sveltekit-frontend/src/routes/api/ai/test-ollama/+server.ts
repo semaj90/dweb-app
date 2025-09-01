@@ -1,9 +1,10 @@
+/// <reference types="vite/client" />
 
 import { json } from "@sveltejs/kit";
 import type { RequestHandler } from './$types';
 
 
-export const GET = async (): Promise<any> => {
+export const GET = (async (): Promise<any> => {
   try {
     // Check if service is available
     const isAvailable = await ollamaService.healthCheck();
@@ -53,9 +54,9 @@ export const GET = async (): Promise<any> => {
       { status: 500 },
     );
   }
-};
+});
 
-export const POST = async ({ request }): Promise<any> => {
+export const POST = (async ({ request }): Promise<any> => {
   try {
     const { prompt = "What are the key elements of a valid contract?" } =
       await request.json();
@@ -124,4 +125,4 @@ export const POST = async ({ request }): Promise<any> => {
       { status: 500 },
     );
   }
-};
+});

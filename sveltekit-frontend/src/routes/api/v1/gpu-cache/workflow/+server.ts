@@ -1,14 +1,15 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * Legal Workflow Optimization API
  * Integrates binary encoding, GPU caching, and NES orchestration for legal workflows
  */
 
-import { binaryGPUShaderCache } from '../../../../../lib/services/gpu-shader-cache-binary-extension';
-import { nesCacheOrchestrator } from '../../../../../lib/services/nes-cache-orchestrator';
-import { webgpuRAGService } from '../../../../../lib/webgpu/webgpu-rag-service';
-import { binaryEncoder, type EncodingFormat } from '../../../../../lib/middleware/binary-encoding';
+import { binaryGPUShaderCache } from '../../../../../lib/services/gpu-shader-cache-binary-extension.js';
+import { nesCacheOrchestrator } from '../../../../../lib/services/nes-cache-orchestrator.js';
+import { webgpuRAGService } from '../../../../../lib/webgpu/webgpu-rag-service.js';
+import { binaryEncoder, type EncodingFormat } from '../../../../../lib/middleware/binary-encoding.js';
+import { URL } from "url";
 
 // Legal workflow types
 export type LegalWorkflowType = 

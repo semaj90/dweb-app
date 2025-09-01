@@ -107,21 +107,20 @@ export const clusterStatsStore = writable<ClusterStats>({
   uptime_percentage: 33.3
 });
 
-// Derived stores
+// Derived stores (fixed syntax)
 export const healthyInstances = derived(
   ollamaClusterStore,
-  $cluster => $cluster.instances.filter(instance => instance.status === 'healthy')
+  ($cluster) => $cluster.instances.filter((instance) => instance.status === 'healthy')
 );
 
 export const bestPerformingInstance = derived(
   healthyInstances,
-  $instances => {
+  ($instances) => {
     if ($instances.length === 0) return null;
-    
     // Sort by lowest load and response time
-    return $instances.sort((a, b) => {
-      const scoreA = a.current_load + (a.response_time / 10);
-      const scoreB = b.current_load + (b.response_time / 10);
+    return [...$instances].sort((a, b) => {
+      const scoreA = a.current_load + a.response_time / 10;
+      const scoreB = b.current_load + b.response_time / 10;
       return scoreA - scoreB;
     })[0];
   }
@@ -163,14 +162,14 @@ export class OllamaClusterService {
     const updatedInstances = await Promise.all(
       config.instances.map(async (instance) => {
         const startTime = Date.now();
-        
+
         try {
           const response = await fetch(`${instance.url}/api/tags`, {
             signal: AbortSignal.timeout(5000)
           });
 
           const responseTime = Date.now() - startTime;
-          
+
           if (response.ok) {
             const data = await response.json();
             return {
@@ -216,8 +215,8 @@ export class OllamaClusterService {
     const healthyInstances = instances.filter(i => i.status === 'healthy');
     const totalCores = instances.reduce((sum, i) => sum + i.cpu_cores, 0);
     const totalMemory = instances.reduce((sum, i) => sum + i.memory_gb, 0);
-    const avgLoad = healthyInstances.length > 0 
-      ? healthyInstances.reduce((sum, i) => sum + i.current_load, 0) / healthyInstances.length 
+    const avgLoad = healthyInstances.length > 0
+      ? healthyInstances.reduce((sum, i) => sum + i.current_load, 0) / healthyInstances.length
       : 0;
     const avgResponseTime = healthyInstances.length > 0
       ? healthyInstances.reduce((sum, i) => sum + i.response_time, 0) / healthyInstances.length
@@ -249,7 +248,7 @@ export class OllamaClusterService {
     });
 
     const healthyInstances = config.instances.filter(i => i.status === 'healthy');
-    
+
     if (healthyInstances.length === 0) {
       console.warn('No healthy Ollama instances available');
       return null;
@@ -268,14 +267,14 @@ export class OllamaClusterService {
     switch (config.load_balancing_strategy) {
       case 'round_robin':
         return candidateInstances[this.requestCounter % candidateInstances.length];
-      
+
       case 'least_connections':
       case 'cpu_based':
         return candidateInstances.sort((a, b) => a.current_load - b.current_load)[0];
-      
+
       case 'response_time':
         return candidateInstances.sort((a, b) => a.response_time - b.response_time)[0];
-      
+
       default:
         return candidateInstances[0];
     }
@@ -291,7 +290,7 @@ export class OllamaClusterService {
     retries: number = 3
   ): Promise<any> {
     const instance = await this.selectInstance(preferredModel);
-    
+
     if (!instance) {
       throw new Error('No healthy Ollama instances available');
     }
@@ -300,7 +299,7 @@ export class OllamaClusterService {
     this.lastMinuteRequests.push(Date.now());
 
     const startTime = Date.now();
-    
+
     try {
       const response = await fetch(`${instance.url}${endpoint}`, {
         method: 'POST',
@@ -312,12 +311,12 @@ export class OllamaClusterService {
       });
 
       const responseTime = Date.now() - startTime;
-      
+
       // Update instance response time
       ollamaClusterStore.update(config => ({
         ...config,
-        instances: config.instances.map(i => 
-          i.id === instance.id 
+        instances: config.instances.map(i =>
+          i.id === instance.id
             ? { ...i, response_time: responseTime }
             : i
         )
@@ -331,12 +330,12 @@ export class OllamaClusterService {
 
     } catch (error: any) {
       console.error(`Request to ${instance.id} failed:`, error);
-      
+
       // Mark instance as unhealthy if multiple failures
       ollamaClusterStore.update(config => ({
         ...config,
-        instances: config.instances.map(i => 
-          i.id === instance.id 
+        instances: config.instances.map(i =>
+          i.id === instance.id
             ? { ...i, status: 'unhealthy' }
             : i
         )
@@ -356,7 +355,7 @@ export class OllamaClusterService {
    */
   async generateText(prompt: string, model?: string): Promise<string> {
     const selectedModel = model || initialConfig.preferred_models.legal_analysis;
-    
+
     const response = await this.executeRequest('/api/generate', {
       model: selectedModel,
       prompt,
@@ -371,7 +370,7 @@ export class OllamaClusterService {
    */
   async generateEmbeddings(text: string): Promise<number[]> {
     const embeddingModel = initialConfig.preferred_models.embeddings;
-    
+
     const response = await this.executeRequest('/api/embeddings', {
       model: embeddingModel,
       prompt: text
@@ -423,7 +422,7 @@ export class OllamaClusterService {
     });
 
     const healthy = stats.healthy_instances > 0;
-    const message = healthy 
+    const message = healthy
       ? `Cluster operational: ${stats.healthy_instances}/${stats.total_instances} instances healthy`
       : 'Cluster down: No healthy instances available';
 

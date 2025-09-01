@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { randomUUID } from "crypto";
 import type { RequestHandler } from './$types';
 

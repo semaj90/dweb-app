@@ -29,11 +29,11 @@
   const auth = getAuthContext();
 
   // Available users for assignment (would come from API)
-  let availableUsers = [
+let availableUsers = $state([
     { id: '1', name: 'John Smith', role: 'prosecutor' },
     { id: '2', name: 'Jane Doe', role: 'investigator' },
     { id: '3', name: 'Mike Johnson', role: 'legal_assistant' }
-  ];
+  ]);
 
   // Initialize superForm
   const { form, errors, constraints, enhance, submitting, delayed, message } = superForm(initialData, {
@@ -69,7 +69,7 @@
   });
 
   // Tag management
-  let tagInput = '';
+let tagInput = $state('');
 
   function addTag() {
     if (tagInput.trim() && (!$form.tags || !$form.tags.includes(tagInput.trim()))) {
@@ -107,7 +107,7 @@
       {#if !isEditing}
         <button
           type="button"
-          click={() => generateCaseNumber()}
+          on:onclick={() => generateCaseNumber()}
           class="space-y-4"
         >
           Generate Case #
@@ -264,7 +264,7 @@
               {tag}
               <button
                 type="button"
-                click={() => removeTag(tag)}
+                on:onclick={() => removeTag(tag)}
                 class="space-y-4"
               >
                 ×
@@ -284,7 +284,7 @@
           />
           <button
             type="button"
-            click={() => addTag()}
+            on:onclick={() => addTag()}
             class="space-y-4"
           >
             Add Tag
@@ -320,7 +320,7 @@
       <div class="space-y-4">
         <button
           type="button"
-          click={() => dispatch('cancel')}
+          on:onclick={() => dispatch('cancel')}
           class="space-y-4"
           disabled={$submitting}
         >

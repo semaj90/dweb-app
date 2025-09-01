@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * Production Logging API Endpoint
@@ -6,6 +6,8 @@ import type { RequestHandler } from './$types';
  */
 
 import { json, error } from '@sveltejs/kit';
+import crypto from "crypto";
+import { URL } from "url";
 
 // Log levels
 type LogLevel = 'error' | 'warn' | 'info' | 'debug';
@@ -54,12 +56,12 @@ function storeLogEntry(entry: LogEntry): void {
   }
 
   // In production, forward to external logging service
-  if (process.env.NODE_ENV === 'production') {
+  if (import.meta.env.NODE_ENV === 'production') {
     forwardToExternalService(entry);
   }
 
   // Print to console for development
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.NODE_ENV === 'development') {
     console.log(`[${entry.level.toUpperCase()}] ${entry.message}`, entry);
   }
 }
@@ -74,18 +76,18 @@ async function forwardToExternalService(entry: LogEntry): Promise<void> {
   
   try {
     // Example: Forward to Sentry or similar service
-    if (process.env.SENTRY_DSN && entry.level === 'error') {
+    if (import.meta.env.SENTRY_DSN && entry.level === 'error') {
       // Sentry integration would go here
       console.log('Forwarding error to Sentry:', entry);
     }
 
     // Example: Forward to custom logging service
-    if (process.env.CUSTOM_LOGGING_ENDPOINT) {
-      await fetch(process.env.CUSTOM_LOGGING_ENDPOINT, {
+    if (import.meta.env.CUSTOM_LOGGING_ENDPOINT) {
+      await fetch(import.meta.env.CUSTOM_LOGGING_ENDPOINT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.LOGGING_API_KEY}`
+          'Authorization': `Bearer ${import.meta.env.LOGGING_API_KEY}`
         },
         body: JSON.stringify(entry)
       });
@@ -153,10 +155,10 @@ export const POST: RequestHandler = async ({ request, getClientAddress, url }) =
 // GET endpoint for retrieving logs (development/debugging)
 export const GET: RequestHandler = async ({ url, request }) => {
   // Only allow in development or with proper authorization
-  if (process.env.NODE_ENV === 'production') {
+  if (import.meta.env.NODE_ENV === 'production') {
     const authHeader = request.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ') || 
-        authHeader.split(' ')[1] !== process.env.ADMIN_API_KEY) {
+        authHeader.split(' ')[1] !== import.meta.env.ADMIN_API_KEY) {
       throw error(401, 'Unauthorized');
     }
   }
@@ -206,7 +208,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
 
 // DELETE endpoint for clearing logs (development only)
 export const DELETE: RequestHandler = async ({ request }) => {
-  if (process.env.NODE_ENV === 'production') {
+  if (import.meta.env.NODE_ENV === 'production') {
     throw error(403, 'Log clearing not allowed in production');
   }
 

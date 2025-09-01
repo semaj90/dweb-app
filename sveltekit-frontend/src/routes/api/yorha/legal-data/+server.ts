@@ -3,7 +3,8 @@ import { db } from "$lib/server/db/index";
 import { legalDocuments, cases, evidence } from "$lib/server/db/schema-postgres";
 import { eq, sql, like, and, or, desc } from "drizzle-orm";
 import crypto from "crypto";
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
+import { URL } from "url";
 
 
 // YoRHa Legal Data Management API - Production Ready

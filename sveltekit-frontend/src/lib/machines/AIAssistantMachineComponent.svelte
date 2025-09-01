@@ -93,11 +93,11 @@
   }
 
   // Get status indicators
-  const isIdle = $derived(state.value === 'idle');
-  const isProcessing = $derived(state.value === 'processing');
-  const isStreaming = $derived(state.context.activeStreaming);
-  const currentState = $derived(state.value as string);
-  const context = $derived(state.context);
+  let isIdle = $derived(state.value === 'idle');
+  let isProcessing = $derived(state.value === 'processing');
+  let isStreaming = $derived(state.context.activeStreaming);
+  let currentState = $derived(state.value as string);
+  let context = $derived(state.context);
 </script>
 
 <div class="ai-assistant-machine-demo max-w-4xl mx-auto p-6 space-y-6">
@@ -168,7 +168,7 @@
           keydown={(e) => e.key === 'Enter' && submitQuery()}
         />
         <button
-          click={submitQuery}
+          on:onclick={submitQuery}
           disabled={isProcessing || !queryInput.trim()}
           class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -178,13 +178,13 @@
       
       <div class="flex gap-2">
         <button
-          click={toggleStreaming}
+          on:onclick={toggleStreaming}
           class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
         >
           {isStreaming ? 'Disable' : 'Enable'} Streaming
         </button>
         <button
-          click={clearConversation}
+          on:onclick={clearConversation}
           class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
         >
           Clear History

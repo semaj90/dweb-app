@@ -1,9 +1,8 @@
 <!-- Test page for YoRHa Detective functionality -->
 <script lang="ts">
   import { onMount } from 'svelte';
-  
-  let testResult = '';
-  let isLoading = false;
+let testResult = $state('');
+let isLoading = $state(false);
 
   async function testCaseCreation() {
     isLoading = true;
@@ -59,7 +58,7 @@
   <div class="space-y-4 mb-8">
     <button 
       class="px-4 py-2 bg-blue-600 text-white border border-blue-400 hover:bg-blue-700 transition-colors disabled:opacity-50"
-      click={testCaseCreation}
+      on:onclick={testCaseCreation}
       disabled={isLoading}
     >
       {isLoading ? 'Testing...' : 'Test Case Creation'}
@@ -67,7 +66,7 @@
     
     <button 
       class="px-4 py-2 bg-green-600 text-white border border-green-400 hover:bg-green-700 transition-colors disabled:opacity-50"
-      click={testCaseList}
+      on:onclick={testCaseList}
       disabled={isLoading}
     >
       {isLoading ? 'Testing...' : 'Test Case Listing'}

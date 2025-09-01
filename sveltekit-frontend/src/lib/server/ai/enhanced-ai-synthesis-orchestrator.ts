@@ -2,7 +2,7 @@
 // Connects Neo4j, PostgreSQL/pgvector, XState, Redis, Ollama, and Go services
 // TypeScript-safe implementation with MCP Context7 best practices
 
-import { logger } from '../logger';
+import { logger } from '../logger.js';
 import postgres from "postgres";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { createMachine, createActor, fromPromise } from "xstate";
@@ -11,10 +11,10 @@ import { PGVectorStore } from "@langchain/community/vectorstores/pgvector";
 import { Neo4jVectorStore } from "@langchain/community/vectorstores/neo4j_vector";
 import type { Document } from '@langchain/core/documents';
 import Redis from 'ioredis';
-import { aiAssistantSynthesizer } from './ai-assistant-input-synthesizer';
-import { legalBERT } from './legalbert-middleware';
-import { cachingLayer } from './caching-layer';
-import { monitoringService } from './monitoring-service';
+import { aiAssistantSynthesizer } from './ai-assistant-input-synthesizer.js';
+import { legalBERT } from './legalbert-middleware.js';
+import { cachingLayer } from './caching-layer.js';
+import { monitoringService } from './monitoring-service.js';
 
 // Type-safe stub for production
 const prisma = null as any; // Will be replaced with proper Drizzle implementation
@@ -80,33 +80,33 @@ export interface AutoSolveResult {
 // Service configuration from environment
 const serviceConfig: ServiceConfig = {
   neo4j: {
-    uri: process.env.NEO4J_URI || 'bolt://localhost:7687',
-    user: process.env.NEO4J_USER || 'neo4j',
-    password: process.env.NEO4J_PASSWORD || 'password',
+    uri: import.meta.env.NEO4J_URI || 'bolt://localhost:7687',
+    user: import.meta.env.NEO4J_USER || 'neo4j',
+    password: import.meta.env.NEO4J_PASSWORD || 'password',
   },
   postgres: {
-    host: process.env.POSTGRES_HOST || 'localhost',
-    port: parseInt(process.env.POSTGRES_PORT || '5432'),
-    database: process.env.POSTGRES_DB || 'legal_ai',
-    user: process.env.POSTGRES_USER || 'postgres',
-    password: process.env.POSTGRES_PASSWORD || 'postgres',
+    host: import.meta.env.POSTGRES_HOST || 'localhost',
+    port: parseInt(import.meta.env.POSTGRES_PORT || '5432'),
+    database: import.meta.env.POSTGRES_DB || 'legal_ai',
+    user: import.meta.env.POSTGRES_USER || 'postgres',
+    password: import.meta.env.POSTGRES_PASSWORD || 'postgres',
   },
   redis: {
-    host: process.env.REDIS_HOST || 'localhost',
-    port: parseInt(process.env.REDIS_PORT || '6379'),
+    host: import.meta.env.REDIS_HOST || 'localhost',
+    port: parseInt(import.meta.env.REDIS_PORT || '6379'),
   },
   goMicroservices: {
-    rag: process.env.ENHANCED_RAG_URL || 'http://localhost:8094',
-    gpu: process.env.GPU_ORCHESTRATOR_URL || 'http://localhost:8095',
-    llama: process.env.GO_LLAMA_URL || 'http://localhost:8096',
+    rag: import.meta.env.ENHANCED_RAG_URL || 'http://localhost:8094',
+    gpu: import.meta.env.GPU_ORCHESTRATOR_URL || 'http://localhost:8095',
+    llama: import.meta.env.GO_LLAMA_URL || 'http://localhost:8096',
   },
   ollama: {
-    baseUrl: process.env.OLLAMA_URL || 'http://localhost:11434',
+    baseUrl: import.meta.env.OLLAMA_URL || 'http://localhost:11434',
     model: 'gemma3:legal-latest',
   },
   mcp: {
-    context7: process.env.CONTEXT7_URL || 'http://localhost:4000',
-    synthesis: process.env.AI_SYNTHESIS_URL || 'http://localhost:8200',
+    context7: import.meta.env.CONTEXT7_URL || 'http://localhost:4000',
+    synthesis: import.meta.env.AI_SYNTHESIS_URL || 'http://localhost:8200',
   },
 };
 
@@ -123,7 +123,7 @@ const pgConnection = postgres({
 });
 
 export const db = drizzle(pgConnection);
-
+;
 // Redis connection for caching and Go service communication
 const redis = new Redis({
   host: serviceConfig.redis.host,
@@ -952,3 +952,4 @@ RESPONSE:`;
 
 // Export singleton instance
 export const aiOrchestrator = new EnhancedAISynthesisOrchestrator();
+;

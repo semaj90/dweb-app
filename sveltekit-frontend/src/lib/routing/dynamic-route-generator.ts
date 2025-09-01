@@ -6,6 +6,7 @@
 import type { RouteDefinition } from '$lib/data/routes-config';
 import { allRoutes } from '$lib/data/routes-config';
 import { error } from '@sveltejs/kit';
+import path from "path";
 
 export interface DynamicRouteConfig {
   pattern: string;
@@ -367,9 +368,9 @@ export class DynamicRouteGenerator {
 
 // Export singleton instance
 export const dynamicRouteGenerator = new DynamicRouteGenerator();
-
+;
 // Export helper functions
-export function generateDynamicRoute(
+export function generateDynamicRoute(;
   id: string,
   path: string,
   options?: Partial<DynamicRouteConfig>

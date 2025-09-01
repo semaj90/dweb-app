@@ -30,7 +30,6 @@ export const aiStore = writable<AIState>({
 
 // Command result store for Phase 2 compatibility
 export const aiCommandResult = writable(null);
-
 /**
  * Parse AI commands with enhanced capabilities
  */
@@ -80,7 +79,7 @@ export function applyAIClasses(
     add?: string[];
     remove?: string[];
     toggle?: string[];
-  } = {},
+  } = {}
 ) {
   const { add = [], remove = [], toggle = [] } = config;
 
@@ -147,15 +146,10 @@ export const aiCommandService = {
   },
 };
 
-// Derived stores
-export const recentCommands = derived(aiStore, ($store) =>
-  $store.history.slice(-10),
-);
+// Derived stores (repaired syntax)
+export const recentCommands = derived(aiStore, ($store) => $store.history.slice(-10));
 
-export const isAIActive = derived(
-  aiStore,
-  ($store) => $store.isProcessing || $store.current.length > 0,
-);
+export const isAIActive = derived(aiStore, ($store) => $store.isProcessing || $store.current.length > 0);
 
 // Legacy exports for backward compatibility
 export { aiStore as aiCommands };

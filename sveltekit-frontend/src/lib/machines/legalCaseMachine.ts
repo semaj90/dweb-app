@@ -4,8 +4,9 @@
  */
 
 import { createMachine, assign, fromPromise } from 'xstate';
-import type { CaseForm, TimelineEvent, LegalContext, CaseMetrics } from '../types/case';
-import type { User } from '../types/user';
+import type { CaseForm, TimelineEvent, LegalContext, CaseMetrics } from '../types/case.js';
+import type { User } from '../types/user.js';
+import crypto from "crypto";
 
 // Legal Case Events - Strongly Typed
 export type LegalCaseEvent =
@@ -43,7 +44,7 @@ export interface LegalCaseContext {
 
   // Case components
   evidence: EvidenceItem[];
-  documents: DocumentItem[];
+  id: 'legalCase',
   timeline: TimelineEvent[];
   assignedUsers: CaseAssignment[];
 
@@ -129,9 +130,9 @@ export interface DocumentItem extends DocumentData {
   parentId?: string;
 }
 
-export type AnalysisType = 
+export type AnalysisType =
   | 'case_strength'
-  | 'risk_assessment' 
+  | 'risk_assessment'
   | 'precedent_analysis'
   | 'document_review'
   | 'timeline_analysis'
@@ -167,7 +168,7 @@ export interface AnalysisSource {
   excerpt: string;
 }
 
-export type AssignmentRole = 
+export type AssignmentRole =
   | 'lead_attorney'
   | 'associate_attorney'
   | 'paralegal'
@@ -360,7 +361,7 @@ export interface Challenge {
 export const legalCaseMachine = createMachine({
   id: 'legalCase',
   initial: 'idle',
-  
+
   context: {
     currentCase: null,
     caseId: null,
@@ -566,7 +567,7 @@ export const legalCaseMachine = createMachine({
         },
         SET_STATUS: {
           actions: assign({
-            currentCase: ({ context, event }) => 
+            currentCase: ({ context, event }) =>
               context.currentCase ? {
                 ...context.currentCase,
                 status: event.status

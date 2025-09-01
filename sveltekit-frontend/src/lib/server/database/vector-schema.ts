@@ -9,7 +9,7 @@ import {
   timestamp,
   uuid,
   varchar,
-  customType,
+  customType
 } from "drizzle-orm/pg-core";
 
 // Custom pgvector column type for Drizzle
@@ -23,11 +23,11 @@ const vector = (name: string, dimensions: number) =>
     },
     toDriver(value: number[]): string {
       return JSON.stringify(value);
-    },
+    }
   })(name);
 
 // User embeddings table
-export const userEmbeddings = pgTable(
+export const userEmbeddings = pgTable(;
   "user_embeddings",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -38,19 +38,19 @@ export const userEmbeddings = pgTable(
     metadata: jsonb("metadata").default(sql`'{}'`),
     caseId: uuid("case_id"),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow()
   },
   (table) => ({
     userIdIdx: index("user_embeddings_user_id_idx").on(table.userId),
     caseIdIdx: index("user_embeddings_case_id_idx").on(table.caseId),
     contentTypeIdx: index("user_embeddings_content_type_idx").on(
       table.contentType,
-    ),
+    )
   }),
 );
 
 // Case embeddings table
-export const caseEmbeddings = pgTable(
+export const caseEmbeddings = pgTable(;
   "case_embeddings",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -60,18 +60,18 @@ export const caseEmbeddings = pgTable(
     embedding: vector("embedding", 384),
     metadata: jsonb("metadata").default(sql`'{}'`),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow()
   },
   (table) => ({
     caseIdIdx: index("case_embeddings_case_id_idx").on(table.caseId),
     contentTypeIdx: index("case_embeddings_content_type_idx").on(
       table.contentType,
-    ),
+    )
   }),
 );
 
 // Evidence embeddings table
-export const evidenceEmbeddings = pgTable(
+export const evidenceEmbeddings = pgTable(;
   "evidence_embeddings",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -81,7 +81,7 @@ export const evidenceEmbeddings = pgTable(
     embedding: vector("embedding", 384),
     metadata: jsonb("metadata").default(sql`'{}'`),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow()
   },
   (table) => ({
     evidenceIdIdx: index("evidence_embeddings_evidence_id_idx").on(
@@ -89,12 +89,12 @@ export const evidenceEmbeddings = pgTable(
     ),
     contentTypeIdx: index("evidence_embeddings_content_type_idx").on(
       table.contentType,
-    ),
+    )
   }),
 );
 
 // Document embeddings table
-export const documentEmbeddings = pgTable(
+export const documentEmbeddings = pgTable(;
   "document_embeddings",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -104,7 +104,7 @@ export const documentEmbeddings = pgTable(
     embedding: vector("embedding", 384),
     metadata: jsonb("metadata").default(sql`'{}'`),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow()
   },
   (table) => ({
     documentIdIdx: index("document_embeddings_document_id_idx").on(
@@ -112,12 +112,12 @@ export const documentEmbeddings = pgTable(
     ),
     contentTypeIdx: index("document_embeddings_content_type_idx").on(
       table.contentType,
-    ),
+    )
   }),
 );
 
 // Search embeddings table
-export const searchEmbeddings = pgTable(
+export const searchEmbeddings = pgTable(;
   "search_embeddings",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -125,9 +125,9 @@ export const searchEmbeddings = pgTable(
     query: text("query").notNull(),
     embedding: vector("embedding", 384),
     metadata: jsonb("metadata").default(sql`'{}'`),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow()
   },
   (table) => ({
-    userIdIdx: index("search_embeddings_user_id_idx").on(table.userId),
+    userIdIdx: index("search_embeddings_user_id_idx").on(table.userId)
   }),
 );

@@ -16,7 +16,7 @@ import {
   relations,
   timestamp,
   uuid,
-  varchar,
+  varchar
 } from "drizzle-orm/pg-core";
 import { vector } from "pgvector/drizzle-orm";
 
@@ -58,7 +58,7 @@ export const enhancedEvidence = pgTable("enhanced_evidence", {
   createdBy: uuid("created_by").notNull(),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
-  processedAt: timestamp("processed_at", { mode: "date" }),
+  processedAt: timestamp("processed_at", { mode: "date" })
 });
 
 // === LEGAL RAG SEARCH SESSIONS ===
@@ -89,7 +89,7 @@ export const legalRAGSessions = pgTable("legal_rag_sessions", {
   contextUsed: jsonb("context_used").default(sql`'[]'::jsonb`),
   aiRecommendations: jsonb("ai_recommendations").default(sql`'[]'::jsonb`),
   
-  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull()
 });
 
 // === LEGAL DOCUMENT RERANKING METRICS ===
@@ -114,7 +114,7 @@ export const legalRerankingMetrics = pgTable("legal_reranking_metrics", {
   relevanceReason: text("relevance_reason"),
   scoringFactors: jsonb("scoring_factors").default(sql`'[]'::jsonb`),
   
-  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull()
 });
 
 // === QDRANT VECTOR METADATA ===
@@ -141,7 +141,7 @@ export const qdrantVectorMetadata = pgTable("qdrant_vector_metadata", {
   syncError: text("sync_error"),
   
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull()
 });
 
 // === LEGAL AI PROCESSING QUEUE ===
@@ -172,7 +172,7 @@ export const legalProcessingQueue = pgTable("legal_processing_queue", {
   processingDuration: integer("processing_duration"), // milliseconds
   
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull()
 });
 
 // === VECTOR SIMILARITY CACHE ===
@@ -195,7 +195,7 @@ export const vectorSimilarityCache = pgTable("vector_similarity_cache", {
   ttl: integer("ttl").default(300), // seconds (5 minutes)
   
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-  expiresAt: timestamp("expires_at", { mode: "date" }).notNull(),
+  expiresAt: timestamp("expires_at", { mode: "date" }).notNull()
 });
 
 // === CONTEXT7 MCP INTEGRATION LOGS ===
@@ -221,7 +221,7 @@ export const context7MCPLogs = pgTable("context7_mcp_logs", {
   // Legal Context
   legalContext: jsonb("legal_context").default(sql`'{}'::jsonb`),
   
-  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull()
 });
 
 // === PERFORMANCE MONITORING ===
@@ -242,7 +242,7 @@ export const legalSystemMetrics = pgTable("legal_system_metrics", {
   timeWindow: varchar("time_window", { length: 20 }).default("1min"), // 1min, 5min, 1hour, 1day
   aggregationType: varchar("aggregation_type", { length: 20 }).default("avg"), // avg, sum, count, max, min
   
-  timestamp: timestamp("timestamp", { mode: "date" }).defaultNow().notNull(),
+  timestamp: timestamp("timestamp", { mode: "date" }).defaultNow().notNull()
 });
 
 // === TYPE EXPORTS ===
@@ -276,32 +276,32 @@ export type NewLegalSystemMetric = typeof legalSystemMetrics.$inferInsert;
 export const enhancedEvidenceRelations = relations(enhancedEvidence, ({ one, many }) => ({
   qdrantMetadata: one(qdrantVectorMetadata, {
     fields: [enhancedEvidence.qdrantId],
-    references: [qdrantVectorMetadata.qdrantId],
+    references: [qdrantVectorMetadata.qdrantId]
   }),
   processingQueue: many(legalProcessingQueue),
-  ragSessions: many(legalRAGSessions),
+  ragSessions: many(legalRAGSessions)
 }));
 
 export const legalRAGSessionsRelations = relations(legalRAGSessions, ({ one, many }) => ({
   evidence: one(enhancedEvidence, {
     fields: [legalRAGSessions.caseId],
-    references: [enhancedEvidence.caseId],
+    references: [enhancedEvidence.caseId]
   }),
-  rerankingMetrics: many(legalRerankingMetrics),
+  rerankingMetrics: many(legalRerankingMetrics)
 }));
 
 export const qdrantVectorMetadataRelations = relations(qdrantVectorMetadata, ({ one }) => ({
   evidence: one(enhancedEvidence, {
     fields: [qdrantVectorMetadata.evidenceId],
-    references: [enhancedEvidence.id],
-  }),
+    references: [enhancedEvidence.id]
+  })
 }));
 
 export const legalProcessingQueueRelations = relations(legalProcessingQueue, ({ one }) => ({
   evidence: one(enhancedEvidence, {
     fields: [legalProcessingQueue.evidenceId],
-    references: [enhancedEvidence.id],
-  }),
+    references: [enhancedEvidence.id]
+  })
 }));
 
 // === INDEXES FOR PERFORMANCE ===

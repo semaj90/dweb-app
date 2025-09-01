@@ -1,6 +1,7 @@
+import type { PageServerLoad } from './$types.js';
 
 import { fail, redirect } from "@sveltejs/kit";
-import type { Actions, PageServerLoad } from "./$types";
+import type { Actions, PageServerLoad } from './$types.js';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { z } from 'zod';
@@ -10,6 +11,7 @@ import { CaseOperations } from '$lib/server/db/enhanced-operations';
 import { vectorOps } from '$lib/server/db/enhanced-vector-operations';
 import { apiError, apiSuccess, CommonErrors } from '$lib/server/api/response';
 import { cuid } from '$lib/utils/cuid';
+import { URL } from "url";
 
 // Validation schemas
 const createCaseSchema = z.object({

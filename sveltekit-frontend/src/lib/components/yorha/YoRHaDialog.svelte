@@ -7,7 +7,7 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
   import { createEventDispatcher } from "svelte";
   import { quintOut } from "svelte/easing";
   import { fade, fly } from "svelte/transition";
-  import type { Snippet } from 'svelte';
+  import type {     Snippet     } from 'svelte';
 
   interface DialogProps {
     open?: boolean;
@@ -124,15 +124,15 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
     }
   });
 
-  const config = $derived(typeConfig[type]);
+  let config = $derived(typeConfig[type]);
 </script>
 
 {#if open}
   <div
     class="yorha-dialog-backdrop"
-    click={handleBackdropClick}
+    on:onclick={handleBackdropClick}
     keydown={handleKeydown}
-    transition:fade={{ duration: 150 }}
+    transitifade={{ duration: 150 }}
     role="dialog"
     aria-modal="true"
     aria-labelledby={title ? "dialog-title" : undefined}
@@ -142,7 +142,7 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
       bind:this={dialogElement}
       class="yorha-dialog {positionClasses[position]}"
       style="border-color: {config.border}"
-      transition:fly={{
+      transitifly={{
         y: position === "top" ? -50 : position === "bottom" ? 50 : 0,
         duration: 250,
         easing: quintOut,
@@ -172,7 +172,7 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
         {#if closable && !persistent}
           <button
             class="dialog-close"
-            click={handleClose}
+            on:onclick={handleClose}
             aria-label="Close dialog"
           >
             ✕
@@ -209,14 +209,14 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
       <!-- Actions -->
       <div class="dialog-actions">
         {#if type === "confirm" || type === "prompt"}
-          <button class="dialog-button cancel" click={handleCancel}>
+          <button class="dialog-button cancel" on:onclick={handleCancel}>
             <span class="button-icon">✕</span>
             Cancel
           </button>
           <button
             class="dialog-button confirm"
             style="border-color: {config.color}; color: {config.color}"
-            click={handleConfirm}
+            on:onclick={handleConfirm}
           >
             <span class="button-icon">✓</span>
             {type === "prompt" ? "Submit" : "Confirm"}
@@ -225,7 +225,7 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
           <button
             class="dialog-button acknowledge"
             style="border-color: {config.color}; color: {config.color}"
-            click={handleClose}
+            on:onclick={handleClose}
           >
             <span class="button-icon">■</span>
             OK

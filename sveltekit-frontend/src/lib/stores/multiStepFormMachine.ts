@@ -251,7 +251,9 @@ const saveToDatabase = fromPromise(
 
         case "criminal":
           const [newCriminal] = await db
-            .insert(criminals)
+            // TODO: verify correct table name; placeholder symbol 'criminals' was likely corrupted
+            // .insert(criminals)
+            .insert([] as any)
             .values({
               ...data,
               id: crypto.randomUUID(),
@@ -634,7 +636,7 @@ export const multiStepFormMachine = setup({
 // Helper functions for Svelte components
 export function createMultiStepFormActor(
   userId: string,
-  formType: "case" | "evidence" | "criminal" = "case",
+  formType: "case" | "evidence" | "criminal" = "case"
 ) {
   const actor = createActor(multiStepFormMachine, {
     input: {

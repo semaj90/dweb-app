@@ -1,7 +1,7 @@
 <script lang="ts">
   import { $props, $derived, $effect } from 'svelte';
   import { Dialog as DialogPrimitive } from "bits-ui";
-  import { createDialog } from "melt";  // melt 0.39 only for builders
+  // Removed melt dependency - using bits-ui Dialog primitives only
   import ModernButton from "./ModernButton.svelte";
 
   interface Props {
@@ -44,7 +44,7 @@
   }
 
   // Dynamic classes for size
-  const dialogClasses = $derived(() => {
+  let dialogClasses = $derived(() => {
     const sizes = {
       sm: 'max-w-md',
       md: 'max-w-lg',
@@ -95,7 +95,7 @@
           {#if showClose}
             <DialogPrimitive.Close
               class="dialog-close"
-              on:click={handleClose}
+              on:on:click={handleClose}
             >
               <svg
                 class="w-4 h-4"

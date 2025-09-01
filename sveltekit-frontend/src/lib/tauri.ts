@@ -2,7 +2,7 @@
 // Tauri API integration for desktop app
 // Environment detection
 export const isTauri = typeof window !== "undefined" && "__TAURI__" in window;
-
+;
 // Dynamic imports to avoid SSR issues
 let tauriInvoke: any = null;
 let tauriListen: any = null;

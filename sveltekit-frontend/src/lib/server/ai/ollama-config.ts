@@ -1,6 +1,6 @@
 // Unified Ollama configuration module (consolidated)
 // Provides model registry, fallback chains, and helper utilities used by server AI services.
-import type { OllamaConfig, ModelConfig } from './types';
+import type { OllamaConfig, ModelConfig } from './types.js';
 /**
  * Ollama Configuration for High-Performance AI Assistant
  * Using local gemma3:legal-latest model with legal-bert fallback
@@ -59,7 +59,7 @@ export const FALLBACK_CHAIN = {
 };
 
 export const OLLAMA_CONFIG: OllamaConfig = {
-  baseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
+  baseUrl: import.meta.env.OLLAMA_BASE_URL || 'http://localhost:11434',
   defaultModel: 'gemma3-legal:latest',
   embeddingModel: 'nomic-embed-text:latest',
   fallbackModel: 'gemma3-legal:latest',
@@ -131,7 +131,7 @@ export function getOptimalModel(task: 'embedding' | 'generation' | 'legal-analys
  * @param preferredModels Array of model names in order of preference
  * @param availableModels Array of currently available model names
  */
-export function selectBestAvailableModel(
+export function selectBestAvailableModel(;
   preferredModels: string[],
   availableModels: string[]
 ): string | null {

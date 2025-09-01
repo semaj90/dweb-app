@@ -61,7 +61,7 @@ export class CacheService {
   private redis: Redis;
 
   constructor() {
-    this.redis = new Redis(process.env.REDIS_URL || "redis://localhost:6379");
+    this.redis = new Redis(import.meta.env.REDIS_URL || "redis://localhost:6379");
   }
 
   async cacheCase(caseId: string, caseData: any, ttl = 3600) {

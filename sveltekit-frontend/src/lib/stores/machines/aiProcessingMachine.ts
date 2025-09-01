@@ -11,7 +11,6 @@ import type {
   AITask,
   AITaskResult
 } from '$lib/types';
-import { goMicroserviceServices } from "./goMicroserviceMachine";
 
 export const aiProcessingMachine = createMachine(
   {
@@ -21,6 +20,7 @@ export const aiProcessingMachine = createMachine(
       events: AIProcessingEvents[keyof AIProcessingEvents];
     },
 
+    context: {
     context: {
       userId: undefined,
       sessionId: "",
@@ -34,8 +34,9 @@ export const aiProcessingMachine = createMachine(
       },
       progress: 0,
       provider: "go-microservice",
-    },
-
+        result: undefined,
+        error: undefined,
+      },
     initial: "idle",
 
     states: {
@@ -380,7 +381,6 @@ async function executeLocalLLMTask(task: AITask): Promise<AITaskResult> {
     duration: Date.now() - startTime,
   };
 }
-
 // Utility functions for working with the AI processing machine
 export const createAITask = (
   type: AITask["type"],
@@ -389,6 +389,7 @@ export const createAITask = (
     priority?: AITask["priority"];
     estimatedDuration?: number;
   }
+): AITask => ({
 ): AITask => ({
   id: `task_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
   type,

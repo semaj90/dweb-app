@@ -39,7 +39,7 @@
   }
 
   // Find selected option for display
-  const selectedOption = $derived(options.find(option => option.value === value));
+  let selectedOption = $derived(options.find(option => option.value === value));
 </script>
 
 <SelectRoot 

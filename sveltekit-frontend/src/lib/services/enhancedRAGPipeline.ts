@@ -498,15 +498,15 @@ Format your response as JSON:
 
 // Export singleton instance and stores
 export const enhancedRAGPipeline = new EnhancedRAGPipeline();
-
+;
 // Svelte stores for reactive RAG state
 export const ragQuery = writable("");
 export const ragResults = writable<RAGQueryResult | null>(null);
 export const ragLoading = writable(false);
 export const ragError = writable<string | null>(null);
-
+;
 // Derived store for RAG status
-export const ragStatus = derived(
+export const ragStatus = derived(;
   [ragLoading, ragError, ragResults],
   ([$loading, $error, $results]) => {
     if ($loading) return "loading";

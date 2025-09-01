@@ -13,8 +13,7 @@
     elements: { root: accordionRoot, item: accordionItem, trigger: accordionTrigger, content: accordionContent },
     helpers: { isSelected }
   } = createAccordion();
-  
-  let selectedDemo = 'overview';
+let selectedDemo = $state('overview');
   
   const demoItems = [
     { id: 'overview', label: 'Overview', description: 'Component library integration summary' },
@@ -45,7 +44,7 @@
         class="p-4 rounded-lg border-2 transition-all hover:shadow-md {selectedDemo === item.id 
           ? 'border-primary bg-primary/5 shadow-md' 
           : 'border-border hover:border-primary/50'}"
-        click={() => selectedDemo = item.id}
+        on:onclick={() => selectedDemo = item.id}
       >
         <h3 class="font-semibold">{item.label}</h3>
         <p class="text-sm text-muted-foreground mt-1">{item.description}</p>
@@ -130,7 +129,7 @@
         
         <div class="flex space-x-4">
           <button 
-            use:melt={$dialogTrigger}
+            <!-- <!-- use:melt={$dialogTrigger}
             class="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
           >
             Open Dialog
@@ -152,46 +151,46 @@
       <div class="space-y-6">
         <h2 class="text-2xl font-bold">Accordion Component (melt-ui)</h2>
         
-        <div use:melt={$accordionRoot} class="space-y-2">
-          <div use:melt={$accordionItem('item-1')}>
+        <div <!-- <!-- use:melt={$accordionRoot} class="space-y-2">
+          <div <!-- <!-- use:melt={$accordionItem('item-1')}>
             <button 
-              use:melt={$accordionTrigger('item-1')}
+              <!-- <!-- use:melt={$accordionTrigger('item-1')}
               class="w-full text-left p-4 bg-muted hover:bg-muted/80 rounded-lg font-medium"
             >
               What is bits-ui?
             </button>
             <div 
-              use:melt={$accordionContent('item-1')}
+              <!-- <!-- use:melt={$accordionContent('item-1')}
               class="px-4 pb-4 text-sm text-muted-foreground"
             >
               bits-ui is a headless component library for Svelte that provides accessible, customizable UI primitives.
             </div>
           </div>
           
-          <div use:melt={$accordionItem('item-2')}>
+          <div <!-- <!-- use:melt={$accordionItem('item-2')}>
             <button 
-              use:melt={$accordionTrigger('item-2')}
+              <!-- <!-- use:melt={$accordionTrigger('item-2')}
               class="w-full text-left p-4 bg-muted hover:bg-muted/80 rounded-lg font-medium"
             >
               What is melt-ui?
             </button>
             <div 
-              use:melt={$accordionContent('item-2')}
+              <!-- <!-- use:melt={$accordionContent('item-2')}
               class="px-4 pb-4 text-sm text-muted-foreground"
             >
               melt-ui provides builder functions that create accessible, keyboard-navigable components with smooth animations.
             </div>
           </div>
           
-          <div use:melt={$accordionItem('item-3')}>
+          <div <!-- <!-- use:melt={$accordionItem('item-3')}>
             <button 
-              use:melt={$accordionTrigger('item-3')}
+              <!-- <!-- use:melt={$accordionTrigger('item-3')}
               class="w-full text-left p-4 bg-muted hover:bg-muted/80 rounded-lg font-medium"
             >
               How do they work together?
             </button>
             <div 
-              use:melt={$accordionContent('item-3')}
+              <!-- <!-- use:melt={$accordionContent('item-3')}
               class="px-4 pb-4 text-sm text-muted-foreground"
             >
               bits-ui and melt-ui complement each other - bits-ui for complex components, melt-ui for interactive behaviors and animations.
@@ -268,12 +267,12 @@
 
 <!-- Dialog Portal -->
 {#if $dialogOpen}
-  <div use:melt={$dialogOverlay} class="fixed inset-0 bg-black/50 z-50">
+  <div <!-- <!-- use:melt={$dialogOverlay} class="fixed inset-0 bg-black/50 z-50">
     <div 
-      use:melt={$dialogContent}
+      <!-- <!-- use:melt={$dialogContent}
       class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg p-6 shadow-lg max-w-md w-full mx-4"
     >
-      <h2 use:melt={$dialogTitle} class="text-lg font-semibold mb-4">
+      <h2 <!-- <!-- use:melt={$dialogTitle} class="text-lg font-semibold mb-4">
         bits-ui Dialog Example
       </h2>
       <p class="text-sm text-muted-foreground mb-4">
@@ -281,13 +280,13 @@
       </p>
       <div class="flex justify-end space-x-2">
         <button 
-          use:melt={$dialogClose}
+          <!-- <!-- use:melt={$dialogClose}
           class="px-4 py-2 border border-input rounded-md hover:bg-muted"
         >
           Cancel
         </button>
         <button 
-          use:melt={$dialogClose}
+          <!-- <!-- use:melt={$dialogClose}
           class="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
         >
           OK

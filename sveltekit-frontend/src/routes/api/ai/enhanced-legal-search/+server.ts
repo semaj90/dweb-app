@@ -1,9 +1,9 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 // Enhanced Legal AI Search API with LangChain.js, Nomic Embed, and Vector Search
 // Provides advanced semantic search with multiple strategies and intelligent ranking
 
-import { enhancedLegalSearch, type LegalSearchResult } from '../../../../lib/server/ai/enhanced-legal-search';
+import { enhancedLegalSearch, type LegalSearchResult } from '../../../../lib/server/ai/enhanced-legal-search.js';
 import { URL } from "url";
 
 // Rate limiting configuration
@@ -82,7 +82,7 @@ export const GET: RequestHandler = async ({ url, getClientAddress }) => {
     return json({
       success: false,
       error: 'Search service temporarily unavailable',
-      details: process.env.NODE_ENV === 'development' ? String(error) : undefined,
+      details: import.meta.env.NODE_ENV === 'development' ? String(error) : undefined,
       timestamp: new Date().toISOString()
     }, { status: 500 });
   }
@@ -168,7 +168,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
     return json({
       success: false,
       error: 'Search service temporarily unavailable',
-      details: process.env.NODE_ENV === 'development' ? String(error) : undefined,
+      details: import.meta.env.NODE_ENV === 'development' ? String(error) : undefined,
       timestamp: new Date().toISOString()
     }, { status: 500 });
   }

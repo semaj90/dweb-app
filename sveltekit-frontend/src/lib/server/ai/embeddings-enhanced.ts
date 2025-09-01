@@ -29,7 +29,7 @@ export interface EmbeddingResult {
  * Generate embeddings using Ollama nomic-embed-text model
  */
 async function generateNomicEmbedding(text: string): Promise<number[]> {
-  const ollamaEndpoint = process.env.OLLAMA_BASE_URL || 'http://localhost:11434';
+  const ollamaEndpoint = import.meta.env.OLLAMA_BASE_URL || 'http://localhost:11434';
   
   try {
     const response = await fetch(`${ollamaEndpoint}/api/embeddings`, {

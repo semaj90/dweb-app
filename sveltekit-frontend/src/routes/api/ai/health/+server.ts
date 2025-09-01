@@ -1,14 +1,41 @@
 import { json } from '@sveltejs/kit';
 import { logger } from "$lib/server/logger";
 import type { RequestHandler } from './$types';
+import { apiSuccess, apiError, getRequestId, withErrorHandling } from '$lib/server/api/standard-response';
 
+// Mock Ollama service for now - replace with actual service when available
+const ollamaService = {
+  async isHealthy(): Promise<boolean> {
+    try {
+      const response = await fetch('http://localhost:11434/api/version', { 
+        signal: AbortSignal.timeout(5000) 
+      });
+      return response.ok;
+    } catch {
+      return false;
+    }
+  },
+  async listModels(): Promise<Array<{ name: string }>> {
+    try {
+      const response = await fetch('http://localhost:11434/api/tags');
+      if (response.ok) {
+        const data = await response.json();
+        return data.models || [];
+      }
+      return [];
+    } catch {
+      return [];
+    }
+  }
+};
 
-export const GET: RequestHandler = async () => {
-  try {
-    // Check Ollama health with model list
-    const ollamaStartTime = Date.now();
-    const ollamaHealthy = await ollamaService.isHealthy();
-    const ollamaResponseTime = Date.now() - ollamaStartTime;
+export const GET: RequestHandler = withErrorHandling(async (event) => {
+  const requestId = getRequestId(event);
+  
+  // Check Ollama health with model list
+  const ollamaStartTime = Date.now();
+  const ollamaHealthy = await ollamaService.isHealthy();
+  const ollamaResponseTime = Date.now() - ollamaStartTime;
 
     let availableModels: string[] = [];
     if (ollamaHealthy) {
@@ -44,27 +71,14 @@ export const GET: RequestHandler = async () => {
 
     const overallStatus = ollamaHealthy ? "healthy" : "degraded";
 
-    return json({
+    const healthData = {
       status: overallStatus,
       services: checks,
       message:
         overallStatus === "healthy"
           ? `All systems operational (${availableModels.length} models available)`
           : "Ollama service not available",
-    });
-  } catch (error: any) {
-    logger.error("Health check failed", error);
-    return json(
-      {
-        status: "critical",
-        error: (error as Error).message,
-        timestamp: new Date().toISOString(),
-        services: {
-          ollama: { healthy: false, models: [], responseTime: 0 },
-          system: { memory: "0MB", uptime: "0h", nodeVersion: process.version },
-        },
-      },
-      { status: 503 }
-    );
-  }
-};
+    };
+
+    return apiSuccess(healthData, undefined, requestId);
+});

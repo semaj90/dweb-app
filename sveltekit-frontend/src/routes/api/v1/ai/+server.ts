@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * AI API Endpoint - Comprehensive AI Services
@@ -8,6 +8,7 @@ import type { RequestHandler } from './$types';
 
 import { ensureError } from '$lib/utils/ensure-error';
 import { productionServiceClient } from "$lib/services/productionServiceClient";
+import { URL } from "url";
 
 export interface AIRequest {
   type: 'summary' | 'legal' | 'live' | 'analysis';

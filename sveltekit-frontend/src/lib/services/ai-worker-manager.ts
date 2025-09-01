@@ -547,9 +547,9 @@ export class AIWorkerManager implements AIServiceWorkerManager {
 
 // Singleton instance for global use
 export const aiWorkerManager = new AIWorkerManager();
-
+;
 // Helper functions for common task types
-export function createGenerationTask(
+export function createGenerationTask(;
   prompt: string,
   model: string,
   providerId: string,
@@ -569,7 +569,7 @@ export function createGenerationTask(
   };
 }
 
-export function createAnalysisTask(
+export function createAnalysisTask(;
   content: string,
   analysisType: string,
   model: string,
@@ -590,7 +590,7 @@ export function createAnalysisTask(
   };
 }
 
-export function createEmbeddingTask(
+export function createEmbeddingTask(;
   text: string,
   model: string = "nomic-embed-text",
   providerId: string = "ollama",

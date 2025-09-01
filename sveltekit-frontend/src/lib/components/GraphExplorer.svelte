@@ -22,24 +22,24 @@
   let nodes = $derived($graphNodes || [];);
   
   // Component state
-  let searchQuery = '';
-  let searchResults: any[] = [];
-  let isSearching = false;
-  let selectedNode: any = null;
-  let viewport = { x: 0, y: 0, width: 1000, height: 1000 };
-  let performanceStats: any = null;
+let searchQuery = $state('');
+let searchResults = $state<any[] >([]);
+let isSearching = $state(false);
+let selectedNode = $state<any >(null);
+let viewport = $state({ x: 0, y: 0, width: 1000, height: 1000 });
+let performanceStats = $state<any >(null);
   
   // GPU canvas for visualization
-  let canvas: HTMLCanvasElement;
-  let animationFrame: number;
+let canvas = $state<HTMLCanvasElement;
+let animationFrame = $state<number;
   
-  // ========================================================================
+  // >(>(======================================================================
   // LIFECYCLE
   // ========================================================================
   
   onMount(async () => {
     try {
-      console.log('🚀 Initializing Graph Explorer...');
+      console.log('🚀 Initializing Graph Explorer...')));
       
       // Initialize all systems
       await Promise.all([
@@ -361,13 +361,13 @@
     <div class="search-section">
       <input 
         bind:value={searchQuery}
-        on:keypress={e => e.key === 'Enter' && handleSearch()}
+        onkeypress={e => e.key === 'Enter' && handleSearch()}
         placeholder="Search legal documents, cases, precedents..."
         class="search-input"
         disabled={isSearching}
       />
       <button 
-        click={handleSearch}
+        on:onclick={handleSearch}
         disabled={isSearching || !searchQuery.trim()}
         class="search-btn"
       >
@@ -376,13 +376,13 @@
     </div>
     
     <div class="actions">
-      <button click={addSampleData} class="action-btn">
+      <button on:onclick={addSampleData} class="action-btn">
         Add Sample Data
       </button>
-      <button click={() => updatePerformanceStats()} class="action-btn">
+      <button on:onclick={() => updatePerformanceStats()} class="action-btn">
         Refresh Stats
       </button>
-      <button click={clearAllData} class="action-btn danger">
+      <button on:onclick={clearAllData} class="action-btn danger">
         Clear All
       </button>
     </div>
@@ -394,7 +394,7 @@
       <h3>Interactive Graph ({nodes.length} nodes)</h3>
       <canvas 
         bind:this={canvas}
-        click={handleCanvasInteraction}
+        on:onclick={handleCanvasInteraction}
         width="800"
         height="600"
         class="graph-canvas"

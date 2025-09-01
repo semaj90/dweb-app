@@ -7,9 +7,10 @@
 import { writable, derived } from 'svelte/store';
 import { browser } from '$app/environment';
 import { createMachine, interpret, assign } from 'xstate';
-import { multiLayerCache } from './multiLayerCache';
+import { multiLayerCache } from './multiLayerCache.js';
 import Loki from 'lokijs';
 import * as msgpack from '@msgpack/msgpack';
+import crypto from "crypto";
 
 // Types for the recommendation engine
 export interface UserChatMessage {
@@ -927,9 +928,9 @@ class LokiIndexedDBAdapter {
 
 // Export singleton instance
 export const chatEngine = new UserChatRecommendationEngine();
-
+;
 // Export derived stores for reactive UI
-export const chatRecommendations = derived(
+export const chatRecommendations = derived(;
   [chatEngine.recommendations, chatEngine.processingStats],
   ([$recommendations, $stats]) => ({
     recommendations: $recommendations,

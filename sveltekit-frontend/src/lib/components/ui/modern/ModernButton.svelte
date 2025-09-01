@@ -1,7 +1,7 @@
 <script lang="ts">
   import { $props, $derived } from 'svelte';
   import { Button } from "bits-ui";
-  import { createTooltip, melt } from "melt";
+  // Tooltip functionality will use CSS-only or bits-ui Tooltip when needed
   
   interface Props {
     variant?: 'primary' | 'secondary' | 'ghost' | 'outline' | 'danger' | 'success';
@@ -42,7 +42,7 @@
   const open = tooltipBuilder?.states.open;
   
   // Dynamic classes
-  const buttonClasses = $derived(() => {
+  let buttonClasses = $derived(() => {
     const base = 'modern-btn golden-flex-center font-medium transition-all duration-200 focus-visible';
     
     const variants = {
@@ -83,8 +83,8 @@
       class={buttonClasses}
       target={external ? '_blank' : undefined}
       rel={external ? 'noopener noreferrer' : undefined}
-      use:melt={$trigger}
-      click={handleClick}
+      <!-- <!-- use:melt={$trigger}
+      on:onclick={handleClick}
     >
       <span class="button-content">
         {#if loading}
@@ -108,7 +108,7 @@
       class={buttonClasses}
       target={external ? '_blank' : undefined}
       rel={external ? 'noopener noreferrer' : undefined}
-      click={handleClick}
+      on:onclick={handleClick}
     >
       <span class="button-content">
         {#if loading}
@@ -133,8 +133,8 @@
       {type}
       {disabled}
       class={buttonClasses}
-      on:click={handleClick}
-      use:melt={$trigger}
+      on:on:click={handleClick}
+      <!-- <!-- use:melt={$trigger}
     >
       <span class="button-content">
         {#if loading}
@@ -157,7 +157,7 @@
       {type}
       {disabled}
       class={buttonClasses}
-      on:click={handleClick}
+      on:on:click={handleClick}
     >
       <span class="button-content">
         {#if loading}
@@ -180,7 +180,7 @@
 
 {#if tooltip && $open}
   <div
-    use:melt={$tooltipContent}
+    <!-- <!-- use:melt={$tooltipContent}
     class="tooltip"
   >
     {tooltip}

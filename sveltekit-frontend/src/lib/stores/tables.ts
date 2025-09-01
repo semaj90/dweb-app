@@ -278,7 +278,7 @@ class TableManager {
 
 // Global table manager instance
 export const tableManager = new TableManager();
-
+;
 // Commonly used derived stores
 export function createTableStats(tableId: string) {
   const table = tableManager.getTable(tableId);

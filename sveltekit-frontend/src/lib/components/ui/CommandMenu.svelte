@@ -1,8 +1,7 @@
 <script lang="ts">
-
   import { goto } from "$app/navigation";
   import { citationStore } from "$lib/stores/citations";
-  import { createPopover, melt } from "melt";
+  // import { createPopover, melt } from "melt"; // Removed melt dependency
   import {
     Calendar,
     FileText,
@@ -14,27 +13,38 @@
   import { tick } from "svelte";
   import { fly } from "svelte/transition";
 
-  let { triggerText = $bindable() } = $props(); // "#";
-  let { placeholder = $bindable() } = $props(); // "Type a command...";
-  let { onInsert = $bindable() } = $props(); // (text: string) => void = () => {};
-  let { textareaElement = $bindable() } = $props(); // HTMLTextAreaElement | undefined = undefined;
+  // Props using Svelte 5 syntax
+  let {
+    triggerText = "#",
+    placeholder = "Type a command...",
+    onInsert = () => {},
+    textareaElement = undefined
+  }: {
+    triggerText?: string;
+    placeholder?: string;
+    onInsert?: (text: string) => void;
+    textareaElement?: HTMLTextAreaElement | undefined;
+  } = $props();
 
-  // Command menu state
-  let searchQuery = "";
-  let selectedIndex = 0;
-  let inputElement: HTMLInputElement;
+  // Command menu state using Svelte 5 syntax
+  let searchQuery = $state("");
+  let selectedIndex = $state(0);
+let inputElement = $state<HTMLInputElement;
 
   // Create popover
-  const {
-    elements: { trigger, content, arrow, close },
-    states: { open },
-  } = createPopover({
-    positioning: { placement: "bottom-start" },
-    forceVisible: true,
-    preventScroll: true,
-    escapeBehavior: "close",
-    closeOnOutsideClick: true,
-  });
+  // const {
+  //   elements: { trigger, content, arrow, close },
+  //   states: { open },
+  // } >(createPopover({
+  //   positioning: { placement: "bottom-start" },
+  //   forceVisible: true,
+  //   preventScroll: true,
+  //   escapeBehavior: "close",
+  //   closeOnOutsideClick: true,
+  // }));
+  
+  // Alternative state management without melt
+  let isOpen = $state(false);
 
   // Get recent citations
   let recentCitations = $derived(citationStore.getRecentCitations($citationStore, 5));
@@ -128,7 +138,7 @@
 
   // Handle keyboard navigation
   function handleKeydown(e: KeyboardEvent) {
-    if (!$open) return;
+    if (!isOpen) return;
 
     const totalCommands = filteredCommands.length;
 
@@ -204,22 +214,24 @@
     });
 }
   // Reset when closing
-  $: if (!$open) {
-    searchQuery = "";
-    selectedIndex = 0;
-}
+  $effect(() => {
+    if (!isOpen) {
+      searchQuery = "";
+      selectedIndex = 0;
+    }
+  });
 </script>
 
 <svelte:window keydown={handleKeydown} />
 
 <!-- Hidden trigger (we'll open programmatically) -->
-<button use:melt={$trigger} style="display: none;">Trigger</button>
+<button <!-- <!-- <!-- use:melt={$trigger} --> style="display: none;">Trigger</button>
 
-{#if $open}
+{#if isOpen}
   <div
-    use:melt={$content}
+    <!-- <!-- <!-- use:melt={$content} -->
     class="container mx-auto px-4"
-    transition:fly={{ y: -10, duration: 150 }}
+    transitifly={{ y: -10, duration: 150 }}
   >
     <div class="container mx-auto px-4">
       <Search size={16} />
@@ -244,8 +256,8 @@
             <button
               class="container mx-auto px-4"
               class:selected={globalIndex === selectedIndex}
-              click={() => executeCommand(command)}
-              on:mouseenter={() => (selectedIndex = globalIndex)}
+              on:onclick={() => executeCommand(command)}
+              on:on:mouseenter={() => (selectedIndex = globalIndex)}
             >
               <svelte:component this={command.icon} size={16} />
               <span class="container mx-auto px-4">{command.label}</span>

@@ -15,7 +15,7 @@ https://svelte.dev/e/js_parse_error -->
 
 
 
-  import { createDialog } from 'melt';
+  // import { createDialog } from 'melt'; // Removed melt dependency
   import { writable } from 'svelte/store';
 
 
@@ -26,17 +26,26 @@ https://svelte.dev/e/js_parse_error -->
     openWritable.set(open);
   });
 
-  const {
-    elements: { trigger, overlay, content, title, description, close },
-    states: { open: openState }
-  } = createDialog({
-    open: openWritable,
-    onOpenChange: ({ next }) => {
-      open = next;
-      onOpenChange?.(next);
-      return next;
-    }
-  });
+  // const {
+  //   elements: { trigger, overlay, content, title, description, close },
+  //   states: { open: openState }
+  // } = createDialog({
+  //   open: openWritable,
+  //   onOpenChange: ({ next }) => {
+  //     open = next;
+  //     onOpenChange?.(next);
+  //     return next;
+  //   }
+  // });
+  
+  // Mock objects for now - replace with bits-ui or plain HTML
+  const trigger = {};
+  const overlay = {};
+  const content = {};
+  const title = {};
+  const description = {};
+  const close = {};
+  const openState = false;
 
 </script>
 

@@ -1,3 +1,6 @@
+import type { LayoutLoad } from './$types';
+import type { PageLoad } from './$types';
+import type { RequestHandler } from '@sveltejs/kit';
 /**
  * 🎯 COMPREHENSIVE TYPE DEFINITIONS
  * 
@@ -604,7 +607,7 @@ export type ClassValue =
   | number 
   | boolean 
   | undefined 
-  | null
+  | null;;
   | { [key: string]: any }
   | ClassValue[];
 

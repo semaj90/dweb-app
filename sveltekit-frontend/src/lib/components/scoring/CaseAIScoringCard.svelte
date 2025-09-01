@@ -89,7 +89,7 @@
     <h3 class="text-lg font-semibold text-white">Case AI Scoring</h3>
     <Button.Root
       size="sm"
-      on:click={calculateScore}
+      on:on:click={calculateScore}
       disabled={loading}
       class="text-xs border border-slate-600 hover:bg-slate-700"
     >
@@ -221,7 +221,7 @@
   {:else}
     <div class="text-slate-400 text-center py-8">
       <Button.Root
-        on:click={calculateScore}
+        on:on:click={calculateScore}
         class="text-sm border border-slate-600 hover:bg-slate-700"
       >
         Calculate AI Score

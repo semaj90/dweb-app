@@ -143,7 +143,7 @@
           <div class="rounded-md shadow">
             <button 
               class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-600 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10"
-              click={checkSystemHealth}
+              on:onclick={checkSystemHealth}
             >
               {$healthStatus.loading ? 'Checking...' : 'Check System Health'}
             </button>
@@ -227,7 +227,7 @@
           <button 
             class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50"
             disabled={$chatLoading}
-            click={testAIChat}
+            on:onclick={testAIChat}
           >
             {$chatLoading ? 'Processing...' : 'Send to AI'}
           </button>
@@ -264,7 +264,7 @@
           <button 
             class="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50"
             disabled={$searchLoading}
-            click={testVectorSearch}
+            on:onclick={testVectorSearch}
           >
             {$searchLoading ? 'Searching...' : 'Vector Search'}
           </button>

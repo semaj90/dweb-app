@@ -18,10 +18,9 @@
   
   let { visible = $bindable() } = $props(); // false;
   let { context = $bindable() } = $props(); // string[] = ['global'];
-  
-  let searchQuery = '';
-  let selectedCategory = 'all';
-  let showRemoteOnly = false;
+let searchQuery = $state('');
+let selectedCategory = $state('all');
+let showRemoteOnly = $state(false);
   
   let filteredShortcuts = $derived($shortcuts.filter(shortcut => {
     const matchesSearch = !searchQuery || 
@@ -37,9 +36,8 @@
   
   let categories = $derived($shortcutCategories);
   let recentCommands = $derived($remoteCommands.slice(-10).reverse());
-  
-  let helpModalVisible = false;
-  let remoteStatusVisible = false;
+let helpModalVisible = $state(false);
+let remoteStatusVisible = $state(false);
   
   onMount(() => {
     // Set context for shortcuts service
@@ -111,7 +109,7 @@
       <div class="p-6">
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-2xl font-bold text-green-400">⌨️ Keyboard Shortcuts</h2>
-          <Button variant="ghost" on:click={() => helpModalVisible = false}>
+          <Button variant="ghost" on:on:click={() => helpModalVisible = false}>
             ✕
           </Button>
         </div>
@@ -173,12 +171,12 @@
                       <div class="flex items-center gap-2">
                         <Switch 
                           checked={shortcut.enabled}
-                          on:change={() => toggleShortcut(shortcut)}
+                          change={() => toggleShortcut(shortcut)}
                         />
                         <Button 
                           size="sm" 
                           variant="outline"
-                          on:click={() => executeShortcut(shortcut)}
+                          on:on:click={() => executeShortcut(shortcut)}
                           disabled={!shortcut.enabled}
                         >
                           Test
@@ -197,7 +195,7 @@
           <div class="mt-4 p-3 bg-green-900 border border-green-700 rounded-lg">
             <div class="flex items-center gap-2">
               <span class="text-green-400">🔗 Connected to remote control</span>
-              <Button size="sm" variant="outline" on:click={() => remoteStatusVisible = true}>
+              <Button size="sm" variant="outline" on:on:click={() => remoteStatusVisible = true}>
                 View Status
               </Button>
             </div>
@@ -206,7 +204,7 @@
           <div class="mt-4 p-3 bg-yellow-900 border border-yellow-700 rounded-lg">
             <div class="flex items-center gap-2">
               <span class="text-yellow-400">⚠️ Remote control disconnected</span>
-              <Button size="sm" variant="outline" on:click={() => keyboardShortcutsService.connectRemote()}>
+              <Button size="sm" variant="outline" on:on:click={() => keyboardShortcutsService.connectRemote()}>
                 Connect
               </Button>
             </div>
@@ -224,7 +222,7 @@
       <div class="p-6">
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-xl font-bold text-green-400">📡 Remote Control Status</h2>
-          <Button variant="ghost" on:click={() => remoteStatusVisible = false}>
+          <Button variant="ghost" on:on:click={() => remoteStatusVisible = false}>
             ✕
           </Button>
         </div>
@@ -273,16 +271,16 @@
         <!-- Controls -->
         <div class="flex gap-2">
           {#if $isRemoteConnected}
-            <Button variant="outline" on:click={() => keyboardShortcutsService.disconnectRemote()}>
+            <Button variant="outline" on:on:click={() => keyboardShortcutsService.disconnectRemote()}>
               Disconnect
             </Button>
           {:else}
-            <Button on:click={() => keyboardShortcutsService.connectRemote()}>
+            <Button on:on:click={() => keyboardShortcutsService.connectRemote()}>
               Reconnect
             </Button>
           {/if}
           
-          <Button variant="outline" on:click={() => $remoteCommands.length && remoteCommands.set([])}>
+          <Button variant="outline" on:on:click={() => $remoteCommands.length && remoteCommands.set([])}>
             Clear History
           </Button>
         </div>

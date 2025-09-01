@@ -117,6 +117,7 @@
 </script>
 
 {#if show}
+  <!-- Updated to Svelte 5 event syntax: use onclick/onkeydown instead of on:click etc. -->
   <div class="feedback-overlay" onclick={close} onkeydown={(e) => e.key === 'Enter' && close()} role="button" tabindex="0">
     <div class="feedback-widget" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.key === 'Enter' && e.stopPropagation()} role="dialog" aria-labelledby="feedback-title" tabindex="0">
       {#if !isSubmitted}
@@ -124,7 +125,7 @@
           <h3 id="feedback-title" class="feedback-title">
             Rate {ratingTypeLabels[ratingType]}
           </h3>
-          <button class="close-button" onclick={close} aria-label="Close feedback">×</button>
+          <button class="close-button" onclick={close} aria-label="Close feedback" type="button">×</button>
         </div>
 
         <div class="feedback-content">
@@ -136,6 +137,7 @@
                   class="star {rating >= star ? 'active' : ''}"
                   onclick={() => setRating(star)}
                   aria-label="Rate {star} stars"
+                  type="button"
                 >
                   ★
                 </button>
@@ -162,6 +164,7 @@
                 class="submit-button"
                 onclick={submitFeedback}
                 disabled={isSubmitting}
+                type="button"
               >
                 {#if isSubmitting}
                   Submitting...

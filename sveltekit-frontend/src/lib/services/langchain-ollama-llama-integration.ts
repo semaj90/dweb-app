@@ -10,6 +10,7 @@ import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { MemoryVectorStore } from 'langchain/vectorstores/memory';
 import { RetrievalQAChain } from 'langchain/chains';
 import { PromptTemplate } from '@langchain/core/prompts';
+import crypto from "crypto";
 
 export interface LangChainConfig {
   ollamaBaseUrl: string;

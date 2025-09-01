@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 // src/routes/api/compute/+server.ts
 // SvelteKit API endpoint for multi-threaded job pipeline
@@ -11,13 +11,14 @@ import { createClient } from 'redis';
 import { nanoid } from 'nanoid';
 import { vectorOutbox, vectorJobs, vectors } from '$lib/server/db/schema-postgres.js';
 import { eq } from 'drizzle-orm';
+import { URL } from "url";
 
 // Initialize connections
-const sql = postgres(process.env.DATABASE_URL || 'postgresql://legal_admin:123456@localhost:5432/legal_ai_db');
+const sql = postgres(import.meta.env.DATABASE_URL || 'postgresql://legal_admin:123456@localhost:5432/legal_ai_db');
 const db = drizzle(sql);
 
 const redis = createClient({ 
-  url: process.env.REDIS_URL || 'redis://localhost:6379' 
+  url: import.meta.env.REDIS_URL || 'redis://localhost:6379' 
 });
 
 let redisConnected = false;

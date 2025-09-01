@@ -3,7 +3,7 @@
  * Following FULL_STACK_INTEGRATION_COMPLETE.md architecture
  */
 
-import type { Writable } from 'svelte/store';
+import type {     Writable     } from 'svelte/store';
 
 // Core AI Service Types
 export interface AITask {

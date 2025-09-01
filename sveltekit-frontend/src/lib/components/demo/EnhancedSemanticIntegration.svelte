@@ -63,10 +63,10 @@
 	const webGPUSupported = writable(false);
 	
 	// Analysis input and results
-	let analysisText = '';
-	let selectedTodo: IntelligentTodo | null = null;
-	let showSOMVisualization = false;
-	let showPageRankGraph = false;
+let analysisText = $state('');
+let selectedTodo = $state<IntelligentTodo | null >(null);
+let showSOMVisualization = $state(false);
+let showPageRankGraph = $state(false);
 	
 	// Derived stores for computed values
 	const todosByCategory = derived(todos, $todos => {
@@ -318,16 +318,16 @@
 	}
 
 	// Real-time updates
-	let updateInterval: any;
+let updateInterval = $state<any;
 	
 	function startRealTimeUpdates() {
 		if (updateInterval) clearInterval(updateInterval);
 		
-		updateInterval = setInterval(async () => {
+		updateInterval >(setInterval(async () => {
 			await Promise.all([
 				fetchCacheStats(),
 				checkSystemStatus()
-			]);
+			]));
 		}, 5000); // Update every 5 seconds
 	}
 
@@ -399,7 +399,7 @@
 			<h2 class="text-xl font-semibold mb-4 text-blue-400">🤖 Intelligent Todo Generator</h2>
 			<div class="space-y-4">
 				<button 
-					click={() => fetchIntelligentTodos()}
+					on:onclick={() => fetchIntelligentTodos()}
 					disabled={$isProcessing}
 					class="btn-primary w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 disabled:opacity-50 px-4 py-2 rounded-lg font-medium transition-all"
 				>
@@ -450,7 +450,7 @@
 				</div>
 				
 				<button 
-					click={() => analyzeText(analysisText)}
+					on:onclick={() => analyzeText(analysisText)}
 					disabled={$isProcessing || !analysisText.trim()}
 					class="btn-secondary w-full bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 disabled:opacity-50 px-4 py-2 rounded-lg font-medium transition-all"
 				>
@@ -475,13 +475,13 @@
 
 						<div class="visualization-controls mt-3 flex space-x-2">
 							<button 
-								click={() => showSOMVisualization = !showSOMVisualization}
+								on:onclick={() => showSOMVisualization = !showSOMVisualization}
 								class="text-xs px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded transition-colors"
 							>
 								{showSOMVisualization ? 'Hide' : 'Show'} SOM
 							</button>
 							<button 
-								click={() => showPageRankGraph = !showPageRankGraph}
+								on:onclick={() => showPageRankGraph = !showPageRankGraph}
 								class="text-xs px-3 py-1 bg-purple-600 hover:bg-purple-700 rounded transition-colors"
 							>
 								{showPageRankGraph ? 'Hide' : 'Show'} PageRank
@@ -593,7 +593,7 @@
 				</div>
 
 				<button 
-					click={checkSystemStatus}
+					on:onclick={checkSystemStatus}
 					class="btn-danger w-full bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 px-4 py-2 rounded-lg font-medium transition-all text-sm"
 				>
 					Refresh Status
@@ -623,13 +623,13 @@
 					<label class="block text-sm font-medium mb-2">Real-time Updates</label>
 					<div class="flex space-x-2">
 						<button 
-							click={startRealTimeUpdates}
+							on:onclick={startRealTimeUpdates}
 							class="btn-sm bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-xs transition-colors"
 						>
 							Start
 						</button>
 						<button 
-							click={stopRealTimeUpdates}
+							on:onclick={stopRealTimeUpdates}
 							class="btn-sm bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-xs transition-colors"
 						>
 							Stop

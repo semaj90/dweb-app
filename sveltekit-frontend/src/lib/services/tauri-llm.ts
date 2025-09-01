@@ -512,7 +512,7 @@ Please provide accurate, well-reasoned responses that would be helpful to legal 
 }
 // Singleton instance
 export const tauriLLM = new TauriLLMService();
-
+;
 // Initialize on module load
 tauriLLM.initialize().catch(console.error);
 

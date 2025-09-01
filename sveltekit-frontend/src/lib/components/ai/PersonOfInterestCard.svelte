@@ -71,8 +71,7 @@
   // Confidence level styling
   let confidenceColor = $derived(person.confidence > 0.8 ? 'text-green-600' : 
                       person.confidence > 0.6 ? 'text-yellow-600' : 'text-red-600');
-
-  let showFullDetails = false;
+let showFullDetails = $state(false);
 </script>
 
 <Card class="w-full max-w-md hover:shadow-lg transition-shadow">
@@ -207,7 +206,7 @@
         variant="outline" 
         size="sm" 
         class="flex-1 text-xs"
-        on:click={() => showFullDetails = !showFullDetails}
+        on:on:click={() => showFullDetails = !showFullDetails}
       >
         {showFullDetails ? 'Less' : 'More'} Info
       </Button>

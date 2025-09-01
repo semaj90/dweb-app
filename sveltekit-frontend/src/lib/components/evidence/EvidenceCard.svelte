@@ -86,7 +86,7 @@
   };
 
   const fileSize = evidence.metadata?.size || evidence.fileSize || 0;
-  let isHovered = false;
+let isHovered = $state(false);
 
   let IconComponent = $derived(getIcon(
     ["document", "image", "video", "audio", "link"].includes(evidence.evidenceType || evidence.type)
@@ -112,9 +112,9 @@
     {compact ? 'text-sm' : ''}
     {draggable ? 'cursor-grab active:cursor-grabbing' : ''}
     {isHovered ? 'scale-105 z-10 shadow-2xl' : ''}"
-  transition:scale={{ duration: 200, easing: quintOut }}
-  on:mouseenter={handleMouseEnter}
-  on:mouseleave={handleMouseLeave}
+  transitiscale={{ duration: 200, easing: quintOut }}
+  on:on:mouseenter={handleMouseEnter}
+  on:on:mouseleave={handleMouseLeave}
   role="article"
 >
   <!-- Header -->
@@ -144,7 +144,7 @@
     <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
       <button
         class="flex items-center justify-center w-7 h-7 rounded text-gray-500 hover:bg-gray-100 hover:text-blue-600"
-        click={() => onView(evidence as Evidence)}
+        on:onclick={() => onView(evidence as Evidence)}
         title="View evidence"
       >
         <Eye size={14} />
@@ -153,7 +153,7 @@
       {#if evidence.url || evidence.file}
         <button
           class="flex items-center justify-center w-7 h-7 rounded text-gray-500 hover:bg-gray-100 hover:text-indigo-600"
-          click={() => onDownload(evidence as Evidence)}
+          on:onclick={() => onDownload(evidence as Evidence)}
           title="Download"
         >
           <Download size={14} />
@@ -162,7 +162,7 @@
 
       <button
         class="flex items-center justify-center w-7 h-7 rounded text-gray-500 hover:bg-gray-100 hover:text-green-600"
-        click={() => onEdit(evidence as Evidence)}
+        on:onclick={() => onEdit(evidence as Evidence)}
         title="Edit evidence"
       >
         <PenLine size={14} />
@@ -170,7 +170,7 @@
 
       <button
         class="flex items-center justify-center w-7 h-7 rounded text-gray-500 hover:bg-gray-100 hover:text-red-600"
-        click={() => onDelete(evidence as Evidence)}
+        on:onclick={() => onDelete(evidence as Evidence)}
         title="Delete evidence"
       >
         <Trash2 size={14} />
@@ -188,7 +188,7 @@
           alt={evidence.title}
           loading="lazy"
           class="w-full h-auto max-h-48 object-cover"
-          on:error={(e) => {
+          error={(e) => {
             const target = e.currentTarget as HTMLImageElement;
             target.style.display = "none";
           }}
@@ -207,7 +207,7 @@
 
     <!-- Title and Description -->
     <div class="flex flex-col gap-2">
-      <h3 class="font-semibold text-base text-gray-900 leading-tight line-clamp-2" use:melt={$tooltipTrigger}>
+      <h3 class="font-semibold text-base text-gray-900 leading-tight line-clamp-2" <!-- <!-- use:melt={$tooltipTrigger}>
         {evidence.title}
       </h3>
 
@@ -274,9 +274,9 @@
 <!-- Tooltip -->
 {#if $tooltipOpen}
   <div
-    use:melt={$tooltipContent}
+    <!-- <!-- use:melt={$tooltipContent}
     class="mx-auto px-4"
-    transition:fly={{ y: -5, duration: 150 }}
+    transitifly={{ y: -5, duration: 150 }}
   >
     <div class="mx-auto px-4">
       <strong>{evidence.title}</strong>

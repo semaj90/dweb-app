@@ -17,12 +17,12 @@
   const holographicData = writable<HolographicData[]>([]);
   
   // 3D visualization elements
-  let canvas3D: HTMLCanvasElement;
-  let glContext: WebGLRenderingContext | null = null;
-  let animationId: number;
+let canvas3D = $state<HTMLCanvasElement;
+  let glContext: WebGLRenderingContext | null >(null);
+let animationId = $state<number;
   
   // System metrics
-  let metrics = writable<SystemMetrics>({
+  let metrics >(writable<SystemMetrics>({
     cpu_usage: 45.2,
     memory_usage: 67.8,
     gpu_utilization: 89.3,
@@ -31,16 +31,16 @@
     security_level: 'MAXIMUM',
     quantum_state: 'COHERENT',
     neural_activity: 94.6,
-  });
+  }));
   
   // Command input
-  let commandInput = '';
-  let isProcessingCommand = false;
+let commandInput = $state('');
+let isProcessingCommand = $state(false);
   
   // Visual effects
-  let glitchActive = false;
-  let scanlineOpacity = 0.3;
-  let hologramFlicker = false;
+let glitchActive = $state(false);
+let scanlineOpacity = $state(0.3);
+let hologramFlicker = $state(false);
   
   // YoRHa modules configuration
   const yorhaModules: YoRHaModule[] = [
@@ -652,7 +652,7 @@
           <span class="hologram-text text-sm mr-2">YORHA-CMD:</span>
           <input
             bind:value={commandInput}
-            on:keypress={handleKeyPress}
+            onkeypress={handleKeyPress}
             class="command-input flex-1"
             placeholder="Enter command..."
             disabled={isProcessingCommand}

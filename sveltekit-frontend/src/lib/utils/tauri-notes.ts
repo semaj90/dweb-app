@@ -308,7 +308,7 @@ class TauriNotesService {
 }
 // Export singleton instance
 export const tauriNotesService = TauriNotesService.getInstance();
-
+;
 // Convenience functions for use in Svelte components
 export async function renderMarkdownInTauri(markdown: string): Promise<string> {
   return await tauriNotesService.renderMarkdownToHtml(markdown);

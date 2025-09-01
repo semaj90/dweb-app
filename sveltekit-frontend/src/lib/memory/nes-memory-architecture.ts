@@ -1,6 +1,6 @@
 /**
  * NES Memory Architecture - Phase 14
- * 
+ *
  * Nintendo Entertainment System inspired memory management for legal AI applications
  * Features:
  * - NES-authentic memory regions (2KB RAM, 8KB CHR-ROM, 32KB PRG-ROM)
@@ -20,7 +20,7 @@ const NES_MEMORY_MAP = {
     mirrored: true,
     mirrorSize: 8192 // $0000-$1FFF
   },
-  
+
   // PPU registers (for UI components)
   PPU_REGISTERS: {
     start: 0x2000,
@@ -29,28 +29,28 @@ const NES_MEMORY_MAP = {
     mirrored: true,
     mirrorSize: 8192 // $2000-$3FFF
   },
-  
+
   // APU and I/O registers (for audio/input)
   APU_IO_REGISTERS: {
     start: 0x4000,
     end: 0x4017,
     size: 24
   },
-  
+
   // Expansion ROM (for legal plugins)
   EXPANSION_ROM: {
     start: 0x4020,
     end: 0x5FFF,
     size: 8160
   },
-  
+
   // Save RAM (for persistent legal data)
   SAVE_RAM: {
     start: 0x6000,
     end: 0x7FFF,
     size: 8192
   },
-  
+
   // PRG-ROM (Program ROM - for legal processing logic)
   PRG_ROM: {
     start: 0x8000,
@@ -58,7 +58,7 @@ const NES_MEMORY_MAP = {
     size: 32768,
     bankSwitchable: true
   },
-  
+
   // CHR-ROM (Character ROM - for legal document patterns)
   CHR_ROM: {
     start: 0x0000, // Separate PPU address space
@@ -120,7 +120,7 @@ export class NESMemoryArchitecture {
   private bankSwitchCount = 0;
   private gcCount = 0;
   private compressionWorker: Worker | null = null;
-  
+
   // NES-style memory management state
   private readonly memoryState = {
     currentScanline: 0,
@@ -242,11 +242,11 @@ export class NESMemoryArchitecture {
     setInterval(() => {
       (this.memoryState as any).vblankActive = true;
       this.performVBlankOperations();
-      
+
       setTimeout(() => {
         (this.memoryState as any).vblankActive = false;
       }, 1350); // VBlank period (~1.35ms)
-      
+
       (this.memoryState as any).currentScanline = ((this.memoryState as any).currentScanline + 1) % 262;
     }, 16.67); // ~60 FPS
   }
@@ -258,7 +258,7 @@ export class NESMemoryArchitecture {
       // Every second, check for garbage collection
       this.checkGarbageCollection();
     }
-    
+
     if (currentScanline % 180 === 0) {
       // Every 3 seconds, optimize memory layout
       this.optimizeMemoryLayout();
@@ -301,10 +301,10 @@ export class NESMemoryArchitecture {
       if (bank.used + documentSize > bank.size) {
         // Try garbage collection
         await this.garbageCollectBank(preferredBank);
-        
+
         if (bank.used + documentSize > bank.size) {
           // Try bank switching if supported
-          if ((bank.type === 'PRG_ROM' || bank.type === 'CHR_ROM') && 
+          if ((bank.type === 'PRG_ROM' || bank.type === 'CHR_ROM') &&
                NES_MEMORY_MAP[bank.type].bankSwitchable) {
             const success = await this.performBankSwitch(preferredBank, document);
             if (!success) {
@@ -345,7 +345,7 @@ export class NESMemoryArchitecture {
 
   private selectOptimalBank(document: Omit<LegalDocument, 'lastAccessed'>, size: number): string {
     // NES-style bank selection based on document characteristics
-    
+
     // Critical legal documents go to fast RAM
     if (document.riskLevel === 'critical' || document.confidenceLevel > 0.9) {
       if (this.memoryBanks.get('INTERNAL_RAM')!.used + size <= this.memoryBanks.get('INTERNAL_RAM')!.size) {
@@ -460,7 +460,7 @@ export class NESMemoryArchitecture {
       documents.sort((a, b) => {
         const [, docA] = a;
         const [, docB] = b;
-        
+
         // Sort by priority (low first) and last access time (old first)
         if (docA.priority !== docB.priority) {
           return docA.priority - docB.priority;
@@ -475,7 +475,7 @@ export class NESMemoryArchitecture {
 
       for (const [docId, doc] of documents) {
         if (freedSpace >= requiredSpace) break;
-        
+
         // Don't swap critical documents
         if (doc.riskLevel === 'high' || doc.priority > 200) continue;
 
@@ -522,13 +522,13 @@ export class NESMemoryArchitecture {
     const documents = Array.from(bank.documents.entries());
     const currentTime = Date.now();
     const oldThreshold = 5 * 60 * 1000; // 5 minutes
-    
+
     let freedSpace = 0;
     const removedDocs: string[] = [];
 
     for (const [docId, document] of documents) {
       const age = currentTime - document.lastAccessed;
-      
+
       // Remove old, low-priority documents
       if (age > oldThreshold && document.priority < 100 && document.riskLevel !== 'critical') {
         bank.documents.delete(docId);
@@ -547,7 +547,7 @@ export class NESMemoryArchitecture {
   private checkGarbageCollection(): void {
     for (const [bankName, bank] of this.memoryBanks) {
       const utilizationRate = bank.used / bank.size;
-      
+
       if (utilizationRate > 0.85) {
         this.garbageCollectBank(bankName);
       }
@@ -605,7 +605,7 @@ export class NESMemoryArchitecture {
 
     for (const bank of this.memoryBanks.values()) {
       documentCount += bank.documents.size;
-      
+
       switch (bank.type) {
         case 'RAM':
           totalRAM += bank.size;
@@ -715,5 +715,5 @@ export class NESMemoryArchitecture {
 
 // Export singleton instance
 export const nesMemory = new NESMemoryArchitecture();
-
+;
 // Export types already declared above - no need to re-export

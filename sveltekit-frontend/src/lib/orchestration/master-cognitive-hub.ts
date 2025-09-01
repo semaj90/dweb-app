@@ -130,7 +130,7 @@ export interface DeveloperToolkit {
   };
 }
 
-export class MasterCognitiveHub {
+export class MasterCognitiveHub {;
   private state: MasterCognitiveState;
   private capabilities: CognitiveCapabilities;
   private toolkit: DeveloperToolkit;

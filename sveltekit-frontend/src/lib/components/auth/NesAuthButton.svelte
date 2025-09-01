@@ -4,7 +4,7 @@
 -->
 <script lang="ts">
   import NesAuthModal from './NesAuthModal.svelte';
-  
+
   interface Props {
     text?: string;
     variant?: 'primary' | 'warning' | 'success' | 'error';
@@ -12,29 +12,29 @@
     icon?: string;
     form?: any;
   }
-  
-  let { 
-    text = 'Retro Auth', 
-    variant = 'primary', 
+
+  let {
+    text = 'Retro Auth',
+    variant = 'primary',
     size = 'medium',
     icon = '🎮',
-    form 
+    form
   }: Props = $props();
-  
+
   let isModalOpen = $state(false);
-  
+
   function openModal() {
     isModalOpen = true;
   }
-  
+
   function closeModal() {
     isModalOpen = false;
   }
-  
+
   // Dynamic classes based on props
   let buttonClasses = $derived(() => {
     let classes = 'nes-btn';
-    
+
     switch (variant) {
       case 'warning':
         classes += ' is-warning';
@@ -48,7 +48,7 @@
       default:
         classes += ' is-primary';
     }
-    
+
     switch (size) {
       case 'small':
         classes += ' nes-btn-small';
@@ -57,7 +57,7 @@
         classes += ' nes-btn-large';
         break;
     }
-    
+
     return classes;
   });
 </script>
@@ -68,18 +68,18 @@
   <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
 </svelte:head>
 
-<button 
+<button
   type="button"
   class={buttonClasses}
-  click={openModal}
+  on:onclick={openModal}
 >
   {#if icon}{icon} {/if}{text}
 </button>
 
-<NesAuthModal 
+<NesAuthModal
   bind:isOpen={isModalOpen}
   {form}
-  on:close={closeModal}
+  close={closeModal}
 />
 
 <style>
@@ -88,21 +88,21 @@
     font-size: 0.6rem;
     padding: 0.5rem 1rem;
   }
-  
+
   :global(.nes-btn-large) {
     font-size: 1rem;
     padding: 1rem 2rem;
   }
-  
+
   /* Button hover effects */
   :global(.nes-btn) {
     transition: transform 0.1s ease;
   }
-  
+
   :global(.nes-btn:hover) {
     transform: scale(1.02);
   }
-  
+
   :global(.nes-btn:active) {
     transform: scale(0.98);
   }

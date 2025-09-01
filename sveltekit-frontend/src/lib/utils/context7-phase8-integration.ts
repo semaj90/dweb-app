@@ -235,8 +235,8 @@ export class Context7Phase8Integrator {
 // Enhanced drag-and-drop evidence upload
 <div 
   class="drop-zone yorha-panel border-dashed border-2 p-8"
-  ondrop={handleDrop}
-  ondragover={handleDragOver}
+  on:drop={handleDrop}
+  on:dragover={handleDragOver}
 >
   <FileUploadIcon />
   <p>Drag evidence files here or click to browse</p>
@@ -560,5 +560,5 @@ export const commonContext7Phase8Queries = {
 
 // Export singleton instance
 export const context7Phase8Integrator = new Context7Phase8Integrator();
-
+;
 export default Context7Phase8Integrator;

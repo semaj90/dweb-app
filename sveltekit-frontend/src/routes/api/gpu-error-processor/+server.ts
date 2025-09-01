@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 // ======================================================================
 // GPU ERROR PROCESSOR API ENDPOINT
@@ -6,6 +6,7 @@ import type { RequestHandler } from './$types';
 // ======================================================================
 
 import { spawn } from 'child_process';
+import { URL } from "url";
 
 export interface ProcessResult {
 	success: boolean;

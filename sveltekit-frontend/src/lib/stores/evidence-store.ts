@@ -1,7 +1,7 @@
 import crypto from "crypto";
 
 import Fuse from "fuse.js";
-import type { Writable } from "svelte/store";
+import type {     Writable     } from 'svelte/store';
 import { derived, writable } from "svelte/store";
 
 // === TYPES ===

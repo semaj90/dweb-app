@@ -117,7 +117,7 @@
   };
 
   // Calculate age
-  const age = $derived(() => {
+  let age = $derived(() => {
     const today = new Date();
     const birthDate = profile.personalInfo.dateOfBirth;
     let age = today.getFullYear() - birthDate.getFullYear();
@@ -129,12 +129,12 @@
   });
 
   // Active warrants
-  const activeWarrants = $derived(() => {
+  let activeWarrants = $derived(() => {
     return profile.warrants?.filter(warrant => warrant.status === 'active') || [];
   });
 
   // Recent criminal activity
-  const recentRecords = $derived(() => {
+  let recentRecords = $derived(() => {
     return profile.criminalHistory
       .sort((a, b) => b.date.getTime() - a.date.getTime())
       .slice(0, 5);
@@ -176,7 +176,7 @@
       <div class="shrink-0">
         {#if profile.identification.mugshots?.length}
           <button
-            click={() => onViewMugshot?.(profile.identification.mugshots[0])}
+            on:onclick={() => onViewMugshot?.(profile.identification.mugshots[0])}
             class="w-20 h-24 bg-yorha-bg-tertiary border border-yorha-border rounded overflow-hidden hover:border-yorha-primary/30 transition-colors group"
           >
             <div class="w-full h-full flex items-center justify-center text-yorha-text-secondary group-hover:text-yorha-primary">
@@ -427,7 +427,7 @@
 
                 {#if interactive && onViewFullRecord}
                   <button
-                    click={() => onViewFullRecord?.(record.id)}
+                    on:onclick={() => onViewFullRecord?.(record.id)}
                     class="mt-2 text-xs font-mono text-yorha-primary hover:text-yorha-accent transition-colors"
                   >
                     View Full Record
@@ -468,7 +468,7 @@
     <div class="px-4 py-3 bg-yorha-bg-tertiary border-t border-yorha-border">
       <div class="flex justify-end">
         <button
-          click={() => onUpdateProfile?.(profile)}
+          on:onclick={() => onUpdateProfile?.(profile)}
           class="px-4 py-2 text-sm font-mono bg-yorha-primary/10 text-yorha-primary border border-yorha-primary/20 rounded hover:bg-yorha-primary/20 transition-colors"
         >
           Update Profile

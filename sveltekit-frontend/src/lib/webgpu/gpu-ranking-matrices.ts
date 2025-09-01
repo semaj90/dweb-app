@@ -10,7 +10,7 @@ import { webgpuPolyfill } from '$lib/webgpu/webgpu-polyfill';
 // Ranking matrix dimensions (4x4 = 16 values per document)
 export const RANKING_MATRIX_SIZE = 4;
 export const RANKING_VALUES_PER_DOCUMENT = RANKING_MATRIX_SIZE * RANKING_MATRIX_SIZE;
-
+;
 // Ranking categories (4x4 matrix)
 export enum RankingCategory {
   RELEVANCE = 0,     // Content relevance to query
@@ -442,7 +442,7 @@ export class GPURankingMatrices {
 
 // Global instance for singleton usage
 export const gpuRankingMatrices = new GPURankingMatrices();
-
+;
 // Utility functions for ranking operations
 export const RankingUtils = {
   /**

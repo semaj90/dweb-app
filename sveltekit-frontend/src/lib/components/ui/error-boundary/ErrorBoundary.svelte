@@ -145,7 +145,7 @@
         <!-- Action Buttons -->
         <div class="flex flex-col sm:flex-row gap-golden-sm justify-center">
           <ModernButton 
-            onclick={resetError}
+            on:on:on:click={resetError}
             variant="primary"
             class="bg-gradient-to-r from-nier-accent-warm to-nier-accent-cool text-nier-bg-primary"
           >
@@ -153,7 +153,7 @@
           </ModernButton>
           
           <ModernButton 
-            onclick={reloadPage}
+            on:on:on:click={reloadPage}
             variant="outline"
             class="border-nier-accent-cool text-nier-accent-cool hover:bg-nier-accent-cool hover:text-nier-bg-primary"
           >

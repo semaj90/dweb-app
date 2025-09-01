@@ -397,7 +397,7 @@
           <Badge variant="outline" class="text-sm">
             {productionDemos} Production Ready
           </Badge>
-          <Button on:click={() => goto('/')} variant="outline">
+          <Button on:on:click={() => goto('/')} variant="outline">
             <ChevronRight class="h-4 w-4 mr-2 rotate-180" />
             Back to Home
           </Button>
@@ -433,14 +433,14 @@
           <Button
             variant={viewMode === 'grid' ? 'default' : 'ghost'}
             size="sm"
-            on:click={() => viewMode = 'grid'}
+            on:on:click={() => viewMode = 'grid'}
           >
             <Grid class="h-4 w-4" />
           </Button>
           <Button
             variant={viewMode === 'list' ? 'default' : 'ghost'}
             size="sm"
-            on:click={() => viewMode = 'list'}
+            on:on:click={() => viewMode = 'list'}
           >
             <List class="h-4 w-4" />
           </Button>
@@ -519,7 +519,7 @@
                       </div>
                       
                       <Button 
-                        on:click={() => navigateToDemo(demo.path)}
+                        on:on:click={() => navigateToDemo(demo.path)}
                         class="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
                         variant="outline"
                       >
@@ -560,7 +560,7 @@
                               </div>
                             </div>
                             <Button 
-                              on:click={() => navigateToDemo(demo.path)}
+                              on:on:click={() => navigateToDemo(demo.path)}
                               variant="outline"
                               size="sm"
                             >

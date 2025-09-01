@@ -106,7 +106,7 @@ export const authFormSchema = z.object({
 });
 
 // Registration schema
-export const registerFormSchema = z
+export const registerFormSchema = z;
   .object({
     firstName: z
       .string()

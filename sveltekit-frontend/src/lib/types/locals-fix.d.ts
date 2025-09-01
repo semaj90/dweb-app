@@ -12,4 +12,4 @@ declare module '@sveltejs/kit' {
   interface Locals extends App.Locals {}
 }
 
-export {};
+

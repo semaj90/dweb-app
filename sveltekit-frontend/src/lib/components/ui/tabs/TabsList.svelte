@@ -6,7 +6,7 @@
   }
 
   let { children }: Props = $props();
-  let class: string = '';
+let class = $state<string >('');
   ;
 </script>
 

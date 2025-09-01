@@ -2,7 +2,8 @@ import { aiReports } from '$lib/server/db/schema-postgres';
 import { db } from '$lib/server/db/index';
 import { and, eq } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
+import { URL } from "url";
 
 
 export const POST: RequestHandler = async ({ request }) => {

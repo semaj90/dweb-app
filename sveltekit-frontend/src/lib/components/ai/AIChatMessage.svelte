@@ -132,7 +132,7 @@
       <button
         type="button"
         class="container mx-auto px-4"
-        click={() => copyToClipboard()}
+        on:onclick={() => copyToClipboard()}
         title="Copy message"
         aria-label="Copy message to clipboard"
       >
@@ -161,7 +161,7 @@
         <button
           type="button"
           class="container mx-auto px-4"
-          click={() => (isSourcesExpanded = !isSourcesExpanded)}
+          on:onclick={() => (isSourcesExpanded = !isSourcesExpanded)}
           aria-expanded={isSourcesExpanded}
         >
           <svg
@@ -179,7 +179,7 @@
         </button>
 
         {#if isSourcesExpanded}
-          <div class="container mx-auto px-4" transition:slide={{ duration: 200 }}>
+          <div class="container mx-auto px-4" transitislide={{ duration: 200 }}>
             {#each message.sources as source (source.id)}
               <div class="container mx-auto px-4">
                 <div class="container mx-auto px-4">
@@ -204,7 +204,7 @@
         <button
           type="button"
           class="container mx-auto px-4"
-          click={() => (isMetadataExpanded = !isMetadataExpanded)}
+          on:onclick={() => (isMetadataExpanded = !isMetadataExpanded)}
           aria-expanded={isMetadataExpanded}
         >
           <svg
@@ -222,7 +222,7 @@
         </button>
 
         {#if isMetadataExpanded}
-          <div class="container mx-auto px-4" transition:slide={{ duration: 200 }}>
+          <div class="container mx-auto px-4" transitislide={{ duration: 200 }}>
             <div class="container mx-auto px-4">
               <span class="container mx-auto px-4">Model:</span>
               <span class="container mx-auto px-4">{message.metadata.model}</span>

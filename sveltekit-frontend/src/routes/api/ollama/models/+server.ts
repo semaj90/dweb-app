@@ -1,5 +1,7 @@
+/// <reference types="vite/client" />
 import type { OllamaTagsResponse, OllamaModel } from "$lib/types/ollama";
 import type { RequestHandler } from './$types';
+import { json } from '@sveltejs/kit';
 
 /**
  * Ollama Models API Endpoint
@@ -7,7 +9,7 @@ import type { RequestHandler } from './$types';
  */
 
 
-const OLLAMA_BASE_URL = import.meta.env.OLLAMA_URL || 'http://localhost:11434';
+const OLLAMA_BASE_URL = (import.meta.env.OLLAMA_URL as string) || 'http://localhost:11434';
 
 export const GET: RequestHandler = async () => {
   try {
@@ -23,7 +25,7 @@ export const GET: RequestHandler = async () => {
     }
 
     const data: OllamaTagsResponse = await response.json();
-    
+
     // Add additional metadata for each model
     const enhancedModels = data.models.map((model: OllamaModel) => ({
       ...model,

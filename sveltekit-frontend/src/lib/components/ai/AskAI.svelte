@@ -62,10 +62,10 @@
     metadata?: Record<string, any>;
 }
   // Component state
-  let query = "";
-  let isLoading = false;
-  let error = "";
-  let conversation: ConversationMessage[] = [];
+let query = $state("");
+let isLoading = $state(false);
+let error = $state("");
+let conversation = $state<ConversationMessage[] >([]);
   let textareaRef: HTMLTextAreaElement;
   let messagesContainer: HTMLDivElement;
 
@@ -75,19 +75,19 @@
   // - searchThreshold: Adjusts the minimum relevance score for vector search results (higher = stricter).
   // - maxResults: Limits the number of context documents retrieved for the AI.
   // - temperature: Controls randomness/creativity of AI responses (higher = more creative).
-  let showAdvancedOptions = false;
-  let selectedModel: "openai" | "ollama" = "openai";
-  let searchThreshold = 0.7;
-  let maxResults = 10;
-  let temperature = 0.7;
+let showAdvancedOptions = $state(false);
+let selectedModel = $state<"openai" | "ollama" >("openai");
+let searchThreshold = $state(0.7);
+let maxResults = $state(10);
+let temperature = $state(0.7);
 
   // Voice input state
-  let isListening = false;
+let isListening = $state(false);
   // Fix SpeechRecognition type for browser
-  let recognition: any = null;
-  let ttsLoading = false;
+let recognition = $state<any >(null);
+let ttsLoading = $state(false);
   // Reusable AudioContext for TTS playback
-  let audioContext: AudioContext | null = null;
+let audioContext = $state<AudioContext | null >(null);
 
   const dispatch = createEventDispatcher<{
     response: AIResponse;
@@ -191,7 +191,7 @@
     isLoading = true;
     error = "";
     let aiMessageId = generateId();
-    let aiMessage: ConversationMessage = {
+let aiMessage = $state<ConversationMessage >({
       id: aiMessageId,
       type: "ai",
       content: "",
@@ -199,7 +199,7 @@
       references: [],
       confidence: undefined,
       metadata: {},
-    };
+    });
     conversation = [...conversation, aiMessage];
     // Auto-resize textarea
     if (textareaRef) {
@@ -249,10 +249,10 @@
         // Streaming response (Ollama/Gemma3)
         const reader = response.body.getReader();
         let decoder = new TextDecoder();
-        let done = false;
-        let buffer = "";
+let done = $state(false);
+let buffer = $state("");
         // In the streaming loop:
-        let meta: Record<string, any> = {};
+let meta = $state<Record<string, any> >({});
         while (!done) {
           const { value, done: doneReading } = await reader.read();
           done = doneReading;
@@ -454,7 +454,7 @@ function formatTime(timestamp: number): string {
       <div>
         <button
           type="button"
-          click={() => (showAdvancedOptions = !showAdvancedOptions)}
+          on:onclick={() => (showAdvancedOptions = !showAdvancedOptions)}
         >
           Advanced
         </button>
@@ -462,7 +462,7 @@ function formatTime(timestamp: number): string {
         {#if conversation.length > 0}
           <button
             type="button"
-            click={() => clearConversation()}
+            on:onclick={() => clearConversation()}
           >
             Clear
           </button>
@@ -588,7 +588,7 @@ function formatTime(timestamp: number): string {
               <button
                 type="button"
                 aria-label="Listen to AI response"
-                click={() => speak(message.content)}
+                on:onclick={() => speak(message.content)}
                 disabled={ttsLoading}
               >
                 {#if ttsLoading}
@@ -609,7 +609,7 @@ function formatTime(timestamp: number): string {
                 {#each message.references as reference}
                   <button
                     type="button"
-                    click={() => handleReferenceClick(reference)}
+                    on:onclick={() => handleReferenceClick(reference)}
                   >
                     <span>{reference.type.toUpperCase()}:</span>
                     {reference.title}
@@ -655,7 +655,7 @@ function formatTime(timestamp: number): string {
         <textarea
           bind:this={textareaRef}
           bind:value={query}
-          on:keypress={handleKeyPress}
+          onkeypress={handleKeyPress}
           input={autoResize}
           {placeholder}
           disabled={isLoading}
@@ -667,7 +667,7 @@ function formatTime(timestamp: number): string {
             type="button"
             class:text-red-500={isListening}
             aria-label={isListening ? "Stop voice input" : "Start voice input"}
-            click={() => (isListening ? stopVoiceInput() : startVoiceInput())}
+            on:onclick={() => (isListening ? stopVoiceInput() : startVoiceInput())}
             disabled={isLoading}
           >
             🎤
@@ -677,7 +677,7 @@ function formatTime(timestamp: number): string {
 
       <button
         type="button"
-        click={() => askAI()}
+        on:onclick={() => askAI()}
         disabled={!query.trim() || isLoading}
         aria-label="Send question to AI"
       >
@@ -696,7 +696,7 @@ function formatTime(timestamp: number): string {
             type="button"
             class="container mx-auto px-4 {isListening ? 'text-red-500' : ''}"
             aria-label={isListening ? "Stop voice input" : "Start voice input"}
-            click={() => (isListening ? stopVoiceInput() : startVoiceInput())}
+            on:onclick={() => (isListening ? stopVoiceInput() : startVoiceInput())}
             disabled={isLoading}
           >
             🎤

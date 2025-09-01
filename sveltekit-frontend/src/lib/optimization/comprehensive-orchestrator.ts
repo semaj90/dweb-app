@@ -20,21 +20,21 @@ export const copilotOrchestrator = {
   analyze: () => Promise.resolve({ status: 'disabled' })
 };
 
-export const mcpMemoryReadGraph = async () => ({ 
+export const mcpMemoryReadGraph = async () => ({ ;
   nodes: [], 
   edges: [], 
   disabled: true 
 });
 
-export const semanticSearch = async () => ({ 
+export const semanticSearch = async () => ({ ;
   results: [], 
   disabled: true 
 });
 
 export const generateMCPPrompt = () => 'MCP tools disabled';
-
+;
 export const validateMCPRequest = () => ({ valid: false, disabled: true });
-
+;
 export const commonMCPQueries = [];
-
+;
 export default comprehensiveOrchestrator;

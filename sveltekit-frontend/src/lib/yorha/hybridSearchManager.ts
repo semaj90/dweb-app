@@ -11,9 +11,9 @@ export interface HybridInitOptions {
   maxDocs?: number;
 }
 
-export function getLastRefresh() { return lastRefresh; }
-export function isRefreshing() { return refreshing; }
-
+export function getLastRefresh() { return lastRefresh; };
+export function isRefreshing() { return refreshing; };
+;
 export async function initHybridLayer(opts: HybridInitOptions = {}): Promise<any> {
   if (typeof window === 'undefined') return;
   const { refreshIntervalMs = 5 * 60_000, maxDocs = 750 } = opts;
@@ -88,7 +88,7 @@ export async function reRankWithPgVector(query: string, current: any[], endpoint
   }
 }
 
-export function getLokiCount() { return lokiCollection ? lokiCollection.count() : 0; }
+export function getLokiCount() { return lokiCollection ? lokiCollection.count() : 0; };
 export function queryLokiTitle(term: string, limit = 25) {
   if (!lokiCollection || !term.trim()) return [];
   const lower = term.toLowerCase();

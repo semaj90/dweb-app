@@ -4,7 +4,7 @@
  */
 
 import { QdrantClient } from "@qdrant/js-client-rest";
-import { productionLogger as logger } from '../production-logger';
+import { productionLogger as logger } from '../production-logger.js';
 
 export class QdrantApiWrapper {
   private client: QdrantClient;
@@ -277,8 +277,8 @@ export class QdrantApiWrapper {
 
 // Factory function for creating wrapper instances
 export function createQdrantWrapper(config: { url?: string; apiKey?: string } = {}): QdrantApiWrapper {
-  const url = config.url || process.env.QDRANT_URL || 'http://localhost:6333';
-  const apiKey = config.apiKey || process.env.QDRANT_API_KEY;
+  const url = config.url || import.meta.env.QDRANT_URL || 'http://localhost:6333';
+  const apiKey = config.apiKey || import.meta.env.QDRANT_API_KEY;
   
   return new QdrantApiWrapper({ url, apiKey });
 }

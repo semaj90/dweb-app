@@ -7,7 +7,6 @@
   import { superForm } from 'sveltekit-superforms/client';
   import { zod } from 'sveltekit-superforms/adapters';
   import { z } from 'zod';
-  import { createEventDispatcher } from 'svelte';
   import { writable } from 'svelte/store';
   import Button from '$lib/components/ui/Button.svelte';
   import { Input } from '$lib/components/ui/input';
@@ -31,18 +30,31 @@
   import { createCaseCreationForm } from '$lib/forms/superforms-xstate-integration';
   import type { SuperValidated } from 'sveltekit-superforms';
 
-  export let data: any = undefined; // SuperValidated<CaseForm>;
-  export let submitAction: string = '?/createCase';
-  export let editMode: boolean = false;
-  export let enableAutoSave: boolean = true;
-  export let enableRealTimeValidation: boolean = true;
+  // Svelte 5 Props Interface
+  interface Props {
+    data?: any; // SuperValidated<CaseForm>
+    submitAction?: string;
+    editMode?: boolean;
+    enableAutoSave?: boolean;
+    enableRealTimeValidation?: boolean;
+    onsubmit?: (event: { data: CaseForm }) => void;
+    onsuccess?: (event: { case: any }) => void;
+    onerror?: (event: { message: string }) => void;
+    ondraft?: (event: { data: CaseForm }) => void;
+  }
 
-  const dispatch = createEventDispatcher<{
-    submit: { data: CaseForm };
-    success: { case: any };
-    error: { message: string };
-    draft: { data: CaseForm };
-  }>();
+  // Svelte 5 props with defaults
+  let {
+    data = undefined,
+    submitAction = '?/createCase',
+    editMode = false,
+    enableAutoSave = true,
+    enableRealTimeValidation = true,
+    onsubmit,
+    onsuccess,
+    onerror,
+    ondraft
+  }: Props = $props();
 
   // Enhanced form integration with XState
   const formIntegration = createCaseCreationForm(data, {
@@ -50,23 +62,25 @@
     autoSaveDelay: 2000,
     resetOnSuccess: !editMode,
     onSubmit: async (formData) => {
-      dispatch('submit', { data: formData as CaseForm });
+      if (onsubmit) onsubmit({ data: formData as CaseForm });
     },
     onSuccess: (result) => {
-      dispatch('success', { case: result });
+      if (onsuccess) onsuccess({ case: result });
     },
     onError: (error) => {
-      dispatch('error', { message: error });
+      if (onerror) onerror({ message: error });
+      componentError = new Error(error);
     }
   });
 
   const { form, errors, enhance: formEnhance, submitting, message, delayed } = formIntegration.form;
   const { isValid, isSubmitting, progress } = formIntegration;
 
-  // Local state
-  let showAdvanced = false;
-  let uploadedFiles: File[] = [];
-  let validationStatus: 'idle' | 'validating' | 'valid' | 'invalid' = 'idle';
+  // Local state using Svelte 5 runes
+  let showAdvanced = $state(false);
+  let uploadedFiles = $state<File[]>([]);
+  let validationStatus = $state<'idle' | 'validating' | 'valid' | 'invalid'>('idle');
+  let componentError = $state<Error | null>(null);
 
   // Priority levels with colors
   const priorityLevels = [
@@ -97,8 +111,8 @@
   }
 
   // Auto-save indicator
-  let lastSaved: Date | null = null;
-  let isAutoSaving = false;
+  let lastSaved = $state<Date | null>(null);
+  let isAutoSaving = $state(false);
 
   // Enhanced file upload handler
   function handleFileUpload(event: Event) {
@@ -141,7 +155,7 @@
       return async ({ result, update }) => {
         if (result.type === 'success') {
           // Handle success
-          dispatch('success', { case: result.data });
+          if (onsuccess) onsuccess({ case: result.data });
           
           // Reset form if not in edit mode
           if (!editMode) {
@@ -150,7 +164,9 @@
           }
         } else if (result.type === 'error') {
           // Handle error
-          dispatch('error', { message: result.error?.message || 'Submission failed' });
+          const errorMsg = result.error?.message || 'Submission failed';
+          if (onerror) onerror({ message: errorMsg });
+          componentError = new Error(errorMsg);
         }
 
         // Update the form
@@ -160,6 +176,7 @@
   }
 </script>
 
+{#if !componentError}
 <Card.Root class="w-full max-w-4xl mx-auto">
   <Card.Header>
     <div class="flex items-center justify-between">
@@ -318,7 +335,7 @@
         <Button
           type="button"
           variant="ghost"
-          on:click={() => showAdvanced = !showAdvanced}
+          on:on:on:click={() => showAdvanced = !showAdvanced}
           class="mb-4"
         >
           {showAdvanced ? 'Hide' : 'Show'} Advanced Options
@@ -426,7 +443,7 @@
                     type="file"
                     multiple
                     accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
-                    on:change={handleFileUpload}
+                    onchange={handleFileUpload}
                     class="sr-only"
                   />
                 </Label>
@@ -456,7 +473,7 @@
                       type="button"
                       variant="ghost"
                       size="sm"
-                      on:click={() => removeFile(index)}
+                      on:on:on:click={() => removeFile(index)}
                     >
                       Remove
                     </Button>
@@ -472,7 +489,7 @@
       <div class="flex items-center justify-between pt-6 border-t">
         <div class="flex items-center space-x-4">
           {#if enableAutoSave && !editMode}
-            <Button type="button" variant="outline" on:click={() => dispatch('draft', { data: $form })}>
+            <Button type="button" variant="outline" on:on:on:click={() => { if (ondraft) ondraft({ data: $form }); }}>
               Save as Draft
             </Button>
           {/if}
@@ -500,6 +517,22 @@
     </form>
   </Card.Content>
 </Card.Root>
+{/if}
+
+{#if componentError}
+  <div class="error-boundary bg-red-50 border border-red-200 rounded-lg p-6 m-4">
+    <h2 class="text-lg font-semibold text-red-800 mb-2">Form Error</h2>
+    <p class="text-red-700 mb-4">The case form encountered an error:</p>
+    <p class="text-red-600 font-mono text-sm mb-4 bg-red-100 p-2 rounded">{componentError.message}</p>
+    <Button 
+      on:on:on:click={() => { componentError = null; }}
+      variant="outline"
+      class="border-red-300 text-red-700 hover:bg-red-50"
+    >
+      Dismiss Error
+    </Button>
+  </div>
+{/if}
 
 <style lang="postcss">
   /* Custom styles for enhanced form interactions */

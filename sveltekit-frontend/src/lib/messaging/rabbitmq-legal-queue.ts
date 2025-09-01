@@ -731,4 +731,4 @@ export class RabbitMQLegalQueue {
 
 // Export singleton instance
 export const rabbitMQLegalQueue = new RabbitMQLegalQueue();
-
+;

@@ -38,7 +38,7 @@ export interface RealityDistortionOptions {
   realityStability: number; // 0-1
 }
 
-export class YoRHaQuantumEffects3D extends YoRHa3DComponent {
+export class YoRHaQuantumEffects3D extends YoRHa3DComponent {;
   private quantumField: THREE.Points | null = null;
   private consciousnessNetwork: THREE.Group | null = null;
   private realityMatrix: THREE.Group | null = null;

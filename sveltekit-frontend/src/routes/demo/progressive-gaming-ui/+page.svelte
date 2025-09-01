@@ -194,7 +194,7 @@
       <h3>Select Gaming Era:</h3>
       <div class="era-buttons">
         <NES8BitButton 
-          onclick={() => selectedEra = '8bit'}
+          on:on:on:click={() => selectedEra = '8bit'}
           variant={selectedEra === '8bit' ? 'success' : 'primary'}
           enableSound={true}
         >
@@ -202,7 +202,7 @@
         </NES8BitButton>
         
         <SNES16BitButton 
-          onclick={() => selectedEra = '16bit'}
+          on:on:on:click={() => selectedEra = '16bit'}
           variant={selectedEra === '16bit' ? 'success' : 'primary'}
           enableEnhancedSound={true}
         >
@@ -210,7 +210,7 @@
         </SNES16BitButton>
         
         <N643DButton 
-          onclick={() => selectedEra = 'n64'}
+          on:on:on:click={() => selectedEra = 'n64'}
           variant={selectedEra === 'n64' ? 'success' : 'primary'}
           enableParticles={true}
         >
@@ -233,7 +233,7 @@
           </ul>
           
           <div class="button-demo">
-            <NES8BitButton nesVariant="is-primary" onclick={() => demoCounter++}>
+            <NES8BitButton nesVariant="is-primary" on:on:on:click={() => demoCounter++}>
               Action ({demoCounter})
             </NES8BitButton>
             <NES8BitButton nesVariant="is-success" enableSound={true}>
@@ -257,7 +257,7 @@
           </ul>
           
           <div class="button-demo">
-            <SNES16BitButton onclick={() => demoCounter++} enableLayerEffects={true}>
+            <SNES16BitButton on:on:on:click={() => demoCounter++} enableLayerEffects={true}>
               Layer Effects ({demoCounter})
             </SNES16BitButton>
             <SNES16BitButton enableMode7={true} plasmaEffect={enableEffects}>
@@ -283,7 +283,7 @@
           
           <div class="button-demo-3d">
             <N643DButton 
-              onclick={() => demoCounter++}
+              on:on:on:click={() => demoCounter++}
               meshComplexity="high"
               enableLighting={true}
               enableReflections={true}
@@ -295,7 +295,7 @@
               materialType="pbr"
               enableParticles={true}
               enableFog={true}
-              onclick={testDataOperations}
+              on:on:on:click={testDataOperations}
             >
               PBR + Particles + DB Test
             </N643DButton>
@@ -373,11 +373,11 @@
       </div>
       
       <div class="action-buttons">
-        <NES8BitButton onclick={checkDatabaseConnection} loading={loading}>
+        <NES8BitButton on:on:on:click={checkDatabaseConnection} loading={loading}>
           Refresh Status
         </NES8BitButton>
         
-        <SNES16BitButton onclick={testDataOperations}>
+        <SNES16BitButton on:on:on:click={testDataOperations}>
           Test Database Ops
         </SNES16BitButton>
       </div>

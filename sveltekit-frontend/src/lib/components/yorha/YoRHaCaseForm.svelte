@@ -34,8 +34,8 @@
   // Form integration state
   let formIntegration: any = $state(null);
   let currentStep = $state(0);
-  let totalSteps = 3; // Basic Info, Legal Details, Review
-  let unsubscribe: (() => void) | null = null;
+let totalSteps = $state(3); // Basic Info, Legal Details, Review
+let unsubscribe = $state<(() >(> void) | null = null);
   
   // Reactive derived state from form integration
   let isSubmitting = $derived(formIntegration?.isSubmitting?.get() || false);
@@ -312,7 +312,7 @@
       <div class="step-navigation flex justify-end pt-4">
         <button
           type="button"
-          click={nextStep}
+          on:onclick={nextStep}
           disabled={!formIntegration.form.get().title || !formIntegration.form.get().description}
           class="next-btn px-6 py-3 bg-yorha-accent-warm text-yorha-dark rounded font-bold hover:bg-yorha-accent-warm/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -415,14 +415,14 @@
       <div class="step-navigation flex justify-between pt-4">
         <button
           type="button"
-          click={previousStep}
+          on:onclick={previousStep}
           class="prev-btn px-6 py-3 border border-yorha-accent-warm/50 text-yorha-light rounded hover:bg-yorha-accent-warm/10 transition-colors"
         >
           ← Back: Basic Info
         </button>
         <button
           type="button"
-          click={nextStep}
+          on:onclick={nextStep}
           class="next-btn px-6 py-3 bg-yorha-accent-warm text-yorha-dark rounded font-bold hover:bg-yorha-accent-warm/90 transition-colors"
         >
           Next: Review →
@@ -491,7 +491,7 @@
       <div class="step-navigation flex justify-between pt-4">
         <button
           type="button"
-          click={previousStep}
+          on:onclick={previousStep}
           disabled={isSubmitting}
           class="prev-btn px-6 py-3 border border-yorha-accent-warm/50 text-yorha-light rounded hover:bg-yorha-accent-warm/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -500,7 +500,7 @@
         <div class="final-actions flex space-x-4">
           <button
             type="button"
-            click={() => dispatch('close')}
+            on:onclick={() => dispatch('close')}
             disabled={isSubmitting}
             class="cancel-btn px-6 py-3 border border-yorha-accent-warm/50 text-yorha-light rounded hover:bg-yorha-accent-warm/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >

@@ -98,16 +98,16 @@
     system: '◆'
   };
 
-  const notificationIcon = $derived(icon || iconMap[type]);
+  let notificationIcon = $derived(icon || iconMap[type]);
 </script>
 
 {#if visible}
   <div
     bind:this={notificationElement}
   class="yorha-notification {type}"
-  transition:fly="{{ x: position.includes('right') ? 150 : -150, duration: 250 }}"
-  on:mouseenter={pauseAutoClose}
-  on:mouseleave={resumeAutoClose}
+  transitifly="{{ x: position.includes('right') ? 150 : -150, duration: 250 }}"
+  on:on:mouseenter={pauseAutoClose}
+  on:on:mouseleave={resumeAutoClose}
     role="alert"
     aria-live="polite"
   >
@@ -117,7 +117,7 @@
         <div
           class="progress-fill"
           style="width: {progress}%"
-          transition:fade="{{ duration: 200 }}"
+          transitifade="{{ duration: 200 }}"
         ></div>
       </div>
     {/if}
@@ -141,7 +141,7 @@
       {#if closable}
         <button
           class="notification-close"
-          click={closeNotification}
+          on:onclick={closeNotification}
           aria-label="Close notification"
         >
           ✕

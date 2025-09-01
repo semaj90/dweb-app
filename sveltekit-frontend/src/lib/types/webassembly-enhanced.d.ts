@@ -20,7 +20,7 @@ export const webAssemblyGPUUtils = {
     // Instead of converting directly, create a function that provides access
     return (() => device) as any;
   },
-  
+
   // Create WebAssembly import object with GPU support
   createImportsWithGPU: (device: GPUDevice, additionalImports: any = {}): WebAssembly.Imports => {
     return {
@@ -32,14 +32,14 @@ export const webAssemblyGPUUtils = {
       ...additionalImports
     };
   },
-  
+
   // Type assertion helper for GPU device conversion
   assertGPUDevice: (device: unknown): device is GPUDevice => {
-    return device !== null && 
-           typeof device === 'object' && 
+    return device !== null &&
+      typeof device === 'object' &&
            'createBuffer' in (device as any);
   },
-  
+
   // Safe type conversion for analysis results
   convertAnalysisResult: (analysis: unknown): any => {
     if (analysis && typeof analysis === 'object') {
@@ -55,7 +55,7 @@ export const webAssemblyGPUUtils = {
         ...analysis
       };
     }
-    
+
     return {
       summary: 'Analysis failed',
       keyTerms: [],
@@ -83,7 +83,7 @@ declare global {
       // Allow GPU devices as import values through function wrapper
       (): GPUDevice;
     }
-    
+
     interface Imports {
       env?: {
         memory?: WebAssembly.Memory;
@@ -97,7 +97,7 @@ declare global {
       [key: string]: any;
     }
   }
-  
+
   // Enhanced GPU device interface
   interface GPUDevice {
     // Ensure destroy method is available

@@ -25,10 +25,10 @@
   let mounted = $state(false);
   let visible = $state(false);
   let interactionId: string | null = $state(null);
-  let element: HTMLElement;
+let element = $state<HTMLElement;
 
-  onMount(() => {
-    mounted = true;
+  onMount(() >(> {
+    mounted = true);
     
     if (trackOnMount) {
       triggerFeedback();

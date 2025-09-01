@@ -417,7 +417,7 @@
     {#each Object.entries(documentationSections) as [key, section]}
       <button
         class="px-4 py-2 text-sm font-bold border transition-colors {activeTab === key ? 'bg-[#3D3D3D] text-[#F7F6F2] border-[#3D3D3D]' : 'bg-[#EAE8E1] border-[#D1CFC7] hover:bg-[#F7F6F2]'}"
-        click={() => activeTab = key}
+        on:onclick={() => activeTab = key}
       >
         {section.icon} {section.title}
       </button>

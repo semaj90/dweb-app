@@ -580,9 +580,10 @@ class EnhancedRAGSemanticAnalyzer {
 
 // Export singleton instance
 export const semanticAnalyzer = new EnhancedRAGSemanticAnalyzer();
-
+;
 // Svelte stores for reactive semantic analysis state
 export const semanticAnalysisStore: Writable<SemanticAnalysisResult | null> = writable(null);
 export const ragQueryStore: Writable<RAGQuery | null> = writable(null);
 export const ragResponseStore: Writable<RAGResponse | null> = writable(null);
 export const isAnalyzingStore: Writable<boolean> = writable(false);
+;

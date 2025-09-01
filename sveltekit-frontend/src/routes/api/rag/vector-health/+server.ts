@@ -1,10 +1,11 @@
+/// <reference types="vite/client" />
 import { json } from "@sveltejs/kit";
 import { db, documents, embeddings } from "drizzle-orm";
 import { sql } from 'drizzle-orm';
 import type { RequestHandler } from './$types';
 
 
-export const GET = async (): Promise<any> => {
+export const GET = (async (): Promise<any> => {
   try {
     const TARGET_DIM = parseInt(import.meta.env.EMBEDDING_DIM || import.meta.env.VECTOR_DIM || '768', 10);
 

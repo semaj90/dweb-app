@@ -28,7 +28,7 @@
   let searchQuery = $state('');
   let columnFilters = $state<Map<string, string>>(new Map());
 
-  const filteredData = $derived(() => {
+  let filteredData = $derived(() => {
     let filtered = data;
     
     // Apply search filter
@@ -53,7 +53,7 @@
     return filtered;
   });
 
-  const sortedData = $derived(() => {
+  let sortedData = $derived(() => {
     if (!sortConfig) return filteredData;
     
     return [...filteredData].sort((a, b) => {
@@ -153,7 +153,7 @@
               <input
                 type="checkbox"
                 checked={selectedRows.size === sortedData.length && sortedData.length > 0}
-                on:change={handleSelectAll}
+                change={handleSelectAll}
                 class="checkbox-input"
               />
             </th>
@@ -163,7 +163,7 @@
             <th class="header-cell">
               <button
                 class="header-button"
-                click={() => handleSort(column.key)}
+                on:onclick={() => handleSort(column.key)}
                 disabled={!sortable || !column.sortable}
               >
                 <span class="header-text">{column.title}</span>
@@ -217,7 +217,7 @@
                 'row-even': index % 2 === 0,
                 'row-clickable': selectable
               })}
-              click={() => handleRowSelect(row.id)}
+              on:onclick={() => handleRowSelect(row.id)}
             >
               {#if selectable && multiSelect}
                 <td class="select-cell">

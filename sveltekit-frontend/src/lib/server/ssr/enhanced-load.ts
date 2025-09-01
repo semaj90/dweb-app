@@ -1,11 +1,14 @@
+import type { LayoutLoad } from './$types.js';
+import type { PageLoad } from './$types.js';
 // Enhanced SSR Load Functions for SvelteKit 2
 // Production-optimized server-side rendering with caching
 
 import type { ServerLoad } from '@sveltejs/kit';
-import { CaseOperations, EvidenceOperations, checkDatabaseHealth } from '../db/enhanced-operations';
-import { CommonErrors } from '../api/response';
-import type { User } from '../db/schema-postgres';
-import { cases, evidence } from '../db/schema-postgres';
+import { CaseOperations, EvidenceOperations, checkDatabaseHealth } from '../db/enhanced-operations.js';
+import { CommonErrors } from '../api/response.js';
+import type { User } from '../db/schema-postgres.js';
+import { cases, evidence } from '../db/schema-postgres.js';
+import { URL } from "url";
 
 type Case = typeof cases.$inferSelect;
 type Evidence = typeof evidence.$inferSelect;

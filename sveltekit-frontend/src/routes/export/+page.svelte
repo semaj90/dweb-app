@@ -158,7 +158,7 @@
                   <TooltipTrigger asChild>
                     <button
                       class="space-y-4"
-                      click={() =>
+                      on:onclick={() =>
                         (format = formatOption.value as "json" | "csv" | "xml")}
                     >
                       <div class="space-y-4">{formatOption.label}</div>
@@ -255,14 +255,14 @@
                 <Button
                   variant="outline"
                   size="sm"
-                  on:click={() => selectAllCases()}
+                  on:on:click={() => selectAllCases()}
                 >
                   Select All
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
-                  on:click={() => clearCaseSelection()}
+                  on:on:click={() => clearCaseSelection()}
                 >
                   Clear
                 </Button>
@@ -335,7 +335,7 @@
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                on:click={() => exportData()}
+                on:on:click={() => exportData()}
                 disabled={exportLoading || (!includeCases && !includeEvidence)}
                 class="space-y-4"
               >

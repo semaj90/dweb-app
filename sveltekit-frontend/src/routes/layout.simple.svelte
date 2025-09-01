@@ -7,7 +7,7 @@
     <h1>YoRHa Legal AI</h1>
   </header>
   <main>
-    <slot />
+    {@/* TODO: manual review – previously {@render children?.()} */}
   </main>
 </div>
 

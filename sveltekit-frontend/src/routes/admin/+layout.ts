@@ -1,8 +1,9 @@
 // Admin Layout Load Function
 // Handles server-side authentication and authorization for admin routes
 
-import type { LayoutLoad } from './$types';
+import type { LayoutLoad } from './$types.js';
 import { redirect } from '@sveltejs/kit';
+import { URL } from "url";
 
 export const load: LayoutLoad = async ({ fetch, url, depends }) => {
   depends('app:auth');

@@ -32,4 +32,4 @@ declare module 'svelte' {
   }
 }
 
-export {};
+

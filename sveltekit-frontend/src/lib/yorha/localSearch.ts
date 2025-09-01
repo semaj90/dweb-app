@@ -102,8 +102,8 @@ export function clearLocalIndex() {
   void idbSet(cacheKey, documents);
 }
 
-export function wasLoadedFromCache() { return loadedFromCache; }
-
+export function wasLoadedFromCache() { return loadedFromCache; };
+;
 // Merge helper: combine local + remote results with weighting & dedupe
 export interface HybridResult extends LocalLegalDoc { relevance: number; source: 'local' | 'remote' | 'hybrid'; }
 

@@ -329,3 +329,4 @@ export class OllamaService {
 
 // Export singleton instance
 export const ollamaService = new OllamaService();
+;

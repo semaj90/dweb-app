@@ -1,5 +1,5 @@
 
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * AI-Powered Find API with Context7 MCP Integration
@@ -35,6 +35,7 @@ export interface AutoMCPSuggestion {
 // Mock database imports for testing without DB connection
 // { db } from '$lib/server/db';
 import { or, like, desc, sql, and, gte } from "drizzle-orm";
+import { URL } from "url";
 // Mock Redis for testing without Redis connection
 // import { Redis } from 'ioredis';
 

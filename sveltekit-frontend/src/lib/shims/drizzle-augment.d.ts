@@ -20,4 +20,4 @@ declare module '$lib/server/db/*' {
   export const aiAnalyses: any;
 }
 
-export {};
+

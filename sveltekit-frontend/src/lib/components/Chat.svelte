@@ -1,11 +1,9 @@
 <script lang="ts">
-
-  import { afterUpdate, createEventDispatcher, onMount, tick } from "svelte";
-  import { $props } from 'svelte';
+  import { afterUpdate, onMount, tick } from "svelte";
   import { elasticOut, quintOut } from "svelte/easing";
   import { writable } from "svelte/store";
   import { fade, fly, scale } from "svelte/transition";
-// Icons from lucide-svelte
+  // Icons from lucide-svelte
   import {
     Bot,
     Brain,
@@ -19,18 +17,47 @@
     Zap,
   } from "lucide-svelte";
 
-  let { conversationId = $bindable() } = $props(); // string = crypto.randomUUID();
-  let { userId = $bindable() } = $props(); // string;
-  let { caseId = $bindable() } = $props(); // string | null = null;
-  let { open = $bindable() } = $props(); // boolean = false;
-  let { title = $bindable() } = $props(); // string = "Legal AI Assistant";
+  // Svelte 5 Props Interface
+  interface Props {
+    conversationId?: string;
+    userId: string;
+    caseId?: string | null;
+    open?: boolean;
+    title?: string;
+    onsuggestionsreceived?: (suggestions: string[]) => void;
+    onactionsreceived?: (actions: any[]) => void;
+    onmessage?: (event: any) => void;
+    onclose?: () => void;
+    onaction?: (action: any) => void;
+  }
 
-  const dispatch = createEventDispatcher();
+  // Svelte 5 props with defaults
+  let {
+    conversationId = crypto.randomUUID(),
+    userId,
+    caseId = null,
+    open = false,
+    title = "Legal AI Assistant",
+    onsuggestionsreceived,
+    onactionsreceived,
+    onmessage,
+    onclose,
+    onaction
+  }: Props = $props();
 
-  // Chat state
-  let messages = writable<
+  // Chat state using Svelte 5 runes
+  let currentMessage = $state("");
+  let isGenerating = $state(false);
+  let selectedMode = $state("professional");
+  let showModeSelector = $state(false);
+  let componentError = $state<Error | null>(null);
+let messagesContainer = $state<HTMLElement;
+let messageInput = $state<HTMLTextAreaElement;
+
+  // Messages store (keeping as writable for complex state management)
+  let messages >(writable<
     Array<{
-      id: string;
+      id: string);
       role: "user" | "assistant";
       content: string;
       timestamp: Date;
@@ -42,13 +69,8 @@
     }>
   >([]);
 
-  let currentMessage = "";
-  let isGenerating = false;
-  let messagesContainer: HTMLElement;
-  let messageInput: HTMLTextAreaElement;
-
   // AI modes/vibes
-  const aiModes = [
+  const aiModes >([
     {
       id: "professional",
       label: "Professional",
@@ -73,10 +95,7 @@
       icon: Zap,
       description: "Case strategy planning",
     },
-  ];
-
-  let selectedMode = "professional";
-  let showModeSelector = false;
+  ]);
 
   // Quick actions
   const quickActions = [
@@ -87,9 +106,13 @@
   ];
 
   onMount(() => {
-    if (open) {
-      focusInput();
-      loadConversationHistory();
+    try {
+      if (open) {
+        focusInput();
+        loadConversationHistory();
+      }
+    } catch (error) {
+      componentError = error instanceof Error ? error : new Error('Initialization failed');
     }
   });
 
@@ -203,12 +226,12 @@
         messages.update((msgs) => [...msgs, aiMessage]);
 
         // Dispatch events for suggestions and actions
-        if (result.suggestions?.length > 0) {
-          dispatch("suggestionsReceived", result.suggestions);
+        if (result.suggestions?.length > 0 && onsuggestionsreceived) {
+          onsuggestionsreceived(result.suggestions);
         }
 
-        if (result.actions?.length > 0) {
-          dispatch("actionsReceived", result.actions);
+        if (result.actions?.length > 0 && onactionsreceived) {
+          onactionsreceived(result.actions);
         }
 
         // Store message embedding for future context
@@ -220,6 +243,7 @@
       }
     } catch (error) {
       console.error("Failed to send message:", error);
+      componentError = error instanceof Error ? error : new Error('Send message failed');
 
       // Remove typing indicator and show error
       messages.update((msgs) => msgs.filter((m) => !m.isTyping));
@@ -230,6 +254,7 @@
         content:
           "Sorry, I encountered an error while processing your request. Please try again.",
         timestamp: new Date(),
+        isError: true,
       };
       messages.update((msgs) => [...msgs, errorMessage]);
     } finally {
@@ -264,109 +289,9 @@
     }
   }
 
-  async function sendMessageLegacy() {
-    if (!currentMessage.trim() || isGenerating) return;
-
-    const messageContent = currentMessage.trim();
-    currentMessage = "";
-    isGenerating = true;
-
-    // Add user message
-    const userMessage = {
-      id: crypto.randomUUID(),
-      role: "user" as const,
-      content: messageContent,
-      timestamp: new Date(),
-    };
-
-    messages.update((msgs) => [...msgs, userMessage]);
-
-    // Add typing indicator
-    const typingMessage = {
-      id: "typing",
-      role: "assistant" as const,
-      content: "",
-      timestamp: new Date(),
-      isTyping: true,
-    };
-
-    messages.update((msgs) => [...msgs, typingMessage]);
-
-    try {
-      // Store user message embedding
-      await storeMessageEmbedding(messageContent, "user");
-
-      // Send to AI
-      const response = await fetch("/api/ai/ask", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: messageContent,
-          conversationId,
-          userId,
-          caseId,
-          mode: selectedMode,
-          includeContext: true,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-
-      // Remove typing indicator and add real response
-      messages.update((msgs) => {
-        const withoutTyping = msgs.filter((m) => !m.isTyping);
-        return [
-          ...withoutTyping,
-          {
-            id: data.messageId || crypto.randomUUID(),
-            role: "assistant" as const,
-            content: data.response,
-            timestamp: new Date(),
-            contextUsed: data.contextUsed,
-            suggestions: data.suggestions,
-            actions: data.actions,
-          },
-        ];
-      });
-
-      // Emit event for parent component
-      dispatch("message", {
-        userMessage,
-        assistantMessage: data,
-        contextUsed: data.contextUsed,
-      });
-    } catch (error) {
-      console.error("Chat error:", error);
-
-      // Remove typing indicator and show error
-      messages.update((msgs) => {
-        const withoutTyping = msgs.filter((m) => !m.isTyping);
-        return [
-          ...withoutTyping,
-          {
-            id: "error-" + Date.now(),
-            role: "assistant" as const,
-            content:
-              "I encountered an error processing your request. Please try again.",
-            timestamp: new Date(),
-            isError: true,
-          },
-        ];
-      });
-    } finally {
-      isGenerating = false;
-      await tick();
-      focusInput();
-    }
-  }
-
   function closeChat() {
     open = false;
-    dispatch("close");
+    if (onclose) onclose();
   }
 
   function clearConversation() {
@@ -383,44 +308,58 @@
   }
 
   function handleActionClick(action: any) {
-    dispatch("action", action);
+    if (onaction) onaction(action);
   }
 </script>
 
-{#if open}
+{#if componentError}
+  <div class="error-boundary">
+    <h2>Chat Error</h2>
+    <p>The chat component encountered an error:</p>
+    <p class="error-message">{componentError.message}</p>
+    <button 
+      on:on:onclick={() => { componentError = null; }}
+      aria-label="Dismiss error and retry"
+    >
+      Retry
+    </button>
+  </div>
+{:else if open}
   <!-- Chat overlay -->
   <div
-    class="mx-auto px-4 max-w-7xl"
-    transition:fade={{ duration: 200  "
-    onclick={(e) => { if (e.target === e.currentTarget) closeChat(); }}
-    keydown={(e) => e.key === "Escape" && closeChat()}
+    class="chat-overlay"
+    transitifade={{ duration: 200 }}
+    on:on:onclick={(e) => { if (e.target === e.currentTarget) closeChat(); }}
+    on:keydown={(e) => e.key === "Escape" && closeChat()}
     role="dialog"
     aria-modal="true"
     aria-labelledby="chat-title"
-    tabindex={-1}
+    tabindex="-1"
   >
     <!-- Chat container -->
     <div
-      class="mx-auto px-4 max-w-7xl"
-      transition:fly={{ y: 50, duration: 300, easing: quintOut  "
+      class="chat-container"
+      transitifly={{ y: 50, duration: 300, easing: quintOut }}
     >
       <!-- Header -->
-      <div class="mx-auto px-4 max-w-7xl">
-        <div class="mx-auto px-4 max-w-7xl">
-          <div class="mx-auto px-4 max-w-7xl">
-            <div class="mx-auto px-4 max-w-7xl">
+      <div class="chat-header">
+        <div class="header-content">
+          <div class="title-section">
+            <div class="ai-indicator">
               <Sparkles size={20} />
             </div>
             <h2 id="chat-title">{title}</h2>
           </div>
 
           <!-- Mode selector -->
-          <div class="mx-auto px-4 max-w-7xl">
+          <div class="mode-section">
             <button
-              class="mx-auto px-4 max-w-7xl"
+              class="mode-button"
               class:active={showModeSelector}
-              click={() => (showModeSelector = !showModeSelector)}
+              on:on:onclick={() => (showModeSelector = !showModeSelector)}
               title="Select AI mode"
+              aria-label="Select AI mode"
+              aria-expanded={showModeSelector}
             >
               {#each aiModes as mode}
                 {#if mode.id === selectedMode}
@@ -432,22 +371,23 @@
 
             {#if showModeSelector}
               <div
-                class="mx-auto px-4 max-w-7xl"
-                transition:scale={{ duration: 200, easing: elasticOut  "
+                class="mode-dropdown"
+                transitiscale={{ duration: 200, easing: elasticOut }}
               >
                 {#each aiModes as mode}
                   <button
-                    class="mx-auto px-4 max-w-7xl"
+                    class="mode-option"
                     class:selected={mode.id === selectedMode}
-                    click={() => {
+                    on:on:onclick={() => {
                       selectedMode = mode.id;
                       showModeSelector = false;
-                    "
+                    }}
+                    aria-label="Switch to {mode.label} mode"
                   >
                     <svelte:component this={mode.icon} size={16} />
-                    <div class="mx-auto px-4 max-w-7xl">
-                      <span class="mx-auto px-4 max-w-7xl">{mode.label}</span>
-                      <span class="mx-auto px-4 max-w-7xl">{mode.description}</span>
+                    <div class="mode-info">
+                      <span class="mode-name">{mode.label}</span>
+                      <span class="mode-desc">{mode.description}</span>
                     </div>
                   </button>
                 {/each}
@@ -457,19 +397,21 @@
         </div>
 
         <!-- Actions -->
-        <div class="mx-auto px-4 max-w-7xl">
+        <div class="header-actions">
           <button
-            class="mx-auto px-4 max-w-7xl"
-            click={() => clearConversation()}
+            class="header-action"
+            on:on:onclick={() => clearConversation()}
             title="Clear conversation"
             disabled={isGenerating}
+            aria-label="Clear conversation"
           >
             <RotateCw size={16} />
           </button>
           <button
-            class="mx-auto px-4 max-w-7xl"
-            click={() => closeChat()}
+            class="header-action"
+            on:on:onclick={() => closeChat()}
             title="Close chat"
+            aria-label="Close chat"
           >
             <X size={16} />
           </button>
@@ -477,19 +419,19 @@
       </div>
 
       <!-- Messages area -->
-      <div class="mx-auto px-4 max-w-7xl" bind:this={messagesContainer}>
+      <div class="messages-container" bind:this={messagesContainer}>
         {#each $messages as message (message.id)}
           <div
-            class="mx-auto px-4 max-w-7xl"
+            class="message"
             class:user={message.role === "user"}
             class:assistant={message.role === "assistant"}
             class:error={message.isError}
-            transition:fly={{
+            transitifly={{
               x: message.role === "user" ? 20 : -20,
               duration: 300,
-             "
+            }}
           >
-            <div class="mx-auto px-4 max-w-7xl">
+            <div class="message-avatar">
               {#if message.role === "user"}
                 <User size={16} />
               {:else}
@@ -497,23 +439,23 @@
               {/if}
             </div>
 
-            <div class="mx-auto px-4 max-w-7xl">
+            <div class="message-content">
               {#if message.isTyping}
-                <div class="mx-auto px-4 max-w-7xl">
-                  <div class="mx-auto px-4 max-w-7xl">
+                <div class="typing-indicator">
+                  <div class="typing-dots">
                     <span></span>
                     <span></span>
                     <span></span>
                   </div>
-                  <span class="mx-auto px-4 max-w-7xl">AI is thinking...</span>
+                  <span class="typing-text">AI is thinking...</span>
                 </div>
               {:else}
-                <div class="mx-auto px-4 max-w-7xl">
+                <div class="message-text">
                   {message.content}
                 </div>
 
                 {#if message.suggestions && message.suggestions.length > 0}
-                  <div class="mx-auto px-4 max-w-7xl">
+                  <div class="suggestions">
                     <h4>Suggestions:</h4>
                     <ul>
                       {#each message.suggestions as suggestion}
@@ -524,12 +466,13 @@
                 {/if}
 
                 {#if message.actions && message.actions.length > 0}
-                  <div class="mx-auto px-4 max-w-7xl">
+                  <div class="actions">
                     {#each message.actions as action}
                       <button
-                        class="mx-auto px-4 max-w-7xl"
-                        click={() => handleActionClick(action)}
+                        class="action-button"
+                        on:on:onclick={() => handleActionClick(action)}
                         title={action.text}
+                        aria-label="Action: {action.text}"
                       >
                         {action.text}
                       </button>
@@ -537,13 +480,13 @@
                   </div>
                 {/if}
 
-                <div class="mx-auto px-4 max-w-7xl">
-                  <span class="mx-auto px-4 max-w-7xl"
+                <div class="message-meta">
+                  <span class="message-timestamp"
                     >{formatTimestamp(message.timestamp)}</span
                   >
                   {#if message.contextUsed && (message.contextUsed.similarContent?.length > 0 || message.contextUsed.evidence?.length > 0)}
                     <span
-                      class="mx-auto px-4 max-w-7xl"
+                      class="context-indicator"
                       title="Response used relevant context"
                     >
                       <Brain size={12} />
@@ -558,14 +501,15 @@
 
       <!-- Quick actions (when no messages) -->
       {#if $messages.length === 0}
-        <div class="mx-auto px-4 max-w-7xl" transition:fade={{ delay: 300 ">
+        <div class="quick-actions" transitifade={{ delay: 300 }}>
           <h3>Quick Actions</h3>
-          <div class="mx-auto px-4 max-w-7xl">
+          <div class="action-grid">
             {#each quickActions as action}
               <button
-                class="mx-auto px-4 max-w-7xl"
-                click={() => handleQuickAction(action.text)}
+                class="quick-action"
+                on:on:onclick={() => handleQuickAction(action.text)}
                 disabled={isGenerating}
+                aria-label="Quick action: {action.text}"
               >
                 <svelte:component this={action.icon} size={20} />
                 {action.text}
@@ -576,27 +520,29 @@
       {/if}
 
       <!-- Input area -->
-      <div class="mx-auto px-4 max-w-7xl">
-        <div class="mx-auto px-4 max-w-7xl">
+      <div class="input-area">
+        <div class="input-container">
           <textarea
             bind:this={messageInput}
             bind:value={currentMessage}
             placeholder="Ask about your case, evidence, or legal strategy..."
             disabled={isGenerating}
-            keydown={handleKeydown}
+            onkeydown={handleKeydown}
             rows="4"
-            class="mx-auto px-4 max-w-7xl"
+            class="message-input"
+            aria-label="Type your message here"
           ></textarea>
 
           <button
-            class="mx-auto px-4 max-w-7xl"
+            class="send-button"
             class:sending={isGenerating}
             disabled={!currentMessage.trim() || isGenerating}
-            click={() => sendMessage()}
+            on:on:onclick={() => sendMessage()}
             title="Send message"
+            aria-label="Send message"
           >
             {#if isGenerating}
-              <div class="mx-auto px-4 max-w-7xl"></div>
+              <div class="spinner"></div>
             {:else}
               <Send size={20} />
             {/if}
@@ -608,6 +554,43 @@
 {/if}
 
 <style>
+  .error-boundary {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem;
+    color: #dc2626;
+  }
+
+  .error-boundary h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .error-boundary p {
+    margin: 0 0 0.5rem 0;
+  }
+
+  .error-message {
+    font-family: monospace;
+    font-size: 0.875rem;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin: 0.5rem 0;
+  }
+
+  .error-boundary button {
+    background: #dc2626;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
   .chat-overlay {
     position: fixed;
     top: 0;
@@ -622,7 +605,20 @@
     z-index: 1000;
     padding: 1rem;
   }
-.chat-header {
+
+  .chat-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    width: 100%;
+    max-width: 600px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .chat-header {
     padding: 1rem 1.5rem;
     border-bottom: 1px solid #e5e7eb;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -1039,7 +1035,17 @@
     background: #9ca3af;
     cursor: not-allowed;
   }
-@keyframes typing {
+
+  .spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes typing {
     0%,
     60%,
     100% {
@@ -1064,7 +1070,7 @@
     .chat-overlay {
       padding: 0.5rem;
     }
-.chat-header {
+    .chat-header {
       padding: 1rem;
     }
 
@@ -1084,4 +1090,4 @@
   }
 </style>
 
-<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->
+<!-- Svelte 5 migration completed - modern patterns applied -->

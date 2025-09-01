@@ -10,11 +10,10 @@
   const activeOperations = writable([]);
   const results = writable([]);
   const metrics = writable([]);
-  
-  let isLoading = false;
-  let selectedOperation = 'processDocument';
-  let testInput = '';
-  let errorMessage = '';
+let isLoading = $state(false);
+let selectedOperation = $state('processDocument');
+let testInput = $state('');
+let errorMessage = $state('');
 
   // Demo data for different operations
   const demoInputs = {
@@ -338,7 +337,7 @@ Both parties acknowledge they have read and agree to these terms.`,
 
           <!-- Execute Button -->
           <Button 
-            on:click={executeOperation}
+            on:on:click={executeOperation}
             disabled={isLoading || !testInput.trim()}
             class="w-full"
           >

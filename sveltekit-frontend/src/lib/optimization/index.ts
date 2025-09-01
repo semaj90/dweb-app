@@ -16,7 +16,7 @@
 
 // Browser and development environment detection
 const browser = typeof window !== 'undefined';
-const dev = process.env.NODE_ENV === 'development';
+const dev = import.meta.env.NODE_ENV === 'development';
 
 // === CORE OPTIMIZATION MODULES ===
 

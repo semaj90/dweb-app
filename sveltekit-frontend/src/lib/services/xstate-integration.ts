@@ -496,7 +496,7 @@ class XStateIntegrationService {
 
 // Create singleton instance
 export const xstateIntegration = new XStateIntegrationService();
-
+;
 // Export for use in components
 export default xstateIntegration;
 

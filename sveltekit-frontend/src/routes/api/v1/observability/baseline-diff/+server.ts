@@ -1,5 +1,7 @@
+/// <reference types="vite/client" />
 
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
+import { URL } from "url";
 
 export interface BaselineDiff {
   metric: string;

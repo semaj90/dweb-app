@@ -537,16 +537,17 @@ export const evidenceProcessingMachine = createMachine(
   }
 );
 
-// Helper functions for working with the state machine
+// Helper factory – optional context override placeholder (currently unused)
 export const createEvidenceProcessingActor = (
   context?: Partial<EvidenceProcessingContext>
 ) => {
+  // NOTE: context overrides can be applied by extending the machine before actor creation if needed
   return evidenceProcessingMachine.provide({
     actions: {
-      // Add custom actions here if needed
+      // Custom actions can be injected here
     },
     guards: {
-      // Add custom guards here if needed
+      // Custom guards can be injected here
     },
   });
 };

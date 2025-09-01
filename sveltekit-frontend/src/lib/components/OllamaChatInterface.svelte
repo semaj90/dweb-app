@@ -72,9 +72,9 @@
   let successMessage = $state("");
 
   // Reactive computations
-  const canSend = $derived(message.trim().length > 0 && !isLoading);
-  const messageCount = $derived(chatHistory.length);
-  const lastResponse = $derived(
+  let canSend = $derived(message.trim().length > 0 && !isLoading);
+  let messageCount = $derived(chatHistory.length);
+  let lastResponse = $derived(
     chatHistory.find((msg) => msg.type === "assistant" && msg.performance)
   );
 
@@ -316,7 +316,7 @@
           <Button
             variant="ghost"
             size="sm"
-            on:click={() => (showSettings = !showSettings)}
+            on:on:click={() => (showSettings = !showSettings)}
           >
             <Settings class="w-4 h-4" />
           </Button>
@@ -325,7 +325,7 @@
           <Button
             variant="ghost"
             size="sm"
-            on:click={checkOllamaHealth}
+            on:on:click={checkOllamaHealth}
             disabled={isLoading}
           >
             <RefreshCw class="w-4 h-4" />
@@ -450,7 +450,7 @@
                   <Button
                     variant="outline"
                     size="sm"
-                    on:click={() => selectSuggestion(suggestion)}
+                    on:on:click={() => selectSuggestion(suggestion)}
                     class="text-xs"
                   >
                     {suggestion}
@@ -492,7 +492,7 @@
       <Input
         bind:value={message}
         placeholder="Ask the Legal AI Assistant..."
-        on:keypress={handleKeyPress}
+        keypress={handleKeyPress}
         disabled={isLoading || ollamaStatus !== "healthy"}
         class="pr-12"
         data-testid="chat-input"
@@ -500,7 +500,7 @@
     </div>
 
     <Button
-      on:click={sendMessage}
+      on:on:click={sendMessage}
       disabled={!canSend || ollamaStatus !== "healthy"}
       class="px-3"
       data-testid="send-button"
@@ -515,7 +515,7 @@
     <!-- Additional Actions -->
     <Button
       variant="outline"
-      on:click={clearChat}
+      on:on:click={clearChat}
       disabled={chatHistory.length === 0}
     >
       Clear
@@ -523,7 +523,7 @@
 
     <Button
       variant="outline"
-      on:click={exportChat}
+      on:on:click={exportChat}
       disabled={chatHistory.length === 0}
     >
       Export

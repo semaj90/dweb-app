@@ -606,6 +606,6 @@ class OllamaService extends EventEmitter {
 
 // Export singleton instance
 export const ollamaService = new OllamaService();
-
+;
 // Export for testing and extension
 export default OllamaService;

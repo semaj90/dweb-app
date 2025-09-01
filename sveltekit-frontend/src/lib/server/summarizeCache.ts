@@ -1,3 +1,4 @@
+import crypto from "crypto";
 // Centralized cache utilities for summarize endpoint (memory + optional Redis)
 // Provides LRU + TTL eviction and write-through to Redis if available.
 
@@ -22,8 +23,8 @@ export interface SummarizeCacheEntry {
   ttlMs: number;             // ttl applied when stored
 }
 
-const MAX_ITEMS = Number((import.meta as any).env?.SUMMARIZE_CACHE_MAX_ITEMS || process.env.SUMMARIZE_CACHE_MAX_ITEMS || 200);
-const TTL_MS = Number((import.meta as any).env?.SUMMARIZE_CACHE_TTL_MS || process.env.SUMMARIZE_CACHE_TTL_MS || 15 * 60 * 1000); // 15m default
+const MAX_ITEMS = Number((import.meta as any).env?.SUMMARIZE_CACHE_MAX_ITEMS || import.meta.env.SUMMARIZE_CACHE_MAX_ITEMS || 200);
+const TTL_MS = Number((import.meta as any).env?.SUMMARIZE_CACHE_TTL_MS || import.meta.env.SUMMARIZE_CACHE_TTL_MS || 15 * 60 * 1000); // 15m default
 const REDIS_TTL_SECS = Math.round(TTL_MS / 1000);
 const REDIS_PREFIX = 'summarize:';
 
@@ -158,3 +159,4 @@ export async function hashPayload(data: string): Promise<string> {
 }
 
 export const CACHE_CONSTANTS = { MAX_ITEMS, TTL_MS, REDIS_TTL_SECS };
+;

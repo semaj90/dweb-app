@@ -464,7 +464,7 @@ ${synthesis.nextSteps.map(step => `- ${step}`).join('\n')}
         
         {#if $state.context.synthesisResult}
           <button
-            click={exportSynthesis}
+            on:onclick={exportSynthesis}
             class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
           >
             <Download class="w-4 h-4" />
@@ -558,7 +558,7 @@ ${synthesis.nextSteps.map(step => `- ${step}`).join('\n')}
           {selectedCount} items selected for synthesis
         </div>
         <button
-          click={startSynthesis}
+          on:onclick={startSynthesis}
           disabled={selectedCount === 0}
           class="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
@@ -596,13 +596,13 @@ ${synthesis.nextSteps.map(step => `- ${step}`).join('\n')}
       </div>
       <div class="mt-4 flex gap-3">
         <button
-          click={() => send({ type: 'RETRY' })}
+          on:onclick={() => send({ type: 'RETRY' })}
           class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
         >
           Retry Synthesis
         </button>
         <button
-          click={() => send({ type: 'RESTART' })}
+          on:onclick={() => send({ type: 'RESTART' })}
           class="px-4 py-2 border border-red-300 text-red-700 rounded-md hover:bg-red-50 transition-colors"
         >
           Start Over
@@ -612,7 +612,7 @@ ${synthesis.nextSteps.map(step => `- ${step}`).join('\n')}
 
   {:else if $state.matches('complete') && $state.context.synthesisResult}
     <!-- Synthesis Results -->
-    <div class="space-y-6" transition:fly={{ y: 20, duration: 300 }}>
+    <div class="space-y-6" transitifly={{ y: 20, duration: 300 }}>
       <!-- Executive Summary -->
       <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
         <h2 class="text-xl font-semibold text-blue-900 mb-4 flex items-center gap-2">
@@ -800,13 +800,13 @@ ${synthesis.nextSteps.map(step => `- ${step}`).join('\n')}
       <!-- Action Buttons -->
       <div class="flex gap-4">
         <button
-          click={() => send({ type: 'RESTART' })}
+          on:onclick={() => send({ type: 'RESTART' })}
           class="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
         >
           New Synthesis
         </button>
         <button
-          click={exportSynthesis}
+          on:onclick={exportSynthesis}
           class="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
         >
           <Download class="w-4 h-4" />

@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import * as amqp from 'amqplib';
 
 let connection = null;

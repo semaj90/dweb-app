@@ -554,7 +554,7 @@ class StreamingService extends EventEmitter {
 
 // Export singleton instance
 export const streamingService = new StreamingService();
-
+;
 // Support for Ollama local LLM integration
 export class OllamaStreamingAdapter {
   private ollamaUrl: string;
@@ -636,6 +636,6 @@ export class OllamaStreamingAdapter {
 
 // Export Ollama adapter
 export const ollamaAdapter = new OllamaStreamingAdapter();
-
+;
 // Types are already exported as interfaces above
 

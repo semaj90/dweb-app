@@ -101,3 +101,4 @@ export class NomicEmbeddingsService {
 
 // Export singleton instance
 export const nomicEmbeddings = new NomicEmbeddingsService();
+;

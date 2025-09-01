@@ -28,19 +28,19 @@
   
   // --- XState workflow state machine ---
   // Dynamically imported in onMount for SSR safety
-  let canvasService: any = null;
-  let currentMode: string = "evidence";
+let canvasService = $state<any >(null);
+let currentMode = $state<string >("evidence");
   let canvasContainer: HTMLDivElement = $state();
-  let fabricCanvas: any = null;
+let fabricCanvas = $state<any >(null);
   let selectedTool = $state("select");
-  let isDrawing = false;
+let isDrawing = $state(false);
   let fabricLoaded = $state(false);
   let canvasHistory: string[] = $state([]);
   let historyIndex = $state(-1);
   let zoom = $state(1);
-  let readonly = false;
-  let caseId: string | undefined = undefined;
-  let evidenceItems: Array<any> = [];
+let readonly = $state(false);
+let caseId = $state<string | undefined >(undefined);
+let evidenceItems = $state<Array<any> >([]);
   function setWorkflowMode(mode: string) {
     if (canvasService) canvasService.send(mode.toUpperCase());
 }
@@ -114,13 +114,12 @@
     try {
       const fabricModule = await import("fabric");
       const fabricLib = fabricModule.default;
+let fabricObject = $state<any;
 
-      let fabricObject: any;
-
-      if (item.type === "image" && item.thumbnailUrl) {
+      if (item.type >(== "image" && item.thumbnailUrl) {
         // Add image
         try {
-          const img = await fabricLib.FabricImage.fromURL(item.thumbnailUrl);
+          const img = await fabricLib.FabricImage.fromURL(item.thumbnailUrl));
           img.set({
             left: item.x || 100,
             top: item.y || 100,
@@ -212,10 +211,9 @@
     try {
       const fabricModule = await import("fabric");
       const fabricLib = fabricModule.default;
+let fabricObject = $state<any;
 
-      let fabricObject: any;
-
-      if (shape === "rectangle") {
+      if (shape >(== "rectangle") {
         fabricObject = new fabricLib.Rect({
           left: 100,
           top: 100,
@@ -224,7 +222,7 @@
           fill: "rgba(59, 130, 246, 0.1)",
           stroke: "#3b82f6",
           strokeWidth: 2,
-        });
+        }));
       } else {
         fabricObject = new fabricLib.Circle({
           left: 100,
@@ -273,7 +271,7 @@
     } catch (error) {
       console.error("Error adding text:", error);
 }}
-  let currentPath: any = null;
+let currentPath = $state<any >(null);
 
   function startDrawing(pointer: { x: number; y: number }) {
     // Drawing implementation
@@ -461,7 +459,7 @@
         <Button
           variant={selectedTool === "select" ? "primary" : "outline"}
           size="sm"
-          on:click={() => selectTool("select")}
+          on:on:click={() => selectTool("select")}
           disabled={readonly}
         >
           <Move class="space-y-4" />
@@ -469,7 +467,7 @@
         <Button
           variant={selectedTool === "draw" ? "primary" : "outline"}
           size="sm"
-          on:click={() => selectTool("draw")}
+          on:on:click={() => selectTool("draw")}
           disabled={readonly}
         >
           ✏️
@@ -477,7 +475,7 @@
         <Button
           variant={selectedTool === "text" ? "primary" : "outline"}
           size="sm"
-          on:click={() => selectTool("text")}
+          on:on:click={() => selectTool("text")}
           disabled={readonly}
         >
           <Type class="space-y-4" />
@@ -492,14 +490,14 @@
           <Button
             variant="outline"
             size="sm"
-            on:click={() => addShape("rectangle")}
+            on:on:click={() => addShape("rectangle")}
           >
             <Square class="space-y-4" />
           </Button>
           <Button
             variant="outline"
             size="sm"
-            on:click={() => addShape("circle")}
+            on:on:click={() => addShape("circle")}
           >
             <Circle class="space-y-4" />
           </Button>
@@ -513,7 +511,7 @@
         <Button
           variant="outline"
           size="sm"
-          on:click={() => undo()}
+          on:on:click={() => undo()}
           disabled={readonly || historyIndex <= 0}
         >
           <Undo class="space-y-4" />
@@ -521,7 +519,7 @@
         <Button
           variant="outline"
           size="sm"
-          on:click={() => redo()}
+          on:on:click={() => redo()}
           disabled={readonly || historyIndex >= canvasHistory.length - 1}
         >
           <Redo class="space-y-4" />
@@ -530,16 +528,16 @@
 
       <!-- Zoom -->
       <div class="space-y-4">
-        <Button variant="outline" size="sm" on:click={() => zoomOut()}>
+        <Button variant="outline" size="sm" on:on:click={() => zoomOut()}>
           <ZoomOut class="space-y-4" />
         </Button>
         <span class="space-y-4"
           >{Math.round(zoom * 100)}%</span
         >
-        <Button variant="outline" size="sm" on:click={() => zoomIn()}>
+        <Button variant="outline" size="sm" on:on:click={() => zoomIn()}>
           <ZoomIn class="space-y-4" />
         </Button>
-        <Button variant="outline" size="sm" on:click={() => resetZoom()}
+        <Button variant="outline" size="sm" on:on:click={() => resetZoom()}
           >Reset</Button
         >
       </div>
@@ -548,15 +546,15 @@
     <!-- Actions -->
     <div class="space-y-4">
       {#if !readonly}
-        <Button variant="outline" size="sm" on:click={() => deleteSelected()}>
+        <Button variant="outline" size="sm" on:on:click={() => deleteSelected()}>
           <Trash2 class="space-y-4" />
         </Button>
-        <Button variant="outline" size="sm" on:click={() => saveCanvas()}>
+        <Button variant="outline" size="sm" on:on:click={() => saveCanvas()}>
           <Save class="space-y-4" />
           Save
         </Button>
       {/if}
-      <Button variant="outline" size="sm" on:click={() => exportCanvas()}>
+      <Button variant="outline" size="sm" on:on:click={() => exportCanvas()}>
         <Download class="space-y-4" />
         Export
       </Button>

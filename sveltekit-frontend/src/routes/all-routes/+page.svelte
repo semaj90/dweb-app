@@ -6,6 +6,7 @@
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
+  import type { PageData } from './$types';
   
   // Comprehensive bits-ui v2 components integration
   import { Button } from 'bits-ui';
@@ -38,7 +39,10 @@
 
   // Import route configuration
   import { allRoutes, routeCategories } from '$lib/data/routes-config';
-
+  
+  // Get data from server loader
+  export let data: PageData;
+;
   // Discover all route modules
   const modules = import.meta.glob('/src/routes/**/+page.svelte');
 
@@ -70,13 +74,13 @@
   let apiOperationResults = $state<Record<string, any>>({});
   let recentOperations = $state<any[]>([]);
   
-  // Authentication state management
+  // Authentication state management - initialize from server data
   let showAuthDialog = $state(false);
   let authMode = $state<'login' | 'register'>('login');
   let authLoading = $state(false);
   let authError = $state<string | null>(null);
-  let currentUser = $state<any>(null);
-  let isAuthenticated = $state(false);
+  let currentUser = $state<any>(data.userSession.user);
+  let isAuthenticated = $state(data.userSession.isAuthenticated);
   
   // Auth form state
   let authForm = $state({
@@ -95,7 +99,7 @@
   let routeHistory = $state<string[]>([]);
 
   // Update discovered routes
-  const discoveredRoutes = $derived(Object.keys(modules)
+  let discoveredRoutes = $derived(Object.keys(modules)
     .map((path) => {
       let route = path
         .replace('/src/routes', '')
@@ -115,7 +119,7 @@
     .sort());
 
   // Combine configured routes with discovered routes
-  const allAvailableRoutes = $derived([
+  let allAvailableRoutes = $derived([
     ...allRoutes.map(route => ({
       ...route,
       type: 'configured',
@@ -138,7 +142,7 @@
   ]);
 
   // Filter and sort routes
-  const filteredRoutesComputed = $derived(allAvailableRoutes
+  let filteredRoutesComputed = $derived(allAvailableRoutes
     .filter(route => {
       // Search filter
       if (searchValue) {
@@ -306,7 +310,7 @@
       <div class="n64-dialog-content">
         <div class="n64-dialog-header">⚠️ NAVIGATION ERROR</div>
         <div class="n64-dialog-body">${message}</div>
-        <button class="n64-dialog-button" onclick="this.parentElement.parentElement.remove()">
+        <button class="n64-dialog-button" on:on:onclick="this.parentElement.parentElement.remove()">
           ACKNOWLEDGE
         </button>
       </div>
@@ -614,22 +618,15 @@
     showAuthDialog = true;
   }
   
-  // Initialize system on mount
+  // Initialize system on mount - use server data as initial state
   onMount(async () => {
-    await fetchSystemHealth();
+    // Initialize with server-loaded data
+    systemHealth = data.systemHealth;
+    recentOperations = data.recentOperations;
     
-    // Check if user is already authenticated
-    try {
-      const response = await fetch('/api/auth/me');
-      if (response.ok) {
-        const result = await response.json();
-        if (result.success && result.data.user) {
-          currentUser = result.data.user;
-          isAuthenticated = true;
-        }
-      }
-    } catch (error) {
-      console.log('Not authenticated:', error);
+    // Only fetch if server data is missing
+    if (!systemHealth) {
+      await fetchSystemHealth();
     }
   });
   
@@ -690,7 +687,7 @@
           
           <!-- Test Operations -->
           <Button.Root
-            onclick={testAllRoutes}
+            on:on:on:click={testAllRoutes}
             disabled={testingMode}
             class="px-4 py-2 bg-green-600/20 border border-green-500/40 text-green-200 rounded hover:bg-green-600/30 disabled:opacity-50"
           >
@@ -698,7 +695,7 @@
           </Button.Root>
           
           <Button.Root
-            onclick={bulkTestRoutes}
+            on:on:on:click={bulkTestRoutes}
             disabled={testingMode || selectedRoutes.length === 0}
             class="px-4 py-2 bg-orange-600/20 border border-orange-500/40 text-orange-200 rounded hover:bg-orange-600/30 disabled:opacity-50"
           >
@@ -725,14 +722,14 @@
                 </Button.Root>
               </DropdownMenu.Trigger>
               <DropdownMenu.Content class="w-56 bg-gray-900/95 border border-amber-500/50 rounded p-2 z-50">
-                <DropdownMenu.Item class="w-full p-3 text-left rounded hover:bg-amber-600/20 text-white" onclick={() => goto('/profile')}>
+                <DropdownMenu.Item class="w-full p-3 text-left rounded hover:bg-amber-600/20 text-white" on:on:on:click={() => goto('/profile')}>
                   👤 Profile
                 </DropdownMenu.Item>
-                <DropdownMenu.Item class="w-full p-3 text-left rounded hover:bg-amber-600/20 text-white" onclick={() => goto('/settings')}>
+                <DropdownMenu.Item class="w-full p-3 text-left rounded hover:bg-amber-600/20 text-white" on:on:on:click={() => goto('/settings')}>
                   ⚙️ Settings
                 </DropdownMenu.Item>
                 <DropdownMenu.Separator class="my-1 h-px bg-amber-500/30" />
-                <DropdownMenu.Item class="w-full p-3 text-left rounded hover:bg-red-600/20 text-red-300" onclick={handleLogout}>
+                <DropdownMenu.Item class="w-full p-3 text-left rounded hover:bg-red-600/20 text-red-300" on:on:on:click={handleLogout}>
                   🚪 Logout
                 </DropdownMenu.Item>
               </DropdownMenu.Content>
@@ -740,14 +737,14 @@
           {:else}
             <!-- Login/Register Buttons -->
             <Button.Root
-              onclick={() => openAuthDialog('login')}
+              on:on:on:click={() => openAuthDialog('login')}
               class="px-4 py-2 bg-blue-600/20 border border-blue-500/40 text-blue-200 rounded hover:bg-blue-600/30"
             >
               🔑 Login
             </Button.Root>
             
             <Button.Root
-              onclick={() => openAuthDialog('register')}
+              on:on:on:click={() => openAuthDialog('register')}
               class="px-4 py-2 bg-green-600/20 border border-green-500/40 text-green-200 rounded hover:bg-green-600/30"
             >
               📝 Register
@@ -759,7 +756,7 @@
           <!-- API Operations Dialog -->
           <Dialog.Root bind:open={showApiDialog}>
             <Button.Root
-              onclick={() => showApiDialog = true}
+              on:on:on:click={() => showApiDialog = true}
               class="px-4 py-2 bg-cyan-600/20 border border-cyan-500/40 text-cyan-200 rounded hover:bg-cyan-600/30"
             >
               🔗 API Ops
@@ -790,28 +787,28 @@
                       <!-- API Operations -->
                       <div class="grid grid-cols-2 gap-2">
                         <Button.Root
-                          onclick={() => performApiOperation('system_optimization')}
+                          on:on:on:click={() => performApiOperation('system_optimization')}
                           class="p-3 bg-blue-600/20 border border-blue-500/40 text-blue-200 rounded hover:bg-blue-600/30"
                         >
                           🔧 System Optimization
                         </Button.Root>
                         
                         <Button.Root
-                          onclick={() => performApiOperation('context7_integration')}
+                          on:on:on:click={() => performApiOperation('context7_integration')}
                           class="p-3 bg-purple-600/20 border border-purple-500/40 text-purple-200 rounded hover:bg-purple-600/30"
                         >
                           🧠 Context7 Integration
                         </Button.Root>
                         
                         <Button.Root
-                          onclick={() => performApiOperation('real_time_analysis')}
+                          on:on:on:click={() => performApiOperation('real_time_analysis')}
                           class="p-3 bg-yellow-600/20 border border-yellow-500/40 text-yellow-200 rounded hover:bg-yellow-600/30"
                         >
                           ⚡ Real-time Analysis
                         </Button.Root>
                         
                         <Button.Root
-                          onclick={() => performApiOperation('legal_research')}
+                          on:on:on:click={() => performApiOperation('legal_research')}
                           class="p-3 bg-red-600/20 border border-red-500/40 text-red-200 rounded hover:bg-red-600/30"
                         >
                           ⚖️ Legal Research
@@ -840,7 +837,7 @@
                 </ScrollArea.Root>
                 
                 <Button.Root
-                  onclick={() => showApiDialog = false}
+                  on:on:on:click={() => showApiDialog = false}
                   class="absolute top-2 right-2 p-2 text-gray-400 hover:text-white"
                 >
                   ✕
@@ -952,7 +949,7 @@
                     
                     <Button.Root
                       type="button"
-                      onclick={() => {
+                      on:on:on:click={() => {
                         authMode = authMode === 'login' ? 'register' : 'login';
                         authError = null;
                       }}
@@ -964,7 +961,7 @@
                 </form>
                 
                 <Button.Root
-                  onclick={() => showAuthDialog = false}
+                  on:on:on:click={() => showAuthDialog = false}
                   class="absolute top-2 right-2 p-2 text-gray-400 hover:text-white"
                 >
                   ✕
@@ -976,7 +973,7 @@
           <!-- Settings Popover -->
           <Popover.Root bind:open={showSettings}>
             <Button.Root
-              onclick={() => showSettings = true}
+              on:on:on:click={() => showSettings = true}
               class="px-4 py-2 bg-gray-600/20 border border-gray-500/40 text-gray-200 rounded hover:bg-gray-600/30"
             >
               ⚙️ Settings
@@ -1134,19 +1131,19 @@
                 <NavigationMenu.Content class="absolute top-full left-0 mt-2 bg-gray-900 border border-amber-500/50 rounded-lg shadow-xl min-w-[120px]">
                   <div class="p-2">
                     <Button.Root
-                      onclick={() => sortValue = 'name'}
+                      on:on:on:click={() => sortValue = 'name'}
                       class="w-full text-left p-2 text-white hover:bg-amber-600/20 rounded {sortValue === 'name' ? 'bg-amber-600/30' : ''}"
                     >
                       🔤 Name
                     </Button.Root>
                     <Button.Root
-                      onclick={() => sortValue = 'category'}
+                      on:on:on:click={() => sortValue = 'category'}
                       class="w-full text-left p-2 text-white hover:bg-amber-600/20 rounded {sortValue === 'category' ? 'bg-amber-600/30' : ''}"
                     >
                       📁 Category
                     </Button.Root>
                     <Button.Root
-                      onclick={() => sortValue = 'status'}
+                      on:on:on:click={() => sortValue = 'status'}
                       class="w-full text-left p-2 text-white hover:bg-amber-600/20 rounded {sortValue === 'status' ? 'bg-amber-600/30' : ''}"
                     >
                       📈 Status
@@ -1281,7 +1278,7 @@
                 <Tooltip.Trigger asChild let:builder>
                   <Button.Root
                     builders={[builder]}
-                    onclick={() => toggleRouteSelection(route.route)}
+                    on:on:on:click={() => toggleRouteSelection(route.route)}
                     class="p-2 {selectedRoutes.includes(route.route) ? 'bg-blue-600/30 border-blue-400' : 'bg-gray-600/20 border-gray-500'} border rounded"
                   >
                     {selectedRoutes.includes(route.route) ? '☑️' : '☐'}
@@ -1297,7 +1294,7 @@
                 <Tooltip.Trigger asChild let:builder>
                   <Button.Root
                     builders={[builder]}
-                    onclick={() => toggleFavorite(route.route)}
+                    on:on:on:click={() => toggleFavorite(route.route)}
                     class="p-2 {favoriteRoutes.includes(route.route) ? 'text-yellow-400' : 'text-gray-400'} hover:text-yellow-300"
                   >
                     {favoriteRoutes.includes(route.route) ? '⭐' : '☆'}
@@ -1310,7 +1307,7 @@
               
               {#if gamingMode}
                 <N643DButton
-                  onClick={() => navigateToRoute(route.route)}
+                  on:on:on:click={() => navigateToRoute(route.route)}
                   disabled={!route.available}
                   variant={route.available ? 'primary' : 'secondary'}
                   size="small"
@@ -1324,7 +1321,7 @@
                 
                 {#if route.available}
                   <NES8BitButton
-                    onClick={() => testRoute(route.route).then(result => testResults[route.route] = result)}
+                    on:on:on:click={() => testRoute(route.route).then(result => testResults[route.route] = result)}
                     disabled={testingMode}
                     variant="info"
                     size="small"
@@ -1336,7 +1333,7 @@
               {:else}
                 <!-- bits-ui Navigation Button -->
                 <Button.Root
-                  onclick={() => navigateToRoute(route.route)}
+                  on:on:on:click={() => navigateToRoute(route.route)}
                   disabled={!route.available}
                   class="flex-1 px-4 py-2 rounded font-medium transition-colors
                          {route.available
@@ -1348,7 +1345,7 @@
                 
                 {#if route.available}
                   <Button.Root
-                    onclick={async () => {
+                    on:on:on:click={async () => {
                       testResults[route.route] = 'pending';
                       const result = await testRoute(route.route);
                       testResults[route.route] = result;
@@ -1362,7 +1359,7 @@
                 
                 {#if route.route.includes('/api/')}
                   <Button.Root
-                    onclick={() => testApiEndpoint(route.route)}
+                    on:on:on:click={() => testApiEndpoint(route.route)}
                     class="px-3 py-2 bg-purple-600/80 text-white rounded hover:bg-purple-700 border border-purple-500"
                   >
                     🔌 API
@@ -1414,7 +1411,7 @@
           <div class="space-y-2">
             {#if gamingMode}
               <N643DButton
-                onClick={() => goto('/')}
+                on:on:on:click={() => goto('/')}
                 variant="info"
                 size="small"
                 class="w-full"
@@ -1423,7 +1420,7 @@
                 🏠 HOME COMMAND CENTER
               </N643DButton>
               <N643DButton
-                onClick={() => goto('/dev/dynamic-routing-test')}
+                on:on:on:click={() => goto('/dev/dynamic-routing-test')}
                 variant="warning"
                 size="small"
                 class="w-full"
@@ -1433,20 +1430,20 @@
               </N643DButton>
             {:else}
               <Button.Root
-                onclick={() => goto('/')}
+                on:on:on:click={() => goto('/')}
                 class="w-full px-4 py-2 bg-blue-600/80 text-white rounded hover:bg-blue-700 transition-colors border border-blue-500"
               >
                 🏠 Go Home
               </Button.Root>
               <Button.Root
-                onclick={() => goto('/dev/dynamic-routing-test')}
+                on:on:on:click={() => goto('/dev/dynamic-routing-test')}
                 class="w-full px-4 py-2 bg-green-600/80 text-white rounded hover:bg-green-700 transition-colors border border-green-500"
               >
                 🛣️ Routing Test
               </Button.Root>
               
               <Button.Root
-                onclick={() => fetchSystemHealth()}
+                on:on:on:click={() => fetchSystemHealth()}
                 class="w-full px-4 py-2 bg-purple-600/80 text-white rounded hover:bg-purple-700 transition-colors border border-purple-500"
               >
                 🔄 Refresh System Health

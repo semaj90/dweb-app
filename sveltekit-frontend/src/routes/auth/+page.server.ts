@@ -1,3 +1,4 @@
+import type { PageServerLoad } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';

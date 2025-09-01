@@ -257,20 +257,20 @@ export const BITS_UI_COMPONENTS: ComponentInfo[] = [
 /**
  * Get components by priority level
  */
-export const getComponentsByPriority = (priority: ComponentInfo['priority']) => 
+export const getComponentsByPriority = (priority: ComponentInfo['priority']) =>
   BITS_UI_COMPONENTS.filter(comp => comp.priority === priority);
 
 /**
  * Get unimplemented essential components
  */
-export const getEssentialUnimplemented = () => 
+export const getEssentialUnimplemented = () =>
   BITS_UI_COMPONENTS.filter(comp => comp.priority === 'essential' && !comp.implemented);
 
 /**
  * Get components by legal AI use case
  */
-export const getComponentsByUseCase = (useCase: string) => 
-  BITS_UI_COMPONENTS.filter(comp => 
+export const getComponentsByUseCase = (useCase: string) =>
+  BITS_UI_COMPONENTS.filter(comp =>
     comp.legalAIUseCase.some(uc => uc.toLowerCase().includes(useCase.toLowerCase()))
   );
 
@@ -286,7 +286,7 @@ export const BITS_UI_EXCLUSIVE = BITS_UI_COMPONENTS.filter(comp => comp.package 
  */
 export const IMPLEMENTATION_QUEUE = [
   'Dialog',
-  'Alert Dialog', 
+  'Alert Dialog',
   'Command',
   'Navigation Menu',
   'Checkbox',

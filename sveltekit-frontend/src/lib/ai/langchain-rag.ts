@@ -26,7 +26,7 @@ const formatDocumentsAsString = (documents: LangChainDocumentType[]) => {
 type QdrantVectorStore = any;
 type QdrantClient = any;
 
-import type { LegalDocumentMetadata } from './qdrant-service';
+import type { LegalDocumentMetadata } from './qdrant-service.js';
 
 export interface LegalRAGConfig {
   qdrantUrl: string;
@@ -636,12 +636,12 @@ Only return the queries, one per line.`),
 
 // Export singleton instance with environment configuration
 export const legalRAG = new LegalRAGService({
-  qdrantUrl: process.env.QDRANT_URL || "http://localhost:6333",
+  qdrantUrl: import.meta.env.QDRANT_URL || "http://localhost:6333",
   ollamaGenerationUrl:
-    process.env.OLLAMA_GENERATION_URL || "http://localhost:11434/v1",
+    import.meta.env.OLLAMA_GENERATION_URL || "http://localhost:11434/v1",
   ollamaEmbeddingUrl:
-    process.env.OLLAMA_EMBEDDING_URL || "http://localhost:11434/v1",
-  apiKey: process.env.OLLAMA_API_KEY || "EMPTY",
+    import.meta.env.OLLAMA_EMBEDDING_URL || "http://localhost:11434/v1",
+  apiKey: import.meta.env.OLLAMA_API_KEY || "EMPTY",
   collectionName: "legal_documents",
   embeddingDimensions: 768,
 });

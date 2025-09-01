@@ -42,12 +42,11 @@ https://svelte.dev/e/js_parse_error -->
   // ======================================================================
   // COMPONENT STATE
   // ======================================================================
-
-  let machines: any = null;
-  let evidenceText = '';
-  let selectedCaseId = 'demo-case-001';
-  let processingActive = false;
-  let realTimeUpdates: any[] = [];
+let machines = $state<any >(null);
+let evidenceText = $state('');
+let selectedCaseId = $state('demo-case-001');
+let processingActive = $state(false);
+let realTimeUpdates = $state<any[] >([]);
 
   // Demo evidence samples
   const demoEvidences = [
@@ -287,7 +286,7 @@ https://svelte.dev/e/js_parse_error -->
               class="w-full"
             />
             <Button
-              on:click={() => addCustomEvidence()}
+              on:on:click={() => addCustomEvidence()}
               disabled={!evidenceText.trim() || processingActive}
               class="w-full"
             >
@@ -314,7 +313,7 @@ https://svelte.dev/e/js_parse_error -->
                 <Button
                   size="sm"
                   variant="outline"
-                  on:click={() => addDemoEvidence(demo)}
+                  on:on:click={() => addDemoEvidence(demo)}
                   disabled={processingActive}
                   class="w-full"
                 >
@@ -331,16 +330,16 @@ https://svelte.dev/e/js_parse_error -->
             <CardTitle>System Controls</CardTitle>
           </CardHeader>
           <CardContent class="space-y-3">
-            <Button variant="outline" on:click={() => checkSystemHealth()} class="w-full">
+            <Button variant="outline" on:on:click={() => checkSystemHealth()} class="w-full">
               Health Check
             </Button>
-            <Button variant="outline" on:click={() => syncCache()} class="w-full">
+            <Button variant="outline" on:on:click={() => syncCache()} class="w-full">
               Sync Cache
             </Button>
-            <Button variant="outline" on:click={() => clearErrors()} class="w-full">
+            <Button variant="outline" on:on:click={() => clearErrors()} class="w-full">
               Clear Errors
             </Button>
-            <Button variant="destructive" on:click={() => clearCache()} class="w-full">
+            <Button variant="destructive" on:on:click={() => clearCache()} class="w-full">
               Clear Cache
             </Button>
           </CardContent>

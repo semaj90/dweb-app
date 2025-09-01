@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * Feedback Loop API Endpoint
@@ -6,6 +6,7 @@ import type { RequestHandler } from './$types';
  */
 
 import { feedbackLoopService } from '$lib/services/feedback-loop-service';
+import { URL } from "url";
 
 export const POST: RequestHandler = async ({ request, url }) => {
   try {

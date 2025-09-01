@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * Cluster API Endpoint - Service Orchestration & Health
@@ -6,6 +6,8 @@ import type { RequestHandler } from './$types';
  */
 
 import { productionServiceClient } from '$lib/services/productionServiceClient';
+import http from "http";
+import { URL } from "url";
 
 // GET handler multiplexes sub-endpoints based on trailing path segment (health|services|metrics|root)
 export const GET: RequestHandler = async ({ url }) => {

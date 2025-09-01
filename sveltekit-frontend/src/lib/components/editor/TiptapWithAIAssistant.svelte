@@ -16,7 +16,7 @@ https://svelte.dev/e/script_duplicate -->
   import { slide, fade } from 'svelte/transition';
 
   // Props
-  let { 
+  let {
     documentId,
     initialContent = '',
     placeholder = 'Start typing your legal document...',
@@ -28,9 +28,9 @@ https://svelte.dev/e/script_duplicate -->
 
   // State management
   const { state, send } = useMachine(crewAIOrchestrationMachine);
-  
+
   // Component state
-  let editor: Editor | null = null;
+let editor = $state<Editor | null >(null);
   let editorElement: HTMLElement;
   let showSuggestions = $state(false);
   let currentSuggestions = $state([]);
@@ -42,8 +42,8 @@ https://svelte.dev/e/script_duplicate -->
   let recommendationPosition = $state({ x: 0, y: 0 });
 
   // Auto-save timer
-  let autoSaveTimer: NodeJS.Timeout | null = null;
-  let idleTimer: NodeJS.Timeout | null = null;
+let autoSaveTimer = $state<NodeJS.Timeout | null >(null);
+let idleTimer = $state<NodeJS.Timeout | null >(null);
 
   // Derived state
   const isProcessing = $derived($state.matches('orchestrating'));
@@ -122,10 +122,10 @@ https://svelte.dev/e/script_duplicate -->
 
   function handleKeyDown(event: KeyboardEvent) {
     userTyping = true;
-    
+
     // Send user activity to state machine
     send({ type: 'USER_ACTIVITY', activity: 'typing' });
-    
+
     // Reset typing flag after short delay
     setTimeout(() => {
       userTyping = false;
@@ -159,7 +159,7 @@ https://svelte.dev/e/script_duplicate -->
 
   function handleContentUpdate(content: string) {
     updateWordCount();
-    
+
     if (autoSave) {
       scheduleAutoSave();
     }
@@ -173,7 +173,7 @@ https://svelte.dev/e/script_duplicate -->
   function handleSelectionUpdate(editor: Editor) {
     const selection = editor.state.selection;
     const pos = editor.view.coordsAtPos(selection.from);
-    
+
     recommendationPosition = {
       x: pos.left,
       y: pos.top
@@ -205,7 +205,7 @@ https://svelte.dev/e/script_duplicate -->
     if (autoSaveTimer) {
       clearTimeout(autoSaveTimer);
     }
-    
+
     autoSaveTimer = setTimeout(() => {
       handleAutoSave();
     }, 3000); // 3 second delay
@@ -213,17 +213,17 @@ https://svelte.dev/e/script_duplicate -->
 
   async function handleAutoSave() {
     if (!editor) return;
-    
+
     const content = editor.getHTML();
-    
+
     try {
       // This would integrate with your document update system
       await saveDocument(content);
       lastSaveTime = new Date();
-      
+
       // Send auto-save event to state machine
       send({ type: 'AUTO_SAVE_TRIGGERED' });
-      
+
     } catch (error) {
       console.error('Auto-save failed:', error);
     }
@@ -231,11 +231,11 @@ https://svelte.dev/e/script_duplicate -->
 
   async function handleManualSave() {
     if (!editor) return;
-    
+
     const content = editor.getHTML();
     await saveDocument(content);
     lastSaveTime = new Date();
-    
+
     // Show save confirmation
     showNotification('Document saved', 'success');
   }
@@ -244,7 +244,7 @@ https://svelte.dev/e/script_duplicate -->
     if (idleTimer) {
       clearTimeout(idleTimer);
     }
-    
+
     idleTimer = setTimeout(() => {
       send({ type: 'USER_IDLE' });
     }, 300000); // 5 minutes
@@ -256,7 +256,7 @@ https://svelte.dev/e/script_duplicate -->
 
   function toggleAIAssistant() {
     aiAssistantVisible = !aiAssistantVisible;
-    
+
     if (aiAssistantVisible) {
       send({ type: 'FOCUS_CHANGED', schema: 'analysis_mode' });
     } else {
@@ -266,12 +266,12 @@ https://svelte.dev/e/script_duplicate -->
 
   async function generateInlineSuggestions(content: string) {
     if (!enableInlineSuggestions || content.length < 100) return;
-    
+
     // This would integrate with your AI suggestion system
     try {
       const suggestions = await fetchInlineSuggestions(content);
       currentSuggestions = suggestions;
-      
+
       if (suggestions.length > 0) {
         showSuggestions = true;
       }
@@ -282,9 +282,9 @@ https://svelte.dev/e/script_duplicate -->
 
   async function startCrewAIReview() {
     if (!editor || !documentId) return;
-    
+
     const content = editor.getText();
-    
+
     try {
       const response = await fetch('/api/crewai/review', {
         method: 'POST',
@@ -299,13 +299,13 @@ https://svelte.dev/e/script_duplicate -->
           }
         })
       });
-      
+
       const result = await response.json();
-      
+
       if (result.success) {
         // Start state machine orchestration
-        send({ 
-          type: 'START_REVIEW', 
+        send({
+          type: 'START_REVIEW',
           task: {
             taskId: result.data.taskId,
             documentId,
@@ -315,7 +315,7 @@ https://svelte.dev/e/script_duplicate -->
             assignedAgents: result.data.assignedAgents.map((a: any) => a.id)
           }
         });
-        
+
         showNotification('CrewAI review started', 'info');
       }
     } catch (error) {
@@ -326,19 +326,19 @@ https://svelte.dev/e/script_duplicate -->
 
   function applySuggestion(suggestion: any) {
     if (!editor) return;
-    
+
     // Apply the suggestion to the editor
     if (suggestion.position !== undefined) {
-      editor.commands.setTextSelection({ 
-        from: suggestion.position, 
-        to: suggestion.position + suggestion.length 
+      editor.commands.setTextSelection({
+        from: suggestion.position,
+        to: suggestion.position + suggestion.length
       });
       editor.commands.insertContent(suggestion.suggestedText);
     }
-    
+
     // Accept recommendation in state machine
     send({ type: 'ACCEPT_RECOMMENDATION', recommendationId: suggestion.id });
-    
+
     showNotification('Suggestion applied', 'success');
   }
 
@@ -355,10 +355,10 @@ https://svelte.dev/e/script_duplicate -->
 
   function showInlineSuggestions() {
     if (!editor) return;
-    
+
     const selection = editor.state.selection;
     const selectedText = editor.state.doc.textBetween(selection.from, selection.to);
-    
+
     if (selectedText.length > 0) {
       generateContextualSuggestion(selectedText);
     }
@@ -384,7 +384,7 @@ https://svelte.dev/e/script_duplicate -->
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content, type: 'inline' })
     });
-    
+
     const result = await response.json();
     return result.suggestions || [];
   }
@@ -401,7 +401,7 @@ https://svelte.dev/e/script_duplicate -->
   function checkForRecommendationAtSelection(selection: any): void {
     // Check if current selection contains any pending recommendations
     const recommendations = $state.context.currentRecommendations;
-    
+
     for (const rec of recommendations) {
       if (rec.position && selection.from <= rec.position && selection.to >= rec.position) {
         currentRecommendation = rec.text;
@@ -435,9 +435,9 @@ https://svelte.dev/e/script_duplicate -->
 
 <!-- Editor Container -->
 <div class="tiptap-container relative">
-  
+
   <!-- Editor Element -->
-  <div 
+  <div
     bind:this={editorElement}
     class="tiptap-editor-wrapper min-h-96 border border-gray-300 rounded-lg p-4 focus-within:border-blue-500 transition-colors"
     class:opacity-50={readOnly}
@@ -447,11 +447,11 @@ https://svelte.dev/e/script_duplicate -->
   <div class="status-bar flex items-center justify-between mt-2 text-sm text-gray-500">
     <div class="flex items-center space-x-4">
       <span>{wordCount} words</span>
-      
+
       {#if lastSaveTime}
         <span>Saved {formatTime(lastSaveTime)}</span>
       {/if}
-      
+
       {#if isProcessing}
         <div class="flex items-center space-x-2 text-blue-600">
           <div class="animate-spin w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full"></div>
@@ -459,7 +459,7 @@ https://svelte.dev/e/script_duplicate -->
         </div>
       {/if}
     </div>
-    
+
     <div class="flex items-center space-x-2">
       {#if userIntent === 'idle'}
         <span class="text-yellow-600">💤 Idle</span>
@@ -473,45 +473,45 @@ https://svelte.dev/e/script_duplicate -->
 
   <!-- AI Assistant Panel -->
   {#if aiAssistantVisible}
-    <div 
+    <div
       class="ai-assistant-panel absolute top-0 right-0 w-80 bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-10"
       transition:slide={{ axis: 'x', duration: 200 }}
     >
       <div class="flex items-center justify-between mb-4">
         <h3 class="font-semibold text-gray-800">AI Assistant</h3>
-        <button 
-          click={() => aiAssistantVisible = false}
+        <button
+          on:onclick={() => aiAssistantVisible = false}
           class="text-gray-500 hover:text-gray-700"
         >
           ✕
         </button>
       </div>
-      
+
       <!-- Quick Actions -->
       <div class="space-y-2 mb-4">
-        <button 
-          click={startCrewAIReview}
+        <button
+          on:onclick={startCrewAIReview}
           class="w-full bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700 transition-colors"
           disabled={isProcessing}
         >
           {isProcessing ? 'Review in Progress...' : 'Start CrewAI Review'}
         </button>
-        
-        <button 
-          click={() => generateInlineSuggestions(editor?.getHTML() || '')}
+
+        <button
+          on:onclick={() => generateInlineSuggestions(editor?.getHTML() || '')}
           class="w-full bg-green-600 text-white px-3 py-2 rounded text-sm hover:bg-green-700 transition-colors"
         >
           Generate Suggestions
         </button>
       </div>
-      
+
       <!-- Current Recommendations -->
       {#if hasRecommendations}
         <div class="recommendations">
           <h4 class="font-medium text-gray-700 mb-2">Recommendations</h4>
-          
+
           {#each $state.context.currentRecommendations as rec (rec.id)}
-            <div 
+            <div
               class="recommendation-item p-2 border border-gray-200 rounded mb-2"
               transition:fade={{ duration: 150 }}
             >
@@ -522,17 +522,17 @@ https://svelte.dev/e/script_duplicate -->
                     {rec.type} • {Math.round(rec.confidence * 100)}% confidence
                   </div>
                 </div>
-                
+
                 <div class="flex space-x-1 ml-2">
-                  <button 
-                    click={() => applySuggestion(rec)}
+                  <button
+                    on:onclick={() => applySuggestion(rec)}
                     class="text-green-600 hover:text-green-800 text-xs px-2 py-1 rounded"
                     title="Accept"
                   >
                     ✓
                   </button>
-                  <button 
-                    click={() => rejectSuggestion(rec)}
+                  <button
+                    on:onclick={() => rejectSuggestion(rec)}
                     class="text-red-600 hover:text-red-800 text-xs px-2 py-1 rounded"
                     title="Reject"
                   >
@@ -544,7 +544,7 @@ https://svelte.dev/e/script_duplicate -->
           {/each}
         </div>
       {/if}
-      
+
       <!-- Focus Schema Indicator -->
       <div class="mt-4 pt-4 border-t border-gray-200">
         <div class="text-xs text-gray-500">
@@ -556,22 +556,22 @@ https://svelte.dev/e/script_duplicate -->
 
   <!-- Inline Suggestions Popup -->
   {#if showSuggestions && currentRecommendation}
-    <div 
+    <div
       class="inline-suggestion absolute bg-yellow-50 border border-yellow-300 rounded-lg p-3 shadow-lg z-20 max-w-xs"
       style="left: {recommendationPosition.x}px; top: {recommendationPosition.y + 25}px;"
       transition:fade={{ duration: 150 }}
     >
       <div class="text-sm text-gray-800 mb-2">{currentRecommendation}</div>
-      
+
       <div class="flex justify-end space-x-2">
-        <button 
-          click={() => showSuggestions = false}
+        <button
+          on:onclick={() => showSuggestions = false}
           class="text-xs text-gray-500 hover:text-gray-700 px-2 py-1"
         >
           Dismiss
         </button>
-        <button 
-          click={() => applySuggestion({ text: currentRecommendation })}
+        <button
+          on:onclick={() => applySuggestion({ text: currentRecommendation })}
           class="text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700"
         >
           Apply
@@ -582,9 +582,9 @@ https://svelte.dev/e/script_duplicate -->
 
   <!-- Keyboard Shortcuts Help -->
   <div class="keyboard-shortcuts text-xs text-gray-400 mt-2">
-    <span>Ctrl+S: Save</span> • 
-    <span>Ctrl+/: AI Assistant</span> • 
-    <span>Shift+Enter: Suggestions</span> • 
+    <span>Ctrl+S: Save</span> •
+    <span>Ctrl+/: AI Assistant</span> •
+    <span>Shift+Enter: Suggestions</span> •
     <span>Esc: Hide suggestions</span>
   </div>
 </div>
@@ -593,12 +593,12 @@ https://svelte.dev/e/script_duplicate -->
   .tiptap-editor {
     outline: none;
   }
-  
+
   .tiptap-editor :global(.ProseMirror) {
     outline: none;
     min-height: 200px;
   }
-  
+
   .tiptap-editor :global(.ProseMirror p.is-editor-empty:first-child::before) {
     content: attr(data-placeholder);
     float: left;
@@ -606,16 +606,16 @@ https://svelte.dev/e/script_duplicate -->
     pointer-events: none;
     height: 0;
   }
-  
+
   .ai-assistant-panel {
     max-height: 500px;
     overflow-y: auto;
   }
-  
+
   .inline-suggestion {
     animation: slideInUp 0.2s ease-out;
   }
-  
+
   @keyframes slideInUp {
     from {
       opacity: 0;
@@ -632,7 +632,7 @@ https://svelte.dev/e/script_duplicate -->
   function formatTime(date: Date): string {
     const now = new Date();
     const diff = now.getTime() - date.getTime();
-    
+
     if (diff < 60000) {
       return 'just now';
     } else if (diff < 3600000) {

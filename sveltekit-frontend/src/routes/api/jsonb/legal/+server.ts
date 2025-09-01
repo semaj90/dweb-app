@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * JSONB Legal API Endpoints
@@ -17,6 +17,9 @@ import { json, error } from '@sveltejs/kit';
 import { jsonbLegalService } from '$lib/services/jsonb-legal-service.js';
 import { logger } from '$lib/logging/structured-logger.js';
 import { z } from 'zod';
+import path from "path";
+import crypto from "crypto";
+import { URL } from "url";
 
 // ============================================================================
 // REQUEST VALIDATION SCHEMAS

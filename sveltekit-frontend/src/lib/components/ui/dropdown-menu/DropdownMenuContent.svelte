@@ -11,7 +11,7 @@
 </script>
 
 <div
-  use:melt={menu}
+  <!-- use:melt={menu}
   class="min-w-32 rounded-md border bg-popover p-1 text-popover-foreground shadow-md focus:outline-none {class}"
 >
   {@render children?.()}

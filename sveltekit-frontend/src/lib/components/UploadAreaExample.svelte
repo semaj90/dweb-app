@@ -137,15 +137,15 @@
           'video/mp4', 'video/avi', 'video/mov',
           'audio/mp3', 'audio/wav', 'audio/mpeg'
         ]}
-        on:upload-start={handleUploadStart}
-        on:upload-progress={handleUploadProgress}
-        on:upload-complete={handleUploadComplete}
-        on:upload-error={handleUploadError}
-        on:file-start={handleFileStart}
-        on:file-success={handleFileSuccess}
-        on:file-error={handleFileError}
-        on:files-selected={handleFilesSelected}
-        on:validation-error={handleValidationError}
+        upload-start={handleUploadStart}
+        upload-progress={handleUploadProgress}
+        upload-complete={handleUploadComplete}
+        upload-error={handleUploadError}
+        file-start={handleFileStart}
+        file-success={handleFileSuccess}
+        file-error={handleFileError}
+        files-selected={handleFilesSelected}
+        validation-error={handleValidationError}
       />
 
       <!-- Status Display -->
@@ -157,7 +157,7 @@
             type="button"
             class="space-y-4"
             aria-label="Clear status"
-            click={() => clearStatus()}
+            on:onclick={() => clearStatus()}
           ></button>
         </div>
       {/if}
@@ -171,7 +171,7 @@
             <button
               type="button"
               class="space-y-4"
-              click={() => clearStatus()}
+              on:onclick={() => clearStatus()}
             >
               Clear
             </button>

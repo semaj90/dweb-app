@@ -57,7 +57,7 @@
     queues: {},
     storage: {}
   });
-  let uploadMachine: ActorRefFrom<typeof fileUploadMachine> | null = null;
+let uploadMachine = $state<ActorRefFrom<typeof fileUploadMachine> | null >(null);
 
   // XState Machine for Upload Management
   const fileUploadMachine = createMachine({
@@ -302,7 +302,7 @@
       updateResult(fileId, 'documentId', documentRecord.id);
 
       // Stage 4: OCR Processing (if enabled)
-      let extractedText = '';
+let extractedText = $state('');
       if (enableOCR && ['image/', 'application/pdf'].some(type => file.type.includes(type))) {
         await updateStage(fileId, 'ocr', 'processing');
         extractedText = await performOCR(file, fileId);
@@ -681,7 +681,7 @@
         </h3>
         <button
           class="text-sm bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-full border border-blue-200 transition-colors"
-          click={() => uploadMachine?.send({ type: 'CHECK_SERVICES' })}
+          on:onclick={() => uploadMachine?.send({ type: 'CHECK_SERVICES' })}
         >
           Refresh Status
         </button>
@@ -738,13 +738,13 @@
   <!-- Enhanced Upload Zone -->
   <div
     class="relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 {isDragOver ? 'border-blue-400 bg-blue-50 scale-102' : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'}"
-    on:dragover={handleDragOver}
-    on:dragleave={handleDragLeave}
-    on:drop={handleDrop}
+    ondragover={handleDragOver}
+    ondragleave={handleDragLeave}
+    ondrop={handleDrop}
     role="button"
     tabindex="0"
-    click={() => fileInput?.click()}
-    on:keydown={(e) => e.key === 'Enter' && fileInput?.click()}
+    on:onclick={() => fileInput?.click()}
+    keydown={(e) => e.key === 'Enter' && fileInput?.click()}
   >
     <div class="flex flex-col items-center">
       <div class="mb-4 p-3 bg-gray-100 rounded-full">
@@ -885,7 +885,7 @@
             <div class="border-t pt-3">
               <button
                 class="text-sm text-blue-600 hover:text-blue-700 font-medium"
-                click={() => {
+                on:onclick={() => {
                   const detailsEl = document.getElementById(`details-${fileId}`);
                   if (detailsEl) {
                     detailsEl.classList.toggle('hidden');

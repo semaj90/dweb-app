@@ -30,12 +30,12 @@
   export let maxFiles: number = multiple ? 10 : 1;
   export let maxSizeMB: number = 100;
   export let acceptedTypes: string[] = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png', '.txt'];
-
+;
   // Provide safe defaults for callbacks
   export let onupload: (data: { files: File[]; formData: FileUpload[] }) => void = () => {};
   export let oncancel: () => void = () => {};
   export let onprogress: (data: { progress: number; file: string }) => void = () => {};
-
+;
   // File upload interface
   interface FileUpload {
     file: File;
@@ -56,15 +56,15 @@
 
   // State
   let fileInput: HTMLInputElement;
-  let isDragOver = false;
-  let selectedFiles: File[] = [];
-  let uploadProgress: Record<string, number> = {};
-  let previews: Record<string, string> = {};
-  let isUploading = false;
-  let currentUploadFile = "";
+let isDragOver = $state(false);
+let selectedFiles = $state<File[] >([]);
+let uploadProgress = $state<Record<string, number> >({});
+let previews = $state<Record<string, string> >({});
+let isUploading = $state(false);
+let currentUploadFile = $state("");
 
   // Local form state (no $form store)
-  let formState = {
+let formState = $state({
     title: '',
     description: '',
     tags: [] as string[],
@@ -78,9 +78,8 @@
     enableEmbeddings: false,
     enableSummarization: false,
     isAdmissible: false,
-  };
-
-  let errors: Record<string, string[]> = {};
+  });
+let errors = $state<Record<string, string[]> >({});
 
   // Options
   const evidenceTypes = [
@@ -228,7 +227,7 @@
 
   async function simulateUpload(fileName: string): Promise<void> {
     return new Promise((resolve) => {
-      let progress = 0;
+let progress = $state(0);
       const interval = setInterval(() => {
         progress += Math.random() * 20;
         if (progress >= 100) {
@@ -247,7 +246,7 @@
   }
 
   // Tags
-  let tagInput = "";
+let tagInput = $state("");
   function addTag() {
     const trimmed = tagInput.trim();
     if (trimmed && !formState.tags.includes(trimmed)) {
@@ -290,10 +289,10 @@
       class:bg-primary/5={isDragOver}
       class:opacity-50={disabled}
       class:cursor-not-allowed={disabled}
-      on:dragover={handleDragOver}
-      on:dragleave={handleDragLeave}
-      on:drop={handleDrop}
-      click={openFileDialog}
+      ondragover={handleDragOver}
+      ondragleave={handleDragLeave}
+      ondrop={handleDrop}
+      on:onclick={openFileDialog}
       keydown={(e: KeyboardEvent) => e.key === "Enter" && openFileDialog()}
       role="button"
       tabindex="0"
@@ -350,7 +349,7 @@
                 {/if}
               </div>
 
-              <Button variant="ghost" size="sm" on:click={() => removeFile(file.name)} disabled={isUploading} class="flex-shrink-0">
+              <Button variant="ghost" size="sm" on:on:click={() => removeFile(file.name)} disabled={isUploading} class="flex-shrink-0">
                 <X class="h-4 w-4" />
               </Button>
             </div>
@@ -405,8 +404,8 @@
         <div class="space-y-2">
           <Label for="tags">Tags</Label>
           <div class="flex gap-2">
-            <Input bind:value={tagInput} placeholder="Add a tag" disabled={isUploading} on:keydown={(e) => e.key === "Enter" && (e.preventDefault(), addTag())} />
-            <Button type="button" variant="outline" on:click={addTag} disabled={isUploading}>Add</Button>
+            <Input bind:value={tagInput} placeholder="Add a tag" disabled={isUploading} keydown={(e) => e.key === "Enter" && (e.preventDefault(), addTag())} />
+            <Button type="button" variant="outline" on:on:click={addTag} disabled={isUploading}>Add</Button>
           </div>
 
           {#if formState.tags.length > 0}
@@ -414,7 +413,7 @@
               {#each formState.tags as tag}
                 <Badge variant="secondary" class="gap-1 inline-flex items-center">
                   <span>{tag}</span>
-                  <button type="button" class="ml-2" click={() => removeTag(tag)} disabled={isUploading} aria-label="Remove tag">
+                  <button type="button" class="ml-2" on:onclick={() => removeTag(tag)} disabled={isUploading} aria-label="Remove tag">
                     <X class="h-3 w-3" />
                   </button>
                 </Badge>
@@ -459,9 +458,9 @@
       </p>
 
       <div class="flex gap-2">
-        <Button variant="outline" on:click={() => oncancel?.()} disabled={isUploading}>Cancel</Button>
+        <Button variant="outline" on:on:click={() => oncancel?.()} disabled={isUploading}>Cancel</Button>
 
-        <Button on:click={handleFormSubmit} disabled={selectedFiles.length === 0 || isUploading || Object.keys(errors).length > 0} class="min-w-24">
+        <Button on:on:click={handleFormSubmit} disabled={selectedFiles.length === 0 || isUploading || Object.keys(errors).length > 0} class="min-w-24">
           {#if isUploading}
             <Loader2 class="h-4 w-4 animate-spin mr-2" />Uploading...
           {:else}

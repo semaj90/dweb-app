@@ -34,7 +34,7 @@ const staticShortcuts: Shortcut[] = [
 ];
 
 export const keyboardShortcuts = writable<Shortcut[]>([...staticShortcuts]);
-
+;
 // Utility to register a new shortcut at runtime
 export function registerShortcut(shortcut: Shortcut) {
   keyboardShortcuts.update((shortcuts) => [...shortcuts, shortcut]);

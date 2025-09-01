@@ -560,7 +560,7 @@ const suite = createEnhancedOptimizationSuite();
         code_example: `
 // SvelteKit optimization
 import { preloadData } from '$app/navigation';
-export const load = async ({ depends }): Promise<any> => {
+export const load = (async ({ depends }): Promise<any> => {
   depends('app:data');
   return await loadOptimizedData();
 };`,
@@ -712,7 +712,7 @@ const db = drizzle(pool, {
 }
 
 // === Factory Functions ===
-export function createContext7MCPIntegration(
+export function createContext7MCPIntegration(;
   suite?: EnhancedOptimizationSuite
 ): Context7MCPOptimizationIntegrator {
   return new Context7MCPOptimizationIntegrator(suite);

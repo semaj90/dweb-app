@@ -21,7 +21,7 @@
   }: Props = $props();
 
   // WebSocket connection
-  let socket: Socket | null = null;
+let socket = $state<Socket | null >(null);
   let connectionStatus = writable<'disconnected' | 'connecting' | 'connected'>('disconnected');
   
   // Progress tracking
@@ -203,7 +203,7 @@
   }
 
   // Attention tracking setup
-  let attentionListeners: Array<() => void> = [];
+let attentionListeners = $state<Array<() >(> void> = []);
 
   function setupAttentionTracking() {
     if (!socket) return;
@@ -229,9 +229,9 @@
     );
 
     // Scroll tracking (throttled)
-    let scrollTimeout: number;
-    const scrollHandler = () => {
-      clearTimeout(scrollTimeout);
+let scrollTimeout = $state<number;
+    const scrollHandler >(() => {
+      clearTimeout(scrollTimeout));
       scrollTimeout = setTimeout(() => {
         trackEvent('scroll', { 
           scrollY: window.scrollY,

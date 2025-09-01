@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import path from 'path';
-import { queryDb } from './helpers/db';
+import { queryDb } from './helpers/db.js';
+import { URL } from "url";
 
 test.describe('Full CRUD flow', () => {
   const testUser = { email: `e2e+${Date.now()}@example.test`, password: 'Password123!' };
@@ -46,7 +47,7 @@ test.describe('Full CRUD flow', () => {
     expect(caseId).not.toBeNull();
 
     // Upload evidence
-    const filePath = path.resolve(__dirname, 'fixtures', 'evidence.txt');
+    const filePath = path.resolve(import.meta.url, 'fixtures', 'evidence.txt');
     await page.setInputFiles('input[type="file"]', filePath);
     await page.click('button:has-text("Upload Evidence")');
     await page.waitForSelector('text=evidence.txt', { timeout: 10000 });

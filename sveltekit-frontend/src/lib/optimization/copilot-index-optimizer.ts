@@ -1,3 +1,5 @@
+import type { PageServerLoad } from './$types';
+import type { RequestHandler } from '@sveltejs/kit';
 import type { RAGSearchResult } from "$lib/types/rag";
 
 /**

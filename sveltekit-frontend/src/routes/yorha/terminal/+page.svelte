@@ -17,10 +17,10 @@
   let terminalHistory = $state([]);
   let currentInput = $state('');
   let isExecuting = $state(false);
-  let terminalRef: any;
+let terminalRef = $state<any;
 
   // Terminal commands
-  const availableCommands = {
+  const availableCommands >({
     help: {
       description: 'Show available commands',
       usage: 'help [command]',
@@ -61,7 +61,7 @@
       usage: 'version',
       execute: () => showVersion()
     }
-  };
+  });
 
   onMount(() => {
     // Initialize terminal with welcome message
@@ -288,7 +288,7 @@
           <span>YoRHa Terminal</span>
         </div>
         <div class="yorha-terminal-controls">
-          <button class="yorha-terminal-control" click={() => clearTerminal()}>
+          <button class="yorha-terminal-control" on:onclick={() => clearTerminal()}>
             <RotateCcw size={14} />
           </button>
           <button class="yorha-terminal-control">

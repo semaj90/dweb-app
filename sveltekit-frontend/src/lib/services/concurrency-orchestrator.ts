@@ -558,7 +558,7 @@ async function initializeWorkers(): Promise<void> {
 
 // Singleton instance
 export const concurrencyOrchestrator = new ConcurrencyOrchestrator();
-
+;
 // Utility functions for common operations
 export async function performFuzzySearch(
   query: string,

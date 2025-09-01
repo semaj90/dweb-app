@@ -29,7 +29,7 @@
 
   // Elements
   let textarea: HTMLTextAreaElement;
-  let isMultiline = false;
+let isMultiline = $state(false);
 
   // Auto-focus on mount
   onMount(() => {
@@ -128,8 +128,8 @@
       rows={rows}
       input={handleInput}
       keydown={handleKeydown}
-      on:focus={handleFocus}
-      on:blur={handleBlur}
+      onfocus={handleFocus}
+      onblur={handleBlur}
       aria-label="Chat message input"
       spellcheck="true"
     ></textarea>
@@ -150,7 +150,7 @@
         class="send-button"
         disabled={disabled}
         class:has-content={value.trim().length > 0}
-        on:click={() => handleSend()}
+        on:on:click={() => handleSend()}
         title="Send message (Enter)"
         aria-label="Send message"
       >

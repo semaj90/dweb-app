@@ -18,13 +18,13 @@
   let activeForm = $state<'signin' | 'signup'>('signin');
   let isLoading = $state(false);
   let showPassword = $state(false);
-  let modalElement: HTMLDialogElement;
+let modalElement = $state<HTMLDialogElement;
   
   // Watch for modal state changes
-  $effect(() => {
+  $effect(() >(> {
     if (modalElement) {
       if (isOpen) {
-        modalElement.showModal();
+        modalElement.showModal());
       } else {
         modalElement.close();
       }
@@ -95,7 +95,7 @@
     <div class="auth-tabs" role="tablist">
       <button 
         class="tab-btn {activeForm === 'signin' ? 'is-active' : ''}" 
-        click={() => switchForm('signin')}
+        on:onclick={() => switchForm('signin')}
         disabled={isLoading}
         role="tab"
         aria-selected={activeForm === 'signin'}
@@ -106,7 +106,7 @@
       </button>
       <button 
         class="tab-btn {activeForm === 'signup' ? 'is-active' : ''}" 
-        click={() => switchForm('signup')}
+        on:onclick={() => switchForm('signup')}
         disabled={isLoading}
         role="tab"
         aria-selected={activeForm === 'signup'}
@@ -204,7 +204,7 @@
             <button 
               type="button"
               class="nes-btn is-warning"
-              click={fillDemoCredentials}
+              on:onclick={fillDemoCredentials}
               disabled={isLoading}
               style="width: 100%;"
             >
@@ -216,7 +216,7 @@
             <button 
               type="button"
               class="nes-btn"
-              click={closeModal}
+              on:onclick={closeModal}
               disabled={isLoading}
             >
               Cancel
@@ -342,7 +342,7 @@
             <button 
               type="button"
               class="nes-btn is-warning"
-              click={fillDemoSignupCredentials}
+              on:onclick={fillDemoSignupCredentials}
               disabled={isLoading}
               style="width: 100%;"
             >
@@ -354,7 +354,7 @@
             <button 
               type="button"
               class="nes-btn"
-              click={closeModal}
+              on:onclick={closeModal}
               disabled={isLoading}
             >
               Cancel

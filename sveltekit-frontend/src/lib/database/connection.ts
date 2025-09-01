@@ -1,10 +1,11 @@
+/// <reference types="vite/client" />
 
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from 'pg';
-import * as schema from './schema';
+import * as schema from './schema.js';
 
 const env = { 
-  DATABASE_URL: process.env.DATABASE_URL || import.meta.env?.DATABASE_URL 
+  DATABASE_URL: import.meta.env.DATABASE_URL || import.meta.env?.DATABASE_URL 
 };
 
 // Create PostgreSQL connection pool
@@ -17,7 +18,7 @@ const pool = new Pool({
 
 // Create Drizzle instance with schema
 export const db = drizzle(pool, { schema });
-
+;
 // Connection health check
 export async function testDatabaseConnection(): Promise<{
   success: boolean;
@@ -219,4 +220,15 @@ export async function closeDatabaseConnection(): Promise<any> {
 }
 
 // Export the pool for direct access if needed
+// Enhanced connection for full-stack legal AI
 export { pool };
+
+// Direct SQL for complex vector operations
+export async function executeSQL(query: string, params: any[] = []) {
+  try {
+    const result = await pool.query(query, params);
+    return { success: true, data: result.rows, rowCount: result.rowCount };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}

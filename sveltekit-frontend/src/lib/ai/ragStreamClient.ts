@@ -1,5 +1,5 @@
 import path from "path";
-import type { Readable } from 'svelte/store';
+import type {     Readable     } from 'svelte/store';
 /**
  * RAG Streaming Client Helper (SSE)
  * ---------------------------------
@@ -881,4 +881,4 @@ export function createRagStreamStore(initial?: RagStreamStoreInit): RagStreamSto
 // const { tokens, status, summary } = rag; // destructure the individual Svelte stores
 // onMount(() => { rag.start({ query: 'Explain force majeure' }); });
 // $: tokenList = $tokens; // reactive tokens array
-// <button onclick={() => rag.cancel()}>Cancel</button>
+// <button on:click={() => rag.cancel()}>Cancel</button>

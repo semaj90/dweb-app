@@ -660,7 +660,7 @@ export class PredictivePrefetcher {
 
 // Initialize and export for service worker
 export const prefetcher = new PredictivePrefetcher();
-
+;
 // Service worker event handlers
 self.addEventListener("install", () => {
   (self as any).skipWaiting();

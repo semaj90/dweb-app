@@ -17,8 +17,8 @@
   // Demo state
   let benchmarkRunning = $state(false);
   let benchmarkResults: { operation: string; time: number; throughput: number }[] = $state([]);
-  let testVectorCount = 100;
-  let testDimensions = 384;
+let testVectorCount = $state(100);
+let testDimensions = $state(384);
   let similarityResults: Float32Array | null = $state(null);
   
   // Legal AI test scenarios
@@ -399,7 +399,7 @@
       
       <div class="flex gap-4">
         <button
-          click={runLegalScenario}
+          on:onclick={runLegalScenario}
           disabled={!$isReady || benchmarkRunning}
           class="px-6 py-2 bg-yellow-600 hover:bg-yellow-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg transition-colors"
         >
@@ -411,7 +411,7 @@
         </button>
         
         <button
-          click={runBenchmark}
+          on:onclick={runBenchmark}
           disabled={!$isReady || benchmarkRunning}
           class="px-6 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg transition-colors"
         >

@@ -291,7 +291,7 @@ Real-time collaboration interface for multiple investigators working on evidence
               bind:value={newMessage}
               placeholder="Type your message..."
               class="flex-1 resize-none min-h-[40px] max-h-[120px]"
-              on:keydown={(e) => {
+              keydown={(e) => {
                 handleTyping();
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
@@ -300,7 +300,7 @@ Real-time collaboration interface for multiple investigators working on evidence
               }}
             />
             <Button 
-              on:click={sendMessage}
+              on:on:click={sendMessage}
               disabled={!newMessage.trim()}
               size="sm"
               class="self-end"
@@ -323,7 +323,7 @@ Real-time collaboration interface for multiple investigators working on evidence
           <Button
             variant="outline"
             size="sm"
-            on:click={() => showAnnotationInput = !showAnnotationInput}
+            on:on:click={() => showAnnotationInput = !showAnnotationInput}
           >
             Add Note
           </Button>
@@ -338,10 +338,10 @@ Real-time collaboration interface for multiple investigators working on evidence
               class="mb-3"
             />
             <div class="flex space-x-2">
-              <Button on:click={addAnnotation} size="sm" disabled={!newAnnotation.trim()}>
+              <Button on:on:click={addAnnotation} size="sm" disabled={!newAnnotation.trim()}>
                 Add Annotation
               </Button>
-              <Button on:click={() => showAnnotationInput = false} variant="outline" size="sm">
+              <Button on:on:click={() => showAnnotationInput = false} variant="outline" size="sm">
                 Cancel
               </Button>
             </div>

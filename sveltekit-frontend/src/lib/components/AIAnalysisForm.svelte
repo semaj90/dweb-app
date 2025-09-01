@@ -39,8 +39,7 @@
   }: Props = $props();
 
   const dispatch = createEventDispatcher();
-
-  let isAnalyzing = false;
+let isAnalyzing = $state(false);
   let analysisProgress = writable(0);
   let currentAnalysisStep = writable('');
   let analysisResults = writable<AnalysisResults | null>(null);
@@ -116,7 +115,7 @@
   
   <div class="mb-6">
     <Button
-      on:click={startAnalysis}
+      on:on:click={startAnalysis}
       disabled={isAnalyzing}
       class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg disabled:opacity-50"
     >

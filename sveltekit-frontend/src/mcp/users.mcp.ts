@@ -11,9 +11,10 @@ import { cosineDistance } from 'drizzle-orm';
 import { users, sessions } from '$lib/server/db/schema';
 import type { User } from '$lib/types';
 import bcrypt from 'bcryptjs';
+import crypto from "crypto";
 
 // Database connection (based on MCP pgvector docs)
-const connectionString = process.env.DATABASE_URL!;
+const connectionString = import.meta.env.DATABASE_URL!;
 const client = postgres(connectionString);
 const db = drizzle(client);
 
@@ -68,7 +69,7 @@ export interface UserProfileMatchParams {
  * MCP Tool: Users Management
  * Thin adapter wrapping Drizzle ORM operations for user management
  */
-export class UsersMCPTool {
+export class UsersMCPTool {;
   
   /**
    * Create new user

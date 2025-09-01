@@ -1,0 +1,1122 @@
+# Hybrid TypeScript + Go Microservices Architecture
+# Drizzle ORM + PostgreSQL pgvector + JSONB + Go Services
+
+## Architecture Overview: Best of Both Worlds
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    SVELTEKIT BFF                            │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │  TypeScript API Routes (+server.ts)                 │   │
+│  │  ├─ Authentication & Authorization                   │   │
+│  │  ├─ Request Orchestration                           │   │
+│  │  ├─ Response Formatting                             │   │
+│  │  └─ Client-Server Communication                     │   │
+│  └─────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────┘
+                              ↕ HTTP/gRPC
+┌─────────────────────────────────────────────────────────────┐
+│                  MICROSERVICES LAYER                        │
+├─────────────────────────────────────────────────────────────┤
+│  TypeScript Services          │  Go Services                │
+│  ┌─────────────────────────┐  │  ┌─────────────────────────┐ │
+│  │ data-api-service        │  │  │ storage-service         │ │
+│  │ ├─ Drizzle ORM          │  │  │ ├─ MinIO Integration    │ │
+│  │ ├─ pgvector queries     │  │  │ ├─ File Processing     │ │
+│  │ ├─ JSONB operations     │  │  │ └─ High-throughput I/O  │ │
+│  │ └─ Complex data logic   │  │  └─────────────────────────┘ │
+│  └─────────────────────────┘  │                            │
+│                               │  ┌─────────────────────────┐ │
+│  ┌─────────────────────────┐  │  │ auth-service            │ │
+│  │ vector-api-service      │  │  │ ├─ JWT Processing       │ │
+│  │ ├─ Embedding generation │  │  │ ├─ Session Management  │ │
+│  │ ├─ Semantic search      │  │  │ └─ Rate Limiting       │ │
+│  │ ├─ Vector similarity    │  │  └─────────────────────────┘ │
+│  │ └─ AI orchestration     │  │                            │
+│  └─────────────────────────┘  │  ┌─────────────────────────┐ │
+│                               │  │ notification-service    │ │
+│                               │  │ ├─ Email/SMS            │ │
+│                               │  │ ├─ Real-time events     │ │
+│                               │  │ └─ WebSocket handling   │ │
+│                               │  └─────────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
+                              ↕
+┌─────────────────────────────────────────────────────────────┐
+│              SHARED POSTGRESQL DATABASE                     │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ Schema managed by Drizzle Kit (TypeScript)          │   │
+│  │ ├─ Tables with pgvector columns                     │   │
+│  │ ├─ JSONB metadata fields                            │   │
+│  │ ├─ Full-text search indices                         │   │
+│  │ └─ Vector similarity indices (HNSW)                 │   │
+│  └─────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+## Service Responsibilities Matrix
+
+| Service | Language | Primary Use Case | Database Access |
+|---------|----------|------------------|------------------|
+| **data-api-service** | TypeScript | Complex queries, JSONB ops, vector search | Drizzle ORM (full schema) |
+| **vector-api-service** | TypeScript | AI embeddings, semantic search | Drizzle ORM (vectors table) |
+| **storage-service** | Go | File uploads, MinIO, high I/O | Native Go (minimal queries) |
+| **auth-service** | Go | JWT, sessions, rate limiting | Native Go (users/sessions) |
+| **notification-service** | Go | Real-time events, WebSocket | Native Go (notifications) |
+
+---
+
+## TypeScript Data Service Implementation
+
+### Schema Definition with Drizzle
+```typescript
+// shared/schema.ts - Single source of truth for all services
+import { pgTable, text, uuid, timestamp, jsonb, vector, integer, boolean } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
+
+// Users table
+export const users = pgTable('users', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  email: text('email').notNull().unique(),
+  hashedPassword: text('hashed_password').notNull(),
+  firstName: text('first_name'),
+  lastName: text('last_name'),
+  profileMetadata: jsonb('profile_metadata').default('{}'),
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// Documents with vector embeddings and rich metadata
+export const documents = pgTable('documents', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').references(() => users.id).notNull(),
+  title: text('title').notNull(),
+  content: text('content'),
+  
+  // Rich JSONB metadata for flexible document properties
+  metadata: jsonb('metadata').$type<{
+    fileType: string;
+    fileSize: number;
+    processingStatus: 'pending' | 'processing' | 'completed' | 'failed';
+    extractedText?: string;
+    pages?: number;
+    language?: string;
+    tags: string[];
+    customFields: Record<string, any>;
+  }>().default('{}'),
+  
+  // pgvector embeddings for semantic search
+  titleEmbedding: vector('title_embedding', { dimensions: 384 }),
+  contentEmbedding: vector('content_embedding', { dimensions: 384 }),
+  
+  // Storage references
+  minioPath: text('minio_path'),
+  thumbnailPath: text('thumbnail_path'),
+  
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// Vector collections for organizing embeddings
+export const vectorCollections = pgTable('vector_collections', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: text('name').notNull(),
+  description: text('description'),
+  userId: uuid('user_id').references(() => users.id).notNull(),
+  
+  // Collection configuration as JSONB
+  config: jsonb('config').$type<{
+    embeddingModel: string;
+    chunkSize: number;
+    chunkOverlap: number;
+    searchThreshold: number;
+    indexType: 'hnsw' | 'ivf';
+    customParams: Record<string, any>;
+  }>().default('{}'),
+  
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// Relations for type-safe joins
+export const usersRelations = relations(users, ({ many }) => ({
+  documents: many(documents),
+  vectorCollections: many(vectorCollections),
+}));
+
+export const documentsRelations = relations(documents, ({ one }) => ({
+  user: one(users, {
+    fields: [documents.userId],
+    references: [users.id],
+  }),
+}));
+
+// Type exports for services
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
+export type Document = typeof documents.$inferSelect;
+export type NewDocument = typeof documents.$inferInsert;
+export type VectorCollection = typeof vectorCollections.$inferSelect;
+```
+
+### Data API Service Implementation
+```typescript
+// services/data-api-service/src/server.ts
+import express from 'express';
+import cors from 'cors';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
+import { documents, users, vectorCollections } from '../../../shared/schema';
+import { eq, sql, and, desc, cosineDistance } from 'drizzle-orm';
+
+// Database connection
+const queryClient = postgres(process.env.DATABASE_URL!);
+export const db = drizzle(queryClient);
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// Document management endpoints
+app.post('/documents', async (req, res) => {
+  try {
+    const { userId, title, content, metadata, embedding } = req.body;
+
+    const [document] = await db.insert(documents).values({
+      userId,
+      title,
+      content,
+      metadata: {
+        ...metadata,
+        processingStatus: 'pending',
+        tags: metadata.tags || [],
+        customFields: metadata.customFields || {}
+      },
+      contentEmbedding: embedding,
+    }).returning();
+
+    res.json(document);
+  } catch (error) {
+    console.error('Document creation error:', error);
+    res.status(500).json({ error: 'Failed to create document' });
+  }
+});
+
+// Vector similarity search with JSONB filtering
+app.post('/documents/search/vector', async (req, res) => {
+  try {
+    const { 
+      queryEmbedding, 
+      userId, 
+      limit = 10, 
+      threshold = 0.7,
+      filters = {} 
+    } = req.body;
+
+    // Build JSONB filter conditions
+    const jsonbConditions = [];
+    
+    if (filters.fileType) {
+      jsonbConditions.push(
+        sql`${documents.metadata}->>'fileType' = ${filters.fileType}`
+      );
+    }
+    
+    if (filters.tags && filters.tags.length > 0) {
+      jsonbConditions.push(
+        sql`${documents.metadata}->>'tags' ?| ${filters.tags}`
+      );
+    }
+    
+    if (filters.processingStatus) {
+      jsonbConditions.push(
+        sql`${documents.metadata}->>'processingStatus' = ${filters.processingStatus}`
+      );
+    }
+
+    // Combine base conditions with JSONB filters
+    const baseConditions = [
+      eq(documents.userId, userId),
+      sql`${documents.contentEmbedding} IS NOT NULL`
+    ];
+
+    const allConditions = [...baseConditions, ...jsonbConditions];
+
+    const results = await db.select({
+      id: documents.id,
+      title: documents.title,
+      content: documents.content,
+      metadata: documents.metadata,
+      minioPath: documents.minioPath,
+      similarity: sql<number>`1 - (${documents.contentEmbedding} <=> ${queryEmbedding})`,
+    })
+    .from(documents)
+    .where(and(...allConditions))
+    .having(sql`1 - (${documents.contentEmbedding} <=> ${queryEmbedding}) > ${threshold}`)
+    .orderBy(sql`${documents.contentEmbedding} <=> ${queryEmbedding}`)
+    .limit(limit);
+
+    res.json(results);
+  } catch (error) {
+    console.error('Vector search error:', error);
+    res.status(500).json({ error: 'Vector search failed' });
+  }
+});
+
+// Hybrid search: combine vector similarity with full-text search
+app.post('/documents/search/hybrid', async (req, res) => {
+  try {
+    const { query, queryEmbedding, userId, limit = 20 } = req.body;
+
+    // Vector search results
+    const vectorResults = await db.select({
+      id: documents.id,
+      title: documents.title,
+      content: documents.content,
+      metadata: documents.metadata,
+      score: sql<number>`1 - (${documents.contentEmbedding} <=> ${queryEmbedding})`,
+      searchType: sql<string>`'vector'`,
+    })
+    .from(documents)
+    .where(
+      and(
+        eq(documents.userId, userId),
+        sql`${documents.contentEmbedding} IS NOT NULL`
+      )
+    )
+    .orderBy(sql`${documents.contentEmbedding} <=> ${queryEmbedding}`)
+    .limit(Math.ceil(limit * 0.7)); // 70% from vector search
+
+    // Full-text search results
+    const textResults = await db.select({
+      id: documents.id,
+      title: documents.title,
+      content: documents.content,
+      metadata: documents.metadata,
+      score: sql<number>`ts_rank_cd(to_tsvector('english', ${documents.title} || ' ' || ${documents.content}), plainto_tsquery('english', ${query}))`,
+      searchType: sql<string>`'text'`,
+    })
+    .from(documents)
+    .where(
+      and(
+        eq(documents.userId, userId),
+        sql`to_tsvector('english', ${documents.title} || ' ' || ${documents.content}) @@ plainto_tsquery('english', ${query})`
+      )
+    )
+    .orderBy(sql`ts_rank_cd(to_tsvector('english', ${documents.title} || ' ' || ${documents.content}), plainto_tsquery('english', ${query})) DESC`)
+    .limit(Math.ceil(limit * 0.3)); // 30% from text search
+
+    // Combine and deduplicate results
+    const combinedResults = combineAndRankResults(vectorResults, textResults, limit);
+
+    res.json(combinedResults);
+  } catch (error) {
+    console.error('Hybrid search error:', error);
+    res.status(500).json({ error: 'Hybrid search failed' });
+  }
+});
+
+// Advanced JSONB analytics endpoint
+app.get('/documents/analytics/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const analytics = await db.select({
+      totalDocuments: sql<number>`count(*)`,
+      
+      // File type distribution
+      fileTypeStats: sql<any>`jsonb_object_agg(
+        COALESCE(metadata->>'fileType', 'unknown'), 
+        count(*)
+      )`,
+      
+      // Processing status breakdown
+      processingStats: sql<any>`jsonb_object_agg(
+        COALESCE(metadata->>'processingStatus', 'unknown'), 
+        count(*)
+      )`,
+      
+      // Tag frequency analysis
+      topTags: sql<any>`(
+        SELECT jsonb_agg(tag_stats ORDER BY tag_count DESC)
+        FROM (
+          SELECT jsonb_array_elements_text(metadata->'tags') as tag, count(*) as tag_count
+          FROM documents 
+          WHERE user_id = ${userId} AND metadata->'tags' IS NOT NULL
+          GROUP BY jsonb_array_elements_text(metadata->'tags')
+          LIMIT 10
+        ) tag_stats
+      )`,
+      
+      // Average file sizes by type
+      avgFileSizeByType: sql<any>`jsonb_object_agg(
+        COALESCE(metadata->>'fileType', 'unknown'),
+        avg((metadata->>'fileSize')::numeric)
+      )`,
+      
+      // Recent activity (last 30 days)
+      recentActivity: sql<number>`count(*) FILTER (WHERE created_at >= NOW() - INTERVAL '30 days')`,
+    })
+    .from(documents)
+    .where(eq(documents.userId, userId))
+    .groupBy(documents.userId);
+
+    res.json(analytics[0] || {});
+  } catch (error) {
+    console.error('Analytics error:', error);
+    res.status(500).json({ error: 'Analytics query failed' });
+  }
+});
+
+// JSONB field update endpoint
+app.patch('/documents/:id/metadata', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { updates } = req.body;
+
+    // Use JSONB operators to update specific fields
+    const [updated] = await db.update(documents)
+      .set({
+        metadata: sql`${documents.metadata} || ${JSON.stringify(updates)}`,
+        updatedAt: sql`NOW()`
+      })
+      .where(eq(documents.id, id))
+      .returning();
+
+    res.json(updated);
+  } catch (error) {
+    console.error('Metadata update error:', error);
+    res.status(500).json({ error: 'Failed to update metadata' });
+  }
+});
+
+function combineAndRankResults(vectorResults: any[], textResults: any[], limit: number) {
+  const resultMap = new Map();
+
+  // Add vector results with weighted scores
+  vectorResults.forEach(result => {
+    resultMap.set(result.id, {
+      ...result,
+      combinedScore: result.score * 0.7, // 70% weight for vector
+      sources: ['vector']
+    });
+  });
+
+  // Add text results, combining scores if document already exists
+  textResults.forEach(result => {
+    if (resultMap.has(result.id)) {
+      const existing = resultMap.get(result.id);
+      existing.combinedScore += result.score * 0.3; // 30% weight for text
+      existing.sources.push('text');
+    } else {
+      resultMap.set(result.id, {
+        ...result,
+        combinedScore: result.score * 0.3,
+        sources: ['text']
+      });
+    }
+  });
+
+  // Sort by combined score and return top results
+  return Array.from(resultMap.values())
+    .sort((a, b) => b.combinedScore - a.combinedScore)
+    .slice(0, limit);
+}
+
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`Data API Service running on port ${PORT}`);
+});
+```
+
+### Vector API Service (TypeScript)
+```typescript
+// services/vector-api-service/src/server.ts
+import express from 'express';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
+import { documents } from '../../../shared/schema';
+import { eq, sql } from 'drizzle-orm';
+import { generateEmbedding } from './ai/embedding-service';
+import { chunkDocument } from './processing/document-chunker';
+
+const queryClient = postgres(process.env.DATABASE_URL!);
+const db = drizzle(queryClient);
+const app = express();
+app.use(express.json());
+
+// Generate embeddings for a document
+app.post('/embeddings/generate', async (req, res) => {
+  try {
+    const { documentId, content, chunkSize = 1000, chunkOverlap = 100 } = req.body;
+
+    // Chunk the document
+    const chunks = chunkDocument(content, chunkSize, chunkOverlap);
+
+    // Generate embeddings for each chunk
+    const embeddings = await Promise.all(
+      chunks.map(chunk => generateEmbedding(chunk.text))
+    );
+
+    // Store chunks and embeddings in database
+    const chunkPromises = chunks.map(async (chunk, index) => {
+      return db.insert(documentChunks).values({
+        documentId,
+        chunkIndex: index,
+        chunkText: chunk.text,
+        startIndex: chunk.startIndex,
+        endIndex: chunk.endIndex,
+        embedding: embeddings[index],
+      });
+    });
+
+    await Promise.all(chunkPromises);
+
+    // Generate document-level embedding (average of chunks)
+    const documentEmbedding = averageEmbeddings(embeddings);
+
+    // Update document with overall embedding
+    await db.update(documents)
+      .set({
+        contentEmbedding: documentEmbedding,
+        metadata: sql`${documents.metadata} || '{"processingStatus": "completed"}'`,
+      })
+      .where(eq(documents.id, documentId));
+
+    res.json({
+      documentId,
+      chunksProcessed: chunks.length,
+      embeddingDimensions: embeddings[0].length,
+    });
+  } catch (error) {
+    console.error('Embedding generation error:', error);
+    res.status(500).json({ error: 'Failed to generate embeddings' });
+  }
+});
+
+// Semantic search with advanced filtering
+app.post('/search/semantic', async (req, res) => {
+  try {
+    const {
+      query,
+      userId,
+      collectionId,
+      filters = {},
+      limit = 10,
+      threshold = 0.7
+    } = req.body;
+
+    // Generate query embedding
+    const queryEmbedding = await generateEmbedding(query);
+
+    // Build dynamic where conditions
+    const conditions = [eq(documents.userId, userId)];
+    
+    if (collectionId) {
+      conditions.push(eq(documents.collectionId, collectionId));
+    }
+
+    // Advanced JSONB filtering
+    if (filters.dateRange) {
+      conditions.push(
+        sql`${documents.createdAt} BETWEEN ${filters.dateRange.start} AND ${filters.dateRange.end}`
+      );
+    }
+
+    if (filters.metadata) {
+      Object.entries(filters.metadata).forEach(([key, value]) => {
+        conditions.push(
+          sql`${documents.metadata}->>${key} = ${value}`
+        );
+      });
+    }
+
+    const results = await db.select({
+      id: documents.id,
+      title: documents.title,
+      content: documents.content,
+      metadata: documents.metadata,
+      minioPath: documents.minioPath,
+      similarity: sql<number>`1 - (${documents.contentEmbedding} <=> ${queryEmbedding})`,
+      explanation: sql<any>`jsonb_build_object(
+        'matchedFields', CASE 
+          WHEN ${documents.title} ILIKE ${'%' + query + '%'} THEN jsonb_build_array('title')
+          ELSE jsonb_build_array()
+        END,
+        'semanticScore', 1 - (${documents.contentEmbedding} <=> ${queryEmbedding}),
+        'searchQuery', ${query}
+      )`
+    })
+    .from(documents)
+    .where(sql`${sql.join(conditions, sql` AND `)} AND (${documents.contentEmbedding} <=> ${queryEmbedding}) < ${1 - threshold}`)
+    .orderBy(sql`${documents.contentEmbedding} <=> ${queryEmbedding}`)
+    .limit(limit);
+
+    res.json(results);
+  } catch (error) {
+    console.error('Semantic search error:', error);
+    res.status(500).json({ error: 'Semantic search failed' });
+  }
+});
+
+const PORT = process.env.PORT || 3002;
+app.listen(PORT, () => {
+  console.log(`Vector API Service running on port ${PORT}`);
+});
+```
+
+---
+
+## Go Services Implementation
+
+### Storage Service (Go)
+```go
+// services/storage-service/main.go
+package main
+
+import (
+    "context"
+    "encoding/json"
+    "fmt"
+    "log"
+    "net/http"
+    "time"
+
+    "github.com/gorilla/mux"
+    "github.com/minio/minio-go/v7"
+    "github.com/minio/minio-go/v7/pkg/credentials"
+    "github.com/go-redis/redis/v8"
+    "github.com/jackc/pgx/v5/pgxpool"
+)
+
+type StorageService struct {
+    minio      *minio.Client
+    redis      *redis.Client
+    db         *pgxpool.Pool
+}
+
+type FileUploadRequest struct {
+    Filename    string `json:"filename"`
+    ContentType string `json:"contentType"`
+    UserID      string `json:"userId"`
+    Metadata    map[string]interface{} `json:"metadata"`
+}
+
+type FileUploadResponse struct {
+    UploadURL   string `json:"uploadUrl"`
+    FileID      string `json:"fileId"`
+    ExpiresAt   time.Time `json:"expiresAt"`
+}
+
+func NewStorageService() *StorageService {
+    // MinIO client
+    minioClient, err := minio.New("localhost:9000", &minio.Options{
+        Creds:  credentials.NewStaticV4("minioadmin", "minioadmin123", ""),
+        Secure: false,
+    })
+    if err != nil {
+        log.Fatal("Failed to create MinIO client:", err)
+    }
+
+    // Redis client
+    redisClient := redis.NewClient(&redis.Options{
+        Addr: "localhost:6379",
+    })
+
+    // PostgreSQL connection
+    db, err := pgxpool.New(context.Background(), 
+        "postgres://postgres:postgres@localhost:5432/ai_platform?sslmode=disable")
+    if err != nil {
+        log.Fatal("Failed to connect to PostgreSQL:", err)
+    }
+
+    return &StorageService{
+        minio: minioClient,
+        redis: redisClient,
+        db:    db,
+    }
+}
+
+func (s *StorageService) generatePresignedUploadURL(w http.ResponseWriter, r *http.Request) {
+    var req FileUploadRequest
+    if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+        http.Error(w, "Invalid request body", http.StatusBadRequest)
+        return
+    }
+
+    // Generate unique file ID
+    fileID := fmt.Sprintf("%s-%d", req.UserID, time.Now().UnixNano())
+    objectName := fmt.Sprintf("documents/%s/%s", req.UserID, fileID)
+
+    // Generate presigned URL (valid for 15 minutes)
+    presignedURL, err := s.minio.PresignedPutObject(
+        context.Background(),
+        "ai-platform-storage",
+        objectName,
+        15*time.Minute,
+    )
+    if err != nil {
+        http.Error(w, "Failed to generate upload URL", http.StatusInternalServerError)
+        return
+    }
+
+    // Store file metadata in PostgreSQL with minimal queries
+    _, err = s.db.Exec(context.Background(), `
+        INSERT INTO documents (id, user_id, title, minio_path, metadata, created_at)
+        VALUES ($1, $2, $3, $4, $5, NOW())
+    `, fileID, req.UserID, req.Filename, objectName, req.Metadata)
+    
+    if err != nil {
+        log.Printf("Failed to store file metadata: %v", err)
+        http.Error(w, "Failed to store file metadata", http.StatusInternalServerError)
+        return
+    }
+
+    // Cache upload info in Redis
+    uploadInfo := map[string]interface{}{
+        "fileId":      fileID,
+        "userId":      req.UserID,
+        "filename":    req.Filename,
+        "objectName":  objectName,
+        "contentType": req.ContentType,
+        "status":      "uploading",
+    }
+    
+    uploadInfoJSON, _ := json.Marshal(uploadInfo)
+    s.redis.SetEX(context.Background(), 
+        fmt.Sprintf("upload:%s", fileID), 
+        uploadInfoJSON, 
+        time.Hour,
+    )
+
+    response := FileUploadResponse{
+        UploadURL: presignedURL.String(),
+        FileID:    fileID,
+        ExpiresAt: time.Now().Add(15 * time.Minute),
+    }
+
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(response)
+}
+
+func (s *StorageService) confirmUpload(w http.ResponseWriter, r *http.Request) {
+    vars := mux.Vars(r)
+    fileID := vars["fileId"]
+
+    // Get upload info from Redis
+    uploadInfoStr, err := s.redis.Get(context.Background(), 
+        fmt.Sprintf("upload:%s", fileID)).Result()
+    if err != nil {
+        http.Error(w, "Upload not found", http.StatusNotFound)
+        return
+    }
+
+    var uploadInfo map[string]interface{}
+    json.Unmarshal([]byte(uploadInfoStr), &uploadInfo)
+
+    // Verify file exists in MinIO
+    objectName := uploadInfo["objectName"].(string)
+    _, err = s.minio.StatObject(context.Background(), 
+        "ai-platform-storage", 
+        objectName, 
+        minio.StatObjectOptions{},
+    )
+    if err != nil {
+        http.Error(w, "File not found in storage", http.StatusNotFound)
+        return
+    }
+
+    // Update document status in PostgreSQL
+    _, err = s.db.Exec(context.Background(), `
+        UPDATE documents 
+        SET metadata = metadata || '{"processingStatus": "uploaded"}'::jsonb,
+            updated_at = NOW()
+        WHERE id = $1
+    `, fileID)
+    
+    if err != nil {
+        log.Printf("Failed to update document status: %v", err)
+        http.Error(w, "Failed to update document status", http.StatusInternalServerError)
+        return
+    }
+
+    // Publish message for document processing
+    processingMessage := map[string]interface{}{
+        "fileId":     fileID,
+        "userId":     uploadInfo["userId"],
+        "objectName": objectName,
+        "filename":   uploadInfo["filename"],
+        "action":     "process_document",
+        "timestamp":  time.Now().Unix(),
+    }
+    
+    messageJSON, _ := json.Marshal(processingMessage)
+    s.redis.Publish(context.Background(), "document_processing", messageJSON)
+
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(map[string]interface{}{
+        "status":  "confirmed",
+        "fileId":  fileID,
+        "message": "File upload confirmed and queued for processing",
+    })
+}
+
+func (s *StorageService) setupRoutes() *mux.Router {
+    r := mux.NewRouter()
+    
+    r.HandleFunc("/upload", s.generatePresignedUploadURL).Methods("POST")
+    r.HandleFunc("/upload/{fileId}/confirm", s.confirmUpload).Methods("POST")
+    
+    return r
+}
+
+func main() {
+    service := NewStorageService()
+    router := service.setupRoutes()
+    
+    log.Println("Storage service starting on :8083")
+    log.Fatal(http.ListenAndServe(":8083", router))
+}
+```
+
+### Auth Service (Go)
+```go
+// services/auth-service/main.go
+package main
+
+import (
+    "context"
+    "crypto/rand"
+    "encoding/hex"
+    "encoding/json"
+    "fmt"
+    "log"
+    "net/http"
+    "strings"
+    "time"
+
+    "github.com/golang-jwt/jwt/v5"
+    "github.com/gorilla/mux"
+    "github.com/go-redis/redis/v8"
+    "github.com/jackc/pgx/v5/pgxpool"
+    "golang.org/x/crypto/bcrypt"
+)
+
+type AuthService struct {
+    redis     *redis.Client
+    db        *pgxpool.Pool
+    jwtSecret []byte
+}
+
+type LoginRequest struct {
+    Email    string `json:"email"`
+    Password string `json:"password"`
+}
+
+type LoginResponse struct {
+    AccessToken  string `json:"accessToken"`
+    RefreshToken string `json:"refreshToken"`
+    User         UserInfo `json:"user"`
+}
+
+type UserInfo struct {
+    ID        string `json:"id"`
+    Email     string `json:"email"`
+    FirstName string `json:"firstName"`
+    LastName  string `json:"lastName"`
+}
+
+type Claims struct {
+    UserID string `json:"userId"`
+    Email  string `json:"email"`
+    jwt.RegisteredClaims
+}
+
+func NewAuthService() *AuthService {
+    // Redis client
+    redisClient := redis.NewClient(&redis.Options{
+        Addr: "localhost:6379",
+    })
+
+    // PostgreSQL connection
+    db, err := pgxpool.New(context.Background(), 
+        "postgres://postgres:postgres@localhost:5432/ai_platform?sslmode=disable")
+    if err != nil {
+        log.Fatal("Failed to connect to PostgreSQL:", err)
+    }
+
+    return &AuthService{
+        redis:     redisClient,
+        db:        db,
+        jwtSecret: []byte("your-jwt-secret"), // Use env variable
+    }
+}
+
+func (a *AuthService) login(w http.ResponseWriter, r *http.Request) {
+    var req LoginRequest
+    if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+        http.Error(w, "Invalid request body", http.StatusBadRequest)
+        return
+    }
+
+    // Rate limiting check
+    clientIP := getClientIP(r)
+    rateLimitKey := fmt.Sprintf("login_attempts:%s", clientIP)
+    
+    attempts, err := a.redis.Incr(context.Background(), rateLimitKey).Result()
+    if err == nil {
+        a.redis.Expire(context.Background(), rateLimitKey, time.Minute*15)
+        if attempts > 5 {
+            http.Error(w, "Too many login attempts", http.StatusTooManyRequests)
+            return
+        }
+    }
+
+    // Get user from database (minimal query)
+    var user struct {
+        ID             string `db:"id"`
+        Email          string `db:"email"`
+        HashedPassword string `db:"hashed_password"`
+        FirstName      string `db:"first_name"`
+        LastName       string `db:"last_name"`
+        IsActive       bool   `db:"is_active"`
+    }
+
+    err = a.db.QueryRow(context.Background(), `
+        SELECT id, email, hashed_password, first_name, last_name, is_active
+        FROM users WHERE email = $1 AND is_active = true
+    `, req.Email).Scan(
+        &user.ID, &user.Email, &user.HashedPassword,
+        &user.FirstName, &user.LastName, &user.IsActive,
+    )
+
+    if err != nil {
+        http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+        return
+    }
+
+    // Verify password
+    if err := bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(req.Password)); err != nil {
+        http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+        return
+    }
+
+    // Clear rate limiting on successful login
+    a.redis.Del(context.Background(), rateLimitKey)
+
+    // Generate tokens
+    accessToken, err := a.generateAccessToken(user.ID, user.Email)
+    if err != nil {
+        http.Error(w, "Failed to generate access token", http.StatusInternalServerError)
+        return
+    }
+
+    refreshToken := generateSecureToken()
+
+    // Store refresh token in Redis with 7-day expiry
+    a.redis.SetEX(context.Background(), 
+        fmt.Sprintf("refresh_token:%s", user.ID), 
+        refreshToken, 
+        7*24*time.Hour,
+    )
+
+    // Store session info in Redis with 1-hour expiry
+    sessionInfo := map[string]interface{}{
+        "userId":    user.ID,
+        "email":     user.Email,
+        "loginTime": time.Now().Unix(),
+        "ipAddress": clientIP,
+    }
+    sessionJSON, _ := json.Marshal(sessionInfo)
+    a.redis.SetEX(context.Background(), 
+        fmt.Sprintf("session:%s", accessToken), 
+        sessionJSON, 
+        time.Hour,
+    )
+
+    response := LoginResponse{
+        AccessToken:  accessToken,
+        RefreshToken: refreshToken,
+        User: UserInfo{
+            ID:        user.ID,
+            Email:     user.Email,
+            FirstName: user.FirstName,
+            LastName:  user.LastName,
+        },
+    }
+
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(response)
+}
+
+func (a *AuthService) validateToken(w http.ResponseWriter, r *http.Request) {
+    authHeader := r.Header.Get("Authorization")
+    if authHeader == "" {
+        http.Error(w, "Authorization header required", http.StatusUnauthorized)
+        return
+    }
+
+    tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+    
+    token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+        return a.jwtSecret, nil
+    })
+
+    if err != nil || !token.Valid {
+        http.Error(w, "Invalid token", http.StatusUnauthorized)
+        return
+    }
+
+    claims, ok := token.Claims.(*Claims)
+    if !ok {
+        http.Error(w, "Invalid token claims", http.StatusUnauthorized)
+        return
+    }
+
+    // Check if session exists in Redis
+    sessionKey := fmt.Sprintf("session:%s", tokenString)
+    sessionInfo, err := a.redis.Get(context.Background(), sessionKey).Result()
+    if err != nil {
+        http.Error(w, "Session expired", http.StatusUnauthorized)
+        return
+    }
+
+    var session map[string]interface{}
+    json.Unmarshal([]byte(sessionInfo), &session)
+
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(map[string]interface{}{
+        "valid":   true,
+        "userId":  claims.UserID,
+        "email":   claims.Email,
+        "session": session,
+    })
+}
+
+func (a *AuthService) generateAccessToken(userID, email string) (string, error) {
+    claims := Claims{
+        UserID: userID,
+        Email:  email,
+        RegisteredClaims: jwt.RegisteredClaims{
+            ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
+            IssuedAt:  jwt.NewNumericDate(time.Now()),
+            Subject:   userID,
+        },
+    }
+
+    token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+    return token.SignedString(a.jwtSecret)
+}
+
+func generateSecureToken() string {
+    bytes := make([]byte, 32)
+    rand.Read(bytes)
+    return hex.EncodeToString(bytes)
+}
+
+func getClientIP(r *http.Request) string {
+    if ip := r.Header.Get("X-Forwarded-For"); ip != "" {
+        return strings.Split(ip, ",")[0]
+    }
+    if ip := r.Header.Get("X-Real-IP"); ip != "" {
+        return ip
+    }
+    return strings.Split(r.RemoteAddr, ":")[0]
+}
+
+func (a *AuthService) setupRoutes() *mux.Router {
+    r := mux.NewRouter()
+    
+    r.HandleFunc("/login", a.login).Methods("POST")
+    r.HandleFunc("/validate", a.validateToken).Methods("POST")
+    
+    return r
+}
+
+func main() {
+    service := NewAuthService()
+    router := service.setupRoutes()
+    
+    log.Println("Auth service starting on :8084")
+    log.Fatal(http.ListenAndServe(":8084", router))
+}
+```
+
+---
+
+## Inter-Service Communication
+
+### Message Queue Integration
+```typescript
+// shared/messaging/redis-pubsub.ts
+import { Redis } from 'ioredis';
+
+export class MessageBroker {
+  private publisher: Redis;
+  private subscriber: Redis;
+
+  constructor() {
+    this.publisher = new Redis(process.env.REDIS_URL);
+    this.subscriber = new Redis(process.env.REDIS_URL);
+  }
+
+  // Publish document processing events
+  async publishDocumentEvent(event: {
+    type: 'uploaded' | 'processing' | 'completed' | 'failed';
+    documentId: string;
+    userId: string;
+    metadata?: any;
+  }) {
+    await this.publisher.publish('document_events', JSON.stringify(event));
+  }
+
+  // Subscribe to document processing events
+  subscribeToDocumentEvents(callback: (event: any) => void) {
+    this.subscriber.subscribe('document_events');
+    this.subscriber.on('message', (channel, message) => {
+      if (channel === 'document_events') {
+        callback(JSON.parse(message));
+      }
+    });
+  }
+
+  // Publish vector processing requests
+  async publishVectorProcessingRequest(request: {
+    documentId: string;
+    content: string;
+    chunkSize?: number;
+    userId: string;
+  }) {
+    await this.publisher.publish('vector_processing', JSON.stringify(request));
+  }
+}
+
+// Usage in vector-api-service
+const messageBroker = new MessageBroker();
+
+messageBroker.subscribeToDocumentEvents(async (event) => {
+  if (event.type === 'uploaded') {
+    // Process the document for vector embedding
+    const document = await getDocumentFromStorage(event.documentId);
+    await generateDocumentEmbeddings(document);
+    
+    // Publish completion event
+    await messageBroker.publishDocumentEvent({
+      type: 'completed',
+      documentId: event.documentId,
+      userId: event.userId,
+      metadata: { embeddingsGenerated: true }
+    });
+  }
+});
+```
+
+This hybrid architecture gives you:
+
+✅ **Type Safety**: Drizzle ORM provides end-to-end TypeScript safety for complex data operations
+✅ **Performance**: Go services handle high-throughput, concurrent operations efficiently  
+✅ **Flexibility**: JSONB for dynamic metadata, pgvector for semantic search
+✅ **Scalability**: Microservices can be scaled independently based on load
+✅ **Developer Experience**: Each service uses the best tool for its specific job
+✅ **Maintainability**: Clear separation of concerns with shared database schema
+
+The key insight is using **TypeScript services for data complexity** and **Go services for operational efficiency**, unified by a shared PostgreSQL schema managed through Drizzle migrations.

@@ -323,7 +323,7 @@ export class WebGPUVectorProcessor {
 
 // Singleton instance for browser use
 export const webGPUProcessor = new WebGPUVectorProcessor();
-
+;
 // Initialize on module load (browser only)
 if (typeof window !== 'undefined') {
   webGPUProcessor.initialize().then(success => {

@@ -1,6 +1,6 @@
 <script lang="ts">
 
-	import type { Snippet } from 'svelte';
+	import type {     Snippet     } from 'svelte';
   import { $props } from 'svelte';
 	
 	let { open = false, title, children }: {
@@ -15,7 +15,7 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<h2>{title}</h2>
-				<button click={() => open = false}>×</button>
+				<button on:onclick={() => open = false}>×</button>
 			</div>
 			<div class="modal-body">
 				{#if children}

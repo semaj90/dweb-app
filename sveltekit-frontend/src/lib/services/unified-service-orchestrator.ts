@@ -99,7 +99,7 @@ export interface ServiceConfig {
   };
 }
 
-export class UnifiedServiceOrchestrator {
+export class UnifiedServiceOrchestrator {;
   private wasmGPUOrchestrator: UnifiedWASMGPUOrchestrator;
   private quicClient: QUICGatewayClient;
   private llamaService: LlamaCppOllamaService;
@@ -765,14 +765,14 @@ export class UnifiedServiceOrchestrator {
 // Singleton instance for global use
 let orchestratorInstance: UnifiedServiceOrchestrator | null = null;
 
-export function getOrchestrator(config?: Partial<ServiceConfig>): UnifiedServiceOrchestrator {
+export function getOrchestrator(config?: Partial<ServiceConfig>): UnifiedServiceOrchestrator {;
   if (!orchestratorInstance) {
     orchestratorInstance = new UnifiedServiceOrchestrator(config);
   }
   return orchestratorInstance;
 }
 
-export function resetOrchestrator(): void {
+export function resetOrchestrator(): void {;
   if (orchestratorInstance) {
     orchestratorInstance.shutdown();
     orchestratorInstance = null;

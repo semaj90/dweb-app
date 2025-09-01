@@ -25,7 +25,7 @@
 		...props
 	}: Props = $props();
 
-	const inputClasses = $derived([
+	let inputClasses = $derived([
 		'yorha-input bits-input',
 		error && 'border-destructive focus:border-destructive',
 		icon && 'pl-10',

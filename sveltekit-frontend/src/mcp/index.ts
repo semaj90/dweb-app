@@ -5,10 +5,21 @@
  */
 
 // Export MCP Tools
-export { CasesMCPTool, casesMCPTool } from './cases.mcp';
-export { EvidenceMCPTool, evidenceMCPTool } from './evidence.mcp';
-export { UsersMCPTool, usersMCPTool } from './users.mcp';
-export { AIAnalysisMCPTool, aiAnalysisMCPTool } from './ai-analysis.mcp';
+import { CasesMCPTool } from './cases.mcp';
+import { EvidenceMCPTool } from './evidence.mcp';
+import { UsersMCPTool } from './users.mcp';
+import { AIAnalysisMCPTool } from './ai-analysis.mcp';
+import type { MCPToolResponse } from './cases.mcp';
+
+// Expect per-tool files to export singleton instances; if not, create them here
+import { CasesMCPTool as _CasesMCPTool } from './cases.mcp';
+export const casesMCPTool = new _CasesMCPTool();
+import { EvidenceMCPTool as _EvidenceMCPTool } from './evidence.mcp';
+export const evidenceMCPTool = new _EvidenceMCPTool();
+import { UsersMCPTool as _UsersMCPTool } from './users.mcp';
+export const usersMCPTool = new _UsersMCPTool();
+import { AIAnalysisMCPTool as _AIAnalysisMCPTool } from './ai-analysis.mcp';
+export const aiAnalysisMCPTool = new _AIAnalysisMCPTool();
 
 // Export shared interfaces
 export type {
@@ -77,8 +88,8 @@ export function createMCPMetadata(tool: string, operation: string): Record<strin
  * Helper function to standardize MCP error responses
  */
 export function createMCPError(
-  tool: string, 
-  operation: string, 
+  tool: string,
+  operation: string,
   error: string | Error,
   additionalMetadata?: Record<string, any>
 ): MCPToolResponse<never> {

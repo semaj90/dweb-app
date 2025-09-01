@@ -616,7 +616,7 @@ class LoggingAggregationService {
 
 // Singleton instance
 export const loggingService = new LoggingAggregationService();
-
+;
 // Convenience functions
 export function log(level: LogLevel, category: string, message: string, data?: unknown, error?: Error) {
   loggingService.log(level, category, message, data, error);

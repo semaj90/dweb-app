@@ -26,11 +26,11 @@ const initialData: CaseStoreData = {
 };
 
 export const casesStore = writable<CaseStoreData>(initialData);
-
+;
 // Computed stores for easy access
 export const activeCases = writable<any[]>([]);
 export const caseStats = writable<any[]>([]);
-export const filterState = writable<CaseStoreData["filters"]>(
+export const filterState = writable<CaseStoreData["filters"]>(;
   initialData.filters,
 );
 

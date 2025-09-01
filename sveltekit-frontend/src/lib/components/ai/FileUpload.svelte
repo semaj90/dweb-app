@@ -22,9 +22,9 @@
   let analysisResult = $state<any>(null);
 
   // Feedback integration
-  let feedbackIntegration: any;
-  let currentInteractionId: string | null = null;
-  let uploadStartTime = 0;
+let feedbackIntegration = $state<any;
+  let currentInteractionId: string | null >(null);
+let uploadStartTime = $state(0);
 
   async function handleUpload() {
     if (!files || files.length === 0) {
@@ -149,7 +149,7 @@
       </div>
     </div>
 
-    <Button on:click={handleUpload} disabled={isUploading} class="w-full">
+    <Button on:on:click={handleUpload} disabled={isUploading} class="w-full">
       {#if isUploading}
         <Loader2 class="mr-2 h-4 w-4 animate-spin" />
         Uploading...

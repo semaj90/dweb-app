@@ -446,7 +446,7 @@ export class NATSMessagingService extends EventEmitter {
 
 // Singleton instance for global use
 export const natsMessaging = new NATSMessagingService();
-
+;
 // Auto-connect when module is imported (in browser environment)
 if (typeof window !== 'undefined') {
   natsMessaging.connect().catch(error => {

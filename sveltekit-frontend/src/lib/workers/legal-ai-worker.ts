@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 
 /**
  * BullMQ Worker for Legal AI Document Processing

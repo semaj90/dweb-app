@@ -145,7 +145,7 @@ class ApiClient {
       }
 
       const result: ApiResponse<T> = await response.json();
-      
+
       if (!result.success && result.error) {
         throw new Error(result.error);
       }
@@ -300,7 +300,7 @@ export interface DataStore<T> {
   lastFetch: number | null;
 }
 
-export class ReactiveApiClient extends ApiClient {
+export class ReactiveApiClient extends ApiClient {;
   private stores = new Map<string, DataStore<any>>();
   private subscribers = new Map<string, Set<(data: DataStore<any>) => void>>();
 
@@ -320,7 +320,7 @@ export class ReactiveApiClient extends ApiClient {
     const store = this.getStore<T>(key);
     const newStore = { ...store, ...update };
     this.stores.set(key, newStore);
-    
+
     // Notify subscribers
     const subs = this.subscribers.get(key);
     if (subs) {
@@ -332,12 +332,12 @@ export class ReactiveApiClient extends ApiClient {
     if (!this.subscribers.has(key)) {
       this.subscribers.set(key, new Set());
     }
-    
+
     this.subscribers.get(key)!.add(callback);
-    
+
     // Immediate callback with current data
     callback(this.getStore<T>(key));
-    
+
     // Return unsubscribe function
     return () => {
       const subs = this.subscribers.get(key);
@@ -353,7 +353,7 @@ export class ReactiveApiClient extends ApiClient {
   async fetchCase(id: string, cache = true): Promise<Case | null> {
     const key = `case:${id}`;
     const store = this.getStore<Case>(key);
-    
+
     // Return cached data if available and fresh
     if (cache && store.data && store.lastFetch && Date.now() - store.lastFetch < 60000) {
       return store.data;
@@ -364,14 +364,14 @@ export class ReactiveApiClient extends ApiClient {
     try {
       const response = await this.getCase(id);
       const data = response.data!;
-      
+
       this.updateStore<Case>(key, {
         data,
         loading: false,
         error: null,
         lastFetch: Date.now()
       });
-      
+
       return data;
     } catch (error: any) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -386,7 +386,7 @@ export class ReactiveApiClient extends ApiClient {
   async fetchEvidence(caseId: string, cache = true): Promise<Evidence[]> {
     const key = `evidence:${caseId}`;
     const store = this.getStore<Evidence[]>(key);
-    
+
     if (cache && store.data && store.lastFetch && Date.now() - store.lastFetch < 60000) {
       return store.data;
     }
@@ -396,14 +396,14 @@ export class ReactiveApiClient extends ApiClient {
     try {
       const response = await this.getEvidenceByCase(caseId);
       const data = response.data!;
-      
+
       this.updateStore<Evidence[]>(key, {
         data,
         loading: false,
         error: null,
         lastFetch: Date.now()
       });
-      
+
       return data;
     } catch (error: any) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -418,20 +418,20 @@ export class ReactiveApiClient extends ApiClient {
   async searchCasesReactive(params: CaseSearchRequest): Promise<Case[]> {
     const key = `search:cases:${JSON.stringify(params)}`;
     const store = this.getStore<Case[]>(key);
-    
+
     this.updateStore<Case[]>(key, { loading: true, error: null });
 
     try {
       const response = await this.searchCases(params);
       const data = response.cases;
-      
+
       this.updateStore<Case[]>(key, {
         data,
         loading: false,
         error: null,
         lastFetch: Date.now()
       });
-      
+
       return data;
     } catch (error: any) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -460,7 +460,7 @@ export class ReactiveApiClient extends ApiClient {
 }
 
 // Export singleton instances
-export const apiClient = new ApiClient();
+export const apiClient = new ApiClient();;
 
 // Export for direct instantiation
 export { ApiClient };

@@ -14,14 +14,14 @@
   export let maxResults = 10;
   export let showFilters = true;
   export let showTags = true;
-
-  let searchValue = '';
-  let fuse: Fuse<Evidence>;
-  let searchResults: Evidence[] = [];
-  let allTags: string[] = [];
-  let selectedTags: string[] = [];
-  let selectedTypes: string[] = [];
-  let dateRange: { start?: Date; end?: Date } = {};
+;
+let searchValue = $state('');
+let fuse = $state<Fuse<Evidence>;
+  let searchResults: Evidence[] >([]);
+let allTags = $state<string[] >([]);
+let selectedTags = $state<string[] >([]);
+let selectedTypes = $state<string[] >([]);
+let dateRange = $state<{ start?: Date; end?: Date } >({});
 
   // Fuse.js configuration for fuzzy search
   const fuseOptions = {
@@ -141,7 +141,7 @@
     <div class="search-input-wrapper">
       <Search size={20} class="search-icon" />
       <input
-        use:melt={$input}
+        <!-- <!-- use:melt={$input}
         class="search-input"
         type="text"
         {placeholder}
@@ -150,7 +150,7 @@
       {#if searchValue}
         <button
           class="clear-button"
-          click={() => clearSearch()}
+          on:onclick={() => clearSearch()}
           title="Clear search"
         >
           <X size={16} />
@@ -161,16 +161,16 @@
     <!-- Results dropdown -->
     {#if $open && searchResults.length > 0}
       <div
-        use:melt={$menu}
+        <!-- <!-- use:melt={$menu}
         class="search-results"
-        transition:fly={{ y: -5, duration: 150 }}
+        transitifly={{ y: -5, duration: 150 }}
       >
         {#each filteredResults as item (item.id)}
           <button
-            use:melt={$option({ value: item.id, label: item.title })}
+            <!-- <!-- use:melt={$option({ value: item.id, label: item.title })}
             class="search-result-item"
             class:highlighted={$isSelected(item.id)}
-            click={() => handleSelect(item)}
+            on:onclick={() => handleSelect(item)}
           >
             <div class="result-icon">
               {#if item.type === 'document'}
@@ -236,7 +236,7 @@
             <button
               class="filter-chip"
               class:active={selectedTypes.includes(type)}
-              click={() => toggleType(type)}
+              on:onclick={() => toggleType(type)}
             >
               {type}
             </button>
@@ -256,7 +256,7 @@
               <button
                 class="filter-chip"
                 class:active={selectedTags.includes(tag)}
-                click={() => toggleTag(tag)}
+                on:onclick={() => toggleTag(tag)}
               >
                 {tag}
               </button>
@@ -298,7 +298,7 @@
       {#each selectedTypes as type}
         <span class="active-filter">
           {type}
-          <button click={() => toggleType(type)}>
+          <button on:onclick={() => toggleType(type)}>
             <X size={12} />
           </button>
         </span>
@@ -307,7 +307,7 @@
       {#each selectedTags as tag}
         <span class="active-filter">
           #{tag}
-          <button click={() => toggleTag(tag)}>
+          <button on:onclick={() => toggleTag(tag)}>
             <X size={12} />
           </button>
         </span>
@@ -316,13 +316,13 @@
       {#if dateRange.start || dateRange.end}
         <span class="active-filter">
           {dateRange.start?.toLocaleDateString() || '...'} - {dateRange.end?.toLocaleDateString() || '...'}
-          <button click={() => dateRange = {}}>
+          <button on:onclick={() => dateRange = {}}>
             <X size={12} />
           </button>
         </span>
       {/if}
 
-      <button class="clear-all-filters" click={() => clearSearch()}>
+      <button class="clear-all-filters" on:onclick={() => clearSearch()}>
         Clear all
       </button>
     </div>

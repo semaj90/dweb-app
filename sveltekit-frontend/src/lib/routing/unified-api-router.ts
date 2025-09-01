@@ -9,6 +9,7 @@ export type EncodingFormat = 'json' | 'msgpack' | 'protobuf' | 'binary' | 'cbor'
 import type { RequestEvent } from '@sveltejs/kit';
 import { json, error as svelteError } from '@sveltejs/kit';
 import { dev } from '$app/environment';
+import { URL } from "url";
 
 // ===== TYPES AND INTERFACES =====
 
@@ -532,7 +533,7 @@ export const unifiedAPIRouter = new UnifiedAPIRouter({
 /**
  * Create a standardized API response
  */
-export function createAPIResponse<T>(
+export function createAPIResponse<T>(;
   data: T,
   success: boolean = true,
   message?: string,

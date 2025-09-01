@@ -307,7 +307,7 @@ class MultiLibraryStartupService {
 
 // Singleton instance
 export const multiLibraryStartup = new MultiLibraryStartupService();
-
+;
 // Auto-initialize when imported (client-side only)
 if (browser) {
   multiLibraryStartup.initialize().catch(error => {

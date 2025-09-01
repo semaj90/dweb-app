@@ -310,7 +310,7 @@ export class Context7OrchestrationService {
 
 // Export singleton instance
 export const context7OrchestrationService = new Context7OrchestrationService();
-
+;
 // Utility functions for Context7 integration
 export async function getContext7ClusterReport(): Promise<{
   orchestration: OrchestrationMetrics;

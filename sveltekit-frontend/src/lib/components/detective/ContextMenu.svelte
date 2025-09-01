@@ -63,10 +63,8 @@ https://svelte.dev/e/js_parse_error -->
     }
     closeMenu();
   }
-
-      
-    let cases: Case[] = [];
-  let menuOpen = true;
+let cases = $state<Case[] >([]);
+let menuOpen = $state(true);
 
   onMount(async () => {
     // Load available cases
@@ -121,7 +119,7 @@ https://svelte.dev/e/js_parse_error -->
 }
 </script>
 <DropdownMenuRoot
-  on:openchange={(e) => {
+  openchange={(e) => {
     if (!e.detail.open) closeMenu();
   }}
 >
@@ -136,7 +134,7 @@ https://svelte.dev/e/js_parse_error -->
       menu={menuOpen}
       class="space-y-4"
       style="position:fixed;left:{x}px;top:{y}px;"
-      on:keydown={(e) => {
+      keydown={(e) => {
         if (e.detail && e.detail.key === "Escape") closeMenu();
       }}
       aria-label="Evidence context menu"
@@ -146,27 +144,27 @@ https://svelte.dev/e/js_parse_error -->
           Evidence Actions
         </p>
       </div>
-      <DropdownMenuItem on:select={viewEvidence}>
+      <DropdownMenuItem select={viewEvidence}>
         <i class="space-y-4"></i>
         <span class="space-y-4">View Details</span>
       </DropdownMenuItem>
-      <DropdownMenuItem on:select={editEvidence}>
+      <DropdownMenuItem select={editEvidence}>
         <i class="space-y-4"></i>
         <span class="space-y-4">Edit</span>
       </DropdownMenuItem>
-      <DropdownMenuItem on:select={downloadEvidence}>
+      <DropdownMenuItem select={downloadEvidence}>
         <i class="space-y-4"></i>
         <span class="space-y-4">Download</span>
       </DropdownMenuItem>
-      <DropdownMenuItem on:select={duplicateEvidence}>
+      <DropdownMenuItem select={duplicateEvidence}>
         <i class="space-y-4"></i>
         <span class="space-y-4">Duplicate</span>
       </DropdownMenuItem>
-      <DropdownMenuItem on:select={auditEvidence}>
+      <DropdownMenuItem select={auditEvidence}>
         <i class="space-y-4"></i>
         <span class="space-y-4">Audit (Semantic/Vector)</span>
       </DropdownMenuItem>
-      <DropdownMenuItem on:select={triggerAgentReview}>
+      <DropdownMenuItem select={triggerAgentReview}>
         <i class="space-y-4"></i>
         <span class="space-y-4">Trigger Agent Review</span>
       </DropdownMenuItem>
@@ -178,7 +176,7 @@ https://svelte.dev/e/js_parse_error -->
           </p>
         </div>
         {#each cases as case_}
-          <DropdownMenuItem on:select={() => sendToCase(case_.id)}>
+          <DropdownMenuItem select={() => sendToCase(case_.id)}>
             <i class="space-y-4"></i>
             <div class="space-y-4">
               <div class="space-y-4">{case_.title}</div>
@@ -196,7 +194,7 @@ https://svelte.dev/e/js_parse_error -->
         </p>
       </div>
       <DropdownMenuItem
-        on:select={deleteEvidence}
+        select={deleteEvidence}
         class="space-y-4"
       >
         <i class="space-y-4"></i>

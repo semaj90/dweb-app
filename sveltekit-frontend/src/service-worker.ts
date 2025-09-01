@@ -37,6 +37,7 @@ declare global {
 }
 
 import { build, files, version } from "$service-worker";
+import { URL } from "url";
 
 // Cache configuration
 const CACHE = `legal-ai-cache-${version}`;

@@ -77,24 +77,24 @@
   };
 
   // Reactive calculations
-  const tokensRemaining = $derived(tokenLimit - tokensUsed);
-  const usagePercentage = $derived((tokensUsed / tokenLimit) * 100);
-  const isNearLimit = $derived(usagePercentage > 80);
-  const isAtLimit = $derived(tokensUsed >= tokenLimit);
+  let tokensRemaining = $derived(tokenLimit - tokensUsed);
+  let usagePercentage = $derived((tokensUsed / tokenLimit) * 100);
+  let isNearLimit = $derived(usagePercentage > 80);
+  let isAtLimit = $derived(tokensUsed >= tokenLimit);
 
-  const warningLevel = $derived(
+  let warningLevel = $derived(
     usagePercentage > 95 ? 'critical' :
     usagePercentage > 80 ? 'warning' :
     usagePercentage > 60 ? 'caution' : 'normal'
   );
 
-  const progressColor = $derived(
+  let progressColor = $derived(
     warningLevel === 'critical' ? 'bg-red-500' :
     warningLevel === 'warning' ? 'bg-orange-500' :
     warningLevel === 'caution' ? 'bg-yellow-500' : 'bg-green-500'
   );
 
-  const estimatedMessagesRemaining = $derived(
+  let estimatedMessagesRemaining = $derived(
     currentSession.averageTokensPerMessage > 0
       ? Math.floor(tokensRemaining / currentSession.averageTokensPerMessage)
       : 0
@@ -376,7 +376,7 @@
       <Button
         size="sm"
         variant="outline"
-        on:click={() => showHistory = !showHistory}
+        on:on:click={() => showHistory = !showHistory}
         data-testid="token-history-button"
       >
         <History class="h-4 w-4 mr-1" />
@@ -386,7 +386,7 @@
       <Button
         size="sm"
         variant="outline"
-        on:click={optimizeTokenUsage}
+        on:on:click={optimizeTokenUsage}
         disabled={!autoOptimize}
       >
         <Zap class="h-4 w-4 mr-1" />
@@ -396,7 +396,7 @@
       <Button
         size="sm"
         variant="outline"
-        on:click={resetSession}
+        on:on:click={resetSession}
       >
         Reset
       </Button>
@@ -404,7 +404,7 @@
       <Button
         size="sm"
         variant="outline"
-        on:click={exportUsageData}
+        on:on:click={exportUsageData}
       >
         Export
       </Button>

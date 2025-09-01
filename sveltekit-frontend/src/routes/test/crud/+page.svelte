@@ -20,23 +20,22 @@
 
   /** @type {import('./$types').PageData} */
   export let data;
-  
-  let isCreating = false;
-  let editingCase = null;
-  let isDeleting = false;
+let isCreating = $state(false);
+let editingCase = $state(null);
+let isDeleting = $state(false);
   
   // Form state
-  let formData = {
+let formData = $state({
     title: '',
     description: '',
     priority: 'medium',
     status: 'open',
     category: 'investigation'
-  };
+  });
 
   // UI state
-  let gamingEra = 'nes'; // nes, snes, n64
-  let showSystemHealth = false;
+let gamingEra = $state('nes'); // nes, snes, n64
+let showSystemHealth = $state(false);
   
   // Reset form
   const resetForm = () => {
@@ -153,7 +152,7 @@
         <Button 
           variant="outline" 
           size="sm"
-          onclick={() => showSystemHealth = !showSystemHealth}
+          on:on:on:click={() => showSystemHealth = !showSystemHealth}
         >
           {showSystemHealth ? 'Hide' : 'Show'} System Health
         </Button>
@@ -311,7 +310,7 @@
               </NES8BitButton>
               
               {#if isCreating}
-                <NES8BitButton type="button" onclick={resetForm}>
+                <NES8BitButton type="button" on:on:on:click={resetForm}>
                   ❌ Cancel
                 </NES8BitButton>
               {/if}
@@ -321,7 +320,7 @@
               </SNES16BitButton>
               
               {#if isCreating}
-                <SNES16BitButton type="button" onclick={resetForm} plasmaEffect={true}>
+                <SNES16BitButton type="button" on:on:on:click={resetForm} plasmaEffect={true}>
                   ❌ Cancel
                 </SNES16BitButton>
               {/if}
@@ -338,7 +337,7 @@
               {#if isCreating}
                 <N643DButton 
                   type="button" 
-                  onclick={resetForm}
+                  on:on:on:click={resetForm}
                   variant="secondary"
                   materialType="metal"
                 >
@@ -400,7 +399,7 @@
                     <Button
                       variant="outline"
                       size="sm"
-                      onclick={() => startEdit(caseItem)}
+                      on:on:on:click={() => startEdit(caseItem)}
                       disabled={isDeleting}
                     >
                       ✏️ Edit
@@ -409,7 +408,7 @@
                     <Button
                       variant="destructive"
                       size="sm"
-                      onclick={() => confirmDelete(caseItem)}
+                      on:on:on:click={() => confirmDelete(caseItem)}
                       disabled={isDeleting}
                     >
                       🗑️ Delete

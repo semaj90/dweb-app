@@ -468,7 +468,7 @@ export function getStateDescription(state: StateValue): string {
   return descriptions[state as keyof typeof descriptions] || "Unknown state";
 }
 
-export function getAISuggestions(
+export function getAISuggestions(;
   context: LegalFormContext,
   state: StateValue
 ): string[] {

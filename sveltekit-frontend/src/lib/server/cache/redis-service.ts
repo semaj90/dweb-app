@@ -4,14 +4,14 @@
  */
 
 import { Redis, type RedisOptions } from 'ioredis';
-const dev = process.env.NODE_ENV === 'development';
+const dev = import.meta.env.NODE_ENV === 'development';
 
 // Redis configuration
 const REDIS_CONFIG: RedisOptions = {
-  host: process.env.REDIS_HOST || 'localhost',
-  port: parseInt(process.env.REDIS_PORT || '6379'),
-  password: process.env.REDIS_PASSWORD || undefined,
-  db: parseInt(process.env.REDIS_DB || '0'),
+  host: import.meta.env.REDIS_HOST || 'localhost',
+  port: parseInt(import.meta.env.REDIS_PORT || '6379'),
+  password: import.meta.env.REDIS_PASSWORD || undefined,
+  db: parseInt(import.meta.env.REDIS_DB || '0'),
   
   // Connection settings
   connectTimeout: 10000,
@@ -596,11 +596,11 @@ export class RedisService {
 
 // Singleton instance
 export const redis = RedisService.getInstance();
-
+;
 // Utility functions
 export const cacheKeys = CACHE_KEYS;
 export const cacheTTL = CACHE_TTL;
-
+;
 // Session management helpers
 export class SessionManager {
   static async createUserSession(userId: number, sessionId: string, metadata?: Record<string, any>) {

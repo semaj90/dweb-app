@@ -8,7 +8,7 @@
   let { asChild = false, children }: Props = $props();
 
   import { getContext } from 'svelte';
-  import type { Writable } from 'svelte/store';
+  import type {     Writable     } from 'svelte/store';
 
   interface BuilderAction {
     action: (node: HTMLElement) => { destroy(): void } | void;

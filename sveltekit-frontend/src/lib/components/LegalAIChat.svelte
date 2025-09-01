@@ -59,8 +59,8 @@
       {/if}
     </div>
     <div class="flex space-x-2">
-      <Input bind:value={input} placeholder="Legal question..." on:keydown={(e) => e.key === 'Enter' && sendMessage()} />
-      <Button on:click={sendMessage} disabled={isLoading}>Send</Button>
+      <Input bind:value={input} placeholder="Legal question..." keydown={(e) => e.key === 'Enter' && sendMessage()} />
+      <Button on:on:click={sendMessage} disabled={isLoading}>Send</Button>
     </div>
   </CardContent>
 </Card>

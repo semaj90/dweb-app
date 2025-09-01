@@ -35,7 +35,7 @@ and performance monitoring across N64 and YoRHa gaming components
 
   // Demo scenarios
   let currentScenario = $state(0);
-  let scenarios = [
+let scenarios = $state([
     {
       name: 'N64 Texture Filtering Showcase',
       description: 'Demonstrate high-performance N64-style texture filtering with cache optimization',
@@ -64,7 +64,7 @@ and performance monitoring across N64 and YoRHa gaming components
       metrics: ['hit-rate', 'memory-usage', 'invalidation-rate', 'wasm-gains'],
       timeframes: ['1min', '5min', '15min', '1hour']
     }
-  ];
+  ]);
 
   // Demo data generators
   let textureTestData = $state<Array<{ id: string; name: string; data: ImageData }>>([]);
@@ -89,9 +89,8 @@ and performance monitoring across N64 and YoRHa gaming components
   let enableWasmAcceleration = $state(true);
   let enableRealTimeMetrics = $state(true);
   let stressTestMode = $state(false);
-
-  let demoTimer: number | null = null;
-  let metricsTimer: number | null = null;
+let demoTimer = $state<number | null >(null);
+let metricsTimer = $state<number | null >(null);
 
   onMount(() => {
     initializeDemoData();
@@ -706,7 +705,7 @@ and performance monitoring across N64 and YoRHa gaming components
                 ? 'border-cyan-400 text-cyan-300' 
                 : 'border-transparent text-slate-400 hover:text-slate-300'
             }"
-            onclick={() => activeDemo = tab}
+            on:on:onclick={() => activeDemo = tab}
           >
             {tab.toUpperCase()}
           </button>
@@ -729,14 +728,14 @@ and performance monitoring across N64 and YoRHa gaming components
               <div class="flex gap-3">
                 {#if !demoStarted}
                   <button
-                    onclick={startDemo}
+                    on:on:onclick={startDemo}
                     class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
                   >
                     Start Demo
                   </button>
                 {:else}
                   <button
-                    onclick={stopDemo}
+                    on:on:onclick={stopDemo}
                     class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
                   >
                     Stop Demo
@@ -744,7 +743,7 @@ and performance monitoring across N64 and YoRHa gaming components
                 {/if}
                 
                 <button
-                  onclick={clearAllCaches}
+                  on:on:onclick={clearAllCaches}
                   class="px-4 py-2 bg-slate-600 hover:bg-slate-700 rounded-lg transition-colors"
                 >
                   Clear Cache
@@ -793,7 +792,7 @@ and performance monitoring across N64 and YoRHa gaming components
               </div>
               
               <button
-                onclick={runStressTest}
+                on:on:onclick={runStressTest}
                 disabled={stressTestMode}
                 class="w-full px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-slate-600 disabled:cursor-not-allowed rounded-lg transition-colors"
               >

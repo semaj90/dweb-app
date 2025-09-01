@@ -7,7 +7,7 @@ import { writable } from "svelte/store";
 
 // Command result store
 export const aiCommandResult = writable(null);
-
+;
 /**
  * Parse AI commands and return structured results
  * @param {string} command - The AI command to parse

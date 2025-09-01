@@ -17,7 +17,7 @@ import type {
   WebFetchSource 
 } from '$lib/types/automated-resolution';
 
-export class WebFetchMissingImplementations {
+export class WebFetchMissingImplementations {;
   private config: WebFetchConfig;
   private cache: Map<string, ImplementationResult> = new Map();
   private rateLimiters: Map<string, number> = new Map();
@@ -213,7 +213,7 @@ export class WebFetchMissingImplementations {
         name: '$state',
         implementation: `
 // Svelte 5 $state rune implementation
-export const $state = <T>(initial: T) => {
+export const $state = <T>(initial: T) => {;
   if (typeof globalThis !== 'undefined' && '$state' in globalThis) {
     return (globalThis as any).$state(initial);
   }
@@ -234,7 +234,7 @@ export const $state = <T>(initial: T) => {
         name: '$derived',
         implementation: `
 // Svelte 5 $derived rune implementation  
-export const $derived = <T>(computation: () => T) => {
+export const $derived = <T>(computation: () => T) => {;
   if (typeof globalThis !== 'undefined' && '$derived' in globalThis) {
     return (globalThis as any).$derived(computation);
   }
@@ -261,7 +261,7 @@ export const $derived = <T>(computation: () => T) => {
         name: '$effect',
         implementation: `
 // Svelte 5 $effect rune implementation
-export const $effect = (fn: () => void | (() => void)) => {
+export const $effect = (fn: () => void | (() => void)) => {;
   if (typeof globalThis !== 'undefined' && '$effect' in globalThis) {
     return (globalThis as any).$effect(fn);
   }
@@ -298,7 +298,7 @@ export const $effect = (fn: () => void | (() => void)) => {
         name: 'pgTable',
         implementation: `
 // Drizzle ORM pgTable implementation
-export const pgTable = <T extends string>(name: T, columns: any, extraConfig?: any) => {
+export const pgTable = <T extends string>(name: T, columns: any, extraConfig?: any) => {;
   return {
     _: {
       name,
@@ -320,7 +320,7 @@ export const pgTable = <T extends string>(name: T, columns: any, extraConfig?: a
         name: 'eq',
         implementation: `
 // Drizzle ORM eq operator
-export const eq = <T, U>(column: T, value: U) => {
+export const eq = <T, U>(column: T, value: U) => {;
   return {
     op: 'eq',
     column,
@@ -338,7 +338,7 @@ export const eq = <T, U>(column: T, value: U) => {
         name: 'text',
         implementation: `
 // Drizzle ORM text column
-export const text = <T extends string>(name?: T, config?: any) => {
+export const text = <T extends string>(name?: T, config?: any) => {;
   return {
     name,
     dataType: 'string',
@@ -368,7 +368,7 @@ export const text = <T extends string>(name?: T, config?: any) => {
         name: 'createMachine',
         implementation: `
 // XState createMachine implementation
-export const createMachine = <T extends any>(config: T) => {
+export const createMachine = <T extends any>(config: T) => {;
   return {
     id: config.id || 'machine',
     states: config.states || {},
@@ -389,7 +389,7 @@ export const createMachine = <T extends any>(config: T) => {
         name: 'createActor',
         implementation: `
 // XState createActor implementation
-export const createActor = (machine: any, options?: any) => {
+export const createActor = (machine: any, options?: any) => {;
   let currentState = machine.getInitialState ? machine.getInitialState() : { value: 'idle', context: {} };
   
   return {
@@ -452,7 +452,7 @@ export const createActor = (machine: any, options?: any) => {
       name: item,
       implementation: `
 // Fallback implementation for ${item}
-export const ${item} = (...args: any[]): any => {
+export const ${item} = (...args: any[]): any => {;
   console.warn('${item} is using fallback implementation');
   if (typeof globalThis !== 'undefined' && '${item}' in globalThis) {
     return (globalThis as any).${item}(...args);

@@ -21,7 +21,7 @@
 {#if href}
   <a 
     {href}
-    use:melt={item}
+    <!-- use:melt={item}
     class="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 {class}"
     data-disabled={disabled ? '' : undefined}
   >
@@ -29,7 +29,7 @@
   </a>
 {:else}
   <button 
-    use:melt={item}
+    <!-- use:melt={item}
     class="relative flex w-full cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 {class}"
     {disabled}
   >

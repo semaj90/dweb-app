@@ -1,4 +1,5 @@
-import type { RequestHandler } from './$types';
+/// <reference types="vite/client" />
+import type { RequestHandler } from './$types.js';
 
 /**
  * Evidence Upload API (Production Ready)
@@ -24,6 +25,7 @@ import Busboy from 'busboy';
 import { Client as MinioClient } from 'minio';
 import { createClient } from 'redis';
 import sharp from 'sharp'; // optional image processing - install as needed
+import { URL } from "url";
 
 // Simple rate limiting and auth stubs for production compatibility
 const redisRateLimit = async (opts: any): Promise<any> => ({ allowed: true, count: 0, retryAfter: 0 });
@@ -91,7 +93,7 @@ let redisPublisher: ReturnType<typeof createClient> | null = null;
 async function getRedisPublisher(): Promise<any> {
   if (!redisPublisher) {
     redisPublisher = createClient({
-      url: process.env.REDIS_URL || 'redis://localhost:6379',
+      url: import.meta.env.REDIS_URL || 'redis://localhost:6379',
       socket: { connectTimeout: 5000, lazyConnect: true }
     });
     
@@ -141,7 +143,7 @@ async function sendToIngestService(evidenceId: string, content: string, options:
   correlationId?: string;
 }): Promise<any> {
   try {
-    const ingestUrl = process.env.INGEST_SERVICE_URL || 'http://localhost:8227';
+    const ingestUrl = import.meta.env.INGEST_SERVICE_URL || 'http://localhost:8227';
     
     const payload = {
       title: options.title || `Evidence ${evidenceId}`,

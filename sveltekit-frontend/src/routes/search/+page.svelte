@@ -55,22 +55,22 @@
   let showAdvancedFilters = $state(false);
 
   // Recent searches (simulated)
-  let recentSearches = [
+let recentSearches = $state([
     "contract fraud investigation",
     "witness testimony evidence",
     "financial records analysis",
     "crime scene documentation",
     "legal precedent research",
-  ];
+  ]);
 
   // Popular searches (simulated)
-  let popularSearches = [
+let popularSearches = $state([
     "fraud cases",
     "evidence analysis",
     "witness statements",
     "legal research",
     "case documentation",
-  ];
+  ]);
 
   onMount(() => {
     // Load search query from URL if present
@@ -252,7 +252,7 @@
               <Button
                 variant="outline"
                 type="button"
-                on:click={() => (showAdvancedFilters = !showAdvancedFilters)}
+                on:on:click={() => (showAdvancedFilters = !showAdvancedFilters)}
               >
                 <Filter class="space-y-4" />
                 Filters
@@ -264,7 +264,7 @@
                 <Button
                   variant="outline"
                   type="button"
-                  on:click={() => clearFilters()}
+                  on:on:click={() => clearFilters()}
                 >
                   Clear Filters
                 </Button>
@@ -394,8 +394,8 @@
                 {@const SvelteComponent = getResultIcon(result.type)}
                 <div
                   class="space-y-4"
-                  click={() => handleResultClick(result)}
-                  on:keydown={(e) =>
+                  on:onclick={() => handleResultClick(result)}
+                  keydown={(e) =>
                     e.key === "Enter" && handleResultClick(result)}
                   role="button"
                   tabindex={0}
@@ -481,7 +481,7 @@
               <button
                 type="button"
                 class="space-y-4"
-                click={() => selectQuickSearch(search)}
+                on:onclick={() => selectQuickSearch(search)}
               >
                 {search}
               </button>
@@ -502,7 +502,7 @@
               <button
                 type="button"
                 class="space-y-4"
-                click={() => selectQuickSearch(search)}
+                on:onclick={() => selectQuickSearch(search)}
               >
                 {search}
               </button>

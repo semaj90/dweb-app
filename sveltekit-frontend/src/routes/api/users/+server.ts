@@ -3,7 +3,8 @@ import { users } from "$lib/server/db/schema-postgres";
 import { json } from "@sveltejs/kit";
 import { and, desc, eq, like, or, sql } from "drizzle-orm";
 import { db } from "$lib/server/db/index";
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
+import { URL } from "url";
 
 
 export const GET: RequestHandler = async ({ locals, url }) => {

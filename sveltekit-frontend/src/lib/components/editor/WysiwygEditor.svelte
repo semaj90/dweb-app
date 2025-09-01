@@ -24,11 +24,11 @@
   import { onMount, createEventDispatcher } from 'svelte';
   import { createDialog, melt } from 'melt';
   import { writable } from 'svelte/store';
-  import type { Writable } from 'svelte/store';
+  import type {     Writable     } from 'svelte/store';
 
   // Props
               export const enableCollaboration = false;
-
+;
   // Events
   const dispatch = createEventDispatcher<{
     change: { content: string; wordCount: number };
@@ -40,7 +40,7 @@
   // Stores
   let editorElement: HTMLElement;
   let hugerte: any;
-  let isInitialized = false;
+let isInitialized = $state(false);
   const wordCount: Writable<number> = writable(0);
   const charCount: Writable<number> = writable(0);
 
@@ -74,18 +74,18 @@
   } = createDialog();
 
   // AI Assistant state
-  let aiQuery = '';
-  let aiResults = '';
-  let isProcessingAI = false;
-  let selectedText = '';
+let aiQuery = $state('');
+let aiResults = $state('');
+let isProcessingAI = $state(false);
+let selectedText = $state('');
 
   // Citation state
-  let citationQuery = '';
-  let citationResults: Array<{
+let citationQuery = $state('');
+let citationResults = $state<Array<{
     title: string;
     citation: string;
     relevance: number;
-  }> = [];
+  }> >([]);
 
   onMount(async () => {
     await initializeEditor();
@@ -329,7 +329,7 @@
   <div class="space-y-4">
     <div class="space-y-4">
       <button
-        use:melt={$aiTrigger}
+        <!-- <!-- use:melt={$aiTrigger}
         class="space-y-4"
         disabled={!enableAI}
       >
@@ -337,7 +337,7 @@
       </button>
 
       <button
-        use:melt={$citeTrigger}
+        <!-- <!-- use:melt={$citeTrigger}
         class="space-y-4"
         disabled={!enableCitation}
       >
@@ -360,11 +360,11 @@
 </div>
 
 <!-- AI Assistant Dialog -->
-<div use:melt={$aiPortalled}>
+<div <!-- <!-- use:melt={$aiPortalled}>
   {#if $aiOpen}
-    <div use:melt={$aiOverlay} class="space-y-4"></div>
-    <div use:melt={$aiContent} class="space-y-4">
-      <h2 use:melt={$aiTitle} class="space-y-4">AI Legal Assistant</h2>
+    <div <!-- <!-- use:melt={$aiOverlay} class="space-y-4"></div>
+    <div <!-- <!-- use:melt={$aiContent} class="space-y-4">
+      <h2 <!-- <!-- use:melt={$aiTitle} class="space-y-4">AI Legal Assistant</h2>
 
       {#if selectedText}
         <div class="space-y-4">
@@ -384,7 +384,7 @@
         ></textarea>
 
         <button
-          click={() => processAIRequest()}
+          on:onclick={() => processAIRequest()}
           disabled={isProcessingAI || !aiQuery.trim()}
           class="space-y-4"
         >
@@ -399,24 +399,24 @@
           <div class="space-y-4">
             <strong>AI Response:</strong>
             <div class="space-y-4">{aiResults}</div>
-            <button click={() => insertAIContent()} class="space-y-4">
+            <button on:onclick={() => insertAIContent()} class="space-y-4">
               Insert into Document
             </button>
           </div>
         {/if}
       </div>
 
-      <button use:melt={$aiClose} class="space-y-4">×</button>
+      <button <!-- <!-- use:melt={$aiClose} class="space-y-4">×</button>
     </div>
   {/if}
 </div>
 
 <!-- Citation Helper Dialog -->
-<div use:melt={$citePortalled}>
+<div <!-- <!-- use:melt={$citePortalled}>
   {#if $citeOpen}
-    <div use:melt={$citeOverlay} class="space-y-4"></div>
-    <div use:melt={$citeContent} class="space-y-4">
-      <h2 use:melt={$citeTitle} class="space-y-4">Citation Helper</h2>
+    <div <!-- <!-- use:melt={$citeOverlay} class="space-y-4"></div>
+    <div <!-- <!-- use:melt={$citeContent} class="space-y-4">
+      <h2 <!-- <!-- use:melt={$citeTitle} class="space-y-4">Citation Helper</h2>
 
       <div class="space-y-4">
         <label for="cite-query">Search for citations:</label>
@@ -428,7 +428,7 @@
         />
 
         <button
-          click={() => searchCitations()}
+          on:onclick={() => searchCitations()}
           disabled={!citationQuery.trim()}
           class="space-y-4"
         >
@@ -446,7 +446,7 @@
                   Relevance: {Math.round(citation.relevance * 100)}%
                 </div>
                 <button
-                  click={() => insertCitation(citation)}
+                  on:onclick={() => insertCitation(citation)}
                   class="space-y-4"
                 >
                   Insert Citation
@@ -457,7 +457,7 @@
         {/if}
       </div>
 
-      <button use:melt={$citeClose} class="space-y-4">×</button>
+      <button <!-- <!-- use:melt={$citeClose} class="space-y-4">×</button>
     </div>
   {/if}
 </div>

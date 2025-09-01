@@ -28,7 +28,7 @@ export interface UnifiedSearchResult extends SearchResult {
 /**
  * Unified fuzzy search across all Loki.js services
  */
-export class UnifiedLokiFuzzySearch extends EventEmitter {
+export class UnifiedLokiFuzzySearch extends EventEmitter {;
   private isInitialized = false;
   private indexingInProgress = false;
   private lastIndexTime = 0;
@@ -587,7 +587,7 @@ export class UnifiedLokiFuzzySearch extends EventEmitter {
 }
 
 // Export singleton instance
-export const unifiedLokiFuzzySearch = new UnifiedLokiFuzzySearch();
+export const unifiedLokiFuzzySearch = new UnifiedLokiFuzzySearch();;
 
 // Auto-initialize in browser
 if (typeof window !== 'undefined') {

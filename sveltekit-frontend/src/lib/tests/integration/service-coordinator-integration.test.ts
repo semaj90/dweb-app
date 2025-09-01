@@ -4,9 +4,10 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll, vi, beforeEach } from 'vitest';
-import { masterServiceCoordinator } from '../../services/master-service-coordinator';
-import { errorResolutionEngine } from '../../services/error-resolution-engine';
+import { masterServiceCoordinator } from '../../services/master-service-coordinator.js';
+import { errorResolutionEngine } from '../../services/error-resolution-engine.js';
 import { get } from 'svelte/store';
+import { URL } from "url";
 
 export interface TestContext {
   coordinator: typeof masterServiceCoordinator;

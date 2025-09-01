@@ -259,12 +259,12 @@ class RabbitMQService {
 
 // Singleton instance
 export const rabbitMQService = new RabbitMQService();
-
+;
 // Types for external use
 export type { DocumentProcessingJob };
 
 // Helper function to create processing jobs
-export function createDocumentProcessingJob(
+export function createDocumentProcessingJob(;
   documentId: string,
   s3Key: string,
   s3Bucket: string,

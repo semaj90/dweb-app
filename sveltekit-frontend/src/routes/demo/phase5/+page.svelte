@@ -197,7 +197,7 @@
   </div>
 
   <!-- Main Content -->
-  <Tabs value={activeTab} on:valuechange={(value) => activeTab = value}>
+  <Tabs value={activeTab} valuechange={(value) => activeTab = value}>
     <TabsList class="grid w-full grid-cols-5">
       <TabsTrigger value="overview">Overview</TabsTrigger>
       <TabsTrigger value="vector-demo">Vector Intelligence</TabsTrigger>
@@ -293,7 +293,7 @@
           <CardContent>
             <Button 
               class="w-full" 
-              on:click={() => activeTab = 'vector-demo'}
+              on:on:click={() => activeTab = 'vector-demo'}
             >
               <Search class="h-4 w-4 mr-2" />
               Launch Vector Demo
@@ -313,7 +313,7 @@
             <Button 
               variant="outline" 
               class="w-full"
-              on:click={() => activeTab = 'fabric-canvas'}
+              on:on:click={() => activeTab = 'fabric-canvas'}
             >
               <Canvas class="h-4 w-4 mr-2" />
               Open Canvas
@@ -343,9 +343,9 @@
             width={800} 
             height={600} 
             caseId="demo-case-001"
-            on:save={(e) => console.log('Canvas saved:', e.detail)}
-            on:delete={(e) => console.log('Object deleted:', e.detail)}
-            on:select={(e) => console.log('Object selected:', e.detail)}
+            save={(e) => console.log('Canvas saved:', e.detail)}
+            delete={(e) => console.log('Object deleted:', e.detail)}
+            select={(e) => console.log('Object selected:', e.detail)}
           />
         </CardContent>
       </Card>

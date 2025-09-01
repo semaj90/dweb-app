@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * Case-specific Vector Search API - PostgreSQL pgvector + RAG Integration
@@ -10,6 +10,7 @@ import { db } from '$lib/server/db/client';
 import { cases, evidence, documents, chatMessages } from '$lib/db/schema';
 import { eq, and, sql, desc } from 'drizzle-orm';
 import { redis } from '$lib/server/cache/redis-service';
+import { URL } from "url";
 
 export interface SearchRequest {
   query: string;

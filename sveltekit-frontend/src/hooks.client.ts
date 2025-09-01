@@ -35,3 +35,8 @@ if (typeof window !== "undefined") {
     console.error("Unhandled promise rejection:", event.reason);
   });
 }
+
+// Diagnostic: detect unexpected process tampering in client bundle (can hint at root cause of process.cwd issue server side if shared transforms)
+if (typeof window !== 'undefined' && (globalThis as any).process && typeof (globalThis as any).process.cwd !== 'function') {
+  console.warn('[diagnostic] Client bundle exposes process without cwd function');
+}

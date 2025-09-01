@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * Unified API Layer with JSON responses
@@ -9,6 +9,7 @@ import { redis } from '$lib/server/cache/redis-service';
 import { minioService } from '$lib/server/storage/minio-service';
 import { rabbitmqService } from '$lib/server/messaging/rabbitmq-service';
 import { workflowOrchestrator } from '$lib/machines/workflow-machine';
+import { URL } from "url";
 
 // API Response types
 export interface APIResponse<T = any> {

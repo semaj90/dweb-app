@@ -140,7 +140,7 @@ export const load: PageServerLoad = async ({ url, fetch }) => {
 
 <YoRHaButton3D 
   {...buttonConfig}
-  onclick={() => console.log('YoRHa button clicked')}
+  on:click={() => console.log('YoRHa button clicked')}
 />`,
       panel: `<script>
   import { YoRHaPanel3D } from '$lib/components/three/yorha-ui';

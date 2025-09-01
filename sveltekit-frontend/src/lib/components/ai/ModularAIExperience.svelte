@@ -18,26 +18,26 @@
   let { enableModularSwitching = $bindable() } = $props(); // boolean = true;
 
   // State
-  let aiActor: any;
-  let currentComputation: any = null;
-  let recommendations: any = null;
-  let isProcessing = false;
-  let processingTime = 0;
-  let webgpuSupported = false;
-  let currentModule = 'dimensional-arrays';
-  let computationHistory: any[] = [];
+let aiActor = $state<any;
+  let currentComputation: any >(null);
+let recommendations = $state<any >(null);
+let isProcessing = $state(false);
+let processingTime = $state(0);
+let webgpuSupported = $state(false);
+let currentModule = $state('dimensional-arrays');
+let computationHistory = $state<any[] >([]);
 
   // Input data
-  let inputData = '1,2,3,4,5,6,7,8';
-  let attentionWeights = '0.8,0.6,0.9,0.7,0.5,0.8,0.6,0.9';
-  let kernelSize = 4;
-  let useT5 = false;
-  let t5Task = 'summarize';
-  let t5Text = 'This is sample text for T5 processing';
+let inputData = $state('1,2,3,4,5,6,7,8');
+let attentionWeights = $state('0.8,0.6,0.9,0.7,0.5,0.8,0.6,0.9');
+let kernelSize = $state(4);
+let useT5 = $state(false);
+let t5Task = $state('summarize');
+let t5Text = $state('This is sample text for T5 processing');
 
   // Results
-  let results: any = null;
-  let error: string | null = null;
+let results = $state<any >(null);
+let error = $state<string | null >(null);
 
   onMount(async () => {
     // Initialize AI computation machine
@@ -268,7 +268,7 @@
             class="px-4 py-2 rounded-lg border transition-colors {currentModule === module 
               ? 'bg-blue-600 text-white border-blue-600' 
               : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'}"
-            click={() => switchModule(module)}
+            on:onclick={() => switchModule(module)}
           >
             {module.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
           </button>
@@ -346,7 +346,7 @@
       </div>
       
       <button 
-        click={processComputation}
+        on:onclick={processComputation}
         disabled={isProcessing}
         class="w-full mt-6 px-4 py-3 bg-blue-600 text-white rounded-lg font-semibold
                disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
@@ -393,7 +393,7 @@
                   <button
                     class="block w-full text-left p-2 text-sm bg-blue-50 hover:bg-blue-100 
                            rounded border border-blue-200 transition-colors"
-                    click={() => applyRecommendation(rec)}
+                    on:onclick={() => applyRecommendation(rec)}
                   >
                     {rec}
                   </button>
@@ -414,7 +414,7 @@
         <div class="recommendation-card bg-green-50 p-4 rounded-lg border border-green-200">
           <h4 class="font-semibold text-green-800 mb-2">🔄 Resume</h4>
           <button 
-            click={pickUpWhereLeftOff}
+            on:onclick={pickUpWhereLeftOff}
             class="text-sm text-green-700 hover:text-green-900 underline"
           >
             Pick up where you left off?
@@ -430,7 +430,7 @@
             {#each recommendations.didYouMean.slice(0, 3) as suggestion}
               <button 
                 class="block text-sm text-yellow-700 hover:text-yellow-900 underline"
-                click={() => applyRecommendation(suggestion)}
+                on:onclick={() => applyRecommendation(suggestion)}
               >
                 {suggestion}
               </button>

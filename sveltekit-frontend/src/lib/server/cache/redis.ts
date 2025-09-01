@@ -20,7 +20,7 @@ class CacheService {
     this.initializeRedis();
   }
   private async initializeRedis() {
-    if (!process.env.REDIS_URL) {
+    if (!import.meta.env.REDIS_URL) {
       console.log("📝 Using memory cache (Redis not configured)");
       return;
     }
@@ -29,7 +29,7 @@ class CacheService {
       const { createClient } = await import("redis");
 
       this.redisClient = createClient({
-        url: process.env.REDIS_URL,
+        url: import.meta.env.REDIS_URL,
         socket: {
           connectTimeout: 5000,
           reconnectStrategy: (retries) => Math.min(retries * 50, 500),
@@ -175,25 +175,25 @@ class CacheService {
 }
 // Singleton instance
 export const cache = new CacheService();
-
+;
 // Helper functions for common cache operations
-export const cacheEmbedding = (
+export const cacheEmbedding = (;
   text: string,
   embedding: number[],
   model?: string,
 ) => cache.setEmbedding(text, embedding, model);
 
-export const getCachedEmbedding = (text: string, model?: string) =>
+export const getCachedEmbedding = (text: string, model?: string) =>;
   cache.getEmbedding(text, model);
 
-export const cacheSearchResults = (
+export const cacheSearchResults = (;
   query: string,
   searchType: string,
   results: any[],
   filters?: unknown,
 ) => cache.setSearchResults(query, searchType, results, filters);
 
-export const getCachedSearchResults = (
+export const getCachedSearchResults = (;
   query: string,
   searchType: string,
   filters?: unknown,

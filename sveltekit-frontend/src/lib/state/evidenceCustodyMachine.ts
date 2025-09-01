@@ -7,13 +7,9 @@ import crypto from "crypto";
  */
 
 import { createMachine, assign, fromPromise } from "xstate";
-import type { Evidence, NewEvidence } from "$lib/types/evidence";
+import type { Evidence } from "$lib/server/db/complete-introspected-schema"; // Evidence type source
 import { db } from "$lib/db";
-import {
-  evidence,
-  evidenceVectors,
-  collaborationSessions,
-} from "$lib/db/schema";
+import { evidence } from "$lib/db/schema"; // Removed non-existent evidenceVectors & collaborationSessions
 import { eq, and, desc } from "drizzle-orm";
 
 // Types for the custody workflow state machine
@@ -342,22 +338,8 @@ const collaborationService = fromPromise(
       input.collaborationSession?.sessionId || crypto.randomUUID();
 
     // Save collaboration session to database
-    await db
-      .insert(collaborationSessions)
-      .values({
-        caseId: input.caseId,
-        userId: input.userId,
-        sessionId,
-        isActive: true,
-        lastActivity: new Date(),
-      })
-      .onConflictDoUpdate({
-        target: [collaborationSessions.sessionId],
-        set: {
-          lastActivity: new Date(),
-          isActive: true,
-        },
-      });
+    // Collaboration session persistence temporarily disabled (schema entity missing)
+    // TODO: Re-enable when collaborationSessions table is defined
 
     // Set up real-time WebSocket connection for collaboration
     const collaborationSession = {
@@ -994,10 +976,7 @@ async function storeCustodyReport(report: any): Promise<void> {
 
 async function closeCollaborationSession(sessionId: string): Promise<void> {
   // Implementation for closing collaboration session
-  await db
-    .update(collaborationSessions)
-    .set({ isActive: false, lastActivity: new Date() })
-    .where(eq(collaborationSessions.sessionId, sessionId));
+  // TODO: implement collaborationSessions update when schema available
 }
 
 // Export convenience functions

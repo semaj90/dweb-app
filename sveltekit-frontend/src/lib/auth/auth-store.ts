@@ -46,14 +46,14 @@ const initialState: AuthState = {
 
 // Create writable store for auth state
 export const authState = writable<AuthState>(initialState);
-
+;
 // Create derived stores for common auth checks
 export const isAuthenticated = derived(authState, $auth => $auth.isAuthenticated);
 export const currentUser = derived(authState, $auth => $auth.user);
 export const userRole = derived(authState, $auth => $auth.user?.role || 'viewer');
 export const userPermissions = derived(authState, $auth => $auth.permissions);
 export const isLoading = derived(authState, $auth => $auth.isLoading);
-
+;
 // Session management constants
 const SESSION_CHECK_INTERVAL = 60000; // Check session every minute
 const SESSION_WARNING_TIME = 5 * 60 * 1000; // Warn 5 minutes before expiration

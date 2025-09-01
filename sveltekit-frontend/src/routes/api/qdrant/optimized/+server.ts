@@ -3,7 +3,8 @@ import { qdrantOptimized } from "$lib/server/vector/qdrant-optimized";
 import { redisRateLimit, createRateLimitConfig } from "$lib/server/redisRateLimit";
 import logger from '$lib/server/production-logger';
 import { dev } from '$app/environment';
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
+import { URL } from "url";
 
 
 /**

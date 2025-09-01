@@ -24,7 +24,7 @@
     ...restProps
   }: Props = $props();
 
-  const containerClass = $derived(() => {
+  let containerClass = $derived(() => {
     const baseClass = "flex flex-col min-h-screen";
     
     const variantClasses = {
@@ -68,7 +68,7 @@
       gapClasses[gap], className);
   });
 
-  const headerClass = $derived(() => {
+  let headerClass = $derived(() => {
     return cn(
       "flex flex-col items-center text-center",
       gap === 'none' ? 'mb-0' : 
@@ -101,7 +101,7 @@
   {/if}
 
   <main class="flex-1 flex flex-col {gap === 'none' ? 'gap-0' : gap === 'sm' ? 'gap-4' : gap === 'md' ? 'gap-6' : gap === 'lg' ? 'gap-8' : 'gap-12'}">
-    <slot />
+    {@render children}
   </main>
 </div>
 

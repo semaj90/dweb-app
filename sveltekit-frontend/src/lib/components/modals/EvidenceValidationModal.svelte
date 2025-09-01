@@ -29,19 +29,16 @@ https://svelte.dev/e/js_parse_error -->
     XCircle,
   } from "lucide-svelte";
     import type { Evidence } from '$lib/stores/evidence-store';
-
-
-  
-  let validationChoice: "approve" | "reject" | null = null;
-  let feedback: string = "";
-  let corrections = {
+let validationChoice = $state<"approve" | "reject" | null >(null);
+let feedback = $state<string >("");
+let corrections = $state({
     summary: "",
     tags: [] as string[],
     evidenceType: "",
     analysis: "",
-  };
-  let isSubmitting = false;
-  let showCorrections = false;
+  });
+let isSubmitting = $state(false);
+let showCorrections = $state(false);
 
   // Initialize corrections with current AI analysis
   $effect(() => { 
@@ -144,7 +141,7 @@ https://svelte.dev/e/js_parse_error -->
             {...builder}
             variant="ghost"
             size="sm"
-            on:click={() => closeModal()}
+            on:on:click={() => closeModal()}
           >
             ×
           </Button>
@@ -218,7 +215,7 @@ https://svelte.dev/e/js_parse_error -->
               <Button
                 variant={validationChoice === "approve" ? "default" : "outline"}
                 class="space-y-4"
-                on:click={() => handleValidationChoice("approve")}
+                on:on:click={() => handleValidationChoice("approve")}
               >
                 <CheckCircle class="space-y-4" />
                 Yes, it's accurate
@@ -227,7 +224,7 @@ https://svelte.dev/e/js_parse_error -->
               <Button
                 variant={validationChoice === "reject" ? "danger" : "outline"}
                 class="space-y-4"
-                on:click={() => handleValidationChoice("reject")}
+                on:on:click={() => handleValidationChoice("reject")}
               >
                 <XCircle class="space-y-4" />
                 No, needs correction
@@ -318,7 +315,7 @@ https://svelte.dev/e/js_parse_error -->
                         {tag}
                         <button
                           type="button"
-                          click={() => removeTag(tag)}
+                          on:onclick={() => removeTag(tag)}
                           class="space-y-4"
                         >
                           ×
@@ -342,7 +339,7 @@ https://svelte.dev/e/js_parse_error -->
                     type="button"
                     variant="secondary"
                     size="sm"
-                    on:click={() => addTag()}
+                    on:on:click={() => addTag()}
                   >
                     <Tag class="space-y-4" />
                   </Button>
@@ -356,14 +353,14 @@ https://svelte.dev/e/js_parse_error -->
         <div class="space-y-4">
           <Button
             variant="ghost"
-            on:click={() => closeModal()}
+            on:on:click={() => closeModal()}
             disabled={isSubmitting}
           >
             Cancel
           </Button>
 
           <Button
-            on:click={() => submitValidation()}
+            on:on:click={() => submitValidation()}
             disabled={!validationChoice || isSubmitting}
             class="space-y-4"
           >

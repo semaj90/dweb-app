@@ -1,0 +1,2022 @@
+# Production Quality Enhancements
+# Enterprise-Grade Error Handling, Monitoring, Security & Performance
+
+## 1. Production-Grade Error Handling & Recovery
+
+### Enhanced API Client with Circuit Breakers
+```typescript
+// src/lib/server/api-client.production.ts
+import { EventEmitter } from 'events';
+
+interface CircuitBreakerOptions {
+  failureThreshold: number;
+  resetTimeout: number;
+  monitoringPeriod: number;
+}
+
+enum CircuitState {
+  CLOSED = 'CLOSED',
+  OPEN = 'OPEN', 
+  HALF_OPEN = 'HALF_OPEN'
+}
+
+class CircuitBreaker extends EventEmitter {
+  private failureCount = 0;
+  private lastFailureTime?: number;
+  private state = CircuitState.CLOSED;
+
+  constructor(private options: CircuitBreakerOptions) {
+    super();
+  }
+
+  async execute<T>(operation: () => Promise<T>): Promise<T> {
+    if (this.state === CircuitState.OPEN) {
+      if (Date.now() - (this.lastFailureTime || 0) > this.options.resetTimeout) {
+        this.state = CircuitState.HALF_OPEN;
+        this.emit('stateChange', 'HALF_OPEN');
+      } else {
+        throw new Error('Circuit breaker is OPEN');
+      }
+    }
+
+    try {
+      const result = await operation();
+      this.onSuccess();
+      return result;
+    } catch (error) {
+      this.onFailure();
+      throw error;
+    }
+  }
+
+  private onSuccess() {
+    this.failureCount = 0;
+    if (this.state === CircuitState.HALF_OPEN) {
+      this.state = CircuitState.CLOSED;
+      this.emit('stateChange', 'CLOSED');
+    }
+  }
+
+  private onFailure() {
+    this.failureCount++;
+    this.lastFailureTime = Date.now();
+
+    if (this.failureCount >= this.options.failureThreshold) {
+      this.state = CircuitState.OPEN;
+      this.emit('stateChange', 'OPEN');
+    }
+  }
+
+  getState() {
+    return this.state;
+  }
+
+  getMetrics() {
+    return {
+      state: this.state,
+      failureCount: this.failureCount,
+      lastFailureTime: this.lastFailureTime,
+    };
+  }
+}
+
+interface RetryOptions {
+  maxAttempts: number;
+  baseDelay: number;
+  maxDelay: number;
+  backoffFactor: number;
+  retryableErrors: string[];
+}
+
+class RetryHandler {
+  constructor(private options: RetryOptions) {}
+
+  async execute<T>(operation: () => Promise<T>): Promise<T> {
+    let lastError: Error;
+    
+    for (let attempt = 1; attempt <= this.options.maxAttempts; attempt++) {
+      try {
+        return await operation();
+      } catch (error) {
+        lastError = error as Error;
+        
+        // Check if error is retryable
+        const isRetryable = this.isRetryableError(error as Error);
+        const isLastAttempt = attempt === this.options.maxAttempts;
+        
+        if (!isRetryable || isLastAttempt) {
+          throw error;
+        }
+
+        // Calculate delay with exponential backoff and jitter
+        const delay = Math.min(
+          this.options.baseDelay * Math.pow(this.options.backoffFactor, attempt - 1),
+          this.options.maxDelay
+        );
+        
+        const jitteredDelay = delay * (0.5 + Math.random() * 0.5);
+        
+        console.warn(`Attempt ${attempt} failed, retrying in ${jitteredDelay}ms:`, error.message);
+        await this.sleep(jitteredDelay);
+      }
+    }
+    
+    throw lastError!;
+  }
+
+  private isRetryableError(error: Error): boolean {
+    return this.options.retryableErrors.some(retryableError => 
+      error.message.includes(retryableError) || 
+      error.name.includes(retryableError)
+    );
+  }
+
+  private sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+}
+
+export class ProductionApiClient {
+  private circuitBreaker: CircuitBreaker;
+  private retryHandler: RetryHandler;
+  private requestMetrics = new Map<string, { count: number; errors: number; totalTime: number }>();
+
+  constructor(
+    private baseUrl: string = process.env.MICROSERVICES_BASE_URL || 'http://localhost:8000'
+  ) {
+    this.circuitBreaker = new CircuitBreaker({
+      failureThreshold: 5,
+      resetTimeout: 30000, // 30 seconds
+      monitoringPeriod: 60000, // 1 minute
+    });
+
+    this.retryHandler = new RetryHandler({
+      maxAttempts: 3,
+      baseDelay: 1000,
+      maxDelay: 10000,
+      backoffFactor: 2,
+      retryableErrors: ['ECONNRESET', 'ENOTFOUND', 'ETIMEDOUT', '503', '502', '504'],
+    });
+
+    // Set up circuit breaker event listeners
+    this.circuitBreaker.on('stateChange', (state) => {
+      console.warn(`Circuit breaker state changed to: ${state}`);
+      
+      // Could send alerts here
+      if (state === 'OPEN') {
+        this.notifyServiceDown();
+      } else if (state === 'CLOSED') {
+        this.notifyServiceRecovered();
+      }
+    });
+  }
+
+  async makeRequest<T>(
+    endpoint: string, 
+    options: RequestInit & { timeout?: number } = {}
+  ): Promise<T> {
+    const startTime = Date.now();
+    const requestId = crypto.randomUUID();
+    const { timeout = 30000, ...fetchOptions } = options;
+
+    console.info(`[${requestId}] Starting request: ${endpoint}`);
+
+    try {
+      return await this.circuitBreaker.execute(async () => {
+        return await this.retryHandler.execute(async () => {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+          try {
+            const response = await fetch(`${this.baseUrl}${endpoint}`, {
+              ...fetchOptions,
+              signal: controller.signal,
+              headers: {
+                'Content-Type': 'application/json',
+                'X-Request-ID': requestId,
+                'X-Client-Version': process.env.CLIENT_VERSION || '1.0.0',
+                ...fetchOptions.headers,
+              },
+            });
+
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+              const errorBody = await response.text().catch(() => 'Unknown error');
+              const error = new Error(`HTTP ${response.status}: ${errorBody}`);
+              error.name = `HTTP_${response.status}`;
+              throw error;
+            }
+
+            const data = await response.json();
+            this.recordMetrics(endpoint, Date.now() - startTime, false);
+            
+            console.info(`[${requestId}] Request completed successfully in ${Date.now() - startTime}ms`);
+            return data;
+
+          } finally {
+            clearTimeout(timeoutId);
+          }
+        });
+      });
+
+    } catch (error) {
+      this.recordMetrics(endpoint, Date.now() - startTime, true);
+      
+      console.error(`[${requestId}] Request failed after ${Date.now() - startTime}ms:`, {
+        endpoint,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        circuitBreakerState: this.circuitBreaker.getState(),
+      });
+
+      // Enhance error with context
+      const enhancedError = this.enhanceError(error as Error, endpoint, requestId);
+      throw enhancedError;
+    }
+  }
+
+  private enhanceError(error: Error, endpoint: string, requestId: string): Error {
+    const enhancedError = new Error(error.message);
+    enhancedError.name = error.name;
+    enhancedError.stack = error.stack;
+    
+    // Add metadata
+    (enhancedError as any).metadata = {
+      endpoint,
+      requestId,
+      timestamp: new Date().toISOString(),
+      circuitBreakerState: this.circuitBreaker.getState(),
+      retryAttempts: this.retryHandler.options?.maxAttempts || 0,
+    };
+
+    return enhancedError;
+  }
+
+  private recordMetrics(endpoint: string, duration: number, isError: boolean) {
+    const current = this.requestMetrics.get(endpoint) || { count: 0, errors: 0, totalTime: 0 };
+    
+    current.count++;
+    current.totalTime += duration;
+    if (isError) current.errors++;
+    
+    this.requestMetrics.set(endpoint, current);
+  }
+
+  getMetrics() {
+    const metrics = Array.from(this.requestMetrics.entries()).map(([endpoint, data]) => ({
+      endpoint,
+      totalRequests: data.count,
+      errorRate: data.errors / data.count,
+      averageResponseTime: data.totalTime / data.count,
+    }));
+
+    return {
+      endpoints: metrics,
+      circuitBreaker: this.circuitBreaker.getMetrics(),
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  private notifyServiceDown() {
+    // Implement alerting logic (email, Slack, PagerDuty, etc.)
+    console.error('🚨 Service is DOWN - Circuit breaker OPEN');
+  }
+
+  private notifyServiceRecovered() {
+    console.info('✅ Service RECOVERED - Circuit breaker CLOSED');
+  }
+
+  // Enhanced methods with production error handling
+  async triggerRAGIngestion(request: RAGIngestionRequest): Promise<RAGIngestionResponse> {
+    try {
+      // Validate request
+      if (!request.fileId || !request.caseId || !request.userId) {
+        throw new Error('Missing required fields for RAG ingestion');
+      }
+
+      const response = await this.makeRequest<RAGIngestionResponse>('/rag/ingest', {
+        method: 'POST',
+        body: JSON.stringify(request),
+        timeout: 60000, // 1 minute timeout for ingestion
+      });
+
+      // Validate response
+      if (!response.jobId || !response.status) {
+        throw new Error('Invalid response from RAG ingestion service');
+      }
+
+      return response;
+
+    } catch (error) {
+      console.error('RAG ingestion failed:', error);
+      
+      // Return a safe fallback response
+      if (error instanceof Error && error.name === 'HTTP_503') {
+        throw new Error('RAG service temporarily unavailable. Please try again later.');
+      }
+      
+      throw error;
+    }
+  }
+
+  async uploadFileWithProgress(
+    file: File, 
+    caseId: string, 
+    onProgress?: (progress: number) => void
+  ): Promise<{ fileId: string; uploadUrl: string }> {
+    // Validate inputs
+    if (!file || file.size === 0) {
+      throw new Error('Invalid file provided');
+    }
+    
+    if (file.size > 100 * 1024 * 1024) { // 100MB limit
+      throw new Error('File size exceeds 100MB limit');
+    }
+
+    try {
+      // Get presigned upload URL with validation
+      const { uploadUrl, fileId } = await this.makeRequest<{ uploadUrl: string; fileId: string }>('/storage/presign', {
+        method: 'POST',
+        body: JSON.stringify({
+          filename: file.name,
+          contentType: file.type,
+          size: file.size,
+          caseId,
+          checksum: await this.calculateFileChecksum(file),
+        }),
+        timeout: 10000,
+      });
+
+      if (!uploadUrl || !fileId) {
+        throw new Error('Invalid presigned URL response');
+      }
+
+      // Upload with retry logic
+      return await this.retryHandler.execute(async () => {
+        return new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          let uploadStarted = false;
+
+          xhr.upload.addEventListener('progress', (event) => {
+            if (event.lengthComputable && onProgress) {
+              const progress = Math.round((event.loaded / event.total) * 100);
+              onProgress(progress);
+            }
+          });
+
+          xhr.addEventListener('loadstart', () => {
+            uploadStarted = true;
+          });
+
+          xhr.addEventListener('load', () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              resolve({ fileId, uploadUrl });
+            } else {
+              reject(new Error(`Upload failed with status: ${xhr.status}`));
+            }
+          });
+
+          xhr.addEventListener('error', () => {
+            reject(new Error('Upload failed due to network error'));
+          });
+
+          xhr.addEventListener('timeout', () => {
+            reject(new Error('Upload timed out'));
+          });
+
+          xhr.addEventListener('abort', () => {
+            if (uploadStarted) {
+              reject(new Error('Upload was aborted'));
+            }
+          });
+
+          xhr.open('PUT', uploadUrl);
+          xhr.timeout = 300000; // 5 minute timeout for uploads
+          xhr.setRequestHeader('Content-Type', file.type);
+          
+          try {
+            xhr.send(file);
+          } catch (error) {
+            reject(new Error(`Failed to initiate upload: ${error}`));
+          }
+        });
+      });
+
+    } catch (error) {
+      console.error('File upload failed:', error);
+      throw error;
+    }
+  }
+
+  private async calculateFileChecksum(file: File): Promise<string> {
+    const arrayBuffer = await file.arrayBuffer();
+    const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+}
+
+export const productionApiClient = new ProductionApiClient();
+
+---
+
+## 2. Comprehensive Logging and Monitoring System
+
+### Structured Logger with Correlation IDs
+```typescript
+// src/lib/server/logger.production.ts
+import winston from 'winston';
+import { AsyncLocalStorage } from 'async_hooks';
+
+interface RequestContext {
+  requestId: string;
+  userId?: string;
+  sessionId?: string;
+  userAgent?: string;
+  ip?: string;
+}
+
+const requestContext = new AsyncLocalStorage<RequestContext>();
+
+class ProductionLogger {
+  private logger: winston.Logger;
+  
+  constructor() {
+    this.logger = winston.createLogger({
+      level: process.env.LOG_LEVEL || 'info',
+      format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.errors({ stack: true }),
+        winston.format.json(),
+        winston.format.printf(({ timestamp, level, message, ...meta }) => {
+          const context = requestContext.getStore();
+          return JSON.stringify({
+            timestamp,
+            level,
+            message,
+            requestId: context?.requestId,
+            userId: context?.userId,
+            sessionId: context?.sessionId,
+            ...meta,
+          });
+        })
+      ),
+      transports: [
+        new winston.transports.Console({
+          format: winston.format.combine(
+            winston.format.colorize(),
+            winston.format.simple()
+          )
+        }),
+        new winston.transports.File({
+          filename: 'logs/error.log',
+          level: 'error',
+          maxsize: 10 * 1024 * 1024, // 10MB
+          maxFiles: 5,
+        }),
+        new winston.transports.File({
+          filename: 'logs/combined.log',
+          maxsize: 50 * 1024 * 1024, // 50MB
+          maxFiles: 10,
+        }),
+      ],
+    });
+
+    // Add custom transport for critical errors (could send to external service)
+    if (process.env.NODE_ENV === 'production') {
+      this.logger.add(new winston.transports.Http({
+        host: process.env.LOG_AGGREGATOR_HOST,
+        port: Number(process.env.LOG_AGGREGATOR_PORT) || 443,
+        path: '/logs',
+      }));
+    }
+  }
+
+  // Structured logging methods
+  info(message: string, meta: Record<string, any> = {}) {
+    this.logger.info(message, { ...meta, component: this.getComponent() });
+  }
+
+  warn(message: string, meta: Record<string, any> = {}) {
+    this.logger.warn(message, { ...meta, component: this.getComponent() });
+  }
+
+  error(message: string, error?: Error, meta: Record<string, any> = {}) {
+    this.logger.error(message, {
+      ...meta,
+      error: error ? {
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+      } : undefined,
+      component: this.getComponent(),
+    });
+  }
+
+  debug(message: string, meta: Record<string, any> = {}) {
+    this.logger.debug(message, { ...meta, component: this.getComponent() });
+  }
+
+  // Performance logging
+  performance(operation: string, duration: number, meta: Record<string, any> = {}) {
+    this.logger.info(`Performance: ${operation}`, {
+      ...meta,
+      duration,
+      operation,
+      type: 'performance',
+      component: this.getComponent(),
+    });
+  }
+
+  // Security logging
+  security(event: string, meta: Record<string, any> = {}) {
+    this.logger.warn(`Security: ${event}`, {
+      ...meta,
+      type: 'security',
+      component: this.getComponent(),
+    });
+  }
+
+  // Business logic logging
+  business(action: string, meta: Record<string, any> = {}) {
+    this.logger.info(`Business: ${action}`, {
+      ...meta,
+      type: 'business',
+      component: this.getComponent(),
+    });
+  }
+
+  private getComponent(): string {
+    const stack = new Error().stack;
+    const caller = stack?.split('\n')[3]; // Get the calling function
+    return caller?.trim() || 'unknown';
+  }
+
+  // Create child logger with additional context
+  child(additionalContext: Record<string, any>) {
+    return {
+      info: (message: string, meta: Record<string, any> = {}) => 
+        this.info(message, { ...additionalContext, ...meta }),
+      warn: (message: string, meta: Record<string, any> = {}) => 
+        this.warn(message, { ...additionalContext, ...meta }),
+      error: (message: string, error?: Error, meta: Record<string, any> = {}) => 
+        this.error(message, error, { ...additionalContext, ...meta }),
+      debug: (message: string, meta: Record<string, any> = {}) => 
+        this.debug(message, { ...additionalContext, ...meta }),
+      performance: (operation: string, duration: number, meta: Record<string, any> = {}) =>
+        this.performance(operation, duration, { ...additionalContext, ...meta }),
+      security: (event: string, meta: Record<string, any> = {}) =>
+        this.security(event, { ...additionalContext, ...meta }),
+      business: (action: string, meta: Record<string, any> = {}) =>
+        this.business(action, { ...additionalContext, ...meta }),
+    };
+  }
+
+  // Context management
+  runWithContext<T>(context: RequestContext, fn: () => T): T {
+    return requestContext.run(context, fn);
+  }
+
+  getCurrentContext(): RequestContext | undefined {
+    return requestContext.getStore();
+  }
+}
+
+export const logger = new ProductionLogger();
+
+// Express middleware for request context
+export function requestContextMiddleware() {
+  return (req: any, res: any, next: any) => {
+    const requestId = req.headers['x-request-id'] || crypto.randomUUID();
+    const context: RequestContext = {
+      requestId,
+      userId: req.user?.id,
+      sessionId: req.session?.id,
+      userAgent: req.headers['user-agent'],
+      ip: req.ip || req.connection.remoteAddress,
+    };
+
+    res.setHeader('X-Request-ID', requestId);
+    
+    logger.runWithContext(context, () => {
+      next();
+    });
+  };
+}
+```
+
+### Application Monitoring and Metrics
+```typescript
+// src/lib/server/monitoring.production.ts
+import { performance } from 'perf_hooks';
+import { register, Counter, Histogram, Gauge, collectDefaultMetrics } from 'prom-client';
+import { logger } from './logger.production';
+
+// Enable default metrics collection
+collectDefaultMetrics({ register });
+
+// Custom metrics
+export const httpRequestsTotal = new Counter({
+  name: 'http_requests_total',
+  help: 'Total number of HTTP requests',
+  labelNames: ['method', 'route', 'status_code', 'service'],
+});
+
+export const httpRequestDuration = new Histogram({
+  name: 'http_request_duration_seconds',
+  help: 'Duration of HTTP requests in seconds',
+  labelNames: ['method', 'route', 'service'],
+  buckets: [0.001, 0.005, 0.015, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 1, 2, 5, 10],
+});
+
+export const activeConnections = new Gauge({
+  name: 'active_connections',
+  help: 'Number of active database connections',
+  labelNames: ['database', 'service'],
+});
+
+export const cacheOperations = new Counter({
+  name: 'cache_operations_total',
+  help: 'Total number of cache operations',
+  labelNames: ['operation', 'cache_type', 'status'],
+});
+
+export const businessMetrics = new Counter({
+  name: 'business_events_total',
+  help: 'Total number of business events',
+  labelNames: ['event_type', 'status', 'service'],
+});
+
+export const aiOperations = new Histogram({
+  name: 'ai_operation_duration_seconds',
+  help: 'Duration of AI operations in seconds',
+  labelNames: ['operation', 'model', 'status'],
+  buckets: [0.1, 0.5, 1, 2, 5, 10, 30, 60, 120, 300],
+});
+
+class MonitoringService {
+  private healthChecks = new Map<string, () => Promise<boolean>>();
+
+  // Register health check
+  registerHealthCheck(name: string, check: () => Promise<boolean>) {
+    this.healthChecks.set(name, check);
+  }
+
+  // Performance monitoring decorator
+  async measureAsync<T>(
+    operation: string,
+    labels: Record<string, string>,
+    fn: () => Promise<T>
+  ): Promise<T> {
+    const startTime = performance.now();
+    const timer = httpRequestDuration.startTimer(labels);
+
+    try {
+      const result = await fn();
+      
+      const duration = (performance.now() - startTime) / 1000;
+      logger.performance(operation, duration, labels);
+      
+      timer({ status: 'success' });
+      return result;
+      
+    } catch (error) {
+      const duration = (performance.now() - startTime) / 1000;
+      logger.performance(`${operation}_failed`, duration, { 
+        ...labels, 
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+      
+      timer({ status: 'error' });
+      throw error;
+    }
+  }
+
+  // Health check endpoint
+  async getHealthStatus() {
+    const checks: Record<string, { status: 'healthy' | 'unhealthy'; duration?: number; error?: string }> = {};
+    
+    for (const [name, check] of this.healthChecks) {
+      const startTime = performance.now();
+      try {
+        const isHealthy = await Promise.race([
+          check(),
+          new Promise<boolean>((_, reject) => 
+            setTimeout(() => reject(new Error('Health check timeout')), 5000)
+          )
+        ]);
+        
+        checks[name] = {
+          status: isHealthy ? 'healthy' : 'unhealthy',
+          duration: performance.now() - startTime,
+        };
+      } catch (error) {
+        checks[name] = {
+          status: 'unhealthy',
+          duration: performance.now() - startTime,
+          error: error instanceof Error ? error.message : 'Unknown error',
+        };
+      }
+    }
+
+    const overallStatus = Object.values(checks).every(check => check.status === 'healthy') 
+      ? 'healthy' 
+      : 'unhealthy';
+
+    return {
+      status: overallStatus,
+      timestamp: new Date().toISOString(),
+      checks,
+      uptime: process.uptime(),
+      memory: process.memoryUsage(),
+      version: process.env.npm_package_version || '1.0.0',
+    };
+  }
+
+  // Record business events
+  recordBusinessEvent(eventType: string, status: 'success' | 'failure', metadata: Record<string, any> = {}) {
+    businessMetrics.labels({ event_type: eventType, status, service: 'sveltekit' }).inc();
+    logger.business(`${eventType}_${status}`, metadata);
+  }
+
+  // Record AI operations
+  recordAIOperation(operation: string, model: string, duration: number, status: 'success' | 'failure') {
+    aiOperations.labels({ operation, model, status }).observe(duration);
+    logger.performance(`ai_${operation}`, duration, { model, status });
+  }
+
+  // Get metrics for Prometheus
+  async getMetrics() {
+    return register.metrics();
+  }
+
+  // Resource usage monitoring
+  getResourceUsage() {
+    const memUsage = process.memoryUsage();
+    const cpuUsage = process.cpuUsage();
+    
+    return {
+      memory: {
+        rss: memUsage.rss,
+        heapTotal: memUsage.heapTotal,
+        heapUsed: memUsage.heapUsed,
+        external: memUsage.external,
+        arrayBuffers: memUsage.arrayBuffers,
+      },
+      cpu: {
+        user: cpuUsage.user,
+        system: cpuUsage.system,
+      },
+      uptime: process.uptime(),
+      pid: process.pid,
+      platform: process.platform,
+      nodeVersion: process.version,
+    };
+  }
+
+  // Alert system
+  checkAlerts() {
+    const memUsage = process.memoryUsage();
+    const heapUsedPercent = (memUsage.heapUsed / memUsage.heapTotal) * 100;
+    
+    if (heapUsedPercent > 90) {
+      logger.warn('High memory usage detected', { 
+        heapUsedPercent: heapUsedPercent.toFixed(2),
+        heapUsed: memUsage.heapUsed,
+        heapTotal: memUsage.heapTotal,
+      });
+    }
+
+    // Check for error rate spikes
+    // This would integrate with your metrics to detect anomalies
+  }
+}
+
+export const monitoring = new MonitoringService();
+
+// Start periodic monitoring
+setInterval(() => {
+  monitoring.checkAlerts();
+}, 30000); // Check every 30 seconds
+```
+
+---
+
+## 3. Production Database Layer with Connection Pooling & Retry Logic
+
+### Enhanced Database Client with Connection Pooling
+```typescript
+// src/lib/server/database.production.ts
+import { Pool, PoolClient, PoolConfig } from 'pg';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
+import { logger } from './logger.production';
+import { monitoring, activeConnections } from './monitoring.production';
+
+interface DatabaseOptions extends PoolConfig {
+  retryOptions?: {
+    maxAttempts: number;
+    baseDelay: number;
+    maxDelay: number;
+    retryableErrors: string[];
+  };
+  connectionValidation?: boolean;
+  healthCheckInterval?: number;
+}
+
+class ProductionDatabase {
+  private pool: Pool;
+  private sql: ReturnType<typeof postgres>;
+  private db: ReturnType<typeof drizzle>;
+  private connectionCount = 0;
+  private healthCheckTimer?: NodeJS.Timeout;
+  private readonly retryOptions = {
+    maxAttempts: 3,
+    baseDelay: 1000,
+    maxDelay: 10000,
+    retryableErrors: [
+      'ECONNRESET', 
+      'ENOTFOUND', 
+      'ETIMEDOUT', 
+      'connection terminated unexpectedly',
+      'server closed the connection unexpectedly',
+      'SSL connection has been closed unexpectedly'
+    ]
+  };
+
+  constructor(options: DatabaseOptions = {}) {
+    // Enhanced connection pool configuration
+    const poolConfig: PoolConfig = {
+      host: process.env.DATABASE_HOST || 'localhost',
+      port: Number(process.env.DATABASE_PORT) || 5432,
+      database: process.env.DATABASE_NAME || 'legal_ai_db',
+      user: process.env.DATABASE_USER || 'postgres',
+      password: process.env.DATABASE_PASSWORD || '123456',
+      
+      // Production pool settings
+      max: Number(process.env.DATABASE_MAX_CONNECTIONS) || 20,
+      min: Number(process.env.DATABASE_MIN_CONNECTIONS) || 2,
+      idleTimeoutMillis: Number(process.env.DATABASE_IDLE_TIMEOUT) || 30000,
+      connectionTimeoutMillis: Number(process.env.DATABASE_CONNECTION_TIMEOUT) || 10000,
+      
+      // Enhanced configuration
+      keepAlive: true,
+      keepAliveInitialDelayMillis: 10000,
+      statement_timeout: 30000,
+      query_timeout: 30000,
+      
+      // SSL configuration for production
+      ssl: process.env.NODE_ENV === 'production' ? {
+        rejectUnauthorized: false,
+        ca: process.env.DATABASE_SSL_CA,
+        key: process.env.DATABASE_SSL_KEY,
+        cert: process.env.DATABASE_SSL_CERT,
+      } : false,
+      
+      ...options,
+    };
+
+    this.retryOptions = { ...this.retryOptions, ...options.retryOptions };
+
+    // Initialize connection pool
+    this.pool = new Pool(poolConfig);
+
+    // Initialize Drizzle with postgres.js for better performance
+    this.sql = postgres({
+      host: poolConfig.host!,
+      port: poolConfig.port!,
+      database: poolConfig.database!,
+      username: poolConfig.user!,
+      password: poolConfig.password!,
+      max: poolConfig.max!,
+      idle_timeout: 20,
+      max_lifetime: 60 * 30, // 30 minutes
+      transform: {
+        undefined: null,
+      },
+      onnotice: (notice) => {
+        if (notice.severity !== 'NOTICE') {
+          logger.warn('PostgreSQL notice', { notice: notice.message });
+        }
+      },
+      onparameter: (key, value) => {
+        logger.debug('PostgreSQL parameter change', { key, value });
+      },
+      debug: process.env.DATABASE_DEBUG === 'true',
+    });
+
+    this.db = drizzle(this.sql);
+
+    // Set up pool event handlers
+    this.setupPoolEventHandlers();
+
+    // Start health checks
+    if (options.healthCheckInterval !== 0) {
+      this.startHealthChecks(options.healthCheckInterval || 60000);
+    }
+
+    // Register database health check
+    monitoring.registerHealthCheck('database', this.healthCheck.bind(this));
+  }
+
+  private setupPoolEventHandlers() {
+    this.pool.on('connect', (client) => {
+      this.connectionCount++;
+      activeConnections.labels({ database: 'postgres', service: 'sveltekit' }).inc();
+      logger.debug('Database client connected', { 
+        activeConnections: this.connectionCount,
+        totalConnections: this.pool.totalCount,
+        idleConnections: this.pool.idleCount,
+      });
+    });
+
+    this.pool.on('remove', (client) => {
+      this.connectionCount--;
+      activeConnections.labels({ database: 'postgres', service: 'sveltekit' }).dec();
+      logger.debug('Database client removed', { 
+        activeConnections: this.connectionCount,
+        totalConnections: this.pool.totalCount,
+        idleConnections: this.pool.idleCount,
+      });
+    });
+
+    this.pool.on('error', (err, client) => {
+      logger.error('Database pool error', err, {
+        client: client ? 'active' : 'idle',
+        activeConnections: this.connectionCount,
+        totalConnections: this.pool.totalCount,
+      });
+    });
+
+    this.pool.on('acquire', () => {
+      logger.debug('Database client acquired from pool');
+    });
+
+    this.pool.on('release', () => {
+      logger.debug('Database client released to pool');
+    });
+  }
+
+  // Enhanced retry logic with exponential backoff
+  private async executeWithRetry<T>(
+    operation: () => Promise<T>,
+    operationName: string
+  ): Promise<T> {
+    let lastError: Error;
+    
+    for (let attempt = 1; attempt <= this.retryOptions.maxAttempts; attempt++) {
+      try {
+        return await operation();
+      } catch (error) {
+        lastError = error as Error;
+        
+        // Check if error is retryable
+        const isRetryable = this.isRetryableError(error as Error);
+        const isLastAttempt = attempt === this.retryOptions.maxAttempts;
+        
+        if (!isRetryable || isLastAttempt) {
+          logger.error(`Database operation failed: ${operationName}`, error as Error, {
+            attempt,
+            isRetryable,
+            isLastAttempt,
+          });
+          throw error;
+        }
+
+        // Calculate delay with exponential backoff and jitter
+        const baseDelay = this.retryOptions.baseDelay * Math.pow(2, attempt - 1);
+        const delay = Math.min(baseDelay, this.retryOptions.maxDelay);
+        const jitteredDelay = delay * (0.5 + Math.random() * 0.5);
+        
+        logger.warn(`Database operation retry: ${operationName}`, {
+          attempt,
+          nextRetryIn: jitteredDelay,
+          error: (error as Error).message,
+        });
+        
+        await this.sleep(jitteredDelay);
+      }
+    }
+    
+    throw lastError!;
+  }
+
+  private isRetryableError(error: Error): boolean {
+    return this.retryOptions.retryableErrors.some(retryableError => 
+      error.message.toLowerCase().includes(retryableError.toLowerCase()) ||
+      error.name.toLowerCase().includes(retryableError.toLowerCase())
+    );
+  }
+
+  private sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // Production-ready database operations
+  async query<T = any>(
+    text: string, 
+    params?: any[], 
+    options: { timeout?: number; retries?: boolean } = {}
+  ): Promise<T[]> {
+    const { timeout = 30000, retries = true } = options;
+    
+    const operation = async () => {
+      return await monitoring.measureAsync(
+        'database_query',
+        { operation: 'query', database: 'postgres' },
+        async () => {
+          const client = await this.pool.connect();
+          try {
+            // Set statement timeout for this query
+            if (timeout !== 30000) {
+              await client.query(`SET statement_timeout = ${timeout}`);
+            }
+            
+            const startTime = Date.now();
+            const result = await client.query(text, params);
+            const duration = Date.now() - startTime;
+            
+            logger.debug('Database query executed', {
+              query: text.substring(0, 200) + (text.length > 200 ? '...' : ''),
+              duration,
+              rowCount: result.rowCount,
+              paramCount: params?.length || 0,
+            });
+            
+            return result.rows;
+          } finally {
+            client.release();
+          }
+        }
+      );
+    };
+
+    if (retries) {
+      return await this.executeWithRetry(operation, 'query');
+    } else {
+      return await operation();
+    }
+  }
+
+  // Transaction with retry logic and proper cleanup
+  async transaction<T>(
+    callback: (tx: any) => Promise<T>,
+    options: { timeout?: number; retries?: boolean } = {}
+  ): Promise<T> {
+    const { timeout = 60000, retries = true } = options;
+    
+    const operation = async () => {
+      return await monitoring.measureAsync(
+        'database_transaction',
+        { operation: 'transaction', database: 'postgres' },
+        async () => {
+          const client = await this.pool.connect();
+          try {
+            // Set transaction timeout
+            await client.query(`SET statement_timeout = ${timeout}`);
+            await client.query('BEGIN');
+            
+            const startTime = Date.now();
+            
+            // Create transaction wrapper for Drizzle
+            const txSql = postgres({
+              ...this.sql.options,
+              transform: { undefined: null },
+            });
+            const txDb = drizzle(txSql);
+            
+            try {
+              const result = await callback(txDb);
+              await client.query('COMMIT');
+              
+              const duration = Date.now() - startTime;
+              logger.info('Database transaction completed', { duration });
+              
+              return result;
+            } catch (error) {
+              await client.query('ROLLBACK');
+              logger.error('Database transaction rolled back', error as Error);
+              throw error;
+            } finally {
+              await txSql.end();
+            }
+          } finally {
+            client.release();
+          }
+        }
+      );
+    };
+
+    if (retries) {
+      return await this.executeWithRetry(operation, 'transaction');
+    } else {
+      return await operation();
+    }
+  }
+
+  // Drizzle ORM access with retry logic
+  get drizzle() {
+    return this.db;
+  }
+
+  // Batch operations with connection reuse
+  async batch<T>(
+    operations: Array<() => Promise<T>>,
+    options: { batchSize?: number; parallel?: boolean } = {}
+  ): Promise<T[]> {
+    const { batchSize = 10, parallel = false } = options;
+    const results: T[] = [];
+    
+    return await monitoring.measureAsync(
+      'database_batch',
+      { operation: 'batch', database: 'postgres', batchSize: batchSize.toString() },
+      async () => {
+        if (parallel) {
+          // Execute operations in parallel batches
+          for (let i = 0; i < operations.length; i += batchSize) {
+            const batch = operations.slice(i, i + batchSize);
+            const batchResults = await Promise.all(
+              batch.map(op => this.executeWithRetry(op, 'batch_operation'))
+            );
+            results.push(...batchResults);
+          }
+        } else {
+          // Execute operations sequentially
+          for (const operation of operations) {
+            const result = await this.executeWithRetry(operation, 'batch_operation');
+            results.push(result);
+          }
+        }
+        
+        logger.info('Database batch operations completed', {
+          totalOperations: operations.length,
+          batchSize,
+          parallel,
+          duration: results.length,
+        });
+        
+        return results;
+      }
+    );
+  }
+
+  // Health check with comprehensive validation
+  async healthCheck(): Promise<boolean> {
+    try {
+      // Test basic connectivity
+      const client = await this.pool.connect();
+      try {
+        await client.query('SELECT 1');
+      } finally {
+        client.release();
+      }
+
+      // Check pool statistics
+      const poolStats = {
+        totalCount: this.pool.totalCount,
+        idleCount: this.pool.idleCount,
+        waitingCount: this.pool.waitingCount,
+      };
+
+      logger.debug('Database health check passed', { poolStats });
+      return true;
+    } catch (error) {
+      logger.error('Database health check failed', error as Error);
+      return false;
+    }
+  }
+
+  private startHealthChecks(interval: number) {
+    this.healthCheckTimer = setInterval(async () => {
+      const isHealthy = await this.healthCheck();
+      if (!isHealthy) {
+        logger.warn('Database health check failed during periodic check');
+      }
+    }, interval);
+  }
+
+  // Get pool statistics for monitoring
+  getPoolStats() {
+    return {
+      totalConnections: this.pool.totalCount,
+      idleConnections: this.pool.idleCount,
+      waitingRequests: this.pool.waitingCount,
+      activeConnections: this.connectionCount,
+    };
+  }
+
+  // Graceful shutdown
+  async shutdown(): Promise<void> {
+    logger.info('Shutting down database connections...');
+    
+    if (this.healthCheckTimer) {
+      clearInterval(this.healthCheckTimer);
+    }
+
+    try {
+      await this.sql.end();
+      await this.pool.end();
+      logger.info('Database connections closed successfully');
+    } catch (error) {
+      logger.error('Error during database shutdown', error as Error);
+      throw error;
+    }
+  }
+}
+
+// Export singleton instance
+export const database = new ProductionDatabase({
+  // Production-optimized settings
+  max: Number(process.env.DATABASE_MAX_CONNECTIONS) || 20,
+  min: Number(process.env.DATABASE_MIN_CONNECTIONS) || 2,
+  connectionValidation: true,
+  healthCheckInterval: 60000, // 1 minute
+  retryOptions: {
+    maxAttempts: 3,
+    baseDelay: 1000,
+    maxDelay: 10000,
+    retryableErrors: [
+      'ECONNRESET',
+      'ENOTFOUND', 
+      'ETIMEDOUT',
+      'connection terminated unexpectedly'
+    ]
+  }
+});
+
+// Enhanced database operations with vector support
+export class VectorDatabase {
+  constructor(private db: ProductionDatabase) {}
+
+  // Optimized vector similarity search with connection pooling
+  async vectorSimilaritySearch(
+    embedding: number[],
+    table: string,
+    options: {
+      limit?: number;
+      threshold?: number;
+      userId?: string;
+      filters?: Record<string, any>;
+    } = {}
+  ) {
+    const { limit = 10, threshold = 0.5, userId, filters } = options;
+    
+    let whereClause = `embedding <=> '[${embedding.join(',')}]' < ${1 - threshold}`;
+    let params: any[] = [];
+    let paramIndex = 1;
+
+    if (userId) {
+      whereClause += ` AND user_id = $${paramIndex}`;
+      params.push(userId);
+      paramIndex++;
+    }
+
+    if (filters) {
+      for (const [key, value] of Object.entries(filters)) {
+        whereClause += ` AND ${key} = $${paramIndex}`;
+        params.push(value);
+        paramIndex++;
+      }
+    }
+
+    const query = `
+      SELECT *,
+             1 - (embedding <=> '[${embedding.join(',')}]') as similarity_score
+      FROM ${table}
+      WHERE ${whereClause}
+      ORDER BY embedding <=> '[${embedding.join(',')}]'
+      LIMIT ${limit}
+    `;
+
+    return await this.db.query(query, params, { timeout: 45000 });
+  }
+
+  // Batch vector operations with optimized connection handling
+  async batchVectorInsert(
+    table: string,
+    records: Array<{ embedding: number[]; metadata: Record<string, any> }>
+  ) {
+    return await this.db.transaction(async (tx) => {
+      const results = [];
+      
+      for (const record of records) {
+        const columns = Object.keys(record.metadata).join(', ');
+        const values = Object.values(record.metadata);
+        const placeholders = values.map((_, i) => `$${i + 2}`).join(', ');
+        
+        const query = `
+          INSERT INTO ${table} (embedding, ${columns})
+          VALUES ($1, ${placeholders})
+          RETURNING id
+        `;
+        
+        const result = await this.db.query(
+          query, 
+          [`[${record.embedding.join(',')}]`, ...values],
+          { retries: false } // Don't retry within transaction
+        );
+        
+        results.push(result[0]);
+      }
+      
+      return results;
+    });
+  }
+}
+
+export const vectorDb = new VectorDatabase(database);
+```
+
+---
+
+## 4. Production Rate Limiting & Request Validation
+
+### Advanced Rate Limiter with Multiple Strategies
+```typescript
+// src/lib/server/rate-limiting.production.ts
+import { logger } from './logger.production';
+import { monitoring } from './monitoring.production';
+
+interface RateLimitRule {
+  windowMs: number;
+  maxRequests: number;
+  message?: string;
+  skipSuccessfulRequests?: boolean;
+  skipFailedRequests?: boolean;
+  keyGenerator?: (request: any) => string;
+}
+
+interface RateLimitStore {
+  get(key: string): Promise<{ count: number; resetTime: number } | null>;
+  set(key: string, value: { count: number; resetTime: number }, ttl: number): Promise<void>;
+  increment(key: string, ttl: number): Promise<{ count: number; resetTime: number }>;
+}
+
+// Memory-based store with Redis fallback
+class HybridRateLimitStore implements RateLimitStore {
+  private memoryStore = new Map<string, { count: number; resetTime: number }>();
+  private redisClient: any; // Redis client would be injected
+
+  constructor(redisClient?: any) {
+    this.redisClient = redisClient;
+    
+    // Clean up expired entries every minute
+    setInterval(() => {
+      const now = Date.now();
+      for (const [key, value] of this.memoryStore.entries()) {
+        if (value.resetTime < now) {
+          this.memoryStore.delete(key);
+        }
+      }
+    }, 60000);
+  }
+
+  async get(key: string) {
+    // Try memory first
+    const memoryValue = this.memoryStore.get(key);
+    if (memoryValue && memoryValue.resetTime > Date.now()) {
+      return memoryValue;
+    }
+
+    // Fallback to Redis if available
+    if (this.redisClient) {
+      try {
+        const redisValue = await this.redisClient.get(`ratelimit:${key}`);
+        if (redisValue) {
+          const parsed = JSON.parse(redisValue);
+          if (parsed.resetTime > Date.now()) {
+            this.memoryStore.set(key, parsed);
+            return parsed;
+          }
+        }
+      } catch (error) {
+        logger.warn('Redis rate limit store error', { error: (error as Error).message });
+      }
+    }
+
+    return null;
+  }
+
+  async set(key: string, value: { count: number; resetTime: number }, ttl: number) {
+    // Store in memory
+    this.memoryStore.set(key, value);
+
+    // Store in Redis if available
+    if (this.redisClient) {
+      try {
+        await this.redisClient.setex(
+          `ratelimit:${key}`,
+          Math.ceil(ttl / 1000),
+          JSON.stringify(value)
+        );
+      } catch (error) {
+        logger.warn('Redis rate limit store error', { error: (error as Error).message });
+      }
+    }
+  }
+
+  async increment(key: string, ttl: number) {
+    const now = Date.now();
+    const resetTime = now + ttl;
+    
+    const existing = await this.get(key);
+    
+    let newValue: { count: number; resetTime: number };
+    
+    if (existing && existing.resetTime > now) {
+      // Window is still active
+      newValue = {
+        count: existing.count + 1,
+        resetTime: existing.resetTime
+      };
+    } else {
+      // New window
+      newValue = {
+        count: 1,
+        resetTime
+      };
+    }
+
+    await this.set(key, newValue, resetTime - now);
+    return newValue;
+  }
+}
+
+class ProductionRateLimiter {
+  private store: RateLimitStore;
+  private rules = new Map<string, RateLimitRule>();
+
+  constructor(redisClient?: any) {
+    this.store = new HybridRateLimitStore(redisClient);
+  }
+
+  // Register rate limiting rules
+  addRule(name: string, rule: RateLimitRule) {
+    this.rules.set(name, rule);
+    logger.info('Rate limiting rule registered', { name, rule });
+  }
+
+  // Create middleware for SvelteKit
+  createMiddleware(ruleName: string) {
+    const rule = this.rules.get(ruleName);
+    if (!rule) {
+      throw new Error(`Rate limiting rule '${ruleName}' not found`);
+    }
+
+    return async (request: any) => {
+      const key = rule.keyGenerator 
+        ? rule.keyGenerator(request) 
+        : this.getDefaultKey(request);
+
+      const result = await this.checkLimit(key, rule);
+      
+      if (!result.allowed) {
+        logger.security('Rate limit exceeded', {
+          rule: ruleName,
+          key: key.substring(0, 50), // Truncate for logging
+          count: result.count,
+          resetTime: result.resetTime,
+          userAgent: request.headers?.get?.('user-agent') || 'unknown'
+        });
+
+        monitoring.businessMetrics
+          .labels({ event_type: 'rate_limit_exceeded', status: 'blocked', service: 'sveltekit' })
+          .inc();
+
+        throw new Error(rule.message || `Rate limit exceeded. Try again in ${Math.ceil((result.resetTime - Date.now()) / 1000)} seconds.`);
+      }
+
+      // Add rate limit headers
+      return {
+        headers: {
+          'X-RateLimit-Limit': rule.maxRequests.toString(),
+          'X-RateLimit-Remaining': Math.max(0, rule.maxRequests - result.count).toString(),
+          'X-RateLimit-Reset': Math.ceil(result.resetTime / 1000).toString(),
+          'X-RateLimit-Window': Math.ceil(rule.windowMs / 1000).toString(),
+        }
+      };
+    };
+  }
+
+  private async checkLimit(key: string, rule: RateLimitRule) {
+    const { count, resetTime } = await this.store.increment(key, rule.windowMs);
+    
+    return {
+      allowed: count <= rule.maxRequests,
+      count,
+      resetTime,
+      remaining: Math.max(0, rule.maxRequests - count),
+    };
+  }
+
+  private getDefaultKey(request: any): string {
+    // Try to get the real IP
+    const forwarded = request.headers?.get?.('x-forwarded-for');
+    const realIp = request.headers?.get?.('x-real-ip');
+    const remoteAddress = request.ip || request.connection?.remoteAddress;
+    
+    const ip = forwarded?.split(',')[0] || realIp || remoteAddress || 'unknown';
+    
+    // Include user ID if available for authenticated requests
+    const userId = request.locals?.user?.id;
+    
+    return userId ? `user:${userId}` : `ip:${ip}`;
+  }
+
+  // Get rate limit statistics
+  async getStats(key?: string) {
+    if (key) {
+      const data = await this.store.get(key);
+      return data ? {
+        key,
+        count: data.count,
+        resetTime: data.resetTime,
+        remaining: Math.max(0, Object.values(this.rules)[0]?.maxRequests || 0 - data.count)
+      } : null;
+    }
+
+    // Return overall stats would require scanning all keys
+    return { message: 'Overall statistics require specific key or Redis SCAN operation' };
+  }
+}
+
+// Export configured rate limiter
+export const rateLimiter = new ProductionRateLimiter();
+
+// Configure common rate limiting rules
+rateLimiter.addRule('api_general', {
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  maxRequests: 1000,
+  message: 'Too many requests from this IP, please try again later.',
+});
+
+rateLimiter.addRule('auth', {
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  maxRequests: 5, // Very strict for auth endpoints
+  message: 'Too many authentication attempts, please try again later.',
+});
+
+rateLimiter.addRule('upload', {
+  windowMs: 60 * 1000, // 1 minute
+  maxRequests: 10,
+  message: 'Upload rate limit exceeded, please wait before uploading again.',
+});
+
+rateLimiter.addRule('ai_inference', {
+  windowMs: 60 * 1000, // 1 minute  
+  maxRequests: 20,
+  message: 'AI inference rate limit exceeded, please wait before making more requests.',
+});
+
+rateLimiter.addRule('search', {
+  windowMs: 60 * 1000, // 1 minute
+  maxRequests: 100,
+  message: 'Search rate limit exceeded, please wait before searching again.',
+});
+```
+
+### Input Validation and Sanitization System
+```typescript
+// src/lib/server/validation.production.ts
+import { z } from 'zod';
+import DOMPurify from 'isomorphic-dompurify';
+import { logger } from './logger.production';
+import { monitoring } from './monitoring.production';
+
+// Common validation schemas
+export const commonSchemas = {
+  // UUID validation
+  uuid: z.string().uuid('Invalid UUID format'),
+  
+  // Email validation with additional checks
+  email: z.string()
+    .email('Invalid email format')
+    .min(5, 'Email too short')
+    .max(254, 'Email too long')
+    .refine(email => !email.includes('..'), 'Email contains consecutive dots')
+    .refine(email => !email.startsWith('.'), 'Email cannot start with dot')
+    .refine(email => !email.endsWith('.'), 'Email cannot end with dot'),
+  
+  // Password with strength requirements
+  password: z.string()
+    .min(8, 'Password must be at least 8 characters')
+    .max(128, 'Password too long')
+    .refine(pwd => /[A-Z]/.test(pwd), 'Password must contain uppercase letter')
+    .refine(pwd => /[a-z]/.test(pwd), 'Password must contain lowercase letter')
+    .refine(pwd => /[0-9]/.test(pwd), 'Password must contain number')
+    .refine(pwd => /[^A-Za-z0-9]/.test(pwd), 'Password must contain special character'),
+  
+  // File upload validation
+  filename: z.string()
+    .min(1, 'Filename required')
+    .max(255, 'Filename too long')
+    .refine(name => !/[<>:"/\\|?*\x00-\x1f]/.test(name), 'Filename contains invalid characters')
+    .refine(name => !name.startsWith('.'), 'Filename cannot start with dot')
+    .refine(name => !/\.(exe|bat|cmd|scr|pif|com)$/i.test(name), 'Executable files not allowed'),
+  
+  // Case title with length and content validation
+  caseTitle: z.string()
+    .min(3, 'Case title must be at least 3 characters')
+    .max(200, 'Case title too long')
+    .refine(title => title.trim().length > 0, 'Case title cannot be empty')
+    .refine(title => !/[<>]/.test(title), 'Case title contains invalid characters'),
+  
+  // Legal content validation
+  legalContent: z.string()
+    .min(10, 'Content must be at least 10 characters')
+    .max(50000, 'Content too long')
+    .refine(content => content.trim().length > 0, 'Content cannot be empty'),
+  
+  // Search query validation
+  searchQuery: z.string()
+    .min(1, 'Search query required')
+    .max(500, 'Search query too long')
+    .refine(query => query.trim().length > 0, 'Search query cannot be empty')
+    .refine(query => !/[<>{}]/.test(query), 'Search query contains invalid characters'),
+  
+  // Pagination
+  pagination: z.object({
+    page: z.number().int().min(1, 'Page must be at least 1').max(1000, 'Page too high').default(1),
+    limit: z.number().int().min(1, 'Limit must be at least 1').max(100, 'Limit too high').default(20),
+  }),
+};
+
+// Legal AI specific schemas
+export const legalSchemas = {
+  // Case creation
+  createCase: z.object({
+    title: commonSchemas.caseTitle,
+    description: commonSchemas.legalContent.optional(),
+    priority: z.enum(['low', 'medium', 'high', 'critical']).default('medium'),
+    jurisdiction: z.string().min(2).max(100).optional(),
+    caseNumber: z.string().max(50).optional(),
+    clientId: commonSchemas.uuid.optional(),
+    tags: z.array(z.string().min(1).max(50)).max(20).default([]),
+  }),
+
+  // Evidence upload
+  uploadEvidence: z.object({
+    caseId: commonSchemas.uuid,
+    filename: commonSchemas.filename,
+    description: z.string().max(1000).optional(),
+    evidenceType: z.enum(['document', 'image', 'video', 'audio', 'other']),
+    confidential: z.boolean().default(false),
+    tags: z.array(z.string().min(1).max(30)).max(10).default([]),
+  }),
+
+  // RAG query
+  ragQuery: z.object({
+    query: commonSchemas.searchQuery,
+    caseId: commonSchemas.uuid.optional(),
+    maxResults: z.number().int().min(1).max(50).default(10),
+    threshold: z.number().min(0).max(1).default(0.5),
+    includeMetadata: z.boolean().default(true),
+  }),
+
+  // User registration
+  userRegistration: z.object({
+    email: commonSchemas.email,
+    password: commonSchemas.password,
+    firstName: z.string().min(1).max(50).refine(name => !/[<>]/.test(name), 'Invalid characters'),
+    lastName: z.string().min(1).max(50).refine(name => !/[<>]/.test(name), 'Invalid characters'),
+    role: z.enum(['attorney', 'paralegal', 'investigator', 'admin']).default('attorney'),
+  }),
+};
+
+// Sanitization utilities
+export class SecuritySanitizer {
+  // HTML sanitization for rich text content
+  static sanitizeHtml(html: string, options: { allowedTags?: string[]; allowedAttributes?: Record<string, string[]> } = {}): string {
+    const defaultConfig = {
+      ALLOWED_TAGS: options.allowedTags || [
+        'p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 
+        'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote'
+      ],
+      ALLOWED_ATTR: options.allowedAttributes || ['href', 'target', 'rel'],
+      FORBID_SCRIPT: true,
+      FORBID_TAGS: ['script', 'object', 'embed', 'applet', 'iframe'],
+      FORBID_ATTR: ['onclick', 'onload', 'onerror', 'onmouseover'],
+    };
+
+    return DOMPurify.sanitize(html, defaultConfig);
+  }
+
+  // SQL injection prevention (additional layer beyond parameterized queries)
+  static sanitizeSqlString(input: string): string {
+    return input
+      .replace(/'/g, "''")  // Escape single quotes
+      .replace(/;/g, '')    // Remove semicolons
+      .replace(/--/g, '')   // Remove SQL comments
+      .replace(/\/\*/g, '') // Remove block comment start
+      .replace(/\*\//g, '') // Remove block comment end
+      .substring(0, 1000);  // Limit length
+  }
+
+  // XSS prevention for user input
+  static sanitizeUserInput(input: string): string {
+    return input
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
+      .replace(/&/g, '&amp;')
+      .substring(0, 10000); // Reasonable length limit
+  }
+
+  // File path sanitization
+  static sanitizeFilePath(path: string): string {
+    return path
+      .replace(/\.\./g, '') // Prevent directory traversal
+      .replace(/[<>:"|?*\x00-\x1f]/g, '') // Remove invalid chars
+      .replace(/^[./\\]+/, '') // Remove leading dots/slashes
+      .substring(0, 255); // Filesystem limit
+  }
+
+  // Search query sanitization
+  static sanitizeSearchQuery(query: string): string {
+    return query
+      .trim()
+      .replace(/[<>{}]/g, '') // Remove potentially dangerous chars
+      .replace(/\s+/g, ' ')   // Normalize whitespace
+      .substring(0, 500);     // Reasonable length limit
+  }
+}
+
+// Validation middleware factory
+export class ValidationMiddleware {
+  static create<T>(schema: z.ZodSchema<T>, options: { 
+    sanitize?: boolean; 
+    logValidationErrors?: boolean;
+    transform?: (data: any) => any;
+  } = {}) {
+    const { sanitize = true, logValidationErrors = true, transform } = options;
+
+    return async (data: unknown) => {
+      try {
+        // Pre-validation sanitization
+        let processedData = data;
+        
+        if (sanitize && typeof data === 'object' && data !== null) {
+          processedData = this.sanitizeObject(data);
+        }
+
+        // Apply custom transformation if provided
+        if (transform) {
+          processedData = transform(processedData);
+        }
+
+        // Validate with Zod
+        const result = await schema.parseAsync(processedData);
+        
+        logger.debug('Validation successful', { 
+          schema: schema.constructor.name,
+          dataKeys: typeof result === 'object' ? Object.keys(result as any) : 'primitive'
+        });
+
+        return result;
+
+      } catch (error) {
+        if (logValidationErrors) {
+          logger.security('Validation failed', {
+            schema: schema.constructor.name,
+            error: error instanceof z.ZodError ? error.errors : (error as Error).message,
+            inputType: typeof data,
+          });
+        }
+
+        monitoring.businessMetrics
+          .labels({ event_type: 'validation_failed', status: 'error', service: 'sveltekit' })
+          .inc();
+
+        throw error;
+      }
+    };
+  }
+
+  private static sanitizeObject(obj: any): any {
+    if (Array.isArray(obj)) {
+      return obj.map(item => this.sanitizeObject(item));
+    }
+    
+    if (obj !== null && typeof obj === 'object') {
+      const sanitized: any = {};
+      for (const [key, value] of Object.entries(obj)) {
+        sanitized[key] = this.sanitizeObject(value);
+      }
+      return sanitized;
+    }
+    
+    if (typeof obj === 'string') {
+      return SecuritySanitizer.sanitizeUserInput(obj);
+    }
+    
+    return obj;
+  }
+}
+
+// Pre-configured validators for common operations
+export const validators = {
+  createCase: ValidationMiddleware.create(legalSchemas.createCase),
+  uploadEvidence: ValidationMiddleware.create(legalSchemas.uploadEvidence),
+  ragQuery: ValidationMiddleware.create(legalSchemas.ragQuery),
+  userRegistration: ValidationMiddleware.create(legalSchemas.userRegistration),
+  pagination: ValidationMiddleware.create(commonSchemas.pagination),
+  searchQuery: ValidationMiddleware.create(z.object({ q: commonSchemas.searchQuery })),
+};
+```
+
+### SvelteKit Hook Integration
+```typescript
+// src/hooks.server.production.ts
+import type { Handle } from '@sveltejs/kit';
+import { sequence } from '@sveltejs/kit/hooks';
+import { rateLimiter } from '$lib/server/rate-limiting.production';
+import { logger, requestContextMiddleware } from '$lib/server/logger.production';
+import { monitoring, httpRequestsTotal, httpRequestDuration } from '$lib/server/monitoring.production';
+
+// Security headers
+const securityHeaders = {
+  'X-Frame-Options': 'DENY',
+  'X-Content-Type-Options': 'nosniff',
+  'X-XSS-Protection': '1; mode=block',
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+  'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';",
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+};
+
+// Rate limiting hook
+const rateLimitingHook: Handle = async ({ event, resolve }) => {
+  const { url, request } = event;
+  
+  // Apply different rate limits based on path
+  try {
+    if (url.pathname.startsWith('/api/auth/')) {
+      await rateLimiter.createMiddleware('auth')(request);
+    } else if (url.pathname.startsWith('/api/upload')) {
+      await rateLimiter.createMiddleware('upload')(request);
+    } else if (url.pathname.startsWith('/api/ai') || url.pathname.startsWith('/api/rag')) {
+      await rateLimiter.createMiddleware('ai_inference')(request);
+    } else if (url.pathname.startsWith('/api/search')) {
+      await rateLimiter.createMiddleware('search')(request);
+    } else if (url.pathname.startsWith('/api/')) {
+      await rateLimiter.createMiddleware('api_general')(request);
+    }
+  } catch (error) {
+    logger.warn('Rate limit exceeded', { 
+      path: url.pathname,
+      ip: request.headers.get('x-forwarded-for') || 'unknown',
+      userAgent: request.headers.get('user-agent') || 'unknown'
+    });
+
+    return new Response('Rate limit exceeded', { 
+      status: 429,
+      headers: {
+        'Retry-After': '60',
+        'Content-Type': 'application/json',
+        ...securityHeaders,
+      },
+      body: JSON.stringify({
+        error: 'Rate limit exceeded',
+        message: (error as Error).message,
+        retryAfter: 60,
+      })
+    });
+  }
+
+  return resolve(event);
+};
+
+// Request logging and monitoring hook
+const monitoringHook: Handle = async ({ event, resolve }) => {
+  const startTime = Date.now();
+  const { url, request } = event;
+  
+  // Set up request context for logging
+  const requestId = crypto.randomUUID();
+  const userAgent = request.headers.get('user-agent') || 'unknown';
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || 
+            request.headers.get('x-real-ip') || 
+            'unknown';
+
+  // Add request ID to event locals
+  event.locals.requestId = requestId;
+  
+  logger.info('Request started', {
+    method: request.method,
+    path: url.pathname,
+    userAgent: userAgent.substring(0, 100),
+    ip,
+    requestId,
+  });
+
+  let response: Response;
+  let statusCode = 200;
+
+  try {
+    response = await resolve(event, {
+      transformPageChunk: ({ html }) => {
+        // Add request ID to HTML for debugging
+        return html.replace(
+          '<head>',
+          `<head>\n<meta name="request-id" content="${requestId}">`
+        );
+      }
+    });
+    
+    statusCode = response.status;
+    
+  } catch (error) {
+    statusCode = 500;
+    logger.error('Request error', error as Error, {
+      method: request.method,
+      path: url.pathname,
+      requestId,
+    });
+    
+    throw error;
+  } finally {
+    const duration = (Date.now() - startTime) / 1000;
+    
+    // Record metrics
+    httpRequestsTotal
+      .labels({ 
+        method: request.method, 
+        route: url.pathname.split('/').slice(0, 3).join('/'), // Generalize route
+        status_code: statusCode.toString(),
+        service: 'sveltekit'
+      })
+      .inc();
+    
+    httpRequestDuration
+      .labels({ 
+        method: request.method, 
+        route: url.pathname.split('/').slice(0, 3).join('/'),
+        service: 'sveltekit'
+      })
+      .observe(duration);
+    
+    logger.info('Request completed', {
+      method: request.method,
+      path: url.pathname,
+      statusCode,
+      duration,
+      requestId,
+    });
+  }
+
+  // Add security headers and request ID
+  const headers = new Headers(response.headers);
+  Object.entries(securityHeaders).forEach(([key, value]) => {
+    headers.set(key, value);
+  });
+  headers.set('X-Request-ID', requestId);
+
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+};
+
+// Error handling hook  
+const errorHandlingHook: Handle = async ({ event, resolve }) => {
+  try {
+    return await resolve(event);
+  } catch (error) {
+    logger.error('Unhandled request error', error as Error, {
+      method: event.request.method,
+      path: event.url.pathname,
+      requestId: event.locals.requestId,
+    });
+
+    // Return user-friendly error response
+    return new Response(JSON.stringify({
+      error: 'Internal Server Error',
+      requestId: event.locals.requestId,
+      message: process.env.NODE_ENV === 'development' ? (error as Error).message : 'An error occurred'
+    }), {
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json',
+        ...securityHeaders,
+      }
+    });
+  }
+};
+
+// Combine all hooks in sequence
+export const handle = sequence(
+  errorHandlingHook,
+  rateLimitingHook, 
+  monitoringHook
+);
+```
+
+---
+
+## 2. Enhanced Logging and Monitoring System
+
+<function_calls>
+<invoke name="TodoWrite">
+<parameter name="todos">[{"content": "Implement production-quality error handling across all services", "status": "completed", "activeForm": "Implementing production-quality error handling across all services"}, {"content": "Add comprehensive logging and monitoring to API client", "status": "in_progress", "activeForm": "Adding comprehensive logging and monitoring to API client"}, {"content": "Implement connection pooling and retry logic for database operations", "status": "pending", "activeForm": "Implementing connection pooling and retry logic for database operations"}, {"content": "Add rate limiting and request validation to all API endpoints", "status": "pending", "activeForm": "Adding rate limiting and request validation to all API endpoints"}, {"content": "Implement circuit breakers for external service calls", "status": "pending", "activeForm": "Implementing circuit breakers for external service calls"}, {"content": "Optimize caching strategies with TTL and invalidation patterns", "status": "pending", "activeForm": "Optimizing caching strategies with TTL and invalidation patterns"}, {"content": "Implement security headers and input sanitization", "status": "pending", "activeForm": "Implementing security headers and input sanitization"}]

@@ -5,6 +5,7 @@
 
 import { z } from 'zod';
 import type { EvidenceMetadata } from '$lib/server/db/schema-unified-postgres.js';
+import { URL } from "url";
 
 // File validation constants
 const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
@@ -28,7 +29,7 @@ const EVIDENCE_TYPE_MAPPINGS = {
 // Additional types from existing file-upload.ts for compatibility
 export const legacyEvidenceTypeEnum = z.enum([
   'physical_evidence',
-  'digital_evidence', 
+  'digital_evidence',
   'witness_testimony',
   'expert_opinion',
   'documents',
@@ -56,16 +57,16 @@ export const evidenceUploadSchema = z.object({
   title: z.string().min(1, 'Title is required').max(255, 'Title must be less than 255 characters'),
   description: z.string().optional(),
   evidence_type: z.enum(['PDF', 'IMAGE', 'VIDEO', 'AUDIO', 'TEXT', 'LINK', 'UNKNOWN']).default('UNKNOWN'),
-  
+
   // File information (populated during upload)
   file_url: z.string().url().optional(),
   storage_key: z.string().optional(),
   file_hash: z.string().optional(),
   file_size: z.string().optional(),
-  
+
   // Rich metadata (type-specific)
   metadata: z.any().optional(), // Will be typed based on evidence_type
-  
+
   // Link-specific field
   link_url: z.string().url().optional(),
 
@@ -77,7 +78,7 @@ export const evidenceUploadSchema = z.object({
   collectedBy: z.string().optional(),
   location: z.string().optional(),
   chainOfCustody: z.array(chainOfCustodyEntrySchema).default([]),
-  
+
   // AI processing options
   enableAiAnalysis: z.boolean().default(true),
   enableOcr: z.boolean().default(true),
@@ -86,7 +87,7 @@ export const evidenceUploadSchema = z.object({
 
   // Legacy evidence type support
   legacyEvidenceType: legacyEvidenceTypeEnum.optional(),
-  
+
   // OCR and analysis results
   ocrResult: z.object({
     extractedText: z.string().optional(),

@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * Upload Completion Webhook - MinIO → Ingestion Pipeline Trigger
@@ -10,6 +10,8 @@ import { redis } from '$lib/server/cache/redis-service';
 import { minioService } from '$lib/server/storage/minio-service';
 import { db } from '$lib/server/db/client';
 import { evidence, documents } from '$lib/db/schema';
+import crypto from "crypto";
+import { URL } from "url";
 
 export interface WebhookEvent {
   eventName: string;

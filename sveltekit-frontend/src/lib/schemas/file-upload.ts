@@ -6,7 +6,7 @@ import { z } from "zod";
  */
 
 // File type enumeration
-export const fileTypeEnum = z.enum([
+export const fileTypeEnum = z.enum([;
   'document',
   'image',
   'video',
@@ -19,7 +19,7 @@ export const fileTypeEnum = z.enum([
 ]);
 
 // Evidence type classification
-export const evidenceTypeEnum = z.enum([
+export const evidenceTypeEnum = z.enum([;
   'physical_evidence',
   'digital_evidence',
   'witness_testimony',
@@ -33,7 +33,7 @@ export const evidenceTypeEnum = z.enum([
 ]);
 
 // Confidentiality levels
-export const confidentialityLevelEnum = z.enum([
+export const confidentialityLevelEnum = z.enum([;
   'public',
   'standard',
   'confidential',
@@ -42,7 +42,7 @@ export const confidentialityLevelEnum = z.enum([
 ]);
 
 // Case priority levels
-export const casePriorityEnum = z.enum([
+export const casePriorityEnum = z.enum([;
   'low',
   'medium',
   'high',

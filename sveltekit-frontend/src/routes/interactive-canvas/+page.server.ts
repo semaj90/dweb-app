@@ -1,9 +1,10 @@
 
-import { canvasStates, cases, evidence } from '../../lib/server/db/schema-postgres';
+import { canvasStates, cases, evidence } from '$lib/server/db/schema-postgres';
 import { eq } from "drizzle-orm";
-import type { PageServerLoad } from './$types';
+import type { PageServerLoad } from './$types.js';
 import { redirect } from '@sveltejs/kit';
-import { db } from '../../lib/server/db/index';
+import { db } from '$lib/server/db/index';
+import { URL } from "url";
 
 export const load: PageServerLoad = async ({ locals, url }) => {
   if (!locals.user) {

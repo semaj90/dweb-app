@@ -1,3 +1,7 @@
+/// <reference types="vite/client" />
+import path from "path";
+import crypto from "crypto";
+import { URL } from "url";
 // Browser polyfills for Node.js modules and enhanced compatibility
 // This ensures Bits UI, Melt UI, and other dependencies work properly in browser context
 
@@ -106,7 +110,7 @@ export const urlUtils = {
 };
 
 // Enhanced fetch with timeout and better error handling
-export const enhancedFetch = async (
+export const enhancedFetch = async (;
   url: string, 
   options: RequestInit & { timeout?: number } = {}
 ): Promise<Response> => {
@@ -140,7 +144,7 @@ export const enhancedFetch = async (
 };
 
 // Debounce utility for search and other operations
-export const debounce = <T extends (...args: any[]) => any>(
+export const debounce = <T extends (...args: any[]) => any>(;
   func: T,
   wait: number
 ): ((...args: Parameters<T>) => void) => {
@@ -153,7 +157,7 @@ export const debounce = <T extends (...args: any[]) => any>(
 };
 
 // Throttle utility for performance-sensitive operations
-export const throttle = <T extends (...args: any[]) => any>(
+export const throttle = <T extends (...args: any[]) => any>(;
   func: T,
   limit: number
 ): ((...args: Parameters<T>) => void) => {

@@ -1,10 +1,11 @@
+import os from "os";
 /**
  * Unified Configuration Management System
  * Production-ready configuration management for Legal AI Platform
  * Supports Windows-native deployment with environment-based configuration
  */
 
-const dev = process.env.NODE_ENV === 'development';
+const dev = import.meta.env.NODE_ENV === 'development';
 const browser = false; // Server-side config
 
 // Configuration interfaces for type safety
@@ -372,7 +373,7 @@ class ConfigManager {
 
   private generateSecretKey(): string {
     // Generate a secure secret key for JWT
-    if (!browser && typeof process !== 'undefined' && process.env.NODE_ENV === 'development') {
+    if (!browser && typeof process !== 'undefined' && import.meta.env.NODE_ENV === 'development') {
       return 'dev-secret-key-change-in-production';
     }
     
@@ -575,7 +576,7 @@ class ConfigManager {
 
 // Export singleton instance
 export const config = new ConfigManager();
-
+;
 // Export utility functions
 export function getConfig(): UnifiedConfig {
   return config.getConfig();

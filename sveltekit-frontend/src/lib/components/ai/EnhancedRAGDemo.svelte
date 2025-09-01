@@ -166,14 +166,14 @@ IN WITNESS WHEREOF, the parties have executed this MOU as of the date first writ
       class="tab px-4 py-2 font-medium {activeTab === 'analyze'
         ? 'border-b-2 border-blue-500 text-blue-600'
         : 'text-gray-500 hover:text-gray-700'}"
-      click={() => (activeTab = 'analyze')}>
+      on:onclick={() => (activeTab = 'analyze')}>
       Document Analysis
     </button>
     <button
       class="tab px-4 py-2 font-medium {activeTab === 'query'
         ? 'border-b-2 border-blue-500 text-blue-600'
         : 'text-gray-500 hover:text-gray-700'}"
-      click={() => (activeTab = 'query')}>
+      on:onclick={() => (activeTab = 'query')}>
       Enhanced RAG Query
     </button>
   </div>
@@ -208,7 +208,7 @@ IN WITNESS WHEREOF, the parties have executed this MOU as of the date first writ
                 )} words
               </div>
               <Button
-                on:click={analyzeDocument}
+                on:on:click={analyzeDocument}
                 disabled={isAnalyzing || !sampleLegalText.trim()}
                 class="px-6">
                 {isAnalyzing ? 'Analyzing...' : 'Analyze Document'}
@@ -409,7 +409,7 @@ IN WITNESS WHEREOF, the parties have executed this MOU as of the date first writ
 
             <div class="flex justify-end">
               <Button
-                on:click={performRAGQuery}
+                on:on:click={performRAGQuery}
                 disabled={isAnalyzing || !queryText.trim()}
                 class="px-6">
                 {isAnalyzing ? 'Querying...' : 'Execute RAG Query'}

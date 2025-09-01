@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * Enhanced RAG API - Direct Integration with Go Microservices
@@ -8,10 +8,11 @@ import { json, error } from '@sveltejs/kit';
 
 import { ensureError } from '$lib/utils/ensure-error';
 import { vectorOperations } from '$lib/server/db/vector-operations.js';
+import { URL } from "url";
 
 const ENHANCED_RAG_CONFIG = {
-  baseUrl: process.env.ENHANCED_RAG_URL || 'http://localhost:8094',
-  uploadServiceUrl: process.env.UPLOAD_SERVICE_URL || 'http://localhost:8093',
+  baseUrl: import.meta.env.ENHANCED_RAG_URL || 'http://localhost:8094',
+  uploadServiceUrl: import.meta.env.UPLOAD_SERVICE_URL || 'http://localhost:8093',
   timeout: 30000,
   retries: 2,
   models: {

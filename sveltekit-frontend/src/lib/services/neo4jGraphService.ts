@@ -132,12 +132,12 @@ export const graphSchemaStore = writable<LegalGraphSchema>({
 });
 
 // Derived stores
-export const isGraphHealthy = derived(
+export const isGraphHealthy = derived(;
   neo4jStatsStore,
   $stats => $stats.nodeCount > 0 && $stats.avgQueryTime < 1000
 );
 
-export const graphComplexity = derived(
+export const graphComplexity = derived(;
   neo4jStatsStore,
   $stats => {
     if ($stats.nodeCount === 0) return 'empty';

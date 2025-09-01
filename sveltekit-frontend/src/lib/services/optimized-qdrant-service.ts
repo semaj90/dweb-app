@@ -6,8 +6,8 @@
 
 import { QdrantClient } from '@qdrant/js-client-rest';
 import type { PointStruct, ScoredPoint, SearchParams } from '@qdrant/js-client-rest';
-import { LegalDocumentSOM } from './som-clustering';
-import { NESCacheOrchestrator } from './nes-cache-orchestrator';
+import { LegalDocumentSOM } from './som-clustering.js';
+import { NESCacheOrchestrator } from './nes-cache-orchestrator.js';
 import { db } from '$lib/server/db/index.js';
 import { evidence, cases, legalDocuments } from '$lib/server/db/unified-schema.js';
 import { eq, sql, inArray, desc } from 'drizzle-orm';
@@ -60,8 +60,8 @@ export class OptimizedQdrantService {
 
   constructor(config: QdrantConfig = {}) {
     this.config = {
-      url: config.url || process.env.QDRANT_URL || 'http://localhost:6333',
-      apiKey: config.apiKey || process.env.QDRANT_API_KEY || '',
+      url: config.url || import.meta.env.QDRANT_URL || 'http://localhost:6333',
+      apiKey: config.apiKey || import.meta.env.QDRANT_API_KEY || '',
       timeout: config.timeout || 30000,
       collectionName: config.collectionName || 'legal_vectors',
       enableBatching: config.enableBatching ?? true,

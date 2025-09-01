@@ -62,29 +62,29 @@
 	}: AllProps = $props();
 
 	// State
-	let messages: Message[] = [];
-	let inputValue = '';
-	let isTyping = false;
-	let isConnected = true;
-	let isDragging = false;
-	let dragOffset = { x: 0, y: 0 };
-	let position = { x: 0, y: 0 };
-	let settingsOpen = false;
+let messages = $state<Message[] >([]);
+let inputValue = $state('');
+let isTyping = $state(false);
+let isConnected = $state(true);
+let isDragging = $state(false);
+let dragOffset = $state({ x: 0, y: 0 });
+let position = $state({ x: 0, y: 0 });
+let settingsOpen = $state(false);
 
 	// Settings
-	let settings: ChatSettings = {
+let settings = $state<ChatSettings >({
 		model: modelName,
 		temperature: 0.1,
 		maxTokens: 512,
 		topP: 0.9,
 		systemPrompt:
 			'You are a specialized Legal AI Assistant powered by Gemma 3. You excel at contract analysis, legal research, and providing professional legal guidance.'
-	};
+	});
 
 	// Elements (nullable for binds)
-	let messagesContainer: HTMLDivElement | null = null;
-	let inputElement: HTMLTextAreaElement | null = null;
-	let windowElement: HTMLDivElement | null = null;
+let messagesContainer = $state<HTMLDivElement | null >(null);
+let inputElement = $state<HTMLTextAreaElement | null >(null);
+let windowElement = $state<HTMLDivElement | null >(null);
 
 	// Initialize welcome message
 	onMount(() => {
@@ -360,7 +360,7 @@ How can I assist you with your legal needs today?`);
 		aria-labelledby="chat-window-title"
 		aria-describedby="chat-window-description"
 		class="fixed bg-yorha-bg-secondary border-2 border-yorha-primary shadow-2xl z-50 flex flex-col overflow-hidden font-mono focus-within:ring-2 focus-within:ring-yorha-primary/50"
-		class:opacity-50={isDragging}
+	 class:opacity-50={isDragging}
 		style="
 			width: {width}px;
 			height: {minimized ? 60 : height}px;
@@ -386,7 +386,7 @@ How can I assist you with your legal needs today?`);
 
 		<header
 			class="flex items-center justify-between p-4 bg-gradient-to-r from-yorha-bg-tertiary to-yorha-bg-secondary border-b border-yorha-border cursor-move select-none relative"
-			on:mousedown={startDrag}
+			onmousedown={startDrag}
 			role="banner"
 		>
 			<div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yorha-primary to-transparent animate-scan"></div>
@@ -422,7 +422,7 @@ How can I assist you with your legal needs today?`);
 				<button
 					type="button"
 					class="w-8 h-8 flex items-center justify-center border border-yorha-border text-yorha-text-secondary hover:border-yorha-primary hover:text-yorha-primary focus:border-yorha-primary focus:outline-none focus:ring-2 focus:ring-yorha-primary/50 transition-colors"
-					on:click={toggleSettings}
+					on:on:onclick={toggleSettings}
 					aria-label={settingsOpen ? 'Close settings' : 'Open settings'}
 					aria-expanded={settingsOpen}
 				>
@@ -435,7 +435,7 @@ How can I assist you with your legal needs today?`);
 				<button
 					type="button"
 					class="w-8 h-8 flex items-center justify-center border border-yorha-border text-yorha-text-secondary hover:border-yorha-primary hover:text-yorha-primary focus:border-yorha-primary focus:outline-none focus:ring-2 focus:ring-yorha-primary/50 transition-colors"
-					on:click={minimizeWindow}
+					on:on:onclick={minimizeWindow}
 					aria-label={minimized ? 'Restore window' : 'Minimize window'}
 				>
 					<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -450,7 +450,7 @@ How can I assist you with your legal needs today?`);
 				<button
 					type="button"
 					class="w-8 h-8 flex items-center justify-center border border-yorha-border text-yorha-text-secondary hover:border-red-500 hover:text-red-500 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-colors"
-					on:click={closeWindow}
+					on:on:onclick={closeWindow}
 					aria-label="Close chat window"
 				>
 					<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -462,7 +462,7 @@ How can I assist you with your legal needs today?`);
 
 		{#if !minimized}
 			{#if settingsOpen}
-				<div class="border-b border-yorha-border bg-yorha-bg-primary p-4" transition:fly={{ y: -50, duration: 200 }}>
+				<div class="border-b border-yorha-border bg-yorha-bg-primary p-4" transitifly={{ y: -50, duration: 200 }}>
 					<div class="space-y-3">
 						<div>
 							<label class="block text-xs text-yorha-text-secondary mb-1">Model</label>
@@ -483,10 +483,10 @@ How can I assist you with your legal needs today?`);
 						</div>
 
 						<div class="flex space-x-2">
-							<button type="button" on:click={updateSettings} class="flex-1 bg-yorha-primary text-yorha-bg-primary text-xs p-2 hover:bg-yorha-secondary transition-colors">
+							<button type="button" on:on:onclick={updateSettings} class="flex-1 bg-yorha-primary text-yorha-bg-primary text-xs p-2 hover:bg-yorha-secondary transition-colors">
 								Apply
 							</button>
-							<button type="button" on:click={clearChat} class="flex-1 bg-yorha-error text-white text-xs p-2 hover:bg-red-600 transition-colors">
+							<button type="button" on:on:onclick={clearChat} class="flex-1 bg-yorha-error text-white text-xs p-2 hover:bg-red-600 transition-colors">
 								Clear
 							</button>
 						</div>
@@ -499,9 +499,9 @@ How can I assist you with your legal needs today?`);
 					<article class="flex" class:justify-end={message.role === 'user'} class:justify-start={message.role !== 'user'} in:fly={{ y: 20, duration: 300 }}>
 						<div
 							class="max-w-[85%] border border-yorha-border p-3 relative shadow-sm"
-							class:bg-yorha-bg-tertiary={message.role === 'user'}
-							class:border-yorha-primary={message.role === 'user'}
-							class:bg-yorha-bg-secondary={message.role !== 'user'}
+						 class:bg-yorha-bg-tertiary={message.role === 'user'}
+						 class:border-yorha-primary={message.role === 'user'}
+						 class:bg-yorha-bg-secondary={message.role !== 'user'}
 							role={message.role === 'system' ? 'status' : 'article'}
 						>
 							{#if message.role === 'assistant'}
@@ -515,7 +515,7 @@ How can I assist you with your legal needs today?`);
 
 							{#if message.error}
 								<div class="mt-2 text-xs text-red-400" role="alert">
-									Failed to get response. <button on:click={sendMessage} class="underline hover:no-underline focus:outline-none focus:ring-2 focus:ring-red-400/50" aria-label="Retry sending message">Retry</button>
+									Failed to get response. <button on:on:onclick={sendMessage} class="underline hover:no-underline focus:outline-none focus:ring-2 focus:ring-red-400/50" aria-label="Retry sending message">Retry</button>
 								</div>
 							{/if}
 
@@ -548,8 +548,8 @@ How can I assist you with your legal needs today?`);
 					<textarea
 						bind:this={inputElement}
 						bind:value={inputValue}
-						on:keydown={handleKeyDown}
-						on:input={autoResize}
+						onkeydown={handleKeyDown}
+						oninput={autoResize}
 						placeholder="Ask me about contracts, liability, compliance, or any legal question..."
 						class="flex-1 bg-yorha-bg-tertiary border border-yorha-border text-yorha-text-primary placeholder-yorha-text-muted p-3 text-sm resize-none focus:border-yorha-primary focus:outline-none focus:ring-2 focus:ring-yorha-primary/50 transition-colors"
 						rows="1"

@@ -15,8 +15,8 @@
   import { AlertCircle, CheckCircle, Cpu, Zap, Activity, Code, Brain, Target } from 'lucide-svelte';
 
   // System instances
-  let ragEngine: any = null;
-  let feedbackLoop: any = null;
+let ragEngine = $state<any >(null);
+let feedbackLoop = $state<any >(null);
   let systemInitialized = $state(false);
 
   // Real-time state
@@ -269,18 +269,18 @@
     <!-- Controls -->
     <div class="flex gap-4 mb-8 justify-center">
       <Button
-        on:click={startMonitoring}
+        on:on:click={startMonitoring}
         disabled={!systemInitialized || isMonitoring}
         class="bg-green-600 hover:bg-green-700">
         Start Monitoring
       </Button>
 
-      <Button on:click={stopMonitoring} disabled={!isMonitoring} class="bg-red-600 hover:bg-red-700">
+      <Button on:on:click={stopMonitoring} disabled={!isMonitoring} class="bg-red-600 hover:bg-red-700">
         Stop Monitoring
       </Button>
 
       <Button
-        on:click={addTestError}
+        on:on:click={addTestError}
         disabled={!systemInitialized}
         class="bg-orange-600 hover:bg-orange-700">
         Add Test Error
@@ -304,8 +304,8 @@
             <button
               type="button"
               class="w-full p-3 rounded-lg bg-slate-700/50 border border-slate-600 cursor-pointer hover:bg-slate-700 transition-colors text-left"
-              click={() => (selectedEvent = event)}
-              on:keydown={(e) => e.key === 'Enter' && (selectedEvent = event)}
+              on:onclick={() => (selectedEvent = event)}
+              keydown={(e) => e.key === 'Enter' && (selectedEvent = event)}
               class:ring-2={selectedEvent?.logs[0]?.id === event.logs[0]?.id}
               class:ring-blue-500={selectedEvent?.logs[0]?.id === event.logs[0]?.id}
               aria-label="Select event: {event.logs[0]?.message || 'Unknown event'}"
@@ -354,7 +354,7 @@
             {@const IconComponent = getPatchIcon(patch)}
             <div
               class="p-3 rounded-lg bg-slate-700/50 border border-slate-600 cursor-pointer hover:bg-slate-700 transition-colors"
-              click={() => (selectedPatch = patch)}
+              on:onclick={() => (selectedPatch = patch)}
               class:ring-2={selectedPatch?.id === patch.id}
               class:ring-green-500={selectedPatch?.id === patch.id}>
               <div class="flex items-start gap-3">

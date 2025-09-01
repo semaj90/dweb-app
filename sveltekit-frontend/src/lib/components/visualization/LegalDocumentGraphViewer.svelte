@@ -72,12 +72,11 @@
   // ============================================================================
   // WEBGPU & CANVAS MANAGEMENT
   // ============================================================================
-
-  let canvas: HTMLCanvasElement;
-  let graphEngine: WebGPULegalDocumentGraph | null = null;
-  let tensorStore: DimensionalTensorStore | null = null;
-  let animationFrame: number | null = null;
-  let resizeObserver: ResizeObserver | null = null;
+let canvas = $state<HTMLCanvasElement;
+  let graphEngine: WebGPULegalDocumentGraph | null >(null);
+let tensorStore = $state<DimensionalTensorStore | null >(null);
+let animationFrame = $state<number | null >(null);
+let resizeObserver = $state<ResizeObserver | null >(null);
 
   // ============================================================================
   // INITIALIZATION
@@ -211,9 +210,8 @@
    */
   function setupEventListeners(): void {
     if (!canvas) return;
-
-    let isDragging = false;
-    let lastMousePos = { x: 0, y: 0 };
+let isDragging = $state(false);
+let lastMousePos = $state({ x: 0, y: 0 });
 
     // Mouse events
     canvas.addEventListener('mousedown', (e) => {
@@ -265,7 +263,7 @@
     });
 
     // Touch events for mobile
-    let touchStart = { x: 0, y: 0 };
+let touchStart = $state({ x: 0, y: 0 });
     
     canvas.addEventListener('touchstart', (e) => {
       const touch = e.touches[0];
@@ -606,7 +604,7 @@
       <div class="error-icon">⚠️</div>
       <h3>WebGPU Error</h3>
       <p>{$error}</p>
-      <button click={() => window.location.reload()}>Reload Page</button>
+      <button on:onclick={() => window.location.reload()}>Reload Page</button>
     </div>
   {/if}
 
@@ -644,15 +642,15 @@
   <!-- Controls Panel -->
   {#if $canInteract}
     <div class="controls-panel">
-      <button click={resetCamera} title="Reset Camera">
+      <button on:onclick={resetCamera} title="Reset Camera">
         🎯
       </button>
       
-      <button click={togglePhysics} title="Toggle Physics" class:active={enablePhysics}>
+      <button on:onclick={togglePhysics} title="Toggle Physics" class:active={enablePhysics}>
         ⚡
       </button>
       
-      <button click={() => $renderState.autoRotate = !$renderState.autoRotate} 
+      <button on:onclick={() => $renderState.autoRotate = !$renderState.autoRotate} 
               title="Auto Rotate" 
               class:active={$renderState.autoRotate}>
         🔄
@@ -666,11 +664,11 @@
         <option value="precedent">Precedents</option>
       </select>
 
-      <button click={saveGraphState} title="Save State">
+      <button on:onclick={saveGraphState} title="Save State">
         💾
       </button>
 
-      <button click={async () => {
+      <button on:onclick={async () => {
         const blob = await exportImage();
         if (blob) {
           const url = URL.createObjectURL(blob);
@@ -705,7 +703,7 @@
   documentId={$documentDetailsState.selectedDocumentId || ''}
   isVisible={$documentDetailsState.isVisible}
   onClose={closeDocumentDetails}
-  on:relatedDocumentsLoaded={(event) => {
+  relatedDocumentsLoaded={(event) => {
     // Update graph visualization when related documents are loaded
     if ($documentDetailsState.selectedDocumentId) {
       updateGraphWithRelations($documentDetailsState.selectedDocumentId, event.detail.relatedDocuments);

@@ -1,7 +1,7 @@
 // Svelte 5 TypeScript Patterns - Progressive Type Replacement
 // Replaces generic 'any' shims with proper Svelte 5 type definitions
 
-import type { Component, ComponentProps, Snippet } from 'svelte';
+import type {     Component, ComponentProps, Snippet     } from 'svelte';
 import type { HTMLButtonAttributes, HTMLInputAttributes } from 'svelte/elements';
 
 // === COMPONENT PROPS PATTERNS ===

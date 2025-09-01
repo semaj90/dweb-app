@@ -51,7 +51,7 @@
 	}: Props = $props();
 
 	let inputElement: HTMLInputElement;
-	let isFocused = false;
+let isFocused = $state(false);
 
 	const hasValue = $derived(value !== '' && value !== null && value !== undefined);
 	const showClearButton = $derived(clearable && hasValue && !disabled && !readonly);
@@ -171,8 +171,8 @@
 				aria-describedby={(hasError ? errorId : '') + (hint ? ' ' + hintId : '')}
 				input={handleInput}
 				change={handleChange}
-				on:focus={handleFocus}
-				on:blur={handleBlur}
+				onfocus={handleFocus}
+				onblur={handleBlur}
 				{...restProps}
 			/>
 		{:else if type === 'email'}
@@ -190,8 +190,8 @@
 				aria-describedby={(hasError ? errorId : '') + (hint ? ' ' + hintId : '')}
 				input={handleInput}
 				change={handleChange}
-				on:focus={handleFocus}
-				on:blur={handleBlur}
+				onfocus={handleFocus}
+				onblur={handleBlur}
 				{...restProps}
 			/>
 		{:else}
@@ -209,8 +209,8 @@
 				aria-describedby={(hasError ? errorId : '') + (hint ? ' ' + hintId : '')}
 				input={handleInput}
 				change={handleChange}
-				on:focus={handleFocus}
-				on:blur={handleBlur}
+				onfocus={handleFocus}
+				onblur={handleBlur}
 				{...restProps}
 			/>
 		{/if}
@@ -239,7 +239,7 @@
 			<button
 				type="button"
 				class="space-y-4"
-				click={handleClear}
+				onclick={handleClear}
 				tabindex={-1}
 				aria-label="Clear input"
 			>

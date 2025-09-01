@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { URL } from "url";
 import type { RequestHandler } from './$types';
 

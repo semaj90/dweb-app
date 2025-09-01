@@ -7,7 +7,7 @@ import {
   text,
   timestamp,
   uuid,
-  varchar,
+  varchar
 } from "drizzle-orm/pg-core";
 
 // Chat embeddings table for AI conversations
@@ -19,7 +19,7 @@ export const chatEmbeddings = pgTable("chat_embeddings", {
   embedding: jsonb("embedding").notNull(),
   metadata: jsonb("metadata"),
   createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
 });
 
 // Evidence embeddings table
@@ -30,7 +30,7 @@ export const evidenceVectors = pgTable("evidence_vectors", {
   embedding: jsonb("embedding").notNull(),
   metadata: jsonb("metadata"),
   createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
 });
 
 // Case embeddings table
@@ -42,7 +42,7 @@ export const caseEmbeddings = pgTable("case_embeddings", {
   embedding: jsonb("embedding").notNull(),
   metadata: jsonb("metadata"),
   createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
 });
 
 // User embeddings table
@@ -54,7 +54,7 @@ export const userEmbeddings = pgTable("user_embeddings", {
   embedding: jsonb("embedding").notNull(),
   metadata: jsonb("metadata"),
   createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
 });
 
 // Document embeddings table
@@ -66,7 +66,7 @@ export const documentEmbeddings = pgTable("document_embeddings", {
   embedding: jsonb("embedding").notNull(),
   metadata: jsonb("metadata"),
   createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
 });
 
 // Vector similarity table
@@ -78,7 +78,7 @@ export const vectorSimilarity = pgTable("vector_similarity", {
   targetType: varchar("target_type", { length: 50 }).notNull(),
   similarity: real("similarity").notNull(),
   metadata: jsonb("metadata"),
-  createdAt: timestamp("created_at").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow()
 });
 
 // Semantic search cache
@@ -90,7 +90,7 @@ export const semanticSearchCache = pgTable("semantic_search_cache", {
   embedding: jsonb("embedding").notNull(),
   metadata: jsonb("metadata"),
   createdAt: timestamp("created_at").defaultNow(),
-  expiresAt: timestamp("expires_at"),
+  expiresAt: timestamp("expires_at")
 });
 
 // Export types for use in services
@@ -135,3 +135,4 @@ export const evidenceEmbeddings_simple = evidenceVectors;
 export const documentEmbeddings_simple = documentEmbeddings;
 export const vectorSimilarity_simple = vectorSimilarity;
 export const semanticSearchCache_simple = semanticSearchCache;
+;

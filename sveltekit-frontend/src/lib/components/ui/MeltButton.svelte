@@ -5,7 +5,7 @@
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	// Dynamically import the melt action only in the browser to avoid SSR / build errors
-	let melt: any;
+let melt = $state<any;
 
 	// User analytics and tracking
 	import { userAnalyticsStore } from '$lib/stores/analytics';
@@ -15,7 +15,7 @@
 	// JSON SSR rendering support
 	import type { UIJsonSSRConfig, ButtonAnalyticsEvent } from '$lib/types/ui-json-ssr';
 
-	const buttonVariants = cva(
+	const buttonVariants >(cva(
 		'inline-flex items-center justify-center font-medium transition-all duration-200 focus-visible:outline-none nes-focus disabled:opacity-50 disabled:pointer-events-none cursor-pointer',
 		{
 			variants: {
@@ -48,7 +48,7 @@
 				size: 'default'
 			}
 		}
-	);
+	));
 
 	interface Props {
 		variant?: VariantProps<typeof buttonVariants>['variant'];
@@ -91,7 +91,7 @@
 		loadingText = 'Loading...',
 		className = '',
 		children = undefined,
-		onclick = undefined,
+		on:on:click= undefined,
 		id = (typeof globalThis !== 'undefined' && (globalThis.crypto as any)?.randomUUID)
 			? (globalThis.crypto as any).randomUUID()
 			: `melt-btn-${Math.random().toString(36).slice(2, 9)}`,
@@ -107,13 +107,13 @@
 		meltElement = undefined,
 		...restProps
 	}: Props & Record<string, any> = $props();
-	// Collect any remaining attributes via $$restProps
+	// Collect any remaining attributes via $restProps
 	// (removed explicit declare to avoid redeclaration errors)
 
 	// Reactive variables declared for TypeScript
-	let isDisabled: boolean = false;
-	let buttonClass: string = '';
-	let finalMeltElement: any = {};
+let isDisabled = $state<boolean >(false);
+let buttonClass = $state<string >('');
+let finalMeltElement = $state<any >({});
 
 	// Reactive values
 	$: isDisabled = disabled || loading;
@@ -122,10 +122,10 @@
 
 	// Provide a stable action wrapper so Svelte has a defined action at compile-time
 	function maybeMelt(node: HTMLElement, params: any) {
-		let cleanup: any;
+let cleanup = $state<any;
 		// Only call the real melt action if running in browser and it's available
-		if (browser && typeof melt === 'function') {
-			cleanup = melt(node, params);
+		if (browser && typeof melt >(== 'function') {
+			cleanup = melt(node, params));
 		}
 		return {
 			update(newParams: any) {
@@ -223,7 +223,7 @@
 		aria-disabled={isDisabled}
 		data-testid={dataTestid || 'melt-button'}
 		use:melt={melt ? finalMeltElement : undefined}
-		onclick={(e: MouseEvent) => {
+		on:onclick={(e: MouseEvent) => {
 			if (isDisabled) {
 				e.preventDefault();
 				return;
@@ -240,7 +240,7 @@
 				aria-hidden="true"
 			>
 		use:maybeMelt={finalMeltElement}
-		on:click={handleClick}
+		on:on:click={handleClick}
 	>
 					fill="currentColor"
 					d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
@@ -248,7 +248,7 @@
 			</svg>
 			{loadingText}
 		{:else}
-			<slot />
+			{@render children?.()}
 			{#if children}{children}{/if}
 		{/if}
 	</a>
@@ -260,7 +260,7 @@
 		class={buttonClass}
 		data-testid={dataTestid || 'melt-button'}
 		use:melt={melt ? finalMeltElement : undefined}
-		on:click={handleClick}
+		on:onclick={handleClick}
 	>
 		{#if loading}
 			<svg
@@ -279,7 +279,7 @@
 			</svg>
 			{loadingText}
 		{:else}
-			<slot />
+			{@render children?.()}
 			{#if children}{children}{/if}
 		{/if}
 	</button>

@@ -4,8 +4,9 @@ import { error, fail } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
 import { zod } from "sveltekit-superforms/adapters";
 import { db } from "$lib/server/db/index";
-import type { PageServerLoad } from './$types';
+import type { PageServerLoad } from './$types.js';
 import { z } from "zod";
+import { URL } from "url";
 
 // Schema for validating evidence form data
 const evidenceSchema = z.object({

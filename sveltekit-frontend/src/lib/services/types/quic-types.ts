@@ -82,8 +82,8 @@ export type QUICEventType =
   | 'connection:lost'
   | 'stream:opened'
   | 'stream:closed'
-  | 'data:received'
-  | 'error:network'
+  | 'data:received';
+  | 'error:network';
   | 'error:protocol';
 
 export interface QUICEvent {

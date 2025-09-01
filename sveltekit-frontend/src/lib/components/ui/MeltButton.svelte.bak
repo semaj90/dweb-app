@@ -1,0 +1,286 @@
+<script lang="ts">
+	// Removed unused 'Snippet' type import (Svelte does not export this type)
+	import { cva, type VariantProps } from 'class-variance-authority';
+	import { cn } from '$lib/utils';
+	import { createEventDispatcher, onMount } from 'svelte';
+	import { browser } from '$app/environment';
+	// Dynamically import the melt action only in the browser to avoid SSR / build errors
+	let melt: any;
+
+	// User analytics and tracking
+	import { userAnalyticsStore } from '$lib/stores/analytics';
+	import { lokiButtonCache } from '$lib/services/loki-cache';
+	import { searchableButtonIndex } from '$lib/services/fuse-search';
+
+	// JSON SSR rendering support
+	import type { UIJsonSSRConfig, ButtonAnalyticsEvent } from '$lib/types/ui-json-ssr';
+
+	const buttonVariants = cva(
+		'inline-flex items-center justify-center font-medium transition-all duration-200 focus-visible:outline-none nes-focus disabled:opacity-50 disabled:pointer-events-none cursor-pointer',
+		{
+			variants: {
+				variant: {
+					default: 'btn-nes-primary',
+					destructive: 'btn-nes-danger',
+					outline: 'border-2 border-gray-400 bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800',
+					secondary: 'btn-nes-secondary',
+					ghost: 'hover:bg-gray-100 dark:hover:bg-gray-800 rounded-none',
+					link: 'text-blue-500 underline-offset-4 hover:underline hover:text-blue-600',
+					legal: 'nes-legal-priority-medium yorha-3d-button',
+					evidence: 'nes-legal-priority-critical yorha-3d-button',
+					case: 'nes-legal-priority-high yorha-3d-button',
+					success: 'btn-nes-success',
+					yorha: 'yorha-3d-button bg-black/80 text-yellow-400 border-2 border-yellow-400',
+					neural: 'neural-sprite-active bg-gradient-to-r from-purple-600 to-blue-600 text-white border-2 border-purple-400'
+				},
+				size: {
+					default: 'h-10 px-4 py-2',
+					sm: 'h-9 rounded-md px-3',
+					lg: 'h-11 rounded-md px-8',
+					icon: 'h-8 w-8',
+					icon_sm: 'h-6 w-6',
+					icon_lg: 'h-12 w-12',
+					xs: 'h-8 rounded px-2 text-xs'
+				}
+			},
+			defaultVariants: {
+				variant: 'default',
+				size: 'default'
+			}
+		}
+	);
+
+	interface Props {
+		variant?: VariantProps<typeof buttonVariants>['variant'];
+		size?: VariantProps<typeof buttonVariants>['size'];
+		disabled?: boolean;
+		type?: 'button' | 'submit' | 'reset';
+		href?: string;
+		target?: string;
+		loading?: boolean;
+		loadingText?: string;
+		className?: string;
+		children?: any | string;
+		onclick?: (event: MouseEvent) => void;
+
+		// Enhanced modular properties
+		id?: string;
+		analyticsCategory?: string;
+		analyticsAction?: string;
+		analyticsLabel?: string;
+		xstateContext?: any;
+		uiJsonConfig?: UIJsonSSRConfig;
+		searchKeywords?: string[];
+		cacheKey?: string;
+		role?: string;
+		dataTestid?: string;
+
+		// Melt-ui specific props
+		meltElement?: any; // For when used with other melt builders (e.g., dialog trigger)
+	}
+
+	// Svelte 5 props with $props()
+	let {
+		variant = 'default',
+		size = 'default',
+		disabled = false,
+		type = 'button',
+		href = undefined,
+		target = undefined,
+		loading = false,
+		loadingText = 'Loading...',
+		className = '',
+		children = undefined,
+		onclick = undefined,
+		id = (typeof globalThis !== 'undefined' && (globalThis.crypto as any)?.randomUUID)
+			? (globalThis.crypto as any).randomUUID()
+			: `melt-btn-${Math.random().toString(36).slice(2, 9)}`,
+		analyticsCategory = 'ui',
+		analyticsAction = 'click',
+		analyticsLabel = '',
+		xstateContext = undefined,
+		uiJsonConfig = undefined,
+		searchKeywords = [],
+		cacheKey = undefined,
+		role = 'button',
+		dataTestid = undefined,
+		meltElement = undefined,
+		...restProps
+	}: Props & Record<string, any> = $props();
+	// Collect any remaining attributes via $$restProps
+	// (removed explicit declare to avoid redeclaration errors)
+
+	// Reactive variables declared for TypeScript
+	let isDisabled: boolean = false;
+	let buttonClass: string = '';
+	let finalMeltElement: any = {};
+
+	// Reactive values
+	$: isDisabled = disabled || loading;
+	$: buttonClass = cn(buttonVariants({ variant, size }), className);
+	$: finalMeltElement = meltElement || {};
+
+	// Provide a stable action wrapper so Svelte has a defined action at compile-time
+	function maybeMelt(node: HTMLElement, params: any) {
+		let cleanup: any;
+		// Only call the real melt action if running in browser and it's available
+		if (browser && typeof melt === 'function') {
+			cleanup = melt(node, params);
+		}
+		return {
+			update(newParams: any) {
+				if (cleanup && typeof cleanup.update === 'function') cleanup.update(newParams);
+			},
+			destroy() {
+				if (cleanup) {
+					if (typeof cleanup.destroy === 'function') cleanup.destroy();
+					if (typeof cleanup === 'function') cleanup();
+				}
+			}
+		};
+	}
+
+	// Event dispatcher for component communication
+	const dispatch = createEventDispatcher<{
+		click: ButtonAnalyticsEvent;
+		analytics: ButtonAnalyticsEvent;
+		cache: { key: string; action: string };
+		'm-click': MouseEvent; // Melt-ui standard event
+	}>();
+
+	// Enhanced click handler with analytics and XState integration
+	function handleClick(event: MouseEvent) {
+		if (isDisabled || loading) {
+			event.preventDefault();
+			return;
+		}
+
+		// Analytics tracking
+		const analyticsEvent: ButtonAnalyticsEvent = {
+			id,
+			category: analyticsCategory,
+			action: analyticsAction,
+			label: analyticsLabel || (event.target as HTMLElement)?.textContent || '',
+			timestamp: Date.now(),
+			context: xstateContext,
+			variant,
+			size
+		};
+
+		// Store analytics
+		if (browser) {
+			userAnalyticsStore.trackButtonClick(analyticsEvent);
+			dispatch('analytics', analyticsEvent);
+		}
+
+		// Cache interaction if cacheKey provided
+		if (cacheKey && browser) {
+			lokiButtonCache.recordInteraction(cacheKey, analyticsEvent);
+			dispatch('cache', { key: cacheKey, action: 'click' });
+		}
+
+		dispatch('click', analyticsEvent);
+		dispatch('m-click', event); // Melt-ui standard event
+
+		// Call the onclick prop if provided
+		if (onclick) {
+			onclick(event);
+		}
+	}
+
+	onMount(async () => {
+		if (browser) {
+			// Try to dynamically import the melt action in the browser to avoid SSR/build-time issues
+			try {
+				const mod = await import('@melt-ui/svelte');
+				// Support both named export and default-export shapes, and fall back safely
+				melt = (mod as any)?.melt ?? (mod as any)?.default ?? undefined;
+			} catch {
+				// If the module isn't available, continue without the action
+				// (this avoids failing SSR/builds or optional runtime dependencies)
+				melt = undefined;
+			}
+
+			if (searchKeywords.length > 0) {
+				searchableButtonIndex.addButton({
+					id,
+					keywords: searchKeywords
+				});
+			}
+		}
+	});
+
+</script>
+
+{#if href}
+	<a
+		href={href}
+		target={target}
+		id={id}
+		class={buttonClass}
+		role={role}
+		tabindex="0"
+		aria-disabled={isDisabled}
+		data-testid={dataTestid || 'melt-button'}
+		use:melt={melt ? finalMeltElement : undefined}
+		onclick={(e: MouseEvent) => {
+			if (isDisabled) {
+				e.preventDefault();
+				return;
+			}
+			handleClick(e);
+		}}
+		>
+		{#if loading}
+			<svg
+				class="mr-2 h-4 w-4 animate-spin"
+				xmlns="http://www.w3.org/2000/svg"
+				fill="none"
+				viewBox="0 0 24 24"
+				aria-hidden="true"
+			>
+		use:maybeMelt={finalMeltElement}
+		click={handleClick}
+	>
+					fill="currentColor"
+					d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+				/>
+			</svg>
+			{loadingText}
+		{:else}
+			<slot />
+			{#if children}{children}{/if}
+		{/if}
+	</a>
+{:else}
+	<button
+		id={id}
+		type={type}
+		disabled={isDisabled}
+		class={buttonClass}
+		data-testid={dataTestid || 'melt-button'}
+		use:melt={melt ? finalMeltElement : undefined}
+		click={handleClick}
+	>
+		{#if loading}
+			<svg
+				class="mr-2 h-4 w-4 animate-spin"
+				xmlns="http://www.w3.org/2000/svg"
+				fill="none"
+				viewBox="0 0 24 24"
+				aria-hidden="true"
+			>
+				<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+				<path
+					class="opacity-75"
+					fill="currentColor"
+					d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+				/>
+			</svg>
+			{loadingText}
+		{:else}
+			<slot />
+			{#if children}{children}{/if}
+		{/if}
+	</button>
+{/if}

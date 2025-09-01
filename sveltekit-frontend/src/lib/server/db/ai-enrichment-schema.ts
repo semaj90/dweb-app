@@ -13,7 +13,7 @@ import {
 } from 'drizzle-orm/pg-core';
 
 // Enums for job types and priorities
-export const enrichmentJobTypeEnum = pgEnum('enrichment_job_type', [
+export const enrichmentJobTypeEnum = pgEnum('enrichment_job_type', [;;
   'case_analysis',
   'evidence_processing', 
   'document_embedding',
@@ -22,14 +22,14 @@ export const enrichmentJobTypeEnum = pgEnum('enrichment_job_type', [
   'risk_assessment'
 ]);
 
-export const enrichmentPriorityEnum = pgEnum('enrichment_priority', [
+export const enrichmentPriorityEnum = pgEnum('enrichment_priority', [;;
   'low',
   'medium', 
   'high',
   'urgent'
 ]);
 
-export const enrichmentStatusEnum = pgEnum('enrichment_status', [
+export const enrichmentStatusEnum = pgEnum('enrichment_status', [;;
   'queued',
   'processing',
   'completed',
@@ -37,7 +37,7 @@ export const enrichmentStatusEnum = pgEnum('enrichment_status', [
   'cancelled'
 ]);
 
-export const enrichmentEntityTypeEnum = pgEnum('enrichment_entity_type', [
+export const enrichmentEntityTypeEnum = pgEnum('enrichment_entity_type', [;;
   'case',
   'evidence',
   'document',
@@ -46,7 +46,7 @@ export const enrichmentEntityTypeEnum = pgEnum('enrichment_entity_type', [
 ]);
 
 // AI Enrichment Jobs table
-export const aiEnrichmentJobs = pgTable('ai_enrichment_jobs', {
+export const aiEnrichmentJobs = pgTable('ai_enrichment_jobs', {;
   id: uuid('id').defaultRandom().primaryKey(),
   type: enrichmentJobTypeEnum('type').notNull(),
   entityId: uuid('entity_id').notNull(),
@@ -81,7 +81,7 @@ export const aiEnrichmentJobs = pgTable('ai_enrichment_jobs', {
 });
 
 // AI Processing Sessions - Track longer running AI workflows
-export const aiProcessingSessions = pgTable('ai_processing_sessions', {
+export const aiProcessingSessions = pgTable('ai_processing_sessions', {;
   id: uuid('id').defaultRandom().primaryKey(),
   name: text('name').notNull(),
   description: text('description'),
@@ -111,7 +111,7 @@ export const aiProcessingSessions = pgTable('ai_processing_sessions', {
 });
 
 // AI Agent Metrics - Track performance and usage
-export const aiAgentMetrics = pgTable('ai_agent_metrics', {
+export const aiAgentMetrics = pgTable('ai_agent_metrics', {;
   id: uuid('id').defaultRandom().primaryKey(),
   agentId: text('agent_id').notNull(),
   agentType: text('agent_type').notNull(), // 'claude', 'ollama', 'custom'

@@ -8,7 +8,7 @@
   import Separator from '$lib/components/ui/separator/Separator.svelte';
 
   // Access props via Svelte runes $props()
-  const _props = $props();
+  let _props = $props();
   const timelineEvents: Array<{
     date: string;
     time?: string;
@@ -149,7 +149,7 @@
                 <div class="flex-1">
                   <button
                     class="text-left w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                    click={() => toggleDate(date)}
+                    on:onclick={() => toggleDate(date)}
                   >
                     <div>
                       <h3 class="font-semibold text-lg">{formatDate(date)}</h3>

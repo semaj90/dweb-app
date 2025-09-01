@@ -480,3 +480,4 @@ Provide a brief summary and recommendations for improvement.`;
 
 // Export singleton instance
 export const context7AutosolveIntegration = new Context7AutosolveIntegration();
+;

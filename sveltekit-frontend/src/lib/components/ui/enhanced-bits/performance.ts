@@ -1,4 +1,4 @@
-import type { ComponentType } from "svelte";
+import type {     ComponentType     } from 'svelte';
 
 /**
  * Performance Optimizations for Enhanced Bits UI Components
@@ -501,7 +501,7 @@ export class PerformanceMonitor {
 // Export singleton instances
 export const componentFactory = new OptimizedComponentFactory();
 export const performanceMonitor = new PerformanceMonitor();
-
+;
 // Register enhanced Bits UI components for lazy loading
 registerComponent("Button", async () => ({
   name: "Button",

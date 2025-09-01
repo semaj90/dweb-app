@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 // Lightweight Redis health metrics collector. Tries ioredis first then node-redis if available.
 import type { Redis as IORedis } from 'ioredis';
 let redis: any = null;
@@ -55,4 +56,5 @@ export async function pollRedisHealth(timeoutMs = 500): Promise<RedisHealthMetri
   return state;
 }
 
-export function getRedisMetrics(): RedisHealthMetrics { return { ...state }; }
+export function getRedisMetrics(): RedisHealthMetrics { return { ...state }; };
+;

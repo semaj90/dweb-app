@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { apiRegistry } from '$lib/server/api/service-registry';
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
+import { URL } from "url";
 
 export const GET: RequestHandler = async ({ url }) => {
   const showDetails = url.searchParams.has('details');
@@ -62,11 +63,11 @@ export const GET: RequestHandler = async ({ url }) => {
       response.details = {
         apiRoutes: apiRegistry.generateServiceReport(),
         environment: {
-          DATABASE_URL: process.env.DATABASE_URL ? 'configured' : 'missing',
-          OLLAMA_MODEL: process.env.OLLAMA_MODEL || 'not set',
-          EMBEDDING_MODEL: process.env.EMBEDDING_MODEL || 'not set',
-          REDIS_URL: process.env.REDIS_URL ? 'configured' : 'missing',
-          QDRANT_URL: process.env.QDRANT_URL ? 'configured' : 'missing'
+          DATABASE_URL: import.meta.env.DATABASE_URL ? 'configured' : 'missing',
+          OLLAMA_MODEL: import.meta.env.OLLAMA_MODEL || 'not set',
+          EMBEDDING_MODEL: import.meta.env.EMBEDDING_MODEL || 'not set',
+          REDIS_URL: import.meta.env.REDIS_URL ? 'configured' : 'missing',
+          QDRANT_URL: import.meta.env.QDRANT_URL ? 'configured' : 'missing'
         }
       };
     }

@@ -49,11 +49,9 @@ https://svelte.dev/e/js_parse_error -->
   
   // Icons
   import { FileText, Brain, Tag, Scale, Zap, Download, Upload, Sparkles } from 'lucide-svelte';
-
-  
-  let isAnalyzing = false;
-  let newTags: string = '';
-  let analysisMode: 'quick' | 'detailed' | 'legal' = 'detailed';
+let isAnalyzing = $state(false);
+let newTags = $state<string >('');
+let analysisMode = $state<'quick' | 'detailed' | 'legal' >('detailed');
 
   async function analyzeEvidence() {
     if (!evidence) return;
@@ -128,7 +126,7 @@ https://svelte.dev/e/js_parse_error -->
   size="xl"
 >
   <svelte:fragment slot="trigger">
-    <slot name="trigger" />
+    {@render trigger?.()}
   </svelte:fragment>
 
   {#if evidence}
@@ -155,7 +153,7 @@ https://svelte.dev/e/js_parse_error -->
           <Button 
             variant="primary" 
             size="sm" 
-            on:click={() => analyzeEvidence()}
+            on:on:click={() => analyzeEvidence()}
             disabled={isAnalyzing}
           >
             {#if isAnalyzing}
@@ -289,7 +287,7 @@ https://svelte.dev/e/js_parse_error -->
                 placeholder="Add tags (comma-separated)"
                 class="space-y-4"
               />
-              <Button size="sm" on:click={() => updateTags()} disabled={!newTags.trim()}>
+              <Button size="sm" on:on:click={() => updateTags()} disabled={!newTags.trim()}>
                 Add
               </Button>
             </div>
@@ -317,10 +315,10 @@ https://svelte.dev/e/js_parse_error -->
   {/if}
 
   <svelte:fragment slot="footer" let:close>
-    <Button variant="secondary" on:click={() => close()}>
+    <Button variant="secondary" on:on:click={() => close()}>
       Close
     </Button>
-    <Button variant="primary" on:click={() => onsaveAnalysis?.()}>
+    <Button variant="primary" on:on:click={() => onsaveAnalysis?.()}>
       Save Analysis
     </Button>
   </svelte:fragment>

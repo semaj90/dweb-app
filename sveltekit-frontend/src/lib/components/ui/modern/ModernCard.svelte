@@ -1,7 +1,7 @@
 <script lang="ts">
   import { $props, $derived } from 'svelte';
   import { Card } from "bits-ui";
-  import { createTooltip, melt } from "melt";
+  // Tooltip functionality removed for now - can be re-added with bits-ui Tooltip
   
   interface Props {
     title?: string;
@@ -47,7 +47,7 @@
   const open = tooltipBuilder?.states.open;
   
   // Dynamic classes based on props
-  const cardClasses = $derived(() => {
+  let cardClasses = $derived(() => {
     const base = 'modern-card transition-all duration-200';
     const variants = {
       default: 'bg-yorha-bg-card border border-yorha-border-primary',
@@ -79,22 +79,22 @@
   class={cardClasses}
   role={clickable ? 'button' : undefined}
   tabindex={clickable ? 0 : undefined}
-  on:click={handleClick}
-  on:keydown={(e) => {
+  on:on:click={handleClick}
+  keydown={(e) => {
     if (clickable && (e.key === 'Enter' || e.key === ' ')) {
       e.preventDefault();
       onclick?.();
     }
   }}
-  use:melt={$trigger}
+  <!-- <!-- use:melt={$trigger}
 >
 {:else}
 <Card.Root 
   class={cardClasses}
   role={clickable ? 'button' : undefined}
   tabindex={clickable ? 0 : undefined}
-  on:click={handleClick}
-  on:keydown={(e) => {
+  on:on:click={handleClick}
+  keydown={(e) => {
     if (clickable && (e.key === 'Enter' || e.key === ' ')) {
       e.preventDefault();
       onclick?.();
@@ -201,7 +201,7 @@
 
 {#if tooltip && $open}
   <div
-    use:melt={$tooltipContent}
+    <!-- <!-- use:melt={$tooltipContent}
     class="tooltip"
   >
     {tooltip}

@@ -384,3 +384,4 @@ export class EnhancedOCRProcessor {
 
 // Export singleton instance
 export const ocrProcessor = new EnhancedOCRProcessor();
+;

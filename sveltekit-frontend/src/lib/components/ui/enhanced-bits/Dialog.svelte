@@ -49,7 +49,7 @@
   }: DialogProps = $props();
 
   // Reactive size classes using $derived
-  const sizeClasses = $derived({
+  let sizeClasses = $derived({
     'max-w-md': size === 'sm',
     'max-w-lg': size === 'md',
     'max-w-2xl': size === 'lg',
@@ -64,7 +64,7 @@
   } : 'max-w-lg');
 
   // Reactive content classes using $derived
-  const dialogContentClasses = $derived(cn(
+  let dialogContentClasses = $derived(cn(
     'bits-dialog-content',
     {
       'max-w-md': size === 'sm',
@@ -81,7 +81,7 @@
   ));
 
   // Reactive overlay classes using $derived
-  const overlayClasses = $derived(cn(
+  let overlayClasses = $derived(cn(
     'bits-dialog-overlay',
     {
       'backdrop-blur-md': legal,
@@ -97,7 +97,7 @@
   }
 </script>
 
-<BitsDialog.Root {open} on:openchange={handleOpenChange}>
+<BitsDialog.Root {open} openchange={handleOpenChange}>
   {@render children?.()}
 
   <!-- Portal rendering for dialog content -->
@@ -125,7 +125,7 @@
   export const DialogTitle = BitsDialog.Title;
   export const DialogDescription = BitsDialog.Description;
   export const DialogClose = BitsDialog.Close;
-
+;
   // Create custom header and footer components since they don't exist in newer Bits UI
   export const DialogHeader = 'div';
   export const DialogFooter = 'div';

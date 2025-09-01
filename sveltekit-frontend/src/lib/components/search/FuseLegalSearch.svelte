@@ -148,7 +148,7 @@
   <div class="relative">
     <Search
       class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-    <Input bind:value={searchQuery} {placeholder} on:keydown={handleKeydown} class="pl-10" />
+    <Input bind:value={searchQuery} {placeholder} keydown={handleKeydown} class="pl-10" />
     {#if isSearching}
       <Loader2
         class="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
@@ -203,11 +203,11 @@
           {#if showAIActions}
             <Card.Content class="pt-0">
               <div class="flex gap-2 flex-wrap">
-                <Button size="sm" on:click={() => handleAIAction(law, 'summary')}>
+                <Button size="sm" on:on:click={() => handleAIAction(law, 'summary')}>
                   <Bot class="h-3 w-3 mr-1" />
                   AI Summary
                 </Button>
-                <Button variant="outline" size="sm" on:click={() => handleAIAction(law, 'chat')}>
+                <Button variant="outline" size="sm" on:on:click={() => handleAIAction(law, 'chat')}>
                   <Bot class="h-3 w-3 mr-1" />
                   Ask AI
                 </Button>

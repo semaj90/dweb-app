@@ -1,0 +1,2799 @@
+# Full-Stack AI Platform Architecture Guide
+# SvelteKit 2 + Go Microservices + Redis + PostgreSQL + Qdrant + MinIO
+
+## Table of Contents
+1. Architecture Overview
+2. Technology Stack Integration
+3. Frontend Architecture (SvelteKit 2)
+4. Backend-for-Frontend (BFF) Layer
+5. Go Microservices Design
+6. Data Storage Strategy
+7. Caching & Performance
+8. Security & Authentication
+9. Deployment & DevOps
+10. Development Workflow
+
+---
+
+## 1. Architecture Overview
+
+### High-Level System Design
+```
+CLIENT LAYER (Browser)
+├── SvelteKit 2 Frontend
+├── bits-ui (headless components)
+├── UnoCSS (atomic CSS)
+├── Loki.js (client-side database)
+└── Fuse.js (fuzzy search)
+
+API GATEWAY / BFF LAYER
+├── SvelteKit +server.ts endpoints
+├── Drizzle ORM (type-safe queries)
+├── postgres.js (high-performance driver)
+└── Request orchestration
+
+CACHING & MESSAGING LAYER
+├── Redis Cluster
+├── Session management
+├── Query result caching
+├── Pub/Sub messaging
+└── Rate limiting
+
+MICROSERVICES LAYER (Go)
+├── user-service (PostgreSQL)
+├── vector-service (Qdrant)
+├── storage-service (MinIO)
+├── ai-service (LLM integration)
+└── notification-service
+
+DATA STORAGE LAYER
+├── PostgreSQL 17 + pgvector
+├── Qdrant Vector Database
+├── MinIO S3-compatible storage
+└── Redis persistence
+```
+
+### Key Design Principles
+- **Separation of Concerns**: Each layer has distinct responsibilities
+- **Type Safety**: End-to-end TypeScript/Go type safety
+- **Performance**: Multi-layer caching and client-side optimization
+- **Scalability**: Horizontal scaling via microservices
+- **Developer Experience**: Modern tooling and clear patterns
+
+---
+
+## 2. Technology Stack Integration
+
+### Frontend Stack
+**SvelteKit 2**: Modern meta-framework with SSR/SPA capabilities
+- Server-side rendering for SEO
+- File-based routing
+- API routes for BFF pattern
+- Svelte 5 with runes for reactive state
+
+**bits-ui**: Headless, accessible UI components
+- No styling assumptions
+- Full accessibility compliance
+- Composable component architecture
+- TypeScript-first design
+
+**UnoCSS**: Instant on-demand atomic CSS
+- Zero runtime overhead
+- Configurable design tokens
+- Utility-first approach
+- Tree-shaking for optimal bundle size
+
+**Loki.js**: High-performance client-side database
+- In-memory document database
+- localStorage persistence
+- Advanced querying capabilities
+- Real-time data synchronization
+
+**Fuse.js**: Powerful fuzzy search library
+- Lightweight and fast
+- Configurable search algorithms
+- Highlighting and ranking
+- Works with any data structure
+
+### Backend Stack
+**Go Microservices**: High-performance, concurrent services
+- Native concurrency with goroutines
+- Fast compilation and execution
+- Strong typing and error handling
+- Excellent standard library
+
+**PostgreSQL 17**: Advanced relational database
+- pgvector extension for embeddings
+- JSONB support for flexible schemas
+- Advanced indexing (HNSW, GIN)
+- Incremental materialized views
+
+**Redis**: In-memory data structure store
+- Sub-millisecond latency
+- Pub/Sub messaging
+- Advanced data structures
+- Clustering support
+
+**Qdrant**: Vector similarity search engine
+- High-performance vector operations
+- REST and gRPC APIs
+- Payload filtering
+- Distributed architecture
+
+**MinIO**: S3-compatible object storage
+- High-performance file storage
+- Kubernetes native
+- Strong consistency
+- Multi-cloud support
+
+---
+
+## 3. Frontend Architecture (SvelteKit 2)
+
+### Project Structure
+```
+sveltekit-frontend/
+├── src/
+│   ├── lib/
+│   │   ├── components/
+│   │   │   ├── ui/               # bits-ui wrappers
+│   │   │   ├── forms/            # Form components
+│   │   │   ├── layout/           # Layout components
+│   │   │   └── features/         # Feature-specific components
+│   │   ├── stores/
+│   │   │   ├── auth.ts           # Authentication state
+│   │   │   ├── ui.ts             # UI state management
+│   │   │   ├── cache.ts          # Client-side cache
+│   │   │   └── search.ts         # Search state
+│   │   ├── db/
+│   │   │   ├── loki.ts           # Loki.js setup
+│   │   │   ├── schemas.ts        # Client data schemas
+│   │   │   └── sync.ts           # Server synchronization
+│   │   ├── search/
+│   │   │   ├── fuse.ts           # Fuse.js configuration
+│   │   │   ├── indices.ts        # Search indices
+│   │   │   └── filters.ts        # Search filters
+│   │   ├── api/
+│   │   │   ├── client.ts         # API client setup
+│   │   │   ├── auth.ts           # Authentication API
+│   │   │   ├── documents.ts      # Document API
+│   │   │   └── search.ts         # Search API
+│   │   └── utils/
+│   │       ├── validation.ts     # Form validation
+│   │       ├── formatting.ts     # Data formatting
+│   │       └── constants.ts      # App constants
+│   ├── routes/
+│   │   ├── api/                  # SvelteKit API routes (BFF)
+│   │   │   ├── auth/             # Authentication endpoints
+│   │   │   ├── documents/        # Document management
+│   │   │   ├── search/           # Search endpoints
+│   │   │   └── chat/             # AI chat endpoints
+│   │   ├── app/                  # Protected app routes
+│   │   │   ├── dashboard/        # Main dashboard
+│   │   │   ├── documents/        # Document management
+│   │   │   ├── search/           # Search interface
+│   │   │   └── settings/         # User settings
+│   │   ├── auth/                 # Authentication pages
+│   │   └── +layout.svelte        # Root layout
+│   ├── hooks.server.ts           # Server hooks
+│   └── app.html                  # HTML template
+├── static/                       # Static assets
+├── uno.config.js                 # UnoCSS configuration
+├── vite.config.js               # Vite configuration
+└── package.json
+```
+
+### Component Architecture Example
+```typescript
+// src/lib/components/ui/SearchDialog.svelte
+<script lang="ts">
+  import { Dialog } from 'bits-ui';
+  import { searchStore } from '$lib/stores/search';
+  import { searchEngine } from '$lib/search/fuse';
+  
+  interface Props {
+    open?: boolean;
+  }
+  
+  let { open = $bindable() }: Props = $props();
+  let query = $state('');
+  let results = $derived(query ? searchEngine.search(query) : []);
+  let selectedIndex = $state(0);
+
+  function selectResult(result: any) {
+    searchStore.addToHistory(result);
+    open = false;
+    // Navigate to result
+  }
+
+  function handleKeydown(event: KeyboardEvent) {
+    if (event.key === 'ArrowDown') {
+      selectedIndex = Math.min(selectedIndex + 1, results.length - 1);
+    } else if (event.key === 'ArrowUp') {
+      selectedIndex = Math.max(selectedIndex - 1, 0);
+    } else if (event.key === 'Enter') {
+      if (results[selectedIndex]) {
+        selectResult(results[selectedIndex].item);
+      }
+    }
+  }
+</script>
+
+<Dialog.Root bind:open>
+  <Dialog.Portal>
+    <Dialog.Overlay class="fixed inset-0 bg-black/50 backdrop-blur-sm" />
+    <Dialog.Content 
+      class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl"
+      onkeydown={handleKeydown}
+    >
+      <div class="bg-white rounded-lg shadow-xl border max-h-96 overflow-hidden">
+        <div class="p-4 border-b">
+          <input
+            bind:value={query}
+            class="w-full px-3 py-2 text-lg border-0 outline-none"
+            placeholder="Search documents, people, or topics..."
+            autofocus
+          />
+        </div>
+        
+        <div class="overflow-y-auto max-h-64">
+          {#each results as result, i}
+            <button
+              class="w-full p-3 text-left hover:bg-gray-50 border-b last:border-b-0"
+              class:bg-blue-50={i === selectedIndex}
+              onclick={() => selectResult(result.item)}
+            >
+              <div class="font-medium text-gray-900">
+                {result.item.title}
+              </div>
+              <div class="text-sm text-gray-600 mt-1">
+                {result.item.excerpt}
+              </div>
+              <div class="flex items-center mt-2 text-xs text-gray-500">
+                <span class="bg-gray-100 px-2 py-1 rounded">
+                  {result.item.type}
+                </span>
+                <span class="ml-2">
+                  Score: {(1 - result.score).toFixed(2)}
+                </span>
+              </div>
+            </button>
+          {/each}
+          
+          {#if query && results.length === 0}
+            <div class="p-4 text-center text-gray-500">
+              No results found for "{query}"
+            </div>
+          {/if}
+        </div>
+      </div>
+    </Dialog.Content>
+  </Dialog.Portal>
+</Dialog.Root>
+```
+
+### Client-Side Data Management
+```typescript
+// src/lib/db/loki.ts
+import Loki from 'lokijs';
+
+interface Document {
+  id: string;
+  title: string;
+  content: string;
+  tags: string[];
+  createdAt: Date;
+  updatedAt: Date;
+  userId: string;
+}
+
+interface SearchIndex {
+  id: string;
+  documentId: string;
+  title: string;
+  excerpt: string;
+  type: string;
+  tags: string[];
+}
+
+class ClientDatabase {
+  private db: Loki;
+  public documents: Collection<Document>;
+  public searchIndex: Collection<SearchIndex>;
+  private syncInProgress = false;
+
+  constructor() {
+    this.db = new Loki('ai-platform-db', {
+      persistenceMethod: 'localStorage',
+      autoload: true,
+      autoloadCallback: () => this.initializeCollections(),
+      autosave: true,
+      autosaveInterval: 10000 // 10 seconds
+    });
+  }
+
+  private initializeCollections() {
+    // Documents collection with indices
+    this.documents = this.db.getCollection('documents') || 
+      this.db.addCollection('documents', { 
+        indices: ['title', 'tags', 'userId', 'createdAt'],
+        unique: ['id']
+      });
+
+    // Search index collection
+    this.searchIndex = this.db.getCollection('searchIndex') || 
+      this.db.addCollection('searchIndex', {
+        indices: ['type', 'tags'],
+        unique: ['id']
+      });
+
+    // Set up change listeners for search index updates
+    this.documents.on('insert', (doc) => this.updateSearchIndex(doc));
+    this.documents.on('update', (doc) => this.updateSearchIndex(doc));
+    this.documents.on('delete', (doc) => this.removeFromSearchIndex(doc.id));
+  }
+
+  private updateSearchIndex(doc: Document) {
+    const indexEntry: SearchIndex = {
+      id: `doc_${doc.id}`,
+      documentId: doc.id,
+      title: doc.title,
+      excerpt: doc.content.substring(0, 200),
+      type: 'document',
+      tags: doc.tags
+    };
+
+    const existing = this.searchIndex.findOne({ id: indexEntry.id });
+    if (existing) {
+      this.searchIndex.update({ ...existing, ...indexEntry });
+    } else {
+      this.searchIndex.insert(indexEntry);
+    }
+  }
+
+  private removeFromSearchIndex(documentId: string) {
+    this.searchIndex.removeWhere({ documentId });
+  }
+
+  async syncWithServer() {
+    if (this.syncInProgress) return;
+    this.syncInProgress = true;
+
+    try {
+      // Get latest documents from server
+      const response = await fetch('/api/documents/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          lastSync: localStorage.getItem('lastSync') || '0'
+        })
+      });
+
+      const { documents, deletedIds } = await response.json();
+
+      // Update documents
+      documents.forEach((doc: Document) => {
+        const existing = this.documents.findOne({ id: doc.id });
+        if (existing) {
+          this.documents.update({ ...existing, ...doc });
+        } else {
+          this.documents.insert(doc);
+        }
+      });
+
+      // Remove deleted documents
+      deletedIds.forEach((id: string) => {
+        this.documents.removeWhere({ id });
+      });
+
+      // Update last sync timestamp
+      localStorage.setItem('lastSync', Date.now().toString());
+
+    } catch (error) {
+      console.error('Sync failed:', error);
+    } finally {
+      this.syncInProgress = false;
+    }
+  }
+
+  // Query methods
+  getUserDocuments(userId: string) {
+    return this.documents.where(doc => doc.userId === userId);
+  }
+
+  getRecentDocuments(limit: number = 10) {
+    return this.documents
+      .chain()
+      .simplesort('createdAt', { desc: true })
+      .limit(limit)
+      .data();
+  }
+
+  searchDocuments(query: string) {
+    return this.documents
+      .where(doc => 
+        doc.title.toLowerCase().includes(query.toLowerCase()) ||
+        doc.content.toLowerCase().includes(query.toLowerCase()) ||
+        doc.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+      );
+  }
+}
+
+export const clientDB = new ClientDatabase();
+
+// Auto-sync on focus
+window.addEventListener('focus', () => {
+  clientDB.syncWithServer();
+});
+
+// Periodic sync
+setInterval(() => {
+  clientDB.syncWithServer();
+}, 60000); // Every minute
+```
+
+### Fuse.js Search Integration
+```typescript
+// src/lib/search/fuse.ts
+import Fuse from 'fuse.js';
+import { clientDB } from '$lib/db/loki';
+
+interface SearchableItem {
+  id: string;
+  title: string;
+  content: string;
+  type: string;
+  tags: string[];
+  createdAt: Date;
+}
+
+class SearchEngine {
+  private fuse: Fuse<SearchableItem>;
+  private options: Fuse.IFuseOptions<SearchableItem>;
+
+  constructor() {
+    this.options = {
+      keys: [
+        { name: 'title', weight: 0.7 },
+        { name: 'content', weight: 0.3 },
+        { name: 'tags', weight: 0.5 }
+      ],
+      threshold: 0.4,
+      distance: 100,
+      includeScore: true,
+      includeMatches: true,
+      minMatchCharLength: 2,
+      ignoreLocation: true
+    };
+
+    this.updateIndex();
+
+    // Re-index when data changes
+    clientDB.documents.on('insert update delete', () => {
+      this.updateIndex();
+    });
+  }
+
+  private updateIndex() {
+    const searchableItems: SearchableItem[] = clientDB.searchIndex
+      .find()
+      .map(item => ({
+        id: item.id,
+        title: item.title,
+        content: item.excerpt,
+        type: item.type,
+        tags: item.tags,
+        createdAt: new Date()
+      }));
+
+    this.fuse = new Fuse(searchableItems, this.options);
+  }
+
+  search(query: string, limit: number = 20) {
+    if (!query.trim()) return [];
+    
+    return this.fuse
+      .search(query)
+      .slice(0, limit)
+      .map(result => ({
+        ...result,
+        score: 1 - (result.score || 0) // Invert score for better UX
+      }));
+  }
+
+  searchByType(query: string, type: string, limit: number = 10) {
+    return this.search(query, 100)
+      .filter(result => result.item.type === type)
+      .slice(0, limit);
+  }
+
+  searchByTags(tags: string[], limit: number = 10) {
+    const items = clientDB.searchIndex
+      .where((item: any) => 
+        tags.some(tag => item.tags.includes(tag))
+      );
+
+    return items.slice(0, limit);
+  }
+
+  getRecentSearches(): string[] {
+    const searches = localStorage.getItem('recentSearches');
+    return searches ? JSON.parse(searches) : [];
+  }
+
+  addToSearchHistory(query: string) {
+    const recent = this.getRecentSearches();
+    const updated = [query, ...recent.filter(q => q !== query)].slice(0, 10);
+    localStorage.setItem('recentSearches', JSON.stringify(updated));
+  }
+}
+
+export const searchEngine = new SearchEngine();
+```
+
+---
+
+## 4. Backend-for-Frontend (BFF) Layer
+
+### SvelteKit API Routes Structure
+```typescript
+// src/routes/api/auth/login/+server.ts
+import type { RequestHandler } from './$types';
+import { json, error } from '@sveltejs/kit';
+import { cache } from '$lib/server/cache';
+import { rateLimiter } from '$lib/server/rateLimit';
+
+export const POST: RequestHandler = async ({ request, getClientAddress }) => {
+  const clientIP = getClientAddress();
+  
+  // Rate limiting
+  const rateLimitResult = await rateLimiter.check('login', clientIP);
+  if (!rateLimitResult.allowed) {
+    throw error(429, 'Too many login attempts');
+  }
+
+  const { email, password } = await request.json();
+
+  // Validate input
+  if (!email || !password) {
+    throw error(400, 'Email and password required');
+  }
+
+  try {
+    // Check cache for recent failed attempts
+    const failedAttempts = await cache.get(`failed_login:${email}`);
+    if (failedAttempts && parseInt(failedAttempts) > 5) {
+      throw error(429, 'Account temporarily locked');
+    }
+
+    // Call user microservice
+    const response = await fetch('http://user-service:8080/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Request-ID': crypto.randomUUID(),
+        'X-Client-IP': clientIP
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    if (!response.ok) {
+      // Increment failed attempts
+      await cache.increment(`failed_login:${email}`, 300); // 5 minute TTL
+      throw error(401, 'Invalid credentials');
+    }
+
+    const { user, token, refreshToken } = await response.json();
+
+    // Cache user session
+    await cache.setUserSession(token, user, 3600);
+
+    // Clear failed attempts
+    await cache.delete(`failed_login:${email}`);
+
+    return json({
+      user,
+      token,
+      refreshToken
+    });
+
+  } catch (err) {
+    console.error('Login error:', err);
+    throw error(500, 'Login failed');
+  }
+};
+```
+
+### Document Management API
+```typescript
+// src/routes/api/documents/+server.ts
+import type { RequestHandler } from './$types';
+import { json, error } from '@sveltejs/kit';
+import { cache } from '$lib/server/cache';
+
+export const GET: RequestHandler = async ({ url, locals }) => {
+  if (!locals.user) {
+    throw error(401, 'Unauthorized');
+  }
+
+  const userId = locals.user.id;
+  const page = parseInt(url.searchParams.get('page') || '1');
+  const limit = parseInt(url.searchParams.get('limit') || '20');
+  const type = url.searchParams.get('type');
+  const tags = url.searchParams.get('tags')?.split(',');
+
+  const cacheKey = `documents:${userId}:${page}:${limit}:${type}:${tags?.join(',')}`;
+
+  // Check cache
+  const cached = await cache.get(cacheKey);
+  if (cached) {
+    return json(JSON.parse(cached));
+  }
+
+  try {
+    // Build query parameters
+    const params = new URLSearchParams({
+      userId,
+      page: page.toString(),
+      limit: limit.toString()
+    });
+
+    if (type) params.append('type', type);
+    if (tags) tags.forEach(tag => params.append('tags', tag));
+
+    // Call user microservice
+    const response = await fetch(`http://user-service:8080/documents?${params}`, {
+      headers: {
+        'Authorization': `Bearer ${locals.token}`,
+        'X-Request-ID': crypto.randomUUID()
+      }
+    });
+
+    if (!response.ok) {
+      throw error(response.status, 'Failed to fetch documents');
+    }
+
+    const documents = await response.json();
+
+    // Cache with tags for invalidation
+    await cache.cacheQuery(
+      cacheKey,
+      documents,
+      [`user:${userId}`, 'documents'],
+      300 // 5 minutes
+    );
+
+    return json(documents);
+
+  } catch (err) {
+    console.error('Documents fetch error:', err);
+    throw error(500, 'Failed to fetch documents');
+  }
+};
+
+export const POST: RequestHandler = async ({ request, locals }) => {
+  if (!locals.user) {
+    throw error(401, 'Unauthorized');
+  }
+
+  const document = await request.json();
+  
+  try {
+    // Upload to storage service first if there are files
+    if (document.files && document.files.length > 0) {
+      const uploadResponse = await fetch('http://storage-service:8080/upload', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${locals.token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          files: document.files,
+          userId: locals.user.id
+        })
+      });
+
+      if (!uploadResponse.ok) {
+        throw error(500, 'File upload failed');
+      }
+
+      const { urls } = await uploadResponse.json();
+      document.fileUrls = urls;
+    }
+
+    // Create document in user service
+    const response = await fetch('http://user-service:8080/documents', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${locals.token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        ...document,
+        userId: locals.user.id
+      })
+    });
+
+    if (!response.ok) {
+      throw error(response.status, 'Document creation failed');
+    }
+
+    const createdDocument = await response.json();
+
+    // Generate embeddings for vector search
+    if (createdDocument.content) {
+      fetch('http://vector-service:8080/index', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${locals.token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          id: createdDocument.id,
+          content: createdDocument.content,
+          metadata: {
+            title: createdDocument.title,
+            userId: locals.user.id,
+            type: createdDocument.type
+          }
+        })
+      }).catch(err => {
+        console.error('Vector indexing failed:', err);
+      });
+    }
+
+    // Invalidate related cache
+    await cache.invalidateByTag(`user:${locals.user.id}`);
+    await cache.invalidateByTag('documents');
+
+    // Publish real-time update
+    await cache.publishUpdate(`user:${locals.user.id}:documents`, {
+      action: 'created',
+      document: createdDocument
+    });
+
+    return json(createdDocument);
+
+  } catch (err) {
+    console.error('Document creation error:', err);
+    throw error(500, 'Document creation failed');
+  }
+};
+```
+
+### Semantic Search API
+```typescript
+// src/routes/api/search/semantic/+server.ts
+import type { RequestHandler } from './$types';
+import { json, error } from '@sveltejs/kit';
+import { cache } from '$lib/server/cache';
+
+export const POST: RequestHandler = async ({ request, locals }) => {
+  if (!locals.user) {
+    throw error(401, 'Unauthorized');
+  }
+
+  const { query, filters = {}, limit = 10 } = await request.json();
+
+  if (!query || query.trim().length < 2) {
+    throw error(400, 'Query too short');
+  }
+
+  const cacheKey = `search:${locals.user.id}:${query}:${JSON.stringify(filters)}:${limit}`;
+
+  // Check cache
+  const cached = await cache.get(cacheKey);
+  if (cached) {
+    return json(JSON.parse(cached));
+  }
+
+  try {
+    // Parallel requests to different services
+    const [vectorResults, traditionalResults] = await Promise.allSettled([
+      // Vector similarity search
+      fetch('http://vector-service:8080/search', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${locals.token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          query,
+          userId: locals.user.id,
+          filters,
+          limit: Math.ceil(limit * 0.7) // 70% from vector search
+        })
+      }),
+
+      // Traditional text search
+      fetch('http://user-service:8080/search', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${locals.token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          query,
+          userId: locals.user.id,
+          filters,
+          limit: Math.ceil(limit * 0.3) // 30% from text search
+        })
+      })
+    ]);
+
+    const results = {
+      vector: [],
+      traditional: [],
+      hybrid: []
+    };
+
+    // Process vector results
+    if (vectorResults.status === 'fulfilled' && vectorResults.value.ok) {
+      results.vector = await vectorResults.value.json();
+    }
+
+    // Process traditional results
+    if (traditionalResults.status === 'fulfilled' && traditionalResults.value.ok) {
+      results.traditional = await traditionalResults.value.json();
+    }
+
+    // Combine and rank results
+    const combinedResults = combineSearchResults(
+      results.vector,
+      results.traditional,
+      query
+    );
+
+    results.hybrid = combinedResults.slice(0, limit);
+
+    // Cache results
+    await cache.cacheQuery(
+      cacheKey,
+      results,
+      [`user:${locals.user.id}`, 'search'],
+      180 // 3 minutes
+    );
+
+    return json(results);
+
+  } catch (err) {
+    console.error('Search error:', err);
+    throw error(500, 'Search failed');
+  }
+};
+
+function combineSearchResults(vectorResults: any[], traditionalResults: any[], query: string) {
+  // Combine results with weighted scoring
+  const combined = new Map();
+
+  // Add vector results with higher weight for semantic similarity
+  vectorResults.forEach(result => {
+    combined.set(result.id, {
+      ...result,
+      score: result.score * 0.7, // 70% weight
+      source: 'vector'
+    });
+  });
+
+  // Add traditional results, combining scores if already exists
+  traditionalResults.forEach(result => {
+    const existing = combined.get(result.id);
+    if (existing) {
+      existing.score = existing.score + (result.score * 0.3);
+      existing.source = 'hybrid';
+    } else {
+      combined.set(result.id, {
+        ...result,
+        score: result.score * 0.3, // 30% weight
+        source: 'traditional'
+      });
+    }
+  });
+
+  // Sort by combined score
+  return Array.from(combined.values())
+    .sort((a, b) => b.score - a.score);
+}
+```
+
+---
+
+## 5. Go Microservices Design
+
+### Service Structure
+```
+go-services/
+├── shared/
+│   ├── auth/
+│   ├── database/
+│   ├── redis/
+│   ├── middleware/
+│   └── utils/
+├── user-service/
+│   ├── cmd/
+│   ├── internal/
+│   │   ├── handlers/
+│   │   ├── models/
+│   │   ├── repository/
+│   │   └── service/
+│   ├── migrations/
+│   └── Dockerfile
+├── vector-service/
+│   ├── cmd/
+│   ├── internal/
+│   └── Dockerfile
+├── storage-service/
+│   ├── cmd/
+│   ├── internal/
+│   └── Dockerfile
+└── docker-compose.yml
+```
+
+### User Service Implementation
+```go
+// go-services/user-service/cmd/main.go
+package main
+
+import (
+    "context"
+    "log"
+    "net/http"
+    "os"
+    "os/signal"
+    "syscall"
+    "time"
+
+    "github.com/gorilla/mux"
+    "user-service/internal/handlers"
+    "user-service/internal/repository"
+    "user-service/internal/service"
+    "shared/auth"
+    "shared/database"
+    "shared/middleware"
+    "shared/redis"
+)
+
+func main() {
+    // Database connection
+    db, err := database.NewPostgresConnection()
+    if err != nil {
+        log.Fatal("Failed to connect to database:", err)
+    }
+    defer db.Close()
+
+    // Redis connection
+    redisClient, err := redis.NewClient()
+    if err != nil {
+        log.Fatal("Failed to connect to Redis:", err)
+    }
+    defer redisClient.Close()
+
+    // Repository layer
+    userRepo := repository.NewUserRepository(db)
+    documentRepo := repository.NewDocumentRepository(db)
+
+    // Service layer
+    authService := auth.NewService(userRepo, redisClient)
+    userService := service.NewUserService(userRepo, redisClient)
+    documentService := service.NewDocumentService(documentRepo, redisClient)
+
+    // Handler layer
+    authHandler := handlers.NewAuthHandler(authService)
+    userHandler := handlers.NewUserHandler(userService)
+    documentHandler := handlers.NewDocumentHandler(documentService)
+
+    // Router setup
+    r := mux.NewRouter()
+    
+    // Middleware
+    r.Use(middleware.CORS)
+    r.Use(middleware.Logger)
+    r.Use(middleware.RateLimit)
+
+    // Public routes
+    r.HandleFunc("/health", handlers.HealthCheck).Methods("GET")
+    r.PathPrefix("/auth").Handler(authHandler.Router())
+
+    // Protected routes
+    protected := r.PathPrefix("").Subrouter()
+    protected.Use(middleware.AuthRequired(authService))
+    protected.PathPrefix("/users").Handler(userHandler.Router())
+    protected.PathPrefix("/documents").Handler(documentHandler.Router())
+
+    // Server setup
+    srv := &http.Server{
+        Addr:         ":8080",
+        Handler:      r,
+        ReadTimeout:  10 * time.Second,
+        WriteTimeout: 10 * time.Second,
+        IdleTimeout:  60 * time.Second,
+    }
+
+    // Start server
+    go func() {
+        log.Println("User service starting on :8080")
+        if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+            log.Fatal("Server failed to start:", err)
+        }
+    }()
+
+    // Graceful shutdown
+    quit := make(chan os.Signal, 1)
+    signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+    <-quit
+
+    log.Println("Shutting down user service...")
+    ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+    defer cancel()
+
+    if err := srv.Shutdown(ctx); err != nil {
+        log.Fatal("Server forced to shutdown:", err)
+    }
+
+    log.Println("User service stopped")
+}
+```
+
+### Document Handler
+```go
+// go-services/user-service/internal/handlers/document.go
+package handlers
+
+import (
+    "encoding/json"
+    "net/http"
+    "strconv"
+    "time"
+
+    "github.com/gorilla/mux"
+    "user-service/internal/models"
+    "user-service/internal/service"
+    "shared/middleware"
+    "shared/utils"
+)
+
+type DocumentHandler struct {
+    service *service.DocumentService
+}
+
+func NewDocumentHandler(s *service.DocumentService) *DocumentHandler {
+    return &DocumentHandler{service: s}
+}
+
+func (h *DocumentHandler) Router() http.Handler {
+    r := mux.NewRouter()
+    
+    r.HandleFunc("/", h.GetDocuments).Methods("GET")
+    r.HandleFunc("/", h.CreateDocument).Methods("POST")
+    r.HandleFunc("/{id}", h.GetDocument).Methods("GET")
+    r.HandleFunc("/{id}", h.UpdateDocument).Methods("PUT")
+    r.HandleFunc("/{id}", h.DeleteDocument).Methods("DELETE")
+    r.HandleFunc("/search", h.SearchDocuments).Methods("POST")
+    r.HandleFunc("/sync", h.SyncDocuments).Methods("POST")
+
+    return r
+}
+
+func (h *DocumentHandler) GetDocuments(w http.ResponseWriter, r *http.Request) {
+    userID := middleware.GetUserID(r.Context())
+    
+    // Parse query parameters
+    page, _ := strconv.Atoi(r.URL.Query().Get("page"))
+    if page < 1 {
+        page = 1
+    }
+    
+    limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
+    if limit < 1 || limit > 100 {
+        limit = 20
+    }
+
+    docType := r.URL.Query().Get("type")
+    tags := r.URL.Query()["tags"]
+
+    filters := models.DocumentFilters{
+        UserID: userID,
+        Type:   docType,
+        Tags:   tags,
+        Page:   page,
+        Limit:  limit,
+    }
+
+    documents, total, err := h.service.GetDocuments(r.Context(), filters)
+    if err != nil {
+        utils.ErrorResponse(w, http.StatusInternalServerError, "Failed to fetch documents")
+        return
+    }
+
+    response := models.DocumentListResponse{
+        Documents: documents,
+        Total:     total,
+        Page:      page,
+        Limit:     limit,
+        HasMore:   (page * limit) < total,
+    }
+
+    utils.JSONResponse(w, http.StatusOK, response)
+}
+
+func (h *DocumentHandler) CreateDocument(w http.ResponseWriter, r *http.Request) {
+    userID := middleware.GetUserID(r.Context())
+    
+    var req models.CreateDocumentRequest
+    if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+        utils.ErrorResponse(w, http.StatusBadRequest, "Invalid request body")
+        return
+    }
+
+    // Validate request
+    if err := req.Validate(); err != nil {
+        utils.ErrorResponse(w, http.StatusBadRequest, err.Error())
+        return
+    }
+
+    document := &models.Document{
+        Title:     req.Title,
+        Content:   req.Content,
+        Type:      req.Type,
+        Tags:      req.Tags,
+        FileURLs:  req.FileURLs,
+        UserID:    userID,
+        CreatedAt: time.Now(),
+        UpdatedAt: time.Now(),
+    }
+
+    createdDoc, err := h.service.CreateDocument(r.Context(), document)
+    if err != nil {
+        utils.ErrorResponse(w, http.StatusInternalServerError, "Failed to create document")
+        return
+    }
+
+    utils.JSONResponse(w, http.StatusCreated, createdDoc)
+}
+
+func (h *DocumentHandler) SearchDocuments(w http.ResponseWriter, r *http.Request) {
+    userID := middleware.GetUserID(r.Context())
+    
+    var req models.SearchRequest
+    if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+        utils.ErrorResponse(w, http.StatusBadRequest, "Invalid request body")
+        return
+    }
+
+    if len(req.Query) < 2 {
+        utils.ErrorResponse(w, http.StatusBadRequest, "Query too short")
+        return
+    }
+
+    results, err := h.service.SearchDocuments(r.Context(), userID, req)
+    if err != nil {
+        utils.ErrorResponse(w, http.StatusInternalServerError, "Search failed")
+        return
+    }
+
+    utils.JSONResponse(w, http.StatusOK, results)
+}
+
+func (h *DocumentHandler) SyncDocuments(w http.ResponseWriter, r *http.Request) {
+    userID := middleware.GetUserID(r.Context())
+    
+    var req models.SyncRequest
+    if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+        utils.ErrorResponse(w, http.StatusBadRequest, "Invalid request body")
+        return
+    }
+
+    lastSync, err := strconv.ParseInt(req.LastSync, 10, 64)
+    if err != nil {
+        lastSync = 0
+    }
+
+    syncData, err := h.service.GetDocumentsSince(r.Context(), userID, time.Unix(0, lastSync*int64(time.Millisecond)))
+    if err != nil {
+        utils.ErrorResponse(w, http.StatusInternalServerError, "Sync failed")
+        return
+    }
+
+    utils.JSONResponse(w, http.StatusOK, syncData)
+}
+```
+
+### Document Service
+```go
+// go-services/user-service/internal/service/document.go
+package service
+
+import (
+    "context"
+    "fmt"
+    "strings"
+    "time"
+
+    "user-service/internal/models"
+    "user-service/internal/repository"
+    "shared/redis"
+    "shared/utils"
+)
+
+type DocumentService struct {
+    repo  *repository.DocumentRepository
+    redis *redis.Client
+}
+
+func NewDocumentService(repo *repository.DocumentRepository, redis *redis.Client) *DocumentService {
+    return &DocumentService{
+        repo:  repo,
+        redis: redis,
+    }
+}
+
+func (s *DocumentService) GetDocuments(ctx context.Context, filters models.DocumentFilters) ([]*models.Document, int, error) {
+    // Generate cache key
+    cacheKey := fmt.Sprintf("docs:%s:%s:%s:%d:%d", 
+        filters.UserID, 
+        filters.Type, 
+        strings.Join(filters.Tags, ","),
+        filters.Page, 
+        filters.Limit)
+
+    // Try cache first
+    if cached, err := s.redis.Get(ctx, cacheKey); err == nil {
+        var result models.CachedDocumentList
+        if err := utils.JSONUnmarshal(cached, &result); err == nil {
+            return result.Documents, result.Total, nil
+        }
+    }
+
+    // Query database
+    documents, total, err := s.repo.GetDocuments(ctx, filters)
+    if err != nil {
+        return nil, 0, err
+    }
+
+    // Cache result
+    cached := models.CachedDocumentList{
+        Documents: documents,
+        Total:     total,
+    }
+    
+    if data, err := utils.JSONMarshal(cached); err == nil {
+        s.redis.SetEX(ctx, cacheKey, data, 5*time.Minute)
+    }
+
+    return documents, total, nil
+}
+
+func (s *DocumentService) CreateDocument(ctx context.Context, doc *models.Document) (*models.Document, error) {
+    // Generate ID
+    doc.ID = utils.GenerateUUID()
+
+    // Create in database
+    createdDoc, err := s.repo.CreateDocument(ctx, doc)
+    if err != nil {
+        return nil, err
+    }
+
+    // Invalidate cache
+    s.invalidateUserCache(ctx, doc.UserID)
+
+    // Publish event for real-time updates
+    event := models.DocumentEvent{
+        Type:     "created",
+        Document: createdDoc,
+        UserID:   doc.UserID,
+    }
+    
+    s.publishEvent(ctx, event)
+
+    return createdDoc, nil
+}
+
+func (s *DocumentService) SearchDocuments(ctx context.Context, userID string, req models.SearchRequest) ([]*models.SearchResult, error) {
+    cacheKey := fmt.Sprintf("search:%s:%s", userID, utils.Hash(req.Query))
+    
+    // Try cache first
+    if cached, err := s.redis.Get(ctx, cacheKey); err == nil {
+        var results []*models.SearchResult
+        if err := utils.JSONUnmarshal(cached, &results); err == nil {
+            return results, nil
+        }
+    }
+
+    // Search database
+    results, err := s.repo.SearchDocuments(ctx, userID, req)
+    if err != nil {
+        return nil, err
+    }
+
+    // Cache results
+    if data, err := utils.JSONMarshal(results); err == nil {
+        s.redis.SetEX(ctx, cacheKey, data, 3*time.Minute)
+    }
+
+    return results, nil
+}
+
+func (s *DocumentService) GetDocumentsSince(ctx context.Context, userID string, since time.Time) (*models.SyncData, error) {
+    documents, err := s.repo.GetDocumentsSince(ctx, userID, since)
+    if err != nil {
+        return nil, err
+    }
+
+    deletedIDs, err := s.repo.GetDeletedDocumentsSince(ctx, userID, since)
+    if err != nil {
+        return nil, err
+    }
+
+    return &models.SyncData{
+        Documents: documents,
+        DeletedIDs: deletedIDs,
+    }, nil
+}
+
+func (s *DocumentService) invalidateUserCache(ctx context.Context, userID string) {
+    pattern := fmt.Sprintf("docs:%s:*", userID)
+    keys, err := s.redis.Keys(ctx, pattern)
+    if err != nil {
+        return
+    }
+
+    if len(keys) > 0 {
+        s.redis.Del(ctx, keys...)
+    }
+}
+
+func (s *DocumentService) publishEvent(ctx context.Context, event models.DocumentEvent) {
+    channel := fmt.Sprintf("user:%s:documents", event.UserID)
+    data, err := utils.JSONMarshal(event)
+    if err != nil {
+        return
+    }
+
+    s.redis.Publish(ctx, channel, data)
+}
+```
+
+---
+
+## 6. Data Storage Strategy
+
+### PostgreSQL Schema Design
+```sql
+-- Users table with enhanced profile support
+CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    hashed_password VARCHAR(255) NOT NULL,
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    profile_image_url TEXT,
+    is_active BOOLEAN DEFAULT TRUE,
+    is_verified BOOLEAN DEFAULT FALSE,
+    preferences JSONB DEFAULT '{}',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Documents table with full-text search and vector support
+CREATE TABLE documents (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    title VARCHAR(500) NOT NULL,
+    content TEXT,
+    type VARCHAR(50) DEFAULT 'document',
+    tags TEXT[] DEFAULT '{}',
+    file_urls TEXT[] DEFAULT '{}',
+    metadata JSONB DEFAULT '{}',
+    
+    -- Full-text search
+    search_vector TSVECTOR,
+    
+    -- Vector embeddings (384 dimensions for nomic-embed-text)
+    title_embedding VECTOR(384),
+    content_embedding VECTOR(384),
+    
+    -- Timestamps
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    deleted_at TIMESTAMP WITH TIME ZONE
+);
+
+-- Create indexes for optimal performance
+CREATE INDEX idx_documents_user_id ON documents(user_id);
+CREATE INDEX idx_documents_type ON documents(type);
+CREATE INDEX idx_documents_tags ON documents USING GIN(tags);
+CREATE INDEX idx_documents_created_at ON documents(created_at DESC);
+CREATE INDEX idx_documents_search_vector ON documents USING GIN(search_vector);
+
+-- Vector similarity indexes using pgvector
+CREATE INDEX idx_documents_title_embedding ON documents 
+USING hnsw (title_embedding vector_cosine_ops)
+WITH (m = 16, ef_construction = 64);
+
+CREATE INDEX idx_documents_content_embedding ON documents 
+USING hnsw (content_embedding vector_cosine_ops)
+WITH (m = 16, ef_construction = 64);
+
+-- Trigger to update search_vector automatically
+CREATE OR REPLACE FUNCTION update_document_search_vector()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.search_vector := 
+        setweight(to_tsvector('english', COALESCE(NEW.title, '')), 'A') ||
+        setweight(to_tsvector('english', COALESCE(NEW.content, '')), 'B') ||
+        setweight(to_tsvector('english', array_to_string(NEW.tags, ' ')), 'C');
+    NEW.updated_at := NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_update_document_search_vector
+    BEFORE INSERT OR UPDATE ON documents
+    FOR EACH ROW
+    EXECUTE FUNCTION update_document_search_vector();
+
+-- Collections for organizing documents
+CREATE TABLE collections (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    name VARCHAR(200) NOT NULL,
+    description TEXT,
+    color VARCHAR(7) DEFAULT '#3B82F6',
+    is_public BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Many-to-many relationship between documents and collections
+CREATE TABLE document_collections (
+    document_id UUID REFERENCES documents(id) ON DELETE CASCADE,
+    collection_id UUID REFERENCES collections(id) ON DELETE CASCADE,
+    added_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    PRIMARY KEY (document_id, collection_id)
+);
+
+-- Sharing and collaboration
+CREATE TABLE document_shares (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    document_id UUID NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
+    shared_by UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    shared_with UUID REFERENCES users(id) ON DELETE CASCADE,
+    share_token VARCHAR(100) UNIQUE, -- For public sharing
+    permissions VARCHAR(20) DEFAULT 'read', -- read, write, admin
+    expires_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Activity logging
+CREATE TABLE activity_logs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    entity_type VARCHAR(50) NOT NULL, -- document, collection, user
+    entity_id UUID NOT NULL,
+    action VARCHAR(50) NOT NULL, -- created, updated, deleted, shared
+    metadata JSONB DEFAULT '{}',
+    ip_address INET,
+    user_agent TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Deleted documents for sync (soft delete tracking)
+CREATE TABLE deleted_documents (
+    id UUID PRIMARY KEY,
+    user_id UUID NOT NULL,
+    deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- User sessions
+CREATE TABLE user_sessions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    token_hash VARCHAR(255) UNIQUE NOT NULL,
+    refresh_token_hash VARCHAR(255) UNIQUE,
+    expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    last_used_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    ip_address INET,
+    user_agent TEXT
+);
+
+-- Materialized view for user statistics (PostgreSQL 17 incremental refresh)
+CREATE MATERIALIZED VIEW user_document_stats AS
+SELECT 
+    u.id AS user_id,
+    u.email,
+    COUNT(d.id) AS total_documents,
+    COUNT(CASE WHEN d.type = 'document' THEN 1 END) AS document_count,
+    COUNT(CASE WHEN d.type = 'note' THEN 1 END) AS note_count,
+    COUNT(CASE WHEN d.type = 'image' THEN 1 END) AS image_count,
+    COUNT(CASE WHEN d.created_at > NOW() - INTERVAL '30 days' THEN 1 END) AS recent_documents,
+    array_agg(DISTINCT unnest(d.tags)) FILTER (WHERE d.tags IS NOT NULL) AS all_tags,
+    MAX(d.created_at) AS last_document_created,
+    SUM(octet_length(d.content)) AS total_content_size
+FROM users u
+LEFT JOIN documents d ON u.id = d.user_id AND d.deleted_at IS NULL
+GROUP BY u.id, u.email;
+
+-- Create unique index for incremental refresh
+CREATE UNIQUE INDEX idx_user_document_stats_user_id 
+ON user_document_stats(user_id);
+```
+
+### Qdrant Collection Setup
+```python
+# Vector database schema for Qdrant
+from qdrant_client import QdrantClient
+from qdrant_client.models import VectorParams, Distance, PayloadSchemaType
+
+client = QdrantClient(host="localhost", port=6333)
+
+# Create collection for document embeddings
+client.create_collection(
+    collection_name="documents",
+    vectors_config=VectorParams(
+        size=384,  # nomic-embed-text dimensions
+        distance=Distance.COSINE
+    )
+)
+
+# Create payload schema for filtering
+client.create_payload_index(
+    collection_name="documents",
+    field_name="user_id",
+    field_schema=PayloadSchemaType.KEYWORD
+)
+
+client.create_payload_index(
+    collection_name="documents",
+    field_name="type",
+    field_schema=PayloadSchemaType.KEYWORD
+)
+
+client.create_payload_index(
+    collection_name="documents",
+    field_name="tags",
+    field_schema=PayloadSchemaType.KEYWORD
+)
+
+client.create_payload_index(
+    collection_name="documents",
+    field_name="created_at",
+    field_schema=PayloadSchemaType.INTEGER
+)
+```
+
+---
+
+## 7. Caching & Performance
+
+### Redis Caching Strategy
+```go
+// shared/redis/cache.go
+package redis
+
+import (
+    "context"
+    "encoding/json"
+    "fmt"
+    "time"
+
+    "github.com/go-redis/redis/v8"
+)
+
+type CacheManager struct {
+    client *redis.Client
+}
+
+func NewCacheManager(client *redis.Client) *CacheManager {
+    return &CacheManager{client: client}
+}
+
+// Multi-level cache with tags
+func (c *CacheManager) SetWithTags(ctx context.Context, key string, value interface{}, ttl time.Duration, tags ...string) error {
+    // Serialize value
+    data, err := json.Marshal(value)
+    if err != nil {
+        return err
+    }
+
+    // Use pipeline for atomic operations
+    pipe := c.client.Pipeline()
+    
+    // Set the main cache entry
+    pipe.SetEX(ctx, key, data, ttl)
+    
+    // Add key to tag sets for batch invalidation
+    for _, tag := range tags {
+        pipe.SAdd(ctx, fmt.Sprintf("tag:%s", tag), key)
+        pipe.Expire(ctx, fmt.Sprintf("tag:%s", tag), ttl+time.Hour) // Tags live longer
+    }
+    
+    _, err = pipe.Exec(ctx)
+    return err
+}
+
+// Get cached value
+func (c *CacheManager) Get(ctx context.Context, key string, dest interface{}) error {
+    data, err := c.client.Get(ctx, key).Result()
+    if err != nil {
+        return err
+    }
+    
+    return json.Unmarshal([]byte(data), dest)
+}
+
+// Invalidate by tags
+func (c *CacheManager) InvalidateByTag(ctx context.Context, tag string) error {
+    tagKey := fmt.Sprintf("tag:%s", tag)
+    
+    // Get all keys with this tag
+    keys, err := c.client.SMembers(ctx, tagKey).Result()
+    if err != nil {
+        return err
+    }
+    
+    if len(keys) == 0 {
+        return nil
+    }
+    
+    // Delete all keys and the tag set
+    pipe := c.client.Pipeline()
+    pipe.Del(ctx, keys...)
+    pipe.Del(ctx, tagKey)
+    
+    _, err = pipe.Exec(ctx)
+    return err
+}
+
+// Cache user session
+func (c *CacheManager) SetUserSession(ctx context.Context, token string, user interface{}, ttl time.Duration) error {
+    return c.SetWithTags(ctx, fmt.Sprintf("session:%s", token), user, ttl, "sessions")
+}
+
+// Rate limiting using sliding window
+func (c *CacheManager) CheckRateLimit(ctx context.Context, key string, limit int, window time.Duration) (bool, error) {
+    now := time.Now().Unix()
+    windowStart := now - int64(window.Seconds())
+    
+    pipe := c.client.Pipeline()
+    
+    // Remove expired entries
+    pipe.ZRemRangeByScore(ctx, key, "0", fmt.Sprintf("%d", windowStart))
+    
+    // Count current entries
+    pipe.ZCard(ctx, key)
+    
+    // Add current request
+    pipe.ZAdd(ctx, key, &redis.Z{Score: float64(now), Member: now})
+    
+    // Set expiry
+    pipe.Expire(ctx, key, window)
+    
+    results, err := pipe.Exec(ctx)
+    if err != nil {
+        return false, err
+    }
+    
+    // Check count
+    count := results[1].(*redis.IntCmd).Val()
+    return count < int64(limit), nil
+}
+
+// Pub/Sub for real-time updates
+func (c *CacheManager) PublishUpdate(ctx context.Context, channel string, data interface{}) error {
+    payload, err := json.Marshal(data)
+    if err != nil {
+        return err
+    }
+    
+    return c.client.Publish(ctx, channel, payload).Err()
+}
+
+func (c *CacheManager) Subscribe(ctx context.Context, channels ...string) *redis.PubSub {
+    return c.client.Subscribe(ctx, channels...)
+}
+
+// Distributed locking
+func (c *CacheManager) AcquireLock(ctx context.Context, key string, ttl time.Duration) (bool, error) {
+    result := c.client.SetNX(ctx, fmt.Sprintf("lock:%s", key), "1", ttl)
+    return result.Val(), result.Err()
+}
+
+func (c *CacheManager) ReleaseLock(ctx context.Context, key string) error {
+    return c.client.Del(ctx, fmt.Sprintf("lock:%s", key)).Err()
+}
+
+// Cache warming
+func (c *CacheManager) WarmCache(ctx context.Context, userID string) error {
+    // Pre-populate common queries
+    queries := []string{
+        fmt.Sprintf("docs:%s:::%d:%d", userID, 1, 20),
+        fmt.Sprintf("collections:%s", userID),
+        fmt.Sprintf("recent:%s", userID),
+    }
+    
+    for _, query := range queries {
+        // This would call the appropriate service to populate the cache
+        // Implementation depends on your specific use case
+    }
+    
+    return nil
+}
+```
+
+### Performance Monitoring
+```go
+// shared/middleware/performance.go
+package middleware
+
+import (
+    "context"
+    "net/http"
+    "strconv"
+    "time"
+
+    "github.com/prometheus/client_golang/prometheus"
+    "github.com/prometheus/client_golang/prometheus/promauto"
+)
+
+var (
+    httpDuration = promauto.NewHistogramVec(
+        prometheus.HistogramOpts{
+            Name: "http_request_duration_seconds",
+            Help: "HTTP request duration in seconds",
+        },
+        []string{"method", "route", "status"},
+    )
+    
+    httpRequests = promauto.NewCounterVec(
+        prometheus.CounterOpts{
+            Name: "http_requests_total",
+            Help: "Total number of HTTP requests",
+        },
+        []string{"method", "route", "status"},
+    )
+    
+    cacheHits = promauto.NewCounterVec(
+        prometheus.CounterOpts{
+            Name: "cache_hits_total",
+            Help: "Total number of cache hits",
+        },
+        []string{"type"},
+    )
+    
+    cacheMisses = promauto.NewCounterVec(
+        prometheus.CounterOpts{
+            Name: "cache_misses_total",
+            Help: "Total number of cache misses",
+        },
+        []string{"type"},
+    )
+)
+
+func Metrics(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        start := time.Now()
+        
+        // Wrap response writer to capture status code
+        ww := &responseWriter{ResponseWriter: w, statusCode: http.StatusOK}
+        
+        // Add request ID for tracing
+        requestID := r.Header.Get("X-Request-ID")
+        if requestID == "" {
+            requestID = generateRequestID()
+        }
+        
+        ctx := context.WithValue(r.Context(), "requestID", requestID)
+        r = r.WithContext(ctx)
+        
+        // Process request
+        next.ServeHTTP(ww, r)
+        
+        // Record metrics
+        duration := time.Since(start)
+        route := r.URL.Path
+        method := r.Method
+        status := strconv.Itoa(ww.statusCode)
+        
+        httpDuration.WithLabelValues(method, route, status).Observe(duration.Seconds())
+        httpRequests.WithLabelValues(method, route, status).Inc()
+    })
+}
+
+func RecordCacheHit(cacheType string) {
+    cacheHits.WithLabelValues(cacheType).Inc()
+}
+
+func RecordCacheMiss(cacheType string) {
+    cacheMisses.WithLabelValues(cacheType).Inc()
+}
+
+type responseWriter struct {
+    http.ResponseWriter
+    statusCode int
+}
+
+func (rw *responseWriter) WriteHeader(code int) {
+    rw.statusCode = code
+    rw.ResponseWriter.WriteHeader(code)
+}
+
+func generateRequestID() string {
+    return fmt.Sprintf("%d", time.Now().UnixNano())
+}
+```
+
+---
+
+## 8. Security & Authentication
+
+### JWT Authentication Service
+```go
+// shared/auth/service.go
+package auth
+
+import (
+    "context"
+    "errors"
+    "fmt"
+    "time"
+
+    "github.com/golang-jwt/jwt/v5"
+    "golang.org/x/crypto/bcrypt"
+    "shared/models"
+    "shared/redis"
+)
+
+type Service struct {
+    jwtSecret     []byte
+    refreshSecret []byte
+    redis         *redis.Client
+    userRepo      UserRepository
+}
+
+type UserRepository interface {
+    GetUserByID(ctx context.Context, id string) (*models.User, error)
+    GetUserByEmail(ctx context.Context, email string) (*models.User, error)
+    CreateUser(ctx context.Context, user *models.User) error
+    UpdateUser(ctx context.Context, user *models.User) error
+}
+
+type Claims struct {
+    UserID string `json:"user_id"`
+    Email  string `json:"email"`
+    Role   string `json:"role"`
+    jwt.RegisteredClaims
+}
+
+func NewService(userRepo UserRepository, redis *redis.Client) *Service {
+    return &Service{
+        jwtSecret:     []byte("your-jwt-secret"), // Use env variable
+        refreshSecret: []byte("your-refresh-secret"), // Use env variable
+        redis:         redis,
+        userRepo:      userRepo,
+    }
+}
+
+func (s *Service) Login(ctx context.Context, email, password string) (*models.AuthResponse, error) {
+    // Get user from database
+    user, err := s.userRepo.GetUserByEmail(ctx, email)
+    if err != nil {
+        return nil, errors.New("invalid credentials")
+    }
+    
+    if !user.IsActive {
+        return nil, errors.New("account deactivated")
+    }
+    
+    // Verify password
+    if err := bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(password)); err != nil {
+        return nil, errors.New("invalid credentials")
+    }
+    
+    // Generate tokens
+    accessToken, err := s.generateAccessToken(user)
+    if err != nil {
+        return nil, err
+    }
+    
+    refreshToken, err := s.generateRefreshToken(user)
+    if err != nil {
+        return nil, err
+    }
+    
+    // Store refresh token in Redis
+    refreshKey := fmt.Sprintf("refresh:%s", user.ID)
+    s.redis.SetEX(ctx, refreshKey, refreshToken, 7*24*time.Hour) // 7 days
+    
+    // Store session
+    sessionKey := fmt.Sprintf("session:%s", accessToken)
+    s.redis.SetEX(ctx, sessionKey, user.ID, time.Hour) // 1 hour
+    
+    return &models.AuthResponse{
+        AccessToken:  accessToken,
+        RefreshToken: refreshToken,
+        User: models.UserProfile{
+            ID:        user.ID,
+            Email:     user.Email,
+            FirstName: user.FirstName,
+            LastName:  user.LastName,
+        },
+    }, nil
+}
+
+func (s *Service) generateAccessToken(user *models.User) (string, error) {
+    claims := Claims{
+        UserID: user.ID,
+        Email:  user.Email,
+        Role:   user.Role,
+        RegisteredClaims: jwt.RegisteredClaims{
+            ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
+            IssuedAt:  jwt.NewNumericDate(time.Now()),
+            Subject:   user.ID,
+        },
+    }
+    
+    token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+    return token.SignedString(s.jwtSecret)
+}
+
+func (s *Service) generateRefreshToken(user *models.User) (string, error) {
+    claims := Claims{
+        UserID: user.ID,
+        Email:  user.Email,
+        RegisteredClaims: jwt.RegisteredClaims{
+            ExpiresAt: jwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour)),
+            IssuedAt:  jwt.NewNumericDate(time.Now()),
+            Subject:   user.ID,
+        },
+    }
+    
+    token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+    return token.SignedString(s.refreshSecret)
+}
+
+func (s *Service) ValidateToken(ctx context.Context, tokenString string) (*Claims, error) {
+    token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+        return s.jwtSecret, nil
+    })
+    
+    if err != nil {
+        return nil, err
+    }
+    
+    if claims, ok := token.Claims.(*Claims); ok && token.Valid {
+        // Check if session exists in Redis
+        sessionKey := fmt.Sprintf("session:%s", tokenString)
+        userID, err := s.redis.Get(ctx, sessionKey).Result()
+        if err != nil {
+            return nil, errors.New("session expired")
+        }
+        
+        if userID != claims.UserID {
+            return nil, errors.New("invalid session")
+        }
+        
+        return claims, nil
+    }
+    
+    return nil, errors.New("invalid token")
+}
+
+func (s *Service) RefreshToken(ctx context.Context, refreshToken string) (*models.AuthResponse, error) {
+    token, err := jwt.ParseWithClaims(refreshToken, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+        return s.refreshSecret, nil
+    })
+    
+    if err != nil {
+        return nil, errors.New("invalid refresh token")
+    }
+    
+    claims, ok := token.Claims.(*Claims)
+    if !ok || !token.Valid {
+        return nil, errors.New("invalid refresh token")
+    }
+    
+    // Check if refresh token exists in Redis
+    refreshKey := fmt.Sprintf("refresh:%s", claims.UserID)
+    storedToken, err := s.redis.Get(ctx, refreshKey).Result()
+    if err != nil || storedToken != refreshToken {
+        return nil, errors.New("refresh token expired or invalid")
+    }
+    
+    // Get current user
+    user, err := s.userRepo.GetUserByID(ctx, claims.UserID)
+    if err != nil {
+        return nil, err
+    }
+    
+    if !user.IsActive {
+        return nil, errors.New("account deactivated")
+    }
+    
+    // Generate new tokens
+    return s.Login(ctx, user.Email, "") // Skip password check for refresh
+}
+
+func (s *Service) Logout(ctx context.Context, tokenString string) error {
+    // Parse token to get user ID
+    claims, err := s.ValidateToken(ctx, tokenString)
+    if err != nil {
+        return err
+    }
+    
+    // Remove session and refresh token
+    pipe := s.redis.Pipeline()
+    pipe.Del(ctx, fmt.Sprintf("session:%s", tokenString))
+    pipe.Del(ctx, fmt.Sprintf("refresh:%s", claims.UserID))
+    
+    _, err = pipe.Exec(ctx)
+    return err
+}
+
+// Password hashing
+func HashPassword(password string) (string, error) {
+    bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+    return string(bytes), err
+}
+```
+
+### Authentication Middleware
+```go
+// shared/middleware/auth.go
+package middleware
+
+import (
+    "context"
+    "net/http"
+    "strings"
+
+    "shared/auth"
+    "shared/utils"
+)
+
+func AuthRequired(authService *auth.Service) func(http.Handler) http.Handler {
+    return func(next http.Handler) http.Handler {
+        return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+            // Get token from Authorization header
+            authHeader := r.Header.Get("Authorization")
+            if authHeader == "" {
+                utils.ErrorResponse(w, http.StatusUnauthorized, "Authorization header required")
+                return
+            }
+            
+            // Extract Bearer token
+            parts := strings.SplitN(authHeader, " ", 2)
+            if len(parts) != 2 || parts[0] != "Bearer" {
+                utils.ErrorResponse(w, http.StatusUnauthorized, "Invalid authorization header format")
+                return
+            }
+            
+            token := parts[1]
+            
+            // Validate token
+            claims, err := authService.ValidateToken(r.Context(), token)
+            if err != nil {
+                utils.ErrorResponse(w, http.StatusUnauthorized, "Invalid or expired token")
+                return
+            }
+            
+            // Add user info to context
+            ctx := context.WithValue(r.Context(), "userID", claims.UserID)
+            ctx = context.WithValue(ctx, "userEmail", claims.Email)
+            ctx = context.WithValue(ctx, "userRole", claims.Role)
+            ctx = context.WithValue(ctx, "token", token)
+            
+            r = r.WithContext(ctx)
+            next.ServeHTTP(w, r)
+        })
+    }
+}
+
+func GetUserID(ctx context.Context) string {
+    if userID, ok := ctx.Value("userID").(string); ok {
+        return userID
+    }
+    return ""
+}
+
+func GetUserEmail(ctx context.Context) string {
+    if email, ok := ctx.Value("userEmail").(string); ok {
+        return email
+    }
+    return ""
+}
+
+func GetUserRole(ctx context.Context) string {
+    if role, ok := ctx.Value("userRole").(string); ok {
+        return role
+    }
+    return ""
+}
+
+func OptionalAuth(authService *auth.Service) func(http.Handler) http.Handler {
+    return func(next http.Handler) http.Handler {
+        return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+            authHeader := r.Header.Get("Authorization")
+            if authHeader == "" {
+                next.ServeHTTP(w, r)
+                return
+            }
+            
+            parts := strings.SplitN(authHeader, " ", 2)
+            if len(parts) != 2 || parts[0] != "Bearer" {
+                next.ServeHTTP(w, r)
+                return
+            }
+            
+            token := parts[1]
+            claims, err := authService.ValidateToken(r.Context(), token)
+            if err != nil {
+                next.ServeHTTP(w, r)
+                return
+            }
+            
+            ctx := context.WithValue(r.Context(), "userID", claims.UserID)
+            ctx = context.WithValue(ctx, "userEmail", claims.Email)
+            ctx = context.WithValue(ctx, "userRole", claims.Role)
+            ctx = context.WithValue(ctx, "token", token)
+            
+            r = r.WithContext(ctx)
+            next.ServeHTTP(w, r)
+        })
+    }
+}
+```
+
+---
+
+## 9. Deployment & DevOps
+
+### Docker Compose for Development
+```yaml
+# docker-compose.yml
+version: '3.8'
+
+services:
+  # Databases
+  postgres:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_DB: ai_platform
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/postgresql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - ai-platform
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - ai-platform
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - ai-platform
+
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - ai-platform
+
+  # Go Microservices
+  user-service:
+    build:
+      context: ./go-services
+      dockerfile: user-service/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/ai_platform?sslmode=disable
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=your-jwt-secret-here
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - ai-platform
+
+  vector-service:
+    build:
+      context: ./go-services
+      dockerfile: vector-service/Dockerfile
+    ports:
+      - "8081:8080"
+    environment:
+      - QDRANT_URL=http://qdrant:6333
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - qdrant
+      - redis
+    networks:
+      - ai-platform
+
+  storage-service:
+    build:
+      context: ./go-services
+      dockerfile: storage-service/Dockerfile
+    ports:
+      - "8082:8080"
+    environment:
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin123
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - minio
+      - redis
+    networks:
+      - ai-platform
+
+  # SvelteKit Application
+  sveltekit-app:
+    build:
+      context: ./sveltekit-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/ai_platform?sslmode=disable
+      - REDIS_URL=redis://redis:6379
+      - USER_SERVICE_URL=http://user-service:8080
+      - VECTOR_SERVICE_URL=http://vector-service:8080
+      - STORAGE_SERVICE_URL=http://storage-service:8080
+    depends_on:
+      - postgres
+      - redis
+      - user-service
+      - vector-service
+      - storage-service
+    networks:
+      - ai-platform
+
+  # Monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./infrastructure/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - ai-platform
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./infrastructure/grafana/dashboards:/var/lib/grafana/dashboards
+    networks:
+      - ai-platform
+
+volumes:
+  postgres_data:
+  redis_data:
+  qdrant_data:
+  minio_data:
+  grafana_data:
+
+networks:
+  ai-platform:
+    driver: bridge
+```
+
+### Kubernetes Deployment Example
+```yaml
+# k8s/namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ai-platform
+
+---
+# k8s/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ai-platform-config
+  namespace: ai-platform
+data:
+  DATABASE_URL: "postgres://postgres:postgres@postgres:5432/ai_platform?sslmode=disable"
+  REDIS_URL: "redis://redis:6379"
+  USER_SERVICE_URL: "http://user-service:8080"
+  VECTOR_SERVICE_URL: "http://vector-service:8080"
+  STORAGE_SERVICE_URL: "http://storage-service:8080"
+
+---
+# k8s/postgres.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: ai-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: pgvector/pgvector:pg17
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: ai_platform
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          value: postgres
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: postgres-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: ai-platform
+spec:
+  selector:
+    app: postgres
+  ports:
+  - port: 5432
+    targetPort: 5432
+
+---
+# k8s/user-service.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: ai-platform
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+      - name: user-service
+        image: your-registry/user-service:latest
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: ai-platform-config
+        env:
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: ai-platform-secrets
+              key: jwt-secret
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+  namespace: ai-platform
+spec:
+  selector:
+    app: user-service
+  ports:
+  - port: 8080
+    targetPort: 8080
+
+---
+# k8s/sveltekit-app.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sveltekit-app
+  namespace: ai-platform
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sveltekit-app
+  template:
+    metadata:
+      labels:
+        app: sveltekit-app
+    spec:
+      containers:
+      - name: sveltekit-app
+        image: your-registry/sveltekit-app:latest
+        ports:
+        - containerPort: 3000
+        envFrom:
+        - configMapRef:
+            name: ai-platform-config
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sveltekit-app
+  namespace: ai-platform
+spec:
+  selector:
+    app: sveltekit-app
+  ports:
+  - port: 3000
+    targetPort: 3000
+
+---
+# k8s/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ai-platform-ingress
+  namespace: ai-platform
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+spec:
+  tls:
+  - hosts:
+    - your-domain.com
+    - api.your-domain.com
+    secretName: ai-platform-tls
+  rules:
+  - host: your-domain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: sveltekit-app
+            port:
+              number: 3000
+  - host: api.your-domain.com
+    http:
+      paths:
+      - path: /users
+        pathType: Prefix
+        backend:
+          service:
+            name: user-service
+            port:
+              number: 8080
+      - path: /vector
+        pathType: Prefix
+        backend:
+          service:
+            name: vector-service
+            port:
+              number: 8080
+      - path: /storage
+        pathType: Prefix
+        backend:
+          service:
+            name: storage-service
+            port:
+              number: 8080
+```
+
+---
+
+## 10. Development Workflow
+
+### Development Scripts
+```json
+{
+  "scripts": {
+    "dev": "concurrently \"npm run dev:sveltekit\" \"npm run dev:services\"",
+    "dev:sveltekit": "cd sveltekit-frontend && npm run dev",
+    "dev:services": "docker-compose up postgres redis qdrant minio",
+    "dev:go": "cd go-services && make dev",
+    "build": "npm run build:sveltekit && npm run build:go",
+    "build:sveltekit": "cd sveltekit-frontend && npm run build",
+    "build:go": "cd go-services && make build",
+    "test": "npm run test:frontend && npm run test:backend",
+    "test:frontend": "cd sveltekit-frontend && npm test",
+    "test:backend": "cd go-services && make test",
+    "lint": "npm run lint:frontend && npm run lint:backend",
+    "lint:frontend": "cd sveltekit-frontend && npm run lint",
+    "lint:backend": "cd go-services && make lint",
+    "migrate": "cd go-services && make migrate",
+    "seed": "cd go-services && make seed",
+    "deploy:dev": "docker-compose up --build",
+    "deploy:prod": "kubectl apply -f k8s/"
+  }
+}
+```
+
+### Makefile for Go Services
+```makefile
+# go-services/Makefile
+
+.PHONY: dev build test lint migrate seed docker-build docker-push
+
+# Development
+dev:
+	@echo "Starting Go services in development mode..."
+	@docker-compose -f docker-compose.dev.yml up --build
+
+# Build all services
+build:
+	@echo "Building Go services..."
+	@cd user-service && go build -o bin/user-service ./cmd
+	@cd vector-service && go build -o bin/vector-service ./cmd
+	@cd storage-service && go build -o bin/storage-service ./cmd
+
+# Run tests
+test:
+	@echo "Running Go tests..."
+	@cd user-service && go test -v ./...
+	@cd vector-service && go test -v ./...
+	@cd storage-service && go test -v ./...
+
+# Lint code
+lint:
+	@echo "Linting Go code..."
+	@golangci-lint run ./...
+
+# Database migrations
+migrate:
+	@echo "Running database migrations..."
+	@cd user-service && go run ./cmd/migrate
+
+# Seed database
+seed:
+	@echo "Seeding database..."
+	@cd user-service && go run ./cmd/seed
+
+# Docker builds
+docker-build:
+	@echo "Building Docker images..."
+	@docker build -t ai-platform/user-service -f user-service/Dockerfile .
+	@docker build -t ai-platform/vector-service -f vector-service/Dockerfile .
+	@docker build -t ai-platform/storage-service -f storage-service/Dockerfile .
+
+docker-push:
+	@echo "Pushing Docker images..."
+	@docker push ai-platform/user-service
+	@docker push ai-platform/vector-service
+	@docker push ai-platform/storage-service
+
+# Clean up
+clean:
+	@echo "Cleaning up..."
+	@rm -rf */bin
+	@docker system prune -f
+```
+
+### CI/CD Pipeline (GitHub Actions)
+```yaml
+# .github/workflows/ci-cd.yml
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  test-frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./sveltekit-frontend
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: sveltekit-frontend/package-lock.json
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run linting
+      run: npm run lint
+
+    - name: Run tests
+      run: npm run test
+
+    - name: Build application
+      run: npm run build
+
+  test-backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./go-services
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+
+    - name: Install dependencies
+      run: go mod download
+
+    - name: Run linting
+      uses: golangci/golangci-lint-action@v3
+      with:
+        working-directory: go-services
+
+    - name: Run tests
+      run: make test
+      env:
+        DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db?sslmode=disable
+        REDIS_URL: redis://localhost:6379
+
+  build-and-push:
+    needs: [test-frontend, test-backend]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and push Docker images
+      run: |
+        # Build SvelteKit app
+        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/sveltekit-app:${{ github.sha }} ./sveltekit-frontend
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/sveltekit-app:${{ github.sha }}
+
+        # Build Go services
+        cd go-services
+        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/user-service:${{ github.sha }} -f user-service/Dockerfile .
+        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/vector-service:${{ github.sha }} -f vector-service/Dockerfile .
+        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/storage-service:${{ github.sha }} -f storage-service/Dockerfile .
+
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/user-service:${{ github.sha }}
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/vector-service:${{ github.sha }}
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/storage-service:${{ github.sha }}
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Configure kubectl
+      uses: azure/k8s-set-context@v3
+      with:
+        method: kubeconfig
+        kubeconfig: ${{ secrets.KUBE_CONFIG }}
+
+    - name: Deploy to Kubernetes
+      run: |
+        # Update image tags in k8s manifests
+        sed -i 's|:latest|:${{ github.sha }}|g' k8s/*.yaml
+        
+        # Apply manifests
+        kubectl apply -f k8s/
+
+        # Wait for deployment to complete
+        kubectl rollout status deployment/sveltekit-app -n ai-platform
+        kubectl rollout status deployment/user-service -n ai-platform
+        kubectl rollout status deployment/vector-service -n ai-platform
+        kubectl rollout status deployment/storage-service -n ai-platform
+```
+
+---
+
+## Summary
+
+This comprehensive architecture provides:
+
+1. **Modern Frontend**: SvelteKit 2 with bits-ui, UnoCSS, client-side caching, and fuzzy search
+2. **Scalable Backend**: Go microservices with clean architecture and domain separation
+3. **High Performance**: Multi-layer caching, connection pooling, and optimized queries
+4. **Type Safety**: End-to-end TypeScript/Go type safety with Drizzle ORM
+5. **Real-time Features**: WebSocket support, pub/sub messaging, and live updates
+6. **Security**: JWT authentication, rate limiting, input validation, and RBAC
+7. **Monitoring**: Prometheus metrics, distributed tracing, and health checks
+8. **DevOps**: Docker containerization, Kubernetes deployment, and CI/CD pipelines
+
+The architecture scales from development to production with clear separation of concerns and modern best practices throughout.

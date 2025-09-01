@@ -406,7 +406,7 @@ ${this.getCommonFixes(error.code)}`;
 // ======================================================================
 
 export const aiErrorFixer = new AIErrorFixer();
-
+;
 export const errorFixerStore = writable({
   initialized: false,
   fixing: false,

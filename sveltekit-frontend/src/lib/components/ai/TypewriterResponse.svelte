@@ -32,20 +32,20 @@
 	}
 
 	// State
-	let displayedText = '';
-	let currentIndex = 0;
-	let isTyping = false;
-	let isPaused = false;
-	let cursorVisible = true;
-	let thinkingState: ThinkingState = {
+let displayedText = $state('');
+let currentIndex = $state(0);
+let isTyping = $state(false);
+let isPaused = $state(false);
+let cursorVisible = $state(true);
+let thinkingState = $state<ThinkingState >({
 		phase: 'analyzing',
 		progress: 0
-	};
+	});
 	
 	// Activity replay state
-	let isReplayingActivity = false;
-	let activityIndex = 0;
-	let replaySpeed = 1.0;
+let isReplayingActivity = $state(false);
+let activityIndex = $state(0);
+let replaySpeed = $state(1.0);
 
 	// Event dispatcher
 	const dispatch = createEventDispatcher<{
@@ -77,14 +77,14 @@
 	};
 
 	// Intervals and timeouts
-	let typingInterval: NodeJS.Timeout;
-	let cursorInterval: NodeJS.Timeout;
+let typingInterval = $state<NodeJS.Timeout;
+let cursorInterval = $state<NodeJS.Timeout;
 	let thinkingInterval: NodeJS.Timeout;
 	let activityTimeout: NodeJS.Timeout;
 
-	onMount(() => {
+	onMount(() >(> {
 		if (autoStart) {
-			startTypewriter();
+			startTypewriter());
 		}
 		startCursorBlink();
 		
@@ -92,8 +92,8 @@
 		loadCachedActivity();
 	});
 
-	onDestroy(() => {
-		clearAllIntervals();
+	onDestroy(() >(> {
+		clearAllIntervals());
 	});
 
 	// Main typewriter function
@@ -139,7 +139,7 @@
 
 	async function typeText(textToType: string, typingSpeed: number): Promise<void> {
 		return new Promise((resolve) => {
-			let index = 0;
+let index = $state(0);
 			displayedText = '';
 			
 			const type = () => {
@@ -180,8 +180,7 @@
 		return new Promise((resolve) => {
 			thinkingState.phase = 'analyzing';
 			thinkingState.progress = 0;
-			
-			let phaseIndex = 0;
+let phaseIndex = $state(0);
 			const phases: (keyof typeof thinkingPhrases)[] = ['analyzing', 'processing', 'generating'];
 			
 			const updateThinking = () => {
@@ -402,7 +401,7 @@
 	{#if showCursor}
 		<span 
 			class="typewriter-cursor {cursorVisible ? 'visible' : 'hidden'}"
-			class:blinking={!isTyping}
+		 class:blinking={!isTyping}
 		>
 			{cursorChar}
 		</span>
@@ -412,10 +411,10 @@
 <!-- Advanced Controls (for development/debugging) -->
 {#if $$props.showControls}
 	<div class="typewriter-controls" in:fade={{ delay: 500 }}>
-		<button click={pause} disabled={!isTyping || isPaused}>Pause</button>
-		<button click={resume} disabled={!isPaused}>Resume</button>
-		<button click={restart}>Restart</button>
-		<button click={stop}>Stop</button>
+		<button on:onclick={pause} disabled={!isTyping || isPaused}>Pause</button>
+		<button on:onclick={resume} disabled={!isPaused}>Resume</button>
+		<button on:onclick={restart}>Restart</button>
+		<button on:onclick={stop}>Stop</button>
 		
 		<div class="speed-controls">
 			<label>

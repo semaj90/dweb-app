@@ -1,12 +1,11 @@
 <script lang="ts">
   import { browser } from '$app/environment';
   import { onMount } from 'svelte';
-  
-  let cookiesEnabled = false;
-  let localStorageEnabled = false;
-  let sessionStorageEnabled = false;
-  let devMode = false;
-  let sessionInfo = '';
+let cookiesEnabled = $state(false);
+let localStorageEnabled = $state(false);
+let sessionStorageEnabled = $state(false);
+let devMode = $state(false);
+let sessionInfo = $state('');
   
   onMount(() => {
     if (!browser) return;

@@ -448,7 +448,7 @@ export const createRPCConfig = (overrides: Partial<RPCConfig> = {}): RPCConfig =
 
 // === Singleton Instance ===
 export const gpuCacheRPCClient = new GPUCacheRPCClient(createRPCConfig());
-
+;
 // === Convenience Wrapper for Feature-Flag Based Usage ===
 export class FeatureFlaggedGPUCache {
   private rpcClient: GPUCacheRPCClient;

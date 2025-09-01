@@ -24,6 +24,14 @@ const meta = {
     sortBy: {
       control: { type: 'select' },
       options: ['date', 'priority', 'status', 'title']
+    },
+    enableAI: {
+      control: { type: 'boolean' },
+      description: 'Enable AI-powered case analysis'
+    },
+    showStats: {
+      control: { type: 'boolean' },
+      description: 'Display case statistics dashboard'
     }
   },
   tags: ['autodocs']
@@ -36,7 +44,9 @@ export const Default: Story = {
   args: {
     viewMode: 'list',
     filterMode: 'all',
-    sortBy: 'date'
+    sortBy: 'date',
+    enableAI: true,
+    showStats: true
   }
 };
 
@@ -44,7 +54,16 @@ export const GridView: Story = {
   args: {
     viewMode: 'grid',
     filterMode: 'active',
-    sortBy: 'priority'
+    sortBy: 'priority',
+    enableAI: true,
+    showStats: false
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Grid view layout optimized for visual case management'
+      }
+    }
   }
 };
 
@@ -52,7 +71,16 @@ export const Timeline: Story = {
   args: {
     viewMode: 'timeline',
     filterMode: 'all',
-    sortBy: 'date'
+    sortBy: 'date',
+    enableAI: false,
+    showStats: true
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Timeline view showing chronological case progression'
+      }
+    }
   }
 };
 
@@ -60,7 +88,16 @@ export const KanbanBoard: Story = {
   args: {
     viewMode: 'kanban',
     filterMode: 'active',
-    sortBy: 'status'
+    sortBy: 'status',
+    enableAI: true,
+    showStats: false
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Kanban board for workflow-based case management'
+      }
+    }
   }
 };
 
@@ -68,6 +105,32 @@ export const AssignedCases: Story = {
   args: {
     viewMode: 'list',
     filterMode: 'assigned',
-    sortBy: 'priority'
+    sortBy: 'priority',
+    enableAI: true,
+    showStats: true
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Focus view showing only cases assigned to current user'
+      }
+    }
+  }
+};
+
+export const ClosedCases: Story = {
+  args: {
+    viewMode: 'grid',
+    filterMode: 'closed',
+    sortBy: 'date',
+    enableAI: false,
+    showStats: true
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Archive view for completed and closed cases'
+      }
+    }
   }
 };

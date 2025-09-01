@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * Unified API Layer - Master Service Coordinator Endpoints
@@ -7,6 +7,7 @@ import type { RequestHandler } from './$types';
 
 import { json } from '@sveltejs/kit';
 import { masterServiceCoordinator } from '$lib/services/master-service-coordinator.js';
+import { URL } from "url";
 
 /**
  * GET /api/v1/coordinator - Get comprehensive system status

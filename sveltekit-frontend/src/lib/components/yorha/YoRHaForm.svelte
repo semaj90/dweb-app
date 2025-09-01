@@ -110,7 +110,7 @@
 
   function handleSubmit() {
     // Validate all fields
-    let hasErrors = false;
+let hasErrors = $state(false);
     const newErrors: Record<string, string> = {};
 
     fields.forEach(field => {
@@ -278,7 +278,7 @@
           type="button"
           class="form-button cancel"
           disabled={loading}
-          click={handleCancel}
+          on:onclick={handleCancel}
         >
           <span class="button-icon">✕</span>
           {cancelLabel}
@@ -289,7 +289,7 @@
         type="submit"
         class="form-button submit"
         disabled={loading || Object.keys(errors).length > 0}
-        on:click={handleSubmit}
+        on:on:click={handleSubmit}
       >
         {#if loading}
           <span class="button-spinner">◌</span>

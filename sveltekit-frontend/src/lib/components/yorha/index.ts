@@ -48,7 +48,7 @@ export interface YoRHaGridColumn {
 // (presets and utilities omitted for brevity in this quick fix)
 export const yorhaTablePresets = {} as const;
 export const yorhaGridPresets = {} as const;
-
+;
 // Status formatters for legal AI
 export const statusFormatters = {
     caseStatus: (status: string) => status?.toUpperCase() || 'UNKNOWN',

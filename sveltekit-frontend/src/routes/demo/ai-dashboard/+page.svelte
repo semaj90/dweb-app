@@ -7,8 +7,8 @@
   import type { AIMetrics, QueueMetrics, CacheMetrics, SystemMetrics } from '$lib/services/performanceMonitor';
   
   // State machine actors
-  let evidenceActor: any = null;
-  let uploadActor: any = null;
+let evidenceActor = $state<any >(null);
+let uploadActor = $state<any >(null);
   let evidenceState = $state({ value: 'idle', context: {} as EvidenceProcessingContext });
   let uploadState = $state({ value: 'idle', context: {} as DocumentUploadContext });
   
@@ -261,7 +261,7 @@ Defendant released on $5,000 bail.
             class="py-2 px-1 border-b-2 font-medium text-sm transition-colors {selectedTab === tab.id 
               ? 'border-blue-500 text-blue-600' 
               : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
-            click={() => selectedTab = tab.id as 'overview' | 'processing' | 'queues' | 'cache' | 'system'}
+            on:onclick={() => selectedTab = tab.id as 'overview' | 'processing' | 'queues' | 'cache' | 'system'}
           >
             {tab.label}
           </button>
@@ -460,7 +460,7 @@ Defendant released on $5,000 bail.
         <div class="mt-6 flex space-x-3">
           <button
             class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-            click={startProcessingDemo}
+            on:onclick={startProcessingDemo}
             disabled={isProcessingDemo || evidenceState.value === 'processing'}
           >
             Start Processing Demo
@@ -469,7 +469,7 @@ Defendant released on $5,000 bail.
           {#if evidenceState.value === 'error'}
             <button
               class="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700"
-              click={retryProcessing}
+              on:onclick={retryProcessing}
             >
               Retry
             </button>
@@ -478,7 +478,7 @@ Defendant released on $5,000 bail.
           {#if isProcessingDemo}
             <button
               class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-              click={cancelProcessing}
+              on:onclick={cancelProcessing}
             >
               Cancel
             </button>
@@ -543,7 +543,7 @@ Defendant released on $5,000 bail.
         <div class="mt-6">
           <button
             class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-            click={startUploadDemo}
+            on:onclick={startUploadDemo}
           >
             Start Upload Demo
           </button>
@@ -761,7 +761,7 @@ Defendant released on $5,000 bail.
   <div class="fixed bottom-6 right-6 space-y-2">
     <button
       class="block w-full px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 text-sm"
-      click={clearLogs}
+      on:onclick={clearLogs}
     >
       Clear Logs
     </button>

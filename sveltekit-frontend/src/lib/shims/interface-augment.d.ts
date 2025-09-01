@@ -128,4 +128,3 @@ declare global {
   }
 }
 
-export {};

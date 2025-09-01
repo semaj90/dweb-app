@@ -181,7 +181,7 @@ class SecurityManager {
 
 // Export singleton instance
 export const securityManager = new SecurityManager();
-
+;
 /**
  * Security middleware hook
  */

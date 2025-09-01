@@ -23,14 +23,14 @@
   const events = writable<unknown[]>([]);
 
   // Configuration
-  let enableStreaming = true;
-  let enableCache = true;
-  let enableMMR = true;
-  let enableCrossEncoder = true;
-  let maxSources = 10;
+let enableStreaming = $state(true);
+let enableCache = $state(true);
+let enableMMR = $state(true);
+let enableCrossEncoder = $state(true);
+let maxSources = $state(10);
 
   // SSE connection
-  let eventSource: EventSource | null = null;
+let eventSource = $state<EventSource | null >(null);
 
   /**
    * Submit query for synthesis
@@ -242,7 +242,7 @@
   }
 
   // Conversation history management
-  let conversationHistory: any[] = [];
+let conversationHistory = $state<any[] >([]);
 
   function getConversationHistory() {
     return conversationHistory.slice(-10); // Last 10 messages
@@ -307,7 +307,7 @@
     />
     
     <button 
-      click={submitQuery}
+      on:onclick={submitQuery}
       disabled={$processing || !query}
       class="submit-btn"
     >
@@ -439,7 +439,7 @@
         <h4>Provide Feedback</h4>
         <div class="rating-buttons">
           {#each [1, 2, 3, 4, 5] as rating}
-            <button click={() => submitFeedback(rating)}>
+            <button on:onclick={() => submitFeedback(rating)}>
               {rating} Star{rating > 1 ? 's' : ''}
             </button>
           {/each}

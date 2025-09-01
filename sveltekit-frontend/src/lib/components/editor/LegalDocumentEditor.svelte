@@ -36,26 +36,26 @@
   let { readonly = $bindable() } = $props(); // false;
 
   // Component state
-  let content = "";
-  let query = "";
-  let isLoading = false;
-  let isProcessingAI = false;
-  let error = "";
-  let loadingDocument = false;
-  let documentLoadError = "";
-  let citations: Array<{
+let content = $state("");
+let query = $state("");
+let isLoading = $state(false);
+let isProcessingAI = $state(false);
+let error = $state("");
+let loadingDocument = $state(false);
+let documentLoadError = $state("");
+let citations = $state<Array<{
     id: string;
     text: string;
     source: string;
     type: "case" | "statute" | "regulation";
-  }> = [];
+  }> >([]);
 
   // Auto-save state
-  let autoSaveTimer: ReturnType<typeof setTimeout> | null = null;
-  let lastSaved = "";
-  let isSaving = false;
-  let saveError = "";
-  let hasUnsavedChanges = false;
+let autoSaveTimer = $state<ReturnType<typeof setTimeout> | null >(null);
+let lastSaved = $state("");
+let isSaving = $state(false);
+let saveError = $state("");
+let hasUnsavedChanges = $state(false);
 
   // Document type definitions
   interface DocumentData {
@@ -405,7 +405,7 @@
         <!-- Document Actions Dropdown -->
         <div class="container mx-auto px-4">
           <button
-            use:melt={$helpTrigger}
+            <!-- <!-- use:melt={$helpTrigger}
             class="container mx-auto px-4"
             aria-label="Help"
           >
@@ -413,7 +413,7 @@
           </button>
 
           <button
-            use:melt={$actionsTrigger}
+            <!-- <!-- use:melt={$actionsTrigger}
             class="container mx-auto px-4"
           >
             <Settings class="container mx-auto px-4" />
@@ -422,7 +422,7 @@
           </button>
 
           <button
-            click={() => manualSaveDocument()}
+            on:onclick={() => manualSaveDocument()}
             class="container mx-auto px-4"
             disabled={readonly || loadingDocument || isSaving}
           >
@@ -465,7 +465,7 @@
                     📚
                   </button>
                   <button
-                    use:melt={$aiTrigger}
+                    <!-- <!-- use:melt={$aiTrigger}
                     class="container mx-auto px-4"
                     title="AI Assistant"
                   >
@@ -504,7 +504,7 @@
                     <p class="container mx-auto px-4">{documentLoadError}</p>
                     <button
                       class="container mx-auto px-4"
-                      click={() => loadDocument()}
+                      on:onclick={() => loadDocument()}
                     >
                       Try Again
                     </button>
@@ -555,7 +555,7 @@
 
               <button
                 class="container mx-auto px-4"
-                click={() =>
+                on:onclick={() =>
                   insertCitation({
                     id: Math.random().toString(),
                     text: "Sample Citation",
@@ -609,30 +609,30 @@
 
 <!-- AI Assistant Dialog -->
 {#if $aiOpen}
-  <div use:melt={$aiPortalled}>
+  <div <!-- <!-- use:melt={$aiPortalled}>
     <div
-      use:melt={$aiOverlay}
+      <!-- <!-- use:melt={$aiOverlay}
       class="container mx-auto px-4"
-      transition:fade={{ duration: 150 }}
+      transitifade={{ duration: 150 }}
     ></div>
     <div
       class="container mx-auto px-4"
-      transition:flyAndScale={{ duration: 150, y: 8, start: 0.96 }}
-      use:melt={$aiContent}
+      transitiflyAndScale={{ duration: 150, y: 8, start: 0.96 }}
+      <!-- <!-- use:melt={$aiContent}
     >
       <div class="container mx-auto px-4">
         <h2
-          use:melt={$aiTitle}
+          <!-- <!-- use:melt={$aiTitle}
           class="container mx-auto px-4"
         >
           <Brain class="container mx-auto px-4" />
           AI Legal Assistant
         </h2>
-        <p use:melt={$aiDescription} class="container mx-auto px-4">
+        <p <!-- <!-- use:melt={$aiDescription} class="container mx-auto px-4">
           Ask for help with legal research, drafting, or analysis
         </p>
         <button
-          use:melt={$aiClose}
+          <!-- <!-- use:melt={$aiClose}
           class="container mx-auto px-4"
         >
           <X class="container mx-auto px-4" />
@@ -668,14 +668,14 @@
 
           <div class="container mx-auto px-4">
             <button
-              use:melt={$aiClose}
+              <!-- <!-- use:melt={$aiClose}
               class="container mx-auto px-4"
               disabled={isProcessingAI}
             >
               Cancel
             </button>
             <button
-              click={() => handleAIRequest()}
+              on:onclick={() => handleAIRequest()}
               class="container mx-auto px-4"
               disabled={!query.trim() || isProcessingAI}
             >
@@ -697,18 +697,18 @@
 <!-- Actions Dropdown Menu -->
 {#if $actionsOpen}
   <div
-    use:melt={$actionsMenu}
+    <!-- <!-- use:melt={$actionsMenu}
     class="container mx-auto px-4"
   >
     <button
-      use:melt={$actionsItem}
+      <!-- <!-- use:melt={$actionsItem}
       class="container mx-auto px-4"
     >
       <Eye class="container mx-auto px-4" />
       Preview
     </button>
     <button
-      use:melt={$actionsItem}
+      <!-- <!-- use:melt={$actionsItem}
       class="container mx-auto px-4"
     >
       <Share2 class="container mx-auto px-4" />
@@ -716,7 +716,7 @@
     </button>
     <div class="container mx-auto px-4"></div>
     <button
-      use:melt={$actionsItem}
+      <!-- <!-- use:melt={$actionsItem}
       class="container mx-auto px-4"
     >
       <X class="container mx-auto px-4" />
@@ -728,7 +728,7 @@
 <!-- Help Tooltip -->
 {#if $helpOpen}
   <div
-    use:melt={$helpContent}
+    <!-- <!-- use:melt={$helpContent}
     class="container mx-auto px-4"
   >
     Use the AI assistant for legal research and drafting help. Click the

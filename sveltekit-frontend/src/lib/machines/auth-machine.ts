@@ -381,6 +381,6 @@ export const authMachine = setup({
 
 // Create the actor
 export const authActor = createActor(authMachine);
-
+;
 // Export for use in components
 export default authActor;

@@ -107,9 +107,8 @@ Displays detailed integrity verification results with AI analysis
 
   function getOverallScore() {
     if (!verificationResults && !aiAnalysis) return 0;
-    
-    let score = 0;
-    let factors = 0;
+let score = $state(0);
+let factors = $state(0);
     
     if (verificationResults) {
       score += verificationResults.hashMatch ? 25 : 0;

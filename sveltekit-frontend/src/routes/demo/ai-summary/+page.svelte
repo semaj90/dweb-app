@@ -6,7 +6,7 @@
   import { onMount } from 'svelte';
 
   let activeTab = $state('summary-reader');
-  let demoMode = 'interactive';
+let demoMode = $state('interactive');
 
   // Mock data for demonstrations
   const mockEvidenceReport = {
@@ -197,7 +197,7 @@ Potential defense challenges include:
             class:text-blue-600={activeTab === 'summary-reader'}
             class:border-transparent={activeTab !== 'summary-reader'}
             class:text-gray-500={activeTab !== 'summary-reader'}
-            click={() => activeTab = 'summary-reader'}
+            on:onclick={() => activeTab = 'summary-reader'}
           >
             <div class="flex items-center gap-2">
               <Brain class="w-4 h-4" />
@@ -211,7 +211,7 @@ Potential defense challenges include:
             class:text-blue-600={activeTab === 'evidence-report'}
             class:border-transparent={activeTab !== 'evidence-report'}
             class:text-gray-500={activeTab !== 'evidence-report'}
-            click={() => activeTab = 'evidence-report'}
+            on:onclick={() => activeTab = 'evidence-report'}
           >
             <div class="flex items-center gap-2">
               <FileText class="w-4 h-4" />
@@ -225,7 +225,7 @@ Potential defense challenges include:
             class:text-blue-600={activeTab === 'case-synthesis'}
             class:border-transparent={activeTab !== 'case-synthesis'}
             class:text-gray-500={activeTab !== 'case-synthesis'}
-            click={() => activeTab = 'case-synthesis'}
+            on:onclick={() => activeTab = 'case-synthesis'}
           >
             <div class="flex items-center gap-2">
               <GitMerge class="w-4 h-4" />

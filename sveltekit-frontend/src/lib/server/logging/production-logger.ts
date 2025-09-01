@@ -292,7 +292,7 @@ export class ProductionLogger {
 
 // Export singleton instance
 export const logger = new ProductionLogger();
-
+;
 // Export service-specific loggers
 export const dbLogger = {
   info: (operation: string, data?: unknown, metrics?: unknown) => logger.logDatabaseOperation(operation, data, undefined, metrics),

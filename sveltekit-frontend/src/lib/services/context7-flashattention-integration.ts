@@ -618,5 +618,5 @@ export function createContext7FlashAttentionIntegration() {
 
 // Global integration instance
 export const context7FlashAttentionIntegration = createContext7FlashAttentionIntegration();
-
+;
 export default Context7FlashAttentionIntegration;

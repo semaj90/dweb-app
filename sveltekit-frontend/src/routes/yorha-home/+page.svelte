@@ -20,10 +20,9 @@
   // tsserver sometimes reports Svelte components as having no default export — silence for now
   // @ts-ignore: Svelte component typing mismatch
   import YoRHaTable from '$lib/components/yorha/YoRHaTable.svelte';
-  import { state } from 'svelte/reactivity';
-
-  // System data for command center (use any to avoid strict prop typing noise in quick pass)
-  let systemData = state({
+  
+  // System data for command center - Svelte 5 runes pattern
+  let systemData = $state({
     activeCases: 12,
     evidenceItems: 234,
     personsOfInterest: 8,
@@ -118,10 +117,10 @@
       <h1>YoRHa Command Interface</h1>
     </div>
     <div class="header-right">
-      <button class="yorha-btn-icon" click={() => navigateTo('/settings')}>
+      <button class="yorha-btn-icon" on:onclick={() => navigateTo('/settings')}>
         <Settings />
       </button>
-      <button class="yorha-btn-icon" click={() => navigateTo('/profile')}>
+      <button class="yorha-btn-icon" on:onclick={() => navigateTo('/profile')}>
         <Gamepad2 />
       </button>
     </div>
@@ -131,31 +130,31 @@
     <nav>
       <ul>
         <li>
-          <button class="yorha-btn-sidebar" class:active={activeSection === 'dashboard'} click={() => activeSection.value = 'dashboard'}>
+          <button class="yorha-btn-sidebar" class:active={activeSection === 'dashboard'} on:onclick={() => activeSection.value = 'dashboard'}>
             <Monitor />
             <span>Dashboard</span>
           </button>
         </li>
         <li>
-          <button class="yorha-btn-sidebar" class:active={activeSection === 'rag-results'} click={() => performRAGQuery()}>
+          <button class="yorha-btn-sidebar" class:active={activeSection === 'rag-results'} on:onclick={() => performRAGQuery()}>
             <Bot />
             <span>RAG Analysis</span>
           </button>
         </li>
         <li>
-          <button class="yorha-btn-sidebar" class:active={activeSection === 'search-results'} click={() => performSemanticSearch()}>
+          <button class="yorha-btn-sidebar" class:active={activeSection === 'search-results'} on:onclick={() => performSemanticSearch()}>
             <Search />
             <span>Semantic Search</span>
           </button>
         </li>
         <li>
-          <button class="yorha-btn-sidebar" click={() => navigateTo('/documents')}>
+          <button class="yorha-btn-sidebar" on:onclick={() => navigateTo('/documents')}>
             <FileText />
             <span>Documents</span>
           </button>
         </li>
         <li>
-          <button class="yorha-btn-sidebar" click={() => navigateTo('/yorha-terminal')}>
+          <button class="yorha-btn-sidebar" on:onclick={() => navigateTo('/yorha-terminal')}>
             <Terminal />
             <span>Terminal</span>
           </button>

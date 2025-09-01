@@ -1,11 +1,12 @@
 
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 // Optimized case search API endpoint
 // Supports multiple search strategies with automatic fallbacks
 import { json } from "@sveltejs/kit";
 import { and, desc, ilike, or, sql } from "drizzle-orm";
 import { db, isPostgreSQL } from "$lib/server/db/index";
+import { URL } from "url";
 
 
 export const GET: RequestHandler = async ({ url }) => {

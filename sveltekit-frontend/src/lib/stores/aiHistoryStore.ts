@@ -1,6 +1,6 @@
 import { writable } from "svelte/store";
 
-export const aiHistory = writable<
+export const aiHistory = writable<;
   Array<{
     prompt: string;
     response: string;

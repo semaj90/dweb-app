@@ -40,7 +40,7 @@ const ERROR_PATTERNS = {
 };
 
 // === Error Fix Strategies ===
-export class WebGPUSOMErrorFixer {
+export class WebGPUSOMErrorFixer {;
   private fixedErrors: Set<string> = new Set();
   private errorStats = {
     total: 0,
@@ -74,7 +74,7 @@ export type User = typeof users.$inferSelect;`,
 
       'firstName': `
 // Fix: Database column mapping
-export const mapDatabaseUser = (dbUser: DatabaseUserAttributes) => ({
+export const mapDatabaseUser = (dbUser: DatabaseUserAttributes) => ({;
   firstName: dbUser.first_name,
   lastName: dbUser.last_name,
   isActive: dbUser.is_active,
@@ -83,7 +83,7 @@ export const mapDatabaseUser = (dbUser: DatabaseUserAttributes) => ({
 
       'embeddingCache': `
 // Fix: Add missing table export
-export const embeddingCache = pgTable('embedding_cache', {
+export const embeddingCache = pgTable('embedding_cache', {;
   id: uuid('id').defaultRandom().primaryKey(),
   query: text('query').notNull(),
   embedding: vector('embedding', { dimensions: 384 }),
@@ -92,7 +92,7 @@ export const embeddingCache = pgTable('embedding_cache', {
 
       'userProfiles': `
 // Fix: Add missing table export  
-export const userProfiles = pgTable('user_profiles', {
+export const userProfiles = pgTable('user_profiles', {;
   id: uuid('id').defaultRandom().primaryKey(),
   userId: uuid('user_id').references(() => users.id),
   preferences: jsonb('preferences'),
@@ -321,7 +321,7 @@ export interface MinIOService {
     const gpuFixes = {
       flashAttentionImport: `
 // Fix: FlashAttention service import
-export class FlashAttentionGPUErrorProcessor {
+export class FlashAttentionGPUErrorProcessor {;
   async initialize(): Promise<void> {
     console.log('🔥 FlashAttention processor initialized');
   }
@@ -354,7 +354,7 @@ export interface WebGPUCacheEntry {
 
       rtxOptimizationFix: `
 // Fix: RTX 3060 Ti specific optimizations
-export const RTX_3060_TI_CONFIG = {
+export const RTX_3060_TI_CONFIG = {;
   maxMemoryMB: 8192, // 8GB VRAM
   cudaDeviceId: 0,
   maxConcurrentAllocations: 8,
@@ -485,7 +485,7 @@ export const RTX_3060_TI_CONFIG = {
 }
 
 // === Export singleton instance ===
-export const webgpuSOMErrorFixer = new WebGPUSOMErrorFixer();
+export const webgpuSOMErrorFixer = new WebGPUSOMErrorFixer();;
 
 // === Auto-start optimization ===
 webgpuSOMErrorFixer.optimizeWithGPUCache().catch(console.error);

@@ -13,29 +13,29 @@
 
   let editorElement: HTMLDivElement;
   let citationSidebar: HTMLDivElement;
-  let isDirty = false;
-  let isLoading = false;
-  let autoSaveTimer: NodeJS.Timeout | null = null;
-  let lastSaved: Date | null = null;
-  let wordCount = 0;
-  let characterCount = 0;
-  let estimatedReadTime = 0;
+let isDirty = $state(false);
+let isLoading = $state(false);
+let autoSaveTimer = $state<NodeJS.Timeout | null >(null);
+let lastSaved = $state<Date | null >(null);
+let wordCount = $state(0);
+let characterCount = $state(0);
+let estimatedReadTime = $state(0);
 
   // Report state
   let title = report?.title || "Untitled Report";
   let content = report?.content || "";
-  let sections: ReportSection[] = [];
-  let selectedCitations: CitationPoint[] = [];
-  let availableCitations: CitationPoint[] = [];
+let sections = $state<ReportSection[] >([]);
+let selectedCitations = $state<CitationPoint[] >([]);
+let availableCitations = $state<CitationPoint[] >([]);
 
   // AI suggestions state
-  let aiSuggestions: string[] = [];
-  let showAiPanel = false;
-  let isGeneratingAi = false;
+let aiSuggestions = $state<string[] >([]);
+let showAiPanel = $state(false);
+let isGeneratingAi = $state(false);
 
   // Selection and cursor state
-  let currentSelection: Range | null = null;
-  let cursorPosition = 0;
+let currentSelection = $state<Range | null >(null);
+let cursorPosition = $state(0);
 
   onMount(async () => {
     if (browser && editorElement) {
@@ -295,7 +295,7 @@
     } finally {
       isLoading = false;
 }}
-  let aiSuggestionTimer: NodeJS.Timeout | null = null;
+let aiSuggestionTimer = $state<NodeJS.Timeout | null >(null);
 
   function debounceAiSuggestions() {
     if (aiSuggestionTimer) {
@@ -385,13 +385,13 @@
       <div class="container mx-auto px-4">
         <button
           class="container mx-auto px-4"
-          click={() => (showAiPanel = !showAiPanel)}
+          on:onclick={() => (showAiPanel = !showAiPanel)}
         >
           AI Assist
         </button>
         <button
           class="container mx-auto px-4"
-          click={() => saveReport()}
+          on:onclick={() => saveReport()}
           disabled={!isDirty || isLoading}
         >
           Save
@@ -407,21 +407,21 @@
       <div class="container mx-auto px-4">
         <button
           type="button"
-          click={() => formatText("bold")}
+          on:onclick={() => formatText("bold")}
           title="Bold (Ctrl+B)"
         >
           <strong>B</strong>
         </button>
         <button
           type="button"
-          click={() => formatText("italic")}
+          on:onclick={() => formatText("italic")}
           title="Italic (Ctrl+I)"
         >
           <em>I</em>
         </button>
         <button
           type="button"
-          click={() => formatText("underline")}
+          on:onclick={() => formatText("underline")}
           title="Underline (Ctrl+U)"
         >
           <u>U</u>
@@ -429,7 +429,7 @@
         <div class="container mx-auto px-4"></div>
         <button
           type="button"
-          click={() => insertCitationPrompt()}
+          on:onclick={() => insertCitationPrompt()}
           title="Insert Citation (Ctrl+K)"
         >
           📎 Citation
@@ -441,7 +441,7 @@
     <div
       bind:this={editorElement}
       class="container mx-auto px-4"
-      class:read-on:ly={readOnly}
+      class:read-ly={readOnly}
       role="textbox"
       aria-multiline="true"
       aria-label="Report content editor"
@@ -458,7 +458,7 @@
       <h3>Citations</h3>
       <button
         class="container mx-auto px-4"
-        click={() => (citationSidebar.style.display = "none")}>×</button
+        on:onclick={() => (citationSidebar.style.display = "none")}>×</button
       >
     </div>
 
@@ -474,7 +474,7 @@
             <div class="container mx-auto px-4">{citation.source}</div>
             <button
               class="container mx-auto px-4"
-              click={() => insertCitation(citation)}
+              on:onclick={() => insertCitation(citation)}
             >
               Add
             </button>
@@ -489,7 +489,7 @@
     <div class="container mx-auto px-4">
       <div class="container mx-auto px-4">
         <h3>AI Suggestions</h3>
-        <button class="container mx-auto px-4" click={() => (showAiPanel = false)}
+        <button class="container mx-auto px-4" on:onclick={() => (showAiPanel = false)}
           >×</button
         >
       </div>
@@ -503,7 +503,7 @@
               <p>{suggestion}</p>
               <button
                 class="container mx-auto px-4"
-                click={() => insertAiSuggestion(suggestion)}
+                on:onclick={() => insertAiSuggestion(suggestion)}
               >
                 Use This
               </button>
@@ -525,7 +525,7 @@
           <span class="container mx-auto px-4">[{citation.source}]</span>
           <button
             class="container mx-auto px-4"
-            click={() => removeCitation(citation.id)}>×</button
+            on:onclick={() => removeCitation(citation.id)}>×</button
           >
         </div>
       {/each}

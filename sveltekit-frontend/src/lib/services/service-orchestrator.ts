@@ -2,6 +2,7 @@
 // Manages all 37 Go binaries with intelligent routing, health monitoring, and auto-scaling
 
 import type {
+import http from "http";
 	ServiceConfig,
 	ServiceStatus,
 	ServiceTier,

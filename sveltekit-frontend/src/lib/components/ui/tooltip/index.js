@@ -6,3 +6,4 @@ export { default } from "../Tooltip.svelte";
 export const TooltipContent = undefined;
 export const TooltipTrigger = undefined;
 export const TooltipProvider = undefined;
+;

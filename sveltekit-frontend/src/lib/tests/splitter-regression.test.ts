@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 /// <reference types="vitest" />
 // TODO: Fix import - // Orphaned content: import {  import { loadBaseline, checkRegression } from '$text/perf-baseline';
 

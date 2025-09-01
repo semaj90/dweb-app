@@ -205,16 +205,15 @@
 	});
 
 	const { state, send } = useMachine(enhancedChatMachine);
-
-	let messageInput = '';
-	let chatContainer: HTMLDivElement;
+let messageInput = $state('');
+let chatContainer = $state<HTMLDivElement;
 
 	// Available models
-	const models = [
+	const models >([
 		{ value: 'gemma3-legal', label: 'Gemma3 Legal', description: 'Legal-specialized model' },
 		{ value: 'gemma3:latest', label: 'Gemma3 General', description: 'General purpose model' },
 		{ value: 'gemma2:2b', label: 'Gemma2 2B', description: 'Fast, lightweight model' }
-	];
+	]);
 
 	function handleSend() {
 		if (messageInput.trim() && !$state.matches('sending')) {
@@ -361,7 +360,7 @@
 					<Button 
 						size="sm" 
 						variant="outline"
-						on:click={() => send({ type: 'RETRY' })}
+						on:on:click={() => send({ type: 'RETRY' })}
 						class="text-red-700 border-red-300 hover:bg-red-50"
 					>
 						Retry
@@ -369,7 +368,7 @@
 					<Button 
 						size="sm" 
 						variant="ghost"
-						on:click={() => send({ type: 'CLEAR_ERROR' })}
+						on:on:click={() => send({ type: 'CLEAR_ERROR' })}
 						class="text-red-700 hover:bg-red-50"
 					>
 						Dismiss
@@ -394,7 +393,7 @@
 			</div>
 			<div class="flex flex-col justify-end">
 				<Button
-					on:click={handleSend}
+					on:on:click={handleSend}
 					disabled={!messageInput.trim() || $state.matches('sending')}
 					class={cn(
 						"px-6 py-3 rounded-lg font-medium transition-colors",

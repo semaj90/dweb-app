@@ -38,11 +38,11 @@
   });
 
   // Real-time updates
-  let updateInterval: number;
+let updateInterval = $state<number;
 
-  onMount(() => {
+  onMount(() >(> {
     updateInterval = setInterval(() => {
-      currentTime = new Date();
+      currentTime = new Date());
       uptime += 1;
       
       // Simulate minor fluctuations

@@ -38,10 +38,10 @@
   // Svelte 5 state management
   let selectedDemo = $state('overview');
   let isLoading = $state(false);
-  let scrollElement: HTMLElement;
+let scrollElement = $state<HTMLElement;
 
   // All demo routes organized by category
-  const demoCategories = [
+  const demoCategories >([
     {
       id: 'overview',
       title: 'DEMOS OVERVIEW',
@@ -302,10 +302,10 @@
         }
       ]
     }
-  ];
+  ]);
 
   // Get all demos for overview
-  const allDemos = $derived(
+  let allDemos = $derived(
     demoCategories
       .filter(cat => cat.id !== 'overview')
       .flatMap(cat => cat.demos)
@@ -369,7 +369,7 @@
       <div class="yorha-nav-bar">
         <Button.Root 
           class="yorha-nav-btn"
-          on:click={goHome}
+          on:on:click={goHome}
         >
           <Home size={16} />
           HOME
@@ -412,7 +412,7 @@
         {#each demoCategories as category}
           <button 
             class="yorha-category-btn {selectedDemo === category.id ? 'active' : ''}"
-            click={() => scrollToCategory(category.id)}
+            on:onclick={() => scrollToCategory(category.id)}
           >
             <svelte:component this={category.icon} size={16} />
             {category.title}
@@ -441,7 +441,7 @@
 
         <div class="yorha-overview-grid">
           {#each allDemos as demo}
-            <div class="yorha-demo-card yorha-demo-card-overview" click={() => handleDemoNavigation(demo.path)}>
+            <div class="yorha-demo-card yorha-demo-card-overview" on:onclick={() => handleDemoNavigation(demo.path)}>
               <div class="yorha-demo-header">
                 <h3 class="yorha-demo-title">{demo.title}</h3>
                 <Badge class="{getStatusColor(demo.status)}">
@@ -476,7 +476,7 @@
 
           <div class="yorha-demos-grid">
             {#each category.demos as demo}
-              <div class="yorha-demo-card" click={() => handleDemoNavigation(demo.path)}>
+              <div class="yorha-demo-card" on:onclick={() => handleDemoNavigation(demo.path)}>
                 <div class="yorha-demo-header">
                   <h3 class="yorha-demo-title">{demo.title}</h3>
                   <Badge class="{getStatusColor(demo.status)}">
@@ -494,7 +494,7 @@
                   <div class="yorha-demo-actions">
                     <Button.Root 
                       class="yorha-demo-btn"
-                      on:click={(e) => {
+                      on:on:click={(e) => {
                         e.stopPropagation();
                         handleDemoNavigation(demo.path);
                       }}
@@ -541,7 +541,7 @@
           <div class="yorha-footer-actions">
             <Button.Root 
               class="yorha-btn yorha-btn-primary"
-              on:click={goHome}
+              on:on:click={goHome}
             >
               <ArrowLeft size={16} />
               RETURN TO HOMEPAGE

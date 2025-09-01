@@ -111,7 +111,7 @@
         <p class="title">🎯 Progress & Loading</p>
         
         <div class="mb-4">
-          <button type="button" class="nes-btn is-primary" click={startProcess} disabled={isLoading}>
+          <button type="button" class="nes-btn is-primary" on:onclick={startProcess} disabled={isLoading}>
             {isLoading ? 'Processing...' : 'Start Retro Process'}
           </button>
         </div>
@@ -142,10 +142,10 @@
         <!-- Mixed styling example -->
         <div class="space-y-4">
           <div class="flex items-center gap-4">
-            <button type="button" class="yorha-button" click={() => goto('/evidenceboard')}>
+            <button type="button" class="yorha-button" on:onclick={() => goto('/evidenceboard')}>
               YoRHa Evidence Board
             </button>
-            <button type="button" class="nes-btn is-success" click={() => goto('/demo')}>
+            <button type="button" class="nes-btn is-success" on:onclick={() => goto('/demo')}>
               🎮 NES Demo Hub
             </button>
           </div>
@@ -177,7 +177,7 @@
       <div class="nes-container with-title is-rounded">
         <p class="title">💬 Dialogs & Modals</p>
         
-        <button type="button" class="nes-btn is-warning mb-4" click={() => isDialogOpen = true}>
+        <button type="button" class="nes-btn is-warning mb-4" on:onclick={() => isDialogOpen = true}>
           Open Retro Dialog
         </button>
         
@@ -271,8 +271,8 @@
       <p class="title">🎮 Retro System Message</p>
       <p>This is a classic 8-bit style dialog powered by NES.css! It integrates perfectly with your existing YoRHa theme and UnoCSS utilities.</p>
       <div class="flex gap-2 justify-end mt-4">
-        <button type="button" class="nes-btn" click={() => isDialogOpen = false}>Cancel</button>
-        <button type="button" class="nes-btn is-primary" click={() => {isDialogOpen = false; message = '🎮 Dialog confirmed!';}}>OK</button>
+        <button type="button" class="nes-btn" on:onclick={() => isDialogOpen = false}>Cancel</button>
+        <button type="button" class="nes-btn is-primary" on:onclick={() => {isDialogOpen = false; message = '🎮 Dialog confirmed!';}}>OK</button>
       </div>
     </form>
   </div>

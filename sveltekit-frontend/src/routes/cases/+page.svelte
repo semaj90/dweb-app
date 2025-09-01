@@ -121,7 +121,7 @@
   let caseCreationFeedback: any;
 
   // Filtered and sorted cases
-  const filteredCases = $derived(() => {
+  let filteredCases = $derived(() => {
     let filtered = data.userCases || [];
     
     if (searchQuery.trim()) {
@@ -285,7 +285,7 @@
           Manage cases with AI-powered search and PostgreSQL vector storage
         </p>
       </div>
-      <Button on:click={() => createCaseDialogOpen = true} class="gap-2">
+      <Button on:on:click={() => createCaseDialogOpen = true} class="gap-2">
         <Plus class="h-4 w-4" />
         New Case
       </Button>
@@ -349,7 +349,7 @@
           <Button
             variant="outline"
             size="sm"
-            on:click={performVectorSearch}
+            on:on:click={performVectorSearch}
             disabled={!searchQuery.trim() || isSearching}
             class="gap-2"
           >
@@ -396,11 +396,11 @@
       <!-- Case Detail View -->
       <div class="space-y-6">
         <div class="flex items-center justify-between">
-          <Button variant="outline" on:click={() => goto('/cases')}>
+          <Button variant="outline" on:on:click={() => goto('/cases')}>
             ← Back to Cases
           </Button>
           <div class="flex gap-2">
-            <Button variant="outline" size="sm" on:click={() => addEvidenceDialogOpen = true}>
+            <Button variant="outline" size="sm" on:on:click={() => addEvidenceDialogOpen = true}>
               <Plus class="h-4 w-4 mr-2" />
               Add Evidence
             </Button>
@@ -448,7 +448,7 @@
               <Card.Content class="flex flex-col items-center justify-center py-12">
                 <FileText class="h-12 w-12 text-muted-foreground mb-4" />
                 <p class="text-muted-foreground mb-4">No evidence has been added to this case yet.</p>
-                <Button on:click={() => addEvidenceDialogOpen = true}>
+                <Button on:on:click={() => addEvidenceDialogOpen = true}>
                   <Plus class="h-4 w-4 mr-2" />
                   Add First Evidence
                 </Button>
@@ -469,7 +469,7 @@
                         <Button 
                           variant="ghost" 
                           size="sm" 
-                          on:click={() => confirmDeleteEvidence(evidence)}
+                          on:on:click={() => confirmDeleteEvidence(evidence)}
                         >
                           <Trash2 class="h-4 w-4" />
                         </Button>
@@ -505,7 +505,7 @@
         <Tabs.Content value="all-cases" class="space-y-4">
           <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {#each filteredCases as caseItem}
-              <Card.Root class="cursor-pointer transition-colors hover:bg-muted/50" on:click={() => viewCase(caseItem)}>
+              <Card.Root class="cursor-pointer transition-colors hover:bg-muted/50" on:on:click={() => viewCase(caseItem)}>
                 <Card.Header>
                   <div class="flex items-start justify-between">
                     <Card.Title class="text-lg line-clamp-2">{caseItem.title}</Card.Title>
@@ -547,7 +547,7 @@
                     <p class="text-muted-foreground mb-4">
                       {searchQuery.trim() ? 'No cases found matching your search.' : 'No cases found.'}
                     </p>
-                    <Button on:click={() => createCaseDialogOpen = true}>
+                    <Button on:on:click={() => createCaseDialogOpen = true}>
                       <Plus class="h-4 w-4 mr-2" />
                       Create Your First Case
                     </Button>
@@ -562,7 +562,7 @@
           {#if vectorSearchResults.length > 0}
             <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {#each vectorSearchResults as result}
-                <Card.Root class="cursor-pointer transition-colors hover:bg-muted/50" on:click={() => viewCase(result)}>
+                <Card.Root class="cursor-pointer transition-colors hover:bg-muted/50" on:on:click={() => viewCase(result)}>
                   <Card.Header>
                     <div class="flex items-start justify-between">
                       <Card.Title class="text-lg line-clamp-2">{result.title}</Card.Title>
@@ -752,7 +752,7 @@
         </div>
       </div>
       <Dialog.Footer>
-        <Button variant="outline" type="button" on:click={() => createCaseDialogOpen = false}>
+        <Button variant="outline" type="button" on:on:click={() => createCaseDialogOpen = false}>
           Cancel
         </Button>
         <Button type="submit" disabled={!$createFormData.title?.trim()}>
@@ -824,7 +824,7 @@
         </div>
       </div>
       <Dialog.Footer>
-        <Button variant="outline" type="button" on:click={() => addEvidenceDialogOpen = false}>
+        <Button variant="outline" type="button" on:on:click={() => addEvidenceDialogOpen = false}>
           Cancel
         </Button>
         <Button type="submit" disabled={!$evidenceFormData.title?.trim()}>
@@ -846,10 +846,10 @@
       </AlertDialog.Description>
     </AlertDialog.Header>
     <AlertDialog.Footer>
-      <Button variant="outline" on:click={() => deleteEvidenceDialogOpen = false}>
+      <Button variant="outline" on:on:click={() => deleteEvidenceDialogOpen = false}>
         Cancel
       </Button>
-      <Button variant="destructive" on:click={deleteEvidence}>
+      <Button variant="destructive" on:on:click={deleteEvidence}>
         Delete Evidence
       </Button>
     </AlertDialog.Footer>

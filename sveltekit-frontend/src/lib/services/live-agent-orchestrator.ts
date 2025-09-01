@@ -525,9 +525,9 @@ export class LiveAgentOrchestrator {
 
 // Singleton instance
 export const liveAgentOrchestrator = new LiveAgentOrchestrator();
-
+;
 // Helper functions for easy integration
-export function createAgentRequest(
+export function createAgentRequest(;
   type: AgentRequest['type'],
   payload: any,
   options: Partial<Pick<AgentRequest, 'priority' | 'context' | 'agents'>> = {}

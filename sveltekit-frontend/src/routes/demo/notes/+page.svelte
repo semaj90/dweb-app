@@ -15,7 +15,7 @@
   let isCreatingNote = $state(false);
 
   // Demo data
-  let demoMarkdown = `# Legal Case Analysis
+let demoMarkdown = $state(`# Legal Case Analysis
 
 ## Case Summary
 This is a **comprehensive analysis** of the evidence collected in case #2024-001.
@@ -45,7 +45,7 @@ Priority: High
 **Next Steps:**
 - Schedule additional witness interviews
 - Request additional forensic analysis
-- Coordinate with district attorney's office`;
+- Coordinate with district attorney's office`);
 
   let editorContent = $state('');
   let currentNote = $state({
@@ -201,7 +201,7 @@ Priority: High
                 type="text"
                 placeholder="Add tags (comma separated)"
                 class="space-y-4"
-                on:blur={(e) => {
+                onblur={(e) => {
                   const tags = (e.target as HTMLInputElement).value.split(',').map(t => t.trim()).filter(t => t);
                   currentNote.tags = tags;
                 }}
@@ -211,8 +211,8 @@ Priority: High
             <RichTextEditor
               content={currentNote.content}
               placeholder="Start writing your note..."
-              on:save={handleEditorSave}
-              on:change={handleEditorChange}
+              save={handleEditorSave}
+              change={handleEditorChange}
               autoSave={true}
               autoSaveDelay={3000}
             />
@@ -231,7 +231,7 @@ Priority: High
             <DragDropZone
               accept="image/*,.pdf,.doc,.docx,.txt"
               maxSize={10485760}
-              on:filesdropped={handleFilesDropped}
+              filesdropped={handleFilesDropped}
             />
           </div>
         </div>
@@ -282,7 +282,7 @@ Priority: High
 
             <button
               type="button"
-              click={() => createNewNote()}
+              on:onclick={() => createNewNote()}
               class="space-y-4"
             >
               <Plus class="space-y-4" />
@@ -303,7 +303,7 @@ Priority: High
             {#each $filteredNotes as note (note.id)}
               <button
                 type="button"
-                click={() => viewNote(note)}
+                on:onclick={() => viewNote(note)}
                 class="space-y-4"
               >
                 <div class="space-y-4">
@@ -366,7 +366,7 @@ Priority: High
     caseId={selectedNote.caseId}
     createdAt={new Date(selectedNote.savedAt)}
     canEdit={true}
-    on:save={(event) => {
+    save={(event) => {
       console.log('Note updated:', event.detail);
       // Refresh the note in the list
       notesManager.saveNote(event.detail);

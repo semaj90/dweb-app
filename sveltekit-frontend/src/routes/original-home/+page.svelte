@@ -5,7 +5,7 @@
   import { browser } from '$app/environment';
   
   let recentCases: any[] = $state([]);
-  let heroText = "Advanced Legal Case Management";
+let heroText = $state("Advanced Legal Case Management");
   
   onMount(async () => {
     // Load recent cases
@@ -120,7 +120,7 @@
         <h3 class="space-y-4">Quick Evidence Upload</h3>
         <p class="space-y-4">Drag and drop files for instant AI analysis</p>
         
-        <UploadArea on:upload={handleQuickUpload} />
+        <UploadArea upload={handleQuickUpload} />
       </div>
       
       <!-- Case Analytics -->

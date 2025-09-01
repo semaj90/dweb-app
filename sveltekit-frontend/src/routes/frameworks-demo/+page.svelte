@@ -3,7 +3,6 @@
   import AskAI from "$lib/components/ai/AskAI.svelte";
   import LegalDocumentEditor from "$lib/components/editor/LegalDocumentEditor.svelte";
   import WysiwygEditor from "$lib/components/editor/WysiwygEditor.svelte";
-  import { createTabs, melt } from "melt";
   import {
     BookOpen,
     Brain,
@@ -14,23 +13,17 @@
   } from "lucide-svelte";
   import { onMount } from "svelte";
 
-  // Melt UI Tabs for switching between demos
-  const {
-    elements: { root, list, content, trigger },
-    states: { value },
-  } = createTabs({
-    defaultValue: "document-editor",
-  });
+  // Simple tab state (replacing melt-ui tabs)
+  let activeTab = $state("document-editor");
 
   // Demo data
-  let activeTab = "document-editor";
-  let sampleContent = `MOTION TO DISMISS
+let sampleContent = $state(`MOTION TO DISMISS
 
 Comes now the Defendant, by and through undersigned counsel, and respectfully moves this Honorable Court to dismiss the Plaintiff's Complaint pursuant to Federal Rule of Civil Procedure 12(b)(6) for failure to state a claim upon which relief can be granted.
 
 I. STATEMENT OF FACTS
 
-The Plaintiff filed a complaint alleging breach of contract. However, the complaint fails to...`;
+The Plaintiff filed a complaint alleging breach of contract. However, the complaint fails to...`);
 
   // Handle component events
   function handleSave(event: CustomEvent) {
@@ -214,37 +207,44 @@ The Plaintiff filed a complaint alleging breach of contract. However, the compla
 
       <!-- Component Demos with Melt UI Tabs -->
       <section class="space-y-4">
-        <div use:melt={$root} class="space-y-4">
+        <div class="space-y-4">
           <!-- Tab List -->
-          <div use:melt={$list} class="space-y-4">
+          <div class="flex gap-2 border-b">
             <button
-              use:melt={$trigger("document-editor")}
-              class="space-y-4"
-              class:active={$value === "document-editor"}
+              class="flex items-center gap-2 px-4 py-2 rounded-t-lg transition-colors"
+              class:bg-blue-500={activeTab === "document-editor"}
+              class:text-white={activeTab === "document-editor"}
+              class:bg-gray-100={activeTab !== "document-editor"}
+              on:on:onclick={() => activeTab = "document-editor"}
             >
-              <FileText class="space-y-4" />
+              <FileText size={16} />
               Document Editor
             </button>
             <button
-              use:melt={$trigger("wysiwyg-editor")}
-              class="space-y-4"
-              class:active={$value === "wysiwyg-editor"}
+              class="flex items-center gap-2 px-4 py-2 rounded-t-lg transition-colors"
+              class:bg-blue-500={activeTab === "wysiwyg-editor"}
+              class:text-white={activeTab === "wysiwyg-editor"}
+              class:bg-gray-100={activeTab !== "wysiwyg-editor"}
+              on:on:onclick={() => activeTab = "wysiwyg-editor"}
             >
-              <Settings class="space-y-4" />
+              <Settings size={16} />
               WYSIWYG Editor
             </button>
             <button
-              use:melt={$trigger("ai-assistant")}
-              class="space-y-4"
-              class:active={$value === "ai-assistant"}
+              class="flex items-center gap-2 px-4 py-2 rounded-t-lg transition-colors"
+              class:bg-blue-500={activeTab === "ai-assistant"}
+              class:text-white={activeTab === "ai-assistant"}
+              class:bg-gray-100={activeTab !== "ai-assistant"}
+              on:on:onclick={() => activeTab = "ai-assistant"}
             >
-              <Brain class="space-y-4" />
+              <Brain size={16} />
               AI Assistant
             </button>
           </div>
 
           <!-- Tab Content -->
-          <div use:melt={$content("document-editor")} class="space-y-4">
+          {#if activeTab === "document-editor"}
+          <div class="p-4 border rounded-b-lg space-y-4">
             <div class="space-y-4">
               <h3 class="space-y-4">Legal Document Editor</h3>
               <p class="space-y-4">
@@ -254,13 +254,13 @@ The Plaintiff filed a complaint alleging breach of contract. However, the compla
               <LegalDocumentEditor
                 documentType="motion"
                 title="Motion to Dismiss"
-                on:save={handleSave}
-                on:airequest={handleAIResponse}
+                save={handleSave}
+                airequest={handleAIResponse}
               />
             </div>
           </div>
-
-          <div use:melt={$content("wysiwyg-editor")} class="space-y-4">
+          {:else if activeTab === "wysiwyg-editor"}
+          <div class="p-4 border rounded-b-lg space-y-4">
             <div class="space-y-4">
               <h3 class="space-y-4">
                 WYSIWYG Editor with Hugerte
@@ -274,12 +274,12 @@ The Plaintiff filed a complaint alleging breach of contract. However, the compla
                 enableAI={true}
                 enableCitation={true}
                 height="400px"
-                on:change={(e) => console.log("Content changed:", e.detail)}
+                change={(e) => console.log("Content changed:", e.detail)}
               />
             </div>
           </div>
-
-          <div use:melt={$content("ai-assistant")} class="space-y-4">
+          {:else if activeTab === "ai-assistant"}
+          <div class="p-4 border rounded-b-lg space-y-4">
             <div class="space-y-4">
               <h3 class="space-y-4">AI Assistant</h3>
               <p class="space-y-4">
@@ -292,10 +292,11 @@ The Plaintiff filed a complaint alleging breach of contract. However, the compla
                 placeholder="Ask about legal procedures, case law, or document drafting..."
                 showReferences={true}
                 enableVoiceInput={true}
-                on:response={handleAIResponse}
+                response={handleAIResponse}
               />
             </div>
           </div>
+          {/if}
         </div>
       </section>
 

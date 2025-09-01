@@ -204,7 +204,7 @@
                 <button
                   type="button"
                   class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded"
-                  click={() => startEdit()}
+                  on:onclick={() => startEdit()}
                   title="Edit Note"
                 >
                   <Edit3 class="w-5 h-5" />
@@ -213,7 +213,7 @@
                 <button
                   type="button"
                   class="px-3 py-1 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
-                  click={() => cancelEdit()}
+                  on:onclick={() => cancelEdit()}
                 >
                   Cancel
                 </button>
@@ -223,7 +223,7 @@
             <button
               type="button"
               class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded"
-              click={() => isSaved ? handleRemoveFromSaved() : handleSaveForLater()}
+              on:onclick={() => isSaved ? handleRemoveFromSaved() : handleSaveForLater()}
               title={isSaved ? "Remove from saved" : "Save for later"}
             >
               {#if isSaved}
@@ -255,7 +255,7 @@
                 {tag}
                 <button
                   type="button"
-                  click={() => removeTag(tag)}
+                  on:onclick={() => removeTag(tag)}
                   class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200"
                 >
                   <X class="w-3 h-3" />

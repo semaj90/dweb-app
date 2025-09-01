@@ -3,6 +3,7 @@
 // Builds on UnoCSS + Svelte 5 for GPU-accelerated layouts
 
 import { mat4 } from "gl-matrix";
+import { EventEmitter } from "events";
 
 export interface MatrixUINode {
   type:

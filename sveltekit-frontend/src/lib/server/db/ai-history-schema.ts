@@ -8,7 +8,7 @@ export const aiSessions = pgTable('ai_sessions', {
   sessionType: text('session_type').notNull(), // 'chat', 'analysis', 'search'
   metadata: jsonb('metadata').default('{}'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
 });
 
 export const aiInteractions = pgTable('ai_interactions', {
@@ -19,7 +19,7 @@ export const aiInteractions = pgTable('ai_interactions', {
   responseTime: integer('response_time'), // milliseconds
   confidence: decimal('confidence', { precision: 5, scale: 4 }),
   metadata: jsonb('metadata').default('{}'),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull()
 });
 
 export const aiAnalysisHistory = pgTable('ai_analysis_history', {
@@ -29,17 +29,17 @@ export const aiAnalysisHistory = pgTable('ai_analysis_history', {
   analysisResult: jsonb('analysis_result').notNull(),
   confidence: decimal('confidence', { precision: 5, scale: 4 }),
   processingTime: integer('processing_time'),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull()
 });
 
 // Relations
 export const aiSessionsRelations = relations(aiSessions, ({ many }) => ({
-  interactions: many(aiInteractions),
+  interactions: many(aiInteractions)
 }));
 
 export const aiInteractionsRelations = relations(aiInteractions, ({ one }) => ({
   session: one(aiSessions, {
     fields: [aiInteractions.sessionId],
-    references: [aiSessions.id],
-  }),
+    references: [aiSessions.id]
+  })
 }));

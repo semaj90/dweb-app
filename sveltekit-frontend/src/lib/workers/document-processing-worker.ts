@@ -1,8 +1,9 @@
-import { rabbitMQService } from '../services/rabbitmq-service';
+import { rabbitMQService } from '../services/rabbitmq-service.js';
 import { db } from '$lib/server/db';
 import * as schema from '$lib/server/db/schema-postgres';
 import { eq } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
+import fs from "fs";
 
 const schemaAny = schema as any;
 

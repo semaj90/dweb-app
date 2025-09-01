@@ -3,9 +3,9 @@
   export let title: string;
   export let description: string;
   export let path: string;
-  export let icon: any; // Svelte component constructor
+  export let icon: any; // Svelte component constructor;
   export let ariaLabel: string = title;
-
+;
   function handleNavigate() {
     if (path) goto(path);
   }
@@ -18,7 +18,7 @@
 </script>
 
 <div class="yorha-nav-card" role="button" tabindex="0" aria-label={ariaLabel}
-  click={handleNavigate} keydown={handleKey} data-path={path}>
+  on:onclick={handleNavigate} keydown={handleKey} data-path={path}>
   <div class="yorha-nav-header">
     {#if icon}
       <svelte:component this={icon} size={28} />
@@ -28,7 +28,7 @@
   <p>{description}</p>
   <div class="yorha-nav-footer">
     <span>{path}</span>
-    <slot name="trailing" />
+    {@render trailing?.()}
   </div>
 </div>
 

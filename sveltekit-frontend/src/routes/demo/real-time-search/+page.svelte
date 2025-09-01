@@ -151,7 +151,7 @@
             enableAI={true}
             maxResults={15}
             autoSearch={true}
-            on:select={handleSearchSelect}
+            select={handleSearchSelect}
           />
         </CardContent>
       </Card>
@@ -255,7 +255,7 @@
                 variant="outline" 
                 size="sm" 
                 class="w-full justify-start text-left h-auto p-2"
-                on:click={() => testSearch(query)}
+                on:on:click={() => testSearch(query)}
               >
                 <div class="text-xs truncate">{query}</div>
               </Button>

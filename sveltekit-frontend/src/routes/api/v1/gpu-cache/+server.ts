@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * Enhanced GPU Cache API Endpoint - Full Stack Integration
@@ -13,6 +13,7 @@ import { nesCacheOrchestrator } from '$lib/services/nes-cache-orchestrator';
 import { webgpuRAGService } from '$lib/webgpu/webgpu-rag-service';
 import { binaryEncoder } from '$lib/middleware/binary-encoding';
 import { dev } from '$app/environment';
+import { URL } from "url";
 
 // === GPU Cache API Handlers ===
 

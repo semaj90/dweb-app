@@ -25,9 +25,9 @@
 
 {#if $menu}
   <div
-    use:melt={$menu}
+    <!-- <!-- use:melt={$menu}
     class="space-y-4"
-    transition:fly={{ duration: 150, y: -10 }}
+    transitifly={{ duration: 150, y: -10 }}
   >
     {@render children?.()}
   </div>

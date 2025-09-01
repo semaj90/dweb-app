@@ -1,3 +1,4 @@
+import http from "http";
 /**
  * Multi-Protocol API Routing Configuration
  * Native Windows Legal AI Platform - Production Ready
@@ -336,7 +337,7 @@ export const SERVICES_CONFIG: Record<string, ServiceConfig> = {
 };
 
 // Multi-Protocol API Routes Configuration
-export const API_ROUTES: ProtocolRoute[] = [
+export const API_ROUTES: ProtocolRoute[] = [;
   // Enhanced RAG Routes
   {
     service: 'enhancedRag',

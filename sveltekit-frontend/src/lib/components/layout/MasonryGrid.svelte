@@ -45,7 +45,7 @@ https://svelte.dev/e/js_parse_error -->
 
   let container: HTMLElement;
   let masonry: any;
-  let isInitialized = false;
+let isInitialized = $state(false);
 
   // Masonry configuration
   let masonryOptions = $derived({
@@ -110,9 +110,9 @@ https://svelte.dev/e/js_parse_error -->
   };
 
   // Auto-resize functionality
-  let resizeTimeout: NodeJS.Timeout;
-  const handleResize = () => {
-    if (!resize || !masonry) return;
+let resizeTimeout = $state<NodeJS.Timeout;
+  const handleResize >(() => {
+    if (!resize || !masonry) return);
 
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
@@ -142,14 +142,14 @@ https://svelte.dev/e/js_parse_error -->
     dropTargetStyle,
     dropFromOthersDisabled
   }}
-  on:consider={handleDndConsider}
-  on:finalize={handleDndFinalize}
+  consider={handleDndConsider}
+  finalize={handleDndFinalize}
   style="--column-width: {columnWidth}px; --gutter: {gutter}px;"
 >
   {#each items as item, index (item.id)}
     <div
       class="space-y-4"
-      transition:fly={{ y: 20, duration: 300, delay: index * 50 }}
+      transitifly={{ y: 20, duration: 300, delay: index * 50 }}
     >
       <slot {item} {index} />
     </div>

@@ -33,7 +33,7 @@ export const defaultFocusSettings: FocusSettings = {
 // Store for focus mode state
 export const focusMode = writable(false);
 export const focusSettings = writable(defaultFocusSettings);
-
+;
 export class FocusManager {
   private isActive = false;
   private originalStyles: Map<Element, string> = new Map();
@@ -298,7 +298,7 @@ export class FocusManager {
 
 // Global focus manager instance
 export const globalFocusManager = new FocusManager();
-
+;
 // Svelte action for focus mode
 export function focusModeAction(node: HTMLElement, enabled: boolean = false) {
   const manager = new FocusManager();
@@ -322,7 +322,7 @@ export function focusModeAction(node: HTMLElement, enabled: boolean = false) {
 }
 
 // CSS classes for focus mode styling
-export const focusModeStyles = `
+export const focusModeStyles = `;
   .focus-mode-active {
     --focus-dim-opacity: 0.3;
     --focus-transition: opacity 0.3s ease;
@@ -393,7 +393,7 @@ export function createFocusMode(initialSettings?: Partial<FocusSettings>) {
 
 // Keyboard shortcut integration
 export function setupFocusModeShortcut(
-  manager: FocusManager = globalFocusManager,
+  manager: FocusManager = globalFocusManager
 ) {
   function handleKeydown(event: KeyboardEvent) {
     if (event.key === "F10") {

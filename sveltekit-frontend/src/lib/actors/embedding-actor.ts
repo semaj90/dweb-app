@@ -45,7 +45,7 @@ export interface EmbeddingError {
 export const embeddingActor = fromPromise<EmbeddingOutput, EmbeddingInput>(
   async ({ input }): Promise<EmbeddingOutput> => {
     const startTime = Date.now();
-    
+
     try {
       // Validate input
       if (!input.text || input.text.trim().length === 0) {
@@ -56,13 +56,13 @@ export const embeddingActor = fromPromise<EmbeddingOutput, EmbeddingInput>(
       }
 
       // Enhanced context for legal documents
-      const contextualText = input.context?.documentType 
+      const contextualText = input.context?.documentType
         ? `[Legal Document: ${input.context.documentType}] ${input.text}`
         : input.text;
 
       // Generate embedding using Ollama service
       const embedding = await ollamaService.generateEmbedding(contextualText);
-      
+
       if (!embedding || embedding.length === 0) {
         throw {
           message: 'Failed to generate embedding - empty result',
@@ -91,7 +91,7 @@ export const embeddingActor = fromPromise<EmbeddingOutput, EmbeddingInput>(
       if (error.code) {
         throw error; // Already a structured error
       }
-      
+
       if (error.message?.includes('fetch')) {
         throw {
           message: 'Ollama service unavailable',
@@ -99,7 +99,7 @@ export const embeddingActor = fromPromise<EmbeddingOutput, EmbeddingInput>(
           details: error
         } as EmbeddingError;
       }
-      
+
       if (error.message?.includes('timeout')) {
         throw {
           message: 'Embedding generation timed out',
@@ -107,7 +107,7 @@ export const embeddingActor = fromPromise<EmbeddingOutput, EmbeddingInput>(
           details: error
         } as EmbeddingError;
       }
-      
+
       throw {
         message: `Embedding generation failed: ${error.message || 'Unknown error'}`,
         code: 'MODEL_ERROR',
@@ -126,21 +126,21 @@ export const batchEmbeddingActor = fromPromise<EmbeddingOutput[], EmbeddingInput
       // Process embeddings in parallel with concurrency limit
       const batchSize = 5; // Prevent overwhelming Ollama
       const results: EmbeddingOutput[] = [];
-      
+
       for (let i = 0; i < input.length; i += batchSize) {
         const batch = input.slice(i, i + batchSize);
-        
+
         const batchPromises = batch.map(async (item, index) => {
           const actor = createActor(embeddingActor, { input: item });
           actor.start();
           const snapshot = actor.getSnapshot();
           return (snapshot as any).output || (snapshot as any).context || null;
         });
-        
+
         const batchResults = await Promise.all(batchPromises);
         results.push(...batchResults.filter(Boolean) as EmbeddingOutput[]);
       }
-      
+
       return results;
     } catch (error: any) {
       throw {

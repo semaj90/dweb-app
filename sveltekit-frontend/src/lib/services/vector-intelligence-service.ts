@@ -760,3 +760,4 @@ ${content.substring(0, 2000)}...
 }
 
 export const vectorIntelligenceService = new VectorIntelligenceService();
+;

@@ -49,7 +49,7 @@
   let metricsInterval: NodeJS.Timeout;
   let frameCount = $state(0);
   let fps = $state(0);
-  let lastFrameTime = 0;
+let lastFrameTime = $state(0);
   
   // Demo scenarios
   const demoScenarios = [
@@ -401,7 +401,7 @@
           <UnifiedButton
             {...getDemoButtonProps(scenario.id)}
             variant={currentDemo === scenario.id ? 'primary' : 'secondary'}
-            on:click={() => currentDemo = scenario.id}
+            on:on:click={() => currentDemo = scenario.id}
           >
             {scenario.title}
           </UnifiedButton>
@@ -450,13 +450,13 @@
               </div>
               
               <div class=\"flex flex-wrap gap-3\">
-                <UnifiedButton on:click={testMemoryOperations} variant=\"evidence\">
+                <UnifiedButton on:on:click={testMemoryOperations} variant=\"evidence\">
                   Test Memory Operations
                 </UnifiedButton>
-                <UnifiedButton on:click={testCacheOperations} variant=\"case\">
+                <UnifiedButton on:on:click={testCacheOperations} variant=\"case\">
                   Test Cache Operations
                 </UnifiedButton>
-                <UnifiedButton on:click={testGPUAnimations} variant=\"legal\">
+                <UnifiedButton on:on:click={testGPUAnimations} variant=\"legal\">
                   Test GPU Animations
                 </UnifiedButton>
               </div>
@@ -506,7 +506,7 @@
                 <!-- Dialog Demo -->
                 <div>
                   <h3 class=\"text-lg font-semibold mb-3\">Modal Dialog</h3>
-                  <UnifiedButton on:click={() => showDialog = true} variant=\"case\">
+                  <UnifiedButton on:on:click={() => showDialog = true} variant=\"case\">
                     Open Legal Analysis Dialog
                   </UnifiedButton>
                 </div>
@@ -543,7 +543,7 @@
               
               <div class=\"mb-6\">
                 <UnifiedButton 
-                  on:click={runAIAnalysis} 
+                  on:on:click={runAIAnalysis} 
                   variant=\"legal\"
                   disabled={!sampleDocument.trim()}
                   legalContext={{
@@ -789,7 +789,7 @@
           <h3 class=\"font-semibold text-gray-900 mb-3\">Quick Actions</h3>
           <div class=\"space-y-2\">
             <UnifiedButton 
-              on:click={runAIAnalysis} 
+              on:on:click={runAIAnalysis} 
               variant=\"legal\" 
               size=\"sm\"
               disabled={!sampleDocument.trim()}
@@ -797,14 +797,14 @@
               Run AI Analysis
             </UnifiedButton>
             <UnifiedButton 
-              on:click={testMemoryOperations} 
+              on:on:click={testMemoryOperations} 
               variant=\"evidence\" 
               size=\"sm\"
             >
               Test Memory
             </UnifiedButton>
             <UnifiedButton 
-              on:click={testGPUAnimations} 
+              on:on:click={testGPUAnimations} 
               variant=\"case\" 
               size=\"sm\"
             >
@@ -890,7 +890,7 @@
   
   {#snippet footer()}
     <UnifiedButton 
-      on:click={() => showDialog = false} 
+      on:on:click={() => showDialog = false} 
       variant=\"secondary\"
     >
       Close

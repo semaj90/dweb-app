@@ -12,18 +12,15 @@
 
   import { onMount, onDestroy } from 'svelte';
   import { memoryMonitoring } from '$lib/services/memory-monitoring.service';
-  
-    
-  let memoryData = {
+let memoryData = $state({
     currentLOD: { name: 'medium', level: 2 },
     memoryPressure: 0.5,
     pools: [],
     clusters: [],
     cacheLayers: []
-  };
-  
-  let updateCount = 0;
-  let isOptimizing = false;
+  });
+let updateCount = $state(0);
+let isOptimizing = $state(false);
 
   onMount(() => {
     memoryMonitoring.start(10000); // Update every 10 seconds
@@ -73,7 +70,7 @@
       <div class="text-xs text-gray-500">Updates: {updateCount}</div>
       <button 
         class="optimize-btn px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
-        click={triggerOptimization}
+        on:onclick={triggerOptimization}
         disabled={isOptimizing}
       >
         {isOptimizing ? 'Optimizing...' : 'Optimize'}

@@ -13,17 +13,16 @@
 
   // In Svelte 5 (runes mode) don't use `export let` for page props — use $props()
   const { data } = $props() as { data: any };
-
-  let EnhancedFuseSearch: any = null;
+let EnhancedFuseSearch = $state<any >(null);
 
   onMount(async () => {
     EnhancedFuseSearch = (await import('$lib/components/search/EnhancedFuseSearch.svelte')).default;
   });
 
   // Simple search state
-  let searchQuery: string = '';
-  let searchResults: any[] = [];
-  let isSearching: boolean = false;
+let searchQuery = $state<string >('');
+let searchResults = $state<any[] >([]);
+let isSearching = $state<boolean >(false);
 
   async function performSearch() {
     if (!searchQuery.trim()) return;
@@ -125,7 +124,7 @@
           bind:value={searchQuery}
           on:keydown={handleKeydown}
           class="flex-1" />
-        <button on:click={performSearch} disabled={isSearching || !searchQuery.trim()} class="inline-flex items-center justify-center gap-2 rounded-md bg-primary text-primary-foreground py-2 px-3 hover:opacity-90 transition disabled:opacity-50">
+        <button on:onclick={performSearch} disabled={isSearching || !searchQuery.trim()} class="inline-flex items-center justify-center gap-2 rounded-md bg-primary text-primary-foreground py-2 px-3 hover:opacity-90 transition disabled:opacity-50">
           {#if isSearching}
             Loading...
           {:else}
@@ -189,11 +188,11 @@
               <div class="flex gap-2">
                 <Button size="sm">
               <div class="flex gap-2">
-                <button on:click={() => handleAISummarizeResult(law)} class="inline-flex items-center gap-2 rounded-md bg-primary text-primary-foreground px-3 py-1 text-sm">
+                <button on:onclick={() => handleAISummarizeResult(law)} class="inline-flex items-center gap-2 rounded-md bg-primary text-primary-foreground px-3 py-1 text-sm">
                   <Bot class="h-4 w-4 mr-2" />
                   <span>AI Summary</span>
                 </button>
-                <button on:click={() => handleAIChatResult(law)} class="inline-flex items-center gap-2 rounded-md border px-3 py-1 text-sm">
+                <button on:onclick={() => handleAIChatResult(law)} class="inline-flex items-center gap-2 rounded-md border px-3 py-1 text-sm">
                   <MessageSquare class="h-4 w-4 mr-2" />
                   <span>AI Chat</span>
                 </button>

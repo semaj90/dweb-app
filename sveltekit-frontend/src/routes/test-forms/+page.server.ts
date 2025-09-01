@@ -1,3 +1,4 @@
+import type { PageServerLoad } from './$types';
 import { fail } from '@sveltejs/kit';
 import { superValidate, message } from 'sveltekit-superforms/server';
 import { zod } from 'sveltekit-superforms/adapters';

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { $props, $state, $derived, $effect } from 'svelte';
   import { goto } from '$app/navigation';
-  import { createTooltip, melt } from 'melt';
+  // import { createTooltip, melt } from 'melt'; // Removed melt dependency
   import { Brain, MessageSquare, Sparkles, Mic, MicOff, Settings } from 'lucide-svelte';
   import { cn } from '$lib/utils';
   import { Badge } from '$lib/components/ui/badge/index.js';
@@ -35,17 +35,17 @@
   let aiStatus = $state<'idle' | 'processing' | 'listening' | 'connected'>('connected');
 
   // Tooltip for compact variants
-  const tooltipBuilder = variant === 'compact' ? createTooltip({
-    openDelay: 500,
-    closeDelay: 100
-  }) : null;
+  // const tooltipBuilder = variant === 'compact' ? createTooltip({
+  //   openDelay: 500,
+  //   closeDelay: 100
+  // }) : null;
 
-  const trigger = tooltipBuilder?.elements.trigger;
-  const tooltipContent = tooltipBuilder?.elements.content;
-  const open = tooltipBuilder?.states.open;
+  // const trigger = tooltipBuilder?.elements.trigger;
+  // const tooltipContent = tooltipBuilder?.elements.content;
+  // const open = tooltipBuilder?.states.open;
 
   // Dynamic classes
-  const buttonClasses = $derived(() => {
+  let buttonClasses = $derived(() => {
     const base = 'ai-assistant-btn transition-all duration-300 font-mono';
 
     const variants = {
@@ -68,8 +68,7 @@
       listening: 'bg-red-500/10 border-red-500 text-red-400 animate-pulse',
       connected: 'bg-yorha-accent-gold/10 border-yorha-accent-gold text-yorha-accent-gold'
     };
-
-    let classes = `${base} ${variants[variant]} ${statusColors[aiStatus]}`;
+let classes = $state(`${base} ${variants[variant]} ${statusColors[aiStatus]}`);
 
     if (variant === 'floating') {
       classes += ` ${positions[position]}`;
@@ -127,7 +126,7 @@
 {#if variant === 'floating'}
   <button
     class={buttonClasses}
-    click={handleClick}
+    on:onclick={handleClick}
     {disabled}
     aria-label="Open AI Assistant"
   >
@@ -155,7 +154,7 @@
 {:else if variant === 'inline'}
   <button
     class={buttonClasses}
-    click={handleClick}
+    on:onclick={handleClick}
     {disabled}
   >
     <div class="flex items-center gap-3 px-4 py-3">
@@ -202,11 +201,11 @@
 
 <!-- Compact Variant with Tooltip -->
 {:else if variant === 'compact'}
-  {#if tooltipBuilder}
+  {#if false} <!-- tooltipBuilder disabled -->
     <button
-      use:melt={$trigger}
+      <!-- <!-- use:melt={trigger} -->
       class={buttonClasses}
-      click={handleClick}
+      on:on:click={handleClick}
       {disabled}
       aria-label="AI Assistant"
     >
@@ -223,7 +222,7 @@
   {:else}
     <button
       class={buttonClasses}
-      click={handleClick}
+      on:onclick={handleClick}
       {disabled}
       aria-label="AI Assistant"
     >
@@ -243,7 +242,7 @@
 {:else if variant === 'full'}
   <button
     class={buttonClasses}
-    click={handleClick}
+    on:onclick={handleClick}
     {disabled}
   >
     <div class="flex items-center justify-between w-full">
@@ -309,9 +308,9 @@
 {/if}
 
 <!-- Tooltip for compact variant -->
-{#if variant === 'compact' && tooltipBuilder && $open}
+{#if false} <!-- variant === 'compact' && tooltipBuilder && open disabled -->
   <div
-    use:melt={$tooltipContent}
+    <!-- <!-- use:melt={tooltipContent} -->
     class="z-50 rounded-lg bg-yorha-bg-primary border border-yorha-border-primary px-3 py-2 shadow-lg"
   >
     <div class="text-sm font-mono">

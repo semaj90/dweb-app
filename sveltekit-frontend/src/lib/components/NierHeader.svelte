@@ -28,10 +28,8 @@ import type { User } from '$lib/types/user';
 
 
 import type { User } from '$lib/types/user';
-
-
-  let searchQuery = "";
-  let userMenuOpen = false;
+let searchQuery = $state("");
+let userMenuOpen = $state(false);
 
   function handleSearch(event: CustomEvent) {
     searchQuery = event.detail.query;
@@ -59,7 +57,7 @@ import type { User } from '$lib/types/user';
     <div class="space-y-4">
       <button
         class="space-y-4"
-        click={() => handleNavigation("/")}
+        on:onclick={() => handleNavigation("/")}
         aria-label="Go to homepage"
       >
         <Palette size={24} />
@@ -71,7 +69,7 @@ import type { User } from '$lib/types/user';
     <nav class="space-y-4" aria-label="Main navigation">
       <button
         class="space-y-4"
-        click={() => handleNavigation("/dashboard")}
+        on:onclick={() => handleNavigation("/dashboard")}
         aria-label="Dashboard"
       >
         <Home size={18} />
@@ -80,7 +78,7 @@ import type { User } from '$lib/types/user';
 
       <button
         class="space-y-4"
-        click={() => handleNavigation("/cases")}
+        on:onclick={() => handleNavigation("/cases")}
         aria-label="Cases"
       >
         <FolderOpen size={18} />
@@ -89,7 +87,7 @@ import type { User } from '$lib/types/user';
 
       <button
         class="space-y-4"
-        click={() => handleNavigation("/interactive-canvas")}
+        on:onclick={() => handleNavigation("/interactive-canvas")}
         aria-label="Interactive Canvas"
       >
         <Palette size={18} />
@@ -98,7 +96,7 @@ import type { User } from '$lib/types/user';
 
       <button
         class="space-y-4"
-        click={() => handleNavigation("/evidence/hash")}
+        on:onclick={() => handleNavigation("/evidence/hash")}
         aria-label="Hash Verification"
         title="Verify evidence file integrity"
       >
@@ -112,7 +110,7 @@ import type { User } from '$lib/types/user';
       <SearchInput
         placeholder="Search cases, evidence, notes..."
         value={searchQuery}
-        on:search={handleSearch}
+        search={handleSearch}
       />
     </div>
 
@@ -122,7 +120,7 @@ import type { User } from '$lib/types/user';
         <div class="space-y-4">
           <button
             class="space-y-4"
-            click={() => toggleUserMenu()}
+            on:onclick={() => toggleUserMenu()}
             aria-label="User menu"
             aria-expanded={userMenuOpen}
           >
@@ -143,7 +141,7 @@ import type { User } from '$lib/types/user';
             <div class="space-y-4" role="menu">
               <button
                 class="space-y-4"
-                click={() => handleNavigation("/profile")}
+                on:onclick={() => handleNavigation("/profile")}
                 role="menuitem"
               >
                 <UserIcon size={16} />
@@ -152,7 +150,7 @@ import type { User } from '$lib/types/user';
 
               <button
                 class="space-y-4"
-                click={() => handleNavigation("/settings")}
+                on:onclick={() => handleNavigation("/settings")}
                 role="menuitem"
               >
                 <Settings size={16} />
@@ -163,7 +161,7 @@ import type { User } from '$lib/types/user';
 
               <button
                 class="space-y-4"
-                click={() => handleLogout()}
+                on:onclick={() => handleLogout()}
                 role="menuitem"
               >
                 <LogOut size={16} />
@@ -175,7 +173,7 @@ import type { User } from '$lib/types/user';
       {:else}
         <button
           class="space-y-4"
-          click={() => handleNavigation("/login")}
+          on:onclick={() => handleNavigation("/login")}
           aria-label="Sign in"
         >
           Sign In
@@ -189,8 +187,8 @@ import type { User } from '$lib/types/user';
 {#if userMenuOpen}
   <div
     class="space-y-4"
-    click={() => closeUserMenu()}
-    on:keydown={(e) => e.key === "Escape" && closeUserMenu()}
+    on:onclick={() => closeUserMenu()}
+    keydown={(e) => e.key === "Escape" && closeUserMenu()}
     role="button"
     tabindex={-1}
     aria-label="Close user menu"

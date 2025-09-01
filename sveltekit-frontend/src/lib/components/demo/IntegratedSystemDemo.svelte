@@ -93,7 +93,7 @@
       const aiHealthy = Object.values(aiHealth).some(Boolean);
       
       // Check production services
-      let servicesHealthy = false;
+let servicesHealthy = $state(false);
       try {
         const serviceHealth = await productionServiceClient.checkAllServicesHealth();
         servicesHealthy = Object.values(serviceHealth).some(Boolean);
@@ -356,13 +356,13 @@
             <div class="space-y-2">
               <h4 class="font-semibold">🎯 Demo Actions:</h4>
               <div class="space-y-2">
-                <Button on:click={demoLogin} disabled={authenticatedUser !== null}>
+                <Button on:on:click={demoLogin} disabled={authenticatedUser !== null}>
                   Demo Login
                 </Button>
-                <Button on:click={demoAIInteraction} disabled={!authenticatedUser}>
+                <Button on:on:click={demoAIInteraction} disabled={!authenticatedUser}>
                   Test AI Assistant
                 </Button>
-                <Button on:click={demoLogout} disabled={!authenticatedUser} variant="outline">
+                <Button on:on:click={demoLogout} disabled={!authenticatedUser} variant="outline">
                   Demo Logout
                 </Button>
               </div>
@@ -384,7 +384,7 @@
               <p class="text-gray-600">
                 Demonstrate the modern authentication system with Svelte 5 runes and XState integration.
               </p>
-              <Button on:click={() => showAuthDialog = true}>
+              <Button on:on:click={() => showAuthDialog = true}>
                 Open Authentication Dialog
               </Button>
             </div>
@@ -398,7 +398,7 @@
                   <p><strong>Status:</strong> {authenticatedUser.isActive ? 'Active' : 'Inactive'}</p>
                 </div>
               </div>
-              <Button on:click={demoLogout} variant="outline">
+              <Button on:on:click={demoLogout} variant="outline">
                 Logout
               </Button>
             </div>
@@ -438,13 +438,13 @@
               
               <div class="flex gap-2">
                 <Button 
-                  on:click={() => sessionManager.performSecurityCheck()} 
+                  on:on:click={() => sessionManager.performSecurityCheck()} 
                   size="sm"
                 >
                   Security Check
                 </Button>
                 <Button 
-                  on:click={() => sessionManager.refreshSession()} 
+                  on:on:click={() => sessionManager.refreshSession()} 
                   size="sm" 
                   variant="outline"
                 >
@@ -511,7 +511,7 @@
               </div>
             </div>
             
-            <Button on:click={checkSystemHealth}>
+            <Button on:on:click={checkSystemHealth}>
               Refresh System Health
             </Button>
           </div>
@@ -523,9 +523,9 @@
 
 <!-- Authentication Dialog -->
 <ModernAuthForm 
-  open={showAuthDialog} on:openchange={(open) => showAuthDialog = open}
+  open={showAuthDialog} openchange={(open) => showAuthDialog = open}
   mode="login"
-  on:success={handleAuthSuccess}
+  success={handleAuthSuccess}
 />
 
 <style>

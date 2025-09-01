@@ -50,7 +50,7 @@
     }, {} as Record<string, Notification[]>);
   }
 
-  const groupedNotifications = $derived(groupNotificationsByPosition(notifications));
+  let groupedNotifications = $derived(groupNotificationsByPosition(notifications));
 </script>
 
 <!-- Render notifications grouped by position -->
@@ -59,7 +59,7 @@
     {#each notificationGroup as notification (notification.id)}
       <YoRHaNotification
         {...notification}
-        on:close={() => removeNotification(notification.id)}
+        close={() => removeNotification(notification.id)}
       />
     {/each}
   </div>

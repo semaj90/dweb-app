@@ -260,7 +260,7 @@ function createModalStore() {
 
 export const dialogStore = createDialogStore();
 export const modalStore = createModalStore();
-
+;
 // Export convenience functions
 export const dialog = dialogStore;
 export const modal = modalStore;

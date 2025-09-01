@@ -4,31 +4,20 @@ import * as dotenv from 'dotenv';
 // Load environment variables
 dotenv.config();
 
+const url = process.env.DATABASE_URL || 'postgresql://legal_admin:123456@localhost:5432/legal_ai_db';
+
 export default defineConfig({
-  schema: './src/schema.ts',
+  schema: './src/lib/server/db/unified-schema.ts',
   out: './database/migrations',
   dialect: 'postgresql',
-  dbCredentials: {
-    connectionString: process.env.DATABASE_URL || 'postgresql://legal_admin:123456@localhost:5432/legal_ai_db',
-  },
-  verbose: true,
-  strict: true,
+  dbCredentials: { url },
   migrations: {
-    prefix: 'timestamp',
     table: '__drizzle_migrations__',
     schema: 'public',
+    prefix: 'timestamp'
   },
   tablesFilter: ['!__drizzle_migrations__'],
-  
-  // Enable pgvector extension support
-  extensionsFilters: ['vector'],
-  
-  // Development vs Production settings
-  ...(process.env.NODE_ENV === 'production' ? {
-    verbose: false,
-    strict: true,
-  } : {
-    verbose: true,
-    strict: false,
-  }),
+  // Keep logging/dev friendliness
+  verbose: process.env.NODE_ENV !== 'production',
+  strict: process.env.NODE_ENV === 'production'
 });

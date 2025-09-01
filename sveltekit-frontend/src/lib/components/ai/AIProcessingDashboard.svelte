@@ -24,10 +24,10 @@ https://svelte.dev/e/js_parse_error -->
 	let systemMetrics = $derived(aiServiceWorkerManager.systemMetrics$);
 
 	// Component state
-	let selectedProvider: LLMProvider | null = null;
-	let isProcessing = false;
-	let processingResults: AITaskResult[] = [];
-	let testInput = "Analyze this legal document for key compliance issues and regulatory requirements.";
+let selectedProvider = $state<LLMProvider | null >(null);
+let isProcessing = $state(false);
+let processingResults = $state<AITaskResult[] >([]);
+let testInput = $state("Analyze this legal document for key compliance issues and regulatory requirements.");
 
 	// Demo task examples
 	const demoTasks = [
@@ -185,9 +185,9 @@ https://svelte.dev/e/js_parse_error -->
 	};
 
 	// System health monitoring
-	let healthCheckInterval: number;
+let healthCheckInterval = $state<number;
 	
-	onMount(() => {
+	onMount(() >(> {
 		// Start health monitoring
 		healthCheckInterval = setInterval(() => {
 			// Update system metrics (in a real app, this would come from the worker manager)
@@ -196,7 +196,7 @@ https://svelte.dev/e/js_parse_error -->
 				totalTasksProcessed: metrics.totalTasksProcessed + Math.floor(Math.random() * 3),
 				currentLoad: Math.random() * 100,
 				availableWorkers: 4 - Math.floor(Math.random() * 2)
-			}));
+			})));
 		}, 2000);
 	});
 
@@ -249,8 +249,8 @@ https://svelte.dev/e/js_parse_error -->
 		<CardContent>
 			<LLMProviderSelector 
 				bind:selectedProvider
-				on:providerselected={handleProviderSelected}
-				on:statuschanged={handleStatusChanged}
+				providerselected={handleProviderSelected}
+				statuschanged={handleStatusChanged}
 			/>
 		</CardContent>
 	</Card>
@@ -313,7 +313,7 @@ https://svelte.dev/e/js_parse_error -->
 					<Button
 						variant="outline"
 						disabled={!selectedProvider || selectedProvider.status !== 'online' || isProcessing}
-						on:click={() => processTask(task)}
+						on:on:click={() => processTask(task)}
 						class="h-auto p-3 flex flex-col items-start space-y-1"
 					>
 						<div class="flex items-center space-x-2">
@@ -329,7 +329,7 @@ https://svelte.dev/e/js_parse_error -->
 			<div class="flex items-center justify-center pt-4 border-t border-yorha-border">
 				<Button
 					disabled={!selectedProvider || selectedProvider.status !== 'online' || isProcessing}
-					on:click={processParallelTasks}
+					on:on:click={processParallelTasks}
 					class="bg-yorha-primary hover:bg-yorha-primary/80"
 				>
 					{#if isProcessing}
@@ -354,7 +354,7 @@ https://svelte.dev/e/js_parse_error -->
 					{#each processingResults as result (result.taskId)}
 						<div 
 							class="p-3 bg-yorha-bg-secondary rounded-md border border-yorha-border"
-							transition:fly={{ y: -20, duration: 300 }}
+							transitifly={{ y: -20, duration: 300 }}
 						>
 							<div class="flex items-center justify-between mb-2">
 								<div class="flex items-center space-x-2">

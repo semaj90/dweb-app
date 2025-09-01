@@ -5,8 +5,8 @@ import { onMount, setContext } from 'svelte';
 import Navigation from '$lib/components/Navigation.svelte';
 
 // Simplified state management for compatibility
-let theme: 'dark' | 'light' = 'dark';
-let sidebarOpen = false;
+let theme = $state<'dark' | 'light' >('dark');
+let sidebarOpen = $state(false);
 
 // App context for global state
 setContext('app', {
@@ -54,7 +54,7 @@ onMount(() => {
 
   <main class="app-main" style="grid-area: main;">
     <div class="container p-golden-xl">
-  <slot />
+  {@/* TODO: manual review – previously {@render children?.()} */}
     </div>
   </main>
 

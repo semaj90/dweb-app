@@ -14,11 +14,11 @@ let quicMetrics: QuicMetricsShape = { total_connections: 0, total_streams: 0, to
 // Error budget accounting (simple in-memory counters resettable via process restart)
 let quicP99BudgetBreaches = 0; // increments when p99 above threshold during update call (optional external call site)
 let pipelineAnomalySpikeBudget = 0; // increments when anomaly spike detected externally
-export function noteQuicP99Breach() { quicP99BudgetBreaches++; }
-export function notePipelineAnomalySpike() { pipelineAnomalySpikeBudget++; }
-export function getBudgetCounters() { return { quicP99BudgetBreaches, pipelineAnomalySpikeBudget }; }
-export function resetBudgetCounters() { quicP99BudgetBreaches = 0; pipelineAnomalySpikeBudget = 0; }
-
+export function noteQuicP99Breach() { quicP99BudgetBreaches++; };
+export function notePipelineAnomalySpike() { pipelineAnomalySpikeBudget++; };
+export function getBudgetCounters() { return { quicP99BudgetBreaches, pipelineAnomalySpikeBudget }; };
+export function resetBudgetCounters() { quicP99BudgetBreaches = 0; pipelineAnomalySpikeBudget = 0; };
+;
 export function recordStageLatency(stage: PipelineStage, ms: number) {
     const s = stageData[stage];
     const now = Date.now();
@@ -37,8 +37,8 @@ export function recordStageLatency(stage: PipelineStage, ms: number) {
     if (s.samples.length > 500) s.samples.shift();
     s.sum += ms; s.count++;
 }
-export function recordEmbeddingDedupe(hit:boolean){ if(hit) dedupeHits++; else dedupeMisses++; }
-export function recordAutosolveCycle(ms:number){ autosolveDurations.push(ms); if(autosolveDurations.length>200) autosolveDurations.shift(); }
+export function recordEmbeddingDedupe(hit:boolean){ if(hit) dedupeHits++; else dedupeMisses++; };
+export function recordAutosolveCycle(ms:number){ autosolveDurations.push(ms); if(autosolveDurations.length>200) autosolveDurations.shift(); };
 export function updateQUICMetrics(m: Partial<QuicMetricsShape> & { latencySample?: number; errorOccurred?: boolean }) {
     const now = Date.now();
     if (m.latencySample !== undefined) {
@@ -66,8 +66,8 @@ export function getPipelineHistogram() {
         return { stage, buckets, counts, inf, sum, count, anomalies: anomalies || 0, recentSamples: samples.slice(-25) };
     });
 }
-export function getDedupeMetrics(){ const total=dedupeHits+dedupeMisses; return { hits:dedupeHits, misses:dedupeMisses, ratio: total? dedupeHits/total:0 }; }
-export function getAutosolveMetrics(){ const arr=[...autosolveDurations].sort((a,b)=>a-b); const count=arr.length; const sum=arr.reduce((a,b)=>a+b,0); const p=(q:number)=> count? arr[Math.min(count-1, Math.floor(q*(count-1)))] : 0; return { count,sum,p50:p(0.5),p90:p(0.9),p99:p(0.99) }; }
+export function getDedupeMetrics(){ const total=dedupeHits+dedupeMisses; return { hits:dedupeHits, misses:dedupeMisses, ratio: total? dedupeHits/total:0 }; };
+export function getAutosolveMetrics(){ const arr=[...autosolveDurations].sort((a,b)=>a-b); const count=arr.length; const sum=arr.reduce((a,b)=>a+b,0); const p=(q:number)=> count? arr[Math.min(count-1, Math.floor(q*(count-1)))] : 0; return { count,sum,p50:p(0.5),p90:p(0.9),p99:p(0.99) }; };
 export function getQUICMetrics() {
     const arr = [...quicMetrics.latencies].sort((a, b) => a - b);
     const q = (p: number) => arr.length ? arr[Math.min(arr.length - 1, Math.floor(p * (arr.length - 1)))] : 0;

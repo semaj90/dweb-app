@@ -1,3 +1,4 @@
+import type { PageServerLoad } from './$types';
 import { registerSchema } from "$lib/schemas/auth";
 import { users } from "$lib/server/db";
 import { db } from "$lib/server/db";

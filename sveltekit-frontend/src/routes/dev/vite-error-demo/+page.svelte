@@ -148,28 +148,28 @@
       <div class="flex flex-wrap gap-4">
         <button
           class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-          click={generateDemoError}
+          on:onclick={generateDemoError}
         >
           🎲 Generate Demo Error
         </button>
         
         <button
           class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-          click={loadErrorLog}
+          on:onclick={loadErrorLog}
         >
           🔄 Reload Error Log
         </button>
         
         <button
           class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
-          click={clearErrors}
+          on:onclick={clearErrors}
         >
           🧹 Clear Errors
         </button>
         
         <button
           class="px-4 py-2 {isWatching ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-purple-600 hover:bg-purple-700'} text-white rounded-md transition-colors"
-          click={isWatching ? stopWatching : startWatching}
+          on:onclick={isWatching ? stopWatching : startWatching}
         >
           {isWatching ? '⏹️ Stop Watching' : '👀 Start Watching'}
         </button>

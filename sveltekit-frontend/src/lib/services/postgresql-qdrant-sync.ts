@@ -50,7 +50,7 @@ export class PostgreSQLQdrantSyncService {
 
   constructor(config: SyncConfig = {}) {
     this.config = {
-      qdrantUrl: config.qdrantUrl || process.env.QDRANT_URL || 'http://localhost:6333',
+      qdrantUrl: config.qdrantUrl || import.meta.env.QDRANT_URL || 'http://localhost:6333',
       collectionName: config.collectionName || 'legal_documents',
       batchSize: config.batchSize || 50,
       enableFullRebuild: config.enableFullRebuild ?? true,
@@ -880,6 +880,6 @@ export class PostgreSQLQdrantSyncService {
 
 // Export singleton instance
 export const postgresqlQdrantSync = new PostgreSQLQdrantSyncService();
-
+;
 // Default export
 export default PostgreSQLQdrantSyncService;

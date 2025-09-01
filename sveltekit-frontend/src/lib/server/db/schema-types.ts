@@ -166,8 +166,8 @@ export type CaseStatus =
   | 'awaiting_trial'
   | 'trial_in_progress'
   | 'closed'
-  | 'dismissed'
-  | 'settled'
+  | 'dismissed';
+  | 'settled';
   | 'archived';
 
 /**
@@ -182,8 +182,8 @@ export type EvidenceType =
   | 'digital_evidence'
   | 'testimony'
   | 'expert_opinion'
-  | 'forensic_report'
-  | 'chain_of_custody'
+  | 'forensic_report';
+  | 'chain_of_custody';
   | 'other';
 
 /**
@@ -194,8 +194,8 @@ export type ConfidentialityLevel =
   | 'confidential'
   | 'privileged'
   | 'attorney_client'
-  | 'work_product'
-  | 'expert_witness'
+  | 'work_product';
+  | 'expert_witness';
   | 'settlement_privileged';
 
 /**
@@ -210,8 +210,8 @@ export type UserRole =
   | 'client'
   | 'expert_witness'
   | 'court_reporter'
-  | 'judge'
-  | 'opposing_counsel'
+  | 'judge';
+  | 'opposing_counsel';
   | 'third_party';
 
 /**
@@ -224,8 +224,8 @@ export type ReviewStatus =
   | 'privileged'
   | 'responsive'
   | 'non_responsive'
-  | 'redacted'
-  | 'withheld'
+  | 'redacted';
+  | 'withheld';
   | 'produced';
 
 /**
@@ -240,8 +240,8 @@ export type BillableCategory =
   | 'court_appearance'
   | 'deposition'
   | 'investigation'
-  | 'trial_prep'
-  | 'administrative'
+  | 'trial_prep';
+  | 'administrative';
   | 'travel';
 
 /**
@@ -251,8 +251,8 @@ export type ComplianceStatus =
   | 'compliant'
   | 'non_compliant'
   | 'under_review'
-  | 'remediated'
-  | 'waived'
+  | 'remediated';
+  | 'waived';
   | 'pending_approval';
 
 /**
@@ -264,8 +264,8 @@ export type FilingStatus =
   | 'ready_to_file'
   | 'filed'
   | 'accepted'
-  | 'rejected'
-  | 'amended'
+  | 'rejected';
+  | 'amended';
   | 'withdrawn';
 
 // ===== UTILITY TYPES =====

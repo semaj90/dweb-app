@@ -8,8 +8,7 @@
   import type { PageData } from './$types';
 
   let { data = $bindable() } = $props(); // PageData;
-
-  let isSubmitting = false;
+let isSubmitting = $state(false);
 
   // Enhanced form submission
   function createEnhancedSubmit() {

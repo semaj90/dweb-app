@@ -416,7 +416,7 @@ class AuthStore {
 
 // Export singleton instance
 export const authStore = new AuthStore();
-
+;
 // Auth guards for routes
 export function requireAuth() {
   return {

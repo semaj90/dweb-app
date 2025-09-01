@@ -46,7 +46,7 @@ type GoLlamaEngine struct {
 	ModelLoaded     bool   `json:"model_loaded"`
 	MaxTokens       int    `json:"max_tokens"`
 	Temperature     float64 `json:"temperature"`
-	
+
 	// Performance optimization fields
 	requestCount    int64      // atomic counter
 	totalLatency    int64      // atomic counter for average latency calculation
@@ -84,7 +84,7 @@ func (gle *GoLlamaEngine) IsLoaded() bool {
 
 func (gle *GoLlamaEngine) ProcessBatch(ctx context.Context, request *BatchProcessRequest) (*BatchProcessResponse, error) {
 	startTime := time.Now()
-	
+
 	// Acquire connection from pool (with timeout)
 	select {
 	case <-gle.connectionPool:
@@ -95,23 +95,23 @@ func (gle *GoLlamaEngine) ProcessBatch(ctx context.Context, request *BatchProces
 		atomic.AddInt64(&gle.errorCount, 1)
 		return nil, fmt.Errorf("connection pool timeout")
 	}
-	
+
 	// Increment request counter atomically
 	atomic.AddInt64(&gle.requestCount, 1)
-	
+
 	// Pre-allocate results slice with capacity
 	results := make([]*TypeScriptFixResult, 0, len(request.Errors))
-	
+
 	// Get buffer from pool for efficient string building
 	buf := gle.bufferPool.Get().([]byte)[:0]
 	defer gle.bufferPool.Put(buf)
-	
+
 	for i, err := range request.Errors {
 		// Use buffer for efficient string concatenation
 		buf = buf[:0] // Reset buffer length
 		buf = append(buf, "// Optimized fix for: "...)
 		buf = append(buf, err.Message...)
-		
+
 		result := &TypeScriptFixResult{
 			Success:        true,
 			FixedCode:      string(buf), // Convert buffer to string once
@@ -130,11 +130,19 @@ func (gle *GoLlamaEngine) ProcessBatch(ctx context.Context, request *BatchProces
 		}
 		results = append(results, result)
 	}
-	
+
 	// Calculate and record latency atomically
 	latency := time.Since(startTime)
 	atomic.AddInt64(&gle.totalLatency, latency.Nanoseconds())
-	
+
+	// Read atomically into locals to avoid repeated loads and division by zero
+	reqCount := atomic.LoadInt64(&gle.requestCount)
+	totalLat := atomic.LoadInt64(&gle.totalLatency)
+	avgLat := int64(0)
+	if reqCount > 0 {
+		avgLat = totalLat / reqCount
+	}
+
 	return &BatchProcessResponse{
 		Success:        true,
 		ProcessedCount: len(request.Errors),
@@ -146,8 +154,8 @@ func (gle *GoLlamaEngine) ProcessBatch(ctx context.Context, request *BatchProces
 			"mock":               true,
 			"optimized":          true,
 			"buffer_pooled":      true,
-			"request_count":      atomic.LoadInt64(&gle.requestCount),
-			"avg_latency_ns":     atomic.LoadInt64(&gle.totalLatency) / atomic.LoadInt64(&gle.requestCount),
+			"request_count":      reqCount,
+			"avg_latency_ns":     avgLat,
 			"connection_pooled":  true,
 		},
 	}, nil
@@ -156,13 +164,13 @@ func (gle *GoLlamaEngine) ProcessBatch(ctx context.Context, request *BatchProces
 // NewGoLlamaEngine creates a new Go-Llama engine instance with optimizations
 func NewGoLlamaEngine(modelPath string) *GoLlamaEngine {
 	const maxConnections = 10
-	
+
 	// Create connection pool and fill it
 	connectionPool := make(chan struct{}, maxConnections)
 	for i := 0; i < maxConnections; i++ {
 		connectionPool <- struct{}{}
 	}
-	
+
 	return &GoLlamaEngine{
 		ModelPath:     modelPath,
 		IsInitialized: true,
@@ -182,27 +190,34 @@ func NewGoLlamaEngine(modelPath string) *GoLlamaEngine {
 	}
 }
 
-// Close cleans up the engine resources
-func (gle *GoLlamaEngine) Close() error {
-	// Close connection pool
-	close(gle.connectionPool)
-	return nil
-}
-
-// GetStats returns performance statistics
 func (gle *GoLlamaEngine) GetStats() map[string]interface{} {
 	requestCount := atomic.LoadInt64(&gle.requestCount)
 	totalLatency := atomic.LoadInt64(&gle.totalLatency)
 	errorCount := atomic.LoadInt64(&gle.errorCount)
-	
+
 	avgLatency := int64(0)
 	if requestCount > 0 {
 		avgLatency = totalLatency / requestCount
 	}
-	
+
+	errorRate := float64(0)
+	if requestCount > 0 {
+		errorRate = float64(errorCount) / float64(requestCount)
+	}
+
+	avgLatencyMs := float64(avgLatency) / 1e6
+
 	return map[string]interface{}{
-		"request_count":      requestCount,
-		"total_latency_ns":   totalLatency,
+		"request_count":        requestCount,
+		"total_latency_ns":     totalLatency,
+		"avg_latency_ns":       avgLatency,
+		"avg_latency_ms":       avgLatencyMs,
+		"error_count":          errorCount,
+		"error_rate":           errorRate,
+		"model_loaded":         gle.ModelLoaded,
+		"connection_pool_size": cap(gle.connectionPool),
+	}
+}	"total_latency_ns":   totalLatency,
 		"avg_latency_ns":     avgLatency,
 		"avg_latency_ms":     float64(avgLatency) / 1e6,
 		"error_count":        errorCount,

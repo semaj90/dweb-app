@@ -768,5 +768,5 @@ Respond with JSON: {"verified": true/false, "confidence": 0.0-1.0, "concerns": [
 
 // Singleton instance
 export const mcpGPUOrchestrator = new MCPGPUOrchestrator();
-
+;
 export default mcpGPUOrchestrator;

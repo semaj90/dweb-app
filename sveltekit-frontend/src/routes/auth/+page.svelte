@@ -8,13 +8,13 @@
   import { cubicOut } from 'svelte/easing';
 
   // Authentication mode state
-  let authMode: 'login' | 'register' = 'login';
-  let isLoading = false;
-  let error = '';
-  let success = '';
+let authMode = $state<'login' | 'register' >('login');
+let isLoading = $state(false);
+let error = $state('');
+let success = $state('');
 
   // Form data
-  let formData = {
+let formData = $state({
     email: '',
     password: '',
     confirmPassword: '',
@@ -26,7 +26,7 @@
     badgeNumber: '',
     agreeToTerms: false,
     agreeToPrivacy: false
-  };
+  });
 
   // Toggle between login and register
   function toggleAuthMode() {
@@ -87,7 +87,7 @@
   }
 
   // Validate form
-  let isFormValid = false;
+let isFormValid = $state(false);
 
   // Use a reactive statement to compute form validity instead of $derived
   $: isFormValid = (authMode === 'login')
@@ -125,7 +125,7 @@
           class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 {authMode === 'login'
             ? 'bg-yellow-500 text-black'
             : 'text-gray-300 hover:text-white'}"
-          click={() => authMode = 'login'}
+          on:onclick={() => authMode = 'login'}
         >
           🔐 Login
         </button>
@@ -134,7 +134,7 @@
           class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 {authMode === 'register'
             ? 'bg-yellow-500 text-black'
             : 'text-gray-300 hover:text-white'}"
-          click={() => authMode = 'register'}
+          on:onclick={() => authMode = 'register'}
         >
           📝 Register
         </button>
@@ -172,7 +172,7 @@
 
         <!-- Register-specific: Name fields -->
         {#if authMode === 'register'}
-          <div class="grid grid-cols-2 gap-3" transition:slide={{ duration: 300, easing: cubicOut }}>
+          <div class="grid grid-cols-2 gap-3" transitislide={{ duration: 300, easing: cubicOut }}>
             <div>
               <label for="firstName" class="block text-sm font-medium text-gray-300 mb-2">
                 First Name
@@ -218,7 +218,7 @@
 
         <!-- Register-specific: Confirm Password -->
         {#if authMode === 'register'}
-          <div transition:slide={{ duration: 300, easing: cubicOut }}>
+          <div transitislide={{ duration: 300, easing: cubicOut }}>
             <label for="confirmPassword" class="block text-sm font-medium text-gray-300 mb-2">
               Confirm Password
             </label>
@@ -236,7 +236,7 @@
           </div>
 
           <!-- Professional Details -->
-          <div class="space-y-3" transition:slide={{ duration: 300, easing: cubicOut }}>
+          <div class="space-y-3" transitislide={{ duration: 300, easing: cubicOut }}>
             <div>
               <label for="role" class="block text-sm font-medium text-gray-300 mb-2">
                 Role
@@ -297,7 +297,7 @@
           </div>
 
           <!-- Terms and Privacy -->
-          <div class="space-y-3" transition:slide={{ duration: 300, easing: cubicOut }}>
+          <div class="space-y-3" transitislide={{ duration: 300, easing: cubicOut }}>
             <label class="flex items-start space-x-3 cursor-pointer">
               <input
                 type="checkbox"
@@ -359,7 +359,7 @@
           {authMode === 'login' ? "Don't have an account?" : "Already have an account?"}
           <button
             type="button"
-            click={toggleAuthMode}
+            on:onclick={toggleAuthMode}
             class="text-yellow-400 hover:text-yellow-300 hover:underline ml-1 transition-colors"
           >
             {authMode === 'login' ? 'Create one here' : 'Sign in instead'}

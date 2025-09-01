@@ -167,7 +167,7 @@
 
     <nav class="yorha-nav">
       <div class="nav-section">
-        <button class="nav-item" click={() => goto('/')}>
+        <button class="nav-item" on:onclick={() => goto('/')}>
           <span class="nav-icon">⌂</span>
           COMMAND CENTER
         </button>
@@ -193,29 +193,29 @@
           <button class="nav-subitem">⚏ BOARD</button>
         </div>
         
-        <button class="nav-item" click={() => goto('/cases')}>
+        <button class="nav-item" on:onclick={() => goto('/cases')}>
           <span class="nav-icon">👤</span>
           PERSONS OF INTEREST
         </button>
         
-        <button class="nav-item" click={() => goto('/demo/ai-dashboard')}>
+        <button class="nav-item" on:onclick={() => goto('/demo/ai-dashboard')}>
           <span class="nav-icon">📊</span>
           ANALYSIS
         </button>
         
-        <button class="nav-item" click={() => goto('/semantic-search-demo')}>
+        <button class="nav-item" on:onclick={() => goto('/semantic-search-demo')}>
           <span class="nav-icon">🔍</span>
           GLOBAL SEARCH
         </button>
         
-        <button class="nav-item" click={() => goto('/dev/mcp-tools')}>
+        <button class="nav-item" on:onclick={() => goto('/dev/mcp-tools')}>
           <span class="nav-icon">></span>
           TERMINAL
         </button>
       </div>
       
       <div class="nav-section bottom-section">
-        <button class="nav-item" click={() => goto('/admin')}>
+        <button class="nav-item" on:onclick={() => goto('/admin')}>
           <span class="nav-icon">⚙</span>
           SYSTEM CONFIG
         </button>
@@ -234,7 +234,7 @@
     <!-- Top Header -->
     <header class="evidence-header">
       <div class="header-left">
-        <button class="header-icon" click={() => goto('/')}>⌂</button>
+        <button class="header-icon" on:onclick={() => goto('/')}>⌂</button>
         <h1 class="evidence-title">EVIDENCE BOARD</h1>
         <div class="evidence-subtitle">Corporate Espionage Investigation</div>
       </div>
@@ -243,15 +243,15 @@
         <div class="case-info">
           Case: <span class="case-id">CORPORATE ESPIONAGE INV</span>
         </div>
-        <button class="header-btn" click={() => goto('/legal/documents')}>
+        <button class="header-btn" on:onclick={() => goto('/legal/documents')}>
           <span class="icon">📚</span>
           LIBRARY
         </button>
-        <button class="header-btn" click={() => goto('/demo/ai-dashboard')}>
+        <button class="header-btn" on:onclick={() => goto('/demo/ai-dashboard')}>
           <span class="icon">📊</span>
           ANALYSIS
         </button>
-        <button class="header-btn ai-assistant" click={() => {
+        <button class="header-btn ai-assistant" on:onclick={() => {
           showAIAssistant = true;
         }}>
           <span class="icon">🧠</span>
@@ -264,26 +264,26 @@
     <div class="evidence-toolbar">
       <div class="toolbar-left">
         <div class="zoom-controls">
-          <button class="tool-btn" click={() => zoomLevel = Math.max(25, zoomLevel - 25)}>
+          <button class="tool-btn" on:onclick={() => zoomLevel = Math.max(25, zoomLevel - 25)}>
             <span class="icon">➖</span>
           </button>
           <span class="zoom-display">{zoomLevel}%</span>
-          <button class="tool-btn" click={() => zoomLevel = Math.min(200, zoomLevel + 25)}>
+          <button class="tool-btn" on:onclick={() => zoomLevel = Math.min(200, zoomLevel + 25)}>
             <span class="icon">➕</span>
           </button>
         </div>
         
-        <button class="tool-btn" click={() => goto('/demo/ai-integration')}>
+        <button class="tool-btn" on:onclick={() => goto('/demo/ai-integration')}>
           <span class="icon">🔗</span>
           CONNECT
         </button>
         
-        <button class="tool-btn primary" click={() => showUploadModal = true}>
+        <button class="tool-btn primary" on:onclick={() => showUploadModal = true}>
           <span class="icon">➕</span>
           ADD EVIDENCE
         </button>
         
-        <button class="tool-btn" click={() => goto('/legal/documents')}>
+        <button class="tool-btn" on:onclick={() => goto('/legal/documents')}>
           <span class="icon">📚</span>
           LIBRARY ({totalEvidence})
         </button>
@@ -300,9 +300,9 @@
     <div class="evidence-grid-container" 
          role="region"
          aria-label="Evidence drop zone"
-         on:dragover={handleDragOver}
-         on:dragleave={handleDragLeave}
-         on:drop={handleDrop}
+         ondragover={handleDragOver}
+         ondragleave={handleDragLeave}
+         ondrop={handleDrop}
          class:drag-over={dragOver}
          style="zoom: {zoomLevel}%">
       
@@ -344,7 +344,7 @@
       <div class="modal-header">
         <div class="modal-icon">📤</div>
         <div class="modal-title">UPLOAD EVIDENCE</div>
-        <button class="modal-close" click={() => showUploadModal = false}>
+        <button class="modal-close" on:onclick={() => showUploadModal = false}>
           <span class="icon">✕</span>
         </button>
       </div>
@@ -353,9 +353,9 @@
         <div class="modal-subtitle">Upload evidence files to the case database</div>
         
         <div class="upload-zone" 
-             on:dragover={handleDragOver}
-             on:dragleave={handleDragLeave}
-             on:drop={handleDrop}
+             ondragover={handleDragOver}
+             ondragleave={handleDragLeave}
+             ondrop={handleDrop}
              class:drag-over={dragOver}
              role="region"
              aria-label="Evidence file drop zone">
@@ -372,7 +372,7 @@
       </div>
       
       <div class="modal-actions">
-        <button class="modal-btn cancel" click={() => showUploadModal = false}>
+        <button class="modal-btn cancel" on:onclick={() => showUploadModal = false}>
           CANCEL
         </button>
         <button class="modal-btn primary">
@@ -391,7 +391,7 @@
       <div class="modal-header">
         <div class="modal-icon">🤖</div>
         <div class="modal-title">AI ASSISTANT</div>
-        <button class="modal-close" click={() => showAIAssistant = false}>
+        <button class="modal-close" on:onclick={() => showAIAssistant = false}>
           <span class="icon">✕</span>
         </button>
       </div>
@@ -434,7 +434,7 @@
       </div>
       
       <div class="modal-actions">
-        <button class="modal-btn cancel" click={() => showAIAssistant = false}>
+        <button class="modal-btn cancel" on:onclick={() => showAIAssistant = false}>
           CLOSE
         </button>
         <button class="modal-btn primary ai-execute">

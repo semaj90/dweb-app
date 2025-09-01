@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 // Unified Service Orchestrator API Endpoint
 // Provides HTTP interface to the complete GPU/WASM integration system
@@ -6,6 +6,7 @@ import type { RequestHandler } from './$types';
 import { json, error } from '@sveltejs/kit';
 import { getOrchestrator, type SystemHealth } from '$lib/services/unified-service-orchestrator';
 import { TaskPriority } from '$lib/services/unified-service-orchestrator';
+import { URL } from "url";
 
 const orchestrator = getOrchestrator({
   enabledServices: ['wasmGPU', 'quicGateway', 'llamaOllama', 'nesGPUBridge'],

@@ -43,8 +43,8 @@ export const GEMMA3_MODELS: Gemma3ModelConfig[] = [
       "case_review",
       "contract_analysis",
       "document_summarization",
-      "quick_queries",
-    ],
+      "quick_queries"
+],
     promptTemplate: `<bos><start_of_turn>user
 {system_prompt}
 
@@ -54,8 +54,8 @@ export const GEMMA3_MODELS: Gemma3ModelConfig[] = [
     ollamaModel: "gemma3:legal-latest",
     fallbackModel: "gemma3:legal-latest",
     format: "gguf",
-    size: "8B",
-  },
+    size: "8B"
+}
 ];
 
 export const LEGAL_SYSTEM_PROMPTS = {
@@ -93,7 +93,7 @@ Provide detailed, practical feedback based on legal best practices.`,
 - Admissibility under evidence rules
 - Impact on case strategy
 
-Focus on factual analysis and legal implications.`,
+Focus on factual analysis and legal implications.`
 };
 
 export const GEMMA3_INFERENCE_SETTINGS = {
@@ -102,29 +102,29 @@ export const GEMMA3_INFERENCE_SETTINGS = {
     topP: 0.8,
     topK: 20,
     repeatPenalty: 1.05,
-    maxTokens: 512,
-  },
+    maxTokens: 512
+},
   balanced: {
     temperature: 0.7,
     topP: 0.9,
     topK: 40,
     repeatPenalty: 1.1,
-    maxTokens: 1024,
-  },
+    maxTokens: 1024
+},
   creative: {
     temperature: 0.9,
     topP: 0.95,
     topK: 60,
     repeatPenalty: 1.15,
-    maxTokens: 2048,
-  },
+    maxTokens: 2048
+},
   precise: {
     temperature: 0.1,
     topP: 0.7,
     topK: 10,
     repeatPenalty: 1.05,
-    maxTokens: 512,
-  },
+    maxTokens: 512
+}
 };
 
 export function selectOptimalGemmaModel(

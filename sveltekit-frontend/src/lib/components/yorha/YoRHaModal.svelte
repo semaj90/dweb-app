@@ -8,7 +8,7 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
   import { quintOut } from "svelte/easing";
   import { fade, scale } from "svelte/transition";
 
-  import type { Snippet } from "svelte";
+  import type {     Snippet     } from 'svelte';
 
   interface ModalProps {
     // Accept both open and isOpen (external code may use isOpen); open is canonical internally
@@ -55,7 +55,7 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
   const dispatch = createEventDispatcher<{ close: void; cancel: void; confirm: void }>();
 
   let modalElement = $state<HTMLDivElement | null>(null);
-  let focusedElementBeforeModal: HTMLElement | null = null;
+let focusedElementBeforeModal = $state<HTMLElement | null >(null);
 
   const sizeClasses = {
     sm: "max-w-sm w-full mx-4",
@@ -123,9 +123,9 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
 {#if open}
   <div
     class="yorha-modal-backdrop {type}"
-    click={handleBackdropClick}
+    on:onclick={handleBackdropClick}
     keydown={handleKeydown}
-    transition:fade={{ duration: 200 }}
+    transitifade={{ duration: 200 }}
     role="dialog"
     aria-modal="true"
     aria-labelledby={title ? "modal-title" : undefined}
@@ -135,7 +135,7 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
     <div
       bind:this={modalElement}
       class="yorha-modal {sizeClasses[size]} {type}"
-      transition:scale={{ duration: 300, easing: quintOut, start: 0.9 }}
+      transitiscale={{ duration: 300, easing: quintOut, start: 0.9 }}
       tabindex="-1"
     >
       <!-- Header -->
@@ -164,7 +164,7 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
           {#if closable && !persistent}
             <button
               class="modal-close"
-              click={handleClose}
+              on:onclick={handleClose}
               aria-label="Close modal"
             >
               <span class="close-icon">✕</span>
@@ -187,18 +187,18 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
             {@render footer()}
           {:else if type === "confirm"}
             <div class="modal-actions">
-              <button class="modal-button cancel" click={handleCancel}>
+              <button class="modal-button cancel" on:onclick={handleCancel}>
                 <span class="button-icon">✕</span>
                 Cancel
               </button>
-              <button class="modal-button confirm" click={handleConfirm}>
+              <button class="modal-button confirm" on:onclick={handleConfirm}>
                 <span class="button-icon">✓</span>
                 Confirm
               </button>
             </div>
           {:else if type === "alert"}
             <div class="modal-actions">
-              <button class="modal-button acknowledge" click={handleClose}>
+              <button class="modal-button acknowledge" on:onclick={handleClose}>
                 <span class="button-icon">■</span>
                 Acknowledge
               </button>

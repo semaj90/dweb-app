@@ -32,10 +32,10 @@ https://svelte.dev/e/js_parse_error -->
   let optimizationLevel = $state<'basic' | 'enhanced' | 'neural'>('enhanced');
 
   // Derived reactive state from store
-  const ragState = $derived(enhancedRAGStore.state);
-  const performanceMetrics = $derived(enhancedRAGStore.performanceMetrics);
-  const optimizedResults = $derived(enhancedRAGStore.optimizedResults);
-  const intelligentSuggestions = $derived(enhancedRAGStore.intelligentSuggestions);
+  let ragState = $derived(enhancedRAGStore.state);
+  let performanceMetrics = $derived(enhancedRAGStore.performanceMetrics);
+  let optimizedResults = $derived(enhancedRAGStore.optimizedResults);
+  let intelligentSuggestions = $derived(enhancedRAGStore.intelligentSuggestions);
   const search = enhancedRAGStore.search;
   const optimizeCache = enhancedRAGStore.optimizeCache;
 
@@ -126,7 +126,7 @@ https://svelte.dev/e/js_parse_error -->
   }
 
   // Reactive calculations
-  const searchPerformance = $derived({
+  let searchPerformance = $derived({
     isSearching: ragState.isLoading,
     duration: searchDuration,
     resultsCount: optimizedResults.length,
@@ -135,7 +135,7 @@ https://svelte.dev/e/js_parse_error -->
     predictionAccuracy: ragState.cacheMetrics.predictionAccuracy
   });
 
-  const clusterVisualization = $derived(
+  let clusterVisualization = $derived(
     ragState.somClusters.map(cluster => ({
       ...cluster,
       isSelected: selectedClusters.includes(cluster.id),
@@ -143,7 +143,7 @@ https://svelte.dev/e/js_parse_error -->
     }))
   );
 
-  const performanceIndicators = $derived({
+  let performanceIndicators = $derived({
     throughput: performanceMetrics.throughputQPS,
     efficiency: performanceMetrics.memoryEfficiency,
     cacheOptimization: ragState.cacheMetrics.hitRate * 100,
@@ -207,7 +207,7 @@ https://svelte.dev/e/js_parse_error -->
             <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
               bind:value={searchQuery}
-              on:keydown={handleKeyPress}
+              keydown={handleKeyPress}
               placeholder="Ask anything about your legal documents..."
               class="pl-10 pr-4 py-3 text-lg"
               disabled={ragState.isLoading}
@@ -222,7 +222,7 @@ https://svelte.dev/e/js_parse_error -->
           </div>
 
           <Button
-            on:click={handleSearch}
+            on:on:click={handleSearch}
             disabled={!searchQuery.trim() || ragState.isLoading}
             class="px-6"
           >
@@ -231,7 +231,7 @@ https://svelte.dev/e/js_parse_error -->
 
           <Button
             variant="outline"
-            on:click={() => showAdvancedOptions = !showAdvancedOptions}
+            on:on:click={() => showAdvancedOptions = !showAdvancedOptions}
           >
             <Settings class="h-4 w-4" />
           </Button>
@@ -259,7 +259,7 @@ https://svelte.dev/e/js_parse_error -->
               <Button
                 variant="ghost"
                 size="sm"
-                on:click={() => selectSuggestion(suggestion)}
+                on:on:click={() => selectSuggestion(suggestion)}
                 class="h-8 px-3 bg-yellow-50 hover:bg-yellow-100 text-yellow-800 border border-yellow-200"
               >
                 <Sparkles class="h-3 w-3 mr-1" />
@@ -277,7 +277,7 @@ https://svelte.dev/e/js_parse_error -->
             Did you mean:
             {#each ragState.didYouMean as suggestion, i}
               <button
-                click={() => selectSuggestion(suggestion)}
+                on:onclick={() => selectSuggestion(suggestion)}
                 class="text-blue-600 hover:text-blue-800 underline ml-1"
               >
                 {suggestion}
@@ -322,7 +322,7 @@ https://svelte.dev/e/js_parse_error -->
               <Button
                 variant="outline"
                 size="sm"
-                on:click={handleOptimization}
+                on:on:click={handleOptimization}
                 class="mt-2 w-full"
               >
                 <Zap class="h-4 w-4 mr-1" />
@@ -358,14 +358,14 @@ https://svelte.dev/e/js_parse_error -->
               <Button
                 variant={visualizationMode === 'list' ? 'default' : 'outline'}
                 size="sm"
-                on:click={() => visualizationMode = 'list'}
+                on:on:click={() => visualizationMode = 'list'}
               >
                 List
               </Button>
               <Button
                 variant={visualizationMode === 'clusters' ? 'default' : 'outline'}
                 size="sm"
-                on:click={() => visualizationMode = 'clusters'}
+                on:on:click={() => visualizationMode = 'clusters'}
               >
                 <Target class="h-4 w-4 mr-1" />
                 Clusters
@@ -373,7 +373,7 @@ https://svelte.dev/e/js_parse_error -->
               <Button
                 variant={visualizationMode === 'performance' ? 'default' : 'outline'}
                 size="sm"
-                on:click={() => visualizationMode = 'performance'}
+                on:on:click={() => visualizationMode = 'performance'}
               >
                 <BarChart3 class="h-4 w-4 mr-1" />
                 Analytics
@@ -452,7 +452,7 @@ https://svelte.dev/e/js_parse_error -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {#each clusterVisualization as cluster}
             <Card class="cursor-pointer transition-all {cluster.isSelected ? 'ring-2 ring-blue-500' : ''}"
-                  on:click={() => handleClusterSelect(cluster.id)}>
+                  on:on:click={() => handleClusterSelect(cluster.id)}>
               <CardHeader>
                 <CardTitle class="flex items-center justify-between">
                   <span>Cluster {cluster.id}</span>

@@ -719,7 +719,8 @@ class ComprehensiveIntegrationService {
 
 // Export singleton instance
 export const comprehensiveIntegration = new ComprehensiveIntegrationService();
-
+;
 // Svelte stores for reactive state management
 export const systemStatusStore: Writable<SystemStatus> = writable();
 export const integrationResponseStore: Writable<IntegratedResponse | null> = writable(null);
+;

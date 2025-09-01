@@ -415,7 +415,7 @@
           <div class="dialog-section-3d">
             <Button.Root 
               class="n64-btn-primary" 
-              onclick={() => dialogOpen = true}
+              on:on:on:click={() => dialogOpen = true}
             >
               🌟 Show N64 Dialog
             </Button.Root>
@@ -436,7 +436,7 @@
                     <div class="dialog-actions-3d">
                       <Button.Root 
                         class="n64-btn-dialog" 
-                        onclick={() => dialogOpen = false}
+                        on:on:on:click={() => dialogOpen = false}
                       >
                         ✓ Acknowledge
                       </Button.Root>

@@ -16,7 +16,7 @@ export type { HTMLAttributes } from "svelte/elements";
 
 // Component utility functions
 export const createComponentId = () => crypto.randomUUID();
-
+;
 // UnoCSS class helpers for dynamic styling
 export const mergeClasses = (...classes: (string | undefined)[]) => {
   return classes.filter(Boolean).join(" ");

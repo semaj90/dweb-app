@@ -1,7 +1,6 @@
 <!-- YoRHa Command Center Dashboard Component -->
 <script lang="ts">
   // Svelte 5 runes and modern imports
-  import { $state } from 'svelte';
   import { onMount } from 'svelte';
   import { goto } from "$app/navigation";
   import { Button } from '$lib/components/ui/button/index.js';
@@ -23,22 +22,31 @@
     networkLatency?: number;
   }
 
-  // Exported props with defaults
-  export let systemData: SystemData = {
-    activeCases: 0,
-    evidenceItems: 0,
-    personsOfInterest: 0,
-    aiQueries: 0,
-    systemLoad: 0,
-    gpuUtilization: 0,
-    memoryUsage: 0,
-    networkLatency: 0
-  };
+  interface Props {
+    systemData?: SystemData;
+  }
+
+  // Svelte 5 props with defaults
+  let {
+    systemData = {
+      activeCases: 0,
+      evidenceItems: 0,
+      personsOfInterest: 0,
+      aiQueries: 0,
+      systemLoad: 0,
+      gpuUtilization: 0,
+      memoryUsage: 0,
+      networkLatency: 0
+    }
+  }: Props = $props();
 
   // Dashboard state using Svelte 5 runes
   let selectedCard = $state<string | null>(null);
   let animationPhase = $state(0);
   let showCaseModal = $state(false);
+  
+  // Error boundary state
+  let componentError = $state<Error | null>(null);
   let recentActivity = $state([
     { id: 1, action: 'Case Analysis Completed', target: 'CASE-2024-087', time: '2 minutes ago', type: 'success' },
     { id: 2, action: 'Evidence Upload', target: 'Digital Forensics Report', time: '5 minutes ago', type: 'info' },
@@ -61,21 +69,26 @@
     { id: 'memory-dashboard', label: 'Memory Graph', icon: '🧠', route: '/memory-dashboard', color: 'cyan' }
   ];
 
-  // System health indicators
-  $: systemHealth = (() => {
+  // System health indicators using Svelte 5 $derived
+  let systemHealth = $derived(() => {
     const avgLoad = (systemData.systemLoad + systemData.gpuUtilization + systemData.memoryUsage) / 3;
     if (avgLoad > 85) return { status: 'critical', color: 'red', message: 'System under heavy load' };
     if (avgLoad > 70) return { status: 'warning', color: 'yellow', message: 'Elevated resource usage' };
     return { status: 'optimal', color: 'green', message: 'All systems operational' };
-  })();
+  });
 
-  // Animation cycle
+  // Animation cycle with error handling
   onMount(() => {
-    const animationInterval = setInterval(() => {
-      animationPhase = (animationPhase + 1) % 4;
-    }, 2000);
+    try {
+      const animationInterval = setInterval(() => {
+        animationPhase = (animationPhase + 1) % 4;
+      }, 2000);
 
-    return () => clearInterval(animationInterval);
+      return () => clearInterval(animationInterval);
+    } catch (error) {
+      componentError = error instanceof Error ? error : new Error('Animation initialization failed');
+      console.error('YoRHaCommandCenter animation error:', error);
+    }
   });
 
   function handleQuickAction(action: any) {
@@ -106,11 +119,8 @@
       ...recentActivity.slice(0, 4)
     ];
     
-    // Update system data
-    systemData = {
-      ...systemData,
-      activeCases: systemData.activeCases + 1
-    };
+    // Update system data (for reactive updates)
+    systemData.activeCases = systemData.activeCases + 1;
   }
 
   function handleCaseError(event: any) {
@@ -165,6 +175,20 @@
 </script>
 
 <!-- Command Center Dashboard -->
+{#if componentError}
+  <div class="error-boundary bg-red-900 border border-red-500 rounded-lg p-6 m-4">
+    <h2 class="text-xl font-bold text-red-300 mb-2">Component Error</h2>
+    <p class="text-red-200 mb-4">YoRHa Command Center encountered an error:</p>
+    <p class="text-red-100 font-mono text-sm mb-4">{componentError.message}</p>
+    <button 
+      class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded" 
+      on:on:onclick={() => { componentError = null; }}
+      aria-label="Dismiss error and retry"
+    >
+      Retry
+    </button>
+  </div>
+{:else}
 <div class="yorha-command-center min-h-full bg-yorha-dark text-yorha-light p-6">
 
   <!-- Header Section -->
@@ -309,7 +333,16 @@
       {#each quickActions as action}
         <button
           class="action-card border rounded-lg p-4 text-center transition-all duration-300 hover:scale-105 hover:shadow-lg {getActionColor(action.color)} {selectedCard === action.id ? 'scale-95' : ''}"
-          click={() => handleQuickAction(action)}
+          on:on:onclick={() => handleQuickAction(action)}
+          role="button"
+          tabindex="0"
+          aria-label="{action.label} - {action.icon}"
+          on:keydown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleQuickAction(action);
+            }
+          }}
         >
           <div class="text-3xl mb-2">{action.icon}</div>
           <div class="text-sm font-medium">{action.label}</div>
@@ -341,7 +374,7 @@
           recentActivity = [{
             id: Date.now(),
             action: 'Search Query Executed',
-            target: `"${result.title}"`,
+            target: `"${result.detail.title}"`,
             time: 'just now',
             type: 'ai'
           }, ...recentActivity.slice(0, 4)];
@@ -379,12 +412,16 @@
     initialOpen={false}
   /> -->
 </div>
+{/if}
 
 <!-- YoRHa Case Creation Modal -->
 {#if showCaseModal}
   <div class="modal-backdrop fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" 
-       click={handleModalBackdropClick}>
-    <div class="modal-content max-w-4xl w-full" click={(e) => e.stopPropagation()}>
+       on:on:onclick={handleModalBackdropClick}
+       role="dialog"
+       aria-modal="true"
+       aria-labelledby="case-modal-title">
+    <div class="modal-content max-w-4xl w-full" on:on:onclick={(e) => e.stopPropagation()}>
       <YoRHaCaseForm 
         on:success={handleCaseCreationSuccess}
         on:error={handleCaseCreationError}

@@ -20,6 +20,6 @@ export const Checkbox = ComponentFallback;
 export const Radio = ComponentFallback;
 export const Tooltip = ComponentFallback;
 export const Popover = ComponentFallback;
-
+;
 // Provide types entry for TypeScript consumers (optional)
 export { default as Component } from './ComponentFallback.svelte';

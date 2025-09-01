@@ -422,5 +422,5 @@ class CachingLayer {
 
 // Export singleton instance
 export const cachingLayer = new CachingLayer();
-
+;
 

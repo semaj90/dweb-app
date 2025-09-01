@@ -13,25 +13,25 @@
 
   // State management
   let editorElement: HTMLDivElement;
-  let isFullscreen = false;
-  let isFocusMode = false;
-  let showShortcuts = false;
+let isFullscreen = $state(false);
+let isFocusMode = $state(false);
+let showShortcuts = $state(false);
   let lastSaved = new Date();
-  let wordCount = 0;
-  let charCount = 0;
-  let readingTime = 0;
-  let hasUnsavedChanges = false;
+let wordCount = $state(0);
+let charCount = $state(0);
+let readingTime = $state(0);
+let hasUnsavedChanges = $state(false);
 
   const dispatch = createEventDispatcher();
 
   // Auto-save functionality
-  let autoSaveTimer: NodeJS.Timeout;
+let autoSaveTimer = $state<NodeJS.Timeout;
   
   function startAutoSave() {
     if (autoSaveTimer) clearInterval(autoSaveTimer);
-    autoSaveTimer = setInterval(() => {
+    autoSaveTimer >(setInterval(() => {
       if (hasUnsavedChanges) {
-        saveDocument();
+        saveDocument());
       }
     }, autoSaveInterval);
   }
@@ -173,7 +173,7 @@
     <div class="header-actions">
       <button 
         class="action-btn yorha-btn yorha-btn-secondary"
-        click={() => showShortcuts = !showShortcuts}
+        on:onclick={() => showShortcuts = !showShortcuts}
         title="Keyboard shortcuts (Ctrl+/)"
       >
         <Keyboard class="h-4 w-4" />
@@ -181,7 +181,7 @@
       
       <button 
         class="action-btn yorha-btn yorha-btn-secondary"
-        click={toggleFocusMode}
+        on:onclick={toggleFocusMode}
         title="Focus mode (F10)"
       >
         {#if isFocusMode}
@@ -193,7 +193,7 @@
       
       <button 
         class="action-btn yorha-btn yorha-btn-secondary"
-        click={toggleFullscreen}
+        on:onclick={toggleFullscreen}
         title="Fullscreen (F11)"
       >
         {#if isFullscreen}
@@ -205,7 +205,7 @@
       
       <button 
         class="action-btn yorha-btn yorha-btn-primary"
-        click={saveDocument}
+        on:onclick={saveDocument}
         title="Save document (Ctrl+S)"
       >
         <Save class="h-4 w-4" />
@@ -219,7 +219,7 @@
     <div class="format-group">
       <button 
         class="format-btn yorha-btn yorha-btn-secondary"
-        click={() => formatText('bold')}
+        on:onclick={() => formatText('bold')}
         title="Bold (Ctrl+B)"
       >
         <strong>B</strong>
@@ -227,7 +227,7 @@
       
       <button 
         class="format-btn yorha-btn yorha-btn-secondary"
-        click={() => formatText('italic')}
+        on:onclick={() => formatText('italic')}
         title="Italic (Ctrl+I)"
       >
         <em>I</em>
@@ -235,7 +235,7 @@
       
       <button 
         class="format-btn yorha-btn yorha-btn-secondary"
-        click={() => formatText('underline')}
+        on:onclick={() => formatText('underline')}
         title="Underline"
       >
         <u>U</u>
@@ -245,7 +245,7 @@
     <div class="format-group">
       <button 
         class="format-btn yorha-btn yorha-btn-secondary"
-        click={() => formatText('justifyLeft')}
+        on:onclick={() => formatText('justifyLeft')}
         title="Align left"
       >
         ⟸
@@ -253,7 +253,7 @@
       
       <button 
         class="format-btn yorha-btn yorha-btn-secondary"
-        click={() => formatText('justifyCenter')}
+        on:onclick={() => formatText('justifyCenter')}
         title="Center"
       >
         ▤
@@ -261,7 +261,7 @@
       
       <button 
         class="format-btn yorha-btn yorha-btn-secondary"
-        click={() => formatText('justifyRight')}
+        on:onclick={() => formatText('justifyRight')}
         title="Align right"
       >
         ⟹
@@ -271,7 +271,7 @@
     <div class="format-group">
       <button 
         class="format-btn yorha-btn yorha-btn-secondary"
-        click={() => formatText('insertUnorderedList')}
+        on:onclick={() => formatText('insertUnorderedList')}
         title="Bullet list"
       >
         ⋯
@@ -279,7 +279,7 @@
       
       <button 
         class="format-btn yorha-btn yorha-btn-secondary"
-        click={() => formatText('insertOrderedList')}
+        on:onclick={() => formatText('insertOrderedList')}
         title="Numbered list"
       >
         ①
@@ -325,8 +325,8 @@
 
 <!-- Keyboard Shortcuts Modal -->
 {#if showShortcuts}
-  <div class="shortcuts-overlay" click={() => showShortcuts = false}>
-    <div class="shortcuts-modal yorha-card" click={(e) => e.stopPropagation()}>
+  <div class="shortcuts-overlay" on:onclick={() => showShortcuts = false}>
+    <div class="shortcuts-modal yorha-card" on:onclick={(e) => e.stopPropagation()}>
       <h3 class="shortcuts-title gradient-text-primary">
         Keyboard Shortcuts
       </h3>
@@ -342,7 +342,7 @@
       
       <button 
         class="close-shortcuts yorha-btn yorha-btn-primary"
-        click={() => showShortcuts = false}
+        on:onclick={() => showShortcuts = false}
       >
         Close
       </button>

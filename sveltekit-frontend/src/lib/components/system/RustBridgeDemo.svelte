@@ -207,7 +207,7 @@
           rows="4"
           class="text-input"
         ></textarea>
-        <button click={processText} disabled={!bridgeInitialized || isLoading}>
+        <button on:onclick={processText} disabled={!bridgeInitialized || isLoading}>
           🔄 Process Text
         </button>
         {#if textProcessingResult}
@@ -221,7 +221,7 @@
       <!-- Performance Benchmark -->
       <div class="demo-section">
         <h3>⚡ Performance Benchmark</h3>
-        <button click={runBenchmark} disabled={!bridgeInitialized || isLoading}>
+        <button on:onclick={runBenchmark} disabled={!bridgeInitialized || isLoading}>
           🏃‍♂️ Run Benchmark
         </button>
         {#if benchmarkResults}
@@ -280,7 +280,7 @@
 
       <!-- Refresh Button -->
       <div class="demo-actions">
-        <button click={loadSystemData} disabled={!bridgeInitialized || isLoading}>
+        <button on:onclick={loadSystemData} disabled={!bridgeInitialized || isLoading}>
           🔄 Refresh Data
         </button>
       </div>

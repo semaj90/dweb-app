@@ -58,7 +58,6 @@ const defaultReport: Report = {
 
 // Main report store
 export const report: Writable<Report> = writable(defaultReport);
-
 // Editor state
 export const editorState = writable({
   isEditing: false,
@@ -82,15 +81,9 @@ export const reportUI = writable({
 // Derived stores
 export const reportTitle = derived(report, ($report) => $report.title);
 export const reportContent = derived(report, ($report) => $report.content);
-export const attachedEvidence = derived(
-  report,
-  ($report) => $report.attachedEvidence,
-);
+export const attachedEvidence = derived(report, ($report) => $report.attachedEvidence);
 export const reportMetadata = derived(report, ($report) => $report.metadata);
-export const hasUnsavedChanges = derived(
-  editorState,
-  ($state) => $state.hasUnsavedChanges,
-);
+export const hasUnsavedChanges = derived(editorState, ($state) => $state.hasUnsavedChanges);
 
 // Actions
 export const reportActions = {

@@ -34,11 +34,11 @@ import { cn } from "../../../utils";
     class: className = "",
     id = undefined,
     name = undefined,
-    onkeydown = undefined,
-    oninput = undefined,
+    on:keydown= undefined,
+    on:input= undefined,
     on:change=undefined,
-    onfocus = undefined,
-    onblur = undefined
+    on:focus= undefined,
+    on:blur= undefined
   }: Props = $props();
 </script>
 

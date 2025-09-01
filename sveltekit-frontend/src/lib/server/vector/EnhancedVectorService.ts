@@ -3,7 +3,7 @@
 // Generated: 2025-07-25T03:29:35.246Z
 // Features detected: hasOllama, hasQdrant, hasRedis, hasPgVector, hasEmbeddings
 
-import { createQdrantWrapper, QdrantApiWrapper } from "./qdrant-api-wrapper";
+import { createQdrantWrapper, QdrantApiWrapper } from './qdrant-api-wrapper.js';
 import { Redis } from "ioredis";
 import {
   cases,
@@ -11,9 +11,9 @@ import {
   criminals,
   embeddingCache,
   vectorMetadata
-} from '../db/schema-postgres-enhanced';
+} from '../db/schema-postgres-enhanced.js';
 import { eq, sql } from "drizzle-orm";
-import { db } from '../db';
+import { db } from '../db.js';
 
 export class EnhancedVectorService {
   private qdrant: QdrantApiWrapper;
@@ -22,12 +22,12 @@ export class EnhancedVectorService {
 
   constructor() {
     this.qdrant = createQdrantWrapper({
-      url: process.env.QDRANT_URL || "http://localhost:6333",
+      url: import.meta.env.QDRANT_URL || "http://localhost:6333",
     });
 
     this.redis = new Redis({
-      host: process.env.REDIS_HOST || "localhost",
-      port: parseInt(process.env.REDIS_PORT || "6379"),
+      host: import.meta.env.REDIS_HOST || "localhost",
+      port: parseInt(import.meta.env.REDIS_PORT || "6379"),
       maxRetriesPerRequest: 3,
     });
   }
@@ -162,3 +162,4 @@ export class EnhancedVectorService {
 }
 
 export const vectorService = new EnhancedVectorService();
+;

@@ -1045,7 +1045,7 @@ export class NESSGPUBinaryRankingPipeline {
 
 // Export singleton instance for easy access
 export const nesGPUBinaryPipeline = new NESSGPUBinaryRankingPipeline();
-
+;
 // Export singleton instance
 export const textureRankingMatrices = new TextureRankingMatrices();
-
+;

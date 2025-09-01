@@ -1,36 +1,41 @@
 import { json } from "@sveltejs/kit";
+import { eq } from "drizzle-orm";
 import { cases } from "$lib/server/db/schema-postgres";
 import { db } from "$lib/server/db/drizzle";
 import type { RequestHandler } from './$types';
+import type { Case, UpdateCaseRequest } from '$lib/types/api.js';
+import { apiSuccess, apiError, getRequestId, withErrorHandling } from '$lib/server/api/standard-response';
 
 
-export const GET: RequestHandler = async ({ params, locals }) => {
-  try {
-    if (!locals.user) {
-      return json({ error: "Not authenticated" }, { status: 401 });
-    }
-    if (!db) {
-      return json({ error: "Database not available" }, { status: 500 });
-    }
-    const caseId = params.caseId;
-    if (!caseId) {
-      return json({ error: "Case ID is required" }, { status: 400 });
-    }
-    const caseResult = await db
-      .select()
-      .from(cases)
-      .where(eq(cases.id, caseId))
-      .limit(1);
+export const GET: RequestHandler = withErrorHandling(async (event) => {
+  const requestId = getRequestId(event);
+  const { params, locals } = event;
 
-    if (!caseResult.length) {
-      return json({ error: "Case not found" }, { status: 404 });
-    }
-    return json(caseResult[0]);
-  } catch (error: any) {
-    console.error("Error fetching case:", error);
-    return json({ error: "Failed to fetch case" }, { status: 500 });
+  if (!locals.user) {
+    return apiError("Not authenticated", 401, 'UNAUTHORIZED', undefined, requestId);
   }
-};
+  
+  if (!db) {
+    return apiError("Database not available", 500, 'DATABASE_UNAVAILABLE', undefined, requestId);
+  }
+  
+  const caseId = params.caseId;
+  if (!caseId) {
+    return apiError("Case ID is required", 400, 'INVALID_INPUT', undefined, requestId);
+  }
+  
+  const caseResult = await db
+    .select()
+    .from(cases)
+    .where(eq(cases.id, caseId))
+    .limit(1);
+
+  if (!caseResult.length) {
+    return apiError("Case not found", 404, 'NOT_FOUND', undefined, requestId);
+  }
+  
+  return apiSuccess(caseResult[0] as Case, 'Case retrieved successfully', requestId);
+});
 
 export const PUT: RequestHandler = async ({ params, request, locals }) => {
   try {

@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * Cluster Services Management API
@@ -7,6 +7,7 @@ import type { RequestHandler } from './$types';
 
 import { productionServiceRegistry, GO_SERVICES_REGISTRY, type ServiceDefinition } from '$lib/../../../../lib/services/production-service-registry.js';
 import { context7OrchestrationService } from '$lib/../../../../lib/services/context7-orchestration-integration.js';
+import { URL } from "url";
 
 export const GET: RequestHandler = async ({ url }) => {
   const category = url.searchParams.get('category');

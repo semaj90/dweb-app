@@ -46,7 +46,7 @@
   };
 
   // Format date for display
-  const formattedDate = $derived(() => {
+  let formattedDate = $derived(() => {
     if (!value) return placeholder;
     
     const options: Intl.DateTimeFormatOptions = {
@@ -64,7 +64,7 @@
   });
 
   // Check if date is a legal deadline (within 30 days)
-  const isUpcomingDeadline = $derived(() => {
+  let isUpcomingDeadline = $derived(() => {
     if (!value || variant !== 'deadline') return false;
     const now = new Date();
     const diffTime = value.getTime() - now.getTime();

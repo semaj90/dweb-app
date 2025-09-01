@@ -23,7 +23,7 @@ export const users = pgTable('users', {
   profilePicture: text('profile_picture'),
   preferences: json('preferences').default(sql`'{}'::json`),
   createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow()
 });
 
 // Sessions table for Lucia v3 compatibility
@@ -33,7 +33,7 @@ export const sessions = pgTable('sessions', {
   expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull(),
   ipAddress: varchar('ip_address', { length: 45 }),
   userAgent: text('user_agent'),
-  createdAt: timestamp('created_at').defaultNow(),
+  createdAt: timestamp('created_at').defaultNow()
 });
 
 // User audit logs for security tracking
@@ -44,7 +44,7 @@ export const userAuditLogs = pgTable('user_audit_logs', {
   ipAddress: varchar('ip_address', { length: 45 }),
   userAgent: text('user_agent'),
   metadata: json('metadata'),
-  createdAt: timestamp('created_at').defaultNow(),
+  createdAt: timestamp('created_at').defaultNow()
 });
 
 // Cases table
@@ -58,7 +58,7 @@ export const cases = pgTable('cases', {
   createdBy: uuid('created_by').references(() => users.id),
   assignedTo: uuid('assigned_to').references(() => users.id),
   createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow()
 });
 
 // Documents table with vector embeddings
@@ -78,7 +78,7 @@ export const documents = pgTable('documents', {
   source: varchar('source', { length: 100 }).default('upload'), // upload, scan, email, etc.
   createdBy: uuid('created_by').references(() => users.id),
   createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow()
 });
 
 // Evidence table
@@ -97,7 +97,7 @@ export const evidence = pgTable('evidence', {
   aiAnalysis: json('ai_analysis'),
   createdBy: uuid('created_by').references(() => users.id),
   createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow()
 });
 
 // AI chat history and interactions
@@ -114,7 +114,7 @@ export const aiInteractions = pgTable('ai_interactions', {
   confidence: integer('confidence'), // 0-100
   feedback: json('feedback'),
   metadata: json('metadata'),
-  createdAt: timestamp('created_at').defaultNow(),
+  createdAt: timestamp('created_at').defaultNow()
 });
 
 // Search index for semantic search
@@ -126,7 +126,7 @@ export const searchIndex = pgTable('search_index', {
   embedding: vector('embedding', { dimensions: 1536 }),
   metadata: json('metadata'),
   createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow()
 });
 
 // Relations for type safety
@@ -138,35 +138,35 @@ export const relations = {
     assignedCases: cases,
     createdDocuments: documents,
     createdEvidence: evidence,
-    aiInteractions: aiInteractions,
+    aiInteractions: aiInteractions
   },
   sessions: {
-    user: users,
+    user: users
   },
   userAuditLogs: {
-    user: users,
+    user: users
   },
   cases: {
     creator: users,
     assignee: users,
     documents: documents,
     evidence: evidence,
-    aiInteractions: aiInteractions,
+    aiInteractions: aiInteractions
   },
   documents: {
     case: cases,
     creator: users,
-    evidence: evidence,
+    evidence: evidence
   },
   evidence: {
     case: cases,
     document: documents,
-    creator: users,
+    creator: users
   },
   aiInteractions: {
     user: users,
-    case: cases,
-  },
+    case: cases
+  }
 };
 
 // Type exports for use in application
@@ -197,5 +197,4 @@ export type NewSearchIndex = typeof searchIndex.$inferInsert;
 // Re-export missing tables from additional-tables.ts
 export { embeddingCache } from '../server/db/additional-tables';
 
-// Database connection re-export
-export { db } from '../server/db/index';
+// Database connection re-export { db } from '../server/db/index';

@@ -28,24 +28,24 @@ import type {
 export const chatMessages = writable<ChatMessage[]>([]);
 export const currentSession = writable<ChatSession | null>(null);
 export const activeSessions = writable<ChatSession[]>([]);
-
+;
 // Connection state
 export const isConnected = writable(false);
 export const connectionStatus = writable<'connecting' | 'connected' | 'disconnected' | 'error'>('disconnected');
 export const lastConnectionTime = writable<Date | null>(null);
-
+;
 // Real-time communication
 export const isTyping = writable(false);
 export const typingUsers = writable<Set<string>>(new Set());
 export const streamingResponse = writable('');
 export const streamingMessageId = writable<string | null>(null);
-
+;
 // Analysis and AI state
 export const currentAnalysis = writable<MessageAnalysis | null>(null);
 export const ragContext = writable<RAGContext | null>(null);
 export const recommendations = writable<Recommendation[]>([]);
 export const didYouMean = writable<string[]>([]);
-
+;
 // Processing state
 export const isProcessing = writable(false);
 export const processingStage = writable<'analyzing' | 'embedding' | 'searching' | 'generating' | 'complete'>('complete');
@@ -62,7 +62,7 @@ export const processingMetrics = writable({
 // Error handling
 export const lastError = writable<string | null>(null);
 export const errorHistory = writable<Array<{ timestamp: Date; error: string; context?: unknown }>>([]);
-
+;
 // User interaction
 export const userAttention = writable<AttentionData>({
   messageId: '',
@@ -71,7 +71,7 @@ export const userAttention = writable<AttentionData>({
 });
 
 export const userActivities = writable<UserActivity[]>([]);
-
+;
 // Chat configuration
 export const chatConfig = writable({
   maxMessages: 100,
@@ -86,12 +86,12 @@ export const chatConfig = writable({
 
 // Derived stores for computed values
 export const messageCount = derived(chatMessages, ($messages) => $messages.length);
-
-export const lastUserMessage = derived(chatMessages, ($messages) => 
+;
+export const lastUserMessage = derived(chatMessages, ($messages) => ;
   $messages.filter(m => m.role === 'user').slice(-1)[0] || null
 );
 
-export const lastAIResponse = derived(chatMessages, ($messages) => 
+export const lastAIResponse = derived(chatMessages, ($messages) => ;
   $messages.filter(m => m.role === 'assistant').slice(-1)[0] || null
 );
 
@@ -109,7 +109,7 @@ export const conversationSummary = derived(chatMessages, ($messages) => {
   };
 });
 
-export const isSessionActive = derived(currentSession, ($session) => 
+export const isSessionActive = derived(currentSession, ($session) => ;
   $session?.is_active || false
 );
 
@@ -126,9 +126,9 @@ export const sessionMetrics = derived([currentSession, chatMessages], ([$session
 });
 
 export const hasRecommendations = derived(recommendations, ($recs) => $recs.length > 0);
-
+;
 export const hasAnalysis = derived(currentAnalysis, ($analysis) => $analysis !== null);
-
+;
 export const attentionScore = derived(userAttention, ($attention) => {
   const timeSinceActivity = Date.now() - $attention.lastActivity;
   const maxInactiveTime = 60000; // 1 minute

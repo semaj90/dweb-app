@@ -126,7 +126,7 @@
   <!-- Search Input -->
   <div class="relative">
     <input
-      use:melt={$input}
+      <!-- <!-- use:melt={$input}
       class="w-full px-4 py-3 pl-10 pr-10 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
       {placeholder}
       autocomplete="off"
@@ -144,7 +144,7 @@
   <!-- Corrected Query Hint -->
   {#if correctedQuery && correctedQuery !== query}
     <div class="mt-2 text-sm text-gray-600">
-      Did you mean: <button class="text-blue-600 hover:underline" click={() => query = correctedQuery}>
+      Did you mean: <button class="text-blue-600 hover:underline" on:onclick={() => query = correctedQuery}>
         {correctedQuery}
       </button>?
     </div>
@@ -153,15 +153,15 @@
   <!-- Suggestions Dropdown -->
   {#if $open && suggestions.length > 0}
     <div
-      use:melt={$menu}
+      <!-- <!-- use:melt={$menu}
       class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-auto"
-      transition:fly={{ y: -5, duration: 150 }}
+      transitifly={{ y: -5, duration: 150 }}
     >
       {#each suggestions as suggestion, index (suggestion.entityId)}
         <button
-          use:melt={$option({ value: suggestion, label: suggestion.label })}
+          <!-- <!-- use:melt={$option({ value: suggestion, label: suggestion.label })}
           class="w-full px-4 py-3 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none border-b border-gray-100 last:border-b-0"
-          click={() => handleSelection(suggestion)}
+          on:onclick={() => handleSelection(suggestion)}
         >
           <div class="flex items-center gap-3">
             <!-- Icon -->

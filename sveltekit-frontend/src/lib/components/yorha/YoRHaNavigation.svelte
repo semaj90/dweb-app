@@ -22,7 +22,7 @@
   let hoveredRoute = $state<string | null>(null);
 
   // Organize routes into sections
-  const organizedRoutes = $derived(() => {
+  let organizedRoutes = $derived(() => {
     const sections = {
       main: routes.filter(r => 
         ['command-center', 'cases', 'evidence', 'persons', 'ai-assistant', 'search', 'documents', 'reports', 'memory', 'chat'].includes(r.id)
@@ -125,9 +125,9 @@
         {#each filteredRoutes as route}
           <button
             class="nes-nav-item nes-legal-priority-medium yorha-3d-button w-full text-left {isRouteActive(route.route) ? 'nes-legal-priority-high neural-sprite-active' : ''}"
-            click={() => navigateToRoute(route.route)}
-            on:mouseenter={() => hoveredRoute = route.id}
-            on:mouseleave={() => hoveredRoute = null}
+            on:onclick={() => navigateToRoute(route.route)}
+            on:on:mouseenter={() => hoveredRoute = route.id}
+            on:on:mouseleave={() => hoveredRoute = null}
           >
             <div class="flex items-center gap-3">
               <span class="neural-sprite-active text-lg">{route.icon}</span>
@@ -147,7 +147,7 @@
             <!-- Section Header -->
             <button
               class="section-header w-full flex items-center justify-between p-2 rounded hover:bg-yorha-accent-warm/10 transition-colors duration-200"
-              click={() => toggleSection(sectionId)}
+              on:onclick={() => toggleSection(sectionId)}
             >
               <div class="flex items-center gap-2">
                 <span class="text-lg">{getSectionIcon(sectionId)}</span>
@@ -170,9 +170,9 @@
                 {#each sectionRoutes as route}
                   <button
                     class="nav-item w-full text-left p-3 mb-1 rounded border border-transparent hover:border-yorha-accent-warm/50 hover:bg-yorha-accent-warm/10 transition-all duration-200 {isRouteActive(route.route) ? 'active bg-yorha-accent-warm/20 border-yorha-accent-warm text-yorha-accent-warm' : 'text-yorha-light'}"
-                    click={() => navigateToRoute(route.route)}
-                    on:mouseenter={() => hoveredRoute = route.id}
-                    on:mouseleave={() => hoveredRoute = null}
+                    on:onclick={() => navigateToRoute(route.route)}
+                    on:on:mouseenter={() => hoveredRoute = route.id}
+                    on:on:mouseleave={() => hoveredRoute = null}
                     title={collapsed ? route.label : ''}
                   >
                     <div class="flex items-center gap-3">

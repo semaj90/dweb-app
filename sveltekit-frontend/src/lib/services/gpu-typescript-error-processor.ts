@@ -3,11 +3,12 @@
  * Integrates all AI pipeline components for automated error resolution
  */
 
-import { neo4jSummarization } from './neo4j-transformers-summarization';
-import { langChainOllamaService } from './langchain-ollama-llama-integration';
-import { vectorProxy } from './grpc-quic-vector-proxy';
-import { fuseLazySearch } from './fuse-lazy-search-indexeddb';
-import { lokiCache, LegalAICacheUtils } from './loki-cache-vscode-integration';
+import { neo4jSummarization } from './neo4j-transformers-summarization.js';
+import { langChainOllamaService } from './langchain-ollama-llama-integration.js';
+import { vectorProxy } from './grpc-quic-vector-proxy.js';
+import { fuseLazySearch } from './fuse-lazy-search-indexeddb.js';
+import { lokiCache, LegalAICacheUtils } from './loki-cache-vscode-integration.js';
+import crypto from "crypto";
 
 export interface TypeScriptError {
   file: string;
@@ -766,7 +767,7 @@ export class GPUTypeScriptErrorProcessor {
 
 // Global GPU error processor instance
 export const gpuErrorProcessor = new GPUTypeScriptErrorProcessor();
-
+;
 /**
  * High-level error processing utilities
  */

@@ -571,3 +571,4 @@ class RealTimeEvidenceStore {
 }
 // Export singleton instance
 export const evidenceStore = new RealTimeEvidenceStore();
+;

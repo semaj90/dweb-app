@@ -15,7 +15,7 @@ const logger = {
 
 // Environment fallback
 const env = {
-  QDRANT_URL: process.env.QDRANT_URL || "http://localhost:6333"
+  QDRANT_URL: import.meta.env.QDRANT_URL || "http://localhost:6333"
 };
 
 // Simplified types for QdrantService
@@ -472,3 +472,4 @@ export class QdrantService {
 
 // Export singleton instance
 export const qdrantService = new QdrantService();
+;

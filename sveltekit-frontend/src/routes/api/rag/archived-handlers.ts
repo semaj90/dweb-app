@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import crypto from "crypto";
 // Archived non-essential handlers preserved for reference/reuse
 // Moved out of +server.ts to keep the active endpoint lean and focused.

@@ -7,7 +7,7 @@
   let isListening = $state(false);
   let finalTranscript = $state('');
   let interimTranscript = $state('');
-  let currentTranscript = '';
+let currentTranscript = $state('');
   let recognition: any = $state();
 
   onMount(() => {
@@ -25,8 +25,8 @@
         speak("I'm listening. You can ask me legal questions or give voice commands.");
       };
       recognition.onresult = (event: any) => {
-        let interim = '';
-        let final = '';
+let interim = $state('');
+let final = $state('');
         for (let i = event.resultIndex; i < event.results.length; i++) {
           const transcript = event.results[i][0].transcript;
           if (event.results[i].isFinal) {
@@ -70,7 +70,7 @@
     {:else}
       <p>Click the button and start speaking.</p>
     {/if}
-    <button click={() => {
+    <button on:onclick={() => {
       if (isListening) {
         recognition.stop();
         isListening = false;

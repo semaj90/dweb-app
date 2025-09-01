@@ -17,7 +17,7 @@
   let state: ObservabilityState | null = $state(null);
   let alerts: Alert[] = $state([]);
   let isConnected = $state(false);
-  let ws: WebSocket | null = null;
+let ws = $state<WebSocket | null >(null);
   let autoScroll = $state(true);
   let showDetails = $state(false);
   
@@ -189,7 +189,7 @@
         <span class="status-indicator {isConnected ? 'connected' : 'disconnected'}"></span>
         {isConnected ? 'Live' : 'Disconnected'}
       </div>
-      <button class="btn-toggle" click={() => showDetails = !showDetails}>
+      <button class="btn-toggle" on:onclick={() => showDetails = !showDetails}>
         {showDetails ? 'Hide' : 'Show'} Details
       </button>
     </div>
@@ -256,7 +256,7 @@
           <input type="checkbox" bind:checked={autoScroll} />
           Auto-scroll
         </label>
-        <button class="btn-clear" click={clearAlerts}>Clear</button>
+        <button class="btn-clear" on:onclick={clearAlerts}>Clear</button>
       </div>
     </div>
     

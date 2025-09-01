@@ -16,7 +16,7 @@
   });
   
   // Fuse.js search instance
-  let fuseSearch: Fuse<any> | null = null;
+let fuseSearch = $state<Fuse<any> | null >(null);
   
   // Configuration
   const config = {
@@ -298,7 +298,7 @@
         class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
       />
       <button
-        click={() => performSearch()}
+        on:onclick={() => performSearch()}
         class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
       >
         Search
@@ -331,7 +331,7 @@
                   {result.metadata.wordCount} words • {result.metadata.legalTerms.length} legal terms
                 </div>
                 <button
-                  click={() => analyzeDocument(result)}
+                  on:onclick={() => analyzeDocument(result)}
                   class="px-3 py-1 bg-purple-600 text-white text-xs rounded hover:bg-purple-700 transition-colors"
                 >
                   🤖 AI Analyze
@@ -412,7 +412,7 @@
                 Source: {doc.source} • {doc.metadata.wordCount} words • {doc.timestamp.toLocaleDateString()}
               </div>
               <button
-                click={() => analyzeDocument(doc)}
+                on:onclick={() => analyzeDocument(doc)}
                 class="px-3 py-1 bg-purple-600 text-white text-xs rounded hover:bg-purple-700 transition-colors"
               >
                 🤖 Analyze with AI

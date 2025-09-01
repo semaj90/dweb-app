@@ -273,7 +273,7 @@ class LocalLLMManager {
 }
 // Singleton instance
 export const localLLMManager = new LocalLLMManager();
-
+;
 // Auto-initialize
 if (typeof window !== "undefined") {
   localLLMManager.initialize().catch(console.error);

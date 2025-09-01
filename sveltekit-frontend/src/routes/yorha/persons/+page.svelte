@@ -170,7 +170,7 @@
       </div>
       
       <div class="header-right">
-        <Button class="header-btn" on:click={() => showNewPersonModal = true}>
+        <Button class="header-btn" on:on:click={() => showNewPersonModal = true}>
           <Plus class="w-4 h-4" />
           ADD PERSON
         </Button>
@@ -355,10 +355,10 @@
     </div>
     
     <Dialog.Footer>
-      <Button variant="outline" on:click={() => showNewPersonModal = false}>
+      <Button variant="outline" on:on:click={() => showNewPersonModal = false}>
         CANCEL
       </Button>
-      <Button on:click={() => showNewPersonModal = false}>
+      <Button on:on:click={() => showNewPersonModal = false}>
         ADD PERSON
       </Button>
     </Dialog.Footer>

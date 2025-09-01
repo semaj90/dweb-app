@@ -464,7 +464,7 @@ export class RealTimeSearchService {
 
 // Global real-time search service instance
 export const realTimeSearchService = new RealTimeSearchService();
-
+;
 // Enhanced search hooks for Svelte 5 components
 export function useRealTimeSearch() {
   return {

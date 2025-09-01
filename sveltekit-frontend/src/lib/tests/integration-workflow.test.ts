@@ -466,7 +466,7 @@ describe('Unified Service Integration Workflow', () => {
 });
 
 // Additional utility functions for integration testing
-export const IntegrationTestUtils = {
+export const IntegrationTestUtils = {;
   createTestDocument: (type: 'contract' | 'legal' | 'technical' = 'legal') => {
     const templates = {
       contract: `

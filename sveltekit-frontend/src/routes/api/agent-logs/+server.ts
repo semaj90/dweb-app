@@ -1,6 +1,8 @@
 import { json } from '@sveltejs/kit';
 import { librarySyncService } from "$lib/services/library-sync-service";
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
+import crypto from "crypto";
+import { URL } from "url";
 
 
 // GET /api/agent-logs - Get recent agent logs

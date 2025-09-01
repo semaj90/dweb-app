@@ -13,7 +13,7 @@
   import { createEventDispatcher } from "svelte";
 
   let { caseId = $bindable() } = $props(); // string | undefined = undefined;
-  export const evidenceIds: string[] = []; // External reference for evidence context
+  export const evidenceIds: string[] = []; // External reference for evidence context;
   let { placeholder = $bindable() } = $props(); // "Ask AI about this case...";
   let { maxHeight = $bindable() } = $props(); // "400px";
   let { showReferences = $bindable() } = $props(); // true;
@@ -21,18 +21,18 @@
   const dispatch = createEventDispatcher();
 
   // State
-  let query = "";
-  let isLoading = false;
-  let messages: any[] = [];
-  let showSettings = false;
-  let showCitationDialog = false;
-  let selectedCitation = "";
+let query = $state("");
+let isLoading = $state(false);
+let messages = $state<any[] >([]);
+let showSettings = $state(false);
+let showCitationDialog = $state(false);
+let selectedCitation = $state("");
 
   // Settings
-  let selectedModel = "gpt-4";
-  let temperature = 0.7;
-  let searchThreshold = 0.7;
-  let maxResults = 5;
+let selectedModel = $state("gpt-4");
+let temperature = $state(0.7);
+let searchThreshold = $state(0.7);
+let maxResults = $state(5);
 
   async function handleSubmit() {
     if (!query.trim() || isLoading) return;
@@ -100,12 +100,12 @@ I can provide more specific guidance if you share additional details about your 
     <div class="container mx-auto px-4">
       <button
         class="container mx-auto px-4"
-        click={() => (showSettings = !showSettings)}
+        on:onclick={() => (showSettings = !showSettings)}
         title="Settings"
       >
         <Settings class="container mx-auto px-4" />
       </button>
-      <button class="container mx-auto px-4" click={() => clearMessages()} title="Clear">
+      <button class="container mx-auto px-4" on:onclick={() => clearMessages()} title="Clear">
         <Trash2 class="container mx-auto px-4" />
       </button>
     </div>
@@ -125,7 +125,7 @@ I can provide more specific guidance if you share additional details about your 
             {#each message.references as reference}
               <button
                 class="container mx-auto px-4"
-                click={() => handleReferenceClick(reference)}
+                on:onclick={() => handleReferenceClick(reference)}
               >
                 <Quote class="container mx-auto px-4" />
                 <span class="container mx-auto px-4">{reference.title}</span>
@@ -170,7 +170,7 @@ I can provide more specific guidance if you share additional details about your 
     <div class="container mx-auto px-4">
       <div class="container mx-auto px-4">
         <h4>Settings</h4>
-        <button class="container mx-auto px-4" click={() => (showSettings = false)}
+        <button class="container mx-auto px-4" on:onclick={() => (showSettings = false)}
           >×</button
         >
       </div>
@@ -231,8 +231,8 @@ I can provide more specific guidance if you share additional details about your 
       aria-modal="true"
       aria-labelledby="citation-dialog-title"
       tabindex={-1}
-      click={() => (showCitationDialog = false)}
-      on:keydown={(e) => e.key === "Escape" && (showCitationDialog = false)}
+      on:onclick={() => (showCitationDialog = false)}
+      keydown={(e) => e.key === "Escape" && (showCitationDialog = false)}
     >
       <div
         class="container mx-auto px-4"
@@ -255,12 +255,12 @@ I can provide more specific guidance if you share additional details about your 
           </div>
 
           <div class="container mx-auto px-4">
-            <button class="container mx-auto px-4" click={() => insertCitation()}>
+            <button class="container mx-auto px-4" on:onclick={() => insertCitation()}>
               Insert Citation
             </button>
             <button
               class="container mx-auto px-4"
-              click={() => navigator.clipboard.writeText(selectedCitation)}
+              on:onclick={() => navigator.clipboard.writeText(selectedCitation)}
             >
               Copy
             </button>
@@ -270,7 +270,7 @@ I can provide more specific guidance if you share additional details about your 
         <div class="container mx-auto px-4">
           <button
             class="container mx-auto px-4"
-            click={() => (showCitationDialog = false)}
+            on:onclick={() => (showCitationDialog = false)}
           >
             Close
           </button>

@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * Enhanced Upload API Endpoint - SvelteKit 2 Production
@@ -15,6 +15,8 @@ import type {
   APIRequestContext 
 } from '$lib/types/api.js';
 import { embeddingService } from '$lib/server/embedding-service.js';
+import crypto from "crypto";
+import { URL } from "url";
 
 // Upload Service Configuration
 const UPLOAD_SERVICE_CONFIG = {

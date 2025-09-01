@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import type { EmbeddingResponse } from "$lib/types/ollama";
 import type { RequestHandler } from './$types';
 

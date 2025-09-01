@@ -33,11 +33,11 @@
   import { enhancedIngestService } from '$lib/services/enhanced-ingest-integration';
   
   // Component state following your patterns
-  let documentTitle = '';
-  let documentContent = '';
-  let caseId = '';
-  let selectedDocumentType = 'legal';
-  let batchMode = false;
+let documentTitle = $state('');
+let documentContent = $state('');
+let caseId = $state('');
+let selectedDocumentType = $state('legal');
+let batchMode = $state(false);
   let batchDocuments = writable([]);
   
   // Processing state
@@ -258,7 +258,7 @@
     <Alert variant="destructive" class="mb-4">
       <AlertDescription class="flex items-center justify-between">
         <span>{error.message}</span>
-        <Button variant="ghost" size="sm" on:click={() => dismissError(error.id)}>
+        <Button variant="ghost" size="sm" on:on:click={() => dismissError(error.id)}>
           ✕
         </Button>
       </AlertDescription>
@@ -317,7 +317,7 @@
               <Button
                 variant={selectedDocumentType === type.value ? 'default' : 'outline'}
                 size="sm"
-                on:click={() => selectedDocumentType = type.value}
+                on:on:click={() => selectedDocumentType = type.value}
                 disabled={$isProcessing}
                 class="justify-start"
               >
@@ -341,7 +341,7 @@
         
         <div class="flex space-x-2">
           <Button
-            on:click={ingestDocument}
+            on:on:click={ingestDocument}
             disabled={!$canIngest || $isProcessing}
             class="flex-1"
           >
@@ -350,7 +350,7 @@
           
           <Button
             variant="outline"
-            on:click={addToBatch}
+            on:on:click={addToBatch}
             disabled={!documentTitle.trim() || !documentContent.trim() || $isProcessing}
           >
             ➕ Add to Batch
@@ -388,7 +388,7 @@
                 <Button
                   variant="ghost"
                   size="sm"
-                  on:click={() => removeFromBatch(doc.id)}
+                  on:on:click={() => removeFromBatch(doc.id)}
                 >
                   ✕
                 </Button>
@@ -398,7 +398,7 @@
           
           <div class="space-y-2">
             <Button
-              on:click={processBatch}
+              on:on:click={processBatch}
               disabled={$isProcessing}
               class="w-full"
             >
@@ -406,7 +406,7 @@
             </Button>
             <Button
               variant="outline"
-              on:click={() => batchDocuments.set([])}
+              on:on:click={() => batchDocuments.set([])}
               disabled={$isProcessing}
               size="sm"
               class="w-full"

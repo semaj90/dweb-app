@@ -1,7 +1,7 @@
 import crypto from "crypto";
 
 // Enhanced case service with proper typing and error handling
-import type { Writable } from "svelte/store";
+import type {     Writable     } from 'svelte/store';
 import { get, writable } from "svelte/store";
 
 // Types
@@ -330,3 +330,4 @@ function createCaseService() {
 }
 // Export singleton instance
 export const caseService = createCaseService();
+;

@@ -3,7 +3,10 @@
 
 import { json, type RequestEvent } from '@sveltejs/kit';
 import { z } from 'zod';
-import type { ApiResponse, ApiError } from '../../types/api';
+import type { ApiResponse, ApiError } from '../../types/api.js';
+import type { APIResponse as UnifiedAPIResponse, FormSubmissionResult } from '$lib/types';
+import path from "path";
+import { URL } from "url";
 
 // Standard response interface
 export interface StandardApiResponse<T = any> {
@@ -136,6 +139,40 @@ export function validationError(
   return apiError(apiErr, requestId, processingTime);
 }
 
+// --- Unified Builders (Lightweight wrappers aligned with new shared types) ---
+export function buildSuccessResponse<T>(
+  data: T,
+  metadata: { processingTimeMs: number; requestId: string }
+): UnifiedAPIResponse<T> {
+  return {
+    success: true,
+    data,
+    metadata: { ...metadata, timestamp: new Date().toISOString() }
+  };
+}
+
+export function buildErrorResponse(
+  code: string,
+  message: string,
+  metadata: { processingTimeMs: number; requestId: string }
+): UnifiedAPIResponse<never> {
+  return {
+    success: false,
+    error: { code, message },
+    metadata: { ...metadata, timestamp: new Date().toISOString() }
+  } as UnifiedAPIResponse<never>;
+}
+
+export function buildFormSubmissionResult<T>(
+  result: Omit<FormSubmissionResult<T>, 'metadata'>,
+  metadata: { processingTimeMs: number; requestId: string }
+): FormSubmissionResult<T> {
+  return {
+    ...result,
+    metadata: { ...metadata, timestamp: new Date().toISOString() }
+  };
+}
+
 // Request ID generator
 function generateRequestId(): string {
   return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -148,24 +185,24 @@ export async function withApiHandler<T>(
 ): Promise<Response> {
   const startTime = Date.now();
   const requestId = generateRequestId();
-  
+
   // Add request ID to locals for tracking
   (event.locals as any).requestId = requestId;
-  
+
   try {
     const result = await handler(event);
     const processingTime = Date.now() - startTime;
-    
+
     // If the handler returned a Response, return it as-is
     if (result instanceof Response) {
       return result;
     }
-    
+
     // Otherwise wrap the result in a standard success response
     return apiSuccess(result, requestId, processingTime);
   } catch (error: any) {
     const processingTime = Date.now() - startTime;
-    
+
     // Log error for monitoring
     console.error(`API Error [${requestId}]:`, {
       error: error instanceof Error ? error.message : error,
@@ -174,43 +211,43 @@ export async function withApiHandler<T>(
       method: event.request.method,
       processingTime
     });
-    
+
     return apiError(error as Error, requestId, processingTime);
   }
 }
 
 // Common API errors
 export const CommonErrors = {
-  NotFound: (resource: string) => 
+  NotFound: (resource: string) =>
     new ApiErrorClass(`${resource} not found`, 'NOT_FOUND', 404),
-  
-  Unauthorized: (message = 'Unauthorized access') => 
+
+  Unauthorized: (message = 'Unauthorized access') =>
     new ApiErrorClass(message, 'UNAUTHORIZED', 401),
-  
-  Forbidden: (message = 'Access forbidden') => 
+
+  Forbidden: (message = 'Access forbidden') =>
     new ApiErrorClass(message, 'FORBIDDEN', 403),
-  
-  BadRequest: (message: string, details?: Record<string, any>) => 
+
+  BadRequest: (message: string, details?: Record<string, any>) =>
     new ApiErrorClass(message, 'BAD_REQUEST', 400, details),
-  
-  InternalError: (message = 'Internal server error') => 
+
+  InternalError: (message = 'Internal server error') =>
     new ApiErrorClass(message, 'INTERNAL_ERROR', 500),
-  
-  ServiceUnavailable: (service: string) => 
+
+  ServiceUnavailable: (service: string) =>
     new ApiErrorClass(`${service} is currently unavailable`, 'SERVICE_UNAVAILABLE', 503),
-  
-  RateLimited: (message = 'Rate limit exceeded') => 
+
+  RateLimited: (message = 'Rate limit exceeded') =>
     new ApiErrorClass(message, 'RATE_LIMITED', 429),
-  
-  DatabaseError: (operation: string, details?: any) => 
+
+  DatabaseError: (operation: string, details?: any) =>
     new ApiErrorClass(
       `Database operation failed: ${operation}`,
       'DATABASE_ERROR',
       500,
       details
     ),
-  
-  ValidationFailed: (field: string, reason: string) => 
+
+  ValidationFailed: (field: string, reason: string) =>
     new ApiErrorClass(
       `Validation failed for field '${field}': ${reason}`,
       'VALIDATION_ERROR',
@@ -240,7 +277,7 @@ export function createPagination(page: number, limit: number, total: number) {
   const offset = (page - 1) * limit;
   const hasNext = offset + limit < total;
   const hasPrev = page > 1;
-  
+
   return {
     page,
     limit,

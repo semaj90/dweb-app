@@ -22,11 +22,10 @@
   let { selectedIndex = $bindable() } = $props(); // number = -1; // Index of selected item
 
   const dispatch = createEventDispatcher();
-
-  let scrollContainer: HTMLElement;
-  let displayedItems: any[] = [];
-  let currentPage = 0;
-  let hasMore = true;
+let scrollContainer = $state<HTMLElement;
+  let displayedItems: any[] >([]);
+let currentPage = $state(0);
+let hasMore = $state(true);
 
   $: {
     // Reset when items change
@@ -105,12 +104,12 @@
 <div
   class="mx-auto px-4 max-w-7xl"
   bind:this={scrollContainer}
-  on:scroll={handleScroll}
+  scroll={handleScroll}
   role="listbox"
   aria-label="{itemType} list"
 >
   {#if displayedItems.length === 0 && !isLoading}
-    <div class="mx-auto px-4 max-w-7xl" transition:fade={{ duration: 200 ">
+    <div class="mx-auto px-4 max-w-7xl" transitifade={{ duration: 200 ">
       <div class="mx-auto px-4 max-w-7xl">
         <svelte:component this={getItemIcon({})} size={48} />
       </div>
@@ -121,9 +120,9 @@
       {#each displayedItems as item, index (item.id || index)}
         <div
           class="mx-auto px-4 max-w-7xl"
-          transition:slide={{ duration: 300, easing: quintOut "
-          click={() => handleItemClick(item)}
-          on:keydown={(e) => e.key === "Enter" && handleItemClick(item)}
+          transitislide={{ duration: 300, easing: quintOut "
+          on:onclick={() => handleItemClick(item)}
+          keydown={(e) => e.key === "Enter" && handleItemClick(item)}
           role="option"
           tabindex={0}
           aria-label="{itemType} item"
@@ -178,14 +177,14 @@
   {/if}
 
   {#if isLoading}
-    <div class="mx-auto px-4 max-w-7xl" transition:fade={{ duration: 200 ">
+    <div class="mx-auto px-4 max-w-7xl" transitifade={{ duration: 200 ">
       <div class="mx-auto px-4 max-w-7xl"></div>
       <p>Loading more {itemType}...</p>
     </div>
   {/if}
 
   {#if !hasMore && displayedItems.length > 0}
-    <div class="mx-auto px-4 max-w-7xl" transition:fade={{ duration: 200 ">
+    <div class="mx-auto px-4 max-w-7xl" transitifade={{ duration: 200 ">
       <p>No more {itemType} to load</p>
     </div>
   {/if}

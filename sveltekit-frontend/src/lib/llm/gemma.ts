@@ -16,7 +16,7 @@ export interface GemmaResponse {
 }
 
 export async function queryGemma(prompt: string, opts: GemmaOptions = {}): Promise<string> {
-  const API = process.env.GEMMA3_API_URL ?? 'http://localhost:11434';
+  const API = import.meta.env.GEMMA3_API_URL ?? 'http://localhost:11434';
   const model = opts.model ?? 'gemma3-legal';
   
   const body = {
@@ -53,7 +53,7 @@ export async function queryGemma(prompt: string, opts: GemmaOptions = {}): Promi
 
 // Stream response version (for future use)
 export async function* streamGemma(prompt: string, opts: GemmaOptions = {}): AsyncGenerator<string> {
-  const API = process.env.GEMMA3_API_URL ?? 'http://localhost:11434';
+  const API = import.meta.env.GEMMA3_API_URL ?? 'http://localhost:11434';
   const model = opts.model ?? 'gemma3-legal';
   
   const body = {

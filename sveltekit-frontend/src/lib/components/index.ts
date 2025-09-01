@@ -1,7 +1,7 @@
 /**
  * Master Component Barrel Export
  * Legal AI Platform - SvelteKit 2 + Svelte 5
- * 
+ *
  * Comprehensive component wiring and modularity for all UI components
  */
 
@@ -60,7 +60,7 @@ export * from './unified/index';
 
 // ===== BUSINESS LOGIC COMPONENTS =====
 
-// AI & Chat Components  
+// AI & Chat Components
 export { default as AIChat } from './AIChat.svelte';
 export { default as EnhancedLegalChat } from './EnhancedLegalChat.svelte';
 export { default as LLMAssistant } from './LLMAssistant.svelte';
@@ -121,7 +121,7 @@ export const COMPONENT_REGISTRY = {
 export const COMPONENT_CATEGORIES = [
   'ui',
   'business',
-  'layout', 
+  'layout',
   'ai',
   'legal',
   'realtime',

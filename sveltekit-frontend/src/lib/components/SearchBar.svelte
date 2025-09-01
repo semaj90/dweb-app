@@ -1,32 +1,39 @@
 <script lang="ts">
-
 	import { createEventDispatcher } from 'svelte';
-  import { $props } from 'svelte';
 	import SearchInput from './SearchInput.svelte';
 	
 	import { Filter, ArrowUpDown } from 'lucide-svelte';
 
-	let { placeholder = $bindable() } = $props(); // 'Search...';
-	let { value = $bindable() } = $props(); // '';
-	let { showFilters = $bindable() } = $props(); // true;
-	let { sortOptions = $bindable() } = $props(); // [
-		{ id: 'relevance', label: 'Relevance' },
-		{ id: 'date', label: 'Date' },
-		{ id: 'name', label: 'Name' },
-		{ id: 'type', label: 'Type' }
-	];
+	// Props using Svelte 5 syntax
+	let {
+		placeholder = 'Search...',
+		value = '',
+		showFilters = true,
+		sortOptions = [
+			{ id: 'relevance', label: 'Relevance' },
+			{ id: 'date', label: 'Date' },
+			{ id: 'name', label: 'Name' },
+			{ id: 'type', label: 'Type' }
+		]
+	}: {
+		placeholder?: string;
+		value?: string;
+		showFilters?: boolean;
+		sortOptions?: Array<{ id: string; label: string; }>;
+	} = $props();
 
 	const dispatch = createEventDispatcher();
 
-	let selectedSort = 'relevance';
-	let filtersOpen = false;
+	// State using Svelte 5 syntax
+	let selectedSort = $state('relevance');
+	let filtersOpen = $state(false);
 	
 	// Filter state
-	let selectedFileTypes: string[] = [];
-	let dateRange = {
+	let selectedFileTypes: string[] = $state([]);
+	let dateRange = $state({
 		from: '',
 		to: ''
-	};
+	});
 
 	function handleSearch(event: CustomEvent) {
 		dispatch('search', event.detail);
@@ -68,7 +75,7 @@
 	<SearchInput 
 		{placeholder}
 		{value}
-		on:search={handleSearch}
+		search={handleSearch}
 	/>
 
 	<!-- Controls -->
@@ -92,8 +99,8 @@
 			<!-- Filter Button -->
 			<button
 				class="container mx-auto px-4"
-				class:active={filtersOpen}
-				click={() => toggleFilters()}
+			 class:active={filtersOpen}
+				on:onclick={() => toggleFilters()}
 				aria-label="Toggle filters"
 				title="Filters"
 			>
@@ -173,7 +180,7 @@
 			<button 
 				type="button" 
 				class="container mx-auto px-4"
-				click={() => {
+				on:onclick={() => {
 					selectedFileTypes = [];
 					dateRange = { from: '', to: '' };
 					dispatchFilters();

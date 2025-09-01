@@ -385,7 +385,7 @@ export class AuthService {
 
 // Create singleton auth service
 export const authService = new AuthService();
-
+;
 // Initialize auth state when module loads
 if (browser) {
   authService.initialize();

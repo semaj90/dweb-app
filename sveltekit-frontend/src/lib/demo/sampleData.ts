@@ -659,7 +659,7 @@ Legal Review: Prosecutor Williams`,
 
 // Export singleton instance
 export const demoDataGenerator = new DemoDataGenerator();
-
+;
 // Export utility functions
 export function createTestEvidence(): string {
   return `POLICE INCIDENT REPORT - CASE DEMO-001

@@ -14,7 +14,7 @@ import { evidence, cases, legalDocuments } from "$lib/server/db/unified-schema";
 import { eq, sql, desc, asc, and } from "drizzle-orm";
 
 // Import sentence transformer for enhanced analysis
-import { legalNLP } from './sentence-transformer';
+import { legalNLP } from './sentence-transformer.js';
 
 export interface EmbeddingConfig {
   model: string;
@@ -113,7 +113,7 @@ class NomicEmbeddingService {
     try {
       // Initialize Ollama embeddings with CUDA optimization
       this.embeddings = new OllamaEmbeddings({
-        baseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
+        baseUrl: import.meta.env.OLLAMA_BASE_URL || 'http://localhost:11434',
         model: this.config.model,
         requestOptions: {
           numGpu: this.config.enableGpuAcceleration ? 1 : 0,

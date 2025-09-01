@@ -1,7 +1,8 @@
-import { and, eq, gte } from "drizzle-orm";
-// Modern server-managed session authentication utilities (no Lucia)
-import { db } from "$lib/server/db/index";
-import { sessions } from "./db/schema-postgres";
+import { and, eq, gte } from 'drizzle-orm';
+// Modern server-managed session authentication utilities (no external Lucia runtime)
+import { db } from '$lib/server/db';
+// sessions/users live in schema-postgres which are re-exported; import explicitly to avoid type issues
+import { sessions as sessionsTable, users as usersTable } from '$lib/server/db/unified-schema';
 import bcrypt from "bcryptjs";
 // Dynamic import for server-side crypto to prevent browser leakage
 // import { randomBytes } from "crypto";
@@ -42,43 +43,55 @@ export async function createUserSession(
 ): Promise<{ sessionId: string; expiresAt: Date }> {
   const sessionId = await generateId(40);
   const expiresAt = createDate({ days });
-  await db.insert(sessions).values({
+  await db.insert(sessionsTable).values({
     id: sessionId,
-    userId,
-    expiresAt,
-    ipAddress,
-    userAgent,
-    sessionContext: {},
+    user_id: userId,
+    expires_at: expiresAt,
+    ip_address: ipAddress,
+    user_agent: userAgent,
+    session_context: {},
   });
   return { sessionId, expiresAt };
 }
 
 export async function validateSession(sessionId: string): Promise<any> {
-  // Find the session in the database that is not expired, and join user
   const now = new Date();
-  const session = await db.query.sessions.findFirst({
-    where: and(eq(sessions.id, sessionId), gte(sessions.expiresAt, now)),
+  const session = await (db as any).query.sessions.findFirst({
+    where: and(eq((sessionsTable as any).id, sessionId), gte((sessionsTable as any).expires_at, now)),
     with: {
       user: {
         columns: {
           id: true,
           email: true,
-          firstName: true,
-          lastName: true,
+          first_name: true,
+          last_name: true,
           role: true,
         },
       },
     },
   });
-  return session && session.user ? { session, user: session.user } : { session: null, user: null };
+  if (session && session.user) {
+    const { user, ...rest } = session;
+    return {
+      session: rest,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        role: user.role,
+      },
+    };
+  }
+  return { session: null, user: null };
 }
 
 export async function invalidateSession(sessionId: string): Promise<void> {
-  await db.delete(sessions).where(eq(sessions.id, sessionId));
+  await db.delete(sessionsTable).where(eq((sessionsTable as any).id, sessionId));
 }
 
 export async function invalidateUserSessions(userId: string): Promise<void> {
-  await db.delete(sessions).where(eq(sessions.userId, userId));
+  await db.delete(sessionsTable).where(eq((sessionsTable as any).user_id, userId));
 }
 
 // --- Cookie Helper ---

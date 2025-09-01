@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 <!--
   Legal Document Processor Component
   Demonstrates XState integration with Svelte 5 for legal document processing
@@ -294,7 +295,7 @@
   <div class="flex items-center space-x-3">
     {#if !isProcessing && !isCompleted && document}
       <button
-        click={startProcessing}
+        on:onclick={startProcessing}
         class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
       >
         Start Processing
@@ -303,7 +304,7 @@
 
     {#if isProcessing}
       <button
-        click={cancelProcessing}
+        on:onclick={cancelProcessing}
         class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
       >
         Cancel
@@ -312,7 +313,7 @@
 
     {#if isFailed && $context.retryCount < $context.maxRetries}
       <button
-        click={retryProcessing}
+        on:onclick={retryProcessing}
         class="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-colors"
       >
         Retry ({$context.retryCount}/{$context.maxRetries})
@@ -321,7 +322,7 @@
 
     {#if isCompleted || isFailed}
       <button
-        click={() => {
+        on:onclick={() => {
           // Reset the machine to idle state
           send({ type: 'CANCEL' });
           // You might want to emit an event or call a callback here

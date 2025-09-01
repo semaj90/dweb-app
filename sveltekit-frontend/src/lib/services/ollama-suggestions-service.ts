@@ -418,7 +418,7 @@ Provide practical, implementable suggestions that would genuinely improve the le
 
 // Singleton instance for the application
 export const ollamaSuggestionsService = new OllamaSuggestionsService();
-
+;
 /**
  * Convenience function for generating suggestions
  */

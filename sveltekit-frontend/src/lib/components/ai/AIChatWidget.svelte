@@ -89,7 +89,7 @@
 
     try {
       // Prepare context for AI
-      let contextText = '';
+let contextText = $state('');
       if (context) {
         contextText = `Context: ${context.title}\n${context.description || ''}\n${context.fullText || ''}`;
       }
@@ -260,19 +260,19 @@
                           <Button
                             variant="ghost"
                             size="sm"
-                            on:click={() => copyToClipboard(message.content)}>
+                            on:on:click={() => copyToClipboard(message.content)}>
                             <Copy class="h-3 w-3" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="sm"
-                            on:click={() => provideFeedback(message.id, 'positive')}>
+                            on:on:click={() => provideFeedback(message.id, 'positive')}>
                             <ThumbsUp class="h-3 w-3" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="sm"
-                            on:click={() => provideFeedback(message.id, 'negative')}>
+                            on:on:click={() => provideFeedback(message.id, 'negative')}>
                             <ThumbsDown class="h-3 w-3" />
                           </Button>
                         </div>
@@ -289,7 +289,7 @@
                         variant="outline"
                         size="sm"
                         class="text-xs h-auto py-1 px-2"
-                        on:click={() => handleSuggestionClick(suggestion)}>
+                        on:on:click={() => handleSuggestionClick(suggestion)}>
                         {suggestion}
                       </Button>
                     {/each}
@@ -338,17 +338,17 @@
           bind:element={inputElement}
           bind:value={currentMessage}
           {placeholder}
-          on:keydown={handleKeydown}
+          keydown={handleKeydown}
           disabled={isLoading}
           class="flex-1" />
-        <Button on:click={sendMessage} disabled={isLoading || !currentMessage.trim()}>
+        <Button on:on:click={sendMessage} disabled={isLoading || !currentMessage.trim()}>
           {#if isLoading}
             <Loader2 class="h-4 w-4 animate-spin" />
           {:else}
             <Send class="h-4 w-4" />
           {/if}
         </Button>
-        <Button variant="outline" on:click={clearChat}>
+        <Button variant="outline" on:on:click={clearChat}>
           <X class="h-4 w-4" />
         </Button>
       </div>

@@ -34,10 +34,9 @@ export interface FinalResultEntry {
 }
 
 export const connectionStatus = writable<string>('disconnected');
-export const stages = writable<Record<string, StageStatus>>({}); // traceId -> stage status object
-export const finalResults = writable<FinalResultEntry[]>([]); // list of final LLM outputs
+export const stages = writable<Record<string, StageStatus>>({}); // traceId -> stage status object;
+export const finalResults = writable<FinalResultEntry[]>([]); // list of final LLM outputs;
 export const recentEvents = writable<any[]>([]); // rolling window (loosely typed)
-
 let ws: WebSocket | null = null;
 
 export function connectRealtime(url = 'ws://localhost:8080') {
@@ -46,9 +45,9 @@ export function connectRealtime(url = 'ws://localhost:8080') {
 	try {
 		ws = new WebSocket(url);
 		ws.onopen = () => connectionStatus.set('connected');
-		ws.onclose = () => { 
-			connectionStatus.set('disconnected'); 
-			setTimeout(() => connectRealtime(url), 3000); 
+		ws.onclose = () => {
+			connectionStatus.set('disconnected');
+			setTimeout(() => connectRealtime(url), 3000);
 		};
 		ws.onerror = () => connectionStatus.set('error');
 		ws.onmessage = (ev) => {
@@ -64,17 +63,17 @@ export function connectRealtime(url = 'ws://localhost:8080') {
 	}
 }
 
-export function disconnectRealtime() { 
-	if (ws) { 
-		ws.close(); 
-		ws = null; 
-	} 
+export function disconnectRealtime() {
+	if (ws) {
+		ws.close();
+		ws = null;
+	}
 }
 
 function pushRecent(evt: any) {
-	recentEvents.update(list => { 
-		const next = [evt, ...list]; 
-		return next.slice(0, 100); 
+	recentEvents.update(list => {
+		const next = [evt, ...list];
+		return next.slice(0, 100);
 	});
 }
 
@@ -83,18 +82,18 @@ function handleEvent(wrapper: any) {
 	const type = wrapper?.type;
 	const msg = wrapper?.msg || {};
 	pushRecent({ type, msg, at: Date.now() });
-	
+
 	if (type === 'ai.response') {
 		const { id, stage, final } = msg;
 		if (!id) return;
-		
+
 		stages.update(map => {
 			const next: Record<string, StageStatus> = { ...map };
 			const curr: StageStatus = next[id] || { id };
 			const now = Date.now();
-			
+
 			if (!curr.stageTimestamps) curr.stageTimestamps = {};
-			
+
 			if (stage) {
 				// Only record first time we see this stage to avoid double counting
 				if (!curr.stageTimestamps[stage as PipelineStage]) {
@@ -102,26 +101,26 @@ function handleEvent(wrapper: any) {
 					const order: PipelineStage[] = ['gpu', 'wasm', 'embedding', 'retrieval', 'llm', 'final'];
 					const idx = order.indexOf(stage as PipelineStage);
 					let refTime = curr.receivedAt || now;
-					
+
 					if (idx > 0) {
 						// find most recent earlier stage timestamp
 						for (let i = idx - 1; i >= 0; i--) {
 							const prevStage = order[i];
 							const ts = curr.stageTimestamps[prevStage];
-							if (ts) { 
-								refTime = ts; 
-								break; 
+							if (ts) {
+								refTime = ts;
+								break;
 							}
 						}
 					}
-					
+
 					(curr as any)[stage] = true;
 					curr.stageTimestamps[stage as PipelineStage] = now;
-					
+
 					if (refTime !== now) {
 						const delta = now - refTime;
-						try { 
-							recordStageLatency(stage as PipelineStage, delta); 
+						try {
+							recordStageLatency(stage as PipelineStage, delta);
 						} catch {
 							// Ignore latency recording errors
 						}
@@ -131,47 +130,47 @@ function handleEvent(wrapper: any) {
 					(curr as any)[stage] = true;
 				}
 			}
-			
-			if (final) { 
-				curr.final = true; 
-				curr.completedAt = Date.now(); 
+
+			if (final) {
+				curr.final = true;
+				curr.completedAt = Date.now();
 			}
-			
-			next[id] = curr; 
+
+			next[id] = curr;
 			return next;
 		});
-		
+
 		if (final) {
 			finalResults.update(arr => [
-				{ 
-					id, 
-					llmResult: msg.llmResult, 
-					context: msg.context, 
-					ts: Date.now() 
-				}, 
+				{
+					id,
+					llmResult: msg.llmResult,
+					context: msg.context,
+					ts: Date.now()
+				},
 				...arr
 			].slice(0, 50));
 		}
-	} else if (type === 'evidence.upload') { 
+	} else if (type === 'evidence.upload') {
 		// seed initial trace
 		const id = msg?.traceId;
-		if (id) { 
-			stages.update(map => { 
-				const next: Record<string, StageStatus> = { ...map }; 
+		if (id) {
+			stages.update(map => {
+				const next: Record<string, StageStatus> = { ...map };
 				if (!next[id]) {
-					next[id] = { id, receivedAt: Date.now() }; 
+					next[id] = { id, receivedAt: Date.now() };
 				}
-				return next; 
-			}); 
+				return next;
+			});
 		}
 	}
 }
 
-export const activePipelines = derived(stages, ($s) => 
+export const activePipelines = derived(stages, ($s) =>
 	Object.values($s as Record<string, StageStatus>).filter(v => !v.final)
 );
 
-export const completedPipelines = derived(stages, ($s) => 
+export const completedPipelines = derived(stages, ($s) =>
 	Object.values($s as Record<string, StageStatus>)
 		.filter(v => v.final)
 		.sort((a, b) => ((b.completedAt || 0) - (a.completedAt || 0)))

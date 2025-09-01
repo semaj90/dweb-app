@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * Unified Document Processing API
@@ -6,6 +6,7 @@ import type { RequestHandler } from './$types';
  */
 
 import { unifiedDocumentProcessor, type DocumentProcessingConfig } from "$lib/services/unified-document-processor.js";
+import { URL } from "url";
 
 export const POST: RequestHandler = async ({ request }) => {
   try {

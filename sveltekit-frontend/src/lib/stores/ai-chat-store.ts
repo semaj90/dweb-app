@@ -75,14 +75,14 @@ const initialState: ChatState = {
 
 // Main chat store
 export const chatStore = writable<ChatState>(initialState);
-
+;
 // Derived stores for easy access
 export const currentSession = derived(chatStore, $state => $state.currentSession);
 export const allSessions = derived(chatStore, $state => $state.sessions);
 export const userPreferences = derived(chatStore, $state => $state.preferences);
 export const isLoading = derived(chatStore, $state => $state.isLoading);
 export const connectionStatus = derived(chatStore, $state => $state.connectionStatus);
-
+;
 // Storage keys
 const STORAGE_KEYS = {
   SESSIONS: 'yorha-ai-chat-sessions',
@@ -452,7 +452,7 @@ class AIChatStore {
 
 // Export singleton instance
 export const aiChatStore = new AIChatStore();
-
+;
 // Export convenience functions
 export const {
   createNewSession,

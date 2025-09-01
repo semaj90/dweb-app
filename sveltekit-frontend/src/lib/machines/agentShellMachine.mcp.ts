@@ -56,8 +56,8 @@ type AgentShellEvent =
 export const agentShellMachineMCP = createMachine({
   id: "agentShellMCP",
   initial: "idle",
-  context: { 
-    input: "", 
+  context: {
+    input: "",
     response: "",
     mcpResults: {},
     serviceHealth: {
@@ -440,14 +440,14 @@ export const agentShellServicesMCP = {
     try {
       // First, gather relevant context using MCP tools
       let contextData = {};
-      
+
       if (caseId) {
         // Load case data and related evidence
         const caseResult = await mcpTools.cases.loadCases({ userId, limit: 1, offset: 0 });
         if (caseResult.success && caseResult.data) {
           contextData = { ...contextData, currentCase: caseResult.data[0] };
         }
-        
+
         const evidenceResult = await mcpTools.evidence.loadEvidence({ caseId, limit: 10 });
         if (evidenceResult.success && evidenceResult.data) {
           contextData = { ...contextData, evidence: evidenceResult.data };
@@ -482,17 +482,17 @@ export const agentShellServicesMCP = {
 
       if (caseId) {
         // Search for similar evidence in current case
-        promises.push(mcpTools.evidence.loadEvidence({ 
-          caseId, 
-          query, 
-          limit: 5 
+        promises.push(mcpTools.evidence.loadEvidence({
+          caseId,
+          query,
+          limit: 5
         }));
       } else {
         // Search across all user cases
-        promises.push(mcpTools.cases.loadCases({ 
-          userId, 
-          query, 
-          limit: 5 
+        promises.push(mcpTools.cases.loadCases({
+          userId,
+          query,
+          limit: 5
         }));
       }
 

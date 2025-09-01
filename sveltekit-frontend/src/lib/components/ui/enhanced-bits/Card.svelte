@@ -62,7 +62,7 @@
   }: CardProps = $props();
 
   // Reactive card classes using $derived
-  const cardClasses = $derived(cn(
+  let cardClasses = $derived(cn(
     'shadcn-card',
     {
       'yorha-card-elevated shadow-lg': variant === 'elevated',
@@ -116,7 +116,7 @@
   class={cardClasses}
   role={clickable ? 'button' : undefined}
   tabindex={clickable ? 0 : undefined}
-  click={handleClick}
+  on:onclick={handleClick}
   keydown={handleKeydown}
   data-evidence-card={evidenceCard}
   data-case-card={caseCard}

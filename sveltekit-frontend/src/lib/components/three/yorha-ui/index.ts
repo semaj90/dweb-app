@@ -281,7 +281,7 @@ export const YoRHaQuickSetup = {
 
 // Version information
 export const YORHA_UI_VERSION = '1.0.0';
-
+;
 /**
  * Main initialization function for the YoRHa UI system
  */

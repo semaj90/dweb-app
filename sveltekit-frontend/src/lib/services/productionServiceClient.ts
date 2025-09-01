@@ -355,7 +355,7 @@ export class ProductionServiceClient {
 
 // Singleton instance
 export const productionServiceClient = new ProductionServiceClient();
-
+;
 // Convenience functions for common operations
 export const services = {
   async queryRAG(query: string, context?: unknown) {

@@ -2,7 +2,7 @@
 
   import type { HTMLFormAttributes } from "svelte/elements";
   import { $props, $derived } from 'svelte';
-  import type { Snippet } from "svelte";
+  import type {     Snippet     } from 'svelte';
   import { enhance } from "$app/forms";
   import type { SubmitFunction } from "@sveltejs/kit";
 
@@ -76,7 +76,7 @@
   };
 
   // Global form error display
-  const hasErrors = $derived(Object.keys(validationErrors).length > 0);
+  let hasErrors = $derived(Object.keys(validationErrors).length > 0);
 </script>
 
 <form 

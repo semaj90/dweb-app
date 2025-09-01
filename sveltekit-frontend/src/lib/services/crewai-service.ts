@@ -606,7 +606,7 @@ export class CrewAIService {
 
 // Singleton instance
 export const crewAIService = new CrewAIService();
-
+;
 // Helper functions for common legal workflows
 export async function analyzeLegalCaseWithCrew(
   caseDescription: string,

@@ -63,12 +63,12 @@ Furthermore, the doctrine of mitigation requires that the injured party take rea
   });
 
   // Monitor service status
-  let statusInterval: NodeJS.Timeout;
+let statusInterval = $state<NodeJS.Timeout;
   
-  onMount(() => {
+  onMount(() >(> {
     // Check service status periodically
     statusInterval = setInterval(() => {
-      serviceStatus.initialized = inlineSuggestionService.isReady();
+      serviceStatus.initialized = inlineSuggestionService.isReady());
       // Additional status checks would go here
     }, 2000);
 
@@ -183,7 +183,7 @@ Furthermore, the doctrine of mitigation requires that the injured party take rea
                 <Button
                   variant="outline"
                   size="sm"
-                  on:click={() => loadScenario(scenario)}
+                  on:on:click={() => loadScenario(scenario)}
                   class="justify-start text-left"
                 >
                   {scenario.title}
@@ -201,7 +201,7 @@ Furthermore, the doctrine of mitigation requires that the injured party take rea
                 <CardTitle>AI-Enhanced Legal Editor</CardTitle>
                 <CardDescription>Start typing to see intelligent suggestions appear</CardDescription>
               </div>
-              <Button on:click={resetDemo} variant="outline" size="sm">
+              <Button on:on:click={resetDemo} variant="outline" size="sm">
                 Reset Demo
               </Button>
             </div>
@@ -218,7 +218,7 @@ Furthermore, the doctrine of mitigation requires that the injured party take rea
               suggestiondelay={serviceOptions.suggestionDelay}
               maxSuggestions={serviceOptions.maxSuggestions}
               class="w-full"
-              on:suggestionaccepted={handleSuggestionAccepted}
+              suggestionaccepted={handleSuggestionAccepted}
             />
           </CardContent>
         </Card>

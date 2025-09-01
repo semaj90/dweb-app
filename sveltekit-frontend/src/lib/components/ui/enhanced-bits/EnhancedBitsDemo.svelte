@@ -98,7 +98,7 @@
     );
   }
 
-  const demoSections = $derived([
+  let demoSections = $derived([
     { id: 'buttons', label: 'Enhanced Buttons', icon: FileText },
     { id: 'inputs', label: 'Smart Inputs', icon: Search },
     { id: 'dialogs', label: 'Legal Dialogs', icon: Scale },
@@ -123,7 +123,7 @@
       {#each demoSections as section (section.id)}
         <button
           class={tabClasses(section.id)}
-          click={() => currentTab = section.id}
+          on:onclick={() => currentTab = section.id}
         >
           <div class="flex items-center gap-2">
             <section.icon class="w-4 h-4" />
@@ -288,15 +288,15 @@
         </p>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <Button variant="yorha" legal on:click={() => dialogOpen = true}>
+          <Button variant="yorha" legal on:on:click={() => dialogOpen = true}>
             Case Management
           </Button>
           
-          <Button variant="primary" legal on:click={() => evidenceDialogOpen = true}>
+          <Button variant="primary" legal on:on:click={() => evidenceDialogOpen = true}>
             Evidence Upload
           </Button>
           
-          <Button variant="outline" legal on:click={runAIAnalysis} loading={aiAnalysisLoading}>
+          <Button variant="outline" legal on:on:click={runAIAnalysis} loading={aiAnalysisLoading}>
             {#if aiAnalysisLoading}
               Running AI Analysis...
             {:else}
@@ -307,7 +307,7 @@
 
         <!-- Case Management Dialog -->
         <Dialog
-          open={dialogOpen} on:openchange={(open) => dialogOpen = open}
+          open={dialogOpen} openchange={(open) => dialogOpen = open}
           size="lg"
           legal
           caseManagement
@@ -361,7 +361,7 @@
               </div>
               
               <div class="bits-dialog-footer">
-                <Button variant="outline" on:click={() => dialogOpen = false}>
+                <Button variant="outline" on:on:click={() => dialogOpen = false}>
                   Cancel
                 </Button>
                 <Button variant="primary" legal>
@@ -374,7 +374,7 @@
 
         <!-- Evidence Upload Dialog -->
         <Dialog
-          open={evidenceDialogOpen} on:openchange={(open) => evidenceDialogOpen = open}
+          open={evidenceDialogOpen} openchange={(open) => evidenceDialogOpen = open}
           size="md"
           legal
           evidenceAnalysis
@@ -418,10 +418,10 @@
               </div>
               
               <div class="bits-dialog-footer">
-                <Button variant="outline" on:click={() => evidenceDialogOpen = false}>
+                <Button variant="outline" on:on:click={() => evidenceDialogOpen = false}>
                   Cancel
                 </Button>
-                <Button variant="primary" legal on:click={uploadEvidence} disabled={evidenceUploadProgress > 0}>
+                <Button variant="primary" legal on:on:click={uploadEvidence} disabled={evidenceUploadProgress > 0}>
                   Upload Evidence
                 </Button>
               </div>
@@ -449,7 +449,7 @@
               priority={item.priority}
               confidence={item.confidence}
               selected={selectedEvidenceCard === item.id}
-              on:click={() => selectEvidenceCard(item.id)}
+              on:on:click={() => selectEvidenceCard(item.id)}
             >
               <div class="space-y-3">
                 <div class="flex items-start justify-between">

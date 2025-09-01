@@ -173,7 +173,7 @@ export const casesJsonb = pgTable('cases_jsonb', {
   totalEvidence: integer('total_evidence').default(0),
   
   createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
 });
 
 export const evidenceJsonb = pgTable('evidence_jsonb', {
@@ -199,7 +199,7 @@ export const evidenceJsonb = pgTable('evidence_jsonb', {
   relevanceScore: real('relevance_score').generatedAlwaysAs(sql`((metadata->'relevance'->>'score')::real)`),
   
   createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
 });
 
 // Semantic relationships between documents
@@ -214,7 +214,7 @@ export const documentRelationshipsJsonb = pgTable('document_relationships_jsonb'
   relationshipType: text('relationship_type').generatedAlwaysAs(sql`(relationship_metadata->>'type')`),
   strength: real('strength').generatedAlwaysAs(sql`((relationship_metadata->>'strength')::real)`),
   
-  createdAt: timestamp('created_at').defaultNow().notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull()
 });
 
 // ============================================================================

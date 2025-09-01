@@ -3,7 +3,7 @@
   import LegalDocumentEditor from "$lib/components/editor/LegalDocumentEditor.svelte";
 
   let documentId = $state("doc-1"); // Use sample document ID
-  let caseId = "case-123";
+let caseId = $state("case-123");
   let selectedDocumentType: "brief" | "contract" | "motion" | "evidence" =
     $state("brief");
   let editorTitle = $state("Criminal Case Brief Demo");
@@ -67,7 +67,7 @@
 
           <!-- New Document Button -->
           <button
-            click={() => createNewDocument()}
+            on:onclick={() => createNewDocument()}
             class="space-y-4"
           >
             New Document
@@ -94,9 +94,9 @@
     documentType={selectedDocumentType}
     title={editorTitle}
     readonly={isReadonly}
-    on:save={handleSave}
-    on:airequest={handleAIRequest}
-    on:citationadded={handleCitationAdded}
+    save={handleSave}
+    airequest={handleAIRequest}
+    citationadded={handleCitationAdded}
   />
 </div>
 

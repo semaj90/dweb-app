@@ -8,14 +8,31 @@
 
 // SvelteKit 2 Polyfills - Import first to ensure module availability
 import './polyfills.js';
-import { barrelStore } from './stores/barrel-functions';
+import { barrelStore } from './stores/barrel-functions.js';
 
 // Enhanced Type Definitions - Import to register module augmentations
 import './types/drizzle-enhanced.js';
 import './types/lokijs-enhanced.js';
+import path from "path";
+
+// ===== CENTRALIZED TYPES (SINGLE SOURCE OF TRUTH) =====
+export * from './types/index';
+
+// ===== TYPE GUARDS & UTILITIES =====
+export * from './utils/type-guards';
+
+// ===== ENHANCED API CLIENT =====
+export { 
+  EnhancedApiClient, 
+  apiClient as enhancedApiClient 
+} from './services/enhanced-api-client';
 
 // ===== ALL COMPONENTS (COMPREHENSIVE BARREL EXPORT) =====
 export * from './components/index';
+
+// ===== FILE UPLOAD SERVICES =====
+export { localStorageFiles } from './services/localStorage-file-fallback.js';
+export { enhancedFileUpload } from './services/enhanced-file-upload.js';
 
 // ===== UTILITIES & TYPES =====
 export { 

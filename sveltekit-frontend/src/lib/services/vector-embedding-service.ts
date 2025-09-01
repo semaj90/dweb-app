@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 
 import { Redis } from "ioredis";
 import type { OCRResult } from "../types/ocr";
@@ -670,3 +671,4 @@ export class EnhancedVectorEmbeddingService {
 
 // Export singleton instance
 export const vectorEmbeddingService = new EnhancedVectorEmbeddingService();
+;

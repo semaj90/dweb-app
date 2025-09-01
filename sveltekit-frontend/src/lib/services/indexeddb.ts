@@ -368,6 +368,6 @@ class IndexedDBService {
 }
 // Export singleton instance
 export const indexedDBService = new IndexedDBService();
-
+;
 // Export types for use in components
 export type { CachedDocument, SearchResult, UserInteraction };

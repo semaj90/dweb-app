@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 // Comprehensive AI Mix Summaries API - End-to-End Integration
 // Combines: Local LLM + Enhanced RAG + User Activity (simulated) + Fuse.js + XState Synthesis
@@ -14,6 +14,7 @@ import Fuse from "fuse.js";
 import { interpret } from "xstate";
 import { aiSummaryMachine } from "$lib/machines/aiSummaryMachine";
 import { ollamaService } from "$lib/server/services/ollama-service"; // Assumed service providing generateResponse
+import { URL } from "url";
 
 // Request payload for summary generation
 export interface SummaryRequest {

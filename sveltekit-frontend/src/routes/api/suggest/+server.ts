@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 // "Did You Mean?" Suggestions API - SSR compatible with fuzzy search
 import { json, error } from '@sveltejs/kit';
@@ -7,6 +7,7 @@ import { db } from '$lib/server/db/index.js';
 import { users, cases, evidence } from '$lib/server/db/schema-unified.js';
 import { generateEnhancedEmbedding } from '$lib/server/ai/embeddings-enhanced.js';
 import { or, ilike, sql } from 'drizzle-orm';
+import { URL } from "url";
 
 export interface Suggestion {
   label: string;

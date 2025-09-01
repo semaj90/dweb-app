@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { Server } from 'socket.io';
 import { dev } from "$app/environment";
 import Redis from 'ioredis';
@@ -43,7 +44,7 @@ function initializeWebSocket() {
     socket.on('join-upload', (uploadId: string) => {
       socket.join(`upload-${uploadId}`);
       console.log(`📤 Client ${socket.id} joined upload room: ${uploadId}`);
-      
+
       // Send current progress if available
       getCurrentProgress(uploadId).then(progress => {
         if (progress) {
@@ -104,15 +105,15 @@ function setupRedisSubscriptions() {
   if (!redis || !io) return;
 
   // Subscribe to job progress updates
-  redis!.psubscribe('progress:*', 'result:*', 'error:*');
+  redis.psubscribe('progress:*', 'result:*', 'error:*');
 
-  redis!.on('pmessage', (pattern, channel, message) => {
+  redis.on('pmessage', (pattern, channel, message) => {
     try {
       const data = JSON.parse(message);
-      
+
       if (channel.startsWith('progress:')) {
         const uploadId = channel.split(':')[1];
-        
+
         // Emit progress to specific upload room
         io?.to(`upload-${uploadId}`).emit('upload-progress', {
           uploadId,
@@ -132,7 +133,7 @@ function setupRedisSubscriptions() {
 
       if (channel.startsWith('result:')) {
         const jobId = channel.split(':')[1];
-        
+
         // Emit results to tensor processing rooms
         io?.to(`tensor-${jobId}`).emit('tensor-result', {
           jobId,
@@ -143,7 +144,7 @@ function setupRedisSubscriptions() {
 
       if (channel.startsWith('error:')) {
         const uploadId = channel.split(':')[1];
-        
+
         // Emit errors to relevant rooms
         io?.to(`upload-${uploadId}`).emit('upload-error', {
           uploadId,
@@ -159,7 +160,7 @@ function setupRedisSubscriptions() {
 }
 
 // Track user attention for AI context switching
-async function trackUserAttention(socketId: string, data: any): Promise<any> {
+async function trackUserAttention(socketId: string, data: any): Promise<void> {
   if (!redis) return;
 
   const attentionEvent = {
@@ -169,7 +170,7 @@ async function trackUserAttention(socketId: string, data: any): Promise<any> {
   };
 
   // Store in Redis with expiration (1 hour)
-  await redis!.setex(
+  await redis.setex(
     `attention:${socketId}:${Date.now()}`,
     3600,
     JSON.stringify(attentionEvent)
@@ -182,7 +183,7 @@ async function trackUserAttention(socketId: string, data: any): Promise<any> {
 }
 
 // Trigger AI context switching based on user attention
-async function triggerAIContextSwitching(socketId: string, query: string): Promise<any> {
+async function triggerAIContextSwitching(socketId: string, query: string): Promise<void> {
   try {
     // Analyze query for legal context
     const contextResponse = await fetch('http://localhost:8080/api/context/analyze', {
@@ -197,7 +198,7 @@ async function triggerAIContextSwitching(socketId: string, query: string): Promi
 
     if (contextResponse.ok) {
       const context = await contextResponse.json();
-      
+
       // Emit context suggestions to client
       io?.to(socketId).emit('ai-context-suggestion', {
         query,
@@ -226,8 +227,8 @@ async function getCurrentProgress(uploadId: string): Promise<any> {
 
 // Broadcast progress update to specific rooms
 export function broadcastProgress(
-  uploadId: string, 
-  caseId: string, 
+  uploadId: string,
+  caseId: string,
   progress: any
 ) {
   if (!io) return;
@@ -241,7 +242,7 @@ export function broadcastProgress(
 
   // Emit to upload-specific room
   io.to(`upload-${uploadId}`).emit('upload-progress', progressData);
-  
+
   // Emit to case-specific room
   io.to(`case-${caseId}`).emit('case-progress', progressData);
 }
@@ -271,7 +272,7 @@ export function broadcastSearchResults(searchId: string, results: any) {
 // HTTP handler for WebSocket endpoint
 export const GET: RequestHandler = async ({ url }) => {
   const server = initializeWebSocket();
-  
+
   // Return WebSocket connection info
   return new Response(JSON.stringify({
     status: 'WebSocket server running',
@@ -295,7 +296,7 @@ export function closeWebSocket() {
     io = null;
   }
   if (redis) {
-    redis!.disconnect();
+    redis.disconnect();
     redis = null;
   }
 }

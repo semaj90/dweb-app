@@ -1,9 +1,9 @@
 /**
  * Enhanced Error Handler Store for Legal AI Platform
- * 
+ *
  * Comprehensive error handling and monitoring system with legal-specific
  * error management, audit trails, and compliance reporting.
- * 
+ *
  * Features:
  * - Legal document error tracking
  * - Compliance violation monitoring
@@ -13,7 +13,7 @@
  * - Court filing error management
  * - Case management error handling
  * - Performance and audit analytics
- * 
+ *
  * @author Legal AI Platform Team
  * @version 2.1.0
  * @lastModified 2025-01-20
@@ -91,20 +91,20 @@ export interface ComplianceViolation {
 }
 
 export type ErrorSeverity = 'info' | 'warning' | 'error' | 'critical' | 'security' | 'compliance';
-export type ErrorCategory = 
-  | 'network' 
-  | 'authentication' 
-  | 'authorization' 
-  | 'validation' 
-  | 'file_upload' 
-  | 'legal_document' 
-  | 'evidence_handling' 
-  | 'case_management' 
-  | 'compliance' 
-  | 'security' 
-  | 'chain_of_custody' 
-  | 'privilege_protection' 
-  | 'court_filing' 
+export type ErrorCategory =
+  | 'network'
+  | 'authentication'
+  | 'authorization'
+  | 'validation'
+  | 'file_upload'
+  | 'legal_document'
+  | 'evidence_handling'
+  | 'case_management'
+  | 'compliance'
+  | 'security'
+  | 'chain_of_custody'
+  | 'privilege_protection'
+  | 'court_filing'
   | 'client_communication'
   | 'database'
   | 'ai_processing'
@@ -203,24 +203,24 @@ class EnhancedErrorHandler {
     legalContext?: LegalErrorContext
   ): UserFriendlyError {
     const errorDetails = this.parseError(error, context, legalContext);
-    
+
     // Add to history
     this.addToHistory(errorDetails);
-    
+
     // Create user-friendly error
     const userError = this.createUserFriendlyError(errorDetails, retryFn);
     this.errorStore.set(userError);
-    
+
     // Handle compliance monitoring
     this.checkComplianceViolations(errorDetails);
-    
+
     // Log and notify
     this.logError(errorDetails);
     this.triggerNotifications(userError, errorDetails);
-    
+
     // Update statistics
     this.updateStats();
-    
+
     return userError;
   }
 
@@ -298,7 +298,7 @@ class EnhancedErrorHandler {
 
     // Immediate compliance alert
     this.triggerComplianceAlert(errorDetails);
-    
+
     return userError;
   }
 
@@ -352,7 +352,7 @@ class EnhancedErrorHandler {
 
     // Emergency privilege violation protocol
     this.triggerPrivilegeViolationProtocol(errorDetails);
-    
+
     return userError;
   }
 
@@ -555,7 +555,7 @@ class EnhancedErrorHandler {
   exportErrorReport(filter?: ErrorFilter): string {
     const errors = filter ? this.getFilteredErrors(filter) : get(this.errorHistory);
     const stats = this.getErrorStats();
-    
+
     const report = {
       generated: new Date().toISOString(),
       stats,
@@ -772,7 +772,7 @@ class EnhancedErrorHandler {
 
       // Count by legal context
       if (error.legalContext?.case_type) {
-        stats.byLegalContext[error.legalContext.case_type] = 
+        stats.byLegalContext[error.legalContext.case_type] =
           (stats.byLegalContext[error.legalContext.case_type] || 0) + 1;
       }
 
@@ -875,7 +875,7 @@ class EnhancedErrorHandler {
     if (compliance) {
       guidance += `Compliance Violation: ${compliance.regulation}. `;
       guidance += `Required actions: ${compliance.required_actions.join(', ')}. `;
-      
+
       if (compliance.notification_required) {
         guidance += `Notification required within ${compliance.notification_timeline}. `;
       }
@@ -938,7 +938,7 @@ class EnhancedErrorHandler {
   private checkComplianceViolations(errorDetails: ErrorDetails): void {
     const settings = get(this.notificationSettings);
     const isMonitoring = get(this.complianceMonitoring);
-    
+
     if (!isMonitoring || !settings.complianceAlerts) return;
 
     if (errorDetails.compliance || errorDetails.chain_of_custody_error || errorDetails.privileged_content_exposed) {
@@ -948,14 +948,14 @@ class EnhancedErrorHandler {
 
   private triggerNotifications(userError: UserFriendlyError, errorDetails: ErrorDetails): void {
     const settings = get(this.notificationSettings);
-    
+
     if (!settings.enableNotifications) return;
 
     // Check severity threshold
     const severityLevels = ['info', 'warning', 'error', 'critical', 'security', 'compliance'];
     const errorSeverityIndex = severityLevels.indexOf(errorDetails.severity);
     const thresholdIndex = severityLevels.indexOf(settings.severityThreshold);
-    
+
     if (errorSeverityIndex < thresholdIndex) return;
 
     // Trigger appropriate notifications
@@ -1044,15 +1044,15 @@ class EnhancedErrorHandler {
 
       // Legal context filters
       if (filter.legalContext) {
-        if (filter.legalContext.case_type && 
+        if (filter.legalContext.case_type &&
             !filter.legalContext.case_type.includes(error.legalContext?.case_type || '')) {
           return false;
         }
-        if (filter.legalContext.confidentiality_level && 
+        if (filter.legalContext.confidentiality_level &&
             !filter.legalContext.confidentiality_level.includes(error.legalContext?.confidentiality_level || '')) {
           return false;
         }
-        if (filter.legalContext.jurisdiction && 
+        if (filter.legalContext.jurisdiction &&
             !filter.legalContext.jurisdiction.includes(error.legalContext?.jurisdiction || '')) {
           return false;
         }
@@ -1104,7 +1104,7 @@ class EnhancedErrorHandler {
       const history = get(this.errorHistory);
       const retentionDate = new Date();
       retentionDate.setDate(retentionDate.getDate() - settings.retentionDays);
-      
+
       const filteredHistory = history.filter(error => error.timestamp >= retentionDate);
       localStorage.setItem('legal-ai-error-history', JSON.stringify(filteredHistory));
     } catch (e: any) {
@@ -1125,8 +1125,8 @@ class EnhancedErrorHandler {
       const settings = get(this.notificationSettings);
       const retentionDate = new Date();
       retentionDate.setDate(retentionDate.getDate() - settings.retentionDays);
-      
-      this.errorHistory.update(history => 
+
+      this.errorHistory.update(history =>
         history.filter(error => error.timestamp >= retentionDate)
       );
       this.updateStats();
@@ -1156,7 +1156,6 @@ class EnhancedErrorHandler {
 // ===== SINGLETON INSTANCE =====
 
 export const enhancedErrorHandler = new EnhancedErrorHandler();
-
 // ===== CONVENIENCE FUNCTIONS =====
 
 export function handleError(
@@ -1268,43 +1267,30 @@ export function setErrorNotificationSettings(settings: Partial<ErrorNotification
 export const currentError = enhancedErrorHandler;
 export const errorHistory = enhancedErrorHandler;
 export const errorStats = enhancedErrorHandler;
-
 // ===== DERIVED STORES =====
 
-export const criticalErrors = derived(
-  [enhancedErrorHandler.subscribeHistory],
-  ([history]) => history.filter(error => 
-    error.severity === 'critical' || 
-    error.compliance || 
-    error.chain_of_custody_error || 
+// Use underlying readable stores instead of subscribe methods
+const _historyStore = (enhancedErrorHandler as any).errorHistory as import('svelte/store').Readable<ErrorDetails[]>;
+const _statsStore = (enhancedErrorHandler as any).errorStats as import('svelte/store').Readable<ErrorStats>;
+
+export const criticalErrors = derived(_historyStore, (history) =>
+  history.filter(error =>
+    error.severity === 'critical' ||
+    error.compliance ||
+    error.chain_of_custody_error ||
     error.privileged_content_exposed
   )
 );
 
-export const complianceViolations = derived(
-  [enhancedErrorHandler.subscribeHistory],
-  ([history]) => history.filter(error => !!error.compliance)
-);
+export const complianceViolations = derived(_historyStore, (history) => history.filter(error => !!error.compliance));
 
-export const chainOfCustodyErrors = derived(
-  [enhancedErrorHandler.subscribeHistory],
-  ([history]) => history.filter(error => error.chain_of_custody_error)
-);
+export const chainOfCustodyErrors = derived(_historyStore, (history) => history.filter(error => error.chain_of_custody_error));
 
-export const privilegeViolations = derived(
-  [enhancedErrorHandler.subscribeHistory],
-  ([history]) => history.filter(error => error.privileged_content_exposed)
-);
+export const privilegeViolations = derived(_historyStore, (history) => history.filter(error => error.privileged_content_exposed));
 
-export const recentErrors = derived(
-  [enhancedErrorHandler.subscribeHistory],
-  ([history]) => {
-    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    return history.filter(error => error.timestamp >= oneDayAgo);
-  }
-);
+export const recentErrors = derived(_historyStore, (history) => {
+  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  return history.filter(error => error.timestamp >= oneDayAgo);
+});
 
-export const errorTrends = derived(
-  [enhancedErrorHandler.subscribeStats],
-  ([stats]) => stats.trends
-);
+export const errorTrends = derived(_statsStore, (stats) => stats.trends);

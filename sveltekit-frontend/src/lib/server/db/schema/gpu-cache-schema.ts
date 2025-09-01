@@ -69,7 +69,7 @@ export const shaderCacheEntries = pgTable("shader_cache_entries", {
   // Audit fields
   createdBy: uuid("created_by"), // references users.id
   createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull()
 }, (table) => ({
   // Indexes for performance
   cacheKeyIdx: index("shader_cache_key_idx").on(table.cacheKey),
@@ -84,7 +84,7 @@ export const shaderCacheEntries = pgTable("shader_cache_entries", {
   embeddingIdx: index("shader_embedding_hnsw_idx").using("hnsw", table.embedding).with({ 
     m: 16, 
     ef_construction: 64 
-  }),
+  })
 }));
 
 // User shader access patterns for reinforcement learning
@@ -117,7 +117,7 @@ export const shaderUserPatterns = pgTable("shader_user_patterns", {
   prediction: jsonb("prediction").default("{}"), // ML model prediction data
   actualOutcome: jsonb("actual_outcome").default("{}"), // actual user behavior for training
   
-  metadata: jsonb("metadata").default("{}"),
+  metadata: jsonb("metadata").default("{}")
 }, (table) => ({
   // Indexes for ML queries
   userIdIdx: index("user_patterns_user_id_idx").on(table.userId),
@@ -128,7 +128,7 @@ export const shaderUserPatterns = pgTable("shader_user_patterns", {
   rewardIdx: index("reward_idx").on(table.reward),
   
   // Composite index for workflow prediction
-  workflowPredictionIdx: index("workflow_prediction_idx").on(table.userId, table.workflowStep, table.accessTimestamp),
+  workflowPredictionIdx: index("workflow_prediction_idx").on(table.userId, table.workflowStep, table.accessTimestamp)
 }));
 
 // Shader dependency graph for optimization
@@ -145,14 +145,14 @@ export const shaderDependencies = pgTable("shader_dependencies", {
   parallelizable: boolean("parallelizable").default(true),
   
   createdAt: timestamp("created_at").defaultNow().notNull(),
-  metadata: jsonb("metadata").default("{}"),
+  metadata: jsonb("metadata").default("{}")
 }, (table) => ({
   // Unique constraint and indexes
   uniqueDependency: primaryKey({ columns: [table.parentShaderCacheId, table.dependentShaderCacheId] }),
   parentIdx: index("parent_shader_idx").on(table.parentShaderCacheId),
   dependentIdx: index("dependent_shader_idx").on(table.dependentShaderCacheId),
   dependencyTypeIdx: index("dependency_type_idx").on(table.dependencyType),
-  priorityIdx: index("load_order_priority_idx").on(table.loadOrderPriority),
+  priorityIdx: index("load_order_priority_idx").on(table.loadOrderPriority)
 }));
 
 // Predictive preload cache for reinforcement learning
@@ -185,7 +185,7 @@ export const shaderPreloadQueue = pgTable("shader_preload_queue", {
   usedAtTimestamp: timestamp("used_at_timestamp"),
   actualDelay: integer("actual_delay"), // ms between preload and actual use
   
-  metadata: jsonb("metadata").default("{}"),
+  metadata: jsonb("metadata").default("{}")
 }, (table) => ({
   userIdIdx: index("preload_user_id_idx").on(table.userId),
   shaderCacheIdIdx: index("preload_shader_id_idx").on(table.shaderCacheId),
@@ -196,7 +196,7 @@ export const shaderPreloadQueue = pgTable("shader_preload_queue", {
   
   // Composite indexes for queue processing
   queueProcessingIdx: index("queue_processing_idx").on(table.status, table.scheduledFor, table.preloadPriority),
-  accuracyTrackingIdx: index("accuracy_tracking_idx").on(table.wasUsed, table.predictionModel),
+  accuracyTrackingIdx: index("accuracy_tracking_idx").on(table.wasUsed, table.predictionModel)
 }));
 
 // Shader performance metrics for monitoring
@@ -225,7 +225,7 @@ export const shaderPerformanceMetrics = pgTable("shader_performance_metrics", {
   renderContext: jsonb("render_context").default("{}"), // resolution, complexity settings
   
   recordedAt: timestamp("recorded_at").defaultNow().notNull(),
-  metadata: jsonb("metadata").default("{}"),
+  metadata: jsonb("metadata").default("{}")
 }, (table) => ({
   shaderCacheIdIdx: index("perf_shader_id_idx").on(table.shaderCacheId),
   userIdIdx: index("perf_user_id_idx").on(table.userId),
@@ -234,7 +234,7 @@ export const shaderPerformanceMetrics = pgTable("shader_performance_metrics", {
   frameRateIdx: index("frame_rate_idx").on(table.frameRate),
   
   // Time series analysis
-  timeSeriesIdx: index("perf_time_series_idx").on(table.shaderCacheId, table.recordedAt),
+  timeSeriesIdx: index("perf_time_series_idx").on(table.shaderCacheId, table.recordedAt)
 }));
 
 // === Relations ===
@@ -244,41 +244,41 @@ export const shaderCacheEntriesRelations = relations(shaderCacheEntries, ({ many
   dependencies: many(shaderDependencies, { relationName: "parent_dependencies" }),
   dependents: many(shaderDependencies, { relationName: "dependent_shaders" }),
   preloadQueue: many(shaderPreloadQueue),
-  performanceMetrics: many(shaderPerformanceMetrics),
+  performanceMetrics: many(shaderPerformanceMetrics)
 }));
 
 export const shaderUserPatternsRelations = relations(shaderUserPatterns, ({ one }) => ({
   shaderCache: one(shaderCacheEntries, {
     fields: [shaderUserPatterns.shaderCacheId],
-    references: [shaderCacheEntries.id],
-  }),
+    references: [shaderCacheEntries.id]
+  })
 }));
 
 export const shaderDependenciesRelations = relations(shaderDependencies, ({ one }) => ({
   parentShader: one(shaderCacheEntries, {
     fields: [shaderDependencies.parentShaderCacheId],
     references: [shaderCacheEntries.id],
-    relationName: "parent_dependencies",
+    relationName: "parent_dependencies"
   }),
   dependentShader: one(shaderCacheEntries, {
     fields: [shaderDependencies.dependentShaderCacheId],
     references: [shaderCacheEntries.id],
-    relationName: "dependent_shaders",
-  }),
+    relationName: "dependent_shaders"
+  })
 }));
 
 export const shaderPreloadQueueRelations = relations(shaderPreloadQueue, ({ one }) => ({
   shaderCache: one(shaderCacheEntries, {
     fields: [shaderPreloadQueue.shaderCacheId],
-    references: [shaderCacheEntries.id],
-  }),
+    references: [shaderCacheEntries.id]
+  })
 }));
 
 export const shaderPerformanceMetricsRelations = relations(shaderPerformanceMetrics, ({ one }) => ({
   shaderCache: one(shaderCacheEntries, {
     fields: [shaderPerformanceMetrics.shaderCacheId],
-    references: [shaderCacheEntries.id],
-  }),
+    references: [shaderCacheEntries.id]
+  })
 }));
 
 // === TypeScript Types ===

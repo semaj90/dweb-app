@@ -72,9 +72,9 @@ export interface EncodingMetrics {
 
 // === NES Cache Types ===
 
-export type NESMemoryRegion = 
+export type NESMemoryRegion =
   | 'PRG_ROM'
-  | 'CHR_ROM' 
+  | 'CHR_ROM'
   | 'RAM'
   | 'PPU_MEMORY'
   | 'SPRITE_MEMORY'
@@ -185,9 +185,9 @@ export interface ShaderPerformanceMetrics {
 
 // === Legal Workflow Types ===
 
-export type LegalWorkflowType = 
-  | 'document_upload' 
-  | 'evidence_review' 
+export type LegalWorkflowType =
+  | 'document_upload'
+  | 'evidence_review'
   | 'case_analysis'
   | 'contract_review'
   | 'litigation_prep'
@@ -327,10 +327,10 @@ export interface BatchOperationResult {
 export interface EnhancedGPUCacheConfig {
   // Binary encoding configuration
   binaryEncoding: BinaryEncodingOptions;
-  
+
   // NES cache configuration
   nesCache: NESCacheConfig;
-  
+
   // WebGPU configuration
   webgpu: {
     enabled: boolean;
@@ -338,7 +338,7 @@ export interface EnhancedGPUCacheConfig {
     memoryLimit?: number;
     features?: string[];
   };
-  
+
   // Shader cache configuration
   shaderCache: {
     enabled: boolean;
@@ -346,7 +346,7 @@ export interface EnhancedGPUCacheConfig {
     compressionEnabled: boolean;
     predictiveLoading: boolean;
   };
-  
+
   // Legal workflow configuration
   legalWorkflows: {
     enabled: boolean;
@@ -354,7 +354,7 @@ export interface EnhancedGPUCacheConfig {
     securityLevel: SecurityLevel;
     retentionPeriod: number;
   };
-  
+
   // Performance configuration
   performance: {
     enableAnalytics: boolean;
@@ -458,7 +458,7 @@ export function isLegalWorkflowType(value: string): value is LegalWorkflowType {
 
 export function isNESMemoryRegion(value: string): value is NESMemoryRegion {
   return [
-    'PRG_ROM', 'CHR_ROM', 'RAM', 
+    'PRG_ROM', 'CHR_ROM', 'RAM',
     'PPU_MEMORY', 'SPRITE_MEMORY', 'PALETTE_MEMORY'
   ].includes(value);
 }
@@ -547,8 +547,8 @@ export function calculateOverallPerformanceScore(metrics: PerformanceMetrics): n
   return Math.min(Math.max(score, 0), 1);
 }
 
-export function createCacheKey(
-  baseKey: string, 
+export function createCacheKey(;
+  baseKey: string,
   workflowType?: LegalWorkflowType,
   format?: EncodingFormat
 ): string {
@@ -558,12 +558,12 @@ export function createCacheKey(
   return parts.join(':');
 }
 
-export function estimateMemoryFootprint(
-  data: any, 
+export function estimateMemoryFootprint(;
+  data: any,
   format: EncodingFormat = 'json'
 ): number {
   const jsonSize = JSON.stringify(data).length * 2; // UTF-16
-  
+
   switch (format) {
     case 'cbor':
       return Math.floor(jsonSize * 0.7); // ~30% compression
@@ -584,13 +584,13 @@ export default {
   isComplexityLevel,
   isUrgencyLevel,
   isSecurityLevel,
-  
+
   // Utility functions
   createDefaultEnhancedGPUCacheConfig,
   calculateOverallPerformanceScore,
   createCacheKey,
   estimateMemoryFootprint,
-  
+
   // Error class
   EnhancedGPUCacheError
 };

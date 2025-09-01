@@ -1,14 +1,14 @@
 
 import { db } from "$lib/db";
 import {
-  documentVectors, 
-  caseSummaryVectors, 
+  documentVectors,
+  caseSummaryVectors,
   evidenceVectors,
   queryVectors,
   knowledgeNodes,
   knowledgeEdges,
   recommendationCache
-} from "$lib/server/db/schema";
+} from "$lib/database/schema";
 import { ollamaService } from "./ollamaService";
 import {
   sql, eq, and, desc
@@ -59,7 +59,7 @@ export class VectorRankingService {
 
     // Generate query embedding
     const queryEmbedding = await ollamaService.generateEmbedding(query);
-    
+
     // Store query for future recommendations
     if (userId) {
       await this.storeQueryVector(userId, query, queryEmbedding);
@@ -67,7 +67,7 @@ export class VectorRankingService {
 
     // Perform vector search based on document type
     let vectorResults: any[] = [];
-    
+
     if (documentType === 'document') {
       vectorResults = await this.searchDocumentVectors(queryEmbedding, caseId, limit * 2);
     } else if (documentType === 'evidence') {
@@ -98,7 +98,7 @@ export class VectorRankingService {
           score: finalScore,
           rankingFactors,
           metadata: result.metadata || {},
-          explanation: includeExplanation 
+          explanation: includeExplanation
             ? this.generateExplanation(rankingFactors)
             : undefined
         };
@@ -339,9 +339,9 @@ export class VectorRankingService {
     // Calculate Jaccard similarity
     const intersection = queryEntitiesLower.filter((e: any) => documentEntities.some((de: any) => de.includes(e) || e.includes(de))
     );
-    
+
     const union = new Set([...queryEntitiesLower, ...documentEntities]);
-    
+
     return intersection.length / union.size;
   }
 
@@ -466,16 +466,16 @@ export class VectorRankingService {
    */
   private averageEmbeddings(embeddings: number[][]): number[] {
     if (embeddings.length === 0) return [];
-    
+
     const dimension = embeddings[0].length;
     const avg = new Array(dimension).fill(0);
-    
+
     for (const embedding of embeddings) {
       for (let i = 0; i < dimension; i++) {
         avg[i] += embedding[i];
       }
     }
-    
+
     return avg.map((v: any) => v / embeddings.length);
   }
 }

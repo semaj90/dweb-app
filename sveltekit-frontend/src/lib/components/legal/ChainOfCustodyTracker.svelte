@@ -54,14 +54,14 @@
   }: ChainOfCustodyProps = $props();
 
   // Sort transfers by date (newest first)
-  const sortedTransfers = $derived(() => {
+  let sortedTransfers = $derived(() => {
     return [...evidence.chainOfCustody].sort((a, b) => 
       b.timestamp.getTime() - a.timestamp.getTime()
     );
   });
 
   // Get the most recent transfer
-  const latestTransfer = $derived(() => sortedTransfers[0]);
+  let latestTransfer = $derived(() => sortedTransfers[0]);
 
   // Evidence category configurations
   const categoryConfig = {
@@ -198,7 +198,7 @@
     {#if interactive && onTransferEvidence}
       <div class="mt-3 flex justify-end">
         <button
-          click={() => onTransferEvidence?.(evidence)}
+          on:onclick={() => onTransferEvidence?.(evidence)}
           class="px-4 py-2 text-sm font-mono bg-yorha-primary/10 text-yorha-primary border border-yorha-primary/20 rounded hover:bg-yorha-primary/20 transition-colors"
         >
           Transfer Custody
@@ -236,7 +236,7 @@
                 'relative flex items-start gap-4',
                 interactive && 'cursor-pointer group'
               )}
-              click={() => interactive && onViewDetails?.(transfer)}
+              on:onclick={() => interactive && onViewDetails?.(transfer)}
             >
               <!-- Timeline Node -->
               <div class={cn(
@@ -335,7 +335,7 @@
         {#if !showFullHistory && sortedTransfers.length > 3}
           <div class="text-center mt-4">
             <button 
-              click={() => showFullHistory = true}
+              on:onclick={() => showFullHistory = true}
               class="text-sm font-mono text-yorha-primary hover:text-yorha-accent transition-colors"
             >
               Show {sortedTransfers.length - 3} more transfer{sortedTransfers.length - 3 !== 1 ? 's' : ''}

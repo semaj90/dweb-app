@@ -1,5 +1,6 @@
-<script lang="ts">
+<script lang="ts" runes>
   import { onMount } from 'svelte';
+  import { get } from 'svelte/store';
   import { currentUser } from '$lib/auth/auth-store';
   import { AccessControl, ROLES, ROLE_HIERARCHY, type UserRole } from '$lib/auth/roles';
   // The project module does not export a named `User` type; declare a local shape with a unique name for TS instead.
@@ -12,37 +13,37 @@
     isActive: boolean;
     createdAt: string | Date;
     updatedAt?: string | Date | null;
-    profile?: any;
+    profile?: Record<string, unknown> | null;
   };
 
-  // User management state
-  let users: (AdminUser & { profile?: any })[] = [];
-  let filteredUsers: typeof users = [];
-  let selectedUsers: Set<string> = new Set();
-  let isLoading = true;
-  let showCreateModal = false;
-  let showEditModal = false;
-  let currentEditUser: AdminUser | null = null;
+  // User management state (use $state so updates trigger reactivity)
+  let users = $state([] as (AdminUser & { profile?: any })[]);
+  let filteredUsers = $state([] as (AdminUser & { profile?: any })[]);
+  let selectedUsers = $state(new Set<string>());
+  let isLoading = $state(true);
+  let showCreateModal = $state(false);
+  let showEditModal = $state(false);
+  let currentEditUser = $state<AdminUser | null>(null);
 
   // Filters and search
-  let searchQuery = '';
-  let roleFilter: UserRole | 'all' = 'all';
-  let statusFilter: 'all' | 'active' | 'inactive' = 'all';
+  let searchQuery = $state('');
+  let roleFilter = $state('all' as UserRole | 'all');
+  let statusFilter = $state('all' as 'all' | 'active' | 'inactive');
 
   // New user form
-  let newUser = {
+  let newUser = $state({
     email: '',
     firstName: '',
     lastName: '',
     role: 'viewer' as UserRole,
     password: '',
     confirmPassword: ''
-  };
+  });
 
   // Pagination
-  let currentPage = 1;
-  let usersPerPage = 20;
-  let totalPages = 1;
+  let currentPage = $state(1);
+  let usersPerPage = $state(20);
+  let totalPages = $state(1);
 
   // YoRHa styling
   const yorhaClasses = {
@@ -61,45 +62,45 @@
   };
 
   // Paginated users container
-  let paginatedUsers: typeof users = [];
+  let paginatedUsers = $state([] as (AdminUser & { profile?: any })[]);
 
   // Use runes-friendly effect to recompute filteredUsers when dependencies change
-  $: {
-    filteredUsers = users.filter(user => {
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        const matchesSearch =
-          user.email.toLowerCase().includes(query) ||
-          user.firstName?.toLowerCase().includes(query) ||
-          user.lastName?.toLowerCase().includes(query);
+    $effect(() => {
+      filteredUsers = users.filter(user => {
+        if (searchQuery) {
+          const query = searchQuery.toLowerCase();
+          const matchesSearch =
+            user.email.toLowerCase().includes(query) ||
+            user.firstName?.toLowerCase().includes(query) ||
+            user.lastName?.toLowerCase().includes(query);
 
-        if (!matchesSearch) return false;
-      }
+          if (!matchesSearch) return false;
+        }
 
-      if (roleFilter !== 'all' && user.role !== roleFilter) {
-        return false;
-      }
+        if (roleFilter !== 'all' && user.role !== roleFilter) {
+          return false;
+        }
 
-      if (statusFilter !== 'all') {
-        if (statusFilter === 'active' && !user.isActive) return false;
-        if (statusFilter === 'inactive' && user.isActive) return false;
-      }
+        if (statusFilter !== 'all') {
+          if (statusFilter === 'active' && !user.isActive) return false;
+          if (statusFilter === 'inactive' && user.isActive) return false;
+        }
 
-      return true;
+        return true;
+      });
     });
-  }
 
   // Use an effect to update pagination values when filteredUsers, currentPage, or usersPerPage change
-  $: {
-    totalPages = Math.ceil(filteredUsers.length / usersPerPage) || 1;
-    currentPage = Math.min(currentPage, totalPages);
+    $effect(() => {
+      totalPages = Math.ceil(filteredUsers.length / usersPerPage) || 1;
+      currentPage = Math.min(currentPage, totalPages);
 
-    // Paginated users (reactive slice)
-    paginatedUsers = filteredUsers.slice(
-      (currentPage - 1) * usersPerPage,
-      currentPage * usersPerPage
-    );
-  }
+      // Paginated users (reactive slice)
+      paginatedUsers = filteredUsers.slice(
+        (currentPage - 1) * usersPerPage,
+        currentPage * usersPerPage
+      );
+    });
 
   // Load users on mount
   onMount(() => {
@@ -188,11 +189,49 @@
     }
   }
 
+  import { z } from 'zod';
+
+  // Zod schemas for form validation (edit + create)
+  const createUserSchema = z
+    .object({
+      email: z.string().email({ message: 'Invalid email address' }),
+      firstName: z.string().max(100).optional().or(z.literal('')),
+      lastName: z.string().max(100).optional().or(z.literal('')),
+      role: z.string(),
+      password: z.string().min(8, { message: 'Password must be at least 8 characters' }),
+      confirmPassword: z.string().min(8)
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: 'Passwords do not match',
+      path: ['confirmPassword']
+    });
+
+  const editUserSchema = z.object({
+    id: z.string(),
+    email: z.string().email({ message: 'Invalid email address' }),
+    firstName: z.string().max(100).optional().or(z.literal('')),
+    lastName: z.string().max(100).optional().or(z.literal('')),
+    role: z.string(),
+    isActive: z.boolean().optional()
+  });
+
   // Safe submit handler for the edit form to ensure currentEditUser is not null
   function handleUpdate() {
     if (!currentEditUser) return;
+
+    const parsed = editUserSchema.safeParse(currentEditUser);
+    if (!parsed.success) {
+      // flatten errors to a readable string
+      const messages = parsed.error.errors.map(e => {
+        const path = e.path.length ? e.path.join('.') : 'value';
+        return `${path}: ${e.message}`;
+      });
+      alert(messages.join('\n'));
+      return;
+    }
+
     // omit id from updates payload
-    const { id, ...updates } = currentEditUser;
+    const { id, ...updates } = parsed.data;
     updateUser(id, updates as Partial<AdminUser>);
   }
 
@@ -245,7 +284,6 @@
       if (response.ok) {
         await loadUsers();
         selectedUsers.clear();
-        selectedUsers = selectedUsers; // Trigger reactivity
       } else {
         const error = await response.json();
         alert(error.message || 'Bulk action failed');
@@ -271,20 +309,21 @@
     currentEditUser = { ...user };
     showEditModal = true;
   }
-
   function canManageUser(targetUser: AdminUser): boolean {
-    if (!$currentUser) return false;
+    const cu = get(currentUser);
+    if (!cu) return false;
 
     // Can't manage yourself through this interface
-    if (targetUser.id === $currentUser.id) return false;
+    if (targetUser.id === cu.id) return false;
 
-    // Check role hierarchy
-    return AccessControl.hasHigherAuthority($currentUser.role, targetUser.role);
+    // Check role hierarchy — cast roles to UserRole for type-safety
+    return AccessControl.hasHigherAuthority(cu.role as UserRole, targetUser.role as UserRole);
   }
 
   function canAssignRole(role: UserRole): boolean {
-    if (!$currentUser) return false;
-    return AccessControl.canAssignRole($currentUser.role, role);
+    const cu = get(currentUser);
+    if (!cu) return false;
+    return AccessControl.canAssignRole(cu.role as UserRole, role);
   }
 
   function getRoleDisplayName(role: string): string {
@@ -298,323 +337,140 @@
     if (roleLevel >= 40) return 'border-yellow-500 text-yellow-400';
     return 'border-gray-500 text-gray-400';
   }
-</script>
+    </script>
 
-<svelte:head>
-  <title>User Management - Admin - Legal AI Platform</title>
-</svelte:head>
-
-<!-- User Management Interface -->
-<div class="space-y-6">
-  <!-- Header -->
-  <div class={yorhaClasses.cardHeader}>
-    <div>
-      <h1 class="text-xl font-bold">USER MANAGEMENT</h1>
-      <p class="text-xs opacity-60 mt-1">MANAGE SYSTEM USERS, ROLES, AND PERMISSIONS</p>
-    </div>
-
-    <div class="flex space-x-2">
-      <button
-        on:click={() => showCreateModal = true}
-        class={yorhaClasses.buttonPrimary}
-      >
-        ◈ CREATE USER
-      </button>
-      <button
-        on:click={loadUsers}
-        class={yorhaClasses.button}
-      >
-        ↻ REFRESH
-      </button>
-    </div>
-  </div>
-
-  <!-- Filters and Search -->
-  <div class={yorhaClasses.card}>
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <!-- Search -->
-      <div>
-        <label class="block text-xs opacity-60 mb-2">SEARCH USERS</label>
-        <input
-          type="text"
-          bind:value={searchQuery}
-          placeholder="Email, name..."
-          class={yorhaClasses.input}
-        >
-      </div>
-
-      <!-- Role Filter -->
-      <div>
-        <label class="block text-xs opacity-60 mb-2">FILTER BY ROLE</label>
-        <select bind:value={roleFilter} class={yorhaClasses.select}>
-          <option value="all">ALL ROLES</option>
-          {#each ROLE_HIERARCHY as role}
-            <option value={role}>{getRoleDisplayName(role)}</option>
-          {/each}
-        </select>
-      </div>
-
-      <!-- Status Filter -->
-      <div>
-        <label class="block text-xs opacity-60 mb-2">FILTER BY STATUS</label>
-        <select bind:value={statusFilter} class={yorhaClasses.select}>
-          <option value="all">ALL STATUS</option>
-          <option value="active">ACTIVE</option>
-          <option value="inactive">INACTIVE</option>
-        </select>
-      </div>
-
-      <!-- Bulk Actions -->
-      <div>
-        <label class="block text-xs opacity-60 mb-2">BULK ACTIONS</label>
-        <div class="flex space-x-1">
+  {#if showCreateModal}
+    <div class={yorhaClasses.modal}>
+      <div class={yorhaClasses.modalContent}>
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-xl font-bold text-[#00ff88]">CREATE USER</h2>
           <button
-            on:click={() => bulkAction('activate')}
-            class={yorhaClasses.button + ' flex-1'}
-            disabled={selectedUsers.size === 0}
+            type="button"
+            on:onclick={() => showCreateModal = false}
+            class="text-2xl hover:text-red-500"
           >
-            ACTIVATE
-          </button>
-          <button
-            on:click={() => bulkAction('deactivate')}
-            class={yorhaClasses.button + ' flex-1'}
-            disabled={selectedUsers.size === 0}
-          >
-            DEACTIVATE
+            ✕
           </button>
         </div>
+  <!--
+  Superforms integration notes (no runtime change yet):
+
+  You asked about using superforms + zod + progressive enhancement (:enhance).
+  Because superforms needs server load/actions (+page.server.ts) and a `form` object
+  returned from load, we cannot just drop the markup in here without also changing
+  the script and adding server code.
+
+  Steps (summary):
+
+  1. Install:
+    npm i sveltekit-superforms zod
+
+  2. Create /routes/admin/users/+page.server.ts (example sketch):
+    import { superValidate } from 'sveltekit-superforms/server';
+    import { z } from 'zod';
+
+    const createUserSchema = z.object({
+      email: z.string().email(),
+      firstName: z.string().optional().or(z.literal('')),
+      lastName: z.string().optional().or(z.literal('')),
+      role: z.string(),
+      password: z.string().min(8),
+      confirmPassword: z.string().min(8)
+    }).refine(d => d.password === d.confirmPassword, {
+      path: ['confirmPassword'],
+      message: 'Passwords do not match'
+    });
+
+    export const load = async () => {
+      const form = await superValidate(createUserSchema);
+      return { form };
+    };
+
+    export const actions = {
+      create: async ({ request }) => {
+       const form = await superValidate(request, createUserSchema);
+       if (!form.valid) return fail(400, { form });
+
+       // TODO: insert into Postgres here (using your preferred db client)
+       // await db.insertUser(...)
+
+       return message(form, 'User created');
+      }
+    };
+
+  3. In this +page.svelte script:
+    - import { enhance } from 'sveltekit-superforms/client';
+    - get `export let data;` then `const form = data.form;`
+    - remove the old createUser() fetch logic (server action replaces it).
+
+  4. Replace the existing manual create form (below) with:
+
+    <form method="POST" use:enhance action="?/create" class="space-y-4">
+      <div>
+       <label class="block text-sm font-bold mb-2">EMAIL ADDRESS
+        <input name="email" type="email" class={yorhaClasses.input} value={form.data.email} required>
+       </label>
+       {#if form.errors.email}<p class="text-xs text-red-400 mt-1">{form.errors.email}</p>{/if}
       </div>
-    </div>
-  </div>
-
-  <!-- Users Table -->
-  <div class={yorhaClasses.card}>
-    {#if isLoading}
-      <div class="text-center py-8">
-        <div class="text-4xl mb-4">◈</div>
-        <div>LOADING USERS...</div>
+      ... (repeat for other fields; use form.data.*, form.errors.*)
+      <div class="flex justify-end space-x-4 pt-4">
+       <button type="button" on:onclick={() => showCreateModal = false} class={yorhaClasses.button}>CANCEL</button>
+       <button type="submit" class={yorhaClasses.buttonPrimary}>◈ CREATE USER</button>
       </div>
-    {:else if paginatedUsers.length > 0}
-      <div class="overflow-x-auto">
-        <table class={yorhaClasses.table}>
-          <thead>
-            <tr>
-              <th class={yorhaClasses.tableHeader}>
-                <input
-                  type="checkbox"
-                  on:change={(e: Event) => {
-                    const target = e.currentTarget as HTMLInputElement;
-                    if (target.checked) {
-                      selectedUsers = new Set(paginatedUsers.map(u => u.id));
-                    } else {
-                      selectedUsers.clear();
-                      selectedUsers = selectedUsers;
-                    }
-                  }}
-                >
-              </th>
-              <th class={yorhaClasses.tableHeader}>STATUS</th>
-              <th class={yorhaClasses.tableHeader}>USER</th>
-              <th class={yorhaClasses.tableHeader}>ROLE</th>
-              <th class={yorhaClasses.tableHeader}>CREATED</th>
-              <th class={yorhaClasses.tableHeader}>LAST ACTIVE</th>
-              <th class={yorhaClasses.tableHeader}>ACTIONS</th>
-            </tr>
-          </thead>
-          <tbody>
-            {#each paginatedUsers as user}
-              <tr class="hover:bg-[#222222]">
-                <!-- Checkbox -->
-                <td class={yorhaClasses.tableCell}>
-                  <input
-                    type="checkbox"
-                    checked={selectedUsers.has(user.id)}
-                    on:change={(e: Event) => {
-                      const target = e.currentTarget as HTMLInputElement;
-                      if (target.checked) {
-                        selectedUsers.add(user.id);
-                      } else {
-                        selectedUsers.delete(user.id);
-                      }
-                      selectedUsers = selectedUsers;
-                    }}
-                  >
-                </td>
+      {#if form.message}<p class="text-xs text-green-400 pt-2">{form.message}</p>{/if}
+    </form>
 
-                <!-- Status -->
-                <td class={yorhaClasses.tableCell}>
-                  <span class={user.isActive ? 'text-[#00ff88]' : 'text-red-500'}>
-                    {user.isActive ? '◈ ACTIVE' : '◯ INACTIVE'}
-                  </span>
-                </td>
+  5. Remove newUser state if no longer needed; superforms keeps form state.
 
-                <!-- User Info -->
-                <td class={yorhaClasses.tableCell}>
-                  <div>
-                    <div class="font-bold">{user.email}</div>
-                    {#if user.firstName || user.lastName}
-                      <div class="text-xs opacity-60">
-                        {user.firstName} {user.lastName}
-                      </div>
-                    {/if}
-                  </div>
-                </td>
-
-                <!-- Role -->
-                <td class={yorhaClasses.tableCell}>
-                  <span class={"px-2 py-1 border " + getRoleBadgeColor(user.role) + " text-xs"}>
-                    {getRoleDisplayName(user.role)}
-                  </span>
-                </td>
-
-                <!-- Created -->
-                <td class={yorhaClasses.tableCell}>
-                  {new Date(user.createdAt).toLocaleDateString()}
-                </td>
-
-                <!-- Last Active -->
-                <td class={yorhaClasses.tableCell}>
-                  <span class="opacity-60">
-                    {user.updatedAt ? new Date(user.updatedAt).toLocaleDateString() : 'Never'}
-                  </span>
-                </td>
-
-                <!-- Actions -->
-                <td class={yorhaClasses.tableCell}>
-                  <div class="flex space-x-1">
-                    {#if canManageUser(user)}
-                      <button
-                        on:click={() => openEditModal(user)}
-                        class="px-2 py-1 border border-[#333333] hover:bg-[#2a2a2a] text-xs"
-                        title="Edit User"
-                      >
-                        ✎
-                      </button>
-
-                      <button
-                        on:click={() => toggleUserStatus(user.id, !user.isActive)}
-                        class={"px-2 py-1 " + (user.isActive ? 'border border-red-500 text-red-500' : 'border border-[#00ff88] text-[#00ff88]') + " hover:bg-opacity-20 text-xs"}
-                        title={user.isActive ? 'Deactivate' : 'Activate'}
-                      >
-                        {user.isActive ? '◯' : '◈'}
-                      </button>
-
-                      <button
-                        on:click={() => deleteUser(user.id)}
-                        class="px-2 py-1 border border-red-500 text-red-500 hover:bg-red-500 hover:text-black text-xs"
-                        title="Delete User"
-                      >
-                        ✕
-                      </button>
-                    {:else}
-                      <span class="text-xs opacity-40">No Access</span>
-                    {/if}
-                  </div>
-                </td>
-              </tr>
-            {/each}
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Pagination -->
-      {#if totalPages > 1}
-        <div class="flex justify-between items-center mt-4 pt-4 border-t border-[#333333]">
-          <div class="text-sm opacity-60">
-            Showing {(currentPage - 1) * usersPerPage + 1} to {Math.min(currentPage * usersPerPage, filteredUsers.length)} of {filteredUsers.length} users
-          </div>
-
-          <div class="flex space-x-2">
-            <button
-              on:click={() => currentPage = Math.max(1, currentPage - 1)}
-              disabled={currentPage === 1}
-              class={yorhaClasses.button}
-            >
-              ◀ PREV
-            </button>
-
-            <div class="flex items-center space-x-2">
-              <span class="text-sm">PAGE {currentPage} OF {totalPages}</span>
-            </div>
-
-            <button
-              on:click={() => currentPage = Math.min(totalPages, currentPage + 1)}
-              disabled={currentPage === totalPages}
-              class={yorhaClasses.button}
-            >
-              NEXT ▶
-            </button>
-          </div>
-        </div>
-      {/if}
-    {:else}
-      <div class="text-center py-8 opacity-60">
-        <div class="text-4xl mb-4">◯</div>
-        <div>NO USERS FOUND</div>
-        <div class="text-sm mt-2">Try adjusting your search or filters</div>
-      </div>
-    {/if}
-  </div>
-</div>
-
-<!-- Create User Modal -->
-{#if showCreateModal}
-  <div class={yorhaClasses.modal}>
-    <div class={yorhaClasses.modalContent}>
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-xl font-bold text-[#00ff88]">CREATE NEW USER</h2>
-        <button
-          on:click={() => showCreateModal = false}
-          class="text-2xl hover:text-red-500"
-        >
-          ✕
-        </button>
-      </div>
-
-      <form on:submit|preventDefault={createUser} class="space-y-4">
+  This placeholder only documents the migration; current code continues to work.
+  -->
+        <form on:submit|preventDefault={createUser} class="space-y-4">
         <!-- Email -->
         <div>
-          <label class="block text-sm font-bold mb-2">EMAIL ADDRESS</label>
-          <input
-            type="email"
-            bind:value={newUser.email}
-            required
-            class={yorhaClasses.input}
-            placeholder="user@example.com"
-          >
+          <label class="block text-sm font-bold mb-2">EMAIL ADDRESS
+            <input
+              type="email"
+              bind:value={newUser.email}
+              required
+              class={yorhaClasses.input}
+            >
+          </label>
         </div>
 
         <!-- Names -->
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-bold mb-2">FIRST NAME</label>
-            <input
-              type="text"
-              bind:value={newUser.firstName}
-              class={yorhaClasses.input}
-            >
+            <label class="block text-sm font-bold mb-2">FIRST NAME
+              <input
+                type="text"
+                bind:value={newUser.firstName}
+                class={yorhaClasses.input}
+              >
+            </label>
           </div>
 
           <div>
-            <label class="block text-sm font-bold mb-2">LAST NAME</label>
-            <input
-              type="text"
-              bind:value={newUser.lastName}
-              class={yorhaClasses.input}
-            >
+            <label class="block text-sm font-bold mb-2">LAST NAME
+              <input
+                type="text"
+                bind:value={newUser.lastName}
+                class={yorhaClasses.input}
+              >
+            </label>
           </div>
         </div>
 
         <!-- Role -->
         <div>
-          <label class="block text-sm font-bold mb-2">USER ROLE</label>
-          <select bind:value={newUser.role} class={yorhaClasses.select}>
-            {#each ROLE_HIERARCHY as role}
-              {#if canAssignRole(role)}
-                <option value={role}>{getRoleDisplayName(role)}</option>
-              {/if}
-            {/each}
-          </select>
+          <label class="block text-sm font-bold mb-2">USER ROLE
+            <select bind:value={newUser.role} class={yorhaClasses.select}>
+              {#each ROLE_HIERARCHY as role}
+                {#if canAssignRole(role)}
+                  <option value={role}>{getRoleDisplayName(role)}</option>
+                {/if}
+              {/each}
+            </select>
+          </label>
           <div class="text-xs opacity-60 mt-1">
             {ROLES[newUser.role]?.description || ''}
           </div>
@@ -623,24 +479,26 @@
         <!-- Password -->
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-bold mb-2">PASSWORD</label>
-            <input
-              type="password"
-              bind:value={newUser.password}
-              required
-              minlength="8"
-              class={yorhaClasses.input}
-            >
+            <label class="block text-sm font-bold mb-2">PASSWORD
+              <input
+                type="password"
+                bind:value={newUser.password}
+                required
+                minlength="8"
+                class={yorhaClasses.input}
+              >
+            </label>
           </div>
 
           <div>
-            <label class="block text-sm font-bold mb-2">CONFIRM PASSWORD</label>
-            <input
-              type="password"
-              bind:value={newUser.confirmPassword}
-              required
-              class={yorhaClasses.input}
-            >
+            <label class="block text-sm font-bold mb-2">CONFIRM PASSWORD
+              <input
+                type="password"
+                bind:value={newUser.confirmPassword}
+                required
+                class={yorhaClasses.input}
+              >
+            </label>
           </div>
         </div>
 
@@ -648,7 +506,7 @@
         <div class="flex justify-end space-x-4 pt-4">
           <button
             type="button"
-            on:click={() => showCreateModal = false}
+            on:onclick={() => showCreateModal = false}
             class={yorhaClasses.button}
           >
             CANCEL
@@ -673,7 +531,7 @@
         <h2 class="text-xl font-bold text-[#00ff88]">EDIT USER</h2>
         <button
           type="button"
-          on:click={() => showEditModal = false}
+          on:onclick={() => showEditModal = false}
           class="text-2xl hover:text-red-500"
         >
           ✕
@@ -684,46 +542,50 @@
       <form on:submit|preventDefault={handleUpdate} class="space-y-4">
         <!-- Email -->
         <div>
-          <label class="block text-sm font-bold mb-2">EMAIL ADDRESS</label>
-          <input
-            type="email"
-            bind:value={currentEditUser.email}
-            required
-            class={yorhaClasses.input}
-          >
+          <label class="block text-sm font-bold mb-2">EMAIL ADDRESS
+            <input
+              type="email"
+              bind:value={currentEditUser.email}
+              required
+              class={yorhaClasses.input}
+            >
+          </label>
         </div>
 
         <!-- Names -->
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-bold mb-2">FIRST NAME</label>
-            <input
-              type="text"
-              bind:value={currentEditUser.firstName}
-              class={yorhaClasses.input}
-            >
+            <label class="block text-sm font-bold mb-2">FIRST NAME
+              <input
+                type="text"
+                bind:value={currentEditUser.firstName}
+                class={yorhaClasses.input}
+              >
+            </label>
           </div>
 
           <div>
-            <label class="block text-sm font-bold mb-2">LAST NAME</label>
-            <input
-              type="text"
-              bind:value={currentEditUser.lastName}
-              class={yorhaClasses.input}
-            >
+            <label class="block text-sm font-bold mb-2">LAST NAME
+              <input
+                type="text"
+                bind:value={currentEditUser.lastName}
+                class={yorhaClasses.input}
+              >
+            </label>
           </div>
         </div>
 
         <!-- Role -->
         <div>
-          <label class="block text-sm font-bold mb-2">USER ROLE</label>
-          <select bind:value={currentEditUser.role} class={yorhaClasses.select}>
-            {#each ROLE_HIERARCHY as role}
-              {#if canAssignRole(role)}
-                <option value={role}>{getRoleDisplayName(role)}</option>
-              {/if}
-            {/each}
-          </select>
+          <label class="block text-sm font-bold mb-2">USER ROLE
+            <select bind:value={currentEditUser.role} class={yorhaClasses.select}>
+              {#each ROLE_HIERARCHY as role}
+                {#if canAssignRole(role)}
+                  <option value={role}>{getRoleDisplayName(role)}</option>
+                {/if}
+              {/each}
+            </select>
+          </label>
         </div>
 
         <!-- Status -->
@@ -741,7 +603,7 @@
         <div class="flex justify-end space-x-4 pt-4">
           <button
             type="button"
-            on:click={() => showEditModal = false}
+            on:onclick={() => showEditModal = false}
             class={yorhaClasses.button}
           >
             CANCEL

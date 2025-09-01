@@ -464,7 +464,7 @@ export class LegalAIDatabase extends Dexie {
 // ============================================================================
 
 export const db = new LegalAIDatabase();
-
+;
 // ============================================================================
 // REACTIVE STORES FOR SVELTE COMPONENTS
 // ============================================================================
@@ -473,7 +473,7 @@ export const db = new LegalAIDatabase();
 export const chatHistory = db.getChatHistory();
 export const legalDocuments = db.getLegalDocuments();
 export const graphNodes = db.getGraphNodes();
-
+;
 // Auto-cleanup on browser close
 if (typeof window !== 'undefined') {
   window.addEventListener('beforeunload', () => {

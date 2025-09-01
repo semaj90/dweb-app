@@ -303,7 +303,7 @@
         <div class="text-center">
           <button 
             type="button"
-            click={toggleMode}
+            on:onclick={toggleMode}
             class="text-sm text-primary hover:underline"
             disabled={loading}
           >
@@ -326,7 +326,7 @@
 
     <button 
       type="button"
-      click={() => open = false}
+      on:onclick={() => open = false}
       class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
     >
       <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

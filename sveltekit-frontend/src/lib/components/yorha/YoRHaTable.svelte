@@ -96,7 +96,7 @@
     return filteredData.slice(start, start + pageSize);
   });
 
-  const totalPages = $derived(
+  let totalPages = $derived(
     Math.ceil(filteredData.length / pageSize)
   );
 
@@ -183,7 +183,7 @@
         <span class="yorha-selection-count">
           {selectedRows.size} SELECTED
         </span>
-        <button class="yorha-action-btn" click={() => selectedRows.clear()}>
+        <button class="yorha-action-btn" on:onclick={() => selectedRows.clear()}>
           CLEAR SELECTION
         </button>
       </div>
@@ -202,7 +202,7 @@
                 class="yorha-checkbox"
                 checked={selectedRows.size === paginatedData.length && paginatedData.length > 0}
                 indeterminate={selectedRows.size > 0 && selectedRows.size < paginatedData.length}
-                on:change={toggleAllSelection}
+                change={toggleAllSelection}
               />
             </th>
           {/if}
@@ -214,7 +214,7 @@
               class:yorha-sorted-asc={sortColumn === column.key && sortDirection === 'asc'}
               class:yorha-sorted-desc={sortColumn === column.key && sortDirection === 'desc'}
               style:width={column.width}
-              click={() => handleSort(column)}
+              on:onclick={() => handleSort(column)}
             >
               <div class="yorha-header-content">
                 <span class="yorha-header-text">{column.title}</span>
@@ -310,14 +310,14 @@
         <button 
           class="yorha-pagination-btn"
           disabled={currentPage === 1}
-          click={() => currentPage = 1}
+          on:onclick={() => currentPage = 1}
         >
           ⟨⟨
         </button>
         <button 
           class="yorha-pagination-btn"
           disabled={currentPage === 1}
-          click={() => currentPage--}
+          on:onclick={() => currentPage--}
         >
           ⟨
         </button>
@@ -329,14 +329,14 @@
         <button 
           class="yorha-pagination-btn"
           disabled={currentPage === totalPages}
-          click={() => currentPage++}
+          on:onclick={() => currentPage++}
         >
           ⟩
         </button>
         <button 
           class="yorha-pagination-btn"
           disabled={currentPage === totalPages}
-          click={() => currentPage = totalPages}
+          on:onclick={() => currentPage = totalPages}
         >
           ⟩⟩
         </button>

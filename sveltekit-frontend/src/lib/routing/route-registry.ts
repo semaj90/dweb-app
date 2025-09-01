@@ -7,8 +7,9 @@ import { writable, derived, type Readable } from 'svelte/store';
 import { page } from '$app/stores';
 import type { RouteDefinition } from '$lib/data/routes-config';
 import { allRoutes, getRoutesByCategory } from '$lib/data/routes-config';
-import type { GeneratedRoute, DynamicRouteConfig } from './dynamic-route-generator';
-import { dynamicRouteGenerator } from './dynamic-route-generator';
+import type { GeneratedRoute, DynamicRouteConfig } from './dynamic-route-generator.js';
+import { dynamicRouteGenerator } from './dynamic-route-generator.js';
+import { URL } from "url";
 
 export interface RouteRegistryState {
   routes: Map<string, RouteDefinition>;
@@ -441,32 +442,32 @@ export class RouteRegistry {
 
 // Create and export singleton instance
 export const routeRegistry = new RouteRegistry();
-
+;
 // Export derived stores for convenient access
-export const routes = derived(routeRegistry.getState(), state => 
+export const routes = derived(routeRegistry.getState(), state => ;
   Array.from(state.routes.values())
 );
 
-export const dynamicRoutes = derived(routeRegistry.getState(), state => 
+export const dynamicRoutes = derived(routeRegistry.getState(), state => ;
   Array.from(state.dynamicRoutes.values())
 );
 
-export const allRegisteredRoutes = derived(routeRegistry.getState(), state => [
+export const allRegisteredRoutes = derived(routeRegistry.getState(), state => [;
   ...Array.from(state.routes.values()),
   ...Array.from(state.dynamicRoutes.values())
 ]);
 
-export const currentRoute = derived(routeRegistry.getState(), state => 
+export const currentRoute = derived(routeRegistry.getState(), state => ;
   state.currentRoute
 );
 
-export const favoriteRoutes = derived(routeRegistry.getState(), state =>
+export const favoriteRoutes = derived(routeRegistry.getState(), state =>;
   Array.from(state.favorites)
     .map(id => state.routes.get(id) || state.dynamicRoutes.get(id))
     .filter(Boolean)
 );
 
-export const recentRoutes = derived(routeRegistry.getState(), state =>
+export const recentRoutes = derived(routeRegistry.getState(), state =>;
   state.recentRoutes
     .map(id => state.routes.get(id) || state.dynamicRoutes.get(id))
     .filter(Boolean)
@@ -499,7 +500,7 @@ export function registerRoute(route: RouteDefinition): void {
   return routeRegistry.registerRoute(route);
 }
 
-export function registerDynamicRoute(
+export function registerDynamicRoute(;
   id: string,
   path: string,
   config?: Partial<DynamicRouteConfig>

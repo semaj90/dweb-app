@@ -21,16 +21,15 @@
   import { ThinkingProcessor } from "$lib/ai/thinking-processor";
 
   let { height = "500px", caseId = undefined }: { height?: string; caseId?: string | undefined } = $props();
-
-  let messageInput = "";
+let messageInput = $state("");
   let messagesContainer: HTMLElement;
   let inputElement: HTMLTextAreaElement;
   let inactivityTimer: NodeJS.Timeout;
   
   // Enhanced thinking style state
-  let thinkingStyleEnabled = false;
-  let analysisMode = false;
-  let lastAnalysisResult: any = null;
+let thinkingStyleEnabled = $state(false);
+let analysisMode = $state(false);
+let lastAnalysisResult = $state<any >(null);
 
   const IDLE_TIMEOUT = 60000; // 60 seconds
 
@@ -69,12 +68,11 @@
       const isAnalysisRequest = userMessage.toLowerCase().includes('analyze') || 
                                userMessage.toLowerCase().includes('evidence') ||
                                userMessage.toLowerCase().includes('case');
-
-      let response: Response;
+let response = $state<Response;
       
       if (isAnalysisRequest && (caseId || thinkingStyleEnabled)) {
         // Use the enhanced analysis endpoint
-        response = await fetch("/api/analyze", {
+        response >(await fetch("/api/analyze", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -84,7 +82,7 @@
             analysisType: 'reasoning',
             documentType: 'legal_document'
           }),
-        });
+        }));
       } else {
         // Use the regular chat endpoint
         const requestBody: ChatRequest = {
@@ -151,8 +149,7 @@
 
   function formatAnalysisResponse(analysis: any, metadata: any): string {
     if (!analysis) return "Analysis completed.";
-    
-    let response = `# AI Analysis Results\n\n`;
+let response = $state(`# AI Analysis Results\n\n`);
     
     // Add thinking process if available
     if (analysis.thinking && thinkingStyleEnabled) {
@@ -375,14 +372,14 @@
           loading={$isLoading}
           premium={true}
           size="sm"
-          on:toggle={handleThinkingToggle}
+          toggle={handleThinkingToggle}
         />
         
         {#if caseId}
           <Button 
             variant="outline" 
             size="sm" 
-            on:click={quickAnalyzeEvidence}
+            on:on:click={quickAnalyzeEvidence}
             disabled={$isLoading}
           >
             🔍 Quick Analysis
@@ -479,8 +476,8 @@
   {#if $showProactivePrompt}
     <div class="mx-auto px-4 max-w-7xl">
       <ProactivePrompt
-        on:accept={handleProactiveResponse}
-        on:dismiss={() => showProactivePrompt.set(false)}
+        accept={handleProactiveResponse}
+        dismiss={() => showProactivePrompt.set(false)}
       />
     </div>
   {/if}
@@ -496,8 +493,8 @@
             ? "Ask for detailed analysis... (Enter to send, Shift+Enter for new line)"
             : "Type your message... (Enter to send, Shift+Enter for new line)"}
           class="mx-auto px-4 max-w-7xl"
-          on:keydown={handleKeyDown}
-          on:input={autoResize}
+          keydown={handleKeyDown}
+          input={autoResize}
           disabled={$isLoading}
         />
       </div>
@@ -506,7 +503,7 @@
         variant="default"
         size="sm"
         class="mx-auto px-4 max-w-7xl"
-        on:click={() => sendMessage()}
+        on:on:click={() => sendMessage()}
         disabled={$isLoading || !messageInput.trim()}
       >
         {#if $isLoading}

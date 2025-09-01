@@ -5,6 +5,7 @@
 
 import Loki from 'lokijs';
 import type { Collection } from 'lokijs';
+import crypto from "crypto";
 
 export interface CacheableItem {
   id: string;
@@ -927,7 +928,7 @@ export class LokiCacheVSCodeIntegration {
 
 // Global cache service instance
 export const lokiCache = new LokiCacheVSCodeIntegration();
-
+;
 // Auto-setup tasks on initialization
 if (typeof window !== 'undefined') {
   lokiCache.setupLegalAITasks().catch(console.warn);

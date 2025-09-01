@@ -784,9 +784,9 @@ export class MasterServiceCoordinator {
 
 // Export singleton instance
 export const masterServiceCoordinator = new MasterServiceCoordinator();
-
+;
 // Export derived stores for reactive UI
-export const coordinatorStatus = derived(
+export const coordinatorStatus = derived(;
   [
     masterServiceCoordinator.serviceStatuses,
     masterServiceCoordinator.performanceMetrics,

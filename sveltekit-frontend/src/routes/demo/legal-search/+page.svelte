@@ -8,26 +8,24 @@
   import { Search, Zap, Database, Users, FileText, Scale } from 'lucide-svelte';
   
   // Demo state
-  let selectedResult: any = null;
-  let searchHistory: any[] = [];
-  let demoConfig = {
+let selectedResult = $state<any >(null);
+let searchHistory = $state<any[] >([]);
+let demoConfig = $state({
     enableVectorSearch: true,
     aiSuggestions: true,
     categories: ['cases', 'evidence', 'precedents'],
     maxResults: 20,
     similarityThreshold: 0.7
-  };
-  
-  let demoSearches = [
+  });
+let demoSearches = $state([
     "Miranda rights violation",
     "DNA evidence chain of custody", 
     "Constitutional search and seizure",
     "Witness testimony credibility",
     "Probable cause determination",
     "Fourth Amendment exceptions"
-  ];
-  
-  let currentDemo = 0;
+  ]);
+let currentDemo = $state(0);
   
   // Handle search results
   function handleSearchSelect(event) {
@@ -126,9 +124,9 @@
               maxResults={demoConfig.maxResults}
               similarityThreshold={demoConfig.similarityThreshold}
               class="w-full"
-              on:select={handleSearchSelect}
-              on:search={handleSearchQuery}
-              on:clear={handleClear}
+              select={handleSearchSelect}
+              search={handleSearchQuery}
+              clear={handleClear}
             />
           </div>
           
@@ -138,7 +136,7 @@
             <div class="flex flex-wrap gap-3">
               <button
                 class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                click={runDemoSearch}
+                on:onclick={runDemoSearch}
               >
                 <Zap class="mr-2 h-4 w-4" />
                 Try Demo Search
@@ -150,7 +148,7 @@
                     ? 'border-green-500 text-green-700 bg-green-50 hover:bg-green-100' 
                     : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
                 }`}
-                click={toggleVectorSearch}
+                on:onclick={toggleVectorSearch}
               >
                 <Database class="mr-2 h-4 w-4" />
                 Vector Search: {demoConfig.enableVectorSearch ? 'ON' : 'OFF'}
@@ -162,7 +160,7 @@
                     ? 'border-purple-500 text-purple-700 bg-purple-50 hover:bg-purple-100'
                     : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
                 }`}
-                click={toggleAISuggestions}
+                on:onclick={toggleAISuggestions}
               >
                 <Zap class="mr-2 h-4 w-4" />
                 AI Suggestions: {demoConfig.aiSuggestions ? 'ON' : 'OFF'}
@@ -339,7 +337,7 @@
                     ? 'bg-blue-50 text-blue-700 border border-blue-200'
                     : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
                 }`}
-                click={() => {
+                on:onclick={() => {
                   const searchInput = document.querySelector('input[type="text"]') as HTMLInputElement;
                   if (searchInput) {
                     searchInput.value = searchTerm;

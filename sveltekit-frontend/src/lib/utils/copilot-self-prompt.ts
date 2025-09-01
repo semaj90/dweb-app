@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import crypto from "crypto";
 
 /**
@@ -998,7 +999,7 @@ export class RLRankingDatastore {
 
 // Singleton instance
 export const rlRankingDatastore = new RLRankingDatastore();
-
+;
 // Update copilotSelfPrompt to use RL ranking
 export async function enhancedCopilotSelfPromptWithRL(
   prompt: string,

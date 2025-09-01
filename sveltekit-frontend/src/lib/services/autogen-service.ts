@@ -506,7 +506,7 @@ export class AutoGenService {
 
 // Singleton instance
 export const autoGenService = new AutoGenService();
-
+;
 // Helper functions for common workflows
 export async function analyzeCaseWithAgents(
   caseDescription: string,

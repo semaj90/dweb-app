@@ -92,7 +92,7 @@
         <CardTitle class="flex items-center justify-between">
           <span>System Status</span>
           <button
-            click={checkSystemStatus}
+            on:onclick={checkSystemStatus}
             class="text-sm px-3 py-1 bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200"
             disabled={loadingStatus}>
             {loadingStatus ? 'Checking...' : 'Refresh'}

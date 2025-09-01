@@ -12,10 +12,9 @@ import { ensureError } from '$lib/utils/ensure-error';
 import { db } from '$lib/server/db';
 import {
   users, userProfiles, cases, criminals, evidence, legalDocuments,
-  reports, personsOfInterest, ragMessages, ragSessions,
-  contentEmbeddings, caseEmbeddings, evidenceVectors, userAiQueries
+  reports, personsOfInterest, ragMessages, ragSessions
 } from '$lib/server/db/schema';
-import { sql, eq, and, or, like, desc, asc } from '$lib/server/db/index';
+import { sql, eq, and, or, like } from 'drizzle-orm';
 import { apiOrchestrator } from '$lib/services/api-orchestrator';
 
 // Entity mapping for dynamic CRUD operations
@@ -43,8 +42,7 @@ function buildWhereClauses(filters: Record<string, any> | undefined, table: any)
   if (!filters || typeof filters !== 'object') return [];
   return Object.entries(filters).flatMap(([key, value]) => {
     if (value === undefined || value === null) return [];
-    // @ts-ignore dynamic column access
-    const column = table[key];
+    const column = (table as any)[key];
     if (!column) return [];
     if (typeof value === 'string' && value.includes('%')) {
       return [like(column, value)];
@@ -54,23 +52,23 @@ function buildWhereClauses(filters: Record<string, any> | undefined, table: any)
 }
 
 // Lightweight text-search clause builder used in list/search handlers.
+// Lightweight text-search clause builder used in list/search handlers.
 // Returns an array of drizzle conditions (often a single `or(...)`) or [].
 function buildSearchClause(entity: string, query: string, table: any) {
   if (!query) return [];
   if (entity === 'cases') {
-    // @ts-ignore
-    return [or(like(table.title, `%${query}%`), like(table.description, `%${query}%`), like(table.status, `%${query}%`))];
+    return [or(like((table as any).title, `%${query}%`), like((table as any).description, `%${query}%`), like((table as any).status, `%${query}%`))];
   }
   if (entity === 'evidence') {
-    // @ts-ignore
-    return [or(like(table.title, `%${query}%`), like(table.description, `%${query}%`), like(table.evidenceType, `%${query}%`))];
+    return [or(like((table as any).title, `%${query}%`), like((table as any).description, `%${query}%`), like((table as any).evidenceType, `%${query}%`))];
   }
   if (entity === 'legalDocuments') {
-    // @ts-ignore
-    return [or(like(table.title, `%${query}%`), like(table.content, `%${query}%`), like(table.documentType, `%${query}%`))];
+    return [or(like((table as any).title, `%${query}%`), like((table as any).content, `%${query}%`), like((table as any).documentType, `%${query}%`))];
   }
   return [];
 }
+// Map entity names to tables (add/remove as needed)
+// Internal map (not exported to SvelteKit routing system)
 const entityMap = {
   users,
   userProfiles,
@@ -82,10 +80,6 @@ const entityMap = {
   personsOfInterest,
   ragMessages,
   ragSessions,
-  contentEmbeddings,
-  caseEmbeddings,
-  evidenceVectors,
-  userAiQueries
 } as const;
 
 type EntityName = keyof typeof entityMap;
@@ -154,7 +148,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
         if (result.length === 0) {
           return error(404, ensureError({ message: `${entity} with ID ${id} not found` }));
         }
-
+        result = await db.select().from(table).where(eq((table as any).id, id)).limit(1);
         return json({
           success: true,
           data: result[0],
@@ -163,14 +157,12 @@ export const GET: RequestHandler = async ({ url, request }) => {
 
       case 'list':
         const offset = (page - 1) * limit;
-        const sortColumn = table[sortBy as keyof typeof table] || table.createdAt;
-        const orderBy = sortOrder === 'asc' ? asc(sortColumn) : desc(sortColumn);
+        const sortColumnAny = (table as any)[sortBy] || (table as any).createdAt;
+        const orderBy = sortOrder === 'asc' ? sql`${sortColumnAny} ASC` : sql`${sortColumnAny} DESC`;
 
         // Get total count for pagination
-        const [countResult] = await db
-          .select({ count: sql<number>`count(*)::int` })
-          .from(table);
-        const total = countResult.count;
+        const countResultArr = await db.select({ count: sql<number>`count(*)::int` }).from(table);
+        const total = countResultArr[0]?.count ?? 0;
 
         // Get paginated results
         const query = db.select().from(table).orderBy(orderBy).limit(limit).offset(offset);
@@ -261,7 +253,6 @@ export const GET: RequestHandler = async ({ url, request }) => {
             'enhancedRAG',
             '/api/vector/search',
             {
-              method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 query: searchQuery,
@@ -284,7 +275,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
             metadata: {
               total: vectorData.total || vectorData.results?.length || 0,
               processingTime: Date.now() - startTime,
-              vectorSearch: true
+              cached: false
             }
           } satisfies ApiResponse);
 
@@ -298,7 +289,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
             error: 'Vector search unavailable, falling back to text search',
             metadata: {
               processingTime: Date.now() - startTime,
-              fallback: true
+              cached: true
             }
           } satisfies ApiResponse);
         }
@@ -352,7 +343,6 @@ export const POST: RequestHandler = async ({ request }) => {
               'enhancedRAG',
               '/api/embeddings/generate',
               {
-                method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                   id: result[0].id,
@@ -398,10 +388,27 @@ export const POST: RequestHandler = async ({ request }) => {
       case 'delete':
         if (!id) return error(400, ensureError({ message: 'ID required for delete operation' }));
 
-        result = await db.delete(table).where(eq(table.id, id)).returning();
+        // Perform deletion
+        result = await db.delete(table).where(eq((table as any).id, id)).returning();
 
         if (result.length === 0) {
           return error(404, ensureError({ message: `${entity} with ID ${id} not found` }));
+        }
+
+        // Best-effort cleanup of embeddings / vectors for content entities
+        if (['evidence', 'legalDocuments'].includes(entity)) {
+          try {
+            await apiOrchestrator.routeRequest(
+              'enhancedRAG',
+              '/api/embeddings/delete',
+              {
+                body: JSON.stringify({ id, entity }),
+                headers: { 'Content-Type': 'application/json' }
+              }
+            );
+          } catch (cleanupErr) {
+            console.warn(`Embedding cleanup failed for ${entity} ${id}:`, cleanupErr);
+          }
         }
 
         return json({

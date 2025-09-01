@@ -5,4 +5,4 @@ declare namespace App {
   }
 }
 
-export {};
+

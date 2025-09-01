@@ -16,7 +16,8 @@
   import type { ChatMessage } from '$lib/types/chat';
   import { notifications } from '$lib/stores/notification';
   import { aiService } from '$lib/services/aiService';
-  import { vectorService } from '$lib/server/vector/EnhancedVectorService';
+  // Import client-safe vector search - use API endpoints instead
+  // import { vectorService } from '$lib/server/vector/EnhancedVectorService';
   import {
     ArrowDown,
     CornerDownLeft,
@@ -55,7 +56,7 @@
   let isSearching = $state(false);
 
   // Demo data
-  let layoutData = {
+let layoutData = $state({
     user: { name: 'James', email: 'james@example.com' },
     stats: { totalCases: 12, openCases: 5, closedCases: 7, evidenceCount: 142 },
     recentActivity: [
@@ -63,7 +64,7 @@
       { action: 'Updated Case', details: 'State v. Anderson', time: '1h ago' },
       { action: 'Generated Report', details: 'Initial Analysis', time: '3h ago' },
     ],
-  };
+  });
 
   // Vector search integration
   async function performVectorSearch() {
@@ -115,7 +116,7 @@
           bind:value={searchQuery}
           placeholder="Search cases, evidence, legal documents..."
           class="flex-1" />
-        <Button on:click={performVectorSearch} loading={isSearching} disabled={!searchQuery.trim()}>
+        <Button on:on:click={performVectorSearch} loading={isSearching} disabled={!searchQuery.trim()}>
           <Search class="w-5 h-5 mr-2" />
           Search
         </Button>
@@ -169,7 +170,7 @@
       <Card>
         <div class="p-4">
           <h3 class="text-lg font-semibold mb-4 text-crimson">Modal Component</h3>
-          <Button on:click={() => (modalOpen = true)}>Open Modal</Button>
+          <Button on:on:click={() => (modalOpen = true)}>Open Modal</Button>
 
           <Modal bind:open={modalOpen} title="System Alert">
             <div class="mt-4">
@@ -178,8 +179,8 @@
                 integrates with bits-ui and follows Svelte 5 best practices.
               </p>
               <div class="flex gap-2 justify-end">
-                <Button variant="ghost" on:click={() => (modalOpen = false)}>Cancel</Button>
-                <Button on:click={() => (modalOpen = false)}>Acknowledge</Button>
+                <Button variant="ghost" on:on:click={() => (modalOpen = false)}>Cancel</Button>
+                <Button on:on:click={() => (modalOpen = false)}>Acknowledge</Button>
               </div>
             </div>
           </Modal>

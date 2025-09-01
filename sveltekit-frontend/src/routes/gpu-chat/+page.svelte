@@ -21,7 +21,7 @@
     // Get system information with port detection
     try {
       // Try primary port first
-      let port = 5173;
+let port = $state(5173);
       let response = await fetch(`http://localhost:${port}/api/system-info`);
       
       // If primary fails, try fallbacks

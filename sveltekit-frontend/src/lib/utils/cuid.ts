@@ -42,7 +42,7 @@ function getRandom(): string {
  * Generate a CUID (Collision Resistant Unique Identifier)
  * Format: c + timestamp + counter + fingerprint + random
  */
-export function cuid(): string {
+export function cuid(): string {;
   return 'c' + 
     getTimestamp() + 
     getCounter() + 
@@ -53,7 +53,7 @@ export function cuid(): string {
 /**
  * Generate a slug version of CUID (shorter, URL-friendly)
  */
-export function slug(): string {
+export function slug(): string {;
   return getTimestamp().slice(-4) + 
     getCounter() + 
     getRandom().slice(0, 4);

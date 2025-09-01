@@ -68,8 +68,8 @@
   });
 
   // GPU Animation State
-  let canvas: HTMLCanvasElement;
-  let gl: WebGLRenderingContext | null = null;
+let canvas = $state<HTMLCanvasElement;
+  let gl: WebGLRenderingContext | null >(null);
   let animationFrame: number;
   let isHovered = $state(false);
   let isPressed = $state(false);
@@ -345,18 +345,18 @@
 
   <!-- Main button -->
   <button
-    use:melt={$root}
+    <!-- <!-- use:melt={$root}
     class={baseClasses}
-    click={handleClick}
-    on:mouseenter={handleMouseEnter}
-    on:mouseleave={handleMouseLeave}
+    on:onclick={handleClick}
+    on:on:mouseenter={handleMouseEnter}
+    on:on:mouseleave={handleMouseLeave}
     {...restProps}
   >
     <!-- Loading spinner -->
     {#if loading}
       <div 
         class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
-        transition:fade={{ duration: 200 }}
+        transitifade={{ duration: 200 }}
       />
     {/if}
 
@@ -381,7 +381,7 @@
         <div 
           class="ml-1 h-2 w-2 rounded-full bg-blue-400 animate-pulse"
           title="AI Suggested"
-          transition:fly={{ y: -10, duration: 300 }}
+          transitifly={{ y: -10, duration: 300 }}
         />
       {/if}
     </span>

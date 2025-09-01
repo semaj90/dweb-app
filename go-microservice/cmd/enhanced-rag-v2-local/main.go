@@ -16,8 +16,8 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/lib/pq"
 	_ "github.com/lib/pq"
-	"github.com/redis/go-redis/v9"
 	amqp "github.com/rabbitmq/amqp091-go"
+	"github.com/redis/go-redis/v9"
 )
 
 // ==========================================

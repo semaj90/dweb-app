@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
-	import { createCheckbox, melt } from '@melt-ui/svelte';
+	import type {    Snippet    } from 'svelte';
+	import { Checkbox as BitsCheckbox } from 'bits-ui';
 	import { createEventDispatcher } from 'svelte';
 	import { cn } from '$lib/utils';
 
@@ -54,46 +54,16 @@
 		onCheckedChange
 	}: Props = $props();
 	
-	// Create the checkbox with melt-ui
-	const {
-		elements: { root, input },
-		states: { checked: checkedState, isChecked, isIndeterminate },
-		options
-	} = createCheckbox({
-		checked,
-		disabled,
-		required,
-		onCheckedChange: ({ curr, next }) => {
-			if (onCheckedChange) {
-				onCheckedChange(next);
-			}
-			return next;
-		}
-	});
-	
 	const dispatch = createEventDispatcher<{
 		'checked-change': { checked: CheckedState };
 	}>();
-	
-	// Sync external checked prop with internal state
-	$effect(() => {
-		if (checked !== $checkedState) {
-			checkedState.set(checked);
+
+	function handleCheckedChange(newChecked: CheckedState) {
+		if (onCheckedChange) {
+			onCheckedChange(newChecked);
 		}
-	});
-	
-	// Update external binding when internal state changes
-	$effect(() => {
-		if (checked !== $checkedState) {
-			checked = $checkedState;
-			dispatch('checked-change', { checked: $checkedState });
-		}
-	});
-	
-	// Sync disabled state
-	$effect(() => {
-		options.update(prev => ({ ...prev, disabled }));
-	});
+		dispatch('checked-change', { checked: newChecked });
+	}
 	
 	// Default checkbox styles
 	const checkboxClass = cn(
@@ -105,39 +75,43 @@
 <!-- Hidden input for form submission -->
 {#if name}
 	<input
-		type="hidden"
+		type="checkbox"
 		{name}
 		{value}
-		bind:checked={$isChecked}
+		bind:checked
+		style="display: none;"
 	/>
 {/if}
 
 <div class="flex items-center space-x-2">
 	<!-- Checkbox -->
-	<button
-		use:melt={$root}
-		{id}
+	<BitsCheckbox.Root
+		bind:checked
+		{disabled}
+		{required}
+		onCheckedChange={handleCheckedChange}
 		class={checkboxClass}
+		{id}
 		aria-label={ariaLabel}
 		aria-labelledby={ariaLabelledBy}
 		aria-describedby={ariaDescribedBy}
-		data-testid={testId || "melt-checkbox"}
-		type="button"
+		data-testid={testId || "bits-checkbox"}
 	>
-		<!-- Hidden native input -->
-		<input use:melt={$input} />
+		<BitsCheckbox.Indicator class="flex items-center justify-center text-current">
+			{#if checked === 'indeterminate'}
+				<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+				</svg>
+			{:else if checked}
+				<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+				</svg>
+			{/if}
+		</BitsCheckbox.Indicator>
 		
-		<!-- Checked state indicator -->
-		{#if $isChecked}
-			<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-			</svg>
-		{:else if $isIndeterminate}
-			<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
-			</svg>
-		{/if}
-	</button>
+		<!-- Hidden native input -->
+		<BitsCheckbox.Input />
+	</BitsCheckbox.Root>
 	
 	<!-- Label and description -->
 	{#if children}

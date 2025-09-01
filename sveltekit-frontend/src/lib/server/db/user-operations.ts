@@ -4,7 +4,7 @@
  */
 
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { eq, and, isNull, count, sql, desc } from './index';
+import { eq, and, isNull, count, sql, desc } from './index.js';
 import { cosineDistance } from 'drizzle-orm';
 import postgres from 'postgres';
 import bcrypt from 'bcryptjs';
@@ -20,7 +20,7 @@ import type {
   UserActivity,
   NewUserActivity,
   FullUserProfile
-} from './schema/user-management';
+} from './schema/user-management.js';
 import { 
   users, 
   userProfiles, 
@@ -30,14 +30,14 @@ import {
   updateUserSchema,
   insertProfileSchema,
   updateProfileSchema
-} from './schema/user-management';
+} from './schema/user-management.js';
 
 // ============================================================================
 // DATABASE CONNECTION
 // ============================================================================
 
-const connectionString = process.env.DATABASE_URL || 
-  `postgresql://${process.env.DATABASE_USER || 'legal_admin'}:${process.env.DATABASE_PASSWORD || '123456'}@${process.env.DATABASE_HOST || 'localhost'}:${process.env.DATABASE_PORT || '5432'}/${process.env.DATABASE_NAME || 'legal_ai_db'}`;
+const connectionString = import.meta.env.DATABASE_URL || 
+  `postgresql://${import.meta.env.DATABASE_USER || 'legal_admin'}:${import.meta.env.DATABASE_PASSWORD || '123456'}@${import.meta.env.DATABASE_HOST || 'localhost'}:${import.meta.env.DATABASE_PORT || '5432'}/${import.meta.env.DATABASE_NAME || 'legal_ai_db'}`;
 
 // Create connection with pgvector support
 const queryClient = postgres(connectionString, {

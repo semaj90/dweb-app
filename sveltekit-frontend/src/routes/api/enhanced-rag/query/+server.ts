@@ -1,3 +1,4 @@
+import type { RequestHandler } from '@sveltejs/kit';
 import { json, type RequestHandler } from '@sveltejs/kit';
 import { z } from 'zod';
 import { enhancedRAGService } from '$lib/services/enhanced-rag-integration.js';

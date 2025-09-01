@@ -9,12 +9,13 @@
  * 5. Qdrant: Search index only (rebuildable from PostgreSQL)
  */
 
-import { redis } from '../lib/server/cache/redis-service';
-import { db } from '../lib/server/db/index';
-import { evidence, documentMetadata, documentEmbeddings } from '../lib/server/db/schema-unified';
-import { embeddingCache } from '../lib/server/db/schema-postgres';
+import { redis } from '$lib/server/cache/redis-service';
+import { db } from '$lib/server/db/index';
+import { evidence, documentMetadata, documentEmbeddings } from '$lib/server/db/schema-unified';
+import { embeddingCache } from '$lib/server/db/schema-postgres';
 import { eq, and, isNull, sql, desc } from 'drizzle-orm';
 import { QdrantClient } from '@qdrant/js-client-rest';
+import stream from "stream";
 
 // Types for Redis events
 export interface AutoTagEvent {
@@ -62,7 +63,7 @@ export class PostgreSQLFirstWorker {
     this.redis = redis;
 
     this.qdrant = new QdrantClient({
-      url: process.env.QDRANT_URL || 'http://localhost:6333'
+      url: import.meta.env.QDRANT_URL || 'http://localhost:6333'
     });
   }
 
@@ -101,7 +102,7 @@ export class PostgreSQLFirstWorker {
       // Create separate client for LISTEN (blocking operation)
       const { Client } = await import('pg');
       this.pgNotificationClient = new Client({
-        connectionString: process.env.DATABASE_URL || 'postgresql://legal_admin:123456@localhost:5432/legal_ai_db'
+        connectionString: import.meta.env.DATABASE_URL || 'postgresql://legal_admin:123456@localhost:5432/legal_ai_db'
       });
 
       await this.pgNotificationClient.connect();

@@ -4,8 +4,7 @@
   import { vectorPipelineState, vectorPipelineActions, type VectorPipelineJob } from '$lib/machines/vector-pipeline-machine';
   import Button from '$lib/components/ui/Button.svelte';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
-
-  let unsubscribe: (() => void) | null = null;
+let unsubscribe = $state<(() >(> void) | null = null);
   let state = $vectorPipelineState;
 
   // Sample job data
@@ -58,11 +57,11 @@
   }
 
   // Get status indicators (runes-safe)
-  let pipelineStatus = {} as any;
-  let batchInfo = {} as any;
-  let metrics = {} as any;
-  let currentState = 'unknown';
-  let errors: string[] = [];
+let pipelineStatus = $state({} as any);
+let batchInfo = $state({} as any);
+let metrics = $state({} as any);
+let currentState = $state('unknown');
+let errors = $state<string[] >([]);
 
   const pipelineStatusDerived = $derived(() => state.context?.pipeline);
   const batchInfoDerived = $derived(() => state.context?.batch);
@@ -113,25 +112,25 @@
 
       <!-- Control Buttons -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-        <Button on:click={submitSingleJob} disabled={currentState === 'processingJob'}>
+        <Button on:on:click={submitSingleJob} disabled={currentState === 'processingJob'}>
           Submit Single Job
         </Button>
-        <Button on:click={submitBatchJobs} disabled={currentState === 'processingBatch'}>
+        <Button on:on:click={submitBatchJobs} disabled={currentState === 'processingBatch'}>
           Submit Batch
         </Button>
-        <Button on:click={runHealthCheck} variant="outline">
+        <Button on:on:click={runHealthCheck} variant="outline">
           Health Check
         </Button>
-        <Button on:click={resetPipeline} variant="destructive">
+        <Button on:on:click={resetPipeline} variant="destructive">
           Reset Pipeline
         </Button>
-        <Button on:click={enableWebGPU} disabled={pipelineStatus?.webgpu}>
+        <Button on:on:click={enableWebGPU} disabled={pipelineStatus?.webgpu}>
           Enable WebGPU
         </Button>
-        <Button on:click={disableWebGPU} disabled={!pipelineStatus?.webgpu}>
+        <Button on:on:click={disableWebGPU} disabled={!pipelineStatus?.webgpu}>
           Disable WebGPU
         </Button>
-        <Button on:click={retryFailedJobs} disabled={!batchInfo?.failedJobs || batchInfo.failedJobs === 0}>
+        <Button on:on:click={retryFailedJobs} disabled={!batchInfo?.failedJobs || batchInfo.failedJobs === 0}>
           Retry Failed
         </Button>
       </div>
@@ -308,7 +307,7 @@
             Test connectivity to backend services that the vector pipeline depends on:
           </p>
           <Button
-            on:click={async () => {
+            on:on:click={async () => {
               try {
                 const response = await fetch('http://localhost:8094/api/health');
                 const data = await response.json();
@@ -323,7 +322,7 @@
             Test Enhanced RAG (8094)
           </Button>
           <Button
-            on:click={async () => {
+            on:on:click={async () => {
               try {
                 const response = await fetch('http://localhost:6333/health');
                 if (response.ok) {

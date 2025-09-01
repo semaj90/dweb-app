@@ -1,91 +1,57 @@
 
 
 import { ensureError } from '$lib/utils/ensure-error';
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
+import type { ChatRequest, ChatResponse } from '$lib/types/api.js';
+import { apiSuccess, apiError, getRequestId, withErrorHandling } from '$lib/server/api/standard-response';
 
 // Simplified Ollama API route for Legal AI Chat
 // SvelteKit 2.0 + Svelte 5 + Direct Ollama integration
 
 import { json, error } from "@sveltejs/kit";
-import { ollamaService } from '../../../../lib/server/services/OllamaService';
-import { logger } from '../../../../lib/server/production-logger';
-const dev = process.env.NODE_ENV === 'development';
+import { ollamaService } from '../../../../lib/server/services/OllamaService.js';
+import { logger } from '../../../../lib/server/production-logger.js';
+const dev = import.meta.env.NODE_ENV === 'development';
 
-export interface ChatRequest {
-  message: string;
-  model?: string;
-  context?: string[];
-  temperature?: number;
-  stream?: boolean;
-  caseId?: string;
-  useRAG?: boolean;
-}
-
-export interface ChatResponse {
-  response: string;
-  model: string;
-  context?: number[];
-  timestamp: string;
-  performance: {
-    duration: number;
-    tokens: number;
-    promptTokens: number;
-    responseTokens: number;
-    tokensPerSecond: number;
-  };
-  suggestions?: string[];
-  relatedCases?: string[];
-}
-
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = withErrorHandling(async (event) => {
+  const requestId = getRequestId(event);
   const startTime = Date.now();
 
-  try {
-    const {
-      message,
-      model = "gemma3-legal:latest",
-      temperature = 0.7,
-      stream = false,
-    }: ChatRequest = await request.json();
+  const {
+    message,
+    model = "gemma3-legal:latest",
+    temperature = 0.7,
+    stream = false,
+  }: ChatRequest = await event.request.json();
 
-    // Validate input
-    if (!message?.trim()) {
-      throw error(400, ensureError({ message: "Message is required" }));
-    }
-
-    // Check Ollama health
-    const isHealthy = await ollamaService.isHealthy();
-    if (!isHealthy) {
-      logger.error("Ollama service is not healthy");
-      throw error(503, ensureError({ message: "AI service is currently unavailable" }));
-    }
-
-    // Add legal AI system prompt
-    const systemPrompt = `You are a legal AI assistant. User question: ${message}`;
-
-    // Handle streaming vs non-streaming responses
-    if (stream) {
-      return handleStreamingResponse(model, systemPrompt, temperature);
-    } else {
-      return handleNonStreamingResponse(
-        model,
-        systemPrompt,
-        temperature,
-        startTime
-      );
-    }
-  } catch (err: any) {
-    logger.error("Chat API error", err);
-
-    if (err instanceof Error && "status" in err) {
-      throw err; // Re-throw SvelteKit errors
-    }
-
-    throw error(500, ensureError({
-      message: dev ? err.message : "Internal server error",
-    }));
+  // Validate input
+  if (!message?.trim()) {
+    return apiError("Message is required", 400, 'INVALID_INPUT', undefined, requestId);
   }
-};
+
+  // Check Ollama health
+  const isHealthy = await ollamaService.isHealthy();
+  if (!isHealthy) {
+    logger.error("Ollama service is not healthy");
+    return apiError("AI service is currently unavailable", 503, 'SERVICE_UNAVAILABLE', undefined, requestId);
+  }
+
+  // Add legal AI system prompt
+  const systemPrompt = `You are a legal AI assistant. User question: ${message}`;
+
+  // Handle streaming vs non-streaming responses
+  if (stream) {
+    return handleStreamingResponse(model, systemPrompt, temperature);
+  } else {
+    return handleNonStreamingResponse(
+      model,
+      systemPrompt,
+      temperature,
+      startTime,
+      requestId
+    );
+  }
+});
 
 async function handleStreamingResponse(
   model: string,
@@ -158,7 +124,8 @@ async function handleNonStreamingResponse(
   model: string,
   prompt: string,
   temperature: number,
-  startTime: number
+  startTime: number,
+  requestId: string
 ): Promise<Response> {
   const response = await ollamaService.generate(model, prompt, { temperature });
   const endTime = Date.now();
@@ -187,7 +154,7 @@ async function handleNonStreamingResponse(
     relatedCases: [], // Simplified - no external case lookup
   };
 
-  return json(chatResponse);
+  return apiSuccess(chatResponse, 'Chat message processed successfully', requestId);
 }
 
 // Enhanced token estimation function
@@ -229,30 +196,28 @@ function generateSimpleSuggestions(
 }
 
 // Health check endpoint
-export const GET: RequestHandler = async () => {
-  try {
-    const isHealthy = await ollamaService.isHealthy();
-    const models = await ollamaService.listModels();
+export const GET: RequestHandler = withErrorHandling(async (event) => {
+  const requestId = getRequestId(event);
 
-    return json({
-      status: isHealthy ? "healthy" : "unhealthy",
-      timestamp: new Date().toISOString(),
-      models: models.map((m) => ({
-        name: m.name,
-        size: m.size,
-        family: m.details?.family || 'unknown',
-      })),
-      endpoints: [
-        "POST /api/ai/chat - Send chat message",
-        "GET /api/ai/chat - Health check",
-      ],
-    });
-  } catch (error: any) {
-    logger.error("Health check failed", error);
-    return json({ 
-      status: "error", 
-      error: (error as Error).message,
-      timestamp: new Date().toISOString()
-    }, { status: 500 });
-  }
-};
+  const isHealthy = await ollamaService.isHealthy();
+  const models = await ollamaService.listModels();
+
+  const healthData = {
+    status: isHealthy ? "healthy" : "unhealthy",
+    models: models.map((m) => ({
+      name: m.name,
+      size: m.size,
+      family: m.details?.family || 'unknown',
+    })),
+    endpoints: [
+      "POST /api/ai/chat - Send chat message",
+      "GET /api/ai/chat - Health check",
+    ],
+  };
+
+  return apiSuccess(
+    healthData, 
+    isHealthy ? 'Chat service is healthy' : 'Chat service has issues', 
+    requestId
+  );
+});

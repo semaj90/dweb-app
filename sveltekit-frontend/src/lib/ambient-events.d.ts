@@ -19,4 +19,4 @@ declare namespace svelteHTML {
   }
 }
 
-export {};
+

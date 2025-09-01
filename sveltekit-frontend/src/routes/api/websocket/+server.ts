@@ -1,5 +1,6 @@
 
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
+import { URL } from "url";
 
 // ======================================================================
 // REAL-TIME WEBSOCKET HANDLER FOR ENHANCED LEGAL AI SYSTEM

@@ -14,24 +14,24 @@
   import type { ActionData } from './$types';
   
   // Component state
-  let reportText = '';
-  let summary = '';
-  let isLoading = false;
-  let errorMessage = '';
-  let processingSteps: string[] = [];
-  let metadata: any = null;
+let reportText = $state('');
+let summary = $state('');
+let isLoading = $state(false);
+let errorMessage = $state('');
+let processingSteps = $state<string[] >([]);
+let metadata = $state<any >(null);
   
   // Summarization options
-  let summaryLength: 'short' | 'medium' | 'long' = 'medium';
-  let includeKeyTerms = true;
-  let includeLegalAnalysis = true;
-  let temperature = 0.3;
+let summaryLength = $state<'short' | 'medium' | 'long' >('medium');
+let includeKeyTerms = $state(true);
+let includeLegalAnalysis = $state(true);
+let temperature = $state(0.3);
   
   // UI state
-  let activeTab: 'input' | 'summary' | 'analysis' = 'input';
-  let wordCount = 0;
-  let charCount = 0;
-  let estimatedProcessingTime = 0;
+let activeTab = $state<'input' | 'summary' | 'analysis' >('input');
+let wordCount = $state(0);
+let charCount = $state(0);
+let estimatedProcessingTime = $state(0);
   
   // Sample legal document for demonstration
   const sampleLegalDoc = `MEMORANDUM OF LAW
@@ -226,10 +226,10 @@ Additionally, we recommend exploring settlement negotiations before filing suit,
       </div>
       
       <div class="actions">
-        <button class="btn btn-outline" click={loadSampleDocument}>
+        <button class="btn btn-outline" on:onclick={loadSampleDocument}>
           Load Sample
         </button>
-        <button class="btn btn-outline" click={clearAll}>
+        <button class="btn btn-outline" on:onclick={clearAll}>
           Clear All
         </button>
       </div>
@@ -239,13 +239,13 @@ Additionally, we recommend exploring settlement negotiations before filing suit,
   <div class="tab-navigation">
     <button 
       class="tab {activeTab === 'input' ? 'active' : ''}"
-      click={() => activeTab = 'input'}
+      on:onclick={() => activeTab = 'input'}
     >
       📝 Document Input
     </button>
     <button 
       class="tab {activeTab === 'summary' ? 'active' : ''}"
-      click={() => activeTab = 'summary'}
+      on:onclick={() => activeTab = 'summary'}
       disabled={!summary && !isLoading}
     >
       📋 Summary
@@ -255,7 +255,7 @@ Additionally, we recommend exploring settlement negotiations before filing suit,
     </button>
     <button 
       class="tab {activeTab === 'analysis' ? 'active' : ''}"
-      click={() => activeTab = 'analysis'}
+      on:onclick={() => activeTab = 'analysis'}
       disabled={!metadata?.legalRiskAnalysis}
     >
       ⚖️ Legal Analysis
@@ -330,7 +330,7 @@ Additionally, we recommend exploring settlement negotiations before filing suit,
           <div class="input-footer">
             <button 
               class="btn btn-primary btn-large"
-              click={handleSummarize}
+              on:onclick={handleSummarize}
               disabled={isLoading || !reportText.trim() || reportText.length < 100}
             >
               {#if isLoading}
@@ -362,7 +362,7 @@ Additionally, we recommend exploring settlement negotiations before filing suit,
             <div class="result-header">
               <h3>📋 Document Summary</h3>
               <div class="result-actions">
-                <button id="copy-btn" class="btn btn-outline" click={copySummary}>
+                <button id="copy-btn" class="btn btn-outline" on:onclick={copySummary}>
                   📋 Copy Summary
                 </button>
               </div>
@@ -409,7 +409,7 @@ Additionally, we recommend exploring settlement negotiations before filing suit,
           <div class="error-panel">
             <h3>❌ Processing Error</h3>
             <p>{errorMessage}</p>
-            <button class="btn btn-primary" click={() => activeTab = 'input'}>
+            <button class="btn btn-primary" on:onclick={() => activeTab = 'input'}>
               ← Back to Input
             </button>
           </div>

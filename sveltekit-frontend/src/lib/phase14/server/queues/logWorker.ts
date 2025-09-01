@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 
 import { Worker } from "bullmq";
 import { logQueue } from './logQueue';

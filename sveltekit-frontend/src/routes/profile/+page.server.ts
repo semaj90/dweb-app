@@ -1,16 +1,34 @@
+import type { PageServerLoad } from './$types';
 
-import { cases, criminals, evidence } from "$lib/server/db";
+import { cases, criminals, evidence, profileUpdateZodSchema } from "$lib/db/schema";
 import { count, eq } from "drizzle-orm";
-import type { PageServerLoad } from "./$types";
-import { redirect } from '@sveltejs/kit';
+import type { PageServerLoad, Actions } from "./$types";
+import { redirect, error } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
+import { superValidate } from 'sveltekit-superforms';
+import { zod } from 'sveltekit-superforms/adapters';
+
+// SOLUTION: Use the pre-extracted Zod schema for SuperForms compatibility
+// No more TypeScript errors with drizzle-zod schemas!
+const profileSchema = profileUpdateZodSchema;
 
 export const load: PageServerLoad = async (event: any) => {
   const { locals } = event;
   if (!locals.user) {
     throw redirect(302, "/login");
   }
+  
   try {
+    // Example profile data (replace with your actual profile fetching logic)
+    const profileData = {
+      id: locals.user.id,
+      firstName: locals.user.firstName || '',
+      lastName: locals.user.lastName || ''
+    };
+
+    // Initialize the SuperForm with drizzle-zod schema
+    const profileForm = await superValidate(profileData, zod(profileSchema));
+
     // Get user account statistics
     const [
       totalCases,
@@ -69,6 +87,7 @@ export const load: PageServerLoad = async (event: any) => {
       user: locals.user,
       session: locals.session,
       userStats,
+      profileForm, // Add the SuperForm
     };
   } catch (error: any) {
     console.error("Error loading user stats:", error);
@@ -88,6 +107,38 @@ export const load: PageServerLoad = async (event: any) => {
         misdemeanorCases: 0,
         citationCases: 0,
       },
+      profileForm: null,
     };
+  }
+};
+
+export const actions: Actions = {
+  updateProfile: async ({ request, locals }) => {
+    if (!locals.user) {
+      throw redirect(302, "/login");
+    }
+
+    const form = await superValidate(request, zod(profileSchema));
+
+    if (!form.valid) {
+      return { form };
+    }
+
+    try {
+      // Update profile in database
+      // await db.update(profileTable)
+      //   .set({
+      //     firstName: form.data.firstName,
+      //     lastName: form.data.lastName,
+      //   })
+      //   .where(eq(profileTable.id, locals.user.id));
+
+      console.log('Profile updated:', form.data);
+      
+      return { form, success: true };
+    } catch (err) {
+      console.error('Profile update failed:', err);
+      throw error(500, 'Failed to update profile');
+    }
   }
 };

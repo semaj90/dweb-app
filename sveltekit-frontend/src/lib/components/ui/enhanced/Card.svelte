@@ -18,7 +18,7 @@
 		...props
 	}: Props = $props();
 
-	const cardClasses = $derived([
+	let cardClasses = $derived([
 		'yorha-card shadcn-card',
 		elevated && 'yorha-card-elevated',
 		interactive && 'cursor-pointer hover:scale-[1.02] transition-transform duration-200',

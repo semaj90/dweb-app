@@ -176,8 +176,7 @@
 				}
 			}
 		];
-		
-		let passedTests = 0;
+let passedTests = $state(0);
 		for (const diagnostic of diagnostics) {
 			try {
 				const result = await diagnostic.test();
@@ -305,10 +304,10 @@
 		</div>
 		
 		<div class="action-buttons">
-			<button click={runSystemDiagnostics} class="diagnostic-button">
+			<button on:onclick={runSystemDiagnostics} class="diagnostic-button">
 				🔬 Run System Diagnostics
 			</button>
-			<button click={clearLogs} class="clear-logs-button">
+			<button on:onclick={clearLogs} class="clear-logs-button">
 				🧹 Clear Logs
 			</button>
 		</div>

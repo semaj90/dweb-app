@@ -118,7 +118,7 @@
 	});
 
 	// Spiral animation for golden ratio aesthetics
-	const spiralPoints = $derived(() => {
+	let spiralPoints = $derived(() => {
 		const points = [];
 		const centerX = 50;
 		const centerY = 50;

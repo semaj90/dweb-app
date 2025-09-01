@@ -1,3 +1,11 @@
+// Simple in-memory metric counters (can be replaced by Prometheus client later)
+const counters: Record<string, number> = {};
+export function incrementMetric(name: string, value = 1) {
+  counters[name] = (counters[name] || 0) + value;
+}
+export function getMetricsSnapshot() {
+  return { ...counters };
+}
 
 /**
  * Server-side logger utility
@@ -31,7 +39,7 @@ export class Logger {
   }
 
   debug(message: string, meta?: unknown) {
-    if (process.env.NODE_ENV === "development") {
+    if (import.meta.env.NODE_ENV === "development") {
       console.debug(
         `[DEBUG] ${new Date().toISOString()} - ${message}`,
         meta || ""

@@ -853,7 +853,7 @@ export class ClientServerSyncService {
 // ============================================================================
 
 export const syncService = ClientServerSyncService.getInstance();
-
+;
 // Export stores for reactive components
 export const syncStatus = syncService.status;
 export const offlineCapabilities = syncService.capabilities;

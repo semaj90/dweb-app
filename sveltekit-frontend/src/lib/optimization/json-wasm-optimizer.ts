@@ -599,7 +599,7 @@ export function createHighPerformanceJSONProcessor(): JSONWebAssemblyOptimizer {
 
 // === Global Instance ===
 export const jsonWasmOptimizer = new JSONWebAssemblyOptimizer();
-
+;
 // === Utility Functions ===
 export async function optimizeJSONForTransport(data: any): Promise<{
   optimized: string | Uint8Array;

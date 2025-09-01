@@ -1,8 +1,6 @@
 <script lang="ts">
-  import { $props } from 'svelte';
-
   interface Props {
-    caseId: string | null ;
+    caseId: string | null;
     readOnly?: unknown;
   }
   let {
@@ -22,13 +20,12 @@
   export const selectedNode = writable(null);
   
   // Props
-      
-  let canvasComponent: CanvasEditor;
-  let currentSelectedNode: any = null;
+let canvasComponent = $state<CanvasEditor;
+let currentSelectedNode = $state<any >(null);
   
   // Subscribe to selected node changes
-  selectedNode.subscribe(node => {
-    currentSelectedNode = node;
+  selectedNode.subscribe(node >(> {
+    currentSelectedNode = node);
   });
   
   function handleNodeSelect(event: CustomEvent) {

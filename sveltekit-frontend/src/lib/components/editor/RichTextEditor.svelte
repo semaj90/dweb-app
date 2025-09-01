@@ -19,12 +19,12 @@ https://svelte.dev/e/js_parse_error -->
   import { onMount, onDestroy } from 'svelte';
   import Editor from '@tinymce/tinymce-svelte';
   import { report, reportActions, editorState } from '$lib/stores/report';
-  
+
   const initialValue = '';
-        
+
   let editorInstance: any;
-  let isInitialized = false;
-  
+let isInitialized = $state(false);
+
   // TinyMCE configuration
   const editorConfig = {
     height,
@@ -37,28 +37,28 @@ https://svelte.dev/e/js_parse_error -->
       'nonbreaking', 'template', 'toc', 'quickbars', 'codesample'
     ],
     toolbar: `
-      undo redo | blocks fontfamily fontsize | 
-      bold italic underline strikethrough | 
-      link image media table | 
-      alignleft aligncenter alignright alignjustify | 
-      outdent indent | numlist bullist | 
-      forecolor backcolor removeformat | 
-      pagebreak | charmap emoticons | 
+      undo redo | blocks fontfamily fontsize |
+      bold italic underline strikethrough |
+      link image media table |
+      alignleft aligncenter alignright alignjustify |
+      outdent indent | numlist bullist |
+      forecolor backcolor removeformat |
+      pagebreak | charmap emoticons |
       fullscreen preview save | help
     `,
     content_style: `
-      body { 
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
-        font-size: 14px; 
+      body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: 14px;
         line-height: 1.6;
         color: #374151;
         background: #ffffff;
 }
       p { margin-bottom: 1em; }
-      h1, h2, h3, h4, h5, h6 { 
-        font-weight: 600; 
-        margin-top: 1.5em; 
-        margin-bottom: 0.5em; 
+      h1, h2, h3, h4, h5, h6 {
+        font-weight: 600;
+        margin-top: 1.5em;
+        margin-bottom: 0.5em;
         color: #111827;
 }
       blockquote {
@@ -116,52 +116,52 @@ https://svelte.dev/e/js_parse_error -->
     // Content change handler
     setup: (editor: any) => {
       editorInstance = editor;
-      
+
       editor.on('init', () => {
         isInitialized = true;
         editorState.update(s => ({ ...s, isEditing: true }));
       });
-      
+
       editor.on('input change', () => {
         if (isInitialized) {
           const content = editor.getContent();
           reportActions.updateContent(content);
-          
+
           // Update word count
           const wordCount = editor.plugins.wordcount?.getCount() || 0;
           editorState.update(s => ({ ...s, wordCount }));
 }
       });
-      
+
       editor.on('selectionchange', () => {
         const selectedText = editor.selection.getContent({ format: 'text' });
         editorState.update(s => ({ ...s, selectedText }));
       });
-      
+
       editor.on('focus', () => {
         editorState.update(s => ({ ...s, isEditing: true }));
       });
-      
+
       editor.on('blur', () => {
         editorState.update(s => ({ ...s, isEditing: false }));
       });
 }
   };
-  
+
   // Reactive updates
-  $effect(() => { 
+  $effect(() => {
     if (editorInstance && $report.content !== editorInstance.getContent()) {
       editorInstance.setContent($report.content);
     }
   });
-  
+
   // Custom methods
   function insertContent(content: string) {
     if (editorInstance) {
       editorInstance.insertContent(content);
     }
   }
-  
+
   function insertEvidence(evidence: any) {
     const evidenceHtml = `
       <div class="space-y-4" data-evidence-id="${evidence.id}">
@@ -175,15 +175,15 @@ https://svelte.dev/e/js_parse_error -->
     `;
     insertContent(evidenceHtml);
   };
-  
+
   function getWordCount() {
     return editorInstance?.plugins.wordcount?.getCount() || 0;
   }
-  
+
   function getCharCount() {
     return editorInstance?.plugins.wordcount?.getCharacterCount() || 0;
   }
-  
+
   onDestroy(() => {
     editorState.update(s => ({ ...s, isEditing: false }));
   });
@@ -194,7 +194,7 @@ https://svelte.dev/e/js_parse_error -->
     {disabled}
     bind:value={$report.content}
     conf={editorConfig}
-    on:change={(e: any) => reportActions.updateContent(e.detail.level.content)}
+    change={(e: any) => reportActions.updateContent(e.detail.level.content)}
   />
 </div>
 
@@ -255,3 +255,5 @@ https://svelte.dev/e/js_parse_error -->
     --tox-collection-toolbar-button-hover-background: #4B5563;
 }
 </style>
+
+<!-- Removed forced error test block after pipeline validation -->

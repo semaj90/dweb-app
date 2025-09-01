@@ -1,6 +1,6 @@
 // TypeScript type definitions for modular UI components
 
-import type { Snippet } from 'svelte';
+import type {     Snippet     } from 'svelte';
 import type { HTMLAttributes, HTMLButtonAttributes, HTMLInputAttributes } from 'svelte/elements';
 
 // Base component props
@@ -135,8 +135,8 @@ export type ComponentVariant =
   | 'warning' 
   | 'info' 
   | 'yorha' 
-  | 'legal' 
-  | 'evidence' 
+  | 'legal' ;
+  | 'evidence' ;
   | 'case';
 
 export type ComponentSize = 'sm' | 'default' | 'lg';

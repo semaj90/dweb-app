@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 <script lang="ts">
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
@@ -19,17 +20,17 @@
   });
 
   // Reactive selectors using the hardened machine
-  const isLoading = $derived(legalCaseSelectors.isLoading($state));
-  const hasError = $derived(legalCaseSelectors.hasError($state));
-  const currentCase = $derived(legalCaseSelectors.getCurrentCase($state));
-  const evidence = $derived(legalCaseSelectors.getEvidence($state));
-  const aiSummary = $derived(legalCaseSelectors.getAISummary($state));
-  const similarCases = $derived(legalCaseSelectors.getSimilarCases($state));
-  const activeTab = $derived(legalCaseSelectors.getActiveTab($state));
-  const workflowStage = $derived(legalCaseSelectors.getWorkflowStage($state));
-  const nextActions = $derived(legalCaseSelectors.getNextActions($state));
-  const canStartAIAnalysis = $derived(legalCaseSelectors.canStartAIAnalysis($state));
-  const stats = $derived(legalCaseSelectors.getStats($state));
+  let isLoading = $derived(legalCaseSelectors.isLoading($state));
+  let hasError = $derived(legalCaseSelectors.hasError($state));
+  let currentCase = $derived(legalCaseSelectors.getCurrentCase($state));
+  let evidence = $derived(legalCaseSelectors.getEvidence($state));
+  let aiSummary = $derived(legalCaseSelectors.getAISummary($state));
+  let similarCases = $derived(legalCaseSelectors.getSimilarCases($state));
+  let activeTab = $derived(legalCaseSelectors.getActiveTab($state));
+  let workflowStage = $derived(legalCaseSelectors.getWorkflowStage($state));
+  let nextActions = $derived(legalCaseSelectors.getNextActions($state));
+  let canStartAIAnalysis = $derived(legalCaseSelectors.canStartAIAnalysis($state));
+  let stats = $derived(legalCaseSelectors.getStats($state));
 
   // Form state
   let newCaseTitle = $state('');
@@ -107,14 +108,14 @@
   }
 
   // File upload handler
-  let fileInput: HTMLInputElement;
+let fileInput = $state<HTMLInputElement;
 
   function triggerFileUpload() {
     fileInput?.click();
   }
 
   function onFileChange(event: Event) {
-    const target = event.target as HTMLInputElement;
+    const target >(event.target as HTMLInputElement);
     if (target.files) {
       handleAddEvidence(target.files);
     }
@@ -131,10 +132,10 @@
         <h3 class="text-lg font-semibold text-red-800 mb-2">Error</h3>
         <p class="text-red-600 mb-4">{$state.context.error}</p>
         <div class="flex gap-2">
-          <Button variant="outline" size="sm" on:click={handleRetry}>
+          <Button variant="outline" size="sm" on:on:click={handleRetry}>
             Retry
           </Button>
-          <Button variant="ghost" size="sm" on:click={handleDismissError}>
+          <Button variant="ghost" size="sm" on:on:click={handleDismissError}>
             Dismiss
           </Button>
         </div>
@@ -189,7 +190,7 @@
             ></textarea>
           </div>
           
-          <Button on:click={handleCreateCase} class="w-full">
+          <Button on:on:click={handleCreateCase} class="w-full">
             Create Case
           </Button>
         </div>
@@ -254,7 +255,7 @@
           {#each ['overview', 'evidence', 'analysis', 'search'] as tab}
             <button
               class="py-2 px-1 border-b-2 font-medium text-sm {activeTab === tab ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
-              click={() => handleTabSwitch(tab)}
+              on:onclick={() => handleTabSwitch(tab)}
             >
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
@@ -296,7 +297,7 @@
                   change={onFileChange}
                   class="hidden"
                 />
-                <Button on:click={triggerFileUpload}>
+                <Button on:on:click={triggerFileUpload}>
                   Choose Files
                 </Button>
               </div>
@@ -317,7 +318,7 @@
                           </div>
                           <div class="flex gap-2">
                             <Button size="sm" variant="outline">View</Button>
-                            <Button size="sm" on:click={() => send({ type: 'SELECT_EVIDENCE', evidence: item })}>
+                            <Button size="sm" on:on:click={() => send({ type: 'SELECT_EVIDENCE', evidence: item })}>
                               Select
                             </Button>
                           </div>
@@ -344,14 +345,14 @@
                 <h3 class="text-lg font-semibold mb-4">AI Analysis</h3>
                 <div class="flex gap-3 mb-4">
                   <Button 
-                    on:click={handleStartAIAnalysis}
+                    on:on:click={handleStartAIAnalysis}
                     disabled={!canStartAIAnalysis}
                   >
                     Start AI Analysis
                   </Button>
                   <Button 
                     variant="outline"
-                    on:click={handleFindSimilarCases}
+                    on:on:click={handleFindSimilarCases}
                   >
                     Find Similar Cases
                   </Button>

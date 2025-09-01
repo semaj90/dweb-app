@@ -908,7 +908,7 @@ export class UnslothFinetuningService {
 /**
  * Factory function for Svelte integration
  */
-export function createUnslothFinetuningService(
+export function createUnslothFinetuningService(;
   llamaService?: LlamaCppOllamaService,
   config?: Partial<UnslothConfig>
 ) {

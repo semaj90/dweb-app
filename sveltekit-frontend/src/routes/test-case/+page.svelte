@@ -15,15 +15,14 @@
     FileText,
     Scale
   } from 'lucide-svelte';
-  
-  let isSubmitting = false;
-  let submitResult = '';
-  let formData = {
+let isSubmitting = $state(false);
+let submitResult = $state('');
+let formData = $state({
     caseNumber: '',
     title: '',
     description: '',
     priority: 'medium'
-  };
+  });
 
   async function handleSubmit(event: Event) {
     event.preventDefault();
@@ -98,7 +97,7 @@
     </Card.Header>
 
     <Card.Content>
-      <form on:submit={handleSubmit} class="space-y-6">
+      <form onsubmit={handleSubmit} class="space-y-6">
         <!-- Case Number -->
         <div class="space-y-2">
           <Label for="caseNumber">
@@ -159,7 +158,7 @@
           <Button 
             type="button" 
             variant="outline"
-            on:click={() => {
+            on:on:click={() => {
               formData = {
                 caseNumber: '',
                 title: '',

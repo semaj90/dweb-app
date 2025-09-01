@@ -17,7 +17,7 @@ export const fieldMap = {
     avatarUrl: 'avatar_url',
     isActive: 'is_active'
   },
-  // Case fields  
+  // Case fields
   case: {
     caseNumber: 'case_number',
     incidentDate: 'incident_date',
@@ -93,12 +93,12 @@ export function applySorting(
 
 // Type-safe filter builders
 export const filterBuilders = {
-  textFilter: (column: PgColumn, value: string) => 
+  textFilter: (column: PgColumn, value: string) =>
     eq(column, value),
-    
+
   searchFilter: (columns: PgColumn[], term: string) =>
     or(...columns.map((col: any) => like(col, `%${term}%`))),
-    
+
   dateRangeFilter: (column: PgColumn, start: Date, end: Date) =>
     and(
       // Use SQL for date comparisons
@@ -114,12 +114,12 @@ export interface PaginationParams {
 }
 
 export function getPaginationParams(
-  page: string | null, 
+  page: string | null,
   limit: string | null
 ): PaginationParams {
   const pageNum = Math.max(1, parseInt(page || '1'));
   const limitNum = Math.min(100, Math.max(1, parseInt(limit || '20')));
-  
+
   return {
     page: pageNum,
     limit: limitNum
@@ -143,17 +143,17 @@ export const queryPatterns = {
     priority?: string;
   }) => {
     const conditions: SQL[] = [];
-    
+
     if (filters.search) {
       // Add search conditions - implement based on actual schema
     }
     if (filters.status) {
-      // Add status filter - implement based on actual schema  
+      // Add status filter - implement based on actual schema
     }
     if (filters.priority) {
       // Add priority filter - implement based on actual schema
     }
-    
+
     return buildFilters(conditions);
   },
 
@@ -164,7 +164,7 @@ export const queryPatterns = {
     search?: string;
   }) => {
     const conditions: SQL[] = [];
-    
+
     if (filters.caseId) {
       // Add caseId filter
     }
@@ -174,7 +174,7 @@ export const queryPatterns = {
     if (filters.search) {
       // Add search filter
     }
-    
+
     return buildFilters(conditions);
   }
 };

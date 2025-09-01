@@ -18,9 +18,9 @@
   let cases: any[] = $state([]);
   let evidence: any[] = $state([]);
   let reports: any[] = $state([]);
-  let criminals: any[] = [];
+let criminals = $state<any[] >([]);
   let activities: any[] = $state([]);
-  let users_list: any[] = [];
+let users_list = $state<any[] >([]);
 
   // Loading states
   let loading = $state({
@@ -250,7 +250,7 @@
       <div class="space-y-4">
         <button
           class="space-y-4"
-          click={() => fetchAllData()}
+          on:onclick={() => fetchAllData()}
           disabled={refreshing}
           title="Refresh all data"
         >
@@ -327,7 +327,7 @@
               input={() => handleSearch("cases")}
             />
           </div>
-          <button class="space-y-4" click={() => createNew("cases")}>
+          <button class="space-y-4" on:onclick={() => createNew("cases")}>
             <Plus size={16} />
           </button>
         </div>
@@ -360,7 +360,7 @@
       </div>
 
       <div class="space-y-4">
-        <button class="space-y-4" click={() => viewAll("cases")}>
+        <button class="space-y-4" on:onclick={() => viewAll("cases")}>
           View All Cases
         </button>
       </div>
@@ -383,7 +383,7 @@
               input={() => handleSearch("evidence")}
             />
           </div>
-          <button class="space-y-4" click={() => createNew("evidence")}>
+          <button class="space-y-4" on:onclick={() => createNew("evidence")}>
             <Plus size={16} />
           </button>
         </div>
@@ -420,7 +420,7 @@
       </div>
 
       <div class="space-y-4">
-        <button class="space-y-4" click={() => viewAll("evidence")}>
+        <button class="space-y-4" on:onclick={() => viewAll("evidence")}>
           View All Evidence
         </button>
       </div>
@@ -443,7 +443,7 @@
               input={() => handleSearch("reports")}
             />
           </div>
-          <button class="space-y-4" click={() => createNew("reports")}>
+          <button class="space-y-4" on:onclick={() => createNew("reports")}>
             <Plus size={16} />
           </button>
         </div>
@@ -478,7 +478,7 @@
       </div>
 
       <div class="space-y-4">
-        <button class="space-y-4" click={() => viewAll("reports")}>
+        <button class="space-y-4" on:onclick={() => viewAll("reports")}>
           View All Reports
         </button>
       </div>
@@ -501,7 +501,7 @@
               input={() => handleSearch("activities")}
             />
           </div>
-          <button class="space-y-4" click={() => createNew("activities")}>
+          <button class="space-y-4" on:onclick={() => createNew("activities")}>
             <Plus size={16} />
           </button>
         </div>
@@ -534,7 +534,7 @@
       </div>
 
       <div class="space-y-4">
-        <button class="space-y-4" click={() => viewAll("activities")}>
+        <button class="space-y-4" on:onclick={() => viewAll("activities")}>
           View All Activities
         </button>
       </div>
@@ -550,22 +550,22 @@
       </div>
 
       <div class="space-y-4">
-        <button class="space-y-4" click={() => createNew("cases")}>
+        <button class="space-y-4" on:onclick={() => createNew("cases")}>
           <FileText size={24} />
           <span>New Case</span>
         </button>
 
-        <button class="space-y-4" click={() => createNew("evidence")}>
+        <button class="space-y-4" on:onclick={() => createNew("evidence")}>
           <Camera size={24} />
           <span>Add Evidence</span>
         </button>
 
-        <button class="space-y-4" click={() => createNew("reports")}>
+        <button class="space-y-4" on:onclick={() => createNew("reports")}>
           <FileText size={24} />
           <span>Create Report</span>
         </button>
 
-        <button class="space-y-4" click={() => viewAll("activities")}>
+        <button class="space-y-4" on:onclick={() => viewAll("activities")}>
           <Clock size={24} />
           <span>View Tasks</span>
         </button>

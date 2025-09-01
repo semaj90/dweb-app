@@ -113,14 +113,14 @@
 	}
 
 	// Reactive computed values
-	const confidenceColor = $derived(() => {
+	let confidenceColor = $derived(() => {
 		if (!results) return 'text-gray-500';
 		if (results.confidence > 0.8) return 'text-green-600';
 		if (results.confidence > 0.6) return 'text-yellow-600';
 		return 'text-red-600';
 	});
 
-	const generationMethodBadge = $derived(() => {
+	let generationMethodBadge = $derived(() => {
 		if (!results) return '';
 		switch (results.generationMethod) {
 			case 'g0llama': return 'bg-purple-100 text-purple-800';
@@ -203,11 +203,11 @@
 			bind:value={query}
 			placeholder="Ask about legal concepts, cases, or technical topics..."
 			class="flex-1"
-			on:keypress={handleKeypress}
+			keypress={handleKeypress}
 			disabled={isSearching}
 		/>
 		<Button 
-			on:click={performSearch}
+			on:on:click={performSearch}
 			disabled={isSearching || !query.trim()}
 			class="px-6"
 		>
@@ -226,7 +226,7 @@
 			<div class="flex flex-wrap gap-2">
 				{#each searchHistory as item}
 					<button
-						click={() => selectHistoryItem(item)}
+						on:onclick={() => selectHistoryItem(item)}
 						class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
 					>
 						{item}

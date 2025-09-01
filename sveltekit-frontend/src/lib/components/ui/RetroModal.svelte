@@ -62,7 +62,7 @@
         <!-- Optional footer -->
         {#if $$slots.footer}
           <div class="modal-footer mt-4 pt-4 border-t-2 border-gray-300">
-            <slot name="footer" />
+            {@render footer?.()}
           </div>
         {/if}
         

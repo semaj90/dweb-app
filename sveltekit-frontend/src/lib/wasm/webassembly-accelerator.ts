@@ -403,7 +403,7 @@ export class WebAssemblyAccelerator {
 
 // Global WASM accelerator instance
 export const wasmAccelerator = new WebAssemblyAccelerator();
-
+;
 // Performance-critical function decorator
 export function accelerateWithWasm(moduleId: string, wasmFunction: string) {
   return function (

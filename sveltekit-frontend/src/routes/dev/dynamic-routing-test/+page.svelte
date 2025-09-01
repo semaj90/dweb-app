@@ -17,9 +17,8 @@
   // State management
   const testResults = writable<string[]>([]);
   const routeStats = writable<any>({});
-  
-  let isLoading = false;
-  let currentPath = '';
+let isLoading = $state(false);
+let currentPath = $state('');
 
   // Test configuration
   const testCases = [
@@ -174,7 +173,7 @@
       
       <div class="flex gap-4 mb-6">
         <Button 
-          on:click={runAllTests} 
+          on:on:click={runAllTests} 
           disabled={isLoading}
           class="bg-yorha-secondary text-yorha-bg-primary hover:bg-yorha-secondary-dark"
         >
@@ -182,7 +181,7 @@
         </Button>
         
         <Button 
-          on:click={calculateRouteStats}
+          on:on:click={calculateRouteStats}
           variant="outline"
           class="border-yorha-accent text-yorha-accent hover:bg-yorha-accent hover:text-yorha-bg-primary"
         >
@@ -260,7 +259,7 @@
           <Button
             size="sm"
             variant="ghost"
-            on:click={() => navigateToRoute('/')}
+            on:on:click={() => navigateToRoute('/')}
             class="w-full justify-start text-yorha-accent hover:bg-yorha-accent hover:text-yorha-bg-primary"
           >
             🏠 Home
@@ -269,7 +268,7 @@
           <Button
             size="sm"
             variant="ghost"
-            on:click={() => navigateToRoute('/demo')}
+            on:on:click={() => navigateToRoute('/demo')}
             class="w-full justify-start text-yorha-accent hover:bg-yorha-accent hover:text-yorha-bg-primary"
           >
             🎯 Demo Overview
@@ -278,7 +277,7 @@
           <Button
             size="sm"
             variant="ghost"
-            on:click={() => navigateToRoute('/dev/mcp-tools')}
+            on:on:click={() => navigateToRoute('/dev/mcp-tools')}
             class="w-full justify-start text-yorha-accent hover:bg-yorha-accent hover:text-yorha-bg-primary"
           >
             🔧 MCP Tools
@@ -287,7 +286,7 @@
           <Button
             size="sm"
             variant="ghost"
-            on:click={() => navigateToRoute('/cases')}
+            on:on:click={() => navigateToRoute('/cases')}
             class="w-full justify-start text-yorha-accent hover:bg-yorha-accent hover:text-yorha-bg-primary"
           >
             📁 Case Management
@@ -313,7 +312,7 @@
                 {#each categoryRoutes.slice(0, 5) as route}
                   <button
                     class="block w-full text-left text-sm text-yorha-text-secondary hover:text-yorha-accent hover:bg-yorha-bg-secondary p-1 rounded transition-colors"
-                    click={() => navigateToRoute(route.route)}
+                    on:onclick={() => navigateToRoute(route.route)}
                   >
                     {route.icon} {route.label}
                   </button>

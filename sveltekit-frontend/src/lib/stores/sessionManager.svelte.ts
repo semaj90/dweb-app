@@ -314,7 +314,7 @@ export class SessionManager {
 
 // Create singleton session manager
 export const sessionManager = new SessionManager();
-
+;
 // Reactive getters for use in components
 export const isSessionActive = () => sessionState.isActive;
 export const currentUser = () => sessionState.user;
@@ -322,11 +322,11 @@ export const sessionPermissions = () => sessionState.permissions;
 export const sessionHealth = () => sessionState.health;
 export const sessionAnalytics = () => sessionState.analytics;
 export const securityLevel = () => sessionState.securityLevel;
-
+;
 // Convenience functions
 export const hasPermission = (permission: string) => sessionManager.hasPermission(permission);
 export const requirePermission = (permission: string) => sessionManager.requirePermission(permission);
-export const recordActivity = (route: string, action: string, feature?: string) => 
+export const recordActivity = (route: string, action: string, feature?: string) => ;
   sessionManager.recordActivity(route, action, feature);
 
 // Initialize session manager when module loads

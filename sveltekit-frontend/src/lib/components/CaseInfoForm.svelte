@@ -16,8 +16,7 @@
     description: string;
     key_dates: Array<{ date: string; description: string }>;
   };
-
-  let validationErrors: Record<string, string> = {};
+let validationErrors = $state<Record<string, string> >({});
 
   // Case type options
   const caseTypes = [
@@ -236,7 +235,7 @@
         </label>
         <Button.Root
           type="button"
-          on:click={addKeyDate}
+          on:on:click={addKeyDate}
           class="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           + Add Date
@@ -258,7 +257,7 @@
           />
           <Button.Root
             type="button"
-            on:click={() => removeKeyDate(index)}
+            on:on:click={() => removeKeyDate(index)}
             class="px-3 py-2 text-red-600 hover:text-red-800 focus:outline-none"
           >
             Remove
@@ -275,7 +274,7 @@
     <div class="flex justify-between pt-6 border-t border-gray-200">
       <Button.Root
         type="button"
-        on:click={handleSaveDraft}
+        on:on:click={handleSaveDraft}
         class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
         Save Draft

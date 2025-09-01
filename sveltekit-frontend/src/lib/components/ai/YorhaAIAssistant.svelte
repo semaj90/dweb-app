@@ -618,10 +618,10 @@
 	// Setup activity tracking
 	function setupActivityTracking() {
 		// Track typing in message input
-		let typingTimeout: number;
+let typingTimeout = $state<number;
 		
-		const updateTyping = () => {
-			clearTimeout(typingTimeout);
+		const updateTyping >(() => {
+			clearTimeout(typingTimeout));
 			updateUserActivity({ action: 'typing' });
 			
 			typingTimeout = setTimeout(() => {
@@ -672,7 +672,7 @@
 	<!-- Trigger Button -->
 	<Button.Root
 		{...$trigger}
-		on:click={openDialog}
+		on:on:click={openDialog}
 		variant="default"
 		size="lg"
 		class={cn(
@@ -748,7 +748,7 @@
 							{...$close}
 							variant="ghost"
 							size="sm"
-							on:click={closeDialog}
+							on:on:click={closeDialog}
 							class="h-6 w-6 p-0"
 						>
 							<span class="sr-only">Close</span>
@@ -829,7 +829,7 @@
 												{#each message.metadata.suggestions as suggestion}
 													<button
 														class="text-xs text-blue-400 hover:text-blue-300 underline block"
-														click={() => {
+														on:onclick={() => {
 															currentMessage = suggestion;
 															sendMessage();
 														}}
@@ -884,13 +884,13 @@
 							bind:value={currentMessage}
 							placeholder={streamingResponse ? "AI is responding..." : "Type your message..."}
 							disabled={!isConnected || streamingResponse}
-							on:keydown={handleKeydown}
+							keydown={handleKeydown}
 							data-yorha-input
 							class="flex-1"
 						/>
 						
 						<Button.Root
-							on:click={sendMessage}
+							on:on:click={sendMessage}
 							disabled={!canSendMessage}
 							variant="default"
 							size="sm"
@@ -915,7 +915,7 @@
 							<Button.Root
 								variant="ghost"
 								size="sm"
-								on:click={clearChat}
+								on:on:click={clearChat}
 								disabled={!hasMessages}
 								class="text-xs h-6 px-2"
 							>

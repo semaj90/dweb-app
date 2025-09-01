@@ -24,7 +24,7 @@ export interface EvidenceRecord {
   aiSummary: string | null;
 }
 
-export const POST = async ({ request, locals }: { request: Request; locals: App.Locals }): Promise<any> => {
+export const POST = (async ({ request, locals }: { request: Request; locals: App.Locals }): Promise<any> => {
   const user = locals.user;
   if (!user || typeof user.id !== "string") {
     return json({ error: "Not authenticated" }, { status: 401 });

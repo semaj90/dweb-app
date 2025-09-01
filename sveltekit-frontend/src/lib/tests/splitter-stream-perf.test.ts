@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { describe, it, expect } from "vitest";
 // TODO: Fix import - // Orphaned content: import {  const MAX_MS_STREAM_TOTAL = parseFloat(import.meta.env.SPLITTER_MAX_MS_STREAM_TOTAL || '30');
 

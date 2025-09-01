@@ -12,7 +12,7 @@ import type {
   Context7Integration 
 } from '$lib/types/automated-resolution';
 
-export class AutomatedBarrelStoreGenerator {
+export class AutomatedBarrelStoreGenerator {;
   private errorPatterns: Map<string, string[]> = new Map();
   private resolutionCache: Map<string, any> = new Map();
   private context7Client: any;
@@ -307,7 +307,7 @@ export class AutomatedBarrelStoreGenerator {
  */
 
 // Svelte 5 runes (following best practices)
-export const svelte5Runes = {
+export const svelte5Runes = {;
   state: <T>(initial: T) => {
     if (typeof globalThis !== 'undefined' && '$state' in globalThis) {
       return (globalThis as any).$state(initial);
@@ -331,14 +331,14 @@ export const svelte5Runes = {
 };
 
 // Environment variables (auto-detected from errors)
-export const environmentVariables = {
+export const environmentVariables = {;
   ${Array.from(analysis.missingTypes).filter(t => t.includes('_')).map(envVar => 
     `${envVar}: process?.env?.${envVar} || ''`
   ).join(',\n  ')}
 };
 
 // SvelteKit stores and utilities
-export const svelteKitUtils = {
+export const svelteKitUtils = {;
   page: { url: new URL('http://localhost:5173'), params: {}, route: { id: null } },
   navigating: null,
   updated: false,
@@ -363,21 +363,21 @@ export const svelteKitUtils = {
  */
 
 // Drizzle ORM column functions
-export const drizzleColumns = {
+export const drizzleColumns = {;
   ${drizzleFunctions.map(fn => 
     `${fn}: (...args: any[]) => ({ name: args[0], dataType: '${fn}', columnType: 'Pg${fn[0].toUpperCase()}${fn.slice(1)}' })`
   ).join(',\n  ')}
 };
 
 // Query operators  
-export const drizzleOperators = {
+export const drizzleOperators = {;
   ${['eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'isNull', 'isNotNull', 'inArray', 'notInArray', 'like', 'ilike'].map(op =>
     `${op}: (column: any, value?: any) => ({ op: '${op}', column, value })`
   ).join(',\n  ')}
 };
 
 // PostgreSQL connection
-export const postgres = (options?: any) => {
+export const postgres = (options?: any) => {;
   if (typeof globalThis !== 'undefined' && (globalThis as any).postgres) {
     return (globalThis as any).postgres(options);
   }
@@ -401,7 +401,7 @@ export const postgres = (options?: any) => {
  */
 
 // XState machine functions
-export const xStateUtils = {
+export const xStateUtils = {;
   createMachine: (config: any) => ({
     id: config.id || 'machine',
     states: config.states || {},
@@ -433,7 +433,7 @@ export const xStateUtils = {
  */
 
 // API client functions
-export const apiClients = {
+export const apiClients = {;
   createClient: (baseURL: string) => ({
     get: async (path: string) => ({ data: null, status: 200 }),
     post: async (path: string, data: any) => ({ data: null, status: 200 }),

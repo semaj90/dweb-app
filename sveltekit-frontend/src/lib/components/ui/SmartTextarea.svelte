@@ -37,9 +37,9 @@
 
   let textarea: HTMLTextAreaElement;
   let commandMenu: CommandMenu;
-  let showCommandMenu = false;
-  let commandMenuPosition = { x: 0, y: 0 };
-  let lastCursorPosition = 0;
+let showCommandMenu = $state(false);
+let commandMenuPosition = $state({ x: 0, y: 0 });
+let lastCursorPosition = $state(0);
 
   function handleInput(e: Event) {
     const target = e.target as HTMLTextAreaElement;
@@ -139,8 +139,8 @@
     class="space-y-4"
     input={handleInput}
     keydown={handleKeydown}
-    on:blur={handleBlur}
-    on:focus={handleFocus}
+    onblur={handleBlur}
+    onfocus={handleFocus}
   ></textarea>
 
   {#if showCommandMenu}
@@ -151,8 +151,8 @@
       <CommandMenu
         bind:this={commandMenu}
         textareaElement={textarea}
-        on:insert={handleCommandInsert}
-        on:close={() => (showCommandMenu = false)}
+        insert={handleCommandInsert}
+        close={() => (showCommandMenu = false)}
       />
     </div>
   {/if}

@@ -38,10 +38,10 @@ https://svelte.dev/e/props_duplicate -->
   } = $props();
 
   // Component state
-  let chatContainer: HTMLDivElement;
-  let messageInput: HTMLTextAreaElement;
-  let isConnected = writable(false);
-  let isTyping = writable(false);
+let chatContainer = $state<HTMLDivElement;
+let messageInput = $state<HTMLTextAreaElement;
+  let isConnected >(writable(false));
+  let isTyping >(writable(false));
   let streamingResponse = writable('');
   let currentAnalysis = writable<MessageAnalysis | null>(null);
   let ragContext = writable<RAGContext | null>(null);
@@ -54,8 +54,8 @@ https://svelte.dev/e/props_duplicate -->
   let error = writable<string | null>(null);
 
   // WebSocket connection
-  let wsConnection: ReturnType<typeof createWebSocketConnection> | null = null;
-  let webgpuAccelerator: ReturnType<typeof createWebGPUAccelerator> | null = null;
+let wsConnection = $state<ReturnType<typeof createWebSocketConnection> | null >(null);
+let webgpuAccelerator = $state<ReturnType<typeof createWebGPUAccelerator> | null >(null);
 
   // Enhanced AI features
   let recommendations = writable<Recommendation[]>([]);
@@ -68,10 +68,10 @@ https://svelte.dev/e/props_duplicate -->
   });
 
   // UI state
-  let inputText = '';
-  let showRecommendations = false;
-  let showAnalysisDetails = false;
-  let selectedMessage: ChatMessage | null = null;
+let inputText = $state('');
+let showRecommendations = $state(false);
+let showAnalysisDetails = $state(false);
+let selectedMessage = $state<ChatMessage | null >(null);
 
   // Melt UI dialog for analysis details
   const {
@@ -402,7 +402,7 @@ https://svelte.dev/e/props_duplicate -->
   }
 
   // Attention tracking setup
-  let attentionListeners: Array<() => void> = [];
+let attentionListeners = $state<Array<() >(> void> = []);
 
   function setupAttentionTracking() {
     if (!enableAttentionTracking || !browser) return;
@@ -441,9 +441,9 @@ https://svelte.dev/e/props_duplicate -->
     );
 
     // Scroll tracking within chat container
-    let scrollTimeout: number;
-    const scrollHandler = () => {
-      clearTimeout(scrollTimeout);
+let scrollTimeout = $state<number;
+    const scrollHandler >(() => {
+      clearTimeout(scrollTimeout));
       scrollTimeout = setTimeout(() => {
         trackEvent('scroll', {
           scrollTop: chatContainer?.scrollTop,
@@ -553,7 +553,7 @@ https://svelte.dev/e/props_duplicate -->
                 variant="ghost"
                 size="sm"
                 class="h-8 w-8 p-0"
-                on:click={() => showAnalysisPanel = !showAnalysisPanel}
+                on:on:click={() => showAnalysisPanel = !showAnalysisPanel}
               >
                 <MagnifyingGlassIcon class="h-4 w-4" />
               </Button.Root>
@@ -564,7 +564,7 @@ https://svelte.dev/e/props_duplicate -->
           </Tooltip.Root>
 
           <!-- Generate Report -->
-          <Button.Root variant="outline" size="sm" on:click={generateReport}>
+          <Button.Root variant="outline" size="sm" on:on:click={generateReport}>
             <DocumentTextIcon class="mr-2 h-4 w-4" />
             Report
           </Button.Root>
@@ -588,7 +588,7 @@ https://svelte.dev/e/props_duplicate -->
     <div 
       bind:this={chatContainer}
       class="flex-1 overflow-y-auto p-4 space-y-4"
-      on:scroll={setupAttentionTracking}
+      scroll={setupAttentionTracking}
     >
       {#each $messages as message (message.id)}
         <div class="flex gap-3 {message.role === 'user' ? 'justify-end' : 'justify-start'}">
@@ -598,10 +598,10 @@ https://svelte.dev/e/props_duplicate -->
               {message.role === 'user' 
                 ? 'bg-primary text-primary-foreground ml-auto' 
                 : 'bg-muted hover:bg-muted/80'}"
-            click={() => selectMessage(message)}
+            on:onclick={() => selectMessage(message)}
             role="button"
             tabindex="0"
-            on:keydown={(e) => e.key === 'Enter' && selectMessage(message)}
+            keydown={(e) => e.key === 'Enter' && selectMessage(message)}
           >
             <!-- Message Content -->
             <div class="prose prose-sm dark:prose-invert max-w-none">
@@ -682,7 +682,7 @@ https://svelte.dev/e/props_duplicate -->
                   variant="outline"
                   size="sm"
                   class="h-auto p-2 text-left"
-                  on:click={() => applyRecommendation(rec)}
+                  on:on:click={() => applyRecommendation(rec)}
                 >
                   <div>
                     <div class="font-medium text-xs">{rec.title}</div>
@@ -703,7 +703,7 @@ https://svelte.dev/e/props_duplicate -->
                 <Button.Root
                   variant="ghost"
                   size="sm"
-                  on:click={() => applyDidYouMean(suggestion)}
+                  on:on:click={() => applyDidYouMean(suggestion)}
                 >
                   "{suggestion}"
                 </Button.Root>
@@ -722,15 +722,15 @@ https://svelte.dev/e/props_duplicate -->
           bind:value={inputText}
           placeholder="Ask your legal AI assistant..."
           class="flex-1 min-h-[40px] max-h-32 resize-none"
-          on:keydown={handleKeyPress}
-          on:input={handleInput}
+          keydown={handleKeyPress}
+          input={handleInput}
           disabled={$isLoading}
         />
         
         <Button.Root
           size="sm"
           disabled={!inputText.trim() || $isLoading}
-          on:click={sendMessage}
+          on:on:click={sendMessage}
           class="h-10 w-10 p-0"
         >
           <PaperPlaneIcon class="h-4 w-4" />
@@ -987,7 +987,7 @@ https://svelte.dev/e/props_duplicate -->
       </div>
 
       <Dialog.Footer>
-        <Button.Root variant="outline" on:click={() => showAnalysisDetails = false}>
+        <Button.Root variant="outline" on:on:click={() => showAnalysisDetails = false}>
           Close
         </Button.Root>
       </Dialog.Footer>
@@ -1004,7 +1004,7 @@ https://svelte.dev/e/props_duplicate -->
       variant="ghost" 
       size="sm" 
       class="mt-2"
-      on:click={() => error.set(null)}
+      on:on:click={() => error.set(null)}
     >
       Dismiss
     </Button.Root>

@@ -69,7 +69,7 @@ export const serviceHealth = writable<HealthStatus | null>(null);
 export const isConnected = writable<boolean>(true);
 export const requestQueue = writable<number>(0);
 export const lastError = writable<string | null>(null);
-
+;
 // Derived stores
 export const servicesStatus = derived(serviceHealth, ($health) => {
   if (!$health) return 'unknown';
@@ -302,7 +302,7 @@ class FrontendServiceClient {
 
 // Singleton instance
 export const serviceClient = FrontendServiceClient.getInstance();
-
+;
 // ==================== REACTIVE API FUNCTIONS ====================
 
 /**

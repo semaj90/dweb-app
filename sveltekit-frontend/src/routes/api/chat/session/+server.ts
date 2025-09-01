@@ -1,6 +1,7 @@
 import { db } from "$lib/db/connection";
 import { eq, desc } from "drizzle-orm";
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
+import { URL } from "url";
 
 
 export const POST: RequestHandler = async ({ request }) => {

@@ -7,25 +7,25 @@
     
     // State management
     let cudaService: LegalCudaGrpcService;
-    let isConnected = false;
-    let loading = true;
-    let error = '';
+let isConnected = $state(false);
+let loading = $state(true);
+let error = $state('');
     
     // Streaming states
-    let activeSession = '';
-    let streamingActive = false;
-    let responses: any[] = [];
+let activeSession = $state('');
+let streamingActive = $state(false);
+let responses = $state<any[] >([]);
     
     // Form inputs
-    let textInput = '';
-    let documentContent = '';
-    let searchQuery = 'contract termination clause';
-    let selectedCollection = 'legal_documents';
+let textInput = $state('');
+let documentContent = $state('');
+let searchQuery = $state('contract termination clause');
+let selectedCollection = $state('legal_documents');
     
     // Performance metrics
-    let lastResponseTime = 0;
-    let totalResponses = 0;
-    let avgProcessingTime = 0;
+let lastResponseTime = $state(0);
+let totalResponses = $state(0);
+let avgProcessingTime = $state(0);
     
     // Demo data
     const sampleLegalText = `
@@ -249,7 +249,7 @@ costs and expenses incurred up to the date of termination.
         <div class="error-state">
             <h3>⚠️ Connection Error</h3>
             <p>{error}</p>
-            <button on:click={() => window.location.reload()}>🔄 Retry</button>
+            <button on:on:onclick={() => window.location.reload()}>🔄 Retry</button>
         </div>
     {:else}
         <!-- Status Panel -->
@@ -305,7 +305,7 @@ costs and expenses incurred up to the date of termination.
                 <h3>🎛️ Streaming Controls</h3>
                 <div class="button-group">
                     <button 
-                        on:click={startStreamingSession}
+                        on:on:onclick={startStreamingSession}
                         disabled={!isConnected || streamingActive}
                         class="primary"
                     >
@@ -313,7 +313,7 @@ costs and expenses incurred up to the date of termination.
                     </button>
                     
                     <button 
-                        on:click={stopStreamingSession}
+                        on:on:onclick={stopStreamingSession}
                         disabled={!streamingActive}
                         class="secondary"
                     >
@@ -321,7 +321,7 @@ costs and expenses incurred up to the date of termination.
                     </button>
                     
                     <button 
-                        on:click={clearResponses}
+                        on:on:onclick={clearResponses}
                         class="tertiary"
                     >
                         🗑️ Clear
@@ -343,11 +343,11 @@ costs and expenses incurred up to the date of termination.
                         disabled={!activeSession}
                     ></textarea>
                     <div class="textarea-actions">
-                        <button on:click={loadSampleText} class="small">
+                        <button on:on:onclick={loadSampleText} class="small">
                             📋 Load Sample
                         </button>
                         <button 
-                            on:click={sendTextForEmbedding}
+                            on:on:onclick={sendTextForEmbedding}
                             disabled={!activeSession || !textInput.trim()}
                             class="primary small"
                         >
@@ -374,7 +374,7 @@ costs and expenses incurred up to the date of termination.
                             <option value="statutes">Statutes</option>
                         </select>
                         <button 
-                            on:click={processDocument}
+                            on:on:onclick={processDocument}
                             disabled={!isConnected || !documentContent.trim()}
                             class="primary small"
                         >
@@ -402,7 +402,7 @@ costs and expenses incurred up to the date of termination.
                     <option value="statutes">Statutes</option>
                 </select>
                 <button 
-                    on:click={performSemanticSearch}
+                    on:on:onclick={performSemanticSearch}
                     disabled={!isConnected || !searchQuery.trim()}
                     class="primary"
                 >

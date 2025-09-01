@@ -43,7 +43,7 @@
     },
   });
   let uploadFiles: UploadFile[] = $state([]);
-  let uploadProgress = 0;
+let uploadProgress = $state(0);
   // Initialize form with caseId if provided
   $: if (caseId) {
     $form.caseId = caseId;
@@ -94,7 +94,7 @@
   async function handleFileUpload(file: UploadFile): Promise<void> {
     // Simulate upload progress
     const simulateProgress = () => {
-      let progress = 0;
+let progress = $state(0);
       const interval = setInterval(() => {
         progress += 10;
         file.progress = progress;
@@ -146,7 +146,7 @@
     </div>
   {/snippet}
 
-  <Form method="POST" enctype="multipart/form-data" on:submit={enhance} variant="legal">
+  <Form method="POST" enctype="multipart/form-data" submit={enhance} variant="legal">
     <!-- File Upload Component -->
     <div class="space-y-2">
       <Label for="file">File</Label>
@@ -157,9 +157,9 @@
         maxSize={50 * 1024 * 1024}
         accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.mp4,.mp3,.wav"
         bind:files={uploadFiles}
-        on:fileschange={handleFilesChange}
-        on:upload={handleFileUpload}
-        on:remove={handleFileRemove}
+        fileschange={handleFilesChange}
+        upload={handleFileUpload}
+        remove={handleFileRemove}
         dragDropText="Drop evidence files here or click to browse"
         browseText="Browse Evidence Files"
         supportedFormats={['PDF', 'Word', 'Images', 'Video', 'Audio']}

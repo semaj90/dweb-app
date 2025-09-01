@@ -4,6 +4,8 @@
  */
 import { vi, beforeAll, afterAll, beforeEach } from 'vitest';
 import '@testing-library/jest-dom';
+import stream from "stream";
+import { URL } from "url";
 
 // Mock SvelteKit environment
 vi.mock('$app/environment', () => ({

@@ -28,7 +28,7 @@
   }: Props = $props();
   
   // Helper to get selected option label
-  const selectedLabel = $derived(
+  let selectedLabel = $derived(
     options.find(option => option.value === value)?.label || placeholder
   );
   
@@ -40,7 +40,7 @@
   }
 </script>
 
-<SelectRoot type="single" on:valuechange={handleValueChange} {disabled}>
+<SelectRoot type="single" valuechange={handleValueChange} {disabled}>
   <SelectTrigger 
     class="flex h-10 w-full items-center justify-between rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:cursor-not-allowed disabled:opacity-50 {class}"
   >

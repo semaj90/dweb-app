@@ -1,4 +1,5 @@
-import type { RequestHandler } from './$types';
+/// <reference types="vite/client" />
+import type { RequestHandler } from './$types.js';
 
 /**
  * Enhanced RAG API Endpoints - Backend Integration
@@ -16,6 +17,7 @@ import { summarizeWithQueue } from "$lib/server/pgai";
 
 import { error, json } from "@sveltejs/kit";
 import crypto from "crypto";
+import { URL } from "url";
 
 // Enhanced RAG Backend Configuration
 const RAG_BACKEND_URL = import.meta.env.RAG_BACKEND_URL || "http://localhost:8000";

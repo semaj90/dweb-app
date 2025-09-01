@@ -1,9 +1,9 @@
 <script lang="ts">
 
-  import { onMount } from 'svelte'
+  import { onMount } from 'svelte';
   import { $props, $state, $derived } from 'svelte';
-  import { scale, fly, fade } from 'svelte/transition'
-  import { spring } from 'svelte/motion'
+  import { scale, fly, fade } from 'svelte/transition';
+  import { spring } from 'svelte/motion';
   import {
     Bot,
     MessageSquare,
@@ -294,8 +294,8 @@ let isTyping = $state(false);
   bind:isVisible={isVisible}
   bind:aiMode={aiMode}
   {isConnected}
-  on:toggle={toggleInterface}
-  on:settingsclick={() => terminalMode = !terminalMode}
+  toggle={toggleInterface}
+  settingsclick={() => terminalMode = !terminalMode}
 />
 
 <!-- Gaming AI Interface -->
@@ -311,8 +311,8 @@ let isTyping = $state(false);
       role="button"
       tabindex="0"
       aria-label="Close AI Interface"
-      click={() => showAIInterface = false}
-      on:keydown={e => { if (e.key === 'Enter' || e.key === ' ') showAIInterface = false; }}
+      on:onclick={() => showAIInterface = false}
+      keydown={e => { if (e.key === 'Enter' || e.key === ' ') showAIInterface = false; }}
     ></div>
 
     <!-- Main Interface Panel -->
@@ -348,7 +348,7 @@ let isTyping = $state(false);
         <!-- Header Controls -->
         <div class="flex items-center gap-2">
           <button
-            click={() => currentTheme = currentTheme === 'yorha' ? 'cyberpunk' : currentTheme === 'cyberpunk' ? 'matrix' : 'yorha'}
+            on:onclick={() => currentTheme = currentTheme === 'yorha' ? 'cyberpunk' : currentTheme === 'cyberpunk' ? 'matrix' : 'yorha'}
             class="p-2 rounded-lg hover:bg-gray-700/50 transition-colors"
             title="Switch Theme"
           >
@@ -356,7 +356,7 @@ let isTyping = $state(false);
           </button>
 
           <button
-            click={openNierAssistant}
+            on:onclick={openNierAssistant}
             class="p-2 rounded-lg hover:bg-gray-700/50 transition-colors"
             title="Open Full Assistant"
           >
@@ -364,7 +364,7 @@ let isTyping = $state(false);
           </button>
 
           <button
-            click={() => showAIInterface = false}
+            on:onclick={() => showAIInterface = false}
             class="p-2 rounded-lg hover:bg-red-500/20 transition-colors"
           >
             <X class="w-5 h-5 text-red-400" />
@@ -485,7 +485,7 @@ let isTyping = $state(false);
             <div class="flex gap-2 mt-3">
               {#each ['analyze case', 'search evidence', 'system status', 'generate report'] as cmd}
                 <button
-                  click={() => { inputValue = cmd; sendMessage(cmd) }}
+                  on:onclick={() => { inputValue = cmd; sendMessage(cmd) }}
                   class="px-3 py-1 text-xs bg-gray-700/50 hover:bg-gray-600/50 {theme.secondary}
                          rounded border {theme.border} transition-colors uppercase font-mono"
                 >
@@ -509,7 +509,7 @@ let isTyping = $state(false);
               { id: 'rapid', label: 'Rapid Response', icon: Zap }
             ] as mode}
               <button
-                click={() => processAICommand(`switch to ${mode.label.toLowerCase()}`)}
+                on:onclick={() => processAICommand(`switch to ${mode.label.toLowerCase()}`)}
                 class="w-full flex items-center gap-3 p-3 rounded-lg border {theme.border}
                        hover:bg-gray-700/30 transition-colors text-left"
               >
@@ -550,7 +550,7 @@ let isTyping = $state(false);
   <NierAIAssistant
     bind:isOpen={showNierAssistant}
     {caseContext}
-    on:close={() => showNierAssistant = false}
+    close={() => showNierAssistant = false}
   />
 {/if}
 

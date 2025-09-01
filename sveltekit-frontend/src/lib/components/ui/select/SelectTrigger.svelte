@@ -13,7 +13,7 @@
   }: Props = $props();
 </script>
 
-<button use:melt={trigger} class="space-y-4">
+<button <!-- use:melt={trigger} class="space-y-4">
   <slot {selectedLabel} />
 </button>
 

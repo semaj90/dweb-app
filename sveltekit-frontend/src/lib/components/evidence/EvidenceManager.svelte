@@ -23,24 +23,24 @@
   export let caseId: string;
   export let onEvidenceSelect: (evidence: Evidence) => void = () => {};
   export let allowUpload: boolean = true;
-
+;
   // State
-  let evidence: Evidence[] = [];
-  let loading = false;
-  let uploadLoading = false;
-  let searchQuery = '';
-  let selectedTags: string[] = [];
-  let filteredEvidence: Evidence[] = [];
+let evidence = $state<Evidence[] >([]);
+let loading = $state(false);
+let uploadLoading = $state(false);
+let searchQuery = $state('');
+let selectedTags = $state<string[] >([]);
+let filteredEvidence = $state<Evidence[] >([]);
 
   // Simple modal state (replaces melt dialog usage)
-  let showUpload = false;
+let showUpload = $state(false);
 
   // File upload state
-  let fileInput: HTMLInputElement | undefined;
-  let uploadFiles: FileList | null = null;
-  let uploadTitle = '';
-  let uploadDescription = '';
-  let dragActive = false;
+let fileInput = $state<HTMLInputElement | undefined;
+  let uploadFiles: FileList | null >(null);
+let uploadTitle = $state('');
+let uploadDescription = $state('');
+let dragActive = $state(false);
 
   // Available tag filters
   const availableTags = [
@@ -215,7 +215,7 @@
       </p>
     </div>
     {#if allowUpload}
-      <Button on:click={() => (showUpload = true)} class="gap-2">
+      <Button on:on:click={() => (showUpload = true)} class="gap-2">
         <Upload class="w-4 h-4" />
         Upload Evidence
       </Button>
@@ -226,7 +226,7 @@
   <Card>
     <CardHeader>
       {#if allowUpload}
-        <Button on:click={() => (showUpload = true)} class="gap-2">
+        <Button on:on:click={() => (showUpload = true)} class="gap-2">
           <Upload class="w-4 h-4" />
           Upload Evidence
         </Button>
@@ -244,7 +244,7 @@
           />
         </div>
         {#if searchQuery || selectedTags.length > 0}
-          <Button on:click={clearFilters} variant="outline" size="sm">
+          <Button on:on:click={clearFilters} variant="outline" size="sm">
             Clear Filters
           </Button>
         {/if}
@@ -257,7 +257,7 @@
           <Badge
             variant={selectedTags.includes(tag) ? 'default' : 'outline'}
             class="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            on:click={() => toggleTag(tag)}
+            on:on:click={() => toggleTag(tag)}
           >
             <Tag class="w-3 h-3 mr-1" />
             {tag}
@@ -343,7 +343,7 @@
             <!-- Actions -->
             <div class="flex gap-2 pt-2">
               <Button
-                on:click={() => viewEvidence(item)}
+                on:on:click={() => viewEvidence(item)}
                 size="sm"
                 variant="default"
                 class="flex-1 gap-2"
@@ -352,7 +352,7 @@
                 View
               </Button>
               <Button
-                on:click={() => downloadEvidence(item)}
+                on:on:click={() => downloadEvidence(item)}
                 size="sm"
                 variant="outline"
                 class="gap-2"
@@ -373,7 +373,7 @@
         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No evidence yet</h3>
         <p class="text-gray-600 dark:text-gray-400 mb-4">Upload the first piece of evidence to get started.</p>
         {#if allowUpload}
-          <Button on:click={() => (showUpload = true)} variant="outline" class="gap-2">
+          <Button on:on:click={() => (showUpload = true)} variant="outline" class="gap-2">
             <Upload class="w-4 h-4" />
             Upload First Evidence
           </Button>
@@ -382,10 +382,10 @@
         <Search class="w-16 h-16 text-gray-400 mx-auto mb-4" />
         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No matches found</h3>
         <p class="text-gray-600 dark:text-gray-400 mb-4">Try adjusting your search or filters.</p>
-        <Button on:click={clearFilters} variant="outline">Clear Filters</Button>
+        <Button on:on:click={clearFilters} variant="outline">Clear Filters</Button>
         {#if allowUpload}
           <div class="mt-4">
-            <Button on:click={() => (showUpload = true)} variant="outline" class="gap-2">
+            <Button on:on:click={() => (showUpload = true)} variant="outline" class="gap-2">
               <Upload class="w-4 h-4" />
               Upload Evidence
             </Button>
@@ -397,7 +397,7 @@
 
   <!-- Upload Modal -->
   {#if showUpload}
-    <div class="fixed inset-0 z-50 bg-black/50" click={() => { if (!uploadLoading) showUpload = false; }} />
+    <div class="fixed inset-0 z-50 bg-black/50" on:onclick={() => { if (!uploadLoading) showUpload = false; }} />
     <div
       class="fixed left-[50%] top-[50%] z-50 max-h-[85vh] w-[90vw] max-w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white dark:bg-gray-800 p-6 shadow-xl border border-gray-200 dark:border-gray-700"
       click|stopPropagation
@@ -409,8 +409,8 @@
         <div
           class="border-2 border-dashed rounded-md p-6 text-center"
           on:dragover|preventDefault={handleDragOver}
-          on:dragleave={handleDragLeave}
-          on:drop={handleDrop}
+          ondragleave={handleDragLeave}
+          ondrop={handleDrop}
           class:opacity-80={dragActive}
         >
           <Upload class="w-12 h-12 text-gray-400 mx-auto mb-4" />
@@ -429,7 +429,7 @@
             class="hidden"
           />
           <Button
-            on:click={() => fileInput && fileInput.click()}
+            on:on:click={() => fileInput && fileInput.click()}
             variant="outline"
             size="sm"
             class="mt-2"
@@ -479,7 +479,7 @@
         <!-- Actions -->
         <div class="flex gap-3 pt-4">
           <Button
-            on:click={uploadEvidence}
+            on:on:click={uploadEvidence}
             disabled={!uploadFiles || uploadFiles.length === 0 || !uploadTitle.trim() || uploadLoading}
             class="flex-1 gap-2"
           >
@@ -492,7 +492,7 @@
             {/if}
           </Button>
           <Button
-            on:click={() => { if (!uploadLoading) { resetUploadForm(); showUpload = false; } }}
+            on:on:click={() => { if (!uploadLoading) { resetUploadForm(); showUpload = false; } }}
             variant="outline"
             class="flex-1"
             disabled={uploadLoading}

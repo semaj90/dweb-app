@@ -21,10 +21,8 @@ if (!databaseUrl) {
 export default defineConfig({
   // ===== SCHEMA DISCOVERY - BEST PRACTICES =====
 
-  // Use the enhanced unified schema as base
-  schema: [
-    './src/lib/server/db/enhanced-unified-schema.ts', // Enhanced schema with Qdrant
-  ],
+  // Use lightweight unified schema aggregator (unified-schema.ts)
+  schema: ['./src/lib/server/db/unified-schema.ts'],
 
   // Output directory for migrations and introspection
   out: './drizzle',

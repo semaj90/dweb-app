@@ -334,7 +334,7 @@ export class VectorPipelineService {
 
 // Export singleton instance
 export const vectorPipeline = new VectorPipelineService();
-
+;
 // Auto-cleanup on page unload
 if (typeof window !== 'undefined') {
   window.addEventListener('beforeunload', () => {

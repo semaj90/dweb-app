@@ -1,10 +1,11 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 // Database Orchestrator Events API
 // Real-time event monitoring and WebSocket integration
 
 databaseOrchestrator // alias
 import { EventEmitter } from "events";
+import { URL } from "url";
 
 // GET /api/database-orchestrator/events - Get recent events
 export const GET: RequestHandler = async ({ url }) => {

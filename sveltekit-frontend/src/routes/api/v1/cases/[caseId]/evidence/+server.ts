@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * Evidence CRUD API for Cases - PostgreSQL + Drizzle ORM Integration
@@ -6,9 +6,10 @@ import type { RequestHandler } from './$types';
  */
 
 import { json } from '@sveltejs/kit';
-import * as casesMCP from '../../../../../../lib/mcp/cases.mcp';
-import { minioService } from '../../../../../../lib/server/storage/minio-service';
-import type { EvidenceData } from '../../../../../../lib/mcp/cases.mcp';
+import * as casesMCP from '../../../../../../lib/mcp/cases.mcp.js';
+import { minioService } from '../../../../../../lib/server/storage/minio-service.js';
+import type { EvidenceData } from '../../../../../../lib/mcp/cases.mcp.js';
+import { URL } from "url";
 
 // POST /api/v1/cases/[caseId]/evidence - Add evidence to case
 export const POST: RequestHandler = async ({ params, request, getClientAddress }) => {

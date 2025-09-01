@@ -39,8 +39,7 @@
     associate: 'bg-orange-100 text-orange-800',
     unknown: 'bg-gray-100 text-gray-800'
   };
-
-  let showDetails = false;
+let showDetails = $state(false);
 </script>
 
 <Card class="w-full max-w-4xl">
@@ -229,7 +228,7 @@
       <Button 
         variant="outline" 
         size="sm"
-        on:click={() => showDetails = !showDetails}
+        on:on:click={() => showDetails = !showDetails}
       >
         {showDetails ? 'Hide' : 'Show'} Full Analysis
       </Button>

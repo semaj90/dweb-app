@@ -342,31 +342,31 @@ export interface ErrorEvent extends WebSocketEvent {
 
 // Export utility types
 
-export type ProcessingStrategy = 
-	| 'auto' 
-	| 'optimized' 
-	| 'gpu_first' 
-	| 'llama_thinking' 
-	| 'template_only' 
+export type ProcessingStrategy =
+	| 'auto'
+	| 'optimized'
+	| 'gpu_first'
+	| 'llama_thinking'
+	| 'template_only'
 	| 'hybrid'
 	| 'streaming';
 
-export type ProcessingStatus = 
-	| 'queued' 
-	| 'processing' 
-	| 'completed' 
-	| 'failed' 
+export type ProcessingStatus =
+	| 'queued'
+	| 'processing'
+	| 'completed'
+	| 'failed'
 	| 'cancelled'
 	| 'streaming';
 
 export type PerformanceGrade = 'A+' | 'A' | 'B+' | 'B' | 'C+' | 'C' | 'D' | 'F';
 
-export type PerformanceTier = 
+export type PerformanceTier =
 	| 'minimal'
-	| 'basic' 
-	| 'standard' 
-	| 'professional' 
-	| 'enterprise' 
+	| 'basic'
+	| 'standard'
+	| 'professional'
+	| 'enterprise'
 	| 'ultra'
 	| 'gpu_accelerated';
 

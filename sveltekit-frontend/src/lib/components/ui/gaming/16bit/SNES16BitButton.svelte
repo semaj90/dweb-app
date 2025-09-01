@@ -73,8 +73,8 @@
 
   let isPressed = $state(false);
   let isHovered = $state(false);
-  let audioContext: AudioContext | null = null;
-  let buttonElement: HTMLButtonElement | null = null;
+let audioContext = $state<AudioContext | null >(null);
+let buttonElement = $state<HTMLButtonElement | null >(null);
 
   // Create 16-bit enhanced button sound with multiple channels
   const playEnhancedButtonSound = async () => {
@@ -204,10 +204,10 @@
   {form}
   {name}
   {value}
-  onclick={handleClick}
-  onmouseenter={handleHover}
-  onmouseleave={handleUnhover}
-  onfocus={handleFocus}
+  on:on:on:click={handleClick}
+  on:on:on:mouseenter={handleHover}
+  on:on:on:mouseleave={handleUnhover}
+  on:focus={handleFocus}
   class="snes-16bit-button {className} {enableLayerEffects ? 'layer-effects' : ''} {enableMode7 ? 'mode7' : ''} {plasmaEffect ? 'plasma' : ''}"
   style="
     --button-gradient: {variantGradient};

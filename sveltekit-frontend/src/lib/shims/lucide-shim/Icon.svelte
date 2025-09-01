@@ -1,6 +1,9 @@
 <script lang="ts">
-  export let name: string = '';
-  export let className = '';
+  // Convert to Svelte 5 runes pattern
+  let { name = '', className = '' } = $props<{
+    name?: string;
+    className?: string;
+  }>();
 </script>
 
 <!-- Minimal shim for lucide-svelte Icon used during Svelte 5 migration. This avoids $$props usage. -->

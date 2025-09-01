@@ -51,11 +51,11 @@
   }>();
 
   // Local validation state
-  let errors: string[] = [];
-  let warnings: string[] = [];
-  let isValid: boolean = true;
-  let isDirty: boolean = false;
-  let showPassword: boolean = false;
+let errors = $state<string[] >([]);
+let warnings = $state<string[] >([]);
+let isValid = $state<boolean >(true);
+let isDirty = $state<boolean >(false);
+let showPassword = $state<boolean >(false);
   let inputElement: HTMLInputElement | HTMLTextAreaElement;
 
   // Computed properties
@@ -180,8 +180,8 @@
         class:textarea-disabled={disabled}
         input={handleInput}
         change={handleChange}
-        on:focus={handleFocus}
-        on:blur={handleBlur}
+        onfocus={handleFocus}
+        onblur={handleBlur}
         aria-describedby="{name}-help {name}-error"
         aria-invalid={showErrorState}
       ></textarea>
@@ -210,8 +210,8 @@
         class:pr-12={type === "password" && showPasswordToggle}
         input={handleInput}
         change={handleChange}
-        on:focus={handleFocus}
-        on:blur={handleBlur}
+        onfocus={handleFocus}
+        onblur={handleBlur}
         aria-describedby="{name}-help {name}-error"
         aria-invalid={showErrorState}
       />
@@ -221,7 +221,7 @@
         <button
           type="button"
           class="container mx-auto px-4"
-          click={() => togglePasswordVisibility()}
+          on:onclick={() => togglePasswordVisibility()}
           aria-label={showPassword ? "Hide password" : "Show password"}
           tabindex={-1}
         >

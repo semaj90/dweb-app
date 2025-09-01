@@ -3,7 +3,8 @@ import { withApiHandler, parseRequestBody, apiSuccess, validationError, createPa
 import { CaseOperations } from '$lib/server/db/enhanced-operations';
 import type { Case } from '$lib/server/db/schema-postgres';
 import { createClient } from 'redis';
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
+import { URL } from "url";
 
 
 // Redis client for worker communication
@@ -12,7 +13,7 @@ let redisClient: ReturnType<typeof createClient> | null = null;
 async function getRedisClient(): Promise<any> {
   if (!redisClient) {
     redisClient = createClient({
-      url: process.env.REDIS_URL || 'redis://localhost:6379',
+      url: import.meta.env.REDIS_URL || 'redis://localhost:6379',
       socket: { connectTimeout: 5000 }
     });
     await redisClient.connect();

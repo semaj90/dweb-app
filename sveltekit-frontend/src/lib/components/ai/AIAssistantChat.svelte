@@ -24,6 +24,8 @@
     context7Analysis,
     aiUsage
   } from '$lib/stores/aiAssistant.svelte.js';
+  import { unifiedAIService } from '$lib/ai/unified-ai-service.js';
+  import type { UnifiedQueryOptions, UnifiedResponse } from '$lib/ai/unified-ai-service.js';
 
   // Component props
   interface Props {
@@ -48,6 +50,8 @@
   let messageInput = $state<HTMLTextAreaElement>();
   let chatContainer = $state<HTMLDivElement>();
   let availableModels = $state<string[]>(['gemma3-legal', 'nomic-embed-text', 'deeds-web']);
+  let useUnifiedService = $state(true);
+  let selectedMode = $state<'auto' | 'wasm' | 'langchain' | 'gpu'>('auto');
 
   // Derived state for UI
   let canSend = $derived(() => currentMessage.trim().length > 0 && !isProcessing());
@@ -67,6 +71,14 @@
     // Focus input if enabled
     if (autoFocus && messageInput) {
       messageInput.focus();
+    }
+
+    // Initialize unified AI service
+    try {
+      await unifiedAIService.initialize();
+      console.log('✅ Unified AI Service ready');
+    } catch (error) {
+      console.error('Failed to initialize Unified AI Service:', error);
     }
 
     // Load available models
@@ -97,11 +109,60 @@
     currentMessage = '';
 
     try {
-      await aiAssistantManager.sendMessage(message, {
-        useContext7: enableContext7 && useContext7,
-        model: currentModel(),
-        temperature: currentTemperature()
-      });
+      if (useUnifiedService) {
+        // Use unified AI service
+        const options: UnifiedQueryOptions = {
+          query: message,
+          mode: selectedMode === 'auto' ? undefined : selectedMode,
+          useContext7: enableContext7 && useContext7,
+          maxResults: 10,
+          threshold: 0.7
+        };
+
+        const response = await unifiedAIService.query(options);
+        
+        if (response.success) {
+          // Add to conversation history manually since we're bypassing the store
+          const entry = {
+            id: crypto.randomUUID(),
+            type: 'assistant' as const,
+            content: response.response,
+            timestamp: new Date(),
+            metadata: {
+              model: response.metadata?.model || selectedMode,
+              temperature: currentTemperature(),
+              responseTime: response.processingTime,
+              tokenCount: response.metadata?.tokenCount || 0,
+              context7Used: useContext7
+            }
+          };
+          
+          // Add user message first
+          const userEntry = {
+            id: crypto.randomUUID(),
+            type: 'user' as const,
+            content: message,
+            timestamp: new Date()
+          };
+          
+          console.log('📝 Unified AI Response:', response);
+        } else {
+          console.error('Unified AI query failed:', response.error);
+          // Fall back to regular AI assistant
+          await aiAssistantManager.sendMessage(message, {
+            useContext7: enableContext7 && useContext7,
+            model: currentModel(),
+            temperature: currentTemperature()
+          });
+        }
+      } else {
+        // Use regular AI assistant manager
+        await aiAssistantManager.sendMessage(message, {
+          useContext7: enableContext7 && useContext7,
+          model: currentModel(),
+          temperature: currentTemperature()
+        });
+      }
     } catch (error) {
       console.error('Failed to send message:', error);
     }
@@ -175,7 +236,7 @@
           <Button 
             variant="ghost" 
             size="sm"
-            on:click={() => showSettingsDialog = true}
+            on:on:click={() => showSettingsDialog = true}
           >
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -188,7 +249,7 @@
           <Button 
             variant="ghost" 
             size="sm"
-            on:click={() => showExportDialog = true}
+            on:on:click={() => showExportDialog = true}
           >
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -259,7 +320,7 @@
             variant="outline" 
             size="sm" 
             class="mt-2"
-            on:click={retryLast}
+            on:on:click={retryLast}
           >
             Retry
           </Button>
@@ -269,6 +330,29 @@
 
     <!-- Input Area -->
     <div class="border-t p-4">
+      <!-- Unified AI Service Controls -->
+      <div class="flex items-center gap-2 mb-3">
+        <Switch 
+          bind:checked={useUnifiedService}
+          disabled={isProcessing()}
+        />
+        <label class="text-sm font-medium">
+          Use Unified AI Service (WASM + LangChain + GPU)
+        </label>
+        {#if useUnifiedService}
+          <select 
+            bind:value={selectedMode}
+            disabled={isProcessing()}
+            class="px-2 py-1 text-xs border rounded"
+          >
+            <option value="auto">Auto Select</option>
+            <option value="wasm">WASM Mode</option>
+            <option value="langchain">LangChain Mode</option>
+            <option value="gpu">GPU Mode</option>
+          </select>
+        {/if}
+      </div>
+
       {#if enableContext7}
         <div class="flex items-center gap-2 mb-3">
           <Switch 
@@ -290,7 +374,7 @@
         <Textarea
           bind:this={messageInput}
           bind:value={currentMessage}
-          on:keydown={handleKeydown}
+          keydown={handleKeydown}
           placeholder="Ask about legal documents, cases, or research..."
           disabled={isProcessing()}
           class="flex-1 min-h-[40px] max-h-[120px] resize-none"
@@ -298,7 +382,7 @@
         
         <div class="flex flex-col gap-1">
           <Button 
-            on:click={sendMessage}
+            on:on:click={sendMessage}
             disabled={!canSend}
             class="px-4"
           >
@@ -315,7 +399,7 @@
             <Button 
               variant="outline"
               size="sm"
-              on:click={stopGeneration}
+              on:on:click={stopGeneration}
             >
               <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <rect x="6" y="6" width="12" height="12" />
@@ -338,7 +422,7 @@
 </Card>
 
 <!-- Settings Dialog -->
-<Dialog.Root open={showSettingsDialog} on:openchange={(open) => showSettingsDialog = open}>
+<Dialog.Root open={showSettingsDialog} openchange={(open) => showSettingsDialog = open}>
   <Dialog.Portal>
     <Dialog.Overlay class="fixed inset-0 z-50 bg-black/80" />
     <Dialog.Content class="fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 sm:rounded-lg">
@@ -370,7 +454,7 @@
             min={0}
             max={2}
             step={0.1}
-            on:valuechange={(values) => aiAssistantManager.setTemperature(values[0])}
+            valuechange={(values) => aiAssistantManager.setTemperature(values[0])}
           />
           <p class="text-xs text-gray-500">
             Lower values make responses more focused, higher values more creative
@@ -397,7 +481,7 @@
           <Button 
             variant="outline" 
             size="sm"
-            on:click={() => aiAssistantManager.checkClusterHealth()}
+            on:on:click={() => aiAssistantManager.checkClusterHealth()}
           >
             Refresh Health
           </Button>
@@ -407,12 +491,12 @@
       <div class="flex justify-between gap-2">
         <Button 
           variant="destructive"
-          on:click={clearConversation}
+          on:on:click={clearConversation}
           disabled={!hasConversation}
         >
           Clear Chat
         </Button>
-        <Button on:click={() => showSettingsDialog = false}>
+        <Button on:on:click={() => showSettingsDialog = false}>
           Close
         </Button>
       </div>
@@ -421,7 +505,7 @@
 </Dialog.Root>
 
 <!-- Export Dialog -->
-<Dialog.Root open={showExportDialog} on:openchange={(open) => showExportDialog = open}>
+<Dialog.Root open={showExportDialog} openchange={(open) => showExportDialog = open}>
   <Dialog.Portal>
     <Dialog.Overlay class="fixed inset-0 z-50 bg-black/80" />
     <Dialog.Content class="fixed left-[50%] top-[50%] z-50 grid w-full max-w-md translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 sm:rounded-lg">
@@ -448,11 +532,11 @@
       <div class="flex justify-end gap-2">
         <Button 
           variant="outline"
-          on:click={() => showExportDialog = false}
+          on:on:click={() => showExportDialog = false}
         >
           Cancel
         </Button>
-        <Button on:click={() => {
+        <Button on:on:click={() => {
           exportConversation();
           showExportDialog = false;
         }}>

@@ -10,30 +10,45 @@
     checkGPUCapabilities,
   } from '$lib/services/gpu-cluster-acceleration';
   import { createWebGLShaderCache, LEGAL_AI_SHADERS } from '$lib/utils/webgl-shader-cache';
-  import { Activity, Cpu, Zap, Eye, BarChart3, Network, Clock } from 'lucide-svelte';
+  import { Activity, Cpu, Zap, Eye, BarChart, BarChart3, Network, Clock } from 'lucide-svelte';
 
   // GPU system state
-  let gpuManager: any = null;
-  let shaderCache: any = null;
-  let gpuCapabilities = $state({
+let gpuManager = $state<any >(null);
+let shaderCache = $state<any >(null);
+  interface GpuCapabilities {
+    webgl: boolean;
+    webgl2: boolean;
+    webgpu: boolean;
+    extensions: string[];
+  }
+  let gpuCapabilities: GpuCapabilities = $state({
     webgl: false,
     webgl2: false,
     webgpu: false,
-    extensions: [] as string[],
+    extensions: [],
   });
 
   // Canvas and WebGL context
-  let canvas: HTMLCanvasElement;
-  let gl: WebGL2RenderingContext | null = null;
+let canvas = $state<HTMLCanvasElement | null >(null);
+  // Allow fallback to WebGL1 so assignment is type-safe
+let gl = $state<WebGL2RenderingContext | WebGLRenderingContext | null >(null);
 
   // Demo state
   let isInitialized = $state(false);
-  let activeVisualization = $state<string>('attentionHeatmap');
+  let activeVisualization: string = $state('attentionHeatmap');
   let isRendering = $state(false);
-  let animationFrame: number = 0;
+let animationFrame = $state<number >(0);
 
   // Performance metrics
-  let gpuMetrics = $state({
+  let gpuMetrics: {
+    totalContexts: number;
+    activeContexts: number;
+    totalShaders: number;
+    cacheHitRate: number;
+    compilationTime: number;
+    frameRate: number;
+    contextSwitches: number;
+  } = $state({
     totalContexts: 0,
     activeContexts: 0,
     totalShaders: 0,
@@ -43,7 +58,13 @@
     contextSwitches: 0,
   });
 
-  let shaderMetrics = $state({
+  let shaderMetrics: {
+    totalShaders: number;
+    cacheHits: number;
+    cacheMisses: number;
+    averageCompilationTime: number;
+    memoryUsage: number;
+  } = $state({
     totalShaders: 0,
     cacheHits: 0,
     cacheMisses: 0,
@@ -51,24 +72,38 @@
     memoryUsage: 0,
   });
 
+  // Cached compiled shader programs
+  const shaderPrograms: Record<string, any> = {};
+
+  // Subscriptions (track to unsubscribe on destroy)
+let gpuMetricsSub = $state<{ unsubscribe?: () >(> void } | null = null);
+let shaderMetricsSub = $state<{ unsubscribe?: () >(> void } | null = null);
+
   // Demo data
-  let attentionData = $state<Float32Array>(new Float32Array(0));
-  let documentData = $state<Float32Array>(new Float32Array(0));
-  let timelineData = $state<Float32Array>(new Float32Array(0));
+let attentionData = $state<Float32Array >(new Float32Array(0));
+let documentData = $state<Float32Array >(new Float32Array(0));
+let timelineData = $state<Float32Array >(new Float32Array(0));
 
   onMount(async () => {
+    // Create GPU manager then init (shader cache created after GL context is ready)
+    gpuManager = createGPUClusterManager();
     await initializeGPUDemo();
+    generateDemoData();
   });
 
   onDestroy(() => {
     if (animationFrame) {
       cancelAnimationFrame(animationFrame);
     }
-
+    if (gpuMetricsSub && gpuMetricsSub.unsubscribe) {
+      gpuMetricsSub.unsubscribe();
+    }
+    if (shaderMetricsSub && shaderMetricsSub.unsubscribe) {
+      shaderMetricsSub.unsubscribe();
+    }
     if (gpuManager) {
       gpuManager.destroy();
     }
-
     if (shaderCache) {
       shaderCache.cleanup();
     }
@@ -87,35 +122,31 @@
       }
 
       // Initialize WebGL context
-      if (canvas) {
-        gl = canvas.getContext('webgl2') || (canvas.getContext('webgl') as WebGL2RenderingContext);
+      if (!canvas) {
+        throw new Error('Canvas not available');
+      }
+      gl =
+        (canvas.getContext('webgl2') as WebGL2RenderingContext) ||
+        (canvas.getContext('webgl') as WebGLRenderingContext);
 
-        if (!gl) {
-          throw new Error('Failed to get WebGL context');
-        }
-
-        // Setup WebGL state
-        gl.enable(gl.BLEND);
-        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-        gl.clearColor(0.05, 0.05, 0.1, 1.0);
-
-        console.log('✅ WebGL context initialized');
+      if (!gl) {
+        throw new Error('Failed to get WebGL context');
       }
 
-      // Initialize GPU cluster manager
-      gpuManager = createGPUClusterManager();
-
-      // Initialize shader cache
-      if (gl) {
+      // Create shader cache now that we have a context
+      if (!shaderCache) {
         shaderCache = createWebGLShaderCache(gl);
       }
 
-      // Generate demo data
-      generateDemoData();
+      // Setup WebGL state
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+      gl.clearColor(0.05, 0.05, 0.1, 1.0);
 
-      // Subscribe to metrics
+      console.log('✅ WebGL context initialized');
+
       if (gpuManager) {
-        gpuManager.getMetrics().subscribe((metrics: any) => {
+        gpuMetricsSub = gpuManager.getMetrics().subscribe((metrics: any) => {
           gpuMetrics = {
             totalContexts: metrics.totalContexts,
             activeContexts: metrics.activeContexts,
@@ -129,7 +160,7 @@
       }
 
       if (shaderCache) {
-        shaderCache.getMetrics().subscribe((metrics: any) => {
+        shaderMetricsSub = shaderCache.getMetrics().subscribe((metrics: any) => {
           shaderMetrics = {
             totalShaders: metrics.totalShaders,
             cacheHits: metrics.cacheHits,
@@ -144,6 +175,7 @@
       console.log('✅ GPU Demo initialized successfully');
     } catch (error) {
       console.error('❌ GPU Demo initialization failed:', error);
+      isRendering = false;
     }
   }
 
@@ -156,77 +188,81 @@
       const x = ((i % 64) / 63) * 2 - 1; // -1 to 1
       const y = (Math.floor(i / 64) / 63) * 2 - 1;
       const attention = Math.random() * Math.exp(-((x * x + y * y) * 2)); // Gaussian-like
-
       attentionData[i * 3] = x;
       attentionData[i * 3 + 1] = y;
       attentionData[i * 3 + 2] = attention;
     }
 
-    // Generate document network data (simulating legal document relationships)
+    // Generate document network data
     const docCount = 100;
-    documentData = new Float32Array(docCount * 7); // x, y, z, r, g, b, pagerank
+    documentData = new Float32Array(docCount * 7);
 
     for (let i = 0; i < docCount; i++) {
       const angle = (i / docCount) * Math.PI * 2;
       const radius = 0.5 + Math.random() * 0.3;
       const pageRank = Math.random();
-
-      documentData[i * 7] = Math.cos(angle) * radius; // x
-      documentData[i * 7 + 1] = Math.sin(angle) * radius; // y
-      documentData[i * 7 + 2] = (Math.random() - 0.5) * 0.2; // z
-      documentData[i * 7 + 3] = 0.3 + pageRank * 0.7; // r
-      documentData[i * 7 + 4] = 0.2 + pageRank * 0.3; // g
-      documentData[i * 7 + 5] = 0.8 - pageRank * 0.3; // b
-      documentData[i * 7 + 6] = pageRank; // pageRank
+      documentData[i * 7] = Math.cos(angle) * radius;
+      documentData[i * 7 + 1] = Math.sin(angle) * radius;
+      documentData[i * 7 + 2] = (Math.random() - 0.5) * 0.2;
+      documentData[i * 7 + 3] = 0.3 + pageRank * 0.7;
+      documentData[i * 7 + 4] = 0.2 + pageRank * 0.3;
+      documentData[i * 7 + 5] = 0.8 - pageRank * 0.3;
+      documentData[i * 7 + 6] = pageRank;
     }
 
-    // Generate timeline data (simulating evidence timeline)
+    // Generate timeline data
     const timelineCount = 50;
-    timelineData = new Float32Array(timelineCount * 6); // x, y, timestamp, importance, r, g, b
+    timelineData = new Float32Array(timelineCount * 7);
 
     for (let i = 0; i < timelineCount; i++) {
       const t = i / (timelineCount - 1);
       const importance = Math.random();
-
-      timelineData[i * 6] = t * 2 - 1; // x (time axis)
-      timelineData[i * 6 + 1] = (Math.random() - 0.5) * 0.5; // y (random offset)
-      timelineData[i * 6 + 2] = t; // timestamp
-      timelineData[i * 6 + 3] = importance; // importance
-      timelineData[i * 6 + 4] = importance; // r
-      timelineData[i * 6 + 5] = 0.5 + importance * 0.5; // g
-      timelineData[i * 6 + 6] = 1.0 - importance * 0.5; // b
+      const base = i * 7;
+      timelineData[base] = t * 2 - 1;
+      timelineData[base + 1] = (Math.random() - 0.5) * 0.5;
+      timelineData[base + 2] = t;
+      timelineData[base + 3] = importance;
+      // Color mapping (importance -> warmer color)
+      timelineData[base + 4] = 0.2 + importance * 0.6;
+      timelineData[base + 5] = 0.4 + (1 - importance) * 0.4;
+      timelineData[base + 6] = 0.9 - importance * 0.5;
     }
-
-    console.log('📊 Demo data generated');
   }
 
-  async function startVisualization(type: string) {
+  async function startVisualization(
+    type: 'attentionHeatmap' | 'documentNetwork' | 'evidenceTimeline' | 'textFlow'
+  ) {
     if (!isInitialized || !gl || !shaderCache) return;
-
-    activeVisualization = type;
-    isRendering = true;
-
     try {
-      // Get appropriate shader program
+      // Stop any current rendering loop
+      isRendering = false;
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+      }
+
+      activeVisualization = type;
+
       const shaderId = `legal-ai-${type}`;
-      const shaderProgram = await shaderCache.getShaderProgram(shaderId);
+      if (!shaderPrograms[shaderId]) {
+        shaderPrograms[shaderId] = await shaderCache.getShaderProgram(shaderId);
+      }
 
+      isRendering = true;
       console.log(`🎨 Starting ${type} visualization`);
-
-      // Start render loop
-      renderLoop();
+      // Begin render loop
+      animationFrame = requestAnimationFrame(renderLoop);
     } catch (error) {
       console.error(`Failed to start ${type} visualization:`, error);
+      isRendering = false;
     }
   }
 
   function renderLoop() {
     if (!isRendering || !gl || !shaderCache) return;
 
-    // Clear canvas
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    const currentTime = Date.now() * 0.001; // Convert to seconds
+    const currentTime = Date.now() * 0.001;
 
     try {
       switch (activeVisualization) {
@@ -247,57 +283,50 @@
       console.error('Render error:', error);
     }
 
-    // Continue render loop
     if (isRendering) {
       animationFrame = requestAnimationFrame(renderLoop);
     }
   }
 
-  async function renderAttentionHeatmap(time: number) {
+  function renderAttentionHeatmap(time: number) {
     if (!gl || !shaderCache) return;
 
     try {
-      const program = await shaderCache.getShaderProgram('legal-ai-attentionHeatmap');
+      const program = shaderPrograms['legal-ai-attentionHeatmap'];
+      if (!program) return;
 
-      // Create vertex buffer if needed
       const positionBuffer = shaderCache.createVertexBuffer(attentionData);
 
-      // Set up rendering state
       gl.useProgram(program.program);
 
-      // Set uniforms
       const uniforms = {
-        u_matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], // Identity matrix
+        u_matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
         u_time: time,
         u_scale: 0.2,
         u_lowColor: [0.1, 0.1, 0.8],
         u_highColor: [0.8, 0.2, 0.2],
         u_intensity: 1.0,
       };
-
       shaderCache.setUniforms(program, uniforms);
 
-      // Set up vertex attributes
       const attributes = {
-        a_position: { buffer: positionBuffer, size: 2 },
-        a_texCoord: { buffer: positionBuffer, size: 2 },
-        a_attention: { buffer: positionBuffer, size: 1, offset: 2 * 4 },
+        a_position: { buffer: positionBuffer, size: 2, stride: 3 * 4 },
+        a_attention: { buffer: positionBuffer, size: 1, offset: 2 * 4, stride: 3 * 4 },
       };
-
       shaderCache.setupVertexAttributes(program, attributes);
 
-      // Render
       gl.drawArrays(gl.POINTS, 0, attentionData.length / 3);
     } catch (error) {
       console.error('Attention heatmap render error:', error);
     }
   }
 
-  async function renderDocumentNetwork(time: number) {
+  function renderDocumentNetwork(time: number) {
     if (!gl || !shaderCache) return;
 
     try {
-      const program = await shaderCache.getShaderProgram('legal-ai-documentNetwork');
+      const program = shaderPrograms['legal-ai-documentNetwork'];
+      if (!program) return;
 
       const positionBuffer = shaderCache.createVertexBuffer(documentData);
 
@@ -309,15 +338,13 @@
         u_nodeSize: 10.0,
         u_alpha: 0.8,
       };
-
       shaderCache.setUniforms(program, uniforms);
 
       const attributes = {
-        a_position: { buffer: positionBuffer, size: 3 },
-        a_color: { buffer: positionBuffer, size: 3, offset: 3 * 4 },
-        a_pageRank: { buffer: positionBuffer, size: 1, offset: 6 * 4 },
+        a_position: { buffer: positionBuffer, size: 3, stride: 7 * 4 },
+        a_color: { buffer: positionBuffer, size: 3, offset: 3 * 4, stride: 7 * 4 },
+        a_pageRank: { buffer: positionBuffer, size: 1, offset: 6 * 4, stride: 7 * 4 },
       };
-
       shaderCache.setupVertexAttributes(program, attributes);
 
       gl.drawArrays(gl.POINTS, 0, documentData.length / 7);
@@ -326,11 +353,12 @@
     }
   }
 
-  async function renderEvidenceTimeline(time: number) {
+  function renderEvidenceTimeline(time: number) {
     if (!gl || !shaderCache) return;
 
     try {
-      const program = await shaderCache.getShaderProgram('legal-ai-evidenceTimeline');
+      const program = shaderPrograms['legal-ai-evidenceTimeline'];
+      if (!program) return;
 
       const positionBuffer = shaderCache.createVertexBuffer(timelineData);
 
@@ -342,16 +370,14 @@
         u_timeRange: 1.0,
         u_alpha: 0.8,
       };
-
       shaderCache.setUniforms(program, uniforms);
 
       const attributes = {
-        a_position: { buffer: positionBuffer, size: 2 },
-        a_timestamp: { buffer: positionBuffer, size: 1, offset: 2 * 4 },
-        a_importance: { buffer: positionBuffer, size: 1, offset: 3 * 4 },
-        a_evidenceColor: { buffer: positionBuffer, size: 3, offset: 4 * 4 },
+        a_position: { buffer: positionBuffer, size: 2, stride: 7 * 4 },
+        a_timestamp: { buffer: positionBuffer, size: 1, offset: 2 * 4, stride: 7 * 4 },
+        a_importance: { buffer: positionBuffer, size: 1, offset: 3 * 4, stride: 7 * 4 },
+        a_evidenceColor: { buffer: positionBuffer, size: 3, offset: 4 * 4, stride: 7 * 4 },
       };
-
       shaderCache.setupVertexAttributes(program, attributes);
 
       gl.drawArrays(gl.POINTS, 0, timelineData.length / 7);
@@ -360,13 +386,14 @@
     }
   }
 
-  async function renderTextFlow(time: number) {
-    // Simplified text flow rendering
+  function renderTextFlow(_time: number) {
     if (!gl || !shaderCache) return;
 
     try {
-      const program = await shaderCache.getShaderProgram('legal-ai-textFlow');
-      // Implementation would be similar to other renderers
+      const program = shaderPrograms['legal-ai-textFlow'];
+      if (!program) return;
+      gl.useProgram(program.program);
+      // Additional uniforms/attributes can be added here later.
     } catch (error) {
       console.error('Text flow render error:', error);
     }
@@ -546,6 +573,9 @@
             <h3 class="font-semibold text-white">Shaders</h3>
             <p class="text-sm text-gray-400">{shaderMetrics.totalShaders} cached</p>
           </div>
+          <div class="p-2 rounded-lg bg-purple-100">
+            <BarChart class="h-5 w-5 text-purple-600" />
+          </div>
         </div>
       </Card>
 
@@ -609,7 +639,7 @@
         <!-- Visualization Controls -->
         <div class="grid grid-cols-2 gap-2">
           <Button
-            on:click={() => startVisualization('attentionHeatmap')}
+            on:on:on:click={() => startVisualization('attentionHeatmap')}
             disabled={!isInitialized}
             variant={activeVisualization === 'attentionHeatmap' ? 'default' : 'outline'}
             class="text-sm">
@@ -617,23 +647,23 @@
           </Button>
 
           <Button
-            on:click={() => startVisualization('documentNetwork')}
+            on:on:on:click={() => startVisualization('documentNetwork')}
             disabled={!isInitialized}
             variant={activeVisualization === 'documentNetwork' ? 'default' : 'outline'}
             class="text-sm">
             Document Network
           </Button>
 
-          <Button
-            on:click={() => startVisualization('evidenceTimeline')}
-            disabled={!isInitialized}
-            variant={activeVisualization === 'evidenceTimeline' ? 'default' : 'outline'}
-            class="text-sm">
-            Evidence Timeline
-          </Button>
+            <Button
+              on:on:on:click={() => startVisualization('evidenceTimeline')}
+              disabled={!isInitialized}
+              variant={activeVisualization === 'evidenceTimeline' ? 'default' : 'outline'}
+              class="text-sm">
+              Evidence Timeline
+            </Button>
 
           <Button
-            on:click={() => startVisualization('textFlow')}
+            on:on:on:click={() => startVisualization('textFlow')}
             disabled={!isInitialized}
             variant={activeVisualization === 'textFlow' ? 'default' : 'outline'}
             class="text-sm">
@@ -644,13 +674,13 @@
         <!-- Render Controls -->
         <div class="flex gap-2">
           {#if isRendering}
-            <Button on:click={stopVisualization} class="bg-red-600 hover:bg-red-700">
+            <Button on:on:on:click={stopVisualization} class="bg-red-600 hover:bg-red-700">
               Stop Rendering
             </Button>
           {/if}
 
           <Button
-            on:click={executeGPUWorkload}
+            on:on:on:click={executeGPUWorkload}
             disabled={!isInitialized}
             variant="outline"
             class="text-white border-slate-600 hover:bg-slate-700">
@@ -661,7 +691,6 @@
     </Card>
 
     <!-- Performance Dashboard -->
-    <div class="space-y-6">
       <!-- GPU Cluster Metrics -->
       <Card class="p-6 bg-slate-800/30 border-slate-600">
         <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
@@ -696,8 +725,7 @@
           </div>
         </div>
       </Card>
-
-      <!-- Shader Cache Stats -->
+      </Card>
       <Card class="p-6 bg-slate-800/30 border-slate-600">
         <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
           <BarChart3 class="h-5 w-5" />

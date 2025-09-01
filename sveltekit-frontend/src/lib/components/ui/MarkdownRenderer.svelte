@@ -19,9 +19,8 @@
     baseUrl = "",
     breaks = true
   }: Props = $props();
-
-  let renderedHtml: string = "";
-  let isClient = false;
+let renderedHtml = $state<string >("");
+let isClient = $state(false);
 
   // Configure marked options
   const markedOptions = {

@@ -1,4 +1,5 @@
 import { dev } from '$app/environment';
+import crypto from "crypto";
 
 export interface RAGSuggestionRequest {
   content: string;
@@ -454,7 +455,7 @@ export class EnhancedRAGSuggestionsService {
 
 // Singleton instance
 export const enhancedRAGSuggestionsService = new EnhancedRAGSuggestionsService();
-
+;
 /**
  * Convenience function for generating RAG-powered suggestions
  */

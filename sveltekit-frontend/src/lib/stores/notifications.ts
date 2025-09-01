@@ -155,6 +155,6 @@ function createNotificationStore() {
 }
 
 export const notificationStore = createNotificationStore();
-
+;
 // Export convenience functions for use throughout the app
 export const notify = notificationStore;

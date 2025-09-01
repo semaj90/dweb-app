@@ -14,7 +14,7 @@
     ...restProps
   }: Props & { children?: unknown } = $props();
 
-  const classes = $derived([
+  let classes = $derived([
     'nier-card-title',
     class
   ].filter(Boolean).join(' '));

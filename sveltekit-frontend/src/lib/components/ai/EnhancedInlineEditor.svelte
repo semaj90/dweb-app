@@ -33,7 +33,7 @@
   let selectedSuggestionIndex = $state(-1);
   let cursorPosition = $state({ x: 0, y: 0 });
   let isProcessing = $state(false);
-  let lastProcessedText = '';
+let lastProcessedText = $state('');
 
   // XState actor for AI processing
   const aiActor = createActor(aiProcessingMachine);
@@ -344,7 +344,7 @@
     {placeholder}
     input={handleInput}
     keydown={handleKeyDown}
-    on:focus={() => generateSuggestions(value, 0)}
+    onfocus={() => generateSuggestions(value, 0)}
   >
     {value}
   </div>
@@ -366,7 +366,7 @@
     >
       <div class="suggestion-header">
         <span class="suggestion-title">AI Suggestions</span>
-        <button class="close-btn" click={hideSuggestions}>×</button>
+        <button class="close-btn" on:onclick={hideSuggestions}>×</button>
       </div>
       
       <div class="suggestions-list">
@@ -374,7 +374,7 @@
           <button
             class="suggestion-item"
             class:selected={index === selectedSuggestionIndex}
-            click={() => applySuggestion(suggestion)}
+            on:onclick={() => applySuggestion(suggestion)}
           >
             <div class="suggestion-content">
               <div class="suggestion-text">{suggestion.text}</div>

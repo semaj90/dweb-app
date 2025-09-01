@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * Individual Service API Endpoints
@@ -8,6 +8,7 @@ import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
 import { masterServiceCoordinator } from '$lib/services/master-service-coordinator.js';
 import { goBinaryService } from '$lib/services/go-binary-integration.js';
+import { URL } from "url";
 
 /**
  * GET /api/v1/services/[serviceId] - Get individual service status

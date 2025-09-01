@@ -330,7 +330,7 @@ https://svelte.dev/e/js_parse_error -->
       <div class="mb-6 p-4 bg-red-900/30 border border-red-500/50 rounded-lg text-red-100">
         <strong>Error:</strong> {errorMessage}
         <button
-          click={() => errorMessage = ''}
+          on:onclick={() => errorMessage = ''}
           class="ml-2 text-red-300 hover:text-red-100"
         >
           ✕
@@ -349,7 +349,7 @@ https://svelte.dev/e/js_parse_error -->
           { id: 'config', label: 'Configuration' }
         ] as tab}
           <button
-            click={() => selectedTab = tab.id}
+            on:onclick={() => selectedTab = tab.id}
             class="px-4 py-2 rounded-md text-sm font-medium transition-all
               {selectedTab === tab.id
                 ? 'bg-purple-600 text-white'
@@ -370,7 +370,7 @@ https://svelte.dev/e/js_parse_error -->
           <div class="flex items-center justify-between">
             <h2 class="text-xl font-semibold text-purple-100">Copilot Content</h2>
             <button
-              click={loadCopilotContent}
+              on:onclick={loadCopilotContent}
               disabled={isLoading}
               class="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50
                      text-white rounded-lg transition-colors"
@@ -388,7 +388,7 @@ https://svelte.dev/e/js_parse_error -->
 
           <div class="flex gap-2">
             <button
-              click={optimizeIndex}
+              on:onclick={optimizeIndex}
               disabled={!copilotContent || isLoading}
               class="flex-1 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600
                      hover:from-purple-700 hover:to-blue-700 disabled:opacity-50
@@ -399,14 +399,14 @@ https://svelte.dev/e/js_parse_error -->
 
             {#if optimizationResults}
               <button
-                click={exportResults}
+                on:onclick={exportResults}
                 class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
               >
                 Export
               </button>
 
               <button
-                click={resetOptimization}
+                on:onclick={resetOptimization}
                 class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
               >
                 Reset
@@ -519,7 +519,7 @@ https://svelte.dev/e/js_parse_error -->
                   keydown={(e) => e.key === 'Enter' && performSearch()}
                 />
                 <button
-                  click={performSearch}
+                  on:onclick={performSearch}
                   disabled={!searchQuery.trim() || isLoading}
                   class="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50
                          text-white rounded-lg transition-colors"
@@ -538,7 +538,7 @@ https://svelte.dev/e/js_parse_error -->
                 'Vector embeddings'
               ] as example}
                 <button
-                  click={() => { searchQuery = example; performSearch(); }}
+                  on:onclick={() => { searchQuery = example; performSearch(); }}
                   class="p-2 text-left text-sm bg-black/20 hover:bg-purple-700/20
                          text-purple-300 hover:text-purple-100 rounded border border-purple-500/20
                          transition-colors"
@@ -599,7 +599,7 @@ https://svelte.dev/e/js_parse_error -->
         <div class="flex items-center justify-between">
           <h2 class="text-xl font-semibold text-purple-100">Code Suggestions</h2>
           <button
-            click={generateSuggestions}
+            on:onclick={generateSuggestions}
             disabled={isLoading}
             class="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50
                    text-white rounded-lg transition-colors"
@@ -835,7 +835,7 @@ https://svelte.dev/e/js_parse_error -->
         <!-- Save configuration -->
         <div class="flex gap-2">
           <button
-            click={() => {
+            on:onclick={() => {
               localStorage.setItem('copilot-optimization-config', JSON.stringify(optimizationConfig));
               alert('Configuration saved!');
             }}
@@ -845,7 +845,7 @@ https://svelte.dev/e/js_parse_error -->
           </button>
 
           <button
-            click={() => {
+            on:onclick={() => {
               const saved = localStorage.getItem('copilot-optimization-config');
               if (saved) {
                 optimizationConfig = JSON.parse(saved);
@@ -858,7 +858,7 @@ https://svelte.dev/e/js_parse_error -->
           </button>
 
           <button
-            click={() => {
+            on:onclick={() => {
               optimizationConfig = {
                 enableContext7Boost: true,
                 enableSemanticClustering: true,

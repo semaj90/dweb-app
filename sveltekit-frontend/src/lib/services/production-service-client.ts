@@ -5,6 +5,8 @@
  */
 
 import { 
+import http from "http";
+import { URL } from "url";
   SERVICES_CONFIG, 
   API_ROUTES, 
   PROTOCOL_PRIORITY, 
@@ -468,5 +470,5 @@ class ProductionServiceClient {
 
 // Singleton instance
 export const productionServiceClient = new ProductionServiceClient();
-
+;
 export default productionServiceClient;

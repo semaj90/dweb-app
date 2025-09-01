@@ -1,5 +1,6 @@
 // Server-side data loading for recommendations demo
-import type { PageServerLoad } from './$types';
+import type { PageServerLoad } from './$types.js';
+import { URL } from "url";
 
 export const load: PageServerLoad = async ({ fetch, url }) => {
   const personId = url.searchParams.get('personId') || 'demo-user-1';

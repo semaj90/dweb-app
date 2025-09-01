@@ -25,7 +25,7 @@ export async function verifyPassword(
  * Generate a JWT token for a user
  */
 export function generateToken(userId: string, email: string): string {
-  const secret = process.env.JWT_SECRET || JWT_SECRET_FALLBACK;
+  const secret = import.meta.env.JWT_SECRET || JWT_SECRET_FALLBACK;
   return jwt.sign(
     {
       userId,
@@ -39,11 +39,11 @@ export function generateToken(userId: string, email: string): string {
 /**
  * Verify and decode a JWT token
  */
-export function verifyToken(
+export function verifyToken(;
   token: string,
 ): { userId: string; email: string } | null {
   try {
-    const secret = process.env.JWT_SECRET || JWT_SECRET_FALLBACK;
+    const secret = import.meta.env.JWT_SECRET || JWT_SECRET_FALLBACK;
     const decoded = jwt.verify(token, secret) as any;
     return {
       userId: decoded.userId,

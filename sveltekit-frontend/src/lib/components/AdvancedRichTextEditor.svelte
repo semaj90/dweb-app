@@ -1,6 +1,6 @@
 <!-- Advanced Rich Text Editor with Google Slides/Photoshop-like Features -->
 <script lang="ts">
-  import { $props, $derived } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
 
   import { Editor } from "@tiptap/core";
   import Color from "@tiptap/extension-color";
@@ -48,20 +48,28 @@
   import { onDestroy, onMount } from "svelte";
   import { get, writable } from "svelte/store";
 
-  let { content = $bindable() } = $props(); // any = null;
-  let { placeholder = $bindable() } = $props(); // "Start writing your legal report...";
-  let { autosave = $bindable() } = $props(); // true;
-  let { reportId = $bindable() } = $props(); // string = "";
-  let { caseId = $bindable() } = $props(); // string = "";
-
-  let editor: Editor | null = null;
+  // Svelte 5 props
+  let {
+    content = $bindable(),
+    placeholder = "Start writing your legal report...",
+    autosave = true,
+    reportId = "",
+    caseId = ""
+  }: {
+    content?: any;
+    placeholder?: string;
+    autosave?: boolean;
+    reportId?: string;
+    caseId?: string;
+  } = $props();
+let editor = $state<Editor | null >(null);
   let editorElement: HTMLElement;
-  let isFullscreen = false;
-  let currentZoom = 100;
-  let showGrid = false;
-  let showRuler = true;
-  let wordCount = 0;
-  let characterCount = 0;
+let isFullscreen = $state(false);
+let currentZoom = $state(100);
+let showGrid = $state(false);
+let showRuler = $state(true);
+let wordCount = $state(0);
+let characterCount = $state(0);
 
   // Editor state stores
   const editorState = writable({
@@ -136,10 +144,10 @@
   ];
 
   // Auto-save functionality
-  let autoSaveTimeout: NodeJS.Timeout;
+let autoSaveTimeout = $state<NodeJS.Timeout;
 
-  onMount(() => {
-    initializeEditor();
+  onMount(() >(> {
+    initializeEditor());
     setupKeyboardShortcuts();
   });
 
@@ -458,14 +466,14 @@
     <div class="mx-auto px-4 max-w-7xl">
       <button
         class="mx-auto px-4 max-w-7xl"
-        click={() => saveContent()}
+        on:onclick={() => saveContent()}
         title="Save (Ctrl+S)"
       >
         <Save size="18" />
       </button>
       <button
         class="mx-auto px-4 max-w-7xl"
-        click={() => importDocument()}
+        on:onclick={() => importDocument()}
         title="Import Document"
       >
         <Upload size="18" />
@@ -476,11 +484,11 @@
           <ChevronDown size="14" />
         </button>
         <div class="mx-auto px-4 max-w-7xl">
-          <button click={() => exportDocument("html")}>Export as HTML</button
+          <button on:onclick={() => exportDocument("html")}>Export as HTML</button
           >
-          <button click={() => exportDocument("json")}>Export as JSON</button
+          <button on:onclick={() => exportDocument("json")}>Export as JSON</button
           >
-          <button click={() => exportDocument("pdf")}>Export as PDF</button>
+          <button on:onclick={() => exportDocument("pdf")}>Export as PDF</button>
         </div>
       </div>
     </div>
@@ -492,7 +500,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:disabled={!state.canUndo}
-        click={() => editor?.commands.undo()}
+        on:onclick={() => editor?.commands.undo()}
         title="Undo (Ctrl+Z)"
       >
         <Undo size="18" />
@@ -500,7 +508,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:disabled={!state.canRedo}
-        click={() => editor?.commands.redo()}
+        on:onclick={() => editor?.commands.redo()}
         title="Redo (Ctrl+Shift+Z)"
       >
         <Redo size="18" />
@@ -526,7 +534,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:active={state.isBold}
-        click={() => toggleBold()}
+        on:onclick={() => toggleBold()}
         title="Bold (Ctrl+B)"
       >
         <Bold size="18" />
@@ -534,7 +542,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:active={state.isItalic}
-        click={() => toggleItalic()}
+        on:onclick={() => toggleItalic()}
         title="Italic (Ctrl+I)"
       >
         <Italic size="18" />
@@ -542,7 +550,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:active={state.isUnderline}
-        click={() => toggleUnderline()}
+        on:onclick={() => toggleUnderline()}
         title="Underline (Ctrl+U)"
       >
         <Underline size="18" />
@@ -550,7 +558,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:active={state.isStrike}
-        click={() => toggleStrike()}
+        on:onclick={() => toggleStrike()}
         title="Strikethrough"
       >
         <Strikethrough size="18" />
@@ -581,7 +589,7 @@
             <button
               class="mx-auto px-4 max-w-7xl"
               style="background-color: {color}"
-              click={() => setHighlight(color)}
+              on:onclick={() => setHighlight(color)}
               title={color === "transparent"
                 ? "Remove highlight"
                 : `Highlight with ${color}`}
@@ -601,7 +609,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:active={state.currentAlignment === "left"}
-        click={() => setAlignment("left")}
+        on:onclick={() => setAlignment("left")}
         title="Align Left"
       >
         <AlignLeft size="18" />
@@ -609,7 +617,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:active={state.currentAlignment === "center"}
-        click={() => setAlignment("center")}
+        on:onclick={() => setAlignment("center")}
         title="Align Center"
       >
         <AlignCenter size="18" />
@@ -617,7 +625,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:active={state.currentAlignment === "right"}
-        click={() => setAlignment("right")}
+        on:onclick={() => setAlignment("right")}
         title="Align Right"
       >
         <AlignRight size="18" />
@@ -625,7 +633,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:active={state.currentAlignment === "justify"}
-        click={() => setAlignment("justify")}
+        on:onclick={() => setAlignment("justify")}
         title="Justify"
       >
         <AlignJustify size="18" />
@@ -639,7 +647,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:active={state.isList}
-        click={() => editor?.chain().focus().toggleBulletList().run()}
+        on:onclick={() => editor?.chain().focus().toggleBulletList().run()}
         title="Bullet List"
       >
         <List size="18" />
@@ -647,7 +655,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:active={state.isOrderedList}
-        click={() => editor?.chain().focus().toggleOrderedList().run()}
+        on:onclick={() => editor?.chain().focus().toggleOrderedList().run()}
         title="Numbered List"
       >
         <ListOrdered size="18" />
@@ -655,7 +663,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:active={state.isQuote}
-        click={() => editor?.chain().focus().toggleBlockquote().run()}
+        on:onclick={() => editor?.chain().focus().toggleBlockquote().run()}
         title="Quote"
       >
         <Quote size="18" />
@@ -663,7 +671,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:active={state.isCode}
-        click={() => editor?.chain().focus().toggleCodeBlock().run()}
+        on:onclick={() => editor?.chain().focus().toggleCodeBlock().run()}
         title="Code Block"
       >
         <Code size="18" />
@@ -676,14 +684,14 @@
     <div class="mx-auto px-4 max-w-7xl">
       <button
         class="mx-auto px-4 max-w-7xl"
-        click={() => insertImage()}
+        on:onclick={() => insertImage()}
         title="Insert Image"
       >
         <ImageIcon size="18" />
       </button>
       <button
         class="mx-auto px-4 max-w-7xl"
-        click={() => insertTable()}
+        on:onclick={() => insertTable()}
         title="Insert Table"
       >
         <TableIcon size="18" />
@@ -696,7 +704,7 @@
     <div class="mx-auto px-4 max-w-7xl">
       <button
         class="mx-auto px-4 max-w-7xl"
-        click={() => adjustZoom(-10)}
+        on:onclick={() => adjustZoom(-10)}
         title="Zoom Out"
       >
         <ZoomOut size="18" />
@@ -704,7 +712,7 @@
       <span class="mx-auto px-4 max-w-7xl">{currentZoom}%</span>
       <button
         class="mx-auto px-4 max-w-7xl"
-        click={() => adjustZoom(10)}
+        on:onclick={() => adjustZoom(10)}
         title="Zoom In"
       >
         <ZoomIn size="18" />
@@ -713,7 +721,7 @@
       <button
         class="mx-auto px-4 max-w-7xl"
         class:active={showGrid}
-        click={() => (showGrid = !showGrid)}
+        on:onclick={() => (showGrid = !showGrid)}
         title="Toggle Grid"
       >
         <Grid size="18" />
@@ -721,7 +729,7 @@
 
       <button
         class="mx-auto px-4 max-w-7xl"
-        click={() => toggleFullscreen()}
+        on:onclick={() => toggleFullscreen()}
         title="Toggle Fullscreen"
       >
         {#if isFullscreen}
@@ -971,4 +979,4 @@
   }
 </style>
 
-<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->
+<!-- Props migrated to Svelte 5 $props() pattern -->

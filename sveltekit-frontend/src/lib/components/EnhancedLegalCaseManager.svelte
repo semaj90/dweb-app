@@ -126,20 +126,20 @@
     ];
 
     // Derived stores converted to Svelte 5 $derived
-    const totalSteps = $derived(steps.length);
-    const progressPercentage = $derived(
+    let totalSteps = $derived(steps.length);
+    let progressPercentage = $derived(
         Math.round((currentStep / (steps.length - 1)) * 100)
     );
-    const currentStepConfig = $derived(steps[currentStep]);
-    const isFirstStep = $derived(currentStep === 0);
-    const isLastStep = $derived(currentStep === steps.length - 1);
-    const estimatedTimeRemaining = $derived(
+    let currentStepConfig = $derived(steps[currentStep]);
+    let isFirstStep = $derived(currentStep === 0);
+    let isLastStep = $derived(currentStep === steps.length - 1);
+    let estimatedTimeRemaining = $derived(
         steps.slice(currentStep + 1).reduce((sum, step) => sum + step.estimatedTime, 0)
     );
 
     // Auto-save functionality using Svelte 5 $effect
-    let autoSaveTimeout: NodeJS.Timeout;
-    const AUTOSAVE_DELAY = 3000; // 3 seconds
+let autoSaveTimeout = $state<NodeJS.Timeout;
+    const AUTOSAVE_DELAY >(3000); // 3 seconds
 
     $effect(() => {
         if (autoSaveEnabled && caseData) {
@@ -295,7 +295,7 @@
     async function jumpToStep(stepIndex: number): Promise<void> {
         if (stepIndex >= 0 && stepIndex < steps.length) {
             // Validate all previous steps
-            let canJump = true;
+let canJump = $state(true);
 
             for (let i = 0; i < stepIndex; i++) {
                 currentStep = i;
@@ -521,8 +521,8 @@
         analyticsStore.logEvent({ type: 'page_view', page: '/case/new' });
 
         // Check for case ID in URL (edit mode)
-        let pageStore: any;
-        const unsubscribe = page.subscribe(value => pageStore = value);
+let pageStore = $state<any;
+        const unsubscribe >(page.subscribe(value => pageStore = value));
         const caseId = pageStore?.url.searchParams.get('id');
         unsubscribe();
         if (caseId) {
@@ -571,7 +571,7 @@
                     <!-- Voice control button -->
                     {#if recognition}
                         <button
-                            click={toggleVoiceListening}
+                            on:onclick={toggleVoiceListening}
                             class="p-2 rounded-lg border border-gray-300 dark:border-gray-600
                                    hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors
                                    {isListening ? 'bg-red-50 border-red-300 text-red-600' : ''}"
@@ -610,7 +610,7 @@
         {steps}
         currentStep={currentStep}
         validationresults={validationResults}
-        on:step-click={(e) => jumpToStep(e.detail)}
+        step-on:on:click={(e) => jumpToStep(e.detail)}
     />
 
     <!-- Processing queue indicator -->
@@ -652,10 +652,10 @@
                     <Component
                         bind:caseData={caseData}
                         validationresult={validationResults[currentStep]}
-                        on:data-changed={() => {
+                        data-changed={() => {
                             caseData.metadata = { ...(typeof caseData.metadata === 'object' && caseData.metadata !== null ? caseData.metadata : {}), updatedAt: new Date() };
                         }}
-                        on:request-validation={validateCurrentStep}
+                        request-validation={validateCurrentStep}
                     />
                 {/if}
             </div>
@@ -665,7 +665,7 @@
                 <div class="flex items-center justify-between">
                     <div class="flex space-x-3">
                         <button
-                            click={previousStep}
+                            on:onclick={previousStep}
                             disabled={isFirstStep || isProcessing}
                             class="px-4 py-2 border border-gray-300 dark:border-gray-600
                                    rounded-md shadow-sm text-sm font-medium
@@ -679,7 +679,7 @@
                         </button>
 
                         <button
-                            click={resetCase}
+                            on:onclick={resetCase}
                             disabled={isProcessing}
                             class="px-4 py-2 border border-red-300 dark:border-red-600
                                    rounded-md shadow-sm text-sm font-medium
@@ -695,7 +695,7 @@
 
                     <div class="flex space-x-3">
                         <button
-                            click={saveProgress}
+                            on:onclick={saveProgress}
                             disabled={isProcessing}
                             class="px-4 py-2 border border-gray-300 dark:border-gray-600
                                    rounded-md shadow-sm text-sm font-medium
@@ -710,7 +710,7 @@
 
                         {#if isLastStep}
                             <button
-                                click={submitCase}
+                                on:onclick={submitCase}
                                 disabled={isProcessing}
                                 class="px-4 py-2 border border-transparent
                                        rounded-md shadow-sm text-sm font-medium
@@ -723,7 +723,7 @@
                             </button>
                         {:else}
                             <button
-                                click={nextStep}
+                                on:onclick={nextStep}
                                 disabled={isProcessing}
                                 class="px-4 py-2 border border-transparent
                                        rounded-md shadow-sm text-sm font-medium

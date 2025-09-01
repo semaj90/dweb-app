@@ -161,7 +161,7 @@ declare module 'ioredis' {
 export function generateEmbedding(text: string, options?: any): Promise<number[]>;
 export function withRetry<T>(fn: () => Promise<T>, retries?: number): Promise<T>;
 export function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T>;
-
+;
 // Production type definitions
 export interface GenericLegalAnalysisResult {
   score: number;

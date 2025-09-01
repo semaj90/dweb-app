@@ -131,60 +131,60 @@ export interface SecuritySettings {
  */
 const createDefaultConfig = (): RAGConfig => ({
   database: {
-    host: process.env.DATABASE_HOST || 'localhost',
-    port: parseInt(process.env.DATABASE_PORT || '5432'),
-    database: process.env.DATABASE_NAME || 'legal_ai_db', 
-    username: process.env.DATABASE_USER || 'legal_admin',
-    password: process.env.DATABASE_PASSWORD || '123456',
-    max: parseInt(process.env.DATABASE_MAX_CONNECTIONS || '20'),
-    idle_timeout: parseInt(process.env.DATABASE_IDLE_TIMEOUT || '20'),
-    ssl: process.env.NODE_ENV === 'production' ? 'require' : false,
-    connect_timeout: parseInt(process.env.DATABASE_CONNECT_TIMEOUT || '10')
+    host: import.meta.env.DATABASE_HOST || 'localhost',
+    port: parseInt(import.meta.env.DATABASE_PORT || '5432'),
+    database: import.meta.env.DATABASE_NAME || 'legal_ai_db', 
+    username: import.meta.env.DATABASE_USER || 'legal_admin',
+    password: import.meta.env.DATABASE_PASSWORD || '123456',
+    max: parseInt(import.meta.env.DATABASE_MAX_CONNECTIONS || '20'),
+    idle_timeout: parseInt(import.meta.env.DATABASE_IDLE_TIMEOUT || '20'),
+    ssl: import.meta.env.NODE_ENV === 'production' ? 'require' : false,
+    connect_timeout: parseInt(import.meta.env.DATABASE_CONNECT_TIMEOUT || '10')
   },
   redis: {
-    host: process.env.REDIS_HOST || 'localhost',
-    port: parseInt(process.env.REDIS_PORT || '6379'),
-    db: parseInt(process.env.REDIS_DB || '0'),
-    maxRetriesPerRequest: parseInt(process.env.REDIS_MAX_RETRIES || '3'),
-    cacheTtl: parseInt(process.env.RAG_CACHE_TTL || '86400'), // 24 hours
+    host: import.meta.env.REDIS_HOST || 'localhost',
+    port: parseInt(import.meta.env.REDIS_PORT || '6379'),
+    db: parseInt(import.meta.env.REDIS_DB || '0'),
+    maxRetriesPerRequest: parseInt(import.meta.env.REDIS_MAX_RETRIES || '3'),
+    cacheTtl: parseInt(import.meta.env.RAG_CACHE_TTL || '86400'), // 24 hours
     enableReadyCheck: true,
     lazyConnect: false
   },
   ollama: {
-    baseUrl: process.env.OLLAMA_URL || 'http://localhost:11434',
-    embeddingModel: process.env.OLLAMA_EMBEDDING_MODEL || 'nomic-embed-text:latest',
-    llmModel: process.env.OLLAMA_LLM_MODEL || 'gemma3-legal:latest',
-    embeddingDimensions: parseInt(process.env.OLLAMA_EMBEDDING_DIMENSIONS || '768'),
-    timeout: parseInt(process.env.OLLAMA_TIMEOUT || '30000'),
-    temperature: parseFloat(process.env.OLLAMA_TEMPERATURE || '0.3'),
-    numCtx: parseInt(process.env.OLLAMA_NUM_CTX || '8192'),
-    numPredict: parseInt(process.env.OLLAMA_NUM_PREDICT || '2048')
+    baseUrl: import.meta.env.OLLAMA_URL || 'http://localhost:11434',
+    embeddingModel: import.meta.env.OLLAMA_EMBEDDING_MODEL || 'nomic-embed-text:latest',
+    llmModel: import.meta.env.OLLAMA_LLM_MODEL || 'gemma3-legal:latest',
+    embeddingDimensions: parseInt(import.meta.env.OLLAMA_EMBEDDING_DIMENSIONS || '768'),
+    timeout: parseInt(import.meta.env.OLLAMA_TIMEOUT || '30000'),
+    temperature: parseFloat(import.meta.env.OLLAMA_TEMPERATURE || '0.3'),
+    numCtx: parseInt(import.meta.env.OLLAMA_NUM_CTX || '8192'),
+    numPredict: parseInt(import.meta.env.OLLAMA_NUM_PREDICT || '2048')
   },
   rag: {
-    chunkSize: parseInt(process.env.RAG_CHUNK_SIZE || '1500'),
-    chunkOverlap: parseInt(process.env.RAG_CHUNK_OVERLAP || '300'),
-    maxSources: parseInt(process.env.RAG_MAX_SOURCES || '10'),
-    similarityThreshold: parseFloat(process.env.RAG_SIMILARITY_THRESHOLD || '0.5'),
-    timeoutMs: parseInt(process.env.RAG_TIMEOUT_MS || '30000'),
-    enableMetrics: process.env.RAG_ENABLE_METRICS !== 'false',
-    enableAutoTagging: process.env.RAG_ENABLE_AUTO_TAGGING !== 'false',
-    enableCaching: process.env.RAG_ENABLE_CACHING !== 'false',
-    batchSize: parseInt(process.env.RAG_BATCH_SIZE || '10')
+    chunkSize: parseInt(import.meta.env.RAG_CHUNK_SIZE || '1500'),
+    chunkOverlap: parseInt(import.meta.env.RAG_CHUNK_OVERLAP || '300'),
+    maxSources: parseInt(import.meta.env.RAG_MAX_SOURCES || '10'),
+    similarityThreshold: parseFloat(import.meta.env.RAG_SIMILARITY_THRESHOLD || '0.5'),
+    timeoutMs: parseInt(import.meta.env.RAG_TIMEOUT_MS || '30000'),
+    enableMetrics: import.meta.env.RAG_ENABLE_METRICS !== 'false',
+    enableAutoTagging: import.meta.env.RAG_ENABLE_AUTO_TAGGING !== 'false',
+    enableCaching: import.meta.env.RAG_ENABLE_CACHING !== 'false',
+    batchSize: parseInt(import.meta.env.RAG_BATCH_SIZE || '10')
   },
   security: {
     rateLimit: {
-      perMinute: parseInt(process.env.RAG_RATE_LIMIT_PER_MINUTE || '60'),
-      windowMs: parseInt(process.env.RAG_RATE_LIMIT_WINDOW_MS || '60000')
+      perMinute: parseInt(import.meta.env.RAG_RATE_LIMIT_PER_MINUTE || '60'),
+      windowMs: parseInt(import.meta.env.RAG_RATE_LIMIT_WINDOW_MS || '60000')
     },
     validation: {
-      maxInputLength: parseInt(process.env.RAG_MAX_INPUT_LENGTH || '10000'),
-      maxDocumentSize: parseInt(process.env.RAG_MAX_DOCUMENT_SIZE || '10485760'), // 10MB
-      allowedDocumentTypes: (process.env.RAG_ALLOWED_DOC_TYPES || 'contract,statute,case_law,brief,memo').split(',')
+      maxInputLength: parseInt(import.meta.env.RAG_MAX_INPUT_LENGTH || '10000'),
+      maxDocumentSize: parseInt(import.meta.env.RAG_MAX_DOCUMENT_SIZE || '10485760'), // 10MB
+      allowedDocumentTypes: (import.meta.env.RAG_ALLOWED_DOC_TYPES || 'contract,statute,case_law,brief,memo').split(',')
     },
     sanitization: {
-      removeHtmlTags: process.env.RAG_REMOVE_HTML_TAGS !== 'false',
-      removeSqlChars: process.env.RAG_REMOVE_SQL_CHARS !== 'false',
-      maxLineLength: parseInt(process.env.RAG_MAX_LINE_LENGTH || '2000')
+      removeHtmlTags: import.meta.env.RAG_REMOVE_HTML_TAGS !== 'false',
+      removeSqlChars: import.meta.env.RAG_REMOVE_SQL_CHARS !== 'false',
+      maxLineLength: parseInt(import.meta.env.RAG_MAX_LINE_LENGTH || '2000')
     }
   }
 });
@@ -1906,12 +1906,12 @@ Limit to 10 most relevant tags.
  * Export enhanced singleton instance
  */
 export const enhancedRAGPipeline = new EnhancedLegalRAGPipeline();
-
+;
 /**
  * Export the original interface for backward compatibility
  */
 export const ragPipeline = enhancedRAGPipeline;
-
+;
 /**
  * Export configuration creator for custom instances
  */

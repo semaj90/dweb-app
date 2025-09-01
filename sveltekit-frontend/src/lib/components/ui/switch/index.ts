@@ -5,10 +5,10 @@
 // Fallback implementation for missing Switch
 export const SwitchRoot = null; // Switch.Root;
 export const SwitchThumb = null; // Switch.Thumb;
-
+;
 // Re-export placeholder
 export const Switch = null;
-
+;
 // Switch-specific common props interface (local, not exported)
 interface SwitchCommonProps {
   className?: string;

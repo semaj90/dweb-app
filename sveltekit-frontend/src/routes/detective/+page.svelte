@@ -10,7 +10,7 @@
   let mounted = $state(false);
   
   // Sample evidence data for the detective board
-  let sampleEvidence = [
+let sampleEvidence = $state([
     {
       id: 'evidence-1',
       title: 'Security Camera Footage',
@@ -98,7 +98,7 @@
       hash: 'dna456',
       aiSummary: 'DNA evidence confirms 99.7% match with suspect sample collected at scene'
 }
-  ];
+  ]);
   
   onMount(() => {
     mounted = true;
@@ -173,7 +173,7 @@
           
           <div class="space-y-4">
             <button 
-              click={() => currentView = 'board'}
+              on:onclick={() => currentView = 'board'}
               class="space-y-4"
             >
               <i class="space-y-4"></i>
@@ -181,7 +181,7 @@
             </button>
             
             <button 
-              click={() => currentView = 'create-case'}
+              on:onclick={() => currentView = 'create-case'}
               class="space-y-4"
             >
               <i class="space-y-4"></i>
@@ -189,7 +189,7 @@
             </button>
             
             <button 
-              click={() => currentView = 'auth-demo'}
+              on:onclick={() => currentView = 'auth-demo'}
               class="space-y-4"
             >
               <i class="space-y-4"></i>
@@ -197,7 +197,7 @@
             </button>
             
             <button 
-              click={() => simulateCollaboration()}
+              on:onclick={() => simulateCollaboration()}
               class="space-y-4"
             >
               <i class="space-y-4"></i>
@@ -217,7 +217,7 @@
             <div class="space-y-4">
               <span class="space-y-4">Welcome, {$auth.user?.name || $auth.user?.email}</span>
               <button 
-                click={() => auth.logout()}
+                on:onclick={() => auth.logout()}
                 class="space-y-4"
               >
                 Logout
@@ -244,8 +244,8 @@
     {:else if currentView === 'create-case'}
       <div class="space-y-4">
         <CaseForm 
-          on:success={handleCaseFormSuccess}
-          on:cancel={handleCaseFormCancel}
+          success={handleCaseFormSuccess}
+          cancel={handleCaseFormCancel}
         />
       </div>
     {:else if currentView === 'auth-demo'}
@@ -265,7 +265,7 @@
               
               <div class="space-y-4">
                 <button 
-                  click={() => auth.login('test@example.com', 'password123')}
+                  on:onclick={() => auth.login('test@example.com', 'password123')}
                   class="space-y-4"
                   disabled={$auth.isLoading}
                 >
@@ -273,7 +273,7 @@
                 </button>
                 
                 <button 
-                  click={() => auth.logout()}
+                  on:onclick={() => auth.logout()}
                   class="space-y-4"
                   disabled={!$auth.isAuthenticated}
                 >
@@ -281,7 +281,7 @@
                 </button>
                 
                 <button 
-                  click={() => auth.checkAuth()}
+                  on:onclick={() => auth.checkAuth()}
                   class="space-y-4"
                   disabled={$auth.isLoading}
                 >

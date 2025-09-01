@@ -5,7 +5,7 @@ import type { RequestHandler } from './$types';
 
 
 // A light wrapper that accepts multipart form uploads and stores the file in MinIO under 'evidence' bucket.
-export const POST = async ({ request }): Promise<any> => {
+export const POST: RequestHandler = (async ({ request }) => {
   try {
     const form = await request.formData();
     const file = form.get('file') as File;
@@ -27,4 +27,4 @@ export const POST = async ({ request }): Promise<any> => {
     console.error('Evidence upload error', err);
     return json({ success: false, error: (err as any)?.message || 'upload error' }, { status: 500 });
   }
-};
+});

@@ -18,8 +18,6 @@
     Play,
     RotateCcw
   } from 'lucide-svelte';
-  import { state } from 'svelte/reactivity';
-
   interface TestResult {
     name: string;
     status: 'pending' | 'running' | 'passed' | 'failed' | 'warning';
@@ -36,7 +34,7 @@
   }
 
   // Production-ready test suites
-  let testSuites = state<TestSuite[]>([
+  let testSuites = $state<TestSuite[]>([
     {
       name: 'Frontend Components',
       description: 'SvelteKit and UI component testing',
@@ -86,13 +84,12 @@
       ]
     }
   ]);
-  // Removed $state and $derived imports
 
-  let isRunning = state(false);
-  let currentTest = state<string | null>(null);
-  let overallProgress = state(0);
-  let startTime = state<Date | null>(null);
-  let endTime = state<Date | null>(null);
+  let isRunning = $state(false);
+  let currentTest = $state<string | null>(null);
+  let overallProgress = $state(0);
+  let startTime = $state<Date | null>(null);
+  let endTime = $state<Date | null>(null);
 
   // Test execution functions
   async function runFrontendTests(suite: TestSuite): Promise<void> {
@@ -329,8 +326,7 @@
   }
 
   // Reactive stats exposed to template
-  // $derived expects a function; wrap getTestStats so it is called lazily
-  let stats = $derived(() => getTestStats());
+  let stats = $derived(getTestStats());
 
   // Auto-run tests on mount
   onMount(() => {
@@ -368,7 +364,7 @@
     <div class="yorha-test-controls-content">
       <button
         class="yorha-test-run-btn {isRunning ? 'running' : ''}"
-        click={runAllTests}
+        on:onclick={runAllTests}
         disabled={isRunning}
       >
         {#if isRunning}

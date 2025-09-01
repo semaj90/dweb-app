@@ -294,7 +294,7 @@
 
       <div class="flex gap-2">
         <Button 
-          on:click={runInitialTests} 
+          on:on:click={runInitialTests} 
           disabled={testRunning}
           variant="outline"
         >
@@ -335,7 +335,7 @@
           </Card.Header>
           <Card.Content class="space-y-4">
             <Button 
-              on:click={() => populateTestData('login')}
+              on:on:click={() => populateTestData('login')}
               variant="outline"
               size="sm"
             >
@@ -363,7 +363,7 @@
           </Card.Header>
           <Card.Content class="space-y-4">
             <Button 
-              on:click={() => populateTestData('register')}
+              on:on:click={() => populateTestData('register')}
               variant="outline"
               size="sm"
             >

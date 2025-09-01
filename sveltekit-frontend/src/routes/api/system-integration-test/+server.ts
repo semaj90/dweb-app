@@ -1,9 +1,10 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 // System Integration Test - Complete Health Check and Autosolve
 // Tests all system components including Context7, MCP, database orchestrator, and autosolve
 
 import { testContext7Pipeline, testDatabaseOperations, runFullIntegrationTest } from "$lib/services/comprehensive-database-orchestrator";
+import { URL } from "url";
 
 // GET /api/system-integration-test - Run comprehensive system test
 export const GET: RequestHandler = async ({ url }) => {

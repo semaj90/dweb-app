@@ -27,12 +27,12 @@
   }
 
   // State
-  let query = '';
-  let loading = false;
-  let response: RAGResponse | null = null;
-  let error: string | null = null;
+let query = $state('');
+let loading = $state(false);
+let response = $state<RAGResponse | null >(null);
+let error = $state<string | null >(null);
   // caseId derived from route params (runes mode) but must be mutable for binding
-  let caseId = '';
+let caseId = $state('');
   $effect(() => {
     caseId = $page.params.caseId ?? '';
   });
@@ -182,7 +182,7 @@
             <!-- Action Button -->
             <div class="flex justify-between items-center">
               <button
-                click={runRAGQuery}
+                onclick={runRAGQuery}
                 disabled={loading || !query.trim()}
                 class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -299,7 +299,7 @@
           <div class="space-y-2">
             {#each exampleQueries as exampleQuery}
               <button
-                click={() => setExampleQuery(exampleQuery)}
+                onclick={() => setExampleQuery(exampleQuery)}
                 class="w-full text-left p-3 text-sm bg-gray-50 hover:bg-gray-100 rounded-md transition-colors"
                 disabled={loading}
               >

@@ -682,3 +682,4 @@ class Context7Service {
 
 // Export singleton instance
 export const context7Service = new Context7Service();
+;

@@ -35,14 +35,14 @@
   const dispatch = createEventDispatcher();
 
   // Calculate flex values based on ratio
-  let calculatedMainFlex: number;
-  let calculatedSidebarFlex: number;
+let calculatedMainFlex = $state<number;
+let calculatedSidebarFlex = $state<number;
 
   $: {
     switch (ratio) {
       case "golden":
-        calculatedMainFlex = 1.618;
-        calculatedSidebarFlex = 1;
+        calculatedMainFlex >(1.618);
+        calculatedSidebarFlex >(1);
         break;
       case "thirds":
         calculatedMainFlex = 2;
@@ -87,13 +87,13 @@
       "
     >
       <div class="container mx-auto px-4" class:hidden={collapsed}>
-        <slot name="sidebar" />
+        {@render sidebar?.()}
       </div>
 
       {#if collapsible}
         <button
           class="container mx-auto px-4"
-          click={() => toggleSidebar()}
+          on:onclick={() => toggleSidebar()}
           title={collapsed
             ? "Expand sidebar (Ctrl+\\)"
             : "Collapse sidebar (Ctrl+\\)"}
@@ -105,7 +105,7 @@
   {/if}
 
   <main class="container mx-auto px-4" style="flex: {calculatedMainFlex};">
-    <slot />
+    {@render children}
   </main>
 
   {#if sidebarPosition === "right"}
@@ -120,13 +120,13 @@
       "
     >
       <div class="container mx-auto px-4" class:hidden={collapsed}>
-        <slot name="sidebar" />
+        {@render sidebar?.()}
       </div>
 
       {#if collapsible}
         <button
           class="container mx-auto px-4"
-          click={() => toggleSidebar()}
+          on:onclick={() => toggleSidebar()}
           title={collapsed
             ? "Expand sidebar (Ctrl+\\)"
             : "Collapse sidebar (Ctrl+\\)"}

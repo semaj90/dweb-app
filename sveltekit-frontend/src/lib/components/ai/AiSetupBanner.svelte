@@ -88,7 +88,7 @@ https://svelte.dev/e/js_parse_error -->
             {/if}
           </span>
           {#if data.details?.ollama?.required_model && !data.details?.ai_summarize_checks?.model}
-            <button class="pull" click={pullModel} aria-label="Pull required model">Pull model</button>
+            <button class="pull" on:onclick={pullModel} aria-label="Pull required model">Pull model</button>
           {/if}
         </div>
       </div>

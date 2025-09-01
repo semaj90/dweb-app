@@ -37,12 +37,11 @@ https://svelte.dev/e/js_parse_error -->
     recommendations: string[];
     processingTime: number;
   }
-
-  let prompt = '';
-  let analysisType: 'case_analysis' | 'legal_research' | 'document_review' | 'precedent_search' = 'case_analysis';
-  let loading = false;
-  let analysis: LegalAnalysis | null = null;
-  let error = '';
+let prompt = $state('');
+let analysisType = $state<'case_analysis' | 'legal_research' | 'document_review' | 'precedent_search' >('case_analysis');
+let loading = $state(false);
+let analysis = $state<LegalAnalysis | null >(null);
+let error = $state('');
 
   const analysisTypes = [
     { value: 'case_analysis', label: 'Case Analysis' },
@@ -113,7 +112,7 @@ https://svelte.dev/e/js_parse_error -->
   });
 </script>
 
-<Dialog bind:isOpen title="Legal AI Analysis" on:close={closeDialog}>
+<Dialog bind:isOpen title="Legal AI Analysis" close={closeDialog}>
   <div class="space-y-6">
     {#if !analysis}
       <!-- Analysis Input Form -->
@@ -155,7 +154,7 @@ https://svelte.dev/e/js_parse_error -->
         <div class="flex gap-3 pt-4">
           <button
             type="button"
-            click={performAnalysis}
+            on:onclick={performAnalysis}
             disabled={loading || !prompt.trim()}
             class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -170,7 +169,7 @@ https://svelte.dev/e/js_parse_error -->
           </button>
           <button
             type="button"
-            click={closeDialog}
+            on:onclick={closeDialog}
             class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
           >
             Cancel
@@ -234,14 +233,14 @@ https://svelte.dev/e/js_parse_error -->
         <div class="flex gap-3 pt-4">
           <button
             type="button"
-            click={resetDialog}
+            on:onclick={resetDialog}
             class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
           >
             New Analysis
           </button>
           <button
             type="button"
-            click={closeDialog}
+            on:onclick={closeDialog}
             class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
           >
             Close

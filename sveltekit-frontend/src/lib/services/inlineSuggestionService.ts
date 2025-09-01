@@ -530,15 +530,15 @@ export class InlineSuggestionService {
 
 // Singleton instance for global use
 export const inlineSuggestionService = new InlineSuggestionService();
-
+;
 // Debounced wrapper for real-time usage
-export const debouncedSuggestionGenerator = debounce(
+export const debouncedSuggestionGenerator = debounce(;
   (context: SuggestionContext) => inlineSuggestionService.generateSuggestions(context),
   800
 );
 
 // Utility functions
-export const createSuggestionContext = (
+export const createSuggestionContext = (;
   text: string,
   cursorPosition: number,
   options: Partial<SuggestionContext> = {}
@@ -551,7 +551,7 @@ export const createSuggestionContext = (
   ...options
 });
 
-export const applySuggestionToText = (
+export const applySuggestionToText = (;
   text: string,
   suggestion: InlineSuggestion,
   cursorPosition: number

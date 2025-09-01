@@ -525,7 +525,7 @@ export class EnhancedSearchService {
 // ===== SINGLETON INSTANCE =====
 
 export const searchService = new EnhancedSearchService();
-
+;
 // ===== CONVENIENCE FUNCTIONS =====
 
 export async function globalSearch(query: string, options?: FuzzySearchOptions): Promise<SearchResult[]> {

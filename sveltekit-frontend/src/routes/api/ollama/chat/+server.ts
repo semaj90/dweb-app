@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * Ollama Chat API Endpoint
@@ -9,17 +9,39 @@ import { ollamaChatStream } from "$lib/services/ollamaChatStream";
 
 export const POST: RequestHandler = async ({ request }) => {
   try {
+    const body = await request.json();
+
     const {
       message,
-      model = 'gemma2:7b',
-      temperature = 0.7,
-      maxTokens = 2048,
-      stream = false,
+      model: reqModel,
+      temperature: reqTemperature,
+      maxTokens: reqMaxTokens,
+      stream: reqStream,
       systemPrompt,
       conversationId,
-      useVectorSearch = true,
+      useVectorSearch: reqUseVectorSearch,
       context = [],
-    } = await request.json();
+    } = body;
+
+    // Environment-backed defaults (check your .env for these keys)
+    // OLLAMA_MODEL, OLLAMA_TEMPERATURE, OLLAMA_MAX_TOKENS, OLLAMA_STREAM, OLLAMA_USE_VECTOR_SEARCH
+    const model = import.meta.env.OLLAMA_MODEL ?? reqModel ?? 'gemma3:legal:latest';
+    const temperature =
+      reqTemperature !== undefined
+      ? Number(reqTemperature)
+      : Number(import.meta.env.OLLAMA_TEMPERATURE ?? 0.7);
+    const maxTokens =
+      reqMaxTokens !== undefined
+      ? Number(reqMaxTokens)
+      : Number(import.meta.env.OLLAMA_MAX_TOKENS ?? 2048);
+    const stream =
+      reqStream !== undefined
+      ? Boolean(reqStream)
+      : (import.meta.env.OLLAMA_STREAM ?? 'false') === 'true';
+    const useVectorSearch =
+      reqUseVectorSearch !== undefined
+      ? Boolean(reqUseVectorSearch)
+      : (import.meta.env.OLLAMA_USE_VECTOR_SEARCH ?? 'true') === 'true';
 
     if (!message) {
       return json({ error: 'Message is required' }, { status: 400 });

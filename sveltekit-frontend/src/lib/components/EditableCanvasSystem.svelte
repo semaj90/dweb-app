@@ -42,15 +42,15 @@
   const canCreateNode = derived(nodeCount, ($nodeCount) => $nodeCount < maxNodes);
 
   // Component state
-  let mounted = false;
-  let canvasElement: HTMLCanvasElement;
+let mounted = $state(false);
+let canvasElement = $state<HTMLCanvasElement;
   let ctx: CanvasRenderingContext2D;
-  let ws: WebSocket | null = null;
-  let reconnectTimeout: ReturnType<typeof setTimeout>;
+  let ws: WebSocket | null >(null);
+let reconnectTimeout = $state<ReturnType<typeof setTimeout>;
 
   // Lifecycle management
-  onMount(async () => {
-    mounted = true;
+  onMount(async () >(> {
+    mounted = true);
     await initializeCanvas();
     initializeWebSocket();
   });
@@ -302,7 +302,7 @@
       <button 
         type="button"
         disabled={readonly}
-        click={resetCanvas}
+        on:onclick={resetCanvas}
         aria-label="Create new canvas"
       >
         New Canvas
@@ -316,7 +316,7 @@
     <div class="toolbar-right">
       <span 
         class="status" 
-        class:on:line={$isOnline}
+        class:line={$isOnline}
         aria-label={$isOnline ? 'Connected' : 'Disconnected'}
       >
         {$isOnline ? 'Online' : 'Offline'}
@@ -332,9 +332,9 @@
       role="img"
       aria-label="Interactive canvas for creating and editing nodes"
       tabindex={readonly ? -1 : 0}
-      click={handleCanvasClick}
-      on:drop={handleFileDrop}
-      on:dragover={handleDragOver}
+      on:onclick={handleCanvasClick}
+      ondrop={handleFileDrop}
+      ondragover={handleDragOver}
     ></canvas>
 
     <aside class="evidence-panel" aria-label="Evidence files">

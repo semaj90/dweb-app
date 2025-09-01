@@ -131,7 +131,7 @@
   ];
 
   // Reactive filtering of results based on confidence
-  const filteredResults = $derived(
+  let filteredResults = $derived(
     selectedConfidence === 'all' ? searchResults : (() => {
       const thresholds = {
         high: 0.9,
@@ -284,7 +284,7 @@
         variant="primary"
         legal
         loading={isSearching}
-        on:click={performVectorSearch}
+        on:on:click={performVectorSearch}
         disabled={!searchQuery.trim()}
       >
         {#if isSearching}
@@ -299,7 +299,7 @@
       {#if searchResults.length > 0}
         <Button
           variant="outline"
-          on:click={clearResults}
+          on:on:click={clearResults}
         >
           Clear
         </Button>
@@ -450,7 +450,7 @@
       <div class="flex justify-center gap-2">
         <Button
           variant="outline"
-          on:click={() => searchQuery = 'contract breach non-disclosure agreement'}
+          on:on:click={() => searchQuery = 'contract breach non-disclosure agreement'}
         >
           Try Sample Query
         </Button>

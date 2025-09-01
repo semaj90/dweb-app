@@ -2,9 +2,9 @@
   import * as monaco from 'monaco-editor';
 import { onDestroy, onMount } from 'svelte';
 let editorContainer: HTMLDivElement = $state();
-let editor: monaco.editor.IStandaloneCodeEditor;
+let editor = $state<monaco.editor.IStandaloneCodeEditor;
 
-onMount(() => {
+onMount(() >(> {
   // SSR safety: only run in browser
   if (typeof window !== 'undefined') {
     editor = monaco.editor.create(editorContainer, {
@@ -12,7 +12,7 @@ onMount(() => {
       language: 'javascript',
       theme: 'vs-dark',
       automaticLayout: true
-    });
+    }));
 }
 });
 

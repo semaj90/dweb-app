@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 // src/routes/api/pipeline/test/+server.ts
 // End-to-end pipeline testing endpoint
@@ -13,11 +13,11 @@ import { eq } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 
 // Initialize connections
-const sql = postgres(process.env.DATABASE_URL || 'postgresql://legal_admin:123456@localhost:5432/legal_ai_db');
+const sql = postgres(import.meta.env.DATABASE_URL || 'postgresql://legal_admin:123456@localhost:5432/legal_ai_db');
 const db = drizzle(sql);
 
 const redis = createClient({ 
-  url: process.env.REDIS_URL || 'redis://localhost:6379' 
+  url: import.meta.env.REDIS_URL || 'redis://localhost:6379' 
 });
 
 let redisConnected = false;

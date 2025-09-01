@@ -471,8 +471,7 @@
 	function optimizeLOD(objects: Map<string, RenderObject>, camera: THREE.Camera) {
 		objects.forEach((obj) => {
 			const distance = camera.position.distanceTo(obj.mesh.position);
-			
-			let targetLOD = 0;
+let targetLOD = $state(0);
 			for (let i = 0; i < obj.lodLevels.length; i++) {
 				if (distance < obj.lodLevels[i].distance) {
 					targetLOD = i;
@@ -514,7 +513,7 @@
 
 	let canvas: HTMLCanvasElement;
 	let animationFrame: number;
-	let initialized = false;
+let initialized = $state(false);
 
 	onMount(async () => {
 		console.log('🚀 Initializing WebGPU + Three.js + Service Worker system...');

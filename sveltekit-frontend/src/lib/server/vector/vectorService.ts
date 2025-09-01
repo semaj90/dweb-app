@@ -8,7 +8,7 @@ import {
   cases,
   evidence,
   criminals
-} from '../db/schema-postgres';
+} from '../db/schema-postgres.js';
 import { eq, and, sql, or, ilike } from "drizzle-orm";
 import cuid2 from "@paralleldrive/cuid2";
 
@@ -33,19 +33,19 @@ export class VectorService {
 
   constructor() {
     this.qdrant = new QdrantClient({
-      url: process.env.QDRANT_URL || "http://localhost:6333",
-      apiKey: process.env.QDRANT_API_KEY,
+      url: import.meta.env.QDRANT_URL || "http://localhost:6333",
+      apiKey: import.meta.env.QDRANT_API_KEY,
     });
 
     this.redis = new Redis({
-      host: process.env.REDIS_HOST || "localhost",
-      port: parseInt(process.env.REDIS_PORT || "6379"),
-      password: process.env.REDIS_PASSWORD,
-      db: parseInt(process.env.REDIS_DB || "0"),
+      host: import.meta.env.REDIS_HOST || "localhost",
+      port: parseInt(import.meta.env.REDIS_PORT || "6379"),
+      password: import.meta.env.REDIS_PASSWORD,
+      db: parseInt(import.meta.env.REDIS_DB || "0"),
       maxRetriesPerRequest: 3,
     });
 
-    this.collectionName = process.env.QDRANT_COLLECTION || "legal_documents";
+    this.collectionName = import.meta.env.QDRANT_COLLECTION || "legal_documents";
   }
 
   // Initialize vector collection with proper schema
@@ -671,3 +671,4 @@ export class VectorService {
 
 // Singleton instance
 export const vectorService = new VectorService();
+;

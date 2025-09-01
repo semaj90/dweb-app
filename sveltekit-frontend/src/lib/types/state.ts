@@ -1,7 +1,7 @@
 // 🔧 Svelte 5 State Management Type Fixes
 // Fixes $state(), $derived(), and runes syntax errors
 
-import type { Readable, Writable } from 'svelte/store';
+import type {     Readable, Writable     } from 'svelte/store';
 // Import types
 import type {
   User,

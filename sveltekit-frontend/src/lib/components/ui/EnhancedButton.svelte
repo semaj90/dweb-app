@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type { ComponentProps } from 'svelte';
+	import type {     ComponentProps     } from 'svelte';
 	import { cva, type VariantProps } from 'class-variance-authority';
 	import { cn } from '$lib/utils';
-	import { createButton, melt } from 'melt';
+	// import { createButton, melt } from 'melt'; // Removed melt dependency
 	import { Button as BitsButton } from 'bits-ui';
 	import type { Button as BitsButtonType } from 'bits-ui';
 	
@@ -61,7 +61,7 @@
 		loading = false,
 		loadingText = 'Loading...',
 		class: className = '',
-		useMelt = true,
+		useMelt = false, // Disabled melt functionality
 		useBits = false,
 		...restProps
 	}: Props = $props();
@@ -70,12 +70,12 @@
 	let buttonClass = $derived(cn(buttonVariants({ variant, size }), class));
 	
 	// Create melt-ui button for enhanced accessibility and interactions - conditionally
-	const meltButtonBuilder = useMelt ? createButton({
-		disabled: isDisabled
-	}) : null;
+	// const meltButtonBuilder = useMelt ? createButton({
+	// 	disabled: isDisabled
+	// }) : null;
 	
-	const meltButton = meltButtonBuilder?.elements.root;
-	const pressed = meltButtonBuilder?.states.pressed;
+	// const meltButton = meltButtonBuilder?.elements.root;
+	// const pressed = meltButtonBuilder?.states.pressed;
 	
 	// Loading spinner SVG
 	const LoadingSpinner = () => (
@@ -94,7 +94,7 @@
 		class={buttonClass}
 		data-testid="enhanced-button"
 		data-variant={variant}
-		data-pressed={useMelt ? $pressed : undefined}
+		data-pressed={undefined}
 		{...restProps}
 	>
 		{#if loading}
@@ -121,7 +121,7 @@
 			</svg>
 			{loadingText}
 		{:else}
-			<slot />
+			{@render children}
 		{/if}
 	</BitsButton.Root>
 {:else if href}
@@ -161,20 +161,20 @@
 			</svg>
 			{loadingText}
 		{:else}
-			<slot />
+			{@render children}
 		{/if}
 	</a>
 {:else}
 	{#if useMelt}
 		<!-- Melt-ui enhanced button -->
 		<button
-			use:melt={$meltButton}
+			<!-- <!-- <!-- use:melt={$meltButton} -->
 			{type}
 			disabled={isDisabled}
 			class={buttonClass}
 			data-testid="enhanced-button"
 			data-variant={variant}
-			data-pressed={$pressed}
+			data-pressed={undefined}
 			{...restProps}
 		>
 			{#if loading}
@@ -201,7 +201,7 @@
 				</svg>
 				{loadingText}
 			{:else}
-				<slot />
+				{@render children}
 			{/if}
 		</button>
 	{:else}
@@ -238,7 +238,7 @@
 				</svg>
 				{loadingText}
 			{:else}
-				<slot />
+				{@render children}
 			{/if}
 		</button>
 	{/if}

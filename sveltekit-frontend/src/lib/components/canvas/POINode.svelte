@@ -44,21 +44,21 @@ import Input from "$lib/components/ui/Input.svelte";
   let { poi = $bindable() } = $props(); // POIData;
 
   let nodeElement: HTMLElement;
-  let isEditing = false;
-  let showContextMenu = false;
-  let contextX = 0;
-  let contextY = 0;
+let isEditing = $state(false);
+let showContextMenu = $state(false);
+let contextX = $state(0);
+let contextY = $state(0);
 
   // Component state - using poi props directly
   let name = poi.name || "";
-  let aliases: string[] = poi.aliases || [];
+let aliases = $state<string[] >(poi.aliases || []);
   let profileData = poi.profileData || { who: "", what: "", why: "", how: "" };
   let posX = poi.posX || 100;
   let posY = poi.posY || 100;
   let relationship = poi.relationship || "";
   let threatLevel = poi.threatLevel || "low";
   let status = poi.status || "active";
-  let tags: string[] = poi.tags || [];
+let tags = $state<string[] >(poi.tags || []);
 
   // Update component state when poi changes
   $: {
@@ -73,7 +73,7 @@ import Input from "$lib/components/ui/Input.svelte";
     tags = poi.tags || [];
 }
   // Form data for editing
-  let formData = {
+let formData = $state({
     name: "",
     aliases: "",
     profileData: { who: "", what: "", why: "", how: "" },
@@ -81,7 +81,7 @@ import Input from "$lib/components/ui/Input.svelte";
     threatLevel: "low",
     status: "active",
     tags: "",
-  };
+  });
 
   function startEditing() {
     isEditing = true;
@@ -198,7 +198,7 @@ import Input from "$lib/components/ui/Input.svelte";
           dispatch("updatePosition", { id: poi.id, x: posX, y: posY });
         }
       }}
-      on:contextmenu={handleContextMenu}
+      contextmenu={handleContextMenu}
       role="menu"
       tabindex={0}
       aria-label="POI context menu"
@@ -317,23 +317,23 @@ import Input from "$lib/components/ui/Input.svelte";
         </div>
         <div class="nier-footer flex justify-between items-center mt-4 gap-2">
           {#if isEditing}
-            <button class="nier-btn nier-btn-accent" click={() => saveChanges()}><Save class="w-4 h-4" /> Save</button>
-            <button class="nier-btn nier-btn-secondary" click={() => cancelEditing()}><X class="w-4 h-4" /> Cancel</button>
+            <button class="nier-btn nier-btn-accent" on:onclick={() => saveChanges()}><Save class="w-4 h-4" /> Save</button>
+            <button class="nier-btn nier-btn-secondary" on:onclick={() => cancelEditing()}><X class="w-4 h-4" /> Cancel</button>
           {:else}
-            <button class="nier-btn nier-btn-secondary" click={() => startEditing()}><Edit class="w-4 h-4" /> Edit</button>
-            <button class="nier-btn nier-btn-secondary" click={() => summarizePOI()}><Sparkles class="w-4 h-4" /> Summarize</button>
+            <button class="nier-btn nier-btn-secondary" on:onclick={() => startEditing()}><Edit class="w-4 h-4" /> Edit</button>
+            <button class="nier-btn nier-btn-secondary" on:onclick={() => summarizePOI()}><Sparkles class="w-4 h-4" /> Summarize</button>
           {/if}
         </div>
       </div>
     </div>
   </ContextMenu.Trigger>
   <ContextMenu.Content menu={showContextMenu} class="container mx-auto px-4">
-    <ContextMenu.Item on:select={startEditing}>
+    <ContextMenu.Item select={startEditing}>
       <Edit class="container mx-auto px-4" />
       Edit Profile
     </ContextMenu.Item>
 
-    <ContextMenu.Item on:select={summarizePOI}>
+    <ContextMenu.Item select={summarizePOI}>
       <Sparkles class="container mx-auto px-4" />
       AI Summary
     </ContextMenu.Item>
@@ -341,7 +341,7 @@ import Input from "$lib/components/ui/Input.svelte";
     <ContextMenu.Separator />
 
     <ContextMenu.Item
-      on:select={() => {
+      select={() => {
         threatLevel = "low";
         dispatch("update", { ...poi, threatLevel: "low" });
       }}
@@ -352,7 +352,7 @@ import Input from "$lib/components/ui/Input.svelte";
       Low
     </ContextMenu.Item>
     <ContextMenu.Item
-      on:select={() => {
+      select={() => {
         threatLevel = "medium";
         dispatch("update", { ...poi, threatLevel: "medium" });
       }}
@@ -363,7 +363,7 @@ import Input from "$lib/components/ui/Input.svelte";
       Medium
     </ContextMenu.Item>
     <ContextMenu.Item
-      on:select={() => {
+      select={() => {
         threatLevel = "high";
         dispatch("update", { ...poi, threatLevel: "high" });
       }}
@@ -376,7 +376,7 @@ import Input from "$lib/components/ui/Input.svelte";
 
     <ContextMenu.Separator />
 
-    <ContextMenu.Item on:select={() => dispatch("delete", poi.id)}>
+    <ContextMenu.Item select={() => dispatch("delete", poi.id)}>
       <X class="container mx-auto px-4" />
       Delete POI
     </ContextMenu.Item>

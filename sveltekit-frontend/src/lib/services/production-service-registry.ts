@@ -1,3 +1,4 @@
+import http from "http";
 /**
  * Production Service Registry - Central mapping of all 37 Go binaries
  * Integrates with Context7 multicore orchestration and GPU error processing
@@ -750,7 +751,7 @@ export const CONTEXT7_MULTICORE_CONFIG: Context7MulticoreConfig = {
 
 // Export singleton instance
 export const productionServiceRegistry = new ProductionServiceRegistry();
-
+;
 // Export service utilities
 export function getServiceUrl(serviceName: string, protocol: 'http' | 'grpc' | 'quic' | 'websocket' = 'http'): string {
   const service = productionServiceRegistry.getServiceByName(serviceName);

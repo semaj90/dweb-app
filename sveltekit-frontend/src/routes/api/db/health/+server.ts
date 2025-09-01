@@ -1,4 +1,5 @@
-import type { RequestHandler } from './$types';
+import { json } from '@sveltejs/kit';
+import type { RequestHandler } from './$types.js';
 
 /**
  * Database Health Check API Endpoint
@@ -9,8 +10,8 @@ import postgres from 'postgres';
 import { dev } from '$app/environment';
 
 // Database connection for health check
-const connectionString = process.env.DATABASE_URL || 
-  `postgresql://${process.env.DATABASE_USER || 'legal_admin'}:${process.env.DATABASE_PASSWORD || '123456'}@${process.env.DATABASE_HOST || 'localhost'}:${process.env.DATABASE_PORT || '5432'}/${process.env.DATABASE_NAME || 'legal_ai_db'}`;
+const connectionString = import.meta.env.DATABASE_URL || 
+  `postgresql://${import.meta.env.DATABASE_USER || 'legal_admin'}:${import.meta.env.DATABASE_PASSWORD || '123456'}@${import.meta.env.DATABASE_HOST || 'localhost'}:${import.meta.env.DATABASE_PORT || '5432'}/${import.meta.env.DATABASE_NAME || 'legal_ai_db'}`;
 
 export const GET: RequestHandler = async () => {
   let sql: postgres.Sql | null = null;

@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 <!-- @migration-task Error while migrating Svelte code: Identifier 'caseId' has already been declared
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
@@ -120,11 +121,11 @@ https://svelte.dev/e/js_parse_error -->
   });
 
   // Auto-save functionality
-  let autoSaveTimeout: NodeJS.Timeout;
+let autoSaveTimeout = $state<NodeJS.Timeout;
 
-  $effect(() => {
+  $effect(() >(> {
     if ($formData) {
-      clearTimeout(autoSaveTimeout);
+      clearTimeout(autoSaveTimeout));
       autoSaveTimeout = setTimeout(() => {
         saveFormData();
       }, 2000);
@@ -382,13 +383,13 @@ https://svelte.dev/e/js_parse_error -->
         'AI Analysis',
         'Review & Submit'
       ]}
-      on:stepclick={(e) => goToStep(e.detail)}
+      stepclick={(e) => goToStep(e.detail)}
     />
   </div>
 
   <!-- Loading Overlay -->
   {#if $isLoading}
-    <div class="loading-overlay" transition:fade={{ duration: 300 }}>
+    <div class="loading-overlay" transitifade={{ duration: 300 }}>
       <LoadingSpinner />
       <p class="loading-message">{$processingMessage}</p>
     </div>
@@ -397,52 +398,52 @@ https://svelte.dev/e/js_parse_error -->
   <!-- Form Steps -->
   <div class="form-container" class:loading={$isLoading}>
     {#if $currentStep === 1}
-      <div transition:slide={{ duration: 300, easing: cubicOut }}>
+      <div transitislide={{ duration: 300, easing: cubicOut }}>
         <CaseInfoForm
           bind:data={$formData.caseInfo}
-          on:next={nextStep}
+          next={nextStep}
           isValid={$stepValidation}
         />
       </div>
     {:else if $currentStep === 2}
-      <div transition:slide={{ duration: 300, easing: cubicOut }}>
+      <div transitislide={{ duration: 300, easing: cubicOut }}>
         <DocumentUploadForm
           bind:data={$formData.documents}
-          on:process={(e) => processDocuments(e.detail)}
-          on:next={nextStep}
-          on:prev={prevStep}
+          process={(e) => processDocuments(e.detail)}
+          next={nextStep}
+          prev={prevStep}
           isValid={$stepValidation}
         />
       </div>
     {:else if $currentStep === 3}
-      <div transition:slide={{ duration: 300, easing: cubicOut }}>
+      <div transitislide={{ duration: 300, easing: cubicOut }}>
         <EvidenceAnalysisForm
           bind:data={$formData.evidence}
           ocrResults={$formData.documents.ocr_results}
-          on:extract={extractEvidence}
-          on:next={nextStep}
-          on:prev={prevStep}
+          extract={extractEvidence}
+          next={nextStep}
+          prev={prevStep}
           isValid={$stepValidation}
         />
       </div>
     {:else if $currentStep === 4}
-      <div transition:slide={{ duration: 300, easing: cubicOut }}>
+      <div transitislide={{ duration: 300, easing: cubicOut }}>
         <AIAnalysisForm
           bind:data={$formData.ai_analysis}
           caseData={$formData}
-          on:analyze={performAIAnalysis}
-          on:next={nextStep}
-          on:prev={prevStep}
+          analyze={performAIAnalysis}
+          next={nextStep}
+          prev={prevStep}
           isValid={$stepValidation}
         />
       </div>
     {:else if $currentStep === 5}
-      <div transition:slide={{ duration: 300, easing: cubicOut }}>
+      <div transitislide={{ duration: 300, easing: cubicOut }}>
         <ReviewSubmitForm
           bind:data={$formData.review}
           fullCaseData={$formData}
-          on:submit={submitForm}
-          on:prev={prevStep}
+          submit={submitForm}
+          prev={prevStep}
           isValid={$stepValidation}
         />
       </div>

@@ -775,9 +775,9 @@ export class EnhancedOCRProcessor extends EventEmitter {
 
 // Export singleton instance for global use
 export const ocrProcessor = new EnhancedOCRProcessor();
-
+;
 // Export factory function for custom instances
-export function createOCRProcessor(
+export function createOCRProcessor(;
   maxWorkers?: number,
   tempDir?: string
 ): EnhancedOCRProcessor {

@@ -4,10 +4,10 @@
  */
 
 import { db } from '$lib/server/db/drizzle';
-import { 
-  users, 
-  userRatings, 
-  interactionHistory, 
+import {
+  users,
+  userRatings,
+  interactionHistory,
   trainingData,
   userBehaviorPatterns,
   feedbackMetrics,
@@ -16,7 +16,7 @@ import {
   type NewTrainingData,
   type NewUserBehaviorPattern,
   type NewFeedbackMetric
-} from '$lib/server/db/schema-postgres';
+} from '$lib/database/schema';
 import { eq, desc, sql, and, gte, lt } from 'drizzle-orm';
 
 export interface UserRating {
@@ -86,11 +86,11 @@ class OllamaEmbeddingService implements EmbeddingService {
           prompt: text
         })
       });
-      
+
       if (!response.ok) {
         throw new Error(`Ollama embedding failed: ${response.statusText}`);
       }
-      
+
       const data = await response.json();
       return data.embedding || [];
     } catch (error: any) {
@@ -106,7 +106,7 @@ export class FeedbackLoopService {
   private userPatterns: Map<string, InteractionPattern> = new Map();
   private adaptiveThresholds: Map<string, number> = new Map();
   private embeddingService: EmbeddingService;
-  
+
   constructor() {
     this.embeddingService = new OllamaEmbeddingService();
     this.initializeDefaults();
@@ -128,13 +128,13 @@ export class FeedbackLoopService {
   async collectRating(rating: Omit<UserRating, 'id' | 'timestamp'>): Promise<string> {
     try {
       const ratingId = `rating_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      
+
       // Generate embeddings for semantic analysis
-      const queryEmbedding = rating.context.query 
+      const queryEmbedding = rating.context.query
         ? await this.embeddingService.generateEmbedding(rating.context.query)
         : null;
-      
-      const responseEmbedding = rating.context.response 
+
+      const responseEmbedding = rating.context.response
         ? await this.embeddingService.generateEmbedding(rating.context.response)
         : null;
 
@@ -175,7 +175,7 @@ export class FeedbackLoopService {
       this.triggerAdaptiveLearning(rating);
 
       console.log(`✅ Rating collected: ${rating.ratingType} score ${rating.score}/5 for user ${rating.userId}`);
-      
+
       return ratingId;
     } catch (error: any) {
       console.error('❌ Error collecting rating:', error);
@@ -232,7 +232,7 @@ export class FeedbackLoopService {
     try {
       // Use PostgreSQL pgvector cosine similarity to find similar queries with low ratings
       const similarInteractions = await db.execute(sql`
-        SELECT 
+        SELECT
           ur.id,
           ur.context,
           ur.score,
@@ -249,7 +249,7 @@ export class FeedbackLoopService {
 
       if (similarInteractions.rows.length > 0) {
         console.log(`🔍 Found ${similarInteractions.rows.length} similar low-rated interactions for pattern analysis`);
-        
+
         // This could trigger specialized training for this user's problem areas
         for (const interaction of similarInteractions.rows) {
           console.log(`   - Similarity: ${(interaction.similarity as number).toFixed(3)}, Score: ${interaction.score}`);
@@ -266,12 +266,12 @@ export class FeedbackLoopService {
   private async updateUserBehaviorPattern(userId: string, rating: UserRating) {
     try {
       let pattern = this.userPatterns.get(userId);
-      
+
       if (!pattern) {
         // Get user info to determine role-based expectations
         const user = await db.select().from(users).where(eq(users.id, userId)).limit(1);
         const userRole = user[0]?.role || 'user';
-        
+
         pattern = {
           userId,
           commonQueries: [],
@@ -315,10 +315,10 @@ export class FeedbackLoopService {
 
       // Update learning progress
       const previousAccuracy = pattern.learningProgress.currentAccuracy;
-      pattern.learningProgress.currentAccuracy = 
+      pattern.learningProgress.currentAccuracy =
         (pattern.learningProgress.currentAccuracy * 0.8 + rating.score * 0.2);
-      
-      pattern.learningProgress.improvementRate = 
+
+      pattern.learningProgress.improvementRate =
         pattern.learningProgress.currentAccuracy - previousAccuracy;
 
       // Update strong/weak areas
@@ -348,7 +348,7 @@ export class FeedbackLoopService {
     const pattern = this.userPatterns.get(rating.userId);
     if (pattern && pattern.learningProgress.currentAccuracy < pattern.qualityExpectations) {
       console.log(`🧠 Triggering adaptive learning for user ${rating.userId}`);
-      
+
       // Add personalized training data
       this.schedulePersonalizedTraining(rating.userId);
     }
@@ -386,7 +386,7 @@ export class FeedbackLoopService {
             contextTags: [weakArea, 'personalized_training'],
             difficultyLevel: this.assessDifficultyLevel(query)
           };
-          
+
           this.trainingQueue.push(trainingScenario);
         }
       }
@@ -408,7 +408,7 @@ export class FeedbackLoopService {
     console.log(`   Type: ${rating.ratingType}`);
     console.log(`   Feedback: ${rating.feedback}`);
     console.log(`   Context: ${JSON.stringify(rating.context, null, 2)}`);
-    
+
     // Could integrate with monitoring systems, Slack alerts, etc.
   }
 
@@ -429,7 +429,7 @@ export class FeedbackLoopService {
     ];
 
     const queryLower = query.toLowerCase();
-    
+
     if (advancedIndicators.some(indicator => queryLower.includes(indicator))) {
       return 'expert';
     } else if (complexityIndicators.some(indicator => queryLower.includes(indicator))) {
@@ -463,7 +463,7 @@ export class FeedbackLoopService {
       for (const dataPoint of batch) {
         // This is where integration with actual AI training would occur
         console.log(`🧠 Processing training data: ${dataPoint.input.substring(0, 50)}...`);
-        
+
         // Update processed flag in database
         await db.update(trainingData)
           .set({ processed: true, updatedAt: new Date() })
@@ -522,7 +522,7 @@ export class FeedbackLoopService {
     personalizedSettings: any;
   }> {
     const pattern = this.userPatterns.get(userId);
-    
+
     if (!pattern) {
       return {
         suggestedFeatures: ['ai_chat', 'document_search', 'case_analysis'],
@@ -533,7 +533,7 @@ export class FeedbackLoopService {
 
     return {
       suggestedFeatures: pattern.preferredFeatures.slice(0, 5),
-      qualityImprovements: pattern.learningProgress.weakAreas.map(area => 
+      qualityImprovements: pattern.learningProgress.weakAreas.map(area =>
         `Consider using improved ${area} features`
       ),
       personalizedSettings: {
@@ -561,8 +561,8 @@ export class FeedbackLoopService {
         .where(gte(userRatings.timestamp, sql`NOW() - INTERVAL '30 days'`));
 
       const totalRatings = recentRatings.length;
-      const averageRating = totalRatings > 0 
-        ? recentRatings.reduce((sum, r) => sum + parseFloat(r.score), 0) / totalRatings 
+      const averageRating = totalRatings > 0
+        ? recentRatings.reduce((sum, r) => sum + parseFloat(r.score), 0) / totalRatings
         : 0;
 
       // Calculate rating distribution

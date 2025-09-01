@@ -39,8 +39,8 @@ const vector = customType<{
 });
 
 // Database connection
-const connectionString = process.env.DATABASE_URL || 
-  `postgresql://${process.env.DB_USER || 'legal_admin'}:${process.env.DB_PASSWORD || '123456'}@${process.env.DB_HOST || 'localhost'}:${process.env.DB_PORT || 5432}/${process.env.DB_NAME || 'legal_ai_db'}`;
+const connectionString = import.meta.env.DATABASE_URL || 
+  `postgresql://${import.meta.env.DB_USER || 'legal_admin'}:${import.meta.env.DB_PASSWORD || '123456'}@${import.meta.env.DB_HOST || 'localhost'}:${import.meta.env.DB_PORT || 5432}/${import.meta.env.DB_NAME || 'legal_ai_db'}`;
 
 const sql_client = postgres(connectionString, {
   max: 20,
@@ -49,7 +49,7 @@ const sql_client = postgres(connectionString, {
 });
 
 export const db = drizzle(sql_client);
-
+;
 // Schema definitions
 export const users = pgTable('users', {
   id: serial('id').primaryKey(),
@@ -60,7 +60,7 @@ export const users = pgTable('users', {
   isActive: boolean('is_active').default(true),
   lastLoginAt: timestamp('last_login_at'),
   createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow()
 });
 
 export const cases = pgTable('cases', {
@@ -80,7 +80,7 @@ export const cases = pgTable('cases', {
   tags: jsonb('tags'),
   
   createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow()
 }, (table) => ({
   // Vector similarity indexes
   titleEmbeddingIdx: index('cases_title_embedding_idx')
@@ -93,7 +93,7 @@ export const cases = pgTable('cases', {
   // Regular indexes
   userIdIdx: index('cases_user_id_idx').on(table.userId),
   statusIdx: index('cases_status_idx').on(table.status),
-  createdAtIdx: index('cases_created_at_idx').on(table.createdAt),
+  createdAtIdx: index('cases_created_at_idx').on(table.createdAt)
 }));
 
 export const documents = pgTable('documents', {
@@ -117,7 +117,7 @@ export const documents = pgTable('documents', {
   ocrConfidence: integer('ocr_confidence'),
   
   createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow()
 }, (table) => ({
   contentEmbeddingIdx: index('documents_content_embedding_idx')
     .on(table.contentEmbedding)
@@ -126,7 +126,7 @@ export const documents = pgTable('documents', {
     .on(table.titleEmbedding)
     .using('ivfflat'),
   caseIdIdx: index('documents_case_id_idx').on(table.caseId),
-  processingStatusIdx: index('documents_processing_status_idx').on(table.processingStatus),
+  processingStatusIdx: index('documents_processing_status_idx').on(table.processingStatus)
 }));
 
 export const evidence = pgTable('evidence', {
@@ -149,7 +149,7 @@ export const evidence = pgTable('evidence', {
   metadata: jsonb('metadata'),
   
   createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow()
 }, (table) => ({
   titleEmbeddingIdx: index('evidence_title_embedding_idx')
     .on(table.titleEmbedding)
@@ -159,7 +159,7 @@ export const evidence = pgTable('evidence', {
     .using('ivfflat'),
   caseIdIdx: index('evidence_case_id_idx').on(table.caseId),
   documentIdIdx: index('evidence_document_id_idx').on(table.documentId),
-  evidenceTypeIdx: index('evidence_type_idx').on(table.evidenceType),
+  evidenceTypeIdx: index('evidence_type_idx').on(table.evidenceType)
 }));
 
 export const vectorSearchLogs = pgTable('vector_search_logs', {
@@ -172,54 +172,54 @@ export const vectorSearchLogs = pgTable('vector_search_logs', {
   searchType: varchar('search_type', { length: 50 }), // 'cases', 'documents', 'evidence', 'mixed'
   similarityThreshold: integer('similarity_threshold'), // Store as integer (0-100)
   metadata: jsonb('metadata'),
-  createdAt: timestamp('created_at').defaultNow(),
+  createdAt: timestamp('created_at').defaultNow()
 }, (table) => ({
   queryEmbeddingIdx: index('vector_search_logs_query_embedding_idx')
     .on(table.queryEmbedding)
     .using('ivfflat'),
   userIdIdx: index('vector_search_logs_user_id_idx').on(table.userId),
-  createdAtIdx: index('vector_search_logs_created_at_idx').on(table.createdAt),
+  createdAtIdx: index('vector_search_logs_created_at_idx').on(table.createdAt)
 }));
 
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   cases: many(cases),
-  vectorSearchLogs: many(vectorSearchLogs),
+  vectorSearchLogs: many(vectorSearchLogs)
 }));
 
 export const casesRelations = relations(cases, ({ one, many }) => ({
   user: one(users, {
     fields: [cases.userId],
-    references: [users.id],
-  }),
+    references: [users.id]
+}),
   documents: many(documents),
-  evidence: many(evidence),
+  evidence: many(evidence)
 }));
 
 export const documentsRelations = relations(documents, ({ one, many }) => ({
   case: one(cases, {
     fields: [documents.caseId],
-    references: [cases.id],
-  }),
-  evidence: many(evidence),
+    references: [cases.id]
+}),
+  evidence: many(evidence)
 }));
 
 export const evidenceRelations = relations(evidence, ({ one }) => ({
   case: one(cases, {
     fields: [evidence.caseId],
-    references: [cases.id],
-  }),
+    references: [cases.id]
+}),
   document: one(documents, {
     fields: [evidence.documentId],
-    references: [documents.id],
-  }),
+    references: [documents.id]
+})
 }));
 
 export const vectorSearchLogsRelations = relations(vectorSearchLogs, ({ one }) => ({
   user: one(users, {
     fields: [vectorSearchLogs.userId],
-    references: [users.id],
-  }),
+    references: [users.id]
+})
 }));
 
 // Vector search utility functions

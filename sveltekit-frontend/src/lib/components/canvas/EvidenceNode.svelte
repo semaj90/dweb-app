@@ -29,11 +29,10 @@
   type FabricObject = any;
   
   // Props - simplified for the Detective Mode interface
-              
-  let canvasEl: HTMLCanvasElement;
-  let fabricCanvas: FabricCanvas | null = null; // fabric.Canvas when Fabric.js is loaded
+let canvasEl = $state<HTMLCanvasElement;
+  let fabricCanvas: FabricCanvas | null >(null); // fabric.Canvas when Fabric.js is loaded
   let nodeElement: HTMLElement;
-  let canvasState = {};
+let canvasState = $state({});
   
   onMount(async () => {
     // Dynamically import Fabric.js to avoid SSR issues
@@ -252,9 +251,9 @@
   <div class="resize-handles">
     <div 
       class="resize-handle resize-bottom-right"
-      on:mousedown={(e) => handleResize('bottom-right', e)}
-      on:touchstart={(e) => handleResizeTouch('bottom-right', e)}
-      on:keydown={(e) => {
+      onmousedown={(e) => handleResize('bottom-right', e)}
+      touchstart={(e) => handleResizeTouch('bottom-right', e)}
+      keydown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           handleResize('bottom-right', e);
@@ -266,9 +265,9 @@
     ></div>
     <div 
       class="resize-handle resize-bottom"
-      on:mousedown={(e) => handleResize('bottom', e)}
-      on:touchstart={(e) => handleResizeTouch('bottom', e)}
-      on:keydown={(e) => {
+      onmousedown={(e) => handleResize('bottom', e)}
+      touchstart={(e) => handleResizeTouch('bottom', e)}
+      keydown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           handleResize('bottom', e);
@@ -280,9 +279,9 @@
     ></div>
     <div 
       class="resize-handle resize-right"
-      on:mousedown={(e) => handleResize('right', e)}
-      on:touchstart={(e) => handleResizeTouch('right', e)}
-      on:keydown={(e) => {
+      onmousedown={(e) => handleResize('right', e)}
+      touchstart={(e) => handleResizeTouch('right', e)}
+      keydown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           handleResize('right', e);

@@ -62,7 +62,7 @@ class AISummarizationService {
   constructor() {
     this.baseUrl = dev
       ? "http://localhost:11434"
-      : process.env.OLLAMA_URL || "http://localhost:11434";
+      : import.meta.env.OLLAMA_URL || "http://localhost:11434";
     this.modelName = "gemma3-legal";
   }
   /**
@@ -744,3 +744,4 @@ Structure as comprehensive timeline JSON analysis.
   }
 }
 export const aiSummarizationService = new AISummarizationService();
+;

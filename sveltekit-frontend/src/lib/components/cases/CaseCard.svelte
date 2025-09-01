@@ -178,7 +178,7 @@
         </span>
 
         <button
-          use:melt={$trigger}
+          <!-- <!-- use:melt={$trigger}
           class="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
           aria-label="More options"
         >
@@ -283,14 +283,14 @@
     <!-- Action Buttons -->
     <div class="flex gap-2 mt-4">
       <button
-        click={() => onView(caseData.id)}
+        on:onclick={() => onView(caseData.id)}
         class="flex-1 bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-md transition-colors duration-200 text-sm font-medium flex items-center justify-center gap-2"
       >
         <Eye class="w-4 h-4" />
         View Details
       </button>
       <button
-        click={() => onEdit(caseData.id)}
+        on:onclick={() => onEdit(caseData.id)}
         class="bg-gray-200 text-gray-800 hover:bg-gray-300 px-4 py-2 rounded-md transition-colors duration-200 text-sm font-medium flex items-center justify-center"
       >
         <Edit class="w-4 h-4" />
@@ -303,13 +303,13 @@
 <!-- Dropdown Menu -->
 {#if $open}
   <div
-    use:melt={$menu}
+    <!-- <!-- use:melt={$menu}
     class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-2 min-w-[200px] z-50"
-    transition:scale={{ duration: 200, start: 0.95 }}
+    transitiscale={{ duration: 200, start: 0.95 }}
   >
     <button
-      use:melt={$item}
-      click={() => onView(caseData.id)}
+      <!-- <!-- use:melt={$item}
+      on:onclick={() => onView(caseData.id)}
       class="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 w-full text-left"
     >
       <Eye class="w-4 h-4 text-gray-600 dark:text-gray-300" />
@@ -317,19 +317,19 @@
     </button>
 
     <button
-      use:melt={$item}
-      click={() => onEdit(caseData.id)}
+      <!-- <!-- use:melt={$item}
+      on:onclick={() => onEdit(caseData.id)}
       class="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 w-full text-left"
     >
       <Edit class="w-4 h-4 text-gray-600 dark:text-gray-300" />
       <span>Edit Case</span>
     </button>
 
-    <div use:melt={$separator} class="h-px bg-gray-200 dark:bg-gray-600 my-2"></div>
+    <div <!-- <!-- use:melt={$separator} class="h-px bg-gray-200 dark:bg-gray-600 my-2"></div>
 
     <button
-      use:melt={$item}
-      click={() => onArchive(caseData.id)}
+      <!-- <!-- use:melt={$item}
+      on:onclick={() => onArchive(caseData.id)}
       class="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-amber-50 dark:hover:bg-amber-900/20 text-amber-600 dark:text-amber-400 transition-colors duration-200 w-full text-left"
     >
       <Archive class="w-4 h-4" />
@@ -337,8 +337,8 @@
     </button>
 
     <button
-      use:melt={$item}
-      click={() => onDelete(caseData.id)}
+      <!-- <!-- use:melt={$item}
+      on:onclick={() => onDelete(caseData.id)}
       class="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors duration-200 w-full text-left"
     >
       <Trash2 class="w-4 h-4" />

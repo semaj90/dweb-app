@@ -22,7 +22,7 @@
 		...props
 	}: Props = $props();
 
-	const isDisabled = $derived(disabled || loading);
+	let isDisabled = $derived(disabled || loading);
 </script>
 
 <button

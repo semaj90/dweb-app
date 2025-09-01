@@ -5,7 +5,7 @@
 	import GamingHUD from './GamingHUD.svelte';
 	import GamingPanel from './GamingPanel.svelte';
 	import GamingButton from './GamingButton.svelte';
-	import type { ComponentProps } from 'svelte';
+	import type {     ComponentProps     } from 'svelte';
 	
 	interface GamingLayoutProps {
 		showHUD?: boolean;
@@ -95,7 +95,7 @@
 				
 				<button 
 					class="collapse-button"
-					click={toggleSidebar}
+					on:onclick={toggleSidebar}
 					aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
 				>
 					{sidebarCollapsed ? '▶' : '◀'}
@@ -108,7 +108,7 @@
 					<a 
 						href={navItem.href}
 						class="nav-item"
-						class:active={isActiveRoute(navItem.href)}
+					 class:active={isActiveRoute(navItem.href)}
 						data-sveltekit-preload-data="hover"
 					>
 						<span class="nav-icon">{navItem.icon}</span>

@@ -5,19 +5,19 @@
 	import type { GPUStatus, GPUMetrics, WorkerStatus, ServiceRegistry, GPUResult } from '$lib/types/gpu-services';
 
 	// Component state
-	let gpuAvailable = false;
-	let loading = true;
-	let error = '';
+let gpuAvailable = $state(false);
+let loading = $state(true);
+let error = $state('');
 	
 	// GPU Status & Metrics
-	let gpuStatus: GPUStatus | null = null;
-	let gpuMetrics: GPUMetrics | null = null;
-	let workers: WorkerStatus[] = [];
-	let services: ServiceRegistry | null = null;
-	let utilization = 0;
+let gpuStatus = $state<GPUStatus | null >(null);
+let gpuMetrics = $state<GPUMetrics | null >(null);
+let workers = $state<WorkerStatus[] >([]);
+let services = $state<ServiceRegistry | null >(null);
+let utilization = $state(0);
 
 	// Demo forms
-	let documentText = `EMPLOYMENT AGREEMENT
+let documentText = $state(`EMPLOYMENT AGREEMENT
 
 This Employment Agreement ("Agreement") is entered into on [DATE] between [COMPANY NAME], a [STATE] corporation ("Company"), and [EMPLOYEE NAME] ("Employee").
 
@@ -34,22 +34,21 @@ Employee will receive an annual base salary of $[AMOUNT], payable in accordance 
 Employee will be eligible for Company's standard benefits package including health insurance, dental insurance, and retirement plans.
 
 4. TERMINATION
-This agreement may be terminated by either party with thirty (30) days written notice.`;
-
-	let queryText = 'What are the termination provisions in employment contracts?';
-	let processingResults: any[] = [];
-	let isProcessing = false;
+This agreement may be terminated by either party with thirty (30) days written notice.`);
+let queryText = $state('What are the termination provisions in employment contracts?');
+let processingResults = $state<any[] >([]);
+let isProcessing = $state(false);
 
 	// Real-time updates
-	let metricsInterval: NodeJS.Timeout;
-	let statusInterval: NodeJS.Timeout;
+let metricsInterval = $state<NodeJS.Timeout;
+let statusInterval = $state<NodeJS.Timeout;
 
-	onMount(async () => {
-		await loadGPUData();
+	onMount(async () >(> {
+		await loadGPUData());
 		startRealtimeUpdates();
 		
-		return () => {
-			if (metricsInterval) clearInterval(metricsInterval);
+		return () >(> {
+			if (metricsInterval) clearInterval(metricsInterval));
 			if (statusInterval) clearInterval(statusInterval);
 		};
 	});
@@ -197,7 +196,7 @@ This agreement may be terminated by either party with thirty (30) days written n
 		
 		for (let i = 0; i < words.length; i++) {
 			const word = words[i];
-			let hash = 0;
+let hash = $state(0);
 			for (let j = 0; j < word.length; j++) {
 				hash = ((hash << 5) - hash) + word.charCodeAt(j);
 				hash = hash & hash;
@@ -264,7 +263,7 @@ This agreement may be terminated by either party with thirty (30) days written n
 							<h3 class="text-sm font-medium text-red-800">Error</h3>
 							<p class="mt-1 text-sm text-red-700">{error}</p>
 							<button 
-								click={loadGPUData}
+								on:onclick={loadGPUData}
 								class="mt-2 text-sm bg-red-100 text-red-800 px-3 py-1 rounded hover:bg-red-200"
 							>
 								Retry
@@ -347,7 +346,7 @@ This agreement may be terminated by either party with thirty (30) days written n
 					</div>
 
 					<button
-						click={processDocument}
+						on:onclick={processDocument}
 						disabled={isProcessing || !documentText.trim()}
 						class="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
 					>
@@ -381,7 +380,7 @@ This agreement may be terminated by either party with thirty (30) days written n
 					</div>
 
 					<button
-						click={processQuery}
+						on:onclick={processQuery}
 						disabled={isProcessing || !queryText.trim()}
 						class="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
 					>
@@ -404,7 +403,7 @@ This agreement may be terminated by either party with thirty (30) days written n
 					<div class="flex justify-between items-center mb-4">
 						<h3 class="text-lg font-semibold text-gray-900">Processing Results</h3>
 						<button
-							click={clearResults}
+							on:onclick={clearResults}
 							class="text-sm text-gray-600 hover:text-gray-800"
 						>
 							Clear Results

@@ -1,5 +1,6 @@
 // YoRHa Demos Single Page App - Comprehensive Playwright Tests
 import { test, expect, type Page } from '@playwright/test';
+import { URL } from "url";
 
 test.describe('YoRHa Demos Single Page App', () => {
   test.beforeEach(async ({ page }) => {

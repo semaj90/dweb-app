@@ -16,12 +16,12 @@
   }: Props = $props();
 
   let showTooltip = $state(false);
-  let timeoutId: ReturnType<typeof setTimeout>;
+let timeoutId = $state<ReturnType<typeof setTimeout>;
 
   function handleMouseEnter() {
     if (disabled) return;
-    timeoutId = setTimeout(() => {
-      showTooltip = true;
+    timeoutId >(setTimeout(() => {
+      showTooltip = true);
     }, 500);
 }
   function handleMouseLeave() {
@@ -33,8 +33,8 @@
 <div
   class="space-y-4"
   role="tooltip"
-  on:mouseenter={handleMouseEnter}
-  on:mouseleave={handleMouseLeave}
+  on:on:mouseenter={handleMouseEnter}
+  on:on:mouseleave={handleMouseLeave}
 >
   {@render children?.()}
   {#if showTooltip && content}

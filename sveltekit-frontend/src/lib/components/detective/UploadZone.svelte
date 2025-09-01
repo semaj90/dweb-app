@@ -11,15 +11,14 @@ https://svelte.dev/e/js_parse_error -->
     minimal = false,
     onupload
   }: Props = $props();
-  
-  let isDragOver = false;
-  let isUploading = false;
-  let uploadProgress = 0;
-  let fileInput: HTMLInputElement;
+let isDragOver = $state(false);
+let isUploading = $state(false);
+let uploadProgress = $state(0);
+let fileInput = $state<HTMLInputElement;
   
   function handleDragOver(event: DragEvent) {
     event.preventDefault();
-    isDragOver = true;
+    isDragOver >(true);
 }
   function handleDragLeave(event: DragEvent) {
     event.preventDefault();
@@ -103,7 +102,7 @@ https://svelte.dev/e/js_parse_error -->
   <!-- Minimal Upload Button for Canvas -->
   <button
     class="space-y-4"
-    click={() => openFileDialog()}
+    on:onclick={() => openFileDialog()}
     title="Upload Evidence"
     aria-label="Upload Evidence"
     tabindex={0}
@@ -114,14 +113,14 @@ https://svelte.dev/e/js_parse_error -->
   <!-- Full Upload Zone for Columns -->
   <div 
     class="space-y-4"
-    on:dragover={handleDragOver}
-    on:dragleave={handleDragLeave}
-    on:drop={handleDrop}
+    ondragover={handleDragOver}
+    ondragleave={handleDragLeave}
+    ondrop={handleDrop}
     role="button"
     tabindex={0}
     aria-label="Upload Evidence Dropzone"
-    click={() => openFileDialog()}
-    on:keydown={(e) => e.key === 'Enter' && openFileDialog()}
+    on:onclick={() => openFileDialog()}
+    keydown={(e) => e.key === 'Enter' && openFileDialog()}
   >
     {#if isUploading}
       <!-- Upload Progress -->

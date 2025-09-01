@@ -6,6 +6,7 @@
 
 import { writable, derived, type Writable } from 'svelte/store';
 import { browser } from '$app/environment';
+import crypto from "crypto";
 
 export interface KeyboardShortcut {
   id: string;
@@ -594,13 +595,13 @@ class KeyboardShortcutsService {
 
 // Singleton instance
 export const keyboardShortcutsService = new KeyboardShortcutsService();
-
+;
 // Derived stores for easy component access
 export const shortcuts = keyboardShortcutsService.shortcutsStore;
 export const shortcutCategories = keyboardShortcutsService.categoriesStore;
 export const remoteCommands = keyboardShortcutsService.remoteCommandsStore;
 export const isRemoteConnected = keyboardShortcutsService.isConnectedStore;
-
+;
 // Utility functions
 export function formatShortcut(shortcut: KeyboardShortcut): string {
   return keyboardShortcutsService.formatShortcut(shortcut);

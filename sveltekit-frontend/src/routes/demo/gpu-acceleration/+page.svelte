@@ -10,11 +10,10 @@
   const processingResults = writable<any[]>([]);
   const isProcessing = writable<boolean>(false);
   const performanceMetrics = writable<any>(null);
-  
-  let testText = "The defendant's indemnification clause shall survive termination of this agreement and remain in full force and effect, providing liability coverage for all preceding actions.";
-  let selectedService = 'enhanced-rag';
-  let selectedOperation = 'legal_analysis';
-  let selectedPriority: 'high' | 'normal' | 'low' = 'high';
+let testText = $state("The defendant's indemnification clause shall survive termination of this agreement and remain in full force and effect, providing liability coverage for all preceding actions.");
+let selectedService = $state('enhanced-rag');
+let selectedOperation = $state('legal_analysis');
+let selectedPriority = $state<'high' | 'normal' | 'low' >('high');
   
   const availableServices = [
     { value: 'enhanced-rag', label: 'Enhanced RAG (Port 8094)' },
@@ -280,7 +279,7 @@
       <!-- Processing Buttons -->
       <div class="space-y-4">
         <button
-          click={processWithCUDA}
+          on:onclick={processWithCUDA}
           disabled={$isProcessing || !$cudaHealth}
           class="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
@@ -293,7 +292,7 @@
         </button>
         
         <button
-          click={testFlashAttention2}
+          on:onclick={testFlashAttention2}
           disabled={$isProcessing}
           class="w-full bg-purple-600 text-white py-3 px-4 rounded-md hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
@@ -301,7 +300,7 @@
         </button>
         
         <button
-          click={checkGPUStatus}
+          on:onclick={checkGPUStatus}
           class="w-full bg-gray-600 text-white py-3 px-4 rounded-md hover:bg-gray-700"
         >
           🔄 Refresh GPU Status

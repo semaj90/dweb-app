@@ -14,15 +14,15 @@ declare module '$lib/database/schema/legal-documents' {
 }
 
 declare module '$lib/server/db/schema-postgres' {
-  export const legalDocuments: any;
-  export const documentChunks: any;
-  export const autoTags: any;
-  export const userAiQueries: any;
-  export const vectors: any;
-  export const cases: any;
-  export const evidence: any;
-  export const users: any;
-  export const document_chunks: any;
+  // Duplicate removed: // Duplicate removed: export const legalDocuments: any;
+  // Duplicate removed: // Duplicate removed: export const documentChunks: any;
+  // Duplicate removed: // Duplicate removed: export const autoTags: any;
+  // Duplicate removed: // Duplicate removed: export const userAiQueries: any;
+  // Duplicate removed: // Duplicate removed: export const vectors: any;
+  // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: export const cases: any;
+  // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: export const evidence: any;
+  // Duplicate removed: // Duplicate removed: export const users: any;
+  // Duplicate removed: // Duplicate removed: export const document_chunks: any;
   const _default: any;
   export default _default;
 }
@@ -36,8 +36,8 @@ declare module '$lib/server/db/index' {
   export const performance: any;
   export const fullStack: any;
   export const cleanup: any;
-  export const cases: any;
-  export const evidence: any;
+  // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: export const cases: any;
+  // Duplicate removed: // Duplicate removed: // Duplicate removed: // Duplicate removed: export const evidence: any;
   export const eq: any;
   export const desc: any;
   export const count: any;
@@ -58,7 +58,7 @@ declare module '$lib/server/db/index' {
 declare module '$lib/server/db/*' {
   const _whatever: any;
   export default _whatever;
-  export const db: any;
-  export const connection: any;
+  // Duplicate removed: // Duplicate removed: export const db: any;
+  // Duplicate removed: // Duplicate removed: export const connection: any;
   export const rows: any;
 }

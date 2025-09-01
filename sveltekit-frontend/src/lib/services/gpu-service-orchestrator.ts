@@ -69,7 +69,7 @@ export interface ServiceHealth {
  * Main GPU Service Orchestrator
  * Provides unified interface for all GPU/WASM/AI operations
  */
-export class GPUServiceOrchestrator {
+export class GPUServiceOrchestrator {;
 	private services: Map<string, any> = new Map();
 	private serviceHealth: Map<string, ServiceHealth> = new Map();
 	private taskQueue: DocumentIngestionTask[] = [];
@@ -601,9 +601,9 @@ export interface ProcessingStep {
 }
 
 // Export singleton instance
-export const gpuServiceOrchestrator = new GPUServiceOrchestrator();
+export const gpuServiceOrchestrator = new GPUServiceOrchestrator();;
 
 // Reactive stores for UI integration
-export const gpuHealthStore = gpuServiceOrchestrator.getHealth();
-export const gpuMetricsStore = gpuServiceOrchestrator.getMetrics();
+export const gpuHealthStore = gpuServiceOrchestrator.getHealth();;
+export const gpuMetricsStore = gpuServiceOrchestrator.getMetrics();;
 export const gpuQueueStore = gpuServiceOrchestrator.getQueue();

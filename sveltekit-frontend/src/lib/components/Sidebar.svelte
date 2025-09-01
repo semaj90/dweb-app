@@ -98,21 +98,21 @@ export {};
   bind:this={sidebarElement}
   role="complementary"
   aria-label="Content sidebar"
-  on:mouseenter={handleMouseEnter}
-  on:mouseleave={handleMouseLeave}
+  on:on:mouseenter={handleMouseEnter}
+  on:on:mouseleave={handleMouseLeave}
 >
   {#if !sidebarOpen}
     <div class="nes-sidebar-trigger hover-trigger" aria-hidden="true"></div>
   {/if}
 
   {#if sidebarOpen}
-    <div class="yorha-3d-panel-inner neural-sprite-active" transition:slide={{ duration: 300, easing: quintOut, axis: "x" }}>
+    <div class="yorha-3d-panel-inner neural-sprite-active" transitislide={{ duration: 300, easing: quintOut, axis: "x" }}>
       <div class="nes-legal-header yorha-3d-button">
         <h3 class="nes-legal-title">CONTENT LIBRARY</h3>
         <div class="nes-header-actions">
           <button
             class={`nes-legal-priority-medium yorha-3d-button ${isPinned ? "nes-legal-priority-high" : ""}`}
-            click={togglePin}
+            on:onclick={togglePin}
             aria-label={isPinned ? "Unpin sidebar" : "Pin sidebar"}
             type="button"
           >
@@ -120,7 +120,7 @@ export {};
           </button>
 
           {#if !isPinned}
-            <button class="nes-legal-priority-low yorha-3d-button" click={() => (isHovered = false)} aria-label="Close sidebar" type="button">
+            <button class="nes-legal-priority-low yorha-3d-button" on:onclick={() => (isHovered = false)} aria-label="Close sidebar" type="button">
               <X size={16} />
             </button>
           {/if}
@@ -128,29 +128,29 @@ export {};
       </div>
 
       <div class="nes-search-section neural-sprite-loading">
-        <SearchBar placeholder={`Search ${activeTab}...`} value={searchQuery} on:search={handleSearch} />
+        <SearchBar placeholder={`Search ${activeTab}...`} value={searchQuery} search={handleSearch} />
       </div>
 
       <div class="nes-tabs-container yorha-3d-panel">
         <div class="nes-tab-list">
-          <button class="nes-tab-trigger nes-legal-priority-medium" class:active={activeTab === "evidence"} click={() => handleTabChange("evidence")} type="button">
+          <button class="nes-tab-trigger nes-legal-priority-medium" class:active={activeTab === "evidence"} on:onclick={() => handleTabChange("evidence")} type="button">
             <Folder size={16} /> EVIDENCE
           </button>
-          <button class="nes-tab-trigger nes-legal-priority-medium" class:active={activeTab === "notes"} click={() => handleTabChange("notes")} type="button">
+          <button class="nes-tab-trigger nes-legal-priority-medium" class:active={activeTab === "notes"} on:onclick={() => handleTabChange("notes")} type="button">
             <FileText size={16} /> NOTES
           </button>
-          <button class="nes-tab-trigger nes-legal-priority-medium" class:active={activeTab === "canvas"} click={() => handleTabChange("canvas")} type="button">
+          <button class="nes-tab-trigger nes-legal-priority-medium" class:active={activeTab === "canvas"} on:onclick={() => handleTabChange("canvas")} type="button">
             <Tag size={16} /> CANVAS
           </button>
         </div>
 
         <div class="nes-tab-content neural-sprite-active">
           {#if activeTab === "evidence"}
-            <InfiniteScrollList items={searchResults} itemType="evidence" on:itemClick={handleItemClick} on:loadMore={refreshData} />
+            <InfiniteScrollList items={searchResults} itemType="evidence" itemClick={handleItemClick} loadMore={refreshData} />
           {:else if activeTab === "notes"}
-            <InfiniteScrollList items={searchResults} itemType="notes" on:itemClick={handleItemClick} on:loadMore={refreshData} />
+            <InfiniteScrollList items={searchResults} itemType="notes" itemClick={handleItemClick} loadMore={refreshData} />
           {:else}
-            <InfiniteScrollList items={canvasStates} itemType="canvas" on:itemClick={handleItemClick} on:loadMore={refreshData} />
+            <InfiniteScrollList items={canvasStates} itemType="canvas" itemClick={handleItemClick} loadMore={refreshData} />
           {/if}
         </div>
       </div>

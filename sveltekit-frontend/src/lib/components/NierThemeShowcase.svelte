@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { Button } from 'bits-ui'
-  import { createDialog, melt } from 'melt'
-  import { fly, fade } from 'svelte/transition'
-  import { writable } from 'svelte/store'
+  import { Button } from 'bits-ui';
+  // import { createDialog, melt } from 'melt'; // Removed melt dependency
+  import { fly, fade } from 'svelte/transition';
+  import { writable } from 'svelte/store';
   
   // Demo states
   let isDarkMode = $state(false);
@@ -12,12 +12,12 @@
   let selectedStatus = $state('active');
   
   // Create melt-ui dialog
-  const {
-    elements: { trigger, overlay, content, title, description, close },
-    states: { open }
-  } = createDialog({
-    forceVisible: true,
-  })
+  // const {
+  //   elements: { trigger, overlay, content, title, description, close },
+  //   states: { open }
+  // } = createDialog({
+  //   forceVisible: true,
+  // })
   
   // Demo data
   const demoCase = {
@@ -47,7 +47,7 @@
         <a href="#" class="nav-item">AI Assistant</a>
         
         <button
-          click={() => isDarkMode = !isDarkMode}
+          on:onclick={() => isDarkMode = !isDarkMode}
           class="nier-button-outline px-4 py-2 rounded-lg"
           class:dark={isDarkMode}
         >
@@ -73,7 +73,7 @@
     <div class="flex gap-2 border-b nier-divider">
       {#each ['overview', 'components', 'forms', 'cards'] as tab}
         <button
-          click={() => activeTab = tab}
+          on:onclick={() => activeTab = tab}
           class="px-6 py-3 font-medium capitalize nier-transition"
           class:text-harvard-crimson={activeTab === tab}
           class:dark:text-digital-green={activeTab === tab}
@@ -204,33 +204,34 @@
           
           <!-- Melt UI Dialog Example -->
           <button
-            use:melt={$trigger}
+            <!-- <!-- <!-- use:melt={$trigger} -->
             class="nier-button-crimson"
+            on:on:on:click={() => showModal = true}
           >
             Open Modal Dialog
           </button>
           
-          {#if $open}
+          {#if showModal}
             <div
-              use:melt={$overlay}
+              <!-- <!-- <!-- use:melt={$overlay} -->
               class="nier-modal-overlay"
-              transition:fade={{ duration: 200 }}
+              transitifade={{ duration: 200 }}
 ></div>
             
             <div
-              use:melt={$content}
+              <!-- <!-- <!-- use:melt={$content} -->
               class="nier-modal"
-              transition:fly={{ y: 20, duration: 300 }}
+              transitifly={{ y: 20, duration: 300 }}
             >
-              <h2 use:melt={$title} class="text-2xl font-display nier-heading mb-4">
+              <h2 <!-- <!-- <!-- use:melt={$title} --> class="text-2xl font-display nier-heading mb-4">
                 System Alert
               </h2>
-              <p use:melt={$description} class="text-nier-gray dark:text-nier-silver mb-6">
+              <p <!-- <!-- <!-- use:melt={$description} --> class="text-nier-gray dark:text-nier-silver mb-6">
                 This is a NieR: Automata styled modal dialog using Melt UI.
               </p>
               
               <div class="flex gap-4 justify-end">
-                <button use:melt={$close} class="nier-button-outline px-4 py-2">
+                <button <!-- <!-- <!-- use:melt={$close} --> class="nier-button-outline px-4 py-2" on:on:on:click={() => showModal = false}>
                   Cancel
                 </button>
                 <button class="nier-button-digital px-4 py-2">

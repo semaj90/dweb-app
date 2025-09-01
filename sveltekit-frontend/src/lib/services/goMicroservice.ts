@@ -317,7 +317,7 @@ class GoMicroserviceClient {
 
 // Export singleton instance
 export const goMicroservice = new GoMicroserviceClient();
-
+;
 /**
  * Node.js subprocess manager for Go service
  */

@@ -420,12 +420,12 @@ ${practices.filter(p => p.legalSpecific).map(p => `- ${p.title}`).join('\n')}
 
 // Export singleton instance
 export const context7MCPIntegration = new Context7MCPIntegration();
-
+;
 // Export derived stores for easy access
 export const bestPracticesStore = context7MCPIntegration.getBestPractices();
 export const integrationsStore = context7MCPIntegration.getIntegrations();
 export const mcpConnectionStatus = context7MCPIntegration.getConnectionStatus();
-
+;
 // Export utility functions
 export async function getEnhancedRecommendations(context: RecommendationContext): Promise<any> {
   return context7MCPIntegration.generateEnhancedRecommendations(context);

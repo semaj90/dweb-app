@@ -1,12 +1,13 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * Binary-Optimized GPU Shader Cache API
  * Combines GPU shader caching with binary encoding middleware for maximum performance
  */
 
-import { binaryGPUShaderCache } from '../../../../../lib/services/gpu-shader-cache-binary-extension';
-import { binaryEncoder } from '../../../../../lib/middleware/binary-encoding';
+import { binaryGPUShaderCache } from '../../../../../lib/services/gpu-shader-cache-binary-extension.js';
+import { binaryEncoder } from '../../../../../lib/middleware/binary-encoding.js';
+import { URL } from "url";
 
 // GET /api/v1/gpu-cache/binary/shader?key=<cacheKey>
 export const GET: RequestHandler = async ({ url, request }) => {

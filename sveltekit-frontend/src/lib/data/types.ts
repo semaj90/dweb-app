@@ -5,7 +5,7 @@ import {
   evidence,
   reports,
   statutes,
-  users,
+  users
 } from "../server/db/schema-postgres";
 import type { InferInsertModel, InferSelectModel } from "drizzle-orm/table";
 
@@ -33,7 +33,7 @@ export function extendUser(user: User): ExtendedUser {
   return {
     ...user,
     username:
-      user.name || user.email || `${user.firstName} ${user.lastName}`.trim(),
+      user.name || user.email || `${user.firstName} ${user.lastName}`.trim()
   };
 }
 
@@ -54,7 +54,7 @@ export function extendEvidence(evidence: Evidence): ExtendedEvidence {
     ...evidence,
     status: evidence.isAdmissible ? "approved" : "pending",
     type: evidence.evidenceType,
-    createdAt: evidence.collectedAt || evidence.uploadedAt,
+    createdAt: evidence.collectedAt || evidence.uploadedAt
   };
 }
 

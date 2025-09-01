@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 
 /**
  * Node.js Cluster Architecture for SvelteKit 2

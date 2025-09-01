@@ -1,5 +1,5 @@
 
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * AI-Assisted Boilerplate Generation API
@@ -12,15 +12,15 @@ import { z } from 'zod';
 // Configuration
 const CONFIG = {
     database: {
-        user: process.env.DB_USER || 'postgres',
-        password: process.env.DB_PASSWORD || 'password',
-        host: process.env.DB_HOST || 'localhost',
-        port: parseInt(process.env.DB_PORT || '5432'),
-        database: process.env.DB_NAME || 'prosecutor_db'
+        user: import.meta.env.DB_USER || 'postgres',
+        password: import.meta.env.DB_PASSWORD || 'password',
+        host: import.meta.env.DB_HOST || 'localhost',
+        port: parseInt(import.meta.env.DB_PORT || '5432'),
+        database: import.meta.env.DB_NAME || 'prosecutor_db'
     },
     ollama: {
-        url: process.env.OLLAMA_URL || 'http://localhost:11434',
-        model: process.env.LLM_MODEL || 'gemma3-legal'
+        url: import.meta.env.OLLAMA_URL || 'http://localhost:11434',
+        model: import.meta.env.LLM_MODEL || 'gemma3-legal'
     },
     boilerplate: {
         minProsecutionScore: 70,

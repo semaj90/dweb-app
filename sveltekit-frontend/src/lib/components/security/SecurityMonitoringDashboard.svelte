@@ -29,14 +29,13 @@
   } from "lucide-svelte";
   import { onDestroy, onMount } from "svelte";
   import { writable } from "svelte/store";
-
-  let securityEvents: SecurityEvent[] = [];
-  let filteredEvents: SecurityEvent[] = [];
-  let selectedSeverity = "";
-  let selectedType = "";
+let securityEvents = $state<SecurityEvent[] >([]);
+let filteredEvents = $state<SecurityEvent[] >([]);
+let selectedSeverity = $state("");
+let selectedType = $state("");
   let showDetails = new Set<number>();
-  let refreshInterval: number | null = null;
-  let loading = false;
+let refreshInterval = $state<number | null >(null);
+let loading = $state(false);
 
   // Security metrics
   // runtime helpers like $derived are provided by the runes compiler; don't import them.
@@ -81,7 +80,7 @@
       loading = false;
 }}
   function filterEvents() {
-    let filtered = [...securityEvents];
+let filtered = $state([...securityEvents]);
 
     if (selectedSeverity) {
       filtered = filtered.filter((e) => e.severity === selectedSeverity);
@@ -227,20 +226,20 @@
       <Button
         variant="outline"
         size="sm"
-        on:click={() => loadSecurityEvents()}
+        on:on:click={() => loadSecurityEvents()}
         disabled={loading}
       >
         <RefreshCw class={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
         Refresh
       </Button>
-      <Button variant="outline" size="sm" on:click={() => exportEvents()}>
+      <Button variant="outline" size="sm" on:on:click={() => exportEvents()}>
         <Download class="container mx-auto px-4" />
         Export
       </Button>
       <Button
         variant="outline"
         size="sm"
-        on:click={() => clearAllEvents()}
+        on:on:click={() => clearAllEvents()}
         class="container mx-auto px-4"
       >
         <Trash2 class="container mx-auto px-4" />
@@ -468,7 +467,7 @@
                 <Button
                   variant="ghost"
                   size="sm"
-                  on:click={() => toggleEventDetails(index)}
+                  on:on:click={() => toggleEventDetails(index)}
                   class="container mx-auto px-4"
                 >
                   <Eye class="container mx-auto px-4" />

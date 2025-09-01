@@ -46,13 +46,13 @@
   let global = $state($globalState);
 
   // Subscribe to state changes
-  let unsubscribeAuth: () => void;
-  let unsubscribeSession: () => void;
-  let unsubscribeAI: () => void;
-  let unsubscribeGlobal: () => void;
-  let unsubscribeAuth2: () => void;
-  let unsubscribeUser: () => void;
-  let unsubscribeHealth: () => void;
+let unsubscribeAuth = $state<() >(> void);
+let unsubscribeSession = $state<() >(> void);
+let unsubscribeAI = $state<() >(> void);
+let unsubscribeGlobal = $state<() >(> void);
+let unsubscribeAuth2 = $state<() >(> void);
+let unsubscribeUser = $state<() >(> void);
+let unsubscribeHealth = $state<() >(> void);
 
   onMount(() => {
     // Subscribe to all relevant stores
@@ -253,16 +253,26 @@
             </div>
 
             <Button
-              on:click={demonstrateLogin}
+              on:on:click={demonstrateLogin}
               disabled={isLoading || authenticated}
               class="w-full"
             >
               {#if isLoading}
                 <Loader2 class="h-4 w-4 mr-2 animate-spin" />
                 Authenticating...
-              {:else if authenticated}
-                <CheckCircle class="h-4 w-4 mr-2" />
-                Already Authenticated
+                {:else if authenticated}
+                <N643DButton
+                  variant="success"
+                  size="medium"
+                  materialType="phong"
+                  enableLighting={true}
+                  enableReflections={true}
+                  disabled={true}
+                  class="w-full"
+                >
+                  <CheckCircle class="h-4 w-4 mr-2" />
+                  Already Authenticated
+                </N643DButton>
               {:else}
                 <Shield class="h-4 w-4 mr-2" />
                 Demonstrate XState Login
@@ -285,23 +295,23 @@
           </Alert>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Button on:click={demonstrateAI} variant="outline">
+            <Button on:on:click={demonstrateAI} variant="outline">
               <Brain class="h-4 w-4 mr-2" />
               Test AI Assistant
             </Button>
 
-            <Button on:click={demonstrateUpload} variant="outline">
+            <Button on:on:click={demonstrateUpload} variant="outline">
               <Zap class="h-4 w-4 mr-2" />
               Demo File Upload
             </Button>
 
-            <Button on:click={demonstrateSessionActivity} variant="outline">
+            <Button on:on:click={demonstrateSessionActivity} variant="outline">
               <Settings class="h-4 w-4 mr-2" />
               Record Activity
             </Button>
           </div>
 
-          <Button on:click={demonstrateLogout} variant="destructive" class="w-full">
+          <Button on:on:click={demonstrateLogout} variant="destructive" class="w-full">
             <LogOut class="h-4 w-4 mr-2" />
             Demonstrate Logout
           </Button>
@@ -350,10 +360,10 @@
             {/if}
 
             <div class="flex gap-2">
-              <Button on:click={() => demoStep = 'dashboard'} variant="outline">
+              <Button on:on:click={() => demoStep = 'dashboard'} variant="outline">
                 Back to Dashboard
               </Button>
-              <Button on:click={demonstrateLogout} variant="destructive">
+              <Button on:on:click={demonstrateLogout} variant="destructive">
                 <LogOut class="h-4 w-4 mr-2" />
                 Complete Demo
               </Button>

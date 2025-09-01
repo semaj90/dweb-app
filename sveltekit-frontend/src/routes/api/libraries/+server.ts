@@ -1,5 +1,5 @@
 
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * Library Sync API Endpoints - Step 6 & 7 Integration
@@ -7,6 +7,7 @@ import type { RequestHandler } from './$types';
 
 
 import { librarySyncService } from "$lib/services/library-sync-service";
+import { URL } from "url";
 
 // GET /api/libraries - Search libraries
 export const GET: RequestHandler = async ({ url }) => {

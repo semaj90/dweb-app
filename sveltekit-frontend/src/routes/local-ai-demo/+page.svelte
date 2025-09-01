@@ -285,7 +285,7 @@
             Enhanced System Status
           </h2>
           <button
-            click={() => checkSystemStatus()}
+            on:onclick={() => checkSystemStatus()}
             class="space-y-4"
             disabled={isLoadingStatus}
           >
@@ -385,7 +385,7 @@
                   </div>
                   {#if !model.isLoaded}
                     <button
-                      click={() => loadLocalModel(model.id)}
+                      on:onclick={() => loadLocalModel(model.id)}
                       class="space-y-4"
                     >
                       Load Model
@@ -425,14 +425,14 @@
               <div class="space-y-4">
                 <button
                   class="space-y-4"
-                  click={() => (selectedProvider = "auto")}
+                  on:onclick={() => (selectedProvider = "auto")}
                 >
                   <Brain class="space-y-4" />
                   Auto
                 </button>
                 <button
                   class="space-y-4"
-                  click={() => (selectedProvider = "local")}
+                  on:onclick={() => (selectedProvider = "local")}
                   disabled={!systemStatus.tauriLLM}
                 >
                   <Cpu class="space-y-4" />
@@ -440,7 +440,7 @@
                 </button>
                 <button
                   class="space-y-4"
-                  click={() => (selectedProvider = "cloud")}
+                  on:onclick={() => (selectedProvider = "cloud")}
                 >
                   <Cloud class="space-y-4" />
                   Cloud Only
@@ -455,8 +455,8 @@
               showReferences={true}
               enableVoiceInput={true}
               maxHeight="400px"
-              on:response={handleAIResponse}
-              on:referenceclicked={handleReferenceClick}
+              response={handleAIResponse}
+              referenceclicked={handleReferenceClick}
             />
           </div>
         </div>
@@ -470,7 +470,7 @@
             {#each legalDemoQueries as query}
               <button
                 class="space-y-4"
-                click={() => (testQuery = query)}
+                on:onclick={() => (testQuery = query)}
               >
                 "{query}"
               </button>
@@ -501,7 +501,7 @@
             ></textarea>
 
             <button
-              click={() => analyzeLegalDocument()}
+              on:onclick={() => analyzeLegalDocument()}
               disabled={!legalAnalysisText.trim() || isAnalyzing}
               class="space-y-4"
             >
@@ -592,7 +592,7 @@
                 class="space-y-4"
               />
               <button
-                click={() => testVectorSearch()}
+                on:onclick={() => testVectorSearch()}
                 disabled={!testQuery.trim() || isTestingSearch}
                 class="space-y-4"
               >

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
+  import { useWebGPUCapability } from '$lib/services/webgpu-capability-service';
   
   let { 
     gpuOrchestrator,
@@ -7,12 +8,14 @@
     height = 400,
     visualizationMode = 'neural-network' // 'neural-network', 'quantum-field', 'consciousness-map', 'matrix-flow'
   } = $props();
-  
-  let canvas: HTMLCanvasElement;
-  let gpu: GPUDevice | null = null;
-  let context: GPUCanvasContext | null = null;
+  let canvas = $state<HTMLCanvasElement | null>(null);
+  let gpu = $state<GPUDevice | null>(null);
+  let context = $state<GPUCanvasContext | null>(null);
   let animationFrame: number;
   let isInitialized = $state(false);
+  
+  // WebGPU capability service
+  const webgpuCapability = useWebGPUCapability();
   
   // Visualization states
   let neurons = $state([]);
@@ -23,10 +26,12 @@
   
   // Performance metrics
   let fps = $state(60);
-  let frameCount = 0;
-  let lastTime = 0;
+let frameCount = $state(0);
+let lastTime = $state(0);
   
   onMount(async () => {
+    // Initialize WebGPU capability service first
+    await webgpuCapability.initialize();
     await initializeWebGPU();
     if (isInitialized) {
       generateVisualizationData();
@@ -42,33 +47,30 @@
   
   async function initializeWebGPU() {
     try {
-      if (!navigator.gpu) {
-        console.warn('WebGPU not supported, falling back to 2D context');
+      const capabilities = webgpuCapability.getCapabilities();
+      
+      if (!capabilities?.isAvailable) {
+        console.warn(`WebGPU not available: ${capabilities?.fallbackReason || 'Unknown reason'}`);
         return initializeFallback();
       }
       
-      const adapter = await navigator.gpu.requestAdapter();
-      if (!adapter) {
-        console.warn('WebGPU adapter not available');
-        return initializeFallback();
-      }
-      
-      gpu = await adapter.requestDevice();
-      context = canvas.getContext('webgpu') as GPUCanvasContext;
+      // Use the device from capability service
+      gpu = capabilities.device!;
+      context = canvas?.getContext('webgpu') as GPUCanvasContext;
       
       if (!context) {
-        console.warn('WebGPU context not available');
+        console.warn('WebGPU canvas context not available');
         return initializeFallback();
       }
       
-      const presentationFormat = navigator.gpu.getPreferredCanvasFormat();
+      const presentationFormat = navigator.gpu!.getPreferredCanvasFormat();
       context.configure({
         device: gpu,
         format: presentationFormat,
       });
       
       isInitialized = true;
-      console.log('🎮 WebGPU visualization initialized successfully');
+      console.log(`🎮 WebGPU visualization initialized successfully (${capabilities.supportLevel} support)`);
     } catch (error) {
       console.error('WebGPU initialization failed:', error);
       initializeFallback();
@@ -479,7 +481,7 @@
       <span class="text-gray-400">FPS: {fps}</span>
       <button 
         class="bg-blue-600/20 border border-blue-600/50 text-blue-300 hover:bg-blue-600/30 px-3 py-1 rounded text-xs"
-        click={switchMode}
+        onclick={switchMode}
       >
         Switch Mode
       </button>
@@ -517,6 +519,20 @@
       Consciousness mapping with {consciousnessNodes.length} awareness nodes
     {:else if visualizationMode === 'matrix-flow'}
       Matrix data streams with {matrixStreams.length} active channels
+    {/if}
+    
+    <!-- WebGPU capability status -->
+    {#if webgpuCapability.getCapabilities()}
+      <div class="mt-1 flex items-center gap-2">
+        {#if webgpuCapability.isAvailable()}
+          <span class="text-green-400">🎮 WebGPU {webgpuCapability.getSupportLevel()}</span>
+        {:else}
+          <span class="text-yellow-400">🔄 Canvas 2D fallback</span>
+          {#if webgpuCapability.getCapabilities()?.fallbackReason}
+            <span class="text-gray-500">({webgpuCapability.getCapabilities()?.fallbackReason})</span>
+          {/if}
+        {/if}
+      </div>
     {/if}
   </div>
 </div>

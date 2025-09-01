@@ -239,8 +239,8 @@
       const gpuTime = performance.now() - startTime;
 
       // CPU comparison for smaller matrices
-      let cpuTime = 0;
-      let speedup = 0;
+let cpuTime = $state(0);
+let speedup = $state(0);
 
       if (matrixSize <= 128) {
         const cpuStartTime = performance.now();
@@ -273,9 +273,9 @@
    * CPU vector similarity for comparison
    */
   function computeCPUSimilarity(vectorA: Float32Array, vectorB: Float32Array): number {
-    let dotProduct = 0;
-    let normA = 0;
-    let normB = 0;
+let dotProduct = $state(0);
+let normA = $state(0);
+let normB = $state(0);
 
     for (let i = 0; i < vectorA.length; i++) {
       dotProduct += vectorA[i] * vectorB[i];
@@ -298,7 +298,7 @@
 
     for (let i = 0; i < size; i++) {
       for (let j = 0; j < size; j++) {
-        let sum = 0;
+let sum = $state(0);
         for (let k = 0; k < size; k++) {
           sum += matrixA[i * size + k] * matrixB[k * size + j];
         }
@@ -428,7 +428,7 @@
             </div>
 
             <Button
-              on:click={runSimilarityDemo}
+              on:on:click={runSimilarityDemo}
               disabled={isProcessing || activeDemo === 'similarity'}
               class="w-full">
               {isProcessing && activeDemo === 'similarity' ? 'Computing...' : 'Run Similarity Test'}
@@ -479,7 +479,7 @@
             </div>
 
             <Button
-              on:click={runClusteringDemo}
+              on:on:click={runClusteringDemo}
               disabled={isProcessing || activeDemo === 'clustering'}
               class="w-full">
               {isProcessing && activeDemo === 'clustering' ? 'Clustering...' : 'Run Clustering'}
@@ -515,7 +515,7 @@
             </div>
 
             <Button
-              on:click={runMatrixDemo}
+              on:on:click={runMatrixDemo}
               disabled={isProcessing || activeDemo === 'matrix'}
               class="w-full">
               {isProcessing && activeDemo === 'matrix' ? 'Computing...' : 'Run Matrix Multiply'}

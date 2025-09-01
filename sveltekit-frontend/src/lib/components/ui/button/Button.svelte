@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { HTMLButtonAttributes } from 'svelte/elements';
   import type { ButtonVariant, ButtonSize } from '$lib/types';
-  import type { Snippet } from 'svelte';
+  import type {     Snippet     } from 'svelte';
 
   interface Props extends HTMLButtonAttributes {
     variant?: ButtonVariant;

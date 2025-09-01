@@ -1,5 +1,6 @@
+import type { PageServerLoad } from './$types.js';
 // CRUD Test Page Server Logic - SSR & Database Integration
-import type { PageServerLoad, Actions } from './$types';
+import type { PageServerLoad, Actions } from './$types.js';
 import { fail, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 
@@ -7,6 +8,7 @@ import { z } from 'zod';
 import { db } from '$lib/server/db/index';
 import { cases } from '$lib/server/db/schema-postgres';
 import { eq, desc, count } from '$lib/server/db/index';
+import { URL } from "url";
 
 // Validation schema
 const caseSchema = z.object({

@@ -12,7 +12,7 @@ let subscriber: Redis | null = null;
 
 export async function initializeWsBroker(): Promise<void> {
   try {
-    const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+    const redisUrl = import.meta.env.REDIS_URL || 'redis://localhost:6379';
     
     // Publisher redis connection
     redis = new Redis(redisUrl);

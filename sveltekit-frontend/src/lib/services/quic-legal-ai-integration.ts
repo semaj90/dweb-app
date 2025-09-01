@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 /**
  * QUIC-Enhanced Legal AI System Integration
  * Links all components with ultra-low latency QUIC protocol

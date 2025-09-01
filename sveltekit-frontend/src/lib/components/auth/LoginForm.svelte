@@ -3,16 +3,13 @@
   Using Bits UI v2 + Superforms + XState + MCP GPU Orchestrator
 -->
 <script lang="ts">
-  // runtime helpers ($props, $state, $derived, $effect) are available in runes mode — do not import them
   import { enhance } from '$app/forms';
-  import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { superForm } from 'sveltekit-superforms/client';
   import { zod } from 'sveltekit-superforms/adapters';
   import { createActor } from 'xstate';
-  import * as Form from '$lib/components/ui/form';
-  import * as Card from '$lib/components/ui/card';
-  import * as Alert from '$lib/components/ui/alert';
+  import { Form } from '$lib/components/ui/form';
+  // Removed Card/Alert imports (compound components not found in codebase). Using semantic divs instead.
   import { Button } from '$lib/components/ui/button';
   import { Input } from '$lib/components/ui/input';
   import { Label } from '$lib/components/ui/label';
@@ -57,7 +54,7 @@
   authActor.start();
 
   // Superform setup
-  const { form, errors, enhance: formEnhance, submitting, message } = superForm(data, {
+  const { form, errors, enhance: formEnhance, submitting } = superForm(data, {
     validators: zod(loginSchema),
     resetForm: false,
     delayMs: 300,
@@ -118,7 +115,6 @@
           twoFactorCode: formData.get('twoFactorCode') as string,
           deviceInfo: {
             userAgent: navigator.userAgent,
-            platform: navigator.platform,
             language: navigator.language,
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
           }
@@ -147,17 +143,17 @@
   });
 
   // XState subscription
-  authActor.subscribe((state) => {
-    if (state.matches('authenticating')) {
+  authActor.subscribe((state: any) => {
+    if (state.value === 'authenticating') {
       isLoading = true;
-    } else if (state.matches('authenticated')) {
+    } else if (state.value === 'authenticated') {
       isLoading = false;
       successMessage = 'Authentication successful!';
       setTimeout(() => goto(redirectTo), 1000);
-    } else if (state.matches('error')) {
+    } else if (state.value === 'error') {
       isLoading = false;
-      errorMessage = state.context.error || 'Authentication failed';
-    } else if (state.matches('requiresTwoFactor')) {
+      errorMessage = state.context?.error || 'Authentication failed';
+    } else if (state.value === 'requiresTwoFactor') {
       isLoading = false;
       showTwoFactor = true;
       successMessage = 'Please enter your two-factor code.';
@@ -177,7 +173,6 @@
     const fingerprint = {
       userAgent: navigator.userAgent,
       language: navigator.language,
-      platform: navigator.platform,
       screenResolution: `${screen.width}x${screen.height}`,
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       canvas: canvas.toDataURL()
@@ -205,52 +200,57 @@
   }
 </script>
 
-<Card.Root class="w-full max-w-md mx-auto">
-  <Card.Header class="text-center">
+<div class="w-full max-w-md mx-auto rounded-lg border p-6 shadow-sm bg-background/60 backdrop-blur card-root">
+  <div class="text-center mb-4 space-y-2">
     <div class="flex items-center justify-center mb-4">
       <Shield class="h-8 w-8 text-primary mr-2" />
       <h1 class="text-2xl font-bold">Legal AI Platform</h1>
     </div>
-    <Card.Title class="text-xl">Sign In</Card.Title>
-    <Card.Description>
-      Enter your credentials to access the legal AI system
-    </Card.Description>
-  </Card.Header>
-
-  <Card.Content>
+    <h2 class="text-xl font-semibold tracking-tight">Sign In</h2>
+    <p class="text-sm text-muted-foreground">Enter your credentials to access the legal AI system</p>
+  </div>
+  <div class="space-y-6">
     <!-- GPU Authentication Status -->
     {#if enableGPUAuth && gpuAuthStatus !== 'idle'}
-      <Alert.Root class="mb-4" variant={gpuAuthStatus === 'error' ? 'destructive' : 'default'}>
-        <Zap class="h-4 w-4" />
-        <Alert.Title>GPU-Enhanced Security</Alert.Title>
-        <Alert.Description>
-          {#if gpuAuthStatus === 'processing'}
-            Running advanced security analysis...
-          {:else if gpuAuthStatus === 'success'}
-            Security verification completed successfully.
-          {:else if gpuAuthStatus === 'error'}
-            Enhanced security check failed. Using standard authentication.
-          {/if}
-        </Alert.Description>
-      </Alert.Root>
+      <div class="mb-4 flex gap-3 rounded-md border p-3 text-sm bg-secondary/30"
+        role="status"
+        data-variant={gpuAuthStatus === 'error' ? 'destructive' : 'default'}>
+        <Zap class="h-4 w-4 shrink-0" />
+        <div class="space-y-1 text-left">
+          <div class="font-medium">GPU-Enhanced Security</div>
+          <div class="text-xs leading-relaxed">
+            {#if gpuAuthStatus === 'processing'}
+              Running advanced security analysis...
+            {:else if gpuAuthStatus === 'success'}
+              Security verification completed successfully.
+            {:else if gpuAuthStatus === 'error'}
+              Enhanced security check failed. Using standard authentication.
+            {/if}
+          </div>
+        </div>
+      </div>
     {/if}
 
     <!-- Error Message -->
     {#if errorMessage}
-      <Alert.Root variant="destructive" class="mb-4">
-        <AlertCircle class="h-4 w-4" />
-        <Alert.Title>Error</Alert.Title>
-        <Alert.Description>{errorMessage}</Alert.Description>
-      </Alert.Root>
+      <div class="mb-4 flex gap-3 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive" role="alert">
+        <AlertCircle class="h-4 w-4 shrink-0" />
+        <div class="space-y-1">
+          <div class="font-medium">Error</div>
+          <div class="text-xs leading-relaxed">{errorMessage}</div>
+        </div>
+      </div>
     {/if}
 
     <!-- Success Message -->
     {#if successMessage}
-      <Alert.Root class="mb-4">
-        <Shield class="h-4 w-4" />
-        <Alert.Title>Success</Alert.Title>
-        <Alert.Description>{successMessage}</Alert.Description>
-      </Alert.Root>
+      <div class="mb-4 flex gap-3 rounded-md border border-emerald-500/40 bg-emerald-500/10 p-3 text-sm text-emerald-600 dark:text-emerald-400" role="status">
+        <Shield class="h-4 w-4 shrink-0" />
+        <div class="space-y-1">
+          <div class="font-medium">Success</div>
+          <div class="text-xs leading-relaxed">{successMessage}</div>
+        </div>
+      </div>
     {/if}
 
     <form method="POST" action="?/login" use:formEnhance class="space-y-4">
@@ -290,7 +290,7 @@
             <button
               type="button"
               class="absolute inset-y-0 right-0 pr-3 flex items-center"
-              click={togglePasswordVisibility}
+              on:onclick={togglePasswordVisibility}
               disabled={isLoading}
             >
               {#if showPassword}
@@ -364,7 +364,7 @@
     <!-- Divider -->
     <div class="relative mt-6">
       <div class="absolute inset-0 flex items-center">
-        <span class="w-full border-t" />
+        <span class="w-full border-t"></span>
       </div>
       <div class="relative flex justify-center text-xs uppercase">
         <span class="bg-background px-2 text-muted-foreground">Or continue with</span>
@@ -375,7 +375,7 @@
     <div class="grid grid-cols-2 gap-4 mt-6">
       <Button
         variant="outline"
-        on:click={() => handleSocialLogin('google')}
+        on:on:click={() => handleSocialLogin('google')}
         disabled={isLoading}
       >
         <svg class="mr-2 h-4 w-4" viewBox="0 0 24 24">
@@ -389,7 +389,7 @@
 
       <Button
         variant="outline"
-        on:click={() => handleSocialLogin('github')}
+        on:on:click={() => handleSocialLogin('github')}
         disabled={isLoading}
       >
         <svg class="mr-2 h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
@@ -414,5 +414,5 @@
         </p>
       </div>
     {/if}
-  </Card.Content>
-</Card.Root>
+  </div>
+</div>

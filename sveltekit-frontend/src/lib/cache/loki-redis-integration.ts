@@ -10,9 +10,10 @@
 
 import Loki from 'lokijs';
 import { redis } from '$lib/server/cache/redis-service';
-import { nesMemory, type LegalDocument } from '../memory/nes-memory-architecture';
+import { nesMemory, type LegalDocument } from '../memory/nes-memory-architecture.js';
 import { EventEmitter } from 'events';
 import type { Redis as IORedisClient } from 'ioredis';
+import crypto from "crypto";
 
 // Cache configuration optimized for legal AI workloads
 const CACHE_CONFIG = {
@@ -804,4 +805,4 @@ export class LokiRedisCache extends EventEmitter {
 
 // Export singleton instance
 export const lokiRedisCache = new LokiRedisCache();
-
+;

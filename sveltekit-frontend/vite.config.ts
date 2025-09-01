@@ -2,6 +2,7 @@ import { sveltekit } from "@sveltejs/kit/vite";
 import { defineConfig } from "vite";
 import UnoCSS from "unocss/vite";
 import { resolve } from "path";
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
 // Enhanced plugin to fix SuperForms SuperDebug compatibility with Svelte 5
 function superFormsCompat() {
@@ -193,6 +194,18 @@ export default defineConfig(async ({ mode }) => {
     logLevel: logLevel as 'info' | 'warn' | 'error' | 'silent',
     clearScreen: false,
   plugins: [
+    nodePolyfills({
+      // Enable polyfills for specific Node.js modules
+      include: ['path', 'process'],
+      // Enable global process object
+      globals: {
+        Buffer: true,
+        global: true,
+        process: true,
+      },
+      // Polyfill prototypes for better compatibility
+      protocolImports: true,
+    }),
     superFormsCompat(),
     // Alias Drizzle node-postgres imports to a local shim that re-exports
     // the postgres-js adapter. This prevents runtime adapter mismatches
@@ -512,7 +525,12 @@ export default defineConfig(async ({ mode }) => {
         'camelcase': resolve('./src/shims/camelcase-compat.mjs'),
         // Additional camelcase path resolutions used by @langchain/core
         '/node_modules/@langchain/core/node_modules/camelcase': resolve('./src/shims/camelcase-compat.mjs'),
-        '/node_modules/@langchain/core/node_modules/camelcase/index.js': resolve('./src/shims/camelcase-compat.mjs')
+        '/node_modules/@langchain/core/node_modules/camelcase/index.js': resolve('./src/shims/camelcase-compat.mjs'),
+
+        // Node.js polyfills for browser compatibility
+        'path': 'path-browserify',
+        'process': 'process/browser',
+        'util': 'util'
       },
       // Fix ESM module compatibility issues
       conditions: ['import', 'module', 'browser', 'default']
@@ -557,6 +575,12 @@ export default defineConfig(async ({ mode }) => {
     // Environment variables and global fixes
   define: {
     global: 'globalThis', // Fix for Node.js global in browser
+    'process.cwd': '(() => "/")', // Fix for process.cwd in browser as function
+    'process.env.NODE_ENV': JSON.stringify(mode),
+    'process.env.BROWSER': JSON.stringify('true'),
+    'process.browser': true,
+    'process.version': JSON.stringify('v18.0.0'),
+    'process.versions': JSON.stringify({ node: '18.0.0' }),
     __DEV__: mode === 'development',
     __PROD__: mode === 'production',
     __VERSION__: JSON.stringify(import.meta.env.npm_package_version || '1.0.0'),

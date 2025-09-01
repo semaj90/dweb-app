@@ -8,9 +8,9 @@
   import AccessibilityPanel from "./AccessibilityPanel.svelte";
 
   // Keyboard shortcuts state
-  let showShortcuts = false;
-  let showAccessibilityPanel = false;
-  let isFullscreen = false;
+let showShortcuts = $state(false);
+let showAccessibilityPanel = $state(false);
+let isFullscreen = $state(false);
 
   // Keyboard shortcuts map
   const shortcuts = [
@@ -165,8 +165,8 @@
 {#if showShortcuts}
   <div
     class="mx-auto px-4 max-w-7xl"
-    click={() => (showShortcuts = false)}
-    on:keydown={(e) => e.key === "Escape" && (showShortcuts = false)}
+    on:onclick={() => (showShortcuts = false)}
+    keydown={(e) => e.key === "Escape" && (showShortcuts = false)}
     role="dialog"
     aria-modal="true"
     aria-labelledby="shortcuts-title"
@@ -183,7 +183,7 @@
         </h3>
         <button
           class="mx-auto px-4 max-w-7xl"
-          click={() => (showShortcuts = false)}
+          on:onclick={() => (showShortcuts = false)}
           aria-label="Close shortcuts dialog"
         >
           <svg class="mx-auto px-4 max-w-7xl" fill="currentColor" viewBox="0 0 20 20">
@@ -229,7 +229,7 @@
       variant="outline"
       size="sm"
       class="mx-auto px-4 max-w-7xl"
-      on:click={() => (showAccessibilityPanel = !showAccessibilityPanel)}
+      on:on:click={() => (showAccessibilityPanel = !showAccessibilityPanel)}
       aria-label="Toggle accessibility panel"
     >
       <Accessibility class="mx-auto px-4 max-w-7xl" />
@@ -242,7 +242,7 @@
       variant="outline"
       size="sm"
       class="mx-auto px-4 max-w-7xl"
-      on:click={() => (showShortcuts = !showShortcuts)}
+      on:on:click={() => (showShortcuts = !showShortcuts)}
       aria-label="Show keyboard shortcuts"
     >
       <Keyboard class="mx-auto px-4 max-w-7xl" />
@@ -258,7 +258,7 @@
       variant="outline"
       size="sm"
       class="mx-auto px-4 max-w-7xl"
-      on:click={() => toggleFullscreen()}
+      on:on:click={() => toggleFullscreen()}
       aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
     >
       {#if isFullscreen}

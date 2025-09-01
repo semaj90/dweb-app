@@ -1,5 +1,6 @@
 
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
+import { URL } from "url";
 
 const DEFAULT_INTERVAL = 3000;
 

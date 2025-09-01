@@ -14,6 +14,9 @@ import { webgpuPolyfill } from '$lib/webgpu/webgpu-polyfill';
 import { llvmWasmBridge } from '$lib/wasm/llvm-wasm-bridge';
 import { lokiRedisCache } from '$lib/cache/loki-redis-integration';
 import type { SvelteKitWASMPolyfill } from '$lib/types/wasm-types';
+import crypto from "crypto";
+import { EventEmitter } from "events";
+import { URL } from "url";
 
 // Browser polyfills for Node.js APIs
 export interface NodePolyfills {
@@ -567,7 +570,7 @@ class SvelteKit2UniversalPolyfill implements SvelteKitWASMPolyfill {
 
 // Export singleton
 export const svelteKit2Polyfill = new SvelteKit2UniversalPolyfill();
-
+;
 // Auto-initialize if in browser
 if (browser) {
   svelteKit2Polyfill.initialize().then(() => {

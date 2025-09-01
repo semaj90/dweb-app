@@ -35,16 +35,16 @@
 	import { quintOut } from 'svelte/easing';
 	
 	// State management
-	let mounted = false;
-	let showTooltip = false;
-	let buttonElement: HTMLButtonElement;
+let mounted = $state(false);
+let showTooltip = $state(false);
+let buttonElement = $state<HTMLButtonElement;
 	
 	// Size configurations
-	const sizeClasses = {
+	const sizeClasses >({
 		sm: 'w-12 h-12 text-sm',
 		md: 'w-16 h-16 text-base',
 		lg: 'w-20 h-20 text-lg'
-	};
+	});
 	
 	// Position configurations
 	const positionClasses = {
@@ -147,12 +147,12 @@
 				{loading ? 'animate-pulse' : ''}
 			"
 			{disabled}
-			click={handleClick}
+			on:onclick={handleClick}
 			keydown={handleKeydown}
-			on:mouseenter={showTooltipHandler}
-			on:mouseleave={hideTooltipHandler}
-			on:focus={showTooltipHandler}
-			on:blur={hideTooltipHandler}
+			on:on:mouseenter={showTooltipHandler}
+			on:on:mouseleave={hideTooltipHandler}
+			onfocus={showTooltipHandler}
+			onblur={hideTooltipHandler}
 			aria-label={tooltip}
 			in:fly={{ y: 100, duration: 500, easing: quintOut }}
 		>

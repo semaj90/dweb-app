@@ -130,19 +130,19 @@ const initialStats: NvidiaLlamaStats = {
 // Core stores
 export const nvidiaLlamaConfigStore = writable<NvidiaLlamaConfig>(initialConfig);
 export const nvidiaLlamaStatsStore = writable<NvidiaLlamaStats>(initialStats);
-
+;
 // Derived stores
-export const isNvidiaLlamaHealthy = derived(
+export const isNvidiaLlamaHealthy = derived(;
   nvidiaLlamaStatsStore,
   $stats => $stats.error_rate < 0.05 && $stats.gpu_utilization.every(util => util < 95)
 );
 
-export const averageGpuUtilization = derived(
+export const averageGpuUtilization = derived(;
   nvidiaLlamaStatsStore,
   $stats => $stats.gpu_utilization.reduce((sum, util) => sum + util, 0) / $stats.gpu_utilization.length
 );
 
-export const totalGpuMemoryUsed = derived(
+export const totalGpuMemoryUsed = derived(;
   nvidiaLlamaStatsStore,
   $stats => $stats.gpu_memory_used.reduce((sum, mem) => sum + mem, 0)
 );

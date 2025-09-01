@@ -154,17 +154,17 @@ export interface LegalAIWASMFunctions {
   processLegalText: (text: string, options?: any) => Promise<string>;
   extractCitations: (text: string) => Promise<string[]>;
   analyzePrecedents: (text: string, jurisdiction?: string) => Promise<any>;
-  
+
   // Document Analysis
   parseContract: (documentBytes: Uint8Array) => Promise<any>;
   assessRisk: (contractData: any) => Promise<number>;
   identifyObligations: (contractText: string) => Promise<any[]>;
-  
+
   // Vector Operations
   computeEmbedding: (inputVector: Float32Array, dimensions: number) => Promise<Float32Array>;
   calculateSimilarity: (vector1: Float32Array, vector2: Float32Array) => Promise<number>;
   buildIndex: (vectors: Float32Array[], metadata: any[]) => Promise<any>;
-  
+
   // Search Functions
   semanticSearch: (query: string, corpus: string[], topK?: number) => Promise<any[]>;
   caseSearch: (facts: string, jurisdiction?: string) => Promise<any[]>;
@@ -172,7 +172,7 @@ export interface LegalAIWASMFunctions {
 }
 
 // WASM Error Types
-export type WASMErrorType = 
+export type WASMErrorType =
   | 'compilation_failed'
   | 'instantiation_failed'
   | 'runtime_error'
@@ -209,18 +209,18 @@ export interface LegalWASMConfig {
   enableVectorOperations: boolean;
   enableRiskAssessment: boolean;
   enableComplianceChecking: boolean;
-  
+
   jurisdiction: string[];
   practiceAreas: string[];
   confidentialityLevel: 'public' | 'confidential' | 'restricted';
-  
+
   performance: {
     optimizationLevel: number;
     memoryPoolSizeMB: number;
     maxConcurrentOperations: number;
     cacheEnabled: boolean;
   };
-  
+
   security: {
     sandboxEnabled: boolean;
     allowFileAccess: boolean;

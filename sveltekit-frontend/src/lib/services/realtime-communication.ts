@@ -721,6 +721,7 @@ export const connectionStatus: Writable<ConnectionStatus> = writable({
 
 export const messages: Writable<RealtimeMessage[]> = writable([]);
 export const streamingResponses: Writable<Map<string, StreamingResponse>> = writable(new Map());
-
+;
 // Export singleton instance
 export const realtimeComm = new RealtimeCommunicationLayer();
+;

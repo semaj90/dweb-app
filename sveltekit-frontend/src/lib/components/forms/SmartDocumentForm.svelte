@@ -33,12 +33,12 @@
 	}>();
 
 	// Component state
-	let fileInput: HTMLInputElement;
-	let uploadedFile: File | null = null;
-	let populatedFields: FormField[] = [...formSchema];
-	let isProcessing = false;
-	let showPreview = false;
-	let selectedDocumentType = 'auto';
+let fileInput = $state<HTMLInputElement;
+	let uploadedFile: File | null >(null);
+let populatedFields = $state<FormField[] >([...formSchema]);
+let isProcessing = $state(false);
+let showPreview = $state(false);
+let selectedDocumentType = $state('auto');
 
 	// OCR stores
 	let processing = $derived(ocrService.processing$);
@@ -48,11 +48,11 @@
 
 	// Form validation
 	const formErrors = writable<Record<string, string>>({});
-	let isFormValid = false;
+let isFormValid = $state(false);
 
 	// Smart suggestions
-	let activeSuggestions: Record<string, string[]> = {};
-	let suggestionLoading: Record<string, boolean> = {};
+let activeSuggestions = $state<Record<string, string[]> >({});
+let suggestionLoading = $state<Record<string, boolean> >({});
 
 	// Default form schema if none provided
 	onMount(() => {
@@ -256,9 +256,9 @@
 				<!-- File Drop Zone -->
 				<div 
 					class="border-2 border-dashed border-yorha-border rounded-lg p-8 text-center transition-colors duration-200 hover:border-yorha-primary hover:bg-yorha-bg-secondary/50"
-					class:border-yorha-primary={uploadedFile}
-					on:drop={handleDrop}
-					on:dragover={handleDragOver}
+				 class:border-yorha-primary={uploadedFile}
+					ondrop={handleDrop}
+					ondragover={handleDragOver}
 					role="button"
 					tabindex="0"
 				>
@@ -298,7 +298,7 @@
 						<Button 
 							variant="outline" 
 							class="mt-4"
-							on:click={() => fileInput.click()}
+							on:on:click={() => fileInput.click()}
 						>
 							Browse Files
 						</Button>
@@ -318,7 +318,7 @@
 
 				<!-- OCR Results Preview -->
 				{#if $ocrResult && showPreview}
-					<div class="bg-yorha-bg-secondary rounded-md p-4 border border-yorha-border" transition:fly={{ y: 20 }}>
+					<div class="bg-yorha-bg-secondary rounded-md p-4 border border-yorha-border" transitifly={{ y: 20 }}>
 						<div class="flex items-center justify-between mb-2">
 							<h4 class="font-medium text-yorha-text-primary">Extraction Results</h4>
 							<Badge class="bg-yorha-success text-yorha-bg-primary">
@@ -381,7 +381,7 @@
 									bind:value={field.value}
 									placeholder={`Enter ${field.label.toLowerCase()}...`}
 									class="min-h-[80px] bg-yorha-bg-secondary border-yorha-border text-yorha-text-primary"
-									on:input={(e) => handleFieldChange(field.name, e.target.value)}
+									input={(e) => handleFieldChange(field.name, e.target.value)}
 								/>
 							{:else}
 								<Input
@@ -389,9 +389,9 @@
 									bind:value={field.value}
 									placeholder={`Enter ${field.label.toLowerCase()}...`}
 									class="bg-yorha-bg-secondary border-yorha-border text-yorha-text-primary"
-									class:border-yorha-danger={$formErrors[field.name]}
-									class:border-yorha-success={field.confidence && field.confidence > 0.8}
-									on:input={(e) => handleFieldChange(field.name, e.target.value)}
+								 class:border-yorha-danger={$formErrors[field.name]}
+								 class:border-yorha-success={field.confidence && field.confidence > 0.8}
+									input={(e) => handleFieldChange(field.name, e.target.value)}
 								/>
 							{/if}
 
@@ -404,7 +404,7 @@
 
 							<!-- Smart Suggestions -->
 							{#if activeSuggestions[field.name] && activeSuggestions[field.name].length > 0}
-								<div class="space-y-1" transition:fly={{ y: -10 }}>
+								<div class="space-y-1" transitifly={{ y: -10 }}>
 									<p class="text-xs text-yorha-text-secondary">Suggestions:</p>
 									<div class="flex flex-wrap gap-1">
 										{#each activeSuggestions[field.name] as suggestion}
@@ -412,7 +412,7 @@
 												variant="outline"
 												size="sm"
 												class="text-xs h-6 px-2"
-												on:click={() => applySuggestion(field.name, suggestion)}
+												on:on:click={() => applySuggestion(field.name, suggestion)}
 											>
 												{suggestion}
 											</Button>
@@ -449,7 +449,7 @@
 					<div class="flex items-center space-x-3">
 						<Button 
 							variant="outline"
-							on:click={() => {
+							on:on:click={() => {
 								populatedFields = populatedFields.map(f => ({ ...f, value: '' }));
 								formErrors.set({});
 							}}
@@ -480,7 +480,7 @@
 					<Button
 						variant="ghost"
 						size="sm"
-						on:click={() => showPreview = !showPreview}
+						on:on:click={() => showPreview = !showPreview}
 					>
 						{showPreview ? 'Hide' : 'Show'}
 					</Button>

@@ -47,13 +47,13 @@
   let input = $state("");
   let isLoading = $state(false);
   let copiedIndex = $state<number | null>(null);
-  let terminalElement: HTMLDivElement;
-  let inputElement: HTMLTextAreaElement;
+let terminalElement = $state<HTMLDivElement;
+let inputElement = $state<HTMLTextAreaElement;
 
   // WebSocket for real-time updates
-  let ws: WebSocket | null = null;
+  let ws: WebSocket | null >(null);
 
-  onMount(() => {
+  onMount(() >(> {
     // Initialize with system message
     messages.push({
       role: "system",
@@ -63,7 +63,7 @@ GPU: ${navigator.gpu ? "Enabled" : "Disabled"}
 Type /help for commands`,
       timestamp: new Date(),
       status: "complete",
-    });
+    }));
 
     // Connect WebSocket if docId provided
     if (docId) {
@@ -178,7 +178,7 @@ Type /help for commands`,
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-      let content = "";
+let content = $state("");
 
       while (true) {
         const { done, value } = await reader.read();
@@ -402,7 +402,7 @@ Type /help for commands`,
             </div>
 
             <button
-              click={() => copyMessage(message.content, i)}
+              on:onclick={() => copyMessage(message.content, i)}
               class="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-muted rounded"
             >
               {#if copiedIndex === i}
@@ -426,7 +426,7 @@ Type /help for commands`,
             disabled={isLoading}
           />
           <button
-            click={handleSubmit}
+            on:onclick={handleSubmit}
             disabled={isLoading || !input.trim()}
             class={cn(
               "p-3 rounded-lg transition-colors",

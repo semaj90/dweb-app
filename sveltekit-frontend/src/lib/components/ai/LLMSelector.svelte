@@ -1,9 +1,9 @@
 <script lang="ts">
 
-  import { onMount } from 'svelte'
+  import { onMount } from 'svelte';
   import { $props, $derived, $effect } from 'svelte';
-  import { createSelect, melt } from 'melt'
-  import { fade, fly } from 'svelte/transition'
+  // import { createSelect, melt } from 'melt'; // Removed melt dependency
+  import { fade, fly } from 'svelte/transition';
   import { 
     ChevronDown, 
     CheckCircle, 
@@ -126,18 +126,28 @@
   )
   
   // Melt UI Select Setup
-  const {
-    elements: { trigger, menu, option, label },
-    states: { selectedLabel, open, selected },
-    helpers: { isSelected }
-  } = createSelect<LLMModel>({
-    forceVisible: true,
-    positioning: {
-      placement: 'bottom',
-      fitViewport: true,
-      sameWidth: true,
-    }
-  })
+  // const {
+  //   elements: { trigger, menu, option, label },
+  //   states: { selectedLabel, open, selected },
+  //   helpers: { isSelected }
+  // } = createSelect<LLMModel>({
+  //   forceVisible: true,
+  //   positioning: {
+  //     placement: 'bottom',
+  //     fitViewport: true,
+  //     sameWidth: true,
+  //   }
+  // })
+  
+  // Mock implementations for now
+  const trigger = {};
+  const menu = {};
+  const option = () => ({});
+  const label = {};
+  const selectedLabel = 'Select Model';
+  const open = false;
+  const selected = null;
+  const isSelected = () => false;
   
   // Provider Icons
   const getProviderIcon = (provider: string) => {
@@ -243,13 +253,13 @@
 <!-- LLM Selector Component -->
 <div class="w-full max-w-md">
   <!-- Label -->
-  <label use:melt={$label} class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+  <label <!-- <!-- <!-- use:melt={$label} --> class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
     AI Model Selection
   </label>
   
   <!-- Trigger Button -->
   <button
-    use:melt={$trigger}
+    <!-- <!-- <!-- use:melt={$trigger} -->
     class="flex h-12 w-full items-center justify-between rounded-lg border border-gray-300 dark:border-gray-600 
            bg-white dark:bg-gray-800 px-3 py-2 text-sm 
            hover:bg-gray-50 dark:hover:bg-gray-700 
@@ -281,13 +291,13 @@
       {/if}
     </div>
     
-    <ChevronDown class="h-4 w-4 text-gray-400 transition-transform duration-200 {$open ? 'rotate-180' : ''}" />
+    <ChevronDown class="h-4 w-4 text-gray-400 transition-transform duration-200 {open ? 'rotate-180' : ''}" />
   </button>
   
   <!-- Dropdown Menu -->
-  {#if $open}
+  {#if open}
     <div
-      use:melt={$menu}
+      <!-- <!-- <!-- use:melt={$menu} -->
       class="z-50 mt-1 w-full rounded-lg border border-gray-200 dark:border-gray-700 
              bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5
              max-h-96 overflow-auto"
@@ -299,17 +309,17 @@
           {@const SvelteComponent_2 = getProviderIcon(model.provider)}
           {@const SvelteComponent_3 = getStatusIcon(model.status)}
           <button
-            use:melt={$option({ value: model, label: model.displayName })}
+            <!-- <!-- <!-- use:melt={$option({ value: model, label: model.displayName })} -->
             class="flex w-full items-center justify-between px-4 py-3 text-sm
                    hover:bg-gray-100 dark:hover:bg-gray-700
                    focus:bg-gray-100 dark:focus:bg-gray-700 focus:outline-none
-                   {$isSelected(model) ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-900 dark:text-gray-100'}"
+                   {isSelected(model) ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-900 dark:text-gray-100'}"
           >
             <div class="flex items-center gap-3 flex-1 min-w-0">
               <!-- Provider Icon -->
               <div class="flex-shrink-0">
                 <SvelteComponent_2 
-                  class="h-5 w-5 {$isSelected(model) ? 'text-blue-500' : 'text-gray-400'}" 
+                  class="h-5 w-5 {isSelected(model) ? 'text-blue-500' : 'text-gray-400'}" 
                 />
               </div>
               
@@ -357,7 +367,7 @@
                 <!-- Load Button -->
                 {#if model.status === 'offline'}
                   <button
-                    click={(e) => {
+                    on:onclick={(e) => {
                       e.stopPropagation()
                       loadModel(model)
                     }}
@@ -390,7 +400,7 @@
       <div class="border-t border-gray-200 dark:border-gray-700 px-4 py-3">
         <div class="flex items-center justify-between">
           <button
-            click={refreshModelStatuses}
+            on:onclick={refreshModelStatuses}
             class="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300
                    focus:outline-none focus:underline"
           >

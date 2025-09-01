@@ -40,15 +40,15 @@
 	const loading = writable(true);
 	const error = writable<string | null>(null);
 	let refreshInterval: number;
-	let autoRefresh = true;
-	let refreshRate = 5000; // 5 seconds
-	let selectedTier = 'all';
-	let showOnlyIssues = false;
+let autoRefresh = $state(true);
+let refreshRate = $state(5000); // 5 seconds
+let selectedTier = $state('all');
+let showOnlyIssues = $state(false);
 	
 	// Real-time data from master coordinator
-	const systemStatus = $derived($coordinatorStatus);
-	const errorStats = $derived(errorResolutionEngine.recoveryStats);
-	const systemMetrics = $derived(errorResolutionEngine.systemMetrics);
+	let systemStatus = $derived($coordinatorStatus);
+	let errorStats = $derived(errorResolutionEngine.recoveryStats);
+	let systemMetrics = $derived(errorResolutionEngine.systemMetrics);
 
 	const fetchHealth = async () => {
 		try {
@@ -59,9 +59,8 @@
 				fetch('/api/v1/health/cuda').catch(() => null),
 				fetch('/api/v1/coordinator?action=health').catch(() => null)
 			]);
-			
-			let legacyData = null;
-			let coordinatorData = null;
+let legacyData = $state(null);
+let coordinatorData = $state(null);
 			
 			if (legacyResponse?.ok) {
 				legacyData = await legacyResponse.json();
@@ -316,18 +315,18 @@
 	}
 
 	// Computed values for enhanced UI
-	const healthPercentage = $derived(systemStatus.summary.totalServices > 0 
+	let healthPercentage = $derived(systemStatus.summary.totalServices > 0 
 		? Math.round((systemStatus.summary.healthyServices / systemStatus.summary.totalServices) * 100) 
 		: 0);
 
-	const tierServices = $derived(selectedTier === 'all' 
+	let tierServices = $derived(selectedTier === 'all' 
 		? Array.from(systemStatus.services.entries())
 		: Array.from(systemStatus.services.entries()).filter(([id]) => {
 			const service = masterServiceCoordinator.services.find(s => s.id === id);
 			return service?.tier === parseInt(selectedTier);
 		}));
 
-	const filteredServices = $derived(showOnlyIssues 
+	let filteredServices = $derived(showOnlyIssues 
 		? tierServices.filter(([_, status]) => status.status !== 'healthy')
 		: tierServices);
 
@@ -357,7 +356,7 @@
 			<p class="text-gray-600 mt-1">Legal AI Platform - CUDA GPU Integration Status</p>
 		</div>
 		<button
-			click={fetchHealth}
+			on:onclick={fetchHealth}
 			class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
 			disabled={$loading}
 		>

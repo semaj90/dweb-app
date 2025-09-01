@@ -5,6 +5,7 @@
  */
 
 import { writable, derived, readonly } from "svelte/store";
+import crypto from "crypto";
 
 // === TYPE DEFINITIONS ===
 export interface ChatMessage {
@@ -106,7 +107,7 @@ const initialState: ChatContext = {
 
 // === MAIN STORE ===
 export const chatStore = writable<ChatContext>(initialState);
-
+;
 // === SERVICE STATUS ===
 export const serviceStatus = writable<ServiceStatus>({
   ollama: "unknown",
@@ -117,42 +118,19 @@ export const serviceStatus = writable<ServiceStatus>({
 
 // === DERIVED STORES ===
 export const messages = derived(chatStore, ($store) => $store.messages);
-
-export const currentConversation = derived(
-  chatStore,
-  ($store) => $store.currentConversation,
-);
-
-export const conversations = derived(
-  chatStore,
-  ($store) => $store.conversations,
-);
-
+export const currentConversation = derived(chatStore, ($store) => $store.currentConversation);
+export const conversations = derived(chatStore, ($store) => $store.conversations);
 export const isLoading = derived(chatStore, ($store) => $store.isLoading);
-
 export const isStreaming = derived(chatStore, ($store) => $store.isStreaming);
-
 export const isTyping = derived(chatStore, ($store) => $store.isTyping);
-
 export const error = derived(chatStore, ($store) => $store.error);
-
 export const settings = derived(chatStore, ($store) => $store.settings);
-
 export const modelStatus = derived(chatStore, ($store) => $store.modelStatus);
-
-export const contextInjection = derived(
-  chatStore,
-  ($store) => $store.contextInjection,
-);
-
+export const contextInjection = derived(chatStore, ($store) => $store.contextInjection);
 export const conversationsList = derived(conversations, ($conversations) =>
-  $conversations.sort((a, b) => b.updated.getTime() - a.updated.getTime()),
+  [...$conversations].sort((a, b) => b.updated.getTime() - a.updated.getTime())
 );
-
-export const isActiveChat = derived(
-  currentConversation,
-  ($conversation) => !!$conversation,
-);
+export const isActiveChat = derived(currentConversation, ($conversation) => !!$conversation);
 
 // === ACTIONS ===
 export const chatActions = {
@@ -563,26 +541,23 @@ export interface XStateCompatibleState {
   matches: (state: string) => boolean;
 }
 
-export const xstateCompatibleStore = derived(
-  chatStore,
-  ($chatStore): XStateCompatibleState => ({
-    context: $chatStore,
-    matches: (state: string) => {
-      switch (state) {
-        case "loading":
-          return $chatStore.isLoading;
-        case "streaming":
-          return $chatStore.isStreaming;
-        case "error":
-          return !!$chatStore.error;
-        case "idle":
-          return !$chatStore.isLoading && !$chatStore.error;
-        default:
-          return false;
-      }
-    },
-  }),
-);
+export const xstateCompatibleStore = derived(chatStore, ($chatStore): XStateCompatibleState => ({
+  context: $chatStore,
+  matches: (state: string) => {
+    switch (state) {
+      case "loading":
+        return $chatStore.isLoading;
+      case "streaming":
+        return $chatStore.isStreaming;
+      case "error":
+        return !!$chatStore.error;
+      case "idle":
+        return !$chatStore.isLoading && !$chatStore.error;
+      default:
+        return false;
+    }
+  },
+}));
 
 export function useChatActor() {
   return {

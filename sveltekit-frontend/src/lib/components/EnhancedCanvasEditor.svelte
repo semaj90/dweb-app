@@ -1,6 +1,6 @@
 <!-- Enhanced Interactive Canvas with Fabric.js, No VDOM, Auto-save with Loki.js -->
 <script lang="ts">
-  import { $props, $derived } from 'svelte';
+  import { onMount, onDestroy, createEventDispatcher } from 'svelte';
 
   import { aiSummarizationService } from "$lib/services/aiSummarizationService";
   import { evidenceStore } from "$lib/stores/evidenceStore";
@@ -36,17 +36,25 @@
   import { onDestroy, onMount } from "svelte";
   import { get, writable } from "svelte/store";
 
-  let { caseId = $bindable() } = $props(); // string;
-  let { canvasId = $bindable() } = $props(); // string = "";
-  let { width = $bindable() } = $props(); // 1200;
-  let { height = $bindable() } = $props(); // 800;
-  let { readOnly = $bindable() } = $props(); // false;
-
-  let canvasElement: HTMLCanvasElement;
-  let canvas: fabric.Canvas | null = null;
-  let lokiDb: Loki | null = null;
-  let canvasCollection: Collection<any> | null = null;
-  let searchEngine: Fuse<any> | null = null;
+  // Svelte 5 props
+  let {
+    caseId,
+    canvasId = "",
+    width = 1200,
+    height = 800,
+    readOnly = false
+  }: {
+    caseId: string;
+    canvasId?: string;
+    width?: number;
+    height?: number;
+    readOnly?: boolean;
+  } = $props();
+let canvasElement = $state<HTMLCanvasElement;
+  let canvas: fabric.Canvas | null >(null);
+let lokiDb = $state<Loki | null >(null);
+let canvasCollection = $state<Collection<any> | null >(null);
+let searchEngine = $state<Fuse<any> | null >(null);
 
   // Canvas state management
   const canvasState = writable({
@@ -66,13 +74,13 @@
   });
 
   // History management
-  let historyStack: string[] = [];
+let historyStack = $state<string[] >([]);
   let historyIndex = -1;
   const maxHistorySize = 50;
 
   // Auto-save
   let autoSaveTimeout: NodeJS.Timeout;
-  let isDirty = false;
+let isDirty = $state(false);
 
   // Tools and modes
   const tools = [
@@ -92,8 +100,8 @@
   ];
 
   // Evidence items from store
-  let evidenceItems: any[] = [];
-  let searchResults: any[] = [];
+let evidenceItems = $state<any[] >([]);
+let searchResults = $state<any[] >([]);
 
   onMount(() => {
     // Initialize components
@@ -400,7 +408,7 @@
     );
 
     // Add thumbnail if available
-    let thumbnail = null;
+let thumbnail = $state(null);
     if (evidence.fileUrl) {
       thumbnail = createThumbnail(evidence);
     }
@@ -920,18 +928,17 @@
   // Export functions
   function exportCanvas(format: "png" | "svg" | "json") {
     if (!canvas) return;
-
-    let dataUrl: string;
-    let filename: string;
+let dataUrl = $state<string;
+let filename = $state<string;
 
     switch (format) {
       case "png":
-        dataUrl = canvas.toDataURL({
+        dataUrl >(canvas.toDataURL({
           format: "png",
           quality: 1,
           multiplier: 1,
-        });
-        filename = `canvas-${caseId}.png`;
+        }));
+        filename >(`canvas-${caseId}.png`);
         break;
       case "svg":
         dataUrl = `data:image/svg+xml;base64,${btoa(canvas.toSVG())}`;
@@ -1059,14 +1066,14 @@
     <div class="mx-auto px-4 max-w-7xl">
       <button
         class="mx-auto px-4 max-w-7xl"
-        click={() => saveCanvas()}
+        on:onclick={() => saveCanvas()}
         title="Save Canvas"
       >
         <Save size="18" />
       </button>
       <button
         class="mx-auto px-4 max-w-7xl"
-        click={() => undo()}
+        on:onclick={() => undo()}
         disabled={!state.canUndo}
         title="Undo"
       >
@@ -1074,7 +1081,7 @@
       </button>
       <button
         class="mx-auto px-4 max-w-7xl"
-        click={() => redo()}
+        on:onclick={() => redo()}
         disabled={!state.canRedo}
         title="Redo"
       >
@@ -1090,7 +1097,7 @@
         <button
           class="mx-auto px-4 max-w-7xl"
           class:active={state.tool === tool.id}
-          click={() => setTool(tool.id)}
+          on:onclick={() => setTool(tool.id)}
           title={tool.label}
         >
           <svelte:component this={tool.icon} size="18" />
@@ -1102,18 +1109,18 @@
 
     <!-- Canvas Controls -->
     <div class="mx-auto px-4 max-w-7xl">
-      <button class="mx-auto px-4 max-w-7xl" click={() => zoomOut()} title="Zoom Out">
+      <button class="mx-auto px-4 max-w-7xl" on:onclick={() => zoomOut()} title="Zoom Out">
         <ZoomOut size="18" />
       </button>
       <span class="mx-auto px-4 max-w-7xl">{state.zoom}%</span>
-      <button class="mx-auto px-4 max-w-7xl" click={() => zoomIn()} title="Zoom In">
+      <button class="mx-auto px-4 max-w-7xl" on:onclick={() => zoomIn()} title="Zoom In">
         <ZoomIn size="18" />
       </button>
 
       <button
         class="mx-auto px-4 max-w-7xl"
         class:active={state.showGrid}
-        click={() => toggleGrid()}
+        on:onclick={() => toggleGrid()}
         title="Toggle Grid"
       >
         <Grid size="18" />
@@ -1124,13 +1131,13 @@
 
     <!-- Object Actions -->
     <div class="mx-auto px-4 max-w-7xl">
-      <button class="mx-auto px-4 max-w-7xl" click={() => copySelected()} title="Copy">
+      <button class="mx-auto px-4 max-w-7xl" on:onclick={() => copySelected()} title="Copy">
         <Copy size="18" />
       </button>
-      <button class="mx-auto px-4 max-w-7xl" click={() => pasteClipboard()} title="Paste">
+      <button class="mx-auto px-4 max-w-7xl" on:onclick={() => pasteClipboard()} title="Paste">
         <Copy size="18" />
       </button>
-      <button class="mx-auto px-4 max-w-7xl" click={() => deleteSelected()} title="Delete">
+      <button class="mx-auto px-4 max-w-7xl" on:onclick={() => deleteSelected()} title="Delete">
         <Trash2 size="18" />
       </button>
     </div>
@@ -1141,7 +1148,7 @@
     <div class="mx-auto px-4 max-w-7xl">
       <button
         class="mx-auto px-4 max-w-7xl"
-        click={() => generateAISummary()}
+        on:onclick={() => generateAISummary()}
         title="Generate AI Summary"
       >
         <FileText size="18" />
@@ -1156,9 +1163,9 @@
         <Download size="18" />
       </button>
       <div class="mx-auto px-4 max-w-7xl">
-        <button click={() => exportCanvas("png")}>Export as PNG</button>
-        <button click={() => exportCanvas("svg")}>Export as SVG</button>
-        <button click={() => exportCanvas("json")}>Export as JSON</button>
+        <button on:onclick={() => exportCanvas("png")}>Export as PNG</button>
+        <button on:onclick={() => exportCanvas("svg")}>Export as SVG</button>
+        <button on:onclick={() => exportCanvas("json")}>Export as JSON</button>
       </div>
     </div>
 
@@ -1192,8 +1199,8 @@
           {#each state.searchQuery ? searchResults : evidenceItems as evidence}
             <div
               class="mx-auto px-4 max-w-7xl"
-              click={() => addEvidenceToCanvas(evidence)}
-              on:keydown={(e) =>
+              on:onclick={() => addEvidenceToCanvas(evidence)}
+              keydown={(e) =>
                 e.key === "Enter" && addEvidenceToCanvas(evidence)}
               role="button"
               tabindex={0}
@@ -1210,28 +1217,28 @@
         <div class="mx-auto px-4 max-w-7xl">
           <button
             class="mx-auto px-4 max-w-7xl"
-            click={() => addTimelineToCanvas()}
+            on:onclick={() => addTimelineToCanvas()}
           >
             <Clock size="16" class="mx-auto px-4 max-w-7xl" />
             Timeline
           </button>
           <button
             class="mx-auto px-4 max-w-7xl"
-            click={() => addPersonToCanvas()}
+            on:onclick={() => addPersonToCanvas()}
           >
             <Users size="16" class="mx-auto px-4 max-w-7xl" />
             Person
           </button>
           <button
             class="mx-auto px-4 max-w-7xl"
-            click={() => addLocationToCanvas()}
+            on:onclick={() => addLocationToCanvas()}
           >
             <MapPin size="16" class="mx-auto px-4 max-w-7xl" />
             Location
           </button>
           <button
             class="mx-auto px-4 max-w-7xl"
-            click={() => setTool("note")}
+            on:onclick={() => setTool("note")}
           >
             <FileText size="16" class="mx-auto px-4 max-w-7xl" />
             Note
@@ -1358,4 +1365,4 @@
   }
 </style>
 
-<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->
+<!-- Props migrated to Svelte 5 $props() pattern -->

@@ -19,7 +19,7 @@ export const GOLDEN_RATIO = 1.618033988749;
 export const INVERSE_GOLDEN_RATIO = 0.618033988749;
 export const GOLDEN_RATIO_SQUARED = 2.618033988749;
 export const GOLDEN_RATIO_CUBED = 4.236067977499;
-
+;
 /**
  * Utility functions for golden ratio calculations
  */

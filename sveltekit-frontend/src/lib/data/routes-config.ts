@@ -588,7 +588,7 @@ export function getActiveRoutes(): RouteDefinition[] {
 
 export function searchRoutes(query: string): RouteDefinition[] {
   const lowerQuery = query.toLowerCase();
-  return allRoutes.filter(route => 
+  return allRoutes.filter(route =>
     route.label.toLowerCase().includes(lowerQuery) ||
     route.description.toLowerCase().includes(lowerQuery) ||
     route.tags.some(tag => tag.toLowerCase().includes(lowerQuery))
@@ -676,7 +676,6 @@ export interface NavigationGuard {
 
 // Route registry for dynamic route management
 export const routeRegistry = new Map<string, RouteDefinition>();
-
 // Initialize route registry
 allRoutes.forEach(route => {
   routeRegistry.set(route.id, route);

@@ -1,7 +1,10 @@
+// Barrel aggregation utilities for missing functions. Type safety intentionally relaxed where
+// underlying environment may not define globals (describe/it/etc.) to avoid TS noise.
+
 /**
  * TypeScript Barrel Store - Missing Functions & Methods
  * Systematic approach to resolve missing function declarations
- * 
+ *
  * This barrel store provides missing functions/methods detected in error analysis:
  * 1. Testing framework functions (describe, it, expect, beforeEach)
  * 2. Cache layer methods (memory, redis, postgres, vector, filesystem, cdn, browser)
@@ -12,9 +15,9 @@
 
 // ===== TESTING FRAMEWORK BARREL STORE =====
 export const testingFramework = {
-  describe: globalThis.describe || ((name: string, fn: () => void) => fn()),
-  it: globalThis.it || ((name: string, fn: () => void) => fn()),
-  expect: globalThis.expect || ((value: any) => ({
+  describe: (globalThis as any).describe || ((name: string, fn: () => void) => fn()),
+  it: (globalThis as any).it || ((name: string, fn: () => void) => fn()),
+  expect: (globalThis as any).expect || ((value: any) => ({
     toBe: (expected: any) => value === expected,
     toEqual: (expected: any) => JSON.stringify(value) === JSON.stringify(expected),
     toBeTruthy: () => !!value,
@@ -25,11 +28,11 @@ export const testingFramework = {
       try { value(); return false; } catch { return true; }
     }
   })),
-  beforeEach: globalThis.beforeEach || ((fn: () => void) => fn()),
-  afterEach: globalThis.afterEach || ((fn: () => void) => fn()),
-  beforeAll: globalThis.beforeAll || ((fn: () => void) => fn()),
-  afterAll: globalThis.afterAll || ((fn: () => void) => fn()),
-  test: globalThis.test || globalThis.it || ((name: string, fn: () => void) => fn())
+  beforeEach: (globalThis as any).beforeEach || ((fn: () => void) => fn()),
+  afterEach: (globalThis as any).afterEach || ((fn: () => void) => fn()),
+  beforeAll: (globalThis as any).beforeAll || ((fn: () => void) => fn()),
+  afterAll: (globalThis as any).afterAll || ((fn: () => void) => fn()),
+  test: (globalThis as any).test || (globalThis as any).it || ((name: string, fn: () => void) => fn())
 };
 
 // ===== CACHE LAYER METHODS BARREL STORE =====
@@ -113,11 +116,11 @@ export const databaseEntityProperties = {
     }
     return obj;
   },
-  
+
   // Ensure common properties exist
   ensureProperties: (obj: any, properties: Record<string, any>) => {
     if (!obj || typeof obj !== 'object') return obj;
-    
+
     for (const [prop, defaultValue] of Object.entries(properties)) {
       if (!(prop in obj)) {
         obj[prop] = defaultValue;
@@ -165,7 +168,7 @@ export const webGPUExtendedMethods = {
   // Enhanced GPUDevice with missing methods
   enhanceGPUDevice: (device: any) => {
     if (!device || typeof device !== 'object') return device;
-    
+
     // Add missing destroy method
     if (!device.destroy) {
       device.destroy = () => {
@@ -173,25 +176,25 @@ export const webGPUExtendedMethods = {
         console.log('GPUDevice.destroy() called');
       };
     }
-    
+
     // Add EventTarget methods for GPU error handling
     if (!device.addEventListener) {
       const eventListeners = new Map();
-      
+
       device.addEventListener = (type: string, listener: (event: any) => void) => {
         if (!eventListeners.has(type)) {
           eventListeners.set(type, new Set());
         }
         eventListeners.get(type).add(listener);
       };
-      
+
       device.removeEventListener = (type: string, listener: (event: any) => void) => {
         const listeners = eventListeners.get(type);
         if (listeners) {
           listeners.delete(listener);
         }
       };
-      
+
       device.dispatchEvent = (event: any) => {
         const listeners = eventListeners.get(event.type);
         if (listeners) {
@@ -201,7 +204,7 @@ export const webGPUExtendedMethods = {
         }
       };
     }
-    
+
     return device;
   },
 
@@ -225,7 +228,7 @@ export const lokiCollectionMethods = {
   // Enhanced collection with missing methods
   enhanceCollection: (collection: any) => {
     if (!collection || typeof collection !== 'object') return collection;
-    
+
     // Add missing remove method
     if (!collection.remove) {
       collection.remove = (doc: any) => {
@@ -239,7 +242,7 @@ export const lokiCollectionMethods = {
         return false;
       };
     }
-    
+
     // Add missing removeWhere method
     if (!collection.removeWhere) {
       collection.removeWhere = (query: any) => {
@@ -251,14 +254,14 @@ export const lokiCollectionMethods = {
         return 0;
       };
     }
-    
+
     return collection;
   },
 
   // Enhanced Loki database with missing methods
   enhanceLoki: (loki: any) => {
     if (!loki || typeof loki !== 'object') return loki;
-    
+
     // Add missing removeCollection method
     if (!loki.removeCollection) {
       loki.removeCollection = (name: string) => {
@@ -272,7 +275,7 @@ export const lokiCollectionMethods = {
         return false;
       };
     }
-    
+
     // Add missing LokiMemoryAdapter
     if (!loki.LokiMemoryAdapter) {
       loki.LokiMemoryAdapter = class LokiMemoryAdapter {
@@ -285,7 +288,7 @@ export const lokiCollectionMethods = {
         }
       };
     }
-    
+
     return loki;
   }
 };
@@ -376,7 +379,7 @@ export const utilityFunctions = {
   safeAccess: (obj: any, path: string, defaultValue: any = null) => {
     const keys = path.split('.');
     let current = obj;
-    
+
     for (const key of keys) {
       if (current && typeof current === 'object' && key in current) {
         current = current[key];
@@ -384,7 +387,7 @@ export const utilityFunctions = {
         return defaultValue;
       }
     }
-    
+
     return current;
   },
 
@@ -397,7 +400,7 @@ export const utilityFunctions = {
   withTimeout: <T>(promise: Promise<T>, timeoutMs: number): Promise<T> => {
     return Promise.race([
       promise,
-      new Promise<T>((_, reject) => 
+      new Promise<T>((_, reject) =>
         setTimeout(() => reject(new Error('Timeout')), timeoutMs)
       )
     ]);
@@ -440,35 +443,5 @@ export interface BarrelStore {
 
 // Global augmentation for missing types
 declare global {
-  interface Window {
-    barrelStore?: BarrelStore;
-  }
-  
-  // Testing framework globals
-  const describe: typeof testingFramework.describe;
-  const it: typeof testingFramework.it;
-  const test: typeof testingFramework.test;
-  const expect: typeof testingFramework.expect;
-  const beforeEach: typeof testingFramework.beforeEach;
-  const afterEach: typeof testingFramework.afterEach;
-  const beforeAll: typeof testingFramework.beforeAll;
-  const afterAll: typeof testingFramework.afterAll;
-  
-  // Enhanced GPUDevice interface
-  interface GPUDevice {
-    destroy?(): void;
-    addEventListener?(type: string, listener: (event: any) => void): void;
-    removeEventListener?(type: string, listener: (event: any) => void): void;
-  }
-  
-  // GPU error event interfaces
-  interface GPUUncapturedErrorEvent {
-    type: 'uncapturederror';
-    error: any;
-    timestamp: number;
-  }
-  
-  interface GPUError {
-    message: string;
-  }
+  interface Window { barrelStore?: BarrelStore; }
 }

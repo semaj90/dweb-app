@@ -163,7 +163,7 @@
 							size="lg" 
 							loading={isAnalyzing}
 							glowEffect={true}
-							on:click={startAnalysis}
+							on:on:click={startAnalysis}
 						>
 							{isAnalyzing ? 'Analyzing...' : 'Start Deep Analysis'}
 						</GamingButton>
@@ -171,7 +171,7 @@
 						<GamingButton 
 							variant="secondary" 
 							size="md"
-							on:click={generateReport}
+							on:on:click={generateReport}
 						>
 							Generate Report
 						</GamingButton>

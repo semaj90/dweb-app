@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 
 // This is the contract that your PG:RELAY (Go or Node relay) must expose.
 // For now we'll use mock data, but this can be extended to call actual relay
-const RELAY_BASE = process.env.RELAY_BASE ?? "http://localhost:8095";
+const RELAY_BASE = import.meta.env.RELAY_BASE ?? "http://localhost:8095";
 
 // Shared user type coming back from relay
 export interface RelayUser {

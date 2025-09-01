@@ -4,8 +4,8 @@
   let { query }: string;
   let { candidateIds }: string[] = [];
   let { chosenId }: string | null = null;
-  let sending = false;
-  let lastResp: any = null;
+let sending = $state(false);
+let lastResp = $state<any >(null);
 
   async function sendFeedback(reward: number) {
     sending = true;
@@ -32,8 +32,8 @@
 </script>
 
 <div class="feedback-buttons">
-  <button class="up" click={() => sendFeedback(1)} disabled={sending}>👍 Helpful</button>
-  <button class="down" click={() => sendFeedback(0)} disabled={sending}>👎 Not helpful</button>
+  <button class="up" on:onclick={() => sendFeedback(1)} disabled={sending}>👍 Helpful</button>
+  <button class="down" on:onclick={() => sendFeedback(0)} disabled={sending}>👎 Not helpful</button>
   {#if sending}
     <span>sending…</span>
   {:else if lastResp}

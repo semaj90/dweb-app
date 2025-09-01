@@ -223,3 +223,4 @@ export const canvasSystemMachine = setup({
 });
 
 export const createCanvasActor = () => createActor(canvasSystemMachine);
+;

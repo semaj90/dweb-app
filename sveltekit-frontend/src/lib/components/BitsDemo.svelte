@@ -35,9 +35,8 @@
     description?: string;
     color: string;
   }
-
-  let dialogOpen = false;
-  let alertOpen = false;
+let dialogOpen = $state(false);
+let alertOpen = $state(false);
   
   // Melt-UI Toast/Notification setup
   const {
@@ -182,30 +181,30 @@
   <div class="mx-auto px-4 max-w-7xl">
     <h3 class="mx-auto px-4 max-w-7xl">Melt-UI Notifications Demo</h3>
     <div class="mx-auto px-4 max-w-7xl">
-      <button class="mx-auto px-4 max-w-7xl" click={() => showSuccessNotification()}>
+      <button class="mx-auto px-4 max-w-7xl" on:onclick={() => showSuccessNotification()}>
         Success Notification
       </button>
-      <button class="mx-auto px-4 max-w-7xl" click={() => showWarningNotification()}>
+      <button class="mx-auto px-4 max-w-7xl" on:onclick={() => showWarningNotification()}>
         Warning Notification
       </button>
-      <button class="mx-auto px-4 max-w-7xl" click={() => showErrorNotification()}>
+      <button class="mx-auto px-4 max-w-7xl" on:onclick={() => showErrorNotification()}>
         Error Notification
       </button>
-      <button class="mx-auto px-4 max-w-7xl" click={() => showInfoNotification()}>
+      <button class="mx-auto px-4 max-w-7xl" on:onclick={() => showInfoNotification()}>
         Info Notification
       </button>
     </div>
   </div>
   
   <!-- Bits UI Button -->
-  <Button.Root class="mx-auto px-4 max-w-7xl" on:click={showSuccessNotification}>
+  <Button.Root class="mx-auto px-4 max-w-7xl" on:on:click={showSuccessNotification}>
     Create New Case
   </Button.Root>
   
   <!-- Bits UI Select -->
   <div class="mx-auto px-4 max-w-7xl">
     <label class="mx-auto px-4 max-w-7xl" for="practice-area-select">Legal Practice Area</label>
-    <SelectRoot type="single" on:valuechange={() => showWarningNotification()}>
+    <SelectRoot type="single" valuechange={() => showWarningNotification()}>
       <SelectTrigger class="mx-auto px-4 max-w-7xl" id="practice-area-select">
         Select practice area...
       </SelectTrigger>
@@ -222,7 +221,7 @@
   </div>
   
   <!-- Bits UI Dialog -->
-  <Dialog.Root bind:open={dialogOpen} on:openchange={(open) => { if (open) showInfoNotification(); }}>
+  <Dialog.Root bind:open={dialogOpen} openchange={(open) => { if (open) showInfoNotification(); }}>
     <Dialog.Trigger class="mx-auto px-4 max-w-7xl">
       Case Management Options
     </Dialog.Trigger>
@@ -283,7 +282,7 @@
           <AlertDialog.Cancel class="mx-auto px-4 max-w-7xl">
             Cancel
           </AlertDialog.Cancel>
-          <AlertDialog.Action class="mx-auto px-4 max-w-7xl" on:click={showErrorNotification}>
+          <AlertDialog.Action class="mx-auto px-4 max-w-7xl" on:on:click={showErrorNotification}>
             Delete Permanently
           </AlertDialog.Action>
         </div>
@@ -307,20 +306,20 @@
       animate:flip={{ duration: 500 }}
       in:fly={{ duration: 150, x: '100%' }}
       out:fly={{ duration: 150, x: '100%'  }}
-      use:melt={$content(id)}
+      <!-- <!-- use:melt={$content(id)}
     >
       <div class="mx-auto px-4 max-w-7xl">
         {#if (data as ToastData).title}
-          <div class="mx-auto px-4 max-w-7xl" use:melt={$title(id)}>
+          <div class="mx-auto px-4 max-w-7xl" <!-- <!-- use:melt={$title(id)}>
             {(data as ToastData).title}
           </div>
         {/if}
-        <button class="mx-auto px-4 max-w-7xl" use:melt={$close(id)} aria-label="Close notification">
+        <button class="mx-auto px-4 max-w-7xl" <!-- <!-- use:melt={$close(id)} aria-label="Close notification">
           ✕
         </button>
       </div>
       {#if (data as ToastData).description}
-        <div class="mx-auto px-4 max-w-7xl" use:melt={$description(id)}>
+        <div class="mx-auto px-4 max-w-7xl" <!-- <!-- use:melt={$description(id)}>
           {(data as ToastData).description}
         </div>
       {/if}

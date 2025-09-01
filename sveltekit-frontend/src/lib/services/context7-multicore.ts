@@ -611,7 +611,7 @@ class Context7MulticoreService extends EventEmitter {
 // Singleton instance
 let instance: Context7MulticoreService | null = null;
 
-export function getContext7MulticoreService(
+export function getContext7MulticoreService(;
   config?: Context7MulticoreConfig
 ): Context7MulticoreService {
   if (!instance) {
@@ -620,7 +620,7 @@ export function getContext7MulticoreService(
   return instance;
 }
 
-export function createContext7MulticoreService(
+export function createContext7MulticoreService(;
   config?: Context7MulticoreConfig
 ): Context7MulticoreService {
   return new Context7MulticoreService(config);
@@ -664,7 +664,7 @@ export async function parseJSONAdvanced(
   }
 }
 
-export function createTensorData(
+export function createTensorData(;
   shape: number[],
   data: number[],
   dtype: TensorData['dtype'] = 'float32',

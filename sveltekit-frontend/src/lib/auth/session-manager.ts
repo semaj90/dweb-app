@@ -4,8 +4,8 @@
 import { dev } from '$app/environment';
 import { redis } from '$lib/server/cache/redis-service';
 import { randomBytes, createHash } from 'crypto';
-import type { AuthUser, AuthSession } from './auth-store';
-import type { UserRole } from './roles';
+import type { AuthUser, AuthSession } from './auth-store.js';
+import type { UserRole } from './roles.js';
 import type { Redis as IORedisClient } from 'ioredis';
 
 export interface SessionData {
@@ -523,11 +523,11 @@ export class SessionManager {
 
 // Export singleton instance
 export const sessionManager = SessionManager.getInstance({
-  maxAge: parseInt(process.env.SESSION_MAX_AGE || '86400000'), // 24 hours default
-  maxInactivity: parseInt(process.env.SESSION_MAX_INACTIVITY || '1800000'), // 30 minutes default
-  renewalThreshold: parseInt(process.env.SESSION_RENEWAL_THRESHOLD || '7200000'), // 2 hours default
-  maxSessionsPerUser: parseInt(process.env.MAX_SESSIONS_PER_USER || '5'),
-  cleanupInterval: parseInt(process.env.SESSION_CLEANUP_INTERVAL || '3600000'), // 1 hour default
+  maxAge: parseInt(import.meta.env.SESSION_MAX_AGE || '86400000'), // 24 hours default
+  maxInactivity: parseInt(import.meta.env.SESSION_MAX_INACTIVITY || '1800000'), // 30 minutes default
+  renewalThreshold: parseInt(import.meta.env.SESSION_RENEWAL_THRESHOLD || '7200000'), // 2 hours default
+  maxSessionsPerUser: parseInt(import.meta.env.MAX_SESSIONS_PER_USER || '5'),
+  cleanupInterval: parseInt(import.meta.env.SESSION_CLEANUP_INTERVAL || '3600000'), // 1 hour default
 });
 
 // Export types and utilities - avoid duplicate exports

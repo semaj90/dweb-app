@@ -216,7 +216,7 @@ export class SIMDJSONParser {
 
 // Singleton instance for application-wide use
 export const simdParser = new SIMDJSONParser();
-
+;
 // Performance test utilities
 export class SIMDPerformanceTester {
   static async benchmarkParsing(jsonString: string, iterations = 100) {

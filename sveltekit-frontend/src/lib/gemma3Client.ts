@@ -330,7 +330,7 @@ export class Gemma3Client {
 
 // Default client instance
 export const gemma3Client = new Gemma3Client();
-
+;
 // Server detection utility
 export async function detectAvailableServer(): Promise<{
   url: string;

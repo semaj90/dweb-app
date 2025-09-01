@@ -1,0 +1,755 @@
+{
+  "timestamp": "2025-09-01T23-00-59-069Z",
+  "summary": {
+    "TS1138": 42,
+    "TS7006": 0,
+    "TS2307": 0,
+    "TS2322": 0,
+    "TS2551": 0,
+    "TS2741": 0,
+    "TS2742": 0,
+    "OTHER": 1344,
+    "total": 1386
+  },
+  "topCodes": [
+    {
+      "code": "TS1005",
+      "count": 723
+    },
+    {
+      "code": "TS1128",
+      "count": 368
+    },
+    {
+      "code": "TS1109",
+      "count": 153
+    },
+    {
+      "code": "TS1138",
+      "count": 42
+    },
+    {
+      "code": "TS1136",
+      "count": 38
+    },
+    {
+      "code": "TS1137",
+      "count": 21
+    },
+    {
+      "code": "TS1434",
+      "count": 19
+    },
+    {
+      "code": "TS1011",
+      "count": 7
+    },
+    {
+      "code": "TS1131",
+      "count": 6
+    },
+    {
+      "code": "TS1003",
+      "count": 4
+    },
+    {
+      "code": "TS1161",
+      "count": 2
+    },
+    {
+      "code": "TS1127",
+      "count": 2
+    },
+    {
+      "code": "TS1180",
+      "count": 1
+    }
+  ],
+  "parseErrors": {
+    "total": 1377,
+    "percent": 99.35,
+    "codes": [
+      "TS1005",
+      "TS1109",
+      "TS1128",
+      "TS1136",
+      "TS1137",
+      "TS1138",
+      "TS1011",
+      "TS1131",
+      "TS1434"
+    ]
+  },
+  "perFileTop": [
+    {
+      "file": "src/lib/machines/graph-cache-machine.ts",
+      "total": 112,
+      "topCodes": [
+        {
+          "code": "TS1005",
+          "count": 81
+        },
+        {
+          "code": "TS1128",
+          "count": 27
+        },
+        {
+          "code": "TS1109",
+          "count": 2
+        },
+        {
+          "code": "TS1136",
+          "count": 1
+        },
+        {
+          "code": "TS1434",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "src/lib/state/evidenceProcessingMachine.ts",
+      "total": 112,
+      "topCodes": [
+        {
+          "code": "TS1128",
+          "count": 46
+        },
+        {
+          "code": "TS1005",
+          "count": 39
+        },
+        {
+          "code": "TS1109",
+          "count": 25
+        },
+        {
+          "code": "TS1434",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "src/lib/machines/legalCaseMachine.ts",
+      "total": 104,
+      "topCodes": [
+        {
+          "code": "TS1005",
+          "count": 76
+        },
+        {
+          "code": "TS1128",
+          "count": 27
+        },
+        {
+          "code": "TS1136",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "src/lib/machines/enhanced-legal-case-machine.ts",
+      "total": 103,
+      "topCodes": [
+        {
+          "code": "TS1005",
+          "count": 73
+        },
+        {
+          "code": "TS1128",
+          "count": 27
+        },
+        {
+          "code": "TS1434",
+          "count": 2
+        },
+        {
+          "code": "TS1136",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "src/lib/schemas/evidence-upload.ts",
+      "total": 100,
+      "topCodes": [
+        {
+          "code": "TS1005",
+          "count": 65
+        },
+        {
+          "code": "TS1128",
+          "count": 14
+        },
+        {
+          "code": "TS1136",
+          "count": 10
+        },
+        {
+          "code": "TS1109",
+          "count": 9
+        },
+        {
+          "code": "TS1137",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "src/lib/machines/caseManagementMachine.ts",
+      "total": 75,
+      "topCodes": [
+        {
+          "code": "TS1005",
+          "count": 55
+        },
+        {
+          "code": "TS1128",
+          "count": 18
+        },
+        {
+          "code": "TS1136",
+          "count": 1
+        },
+        {
+          "code": "TS1434",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "src/lib/server/db/ai-enrichment-schema.ts",
+      "total": 66,
+      "topCodes": [
+        {
+          "code": "TS1005",
+          "count": 45
+        },
+        {
+          "code": "TS1128",
+          "count": 14
+        },
+        {
+          "code": "TS1137",
+          "count": 4
+        },
+        {
+          "code": "TS1136",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "file": "src/lib/config/multi-protocol-routes.ts",
+      "total": 59,
+      "topCodes": [
+        {
+          "code": "TS1005",
+          "count": 38
+        },
+        {
+          "code": "TS1128",
+          "count": 20
+        },
+        {
+          "code": "TS1137",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "src/lib/stores/autoTaggingMachine.ts",
+      "total": 54,
+      "topCodes": [
+        {
+          "code": "TS1128",
+          "count": 23
+        },
+        {
+          "code": "TS1005",
+          "count": 18
+        },
+        {
+          "code": "TS1109",
+          "count": 12
+        },
+        {
+          "code": "TS1434",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "src/lib/server/db/schema-unified-postgres.ts",
+      "total": 46,
+      "topCodes": [
+        {
+          "code": "TS1128",
+          "count": 24
+        },
+        {
+          "code": "TS1005",
+          "count": 16
+        },
+        {
+          "code": "TS1136",
+          "count": 4
+        },
+        {
+          "code": "TS1137",
+          "count": 1
+        },
+        {
+          "code": "TS1109",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "src/lib/services/webasm-inference-rag.ts",
+      "total": 42,
+      "topCodes": [
+        {
+          "code": "TS1005",
+          "count": 30
+        },
+        {
+          "code": "TS1128",
+          "count": 10
+        },
+        {
+          "code": "TS1136",
+          "count": 1
+        },
+        {
+          "code": "TS1434",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "src/lib/services/ai-assistant-input-synthesizer.ts",
+      "total": 37,
+      "topCodes": [
+        {
+          "code": "TS1005",
+          "count": 32
+        },
+        {
+          "code": "TS1434",
+          "count": 1
+        },
+        {
+          "code": "TS1109",
+          "count": 1
+        },
+        {
+          "code": "TS1011",
+          "count": 1
+        },
+        {
+          "code": "TS1136",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "src/lib/engines/neural-sprite-effects.ts",
+      "total": 32,
+      "topCodes": [
+        {
+          "code": "TS1005",
+          "count": 18
+        },
+        {
+          "code": "TS1128",
+          "count": 7
+        },
+        {
+          "code": "TS1109",
+          "count": 6
+        },
+        {
+          "code": "TS1137",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "src/lib/server/db/schema-postgres-enhanced.ts",
+      "total": 22,
+      "topCodes": [
+        {
+          "code": "TS1005",
+          "count": 11
+        },
+        {
+          "code": "TS1109",
+          "count": 11
+        }
+      ]
+    },
+    {
+      "file": "src/lib/types/drizzle-enhanced.d.ts",
+      "total": 21,
+      "topCodes": [
+        {
+          "code": "TS1005",
+          "count": 9
+        },
+        {
+          "code": "TS1128",
+          "count": 5
+        },
+        {
+          "code": "TS1131",
+          "count": 3
+        },
+        {
+          "code": "TS1011",
+          "count": 2
+        },
+        {
+          "code": "TS1109",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "src/lib/polyfills.ts",
+      "total": 20,
+      "topCodes": [
+        {
+          "code": "TS1005",
+          "count": 10
+        },
+        {
+          "code": "TS1128",
+          "count": 6
+        },
+        {
+          "code": "TS1109",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "file": "src/lib/server/cache/redis.ts",
+      "total": 19,
+      "topCodes": [
+        {
+          "code": "TS1109",
+          "count": 10
+        },
+        {
+          "code": "TS1005",
+          "count": 4
+        },
+        {
+          "code": "TS1128",
+          "count": 3
+        },
+        {
+          "code": "TS1011",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "src/lib/services/go-microservice-client.ts",
+      "total": 19,
+      "topCodes": [
+        {
+          "code": "TS1005",
+          "count": 9
+        },
+        {
+          "code": "TS1128",
+          "count": 9
+        },
+        {
+          "code": "TS1136",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "src/lib/database/drizzle-compatibility-fix.ts",
+      "total": 16,
+      "topCodes": [
+        {
+          "code": "TS1005",
+          "count": 7
+        },
+        {
+          "code": "TS1128",
+          "count": 5
+        },
+        {
+          "code": "TS1136",
+          "count": 3
+        },
+        {
+          "code": "TS1109",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "src/lib/routing/route-registry.ts",
+      "total": 16,
+      "topCodes": [
+        {
+          "code": "TS1128",
+          "count": 8
+        },
+        {
+          "code": "TS1109",
+          "count": 6
+        },
+        {
+          "code": "TS1137",
+          "count": 1
+        },
+        {
+          "code": "TS1138",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "src/lib/server/db/schema-types.ts",
+      "total": 16,
+      "topCodes": [
+        {
+          "code": "TS1109",
+          "count": 16
+        }
+      ]
+    },
+    {
+      "file": "src/lib/server/db/qdrant-integration.ts",
+      "total": 14,
+      "topCodes": [
+        {
+          "code": "TS1005",
+          "count": 6
+        },
+        {
+          "code": "TS1128",
+          "count": 3
+        },
+        {
+          "code": "TS1109",
+          "count": 3
+        },
+        {
+          "code": "TS1003",
+          "count": 1
+        },
+        {
+          "code": "TS1434",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "src/lib/server/ai/config.ts",
+      "total": 13,
+      "topCodes": [
+        {
+          "code": "TS1128",
+          "count": 4
+        },
+        {
+          "code": "TS1138",
+          "count": 2
+        },
+        {
+          "code": "TS1161",
+          "count": 2
+        },
+        {
+          "code": "TS1109",
+          "count": 2
+        },
+        {
+          "code": "TS1127",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "src/lib/services/inlineSuggestionService.ts",
+      "total": 13,
+      "topCodes": [
+        {
+          "code": "TS1128",
+          "count": 6
+        },
+        {
+          "code": "TS1005",
+          "count": 5
+        },
+        {
+          "code": "TS1109",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "src/lib/db/schema-jsonb.ts",
+      "total": 12,
+      "topCodes": [
+        {
+          "code": "TS1128",
+          "count": 8
+        },
+        {
+          "code": "TS1137",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "file": "src/lib/schemas/file-upload.ts",
+      "total": 12,
+      "topCodes": [
+        {
+          "code": "TS1128",
+          "count": 8
+        },
+        {
+          "code": "TS1137",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "file": "src/lib/services/unified-wasm-gpu-orchestrator.ts",
+      "total": 11,
+      "topCodes": [
+        {
+          "code": "TS1005",
+          "count": 8
+        },
+        {
+          "code": "TS1128",
+          "count": 2
+        },
+        {
+          "code": "TS1136",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "src/lib/server/database/vector-schema.ts",
+      "total": 10,
+      "topCodes": [
+        {
+          "code": "TS1005",
+          "count": 5
+        },
+        {
+          "code": "TS1109",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "file": "src/lib/server/db/auth-schema.ts",
+      "total": 10,
+      "topCodes": [
+        {
+          "code": "TS1005",
+          "count": 5
+        },
+        {
+          "code": "TS1128",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "file": "src/lib/services/quic-gateway-client.ts",
+      "total": 10,
+      "topCodes": [
+        {
+          "code": "TS1005",
+          "count": 7
+        },
+        {
+          "code": "TS1128",
+          "count": 2
+        },
+        {
+          "code": "TS1136",
+          "count": 1
+        }
+      ]
+    }
+  ],
+  "categories": {
+    "TS1138": [
+      "src/lib/forms/superforms-xstate-integration.ts(54,42): error TS1138: Parameter declaration expected.",
+      "src/lib/forms/superforms-xstate-integration.ts(186,40): error TS1138: Parameter declaration expected.",
+      "src/lib/forms/superforms-xstate-integration.ts(291,34): error TS1138: Parameter declaration expected.",
+      "src/lib/forms/superforms-xstate-integration.ts(399,38): error TS1138: Parameter declaration expected.",
+      "src/lib/optimization/context7-mcp-integration.ts(715,46): error TS1138: Parameter declaration expected.",
+      "src/lib/routing/dynamic-navigation.ts(484,33): error TS1138: Parameter declaration expected.",
+      "src/lib/routing/dynamic-route-generator.ts(373,38): error TS1138: Parameter declaration expected.",
+      "src/lib/routing/index.ts(255,28): error TS1138: Parameter declaration expected.",
+      "src/lib/routing/index.ts(291,34): error TS1138: Parameter declaration expected.",
+      "src/lib/routing/route-guards.ts(271,37): error TS1138: Parameter declaration expected.",
+      "src/lib/routing/route-guards.ts(385,38): error TS1138: Parameter declaration expected.",
+      "src/lib/routing/route-registry.ts(503,38): error TS1138: Parameter declaration expected.",
+      "src/lib/routing/unified-api-router.ts(536,38): error TS1138: Parameter declaration expected.",
+      "src/lib/server/ai/config.ts(126,30): error TS1138: Parameter declaration expected.",
+      "src/lib/server/ai/config.ts(159,32): error TS1138: Parameter declaration expected.",
+      "src/lib/server/ai/ollama-config.ts(134,42): error TS1138: Parameter declaration expected.",
+      "src/lib/server/auth/authUtils.ts(42,29): error TS1138: Parameter declaration expected.",
+      "src/lib/server/session.ts(53,39): error TS1138: Parameter declaration expected.",
+      "src/lib/server/utils/avatar-upload.ts(43,36): error TS1138: Parameter declaration expected.",
+      "src/lib/server/utils/avatar-upload.ts(102,40): error TS1138: Parameter declaration expected.",
+      "src/lib/server/websocket.ts(201,41): error TS1138: Parameter declaration expected.",
+      "src/lib/services/ai-worker-manager.ts(552,38): error TS1138: Parameter declaration expected.",
+      "src/lib/services/ai-worker-manager.ts(572,36): error TS1138: Parameter declaration expected.",
+      "src/lib/services/ai-worker-manager.ts(593,37): error TS1138: Parameter declaration expected.",
+      "src/lib/services/cache-first-architecture.ts(425,61): error TS1138: Parameter declaration expected."
+    ],
+    "TS7006": [],
+    "TS2307": [],
+    "TS2322": [],
+    "TS2551": [],
+    "TS2741": [],
+    "TS2742": [],
+    "OTHER": [
+      ".svelte-kit/types/src/routes/test-enhanced-upload/proxy+page.server.ts(27,1): error TS1136: Property assignment expected.",
+      ".svelte-kit/types/src/routes/test-enhanced-upload/proxy+page.server.ts(101,1): error TS1128: Declaration or statement expected.",
+      "src/lib/components/three/yorha-ui/NESYoRHaHybrid3D.ts(616,1): error TS1131: Property or signature expected.",
+      "src/lib/components/three/yorha-ui/NESYoRHaHybrid3D.ts(636,1): error TS1131: Property or signature expected.",
+      "src/lib/components/three/yorha-ui/NESYoRHaHybrid3D.ts(660,1): error TS1131: Property or signature expected.",
+      "src/lib/components/ui/modern/index.ts(20,30): error TS1137: Expression or comma expected.",
+      "src/lib/components/ui/modern/index.ts(25,1): error TS1128: Declaration or statement expected.",
+      "src/lib/components/ui/modern/index.ts(25,3): error TS1434: Unexpected keyword or identifier.",
+      "src/lib/components/ui/modern/index.ts(27,32): error TS1137: Expression or comma expected.",
+      "src/lib/components/ui/modern/index.ts(34,1): error TS1128: Declaration or statement expected.",
+      "src/lib/components/ui/modern/index.ts(34,3): error TS1434: Unexpected keyword or identifier.",
+      "src/lib/components/ui/modern/index.ts(36,23): error TS1137: Expression or comma expected.",
+      "src/lib/components/ui/modern/index.ts(42,1): error TS1128: Declaration or statement expected.",
+      "src/lib/components/ui/modern/index.ts(42,3): error TS1434: Unexpected keyword or identifier.",
+      "src/lib/components/ui/modular/types.ts(139,3): error TS1109: Expression expected.",
+      "src/lib/components/ui/modular/types.ts(140,3): error TS1109: Expression expected.",
+      "src/lib/config/multi-protocol-routes.ts(340,45): error TS1137: Expression or comma expected.",
+      "src/lib/config/multi-protocol-routes.ts(344,13): error TS1005: ';' expected.",
+      "src/lib/config/multi-protocol-routes.ts(345,14): error TS1005: ';' expected.",
+      "src/lib/config/multi-protocol-routes.ts(347,11): error TS1005: ';' expected.",
+      "src/lib/config/multi-protocol-routes.ts(348,11): error TS1005: ';' expected.",
+      "src/lib/config/multi-protocol-routes.ts(349,9): error TS1005: ';' expected.",
+      "src/lib/config/multi-protocol-routes.ts(350,6): error TS1128: Declaration or statement expected.",
+      "src/lib/config/multi-protocol-routes.ts(352,12): error TS1005: ';' expected.",
+      "src/lib/config/multi-protocol-routes.ts(353,4): error TS1128: Declaration or statement expected."
+    ]
+  }
+}

@@ -31,12 +31,12 @@
   });
 
   // UI state
-  let searchBarRef: HTMLInputElement;
+let searchBarRef = $state<HTMLInputElement;
   let chatContainerRef: HTMLDivElement;
   let evidenceEditorRef: HTMLDivElement;
 
   // Golden ratio dimensions
-  const GOLDEN_RATIO = 1.618;
+  const GOLDEN_RATIO >(1.618);
   let containerWidth = $state(800);
   let containerHeight = $state(containerWidth / GOLDEN_RATIO);
 
@@ -80,7 +80,7 @@
     isProcessing = true;
 
     try {
-      let responseContent = '';
+let responseContent = $state('');
 
       await streamRag({
         query,
@@ -203,17 +203,17 @@
     }
   });
 
-  const ragStatus = $derived(ragStore.status);
-  const ragTokenCount = $derived(ragStore.tokenCount);
+  let ragStatus = $derived(ragStore.status);
+  let ragTokenCount = $derived(ragStore.tokenCount);
 </script>
 
 {#if isOpen}
-  <div class="ai-assistant-overlay" transition:fade={{ duration: 200 }} click={onClose}>
+  <div class="ai-assistant-overlay" transitifade={{ duration: 200 }} on:onclick={onClose}>
     <div
       class="ai-assistant-container"
       style="width: {containerWidth}px; height: {containerHeight}px;"
-      transition:fly={{ y: -50, duration: 400, easing: quintOut }}
-      click={(e) => e.stopPropagation()}>
+      transitifly={{ y: -50, duration: 400, easing: quintOut }}
+      on:onclick={(e) => e.stopPropagation()}>
       <!-- Header -->
       <header class="assistant-header">
         <div class="header-left">
@@ -229,24 +229,24 @@
             <button
               class="mode-btn"
               class:active={currentMode === 'chat'}
-              click={() => switchMode('chat')}>
+              on:onclick={() => switchMode('chat')}>
               💬 Chat
             </button>
             <button
               class="mode-btn"
               class:active={currentMode === 'evidence'}
-              click={() => switchMode('evidence')}>
+              on:onclick={() => switchMode('evidence')}>
               📁 Evidence
             </button>
             <button
               class="mode-btn"
               class:active={currentMode === 'analysis'}
-              click={() => switchMode('analysis')}>
+              on:onclick={() => switchMode('analysis')}>
               📊 Analysis
             </button>
           </div>
 
-          <button class="close-btn" click={onClose}>✕</button>
+          <button class="close-btn" on:onclick={onClose}>✕</button>
         </div>
       </header>
 
@@ -266,7 +266,7 @@
             disabled={isProcessing} />
           <button
             class="search-btn"
-            click={handleSearch}
+            on:onclick={handleSearch}
             disabled={isProcessing || !searchQuery.trim()}>
             {isProcessing ? '⚡' : '🔍'}
           </button>
@@ -274,7 +274,7 @@
 
         <!-- Context Toggle -->
         <div class="context-controls">
-          <button class="context-toggle" click={() => (contextExpanded = !contextExpanded)}>
+          <button class="context-toggle" on:onclick={() => (contextExpanded = !contextExpanded)}>
             📋 Context ({evidenceItems.length})
           </button>
 
@@ -288,10 +288,10 @@
 
       <!-- Context Panel -->
       {#if contextExpanded}
-        <div class="context-panel" transition:fly={{ y: -20, duration: 200 }}>
+        <div class="context-panel" transitifly={{ y: -20, duration: 200 }}>
           <div class="context-header">
             <h3>Active Context</h3>
-            <button click={() => (contextExpanded = false)}>✕</button>
+            <button on:onclick={() => (contextExpanded = false)}>✕</button>
           </div>
           <div class="context-items">
             {#each evidenceItems.slice(0, 3) as item}
@@ -315,7 +315,7 @@
             {#each chatMessages as message (message.id)}
               <div
                 class="message {message.role}"
-                transition:fly={{ x: message.role === 'user' ? 20 : -20, duration: 300 }}>
+                transitifly={{ x: message.role === 'user' ? 20 : -20, duration: 300 }}>
                 <div class="message-avatar">
                   {message.role === 'user' ? '👤' : '🤖'}
                 </div>
@@ -353,20 +353,20 @@
                     const file = e.target?.files?.[0];
                     if (file) addEvidence(file);
                   }} />
-                <button click={() => document.getElementById('evidence-upload')?.click()}>
+                <button on:onclick={() => document.getElementById('evidence-upload')?.click()}>
                   📁 Upload
                 </button>
-                <button click={() => addEvidence()}> ➕ Add Item </button>
-                <button click={exportEvidence}> 💾 Export </button>
+                <button on:onclick={() => addEvidence()}> ➕ Add Item </button>
+                <button on:onclick={exportEvidence}> 💾 Export </button>
               </div>
             </div>
 
             <div class="evidence-grid">
               {#each evidenceItems as evidence, index (evidence.id)}
-                <div class="evidence-item" transition:scale={{ duration: 200, delay: index * 50 }}>
+                <div class="evidence-item" transitiscale={{ duration: 200, delay: index * 50 }}>
                   <div class="evidence-header">
                     <h3>{evidence.name}</h3>
-                    <button click={() => removeEvidence(evidence.id)}>🗑️</button>
+                    <button on:onclick={() => removeEvidence(evidence.id)}>🗑️</button>
                   </div>
                   <div class="evidence-content">
                     <div class="evidence-type">{evidence.type}</div>
@@ -384,7 +384,7 @@
                 <div class="evidence-empty">
                   <div class="empty-icon">📁</div>
                   <p>No evidence items yet</p>
-                  <button click={() => addEvidence()}>Add your first evidence item</button>
+                  <button on:onclick={() => addEvidence()}>Add your first evidence item</button>
                 </div>
               {/if}
             </div>
@@ -450,8 +450,8 @@
         </div>
 
         <div class="footer-controls">
-          <button click={() => ragStore.clear()}>Clear Session</button>
-          <button click={exportEvidence}>Export All</button>
+          <button on:onclick={() => ragStore.clear()}>Clear Session</button>
+          <button on:onclick={exportEvidence}>Export All</button>
         </div>
       </footer>
     </div>

@@ -69,10 +69,8 @@
   let { useDrawer = $bindable() } = $props(); // boolean = false;
 
   const dispatch = createEventDispatcher();
-
-  let isGeneratingSummary = false;
-  let activeTab: "overview" | "timeline" | "evidence" | "recommendations" =
-    "overview";
+let isGeneratingSummary = $state(false);
+let activeTab = $state<"overview" | "timeline" | "evidence" | "recommendations" >("overview");
 
   async function generateSummary() {
     if (!caseData) return;
@@ -155,15 +153,15 @@
     size="xl"
   >
     <svelte:fragment slot="trigger">
-      <slot name="trigger" />
+      {@render trigger?.()}
     </svelte:fragment>
 
     <svelte:fragment slot="default">
-      <slot name="content" />
+      {@render content?.()}
     </svelte:fragment>
   </Drawer>
 {:else}
-  <Dialog.Root open={isOpen} on:close={closeModal}>
+  <Dialog.Root open={isOpen} close={closeModal}>
     <Dialog.Content size="lg">
       <Dialog.Header>
         <Dialog.Title>Case Summary</Dialog.Title>
@@ -182,7 +180,7 @@
           <div class="space-y-4">
             <div class="flex justify-between items-center">
               <h3 class="text-lg font-semibold">Overview</h3>
-              <Button on:click={generateSummary} disabled={isGeneratingSummary} size="sm" variant="outline">
+              <Button on:on:click={generateSummary} disabled={isGeneratingSummary} size="sm" variant="outline">
                 <Sparkles class="w-4 h-4 mr-2" /> Regenerate
               </Button>
             </div>
@@ -242,7 +240,7 @@
           <div class="flex flex-col items-center justify-center h-48 text-muted-foreground">
             <Brain class="w-16 h-16 mb-4 opacity-50" />
             <p>No AI summary available for this case.</p>
-            <Button on:click={generateSummary} disabled={isGeneratingSummary} class="mt-4">
+            <Button on:on:click={generateSummary} disabled={isGeneratingSummary} class="mt-4">
               <Sparkles class="w-4 h-4 mr-2" /> Generate Summary
             </Button>
           </div>

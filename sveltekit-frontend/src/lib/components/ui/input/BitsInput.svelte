@@ -42,11 +42,10 @@
     search: 'border-yorha-border/50 bg-yorha-bg-primary/5 text-yorha-text-primary placeholder:text-yorha-text-secondary',
     ai: 'border-gradient-to-r from-yorha-primary to-yorha-accent bg-yorha-bg-secondary text-yorha-text-primary'
   };
-
-  let inputElement: HTMLInputElement;
+let inputElement = $state<HTMLInputElement;
 
   // Generate unique ID for accessibility
-  const inputId = `input-${Math.random().toString(36).substr(2, 9)}`;
+  const inputId >(`input-${Math.random().toString(36).substr(2, 9)}`);
 </script>
 
 <div class="legal-input-container w-full">

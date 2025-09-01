@@ -60,11 +60,11 @@
 
 
   let uploadFiles: UploadFile[] = $state([]);
-  let aiSystem: ComprehensiveAISystemIntegration;
-  let docStatus: string = '';
-  let docs: any = null;
-  let availableTags: string[] = [];
-  let summaryType: 'key_points' | 'narrative' | 'prosecutorial' = 'narrative';
+let aiSystem = $state<ComprehensiveAISystemIntegration;
+  let docStatus: string >('');
+let docs = $state<any >(null);
+let availableTags = $state<string[] >([]);
+let summaryType = $state<'key_points' | 'narrative' | 'prosecutorial' >('narrative');
 
   // Load available tags
   onMount(async () => {
@@ -259,9 +259,9 @@
     maxSize={maxFileSize}
     accept={acceptedTypes.join(',')}
     bind:files={uploadFiles}
-    on:fileschange={handleFilesChange}
-    on:upload={handleFileUpload}
-    on:remove={handleFileRemove}
+    fileschange={handleFilesChange}
+    upload={handleFileUpload}
+    remove={handleFileRemove}
     dragDropText="Drop evidence files here or click to browse"
     browseText="Browse Evidence Files"
     supportedFormats={acceptedTypes.map(type => type.replace('.', '').toUpperCase())}

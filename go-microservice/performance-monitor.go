@@ -65,65 +65,58 @@ type RealtimeMetrics struct {
 	Alerts            []PerformanceAlert `json:"alerts"`
 }
 
-// Missing type definitions for compilation
+// SystemMetrics tracks overall system performance - unified structure
 type SystemMetrics struct {
-	CPU          *CPUMetrics          `json:"cpu"`
-	Memory       *MemoryMetrics       `json:"memory"`
-	Disk         *DiskMetrics         `json:"disk"`
-	Network      *NetworkMetrics      `json:"network"`
-	GPUHealth    *GPUHealthMetrics    `json:"gpu_health"`
-	Runtime      *RuntimeMetrics      `json:"runtime"`
-	Services     map[string]*ServiceMetrics `json:"services"`
-	Timestamp    time.Time            `json:"timestamp"`
+	Timestamp time.Time                 `json:"timestamp"`
+	CPU       *CPUMetrics               `json:"cpu"`
+	Memory    *MemoryMetrics            `json:"memory"`
+	Disk      *DiskMetrics              `json:"disk"`
+	Network   *NetworkMetrics           `json:"network"`
+	GPUHealth *GPUHealthMetrics         `json:"gpu_health"`
+	Runtime   *RuntimeMetrics           `json:"runtime"`
+	Services  map[string]*ServiceMetrics `json:"services"`
 }
 
 type CPUMetrics struct {
-	UsagePercent    []float64 `json:"usage_percent"`
-	Cores           int       `json:"cores"`
-	Threads         int       `json:"threads"`
-	LoadAverage     []float64 `json:"load_average"`
-	Temperature     float64   `json:"temperature"`
-	FrequencyMHz    int       `json:"frequency_mhz"`
-	ProcessCount    int       `json:"process_count"`
-	ContextSwitches int64     `json:"context_switches"`
+	UsagePercent []float64 `json:"usage_percent"`
+	LoadAverage  []float64 `json:"load_avg"`
+	Cores        int       `json:"cores"`
+	Threads      int       `json:"threads"`
+	Temperature  float64   `json:"temperature"`
+	FrequencyMHz int       `json:"frequency_mhz"`
 }
 
 type MemoryMetrics struct {
 	TotalBytes     uint64  `json:"total_bytes"`
-	UsedBytes      uint64  `json:"used_bytes"`
-	FreeBytes      uint64  `json:"free_bytes"`
-	AvailableBytes uint64  `json:"available_bytes"`
-	UsagePercent   float64 `json:"usage_percent"`
-	UsedPercent    float64 `json:"used_percent"`
-	Total          uint64  `json:"total"`
-	Used           uint64  `json:"used"`
-	Available      uint64  `json:"available"`
-	SwapTotal      uint64  `json:"swap_total"`
-	SwapUsed       uint64  `json:"swap_used"`
-	SwapFree       uint64  `json:"swap_free"`
-	Cached         uint64  `json:"cached"`
-	Buffered       uint64  `json:"buffered"`
+type MemoryMetrics struct {
+	Total       uint64  `json:"total"`
+	Available   uint64  `json:"available"`
+	Used        uint64  `json:"used"`
+	UsedPercent float64 `json:"used_percent"`
+	Cached      uint64  `json:"cached"`
+	Buffers     uint64  `json:"buffers"`
+	SwapTotal   uint64  `json:"swap_total"`
+	SwapUsed    uint64  `json:"swap_used"`
+	SwapFree    uint64  `json:"swap_free"`
 }
-
-type DiskMetrics struct {
 	TotalBytes     uint64  `json:"total_bytes"`
 	UsedBytes      uint64  `json:"used_bytes"`
 	FreeBytes      uint64  `json:"free_bytes"`
 	UsagePercent   float64 `json:"usage_percent"`
 	ReadOps        uint64  `json:"read_ops"`
 	WriteOps       uint64  `json:"write_ops"`
-	ReadBytes      uint64  `json:"read_bytes"`
-	WriteBytes     uint64  `json:"write_bytes"`
-	IOPSRead       float64 `json:"iops_read"`
-	IOPSWrite      float64 `json:"iops_write"`
+type DiskMetrics struct {
+	Total       uint64  `json:"total"`
+	Free        uint64  `json:"free"`
+	Used        uint64  `json:"used"`
+	UsedPercent float64 `json:"used_percent"`
+	ReadOps     uint64  `json:"read_ops"`
+	WriteOps    uint64  `json:"write_ops"`
+	ReadBytes   uint64  `json:"read_bytes"`
+	WriteBytes  uint64  `json:"write_bytes"`
+	IOPSRead    float64 `json:"iops_read"`
+	IOPSWrite   float64 `json:"iops_write"`
 }
-
-type NetworkMetrics struct {
-	BytesReceived uint64  `json:"bytes_received"`
-	BytesSent     uint64  `json:"bytes_sent"`
-	PacketsReceived uint64 `json:"packets_received"`
-	PacketsSent   uint64  `json:"packets_sent"`
-	ErrorsIn      uint64  `json:"errors_in"`
 	ErrorsOut     uint64  `json:"errors_out"`
 	DroppedIn     uint64  `json:"dropped_in"`
 	DroppedOut    uint64  `json:"dropped_out"`
@@ -1047,13 +1040,18 @@ func (smc *SystemMetricsCollector) CollectMetrics() (*MetricsBatch, error) {
 		Available:   m.Sys - m.Alloc,
 		UsedPercent: float64(m.Alloc) / float64(m.Sys) * 100,
 	}
-
-	// Collect runtime metrics
-	runtimeStats := RuntimeMetrics{
-		GoroutineCount: runtime.NumGoroutine(),
-		HeapAllocMB:    float64(m.Alloc) / 1024 / 1024,
-		HeapSysMB:      float64(m.Sys) / 1024 / 1024,
-		NumGC:          m.NumGC,
+	// Collect basic memory info
+	memStats := MemoryMetrics{
+		Total:       m.Sys,
+		Used:        m.Alloc,
+		Available:   m.Sys - m.Alloc,
+		UsedPercent: float64(m.Alloc) / float64(m.Sys) * 100,
+		Cached:      0, // Placeholder
+		Buffers:     0, // Placeholder
+		SwapTotal:   0, // Placeholder
+		SwapUsed:    0, // Placeholder
+		SwapFree:    0, // Placeholder
+	}
 		GCPauseTime:    time.Duration(m.PauseNs[(m.NumGC+255)%256]),
 	}
 

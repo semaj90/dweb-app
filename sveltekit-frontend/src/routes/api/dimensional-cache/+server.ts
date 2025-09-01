@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * Dimensional Cache API
@@ -8,6 +8,7 @@ import type { RequestHandler } from './$types';
 
 import { dimensionalCache } from '$lib/ai/dimensional-cache-engine';
 import type { DimensionalArray, CacheMetadata } from '$lib/ai/dimensional-cache-engine';
+import { URL } from "url";
 
 export const POST: RequestHandler = async ({ request, url }) => {
   try {

@@ -605,7 +605,7 @@ export class EnhancedNeo4jReranker {
 
 // Export factory function
 export function createEnhancedNeo4jReranker(
-  config?: Partial<EnhancedRerankerConfig>,
+  config?: Partial<EnhancedRerankerConfig>
 ): EnhancedNeo4jReranker {
   return new EnhancedNeo4jReranker(config);
 }

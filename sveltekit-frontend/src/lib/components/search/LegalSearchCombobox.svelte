@@ -55,13 +55,13 @@
   let { class = $bindable() } = $props(); // "";
   
   // State
-  let open = false;
+let open = $state(false);
   let inputValue = value;
-  let searchResults: SearchResult[] = [];
-  let isLoading = false;
-  let selectedResult: SearchResult | null = null;
-  let recentSearches: string[] = [];
-  let suggestions: string[] = [];
+let searchResults = $state<SearchResult[] >([]);
+let isLoading = $state(false);
+let selectedResult = $state<SearchResult | null >(null);
+let recentSearches = $state<string[] >([]);
+let suggestions = $state<string[] >([]);
   
   // Event dispatcher
   const dispatch = createEventDispatcher<{
@@ -234,7 +234,7 @@
           selectedResult && "text-gray-900 font-medium"
         )}
         {placeholder}
-        on:input={handleInputChange}
+        input={handleInputChange}
         autocomplete="off"
       />
       
@@ -254,7 +254,7 @@
         <button
           type="button"
           class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-          click={handleClear}
+          on:onclick={handleClear}
         >
           <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -321,7 +321,7 @@
                   <Combobox.Item
                     value={search}
                     class="flex items-center rounded-md px-3 py-2 text-sm hover:bg-gray-100 cursor-pointer"
-                    on:click={() => {
+                    on:on:click={() => {
                       inputValue = search;
                       performSearch(search);
                     }}
@@ -344,7 +344,7 @@
                   <Combobox.Item
                     value={suggestion}
                     class="flex items-center rounded-md px-3 py-2 text-sm hover:bg-gray-100 cursor-pointer"
-                    on:click={() => {
+                    on:on:click={() => {
                       inputValue = suggestion;
                       performSearch(suggestion);
                     }}
@@ -365,7 +365,7 @@
                 "hover:bg-gray-50 cursor-pointer transition-colors",
                 "data-[highlighted]:bg-blue-50"
               )}
-              on:click={() => handleSelect(result)}
+              on:on:click={() => handleSelect(result)}
             >
               <!-- Type Icon -->
               <div class={cn("flex-shrink-0 mt-1", typeColors[result.type] || 'text-gray-500')}>

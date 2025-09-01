@@ -833,7 +833,7 @@ export class SelfOrganizingMapRAG {
 
 // Export factory function for easy instantiation
 export function createSOMRAGSystem(
-  config: Partial<SOMConfig> = {},
+  config: Partial<SOMConfig> = {}
 ): SelfOrganizingMapRAG {
   const defaultConfig: SOMConfig = {
     mapWidth: 20,

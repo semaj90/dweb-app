@@ -87,29 +87,29 @@
 
 <!-- Melt-UI Dialog Implementation -->
 {#if open}
-  <div use:melt={$overlay} class="fixed inset-0 z-50 bg-black/50" transition:fade={{ duration: 150 }}>
+  <div <!-- <!-- use:melt={$overlay} class="fixed inset-0 z-50 bg-black/50" transitifade={{ duration: 150 }}>
     <div
-      use:melt={$content}
+      <!-- <!-- use:melt={$content}
       class="fixed left-1/2 top-1/2 z-50 max-h-[85vh] w-[90vw] max-w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-xl border bg-white p-6 shadow-lg"
-      transition:fly={{ y: -8, duration: 150 }}
+      transitifly={{ y: -8, duration: 150 }}
     >
       <!-- Header -->
       <div class="flex items-center justify-between mb-4">
-        <h2 use:melt={$title} class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+        <h2 <!-- <!-- use:melt={$title} class="text-xl font-semibold text-gray-900 flex items-center gap-2">
           <Users class="w-5 h-5" />
           Professional Network
         </h2>
         <button
-          use:melt={$close}
+          <!-- <!-- use:melt={$close}
           class="rounded-sm opacity-70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
-          click={handleClose}
+          on:onclick={handleClose}
         >
           <X class="w-4 h-4" />
         </button>
       </div>
 
       <!-- Content -->
-      <div use:melt={$description} class="space-y-4">
+      <div <!-- <!-- use:melt={$description} class="space-y-4">
         {#if loading}
           <div class="flex items-center justify-center py-8">
             <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -173,7 +173,7 @@
       <div class="flex justify-end mt-6 pt-4 border-t border-gray-200">
         <button
           class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-400"
-          click={handleClose}
+          on:onclick={handleClose}
         >
           Close
         </button>

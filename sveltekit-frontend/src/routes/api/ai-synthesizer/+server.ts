@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 // AI Synthesizer API Route - Full Stack Integration
 // Uses Neo4j, PostgreSQL/pgvector, XState, Redis, Ollama with gemma3:legal-latest
@@ -7,6 +7,7 @@ import type { RequestHandler } from './$types';
 import { aiOrchestrator } from "$lib/server/ai/enhanced-ai-synthesis-orchestrator";
 import { monitoringService } from "$lib/server/ai/monitoring-service";
 import stream from "stream";
+import { URL } from "url";
 
 // SSE stream storage for real-time updates
 const activeStreams = new Map<string, any>();

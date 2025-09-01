@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * PostgreSQL-First Worker Trigger API
@@ -13,6 +13,8 @@ import { z } from 'zod';
 import { db } from '$lib/server/db/index';
 import { cases } from '$lib/server/db/schema-postgres';
 import { eq } from 'drizzle-orm';
+import stream from "stream";
+import { EventEmitter } from "events";
 
 // Validation schema for worker trigger requests
 const WorkerTriggerSchema = z.object({

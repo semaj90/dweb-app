@@ -62,7 +62,7 @@ declare module '$env/static/public' {
   export = env;
 }
 
-export {};
+
 // Auto-generated development global declarations to reduce TS noise while
 // we incrementally normalize runtime service imports. These are lightweight
 // `any` declarations for dev-time only and should be replaced with proper
@@ -117,4 +117,4 @@ declare const VectorService: any;
 declare const legalPrecedents: any;
 declare const aiReports: any;
 
-export {};
+

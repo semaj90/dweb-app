@@ -35,7 +35,7 @@
   let searchHistory = $state<any[]>([]);
 
   // Polling interval for job status
-  let statusPollingInterval: number | null = null;
+let statusPollingInterval = $state<number | null >(null);
 
   // Load cases on component mount
   onMount(async () => {
@@ -456,7 +456,7 @@
         <h2 class="text-xl font-semibold text-gray-900">Cases</h2>
         <button
           class="btn btn-primary px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          click={() => showCreateForm = true}
+          on:onclick={() => showCreateForm = true}
           disabled={isLoading}
         >
           Create Case
@@ -477,7 +477,7 @@
             <div
               class="case-card p-4 border border-gray-200 rounded-lg hover:border-blue-300 cursor-pointer transition-colors"
               class:selected={selectedCase?.id === caseItem.id}
-              click={() => loadCase(caseItem.id)}
+              on:onclick={() => loadCase(caseItem.id)}
             >
               <div class="flex justify-between items-start mb-2">
                 <h3 class="font-medium text-gray-900">{caseItem.title}</h3>
@@ -532,14 +532,14 @@
             <div class="flex space-x-2">
               <button
                 class="btn btn-search px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
-                click={() => { showSearchModal = true; loadSearchHistory(); }}
+                on:onclick={() => { showSearchModal = true; loadSearchHistory(); }}
                 disabled={isLoading}
               >
                 Search Evidence
               </button>
               <button
                 class="btn btn-secondary px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-                click={() => showUploadModal = true}
+                on:onclick={() => showUploadModal = true}
                 disabled={isLoading}
               >
                 Upload Evidence
@@ -685,7 +685,7 @@
         <div class="flex justify-end space-x-3">
           <button
             type="button"
-            click={() => showCreateForm = false}
+            on:onclick={() => showCreateForm = false}
             class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
             disabled={isLoading}
           >
@@ -750,7 +750,7 @@
         <div class="flex justify-end space-x-3">
           <button
             type="button"
-            click={() => { showUploadModal = false; uploadFile = null; uploadProgress = 0; }}
+            on:onclick={() => { showUploadModal = false; uploadFile = null; uploadProgress = 0; }}
             class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
             disabled={isLoading}
           >
@@ -776,7 +776,7 @@
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-semibold">Search Evidence - {selectedCase?.title}</h2>
         <button 
-          click={() => { showSearchModal = false; clearSearch(); }}
+          on:onclick={() => { showSearchModal = false; clearSearch(); }}
           class="text-gray-500 hover:text-black text-2xl"
         >
           &times;
@@ -812,7 +812,7 @@
           {#if searchResults.length > 0}
             <button
               type="button"
-              click={clearSearch}
+              on:onclick={clearSearch}
               class="px-4 py-3 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200"
             >
               Clear
@@ -899,7 +899,7 @@
             {#each searchHistory.slice(0, 5) as historyItem (historyItem.timestamp)}
               <button
                 class="w-full text-left p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
-                click={() => { searchQuery = historyItem.query; performSearch(); }}
+                on:onclick={() => { searchQuery = historyItem.query; performSearch(); }}
               >
                 <div class="font-medium text-sm text-gray-900">{historyItem.query}</div>
                 <div class="text-xs text-gray-500 mt-1">

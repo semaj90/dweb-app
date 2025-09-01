@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import Redis from 'ioredis';
 
 export function createRedisConnection() {

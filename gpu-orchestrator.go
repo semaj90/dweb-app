@@ -2,25 +2,6 @@
 // Coordinates GPU workloads between CUDA, WebAssembly, and AI models
 package main
 
-import (
-	"context"
-	"encoding/json"
-	"fmt"
-	"log"
-	"net/http"
-	"os"
-	"os/exec"
-	"os/signal"
-	"runtime"
-	"strings"
-	"syscall"
-	"time"
-
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
-	"github.com/joho/godotenv"
-)
 
 // Configuration
 type Config struct {
@@ -34,21 +15,21 @@ type Config struct {
 
 // GPU Task Types
 type GPUTask struct {
-	ID       string                 `json:"id"`
-	Type     string                 `json:"type"` // "embedding", "inference", "cuda_kernel"
-	Input    interface{}            `json:"input"`
-	Priority int                    `json:"priority"`
-	Metadata map[string]interface{} `json:"metadata"`
-	Status   string                 `json:"status"`
-	Result   interface{}            `json:"result"`
-	Error    string                 `json:"error,omitempty"`
-	StartTime time.Time             `json:"start_time"`
-	EndTime   *time.Time            `json:"end_time,omitempty"`
+	ID        string                 `json:"id"`
+	Type      string                 `json:"type"` // "embedding", "inference", "cuda_kernel"
+	Input     interface{}            `json:"input"`
+	Priority  int                    `json:"priority"`
+	Metadata  map[string]interface{} `json:"metadata"`
+	Status    string                 `json:"status"`
+	StartTime time.Time              `json:"start_time"`
+	EndTime   *time.Time             `json:"end_time,omitempty"`
+	Result    interface{}            `json:"result,omitempty"`
+	Error     string                 `json:"error,omitempty"`
 }
 
 type GPUStats struct {
-	TotalMemory   string  `json:"total_memory"`
-	FreeMemory    string  `json:"free_memory"`
+	TotalMemory    string  `json:"total_memory"`
+	FreeMemory     string  `json:"free_memory"`
 	Utilization   float64 `json:"utilization"`
 	Temperature   int     `json:"temperature"`
 	ActiveTasks   int     `json:"active_tasks"`
@@ -81,54 +62,55 @@ func main() {
 		Port:           getEnv("GPU_ORCHESTRATOR_PORT", "8095"),
 		GPUEnabled:     getEnv("GPU_ENABLED", "false") == "true",
 		CUDAPath:       getEnv("CUDA_PATH", "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA"),
+type GPUService struct {
+	config         GPUConfig
+	taskQueue      chan GPUTask
+	activeTasks    map[string]*GPUTask
+	completedTasks int
+	wsUpgrader     websocket.Upgrader
+	clients        map[*websocket.Conn]bool
+	gpuStats       GPUStats
+}
+		clients:     make(map[*websocket.Conn]bool),
+func mainGPU() {
+	// Load environment
+	godotenv.Load()
+
+	config := GPUConfig{
+		Port:           getGPUEnv("GPU_ORCHESTRATOR_PORT", "8095"),
+		GPUEnabled:     getGPUEnv("GPU_ENABLED", "false") == "true",
+		CUDAPath:       getGPUEnv("CUDA_PATH", "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA"),
 		MaxConcurrent:  10,
-		MemoryLimit:    getEnv("GPU_MEMORY_LIMIT", "6GB"),
-		WebAssemblyURL: getEnv("WEBASSEMBLY_URL", "http://localhost:8080"),
+		MemoryLimit:    getGPUEnv("GPU_MEMORY_LIMIT", "6GB"),
+		WebAssemblyURL: getGPUEnv("WEBASSEMBLY_URL", "http://localhost:8080"),
 	}
 
-	service := &Service{
-		config:      config,
-		taskQueue:   make(chan GPUTask, 100),
-		activeTasks: make(map[string]*GPUTask),
-		clients:     make(map[*websocket.Conn]bool),
+	service := &GPUService{
+		config:         config,
+		taskQueue:      make(chan GPUTask, 100),
+		activeTasks:    make(map[string]*GPUTask),
+		completedTasks: 0,
+		clients:        make(map[*websocket.Conn]bool),
 		wsUpgrader: websocket.Upgrader{
 			CheckOrigin: func(r *http.Request) bool { return true },
 		},
 	}
-
-	if err := service.initialize(); err != nil {
+	if err := service.initializeGPU(); err != nil {
 		log.Fatalf("Failed to initialize GPU orchestrator: %v", err)
 	}
 
 	// Start task processor
 	go service.processTaskQueue()
-	
+
 	// Start GPU monitoring
 	go service.monitorGPU()
 
-	router := service.setupRoutes()
-	
-	server := &http.Server{
-		Addr:    ":" + config.Port,
-		Handler: router,
-	}
-
-	// Graceful shutdown
-	go func() {
-		sigChan := make(chan os.Signal, 1)
-		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
-		<-sigChan
-
-		log.Println("🛑 Shutting down GPU Orchestrator...")
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-		server.Shutdown(ctx)
-	}()
+	router := service.setupGPURoutes()
 
 	log.Printf("🚀 GPU Orchestrator starting on port %s", config.Port)
 	log.Printf("🔥 GPU Acceleration: %v", config.GPUEnabled)
 	log.Printf("💾 Memory Limit: %s", config.MemoryLimit)
-	
+
 	if err := server.ListenAndServe(); err != http.ErrServerClosed {
 		log.Fatalf("Server failed: %v", err)
 	}
@@ -146,18 +128,18 @@ func (s *Service) initialize() error {
 
 	log.Printf("✅ GPU Orchestrator initialized")
 	log.Printf("📊 GPU Stats: %+v", s.gpuStats)
-	
+
 	return nil
 }
 
 func (s *Service) setupRoutes() *gin.Engine {
-	if os.Getenv("GIN_MODE") != "debug" {
+func (s *GPUService) initializeGPU() error {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
 	router := gin.Default()
 
-	// CORS configuration  
+	// CORS configuration
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:3000", "http://localhost:8080"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -167,7 +149,7 @@ func (s *Service) setupRoutes() *gin.Engine {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	// Routes
+func (s *GPUService) setupGPURoutes() *gin.Engine {
 	router.GET("/health", s.healthCheck)
 	router.GET("/gpu/stats", s.getGPUStats)
 	router.POST("/gpu/task", s.submitTask)
@@ -177,15 +159,15 @@ func (s *Service) setupRoutes() *gin.Engine {
 	router.GET("/cuda/kernels", s.listCUDAKernels)
 	router.POST("/cuda/execute", s.executeCUDAKernel)
 	router.GET("/ws", s.handleWebSocket)
-	
+
 	return router
 }
 
 func (s *Service) healthCheck(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"status":         "healthy",
-		"service":        "gpu-orchestrator",
-		"gpu_enabled":    s.config.GPUEnabled,
+	// Routes
+	router.GET("/health", s.gpuHealthCheck)
 		"cuda_available": s.isCUDAAvailable(),
 		"active_tasks":   len(s.activeTasks),
 		"queue_size":     len(s.taskQueue),
@@ -196,9 +178,9 @@ func (s *Service) healthCheck(c *gin.Context) {
 
 func (s *Service) getGPUStats(c *gin.Context) {
 	s.updateGPUStats()
-	
+
 	c.JSON(http.StatusOK, gin.H{
-		"gpu_stats":       s.gpuStats,
+func (s *GPUService) gpuHealthCheck(c *gin.Context) {
 		"active_tasks":    len(s.activeTasks),
 		"completed_tasks": s.completedTasks,
 		"queue_length":    len(s.taskQueue),
@@ -211,7 +193,7 @@ func (s *Service) submitTask(c *gin.Context) {
 	var task GPUTask
 	if err := c.ShouldBindJSON(&task); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+func (s *GPUService) getGPUStats(c *gin.Context) {
 	}
 
 	// Generate task ID if not provided
@@ -224,7 +206,7 @@ func (s *Service) submitTask(c *gin.Context) {
 
 	// Add to queue
 	select {
-	case s.taskQueue <- task:
+func (s *GPUService) submitTask(c *gin.Context) {
 		log.Printf("📝 Task queued: %s (%s)", task.ID, task.Type)
 		c.JSON(http.StatusAccepted, gin.H{
 			"task_id": task.ID,
@@ -240,7 +222,7 @@ func (s *Service) submitTask(c *gin.Context) {
 
 func (s *Service) getTaskStatus(c *gin.Context) {
 	taskID := c.Param("id")
-	
+
 	if task, exists := s.activeTasks[taskID]; exists {
 		c.JSON(http.StatusOK, task)
 		return
@@ -255,7 +237,7 @@ func (s *Service) getAllTasks(c *gin.Context) {
 	tasks := make([]GPUTask, 0, len(s.activeTasks))
 	for _, task := range s.activeTasks {
 		tasks = append(tasks, *task)
-	}
+func (s *GPUService) getTaskStatus(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"active_tasks":    tasks,
@@ -266,13 +248,13 @@ func (s *Service) getAllTasks(c *gin.Context) {
 
 func (s *Service) cancelTask(c *gin.Context) {
 	taskID := c.Param("id")
-	
+
 	if task, exists := s.activeTasks[taskID]; exists {
-		task.Status = "cancelled"
+func (s *GPUService) getAllTasks(c *gin.Context) {
 		now := time.Now()
 		task.EndTime = &now
 		delete(s.activeTasks, taskID)
-		
+
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Task cancelled",
 			"task_id": taskID,
@@ -281,7 +263,7 @@ func (s *Service) cancelTask(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusNotFound, gin.H{
-		"error": "Task not found",
+func (s *GPUService) cancelTask(c *gin.Context) {
 	})
 }
 
@@ -302,7 +284,7 @@ func (s *Service) listCUDAKernels(c *gin.Context) {
 		},
 		{
 			"name":        "contract_clause_extraction",
-			"description": "Extract important clauses from contracts using CUDA",
+func (s *GPUService) listCUDAKernels(c *gin.Context) {
 			"parameters":  []string{"contract_text", "clause_types"},
 		},
 		{
@@ -336,7 +318,7 @@ func (s *Service) executeCUDAKernel(c *gin.Context) {
 			"error": "CUDA not available",
 		})
 		return
-	}
+func (s *GPUService) executeCUDAKernel(c *gin.Context) {
 
 	// Create and submit CUDA task
 	task := GPUTask{
@@ -383,7 +365,7 @@ func (s *Service) handleWebSocket(c *gin.Context) {
 	s.sendToClient(conn, WebSocketMessage{
 		Type: "status",
 		Payload: gin.H{
-			"gpu_stats":    s.gpuStats,
+func (s *GPUService) handleWebSocket(c *gin.Context) {
 			"active_tasks": len(s.activeTasks),
 			"queue_size":   len(s.taskQueue),
 		},
@@ -417,7 +399,7 @@ func (s *Service) handleWebSocket(c *gin.Context) {
 
 func (s *Service) processTaskQueue() {
 	log.Println("⚡ Task processor started")
-	
+
 	for task := range s.taskQueue {
 		if len(s.activeTasks) >= s.config.MaxConcurrent {
 			// Put task back in queue and wait
@@ -432,7 +414,7 @@ func (s *Service) processTaskQueue() {
 		go s.executeTask(task)
 	}
 }
-
+func (s *GPUService) processTaskQueue() {
 func (s *Service) executeTask(task GPUTask) {
 	task.Status = "running"
 	s.activeTasks[task.ID] = &task
@@ -450,7 +432,7 @@ func (s *Service) executeTask(task GPUTask) {
 	})
 
 	// Execute task based on type
-	switch task.Type {
+func (s *GPUService) executeTask(task GPUTask) {
 	case "embedding":
 		s.executeEmbeddingTask(&task)
 	case "inference":
@@ -465,7 +447,7 @@ func (s *Service) executeTask(task GPUTask) {
 	// Mark task as completed
 	now := time.Now()
 	task.EndTime = &now
-	
+
 	if task.Status == "running" {
 		task.Status = "completed"
 		s.completedTasks++
@@ -490,7 +472,7 @@ func (s *Service) executeTask(task GPUTask) {
 func (s *Service) executeEmbeddingTask(task *GPUTask) {
 	// Simulate embedding generation with GPU acceleration
 	time.Sleep(time.Duration(100+time.Now().UnixNano()%400) * time.Millisecond)
-	
+
 	task.Result = gin.H{
 		"embedding": make([]float64, 384), // Mock embedding vector
 		"dimension": 384,
@@ -502,9 +484,9 @@ func (s *Service) executeEmbeddingTask(task *GPUTask) {
 func (s *Service) executeInferenceTask(task *GPUTask) {
 	// Simulate AI model inference
 	time.Sleep(time.Duration(200+time.Now().UnixNano()%800) * time.Millisecond)
-	
+
 	task.Result = gin.H{
-		"response":    "AI-generated legal analysis...",
+func (s *GPUService) executeEmbeddingTask(task *GPUTask) {
 		"confidence":  0.95,
 		"tokens_used": 150,
 		"gpu_used":    s.config.GPUEnabled,
@@ -516,11 +498,11 @@ func (s *Service) executeCUDATask(task *GPUTask) {
 		task.Status = "failed"
 		task.Error = "CUDA not available"
 		return
-	}
+func (s *GPUService) executeInferenceTask(task *GPUTask) {
 
 	// Simulate CUDA kernel execution
 	time.Sleep(time.Duration(50+time.Now().UnixNano()%200) * time.Millisecond)
-	
+
 	task.Result = gin.H{
 		"kernel_output": "CUDA kernel executed successfully",
 		"gpu_memory_used": "1.2GB",
@@ -528,14 +510,14 @@ func (s *Service) executeCUDATask(task *GPUTask) {
 		"throughput": "2.1 GFLOPS",
 	}
 }
-
+func (s *GPUService) executeCUDATask(task *GPUTask) {
 func (s *Service) monitorGPU() {
 	ticker := time.NewTicker(5 * time.Second)
 	defer ticker.Stop()
 
 	for range ticker.C {
 		s.updateGPUStats()
-		
+
 		// Broadcast stats to WebSocket clients
 		s.broadcastToClients(WebSocketMessage{
 			Type: "gpu_stats_update",
@@ -546,7 +528,7 @@ func (s *Service) monitorGPU() {
 			},
 		})
 	}
-}
+func (s *GPUService) monitorGPU() {
 
 func (s *Service) updateGPUStats() {
 	if !s.config.GPUEnabled {
@@ -565,7 +547,7 @@ func (s *Service) updateGPUStats() {
 	// Try to get real GPU stats using nvidia-smi
 	cmd := exec.Command("nvidia-smi", "--query-gpu=name,memory.total,memory.free,utilization.gpu,temperature.gpu", "--format=csv,noheader,nounits")
 	output, err := cmd.Output()
-	
+func (s *GPUService) updateGPUStats() {
 	if err != nil {
 		// Fallback to mock stats
 		s.gpuStats = GPUStats{
@@ -587,7 +569,7 @@ func (s *Service) updateGPUStats() {
 		s.gpuStats = GPUStats{
 			DeviceName:     parts[0],
 			TotalMemory:    parts[1] + " MiB",
-			FreeMemory:     parts[2] + " MiB", 
+			FreeMemory:     parts[2] + " MiB",
 			Utilization:    parseFloat(parts[3]),
 			Temperature:    parseInt(parts[4]),
 			ActiveTasks:    len(s.activeTasks),
@@ -614,7 +596,7 @@ func (s *Service) detectGPUCapabilities() error {
 }
 
 func (s *Service) isCUDAAvailable() bool {
-	return s.config.GPUEnabled
+func (s *GPUService) detectGPUCapabilities() error {
 }
 
 func (s *Service) sendToClient(conn *websocket.Conn, msg WebSocketMessage) {
@@ -630,26 +612,26 @@ func (s *Service) broadcastToClients(msg WebSocketMessage) {
 }
 
 // Utility functions
-func getEnv(key, defaultValue string) string {
+func (s *GPUService) isCUDAAvailable() bool {
 	if value := os.Getenv(key); value != "" {
 		return value
 	}
-	return defaultValue
+func (s *GPUService) sendToClient(conn *websocket.Conn, msg WebSocketMessage) {
 }
 
 func parseFloat(s string) float64 {
 	// Simple float parsing
 	if strings.Contains(s, ".") {
-		return 45.0 + float64(time.Now().Unix()%30)
+func (s *GPUService) broadcastToClients(msg WebSocketMessage) {
 	}
 	return float64(time.Now().Unix() % 100)
 }
 
 func parseInt(s string) int {
 	return 65 + int(time.Now().Unix()%20)
-}
-
-func init() {
-	// Set max CPU cores for better performance
-	runtime.GOMAXPROCS(runtime.NumCPU())
+func getGPUEnv(key, defaultValue string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return defaultValue
 }

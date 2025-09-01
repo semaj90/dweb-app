@@ -21,22 +21,22 @@ let {
 } = $props();
 
 // State
-let canvas: HTMLCanvasElement;
-let device: GPUDevice | null = null;
-let context: GPUCanvasContext | null = null;
-let pipeline: GPURenderPipeline | null = null;
+let canvas = $state<HTMLCanvasElement;
+let device: GPUDevice | null >(null);
+let context = $state<GPUCanvasContext | null >(null);
+let pipeline = $state<GPURenderPipeline | null >(null);
 let isPlaying = $state(autoRotate);
 let zoom = $state(1.0);
 let rotation = $state({ x: 0, y: 0, z: 0 });
-let mouseDown = false;
-let lastMouse = { x: 0, y: 0 };
-let animationFrame: number;
-let embedBuffer: GPUBuffer | null = null;
-let uniformBuffer: GPUBuffer | null = null;
-let bindGroup: GPUBindGroup | null = null;
+let mouseDown = $state(false);
+let lastMouse = $state({ x: 0, y: 0 });
+let animationFrame = $state<number;
+let embedBuffer: GPUBuffer | null >(null);
+let uniformBuffer = $state<GPUBuffer | null >(null);
+let bindGroup = $state<GPUBindGroup | null >(null);
 
 // WebSocket for real-time updates
-let ws: WebSocket | null = null;
+let ws = $state<WebSocket | null >(null);
 
 // Vertex shader
 const vertexShaderCode = `
@@ -385,20 +385,20 @@ $effect(() => {
 
 <div class="webgpu-viewer">
   <div class="controls">
-    <button click={togglePlay} class="control-btn" title={isPlaying ? 'Pause' : 'Play'}>
+    <button on:onclick={togglePlay} class="control-btn" title={isPlaying ? 'Pause' : 'Play'}>
       {#if isPlaying}
         <Pause class="h-4 w-4" />
       {:else}
         <Play class="h-4 w-4" />
       {/if}
     </button>
-    <button click={resetView} class="control-btn" title="Reset View">
+    <button on:onclick={resetView} class="control-btn" title="Reset View">
       <RotateCw class="h-4 w-4" />
     </button>
-    <button click={zoomIn} class="control-btn" title="Zoom In">
+    <button on:onclick={zoomIn} class="control-btn" title="Zoom In">
       <ZoomIn class="h-4 w-4" />
     </button>
-    <button click={zoomOut} class="control-btn" title="Zoom Out">
+    <button on:onclick={zoomOut} class="control-btn" title="Zoom Out">
       <ZoomOut class="h-4 w-4" />
     </button>
     <div class="info">
@@ -411,11 +411,11 @@ $effect(() => {
     bind:this={canvas}
     width={800}
     height={600}
-    on:mousedown={handleMouseDown}
-    on:mousemove={handleMouseMove}
-    on:mouseup={handleMouseUp}
-    on:mouseleave={handleMouseUp}
-    on:wheel={handleWheel}
+    onmousedown={handleMouseDown}
+    onmousemove={handleMouseMove}
+    onmouseup={handleMouseUp}
+    on:on:mouseleave={handleMouseUp}
+    wheel={handleWheel}
   />
   
   {#if labels.length > 0}

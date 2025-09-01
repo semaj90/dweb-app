@@ -26,16 +26,15 @@
   import { Brain, Zap, Settings, Crown, Info } from 'lucide-svelte';
   import Button from '$lib/components/ui/Button.svelte';
   import { cn } from '$lib/utils';
-
-  let showTooltip = false;
-  let showConfig = false;
-  let thinkingDepth = 'detailed';
-  let focusAreas = {
+let showTooltip = $state(false);
+let showConfig = $state(false);
+let thinkingDepth = $state('detailed');
+let focusAreas = $state({
     precedents: true,
     evidence: true,
     compliance: true,
     alternatives: false
-  };
+  });
 
   let iconSize = $derived(size === 'sm' ? 16 : size === 'md' ? 20 : 24);
   let buttonClass = $derived(cn(
@@ -68,8 +67,8 @@
   <!-- Main Toggle Button -->
   <div
     class="toggle-container"
-    on:mouseenter={() => showTooltip = true}
-    on:mouseleave={() => showTooltip = false}
+    on:on:mouseenter={() => showTooltip = true}
+    on:on:mouseleave={() => showTooltip = false}
     role="button"
     tabindex="0"
   >
@@ -77,7 +76,7 @@
       variant={enabled ? "crimson" : "nier"}
       size={size === 'sm' ? 'sm' : size === 'lg' ? 'lg' : 'default'}
       disabled={loading || (!premium && !enabled)}
-      on:click={handleToggle}
+      on:on:click={handleToggle}
       class={cn(
         "thinking-toggle-btn transition-all duration-300",
         enabled && "animate-crimson-glow",
@@ -114,7 +113,7 @@
       <Button
         variant="ghost"
         size="sm"
-        on:click={handleConfigure}
+        on:on:click={handleConfigure}
         class="config-btn ml-2"
         disabled={loading}
       >
@@ -127,7 +126,7 @@
       <Button
         variant="ghost"
         size="sm"
-        on:click={handleUpgrade}
+        on:on:click={handleUpgrade}
         class="upgrade-btn ml-2"
       >
         <Info size={14} class="text-harvard-gold" />
@@ -138,7 +137,7 @@
     {#if showTooltip}
       <div
         class="tooltip"
-        transition:fade={{ duration: 200 }}
+        transitifade={{ duration: 200 }}
       >
         {#if !premium}
           <div class="tooltip-content premium-required">
@@ -185,7 +184,7 @@
   {#if showConfig && premium}
     <div
       class="config-panel nier-border-glow"
-      transition:slide={{ duration: 300 }}
+      transitislide={{ duration: 300 }}
     >
       <div class="config-header">
         <h4 class="text-foreground font-semibold">Thinking Style Configuration</h4>
@@ -250,7 +249,7 @@
       </div>
 
       <div class="config-actions">
-        <Button variant="ghost" size="sm" on:click={() => showConfig = false}>
+        <Button variant="ghost" size="sm" on:on:click={() => showConfig = false}>
           Cancel
         </Button>
         <Button variant="crimson" size="sm">
@@ -264,7 +263,7 @@
   {#if !premium}
     <div
       class="premium-banner"
-      transition:slide={{ duration: 300 }}
+      transitislide={{ duration: 300 }}
     >
       <div class="premium-content">
         <Crown class="h-5 w-5 text-harvard-gold" />
@@ -272,7 +271,7 @@
           <strong>Unlock Advanced AI Reasoning</strong>
           <p>Get step-by-step legal analysis with transparent thinking process</p>
         </div>
-        <Button variant="gold" size="sm" on:click={handleUpgrade}>
+        <Button variant="gold" size="sm" on:on:click={handleUpgrade}>
           Upgrade Now
         </Button>
       </div>

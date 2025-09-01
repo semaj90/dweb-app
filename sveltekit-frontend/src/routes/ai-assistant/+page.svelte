@@ -3,10 +3,10 @@
   import { onMount } from 'svelte';
 
   // Use plain reactive variables instead of undefined $state helper
-  let response: string = '';
-  let loading: boolean = false;
-  let error: string = '';
-  let systemStatus = { gpu: false, ollama: false, synthesis: false };
+let response = $state<string >('');
+let loading = $state<boolean >(false);
+let error = $state<string >('');
+let systemStatus = $state({ gpu: false, ollama: false, synthesis: false });
 
   async function checkSystemStatus() {
     try {
@@ -115,7 +115,7 @@
     <div class="grid grid-cols-4 gap-3">
       <Button
         class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded"
-        on:click={() => synthesize('correlation')}
+        on:on:click={() => synthesize('correlation')}
         {disabled}
         disabled={loading}
       >
@@ -123,21 +123,21 @@
       </Button>
       <Button
         class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded"
-        on:click={() => synthesize('timeline')}
+        on:on:click={() => synthesize('timeline')}
         disabled={loading}
       >
         Timeline
       </Button>
       <Button
         class="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded"
-        on:click={() => synthesize('compare')}
+        on:on:click={() => synthesize('compare')}
         disabled={loading}
       >
         Compare
       </Button>
       <Button
         class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded"
-        on:click={() => synthesize('merge')}
+        on:on:click={() => synthesize('merge')}
         disabled={loading}
       >
         Merge
@@ -150,7 +150,7 @@
     <h2 class="text-xl mb-3">Gemma3 Legal AI</h2>
     <Button
       class="bg-red-600 hover:bg-red-700 px-6 py-2 rounded"
-      on:click={testGemma3}
+      on:on:click={testGemma3}
       disabled={loading}
     >
       Test Legal Query
@@ -175,13 +175,13 @@
   <div class="mt-6 flex gap-3">
     <Button
       class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded"
-      on:click={checkSystemStatus}
+      on:on:click={checkSystemStatus}
     >
       Refresh Status
     </Button>
     <Button
       class="bg-orange-600 hover:bg-orange-700 px-4 py-2 rounded"
-      on:click={() => window.open('/api/health', '_blank')}
+      on:on:click={() => window.open('/api/health', '_blank')}
     >
       Health Check
     </Button>

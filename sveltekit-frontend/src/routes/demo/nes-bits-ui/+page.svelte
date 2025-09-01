@@ -55,21 +55,21 @@
       <div class="button-showcase">
         <Button.Root 
           class="nes-btn is-primary"
-          onclick={incrementCounter}
+          on:on:on:click={incrementCounter}
         >
           Primary Button
         </Button.Root>
 
         <Button.Root 
           class="nes-btn is-success"
-          onclick={showToast}
+          on:on:on:click={showToast}
         >
           Success Button
         </Button.Root>
 
         <Button.Root 
           class="nes-btn is-warning"
-          onclick={resetCounter}
+          on:on:on:click={resetCounter}
         >
           Warning Button
         </Button.Root>
@@ -83,7 +83,7 @@
 
         <Button.Root 
           class="nes-btn"
-          onclick={() => dialogOpen = true}
+          on:on:on:click={() => dialogOpen = true}
         >
           Open Dialog
         </Button.Root>

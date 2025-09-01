@@ -38,11 +38,11 @@
   } from 'lucide-svelte';
 
   // State variables
-  let serviceStatus: OllamaServiceStatus | null = null;
-  let isInitialized = false;
-  let isLoading = false;
-  let testMessage = 'Analyze this legal contract for key risks and opportunities.';
-  let testDocument = `MUTUAL NON-DISCLOSURE AGREEMENT
+let serviceStatus = $state<OllamaServiceStatus | null >(null);
+let isInitialized = $state(false);
+let isLoading = $state(false);
+let testMessage = $state('Analyze this legal contract for key risks and opportunities.');
+let testDocument = $state(`MUTUAL NON-DISCLOSURE AGREEMENT
 
 This Mutual Non-Disclosure Agreement ("Agreement") is entered into on [DATE] by and between Company A and Company B.
 
@@ -52,22 +52,20 @@ OBLIGATIONS: Each party agrees to maintain confidentiality and use the informati
 
 TERM: This agreement shall remain in effect for two (2) years from the date of execution.
 
-NON-CIRCUMVENTION: Neither party shall directly or indirectly circumvent the other party in business dealings.`;
-
-  let responses: Array<{
+NON-CIRCUMVENTION: Neither party shall directly or indirectly circumvent the other party in business dealings.`);
+let responses = $state<Array<{
     type: string;
     request: any;
     response: any;
     timestamp: Date;
     processingTime: number;
-  }> = [];
-
-  let streamingResponse = '';
-  let isStreaming = false;
+  }> >([]);
+let streamingResponse = $state('');
+let isStreaming = $state(false);
 
   // Reactive subscriptions
-  let activeRequests = 0;
-  let stats: any = null;
+let activeRequests = $state(0);
+let stats = $state<any >(null);
 
   onMount(async () => {
     try {
@@ -341,7 +339,7 @@ NON-CIRCUMVENTION: Neither party shall directly or indirectly circumvent the oth
       <Badge variant={isInitialized ? 'default' : 'secondary'}>
         {isInitialized ? 'Ready' : 'Initializing'}
       </Badge>
-      <Button variant="outline" size="sm" on:click={refreshServiceStatus}>
+      <Button variant="outline" size="sm" on:on:click={refreshServiceStatus}>
         <Settings class="w-4 h-4" />
       </Button>
     </div>
@@ -429,7 +427,7 @@ NON-CIRCUMVENTION: Neither party shall directly or indirectly circumvent the oth
         <!-- Test Actions -->
         <div class="grid grid-cols-2 gap-2">
           <Button 
-            on:click={testBasicChat} 
+            on:on:click={testBasicChat} 
             disabled={!isInitialized || isLoading}
             class="flex items-center gap-2"
           >
@@ -442,7 +440,7 @@ NON-CIRCUMVENTION: Neither party shall directly or indirectly circumvent the oth
           </Button>
           
           <Button 
-            on:click={testDocumentSummary} 
+            on:on:click={testDocumentSummary} 
             disabled={!isInitialized || isLoading}
             variant="secondary"
             class="flex items-center gap-2"
@@ -452,7 +450,7 @@ NON-CIRCUMVENTION: Neither party shall directly or indirectly circumvent the oth
           </Button>
           
           <Button 
-            on:click={testRAGQuery} 
+            on:on:click={testRAGQuery} 
             disabled={!isInitialized || isLoading}
             variant="outline"
             class="flex items-center gap-2"
@@ -462,7 +460,7 @@ NON-CIRCUMVENTION: Neither party shall directly or indirectly circumvent the oth
           </Button>
           
           <Button 
-            on:click={testDirectAPI} 
+            on:on:click={testDirectAPI} 
             disabled={!isInitialized || isLoading}
             variant="outline"
             class="flex items-center gap-2"
@@ -475,7 +473,7 @@ NON-CIRCUMVENTION: Neither party shall directly or indirectly circumvent the oth
         <!-- Streaming Test -->
         <div class="border-t pt-4">
           <Button 
-            on:click={testStreamingResponse} 
+            on:on:click={testStreamingResponse} 
             disabled={!isInitialized || isStreaming}
             variant="secondary"
             class="w-full flex items-center gap-2"
@@ -502,7 +500,7 @@ NON-CIRCUMVENTION: Neither party shall directly or indirectly circumvent the oth
         <!-- System Actions -->
         <div class="border-t pt-4 space-y-2">
           <Button 
-            on:click={warmupServices} 
+            on:on:click={warmupServices} 
             disabled={isLoading}
             variant="outline"
             class="w-full flex items-center gap-2"
@@ -526,7 +524,7 @@ NON-CIRCUMVENTION: Neither party shall directly or indirectly circumvent the oth
             <Button 
               variant="outline" 
               size="sm" 
-              on:click={() => responses = []}
+              on:on:click={() => responses = []}
             >
               Clear
             </Button>

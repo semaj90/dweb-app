@@ -2,15 +2,13 @@
 <script>
   import { onMount } from 'svelte';
   import Button from '$lib/components/ui/Button.svelte';
-  
-  let routeTests = [
+let routeTests = $state([
     { name: 'Test Hub', path: '/test', status: 'pending', responseTime: null },
     { name: 'CRUD Interface', path: '/test/crud', status: 'pending', responseTime: null },
     { name: 'CRUD API Health', path: '/test/crud', method: 'GET', headers: {'Accept': 'application/json'}, status: 'pending', responseTime: null },
     { name: 'Route Status', path: '/test/status', status: 'pending', responseTime: null }
-  ];
-  
-  let isTestingRoutes = false;
+  ]);
+let isTestingRoutes = $state(false);
   
   const testRoute = async (test) => {
     const startTime = Date.now();
@@ -92,7 +90,7 @@
   
   <div class="flex justify-center gap-4">
     <Button 
-      onclick={runAllRouteTests}
+      on:on:on:click={runAllRouteTests}
       disabled={isTestingRoutes}
       variant="default"
     >
@@ -100,7 +98,7 @@
     </Button>
     
     <Button 
-      onclick={() => window.location.href = '/test'}
+      on:on:on:click={() => window.location.href = '/test'}
       variant="outline"
     >
       ← Back to Test Hub

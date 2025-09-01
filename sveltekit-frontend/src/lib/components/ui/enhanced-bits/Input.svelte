@@ -79,18 +79,18 @@
   let inputElement: HTMLInputElement | undefined = $state();
 
   // Determine if this is a password input
-  const isPassword = $derived(variant === 'password' || type === 'password');
+  let isPassword = $derived(variant === 'password' || type === 'password');
   
   // Actual input type to use
-  const inputType = $derived(
+  let inputType = $derived(
     isPassword ? (showPassword ? 'text' : 'password') : type
   );
 
   // Character count
-  const charCount = $derived(typeof value === 'string' ? value.length : 0);
+  let charCount = $derived(typeof value === 'string' ? value.length : 0);
 
   // Reactive input classes using $derived
-  const inputClasses = $derived(cn(
+  let inputClasses = $derived(cn(
     'bits-input',
     {
       'pl-10': variant === 'search' || (icon && iconPosition === 'left'),
@@ -179,7 +179,7 @@
       <button
         type="button"
         class="absolute inset-y-0 right-0 pr-3 flex items-center"
-        click={() => showPassword = !showPassword}
+        on:onclick={() => showPassword = !showPassword}
         tabindex="-1"
       >
         {#if showPassword}

@@ -47,7 +47,7 @@ export class OllamaChatStreamService {
 
   constructor() {
     this.ollama = new ChatOllama({
-      baseUrl: process.env.OLLAMA_BASE_URL || "http://localhost:11434",
+      baseUrl: import.meta.env.OLLAMA_BASE_URL || "http://localhost:11434",
       model: "gemma2:7b", // Default to Gemma 2
       temperature: 0.7,
       numPredict: 2048,
@@ -89,7 +89,7 @@ export class OllamaChatStreamService {
 
       // Configure model for this request
       const llm = new ChatOllama({
-        baseUrl: process.env.OLLAMA_BASE_URL || "http://localhost:11434",
+        baseUrl: import.meta.env.OLLAMA_BASE_URL || "http://localhost:11434",
         model: options.model || "gemma2:7b",
         temperature: options.temperature || 0.7,
         numPredict: options.maxTokens || 2048,

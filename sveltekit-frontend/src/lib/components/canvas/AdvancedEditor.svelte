@@ -22,7 +22,7 @@ https://svelte.dev/e/js_parse_error -->
         
   let editorElement: HTMLElement;
   let editor: Editor;
-  let isInitialized = false;
+let isInitialized = $state(false);
 
   // Convert ContentNode array to markdown
   function contentToMarkdown(nodes: ContentNode[]): string {
@@ -75,7 +75,7 @@ https://svelte.dev/e/js_parse_error -->
     // Basic markdown parsing - in production, use a proper parser
     const lines = markdown.split('\n');
     const nodes: ContentNode[] = [];
-    let currentParagraph: ContentNode | null = null;
+let currentParagraph = $state<ContentNode | null >(null);
 
     for (const line of lines) {
       if (line.trim() === '') {

@@ -1,5 +1,7 @@
-import stream from 'stream';
-import type { RequestHandler } from './$types';
+/// <reference types="vite/client" />
+import type { RequestHandler } from './$types.js';
+import { json } from '@sveltejs/kit';
+import stream from "stream";
 
 
 const OLLAMA_BASE = import.meta.env.OLLAMA_HOST || "http://localhost:11434";

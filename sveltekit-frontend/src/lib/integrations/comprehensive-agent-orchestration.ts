@@ -463,7 +463,7 @@ export class ComprehensiveAgentOrchestrator {
 
 // Singleton instance
 export const comprehensiveOrchestrator = new ComprehensiveAgentOrchestrator();
-
+;
 // Helper function for quick agent execution
 export async function executeAgents(
   prompt: string,

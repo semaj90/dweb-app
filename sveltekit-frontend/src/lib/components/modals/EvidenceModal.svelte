@@ -5,7 +5,7 @@
   import Button from 'bits-ui/Button.svelte';
   import { onMount } from 'svelte';
   import { superValidate } from 'sveltekit-superforms/client';
-  import { evidenceSchema } from '$lib/server/schemas';
+  import { evidenceSchema } from '$lib/schemas/client';
   import { createMachine } from 'xstate';
   // Props
   let {
@@ -23,11 +23,11 @@
     };
     open?: boolean;
   } = $props();
-  let form: any = null;
-  let title = '';
-  let description = '';
-  let tagsString = '';
-  let type = '';
+let form = $state<any >(null);
+let title = $state('');
+let description = $state('');
+let tagsString = $state('');
+let type = $state('');
 
   // XState machine for tag/type grouping
   const evidenceMachine = createMachine({
@@ -88,7 +88,7 @@
         <!-- Add other view-only fields as needed -->
       </div>
       <div class="flex gap-2 mt-2">
-        <Button on:click={handleEdit}>Edit</Button>
+        <Button on:on:click={handleEdit}>Edit</Button>
       </div>
     {:else}
       <form class="flex flex-col gap-2" on:submit|preventDefault={handleSave}>
@@ -98,12 +98,12 @@
         <input name="jsonData.type" bind:value={type} placeholder="Type" class="input input-bordered" />
         <div class="flex gap-2 mt-2">
           <Button type="submit" class="uno-bg-green-600 uno-text-white uno-px-3 uno-py-1 uno-rounded">Save</Button>
-          <Button variant="outline" on:click={handleCancel}>Cancel</Button>
+          <Button variant="outline" on:on:click={handleCancel}>Cancel</Button>
         </div>
       </form>
     {/if}
     <div class="mt-4 flex justify-end">
-      <Button on:click={() => (open = false)} variant="ghost">Close</Button>
+      <Button on:on:click={() => (open = false)} variant="ghost">Close</Button>
     </div>
   </div>
 </Dialog>

@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import * as fs from "fs/promises";
 
 /**

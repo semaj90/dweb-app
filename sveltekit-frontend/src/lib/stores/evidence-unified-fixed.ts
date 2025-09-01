@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { writable, derived, get } from "svelte/store";
 import { browser } from "$app/environment";
 
@@ -375,7 +376,7 @@ class UnifiedEvidenceStore {
 }
 
 export const evidenceStore = new UnifiedEvidenceStore();
-
+;
 export const evidenceById = derived(evidenceStore, ($store) => {
   const map = new Map<string, Evidence>();
   $store.evidence.forEach((item) => map.set(item.id, item));

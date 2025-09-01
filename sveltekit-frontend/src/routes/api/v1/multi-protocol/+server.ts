@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * Multi-Protocol API Gateway Integration
@@ -8,6 +8,7 @@ import type { RequestHandler } from './$types';
 import { json, error } from '@sveltejs/kit';
 
 import { ensureError } from '$lib/utils/ensure-error';
+import { URL } from "url";
 
 // Protocol types and priorities
 type ProtocolType = 'quic' | 'grpc' | 'http' | 'websocket';
@@ -64,10 +65,10 @@ export interface ServiceEndpoint {
 
 // Gateway configuration
 const GATEWAY_CONFIG = {
-	baseUrl: process.env.GATEWAY_BASE_URL || 'http://localhost:8230',
-	timeout: parseInt(process.env.GATEWAY_TIMEOUT || '30000', 10),
-	retryAttempts: parseInt(process.env.GATEWAY_RETRY_ATTEMPTS || '3', 10),
-	enableFallback: process.env.GATEWAY_ENABLE_FALLBACK !== 'false',
+	baseUrl: import.meta.env.GATEWAY_BASE_URL || 'http://localhost:8230',
+	timeout: parseInt(import.meta.env.GATEWAY_TIMEOUT || '30000', 10),
+	retryAttempts: parseInt(import.meta.env.GATEWAY_RETRY_ATTEMPTS || '3', 10),
+	enableFallback: import.meta.env.GATEWAY_ENABLE_FALLBACK !== 'false',
 };
 
 // Protocol priority mapping
@@ -145,13 +146,13 @@ export const GET: RequestHandler = async ({ url }) => {
 export const POST: RequestHandler = async ({ request, url }) => {
 	try {
 		const requestData = await request.json();
-		
+
 		// Validate request structure
 		const fallbackRequest = validateFallbackRequest(requestData);
-		
+
 		// Execute request with fallback through gateway
 		const response = await executeProtocolFallback(fallbackRequest);
-		
+
 		// Determine HTTP status code based on response
 		let statusCode = 200;
 		if (!response.success) {
@@ -263,7 +264,7 @@ function validateFallbackRequest(data: any): ProtocolFallbackRequest {
 
 	const validProtocols: ProtocolType[] = ['quic', 'grpc', 'http', 'websocket'];
 	const preferredProtocol = data.preferred_protocol || 'quic';
-	
+
 	if (!validProtocols.includes(preferredProtocol)) {
 		throw new Error(`Invalid protocol. Must be one of: ${validProtocols.join(', ')}`);
 	}
@@ -287,7 +288,7 @@ function validateFallbackRequest(data: any): ProtocolFallbackRequest {
  */
 async function executeProtocolFallback(request: ProtocolFallbackRequest): Promise<ProtocolFallbackResponse> {
 	const startTime = Date.now();
-	
+
 	try {
 		const response = await fetch(`${GATEWAY_CONFIG.baseUrl}/api/gateway/fallback`, {
 			method: 'POST',
@@ -325,7 +326,7 @@ async function executeProtocolFallback(request: ProtocolFallbackRequest): Promis
 
 	} catch (err: any) {
 		const totalLatency = Date.now() - startTime;
-		
+
 		return {
 			success: false,
 			status_code: 500,
@@ -398,7 +399,7 @@ function generateRequestId(): string {
  * Get optimal protocol for service based on requirements
  */
 export function getOptimalProtocol(
-	service: string, 
+	service: string,
 	requirements: {
 		latency?: 'low' | 'medium' | 'high';
 		throughput?: 'low' | 'medium' | 'high';
@@ -440,22 +441,22 @@ export function createFallbackChain(
 	serviceCapabilities: string[] = []
 ): ProtocolType[] {
 	const allProtocols: ProtocolType[] = ['quic', 'grpc', 'http', 'websocket'];
-	
+
 	// Filter protocols based on service capabilities if provided
-	const availableProtocols = serviceCapabilities.length > 0 
+	const availableProtocols = serviceCapabilities.length > 0
 		? allProtocols.filter(protocol => serviceCapabilities.includes(protocol))
 		: allProtocols;
 
 	// Create fallback chain with preferred protocol first
 	const chain = [preferredProtocol];
-	
+
 	// Add remaining protocols in priority order
 	const remaining = availableProtocols
 		.filter(p => p !== preferredProtocol)
 		.sort((a, b) => PROTOCOL_PRIORITIES[a] - PROTOCOL_PRIORITIES[b]);
-	
+
 	chain.push(...remaining);
-	
+
 	return chain;
 }
 
@@ -465,7 +466,7 @@ export function createFallbackChain(
 export const ProtocolUtils = {
 	getOptimalProtocol,
 	createFallbackChain,
-	
+
 	/**
 	 * Check if protocol is available for service
 	 */
@@ -523,8 +524,8 @@ export const ProtocolUtils = {
 			stats[protocol] = {
 				total: endpoints.length,
 				healthy: healthy.length,
-				avg_response_time: healthy.length > 0 
-					? healthy.reduce((sum, e) => sum + e.response_time, 0) / healthy.length 
+				avg_response_time: healthy.length > 0
+					? healthy.reduce((sum, e) => sum + e.response_time, 0) / healthy.length
 					: 0,
 				avg_success_rate: healthy.length > 0
 					? healthy.reduce((sum, e) => sum + e.success_rate, 0) / healthy.length

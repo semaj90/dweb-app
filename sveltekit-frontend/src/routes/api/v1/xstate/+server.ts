@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * XState API Endpoint - State Management & Orchestration
@@ -8,6 +8,7 @@ import type { RequestHandler } from './$types';
 
 import { ensureError } from '$lib/utils/ensure-error';
 import { productionServiceClient } from "$lib/services/productionServiceClient";
+import { URL } from "url";
 
 export interface XStateEvent {
   type: string;

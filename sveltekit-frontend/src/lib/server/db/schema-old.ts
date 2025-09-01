@@ -10,8 +10,8 @@ export * from "./schema-postgres";
 export { cases, evidence, users, sessions };
 
 // Legacy table aliases for backward compatibility
-export const caseLawLinks = cases; // Placeholder
-export const lawParagraphs = cases; // Placeholder  
-export const crimes = cases; // Placeholder
-export const statutes = cases; // Placeholder
-export const courtDecisions = cases; // Placeholder
+export const caseLawLinks = cases; // Placeholder;
+export const lawParagraphs = cases; // Placeholder  ;
+export const crimes = cases; // Placeholder;
+export const statutes = cases; // Placeholder;
+export const courtDecisions = cases; // Placeholder;

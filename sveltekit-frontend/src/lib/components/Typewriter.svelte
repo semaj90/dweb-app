@@ -11,13 +11,9 @@ https://svelte.dev/e/js_parse_error -->
     text = '',
     speed = 50
   }: Props = $props();
-
-
-
-      
-  let output = '';
-  let i = 0;
-  let intervalId: NodeJS.Timeout | null = null;
+let output = $state('');
+let i = $state(0);
+let intervalId = $state<NodeJS.Timeout | null >(null);
   
   $effect(() => {
     if (text) {

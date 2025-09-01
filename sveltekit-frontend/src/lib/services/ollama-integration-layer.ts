@@ -499,5 +499,5 @@ Please answer the question using the provided context.`;
 // ============================================================================
 
 export const ollamaIntegrationLayer = new OllamaIntegrationLayer();
-
+;
 // Types already exported above via export interface declarations

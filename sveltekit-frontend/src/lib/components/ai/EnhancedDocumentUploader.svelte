@@ -118,11 +118,11 @@
   );
 
   // File input reference
-  let fileInput: HTMLInputElement;
-  let dropZone: HTMLDivElement;
+let fileInput = $state<HTMLInputElement;
+let dropZone = $state<HTMLDivElement;
 
   // Document types for legal AI
-  const documentTypes = [
+  const documentTypes >([
     { value: "contract", label: "Contract" },
     { value: "motion", label: "Motion" },
     { value: "brief", label: "Brief" },
@@ -132,14 +132,14 @@
     { value: "regulation", label: "Regulation" },
     { value: "case_law", label: "Case Law" },
     { value: "other", label: "Other" },
-  ];
+  ]);
 
-  const jurisdictions = [
+  const jurisdictions >([
     { value: "federal", label: "Federal" },
     { value: "state", label: "State" },
     { value: "local", label: "Local" },
     { value: "international", label: "International" },
-  ];
+  ]);
 
   // ============================================================================
   // DRAG & DROP HANDLERS
@@ -445,13 +445,13 @@
     bind:this={dropZone}
     class="drop-zone"
     class:dragging={$isDragging}
-    on:dragover={handleDragOver}
-    on:dragleave={handleDragLeave}
-    on:drop={handleDrop}
+    ondragover={handleDragOver}
+    ondragleave={handleDragLeave}
+    ondrop={handleDrop}
     role="button"
     tabindex="0"
-    click={() => fileInput?.click()}
-    on:keydown={(e) => e.key === "Enter" && fileInput?.click()}
+    on:onclick={() => fileInput?.click()}
+    keydown={(e) => e.key === "Enter" && fileInput?.click()}
   >
     <div class="drop-zone-content">
       <Upload class="drop-zone-icon" size={48} />
@@ -568,7 +568,7 @@
                     <Button
                       variant="ghost"
                       size="sm"
-                      on:click={() => openMetadataDialog(file)}
+                      on:on:click={() => openMetadataDialog(file)}
                     >
                       Edit
                     </Button>
@@ -577,7 +577,7 @@
                   <Button
                     variant="ghost"
                     size="sm"
-                    on:click={() => removeFile(file.id)}
+                    on:on:click={() => removeFile(file.id)}
                     disabled={file.status === "uploading" ||
                       file.status === "processing"}
                   >
@@ -594,7 +594,7 @@
     <!-- Upload Actions -->
     <div class="upload-actions mt-6">
       <Button
-        on:click={uploadFiles}
+        on:on:click={uploadFiles}
         disabled={$isProcessing || $files.every((f) => f.status !== "pending")}
         class="mr-4"
       >
@@ -610,7 +610,7 @@
 
       <Button
         variant="outline"
-        on:click={() => files.set([])}
+        on:on:click={() => files.set([])}
         disabled={$isProcessing}
       >
         Clear All
@@ -689,11 +689,11 @@
           </div>
 
           <div class="dialog-actions">
-            <Button variant="outline" on:click={() => showMetadata.set(false)}>
+            <Button variant="outline" on:on:click={() => showMetadata.set(false)}>
               Cancel
             </Button>
             <Button
-              on:click={() => {
+              on:on:click={() => {
                 if ($selectedFile) {
                   updateFileMetadata($selectedFile.id, $selectedFile.metadata);
                 }

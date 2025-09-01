@@ -47,9 +47,8 @@
     showHeader = true,
     columns = 3
   }: Props = $props();
-
-  let searchInput: HTMLInputElement;
-  let selectedItem: Evidence | null = null;
+let searchInput = $state<HTMLInputElement;
+  let selectedItem: Evidence | null >(null);
 
   // In Svelte 5, access store values directly
   let gridData = $state<EvidenceGridState | undefined>(undefined);
@@ -252,7 +251,7 @@
         <Button
           variant="secondary"
           size="sm"
-          on:click={() => toggleSort(sortBy)}
+          on:on:click={() => toggleSort(sortBy)}
           class="flex items-center gap-2"
         >
           {#if sortOrder === "asc"}
@@ -266,7 +265,7 @@
         <Button
           variant="secondary"
           size="sm"
-          on:click={() => toggleViewMode()}
+          on:on:click={() => toggleViewMode()}
           class="flex items-center gap-2"
         >
           {#if viewMode === "grid"}
@@ -288,7 +287,7 @@
           <Button
             variant="secondary"
             size="sm"
-            on:click={() => clearSelection()}
+            on:on:click={() => clearSelection()}
           >
             Clear
           </Button>
@@ -319,7 +318,7 @@
       <Button
         variant="secondary"
         size="sm"
-        on:click={() => evidenceActions.loadEvidence(caseId)}
+        on:on:click={() => evidenceActions.loadEvidence(caseId)}
       >
         Try Again
       </Button>
@@ -347,8 +346,8 @@
           {#each filteredData as item (item.id)}
             <div
               class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4 hover:shadow-lg transition-shadow cursor-pointer {selectedItems.has(item.id) ? 'ring-2 ring-blue-500' : ''}"
-              click={() => toggleSelection(item)}
-              on:contextmenu={(e) => { e.preventDefault(); showContextMenu(e, item); }}
+              on:onclick={() => toggleSelection(item)}
+              contextmenu={(e) => { e.preventDefault(); showContextMenu(e, item); }}
             >
               <!-- Preview/Thumbnail -->
               <div
@@ -439,8 +438,8 @@
             {@const SvelteComponent_1 = getFileIcon(item.evidenceType, item.mimeType)}
             <div
               class="space-y-4"
-              click={() => toggleSelection(item)}
-              on:contextmenu={(e) => { e.preventDefault(); showContextMenu(e, item); }}
+              on:onclick={() => toggleSelection(item)}
+              contextmenu={(e) => { e.preventDefault(); showContextMenu(e, item); }}
             >
               <!-- Selection checkbox -->
               <input

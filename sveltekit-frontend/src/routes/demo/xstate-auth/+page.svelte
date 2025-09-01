@@ -173,9 +173,9 @@
     }
   }
 
-  const successfulTests = $derived(testResults.filter(t => t.status === 'success').length);
-  const totalTests = $derived(testSuite.length);
-  const allTestsPassed = $derived(successfulTests === totalTests && overallStatus === 'complete');
+  let successfulTests = $derived(testResults.filter(t => t.status === 'success').length);
+  let totalTests = $derived(testSuite.length);
+  let allTestsPassed = $derived(successfulTests === totalTests && overallStatus === 'complete');
 </script>
 
 <svelte:head>
@@ -218,7 +218,7 @@
               </Badge>
             {/if}
             <Button 
-              on:click={runTests} 
+              on:on:click={runTests} 
               disabled={isRunningTests}
               variant={allTestsPassed ? 'outline' : 'default'}
             >

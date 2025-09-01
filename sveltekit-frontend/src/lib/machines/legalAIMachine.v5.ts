@@ -425,10 +425,10 @@ export const legalAIMachine = setup({
 
 // Create the actor
 export const legalAIActor = createActor(legalAIMachine);
-
+;
 // Create Svelte store for reactive state
 export const legalAIState = writable(legalAIActor.getSnapshot());
-
+;
 // Update store when state changes
 legalAIActor.subscribe((snapshot) => {
   legalAIState.set(snapshot);

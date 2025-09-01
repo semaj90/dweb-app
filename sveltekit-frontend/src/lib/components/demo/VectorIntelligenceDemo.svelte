@@ -10,11 +10,10 @@
 
   // Reactive state from Context7 service
   const { vectorResults, isAnalyzing } = context7Service;
-
-  let searchQuery = '';
-  let selectedFilters: string[] = [];
-  let searchResults: VectorIntelligence | null = null;
-  let searchHistory: string[] = [];
+let searchQuery = $state('');
+let selectedFilters = $state<string[] >([]);
+let searchResults = $state<VectorIntelligence | null >(null);
+let searchHistory = $state<string[] >([]);
 
   // Demo data and filters
   const availableFilters = [
@@ -123,10 +122,10 @@
           bind:value={searchQuery}
           placeholder="Enter your legal research question..."
           class="flex-1"
-          on:keydown={(e) => e.key === 'Enter' && performSearch()}
+          keydown={(e) => e.key === 'Enter' && performSearch()}
         />
         <Button
-          on:click={performSearch}
+          on:on:click={performSearch}
           disabled={$isAnalyzing || !searchQuery.trim()}
           class="px-6"
         >
@@ -148,7 +147,7 @@
             <Badge
               variant={selectedFilters.includes(filter) ? 'default' : 'outline'}
               class="cursor-pointer hover:bg-blue-100 transition-colors"
-              on:click={() => toggleFilter(filter)}
+              on:on:click={() => toggleFilter(filter)}
             >
               {filter}
             </Badge>
@@ -165,7 +164,7 @@
               variant="outline"
               size="sm"
               class="text-xs"
-              on:click={() => useSampleQuery(query)}
+              on:on:click={() => useSampleQuery(query)}
             >
               {query}
             </Button>
@@ -278,7 +277,7 @@
           <CardHeader>
             <div class="flex items-center justify-between">
               <CardTitle class="text-lg">Recent Searches</CardTitle>
-              <Button variant="ghost" size="sm" on:click={clearHistory}>
+              <Button variant="ghost" size="sm" on:on:click={clearHistory}>
                 Clear
               </Button>
             </div>
@@ -288,7 +287,7 @@
               {#each searchHistory as query}
                 <button
                   class="w-full text-left p-2 text-sm rounded hover:bg-gray-100 transition-colors"
-                  click={() => useHistoryQuery(query)}
+                  on:onclick={() => useHistoryQuery(query)}
                 >
                   {query}
                 </button>

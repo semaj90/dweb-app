@@ -3,7 +3,7 @@
  * Validates database connectivity and vector extension availability
  */
 
-import { db } from './index';
+import { db } from './index.js';
 import { sql } from 'drizzle-orm';
 
 export interface DatabaseHealthStatus {
@@ -122,10 +122,10 @@ export class DatabaseHealthChecker {
 
       // Add connection details
       status.details = {
-        host: process.env.DATABASE_HOST || 'localhost',
-        port: parseInt(process.env.DATABASE_PORT || '5432'),
-        database: process.env.DATABASE_NAME || 'legal_ai_db',
-        ssl: Boolean(process.env.DATABASE_SSL)
+        host: import.meta.env.DATABASE_HOST || 'localhost',
+        port: parseInt(import.meta.env.DATABASE_PORT || '5432'),
+        database: import.meta.env.DATABASE_NAME || 'legal_ai_db',
+        ssl: Boolean(import.meta.env.DATABASE_SSL)
       };
 
     } catch (error: any) {
@@ -292,7 +292,7 @@ export class DatabaseHealthChecker {
 
 // Export singleton instance
 export const dbHealthChecker = DatabaseHealthChecker.getInstance();
-
+;
 /**
  * Simple health check function for quick use
  */

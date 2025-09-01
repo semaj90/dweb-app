@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
+	import type {     Snippet     } from 'svelte';
 	import { cva, type VariantProps } from 'class-variance-authority';
 	import { cn } from '$lib/utils';
 

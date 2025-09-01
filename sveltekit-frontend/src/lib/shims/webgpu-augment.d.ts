@@ -31,4 +31,4 @@ declare global {
   type BufferSource = any;
 }
 
-export {};
+

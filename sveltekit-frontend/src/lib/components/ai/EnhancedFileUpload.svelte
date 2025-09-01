@@ -45,8 +45,7 @@
     status: '/rag/status',
     search: '/rag/search',
   } as const;
-
-  let statusSocket: WebSocket | null = null;
+let statusSocket = $state<WebSocket | null >(null);
 
   function connectStatusSocket() {
     try {
@@ -287,7 +286,7 @@
   function formatFileSize(bytes: number): string {
     const units = ['B', 'KB', 'MB', 'GB'];
     let size = bytes;
-    let unitIndex = 0;
+let unitIndex = $state(0);
 
     while (size >= 1024 && unitIndex < units.length - 1) {
       size /= 1024;
@@ -436,7 +435,7 @@
           placeholder="Search uploaded documents with AI..."
           class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
         <button
-          click={handleSearch}
+          on:onclick={handleSearch}
           disabled={isSearching || !searchQuery.trim()}
           class="px-6 py-2 bg-blue-500 text-white rounded-lg disabled:opacity-50 hover:bg-blue-600 flex items-center gap-2">
           {#if isSearching}

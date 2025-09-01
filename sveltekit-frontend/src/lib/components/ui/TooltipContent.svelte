@@ -9,7 +9,7 @@
   let { children }: Props = $props();
 
   // `class` is a reserved identifier in runes mode; use `className` instead.
-  let className: string = "";
+let className = $state<string >("");
 
 </script>
 

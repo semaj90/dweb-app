@@ -17,18 +17,18 @@ https://svelte.dev/e/js_parse_error -->
   let animationId: number;
   
   // Demo state
-  let isPlaying = false;
-  let selectedDemo = 'legal-workflow';
-  let aiPredictionEnabled = true;
-  let gpuAcceleration = true;
-  let frameCount = 0;
+let isPlaying = $state(false);
+let selectedDemo = $state('legal-workflow');
+let aiPredictionEnabled = $state(true);
+let gpuAcceleration = $state(true);
+let frameCount = $state(0);
   let lastFrameTime = performance.now();
   
   // Performance metrics
-  let fps = 60;
-  let gpuMemoryUsage = 0;
-  let cacheEfficiency = 100;
-  let aiConfidence = 0;
+let fps = $state(60);
+let gpuMemoryUsage = $state(0);
+let cacheEfficiency = $state(100);
+let aiConfidence = $state(0);
   
   // Demo scenarios
   const demoScenarios = [
@@ -64,7 +64,7 @@ https://svelte.dev/e/js_parse_error -->
   
   // AI prediction simulation
   let predictedNextStates = writable<string[]>([]);
-  let currentPredictionAccuracy = 85;
+let currentPredictionAccuracy = $state(85);
   
   onMount(async () => {
     initializeNeuralSpriteEngine();
@@ -326,8 +326,7 @@ https://svelte.dev/e/js_parse_error -->
     isPlaying = true;
     const scenario = demoScenarios.find(s => s.id === selectedDemo);
     if (!scenario) return;
-    
-    let currentFrame = 0;
+let currentFrame = $state(0);
     
     const playFrame = async () => {
       if (!isPlaying) return;
@@ -470,7 +469,7 @@ https://svelte.dev/e/js_parse_error -->
               class="scenario-btn"
               class:active={selectedDemo === scenario.id}
               style="border-color: {scenario.color}"
-              click={() => { selectedDemo = scenario.id; resetDemo(); }}
+              on:onclick={() => { selectedDemo = scenario.id; resetDemo(); }}
             >
               <div class="scenario-name">{scenario.name}</div>
               <div class="scenario-desc">{scenario.description}</div>
@@ -499,17 +498,17 @@ https://svelte.dev/e/js_parse_error -->
         <h3>🎮 Playback Controls</h3>
         <div class="control-buttons">
           {#if !isPlaying}
-            <button class="nes-btn primary" click={playDemo}>
+            <button class="nes-btn primary" on:onclick={playDemo}>
               <Play size="16" />
               Play Demo
             </button>
           {:else}
-            <button class="nes-btn secondary" click={stopDemo}>
+            <button class="nes-btn secondary" on:onclick={stopDemo}>
               <Pause size="16" />
               Pause
             </button>
           {/if}
-          <button class="nes-btn reset" click={resetDemo}>
+          <button class="nes-btn reset" on:onclick={resetDemo}>
             <Square size="16" />
             Reset
           </button>

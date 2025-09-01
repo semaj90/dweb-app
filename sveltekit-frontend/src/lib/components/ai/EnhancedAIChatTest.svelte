@@ -201,7 +201,7 @@
       messages = [...messages, assistantMessage];
 
       if (reader) {
-        let fullContent = '';
+let fullContent = $state('');
 
         while (true) {
           const { done, value } = await reader.read();
@@ -385,11 +385,11 @@
           <Button
             variant="ghost"
             size="sm"
-            on:click={downloadConversation}
+            on:on:click={downloadConversation}
             disabled={messages.length <= 1}>
             <Download class="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="sm" on:click={clearMessages} disabled={messages.length <= 1}>
+          <Button variant="ghost" size="sm" on:on:click={clearMessages} disabled={messages.length <= 1}>
             <Trash2 class="h-4 w-4" />
           </Button>
           <Dialog.Close>
@@ -465,7 +465,7 @@
             class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             keydown={handleKeydown} />
           <Button
-            on:click={sendMessage}
+            on:on:click={sendMessage}
             disabled={!currentMessage.trim() || !isConnected || isLoading}
             class="px-4">
             {#if isLoading}

@@ -6,6 +6,8 @@
 
 import { browser } from "$app/environment";
 import type { User } from "$lib/types/user";
+import crypto from "crypto";
+import { EventEmitter } from "events";
 
 // Security configuration
 export interface SecurityConfig {
@@ -182,7 +184,6 @@ class SessionManager {
 
 // Singleton session manager
 export const sessionManager = new SessionManager();
-
 // Data protection utilities for legal documents
 export function encryptSensitiveData(data: string, key?: string): string {
   // Simple XOR cipher for demo purposes
@@ -200,7 +201,7 @@ export function encryptSensitiveData(data: string, key?: string): string {
 
 export function decryptSensitiveData(
   encryptedData: string,
-  key?: string,
+  key?: string
 ): string {
   try {
     if (!key) key = "legal-ai-security-key-2024";
@@ -277,7 +278,7 @@ export function sanitizeForJavaScript(input: string): string {
 // Generic input sanitization function
 export function sanitizeInput(
   input: string,
-  type: "html" | "sql" | "js" = "html",
+  type: "html" | "sql" | "js" = "html"
 ): string {
   switch (type) {
     case "html":
@@ -433,10 +434,10 @@ class RateLimiter {
 }
 
 export const rateLimiter = new RateLimiter();
-
+;
 // Security monitoring with legal context
 export function logSecurityEvent(
-  event: Omit<SecurityEvent, "timestamp">,
+  event: Omit<SecurityEvent, "timestamp">
 ): void {
   const fullEvent: SecurityEvent = {
     ...event,
@@ -547,7 +548,7 @@ export interface ChainOfCustodyEvent {
 
 export function addChainOfCustodyEvent(
   evidenceId: string,
-  event: Omit<ChainOfCustodyEvent, "timestamp">,
+  event: Omit<ChainOfCustodyEvent, "timestamp">
 ): void {
   const fullEvent: ChainOfCustodyEvent = {
     ...event,
@@ -614,10 +615,10 @@ export function addCSRFToken(formData: FormData): FormData {
 export function checkAttorneyClientPrivilege(
   userId: string,
   documentId: string,
-  action: string,
+  action: string
 ): boolean {
   const session = sessionManager.getSession();
-  
+
   if (!session?.isLegalProfessional) {
     logSecurityEvent({
       type: "access_denied",
@@ -637,16 +638,16 @@ export function checkAttorneyClientPrivilege(
 
 export function validateLegalAccess(
   requiredPermission: string,
-  caseId?: string,
+  caseId?: string
 ): boolean {
   const session = sessionManager.getSession();
-  
+
   if (!session) {
     return false;
   }
 
   const hasPermission = session.permissions.includes(requiredPermission);
-  
+
   if (!hasPermission) {
     logSecurityEvent({
       type: "access_denied",
@@ -668,10 +669,10 @@ export function validateLegalAccess(
 export function trackPrivilegedAccess(
   documentId: string,
   action: "view" | "edit" | "download" | "print",
-  caseId?: string,
+  caseId?: string
 ): void {
   const session = sessionManager.getSession();
-  
+
   if (session) {
     logSecurityEvent({
       type: "privileged_access",

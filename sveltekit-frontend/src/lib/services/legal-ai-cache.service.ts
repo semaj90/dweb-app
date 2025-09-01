@@ -289,6 +289,6 @@ export class LegalAICache {
 
 // Singleton instance
 export const legalAICache = new LegalAICache();
-
+;
 // Initialize cache from IndexedDB on module load
 legalAICache.loadFromIndexedDB().catch(console.error);

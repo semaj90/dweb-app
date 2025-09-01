@@ -2,17 +2,16 @@
   import { onMount } from 'svelte';
   import { YoRHaAPIClient } from '$lib/components/three/yorha-ui/api/YoRHaAPIClient';
   import * as THREE from 'three';
-  let layout: any = null;
-  let graphData: any = { nodes: [], links: [] };
+let layout = $state<any >(null);
+let graphData = $state<any >({ nodes: [], links: [] });
   const client = new YoRHaAPIClient({ onData: (id, data) => { if (id === 'brainGraph') { graphData = data; updateScene(); } }});
-
-  let canvasContainer: HTMLDivElement | null = null;
-  let renderer: THREE.WebGLRenderer;
+let canvasContainer = $state<HTMLDivElement | null >(null);
+let renderer = $state<THREE.WebGLRenderer;
   let scene: THREE.Scene;
   let camera: THREE.PerspectiveCamera;
   let animationId: number;
-  let nodeMeshes: Record<string, THREE.Mesh> = {};
-  let linkLines: THREE.Line[] = [];
+  let nodeMeshes: Record<string, THREE.Mesh> >({});
+let linkLines = $state<THREE.Line[] >([]);
 
   const nodeGeometry = new THREE.SphereGeometry(0.25, 24, 24);
   const typeColor: Record<string, number> = {

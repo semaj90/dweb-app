@@ -52,9 +52,9 @@ Features: Case management, evidence upload, AI chat, vector search
 
   const loadCases = async () => {
     try {
-      let response: Response;
+let response = $state<Response;
         try {
-          response = await fetch('/api/cases?role=prosecutor');
+          response >(await fetch('/api/cases?role=prosecutor'));
           if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
           }
@@ -75,9 +75,9 @@ Features: Case management, evidence upload, AI chat, vector search
 
   const loadPersonsOfInterest = async () => {
     try {
-      let response: Response;
+let response = $state<Response;
         try {
-          response = await fetch(`/api/persons-of-interest?caseId=${selectedCaseId}`);
+          response >(await fetch(`/api/persons-of-interest?caseId=${selectedCaseId}`));
           if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
           }
@@ -94,9 +94,9 @@ Features: Case management, evidence upload, AI chat, vector search
 
   const loadRecentEvidence = async () => {
     try {
-      let response: Response;
+let response = $state<Response;
         try {
-          response = await fetch(`/api/evidence?caseId=${selectedCaseId}&limit=10`);
+          response >(await fetch(`/api/evidence?caseId=${selectedCaseId}&limit=10`));
           if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
           }
@@ -204,7 +204,7 @@ Features: Case management, evidence upload, AI chat, vector search
             <Button
               variant={selectedCaseId === caseItem.id ? 'default' : 'outline'}
               size="sm"
-              on:click={() => selectCase(caseItem.id)}
+              on:on:click={() => selectCase(caseItem.id)}
             >
               {caseItem.caseNumber} - {caseItem.title}
               <Badge variant="secondary" class="ml-2">
@@ -243,7 +243,7 @@ Features: Case management, evidence upload, AI chat, vector search
                 placeholder="Search evidence, cases, precedents..."
                 class="flex-1"
               />
-              <Button on:click={performVectorSearch} disabled={!searchQuery.trim()}>
+              <Button on:on:click={performVectorSearch} disabled={!searchQuery.trim()}>
                 <Search class="w-4 h-4" />
               </Button>
             </div>
@@ -282,7 +282,7 @@ Features: Case management, evidence upload, AI chat, vector search
         <EvidenceUploadComponent 
           caseId={selectedCaseId}
           enableWebGPU={webGPUEnabled}
-          on:uploadcomplete={handleEvidenceUploaded}
+          uploadcomplete={handleEvidenceUploaded}
         />
 
         <!-- Recent Evidence -->

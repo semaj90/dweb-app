@@ -83,7 +83,7 @@ import type { Case } from '$lib/types';
   class="space-y-4"
   class:active={isActive}
   class:disabled
-  click={handleClick}
+  on:onclick={handleClick}
   keydown={(e) => e.key === "Enter" && handleClick()}
   role="button"
   tabindex={0}
@@ -150,7 +150,7 @@ import type { Case } from '$lib/types';
         class="space-y-4"
         value={caseData.status}
         change={handleStatusChange}
-        click={(e) => e.stopPropagation()}
+        on:onclick={(e) => e.stopPropagation()}
       >
         <option value="open">Open</option>
         <option value="in_progress">In Progress</option>

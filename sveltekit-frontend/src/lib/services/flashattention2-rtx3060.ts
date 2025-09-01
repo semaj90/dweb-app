@@ -619,7 +619,7 @@ export class GPUErrorProcessor {
 
 // Global GPU error processor instance
 export const gpuErrorProcessor = new GPUErrorProcessor(flashAttention2Service);
-
+;
 // Auto-initialize on import
 if (typeof window !== 'undefined') {
   flashAttention2Service.initialize().catch(console.warn);

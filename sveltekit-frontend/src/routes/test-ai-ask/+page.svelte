@@ -16,8 +16,8 @@
   let manualTestResponse: any = $state(null);
   let manualTestLoading = $state(false);
   let manualTestError: string | null = $state(null);
-  let healthCheckResults: any = null;
-  let selectedExample = "";
+let healthCheckResults = $state<any >(null);
+let selectedExample = $state("");
 
   // Sample queries for testing
   const sampleQueries = [
@@ -33,9 +33,9 @@
 
   // Missing variables that are referenced in template
   let query = $state("");
-  let isLoading = false;
-  let error: string | null = null;
-  let response: any = null;
+let isLoading = $state(false);
+let error = $state<string | null >(null);
+let response = $state<any >(null);
   let exampleQueries = sampleQueries; // Alias for template
 
   // Initialize page
@@ -105,7 +105,7 @@
       console.log("Local AI Health:", localHealth);
 
       // Check cloud AI health
-      let cloudHealth = null;
+let cloudHealth = $state(null);
       try {
         const cloudRes = await fetch("/api/ai/health/cloud");
         cloudHealth = await cloudRes.json();
@@ -235,7 +235,7 @@
               <button
                 type="button"
                 class="space-y-4"
-                click={() => aiStore.sendMessage(query)}
+                on:onclick={() => aiStore.sendMessage(query)}
                 disabled={$status.isLoading}
               >
                 {query}
@@ -267,7 +267,7 @@
             <button
               type="button"
               class="space-y-4"
-              click={() => testAPIDirectly()}
+              on:onclick={() => testAPIDirectly()}
               disabled={manualTestLoading}
             >
               {manualTestLoading ? "⏳ Testing..." : "🚀 Test API"}
@@ -276,7 +276,7 @@
             <button
               type="button"
               class="space-y-4"
-              click={() => checkHealthEndpoints()}
+              on:onclick={() => checkHealthEndpoints()}
             >
               🏥 Check Health
             </button>
@@ -383,21 +383,21 @@
           <button
             type="button"
             class="space-y-4"
-            click={() => aiStore.clearConversation()}
+            on:onclick={() => aiStore.clearConversation()}
           >
             🗑️ Clear Conversation
           </button>
           <button
             type="button"
             class="space-y-4"
-            click={() => aiStore.reset()}
+            on:onclick={() => aiStore.reset()}
           >
             🔄 Reset All Stores
           </button>
           <button
             type="button"
             class="space-y-4"
-            click={() => aiStore.initialize()}
+            on:onclick={() => aiStore.initialize()}
           >
             🔄 Reinitialize AI
           </button>
@@ -440,7 +440,7 @@
             <button
               type="button"
               class="space-y-4"
-              click={() => checkHealthEndpoints()}
+              on:onclick={() => checkHealthEndpoints()}
             >
               Check Health Status
             </button>
@@ -493,7 +493,7 @@
       {#each sampleQueries as sampleQuery}
         <button
           class="space-y-4"
-          click={() => selectQuery(sampleQuery)}
+          on:onclick={() => selectQuery(sampleQuery)}
         >
           <span class="space-y-4">{sampleQuery}</span>
         </button>
@@ -515,7 +515,7 @@
     ></textarea>
 
     <button
-      click={() => testGemma3()}
+      on:onclick={() => testGemma3()}
       disabled={isLoading || !query.trim()}
       class="space-y-4"
     >

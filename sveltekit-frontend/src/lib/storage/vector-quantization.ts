@@ -1,3 +1,4 @@
+import crypto from "crypto";
 /**
  * Vector Quantization for Embedding Storage Optimization
  * 

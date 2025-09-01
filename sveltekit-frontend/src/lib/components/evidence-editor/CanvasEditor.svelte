@@ -12,15 +12,17 @@
   // Access state from snapshot
   let state = $derived($snapshot);
 
-  let { caseId = $bindable() } = $props(); // string | null = null;
-  let { readOnly = $bindable() } = $props(); // false;
-
-  let canvas: HTMLCanvasElement;
+  let { caseId = $bindable(), readOnly = false } = $props<{
+    caseId?: string | null;
+    readOnly?: boolean;
+  }>();
+  
+  let canvas = $state<HTMLCanvasElement>();
   let ctx: CanvasRenderingContext2D;
   let canvasContainer: HTMLDivElement;
 
   // Enhanced file nodes with connections
-  let fileNodes: Array<{
+  let fileNodes = $state<Array<{
     id: string;
     name: string;
     type: string;
@@ -32,37 +34,36 @@
     aiTags?: unknown;
     metadata?: unknown;
     connections?: string[]; // Connected node IDs
-  }> = [];
+  }>>([]);
 
   // Node connections for relationship visualization
-  let nodeConnections: Array<{
+  let nodeConnections = $state<Array<{
     fromId: string;
     toId: string;
     type: 'person' | 'location' | 'organization' | 'temporal' | 'custom';
     strength: number;
     label?: string;
-  }> = [];
-
-  let selectedNodeId: string | null = null;
-  let hoveredNodeId: string | null = null;
-  let isDragging = false;
-  let isConnecting = false;
-  let connectingFromId: string | null = null;
-  let dragOffset = { x: 0, y: 0 };
+  }>>([]);
+  let selectedNodeId = $state<string | null>(null);
+  let hoveredNodeId = $state<string | null>(null);
+  let isDragging = $state(false);
+  let isConnecting = $state(false);
+  let connectingFromId = $state<string | null>(null);
+  let dragOffset = $state({ x: 0, y: 0 });
 
   // Enhanced canvas state with zoom and pan
-  let canvasWidth = 800;
-  let canvasHeight = 600;
-  let zoomLevel = 1;
-  let minZoom = 0.1;
-  let maxZoom = 3;
-  let panOffset = { x: 0, y: 0 };
-  let isPanning = false;
-  let lastPanPoint = { x: 0, y: 0 };
+  let canvasWidth = $state(800);
+  let canvasHeight = $state(600);
+  let zoomLevel = $state(1);
+  let minZoom = $state(0.1);
+  let maxZoom = $state(3);
+  let panOffset = $state({ x: 0, y: 0 });
+  let isPanning = $state(false);
+  let lastPanPoint = $state({ x: 0, y: 0 });
 
   // Auto-save state
   let autoSaveTimer: ReturnType<typeof setInterval>;
-  let isAutoSaving = false;
+  let isAutoSaving = $state(false);
 
   onMount(() => {
     if (!browser) return;
@@ -757,14 +758,14 @@
   <canvas
     bind:this={canvas}
     class="container mx-auto px-4"
-    on:drop={handleDrop}
-    on:dragover={handleDragOver}
-    click={handleCanvasClick}
-    on:mousedown={handleMouseDown}
+    ondrop={handleDrop}
+    ondragover={handleDragOver}
+    on:onclick={handleCanvasClick}
+    onmousedown={handleMouseDown}
     on:mousemove={handleMouseMove}
-    on:mouseup={handleMouseUp}
-    on:mouseleave={handleMouseUp}
-    on:wheel={handleWheel}
+    mouseup={handleMouseUp}
+    on:on:mouseleave={handleMouseUp}
+    wheel={handleWheel}
     on:contextmenu|preventDefault
   ></canvas>
 

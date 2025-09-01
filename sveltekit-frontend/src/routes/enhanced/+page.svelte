@@ -1,26 +1,24 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	// Debounce + streaming support
-	let debounceMs = 400;
-	let autoSearch = true;
-	let lastTimer: any = null;
-	let useStreaming = true;
-	let streaming = false;
-	let streamedCount = 0;
-
-	let query = '';
-	let mode: 'simple' | 'enhanced' = 'simple';
-	let limit = 8;
-	let threshold: number | null = null;
-	let model = '';
-	let caseId = '';
-	let autoFocus = true;
-
-	let loading = false;
-	let controller: AbortController | null = null;
-	let results: any[] = [];
-	let responseMeta: any = null;
-	let errorMsg: string | null = null;
+let debounceMs = $state(400);
+let autoSearch = $state(true);
+let lastTimer = $state<any >(null);
+let useStreaming = $state(true);
+let streaming = $state(false);
+let streamedCount = $state(0);
+let query = $state('');
+let mode = $state<'simple' | 'enhanced' >('simple');
+let limit = $state(8);
+let threshold = $state<number | null >(null);
+let model = $state('');
+let caseId = $state('');
+let autoFocus = $state(true);
+let loading = $state(false);
+let controller = $state<AbortController | null >(null);
+let results = $state<any[] >([]);
+let responseMeta = $state<any >(null);
+let errorMsg = $state<string | null >(null);
 
 	function reset() {
 		results = [];
@@ -84,7 +82,7 @@
 			if (!res.ok || !res.body) { errorMsg = `Stream failed (${res.status})`; return; }
 			const reader = res.body.getReader();
 			const decoder = new TextDecoder();
-			let buffer = '';
+let buffer = $state('');
 			while (true) {
 				const { value, done } = await reader.read();
 				if (done) break;
@@ -95,8 +93,8 @@
 					buffer = buffer.slice(idx + 2);
 					if (!raw) continue;
 					const lines = raw.split('\n');
-					let event = 'message';
-					let dataStr = '';
+let event = $state('message');
+let dataStr = $state('');
 					for (const line of lines) {
 						if (line.startsWith('event:')) event = line.slice(6).trim();
 						else if (line.startsWith('data:')) dataStr += line.slice(5).trim();
@@ -198,9 +196,9 @@
 		<div class="md:col-span-7 flex gap-3 pt-1">
 			<button type="submit" class="px-4 py-2 rounded bg-indigo-600 text-white text-sm font-medium disabled:opacity-50" disabled={loading}>{loading ? (useStreaming ? (streaming ? 'Streaming…' : 'Starting…') : 'Searching…') : 'Search'}</button>
 			{#if loading}
-				<button type="button" click={abort} class="px-3 py-2 rounded bg-neutral-200 dark:bg-neutral-700 text-sm">Abort</button>
+				<button type="button" on:onclick={abort} class="px-3 py-2 rounded bg-neutral-200 dark:bg-neutral-700 text-sm">Abort</button>
 			{/if}
-			<button type="button" click={reset} class="px-3 py-2 rounded border border-neutral-300 dark:border-neutral-600 text-sm">Clear</button>
+			<button type="button" on:onclick={reset} class="px-3 py-2 rounded border border-neutral-300 dark:border-neutral-600 text-sm">Clear</button>
 		</div>
 	</form>
 

@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 
 // Production environment configuration
 export const ENV_CONFIG = {

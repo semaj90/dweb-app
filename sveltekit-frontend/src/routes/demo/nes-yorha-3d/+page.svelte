@@ -27,9 +27,9 @@
   let showHybridModal = $state(false);
 
   // 3D Components
-  let nesButtons: NESYoRHaHybrid3D[] = [];
-  let nesContainers: NESYoRHaHybrid3D[] = [];
-  let nesProgressBars: NESYoRHaHybrid3D[] = [];
+let nesButtons = $state<NESYoRHaHybrid3D[] >([]);
+let nesContainers = $state<NESYoRHaHybrid3D[] >([]);
+let nesProgressBars = $state<NESYoRHaHybrid3D[] >([]);
 
   onMount(() => {
     initializeScene();
@@ -336,19 +336,19 @@
           <div class="flex flex-wrap gap-2 mb-2">
             <button 
               class="nes-btn is-primary" 
-              click={() => switchRenderMode('hybrid-sync')}
+              on:onclick={() => switchRenderMode('hybrid-sync')}
             >
               Hybrid Sync
             </button>
             <button 
               class="nes-btn" 
-              click={() => switchRenderMode('2d-overlay')}
+              on:onclick={() => switchRenderMode('2d-overlay')}
             >
               2D Overlay
             </button>
             <button 
               class="nes-btn" 
-              click={() => switchRenderMode('3d-embedded')}
+              on:onclick={() => switchRenderMode('3d-embedded')}
             >
               3D Embedded
             </button>
@@ -357,19 +357,19 @@
           <div class="flex flex-wrap gap-2">
             <button 
               class="nes-btn is-warning" 
-              click={toggleCRTEffect}
+              on:onclick={toggleCRTEffect}
             >
               📺 Toggle CRT
             </button>
             <button 
               class="nes-btn is-error" 
-              click={clearCache}
+              on:onclick={clearCache}
             >
               🗑️ Clear Cache
             </button>
             <button 
               class="nes-btn is-success" 
-              click={resetDemo}
+              on:onclick={resetDemo}
             >
               🔄 Reset
             </button>
@@ -382,7 +382,7 @@
               <FinalFantasyButton
                 variant="magic"
                 size="small"
-                on:click={() => showYoRHaModal = true}
+                on:on:click={() => showYoRHaModal = true}
                 icon="🤖"
               >
                 {#snippet children()}YoRHa 3D{/snippet}
@@ -391,7 +391,7 @@
               <FinalFantasyButton
                 variant="item"
                 size="small" 
-                on:click={() => showNESModal = true}
+                on:on:click={() => showNESModal = true}
                 icon="🎮"
               >
                 {#snippet children()}NES Cache{/snippet}
@@ -400,7 +400,7 @@
               <FinalFantasyButton
                 variant="success"
                 size="small"
-                on:click={() => showWebGLModal = true}
+                on:on:click={() => showWebGLModal = true}
                 icon="🌟"
               >
                 {#snippet children()}WebGL GPU{/snippet}
@@ -409,7 +409,7 @@
               <FinalFantasyButton
                 variant="primary"
                 size="small"
-                on:click={() => showHybridModal = true}
+                on:on:click={() => showHybridModal = true}
                 icon="⚡"
               >
                 {#snippet children()}Hybrid Sync{/snippet}
@@ -472,7 +472,7 @@
           <button 
             class="nes-btn w-full"
             class:is-primary={currentDemo === 'buttons'}
-            click={() => currentDemo = 'buttons'}
+            on:onclick={() => currentDemo = 'buttons'}
           >
             🔘 NES Buttons
           </button>
@@ -480,7 +480,7 @@
           <button 
             class="nes-btn w-full"
             class:is-primary={currentDemo === 'containers'}
-            click={() => currentDemo = 'containers'}
+            on:onclick={() => currentDemo = 'containers'}
           >
             📦 Containers
           </button>
@@ -488,7 +488,7 @@
           <button 
             class="nes-btn w-full"
             class:is-primary={currentDemo === 'progress'}
-            click={() => currentDemo = 'progress'}
+            on:onclick={() => currentDemo = 'progress'}
           >
             📊 Progress Bars
           </button>
@@ -543,7 +543,7 @@
     type="battle"
     size="large"
     cornerStyle="hybrid"
-    on:close={() => showYoRHaModal = false}
+    close={() => showYoRHaModal = false}
   >
     {#snippet children()}
       <FinalFantasyContainer title="Advanced Three.js-powered 3D Interface Elements" type="battle" glowEffect={true}>
@@ -588,7 +588,7 @@
     {/snippet}
 
     {#snippet actions()}
-      <FinalFantasyButton variant="secondary" on:click={() => showYoRHaModal = false}>
+      <FinalFantasyButton variant="secondary" on:on:click={() => showYoRHaModal = false}>
         {#snippet children()}Close{/snippet}
       </FinalFantasyButton>
     {/snippet}
@@ -601,7 +601,7 @@
     type="inventory"
     size="large"
     cornerStyle="classic"
-    on:close={() => showNESModal = false}
+    close={() => showNESModal = false}
   >
     {#snippet children()}
       <FinalFantasyContainer title="Memory-efficient State Management" type="inventory" glowEffect={true}>
@@ -651,7 +651,7 @@
     {/snippet}
 
     {#snippet actions()}
-      <FinalFantasyButton variant="secondary" on:click={() => showNESModal = false}>
+      <FinalFantasyButton variant="secondary" on:on:click={() => showNESModal = false}>
         {#snippet children()}Close{/snippet}
       </FinalFantasyButton>
     {/snippet}
@@ -664,7 +664,7 @@
     type="magic"
     size="large"
     cornerStyle="modern"
-    on:close={() => showWebGLModal = false}
+    close={() => showWebGLModal = false}
   >
     <FinalFantasyContainer title="High-Performance Graphics Processing" type="magic" glowEffect={true}>
       <div class="space-y-4">
@@ -725,7 +725,7 @@
     </FinalFantasyContainer>
 
     <svelte:fragment slot="actions">
-      <FinalFantasyButton variant="secondary" on:click={() => showWebGLModal = false}>
+      <FinalFantasyButton variant="secondary" on:on:click={() => showWebGLModal = false}>
         Close
       </FinalFantasyButton>
     </svelte:fragment>
@@ -738,7 +738,7 @@
     type="menu"
     size="large"
     cornerStyle="hybrid"
-    on:close={() => showHybridModal = false}
+    close={() => showHybridModal = false}
   >
     <FinalFantasyContainer title="Seamless DOM-WebGL Integration" type="menu" glowEffect={true}>
       <div class="space-y-4">
@@ -790,7 +790,7 @@
     </FinalFantasyContainer>
 
     <svelte:fragment slot="actions">
-      <FinalFantasyButton variant="secondary" on:click={() => showHybridModal = false}>
+      <FinalFantasyButton variant="secondary" on:on:click={() => showHybridModal = false}>
         Close
       </FinalFantasyButton>
     </svelte:fragment>

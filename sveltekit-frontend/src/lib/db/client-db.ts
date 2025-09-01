@@ -254,7 +254,7 @@ export class LegalAIClientDB extends Dexie {
 // ============================================================================
 
 export const legalDB = new LegalAIClientDB();
-
+;
 // Database utility functions
 export class LegalDBUtils {
   /**
@@ -438,7 +438,7 @@ export const annotationsCount = liveQuery(async () => {
  * Storage usage monitor
  */
 export const storageStats = writable({ totalRecords: 0, storageUsed: 'Unknown', tables: [] });
-
+;
 // Update storage stats periodically
 if (typeof window !== 'undefined') {
   setInterval(async () => {

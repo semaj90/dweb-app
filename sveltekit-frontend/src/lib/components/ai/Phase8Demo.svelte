@@ -141,7 +141,7 @@
   }
 
   function startDemoLoop(): void {
-    let frameCount = 0;
+let frameCount = $state(0);
     
     const demoLoop = () => {
       frameCount++;
@@ -296,31 +296,31 @@
     <div class="demo-controls flex gap-2 mb-4">
       <button 
         class="yorha-button px-3 py-1 text-sm {currentDemo === 'reranker' ? 'bg-yellow-400 text-black' : 'bg-gray-700'}"
-        click={() => switchDemo('reranker')}
+        on:onclick={() => switchDemo('reranker')}
       >
         AI Reranker
       </button>
       <button 
         class="yorha-button px-3 py-1 text-sm {currentDemo === 'matrix' ? 'bg-yellow-400 text-black' : 'bg-gray-700'}"
-        click={() => switchDemo('matrix')}
+        on:onclick={() => switchDemo('matrix')}
       >
         Matrix Compiler
       </button>
       <button 
         class="yorha-button px-3 py-1 text-sm {currentDemo === 'lod' ? 'bg-yellow-400 text-black' : 'bg-gray-700'}"
-        click={() => switchDemo('lod')}
+        on:onclick={() => switchDemo('lod')}
       >
         LOD System
       </button>
       <button 
         class="yorha-button px-3 py-1 text-sm {currentDemo === 'prefetch' ? 'bg-yellow-400 text-black' : 'bg-gray-700'}"
-        click={() => switchDemo('prefetch')}
+        on:onclick={() => switchDemo('prefetch')}
       >
         Prefetcher
       </button>
       <button 
         class="yorha-button px-3 py-1 text-sm bg-blue-600 text-white ml-4"
-        click={runPerformanceTest}
+        on:onclick={runPerformanceTest}
       >
         Performance Test
       </button>

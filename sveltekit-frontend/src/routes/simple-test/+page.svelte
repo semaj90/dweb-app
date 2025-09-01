@@ -1,15 +1,14 @@
 <!--
   Minimal Case Creation Test - Testing API integration without UI library dependencies
 -->
-<script lang="ts">
-  let isSubmitting = false;
-  let submitResult = '';
-  let formData = {
+<script lang="ts">let isSubmitting = $state(false);
+let submitResult = $state('');
+let formData = $state({
     caseNumber: '',
     title: '',
     description: '',
     priority: 'medium'
-  };
+  });
 
   async function handleSubmit(event: Event) {
     event.preventDefault();
@@ -76,7 +75,7 @@
   <div class="card" style="border: 1px solid #ddd; border-radius: 8px; padding: 30px; background: white;">
     <h2 style="margin-top: 0; color: #333;">Case Information Form</h2>
     
-    <form on:submit={handleSubmit} style="display: flex; flex-direction: column; gap: 20px;">
+    <form onsubmit={handleSubmit} style="display: flex; flex-direction: column; gap: 20px;">
       
       <div>
         <label for="caseNumber" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">
@@ -140,7 +139,7 @@
       <div style="display: flex; gap: 10px; justify-content: flex-end; padding-top: 20px; border-top: 1px solid #eee;">
         <button 
           type="button"
-          on:click={testDatabaseConnection}
+          on:on:onclick={testDatabaseConnection}
           style="padding: 10px 20px; border: 1px solid #007bff; background: white; color: #007bff; border-radius: 4px; cursor: pointer; font-size: 14px;"
         >
           Test Database Connection

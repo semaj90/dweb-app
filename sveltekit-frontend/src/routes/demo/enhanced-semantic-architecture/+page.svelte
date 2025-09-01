@@ -1,15 +1,14 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import EnhancedSemanticIntegration from '$lib/components/demo/EnhancedSemanticIntegration.svelte';
-	
-	let pageTitle = '🧠 Enhanced Semantic Architecture - Complete Integration Demo';
-	let integrationComponent: any;
+let pageTitle = $state('🧠 Enhanced Semantic Architecture - Complete Integration Demo');
+let integrationComponent = $state<any;
 	
 	// Demo state
-	let lastTodosUpdate: any = null;
-	let lastTextAnalysis: any = null;
-	let lastPageRankUpdate: any = null;
-	let lastSOMUpdate: any = null;
+	let lastTodosUpdate: any >(null);
+let lastTextAnalysis = $state<any >(null);
+let lastPageRankUpdate = $state<any >(null);
+let lastSOMUpdate = $state<any >(null);
 	
 	// Handle integration events
 	function handleTodosUpdated(event: CustomEvent) {
@@ -151,10 +150,10 @@
 		<div class="max-w-7xl mx-auto">
 			<EnhancedSemanticIntegration 
 				bind:this={integrationComponent}
-				on:todos-updated={handleTodosUpdated}
-				on:text-analyzed={handleTextAnalyzed}
-				on:pagerank-updated={handlePageRankUpdated}
-				on:som-updated={handleSOMUpdated}
+				todos-updated={handleTodosUpdated}
+				text-analyzed={handleTextAnalyzed}
+				pagerank-updated={handlePageRankUpdated}
+				som-updated={handleSOMUpdated}
 			/>
 		</div>
 	</section>

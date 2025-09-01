@@ -302,6 +302,6 @@ export class EnhancedCaseAPI {
 
 // Singleton instance
 export const enhancedCaseAPI = new EnhancedCaseAPI();
-
+;
 // Export for use in components
 export default enhancedCaseAPI;

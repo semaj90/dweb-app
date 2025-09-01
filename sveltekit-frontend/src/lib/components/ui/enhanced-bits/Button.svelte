@@ -41,7 +41,7 @@
   }: ButtonProps = $props();
 
   // Reactive class computation using $derived
-  const buttonClasses = $derived(cn(
+  let buttonClasses = $derived(cn(
     'bits-btn',
     {
       'bits-btn-default': variant === 'default',

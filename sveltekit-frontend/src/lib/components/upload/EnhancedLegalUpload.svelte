@@ -411,11 +411,11 @@
         class:is-warning={processingStage}
         role="button"
         tabindex="0"
-        on:drop={onDrop}
-        on:dragover={onDragOver}
-        on:dragleave={onDragLeave}
-        click={() => document.getElementById('file-input')?.click()}
-        on:keydown={(e) => e.key === 'Enter' && document.getElementById('file-input')?.click()}
+        ondrop={onDrop}
+        ondragover={onDragOver}
+        ondragleave={onDragLeave}
+        on:onclick={() => document.getElementById('file-input')?.click()}
+        keydown={(e) => e.key === 'Enter' && document.getElementById('file-input')?.click()}
       >
         <input
           id="file-input"
@@ -437,7 +437,7 @@
               <div class="file-details">
                 <div class="file-name">{selectedFile.name}</div>
                 <div class="file-size">{formatFileSize(selectedFile.size)}</div>
-                <button type="button" class="remove-file" click={removeFile}>
+                <button type="button" class="remove-file" on:onclick={removeFile}>
                   ✕ Remove
                 </button>
               </div>

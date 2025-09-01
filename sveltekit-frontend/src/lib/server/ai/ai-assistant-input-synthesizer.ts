@@ -1142,4 +1142,4 @@ export class AIAssistantInputSynthesizer {
 
 // Export singleton instance
 export const aiAssistantSynthesizer = new AIAssistantInputSynthesizer();
-
+;

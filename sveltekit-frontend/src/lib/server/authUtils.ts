@@ -11,8 +11,8 @@ export interface JWTPayload {
 }
 
 
-const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret-key";
-const JWT_EXPIRATION = process.env.JWT_EXPIRATION || "86400"; // 24 hours
+const JWT_SECRET = import.meta.env.JWT_SECRET || "fallback-secret-key";
+const JWT_EXPIRATION = import.meta.env.JWT_EXPIRATION || "86400"; // 24 hours
 
 /**
  * Hashes a plain-text password using Bcrypt.
@@ -20,7 +20,7 @@ const JWT_EXPIRATION = process.env.JWT_EXPIRATION || "86400"; // 24 hours
  * @returns A promise that resolves to the hashed password.
  */
 export async function hashPassword(password: string): Promise<string> {
-  const rounds = parseInt(process.env.BCRYPT_ROUNDS || "12");
+  const rounds = parseInt(import.meta.env.BCRYPT_ROUNDS || "12");
   return bcrypt.hash(password, rounds);
 }
 /**

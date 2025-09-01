@@ -699,7 +699,7 @@ int32_t ${baseName}_process(const char* input, int32_t input_length, char* outpu
 
 // Singleton instance
 export const llvmWasmBridge = new LLVMWASMBridge();
-
+;
 // Integration with existing services
 export async function initializeLLVMIntegration(): Promise<void> {
   try {

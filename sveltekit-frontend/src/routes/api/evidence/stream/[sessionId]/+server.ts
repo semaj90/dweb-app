@@ -1,8 +1,9 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 // src/routes/api/evidence/stream/[sessionId]/+server.ts
 import { registerWsConnection, getMissedMessages } from "drizzle-orm";
 import WebSocket from "ws";
+import { URL } from "url";
 
 export const GET: RequestHandler = async ({ request, params, url }) => {
   const { sessionId } = params;

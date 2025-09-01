@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 /// <reference types="vitest" />
 import { vi } from 'vitest';
 

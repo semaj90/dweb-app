@@ -26,8 +26,7 @@ https://svelte.dev/e/js_parse_error -->
     Settings,
   } from "lucide-svelte";
   import { onMount } from "svelte";
-
-  let mounted = false;
+let mounted = $state(false);
 
   onMount(() => {
     mounted = true;
@@ -103,7 +102,7 @@ https://svelte.dev/e/js_parse_error -->
 {#if open}
   <div
     class="fixed inset-0 z-40 bg-black/50 lg:hidden"
-    click={closeSidebar}
+    on:onclick={closeSidebar}
     role="button"
     tabindex="0"
     keydown={(e) => e.key === "Enter" && closeSidebar()}
@@ -165,7 +164,7 @@ https://svelte.dev/e/js_parse_error -->
                   ? "bg-harvard-crimson text-white shadow-nier-glow"
                   : "text-muted-foreground hover:text-foreground hover:bg-nier-surface-light"
               )}
-              click={closeSidebar}
+              on:onclick={closeSidebar}
             >
               <div class="flex items-center">
                 {@const Icon = item.icon}
@@ -217,7 +216,7 @@ https://svelte.dev/e/js_parse_error -->
                     ? "bg-harvard-crimson text-white shadow-nier-glow"
                     : "text-muted-foreground hover:text-foreground hover:bg-nier-surface-light"
                 )}
-                click={closeSidebar}
+                on:onclick={closeSidebar}
               >
                 {@const Icon = item.icon}
                 <Icon
@@ -251,7 +250,7 @@ https://svelte.dev/e/js_parse_error -->
                     ? "bg-harvard-crimson text-white shadow-nier-glow"
                     : "text-muted-foreground hover:text-foreground hover:bg-nier-surface-light"
                 )}
-                click={closeSidebar}
+                on:onclick={closeSidebar}
               >
                 {@const Icon = item.icon}
                 <Icon

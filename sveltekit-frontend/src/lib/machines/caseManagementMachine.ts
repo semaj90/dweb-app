@@ -12,7 +12,7 @@ export interface CaseManagementContext {
   currentCase: CaseData | null;
   cases: CaseData[];
   evidence: EvidenceData[];
-  
+
   // Search and filters
   searchQuery: string;
   searchResults: CaseData[];
@@ -21,19 +21,19 @@ export interface CaseManagementContext {
     priority?: string;
     dateRange?: { from: Date; to: Date };
   };
-  
+
   // UI state
   selectedCaseId: string | null;
   isLoading: boolean;
   error: string | null;
-  
+
   // Pagination
   pagination: {
     page: number;
     limit: number;
     totalCount: number;
   };
-  
+
   // User context
   userId: string;
 }
@@ -68,11 +68,11 @@ const caseManagementServices = {
         args: { caseId }
       })
     });
-    
+
     if (!response.ok) {
       throw new Error(`Failed to load case: ${response.statusText}`);
     }
-    
+
     return await response.json();
   },
 
@@ -83,7 +83,7 @@ const caseManagementServices = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         tool: 'cases.createCase',
-        args: { 
+        args: {
           caseData: {
             ...event.caseData,
             userId: context.userId
@@ -91,11 +91,11 @@ const caseManagementServices = {
         }
       })
     });
-    
+
     if (!response.ok) {
       throw new Error(`Failed to create case: ${response.statusText}`);
     }
-    
+
     return await response.json();
   },
 
@@ -106,17 +106,17 @@ const caseManagementServices = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         tool: 'cases.updateCase',
-        args: { 
+        args: {
           caseId: event.caseId,
           updates: event.updates
         }
       })
     });
-    
+
     if (!response.ok) {
       throw new Error(`Failed to update case: ${response.statusText}`);
     }
-    
+
     return await response.json();
   },
 
@@ -133,11 +133,11 @@ const caseManagementServices = {
         }
       })
     });
-    
+
     if (!response.ok) {
       throw new Error(`Failed to add evidence: ${response.statusText}`);
     }
-    
+
     return await response.json();
   },
 
@@ -155,11 +155,11 @@ const caseManagementServices = {
         }
       })
     });
-    
+
     if (!response.ok) {
       throw new Error(`Failed to search cases: ${response.statusText}`);
     }
-    
+
     return await response.json();
   },
 
@@ -180,11 +180,11 @@ const caseManagementServices = {
         }
       })
     });
-    
+
     if (!response.ok) {
       throw new Error(`Failed to load user cases: ${response.statusText}`);
     }
-    
+
     return await response.json();
   }
 };
@@ -193,7 +193,7 @@ const caseManagementServices = {
 export const caseManagementMachine = createMachine({
   id: 'caseManagement',
   initial: 'idle',
-  
+
   context: {
     currentCase: null,
     cases: [],
@@ -230,9 +230,9 @@ export const caseManagementMachine = createMachine({
         SET_PAGE: {
           target: 'loadingUserCases',
           actions: assign({
-            pagination: ({ context, event }) => ({ 
-              ...context.pagination, 
-              page: event.page 
+            pagination: ({ context, event }) => ({
+              ...context.pagination,
+              page: event.page
             })
           })
         },
@@ -363,8 +363,8 @@ export const caseManagementMachine = createMachine({
     },
 
     searchingCases: {
-      entry: assign({ 
-        isLoading: true, 
+      entry: assign({
+        isLoading: true,
         error: null,
         searchQuery: ({ event }) => event.query || ''
       }),

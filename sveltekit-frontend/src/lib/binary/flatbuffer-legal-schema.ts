@@ -21,8 +21,8 @@ export enum RiskLevel {
 }
 
 // Binary layout for legal documents (fixed-size for GPU efficiency)
-export const LEGAL_DOCUMENT_BINARY_SIZE = 2048; // 2KB per document
-
+export const LEGAL_DOCUMENT_BINARY_SIZE = 2048; // 2KB per document;
+;
 export interface LegalDocumentBinaryLayout {
   // Header (32 bytes)
   magic: number;           // 4 bytes - magic number for validation

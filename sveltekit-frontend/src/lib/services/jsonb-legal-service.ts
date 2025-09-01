@@ -37,7 +37,7 @@ import { logger } from '$lib/logging/structured-logger.js';
 import type { VectorEmbedding } from '$lib/storage/vector-quantization.js';
 
 // PostgreSQL connection with JSONB optimizations
-const connectionString = process.env.DATABASE_URL || 'postgresql://legal_admin:123456@localhost:5432/legal_ai_db';
+const connectionString = import.meta.env.DATABASE_URL || 'postgresql://legal_admin:123456@localhost:5432/legal_ai_db';
 const sql_client = postgres(connectionString, {
   max: 20,
   idle_timeout: 20,

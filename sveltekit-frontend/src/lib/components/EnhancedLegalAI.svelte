@@ -408,7 +408,7 @@
 
         <!-- Process Button -->
         <Button.Root
-          on:click={processDocument}
+          on:on:click={processDocument}
           disabled={processing || !serviceStatus.healthy}
           class="w-full mt-4 px-4 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 text-white font-semibold rounded-lg transition-colors"
         >
@@ -464,7 +464,7 @@
 
         <!-- Search Button -->
         <Button.Root
-          on:click={performVectorSearch}
+          on:on:click={performVectorSearch}
           disabled={searching || !serviceStatus.healthy}
           class="w-full mt-4 px-4 py-3 bg-green-600 hover:bg-green-700 disabled:bg-slate-400 text-white font-semibold rounded-lg transition-colors"
         >
@@ -485,7 +485,7 @@
 </div>
 
 <!-- Process Results Dialog -->
-<Dialog.Root open={showProcessDialog} on:openchange={(open) => showProcessDialog = open}>
+<Dialog.Root open={showProcessDialog} openchange={(open) => showProcessDialog = open}>
   <Dialog.Portal>
     <Dialog.Overlay class="fixed inset-0 bg-black/50 z-40" />
     <Dialog.Content
@@ -594,7 +594,7 @@
 </Dialog.Root>
 
 <!-- Search Results Dialog -->
-<Dialog.Root open={showSearchDialog} on:openchange={(open) => showSearchDialog = open}>
+<Dialog.Root open={showSearchDialog} openchange={(open) => showSearchDialog = open}>
   <Dialog.Portal>
     <Dialog.Overlay class="fixed inset-0 bg-black/50 z-40" />
     <Dialog.Content

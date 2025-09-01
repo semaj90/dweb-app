@@ -3,7 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { db } from '$lib/server/db';
 import { documents, document_processing } from '$lib/server/db/schema-postgres';
 import { rabbitMQService, createDocumentProcessingJob } from '$lib/services/rabbitmq-service';
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
+import { URL } from "url";
 
 
 const ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/png', 'text/plain'];

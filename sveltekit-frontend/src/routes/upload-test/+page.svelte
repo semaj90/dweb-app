@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 <!-- Test page for Simple File Upload with RAG integration -->
 <script lang="ts">
   import SimpleFileUpload from '$lib/components/ai/SimpleFileUpload.svelte';
@@ -21,7 +22,7 @@
       const MAX_RETRIES = 5;
       const REQUEST_TIMEOUT_MS = 8000;
       const POLL_INTERVAL_MS = 5000;
-      let pollActive = true;
+let pollActive = $state(true);
 
       async function fetchStatus(attempt = 1) {
         const controller = new AbortController();
@@ -105,7 +106,7 @@
   <!-- Simple File Upload Component (UnoCSS attributify) -->
   <!-- Converted UnoCSS attributify props to class to satisfy TS HTMLProps -->
   <div class="mb-8 border border-gray-200 rounded-lg p-4">
-    <SimpleFileUpload on:uploadcomplete={handleUploadComplete} />
+    <SimpleFileUpload uploadcomplete={handleUploadComplete} />
   </div>
 
   <!-- Upload Results -->

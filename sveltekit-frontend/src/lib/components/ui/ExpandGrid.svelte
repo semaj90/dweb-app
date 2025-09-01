@@ -24,21 +24,14 @@ https://svelte.dev/e/js_parse_error -->
     expandOnFocus = true,
     onexpand
   }: Props = $props();
-
-
-
-  
-              
-  let class = "";
+let class = $state("");
   ;
-
-  
-  let isExpanded = false;
-  let containerElement: HTMLDivElement;
+let isExpanded = $state(false);
+let containerElement = $state<HTMLDivElement;
 
   function handleMouseEnter() {
     if (expandOnHover) {
-      isExpanded = true;
+      isExpanded >(true);
       onexpand?.();
 }}
   function handleMouseLeave() {
@@ -69,14 +62,14 @@ https://svelte.dev/e/js_parse_error -->
     --expand-duration: {expandDuration};
     --easing: {easing};
   "
-  on:mouseenter={handleMouseEnter}
-  on:mouseleave={handleMouseLeave}
-  on:focusin={handleFocusIn}
-  on:focusout={handleFocusOut}
+  on:on:mouseenter={handleMouseEnter}
+  on:on:mouseleave={handleMouseLeave}
+  focusin={handleFocusIn}
+  focusout={handleFocusOut}
   role="grid"
   tabindex={0}
 >
-  <slot></slot>
+  {@render children}
 </div>
 
 <style>

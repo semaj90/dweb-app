@@ -17,8 +17,7 @@
     Sparkles,
   } from "lucide-svelte";
   import { onMount } from "svelte";
-
-  let selectedConversationId: string | null = null;
+let selectedConversationId = $state<string | null >(null);
   let searchQuery = $state("");
   let showHistory = $state(true);
 
@@ -115,7 +114,7 @@
               <Button
                 variant="outline"
                 size="sm"
-                on:click={() => startNewChat()}
+                on:on:click={() => startNewChat()}
               >
                 <Plus class="space-y-4" />
                 New
@@ -140,7 +139,7 @@
               {#each filteredHistory as conversation (conversation.id)}
                 <button
                   class="space-y-4"
-                  click={() => loadConversation(conversation.id)}
+                  on:onclick={() => loadConversation(conversation.id)}
                 >
                   <h3 class="space-y-4">
                     {conversation.title}
@@ -182,7 +181,7 @@
                 <Button
                   variant="outline"
                   size="sm"
-                  on:click={() => showHistoryPanel()}
+                  on:on:click={() => showHistoryPanel()}
                 >
                   <Clock class="space-y-4" />
                   History
@@ -206,7 +205,7 @@
                 <Button
                   variant="outline"
                   size="sm"
-                  on:click={() => chatActions.saveToStorage()}
+                  on:on:click={() => chatActions.saveToStorage()}
                 >
                   <Save class="space-y-4" />
                   Save
@@ -216,7 +215,7 @@
               <Button
                 variant="outline"
                 size="sm"
-                on:click={() => startNewChat()}
+                on:on:click={() => startNewChat()}
               >
                 <Plus class="space-y-4" />
                 New Chat
@@ -246,7 +245,7 @@
                 <Button
                   variant="outline"
                   class="space-y-4"
-                  on:click={() => {
+                  on:on:click={() => {
                     if (!$chatStore.currentConversation)
                       chatActions.newConversation();
                     // Add the prompt to the conversation

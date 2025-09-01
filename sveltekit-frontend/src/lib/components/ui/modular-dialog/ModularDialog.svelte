@@ -92,7 +92,7 @@
     errorMessage = null;
 
     try {
-      let result: any = null;
+let result = $state<any >(null);
 
       switch (entityType) {
         case 'case':
@@ -138,7 +138,7 @@
   }
 
   // Auto-refresh interval
-  let refreshTimer: number | null = null;
+let refreshTimer = $state<number | null >(null);
   
   $effect(() => {
     if (open && refreshInterval && refreshInterval > 0) {
@@ -165,7 +165,7 @@
   });
 
   // Subscribe to reactive data changes
-  let unsubscribe: (() => void) | null = null;
+let unsubscribe = $state<(() >(> void) | null = null);
   
   $effect(() => {
     if (entityType && entityId) {
@@ -226,7 +226,7 @@
           <!-- Refresh button -->
           {#if entityType && entityId}
             <button
-              click={refresh}
+              on:onclick={refresh}
               disabled={isLoading}
               class="p-1 rounded-sm opacity-70 hover:opacity-100 transition-opacity disabled:opacity-50 mr-2"
               title="Refresh data"
@@ -270,7 +270,7 @@
                   <p class="font-mono text-xs text-muted-foreground mt-1">{errorMessage}</p>
                 </div>
                 <button
-                  click={refresh}
+                  on:onclick={refresh}
                   class="px-3 py-1 text-xs bg-muted hover:bg-muted/80 rounded-md font-mono transition-colors"
                 >
                   Try Again

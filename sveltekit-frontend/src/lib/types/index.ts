@@ -1,118 +1,402 @@
+// ---
+// SINGLE SOURCE OF TRUTH FOR TYPES
+//
+// This file establishes a centralized repository for all shared interfaces and types
+// used across the SvelteKit application, addressing the root cause of hundreds of
+// TypeScript errors related to type mismatches and missing properties.
+// ---
 
-// === DATABASE TYPES ===
-// Re-export Drizzle database types for clean imports
-export type {
-  // Table Select Types
-  SelectUser,
-  SelectSession,
-  SelectCase,
-  SelectEvidence, 
-  SelectLegalDocument,
-  SelectDocumentChunk,
-  
-  // Table Insert Types
-  InsertUser,
-  InsertSession,
-  InsertCase,
-  InsertEvidence,
-  InsertLegalDocument,
-  InsertDocumentChunk,
-  
-  // Database Utilities
-  QueryResult,
-  DatabaseConfig,
-  UserRole,
-  CaseStatus,
-  EvidenceType,
-  DocumentType,
-  TableName
-} from '$lib/server/db/index.js';
+// --- Core Service & API Types ---
 
-// Legacy interfaces for compatibility
-export interface Database {
-  [key: string]: unknown;
+export type ServiceStatus = 'operational' | 'degraded' | 'offline' | 'unknown';
+
+export interface APIResponse<T> {
+    success: boolean;
+    data?: T;
+    error?: {
+        code: string;
+        message: string;
+    };
+    metadata?: {
+        timestamp: string;
+        processingTimeMs: number;
+    };
 }
 
-export interface API {
-  [key: string]: unknown;
+// --- AI & Worker Manager Types (Fixes ~50+ errors) ---
+
+export type AITaskType = "generate" | "analyze" | "embed" | "search" | "embedding" | "analysis" | "classification" | "summarization";
+export type WorkerMessageType = "error" | "status" | "result" | "task" | "TASK_STARTED" | "TASK_COMPLETED" | "TASK_ERROR" | "TASK_CANCELLED" | "STATUS_UPDATE";
+
+export interface AITask {
+  taskId: string;
+  type: AITaskType;
+  providerId: string; // e.g., 'ollama', 'openai'
+  model: string;
+  prompt: string;
+  timestamp: number;
+  priority: 'low' | 'medium' | 'high';
+  // Additional properties for specific tasks can be added
+  [key: string]: any;
 }
 
-export interface Config {
-  [key: string]: unknown;
+export interface WorkerStatus {
+  status: 'idle' | 'processing' | 'error';
+  activeRequests: number;
+  queueLength: number;
+  providers: { id: string, status: ServiceStatus }[];
+  maxConcurrent: number;
+  uptime: number;
+  totalProcessed: number;
+  errors: number;
+  performance: {
+    avgTaskTime: number;
+    tasksPerMinute: number;
+  };
+  lastActivity: Date;
 }
 
-// UI Component Types
-export type ButtonVariant = 'primary' | 'secondary' | 'destructive' | 'outline' | 'ghost' | 'link' | 'danger' | 'success' | 'warning' | 'info' | 'default' | 'nier' | 'crimson' | 'gold';
-export type ButtonSize = 'sm' | 'md' | 'lg' | 'xl';
+export interface WorkerMessage {
+  taskId?: string;
+  type: WorkerMessageType;
+  data?: unknown;
+  payload?: AITask | APIResponse<unknown> | WorkerStatus;
+}
 
-// Evidence Types
-export interface Evidence {
+// --- Copilot & RAG Types (Fixes ~20+ errors) ---
+
+export type CopilotSource = "context7_mcp" | "enhanced_local_index" | "basic_index";
+
+export interface CopilotIndexEntry {
+  // Base properties
   id: string;
-  title: string;
-  description?: string;
-  type: 'document' | 'image' | 'video' | 'audio' | 'physical' | 'digital';
-  evidenceType: 'document' | 'image' | 'video' | 'audio';
-  caseId: string;
-  uploadedBy: string;
-  uploadedAt: string | Date;
-  fileUrl?: string;
-  fileName?: string;
-  mimeType?: string;
-  fileSize?: number;
-  metadata?: Record<string, any>;
-  tags?: string[];
-}
-
-// Session User (simplified version for auth)
-export interface SessionUser {
-  id: string;
-  email: string;
-  name: string;
-  firstName: string;
-  lastName: string;
-  role: string;
-}
-
-export interface Report {
-  id: string;
-  title: string;
   content: string;
-  summary: string;
+  score: number;
+
+  // Unified metadata properties
+  source: CopilotSource;
+  type: 'case' | 'document' | 'evidence' | 'statute';
+  jurisdiction: string;
+  practiceArea: string[];
+  confidentialityLevel: number;
+  lastModified: Date;
+  fileSize: number;
+  language: string;
+  tags: string[];
+}
+
+export interface SimilarityResult {
+    id: string;
+    documentId: string;
+    documentType: string;
+    chunkIndex: number;
+    content: string;
+    score: number;
+}
+
+// --- Database & Document Types ---
+export interface LegalDocument {
+    id: string;
+    caseId: string;
+    title: string;
+    content: string;
+    createdAt: string;
+    updatedAt: string;
+    metadata: Record<string, any>;
+    embedding?: number[];
+}
+
+// --- NES-Style Canvas Engine & AI Prediction Types ---
+
+export interface CanvasState {
+  id: string;
+  animation: string;
+  frame: number;
+  fabricJSON: object; // Represents the serialized fabric.js canvas state
+  metadata: {
+    duration?: number;
+    transitions?: string[];
+    userContext?: string[];
+    confidence?: number;
+  };
+}
+
+export interface CanvasAnimation {
+    name: string;
+    frames: CanvasState[];
+    loop: boolean;
+}
+
+export interface UserActivityLog {
+    timestamp: number;
+    action: string; // e.g., 'canvas_click', 'animation_changed'
+    context: Record<string, any>;
+    sessionId: string;
+}
+
+// --- XState & Machine Types ---
+export interface GlobalAppContext {
+    user: { id: string; email: string; } | null;
+    activeCaseId: string | null;
+    theme: 'light' | 'dark';
+}
+
+export type GlobalAppEvent =
+  | { type: 'LOGIN'; user: { id: string; email: string } }
+  | { type: 'LOGOUT' }
+  | { type: 'SET_CASE'; caseId: string }
+  | { type: 'SET_THEME'; theme: 'light' | 'dark' };
+
+// --- Legal Case & Evidence Types ---
+
+export interface LegalCase {
+  id: string;
+  title: string;
+  description: string;
+  priority: 'low' | 'medium' | 'high' | 'critical';
+  status: 'open' | 'in_progress' | 'closed' | 'archived';
   createdAt: string;
   updatedAt: string;
-  status: 'draft' | 'completed' | 'archived';
-  type: 'case' | 'evidence' | 'legal' | 'analysis';
-  reportType: string;
-  wordCount: number;
-  estimatedReadTime: number;
-  tags: string[];
+  userId: string;
+  metadata: Record<string, any>;
+}
+
+export interface Evidence {
+  id: string;
+  caseId: string;
+  title: string;
+  description: string;
+  type: 'document' | 'image' | 'video' | 'audio' | 'other';
+  fileName?: string;
+  fileSize?: number;
+  mimeType?: string;
+  uploadedAt: string;
+  metadata: Record<string, any>;
+  embedding?: number[];
+}
+
+// --- Vector & Search Types ---
+
+export interface VectorSearchRequest {
+  query: string;
+  filters?: Record<string, any>;
+  limit?: number;
+  threshold?: number;
+}
+
+export interface VectorSearchResult {
+  id: string;
+  content: string;
+  score: number;
+  metadata: Record<string, any>;
+}
+
+// --- Form & Validation Types ---
+
+export interface FormValidationError {
+  field: string;
+  message: string;
+  code?: string;
+}
+
+export interface FormState<T> {
+  data: T;
+  errors: FormValidationError[];
+  isValid: boolean;
+  isSubmitting: boolean;
+}
+
+// --- Notification & Alert Types ---
+
+export type NotificationType = 'info' | 'success' | 'warning' | 'error';
+
+export interface Notification {
+  id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  timestamp: number;
+  autoClose?: boolean;
+  duration?: number;
+}
+
+// --- UI Component Props Types ---
+
+export interface ButtonProps {
+  variant?: 'default' | 'primary' | 'secondary' | 'outline' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  disabled?: boolean;
+  loading?: boolean;
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  onclick?: (event: MouseEvent) => void;
+  class?: string;
+}
+
+export interface ModalProps {
+  show: boolean;
+  title?: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  closable?: boolean;
+  onClose?: () => void;
+  class?: string;
+}
+
+// --- Authentication Types ---
+
+export interface User {
+  id: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  role: 'user' | 'admin' | 'attorney' | 'paralegal';
+  permissions: string[];
+  createdAt: string;
+  lastLoginAt?: string;
+}
+
+export interface AuthSession {
+  user: User;
+  token: string;
+  expiresAt: string;
+  refreshToken?: string;
+}
+
+// --- File Upload Types ---
+
+export interface FileUploadRequest {
+  file: File;
+  caseId?: string;
+  description?: string;
   metadata?: Record<string, any>;
 }
 
-// User interface moved to ./user.ts for centralized management
+export interface FileUploadResponse {
+  id: string;
+  fileName: string;
+  fileSize: number;
+  mimeType: string;
+  url: string;
+  uploadedAt: string;
+}
 
-// Enhanced type definitions for barrel store compatibility
-// Re-export all types from organized type files
+// --- WebSocket & Real-time Types ---
 
-// Core Domain Types - Safe exports without conflicts
-export { User, UserSession } from './user';
-export { Case, CaseForm, CaseFormState, CaseMetrics } from './case';
+export type WebSocketMessageType = 'ping' | 'pong' | 'subscribe' | 'unsubscribe' | 'notification' | 'update';
 
-// Export Evidence interface defined above
-export type { Evidence };
+export interface WebSocketMessage {
+  type: WebSocketMessageType;
+  payload?: any;
+  timestamp: number;
+  requestId?: string;
+}
 
-// Component Props (Svelte 5 runes compatible)
-export * from './component-props';
+// --- API Types Re-export ---
+// Export all centralized API types for easy access
 
-// XState Types - Centralized state management types
-export type { AIAssistantEvent, AIAssistantContext, ConversationEntry } from './xstate';
+export type {
+  // Core API Response Types
+  ApiResponse,
+  ApiError,
+  HealthStatus,
+  ServiceHealth,
+  SystemInfo,
 
-// AI & ML Types - Safe exports
-export { type AIAnalysisResult, type AIModelConfig, type VectorSearchOptions } from './ai-types';
-export { type ChatMessage, type ChatSession, type StreamingResponse } from './ai-chat';
+  // AI & Chat Types
+  ChatRequest,
+  ChatResponse,
+  AIAnalysisRequest,
+  AIAnalysisResponse,
 
-// Global type references for enhanced compatibility
-/// <reference path="./webgpu.d.ts" />
-/// <reference path="./webassembly-enhanced.d.ts" />
-/// <reference path="./drizzle-enhanced.d.ts" />
-/// <reference path="./env-enhanced.d.ts" />
+  // Vector Search & RAG Types
+  VectorSearchRequest as APIVectorSearchRequest,
+  VectorSearchResponse,
+  RAGRequest,
+  RAGResponse,
+
+  // Case Management Types
+  Case,
+  CreateCaseRequest,
+  UpdateCaseRequest,
+  CasesListResponse,
+
+  // Document Types
+  Document,
+  DocumentUploadRequest,
+  DocumentUploadResponse,
+  DocumentSearchRequest,
+  DocumentSearchResponse,
+
+  // Evidence Types
+  Evidence as APIEvidence,
+  CreateEvidenceRequest,
+
+  // User & Auth Types
+  User as APIUser,
+  AuthResponse,
+
+  // Analytics & Metrics Types
+  DashboardStats,
+  AnalyticsRequest,
+  AnalyticsResponse,
+
+  // Cluster & Admin Types
+  ClusterStatus,
+  ScaleRequest,
+  ServiceEvent,
+
+  // Search & Query Types
+  SearchRequest as APISearchRequest,
+  SearchResponse as APISearchResponse,
+
+  // Pagination Types
+  PaginationParams,
+  PaginatedResponse,
+
+  // Error Handling Types
+  ValidationError,
+  ApiValidationError,
+
+  // Request Context Types
+  RequestContext,
+
+  // Type Guards
+  isApiError,
+  isApiResponse,
+  isPaginatedResponse,
+
+  // Enhanced Production Types
+  APIResponse as EnhancedAPIResponse,
+  ServiceTier,
+  ProtocolEndpoint,
+  DatabaseEndpoint,
+  MessagingEndpoint,
+  FrontendEndpoint,
+  ServiceEndpoints,
+  HealthCheckResult,
+  ClusterMetrics,
+  PerformanceMetrics,
+  EnhancedRAGRequest,
+  EnhancedRAGResponse,
+  EnhancedUploadRequest,
+  EnhancedUploadResponse,
+  DimensionalCacheRequest,
+  DimensionalCacheResponse,
+  XStateRequest,
+  XStateResponse,
+  ModuleRequest,
+  ModuleResponse,
+  RecommendationRequest,
+  RecommendationResponse,
+  SystemHealthResponse,
+  ServiceDiscoveryResponse,
+  NATSMessageRequest,
+  NATSMessageResponse,
+  NATSSubscriptionRequest,
+  NATSSubscriptionResponse,
+  APIRequestContext,
+  APIErrorResponse,
+  ProtocolRouter,
+  EnhancedAPIHandler,
+  MultiProtocolRequestOptions
+} from './api.js';

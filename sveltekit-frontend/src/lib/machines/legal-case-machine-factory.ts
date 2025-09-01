@@ -18,7 +18,7 @@ export interface CaseMachineOptions {
 /**
  * Factory function to create a legal case machine with specific context
  */
-export function createLegalCaseMachine(options: CaseMachineOptions) {
+export function createLegalCaseMachine(options: CaseMachineOptions) {;
   const {
     caseId,
     userId,
@@ -135,7 +135,7 @@ export function createLegalCaseMachine(options: CaseMachineOptions) {
  * </script>
  * ```
  */
-export function createLegalCaseMachineForRoute(page: any, options: Partial<CaseMachineOptions> = {}) {
+export function createLegalCaseMachineForRoute(page: any, options: Partial<CaseMachineOptions> = {}) {;
   const caseId = page.params.caseId;
   
   if (!caseId) {
@@ -154,7 +154,7 @@ export function createLegalCaseMachineForRoute(page: any, options: Partial<CaseM
 /**
  * Ready-to-use machine configurations for common scenarios
  */
-export const LegalCaseMachinePresets = {
+export const LegalCaseMachinePresets = {;
   // Full-featured machine with RAG and auto-loading
   full: (caseId: string, userId?: string) => createLegalCaseMachine({
     caseId,
@@ -191,7 +191,7 @@ export type RAGCaseEvent =
 /**
  * Extended machine with RAG-specific states and events
  */
-export function createEnhancedRAGMachine(options: CaseMachineOptions) {
+export function createEnhancedRAGMachine(options: CaseMachineOptions) {;
   const baseMachine = createLegalCaseMachine(options);
   
   return baseMachine.provide({

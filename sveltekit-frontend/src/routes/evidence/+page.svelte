@@ -18,7 +18,7 @@
   import { notifications } from "$lib/stores/notification";
   import { ThinkingProcessor } from "$lib/ai/thinking-processor";
   import { logSecurityEvent } from "$lib/utils/security";
-  
+
   // Feedback Integration
   import FeedbackIntegration from '$lib/components/feedback/FeedbackIntegration.svelte';
   import {
@@ -63,52 +63,50 @@
   let { data = $bindable() } = $props(); // PageData;
 
   // State management
-  let validationModal = {
+let validationModal = $state({
     open: false,
     evidence: null as Evidence | null,
     aiEvent: null as any,
-  };
-
-  let analysisModal = {
+  });
+let analysisModal = $state({
     open: false,
     evidence: null as Evidence | null,
     result: null as any,
     loading: false
-  };
-
-  let searchQuery = "";
-  let showFilters = false;
-  let showBulkActions = false;
-  let viewMode: "grid" | "list" = "grid";
-  let sortBy = "createdAt";
-  let sortOrder: "asc" | "desc" = "desc";
+  });
+let searchQuery = $state("");
+let showFilters = $state(false);
+let showBulkActions = $state(false);
+let viewMode = $state<"grid" | "list" >("grid");
+let sortBy = $state("createdAt");
+let sortOrder = $state<"asc" | "desc" >("desc");
 
   // Enhanced AI analysis state
-  let thinkingStyleEnabled = false;
-  let bulkAnalysisMode = false;
+let thinkingStyleEnabled = $state(false);
+let bulkAnalysisMode = $state(false);
   let analysisInProgress = new Set<string>();
 
   // Feedback integration references
-  let evidencePageFeedback: any;
+let evidencePageFeedback = $state<any;
   let evidenceSearchFeedback: any;
   let evidenceUploadFeedback: any;
 
   // Filtering and selection
-  let selectedEvidence = new Set<string>();
-  let selectedType = "";
-  let selectedStatus = "";
-  let selectedCollector = "";
-  let dateFrom = "";
-  let dateTo = "";
-  let showAdvancedUpload = false;
+  let selectedEvidence >(new Set<string>());
+let selectedType = $state("");
+let selectedStatus = $state("");
+let selectedCollector = $state("");
+let dateFrom = $state("");
+let dateTo = $state("");
+let showAdvancedUpload = $state(false);
 
   // Pagination
-  let currentPage = 1;
-  let itemsPerPage = 12;
-  let totalPages = 1;
+let currentPage = $state(1);
+let itemsPerPage = $state(12);
+let totalPages = $state(1);
 
   // Bulk operations
-  let bulkOperationLoading = false;
+let bulkOperationLoading = $state(false);
 
   // Get case ID from URL if available
   let caseId = $derived($page.url.searchParams.get("caseId") || undefined);
@@ -129,7 +127,7 @@
   });
 
   function filterAndSortEvidence(evidence: Evidence[]) {
-    let filtered = [...evidence];
+let filtered = $state([...evidence]);
 
     // Apply search filter
     if (searchQuery.trim()) {
@@ -213,7 +211,7 @@
   // Enhanced AI Analysis Functions
   async function analyzeEvidence(evidence: Evidence) {
     if (analysisInProgress.has(evidence.id)) return;
-    
+
     analysisInProgress.add(evidence.id);
     analysisInProgress = analysisInProgress;
 
@@ -262,8 +260,8 @@
 
     bulkOperationLoading = true;
     const evidenceIds = Array.from(selectedEvidence);
-    let successCount = 0;
-    let failureCount = 0;
+let successCount = $state(0);
+let failureCount = $state(0);
 
     try {
       for (const evidenceId of evidenceIds) {
@@ -300,11 +298,11 @@
 
   function handleThinkingToggle(event: CustomEvent<{ enabled: boolean }>) {
     thinkingStyleEnabled = event.detail.enabled;
-    
+
     notifications.add({
       type: "info",
       title: "Analysis Mode Changed",
-      message: thinkingStyleEnabled 
+      message: thinkingStyleEnabled
         ? "🧠 Thinking Style enabled - detailed reasoning will be shown"
         : "⚡ Quick Mode enabled - concise analysis results",
     });
@@ -321,31 +319,30 @@
 
   function formatAnalysisForDisplay(analysis: any): string {
     if (!analysis) return "No analysis available";
-    
-    let display = "";
-    
+let display = $state("");
+
     if (analysis.thinking && thinkingStyleEnabled) {
       display += `**🧠 AI Reasoning Process:**\n${analysis.thinking}\n\n---\n\n`;
     }
-    
+
     if (analysis.analysis) {
       display += `**📋 Analysis Results:**\n`;
       const analysisData = analysis.analysis;
-      
+
       if (analysisData.key_findings) {
         display += `\n**Key Findings:**\n`;
         analysisData.key_findings.forEach((finding: string) => {
           display += `• ${finding}\n`;
         });
       }
-      
+
       if (analysisData.legal_implications) {
         display += `\n**Legal Implications:**\n`;
         analysisData.legal_implications.forEach((implication: string) => {
           display += `• ${implication}\n`;
         });
       }
-      
+
       if (analysisData.recommendations) {
         display += `\n**Recommendations:**\n`;
         analysisData.recommendations.forEach((rec: string) => {
@@ -353,9 +350,9 @@
         });
       }
     }
-    
+
     display += `\n**Confidence:** ${Math.round(analysis.confidence * 100)}%`;
-    
+
     return display;
   }
 
@@ -608,7 +605,7 @@
       <div class="flex flex-wrap gap-2 items-center">
         <!-- AI Analysis Toggle -->
         <div class="neural-sprite-active">
-          <ThinkingStyleToggle 
+          <ThinkingStyleToggle
             bind:enabled={thinkingStyleEnabled}
             premium={true}
             size="sm"
@@ -620,7 +617,7 @@
           <Button
             variant="outline"
             size="sm"
-            on:click={() => refreshEvidence()}
+            on:on:on:click={() => refreshEvidence()}
             disabled={loading}
             aria-label="Refresh evidence"
           >
@@ -634,7 +631,7 @@
           <Button
             variant="outline"
             size="sm"
-            on:click={() => (showFilters = !showFilters)}
+            on:on:on:click={() => (showFilters = !showFilters)}
             class={showFilters ? 'nes-legal-priority-high' : ''}
             aria-label="Toggle filters"
             aria-expanded={showFilters}
@@ -648,7 +645,7 @@
           <Button
             variant="outline"
             size="sm"
-            on:click={() => (viewMode = viewMode === "grid" ? "list" : "grid")}
+            on:on:on:click={() => (viewMode = viewMode === "grid" ? "list" : "grid")}
             aria-label="Toggle view mode"
             class="yorha-3d-button"
           >
@@ -664,7 +661,7 @@
           <Button
             variant="outline"
             size="sm"
-            on:click={() => handleAdvancedUpload()}
+            on:on:on:click={() => handleAdvancedUpload()}
             class="neural-sprite-cached"
           >
             <Upload class="w-4 h-4 mr-2" />
@@ -673,9 +670,9 @@
         </Tooltip>
 
         <Tooltip content="Standard evidence upload">
-          <Button 
+          <Button
             variant="evidence"
-            on:click={() => openUploadModal()}
+            on:on:on:click={() => openUploadModal()}
           >
             <Plus class="w-4 h-4 mr-2" />
             Upload Evidence
@@ -719,7 +716,7 @@
         <Button
           variant="outline"
           size="sm"
-          on:click={() => (sortOrder = sortOrder === "asc" ? "desc" : "asc")}
+          on:on:on:click={() => (sortOrder = sortOrder === "asc" ? "desc" : "asc")}
           aria-label="Toggle sort order"
         >
           {#if sortOrder === "asc"}
@@ -812,7 +809,7 @@
         <Button
           variant="outline"
           size="sm"
-          on:click={() => {
+          on:on:on:click={() => {
             selectedType = "";
             selectedStatus = "";
             selectedCollector = "";
@@ -844,7 +841,7 @@
           <Button
             variant="outline"
             size="sm"
-            on:click={() => bulkOperation("analyze")}
+            on:on:on:click={() => bulkOperation("analyze")}
             disabled={bulkOperationLoading}
             class="mx-auto px-4 max-w-7xl"
           >
@@ -860,7 +857,7 @@
           <Button
             variant="outline"
             size="sm"
-            on:click={() => bulkOperation("verify")}
+            on:on:on:click={() => bulkOperation("verify")}
             disabled={bulkOperationLoading}
             class="mx-auto px-4 max-w-7xl"
           >
@@ -871,7 +868,7 @@
           <Button
             variant="outline"
             size="sm"
-            on:click={() => bulkOperation("archive")}
+            on:on:on:click={() => bulkOperation("archive")}
             disabled={bulkOperationLoading}
             class="mx-auto px-4 max-w-7xl"
           >
@@ -882,7 +879,7 @@
           <Button
             variant="outline"
             size="sm"
-            on:click={() => bulkOperation("export")}
+            on:on:on:click={() => bulkOperation("export")}
             disabled={bulkOperationLoading}
             class="mx-auto px-4 max-w-7xl"
           >
@@ -893,7 +890,7 @@
           <Button
             variant="outline"
             size="sm"
-            on:click={() => bulkOperation("delete")}
+            on:on:on:click={() => bulkOperation("delete")}
             disabled={bulkOperationLoading}
             class="mx-auto px-4 max-w-7xl"
           >
@@ -904,7 +901,7 @@
           <Button
             variant="outline"
             size="sm"
-            on:click={() => {
+            on:on:on:click={() => {
               selectedEvidence.clear();
               selectedEvidence = selectedEvidence;
               showBulkActions = false;
@@ -931,7 +928,7 @@
         <h3 class="mx-auto px-4 max-w-7xl">Error Loading Evidence</h3>
         <div class="mx-auto px-4 max-w-7xl">{error}</div>
       </div>
-      <Button variant="outline" size="sm" on:click={() => refreshEvidence()}>
+      <Button variant="outline" size="sm" on:on:on:click={() => refreshEvidence()}>
         <RefreshCw class="mx-auto px-4 max-w-7xl" />
         Retry
       </Button>
@@ -961,13 +958,13 @@
       </p>
       {#if !searchQuery && !selectedType && !selectedStatus && !selectedCollector && !dateFrom && !dateTo}
         <div class="mx-auto px-4 max-w-7xl">
-          <Button on:click={() => openUploadModal()} class="mx-auto px-4 max-w-7xl">
+          <Button on:on:on:click={() => openUploadModal()} class="mx-auto px-4 max-w-7xl">
             <Plus class="mx-auto px-4 max-w-7xl" />
             Upload Evidence
           </Button>
           <Button
             variant="outline"
-            on:click={() => handleAdvancedUpload()}
+            on:on:on:click={() => handleAdvancedUpload()}
             class="mx-auto px-4 max-w-7xl"
           >
             <Upload class="mx-auto px-4 max-w-7xl" />
@@ -991,7 +988,7 @@
           <Button
             variant="ghost"
             size="sm"
-            on:click={() => selectAllEvidence()}
+            on:on:on:click={() => selectAllEvidence()}
             class="mx-auto px-4 max-w-7xl"
             aria-label="Select all visible evidence"
           >
@@ -1011,8 +1008,8 @@
       {#if viewMode === "grid"}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {#each visibleEvidence as evidence}
-            <Card 
-              variant="evidence" 
+            <Card
+              variant="evidence"
               priority={evidence.isAdmissible ? "critical" : "medium"}
               loading={analysisInProgress.has(evidence.id)}
               interactive={true}
@@ -1027,7 +1024,7 @@
                   change={() => toggleEvidenceSelection(evidence.id)}
                   aria-label="Select evidence {evidence.title || 'Untitled Evidence'}"
                 />
-                
+
                 <div class="dropdown dropdown-end">
                   <Tooltip content="Evidence actions">
                     <Button variant="ghost" size="sm" class="yorha-3d-button">
@@ -1108,10 +1105,10 @@
 
               <!-- Enhanced Actions with AI Analysis -->
               <div class="flex gap-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                <Button 
-                  size="sm" 
+                <Button
+                  size="sm"
                   variant={thinkingStyleEnabled ? "neural" : "yorha"}
-                  on:click={() => analyzeEvidence(evidence)}
+                  on:on:on:click={() => analyzeEvidence(evidence)}
                   disabled={analysisInProgress.has(evidence.id)}
                   class="flex-1"
                 >
@@ -1126,7 +1123,7 @@
                     Analyze
                   {/if}
                 </Button>
-                
+
                 <a href="/evidence/{evidence.id}">
                   <Button size="sm" variant="evidence" class="flex-1">
                     <Eye class="w-3 h-3 mr-1" />
@@ -1219,10 +1216,10 @@
                 </div>
 
                 <div class="mx-auto px-4 max-w-7xl">
-                  <Button 
-                    size="sm" 
+                  <Button
+                    size="sm"
                     variant="outline"
-                    on:click={() => analyzeEvidence(evidence)}
+                    on:on:on:click={() => analyzeEvidence(evidence)}
                     disabled={analysisInProgress.has(evidence.id)}
                     class="mx-auto px-4 max-w-7xl"
                   >
@@ -1300,7 +1297,7 @@
             size="sm"
             class="mx-auto px-4 max-w-7xl"
             disabled={currentPage === 1}
-            on:click={() => (currentPage = Math.max(1, currentPage - 1))}
+            on:on:on:click={() => (currentPage = Math.max(1, currentPage - 1))}
             aria-label="Previous page"
           >
             Previous
@@ -1314,7 +1311,7 @@
               variant={page === currentPage ? "default" : "outline"}
               size="sm"
               class="mx-auto px-4 max-w-7xl"
-              on:click={() => (currentPage = page)}
+              on:on:on:click={() => (currentPage = page)}
               aria-label="Go to page {page}"
               aria-current={page === currentPage ? "page" : undefined}
             >
@@ -1327,7 +1324,7 @@
             size="sm"
             class="mx-auto px-4 max-w-7xl"
             disabled={currentPage === totalPages}
-            on:click={() =>
+            on:on:on:click={() =>
               (currentPage = Math.min(totalPages, currentPage + 1))}
             aria-label="Next page"
           >
@@ -1364,16 +1361,16 @@
           {/if}
           - {analysisModal.evidence.title}
         </h3>
-        <Button variant="ghost" size="sm" on:click={closeAnalysisModal}>
+        <Button variant="ghost" size="sm" on:on:on:click={closeAnalysisModal}>
           ✕
         </Button>
       </div>
-      
+
       <div class="mx-auto px-4 max-w-7xl">
         <div class="mx-auto px-4 max-w-7xl">
           <div class="mx-auto px-4 max-w-7xl">{formatAnalysisForDisplay(analysisModal.result)}</div>
         </div>
-        
+
         {#if analysisModal.result.reasoning_steps && analysisModal.result.reasoning_steps.length > 0}
           <div class="mx-auto px-4 max-w-7xl">
             <h4 class="mx-auto px-4 max-w-7xl">Reasoning Steps:</h4>
@@ -1385,16 +1382,16 @@
           </div>
         {/if}
       </div>
-      
+
       <div class="mx-auto px-4 max-w-7xl">
-        <Button variant="outline" on:click={closeAnalysisModal}>Close</Button>
-        <Button on:click={() => {
+        <Button variant="outline" on:on:on:click={closeAnalysisModal}>Close</Button>
+        <Button on:on:on:click={() => {
           // Save analysis or perform other actions
           closeAnalysisModal();
         ">Save Analysis</Button>
       </div>
     </div>
-    <div class="mx-auto px-4 max-w-7xl" click={closeAnalysisModal}></div>
+    <div class="mx-auto px-4 max-w-7xl" on:onclick={closeAnalysisModal}></div>
   </div>
 {/if}
 
@@ -1416,7 +1413,7 @@
       role="button"
       tabindex={0}
       aria-label="Close modal"
-      click={() => (showAdvancedUpload = false)}
+      on:onclick={() => (showAdvancedUpload = false)}
       on:keydown={(e) => e.key === "Escape" && (showAdvancedUpload = false)}
     ></div>
   </div>
@@ -1446,7 +1443,7 @@
   interactionType="page_visit"
   ratingType="ui_experience"
   priority="low"
-  context={{ 
+  context={{
     page: 'evidence',
     viewMode,
     evidenceCount: $evidenceGrid.length,

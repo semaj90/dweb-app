@@ -7,16 +7,15 @@
 <script lang="ts">
   import ModularAIExperience from '$lib/components/ai/ModularAIExperience.svelte';
   import { onMount } from 'svelte';
-
-  let userId = 'demo_user_' + Math.random().toString(36).substr(2, 9);
-  let showAdvancedSettings = false;
-  let systemStatus = {
+let userId = $state('demo_user_' + Math.random().toString(36).substr(2, 9));
+let showAdvancedSettings = $state(false);
+let systemStatus = $state({
     cudaService: false,
     webgpuSupported: false,
     dimensionalCache: true,
     xstateMachine: true,
     rabbitMqConnected: false
-  };
+  });
 
   onMount(async () => {
     // Check system status
@@ -54,7 +53,7 @@
         </div>
         
         <button 
-          click={() => showAdvancedSettings = !showAdvancedSettings}
+          on:onclick={() => showAdvancedSettings = !showAdvancedSettings}
           class="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
         >
           ⚙️ {showAdvancedSettings ? 'Hide' : 'Show'} Advanced Settings

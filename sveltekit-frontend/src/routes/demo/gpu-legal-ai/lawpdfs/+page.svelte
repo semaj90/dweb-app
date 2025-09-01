@@ -35,7 +35,7 @@ https://svelte.dev/e/expected_token -->
   }
 
   // Check AI ready on component mount (run once)
-  let hasCheckedAI = false;
+let hasCheckedAI = $state(false);
   $effect(() => {
     if (!hasCheckedAI) {
       hasCheckedAI = true;
@@ -44,10 +44,10 @@ https://svelte.dev/e/expected_token -->
   });
 
   // File upload handling
-  let fileInput: HTMLInputElement;
+let fileInput = $state<HTMLInputElement;
 
-  const handleFileUpload = async (event: Event) => {
-    const target = event.target as HTMLInputElement;
+  const handleFileUpload >(async (event: Event) => {
+    const target = event.target as HTMLInputElement);
     const files = Array.from(target.files || []);
 
     if (files.length === 0) return;
@@ -400,7 +400,7 @@ https://svelte.dev/e/expected_token -->
       <p class="text-gray-300 mb-4">Generate comprehensive Playwright tests for this processing pipeline</p>
 
       <button
-        click={generatePlaywrightTests}
+        on:onclick={generatePlaywrightTests}
         disabled={!ocrResults.length || isProcessing}
         class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg transition-colors"
       >
@@ -417,7 +417,7 @@ https://svelte.dev/e/expected_token -->
       {/if}
 
       <button
-        click={async () => {
+        on:onclick={async () => {
           if (!jsonOutput) return;
           if (aiReady === false) return;
 

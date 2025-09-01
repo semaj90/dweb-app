@@ -768,7 +768,7 @@ export class Context7Phase13Integration {
 }
 
 // Factory function for Svelte integration
-export function createContext7Phase13Integration(
+export function createContext7Phase13Integration(;
   config?: Partial<Context7IntegrationConfig>,
   ragEngine?: EnhancedRAGEngine,
   apiCoordinator?: StatelessAPICoordinator

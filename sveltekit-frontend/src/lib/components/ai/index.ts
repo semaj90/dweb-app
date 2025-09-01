@@ -15,5 +15,5 @@ export type AIComponentProps = {
   maxTokens?: number;
 };
 
-export const AI_PROVIDERS = ['ollama', 'openai', 'anthropic'] as const;
+export const AI_PROVIDERS = ['ollama', 'openai', 'anthropic'] as const;;
 export type AIProvider = typeof AI_PROVIDERS[number];

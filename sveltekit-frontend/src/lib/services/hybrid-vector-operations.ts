@@ -484,7 +484,7 @@ export class HybridVectorService {
 // ===== SINGLETON INSTANCE =====
 
 export const hybridVectorService = new HybridVectorService();
-
+;
 // ===== CONVENIENCE FUNCTIONS =====
 
 export async function hybridSearch(

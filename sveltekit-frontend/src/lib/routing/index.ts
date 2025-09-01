@@ -3,10 +3,11 @@
  * Complete routing solution for SvelteKit with dynamic generation
  */
 
-import type { DynamicRouteConfig, GeneratedRoute } from './dynamic-route-generator';
+import type { DynamicRouteConfig, GeneratedRoute } from './dynamic-route-generator.js';
 import type { RouteDefinition } from '$lib/data/routes-config';
-import { getAllDynamicRoutes } from './dynamic-route-generator';
-import { registerDynamicRoute, getRoute } from './route-registry';
+import { getAllDynamicRoutes } from './dynamic-route-generator.js';
+import { registerDynamicRoute, getRoute } from './route-registry.js';
+import path from "path";
 
 // Core route generation
 export {
@@ -251,7 +252,7 @@ export function registerRoutes(routes: Array<{
 /**
  * Route pattern matching utility
  */
-export function matchRoute(
+export function matchRoute(;
   pattern: string,
   path: string
 ): { match: boolean; params: Record<string, string> } {
@@ -287,7 +288,7 @@ export function matchRoute(
 /**
  * Route URL generation utility
  */
-export function generateRouteUrl(
+export function generateRouteUrl(;
   routeId: string,
   params: Record<string, string> = {},
   searchParams: Record<string, string> = {}

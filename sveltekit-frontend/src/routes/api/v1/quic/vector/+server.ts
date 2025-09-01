@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * QUIC Vector Proxy API - High-Performance Vector Operations
@@ -12,6 +12,7 @@ import { randomUUID } from 'crypto';
 import { ensureError } from '$lib/utils/ensure-error';
 import { vectorOperations, type VectorSearchQuery } from '$lib/server/db/vector-operations.js';
 import { goServiceManager } from '$lib/services/go-microservice-client.js';
+import { URL } from "url";
 
 const QUIC_VECTOR_CONFIG = {
   primaryPort: 8445,    // QUIC HTTP/3

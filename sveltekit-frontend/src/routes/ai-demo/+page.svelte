@@ -90,7 +90,7 @@ https://svelte.dev/e/const_tag_invalid_placement -->
   });
 
   // Computed values
-  const healthColor = $derived(
+  let healthColor = $derived(
     ollamaStatus === "healthy"
       ? "text-green-600"
       : ollamaStatus === "unhealthy"
@@ -98,7 +98,7 @@ https://svelte.dev/e/const_tag_invalid_placement -->
         : "text-yellow-600"
   );
 
-  const healthIcon = $derived(
+  let healthIcon = $derived(
     ollamaStatus === "healthy" ? CheckCircle : AlertTriangle
   );
 </script>
@@ -203,7 +203,7 @@ https://svelte.dev/e/const_tag_invalid_placement -->
             <Badge
               variant={selectedModel === model ? "default" : "outline"}
               class="cursor-pointer"
-              on:click={() => (selectedModel = model)}
+              on:on:click={() => (selectedModel = model)}
             >
               {model}
             </Badge>
@@ -211,10 +211,10 @@ https://svelte.dev/e/const_tag_invalid_placement -->
         </div>
 
         <div class="mt-4 flex gap-2">
-          <Button on:click={testGeneration} variant="outline">
+          <Button on:on:click={testGeneration} variant="outline">
             Test Generation
           </Button>
-          <Button on:click={checkOllamaHealth} variant="outline">
+          <Button on:on:click={checkOllamaHealth} variant="outline">
             Refresh Status
           </Button>
         </div>

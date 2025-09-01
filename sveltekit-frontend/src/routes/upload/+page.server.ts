@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+import type { PageServerLoad } from './$types';
 import { fail } from "@sveltejs/kit";
 import { z } from 'zod';
 import { superValidate } from 'sveltekit-superforms/server';

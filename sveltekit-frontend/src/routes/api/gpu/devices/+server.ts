@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+import type { RequestHandler } from '@sveltejs/kit';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
 const GO_BASE =

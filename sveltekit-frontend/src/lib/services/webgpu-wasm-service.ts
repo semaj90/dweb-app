@@ -568,7 +568,7 @@ export class WebGPUWASMService {
 
 // Export singleton instance
 export const webgpuWASM = new WebGPUWASMService();
-
+;
 // Initialize capabilities on load
 if (browser) {
   webgpuWASM.detectCapabilities();

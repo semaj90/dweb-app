@@ -1,6 +1,6 @@
 <script lang="ts">
   // $state runtime rune is provided globally
-  let message = "SvelteKit 2 + Svelte 5 Test Page";
+let message = $state("SvelteKit 2 + Svelte 5 Test Page");
   let count = $state(0);
 
   function increment() {
@@ -28,7 +28,7 @@
         <p><strong>Svelte 5 State Test:</strong></p>
         <p>Count: <span class="font-mono">{count}</span></p>
         <button
-          click={increment}
+          on:onclick={increment}
           class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-2"
         >
           Increment

@@ -678,6 +678,6 @@ export class YoRHaWebGPUMath {
 
 // Singleton instance
 export const yorhaWebGPU = new YoRHaWebGPUMath();
-
+;
 // Initialize on module load
 yorhaWebGPU.initialize().catch(console.error);

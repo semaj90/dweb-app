@@ -50,7 +50,7 @@ and AI-powered verification features.
   let showTransferDialog = $state(false);
 
   // WebSocket for real-time updates
-  let wsConnection: WebSocket | null = null;
+let wsConnection = $state<WebSocket | null >(null);
 
   onMount(() => {
     // Start the state machine actor
@@ -312,7 +312,7 @@ and AI-powered verification features.
               Begin the Evidence Chain of Custody workflow to ensure proper handling,
               verification, and documentation of evidence integrity.
             </p>
-            <Button on:click={startWorkflow} class="w-full">
+            <Button on:on:click={startWorkflow} class="w-full">
               Start Custody Workflow
             </Button>
           </CardContent>
@@ -331,7 +331,7 @@ and AI-powered verification features.
               <Button 
                 variant="outline" 
                 size="sm"
-                on:click={() => showIntegrityDetails = !showIntegrityDetails}
+                on:on:click={() => showIntegrityDetails = !showIntegrityDetails}
               >
                 {showIntegrityDetails ? 'Hide' : 'Show'} Details
               </Button>
@@ -377,10 +377,10 @@ and AI-powered verification features.
           <CardContent class="space-y-4">
             {#if currentState.value === 'awaitingApproval'}
               <div class="flex space-x-3">
-                <Button on:click={approveWorkflow} variant="success">
+                <Button on:on:click={approveWorkflow} variant="success">
                   Approve Custody
                 </Button>
-                <Button on:click={rejectWorkflow} variant="destructive">
+                <Button on:on:click={rejectWorkflow} variant="destructive">
                   Reject Custody
                 </Button>
               </div>
@@ -388,15 +388,15 @@ and AI-powered verification features.
 
             {#if currentState.value === 'collaboration'}
               <div class="flex space-x-3">
-                <Button on:click={() => showTransferDialog = true} variant="outline">
+                <Button on:on:click={() => showTransferDialog = true} variant="outline">
                   Transfer Custody
                 </Button>
                 {#if !activeCollaborators.includes(userId)}
-                  <Button on:click={joinCollaboration} variant="outline">
+                  <Button on:on:click={joinCollaboration} variant="outline">
                     Join Collaboration
                   </Button>
                 {:else}
-                  <Button on:click={leaveCollaboration} variant="outline">
+                  <Button on:on:click={leaveCollaboration} variant="outline">
                     Leave Collaboration
                   </Button>
                 {/if}
@@ -405,10 +405,10 @@ and AI-powered verification features.
 
             {#if currentState.value === 'error'}
               <div class="flex space-x-3">
-                <Button on:click={retryWorkflow}>
+                <Button on:on:click={retryWorkflow}>
                   Retry Workflow
                 </Button>
-                <Button on:click={cancelWorkflow} variant="destructive">
+                <Button on:on:click={cancelWorkflow} variant="destructive">
                   Cancel Workflow
                 </Button>
               </div>
@@ -427,7 +427,7 @@ and AI-powered verification features.
           {userId}
           {evidenceId}
           {wsConnection}
-          on:addannotation={(content, position) => {
+          addannotation={(content, position) => {
             custodyActor.send({
               type: 'ADD_ANNOTATION',
               userId,
@@ -455,14 +455,14 @@ and AI-powered verification features.
         ></textarea>
         <div class="flex space-x-3">
           <Button 
-            on:click={startCustodyTransfer}
+            on:on:click={startCustodyTransfer}
             disabled={!transferReason.trim()}
             class="flex-1"
           >
             Transfer
           </Button>
           <Button 
-            on:click={() => showTransferDialog = false}
+            on:on:click={() => showTransferDialog = false}
             variant="outline"
             class="flex-1"
           >

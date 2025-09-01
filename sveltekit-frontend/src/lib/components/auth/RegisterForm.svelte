@@ -258,8 +258,7 @@
 
   function calculatePasswordStrength(password: string): { score: number; feedback: string; color: string } {
     if (!password) return { score: 0, feedback: 'Enter a password', color: 'text-gray-400' };
-
-    let score = 0;
+let score = $state(0);
     if (password.length >= 12) score += 2;
     if (password.length >= 16) score += 1;
     if (/[a-z]/.test(password)) score += 1;
@@ -482,7 +481,7 @@
               <button
                 type="button"
                 class="absolute inset-y-0 right-0 pr-3 flex items-center"
-                click={togglePasswordVisibility}
+                onclick={togglePasswordVisibility}
                 disabled={isLoading}
               >
                 {#if showPassword}
@@ -528,7 +527,7 @@
               <button
                 type="button"
                 class="absolute inset-y-0 right-0 pr-3 flex items-center"
-                click={toggleConfirmPasswordVisibility}
+                onclick={toggleConfirmPasswordVisibility}
                 disabled={isLoading}
               >
                 {#if showConfirmPassword}

@@ -15,9 +15,8 @@
   let { responseTime = $bindable() } = $props(); // 0;
   
   const dispatch = createEventDispatcher();
-  
-  let apiLogs = [];
-  let currentTest = null;
+let apiLogs = $state([]);
+let currentTest = $state(null);
   
   const logAPI = (endpoint, status, time, error = null) => {
     apiLogs = [{
@@ -176,7 +175,7 @@
   <!-- Action Buttons -->
   <div class="grid grid-cols-3 gap-3">
     <Button.Root
-      on:click={testGemma3}
+      on:on:click={testGemma3}
       disabled={isProcessing}
       class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
     >
@@ -189,7 +188,7 @@
     </Button.Root>
 
     <Button.Root
-      on:click={testSynthesis}
+      on:on:click={testSynthesis}
       disabled={isProcessing}
       class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white"
     >
@@ -202,7 +201,7 @@
     </Button.Root>
 
     <Button.Root
-      on:click={testRAG}
+      on:on:click={testRAG}
       disabled={isProcessing}
       class="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white"
     >

@@ -350,7 +350,7 @@ const createAIAgentStore = () => {
     async searchSimilarDocuments(query: string, limit = 5) {
       try {
         // Use real AI service for document search
-        const documents = await realAIService.searchSimilarDocuments(query, { 
+        const documents = await realAIService.searchSimilarDocuments(query, {
           limit,
           threshold: 0.7
         });
@@ -581,35 +581,15 @@ const createAIAgentStore = () => {
 
 // Export the store
 export const aiAgentStore = createAIAgentStore();
-
-// Derived stores for easy component access
-export const isAIConnected = derived(
-  aiAgentStore,
-  (state) => state.isConnected
-);
-export const currentConversation = derived(
-  aiAgentStore,
-  (state) => state.currentConversation
-);
-export const isProcessing = derived(
-  aiAgentStore,
-  (state) => state.isProcessing
-);
-export const streamingResponse = derived(
-  aiAgentStore,
-  (state) => state.streamingResponse
-);
-export const similarDocuments = derived(
-  aiAgentStore,
-  (state) => state.similarDocuments
-);
-export const aiErrors = derived(aiAgentStore, (state) =>
-  state.errors.filter((e: any) => !e.resolved)
-);
-export const systemHealth = derived(
-  aiAgentStore,
-  (state) => state.systemHealth
-);
+;
+// Derived stores for easy component access (fixed corruption)
+export const isAIConnected = derived(aiAgentStore, (state) => state.isConnected);
+export const currentConversation = derived(aiAgentStore, (state) => state.currentConversation);
+export const isProcessing = derived(aiAgentStore, (state) => state.isProcessing);
+export const streamingResponse = derived(aiAgentStore, (state) => state.streamingResponse);
+export const similarDocuments = derived(aiAgentStore, (state) => state.similarDocuments);
+export const aiErrors = derived(aiAgentStore, (state) => state.errors.filter((e: any) => !e.resolved));
+export const systemHealth = derived(aiAgentStore, (state) => state.systemHealth);
 export const performanceMetrics = derived(aiAgentStore, (state) => ({
   responseTime: state.responseTimeMs,
   averageResponseTime: state.averageResponseTime,

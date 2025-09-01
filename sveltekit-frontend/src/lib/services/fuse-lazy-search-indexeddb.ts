@@ -574,7 +574,7 @@ export class FuseLazySearchService {
 
 // Global service instance
 export const fuseLazySearch = new FuseLazySearchService();
-
+;
 // Auto-initialize on import (browser only)
 if (typeof window !== 'undefined') {
   fuseLazySearch.initialize().catch(console.warn);

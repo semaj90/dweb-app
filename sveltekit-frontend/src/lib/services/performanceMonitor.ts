@@ -725,7 +725,7 @@ class PerformanceMonitor {
 
 // Export singleton instance
 export const performanceMonitor = new PerformanceMonitor();
-
+;
 // Export utility functions
 export const formatMetricValue = (value: number, type: 'time' | 'percentage' | 'count' | 'size'): string => {
   switch (type) {

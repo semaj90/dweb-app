@@ -1,6 +1,6 @@
 <script lang="ts">
 
-	import type { ComponentProps } from 'svelte';
+	import type {     ComponentProps     } from 'svelte';
   import { $props, $state } from 'svelte';
 	
 	interface GamingPanelProps {
@@ -40,9 +40,9 @@
 {#if !isClosed}
 <div 
 	class="gaming-panel {variant}"
-	class:glow={borderGlow}
-	class:scan={scanEffect}
-	class:minimized={isMinimized}
+ class:glow={borderGlow}
+ class:scan={scanEffect}
+ class:minimized={isMinimized}
 >
 	<!-- Panel Header -->
 	{#if title || minimizable || closable}
@@ -62,7 +62,7 @@
 				{#if minimizable}
 					<button 
 						class="control-button minimize" 
-						click={toggleMinimize}
+						on:onclick={toggleMinimize}
 						aria-label={isMinimized ? 'Expand panel' : 'Minimize panel'}
 					>
 						{isMinimized ? '▲' : '▼'}
@@ -72,7 +72,7 @@
 				{#if closable}
 					<button 
 						class="control-button close" 
-						click={closePanel}
+						on:onclick={closePanel}
 						aria-label="Close panel"
 					>
 						✕

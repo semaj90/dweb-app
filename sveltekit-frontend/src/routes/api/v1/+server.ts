@@ -1,28 +1,23 @@
-import type { RequestHandler } from './$types';
-
 /**
  * Unified JSON API Router v1 - SvelteKit 2 Production Implementation
  * Integrates all 37 Go microservices with production-quality endpoints
  * Windows-native deployment with comprehensive error handling
  */
-
-
-import { ensureError } from '$lib/utils/ensure-error';
+import { json } from '@sveltejs/kit';
+import type { RequestHandler } from '@sveltejs/kit';
 import { dev } from '$app/environment';
-import type { 
-  APIResponse, 
-  ServiceEndpoints, 
-  ServiceTier, 
-  HealthCheckResult,
-  ClusterMetrics 
-} from '$lib/types/api.js';
+import { ensureError } from '$lib/utils/ensure-error';
+import type { APIResponse } from '$lib/types/index';
+import type { HealthCheckResult } from '$lib/types/api';
 
 // Production Service Configuration - Windows Native
-const PRODUCTION_ENDPOINTS: ServiceEndpoints = {
+// NOTE: Using Partial<ServiceEndpoints> shape to avoid requiring full 37-service map
+// Only actively configured services are declared here; others may be added over time.
+const PRODUCTION_ENDPOINTS = {
   // Core AI Services (Tier 1)
   enhancedRAG: {
     http: 'http://localhost:8094',
-    grpc: 'localhost:50051', 
+    grpc: 'localhost:50051',
     quic: 'localhost:8216',
     websocket: 'ws://localhost:8094/ws',
     tier: 'ULTRA_FAST',
@@ -31,7 +26,7 @@ const PRODUCTION_ENDPOINTS: ServiceEndpoints = {
   },
   uploadService: {
     http: 'http://localhost:8093',
-    health: '/health', 
+    health: '/health',
     status: 'active'
   },
   documentProcessor: {
@@ -50,14 +45,14 @@ const PRODUCTION_ENDPOINTS: ServiceEndpoints = {
   dimensionalCache: {
     http: 'http://localhost:8097',
     tier: 'HIGH_PERF',
-    health: '/health', 
+    health: '/health',
     status: 'experimental'
   },
 
   // Multi-Core Ollama Cluster
   ollama: {
     primary: 'http://localhost:11434',
-    secondary: 'http://localhost:11435', 
+    secondary: 'http://localhost:11435',
     embeddings: 'http://localhost:11436',
     health: '/api/tags',
     status: 'active'
@@ -71,7 +66,7 @@ const PRODUCTION_ENDPOINTS: ServiceEndpoints = {
     status: 'active'
   },
   redis: {
-    host: 'localhost', 
+    host: 'localhost',
     port: 6379,
     status: 'active'
   },
@@ -102,7 +97,7 @@ const PRODUCTION_ENDPOINTS: ServiceEndpoints = {
     status: 'active'
   },
   loadBalancer: {
-    http: 'http://localhost:8224', 
+    http: 'http://localhost:8224',
     health: '/health',
     status: 'active'
   },
@@ -113,25 +108,25 @@ const PRODUCTION_ENDPOINTS: ServiceEndpoints = {
     dev: 'http://localhost:5174',
     status: 'active'
   }
-};
+} as const;
 
 /**
  * Protocol-aware request handler with automatic failover
  */
 async function makeServiceRequest(
-  service: keyof ServiceEndpoints,
+  service: keyof typeof PRODUCTION_ENDPOINTS,
   endpoint: string,
   options: RequestInit = {}
 ): Promise<Response> {
   const serviceConfig = PRODUCTION_ENDPOINTS[service];
-  
+
   if (!serviceConfig) {
     throw new Error(`Service ${service} not configured`);
   }
 
   // Determine optimal protocol based on service tier
   let baseUrl: string;
-  
+
   if ('tier' in serviceConfig && serviceConfig.tier === 'ULTRA_FAST' && 'quic' in serviceConfig) {
     // Attempt QUIC first for ultra-fast services
     baseUrl = `http://${serviceConfig.quic}`;
@@ -149,7 +144,7 @@ async function makeServiceRequest(
   }
 
   const fullUrl = `${baseUrl}${endpoint}`;
-  
+
   try {
     const response = await fetch(fullUrl, {
       ...options,
@@ -167,7 +162,7 @@ async function makeServiceRequest(
       console.warn(`Service ${service} failover: ${baseUrl} → ${serviceConfig.http}`);
       return fetch(`${serviceConfig.http}${endpoint}`, options);
     }
-    
+
     throw fetchError;
   }
 }
@@ -177,7 +172,8 @@ async function makeServiceRequest(
  */
 export const GET: RequestHandler = async ({ url }) => {
   const query = url.searchParams.get('action');
-  
+  const started = Date.now();
+
   try {
     switch (query) {
       case 'health':
@@ -188,14 +184,14 @@ export const GET: RequestHandler = async ({ url }) => {
         return await handleMetrics();
       case 'cluster':
         return await handleClusterStatus();
-      default:
-        return json({
+      default: {
+        const data = {
           api: 'Legal AI Platform API v1',
           version: '2.0.0',
           documentation: 'https://localhost:5173/api/docs',
           endpoints: {
             health: '/api/v1?action=health',
-            services: '/api/v1?action=services', 
+            services: '/api/v1?action=services',
             metrics: '/api/v1?action=metrics',
             cluster: '/api/v1?action=cluster',
             rag: '/api/v1/rag',
@@ -207,14 +203,31 @@ export const GET: RequestHandler = async ({ url }) => {
           protocols: ['HTTP', 'gRPC', 'QUIC', 'WebSocket'],
           deployment: 'Windows Native (No Docker)',
           status: 'production'
-        } satisfies APIResponse);
+        };
+        return json({
+          success: true,
+          data,
+          metadata: {
+            timestamp: new Date().toISOString(),
+            processingTimeMs: Date.now() - started
+          }
+        } satisfies APIResponse<typeof data>);
+      }
     }
-  } catch (err: any) {
-    console.error('API v1 Error:', err);
-    return error(500, ensureError({
-      message: 'Internal API Error',
-      error: dev ? String(err) : 'Service temporarily unavailable'
-    }));
+  } catch (err: unknown) {
+    const e = ensureError(err);
+    console.error('API v1 Error:', e);
+    return json({
+      success: false,
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: dev ? e.message : 'Service temporarily unavailable'
+      },
+      metadata: {
+        timestamp: new Date().toISOString(),
+        processingTimeMs: Date.now() - started
+      }
+    } satisfies APIResponse, { status: 500 });
   }
 };
 
@@ -222,6 +235,7 @@ export const GET: RequestHandler = async ({ url }) => {
  * Comprehensive health check across all services
  */
 async function handleHealthCheck(): Promise<Response> {
+  const started = Date.now();
   const healthChecks: Record<string, HealthCheckResult> = {};
   const checkPromises: Promise<void>[] = [];
 
@@ -233,15 +247,16 @@ async function handleHealthCheck(): Promise<Response> {
       (async () => {
         try {
           const healthEndpoint = 'health' in config ? config.health || '/health' : '/health';
+          const reqStarted = performance.now?.() ?? Date.now();
           const response = await makeServiceRequest(
-            serviceName as keyof ServiceEndpoints,
+            serviceName as keyof typeof PRODUCTION_ENDPOINTS,
             healthEndpoint,
             { method: 'GET' }
           );
 
           healthChecks[serviceName] = {
             status: response.ok ? 'healthy' : 'unhealthy',
-            responseTime: Date.now() - Date.now(), // Will be updated with actual timing
+            responseTime: (performance.now?.() ?? Date.now()) - reqStarted,
             endpoint: healthEndpoint,
             lastCheck: new Date().toISOString()
           };
@@ -262,7 +277,7 @@ async function handleHealthCheck(): Promise<Response> {
   const healthyServices = Object.values(healthChecks).filter(h => h.status === 'healthy').length;
   const healthScore = totalServices > 0 ? Math.round((healthyServices / totalServices) * 100) : 0;
 
-  return json({
+  const data = {
     overall: healthScore >= 80 ? 'healthy' : healthScore >= 50 ? 'degraded' : 'unhealthy',
     healthScore,
     services: healthChecks,
@@ -273,21 +288,29 @@ async function handleHealthCheck(): Promise<Response> {
     },
     timestamp: new Date().toISOString(),
     deployment: 'Windows Native'
-  } satisfies APIResponse);
+  };
+  return json({
+    success: true,
+    data,
+    metadata: {
+      timestamp: new Date().toISOString(),
+      processingTimeMs: Date.now() - started
+    }
+  } satisfies APIResponse<typeof data>);
 }
 
 /**
  * Service discovery endpoint
  */
 async function handleServiceDiscovery(): Promise<Response> {
+  const started = Date.now();
   const services = Object.entries(PRODUCTION_ENDPOINTS).map(([name, config]) => ({
     name,
     config,
     protocols: getServiceProtocols(config),
     tier: 'tier' in config ? config.tier : 'STANDARD'
   }));
-
-  return json({
+  const data = {
     services,
     total: services.length,
     active: services.filter(s => s.config.status === 'active').length,
@@ -298,16 +321,22 @@ async function handleServiceDiscovery(): Promise<Response> {
       QUIC: services.filter(s => s.protocols.includes('QUIC')).length,
       WebSocket: services.filter(s => s.protocols.includes('WebSocket')).length
     }
-  } satisfies APIResponse);
+  };
+  return json({
+    success: true,
+    data,
+    metadata: { timestamp: new Date().toISOString(), processingTimeMs: Date.now() - started }
+  } satisfies APIResponse<typeof data>);
 }
 
 /**
  * Performance metrics endpoint
  */
 async function handleMetrics(): Promise<Response> {
+  const started = Date.now();
   // This would integrate with actual monitoring systems
   // For now, return basic metrics structure
-  return json({
+  const data = {
     performance: {
       averageResponseTime: '< 50ms',
       uptime: '99.9%',
@@ -321,20 +350,26 @@ async function handleMetrics(): Promise<Response> {
     },
     protocols: {
       QUIC: '< 5ms avg',
-      gRPC: '< 15ms avg', 
+      gRPC: '< 15ms avg',
       HTTP: '< 50ms avg',
       WebSocket: '< 1ms latency'
     },
     timestamp: new Date().toISOString()
-  } satisfies APIResponse);
+  };
+  return json({
+    success: true,
+    data,
+    metadata: { timestamp: new Date().toISOString(), processingTimeMs: Date.now() - started }
+  } satisfies APIResponse<typeof data>);
 }
 
 /**
  * Cluster status with Windows-native process monitoring
  */
 async function handleClusterStatus(): Promise<Response> {
+  const started = Date.now();
   // This would integrate with actual cluster monitoring
-  return json({
+  const data = {
     cluster: {
       status: 'operational',
       nodes: 1,
@@ -349,7 +384,12 @@ async function handleClusterStatus(): Promise<Response> {
       databases: { status: 'connected', count: 3 }
     },
     timestamp: new Date().toISOString()
-  } satisfies APIResponse);
+  };
+  return json({
+    success: true,
+    data,
+    metadata: { timestamp: new Date().toISOString(), processingTimeMs: Date.now() - started }
+  } satisfies APIResponse<typeof data>);
 }
 
 /**
@@ -357,11 +397,11 @@ async function handleClusterStatus(): Promise<Response> {
  */
 function getServiceProtocols(config: any): string[] {
   const protocols: string[] = [];
-  
+
   if ('http' in config || 'primary' in config) protocols.push('HTTP');
-  if ('grpc' in config) protocols.push('gRPC'); 
+  if ('grpc' in config) protocols.push('gRPC');
   if ('quic' in config) protocols.push('QUIC');
   if ('websocket' in config) protocols.push('WebSocket');
-  
+
   return protocols;
 }

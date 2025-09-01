@@ -34,27 +34,27 @@
   export let searchQuery: string = "";
   export let selectedTypes: string[] = [];
   export const showAdvancedFilters: boolean = false;
-
+;
   // Store subscriptions - using $derived below
 
   // Connection status
-  let connectionStatus = "disconnected";
-  let lastUpdateTime: string | null = null;
-  let syncStatus = { pending: 0, failed: 0, total: 0, inProgress: false };
+let connectionStatus = $state("disconnected");
+let lastUpdateTime = $state<string | null >(null);
+let syncStatus = $state({ pending: 0, failed: 0, total: 0, inProgress: false });
 
   // UI state
-  let viewMode: "grid" | "list" = "grid";
-  let sortBy: "date" | "title" | "type" | "relevance" = "date";
-  let sortOrder: "asc" | "desc" = "desc";
-  let pageSize = 20;
-  let currentPage = 0;
-  let selectedEvidence: Set<string> = new Set();
-  let editingEvidence: string | null = null;
+let viewMode = $state<"grid" | "list" >("grid");
+let sortBy = $state<"date" | "title" | "type" | "relevance" >("date");
+let sortOrder = $state<"asc" | "desc" >("desc");
+let pageSize = $state(20);
+let currentPage = $state(0);
+let selectedEvidence = $state<Set<string> >(new Set());
+let editingEvidence = $state<string | null >(null);
 
   // Filtered and sorted evidence
-  let filteredEvidence: Evidence[] = [];
-  let paginatedEvidence: Evidence[] = [];
-  let totalPages = 0;
+let filteredEvidence = $state<Evidence[] >([]);
+let paginatedEvidence = $state<Evidence[] >([]);
+let totalPages = $state(0);
 
   // Subscribe to store values (use function form so the global $derived signature is satisfied)
   let evidence = $derived(() => $evidenceStore.evidence || []);
@@ -89,11 +89,11 @@
         return true;
       })
       .sort((a, b) => {
-        let aVal: any, bVal: any;
+let aVal = $state<any, bVal: any;
 
         switch (sortBy) {
           case "date":
-            aVal = new Date(a.timeline?.updatedAt || 0);
+            aVal >(new Date(a.timeline?.updatedAt || 0));
             bVal = new Date(b.timeline?.updatedAt || 0);
             break;
           case "title":
@@ -347,7 +347,7 @@
     <Button
       variant="ghost"
       size="sm"
-      on:click={() => evidenceStore.undo()}
+      on:on:click={() => evidenceStore.undo()}
       disabled={!evidenceStore.canUndo()}
       title="Undo (Ctrl+Z)"
     >
@@ -357,7 +357,7 @@
     <Button
       variant="ghost"
       size="sm"
-      on:click={() => evidenceStore.redo()}
+      on:on:click={() => evidenceStore.redo()}
       disabled={!evidenceStore.canRedo()}
       title="Redo (Ctrl+Y)"
     >
@@ -367,7 +367,7 @@
     <Button
       variant="ghost"
       size="sm"
-      on:click={() => syncWithServer()}
+      on:on:click={() => syncWithServer()}
       disabled={isLoading}
       title="Sync with server"
     >
@@ -386,7 +386,7 @@
       <div class="mx-auto px-4 max-w-7xl">
         <button
           class="mx-auto px-4 max-w-7xl"
-          click={() => (error = null)}
+          on:onclick={() => (error = null)}
         >
           <span class="mx-auto px-4 max-w-7xl">Dismiss</span>
           ✕
@@ -445,7 +445,7 @@
         <Button
           variant="ghost"
           size="sm"
-          on:click={() => (sortOrder = sortOrder === "asc" ? "desc" : "asc")}
+          on:on:click={() => (sortOrder = sortOrder === "asc" ? "desc" : "asc")}
         >
           {#if sortOrder === "asc"}
             <SortAsc class="mx-auto px-4 max-w-7xl" />
@@ -462,7 +462,7 @@
       <Button
         variant="ghost"
         size="sm"
-        on:click={() => (viewMode = viewMode === "grid" ? "list" : "grid")}
+        on:on:click={() => (viewMode = viewMode === "grid" ? "list" : "grid")}
       >
         {#if viewMode === "grid"}
           <List class="mx-auto px-4 max-w-7xl" />
@@ -473,14 +473,14 @@
 
       <!-- Selection Actions -->
       {#if selectedEvidence.size > 0}
-        <Button variant="outline" size="sm" on:click={() => clearSelection()}>
+        <Button variant="outline" size="sm" on:on:click={() => clearSelection()}>
           Clear ({selectedEvidence.size})
         </Button>
 
         <Button
           variant="danger"
           size="sm"
-          on:click={() => {
+          on:on:click={() => {
             if (confirm(`Delete ${selectedEvidence.size} selected items?`)) {
               selectedEvidence.forEach((id) => deleteEvidence(id));
             }
@@ -490,13 +490,13 @@
           Delete
         </Button>
       {:else}
-        <Button variant="ghost" size="sm" on:click={() => selectAll()}>
+        <Button variant="ghost" size="sm" on:on:click={() => selectAll()}>
           Select All
         </Button>
       {/if}
 
       <!-- Add Evidence -->
-      <Button on:click={() => createEvidence()}>
+      <Button on:on:click={() => createEvidence()}>
         <span class="mx-auto px-4 max-w-7xl">+</span>
         Add Evidence
       </Button>
@@ -527,7 +527,7 @@
             ? "No evidence matches your current filters."
             : "No evidence has been added yet."}
         </p>
-        <Button on:click={() => createEvidence()}>Add First Evidence</Button>
+        <Button on:on:click={() => createEvidence()}>Add First Evidence</Button>
       </div>
     </div>
   {:else}
@@ -567,7 +567,7 @@
                 <Button
                   variant="ghost"
                   size="sm"
-                  on:click={() => (editingEvidence = item.id)}
+                  on:on:click={() => (editingEvidence = item.id)}
                 >
                   <Eye class="mx-auto px-4 max-w-7xl" />
                 </Button>
@@ -575,7 +575,7 @@
                 <Button
                   variant="ghost"
                   size="sm"
-                  on:click={() => deleteEvidence(item.id)}
+                  on:on:click={() => deleteEvidence(item.id)}
                 >
                   <Trash2 class="mx-auto px-4 max-w-7xl" />
                 </Button>
@@ -599,7 +599,7 @@
                 <div class="mx-auto px-4 max-w-7xl">
                   <Button
                     size="sm"
-                    on:click={() =>
+                    on:on:click={() =>
                       updateEvidence(item.id, {
                         title: item.title,
                         description: item.description,
@@ -610,7 +610,7 @@
                   <Button
                     variant="ghost"
                     size="sm"
-                    on:click={() => (editingEvidence = null)}
+                    on:on:click={() => (editingEvidence = null)}
                   >
                     Cancel
                   </Button>
@@ -752,14 +752,14 @@
                     <Button
                       variant="ghost"
                       size="sm"
-                      on:click={() => (editingEvidence = item.id)}
+                      on:on:click={() => (editingEvidence = item.id)}
                     >
                       <Eye class="mx-auto px-4 max-w-7xl" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
-                      on:click={() => deleteEvidence(item.id)}
+                      on:on:click={() => deleteEvidence(item.id)}
                     >
                       <Trash2 class="mx-auto px-4 max-w-7xl" />
                     </Button>
@@ -787,7 +787,7 @@
             variant="outline"
             size="sm"
             disabled={currentPage === 0}
-            on:click={() => currentPage--}
+            on:on:click={() => currentPage--}
           >
             Previous
           </Button>
@@ -800,7 +800,7 @@
             variant="outline"
             size="sm"
             disabled={currentPage >= totalPages - 1}
-            on:click={() => currentPage++}
+            on:on:click={() => currentPage++}
           >
             Next
           </Button>

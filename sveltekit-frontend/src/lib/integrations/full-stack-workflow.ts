@@ -604,7 +604,7 @@ export class FullStackLegalAIWorkflow {
 
 // Global workflow instance
 export const fullStackWorkflow = new FullStackLegalAIWorkflow();
-
+;
 // Helper functions for VS Code tasks
 export async function initializeFullStack(): Promise<void> {
   await fullStackWorkflow.initialize();

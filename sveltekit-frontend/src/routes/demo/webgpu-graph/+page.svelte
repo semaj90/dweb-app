@@ -15,7 +15,7 @@
   import LegalDocumentGraphViewer from '$lib/components/visualization/LegalDocumentGraphViewer.svelte';
   import { syncService, syncStatus, offlineCapabilities } from '$lib/services/client-server-sync';
   import { legalDB, LegalDBUtils, type GraphVisualizationData, type DocumentCache } from '$lib/db/client-db';
-  import type { VectorSearchResult } from '$lib/server/db/enhanced-vector-operations';
+  import type { VectorSearchResult } from '$lib/schemas/client';
 
   // ============================================================================
   // REACTIVE STATE
@@ -445,7 +445,7 @@
           class:active={$demoState.currentStep === index + 1}
           class:completed={$demoState.currentStep > index + 1}
           disabled={!$canProceed}
-          on:click={() => demoState.update(s => ({ ...s, currentStep: index + 1 }))}
+          on:on:click={() => demoState.update(s => ({ ...s, currentStep: index + 1 }))}
         >
           <span class="step-number">{index + 1}</span>
           <span class="step-title">{step.title}</span>
@@ -489,7 +489,7 @@
             </div>
           </div>
 
-          <button click={nextStep} disabled={!$webgpuSupported} class="primary-button">
+          <button on:onclick={nextStep} disabled={!$webgpuSupported} class="primary-button">
             Initialize System
           </button>
         </div>
@@ -513,7 +513,7 @@
 
           <div class="action-buttons">
             <button 
-              click={generateSampleData} 
+              on:onclick={generateSampleData} 
               disabled={$demoState.isGeneratingData || $demoState.dataGenerated}
               class="primary-button"
             >
@@ -522,7 +522,7 @@
             </button>
             
             {#if $demoState.dataGenerated}
-              <button click={nextStep} class="secondary-button">
+              <button on:onclick={nextStep} class="secondary-button">
                 Continue to Storage
               </button>
             {/if}
@@ -560,11 +560,11 @@
           </div>
 
           <div class="action-buttons">
-            <button click={async () => { await updateDatabaseStats(); }} class="secondary-button">
+            <button on:onclick={async () => { await updateDatabaseStats(); }} class="secondary-button">
               Refresh Stats
             </button>
             
-            <button click={nextStep} class="primary-button">
+            <button on:onclick={nextStep} class="primary-button">
               Launch Visualization
             </button>
           </div>
@@ -596,20 +596,20 @@
           </div>
 
           <div class="visualization-controls">
-            <button click={() => $graphViewer?.resetCamera()} class="control-button">
+            <button on:onclick={() => $graphViewer?.resetCamera()} class="control-button">
               🎯 Reset Camera
             </button>
             
-            <button click={() => $graphViewer?.togglePhysics()} class="control-button">
+            <button on:onclick={() => $graphViewer?.togglePhysics()} class="control-button">
               ⚡ Toggle Physics
             </button>
             
-            <button click={() => $graphViewer?.focusOnNode('case-001')} class="control-button">
+            <button on:onclick={() => $graphViewer?.focusOnNode('case-001')} class="control-button">
               🔍 Focus on Case
             </button>
           </div>
 
-          <button click={nextStep} class="primary-button">
+          <button on:onclick={nextStep} class="primary-button">
             Test Vector Search
           </button>
         </div>
@@ -629,7 +629,7 @@
                 class="search-input"
                 keydown={(e) => e.key === 'Enter' && performVectorSearch()}
               />
-              <button click={performVectorSearch} class="search-button">
+              <button on:onclick={performVectorSearch} class="search-button">
                 🔍 Search
               </button>
             </div>
@@ -670,7 +670,7 @@
             </div>
           {/if}
 
-          <button click={nextStep} class="primary-button">
+          <button on:onclick={nextStep} class="primary-button">
             Test Server Sync
           </button>
         </div>
@@ -686,7 +686,7 @@
             <div class="status-grid">
               <div class="status-item">
                 <span class="status-label">Connection:</span>
-                <span class="status-value" class:on:line={$syncStatus.isOnline}>
+                <span class="status-value" class:line={$syncStatus.isOnline}>
                   {$syncStatus.isOnline ? 'Online' : 'Offline'}
                 </span>
               </div>
@@ -720,14 +720,14 @@
 
           <div class="action-buttons">
             <button 
-              click={syncToServer}
+              on:onclick={syncToServer}
               disabled={!$syncStatus.isOnline}
               class="primary-button"
             >
               Sync to Server
             </button>
             
-            <button click={async () => { await syncService.clearCache(); }} class="secondary-button">
+            <button on:onclick={async () => { await syncService.clearCache(); }} class="secondary-button">
               Clear Cache
             </button>
           </div>
@@ -746,7 +746,7 @@
     <!-- Navigation Controls -->
     <footer class="demo-navigation">
       <button 
-        click={prevStep} 
+        on:onclick={prevStep} 
         disabled={$demoState.currentStep === 1}
         class="nav-button prev"
       >
@@ -758,7 +758,7 @@
       </span>
       
       <button 
-        click={nextStep}
+        on:onclick={nextStep}
         disabled={$demoState.currentStep === $demoState.maxSteps}
         class="nav-button next"
       >

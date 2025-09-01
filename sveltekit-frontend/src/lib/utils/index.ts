@@ -20,7 +20,7 @@ export async function fetchWithTimeout(
   options: RequestInit & { timeout?: number } = {}
 ): Promise<Response> {
   const { timeout = 8000, ...fetchOptions } = options;
-  
+
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
 
@@ -41,11 +41,11 @@ export async function fetchWithTimeout(
 
 export function formatFileSize(bytes: number): string {
   if (!bytes) return '0 B';
-  
+
   const k = 1024;
   const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  
+
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 }
 
@@ -77,7 +77,7 @@ export function generateId(): string {
 // ===== PERFORMANCE UTILITIES =====
 
 export function debounce<T extends (...args: any[]) => any>(
-  func: T, 
+  func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
   let timeout: NodeJS.Timeout;
@@ -88,7 +88,7 @@ export function debounce<T extends (...args: any[]) => any>(
 }
 
 export function throttle<T extends (...args: any[]) => any>(
-  func: T, 
+  func: T,
   limit: number
 ): (...args: Parameters<T>) => void {
   let inThrottle: boolean;
@@ -190,7 +190,7 @@ export function downloadFile(data: Blob | string, filename: string, type: string
 // ===== ENVIRONMENT UTILITIES =====
 
 export const isBrowser = typeof window !== 'undefined';
-
+;
 // ===== STORAGE UTILITIES =====
 
 export const storage = {
@@ -203,7 +203,7 @@ export const storage = {
       return fallback;
     }
   },
-  
+
   set: <T>(key: string, value: T): void => {
     if (!isBrowser) return;
     try {
@@ -212,12 +212,12 @@ export const storage = {
       console.error('Failed to save to localStorage:', error);
     }
   },
-  
+
   remove: (key: string): void => {
     if (!isBrowser) return;
     localStorage.removeItem(key);
   },
-  
+
   clear: (): void => {
     if (!isBrowser) return;
     localStorage.clear();
@@ -231,13 +231,13 @@ export const theme = {
     if (!isBrowser) return 'light';
     return (localStorage.getItem('theme') as 'light' | 'dark') || 'light';
   },
-  
+
   set: (newTheme: 'light' | 'dark'): void => {
     if (!isBrowser) return;
     localStorage.setItem('theme', newTheme);
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
   },
-  
+
   toggle: (): 'light' | 'dark' => {
     const current = theme.get();
     const newTheme = current === 'light' ? 'dark' : 'light';

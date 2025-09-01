@@ -504,7 +504,7 @@ export class YoRHaAPIClient {
 
 // Singleton instance for global use
 export const yorhaAPI = new YoRHaAPIClient();
-
+;
 // Component Data Validators
 export const YoRHaValidators = {
   validateButtonConfig: (config: any): config is YoRHaButton3DOptions => {

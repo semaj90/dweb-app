@@ -493,7 +493,7 @@ SYSTEM """You are a specialized legal AI assistant with expertise in case law an
 
 // Singleton instance
 export const ollamaService = new OllamaService();
-
+;
 // Initialize on module load (only in browser)
 if (browser) {
   ollamaService.initialize().catch(console.error);

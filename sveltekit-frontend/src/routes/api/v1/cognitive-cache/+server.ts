@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * Cognitive Cache API Endpoint
@@ -8,6 +8,7 @@ import type { RequestHandler } from './$types';
 
 import { cognitiveCacheManager } from '$lib/services/cognitive-cache-integration';
 import { dev } from '$app/environment';
+import { URL } from "url";
 
 // === Cognitive Cache API Handlers ===
 

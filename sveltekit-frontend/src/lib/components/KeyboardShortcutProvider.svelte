@@ -7,7 +7,7 @@
   import { page } from '$app/stores';
 
   // Initialize the keyboard shortcut system
-  let cleanup: (() => void) | null = null;
+let cleanup = $state<(() >(> void) | null = null);
 
   onMount(() => {
     // Initialize the global keyboard shortcut listener

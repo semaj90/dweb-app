@@ -1,16 +1,16 @@
 // Role-based Access Control (RBAC) System for Legal AI Platform
 // Defines user roles, permissions, and access control logic
 
-export type UserRole = 
-  | 'admin' 
-  | 'lead_prosecutor' 
-  | 'prosecutor' 
-  | 'paralegal' 
-  | 'investigator' 
-  | 'analyst' 
+export type UserRole =
+  | 'admin'
+  | 'lead_prosecutor'
+  | 'prosecutor'
+  | 'paralegal'
+  | 'investigator'
+  | 'analyst'
   | 'viewer';
 
-export type Permission = 
+export type Permission =
   | 'create_case'
   | 'edit_case'
   | 'delete_case'
@@ -69,7 +69,7 @@ export const ROLES: Record<UserRole, RoleDefinition> = {
       'configure_system', 'view_audit_logs', 'manage_integrations'
     ]
   },
-  
+
   lead_prosecutor: {
     name: 'lead_prosecutor',
     displayName: 'Lead Prosecutor',
@@ -86,7 +86,7 @@ export const ROLES: Record<UserRole, RoleDefinition> = {
       'assign_cases', 'approve_reports'
     ]
   },
-  
+
   prosecutor: {
     name: 'prosecutor',
     displayName: 'Prosecutor',
@@ -102,7 +102,7 @@ export const ROLES: Record<UserRole, RoleDefinition> = {
       'view_criminals', 'edit_criminals'
     ]
   },
-  
+
   paralegal: {
     name: 'paralegal',
     displayName: 'Paralegal',
@@ -118,7 +118,7 @@ export const ROLES: Record<UserRole, RoleDefinition> = {
       'view_criminals'
     ]
   },
-  
+
   investigator: {
     name: 'investigator',
     displayName: 'Criminal Investigator',
@@ -133,7 +133,7 @@ export const ROLES: Record<UserRole, RoleDefinition> = {
       'manage_criminals', 'edit_criminals', 'view_criminals'
     ]
   },
-  
+
   analyst: {
     name: 'analyst',
     displayName: 'Data Analyst',
@@ -148,7 +148,7 @@ export const ROLES: Record<UserRole, RoleDefinition> = {
       'view_criminals'
     ]
   },
-  
+
   viewer: {
     name: 'viewer',
     displayName: 'Viewer',
@@ -259,9 +259,9 @@ export class AccessControl {
    * Check if a user can access a specific resource based on ownership and permissions
    */
   static canAccessResource(
-    userRole: UserRole, 
-    permission: Permission, 
-    resourceOwnerId?: string, 
+    userRole: UserRole,
+    permission: Permission,
+    resourceOwnerId?: string,
     userId?: string,
     isPublic?: boolean
   ): boolean {
@@ -337,7 +337,7 @@ export class AccessControl {
    * Get roles that have a specific permission
    */
   static getRolesWithPermission(permission: Permission): UserRole[] {
-    return (Object.keys(ROLES) as UserRole[]).filter(role => 
+    return (Object.keys(ROLES) as UserRole[]).filter(role =>
       this.hasPermission(role, permission)
     );
   }
@@ -352,7 +352,7 @@ export class AccessControl {
     }
 
     // Users can only assign roles with lower or equal hierarchy
-    return this.hasHigherAuthority(currentUserRole, targetRole) || 
+    return this.hasHigherAuthority(currentUserRole, targetRole) ||
            ROLES[currentUserRole]?.hierarchyLevel === ROLES[targetRole]?.hierarchyLevel;
   }
 }
@@ -367,7 +367,7 @@ export const DEFAULT_PERMISSIONS = {
 // Role hierarchy for UI display
 export const ROLE_HIERARCHY: UserRole[] = [
   'admin',
-  'lead_prosecutor', 
+  'lead_prosecutor',
   'prosecutor',
   'investigator',
   'analyst',

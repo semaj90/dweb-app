@@ -247,9 +247,9 @@
             <div
               class="nes-container {dragOver ? 'is-success' : ''} {$errors.file ? 'is-error' : ''}"
               style="padding: 30px; text-align: center; cursor: pointer;"
-              on:dragover={onDragOver}
-              on:dragleave={onDragLeave}
-              on:drop={onDrop}
+              ondragover={onDragOver}
+              ondragleave={onDragLeave}
+              ondrop={onDrop}
             >
               {#if selectedFile}
                 <div class="space-y-4">
@@ -270,7 +270,7 @@
                   
                   <button
                     type="button"
-                    click={() => { selectedFile = null; filePreview = null; metadata = null; }}
+                    on:onclick={() => { selectedFile = null; filePreview = null; metadata = null; }}
                     class="text-sm text-red-600 hover:text-red-800"
                   >
                     Remove file
@@ -508,7 +508,7 @@
         <div style="text-align: center; margin: 20px 0;">
           <button
             type="button"
-            click={() => history.back()}
+            on:onclick={() => history.back()}
             disabled={$submitting}
             class="nes-btn"
           >

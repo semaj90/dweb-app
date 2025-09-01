@@ -53,31 +53,31 @@
   }
 
   // State management
-  let activeTab = 'documents';
-  let isLoading = false;
-  let selectedData: any[] = [];
-  let searchQuery = '';
-  let modalOpen = false;
-  let modalType: 'create' | 'edit' = 'create';
-  let modalData: any = null;
-  let notifications: NotificationItem[] = [];
-  let terminalActive = false;
+let activeTab = $state('documents');
+let isLoading = $state(false);
+let selectedData = $state<any[] >([]);
+let searchQuery = $state('');
+let modalOpen = $state(false);
+let modalType = $state<'create' | 'edit' >('create');
+let modalData = $state<any >(null);
+let notifications = $state<NotificationItem[] >([]);
+let terminalActive = $state(false);
 
   // Data stores
-  let documentsData: any[] = [];
-  let casesData: any[] = [];
-  let evidenceData: any[] = [];
-  let pagination: Pagination = {
+let documentsData = $state<any[] >([]);
+let casesData = $state<any[] >([]);
+let evidenceData = $state<any[] >([]);
+let pagination = $state<Pagination >({
     page: 1,
     limit: 25,
     total: 0,
     totalPages: 0
-  };
+  });
 
   // Enhanced RAG state
-  let ragResults: RagResult[] = [];
-  let ragAnalysis: RagAnalysis | null = null;
-  let ragRecommendations: RagRecommendation[] = [];
+let ragResults = $state<RagResult[] >([]);
+let ragAnalysis = $state<RagAnalysis | null >(null);
+let ragRecommendations = $state<RagRecommendation[] >([]);
 
   // Reactive selection based on activeTab (using $derived)
   let currentData = $derived(activeTab === 'documents'
@@ -366,15 +366,15 @@
     <!-- Controls -->
     <div class="header-controls">
       <div class="search-container">
-  <input type="search" class="search-input" placeholder="Search legal data..." aria-label="Search legal data" bind:value={searchQuery} input={() => triggerSearch()} on:keydown={(e) => e.key === 'Enter' && loadData()} />
-        <button class="search-btn" click={() => loadData()}>SEARCH</button>
+  <input type="search" class="search-input" placeholder="Search legal data..." aria-label="Search legal data" bind:value={searchQuery} input={() => triggerSearch()} keydown={(e) => e.key === 'Enter' && loadData()} />
+        <button class="search-btn" on:onclick={() => loadData()}>SEARCH</button>
       </div>
 
-      <button class="analyze-btn" click={() => performEnhancedAnalysis(searchQuery)}>
+      <button class="analyze-btn" on:onclick={() => performEnhancedAnalysis(searchQuery)}>
         ENHANCED ANALYSIS
       </button>
 
-      <button class="terminal-btn" click={() => terminalActive = !terminalActive}>
+      <button class="terminal-btn" on:onclick={() => terminalActive = !terminalActive}>
         TERMINAL
       </button>
     </div>
@@ -384,19 +384,19 @@
   <nav class="tab-navigation">
     <button
       class="tab-btn {activeTab === 'documents' ? 'active' : ''}"
-      click={() => activeTab = 'documents'}
+      on:onclick={() => activeTab = 'documents'}
     >
       DOCUMENTS
     </button>
     <button
       class="tab-btn {activeTab === 'cases' ? 'active' : ''}"
-      click={() => activeTab = 'cases'}
+      on:onclick={() => activeTab = 'cases'}
     >
       CASES
     </button>
     <button
       class="tab-btn {activeTab === 'evidence' ? 'active' : ''}"
-      click={() => activeTab = 'evidence'}
+      on:onclick={() => activeTab = 'evidence'}
     >
       EVIDENCE
     </button>
@@ -409,7 +409,7 @@
       <section class="data-section">
         <div class="section-header">
           <h2 class="section-title">{activeTab.toUpperCase()} MANAGEMENT</h2>
-          <button class="create-btn" click={openCreateModal}>
+          <button class="create-btn" on:onclick={openCreateModal}>
             CREATE NEW {activeTab.toUpperCase().slice(0, -1)}
           </button>
         </div>
@@ -480,7 +480,7 @@
         title={(modalType === 'create' ? 'Create New' : 'Edit') + ' ' + activeTab.toUpperCase().slice(0, -1)}
         fields={currentFormFields}
         submitLabel={modalType === 'create' ? 'Create' : 'Update'}
-        on:submit={(data) => {
+        submit={(data) => {
                     {#each rec.actionItems as action}
                       <span class="rec-action">{action}</span>
                     {/each}
@@ -503,7 +503,7 @@
         <YoRHaTerminal
           title="YoRHa Legal AI Terminal"
           isActive={terminalActive}
-          on:command={handleTerminalCommand}
+          command={handleTerminalCommand}
         />
       </aside>
     {/if}
@@ -519,14 +519,14 @@
         title="{modalType === 'create' ? 'Create New' : 'Edit'} {activeTab.toUpperCase().slice(0, -1)}"
         fields={currentFormFields}
         submitLabel={modalType === 'create' ? 'Create' : 'Update'}
-        on:submit={(data) => {
+        submit={(data) => {
           if (modalType === 'create') {
             createItem(activeTab, data);
           } else {
             updateItem(activeTab, modalData?.id, data);
           }
         }}
-        on:cancel={closeModal}
+        cancel={closeModal}
       />
     </YoRHaModal>
   {/if}
@@ -537,7 +537,7 @@
       <YoRHaNotification
         type={notification.type}
         message={notification.message}
-        on:close={() => notifications = notifications.filter(n => n.id !== notification.id)}
+        close={() => notifications = notifications.filter(n => n.id !== notification.id)}
       />
     {/each}
   </div>

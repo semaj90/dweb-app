@@ -5,16 +5,16 @@
   import { WebGPUSOMCache, type IntelligentTodo, type NPMError, initializeSOMCache } from '$lib/webgpu/som-webgpu-cache.js';
 
   let somCache: WebGPUSOMCache;
-  let isLoading = false;
-  let webGPUEnabled = false;
-  let todos: IntelligentTodo[] = [];
-  let errors: NPMError[] = [];
-  let processingTime = 0;
-  let npmOutput = `
+let isLoading = $state(false);
+let webGPUEnabled = $state(false);
+let todos = $state<IntelligentTodo[] >([]);
+let errors = $state<NPMError[] >([]);
+let processingTime = $state(0);
+let npmOutput = $state(`
 src/app.ts(1,25): error TS2307: Cannot find module '@types/node' or its corresponding type declarations.
 src/utils.ts(15,23): error TS2339: Property 'foo' does not exist on type 'Object'.
 src/api.ts(25,10): error: Service unavailable: http://localhost:8080
-src/parser.ts(42,15): error TS1005: Unexpected token ';'.
+src/parser.ts(42,15): error TS1005: Unexpected token ');'.
 src/index.ts(8,32): error TS2307: Module not found: Can't resolve './missing'
 src/components/Button.tsx(12,8): error TS2322: Type 'string' is not assignable to type 'number'.
 src/services/auth.ts(56,4): error: Authentication service connection failed
@@ -22,18 +22,16 @@ src/database/models.ts(23,12): error TS2304: Cannot find name 'User'.
 src/types/global.d.ts(5,18): error TS2717: Subsequent property declarations must have the same type.
 src/hooks.server.ts(18,25): error: Database connection timeout after 5000ms
 `;
-
-  let performanceMetrics = {
+let performanceMetrics = $state({
     somTrainingTime: 0,
     webGPUProcessingTime: 0,
     pageRankIterations: 0,
     cacheHitRatio: 0,
     totalProcessingTime: 0
-  };
-
-  let filterCategory = 'all';
-  let sortBy: 'priority' | 'confidence' | 'effort' = 'priority';
-  let showDetails = false;
+  });
+let filterCategory = $state('all');
+let sortBy = $state<'priority' | 'confidence' | 'effort' >('priority');
+let showDetails = $state(false);
 
   onMount(async () => {
     try {
@@ -201,7 +199,7 @@ src/hooks.server.ts(18,25): error: Database connection timeout after 5000ms
 
     <div class="flex justify-between items-center mt-4">
       <button
-        click={processErrors}
+        on:onclick={processErrors}
         disabled={isLoading || !somCache}
         class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-6 py-2 rounded-lg font-medium transition-colors"
       >

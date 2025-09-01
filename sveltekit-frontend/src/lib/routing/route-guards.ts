@@ -6,7 +6,8 @@
 import { redirect, error } from '@sveltejs/kit';
 import type { Load, ServerLoad, ServerLoadEvent } from '@sveltejs/kit';
 import type { RouteDefinition } from '$lib/data/routes-config';
-import type { GeneratedRoute } from './dynamic-route-generator';
+import type { GeneratedRoute } from './dynamic-route-generator.js';
+import { URL } from "url";
 
 export interface RouteGuardContext {
   event: ServerLoadEvent;
@@ -143,7 +144,7 @@ export class RouteGuards {
    * Development environment guard
    */
   private devGuard: RouteGuard = async (context) => {
-    const isDevelopment = process.env.NODE_ENV === 'development';
+    const isDevelopment = import.meta.env.NODE_ENV === 'development';
     const isDevUser = (context.event.locals as any).user?.role === 'developer';
 
     if (!isDevelopment && !isDevUser) {
@@ -218,7 +219,7 @@ export class RouteGuards {
    * Maintenance mode guard
    */
   private maintenanceGuard: RouteGuard = async (context) => {
-    const isMaintenanceMode = process.env.MAINTENANCE_MODE === 'true';
+    const isMaintenanceMode = import.meta.env.MAINTENANCE_MODE === 'true';
     const isMaintenancePage = context.route.id === 'maintenance';
     const isAdmin = (context.event.locals as any).user?.role === 'admin';
 
@@ -263,11 +264,11 @@ export class RouteGuards {
 
 // Export singleton instance
 export const routeGuards = new RouteGuards();
-
+;
 /**
  * Create a guard-protected page loader
  */
-export function createGuardedLoader(
+export function createGuardedLoader(;
   guards: string[],
   loader?: ServerLoad
 ): ServerLoad {
@@ -381,7 +382,7 @@ export interface RouteGuardConfig {
 /**
  * Configure guards for a specific route
  */
-export function configureRouteGuards(
+export function configureRouteGuards(;
   routeId: string,
   config: RouteGuardConfig
 ): void {

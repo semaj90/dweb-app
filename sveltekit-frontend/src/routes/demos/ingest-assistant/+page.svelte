@@ -10,10 +10,9 @@
   import { Badge } from '$lib/components/ui/badge';
   import { Button } from '$lib/components/ui/button';
   import { onMount } from 'svelte';
-  
-  let serviceStatus = 'checking...';
-  let serviceHealth = null;
-  let recentIngests = [];
+let serviceStatus = $state('checking...');
+let serviceHealth = $state(null);
+let recentIngests = $state([]);
   
   async function checkServiceHealth() {
     try {
@@ -188,7 +187,7 @@
           is available at <code>$lib/components/ai/IngestAIAssistant.svelte</code>
         </p>
         <div class="space-y-2">
-          <Button on:click={() => window.open('/api/v1/ingest', '_blank')}>
+          <Button on:on:click={() => window.open('/api/v1/ingest', '_blank')}>
             Test API Directly
           </Button>
         </div>
@@ -296,10 +295,10 @@
       AI-powered processing and vector semantic search
     </p>
     <div class="flex justify-center space-x-4">
-      <Button variant="outline" size="sm" on:click={checkServiceHealth}>
+      <Button variant="outline" size="sm" on:on:click={checkServiceHealth}>
         🔄 Refresh Status
       </Button>
-      <Button variant="outline" size="sm" on:click={loadRecentIngests}>
+      <Button variant="outline" size="sm" on:on:click={loadRecentIngests}>
         📊 Load Recent
       </Button>
     </div>

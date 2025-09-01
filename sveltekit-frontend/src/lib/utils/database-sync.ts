@@ -508,7 +508,7 @@ export class DatabaseSyncManager {
 }
 // Convenience wrapper functions
 export const dbSync = DatabaseSyncManager.getInstance();
-
+;
 // Entity-specific helper functions
 export const CasesAPI = {
   list: (params?: unknown, options?: SyncOptions) =>

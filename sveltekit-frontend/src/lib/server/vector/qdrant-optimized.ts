@@ -5,9 +5,9 @@
  */
 
 import { QdrantClient } from "@qdrant/js-client-rest";
-import { generateEmbedding } from "../ai/embeddings-simple";
-import logger from '../production-logger';
-import type { LogContext } from '../production-logger';
+import { generateEmbedding } from '../ai/embeddings-simple.js';
+import logger from '../production-logger.js';
+import type { LogContext } from '../production-logger.js';
 
 // Simple caching fallback if service not available
 const cachingService = {
@@ -18,7 +18,7 @@ const cachingService = {
 };
 
 // Environment detection
-const dev = typeof process !== 'undefined' && process.env.NODE_ENV === 'development';
+const dev = typeof process !== 'undefined' && import.meta.env.NODE_ENV === 'development';
 
 // Memory-optimized interfaces
 export interface OptimizedQdrantConfig {
@@ -143,7 +143,7 @@ class OptimizedQdrantService {
 
   private initializeClient(): void {
     const qdrantUrl = typeof process !== 'undefined' 
-      ? process.env.QDRANT_URL || process.env.VITE_QDRANT_URL
+      ? import.meta.env.QDRANT_URL || import.meta.env.VITE_QDRANT_URL
       : undefined;
       
     if (!qdrantUrl) {
@@ -155,7 +155,7 @@ class OptimizedQdrantService {
 
     try {
       const qdrantApiKey = typeof process !== 'undefined' 
-        ? process.env.QDRANT_API_KEY || process.env.VITE_QDRANT_API_KEY
+        ? import.meta.env.QDRANT_API_KEY || import.meta.env.VITE_QDRANT_API_KEY
         : undefined;
         
       this.client = new QdrantClient({
@@ -720,7 +720,7 @@ class OptimizedQdrantService {
 
 // Singleton instance
 export const optimizedQdrant = new OptimizedQdrantService();
-
+;
 // Backward compatibility exports
 export const qdrantOptimized = {
   search: (collection: string, query: string | number[], options = {}) => 

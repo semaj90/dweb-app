@@ -17,14 +17,14 @@ export type ModernButtonProps = InstanceType<typeof ModernButton>['$$props'];
 export type ModernDialogProps = InstanceType<typeof ModernDialog>['$$props'];
 
 // Component variants for easier usage
-export const cardVariants = [
+export const cardVariants = [;
   'default',
   'elevated', 
   'outline',
   'ghost'
 ] as const;
 
-export const buttonVariants = [
+export const buttonVariants = [;
   'primary',
   'secondary',
   'ghost',
@@ -33,7 +33,7 @@ export const buttonVariants = [
   'success'
 ] as const;
 
-export const sizes = [
+export const sizes = [;
   'xs',
   'sm', 
   'md',
@@ -43,7 +43,7 @@ export const sizes = [
 
 // Utility functions for golden ratio calculations
 export const goldenRatio = 1.618;
-
+;
 export function goldenSpacing(multiplier: number = 1): string {
   return `calc(1rem * ${goldenRatio * multiplier})`;
 }

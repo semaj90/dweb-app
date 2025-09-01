@@ -28,8 +28,8 @@
 <!-- Floating Action Button -->
 <button
 	class="mx-auto px-4 max-w-7xl"
-	class:generating={isGenerating}
-	click={() => toggleDialog()}
+ class:generating={isGenerating}
+	on:onclick={() => toggleDialog()}
 	aria-label="Open AI Assistant"
 	title="AI Assistant"
 >
@@ -49,8 +49,8 @@
 	<Dialog
 		title="AI Assistant"
 		open={dialogOpen}
-		on:close={toggleDialog}
-		on:airequest={handleAIRequest}
+		close={toggleDialog}
+		airequest={handleAIRequest}
 	/>
 {/if}
 

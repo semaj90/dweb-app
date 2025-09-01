@@ -1,19 +1,21 @@
 <script lang="ts">
 
-  import { createEventDispatcher } from 'svelte';
-  // do not import the Svelte rune for props; the compiler provides it automatically
-  import { writable } from 'svelte/store';
+  // Svelte 5 props interface
+  interface Props {
+    caseId: string;
+    maxFileSize?: number;
+    onuploaded?: (event: { file: File; evidence: any }) => void;
+  }
 
-  export let caseId: string;
-  export let maxFileSize = 50 * 1024 * 1024; // 50MB default
+  // Svelte 5 props with event handlers
+  let { caseId, maxFileSize = 50 * 1024 * 1024, onuploaded }: Props = $props();
 
-  const dispatch = createEventDispatcher();
-
-  let files: FileList | null = null;
-  let dragActive = false;
-  let uploading = false;
-  let uploadProgress = writable(0);
-  let uploadStatus = writable('');
+  let files: FileList | null = $state(null);
+  let dragActive = $state(false);
+  let componentError = $state<Error | null>(null);
+  let uploading = $state(false);
+  let uploadProgress = $state(0);
+  let uploadStatus = $state('');
 
   // File type categories for validation and UI
   const allowedTypes = {
@@ -58,8 +60,8 @@
     if (!files || files.length === 0) return;
 
     uploading = true;
-    uploadStatus.set('Preparing upload...');
-    uploadProgress.set(0);
+    uploadStatus = 'Preparing upload...';
+    uploadProgress = 0;
 
     try {
       for (let i = 0; i < files.length; i++) {
@@ -67,17 +69,17 @@
 
         // Validate file type
         if (!allAllowedTypes.includes(file.type)) {
-          uploadStatus.set(`Unsupported file type: ${file.type}`);
+          uploadStatus = `Unsupported file type: ${file.type}`;
           continue;
         }
 
         // Validate file size
         if (file.size > maxFileSize) {
-          uploadStatus.set(`File too large: ${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB)`);
+          uploadStatus = `File too large: ${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB)`;
           continue;
         }
 
-        uploadStatus.set(`Uploading ${file.name}...`);
+        uploadStatus = `Uploading ${file.name}...`;
 
         const formData = new FormData();
         formData.append('file', file);
@@ -92,27 +94,31 @@
 
         if (response.ok) {
           const result = await response.json();
-          uploadProgress.set(((i + 1) / files.length) * 100);
+          uploadProgress = ((i + 1) / files.length) * 100;
 
           // Dispatch success event
-          dispatch('uploaded', {
-            file,
-            evidence: result.evidence
-          });
+          if (onuploaded) {
+            onuploaded({
+              file,
+              evidence: result.evidence
+            });
+          }
         } else {
           const error = await response.json();
-          uploadStatus.set(`Upload failed: ${error.error}`);
+          uploadStatus = `Upload failed: ${error.error}`;
         }
       }
 
-      uploadStatus.set('Upload complete');
+      uploadStatus = 'Upload complete';
       setTimeout(() => {
-        uploadStatus.set('');
-        uploadProgress.set(0);
+        uploadStatus = '';
+        uploadProgress = 0;
       }, 2000);
 
     } catch (error) {
-      uploadStatus.set(`Upload error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+      uploadStatus = `Upload error: ${errorMsg}`;
+      componentError = error instanceof Error ? error : new Error(errorMsg);
     } finally {
       uploading = false;
       files = null;
@@ -144,18 +150,33 @@
   }
 </script>
 
-<div class="mx-auto px-4 max-w-7xl">
+{#if componentError}
+  <div class="error-boundary bg-red-900 border border-red-500 rounded-lg p-6 m-4">
+    <h2 class="text-xl font-bold text-red-300 mb-2">Upload Error</h2>
+    <p class="text-red-200 mb-4">Evidence uploader encountered an error:</p>
+    <p class="text-red-100 font-mono text-sm mb-4">{componentError.message}</p>
+    <button 
+      class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded" 
+      on:on:onclick={() => { componentError = null; }}
+      aria-label="Dismiss error and retry"
+    >
+      Retry
+    </button>
+  </div>
+{:else}
+<div class="evidence-uploader">
   <div
-    class="mx-auto px-4 max-w-7xl"
+    class="upload-zone"
     class:drag-active={dragActive}
     class:uploading
-    on:dragover={handleDragOver}
-    on:dragleave={handleDragLeave}
-    on:drop={handleDrop}
+    ondragover={handleDragOver}
+    ondragleave={handleDragLeave}
+    ondrop={handleDrop}
     role="button"
-    tabindex={0}
-    click={() => document.getElementById('file-input')?.click()}
+    tabindex="0"
+    on:on:onclick={() => document.getElementById('file-input')?.click()}
     on:keydown={(e) => e.key === 'Enter' && document.getElementById('file-input')?.click()}
+    aria-label="Upload evidence files - drag and drop or click to browse"
   >
     <input
       id="file-input"
@@ -163,33 +184,33 @@
       multiple
       accept={allAllowedTypes.join(',')}
       style="display: none;"
-      change={handleFileSelect}
+      onchange={handleFileSelect}
     />
 
     {#if uploading}
-      <div class="mx-auto px-4 max-w-7xl">
-        <div class="mx-auto px-4 max-w-7xl">⏳</div>
-        <div class="mx-auto px-4 max-w-7xl">
-          {$uploadStatus}
+      <div class="upload-progress">
+        <div class="upload-spinner">⏳</div>
+        <div class="upload-message">
+          {uploadStatus}
         </div>
-        {#if $uploadProgress > 0}
-          <div class="mx-auto px-4 max-w-7xl">
-            <div class="mx-auto px-4 max-w-7xl" style="width: {$uploadProgress}%"></div>
+        {#if uploadProgress > 0}
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: {uploadProgress}%"></div>
           </div>
         {/if}
       </div>
     {:else}
-      <div class="mx-auto px-4 max-w-7xl">
-        <div class="mx-auto px-4 max-w-7xl">📤</div>
+      <div class="upload-prompt">
+        <div class="upload-icon">📤</div>
         <h3>Upload Evidence</h3>
         <p>Drag and drop files here or click to browse</p>
-        <div class="mx-auto px-4 max-w-7xl">
-          <span class="mx-auto px-4 max-w-7xl">🖼️ Images</span>
-          <span class="mx-auto px-4 max-w-7xl">🎥 Videos</span>
-          <span class="mx-auto px-4 max-w-7xl">📄 Documents</span>
-          <span class="mx-auto px-4 max-w-7xl">🎵 Audio</span>
+        <div class="file-types">
+          <span class="file-type">🖼️ Images</span>
+          <span class="file-type">🎥 Videos</span>
+          <span class="file-type">📄 Documents</span>
+          <span class="file-type">🎵 Audio</span>
         </div>
-        <div class="mx-auto px-4 max-w-7xl">
+        <div class="size-limit">
           Max file size: {formatFileSize(maxFileSize)}
         </div>
       </div>
@@ -198,14 +219,14 @@
 
   <!-- File preview if files selected but not uploaded yet -->
   {#if files && files.length > 0 && !uploading}
-    <div class="mx-auto px-4 max-w-7xl">
+    <div class="file-preview">
       <h4>Selected Files ({files.length})</h4>
       {#each Array.from(files) as file}
-        <div class="mx-auto px-4 max-w-7xl">
-          <span class="mx-auto px-4 max-w-7xl">{getFileIcon(file.type)}</span>
-          <div class="mx-auto px-4 max-w-7xl">
-            <div class="mx-auto px-4 max-w-7xl">{file.name}</div>
-            <div class="mx-auto px-4 max-w-7xl">
+        <div class="file-item">
+          <span class="file-icon">{getFileIcon(file.type)}</span>
+          <div class="file-info">
+            <div class="file-name">{file.name}</div>
+            <div class="file-meta">
               {formatFileSize(file.size)} • {file.type}
             </div>
           </div>
@@ -214,6 +235,7 @@
     </div>
   {/if}
 </div>
+{/if}
 
 <style>
   .evidence-uploader {
@@ -364,4 +386,4 @@
   }
 </style>
 
-<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->
+<!-- Svelte 5 migration completed - modern patterns applied -->

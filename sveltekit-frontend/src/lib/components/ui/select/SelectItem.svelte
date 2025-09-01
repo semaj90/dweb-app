@@ -39,8 +39,8 @@
   class="space-y-4 {class_}"
   role="option"
   aria-selected={isSelected ? "true" : "false"}
-  click={() => handleClick()}
-  on:keydown={(e) => e.key === "Enter" && handleClick()}
+  on:onclick={() => handleClick()}
+  keydown={(e) => e.key === "Enter" && handleClick()}
   tabindex={0}
 >
   {#if children}

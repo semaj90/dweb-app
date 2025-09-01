@@ -386,7 +386,7 @@ export class AIServiceWorkerManager {
 
 // Singleton instance
 export const aiServiceWorkerManager = new AIServiceWorkerManager();
-
+;
 // Types
 export interface AISystemMetrics {
 	totalTasksProcessed: number;

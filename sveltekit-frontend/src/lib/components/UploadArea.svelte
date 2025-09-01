@@ -10,13 +10,12 @@
   }
 
   let { onFileSelected = () => {}, accept = "*", multiple = false }: Props = $props();
-
-  let dragActive = false;
-  let fileInput: HTMLInputElement;
+let dragActive = $state(false);
+let fileInput = $state<HTMLInputElement;
 
   function handleDrop(e: DragEvent) {
     e.preventDefault();
-    dragActive = false;
+    dragActive >(false);
 
     if (e.dataTransfer?.files) {
       const files = Array.from(e.dataTransfer.files);
@@ -37,9 +36,9 @@
   class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors"
   class:border-blue-500={dragActive}
   class:bg-blue-50={dragActive}
-  on:drop={handleDrop}
-  on:dragover={preventDefault(() => dragActive = true)}
-  on:dragleave={() => dragActive = false}
+  ondrop={handleDrop}
+  ondragover={preventDefault(() => dragActive = true)}
+  dragleave={() => dragActive = false}
 >
   <input
     bind:this={fileInput}
@@ -57,7 +56,7 @@
       <p class="text-sm text-gray-500">Supports all file types</p>
     </div>
     <button
-      click={() => fileInput.click()}
+      on:onclick={() => fileInput.click()}
       class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
     >
       Select Files

@@ -17,7 +17,7 @@
   const dispatch = createEventDispatcher();
 
   let fileInput: HTMLInputElement;
-  let dragActive = false;
+let dragActive = $state(false);
 
   let isOpen = $derived($uploadModal.isOpen);
   let files = $derived($uploadModal.files || []);
@@ -66,7 +66,7 @@
           <Upload class="container mx-auto px-4" />
           <h2 class="container mx-auto px-4">Upload Evidence</h2>
         </div>
-        <Button variant="ghost" size="sm" on:click={() => closeModal()}>
+        <Button variant="ghost" size="sm" on:on:click={() => closeModal()}>
           <X class="container mx-auto px-4" />
         </Button>
       </div>
@@ -80,11 +80,11 @@
           aria-label="Evidence file drop zone"
           aria-describedby="evidence-dropzone-instructions"
           class="container mx-auto px-4"
-          on:drop={handleDrop}
-          on:dragover={handleDragOver}
-          on:dragleave={handleDragLeave}
-          click={() => fileInput?.click()}
-          on:keydown={(e) =>
+          ondrop={handleDrop}
+          ondragover={handleDragOver}
+          ondragleave={handleDragLeave}
+          on:onclick={() => fileInput?.click()}
+          keydown={(e) =>
             (e.key === "Enter" || e.key === " ") && fileInput?.click()}
         >
           <Upload class="container mx-auto px-4" />
@@ -94,7 +94,7 @@
           <p id="evidence-dropzone-instructions" class="container mx-auto px-4">
             Support for images, documents, audio, and video files
           </p>
-          <Button variant="outline" on:click={() => fileInput?.click()}>
+          <Button variant="outline" on:on:click={() => fileInput?.click()}>
             Choose Files
           </Button>
           <input
@@ -169,7 +169,7 @@
                       <Button
                         variant="ghost"
                         size="sm"
-                        on:click={() => removeFile(file.id)}
+                        on:on:click={() => removeFile(file.id)}
                       >
                         <X class="container mx-auto px-4" />
                       </Button>
@@ -199,12 +199,12 @@
         </div>
 
         <div class="container mx-auto px-4">
-          <Button variant="outline" on:click={() => closeModal()}>
+          <Button variant="outline" on:on:click={() => closeModal()}>
             {activeUploads.length > 0 ? "Continue in Background" : "Close"}
           </Button>
 
           {#if completedUploads.length > 0}
-            <Button on:click={() => dispatch("viewEvidence", completedUploads)}>
+            <Button on:on:click={() => dispatch("viewEvidence", completedUploads)}>
               View Evidence
             </Button>
           {/if}

@@ -29,11 +29,11 @@ const vector = customType<{ data: number[]; driverData: string }>({
   },
   fromDriver(value: string): number[] {
     return JSON.parse(value);
-  },
+  }
 });
 
 // Enum definitions
-export const documentStatusEnum = pgEnum('document_status', [
+export const documentStatusEnum = pgEnum('document_status', [;
   'pending',
   'processing',
   'completed',
@@ -41,7 +41,7 @@ export const documentStatusEnum = pgEnum('document_status', [
   'archived'
 ]);
 
-export const documentTypeEnum = pgEnum('document_type', [
+export const documentTypeEnum = pgEnum('document_type', [;
   'contract',
   'brief',
   'case_study',
@@ -51,7 +51,7 @@ export const documentTypeEnum = pgEnum('document_type', [
   'other'
 ]);
 
-export const summaryStyleEnum = pgEnum('summary_style', [
+export const summaryStyleEnum = pgEnum('summary_style', [;
   'executive',
   'technical',
   'judicial',
@@ -59,7 +59,7 @@ export const summaryStyleEnum = pgEnum('summary_style', [
   'brief'
 ]);
 
-export const jobPriorityEnum = pgEnum('job_priority', [
+export const jobPriorityEnum = pgEnum('job_priority', [;
   'low',
   'normal',
   'high',
@@ -226,7 +226,7 @@ export const documentEmbeddings = pgTable('document_embeddings', {
   embedding: vector('embedding'),
   metadata: jsonb('metadata').default(sql`'{}'::jsonb`).notNull(),
   modelName: varchar('model_name', { length: 100 }),
-  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow()
 }, (table) => ({
   documentIdx: index('idx_embeddings_document').on(table.documentId),
   uniqueChunk: uniqueIndex('unique_document_chunk').on(table.documentId, table.chunkIndex),
@@ -263,11 +263,11 @@ export const summarizationJobs = pgTable('summarization_jobs', {
   lockedAt: timestamp('locked_at', { withTimezone: true }),
   
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow()
 }, (table) => ({
   statusPriorityIdx: index('idx_jobs_status_priority').on(table.status, table.priority, table.scheduledAt),
   documentIdx: index('idx_jobs_document').on(table.documentId),
-  lockedIdx: index('idx_jobs_locked').on(table.lockedBy, table.lockedAt),
+  lockedIdx: index('idx_jobs_locked').on(table.lockedBy, table.lockedAt)
 }));
 
 // User preferences
@@ -295,7 +295,7 @@ export const userPreferences = pgTable('user_preferences', {
     "last_activity": null
   }'::jsonb`).notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow()
 });
 
 // Export all tables
@@ -303,7 +303,7 @@ export const schema = {
   aiSummarizedDocuments,
   documentEmbeddings,
   summarizationJobs,
-  userPreferences,
+  userPreferences
 };
 
 // Type exports for use in application

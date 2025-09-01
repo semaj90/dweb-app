@@ -385,7 +385,7 @@
       {:else if authError}
         <div class="text-red-600 space-y-2">
           <p><strong>Error:</strong> {authError}</p>
-          <Button onclick={goToLogin} variant="default">Go to Login</Button>
+          <Button on:on:on:click={goToLogin} variant="default">Go to Login</Button>
         </div>
       {:else}
         <p class="text-gray-500">Checking authentication...</p>
@@ -400,25 +400,25 @@
     </CardHeader>
     <CardContent>
       <div class="flex flex-wrap gap-3">
-        <Button onclick={runAuthenticatedCRUDTest} disabled={isLoading || !isAuthenticated} variant="default">
+        <Button on:on:on:click={runAuthenticatedCRUDTest} disabled={isLoading || !isAuthenticated} variant="default">
           {isLoading ? '⏳ Testing...' : '🚀 Run Authenticated CRUD Test'}
         </Button>
-        <Button onclick={() => checkAuth()} disabled={isLoading} variant="secondary">
+        <Button on:on:on:click={() => checkAuth()} disabled={isLoading} variant="secondary">
           🔍 Check Auth
         </Button>
-        <Button onclick={testAuthenticatedGET} disabled={isLoading || !isAuthenticated} variant="secondary">
+        <Button on:on:on:click={testAuthenticatedGET} disabled={isLoading || !isAuthenticated} variant="secondary">
           📋 Test GET
         </Button>
-        <Button onclick={testAuthenticatedPOST} disabled={isLoading || !isAuthenticated} variant="secondary">
+        <Button on:on:on:click={testAuthenticatedPOST} disabled={isLoading || !isAuthenticated} variant="secondary">
           📝 Test POST
         </Button>
-        <Button onclick={() => testAuthenticatedPUT()} disabled={isLoading || !isAuthenticated} variant="secondary">
+        <Button on:on:on:click={() => testAuthenticatedPUT()} disabled={isLoading || !isAuthenticated} variant="secondary">
           ✏️ Test PUT
         </Button>
-        <Button onclick={() => testAuthenticatedDELETE()} disabled={isLoading || !isAuthenticated} variant="secondary">
+        <Button on:on:on:click={() => testAuthenticatedDELETE()} disabled={isLoading || !isAuthenticated} variant="secondary">
           🗑️ Test DELETE
         </Button>
-        <Button onclick={clearResults} variant="ghost">
+        <Button on:on:on:click={clearResults} variant="ghost">
           🧹 Clear Results
         </Button>
       </div>

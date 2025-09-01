@@ -15,5 +15,5 @@ export const POST: RequestHandler = async ({ request }) => {
 };
 
 export const GET: RequestHandler = async () => json({ success: true, status: 'ok' });
-
+;
 export const prerender = false;

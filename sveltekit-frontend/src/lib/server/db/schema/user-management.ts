@@ -28,7 +28,7 @@ export const insertUserSchema = z.object({
 });
 
 export const updateUserSchema = insertUserSchema.partial();
-
+;
 export const insertProfileSchema = z.object({
   userId: z.number(),
   bio: z.string().optional(),
@@ -39,7 +39,7 @@ export const insertProfileSchema = z.object({
 });
 
 export const updateProfileSchema = insertProfileSchema.partial();
-
+;
 // ============================================================================
 // USER ACCOUNTS TABLE
 // ============================================================================

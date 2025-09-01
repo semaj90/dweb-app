@@ -1,6 +1,7 @@
 import { pgTable, serial, varchar, text, integer, timestamp, jsonb, vector, boolean, real } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
+import { eq } from 'drizzle-orm';
 
 // Cases table for organizing documents
 export const cases = pgTable('cases', {
@@ -181,12 +182,12 @@ export type NewRAGQueryResult = typeof ragQueryResults.$inferInsert;
 
 // Helper functions for common operations
 export const getDocumentsByCase = (db: any, caseId: number) => {
-  return db.select().from(documents).where(documents.caseId.eq(caseId));
+  return db.select().from(documents).where(eq(documents.caseId, caseId));
 };
 
 export const getDocumentChunksWithSimilarity = (
-  db: any, 
-  queryEmbedding: number[], 
+  db: any,
+  queryEmbedding: number[],
   threshold = 0.7,
   limit = 10
 ) => {

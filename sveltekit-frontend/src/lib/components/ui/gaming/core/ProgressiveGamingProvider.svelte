@@ -96,9 +96,8 @@
     bitsUICompatibility: true,
     ...config
   });
-
-  let evolutionManager: GamingEvolutionManager;
-  let unsubscribe: (() => void) | null = null;
+let evolutionManager = $state<GamingEvolutionManager;
+let unsubscribe = $state<(() >(> void) | null >(null));
   let debugInfo = $state<any>(null);
 
   // Set context for child components
@@ -267,9 +266,9 @@
         </div>
       </div>
       <div class="debug-controls">
-        <button onclick={() => setEra('8bit')}>8-Bit</button>
-        <button onclick={() => setEra('16bit')}>16-Bit</button>
-        <button onclick={() => setEra('n64')}>N64</button>
+        <button on:on:onclick={() => setEra('8bit')}>8-Bit</button>
+        <button on:on:onclick={() => setEra('16bit')}>16-Bit</button>
+        <button on:on:onclick={() => setEra('n64')}>N64</button>
       </div>
     </div>
   {/if}

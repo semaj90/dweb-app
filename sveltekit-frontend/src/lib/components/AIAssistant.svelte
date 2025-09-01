@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createMachine, assign } from 'xstate';
   import { useMachine } from '@xstate/svelte';
-  import { createToaster, melt } from 'melt';
+  // Toast notifications removed - using simple state instead
   
   import { Button } from '$lib/components/ui/button';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
@@ -129,15 +129,16 @@
   let errorMessage = $derived(snapshot.context.error);
   let canSubmit = $derived(promptInput.trim().length > 0 && !isLoading);
   
-  // Toast notifications for user feedback
-  const {
-    elements: { content: toastContent, title: toastTitle, description: toastDescription, close: toastClose },
-    helpers: { addToast },
-    states: { toasts }
-  } = createToaster({
-    placement: 'top-right',
-    closeDelay: 5000
-  });
+  // Simple notification state (replacing melt-ui toaster)
+  let notifications = $state([]);
+  
+  function showNotification(title: string, description: string) {
+    const id = Date.now();
+    notifications.push({ id, title, description });
+    setTimeout(() => {
+      notifications = notifications.filter(n => n.id !== id);
+    }, 5000);
+  }
 
   // Enhanced query function with error handling
   function handleQuery() {
@@ -145,14 +146,8 @@
     
     send({ type: 'QUERY', prompt: promptInput });
     
-    // Add toast notification
-    addToast({
-      data: {
-        title: 'Legal AI Query',
-        description: 'Processing your legal question...',
-        color: 'bg-blue-500'
-      }
-    });
+    // Show notification
+    showNotification('Legal AI Query', 'Processing your legal question...');
   }
 
   function handleRetry() {
@@ -173,12 +168,17 @@
   }
 </script>
 
-<!-- Toast Notifications -->
-{#each $toasts as toast (toast.id)}
-  <div use:melt={$toastContent(toast)} class="toast yorha-toast">
-    <div use:melt={$toastTitle(toast)}>{toast.data.title}</div>
-    <div use:melt={$toastDescription(toast)}>{toast.data.description}</div>
-    <button use:melt={$toastClose(toast)} class="toast-close">&times;</button>
+<!-- Simple Notifications -->
+{#each notifications as notification (notification.id)}
+  <div class="fixed top-4 right-4 bg-blue-500 text-white p-4 rounded shadow-lg z-50">
+    <div class="font-semibold">{notification.title}</div>
+    <div class="text-sm">{notification.description}</div>
+    <button 
+      class="absolute top-2 right-2 text-white hover:text-gray-200" 
+      on:on:onclick={() => notifications = notifications.filter(n => n.id !== notification.id)}
+    >
+      &times;
+    </button>
   </div>
 {/each}
 
@@ -207,7 +207,7 @@
       <Textarea 
         id="legal-prompt"
         bind:value={promptInput}
-        on:keydown={handleKeydown}
+        keydown={handleKeydown}
         placeholder="Ask a legal question (e.g., 'What are the key elements of a valid contract?', 'Explain force majeure clauses', etc.)"
         rows={4}
         class="yorha-textarea"
@@ -223,7 +223,7 @@
     <div class="flex gap-2">
       <EnhancedButton 
         variant="legal" 
-        on:click={handleQuery} 
+        on:on:click={handleQuery} 
         disabled={!canSubmit}
         loading={isLoading}
         loadingText="Analyzing..."
@@ -236,7 +236,7 @@
       {#if snapshot.matches('error')}
         <EnhancedButton 
           variant="outline" 
-          on:click={handleRetry}
+          on:on:click={handleRetry}
           useMelt={true}
         >
           Retry
@@ -246,7 +246,7 @@
       {#if currentResponse}
         <EnhancedButton 
           variant="ghost" 
-          on:click={handleClear}
+          on:on:click={handleClear}
           useMelt={true}
         >
           Clear

@@ -1,5 +1,6 @@
+/// <reference types="vite/client" />
 
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
 
 /**
  * SvelteKit 2 API Route: K-Means Clustering
@@ -11,6 +12,7 @@ import { LegalKMeansClusterer } from "$lib/services/kmeans-clustering";
 import { Redis } from "ioredis";
 import { db } from "$lib/server/db";
 import { inArray } from "drizzle-orm";
+import { URL } from "url";
 // Optional amqp for message queue integration
 
 // Initialize connections

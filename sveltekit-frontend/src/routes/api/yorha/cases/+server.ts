@@ -5,7 +5,8 @@ import { db } from '$lib/database/connection';
 import { cases, users } from '$lib/db/schema';
 import { eq, and, desc } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from './$types.js';
+import { URL } from "url";
 
 
 // GET - Fetch cases

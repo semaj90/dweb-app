@@ -1,12 +1,10 @@
-// enhanced_legal_cuda_server.go - Production CUDA gRPC Server with Integrated Cache System
-package main
+//go:build enhanced
+// +build enhanced
 
 import (
 	"context"
-	"crypto/tls"
-	"database/sql"
-	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"net/http"
@@ -14,6 +12,7 @@ import (
 	"os/signal"
 	"runtime"
 	"sync"
+	"sync/atomic"
 	"syscall"
 	"time"
 
@@ -26,7 +25,6 @@ import (
 
 	// HTTP/2 and REST API
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 	"golang.org/x/net/http2"
 
 	// Monitoring and Metrics
@@ -34,13 +32,15 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	// Database and Cache
-	"github.com/go-redis/redis/v8"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	// Import our cache system
+	// Import our cache system (alias internal redis to avoid name clash)
 	"legal-ai-production/internal/cache"
-	"legal-ai-production/internal/redis"
+	iredis "legal-ai-production/internal/redis"
 
+	// Protocol Buffer generated files
+	pb "legal-ai-production/proto/legal_cuda_streaming"
+)
 	// Protocol Buffer generated files
 	pb "legal-ai-production/proto/legal_cuda_streaming"
 )
@@ -65,7 +65,7 @@ type CudaServerConfig struct {
 	PostgresURL string `json:"postgres_url" env:"POSTGRES_URL" default:"postgresql://legal_admin:LegalAI2024!@localhost:5432/legal_ai_db"`
 	RedisURL    string `json:"redis_url" env:"REDIS_URL" default:"localhost:6379"`
 
-	// CUDA Configuration  
+	// CUDA Configuration
 	CudaDeviceID     int    `json:"cuda_device_id" env:"CUDA_DEVICE_ID" default:"0"`
 	CudaMemoryPool   int64  `json:"cuda_memory_pool" env:"CUDA_MEMORY_POOL" default:"2147483648"` // 2GB
 	CudaStreams      int    `json:"cuda_streams" env:"CUDA_STREAMS" default:"8"`
@@ -211,7 +211,7 @@ func NewCudaMetricsCollector() *CudaMetricsCollector {
 
 		httpRequestsTotal: prometheus.NewCounterVec(
 			prometheus.CounterOpts{
-				Name: "legal_cuda_http_requests_total", 
+				Name: "legal_cuda_http_requests_total",
 				Help: "Total number of HTTP requests",
 			},
 			[]string{"method", "endpoint", "status"},
@@ -292,7 +292,7 @@ func NewCudaMetricsCollector() *CudaMetricsCollector {
 
 		searchesPerformed: prometheus.NewCounterVec(
 			prometheus.CounterOpts{
-				Name: "searches_performed_total", 
+				Name: "searches_performed_total",
 				Help: "Total searches performed",
 			},
 			[]string{"search_type", "collection"},
@@ -337,7 +337,7 @@ type EnhancedLegalCudaService struct {
 
 	// Database & Cache
 	pgPool      *pgxpool.Pool
-	redisCache  *redis.DistributedCache
+	redisCache  *iredis.DistributedCache
 	multiCache  *cache.MultiLayerCache
 
 	// CUDA Resources
@@ -345,7 +345,7 @@ type EnhancedLegalCudaService struct {
 	cudaContext     uintptr // CUDA context handle
 	cudaStreams     []uintptr // CUDA stream handles
 	cudaMemoryPool  *CudaMemoryPool
-	
+
 	// Performance Monitoring
 	metrics *CudaMetricsCollector
 
@@ -508,9 +508,9 @@ func (s *EnhancedLegalCudaService) initializeCUDA() error {
 		usedBlocks: make(map[uintptr]CudaMemoryBlock),
 	}
 
-	log.Printf("✅ CUDA initialized: %s (Compute %d.%d)", 
+	log.Printf("✅ CUDA initialized: %s (Compute %d.%d)",
 		s.deviceProps.Name, s.deviceProps.Major, s.deviceProps.Minor)
-	log.Printf("📊 GPU Memory: %.2f GB, Multiprocessors: %d", 
+	log.Printf("📊 GPU Memory: %.2f GB, Multiprocessors: %d",
 		float64(s.deviceProps.TotalGlobalMem)/1024/1024/1024, s.deviceProps.MultiProcessorCount)
 
 	return nil
@@ -611,9 +611,9 @@ func (s *EnhancedLegalCudaService) createCacheTables(ctx context.Context) error 
 func (s *EnhancedLegalCudaService) initializeCache() error {
 	log.Printf("🔧 Initializing Multi-Layer Cache System...")
 
-	// Initialize Redis distributed cache
+	// Initialize Redis distributed cache (internal wrapper)
 	var err error
-	s.redisCache, err = redis.InitializeDistributedCache(s.config.RedisURL)
+	s.redisCache, err = iredis.InitializeDistributedCache(s.config.RedisURL)
 	if err != nil {
 		log.Printf("Warning: Redis cache initialization failed: %v", err)
 	}
@@ -647,7 +647,7 @@ func (s *EnhancedLegalCudaService) initializeCache() error {
 		return fmt.Errorf("multi-layer cache initialization failed: %w", err)
 	}
 
-	log.Printf("✅ Multi-Layer Cache initialized: L1=true L2=%v L3=true", 
+	log.Printf("✅ Multi-Layer Cache initialized: L1=true L2=%v L3=true",
 		s.redisCache.IsEnabled())
 
 	return nil
@@ -656,13 +656,13 @@ func (s *EnhancedLegalCudaService) initializeCache() error {
 func (s *EnhancedLegalCudaService) startBackgroundTasks() {
 	// Start GPU monitoring
 	go s.monitorGPUMetrics()
-	
+
 	// Start cache metrics collection
 	go s.monitorCacheMetrics()
-	
+
 	// Start session cleanup
 	go s.cleanupInactiveSessions()
-	
+
 	// Start memory pool maintenance
 	go s.maintainMemoryPool()
 
@@ -729,7 +729,7 @@ func (s *EnhancedLegalCudaService) BidirectionalLegalStream(stream pb.LegalCudaS
 
 	duration := time.Since(startTime)
 	s.metrics.grpcRequestsTotal.WithLabelValues("BidirectionalLegalStream", "completed", "true").Inc()
-	
+
 	log.Printf("✅ Completed bidirectional stream: %s (duration: %v)", session.ID, duration)
 	return nil
 }
@@ -738,10 +738,10 @@ func (s *EnhancedLegalCudaService) processStreamRequests(stream pb.LegalCudaServ
 	for {
 		request, err := stream.Recv()
 		if err != nil {
-			if err.Error() != "EOF" {
-				return fmt.Errorf("failed to receive request: %w", err)
+			if err == io.EOF {
+				break
 			}
-			break
+			return fmt.Errorf("failed to receive request: %w", err)
 		}
 
 		select {
@@ -774,9 +774,9 @@ func (s *EnhancedLegalCudaService) sendStreamResponses(stream pb.LegalCudaServic
 
 func (s *EnhancedLegalCudaService) createStreamingSession(ctx context.Context) *CudaStreamingSession {
 	sessionID := fmt.Sprintf("session_%d_%d", time.Now().UnixNano(), len(s.activeSessions))
-	
+
 	sessionCtx, cancel := context.WithCancel(ctx)
-	
+
 	session := &CudaStreamingSession{
 		ID:              sessionID,
 		StartTime:       time.Now(),
@@ -804,17 +804,29 @@ func (s *EnhancedLegalCudaService) processSessionRequests(session *CudaStreaming
 
 	for request := range session.ProcessingQueue {
 		startTime := time.Now()
-		
-		// Get worker from pool
-		<-s.workerPool
-		
-		response, err := s.processCudaRequest(session, request)
+
+		var response *pb.CudaResponse
+		var err error
+
+		// Acquire a worker safely and run the processing function
+		err = s.withWorker(session.Context, func() error {
+			var e error
+			response, e = s.processCudaRequest(session, request)
+			return e
+		})
+
 		if err != nil {
-			response = &pb.CudaResponse{
-				SessionId:     request.SessionId,
-				OperationType: request.OperationType,
-				Status:        pb.ProcessingStatus_FAILED,
-				ErrorMessage:  err.Error(),
+			// ensure a response exists to report failure
+			if response == nil {
+				response = &pb.CudaResponse{
+					SessionId:     request.SessionId,
+					OperationType: request.OperationType,
+					Status:        pb.ProcessingStatus_FAILED,
+					ErrorMessage:  err.Error(),
+				}
+			} else {
+				response.Status = pb.ProcessingStatus_FAILED
+				response.ErrorMessage = err.Error()
 			}
 			s.metrics.errorRate.WithLabelValues("cuda_processing", "cuda_service", "error").Inc()
 		}
@@ -828,9 +840,6 @@ func (s *EnhancedLegalCudaService) processSessionRequests(session *CudaStreaming
 
 		session.ResponseChan <- response
 		session.Metrics.RequestsProcessed++
-		
-		// Return worker to pool
-		s.workerPool <- struct{}{}
 	}
 }
 
@@ -844,7 +853,7 @@ func (s *EnhancedLegalCudaService) processCudaRequest(session *CudaStreamingSess
 	switch request.OperationType {
 	case "embed":
 		return s.processEmbeddingRequest(session, request, response)
-	case "search": 
+	case "search":
 		return s.processSearchRequest(session, request, response)
 	case "analyze":
 		return s.processAnalysisRequest(session, request, response)
@@ -858,30 +867,30 @@ func (s *EnhancedLegalCudaService) processCudaRequest(session *CudaStreamingSess
 // Implement specific CUDA processing methods
 func (s *EnhancedLegalCudaService) processEmbeddingRequest(session *CudaStreamingSession, request *pb.CudaRequest, response *pb.CudaResponse) (*pb.CudaResponse, error) {
 	startTime := time.Now()
-	
+
 	// Extract text data
 	var textData string
 	switch data := request.Data.(type) {
 	case *pb.CudaRequest_RawText:
-		textData = string(data.RawText)
-	case *pb.CudaRequest_LegalQuery:
-		textData = data.LegalQuery
-	default:
-		return nil, fmt.Errorf("invalid data type for embedding request")
-	}
-
-	// Check cache first
-	cacheKey := fmt.Sprintf("embedding:text:%x", textData)
-	if cachedEmbedding, found := s.multiCache.Get(request.SessionId, cacheKey); found {
+	if cachedEmbedding, found := s.multiCache.Get(context.Background(), request.SessionId, cacheKey); found {
 		if embedding, ok := cachedEmbedding.([]float32); ok {
 			response.Result = &pb.CudaResponse_ComputedEmbedding{
 				ComputedEmbedding: embedding,
 			}
 			response.Status = pb.ProcessingStatus_COMPLETED
-			
+
 			s.metrics.cacheOperations.WithLabelValues("get", "multi_layer", "hit").Inc()
 			session.Metrics.CacheHits++
-			
+
+			return response, nil
+		}
+	}
+			}
+			response.Status = pb.ProcessingStatus_COMPLETED
+
+			s.metrics.cacheOperations.WithLabelValues("get", "multi_layer", "hit").Inc()
+			session.Metrics.CacheHits++
+
 			return response, nil
 		}
 	}
@@ -915,28 +924,28 @@ func (s *EnhancedLegalCudaService) processEmbeddingRequest(session *CudaStreamin
 
 func (s *EnhancedLegalCudaService) processSearchRequest(session *CudaStreamingSession, request *pb.CudaRequest, response *pb.CudaResponse) (*pb.CudaResponse, error) {
 	startTime := time.Now()
-	
+
 	// Extract embedding vector
 	var queryEmbedding []float32
-	switch data := request.Data.(type) {
-	case *pb.CudaRequest_EmbeddingVector:
-		queryEmbedding = data.EmbeddingVector
-	default:
-		return nil, fmt.Errorf("invalid data type for search request")
-	}
-
-	// Check cache
-	cacheKey := fmt.Sprintf("search:embedding:%x", queryEmbedding)
-	if cachedResults, found := s.multiCache.Get(request.SessionId, cacheKey); found {
+	if cachedResults, found := s.multiCache.Get(context.Background(), request.SessionId, cacheKey); found {
 		if matches, ok := cachedResults.([]*pb.SearchMatch); ok {
 			response.Result = &pb.CudaResponse_SearchMatches{
 				SearchMatches: matches,
 			}
 			response.Status = pb.ProcessingStatus_COMPLETED
-			
+
 			s.metrics.cacheOperations.WithLabelValues("get", "multi_layer", "hit").Inc()
 			session.Metrics.CacheHits++
-			
+
+			return response, nil
+		}
+	}
+			}
+			response.Status = pb.ProcessingStatus_COMPLETED
+
+			s.metrics.cacheOperations.WithLabelValues("get", "multi_layer", "hit").Inc()
+			session.Metrics.CacheHits++
+
 			return response, nil
 		}
 	}
@@ -1036,7 +1045,7 @@ func (s *EnhancedLegalCudaService) generateEmbeddingWithCuda(text string, cudaSt
 func (s *EnhancedLegalCudaService) performCudaSimilaritySearch(queryEmbedding []float32, collection string, topK int, cudaStream uintptr) ([]*pb.SearchMatch, error) {
 	// Placeholder for CUDA similarity search
 	matches := make([]*pb.SearchMatch, topK)
-	
+
 	for i := 0; i < topK; i++ {
 		matches[i] = &pb.SearchMatch{
 			DocumentId:      fmt.Sprintf("doc_%d", i+1),
@@ -1051,17 +1060,35 @@ func (s *EnhancedLegalCudaService) performCudaSimilaritySearch(queryEmbedding []
 	}
 
 	// Simulate GPU processing time
-	time.Sleep(5 * time.Millisecond)
-
-	return matches, nil
-}
-
-// =====================================
-// Session Management
-// =====================================
-
 func (s *CudaStreamingSession) updateActivity() {
 	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	s.LastActivity = time.Now()
+}
+// =====================================
+var streamCounter int64
+
+func (s *EnhancedLegalCudaService) withWorker(ctx context.Context, fn func() error) error {
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	case <-s.shutdownChan:
+		return fmt.Errorf("service shutting down")
+	case <-s.workerPool:
+		// acquired a worker; ensure it's returned
+		defer func() { s.workerPool <- struct{}{} }()
+		return fn()
+	}
+}
+
+func (s *EnhancedLegalCudaService) getAvailableCudaStream() uintptr {
+	// Guard against zero streams
+	if len(s.cudaStreams) == 0 {
+		return 0
+	}
+	idx := atomic.AddInt64(&streamCounter, 1)
+	return s.cudaStreams[int(idx)%len(s.cudaStreams)]
+}
 	s.LastActivity = time.Now()
 	s.mutex.Unlock()
 }
@@ -1097,7 +1124,7 @@ func (s *EnhancedLegalCudaService) cleanupInactiveSessions() {
 				session.mutex.RLock()
 				inactive := now.Sub(session.LastActivity) > 10*time.Minute
 				session.mutex.RUnlock()
-				
+
 				if inactive {
 					session.Cancel()
 					delete(s.activeSessions, sessionID)
@@ -1143,7 +1170,7 @@ func (s *EnhancedLegalCudaService) monitorCacheMetrics() {
 		case <-ticker.C:
 			// Get cache statistics
 			stats := s.multiCache.GetStats()
-			
+
 			s.metrics.cacheHitRatio.WithLabelValues("L1").Set(stats.L1Stats.HitRatio)
 			s.metrics.cacheHitRatio.WithLabelValues("L2").Set(stats.L2Stats.HitRatio)
 			s.metrics.cacheHitRatio.WithLabelValues("L3").Set(stats.L3Stats.HitRatio)
@@ -1165,8 +1192,8 @@ func (s *EnhancedLegalCudaService) maintainMemoryPool() {
 			// Maintain CUDA memory pool (placeholder)
 			s.cudaMemoryPool.mutex.Lock()
 			// Memory pool maintenance logic would go here
-			s.cudaMemoryPool.mutex.Unlock()
-
+	_, cancel := context.WithCancel(context.Background())
+	defer cancel()
 		case <-s.shutdownChan:
 			return
 		}
@@ -1220,13 +1247,13 @@ func main() {
 	<-sigChan
 
 	log.Printf("🛑 Shutdown signal received, gracefully shutting down...")
-	
+
 	// Signal shutdown to background tasks
 	close(service.shutdownChan)
-	
+
 	// Wait for active sessions to complete
 	service.wg.Wait()
-	
+
 	// Close resources
 	if service.multiCache != nil {
 		service.multiCache.Close()

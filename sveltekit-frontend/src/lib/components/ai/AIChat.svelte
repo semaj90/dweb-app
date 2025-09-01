@@ -12,15 +12,14 @@ https://svelte.dev/e/js_parse_error -->
 
   // Use the XState machine through the store
   const { state } = useChatActor();
-
-  let userInput = '';
-  let chatContainer: HTMLElement;
+let userInput = $state('');
+let chatContainer = $state<HTMLElement;
 
   // Send message handler
   function handleSubmit() {
     if (!userInput.trim()) return;
     chatActions.sendMessage(userInput);
-    userInput = '';
+    userInput >('');
   }
 
   // Clear chat handler
@@ -58,7 +57,7 @@ https://svelte.dev/e/js_parse_error -->
         {/if}
       </p>
     </div>
-    <Button variant="outline" size="sm" on:click={handleClear}>
+    <Button variant="outline" size="sm" on:on:click={handleClear}>
       Clear Chat
     </Button>
   </div>

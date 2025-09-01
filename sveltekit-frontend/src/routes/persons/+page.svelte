@@ -4,12 +4,12 @@
   import Button from '$lib/components/ui/Button.svelte';
 
   // State
-  let searchQuery = '';
-  let viewMode: 'grid' | 'list' = 'grid';
-  let showFilters = false;
+let searchQuery = $state('');
+let viewMode = $state<'grid' | 'list' >('grid');
+let showFilters = $state(false);
 
   // Mock persons data - replace with real API call
-  let persons = [
+let persons = $state([
     {
       id: '1',
       name: 'John Smith',
@@ -30,9 +30,8 @@
       caseIds: ['case-002'],
       lastUpdated: new Date().toISOString()
     }
-  ];
-
-  let filteredPersons: typeof persons = [];
+  ]);
+let filteredPersons = $state<typeof persons >([]);
 
   const filteredPersonsDerived = $derived(() =>
     persons.filter(person =>
@@ -74,7 +73,7 @@
       <Button
         variant="outline"
         size="sm"
-        on:click={() => (showFilters = !showFilters)}
+        on:on:click={() => (showFilters = !showFilters)}
         class={showFilters ? 'bg-blue-50 border-blue-300' : ''}
       >
         <Filter class="w-4 h-4 mr-2" />
@@ -84,7 +83,7 @@
       <Button
         variant="outline"
         size="sm"
-        on:click={() => (viewMode = viewMode === 'grid' ? 'list' : 'grid')}
+        on:on:click={() => (viewMode = viewMode === 'grid' ? 'list' : 'grid')}
       >
         {#if viewMode === 'grid'}
           <List class="w-4 h-4" />

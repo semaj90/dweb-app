@@ -199,7 +199,7 @@ class StubOrchestrator extends EventEmitter {
 }
 
 export const orchestrator = new StubOrchestrator();
-export const databaseOrchestrator = orchestrator; // Backwards compatibility alias
+export const databaseOrchestrator = orchestrator; // Backwards compatibility alias;
 import { splitSentencesEnhanced } from '$text/enhanced-sentence-splitter';
 
 // Helper functions for compatibility

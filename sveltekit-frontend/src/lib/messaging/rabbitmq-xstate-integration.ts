@@ -322,12 +322,12 @@ export class RabbitMQXStateIntegration {
 
   // Free RabbitMQ configuration (CloudAMQP free tier)
   private static config: RabbitMQConfig = {
-    host: process.env.RABBITMQ_HOST || 'localhost',
-    port: parseInt(process.env.RABBITMQ_PORT || '15674'), // Web STOMP port
-    vhost: process.env.RABBITMQ_VHOST || '/',
-    username: process.env.RABBITMQ_USERNAME || 'guest',
-    password: process.env.RABBITMQ_PASSWORD || 'guest',
-    ssl: process.env.RABBITMQ_SSL === 'true',
+    host: import.meta.env.RABBITMQ_HOST || 'localhost',
+    port: parseInt(import.meta.env.RABBITMQ_PORT || '15674'), // Web STOMP port
+    vhost: import.meta.env.RABBITMQ_VHOST || '/',
+    username: import.meta.env.RABBITMQ_USERNAME || 'guest',
+    password: import.meta.env.RABBITMQ_PASSWORD || 'guest',
+    ssl: import.meta.env.RABBITMQ_SSL === 'true',
     heartbeat: 60
   };
 

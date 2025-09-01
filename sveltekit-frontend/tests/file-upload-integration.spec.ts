@@ -26,7 +26,7 @@ test.describe('File Upload Integration Tests', () => {
 
   test('can select file through file picker', async ({ page }) => {
     // Create a test file
-    const testFilePath = path.join(__dirname, 'test-files', 'sample.txt');
+    const testFilePath = path.join(import.meta.url, 'test-files', 'sample.txt');
     const testDir = path.dirname(testFilePath);
     
     // Ensure test directory exists
@@ -52,7 +52,7 @@ test.describe('File Upload Integration Tests', () => {
 
   test('displays upload progress', async ({ page }) => {
     // Create test file
-    const testFilePath = path.join(__dirname, 'test-files', 'progress-test.pdf');
+    const testFilePath = path.join(import.meta.url, 'test-files', 'progress-test.pdf');
     const testDir = path.dirname(testFilePath);
     
     if (!fs.existsSync(testDir)) {
@@ -110,7 +110,7 @@ test.describe('File Upload Integration Tests', () => {
       });
     });
     
-    const testFilePath = path.join(__dirname, 'test-files', 'ai-test.txt');
+    const testFilePath = path.join(import.meta.url, 'test-files', 'ai-test.txt');
     const testDir = path.dirname(testFilePath);
     
     if (!fs.existsSync(testDir)) {
@@ -132,7 +132,7 @@ test.describe('File Upload Integration Tests', () => {
   });
 
   test('shows error handling for invalid files', async ({ page }) => {
-    const invalidFilePath = path.join(__dirname, 'test-files', 'invalid.xyz');
+    const invalidFilePath = path.join(import.meta.url, 'test-files', 'invalid.xyz');
     const testDir = path.dirname(invalidFilePath);
     
     if (!fs.existsSync(testDir)) {
@@ -158,7 +158,7 @@ test.describe('File Upload Integration Tests', () => {
     }
     
     // Create test file
-    const testFilePath = path.join(__dirname, 'test-files', 'drag-test.txt');
+    const testFilePath = path.join(import.meta.url, 'test-files', 'drag-test.txt');
     const testDir = path.dirname(testFilePath);
     
     if (!fs.existsSync(testDir)) {
@@ -202,7 +202,7 @@ test.describe('File Upload Integration Tests', () => {
       });
     });
     
-    const testFilePath = path.join(__dirname, 'test-files', 'stream-test.txt');
+    const testFilePath = path.join(import.meta.url, 'test-files', 'stream-test.txt');
     const testDir = path.dirname(testFilePath);
     
     if (!fs.existsSync(testDir)) {
@@ -223,7 +223,7 @@ test.describe('File Upload Integration Tests', () => {
 
   test('file size limits are enforced', async ({ page }) => {
     // Create a large test file
-    const largeFilePath = path.join(__dirname, 'test-files', 'large.txt');
+    const largeFilePath = path.join(import.meta.url, 'test-files', 'large.txt');
     const testDir = path.dirname(largeFilePath);
     
     if (!fs.existsSync(testDir)) {
@@ -253,7 +253,7 @@ test.describe('File Upload Integration Tests', () => {
     }
     
     // Create multiple test files
-    const testDir = path.join(__dirname, 'test-files');
+    const testDir = path.join(import.meta.url, 'test-files');
     if (!fs.existsSync(testDir)) {
       fs.mkdirSync(testDir, { recursive: true });
     }
@@ -276,7 +276,7 @@ test.describe('File Upload Integration Tests', () => {
 
   test.afterEach(async () => {
     // Clean up test files directory
-    const testDir = path.join(__dirname, 'test-files');
+    const testDir = path.join(import.meta.url, 'test-files');
     if (fs.existsSync(testDir)) {
       try {
         fs.rmSync(testDir, { recursive: true, force: true });

@@ -1,3 +1,4 @@
+import crypto from "crypto";
 /**
  * Real AI Service - No Mocks
  * Integrates with Ollama + Enhanced RAG services + Vector Search
@@ -64,8 +65,8 @@ export class RealAIService {
   private timeout: number;
 
   constructor(options: AIServiceOptions = {}) {
-    this.ollamaUrl = options.ollamaUrl || process.env.OLLAMA_URL || 'http://localhost:11434';
-    this.ragServiceUrl = options.ragServiceUrl || process.env.RAG_SERVICE_URL || 'http://localhost:8094';
+    this.ollamaUrl = options.ollamaUrl || import.meta.env.OLLAMA_URL || 'http://localhost:11434';
+    this.ragServiceUrl = options.ragServiceUrl || import.meta.env.RAG_SERVICE_URL || 'http://localhost:8094';
     this.timeout = options.timeout || 30000;
   }
 

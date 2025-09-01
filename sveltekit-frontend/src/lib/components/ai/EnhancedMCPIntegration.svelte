@@ -72,10 +72,10 @@
 	}>>([]);
 	
 	// WebSocket connection for real-time updates
-	let wsConnection: WebSocket | null = null;
-	let queryInput = '';
-	let selectedTool = '';
-	let isProcessing = false;
+let wsConnection = $state<WebSocket | null >(null);
+let queryInput = $state('');
+let selectedTool = $state('');
+let isProcessing = $state(false);
 	
 	// Available MCP tools
 	const availableMCPTools = [
@@ -275,7 +275,7 @@
 			);
 			
 			// Determine the appropriate endpoint based on tool type
-			let endpoint = '';
+let endpoint = $state('');
 			switch (toolId) {
 				case 'enhanced_rag_query':
 					endpoint = '/mcp/enhanced-rag/query';
@@ -446,7 +446,7 @@
 					keydown={(e) => e.key === 'Enter' && executeQuery()}
 				/>
 				<button 
-					click={executeQuery}
+					on:onclick={executeQuery}
 					disabled={!queryInput.trim() || !selectedTool || isProcessing}
 					class="execute-button"
 				>
@@ -461,7 +461,7 @@
 				{#each $contextualSuggestions as suggestion}
 					<button 
 						class="suggestion-item suggestion-{suggestion.priority}"
-						click={suggestion.action}
+						on:onclick={suggestion.action}
 						disabled={isProcessing}
 					>
 						<div class="suggestion-title">{suggestion.title}</div>

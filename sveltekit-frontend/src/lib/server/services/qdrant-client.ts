@@ -1,10 +1,10 @@
 
 import { QdrantClient } from '@qdrant/js-client-rest';
 
-export const qdrant = new QdrantClient({ url: process.env.QDRANT_URL || "http://localhost:6333" });
-
+export const qdrant = new QdrantClient({ url: import.meta.env.QDRANT_URL || "http://localhost:6333" });
+;
 export const EVIDENCE_COLLECTION_NAME = "evidence_v1";
-
+;
 /**
  * Ensures the Qdrant collection exists and has a payload index for tags.
  * This is critical for efficient filtering and should be called on server startup.

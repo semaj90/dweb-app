@@ -1,6 +1,6 @@
 <script lang="ts">
 
-	import type { ComponentProps } from 'svelte';
+	import type {     ComponentProps     } from 'svelte';
   import { $props, $state } from 'svelte';
 	
 	interface GamingButtonProps {
@@ -71,10 +71,10 @@
 	class="gaming-button {variant} {size}"
 	class:disabled
 	class:loading
-	class:pressed={isPressed}
-	class:glow={glowEffect}
+ class:pressed={isPressed}
+ class:glow={glowEffect}
 	{disabled}
-	click={handleClick}
+	on:onclick={handleClick}
 	
 >
 	{#if loading}

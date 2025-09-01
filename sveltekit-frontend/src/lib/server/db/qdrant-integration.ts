@@ -8,6 +8,7 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import postgres from 'postgres';
 import { eq, and, sql } from 'drizzle-orm';
 import {
+import crypto from "crypto";
   legalDocuments,
   cases,
   vectorOperations,
@@ -536,20 +537,20 @@ export class QdrantPostgreSQLService {
 // HELPER FUNCTIONS
 // ============================================================================
 
-export const createQdrantService = (
+export const createQdrantService = (;
   qdrantConfig?: Partial<QdrantConfig>,
   postgresConfig?: Partial<PostgreSQLConfig>
 ): QdrantPostgreSQLService => {
   const defaultQdrantConfig: QdrantConfig = {
-    host: process.env.QDRANT_HOST || 'localhost',
-    port: parseInt(process.env.QDRANT_PORT || '6333'),
-    apiKey: process.env.QDRANT_API_KEY,
+    host: import.meta.env.QDRANT_HOST || 'localhost',
+    port: parseInt(import.meta.env.QDRANT_PORT || '6333'),
+    apiKey: import.meta.env.QDRANT_API_KEY,
     ...qdrantConfig,
   };
 
   const defaultPostgresConfig: PostgreSQLConfig = {
-    connectionString: process.env.DATABASE_URL || 
-      `postgresql://${process.env.DATABASE_USER || 'legal_admin'}:${process.env.DATABASE_PASSWORD || '123456'}@${process.env.DATABASE_HOST || 'localhost'}:${process.env.DATABASE_PORT || '5432'}/${process.env.DATABASE_NAME || 'legal_ai_db'}`,
+    connectionString: import.meta.env.DATABASE_URL || 
+      `postgresql://${import.meta.env.DATABASE_USER || 'legal_admin'}:${import.meta.env.DATABASE_PASSWORD || '123456'}@${import.meta.env.DATABASE_HOST || 'localhost'}:${import.meta.env.DATABASE_PORT || '5432'}/${import.meta.env.DATABASE_NAME || 'legal_ai_db'}`,
     ...postgresConfig,
   };
 

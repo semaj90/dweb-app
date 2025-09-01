@@ -172,10 +172,10 @@
 			<p class="space-y-4">AI-powered case analysis and report generation</p>
 			
 			<div class="space-y-4">
-				<button class="space-y-4" click={() => createNewReport()}>
+				<button class="space-y-4" on:onclick={() => createNewReport()}>
 					📄 New Report
 				</button>
-				<button class="space-y-4" click={() => createNewCanvas()}>
+				<button class="space-y-4" on:onclick={() => createNewCanvas()}>
 					🎨 New Canvas
 				</button>
 			</div>
@@ -186,7 +186,7 @@
 	{#if error}
 		<div class="space-y-4">
 			❌ {error}
-			<button click={() => error = ''} class="space-y-4">×</button>
+			<button on:onclick={() => error = ''} class="space-y-4">×</button>
 		</div>
 	{/if}
 
@@ -201,15 +201,15 @@
 		<div class="space-y-4">
 			<button 
 				class="space-y-4"
-				class:active={activeTab === 'editor'}
-				click={() => activeTab = 'editor'}
+			 class:active={activeTab === 'editor'}
+				on:onclick={() => activeTab = 'editor'}
 			>
 				📝 Report Editor
 			</button>
 			<button 
 				class="space-y-4"
-				class:active={activeTab === 'canvas'}
-				click={() => activeTab = 'canvas'}
+			 class:active={activeTab === 'canvas'}
+				on:onclick={() => activeTab = 'canvas'}
 			>
 				🎨 Interactive Canvas
 			</button>
@@ -228,7 +228,7 @@
 					<ReportEditor
 						report={currentReport}
 						{caseId}
-						on:save={handleReportSave}
+						save={handleReportSave}
 						autoSaveEnabled={true}
 					/>
 				</div>
@@ -245,7 +245,7 @@
 						reportId={currentReport?.id || 'temp-report-id'}
 						{evidence}
 						{citationPoints}
-						on:save={handleCanvasSave}
+						save={handleCanvasSave}
 					/>
 				</div>
 			{/if}

@@ -464,7 +464,7 @@
       </div>
 
       <div class="flex items-center space-x-2">
-        <Button variant="outline" size="sm" on:click={exportChatHistory}>
+        <Button variant="outline" size="sm" on:on:click={exportChatHistory}>
           <Download class="h-4 w-4 mr-1" />
           Export
         </Button>
@@ -487,10 +487,10 @@
           <div class="p-4 border-b border-slate-200 flex items-center justify-between">
             <h3 class="font-semibold text-slate-900">Reports</h3>
             <div class="flex items-center space-x-1">
-              <Button size="sm" variant="ghost" on:click={() => adjustPanelWidth('reports', -5)}>
+              <Button size="sm" variant="ghost" on:on:click={() => adjustPanelWidth('reports', -5)}>
                 <Minimize class="h-3 w-3" />
               </Button>
-              <Button size="sm" variant="ghost" on:click={() => togglePanel('reports')}>
+              <Button size="sm" variant="ghost" on:on:click={() => togglePanel('reports')}>
                 <Minimize class="h-3 w-3" />
               </Button>
             </div>
@@ -535,7 +535,7 @@
         <div class="h-full flex flex-col">
           <div class="p-4 border-b border-slate-200 flex items-center justify-between">
             <h3 class="font-semibold text-slate-900">Summaries</h3>
-            <Button size="sm" variant="ghost" on:click={() => togglePanel('summaries')}>
+            <Button size="sm" variant="ghost" on:on:click={() => togglePanel('summaries')}>
               <Minimize class="h-3 w-3" />
             </Button>
           </div>
@@ -563,7 +563,7 @@
         <div class="h-full flex flex-col">
           <div class="p-4 border-b border-slate-200 flex items-center justify-between">
             <h3 class="font-semibold text-slate-900">Citations</h3>
-            <Button size="sm" variant="ghost" on:click={() => togglePanel('citations')}>
+            <Button size="sm" variant="ghost" on:on:click={() => togglePanel('citations')}>
               <Minimize class="h-3 w-3" />
             </Button>
           </div>
@@ -610,7 +610,7 @@
               </span>
             </div>
           </div>
-          <Button size="sm" variant="ghost" on:click={() => togglePanel('chat')}>
+          <Button size="sm" variant="ghost" on:on:click={() => togglePanel('chat')}>
             <Expand class="h-3 w-3" />
           </Button>
         </div>
@@ -623,7 +623,7 @@
               {#each contextualSuggestions as suggestion}
                 <button
                   class="text-xs px-2 py-1 bg-blue-100 hover:bg-blue-200 text-blue-800 rounded transition-colors"
-                  click={() => useSuggestion(suggestion)}>
+                  on:onclick={() => useSuggestion(suggestion)}>
                   {suggestion}
                 </button>
               {/each}
@@ -660,7 +660,7 @@
                       {#each message.suggestions as suggestion}
                         <button
                           class="block w-full text-left text-xs p-2 bg-white/20 hover:bg-white/30 rounded transition-colors"
-                          click={() => useSuggestion(suggestion)}>
+                          on:onclick={() => useSuggestion(suggestion)}>
                           {suggestion}
                         </button>
                       {/each}
@@ -699,7 +699,7 @@
               categories={['cases', 'evidence', 'precedents', 'statutes']}
               enableVectorSearch={true}
               aiSuggestions={true}
-              on:select={(result) => {
+              select={(result) => {
                 currentMessage = `Tell me about: ${result.title}`;
                 sendMessage();
               }}
@@ -712,7 +712,7 @@
               <Input
                 bind:value={currentMessage}
                 placeholder="Ask your AI assistant..."
-                on:keydown={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
+                keydown={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
                 disabled={isProcessing} />
             </div>
 
@@ -720,7 +720,7 @@
               <Button
                 variant="outline"
                 size="sm"
-                on:click={startVoiceInput}
+                on:on:click={startVoiceInput}
                 disabled={isListening || isProcessing}
                 class={isListening ? 'bg-red-100 border-red-300' : ''}>
                 {#if isListening}
@@ -731,7 +731,7 @@
               </Button>
             {/if}
 
-            <Button on:click={sendMessage} disabled={!currentMessage.trim() || isProcessing}>
+            <Button on:on:click={sendMessage} disabled={!currentMessage.trim() || isProcessing}>
               <Send class="h-4 w-4" />
             </Button>
           </div>

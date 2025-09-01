@@ -197,7 +197,7 @@ ${report.attachments.map((att) => `• ${att.name} (${att.type})`).join("\n")}
 
         {#if allowExport}
           <button
-            click={exportReport as any}
+            on:onclick={exportReport as any}
             class="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-md transition-colors"
             title="Export Report"
           >
