@@ -4,7 +4,7 @@
 // 	protoc        v4.23.4
 // source: events.proto
 
-package wire
+package embed // unified: previously wire; adjust until protoc regen
 
 import (
 	reflect "reflect"

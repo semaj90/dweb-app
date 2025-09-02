@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package gpu_rag_system;
-
-option go_package = "legal-ai-production/proto/gpu;gpu";
+// Unified into embed package for single Go package in this directory.
+package embed;
+option go_package = "legal-ai-platform/proto/embed;embed";
 
 // Core data types for embeddings and chunks
 message EmbeddingVector {

@@ -445,6 +445,9 @@ let lastClickTime = $state(0);
       case 'terminal':
         goto('/terminal');
         break;
+      case 'performance':
+        goto('/perf');
+        break;
       default:
         // Stay on command center
         break;
@@ -649,6 +652,12 @@ let lastClickTime = $state(0);
           onclick={() => handleNavigation('terminal')}
         >
           TERMINAL
+        </button>
+        <button
+          class="w-full px-4 py-2 text-left font-bold transition-colors border {activeSection === 'performance' ? 'bg-[#3D3D3D] text-[#F7F6F2] border-[#3D3D3D]' : 'border-transparent hover:border-[#3D3D3D] hover:bg-white'}"
+          onclick={() => handleNavigation('performance')}
+        >
+          🚀 PERFORMANCE
         </button>
       </nav>
     </aside>

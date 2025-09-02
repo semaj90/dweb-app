@@ -1,8 +1,10 @@
 syntax = "proto3";
 
-package wire;
+// Unified into the embed package to avoid mixed packages in the same Go directory.
+package embed;
 
-option go_package = "legal-ai-production/proto/wire;wire";
+// Updated go_package to match unified package name (module path adjusted to current module name)
+option go_package = "legal-ai-platform/proto/embed;embed";
 
 // Lightweight telemetry from client to server
 message Telemetry {

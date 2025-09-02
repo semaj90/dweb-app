@@ -18,9 +18,13 @@
   import { ScrollArea } from '$lib/components/ui/scroll-area';
   import { Loader2, Send, Cpu, Zap, Database, Brain, FileText, Search } from 'lucide-svelte';
   
-  export let caseId: string = '';
-  export let userId: string = '';
-  export let documentId: string = '';
+  interface Props {
+    caseId?: string;
+    userId?: string;
+    documentId?: string;
+  }
+
+  let { caseId = '', userId = '', documentId = '' }: Props = $props();
   
   // Stores
   const messages = writable<Message[]>([]);

@@ -2,7 +2,7 @@ import http from "http";
 /**
  * Multi-Protocol API Routing Configuration
  * Native Windows Legal AI Platform - Production Ready
- * 
+ *
  * Supports HTTP, gRPC, QUIC, and WebSocket protocols
  * Using existing compiled Go binaries for maximum performance
  */
@@ -337,7 +337,7 @@ export const SERVICES_CONFIG: Record<string, ServiceConfig> = {
 };
 
 // Multi-Protocol API Routes Configuration
-export const API_ROUTES: ProtocolRoute[] = [;
+export const API_ROUTES: ProtocolRoute[] = [
   // Enhanced RAG Routes
   {
     service: 'enhancedRag',
@@ -351,7 +351,7 @@ export const API_ROUTES: ProtocolRoute[] = [;
     fallback: ['quic', 'grpc', 'http'],
     timeout: 30000
   },
-  
+
   // Upload Routes
   {
     service: 'uploadService',
@@ -363,7 +363,7 @@ export const API_ROUTES: ProtocolRoute[] = [;
     fallback: ['http'],
     timeout: 60000
   },
-  
+
   // AI Summary Routes
   {
     service: 'aiSummary',
@@ -375,7 +375,7 @@ export const API_ROUTES: ProtocolRoute[] = [;
     fallback: ['http'],
     timeout: 45000
   },
-  
+
   // Legal AI Routes
   {
     service: 'legalAI',
@@ -387,7 +387,7 @@ export const API_ROUTES: ProtocolRoute[] = [;
     fallback: ['grpc', 'http'],
     timeout: 30000
   },
-  
+
   // QUIC Gateway Routes
   {
     service: 'quicGateway',
@@ -399,7 +399,7 @@ export const API_ROUTES: ProtocolRoute[] = [;
     fallback: ['quic', 'http'],
     timeout: 5000
   },
-  
+
   // Cluster Management Routes
   {
     service: 'clusterManager',
@@ -410,7 +410,7 @@ export const API_ROUTES: ProtocolRoute[] = [;
     fallback: ['http'],
     timeout: 15000
   },
-  
+
   // XState Management Routes
   {
     service: 'xstateManager',
@@ -422,7 +422,7 @@ export const API_ROUTES: ProtocolRoute[] = [;
     fallback: ['http'],
     timeout: 10000
   },
-  
+
   // Load Balancer Routes
   {
     service: 'loadBalancer',
@@ -433,7 +433,7 @@ export const API_ROUTES: ProtocolRoute[] = [;
     fallback: ['http'],
     timeout: 5000
   },
-  
+
   // GPU Indexer Routes
   {
     service: 'gpuIndexer',
@@ -444,7 +444,7 @@ export const API_ROUTES: ProtocolRoute[] = [;
     fallback: ['http'],
     timeout: 60000
   },
-  
+
   // Recommendation Routes
   {
     service: 'recommendations',

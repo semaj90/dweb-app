@@ -244,7 +244,63 @@
       "detail": "Context7-guided systematic error reduction analysis"
     },
     {
-      "label": "🔍 Vector: Search",
+      "label": "� Perf Monitor: Build Binary",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "cd go-microservice; if (!(Test-Path bin)) { New-Item -ItemType Directory -Path bin | Out-Null }; go build -o ./bin/perf-monitor.exe ./cmd/perf-monitor; Write-Host '✅ perf-monitor.exe built to go-microservice/bin' -ForegroundColor Green"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Build Go performance monitoring service binary"
+    },
+    {
+      "label": "📊 Perf Monitor: Run (Dev)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "cd go-microservice; if (!(Test-Path bin/perf-monitor.exe)) { go build -o ./bin/perf-monitor.exe ./cmd/perf-monitor }; Start-Process -NoNewWindow -FilePath 'bin/perf-monitor.exe'; Write-Host '🚀 perf-monitor started on :8098' -ForegroundColor Cyan"
+      ],
+      "group": "build",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Run performance monitor service locally"
+    },
+    {
+      "label": "📊 Perf Monitor: Collector",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "cd windows-service; ./perf-monitor-collector.bat"
+      ],
+      "group": "test",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Continuously collect runtime metrics snapshots"
+    },
+    {
+      "label": "�🔍 Vector: Search",
       "type": "shell",
       "command": "npm",
       "args": [

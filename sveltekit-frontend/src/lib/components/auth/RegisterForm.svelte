@@ -258,7 +258,7 @@
 
   function calculatePasswordStrength(password: string): { score: number; feedback: string; color: string } {
     if (!password) return { score: 0, feedback: 'Enter a password', color: 'text-gray-400' };
-let score = $state(0);
+    let score = 0;
     if (password.length >= 12) score += 2;
     if (password.length >= 16) score += 1;
     if (/[a-z]/.test(password)) score += 1;
@@ -274,7 +274,7 @@ let score = $state(0);
   }
 </script>
 
-<Card.Root class="w-full max-w-2xl mx-auto">
+<Card.Root class="w-full max-w-2xl mx-auto nes-legal-register-form">
   <Card.Header class="text-center">
     <div class="flex items-center justify-center mb-4">
       <Shield class="h-8 w-8 text-primary mr-2" />
@@ -292,7 +292,7 @@ let score = $state(0);
   <Card.Content>
     <!-- GPU Validation Status -->
     {#if enableGPUValidation && gpuValidationStatus !== 'idle'}
-      <Alert.Root class="mb-4" variant={gpuValidationStatus === 'error' ? 'destructive' : 'default'}>
+      <Alert.Root class="mb-4 gpu-validation {gpuValidationStatus}" variant={gpuValidationStatus === 'error' ? 'destructive' : 'default'}>
         <Zap class="h-4 w-4" />
         <Alert.Title>AI-Enhanced Validation</Alert.Title>
         <Alert.Description>
@@ -390,21 +390,21 @@ let score = $state(0);
         <Form.Field {form} name="role">
           <Form.Control let:attrs>
             <Label for="role">Professional Role</Label>
-            <SelectRoot bind:selected={$form.role}>
-              <SelectTrigger class="mt-1">
-                <SelectValue placeholder="Select your role" />
-              </SelectTrigger>
-              <SelectContent>
+            <Select.Root bind:selected={$form.role}>
+              <Select.Trigger class="mt-1">
+                <Select.Value placeholder="Select your role" />
+              </Select.Trigger>
+              <Select.Content>
                 {#each roleOptions as option}
-                  <SelectItem value={option.value}>
+                  <Select.Item value={option.value} class="role-option">
                     <div class="flex items-center gap-2">
                       <svelte:component this={option.icon} class="h-4 w-4" />
                       {option.label}
                     </div>
-                  </SelectItem>
+                  </Select.Item>
                 {/each}
-              </SelectContent>
-            </SelectRoot>
+              </Select.Content>
+            </Select.Root>
           </Form.Control>
           <Form.FieldErrors />
         </Form.Field>
@@ -587,7 +587,7 @@ let score = $state(0);
       <!-- Submit Button -->
       <Button
         type="submit"
-        class="w-full"
+        class="w-full nes-btn nes-legal-priority-medium"
         disabled={isLoading || $submitting}
       >
         {#if isLoading || $submitting}
@@ -617,3 +617,123 @@ let score = $state(0);
     {/if}
   </Card.Content>
 </Card.Root>
+
+<style>
+  /* NES.css Legal Registration Form Styling */
+  :global(.nes-legal-register-form) {
+    font-family: 'Courier New', monospace;
+    border: 3px solid #000;
+    background: #f8f8f8;
+    box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.2);
+  }
+
+  /* NES-style form inputs */
+  :global(.nes-legal-register-form input) {
+    border: 2px solid #000;
+    background: #fff;
+    font-family: 'Courier New', monospace;
+    padding: 8px;
+  }
+
+  :global(.nes-legal-register-form input:focus) {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 100, 200, 0.3);
+  }
+
+  /* NES-style buttons */
+  :global(.nes-legal-register-form .nes-btn) {
+    border: 2px solid #000;
+    background: #fff;
+    color: #000;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    padding: 12px 24px;
+    transition: all 0.1s ease;
+    text-transform: uppercase;
+  }
+
+  :global(.nes-legal-register-form .nes-btn:hover:not(:disabled)) {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
+  }
+
+  :global(.nes-legal-register-form .nes-btn:active:not(:disabled)) {
+    transform: translate(4px, 4px);
+    box-shadow: none;
+  }
+
+  :global(.nes-legal-register-form .nes-btn:disabled) {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* Legal priority styling for submit button */
+  :global(.nes-legal-register-form .nes-legal-priority-medium) {
+    background: #3b82f6;
+    color: white;
+    border-color: #1e40af;
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+  }
+
+  :global(.nes-legal-register-form .nes-legal-priority-medium:hover:not(:disabled)) {
+    background: #2563eb;
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+  }
+
+  /* Password strength indicator NES styling */
+  :global(.nes-legal-register-form .password-strength) {
+    border: 1px solid #000;
+    background: #fff;
+    height: 8px;
+  }
+
+  /* Alert styling with NES borders */
+  :global(.nes-legal-register-form .alert-destructive) {
+    border: 2px solid #dc2626;
+    background: #fef2f2;
+    color: #991b1b;
+  }
+
+  :global(.nes-legal-register-form .alert-success) {
+    border: 2px solid #16a34a;
+    background: #f0fdf4;
+    color: #15803d;
+  }
+
+  /* Legal professional role icons */
+  :global(.nes-legal-register-form .role-option) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border: 1px solid transparent;
+    font-family: 'Courier New', monospace;
+  }
+
+  :global(.nes-legal-register-form .role-option:hover) {
+    background: #f3f4f6;
+    border-color: #000;
+  }
+
+  /* GPU validation status styling */
+  :global(.nes-legal-register-form .gpu-validation) {
+    border: 2px solid #6366f1;
+    background: linear-gradient(45deg, #f0f9ff, #e0e7ff);
+    padding: 12px;
+    font-family: 'Courier New', monospace;
+  }
+
+  :global(.nes-legal-register-form .gpu-validation.processing) {
+    animation: pulse 2s infinite;
+  }
+
+  :global(.nes-legal-register-form .gpu-validation.success) {
+    border-color: #16a34a;
+    background: linear-gradient(45deg, #f0fdf4, #dcfce7);
+  }
+
+  :global(.nes-legal-register-form .gpu-validation.error) {
+    border-color: #dc2626;
+    background: linear-gradient(45deg, #fef2f2, #fee2e2);
+  }
+</style>

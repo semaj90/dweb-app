@@ -1,4 +1,5 @@
 import type { RequestHandler } from './$types.js';
+import { json } from '@sveltejs/kit';
 
 // GPU Orchestration API Routes for Legal AI Platform
 // Integrates with Go GPU Orchestrator Service (Port 8231)
@@ -57,6 +58,10 @@ export const GET: RequestHandler = async ({ url }) => {
 				return await getQueueStatus();
 			case 'services':
 				return await getServiceRegistry();
+			case 'runtime':
+				return await getCudaRuntime();
+			case 'series':
+				return await getCudaSeries();
 			default:
 				return await getGPUOverview();
 		}
@@ -216,6 +221,28 @@ async function getGPUOverview(): Promise<Response> {
 				}
 			}
 		});
+	}
+}
+
+// Cuda-service direct runtime (ring buffer latest)
+async function getCudaRuntime(): Promise<Response> {
+	try {
+		const r = await fetch('http://localhost:8096/gpu/runtime');
+		const data = await r.json();
+		return json({ source: 'cuda-service', runtime: data });
+	} catch (e: any) {
+		return json({ error: 'cuda runtime unavailable', detail: e.message }, { status: 502 });
+	}
+}
+
+// Cuda-service series (ring buffer)
+async function getCudaSeries(): Promise<Response> {
+	try {
+		const r = await fetch('http://localhost:8096/gpu/series');
+		const data = await r.json();
+		return json({ source: 'cuda-service', series: data });
+	} catch (e: any) {
+		return json({ error: 'cuda series unavailable', detail: e.message }, { status: 502 });
 	}
 }
 

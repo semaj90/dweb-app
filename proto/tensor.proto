@@ -1,8 +1,9 @@
 syntax = "proto3";
 
-package tensor;
+// Unified proto package
+package embed;
 
-option go_package = "legal-ai-production/proto/tensor;tensor";
+option go_package = "legal-ai-platform/proto/embed;embed";
 
 // Tensor operation request
 message TensorRequest {

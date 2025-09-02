@@ -4,10 +4,11 @@
 // - protoc             v4.23.4
 // source: tensor.proto
 
-package pb
+package embed // unified (was pb)
 
 import (
 	context "context"
+
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"

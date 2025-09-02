@@ -1,5 +1,4 @@
-<!-- @migration-task Error while migrating Svelte code: `$evidenceStore` is an illegal variable name. To reference a global variable called `$evidenceStore`, use `globalThis.$evidenceStore`
-https://svelte.dev/e/global_reference_invalid -->
+<!-- Detective Board - Fixed for Svelte 5 runes mode -->
 <script lang="ts">
 
   import Badge from "$lib/components/ui/Badge.svelte";
@@ -24,7 +23,7 @@ https://svelte.dev/e/global_reference_invalid -->
   import { keyboardShortcuts } from "$lib/stores";
   import { get as getStore } from "svelte/store";
   // Save to logic: update user activity store, backend, Qdrant, Loki.js, MCP, LLM
-  import { page } from "$app/state";
+  import { page } from "$app/stores";
   import {
     callContext7Tool,
     getContextAwareSuggestions,
@@ -35,7 +34,7 @@ https://svelte.dev/e/global_reference_invalid -->
   // Stub for activeUsers - replace with actual implementation
   const activeUsers = writable([]);
 
-  // State variables for the component
+  // State variables for the component using Svelte 5 runes
   let viewMode = $state('columns');
   let canvasContainer: HTMLDivElement;
   let columns = $state([
@@ -170,7 +169,7 @@ https://svelte.dev/e/global_reference_invalid -->
   async function findWithLLM() {
     openFindModal();
   }
-let findModal = $state({
+  let findModal = $state({
     show: false,
     query: "",
     results: [],
@@ -202,7 +201,7 @@ let findModal = $state({
     findModal.suggestions = [];
     // 1. Local fuzzy search (Fuse.js)
     try {
-      const items = get(evidenceStore);
+      const items = get(evidenceStore) || [];
       const fuse = new Fuse(items, { keys: ["title", "description", "tags"] });
       findModal.results = fuse.search(
         findModal.query || contextMenu.item.title || ""
@@ -247,7 +246,7 @@ let findModal = $state({
   on:keydown={handleGlobalKeydown}
 />
 
-<div class="w-full h-full min-h-screen bg-background">
+<div class="w-full h-full min-h-screen bg-background detective-board-nes">
   <!-- Header -->
   <Card class="mb-6">
     <CardHeader>
@@ -270,7 +269,7 @@ let findModal = $state({
             <Button
               variant={viewMode === "columns" ? "default" : "outline"}
               size="sm"
-              on:on:click={() => switchViewMode("columns")}
+              onclick={() => switchViewMode("columns")}
             >
               <span class="mr-2">📋</span>
               Columns
@@ -278,7 +277,7 @@ let findModal = $state({
             <Button
               variant={viewMode === "canvas" ? "default" : "outline"}
               size="sm"
-              on:on:click={() => switchViewMode("canvas")}
+              onclick={() => switchViewMode("canvas")}
             >
               <span class="mr-2">🎨</span>
               Canvas
@@ -484,27 +483,27 @@ let findModal = $state({
         <p class="space-y-4">Save/Link</p>
       </div>
       <ContextMenu.Item
-        on:on:mouseenter={() => showMiniModal("citation")}
-        on:on:mouseleave={hideMiniModal}
-        on:select={() => saveTo("savedcitations")}
+        onmouseenter={() => showMiniModal("citation")}
+        onmouseleave={hideMiniModal}
+        onselect={() => saveTo("savedcitations")}
         >Add to /savedcitations</ContextMenu.Item
       >
       <ContextMenu.Item
-        on:on:mouseenter={() => showMiniModal("aisummary")}
-        on:on:mouseleave={hideMiniModal}
-        on:select={() => saveTo("savedaisummaries")}
+        onmouseenter={() => showMiniModal("aisummary")}
+        onmouseleave={hideMiniModal}
+        onselect={() => saveTo("savedaisummaries")}
         >Add to /savedaisummaries</ContextMenu.Item
       >
       <ContextMenu.Item
-        on:on:mouseenter={() => showMiniModal("userreport")}
-        on:on:mouseleave={hideMiniModal}
-        on:select={() => saveTo("saveduserreports")}
+        onmouseenter={() => showMiniModal("userreport")}
+        onmouseleave={hideMiniModal}
+        onselect={() => saveTo("saveduserreports")}
         >Add to /saveduserreports</ContextMenu.Item
       >
       <ContextMenu.Item
-        on:on:mouseenter={() => showMiniModal("mcpcontext")}
-        on:on:mouseleave={hideMiniModal}
-        on:select={() => saveTo("mcpcontext")}
+        onmouseenter={() => showMiniModal("mcpcontext")}
+        onmouseleave={hideMiniModal}
+        onselect={() => saveTo("mcpcontext")}
         >Add to MCP Context (LLM)</ContextMenu.Item
       >
       <ContextMenu.Separator />
@@ -518,9 +517,9 @@ let findModal = $state({
       >
       <ContextMenu.Separator />
       <ContextMenu.Item
-        on:on:mouseenter={() => showMiniModal("find")}
-        on:on:mouseleave={hideMiniModal}
-        on:select={findWithLLM}>Find (search/query with LLM)</ContextMenu.Item
+        onmouseenter={() => showMiniModal("find")}
+        onmouseleave={hideMiniModal}
+        onselect={findWithLLM}>Find (search/query with LLM)</ContextMenu.Item
       >
       {#if findModal.show}
         <div
@@ -539,10 +538,10 @@ let findModal = $state({
               />
               <Button
                 size="sm"
-                on:on:click={runFindSearch}
+                onclick={runFindSearch}
                 disabled={findModal.loading}>Search</Button
               >
-              <Button size="sm" variant="outline" on:on:click={closeFindModal}
+              <Button size="sm" variant="outline" onclick={closeFindModal}
                 >Close</Button
               >
             </div>
@@ -626,5 +625,73 @@ let findModal = $state({
     {/if}
   </div>
 {/if}
+
+<style>
+  /* NES.css Detective Board Styling */
+  .detective-board-nes {
+    font-family: 'Courier New', monospace;
+  }
+
+  /* NES-style buttons for detective actions */
+  :global(.detective-board-nes .nes-btn) {
+    @apply border-2 border-gray-800 bg-white text-gray-800 px-4 py-2 font-bold;
+    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.2);
+    transition: all 0.1s ease;
+  }
+
+  :global(.detective-board-nes .nes-btn:hover) {
+    @apply bg-gray-100;
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
+  }
+
+  :global(.detective-board-nes .nes-btn:active) {
+    transform: translate(4px, 4px);
+    box-shadow: none;
+  }
+
+  /* Evidence priority styling with NES legal colors */
+  :global(.detective-board-nes .nes-legal-priority-critical) {
+    @apply bg-red-600 text-white font-bold animate-pulse border-2 border-red-400;
+    box-shadow: 0 0 15px rgba(220, 38, 38, 0.5);
+  }
+
+  :global(.detective-board-nes .nes-legal-priority-high) {
+    @apply bg-yellow-500 text-black font-medium border-2 border-yellow-400;
+    box-shadow: 0 0 10px rgba(234, 179, 8, 0.4);
+  }
+
+  :global(.detective-board-nes .nes-legal-priority-medium) {
+    @apply bg-blue-500 text-white font-normal border-2 border-blue-400;
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+  }
+
+  /* NES-style panels for columns */
+  :global(.detective-board-nes .nes-panel) {
+    border: 3px solid #000;
+    background: #f8f8f8;
+    padding: 16px;
+    position: relative;
+  }
+
+  :global(.detective-board-nes .nes-panel::before) {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    background: #fff;
+    z-index: -1;
+  }
+
+  /* Context menu NES styling */
+  :global(.detective-board-nes .nes-context-menu) {
+    border: 2px solid #000;
+    background: #f8f8f8;
+    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.3);
+    font-family: 'Courier New', monospace;
+  }
+</style>
 
 

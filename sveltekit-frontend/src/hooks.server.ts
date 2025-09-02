@@ -1,22 +1,46 @@
-// EARLY PROCESS.CWD PATCH (must occur before other server imports with side-effects)
+// CRITICAL PROCESS.CWD RESTORATION (must be first)
 import type { Handle } from '@sveltejs/kit';
 import nodeProcess from 'node:process';
 
-if (globalThis.process && typeof globalThis.process.cwd !== 'function') {
-  // Minimal, synchronous patch
+// Comprehensive process.cwd restoration with breadcrumb logging
+function restoreProcessCwd() {
+  const originalCwd = nodeProcess.cwd();
+  let patchApplied = false;
+  
+  // Check and restore global process.cwd
+  if (typeof process.cwd !== 'function') {
+    const currentValue = (process as any).cwd;
+    console.warn(`[PATCH] process.cwd was mutated to:`, typeof currentValue, currentValue);
+    process.cwd = () => originalCwd;
+    patchApplied = true;
+  }
+  
+  // Check and restore globalThis.process.cwd
+  if (globalThis.process && typeof globalThis.process.cwd !== 'function') {
+    const currentValue = (globalThis.process as any).cwd;
+    console.warn(`[PATCH] globalThis.process.cwd was mutated to:`, typeof currentValue, currentValue);
+    globalThis.process.cwd = () => originalCwd;
+    patchApplied = true;
+  }
+  
+  if (patchApplied) {
+    console.info(`[PATCH] process.cwd restored to function returning: "${originalCwd}"`);
+  }
+  
+  // Final verification
   try {
-    globalThis.process.cwd = nodeProcess.cwd;
-    console.info('[startup] Patched missing process.cwd');
+    const testResult = process.cwd();
+    console.info(`[VERIFY] process.cwd() test: "${testResult}" (type: ${typeof testResult})`);
   } catch (e) {
-    console.warn('[startup] Failed to patch process.cwd', e);
-    (globalThis.process as any).cwd = () => '/';
+    console.error(`[VERIFY] process.cwd() test failed:`, e);
+    // Failsafe fallback
+    process.cwd = () => '/';
+    console.warn(`[FAILSAFE] Set process.cwd to return root directory`);
   }
 }
 
-// Lightweight diagnostic (avoid logger usage before ensured patch)
-try {
-  console.info('[diagnostic] process.cwd type:', typeof process.cwd, 'node version:', (process as any).versions?.node);
-} catch {/* ignore */ }
+// Apply the restoration immediately
+restoreProcessCwd();
 
 // Defer heavier imports until after patch to avoid early evaluation using broken process
 let _lazy: {

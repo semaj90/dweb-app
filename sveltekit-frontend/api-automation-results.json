@@ -1,0 +1,14 @@
+{
+  "totalTests": 1,
+  "passedTests": 1,
+  "failedTests": 0,
+  "timestamp": "2025-09-02T01:44:14.254Z",
+  "testResults": {
+    "Database Health Check": {
+      "status": 200,
+      "success": true,
+      "hasJson": true,
+      "responsePreview": "{\"status\":\"healthy\",\"message\":\"Database connection successful\",\"connection\":{\"postgresVersion\":\"PostgreSQL 17.6 on x86_64-windows, compiled by msvc-19.44.35213, 64-bit\",\"pgvectorEnabled\":true,\"poolSiz"
+    }
+  }
+}

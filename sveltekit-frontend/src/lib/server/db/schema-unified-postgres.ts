@@ -4,12 +4,12 @@
  * Single source of truth for all database operations
  */
 
-import { 
-  pgTable, 
-  text, 
-  timestamp, 
-  boolean, 
-  jsonb, 
+import {
+  pgTable,
+  text,
+  timestamp,
+  boolean,
+  jsonb,
   uuid,
   pgEnum,
   index,
@@ -18,14 +18,14 @@ import {
 } from "drizzle-orm/pg-core";
 
 // --- Enums ---
-export const evidenceTypeEnum = pgEnum('evidence_type', [;;
+export const evidenceTypeEnum = pgEnum('evidence_type', [
   'PDF', 'IMAGE', 'VIDEO', 'AUDIO', 'TEXT', 'LINK', 'UNKNOWN'
 ]);
 
 // --- Core Auth Tables (matching actual database structure) ---
 
 // Users table - matches the existing database structure exactly
-export const users = pgTable(;;
+export const users = pgTable(
   "users",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -59,7 +59,7 @@ export const users = pgTable(;;
 );
 
 // Sessions table - matches the existing database structure
-export const sessions = pgTable(;;
+export const sessions = pgTable(
   "sessions",
   {
     id: text("id").primaryKey(),
@@ -74,7 +74,7 @@ export const sessions = pgTable(;;
 );
 
 // User profiles table - matches existing structure
-export const user_profiles = pgTable(;;
+export const user_profiles = pgTable(
   "user_profiles",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -94,7 +94,7 @@ export const user_profiles = pgTable(;;
 // --- Legal Domain Tables ---
 
 // Cases table
-export const cases = pgTable(;;
+export const cases = pgTable(
   "cases",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -119,7 +119,7 @@ export const cases = pgTable(;;
 );
 
 // Rich Evidence table with TypeScript metadata support
-export const evidence = pgTable(;;
+export const evidence = pgTable(
   "evidence",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -147,7 +147,7 @@ export const evidence = pgTable(;;
 );
 
 // Legal documents table
-export const legal_documents = pgTable(;;
+export const legal_documents = pgTable(
   "legal_documents",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -168,7 +168,7 @@ export const legal_documents = pgTable(;;
 );
 
 // Reports table
-export const reports = pgTable(;;
+export const reports = pgTable(
   "reports",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -190,11 +190,11 @@ export const reports = pgTable(;;
 );
 
 // Vector operations table for tracking embedding operations
-export const vectors = pgTable(;;
+export const vectors = pgTable(
   "vectors",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    entity_type: text("entity_type").notNull(), // 'evidence', 'legal_documents', etc.
+    entity_type: text("entity_type").notNull(), // 'evidence', 'legal_documents', 'chat_sessions', etc.
     entity_id: uuid("entity_id").notNull(),
     embedding: vector("embedding", { dimensions: 384 }),
     model: text("model").default("nomic-embed-text"),
@@ -206,34 +206,100 @@ export const vectors = pgTable(;;
   })
 );
 
+// Chat sessions table for AI conversations
+export const chat_sessions = pgTable(
+  "chat_sessions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    user_id: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
+    case_id: uuid("case_id").references(() => cases.id, { onDelete: "cascade" }),
+    report_id: uuid("report_id").references(() => reports.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    user_role: text("user_role").default("prosecutor"),
+    session_metadata: jsonb("session_metadata"), // Settings, preferences, etc.
+    is_active: boolean("is_active").default(true),
+    created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+  },
+  (table) => ({
+    user_id_idx: index("chat_sessions_user_id_idx").on(table.user_id),
+    case_id_idx: index("chat_sessions_case_id_idx").on(table.case_id),
+    is_active_idx: index("chat_sessions_is_active_idx").on(table.is_active)
+  })
+);
+
+// Chat messages table for conversation history
+export const chat_messages = pgTable(
+  "chat_messages",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    session_id: uuid("session_id").notNull().references(() => chat_sessions.id, { onDelete: "cascade" }),
+    role: text("role").notNull(), // 'user', 'assistant', 'system'
+    content: text("content").notNull(),
+    // Enhanced AI analysis data
+    synthesized_input: jsonb("synthesized_input"),
+    legal_analysis: jsonb("legal_analysis"),
+    rag_results: jsonb("rag_results"),
+    confidence: text("confidence"), // Store as text to avoid precision issues
+    processing_time: text("processing_time"), // Milliseconds as text
+    ai_metadata: jsonb("ai_metadata"), // Model used, settings, etc.
+    embedding: vector("embedding", { dimensions: 384 }),
+    created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull()
+  },
+  (table) => ({
+    session_id_idx: index("chat_messages_session_id_idx").on(table.session_id),
+    role_idx: index("chat_messages_role_idx").on(table.role),
+    created_at_idx: index("chat_messages_created_at_idx").on(table.created_at)
+  })
+);
+
+// Report chat associations for linking chats to reports
+export const report_chat_associations = pgTable(
+  "report_chat_associations",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    report_id: uuid("report_id").notNull().references(() => reports.id, { onDelete: "cascade" }),
+    chat_session_id: uuid("chat_session_id").notNull().references(() => chat_sessions.id, { onDelete: "cascade" }),
+    association_type: text("association_type").notNull(), // 'research', 'analysis', 'drafting', etc.
+    metadata: jsonb("metadata"),
+    created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull()
+  },
+  (table) => ({
+    report_id_idx: index("report_chat_associations_report_id_idx").on(table.report_id),
+    chat_session_id_idx: index("report_chat_associations_chat_session_id_idx").on(table.chat_session_id)
+  })
+);
+
 // --- Relations ---
 
-export const usersRelations = relations(users, ({ many }) => ({;
+export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
   user_profiles: many(user_profiles),
   cases: many(cases),
   evidence: many(evidence),
-  reports: many(reports)
+  reports: many(reports),
+  chat_sessions: many(chat_sessions)
 }));
 
-export const sessionsRelations = relations(sessions, ({ one }) => ({;
+export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(users, {
     fields: [sessions.user_id],
     references: [users.id]
   })
 }));
 
-export const casesRelations = relations(cases, ({ one, many }) => ({;
+export const casesRelations = relations(cases, ({ one, many }) => ({
   user: one(users, {
     fields: [cases.user_id],
     references: [users.id]
   }),
   evidence: many(evidence),
   legal_documents: many(legal_documents),
-  reports: many(reports)
+  reports: many(reports),
+  chat_sessions: many(chat_sessions)
 }));
 
-export const evidenceRelations = relations(evidence, ({ one }) => ({;
+export const evidenceRelations = relations(evidence, ({ one }) => ({
   case: one(cases, {
     fields: [evidence.case_id],
     references: [cases.id]
@@ -294,13 +360,13 @@ export interface LinkMetadata {
 }
 
 // Union type for all possible metadata structures
-export type EvidenceMetadata = 
-  | ImageMetadata 
-  | PdfMetadata 
-  | VideoMetadata 
+export type EvidenceMetadata =
+  | ImageMetadata
+  | PdfMetadata
+  | VideoMetadata
   | AudioMetadata
   | TextMetadata
-  | LinkMetadata;;
+  | LinkMetadata
   | { kind: 'UNKNOWN' };
 
 // --- Type Inference ---
@@ -316,3 +382,49 @@ export type Evidence = typeof evidence.$inferSelect;
 export type NewEvidence = typeof evidence.$inferInsert;
 export type LegalDocument = typeof legal_documents.$inferSelect;
 export type NewLegalDocument = typeof legal_documents.$inferInsert;
+export type Report = typeof reports.$inferSelect;
+export type NewReport = typeof reports.$inferInsert;
+export type ChatSession = typeof chat_sessions.$inferSelect;
+export type NewChatSession = typeof chat_sessions.$inferInsert;
+export type ChatMessage = typeof chat_messages.$inferSelect;
+export type NewChatMessage = typeof chat_messages.$inferInsert;
+export type ReportChatAssociation = typeof report_chat_associations.$inferSelect;
+export type NewReportChatAssociation = typeof report_chat_associations.$inferInsert;
+
+// Chat relations
+export const chatSessionsRelations = relations(chat_sessions, ({ one, many }) => ({
+  user: one(users, {
+    fields: [chat_sessions.user_id],
+    references: [users.id]
+  }),
+  case: one(cases, {
+    fields: [chat_sessions.case_id],
+    references: [cases.id]
+  }),
+  report: one(reports, {
+    fields: [chat_sessions.report_id],
+    references: [reports.id]
+  }),
+  messages: many(chat_messages),
+  report_associations: many(report_chat_associations)
+}));
+
+export const chatMessagesRelations = relations(chat_messages, ({ one }) => ({
+  session: one(chat_sessions, {
+    fields: [chat_messages.session_id],
+    references: [chat_sessions.id]
+  })
+}));
+
+export const reportsRelations = relations(reports, ({ one, many }) => ({
+  user: one(users, {
+    fields: [reports.user_id],
+    references: [users.id]
+  }),
+  case: one(cases, {
+    fields: [reports.case_id],
+    references: [cases.id]
+  }),
+  chat_sessions: many(chat_sessions),
+  chat_associations: many(report_chat_associations)
+}));

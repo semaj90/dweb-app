@@ -12,9 +12,17 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"legal-ai-production/internal/messaging"
 	"legal-ai-production/internal/redis"
+
+	"github.com/gin-gonic/gin"
+
+	// Metrics
+	"sync/atomic"
+
+	"github.com/NVIDIA/go-nvml/pkg/nvml"
+	"github.com/prometheus/client_golang/prometheus"
+	promhttp "github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 // DimensionalArray represents a multi-dimensional tensor
@@ -60,11 +68,12 @@ type CUDAService struct {
 	offlineQueue     []ComputationRequest
 	isOnline         bool
 	mu               sync.RWMutex
-	
+	startedAt        time.Time
+
 	// RabbitMQ client for async processing
 	rabbitmq         *messaging.RabbitMQClient
 	rabbitmqEnabled  bool
-	
+
 	// Redis distributed cache
 	redisCache       *redis.DistributedCache
 	redisCacheEnabled bool
@@ -109,20 +118,21 @@ func init() {
 			UseGPU:                 true,
 			CUDADeviceID:           0,
 		},
+		startedAt: time.Now(),
 	}
-	
+
 	// Initialize RabbitMQ client
 	rabbitmqURL := os.Getenv("RABBITMQ_URL")
 	if rabbitmqURL == "" {
 		rabbitmqURL = "amqp://guest:guest@localhost:5672/"
 	}
-	
+
 	config := messaging.GetDefaultConfig()
 	config.URL = rabbitmqURL
-	
+
 	cudaService.rabbitmq = messaging.NewRabbitMQClient(config)
 	cudaService.rabbitmqEnabled = true
-	
+
 	// Enable Redis distributed cache
 	cudaService.redisCacheEnabled = true
 }
@@ -135,7 +145,10 @@ func main() {
 
 	log.Printf("🚀 CUDA AI Service starting on port %s", port)
 	log.Printf("🎯 Features: T5 Architecture, Kernel Attention, Dimensional Arrays")
-	
+
+	initPromCUDA()
+	initNVMLCUDA()
+
 	// Initialize CUDA
 	if err := cudaService.Initialize(); err != nil {
 		log.Printf("⚠️ CUDA initialization failed: %v (falling back to CPU)", err)
@@ -149,19 +162,19 @@ func main() {
 			cudaService.rabbitmqEnabled = false
 		} else {
 			log.Printf("🐰 RabbitMQ connected successfully")
-			
+
 			// Start consuming messages
 			go cudaService.startMessageConsumers()
 		}
 	}
-	
+
 	// Initialize Redis distributed cache
 	if cudaService.redisCacheEnabled {
 		redisURL := os.Getenv("REDIS_URL")
 		if redisURL == "" {
 			redisURL = "localhost:6379"
 		}
-		
+
 		cache, err := redis.InitializeDistributedCache(redisURL)
 		if err != nil {
 			log.Printf("⚠️ Redis connection failed: %v (continuing without distributed cache)", err)
@@ -174,19 +187,22 @@ func main() {
 
 	// Setup Gin router
 	r := gin.Default()
-	
+
 	// Enable CORS
 	r.Use(func(c *gin.Context) {
 		c.Header("Access-Control-Allow-Origin", "*")
 		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
-		
+
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(200)
 			return
 		}
 		c.Next()
 	})
+
+	// Metrics endpoint
+	r.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
 	// API Routes
 	r.GET("/health", healthHandler)
@@ -198,14 +214,14 @@ func main() {
 	r.POST("/cuda/cache", cacheHandler)
 	r.GET("/cuda/stats", statsHandler)
 	r.POST("/cuda/queue/process", processQueueHandler)
-	
+
 	// RabbitMQ Routes
 	r.GET("/rabbitmq/status", rabbitmqStatusHandler)
 	r.POST("/rabbitmq/publish", rabbitmqPublishHandler)
 	r.GET("/rabbitmq/stats", rabbitmqStatsHandler)
 	r.POST("/rabbitmq/background", rabbitmqBackgroundTaskHandler)
 	r.POST("/rabbitmq/offline", rabbitmqOfflineTaskHandler)
-	
+
 	// Redis Cache Routes
 	r.GET("/redis/status", redisStatusHandler)
 	r.GET("/redis/stats", redisStatsHandler)
@@ -216,6 +232,59 @@ func main() {
 
 	log.Printf("✅ CUDA AI Service ready - GPU acceleration enabled")
 	log.Fatal(r.Run(":" + port))
+}
+
+// -----------------------------------------------------------------------------
+// Prometheus & GPU metrics
+// -----------------------------------------------------------------------------
+var (
+	cudaReqTotal = prometheus.NewCounter(prometheus.CounterOpts{Name: "cuda_ai_requests_total", Help: "Total CUDA AI compute requests"})
+	cudaReqErrors = prometheus.NewCounter(prometheus.CounterOpts{Name: "cuda_ai_requests_error_total", Help: "Failed CUDA AI compute requests"})
+	cudaComputeLatency = prometheus.NewHistogram(prometheus.HistogramOpts{Name: "cuda_ai_compute_latency_seconds", Help: "Latency of CUDA compute operations", Buckets: prometheus.DefBuckets})
+	cudaQueueLength = prometheus.NewGauge(prometheus.GaugeOpts{Name: "cuda_ai_queue_length", Help: "Queued offline computation requests"})
+	cudaCacheSize = prometheus.NewGauge(prometheus.GaugeOpts{Name: "cuda_ai_cache_size", Help: "Approx in-memory cache size entries"})
+	cudaUptimeSeconds = prometheus.NewGauge(prometheus.GaugeOpts{Name: "cuda_ai_uptime_seconds", Help: "Service uptime seconds"})
+	cudaGPUUtil = prometheus.NewGauge(prometheus.GaugeOpts{Name: "cuda_ai_gpu_utilization_percent", Help: "GPU utilization percent"})
+	cudaGPUMemUsed = prometheus.NewGauge(prometheus.GaugeOpts{Name: "cuda_ai_gpu_memory_used_bytes", Help: "GPU memory used bytes"})
+	cudaGPUMemTotal = prometheus.NewGauge(prometheus.GaugeOpts{Name: "cuda_ai_gpu_memory_total_bytes", Help: "GPU memory total bytes"})
+	nvmlInitOnce atomic.Bool
+)
+
+func initPromCUDA() {
+	prometheus.MustRegister(cudaReqTotal, cudaReqErrors, cudaComputeLatency, cudaQueueLength, cudaCacheSize, cudaUptimeSeconds, cudaGPUUtil, cudaGPUMemUsed, cudaGPUMemTotal)
+	go func() {
+		ticker := time.NewTicker(5 * time.Second)
+		for range ticker.C {
+			cudaQueueLength.Set(float64(len(cudaService.offlineQueue)))
+			cudaCacheSize.Set(float64(getCacheSize()))
+			cudaUptimeSeconds.Set(time.Since(cudaService.startedAt).Seconds())
+			updateNVMLCUDA()
+		}
+	}()
+}
+
+func initNVMLCUDA() {
+	if ret := nvml.Init(); ret == nvml.SUCCESS {
+		nvmlInitOnce.Store(true)
+		log.Printf("🟢 NVML initialized (cuda-ai-service)")
+	} else {
+		log.Printf("⚠️ NVML init failed (cuda-ai-service): %v", nvml.ErrorString(ret))
+	}
+}
+
+func updateNVMLCUDA() {
+	if !nvmlInitOnce.Load() { return }
+	count, ret := nvml.DeviceGetCount()
+	if ret != nvml.SUCCESS || count == 0 { return }
+	dev, ret := nvml.DeviceGetHandleByIndex(0)
+	if ret != nvml.SUCCESS { return }
+	if util, ret := nvml.DeviceGetUtilizationRates(dev); ret == nvml.SUCCESS {
+		cudaGPUUtil.Set(float64(util.Gpu))
+	}
+	if mem, ret := nvml.DeviceGetMemoryInfo(dev); ret == nvml.SUCCESS {
+		cudaGPUMemUsed.Set(float64(mem.Used))
+		cudaGPUMemTotal.Set(float64(mem.Total))
+	}
 }
 
 // Initialize CUDA service
@@ -276,13 +345,14 @@ func computeHandler(c *gin.Context) {
 		c.JSON(400, gin.H{"error": "Invalid request format"})
 		return
 	}
+	cudaReqTotal.Inc()
 
 	// Check if online or queue for offline processing
 	if !cudaService.isOnline {
 		req.ID = fmt.Sprintf("req_%d", time.Now().UnixNano())
 		req.RequestedAt = time.Now()
 		cudaService.offlineQueue = append(cudaService.offlineQueue, req)
-		
+
 		c.JSON(202, gin.H{
 			"queued": true,
 			"request_id": req.ID,
@@ -294,6 +364,7 @@ func computeHandler(c *gin.Context) {
 	startTime := time.Now()
 	result := cudaService.ProcessDimensionalArray(req.DimensionalArray, req.AttentionWeights)
 	processingTime := time.Since(startTime)
+	cudaComputeLatency.Observe(processingTime.Seconds())
 
 	// Generate recommendations
 	recommendations := cudaService.GenerateRecommendations(req.DimensionalArray)
@@ -310,6 +381,8 @@ func computeHandler(c *gin.Context) {
 		Error:              result.Error,
 	}
 
+	if result.Error != "" { cudaReqErrors.Inc() }
+	updateNVMLCUDA()
 	c.JSON(200, response)
 }
 
@@ -479,7 +552,7 @@ func processQueueHandler(c *gin.Context) {
 	}
 
 	log.Printf("🔄 Processing %d queued computations", queueSize)
-	
+
 	processed := 0
 	errors := []string{}
 
@@ -556,10 +629,10 @@ func (cs *CUDAService) ProcessT5(text, task string, config *T5Configuration) str
 func (cs *CUDAService) GenerateKernelSlices(array *DimensionalArray, kernelSize int32, useModular bool) []KernelAttentionSlice {
 	slices := []KernelAttentionSlice{}
 	dataLen := int32(len(array.Data))
-	
+
 	for i := int32(0); i < dataLen; i += kernelSize {
 		endIndex := min(i+kernelSize, dataLen)
-		
+
 		// Calculate attention score
 		var attentionScore float32 = 0.0
 		for j := i; j < endIndex; j++ {
@@ -723,12 +796,12 @@ func rabbitmqStatusHandler(c *gin.Context) {
 			messaging.QueueOfflineProcessing,
 		},
 	}
-	
+
 	if cudaService.rabbitmqEnabled && cudaService.rabbitmq != nil {
 		status["connected"] = cudaService.rabbitmq.IsConnected()
 		status["url"] = cudaService.rabbitmq.GetStats()["connection_url"]
 	}
-	
+
 	c.JSON(200, status)
 }
 
@@ -737,18 +810,18 @@ func rabbitmqPublishHandler(c *gin.Context) {
 		c.JSON(503, gin.H{"error": "RabbitMQ not enabled or connected"})
 		return
 	}
-	
+
 	var request struct {
 		Type    string                 `json:"type"`
 		Payload map[string]interface{} `json:"payload"`
 		Queue   string                 `json:"queue"`
 	}
-	
+
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(400, gin.H{"error": "Invalid request format"})
 		return
 	}
-	
+
 	var err error
 	switch request.Type {
 	case "dimensional_array":
@@ -765,12 +838,12 @@ func rabbitmqPublishHandler(c *gin.Context) {
 		c.JSON(400, gin.H{"error": "Unknown message type"})
 		return
 	}
-	
+
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	c.JSON(200, gin.H{
 		"published": true,
 		"type":      request.Type,
@@ -783,7 +856,7 @@ func rabbitmqStatsHandler(c *gin.Context) {
 		c.JSON(503, gin.H{"error": "RabbitMQ not enabled"})
 		return
 	}
-	
+
 	stats := cudaService.rabbitmq.GetStats()
 	c.JSON(200, stats)
 }
@@ -793,24 +866,24 @@ func rabbitmqBackgroundTaskHandler(c *gin.Context) {
 		c.JSON(503, gin.H{"error": "RabbitMQ not enabled"})
 		return
 	}
-	
+
 	var task map[string]interface{}
 	if err := c.ShouldBindJSON(&task); err != nil {
 		c.JSON(400, gin.H{"error": "Invalid task format"})
 		return
 	}
-	
+
 	// Add task metadata
 	task["created_at"] = time.Now().Unix()
 	task["task_id"] = fmt.Sprintf("bg_task_%d", time.Now().UnixNano())
 	task["priority"] = "background"
-	
+
 	err := cudaService.rabbitmq.PublishBackgroundTask(task)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	c.JSON(200, gin.H{
 		"queued":     true,
 		"task_id":    task["task_id"],
@@ -824,26 +897,26 @@ func rabbitmqOfflineTaskHandler(c *gin.Context) {
 		c.JSON(503, gin.H{"error": "RabbitMQ not enabled"})
 		return
 	}
-	
+
 	var task map[string]interface{}
 	if err := c.ShouldBindJSON(&task); err != nil {
 		c.JSON(400, gin.H{"error": "Invalid task format"})
 		return
 	}
-	
+
 	// Add offline task metadata
 	task["created_at"] = time.Now().Unix()
 	task["task_id"] = fmt.Sprintf("offline_task_%d", time.Now().UnixNano())
 	task["priority"] = "offline_processing"
 	task["retry_count"] = 0
 	task["max_retries"] = 5
-	
+
 	err := cudaService.rabbitmq.PublishOfflineTask(task)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	c.JSON(200, gin.H{
 		"queued":       true,
 		"task_id":      task["task_id"],
@@ -858,49 +931,49 @@ func (cs *CUDAService) startMessageConsumers() {
 	if !cs.rabbitmqEnabled || cs.rabbitmq == nil {
 		return
 	}
-	
+
 	log.Printf("🐰 Starting RabbitMQ message consumers...")
-	
+
 	// Consume computation requests
 	err := cs.rabbitmq.ConsumeMessages(messaging.QueueComputationRequests, cs.handleComputationMessage)
 	if err != nil {
 		log.Printf("❌ Failed to start computation consumer: %v", err)
 	}
-	
+
 	// Consume cache operations
 	err = cs.rabbitmq.ConsumeMessages(messaging.QueueCacheOperations, cs.handleCacheMessage)
 	if err != nil {
 		log.Printf("❌ Failed to start cache consumer: %v", err)
 	}
-	
+
 	// Consume background tasks
 	err = cs.rabbitmq.ConsumeMessages(messaging.QueueBackgroundTasks, cs.handleBackgroundMessage)
 	if err != nil {
 		log.Printf("❌ Failed to start background task consumer: %v", err)
 	}
-	
+
 	// Consume offline processing tasks
 	err = cs.rabbitmq.ConsumeMessages(messaging.QueueOfflineProcessing, cs.handleOfflineMessage)
 	if err != nil {
 		log.Printf("❌ Failed to start offline processing consumer: %v", err)
 	}
-	
+
 	log.Printf("✅ RabbitMQ consumers started")
 }
 
 func (cs *CUDAService) handleComputationMessage(message messaging.Message) error {
 	log.Printf("🔧 Processing computation message: %s", message.ID)
-	
+
 	// Extract payload and process
 	_, ok := message.Payload["dimensional_array"]
 	if !ok {
 		return fmt.Errorf("missing dimensional_array in payload")
 	}
-	
+
 	// Convert payload to DimensionalArray (simplified)
 	// In production, you'd use proper JSON marshaling or protobuf
 	log.Printf("✅ Processed computation message: %s", message.ID)
-	
+
 	// Publish result to results queue
 	result := map[string]interface{}{
 		"request_id": message.ID,
@@ -908,7 +981,7 @@ func (cs *CUDAService) handleComputationMessage(message messaging.Message) error
 		"timestamp":  time.Now().Unix(),
 		"result":     "computation completed successfully",
 	}
-	
+
 	resultMessage := messaging.Message{
 		Type:          "computation_result",
 		Priority:      message.Priority,
@@ -916,13 +989,13 @@ func (cs *CUDAService) handleComputationMessage(message messaging.Message) error
 		Payload:       result,
 		RoutingKey:    messaging.QueueComputationResults,
 	}
-	
+
 	return cs.rabbitmq.PublishMessage(messaging.QueueComputationResults, resultMessage)
 }
 
 func (cs *CUDAService) handleCacheMessage(message messaging.Message) error {
 	log.Printf("💾 Processing cache message: %s", message.ID)
-	
+
 	// Handle cache operations
 	operation, _ := message.Payload["operation"].(string)
 	switch operation {
@@ -931,32 +1004,32 @@ func (cs *CUDAService) handleCacheMessage(message messaging.Message) error {
 	default:
 		return fmt.Errorf("unknown cache operation: %s", operation)
 	}
-	
+
 	return nil
 }
 
 func (cs *CUDAService) handleBackgroundMessage(message messaging.Message) error {
 	log.Printf("🔄 Processing background task: %s", message.ID)
-	
+
 	// Simulate background processing
 	time.Sleep(100 * time.Millisecond)
-	
+
 	log.Printf("✅ Background task completed: %s", message.ID)
 	return nil
 }
 
 func (cs *CUDAService) handleOfflineMessage(message messaging.Message) error {
 	log.Printf("📱 Processing offline task: %s", message.ID)
-	
+
 	// Handle offline processing tasks
 	// These are tasks that were queued while offline and are now being processed
-	
+
 	taskType, _ := message.Payload["task_type"].(string)
 	log.Printf("🔧 Offline task type: %s", taskType)
-	
+
 	// Simulate processing
 	time.Sleep(50 * time.Millisecond)
-	
+
 	log.Printf("✅ Offline task completed: %s", message.ID)
 	return nil
 }
@@ -972,12 +1045,12 @@ func redisStatusHandler(c *gin.Context) {
 		})
 		return
 	}
-	
+
 	status := map[string]interface{}{
 		"enabled": cudaService.redisCacheEnabled,
 		"health":  cudaService.redisCache.HealthCheck(),
 	}
-	
+
 	c.JSON(200, status)
 }
 
@@ -987,7 +1060,7 @@ func redisStatsHandler(c *gin.Context) {
 		c.JSON(503, gin.H{"error": "Redis not enabled"})
 		return
 	}
-	
+
 	stats := cudaService.redisCache.GetCacheStats()
 	c.JSON(200, stats)
 }
@@ -1001,13 +1074,13 @@ func redisHealthHandler(c *gin.Context) {
 		})
 		return
 	}
-	
+
 	health := cudaService.redisCache.HealthCheck()
 	statusCode := 200
 	if status, ok := health["status"].(string); ok && status != "connected" {
 		statusCode = 503
 	}
-	
+
 	c.JSON(statusCode, health)
 }
 
@@ -1017,29 +1090,29 @@ func redisSetHandler(c *gin.Context) {
 		c.JSON(503, gin.H{"error": "Redis not enabled"})
 		return
 	}
-	
+
 	var request struct {
 		Key   string      `json:"key" binding:"required"`
 		Value interface{} `json:"value" binding:"required"`
 		TTL   int         `json:"ttl,omitempty"` // TTL in seconds
 	}
-	
+
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	ttl := time.Duration(request.TTL) * time.Second
 	if request.TTL == 0 {
 		ttl = 1 * time.Hour // Default TTL
 	}
-	
+
 	err := cudaService.redisCache.Set(request.Key, request.Value, ttl)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	c.JSON(200, gin.H{
 		"success": true,
 		"key":     request.Key,
@@ -1053,13 +1126,13 @@ func redisGetHandler(c *gin.Context) {
 		c.JSON(503, gin.H{"error": "Redis not enabled"})
 		return
 	}
-	
+
 	key := c.Param("key")
 	if key == "" {
 		c.JSON(400, gin.H{"error": "key parameter is required"})
 		return
 	}
-	
+
 	var value interface{}
 	err := cudaService.redisCache.Get(key, &value)
 	if err != nil {
@@ -1069,7 +1142,7 @@ func redisGetHandler(c *gin.Context) {
 		})
 		return
 	}
-	
+
 	c.JSON(200, gin.H{
 		"key":   key,
 		"value": value,
@@ -1083,27 +1156,27 @@ func redisDeleteHandler(c *gin.Context) {
 		c.JSON(503, gin.H{"error": "Redis not enabled"})
 		return
 	}
-	
+
 	var request struct {
 		Keys []string `json:"keys" binding:"required"`
 	}
-	
+
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	if len(request.Keys) == 0 {
 		c.JSON(400, gin.H{"error": "At least one key is required"})
 		return
 	}
-	
+
 	err := cudaService.redisCache.Delete(request.Keys...)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	c.JSON(200, gin.H{
 		"success":      true,
 		"deleted_keys": request.Keys,

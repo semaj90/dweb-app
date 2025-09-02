@@ -72,7 +72,14 @@
       "Bash(./redis-swr-cache.exe)",
       "Bash(./START-COMPLETE-LEGAL-AI-CACHE-ARCHITECTURE.bat)",
       "mcp__filesystem__create_directory",
-      "mcp__filesystem__write_file"
+      "mcp__filesystem__write_file",
+      "Bash(npx playwright:*)",
+      "Bash(echo \"Exit code: $?\")",
+      "Bash(DEBUG=pw:api,pw:browser node test-routes-playwright.js)",
+      "Bash(where neo4j)",
+      "Bash(binneo4j.bat console:*)",
+      "Bash(bin/neo4j.bat:*)",
+      "Bash(START-GPU-NEO4J.bat)"
     ],
     "deny": [],
     "ask": [],

@@ -1,7 +1,6 @@
 syntax = "proto3";
 package embed;
-
-option go_package = "legal-ai-production/proto/embed;embed";
+option go_package = "legal-ai-platform/proto/embed;embed";
 
 service Embedder {
   rpc Embed(EmbedRequest) returns (EmbedResponse);

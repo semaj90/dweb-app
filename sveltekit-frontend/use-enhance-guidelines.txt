@@ -1,0 +1,96 @@
+# SvelteKit use:enhance Guidelines
+
+## ✅ CORRECT Usage of use:enhance
+
+### Requirements for use:enhance:
+1. **MUST use method="POST"**
+2. **MUST point to form actions in +page.server.js/ts files**
+3. **CANNOT be used with method="GET"**
+
+### ✅ Correct Examples in Our Codebase:
+
+**AuthForm.svelte:**
+```svelte
+<form method="POST" action="?/{formType}" use:enhance>
+```
+
+**LoginModal.svelte:**
+```svelte
+<form method="POST" action="?/login" use:enhance>
+```
+
+**CaseForm.svelte:**
+```svelte
+<form method="POST" use:enhance>
+```
+
+### ✅ Corresponding Server Actions:
+
+**auth/+page.server.ts:**
+```typescript
+export const actions: Actions = {
+  login: async ({ request }) => {
+    // Handle login form submission
+  },
+  register: async ({ request }) => {
+    // Handle registration form submission  
+  }
+};
+```
+
+## ❌ INCORRECT Usage (What NOT to do):
+
+### ❌ DON'T use with GET method:
+```svelte
+<!-- WRONG - This will not work -->
+<form method="GET" use:enhance>
+  <input name="search" />
+  <button>Search</button>
+</form>
+```
+
+### ❌ DON'T use without server actions:
+```svelte
+<!-- WRONG - No corresponding +page.server.ts action -->
+<form method="POST" action="/api/search" use:enhance>
+```
+
+## ✅ Alternatives for GET Forms:
+
+### For GET forms, use regular form submission or JavaScript:
+```svelte
+<!-- Regular GET form (no enhancement needed) -->
+<form method="GET" action="/search">
+  <input name="q" />
+  <button>Search</button>
+</form>
+
+<!-- Or use JavaScript fetch for API calls -->
+<script>
+  async function handleSearch() {
+    const response = await fetch('/api/search', {
+      method: 'POST',
+      body: JSON.stringify({ query })
+    });
+  }
+</script>
+```
+
+## ✅ Our Performance Dashboard Approach:
+
+The performance dashboard correctly uses JavaScript fetch calls:
+```javascript
+// Correct approach for API data fetching
+const res = await fetch('/api/node/metrics');
+const data = await res.json();
+```
+
+## Current Status:
+
+✅ **All use:enhance usage in our codebase is CORRECT**
+✅ **All forms using use:enhance have method="POST"**  
+✅ **All forms using use:enhance have corresponding server actions**
+✅ **Performance dashboard uses proper fetch calls instead of use:enhance**
+
+Date: 2025-09-02
+Status: Verified - No incorrect use:enhance usage found

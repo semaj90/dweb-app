@@ -3,6 +3,8 @@
 import { browser } from '$app/environment';
 import { createActor } from 'xstate';
 import { aiAssistantMachine, aiAssistantServices, aiAssistantActions } from '$lib/machines/aiAssistantMachine.js';
+import { webAssemblyAIAdapter, type WebAssemblyAIResponse } from '$lib/adapters/webasm-ai-adapter.js';
+import { webAssemblyLangChainBridge, type HybridRAGResult } from '$lib/services/webasm-langchain-bridge.js';
 
 // AI Assistant reactive state interface
 export interface AIAssistantState {
@@ -85,6 +87,9 @@ const aiAssistantActor = browser ? createActor(aiAssistantMachine, {
 export class AIAssistantManager {
   private actor = aiAssistantActor;
   private healthCheckInterval: number | null = null;
+  private webAssemblyEnabled = false;
+  private webAssemblyFallback = true;
+  private langChainBridgeEnabled = false;
 
   constructor() {
     if (browser && this.actor) {
@@ -98,8 +103,34 @@ export class AIAssistantManager {
   }
 
   // Initialize AI assistant manager
-  private initialize() {
+  private async initialize() {
     if (!this.actor) return;
+    
+    // Initialize WebAssembly AI adapter if supported
+    if (webAssemblyAIAdapter.isSupported()) {
+      try {
+        console.log('[AI Assistant] Initializing WebAssembly backend...');
+        this.webAssemblyEnabled = await webAssemblyAIAdapter.initialize();
+        if (this.webAssemblyEnabled) {
+          console.log('[AI Assistant] WebAssembly backend enabled');
+          
+          // Initialize WebAssembly-LangChain bridge
+          console.log('[AI Assistant] Initializing WebAssembly-LangChain bridge...');
+          this.langChainBridgeEnabled = await webAssemblyLangChainBridge.initialize();
+          if (this.langChainBridgeEnabled) {
+            console.log('[AI Assistant] WebAssembly-LangChain bridge enabled');
+          } else {
+            console.warn('[AI Assistant] Bridge initialization failed, using direct WebAssembly');
+          }
+        } else {
+          console.warn('[AI Assistant] WebAssembly initialization failed, using fallback');
+        }
+      } catch (error) {
+        console.error('[AI Assistant] WebAssembly setup error:', error);
+        this.webAssemblyEnabled = false;
+        this.langChainBridgeEnabled = false;
+      }
+    }
     
     // Start the XState actor
     this.actor.start();
@@ -139,6 +170,9 @@ export class AIAssistantManager {
   // Send a message to the AI assistant
   async sendMessage(message: string, options?: {
     useContext7?: boolean;
+    useWebAssembly?: boolean;
+    useLangChain?: boolean;
+    useHybridRAG?: boolean;
     model?: string;
     temperature?: number;
   }) {
@@ -159,17 +193,211 @@ export class AIAssistantManager {
         this.setTemperature(options.temperature);
       }
 
-      // Send message to AI assistant
-      this.actor.send({
-        type: 'SEND_MESSAGE',
-        message: message.trim(),
-        useContext7: options?.useContext7 || false
-      });
+      // Determine processing method
+      const useLangChain = options?.useLangChain && this.langChainBridgeEnabled;
+      const useHybridRAG = options?.useHybridRAG && this.langChainBridgeEnabled;
+      const useWebAssembly = options?.useWebAssembly !== false && 
+                            this.webAssemblyEnabled && 
+                            this.webAssemblyFallback;
 
-      console.log('Message sent to AI assistant:', message);
+      if (useLangChain || useHybridRAG) {
+        await this.sendMessageLangChainRAG(message, options);
+      } else if (useWebAssembly) {
+        await this.sendMessageWebAssembly(message, options);
+      } else {
+        // Send message to XState actor (original path)
+        this.actor.send({
+          type: 'SEND_MESSAGE',
+          message: message.trim(),
+          useContext7: options?.useContext7 || false
+        });
+      }
+
+      console.log('Message sent to AI assistant:', message, { 
+        useWebAssembly,
+        useLangChain,
+        useHybridRAG
+      });
     } catch (error: any) {
       console.error('Failed to send message:', error);
       throw error;
+    }
+  }
+
+  // WebAssembly-enhanced message processing
+  private async sendMessageWebAssembly(message: string, options?: any) {
+    try {
+      // Update state to processing
+      aiAssistantState.isProcessing = true;
+      aiAssistantState.currentQuery = message;
+      aiAssistantState.error = null;
+
+      // Send to WebAssembly AI adapter
+      const response: WebAssemblyAIResponse = await webAssemblyAIAdapter.sendMessage(message, {
+        conversationHistory: aiAssistantState.conversationHistory,
+        useContext: options?.useContext7,
+        model: options?.model || aiAssistantState.model,
+        temperature: options?.temperature || aiAssistantState.temperature,
+        maxTokens: aiAssistantState.maxTokens
+      });
+
+      // Update conversation history
+      const userEntry: ConversationEntry = {
+        id: crypto.randomUUID(),
+        type: 'user',
+        content: message,
+        timestamp: new Date(),
+        metadata: {
+          model: response.metadata.modelUsed,
+          temperature: options?.temperature || aiAssistantState.temperature,
+          responseTime: 0,
+          tokenCount: message.split(' ').length * 1.5,
+          context7Used: options?.useContext7 || false
+        }
+      };
+
+      const assistantEntry: ConversationEntry = {
+        id: crypto.randomUUID(),
+        type: 'assistant',
+        content: response.content,
+        timestamp: new Date(),
+        metadata: {
+          model: response.metadata.modelUsed,
+          temperature: options?.temperature || aiAssistantState.temperature,
+          responseTime: response.metadata.processingTime,
+          tokenCount: response.metadata.tokensGenerated,
+          context7Used: false
+        }
+      };
+
+      aiAssistantState.conversationHistory.push(userEntry, assistantEntry);
+      
+      // Update state
+      aiAssistantState.response = response.content;
+      aiAssistantState.isProcessing = false;
+      
+      // Update usage statistics
+      aiAssistantState.usage.totalQueries++;
+      aiAssistantState.usage.totalTokens += response.metadata.tokensGenerated;
+      aiAssistantState.usage.averageResponseTime = 
+        (aiAssistantState.usage.averageResponseTime + response.metadata.processingTime) / 2;
+
+      console.log('[AI Assistant] WebAssembly response generated:', {
+        tokensGenerated: response.metadata.tokensGenerated,
+        processingTime: response.metadata.processingTime,
+        fromCache: response.metadata.fromCache,
+        confidence: response.metadata.confidence
+      });
+
+    } catch (error: any) {
+      console.error('[AI Assistant] WebAssembly processing failed:', error);
+      
+      // Update error state
+      aiAssistantState.isProcessing = false;
+      aiAssistantState.error = `WebAssembly AI error: ${error.message}`;
+      
+      // Fallback to XState machine if WebAssembly fails
+      if (this.webAssemblyFallback && this.actor) {
+        console.log('[AI Assistant] Falling back to XState machine...');
+        this.actor.send({
+          type: 'SEND_MESSAGE',
+          message: message.trim(),
+          useContext7: options?.useContext7 || false
+        });
+      }
+    }
+  }
+
+  // LangChain RAG-enhanced message processing
+  private async sendMessageLangChainRAG(message: string, options?: any) {
+    try {
+      // Update state to processing
+      aiAssistantState.isProcessing = true;
+      aiAssistantState.currentQuery = message;
+      aiAssistantState.error = null;
+
+      console.log('[AI Assistant] Processing with LangChain RAG bridge...');
+
+      // Send to WebAssembly-LangChain bridge
+      const ragResult: HybridRAGResult = await webAssemblyLangChainBridge.query(message, {
+        useWebAssembly: options?.useWebAssembly !== false,
+        useHybridMode: options?.useHybridRAG,
+        thinkingMode: options?.thinkingMode,
+        verbose: options?.verbose,
+        maxRetrievedDocs: 5,
+        useCompression: true,
+        confidenceThreshold: 0.7
+      });
+
+      // Update conversation history
+      const userEntry: ConversationEntry = {
+        id: crypto.randomUUID(),
+        type: 'user',
+        content: message,
+        timestamp: new Date(),
+        metadata: {
+          model: options?.model || aiAssistantState.model,
+          temperature: options?.temperature || aiAssistantState.temperature,
+          responseTime: 0,
+          tokenCount: message.split(' ').length * 1.5,
+          context7Used: options?.useContext7 || false
+        }
+      };
+
+      const assistantEntry: ConversationEntry = {
+        id: crypto.randomUUID(),
+        type: 'assistant',
+        content: ragResult.answer,
+        timestamp: new Date(),
+        metadata: {
+          model: ragResult.metadata.processingMethod || 'hybrid',
+          temperature: options?.temperature || aiAssistantState.temperature,
+          responseTime: ragResult.metadata.processingTime,
+          tokenCount: ragResult.answer.split(' ').length * 1.3,
+          context7Used: false
+        }
+      };
+
+      aiAssistantState.conversationHistory.push(userEntry, assistantEntry);
+      
+      // Update state
+      aiAssistantState.response = ragResult.answer;
+      aiAssistantState.isProcessing = false;
+      
+      // Update usage statistics
+      aiAssistantState.usage.totalQueries++;
+      aiAssistantState.usage.totalTokens += ragResult.answer.split(' ').length * 1.3;
+      aiAssistantState.usage.averageResponseTime = 
+        (aiAssistantState.usage.averageResponseTime + ragResult.metadata.processingTime) / 2;
+
+      console.log('[AI Assistant] LangChain RAG response generated:', {
+        processingMethod: ragResult.metadata.processingMethod,
+        processingTime: ragResult.metadata.processingTime,
+        retrievedChunks: ragResult.metadata.retrievedChunks,
+        confidence: ragResult.confidence,
+        usedWebAssembly: ragResult.metadata.usedWebAssembly,
+        sourceDocuments: ragResult.sourceDocuments.length
+      });
+
+    } catch (error: any) {
+      console.error('[AI Assistant] LangChain RAG processing failed:', error);
+      
+      // Update error state
+      aiAssistantState.isProcessing = false;
+      aiAssistantState.error = `LangChain RAG error: ${error.message}`;
+      
+      // Fallback to WebAssembly-only processing
+      if (this.webAssemblyEnabled && this.webAssemblyFallback) {
+        console.log('[AI Assistant] Falling back to WebAssembly processing...');
+        await this.sendMessageWebAssembly(message, options);
+      } else if (this.actor) {
+        console.log('[AI Assistant] Falling back to XState machine...');
+        this.actor.send({
+          type: 'SEND_MESSAGE',
+          message: message.trim(),
+          useContext7: options?.useContext7 || false
+        });
+      }
     }
   }
 
@@ -377,18 +605,65 @@ export class AIAssistantManager {
     };
   }
 
-  // Get available models from cluster
+  // Get available models from cluster and WebAssembly
   async getAvailableModels() {
     try {
-      const response = await fetch('http://localhost:11434/api/tags');
-      if (response.ok) {
-        const data = await response.json();
-        return data.models?.map((model: any) => model.name) || [];
+      const ollamaModels: string[] = [];
+      const webAssemblyModels: string[] = [];
+
+      // Get Ollama models
+      try {
+        const response = await fetch('http://localhost:11434/api/tags');
+        if (response.ok) {
+          const data = await response.json();
+          ollamaModels.push(...(data.models?.map((model: any) => model.name) || []));
+        }
+      } catch (error) {
+        console.warn('Failed to fetch Ollama models:', error);
       }
-      return ['gemma3-legal', 'nomic-embed-text', 'deeds-web']; // Fallback
+
+      // Get WebAssembly models
+      if (this.webAssemblyEnabled) {
+        webAssemblyModels.push(...webAssemblyAIAdapter.getAvailableModels());
+      }
+
+      // Combine and deduplicate
+      const allModels = [...new Set([...ollamaModels, ...webAssemblyModels])];
+      
+      return allModels.length > 0 ? allModels : ['gemma3-legal', 'nomic-embed-text', 'deeds-web'];
     } catch (error: any) {
       console.error('Failed to fetch available models:', error);
       return ['gemma3-legal', 'nomic-embed-text', 'deeds-web']; // Fallback
+    }
+  }
+
+  // Analyze legal document using WebAssembly if available
+  async analyzeLegalDocument(
+    title: string,
+    content: string,
+    analysisType: 'comprehensive' | 'quick' | 'risk-focused' = 'comprehensive'
+  ) {
+    if (!this.webAssemblyEnabled) {
+      throw new Error('WebAssembly not available for legal document analysis');
+    }
+
+    try {
+      console.log('[AI Assistant] Starting legal document analysis with WebAssembly...');
+      
+      const analysis = await webAssemblyAIAdapter.analyzeLegalDocument(title, content, analysisType);
+      
+      console.log('[AI Assistant] Legal analysis completed:', {
+        summary: analysis.summary.substring(0, 100) + '...',
+        keyTerms: analysis.keyTerms.length,
+        entities: analysis.entities.length,
+        risks: analysis.risks.length,
+        processingTime: analysis.processingTime
+      });
+
+      return analysis;
+    } catch (error: any) {
+      console.error('[AI Assistant] Legal analysis failed:', error);
+      throw error;
     }
   }
 

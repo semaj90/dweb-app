@@ -22,20 +22,6 @@
     X,
   } from "lucide-svelte";
 
-  // Exported props (use Svelte exports instead of $props)
-  export let caseId: string | undefined = undefined;
-  export let multiple: boolean = false;
-  export let compact: boolean = false;
-  export let disabled: boolean = false;
-  export let maxFiles: number = multiple ? 10 : 1;
-  export let maxSizeMB: number = 100;
-  export let acceptedTypes: string[] = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png', '.txt'];
-;
-  // Provide safe defaults for callbacks
-  export let onupload: (data: { files: File[]; formData: FileUpload[] }) => void = () => {};
-  export let oncancel: () => void = () => {};
-  export let onprogress: (data: { progress: number; file: string }) => void = () => {};
-;
   // File upload interface
   interface FileUpload {
     file: File;
@@ -53,6 +39,33 @@
     enableSummarization?: boolean;
     isAdmissible?: boolean;
   }
+
+  // Props interface
+  interface Props {
+    caseId?: string | undefined;
+    multiple?: boolean;
+    compact?: boolean;
+    disabled?: boolean;
+    maxFiles?: number;
+    maxSizeMB?: number;
+    acceptedTypes?: string[];
+    onupload?: (data: { files: File[]; formData: FileUpload[] }) => void;
+    oncancel?: () => void;
+    onprogress?: (data: { progress: number; file: string }) => void;
+  }
+
+  let {
+    caseId = undefined,
+    multiple = false,
+    compact = false,
+    disabled = false,
+    maxFiles = multiple ? 10 : 1,
+    maxSizeMB = 100,
+    acceptedTypes = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png', '.txt'],
+    onupload = () => {},
+    oncancel = () => {},
+    onprogress = () => {}
+  }: Props = $props();
 
   // State
   let fileInput: HTMLInputElement;

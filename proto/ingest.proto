@@ -1,7 +1,8 @@
 syntax = "proto3";
-package ingest;
+// Unified to embed package to avoid mixed Go packages in single directory.
+package embed;
 
-option go_package = "legal-ai-production/proto/ingest;ingest";
+option go_package = "legal-ai-platform/proto/embed;embed";
 
 service Ingestion {
   rpc StreamChunks(stream IngestChunk) returns (IngestAck);

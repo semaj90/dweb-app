@@ -1,7 +1,7 @@
 /**
  * WebAssembly Inference RAG Integration
  * Integrates WebAssembly inference capabilities with the Enhanced RAG pipeline
- * 
+ *
  * Architecture Integration:
  * - XState orchestration for workflow management
  * - RabbitMQ messaging for async processing
@@ -74,7 +74,7 @@ export interface WASMRAGContext {
 }
 
 // XState machine for WebAssembly RAG inference
-export const wasmInferenceMachine = createMachine({;
+export const wasmInferenceMachine = createMachine({
   id: 'wasmInferenceRAG',
   initial: 'initializing',
   context: {
@@ -224,7 +224,7 @@ export const wasmInferenceMachine = createMachine({;
         priority: 7
       }).catch(console.error);
     },
-    
+
     publishError: ({ context, event }) => {
       // Publish error via RabbitMQ
       rabbitMQIntegration.publishMessage({
@@ -240,7 +240,7 @@ export const wasmInferenceMachine = createMachine({;
 });
 
 // Main WebAssembly Inference RAG Service
-export class WASMInferenceRAGService {;
+export class WASMInferenceRAGService {
   private static wasmModule: WebAssembly.Module | null = null;
   private static wasmInstance: WebAssembly.Instance | null = null;
   private static isInitialized = false;
@@ -251,39 +251,39 @@ export class WASMInferenceRAGService {;
    */
   static async initialize(config: WASMInferenceConfig): Promise<{ module: WebAssembly.Module; instance: WebAssembly.Instance }> {
     console.log('🚀 Initializing WebAssembly Inference RAG Service');
-    
+
     try {
       // Initialize vertex buffer image analyzer for multimodal RAG
       await vertexBufferImageAnalyzer.initialize();
-      
+
       // Initialize PostgreSQL-Qdrant sync for vector retrieval
       await postgresqlQdrantSync.ensureCollection();
-      
+
       // Load WebAssembly module
       const wasmBuffer = await this.loadWASMModule(config.modelPath);
       this.wasmModule = await WebAssembly.compile(wasmBuffer);
-      
+
       // Create instance with memory and imports
-      const memory = new WebAssembly.Memory({ 
+      const memory = new WebAssembly.Memory({
         initial: 256, // 16MB
         maximum: 1024, // 64MB
-        shared: true 
+        shared: true
       });
-      
+
       const imports = this.createWASMImports(memory, config);
       this.wasmInstance = await WebAssembly.instantiate(this.wasmModule, imports);
-      
+
       this.config = config;
       this.isInitialized = true;
-      
+
       console.log('✅ WebAssembly Inference RAG Service initialized');
       console.log(`📊 Config: ${config.quantization}, ${config.threads} threads, GPU: ${config.enableGPU}`);
-      
+
       return {
         module: this.wasmModule,
         instance: this.wasmInstance
       };
-      
+
     } catch (error: any) {
       console.error('❌ WebAssembly initialization failed:', error);
       throw error;
@@ -294,38 +294,38 @@ export class WASMInferenceRAGService {;
    * Process inference request with enhanced RAG capabilities
    */
   static async processInferenceWithRAG(
-    request: WASMInferenceRequest, 
+    request: WASMInferenceRequest,
     context: WASMRAGContext
   ): Promise<WASMInferenceResult> {
     const startTime = performance.now();
-    
+
     try {
       console.log(`🧠 Processing WASM inference: ${request.id}`);
-      
+
       // Step 1: RAG Document Retrieval (if enabled)
       let ragContext: WASMInferenceResult['ragContext'] | undefined;
       let enhancedPrompt = request.prompt;
-      
+
       if (request.enableRAG) {
         console.log('📚 Retrieving RAG context from PostgreSQL-Qdrant');
-        
+
         // Use PostgreSQL-Qdrant sync for vector search
         const similarDocs = await this.retrieveRelevantDocuments(request.prompt, 5);
-        
+
         if (similarDocs.length > 0) {
           const contextText = similarDocs.map(doc => doc.content).join('\n\n');
           enhancedPrompt = `Context:\n${contextText}\n\nQuestion: ${request.prompt}`;
-          
+
           ragContext = {
             documentsUsed: similarDocs.length,
             relevanceScores: similarDocs.map(doc => doc.score),
             sources: similarDocs.map(doc => doc.id)
           };
-          
+
           console.log(`📖 Enhanced prompt with ${similarDocs.length} context documents`);
         }
       }
-      
+
       // Step 2: WebAssembly Inference
       const inferenceResult = await this.runWASMInference(
         enhancedPrompt,
@@ -333,13 +333,13 @@ export class WASMInferenceRAGService {;
         request.temperature,
         request.stopSequences
       );
-      
+
       // Step 3: Post-processing and tagging
       await this.triggerAutoTagging(request.id, inferenceResult.text, request.priority);
-      
+
       const processingTime = performance.now() - startTime;
       const memoryUsage = this.getMemoryUsage();
-      
+
       const result: WASMInferenceResult = {
         id: request.id,
         text: inferenceResult.text,
@@ -355,13 +355,13 @@ export class WASMInferenceRAGService {;
           wasmVersion: '1.0.0'
         }
       };
-      
+
       // Store inference result for future RAG improvements
       if (ragContext && ragContext.documentsUsed > 0) {
         try {
           const { postgresqlQdrantSync } = await import('./postgresql-qdrant-sync.js');
           const queryEmbedding = await this.generateQueryEmbedding(request.prompt);
-          
+
           await postgresqlQdrantSync.storeWASMInferenceResult(
             queryEmbedding,
             ragContext.sources,
@@ -373,7 +373,7 @@ export class WASMInferenceRAGService {;
               ragContext
             }
           );
-          
+
           console.log(`📝 Stored WASM inference result for future RAG improvements`);
         } catch (storageError) {
           console.warn('⚠️ Failed to store WASM inference result:', storageError);
@@ -382,7 +382,7 @@ export class WASMInferenceRAGService {;
 
       console.log(`✅ WASM inference completed: ${request.id} (${processingTime.toFixed(2)}ms)`);
       return result;
-      
+
     } catch (error: any) {
       console.error(`❌ WASM inference failed for ${request.id}:`, error);
       throw error;
@@ -400,14 +400,14 @@ export class WASMInferenceRAGService {;
   }>> {
     try {
       console.log(`🔍 Retrieving relevant documents for WASM inference: "${query.slice(0, 50)}..."`);
-      
+
       // First, we need to get the query embedding
       // For now, we'll use a simple approach - in production this would use your embedding service
       const queryEmbedding = await this.generateQueryEmbedding(query);
-      
+
       // Use WebAssembly-optimized PostgreSQL-Qdrant search
       const { postgresqlQdrantSync } = await import('./postgresql-qdrant-sync.js');
-      
+
       const results = await postgresqlQdrantSync.searchForWASMInference(
         queryEmbedding,
         limit,
@@ -417,13 +417,13 @@ export class WASMInferenceRAGService {;
           // Add more filters as needed
         }
       );
-      
+
       console.log(`📚 Retrieved ${results.length} relevant documents for WASM inference`);
       return results;
-      
+
     } catch (error: any) {
       console.warn('⚠️ WASM RAG retrieval error:', error);
-      
+
       // Fallback to the existing enhanced RAG service if available
       try {
         console.log('🔄 Falling back to enhanced RAG service...');
@@ -437,7 +437,7 @@ export class WASMInferenceRAGService {;
             includeMetadata: true
           })
         });
-        
+
         if (response.ok) {
           const results = await response.json();
           console.log(`📚 Fallback retrieval successful: ${results.documents?.length || 0} documents`);
@@ -446,7 +446,7 @@ export class WASMInferenceRAGService {;
       } catch (fallbackError) {
         console.warn('⚠️ Fallback RAG search also failed:', fallbackError);
       }
-      
+
       return [];
     }
   }
@@ -460,23 +460,23 @@ export class WASMInferenceRAGService {;
       const { legalNLP } = await import('./sentence-transformer.js');
       const embedding = await legalNLP.embedText(query);
       return Array.isArray(embedding) ? embedding : Array.from(embedding as any);
-      
+
     } catch (error: any) {
       console.warn('⚠️ Sentence transformer not available, using mock embedding:', error);
-      
+
       // Generate a mock embedding for development (384 dimensions for nomic-embed-text)
       const dimensions = 384;
       const mockEmbedding = Array(dimensions).fill(0).map(() => Math.random() * 2 - 1);
-      
+
       // Add some deterministic elements based on query for consistent results
-      const queryHash = query.split('').reduce((hash, char) => 
+      const queryHash = query.split('').reduce((hash, char) =>
         ((hash << 5) - hash + char.charCodeAt(0)) & 0xffffffff, 0
       );
-      
+
       for (let i = 0; i < Math.min(10, dimensions); i++) {
         mockEmbedding[i] = (queryHash % 1000 + i) / 1000 - 0.5;
       }
-      
+
       return mockEmbedding;
     }
   }
@@ -493,31 +493,31 @@ export class WASMInferenceRAGService {;
     if (!this.wasmInstance) {
       throw new Error('WebAssembly instance not initialized');
     }
-    
+
     try {
       // Create prompt buffer in WASM memory
       const promptBuffer = new TextEncoder().encode(prompt);
       const inputPtr = this.allocateWASMMemory(promptBuffer.length);
       this.writeToWASMMemory(inputPtr, promptBuffer);
-      
+
       // Call WASM inference function
       // Note: This assumes a specific WASM interface - adjust based on your actual WASM module
       const wasmExports = this.wasmInstance.exports as any;
       const resultPtr = wasmExports.infer(inputPtr, promptBuffer.length, maxTokens, temperature);
-      
+
       // Read result from WASM memory
       const resultText = this.readStringFromWASMMemory(resultPtr);
       const tokens = this.countTokens(resultText);
-      
+
       // Free WASM memory
       wasmExports.free(inputPtr);
       wasmExports.free(resultPtr);
-      
+
       return {
         text: resultText,
         tokens
       };
-      
+
     } catch (error: any) {
       console.error('WASM inference execution error:', error);
       throw error;
@@ -541,7 +541,7 @@ export class WASMInferenceRAGService {;
         correlationId: inferenceId
       });
       console.log(`🏷️ Triggered auto-tagging for inference: ${inferenceId}`);
-      
+
     } catch (error: any) {
       console.warn('⚠️ Auto-tagging trigger failed:', error);
     }
@@ -598,11 +598,11 @@ export class WASMInferenceRAGService {;
       // Cleanup WASM instance
       this.wasmInstance = null;
     }
-    
+
     if (this.wasmModule) {
       this.wasmModule = null;
     }
-    
+
     this.isInitialized = false;
     console.log('🧹 WebAssembly Inference RAG Service cleaned up');
   }
@@ -626,5 +626,5 @@ export class WASMInferenceRAGService {;
 }
 
 // Export singleton for integration
-export const wasmInferenceRAGService = WASMInferenceRAGService;;
+export const wasmInferenceRAGService = WASMInferenceRAGService;
 export default WASMInferenceRAGService;

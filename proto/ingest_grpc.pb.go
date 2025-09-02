@@ -4,10 +4,11 @@
 // - protoc             v4.23.4
 // source: ingest.proto
 
-package ingest
+package embed // unified (was ingest)
 
 import (
 	context "context"
+
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"

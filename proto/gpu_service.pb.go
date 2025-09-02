@@ -4,7 +4,7 @@
 // 	protoc        v4.23.4
 // source: gpu_service.proto
 
-package gpu
+package embed // unified (was gpu)
 
 import (
 	reflect "reflect"
