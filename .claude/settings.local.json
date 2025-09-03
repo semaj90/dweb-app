@@ -72,7 +72,10 @@
       "Bash(./redis-swr-cache.exe)",
       "Bash(./START-COMPLETE-LEGAL-AI-CACHE-ARCHITECTURE.bat)",
       "mcp__filesystem__create_directory",
-      "mcp__filesystem__write_file"
+      "mcp__filesystem__write_file",
+      "Bash(git merge:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": [],
