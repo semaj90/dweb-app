@@ -2,7 +2,7 @@
   import { $props, $derived } from 'svelte';
   import { Card } from "bits-ui";
   // Tooltip functionality removed for now - can be re-added with bits-ui Tooltip
-  
+
   interface Props {
     title?: string;
     subtitle?: string;
@@ -18,8 +18,8 @@
     actions?: import('svelte').Snippet;
     onclick?: () => void;
   }
-  
-  let { 
+
+  let {
     title,
     subtitle,
     variant = 'default',
@@ -34,18 +34,18 @@
     actions,
     onclick
   }: Props = $props();
-  
+
   // Melt-UI tooltip - conditionally create only when needed
   const tooltipBuilder = tooltip ? createTooltip({
     openDelay: 500,
     closeDelay: 100,
     forceVisible: true
   }) : null;
-  
+
   const trigger = tooltipBuilder?.elements.trigger;
   const tooltipContent = tooltipBuilder?.elements.content;
   const open = tooltipBuilder?.states.open;
-  
+
   // Dynamic classes based on props
   let cardClasses = $derived(() => {
     const base = 'modern-card transition-all duration-200';
@@ -63,10 +63,10 @@
     };
     const interactive = hoverable ? 'hover:border-yorha-border-accent hover:shadow-md' : '';
     const cursor = clickable ? 'cursor-pointer' : '';
-    
+
     return `${base} ${variants[variant]} ${sizes[size]} ${interactive} ${cursor}`;
   });
-  
+
   function handleClick() {
     if (clickable && onclick) {
       onclick();
@@ -74,26 +74,11 @@
   }
 </script>
 
-{#if tooltip}
-<Card.Root 
+<Card.Root
   class={cardClasses}
   role={clickable ? 'button' : undefined}
   tabindex={clickable ? 0 : undefined}
-  on:on:click={handleClick}
-  keydown={(e) => {
-    if (clickable && (e.key === 'Enter' || e.key === ' ')) {
-      e.preventDefault();
-      onclick?.();
-    }
-  }}
-  <!-- <!-- use:melt={$trigger}
->
-{:else}
-<Card.Root 
-  class={cardClasses}
-  role={clickable ? 'button' : undefined}
-  tabindex={clickable ? 0 : undefined}
-  on:on:click={handleClick}
+  on:click={handleClick}
   keydown={(e) => {
     if (clickable && (e.key === 'Enter' || e.key === ' ')) {
       e.preventDefault();
@@ -101,62 +86,12 @@
     }
   }}
 >
-{/if}
   {#if loading}
     <div class="loading-overlay">
       <div class="loading-spinner"></div>
     </div>
   {/if}
-  
-  {#if header || title || subtitle || actions}
-    <Card.Header class="card-header">
-      {#if header}
-        {@render header()}
-      {:else if title || subtitle}
-        <div class="golden-flex-between">
-          <div class="space-y-golden">
-            {#if title}
-              <Card.Title class="card-title text-yorha-text-primary">
-                {title}
-              </Card.Title>
-            {/if}
-            {#if subtitle}
-              <Card.Description class="card-subtitle text-yorha-text-secondary">
-                {subtitle}
-              </Card.Description>
-            {/if}
-          </div>
-          {#if actions}
-            <div class="card-actions">
-              {@render actions()}
-            </div>
-          {/if}
-        </div>
-      {/if}
-    </Card.Header>
-  {/if}
-  
-  {#if children}
-    <Card.Content class="card-content">
-      {@render children()}
-    </Card.Content>
-  {/if}
-  
-  {#if footer}
-    <Card.Footer class="card-footer">
-      {@render footer()}
-    </Card.Footer>
-  {/if}
-</Card.Root>
 
-<!-- Duplicate content for non-tooltip case -->
-{#if !tooltip}
-  {#if loading}
-    <div class="loading-overlay">
-      <div class="loading-spinner"></div>
-    </div>
-  {/if}
-  
   {#if header || title || subtitle || actions}
     <Card.Header class="card-header">
       {#if header}
@@ -165,47 +100,31 @@
         <div class="golden-flex-between">
           <div class="space-y-golden">
             {#if title}
-              <Card.Title class="card-title text-yorha-text-primary">
-                {title}
-              </Card.Title>
+              <Card.Title class="card-title text-yorha-text-primary">{title}</Card.Title>
             {/if}
             {#if subtitle}
-              <Card.Description class="card-subtitle text-yorha-text-secondary">
-                {subtitle}
-              </Card.Description>
+              <Card.Description class="card-subtitle text-yorha-text-secondary">{subtitle}</Card.Description>
             {/if}
           </div>
           {#if actions}
-            <div class="card-actions">
-              {@render actions()}
-            </div>
+            <div class="card-actions">{@render actions()}</div>
           {/if}
         </div>
       {/if}
     </Card.Header>
   {/if}
-  
+
   {#if children}
-    <Card.Content class="card-content">
-      {@render children()}
-    </Card.Content>
+    <Card.Content class="card-content">{@render children()}</Card.Content>
   {/if}
-  
+
   {#if footer}
-    <Card.Footer class="card-footer">
-      {@render footer()}
-    </Card.Footer>
+    <Card.Footer class="card-footer">{@render footer()}</Card.Footer>
   {/if}
 </Card.Root>
-{/if}
 
 {#if tooltip && $open}
-  <div
-    <!-- <!-- use:melt={$tooltipContent}
-    class="tooltip"
-  >
-    {tooltip}
-  </div>
+  <div class="tooltip">{tooltip}</div>
 {/if}
 
 <style>
@@ -214,18 +133,18 @@
     position: relative;
     overflow: hidden;
   }
-  
+
   .modern-card:focus-visible {
     outline: 2px solid var(--yorha-accent-gold);
     outline-offset: 2px;
   }
-  
+
   .card-header {
     border-bottom: 1px solid var(--yorha-border-secondary);
     margin-bottom: var(--golden-lg);
     padding-bottom: var(--golden-md);
   }
-  
+
   .card-title {
     font-size: var(--text-lg);
     font-weight: 600;
@@ -234,29 +153,29 @@
     letter-spacing: 0.025em;
     margin: 0;
   }
-  
+
   .card-subtitle {
     font-size: var(--text-sm);
     color: var(--yorha-text-muted);
     margin: 0;
   }
-  
+
   .card-content {
     flex: 1;
   }
-  
+
   .card-footer {
     border-top: 1px solid var(--yorha-border-secondary);
     margin-top: var(--golden-lg);
     padding-top: var(--golden-md);
   }
-  
+
   .card-actions {
     display: flex;
     gap: var(--golden-sm);
     align-items: center;
   }
-  
+
   .loading-overlay {
     position: absolute;
     inset: 0;
@@ -268,7 +187,7 @@
     border-radius: inherit;
     backdrop-filter: blur(2px);
   }
-  
+
   .loading-spinner {
     width: 2rem;
     height: 2rem;
@@ -277,13 +196,13 @@
     border-radius: 50%;
     animation: spin 1s linear infinite;
   }
-  
+
   @keyframes spin {
     to {
       transform: rotate(360deg);
     }
   }
-  
+
   .tooltip {
     background: var(--yorha-bg-card);
     border: 1px solid var(--yorha-border-primary);
@@ -295,7 +214,7 @@
     z-index: 50;
     max-width: 20rem;
   }
-  
+
   /* Golden ratio responsive breakpoints */
   @container (min-width: 768px) {
     .modern-card {

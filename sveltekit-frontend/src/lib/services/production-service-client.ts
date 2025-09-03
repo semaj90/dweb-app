@@ -4,9 +4,9 @@
  * Uses existing compiled Go binaries for maximum performance
  */
 
-import { 
 import http from "http";
 import { URL } from "url";
+import { 
   SERVICES_CONFIG, 
   API_ROUTES, 
   PROTOCOL_PRIORITY, 

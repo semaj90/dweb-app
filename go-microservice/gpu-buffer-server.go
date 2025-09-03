@@ -1,5 +1,5 @@
-//go:build legacy && legacygpu
-// +build legacy,legacygpu
+//go:build experimental || (legacy && legacygpu)
+// +build experimental legacy,legacygpu
 
 package main
 

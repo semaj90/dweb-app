@@ -411,8 +411,7 @@ export function extractLegalEntities(text: string): Array<{ type: string; value:
   });
 
   // Dollar amounts
-  const dollarPattern = /\$[\d
-]+(?:\.\d{2})?/g;
+  const dollarPattern = /\$[\d,]+(?:\.\d{2})?/g;
   const dollarMatches = text.match(dollarPattern) || [];
   dollarMatches.forEach((match: string) => {
     entities.push({ type: 'monetary_amount', value: match.trim(), confidence: 0.95 });

@@ -13,8 +13,8 @@
     fontSize: string;
   }
 
-  let { isOpen = $bindable() } = $props(); // boolean = false;
-  let { settings = $bindable() } = $props(); // Settings = {
+  // Default settings object
+  const defaultSettings: Settings = {
     theme: 'light',
     language: 'en',
     ttsEngine: 'default',
@@ -27,6 +27,10 @@
     fontFamily: 'Arial',
     fontSize: '16px'
   };
+
+  // Bindable props with defaults
+  let { isOpen = $bindable(false) } = $props();
+  let { settings = $bindable<Settings>(defaultSettings) } = $props();
 </script>
 
 {#if isOpen}

@@ -2,6 +2,9 @@
 // Production Go service that consumes Redis Streams, processes vectors with CUDA worker, and updates databases
 // Build: go build -o vector-consumer-service.exe vector-consumer-service.go
 
+//go:build experimental
+// +build experimental
+
 package main
 
 import (

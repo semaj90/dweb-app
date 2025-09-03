@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { $props, $derived } from 'svelte';
 
 	import { type ButtonVariants, buttonVariants } from './button-variants';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
@@ -17,7 +16,7 @@
 		size = 'default',
 		loading = false,
 		children,
-		class: class,
+		class: className = '',
 		disabled,
 		...props
 	}: Props = $props();
@@ -26,7 +25,7 @@
 </script>
 
 <button
-	class="yorha-button {buttonVariants({ variant, size })} {class || ""}"
+	class="yorha-button {buttonVariants({ variant, size })} {className}"
 	disabled={isDisabled}
 	{...props}
 >

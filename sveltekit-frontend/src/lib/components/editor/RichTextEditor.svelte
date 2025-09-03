@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { $props, $effect, $state } from 'svelte';
-  import { onMount, onDestroy } from 'svelte';
+  // Removed rune imports ($props, $effect, $state) - they are provided by the Svelte compiler and must not be imported
+  import { onDestroy } from 'svelte';
   import Editor from '@tinymce/tinymce-svelte';
   import { report, reportActions, editorState } from '$lib/stores/report';
   import { lokiRedisCache } from '$lib/cache/loki-redis-integration';
@@ -25,10 +25,10 @@
   let lastProcessedText = $state<string>('');
   let autoSaveStatus = $state<'saving' | 'saved' | 'error' | 'idle'>('idle');
   let jobId = $state<string | null>(null);
-  let pollingInterval: NodeJS.Timeout | null = null;
-  
+  let pollingInterval: ReturnType<typeof setInterval> | null = null;
+
   // Debouncing variables
-  let debounceTimer: NodeJS.Timeout | null = null;
+  let debounceTimer: ReturnType<typeof setTimeout> | null = null;
   const DEBOUNCE_DELAY = 500; // 500ms as recommended
   const MIN_TEXT_LENGTH = 100; // Minimum text length for AI processing
 
@@ -166,7 +166,7 @@
   });
 
   // ==================== AI-POWERED ARCHITECTURE METHODS ====================
-  
+
   /**
    * 1. DEBOUNCED EVENT HANDLER - Prevents overwhelming the backend
    */
@@ -175,12 +175,12 @@
     if (debounceTimer) {
       clearTimeout(debounceTimer);
     }
-    
+
     // Set new timer - only processes after user stops typing for DEBOUNCE_DELAY
     debounceTimer = setTimeout(() => {
       processContentChange(content);
     }, DEBOUNCE_DELAY);
-    
+
     // Immediate local auto-save to Loki.js/IndexedDB (offline capability)
     performLocalAutoSave(content);
   }
@@ -190,10 +190,10 @@
    */
   async function performLocalAutoSave(content: string) {
     if (!browser) return;
-    
+
     try {
       autoSaveStatus = 'saving';
-      
+
       // Save to Loki.js/IndexedDB for offline capability
       await lokiRedisCache.storeDocument({
         id: $report.id || crypto.randomUUID(),
@@ -212,7 +212,7 @@
         cacheLocation: 'loki',
         syncStatus: 'pending'
       });
-      
+
       autoSaveStatus = 'saved';
     } catch (error) {
       console.error('Local auto-save failed:', error);
@@ -226,20 +226,20 @@
   async function processContentChange(content: string) {
     if (!content || content.length < MIN_TEXT_LENGTH) return;
     if (content === lastProcessedText) return; // Avoid duplicate processing
-    
+
     const textHash = await generateTextHash(content);
-    
+
     try {
       isProcessingSummary = true;
       lastProcessedText = content;
-      
+
       // Step 1: Check Redis cache via Go microservice
       const cacheResponse = await fetch('/api/v1/ai/summary-cache', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ textHash, content })
       });
-      
+
       if (cacheResponse.ok) {
         const cached = await cacheResponse.json();
         if (cached.summary) {
@@ -249,27 +249,27 @@
           return;
         }
       }
-      
+
       // Step 2: Cache miss - Start background AI processing
       const jobResponse = await fetch('/api/v1/ai/summarize-async', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          content, 
+        body: JSON.stringify({
+          content,
           textHash,
           model: 'legal-bert',
           embedModel: 'nomic-embed-text'
         })
       });
-      
+
       if (jobResponse.ok) {
         const job = await jobResponse.json();
         jobId = job.jobId;
-        
+
         // Start polling for results
         startJobPolling();
       }
-      
+
     } catch (error) {
       console.error('AI processing failed:', error);
       isProcessingSummary = false;
@@ -281,32 +281,32 @@
    */
   function startJobPolling() {
     if (pollingInterval) clearInterval(pollingInterval);
-    
+
     pollingInterval = setInterval(async () => {
       if (!jobId) return;
-      
+
       try {
         const response = await fetch(`/api/v1/ai/job-status/${jobId}`);
         if (response.ok) {
           const result = await response.json();
-          
+
           if (result.status === 'completed') {
             currentSummary = result.summary;
-            
+
             // Store vector embedding in PostgreSQL/pg_vector
             if (result.embedding) {
               await storeVectorEmbedding(result.embedding, lastProcessedText);
             }
-            
+
             // Cache result in Redis for future requests
             await cacheResult(result.textHash, result.summary);
-            
+
             // Cleanup
             isProcessingSummary = false;
             jobId = null;
             clearInterval(pollingInterval!);
             pollingInterval = null;
-            
+
           } else if (result.status === 'failed') {
             console.error('AI job failed:', result.error);
             isProcessingSummary = false;
@@ -400,7 +400,7 @@
 
   onDestroy(() => {
     editorState.update(s => ({ ...s, isEditing: false }));
-    
+
     // Cleanup AI architecture timers
     if (debounceTimer) {
       clearTimeout(debounceTimer);
@@ -418,17 +418,17 @@
     <div class="flex items-center gap-4">
       <!-- Auto-save Status -->
       <div class="flex items-center gap-2">
-        <div class="w-2 h-2 rounded-full" class:bg-green-500={autoSaveStatus === 'saved'} 
-             class:bg-yellow-500={autoSaveStatus === 'saving'} 
+        <div class="w-2 h-2 rounded-full" class:bg-green-500={autoSaveStatus === 'saved'}
+             class:bg-yellow-500={autoSaveStatus === 'saving'}
              class:bg-red-500={autoSaveStatus === 'error'}
              class:bg-gray-300={autoSaveStatus === 'idle'}></div>
         <span class="text-sm font-medium">
-          {autoSaveStatus === 'saved' ? 'Draft Saved' : 
-           autoSaveStatus === 'saving' ? 'Saving...' : 
+          {autoSaveStatus === 'saved' ? 'Draft Saved' :
+           autoSaveStatus === 'saving' ? 'Saving...' :
            autoSaveStatus === 'error' ? 'Save Error' : 'Ready'}
         </span>
       </div>
-      
+
       <!-- AI Processing Status -->
       {#if isProcessingSummary}
         <div class="flex items-center gap-2">
@@ -445,7 +445,7 @@
         </div>
       {/if}
     </div>
-    
+
     <!-- Document Stats -->
     <div class="flex items-center gap-4 text-sm text-gray-600">
       <span>Words: {getWordCount()}</span>
@@ -460,11 +460,10 @@
       <Editor
         {disabled}
         bind:value={$report.content}
-        conf={editorConfig}
-        change={(e: any) => reportActions.updateContent(e.detail.level.content)}
+        init={editorConfig}
       />
     </div>
-    
+
     <!-- AI Insights Panel (1/3 width on large screens) -->
     <div class="lg:col-span-1">
       <div class="bg-white border border-gray-200 rounded-lg p-4 h-full">
@@ -474,7 +473,7 @@
           </svg>
           AI Insights
         </h3>
-        
+
         {#if isProcessingSummary}
           <div class="flex flex-col items-center justify-center py-8 text-gray-500">
             <div class="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mb-3"></div>
@@ -487,7 +486,7 @@
               <h4 class="font-medium text-blue-900 mb-2">Document Summary</h4>
               <p class="text-sm text-blue-800">{currentSummary}</p>
             </div>
-            
+
             <!-- Technical Details -->
             <div class="bg-gray-50 rounded-lg p-3">
               <h5 class="font-medium text-gray-700 mb-2 text-xs uppercase tracking-wide">Processing Details</h5>
@@ -528,7 +527,7 @@
       </div>
     </div>
   </div>
-  
+
   <!-- Architecture Footer - Shows the technical stack in action -->
   <div class="text-xs text-gray-500 bg-gray-50 p-2 rounded border">
     <div class="flex items-center justify-between">

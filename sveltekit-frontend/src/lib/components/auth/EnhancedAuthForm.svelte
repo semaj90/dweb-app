@@ -21,7 +21,7 @@
     onSuccess,
     allowGuestMode = false,
     loading = false,
-    class: class,
+    class: className = '',
     id,
     'data-testid': testId
   }: EnhancedAuthFormProps = $props();

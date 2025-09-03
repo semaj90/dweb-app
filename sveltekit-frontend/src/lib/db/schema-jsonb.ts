@@ -33,7 +33,7 @@ const vector = customType<{ data: number[]; driverData: string }>({
 });
 
 // Enum definitions
-export const documentStatusEnum = pgEnum('document_status', [;
+export const documentStatusEnum = pgEnum('document_status', [
   'pending',
   'processing',
   'completed',
@@ -41,7 +41,7 @@ export const documentStatusEnum = pgEnum('document_status', [;
   'archived'
 ]);
 
-export const documentTypeEnum = pgEnum('document_type', [;
+export const documentTypeEnum = pgEnum('document_type', [
   'contract',
   'brief',
   'case_study',
@@ -51,7 +51,7 @@ export const documentTypeEnum = pgEnum('document_type', [;
   'other'
 ]);
 
-export const summaryStyleEnum = pgEnum('summary_style', [;
+export const summaryStyleEnum = pgEnum('summary_style', [
   'executive',
   'technical',
   'judicial',
@@ -59,7 +59,7 @@ export const summaryStyleEnum = pgEnum('summary_style', [;
   'brief'
 ]);
 
-export const jobPriorityEnum = pgEnum('job_priority', [;
+export const jobPriorityEnum = pgEnum('job_priority', [
   'low',
   'normal',
   'high',

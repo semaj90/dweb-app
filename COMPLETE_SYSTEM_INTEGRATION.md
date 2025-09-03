@@ -62,8 +62,8 @@ interface EnhancedMLPipeline {
 |-------|---------|--------|-----|--------|
 | **gemma3-legal** | Legal reasoning | ✅ Loaded | Yes | 4GB |
 | **nomic-embed-text** | Embeddings | ✅ Active | Yes | 1GB |
-| **llama3.1:8b** | General reasoning | ✅ Ready | Yes | 8GB |
-| **codellama:13b** | Code analysis | ✅ Available | Yes | 13GB |
+| *** | General reasoning | ✅ Ready | Yes | 8GB |
+| **** | Code analysis | ✅ Available | Yes | 13GB |
 
 ---
 

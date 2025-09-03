@@ -10,7 +10,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 // Authentication tables for Lucia + legal AI platform
-export const authUsers = pgTable(;
+export const authUsers = pgTable(
   "auth_users",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -48,7 +48,7 @@ export const authUsers = pgTable(;
   })
 );
 
-export const authKeys = pgTable(;
+export const authKeys = pgTable(
   "auth_keys",
   {
     id: text("id").primaryKey(),
@@ -60,7 +60,7 @@ export const authKeys = pgTable(;
   })
 );
 
-export const authSessions = pgTable(;
+export const authSessions = pgTable(
   "auth_sessions",
   {
     id: text("id").primaryKey(),
@@ -82,7 +82,7 @@ export const authSessions = pgTable(;
   })
 );
 
-export const authPasswordResets = pgTable(;
+export const authPasswordResets = pgTable(
   "auth_password_resets",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -98,7 +98,7 @@ export const authPasswordResets = pgTable(;
   })
 );
 
-export const authAuditLog = pgTable(;
+export const authAuditLog = pgTable(
   "auth_audit_log",
   {
     id: uuid("id").primaryKey().defaultRandom(),

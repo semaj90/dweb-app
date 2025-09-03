@@ -6,9 +6,9 @@ https://svelte.dev/e/js_parse_error -->
 
 	import { onMount, onDestroy } from 'svelte';
 	// Updated to use melt-ui components
-	import Button from '$lib/components/ui/MeltButton.svelte';
+	import Button from '$lib/components/ui/bitsbutton.svelte';
 	import Card from '$lib/components/ui/MeltCard.svelte';
-	
+
 	// TODO: Replace with melt-ui equivalents when available
 	// import { Badge } from 'bits-ui';
 	// import { CardContent, CardHeader, CardTitle } from 'bits-ui';
@@ -80,7 +80,7 @@ let testInput = $state("Analyze this legal document for key compliance issues an
 
 		try {
 			isProcessing = true;
-			
+
 			const taskId = await aiServiceWorkerManager.queueTask({
 				type: taskTemplate.type,
 				priority: 'medium',
@@ -94,7 +94,7 @@ let testInput = $state("Analyze this legal document for key compliance issues an
 			});
 
 			console.log(`✅ Task ${taskId} queued successfully`);
-			
+
 			// For demo purposes, simulate task completion
 			// In a real app, you would listen to worker events
 			setTimeout(() => {
@@ -109,11 +109,11 @@ let testInput = $state("Analyze this legal document for key compliance issues an
 						memoryUsed: `${Math.floor(Math.random() * 500) + 100}MB`
 					}
 				};
-				
+
 				processingResults = [mockResult, ...processingResults.slice(0, 9)]; // Keep last 10 results
 				isProcessing = false;
 			}, Math.random() * 3000 + 1000);
-			
+
 		} catch (error) {
 			console.error('Task processing failed:', error);
 			isProcessing = false;
@@ -129,7 +129,7 @@ let testInput = $state("Analyze this legal document for key compliance issues an
 
 		try {
 			isProcessing = true;
-			
+
 			const tasks = demoTasks.map(task => ({
 				type: task.type,
 				priority: 'high' as const,
@@ -138,13 +138,13 @@ let testInput = $state("Analyze this legal document for key compliance issues an
 			}));
 
 			console.log('🚀 Processing parallel tasks...');
-			
+
 			// This would use the actual parallel processing in a real implementation
 			const results = await aiServiceWorkerManager.processParallel(tasks);
-			
+
 			processingResults = [...results.reverse(), ...processingResults.slice(0, 6)];
 			isProcessing = false;
-			
+
 		} catch (error) {
 			console.error('Parallel processing failed:', error);
 			isProcessing = false;
@@ -186,7 +186,7 @@ let testInput = $state("Analyze this legal document for key compliance issues an
 
 	// System health monitoring
 let healthCheckInterval = $state<number;
-	
+
 	onMount(() >(> {
 		// Start health monitoring
 		healthCheckInterval = setInterval(() => {
@@ -229,7 +229,7 @@ let healthCheckInterval = $state<number;
 			<h1 class="text-2xl font-bold text-yorha-text-primary">AI Processing Dashboard</h1>
 			<p class="text-yorha-text-secondary">Multi-LLM orchestration and task management</p>
 		</div>
-		
+
 		<!-- System Status -->
 		<div class="flex items-center space-x-4">
 			<Badge class={selectedProvider?.status === 'online' ? 'bg-yorha-success' : 'bg-yorha-danger'}>
@@ -247,7 +247,7 @@ let healthCheckInterval = $state<number;
 			<CardTitle>LLM Provider Configuration</CardTitle>
 		</CardHeader>
 		<CardContent>
-			<LLMProviderSelector 
+			<LLMProviderSelector
 				bind:selectedProvider
 				providerselected={handleProviderSelected}
 				statuschanged={handleStatusChanged}
@@ -263,14 +263,14 @@ let healthCheckInterval = $state<number;
 				<div class="text-sm text-yorha-text-secondary">Tasks Processed</div>
 			</CardContent>
 		</Card>
-		
+
 		<Card>
 			<CardContent class="p-4">
 				<div class="text-2xl font-bold text-yorha-accent">{$systemMetrics?.averageResponseTime?.toFixed(0) || 0}ms</div>
 				<div class="text-sm text-yorha-text-secondary">Avg Response Time</div>
 			</CardContent>
 		</Card>
-		
+
 		<Card>
 			<CardContent class="p-4">
 				<div class="flex items-center space-x-2">
@@ -280,7 +280,7 @@ let healthCheckInterval = $state<number;
 				<div class="text-sm text-yorha-text-secondary">System Load</div>
 			</CardContent>
 		</Card>
-		
+
 		<Card>
 			<CardContent class="p-4">
 				<div class="text-2xl font-bold text-yorha-success">{$systemMetrics?.availableWorkers || 0}</div>
@@ -300,7 +300,7 @@ let healthCheckInterval = $state<number;
 				<label class="block text-sm font-medium text-yorha-text-primary mb-2">
 					Test Input
 				</label>
-				<textarea 
+				<textarea
 					bind:value={testInput}
 					class="w-full h-20 px-3 py-2 bg-yorha-bg-secondary border border-yorha-border rounded-md text-yorha-text-primary placeholder-yorha-text-tertiary focus:outline-none focus:ring-2 focus:ring-yorha-primary"
 					placeholder="Enter text to process..."
@@ -352,7 +352,7 @@ let healthCheckInterval = $state<number;
 			<CardContent>
 				<div class="space-y-3 max-h-96 overflow-y-auto">
 					{#each processingResults as result (result.taskId)}
-						<div 
+						<div
 							class="p-3 bg-yorha-bg-secondary rounded-md border border-yorha-border"
 							transitifly={{ y: -20, duration: 300 }}
 						>
@@ -369,7 +369,7 @@ let healthCheckInterval = $state<number;
 									{formatDuration(result.duration)}
 								</div>
 							</div>
-							
+
 							{#if result.success && result.result}
 								<div class="text-sm bg-yorha-bg-primary p-2 rounded border">
 									<pre class="whitespace-pre-wrap text-yorha-text-primary overflow-x-auto">
@@ -377,7 +377,7 @@ let healthCheckInterval = $state<number;
 									</pre>
 								</div>
 							{/if}
-							
+
 							{#if result.metrics}
 								<div class="flex items-center space-x-4 mt-2 text-xs text-yorha-text-secondary">
 									<span>Tokens: {result.metrics.tokensProcessed}</span>

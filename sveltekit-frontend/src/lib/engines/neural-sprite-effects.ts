@@ -440,7 +440,7 @@ export class NeuralSpriteEffects {
 }
 
 // Pre-defined effect configurations
-export const NEURAL_SPRITE_EFFECTS: SpriteEffect[] = [;
+export const NEURAL_SPRITE_EFFECTS: SpriteEffect[] = [
   {
     id: "crt-scanlines",
     name: "CRT Scanlines",

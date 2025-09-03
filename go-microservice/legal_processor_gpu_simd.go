@@ -1,5 +1,5 @@
-//go:build legacy
-// +build legacy
+//go:build experimental || legacy
+// +build experimental legacy
 
 package main
 
@@ -33,15 +33,15 @@ import (
 #include <immintrin.h>
 
 // CUDA kernel for parallel similarity calculation
-__global__ void batch_similarity_kernel(float* queries, float* documents, float* results, 
+__global__ void batch_similarity_kernel(float* queries, float* documents, float* results,
                                        int num_queries, int num_docs, int embedding_dim) {
     int doc_idx = blockIdx.x * blockDim.x + threadIdx.x;
     int query_idx = blockIdx.y * blockDim.y + threadIdx.y;
-    
+
     if (doc_idx < num_docs && query_idx < num_queries) {
         float sum = 0.0f;
         for (int i = 0; i < embedding_dim; i++) {
-            sum += queries[query_idx * embedding_dim + i] * 
+            sum += queries[query_idx * embedding_dim + i] *
                    documents[doc_idx * embedding_dim + i];
         }
         results[query_idx * num_docs + doc_idx] = sum;
@@ -56,15 +56,15 @@ void simd_dot_product_avx2(float* a, float* b, float* result, int len) {
         __m256 vb = _mm256_load_ps(&b[i]);
         sum = _mm256_fmadd_ps(va, vb, sum);
     }
-    
+
     // Horizontal sum
     __m128 sum_high = _mm256_extractf128_ps(sum, 1);
     __m128 sum_low = _mm256_castps256_ps128(sum);
     __m128 sum128 = _mm_add_ps(sum_high, sum_low);
-    
+
     __m128 temp = _mm_hadd_ps(sum128, sum128);
     temp = _mm_hadd_ps(temp, temp);
-    
+
     *result = _mm_cvtss_f32(temp);
 }
 
@@ -81,17 +81,17 @@ typedef struct {
 
 GPUContext* init_gpu_context(int max_docs, int embedding_dim) {
     GPUContext* ctx = (GPUContext*)malloc(sizeof(GPUContext));
-    
+
     if (cudaSetDevice(0) != cudaSuccess) {
         ctx->initialized = false;
         return ctx;
     }
-    
+
     if (cublasCreate(&ctx->handle) != CUBLAS_STATUS_SUCCESS) {
         ctx->initialized = false;
         return ctx;
     }
-    
+
     // Allocate GPU memory
     if (cudaMalloc(&ctx->d_queries, embedding_dim * sizeof(float)) != cudaSuccess ||
         cudaMalloc(&ctx->d_documents, max_docs * embedding_dim * sizeof(float)) != cudaSuccess ||
@@ -99,11 +99,11 @@ GPUContext* init_gpu_context(int max_docs, int embedding_dim) {
         ctx->initialized = false;
         return ctx;
     }
-    
+
     ctx->max_docs = max_docs;
     ctx->embedding_dim = embedding_dim;
     ctx->initialized = true;
-    
+
     return ctx;
 }
 
@@ -118,21 +118,21 @@ void cleanup_gpu_context(GPUContext* ctx) {
 }
 
 // High-performance GPU similarity calculation
-int gpu_similarity_search(GPUContext* ctx, float* query_embedding, 
+int gpu_similarity_search(GPUContext* ctx, float* query_embedding,
                          float* document_embeddings, float* results, int num_docs) {
     if (!ctx->initialized) return -1;
-    
+
     // Copy data to GPU
-    if (cudaMemcpy(ctx->d_queries, query_embedding, 
+    if (cudaMemcpy(ctx->d_queries, query_embedding,
                    ctx->embedding_dim * sizeof(float), cudaMemcpyHostToDevice) != cudaSuccess) {
         return -2;
     }
-    
-    if (cudaMemcpy(ctx->d_documents, document_embeddings, 
+
+    if (cudaMemcpy(ctx->d_documents, document_embeddings,
                    num_docs * ctx->embedding_dim * sizeof(float), cudaMemcpyHostToDevice) != cudaSuccess) {
         return -3;
     }
-    
+
     // Use cuBLAS SGEMV for optimized matrix-vector multiplication (Tensor Core acceleration)
     const float alpha = 1.0f, beta = 0.0f;
     if (cublasSgemv(ctx->handle, CUBLAS_OP_T, ctx->embedding_dim, num_docs,
@@ -140,21 +140,21 @@ int gpu_similarity_search(GPUContext* ctx, float* query_embedding,
                     ctx->d_queries, 1, &beta, ctx->d_results, 1) != CUBLAS_STATUS_SUCCESS) {
         return -4;
     }
-    
+
     // Copy results back to CPU
     if (cudaMemcpy(results, ctx->d_results, num_docs * sizeof(float), cudaMemcpyDeviceToHost) != cudaSuccess) {
         return -5;
     }
-    
+
     return 0;
 }
 
 // CPU SIMD fallback
-void cpu_simd_similarity_search(float* query_embedding, float* document_embeddings, 
+void cpu_simd_similarity_search(float* query_embedding, float* document_embeddings,
                                float* results, int num_docs, int embedding_dim) {
     for (int i = 0; i < num_docs; i++) {
-        simd_dot_product_avx2(query_embedding, 
-                             &document_embeddings[i * embedding_dim], 
+        simd_dot_product_avx2(query_embedding,
+                             &document_embeddings[i * embedding_dim],
                              &results[i], embedding_dim);
     }
 }
@@ -168,7 +168,7 @@ const (
 	neo4jUser         = "neo4j"
 	neo4jPassword     = "legalai123"
 	analysisOutputDir = "./generated_reports"
-	
+
 	// Performance tuning
 	maxDocuments     = 10000  // Adjust based on GPU VRAM
 	embeddingDim     = 768    // Standard embedding dimension
@@ -313,7 +313,7 @@ func (wp *WorkerPool) Stop() {
 func main() {
 	// Initialize logging
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	
+
 	// Ensure output directory exists
 	if err := os.MkdirAll(analysisOutputDir, 0755); err != nil {
 		log.Fatalf("Failed to create output directory: %v", err)
@@ -353,7 +353,7 @@ func main() {
 
 	// Setup Gin router
 	router := gin.Default()
-	
+
 	// Enable CORS for SvelteKit integration
 	router.Use(func(c *gin.Context) {
 		c.Header("Access-Control-Allow-Origin", "*")
@@ -370,7 +370,7 @@ func main() {
 	router.GET("/health", func(c *gin.Context) {
 		var m runtime.MemStats
 		runtime.ReadMemStats(&m)
-		
+
 		c.JSON(http.StatusOK, gin.H{
 			"status":        "ok",
 			"gpu_enabled":   gpuEnabled,
@@ -551,7 +551,7 @@ func performSimilaritySearch(req SimilaritySearchRequest) ([]SimilarityResult, s
 func performCPUSIMDSearch(queryEmbedding []float32, documentEmbeddings [][]float32, scores []float32) {
 	numDocs := len(documentEmbeddings)
 	flatDocs := make([]float32, numDocs*embeddingDim)
-	
+
 	for i, embedding := range documentEmbeddings {
 		copy(flatDocs[i*embeddingDim:(i+1)*embeddingDim], embedding)
 	}
@@ -851,7 +851,7 @@ Provide a JSON response with:
 func parseEmbeddingString(embStr string) []float32 {
 	embStr = strings.Trim(embStr, "[]")
 	jsonStr := "[" + embStr + "]"
-	
+
 	result := gjson.Get(jsonStr, "@this")
 	if !result.IsArray() {
 		return nil
@@ -878,15 +878,15 @@ func getEmbedding(text string) ([]float32, error) {
 
 func saveAnalysisReports(report AnalysisReport, jsonResponse string) {
 	baseName := filepath.Base(report.FilePath)
-	
+
 	// JSON report
 	os.WriteFile(filepath.Join(analysisOutputDir, baseName+".json"), []byte(jsonResponse), 0644)
-	
+
 	// Markdown report
 	mdContent := fmt.Sprintf(`# Analysis Report: %s
 
-**Severity**: %s  
-**Processing Time**: %dms  
+**Severity**: %s
+**Processing Time**: %dms
 **Method**: %s
 
 ## Issue Summary
@@ -901,7 +901,7 @@ func saveAnalysisReports(report AnalysisReport, jsonResponse string) {
 		report.IssueSummary,
 		"- "+strings.Join(report.Recommendations, "\n- "),
 		"- [ ] "+strings.Join(report.TodoList, "\n- [ ] "))
-	
+
 	os.WriteFile(filepath.Join(analysisOutputDir, baseName+".md"), []byte(mdContent), 0644)
 }
 

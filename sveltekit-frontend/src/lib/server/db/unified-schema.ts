@@ -169,9 +169,10 @@ export const savedCitations = pgTable(
 export const canvasStates = pgTable("canvas_states", {
   id: serial("id").primaryKey(),
   title: varchar("title", { length: 255 }),
-  reportId: uuid("report_id").references(() => reports.id, {
-    onDelete: "cascade"
-  }),
+  // reportId: uuid("report_id").references(() => reports.id, {
+  //   onDelete: "cascade"
+  // }), // TODO: Define reports table or remove this reference
+  reportId: uuid("report_id"), // Simplified - no foreign key reference
   caseId: uuid("case_id")
     .notNull()
     .references(() => cases.id, { onDelete: "cascade" }),
@@ -204,9 +205,10 @@ export const citationPoints = pgTable("citation_points", {
   jurisdiction: varchar("jurisdiction", { length: 100 }),
   tags: jsonb("tags").default([]).notNull(),
   caseId: uuid("case_id").references(() => cases.id, { onDelete: "cascade" }),
-  reportId: uuid("report_id").references(() => reports.id, {
-    onDelete: "cascade"
-  }),
+  // reportId: uuid("report_id").references(() => reports.id, {
+  //   onDelete: "cascade"
+  // }), // TODO: Define reports table or remove this reference  
+  reportId: uuid("report_id"), // Simplified - no foreign key reference
   evidenceId: uuid("evidence_id").references(() => evidence.id, {
     onDelete: "set null"
   }),

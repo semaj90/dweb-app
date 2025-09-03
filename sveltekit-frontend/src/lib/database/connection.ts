@@ -1,24 +1,26 @@
 /// <reference types="vite/client" />
 
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from 'pg';
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from 'postgres';
 import * as schema from './schema.js';
 
-const env = { 
-  DATABASE_URL: import.meta.env.DATABASE_URL || import.meta.env?.DATABASE_URL 
-};
+// Get DATABASE_URL from environment with fallback
+const DATABASE_URL = import.meta.env.VITE_DATABASE_URL ||
+  import.meta.env.DATABASE_URL ||
+  'postgresql://postgres:123456@localhost:5432/legal_ai_db';
 
-// Create PostgreSQL connection pool
-const pool = new Pool({
-  connectionString: env.DATABASE_URL || 'postgresql://legal_admin:123456@localhost:5432/legal_ai_db',
+// Create PostgreSQL connection using postgres.js
+const sql = postgres(DATABASE_URL, {
   max: 10,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+  idle_timeout: 30,
+  connect_timeout: 2,
 });
 
 // Create Drizzle instance with schema
-export const db = drizzle(pool, { schema });
-;
+export const db = drizzle(sql, { schema });
+
+// Export sql connection for direct queries
+export const pool = sql; // alias for consistency (postgres.js instance)
 // Connection health check
 export async function testDatabaseConnection(): Promise<{
   success: boolean;
@@ -27,21 +29,19 @@ export async function testDatabaseConnection(): Promise<{
 }> {
   try {
     // Test basic connection
-    const client = await pool.connect();
-    const result = await client.query('SELECT version();');
-    client.release();
+    const result = await pool`SELECT version();`;
 
     // Test pgvector extension
-    const vectorTest = await pool.query("SELECT extname FROM pg_extension WHERE extname = 'vector';");
-    const hasVector = vectorTest.rows.length > 0;
+    const vectorTest = await pool`SELECT extname FROM pg_extension WHERE extname = 'vector';`;
+    const hasVector = Array.isArray(vectorTest) && vectorTest.length > 0;
 
     return {
       success: true,
       message: 'Database connection successful',
       details: {
-        postgresVersion: result.rows[0]?.version,
+        postgresVersion: (result as any)[0]?.version,
         pgvectorEnabled: hasVector,
-        poolSize: pool.totalCount,
+        poolSize: 'n/a',
         timestamp: new Date().toISOString(),
       },
     };
@@ -66,7 +66,7 @@ export async function vectorSimilaritySearch(
 ): Promise<any> {
   try {
     const tableName = table === 'documents' ? 'documents' : 'search_index';
-    
+
     // Use pgvector's cosine distance operator
     const query = `
       SELECT *, 1 - (embedding <=> $1) AS similarity
@@ -76,7 +76,7 @@ export async function vectorSimilaritySearch(
       LIMIT $3
     `;
 
-    const result = await pool.query(query, [
+    const result = await pool.unsafe(query, [
       JSON.stringify(queryEmbedding),
       threshold,
       limit,
@@ -84,8 +84,8 @@ export async function vectorSimilaritySearch(
 
     return {
       success: true,
-      results: result.rows,
-      count: result.rows.length,
+      results: result,
+      count: Array.isArray(result) ? result.length : 0,
     };
   } catch (error: any) {
     return {
@@ -137,7 +137,7 @@ export async function hybridSemanticSearch(
     }
 
     const searchQuery = `
-      SELECT 
+      SELECT
         si.*,
         1 - (si.embedding <=> $1) AS similarity,
         CASE si.entity_type
@@ -157,14 +157,14 @@ export async function hybridSemanticSearch(
 
     params.push(limit);
 
-    const result = await pool.query(searchQuery, params);
+    const result = await pool.unsafe(searchQuery, params);
 
     return {
       success: true,
-      results: result.rows,
-      count: result.rows.length,
+      results: result,
+      count: Array.isArray(result) ? result.length : 0,
       query,
-      queryEmbedding: queryEmbedding.slice(0, 5), // Only return first 5 dimensions for debugging
+      queryEmbedding: queryEmbedding.slice(0, 5),
     };
   } catch (error: any) {
     return {
@@ -183,8 +183,8 @@ export async function initializeDatabase(): Promise<any> {
     console.log('🔄 Initializing database...');
 
     // Create extensions
-    await pool.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
-    await pool.query('CREATE EXTENSION IF NOT EXISTS vector;');
+    await pool`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`;
+    await pool`CREATE EXTENSION IF NOT EXISTS vector;`;
 
     console.log('✅ Database extensions created');
 
@@ -219,15 +219,13 @@ export async function closeDatabaseConnection(): Promise<any> {
   }
 }
 
-// Export the pool for direct access if needed
-// Enhanced connection for full-stack legal AI
-export { pool };
+// Note: pool exported once at declaration to avoid duplicate export errors
 
 // Direct SQL for complex vector operations
 export async function executeSQL(query: string, params: any[] = []) {
   try {
-    const result = await pool.query(query, params);
-    return { success: true, data: result.rows, rowCount: result.rowCount };
+    const result = await pool.unsafe(query, params);
+    return { success: true, data: result, rowCount: Array.isArray(result) ? result.length : 0 };
   } catch (error: any) {
     return { success: false, error: error.message };
   }

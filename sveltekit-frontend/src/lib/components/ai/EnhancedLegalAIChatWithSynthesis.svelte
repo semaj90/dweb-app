@@ -1178,7 +1178,7 @@ ${relatedReports.length > 0 ? `**Database Stats:**
   }
 </script>
 
-<div class="enhanced-legal-ai-chat flex flex-col h-full max-w-6xl mx-auto {class}">
+<div class="enhanced-legal-ai-chat flex flex-col h-full max-w-6xl mx-auto {className}">
   <!-- Header with Status -->
   <Card class="mb-4">
     <CardHeader class="pb-2">

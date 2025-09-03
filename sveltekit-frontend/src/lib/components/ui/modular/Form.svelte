@@ -24,7 +24,7 @@
   let {
     variant = 'default',
     size = 'default',
-    class: class,
+    class: className = '',
     children,
     header,
     footer,

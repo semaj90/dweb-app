@@ -147,12 +147,11 @@ let showSources = $state(true);
 	const hasContent = $derived(() => contextItems.length > 0);
 	const isLoading = $derived(() => state.matches('processing'));
 	const canSummarize = $derived(() => hasContent && !!user && !isLoading);
+	const canSave = $derived(() => !!summary && !!user && !isSaving);
 	const allowSave = true;
 // Feedback integration variables
 let feedbackIntegration = $state<any>();
-	let currentInteractionId: string | null = null;
-let feedbackIntegration = $state<any;
-	let currentInteractionId: string | null >(null);
+let currentInteractionId: string | null = null;
 
 	const getStatusInfo = () => {
 		if (isLoading) {
@@ -587,7 +586,7 @@ let feedbackIntegration = $state<any;
 		<div class="flex flex-wrap gap-3">
 			<AnyButton
 				type="button"
-				on:on:click={handleSummarize}
+				onclick={handleSummarize}
 				aria-disabled={!canSummarize}
 				disabled={!canSummarize}
 				variant="default"
@@ -603,14 +602,13 @@ let feedbackIntegration = $state<any;
 					Summarize Evidence
 				{/if}
 			</AnyButton>
+			{#if allowSave}
 				<AnyButton
 					type="button"
-					on:click={handleSave}
+					onclick={handleSave}
 					aria-disabled={!canSave}
 					disabled={!canSave}
 					variant="outline"
-					class="gap-2 transition-all duration-200"
-				>
 					class="gap-2 transition-all duration-200"
 				>
 					{#if isSaving}
@@ -622,25 +620,25 @@ let feedbackIntegration = $state<any;
 					{/if}
 				</AnyButton>
 			{/if}
+
+			{#if error && retryCount < 3}
 				<AnyButton
 					type="button"
-					on:click={handleRetry}
+					onclick={handleRetry}
 					variant="outline"
-					class="gap-2 text-orange-600 border-orange-600 hover:bg-orange-50"
-				>
 					class="gap-2 text-orange-600 border-orange-600 hover:bg-orange-50"
 				>
 					<RefreshCw class="w-4 h-4" />
 					Retry ({retryCount}/3)
 				</AnyButton>
 			{/if}
+
+			{#if summary || error}
 				<AnyButton
 					type="button"
-					on:click={handleReset}
+					onclick={handleReset}
 					variant="ghost"
 					size="sm"
-					class="text-gray-500 hover:text-gray-700"
-				>
 					class="text-gray-500 hover:text-gray-700"
 				>
 					Reset

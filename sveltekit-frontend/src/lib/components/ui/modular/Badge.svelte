@@ -17,7 +17,7 @@
   let {
     variant = 'default',
     size = 'default',
-    class: class,
+    class: className = '',
     children,
     icon,
     removable = false,
@@ -58,7 +58,7 @@
   );
 
   // Computed class names
-  let badgeClass = $derived(cn(badgeVariants({ variant, size }), class));
+  let badgeClass = $derived(cn(badgeVariants({ variant, size }), className));
 
   // Handle remove click
   function handleRemove(event: MouseEvent) {

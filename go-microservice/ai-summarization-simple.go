@@ -1,5 +1,5 @@
-//go:build legacy
-// +build legacy
+//go:build experimental || legacy
+// +build experimental legacy
 
 // AI Summarization Microservice with go-llama integration
 // Simplified version focusing on local routing and Qdrant integration

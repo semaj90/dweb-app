@@ -1,291 +1,149 @@
-import { json } from '@sveltejs/kit';
+/**
+ * Cases API Routes with Lucia v3 Authentication
+ * GET /api/v1/cases - List user's cases (with pagination)
+ * POST /api/v1/cases - Create new case
+ */
+
+import { json, error, type RequestHandler } from '@sveltejs/kit';
+import { CasesCRUDService, CreateCaseSchema, type CreateCaseData } from '$lib/server/services/user-scoped-crud';
 import { z } from 'zod';
-import { db } from '$lib/db/client';
-import { cases, documents, insertCaseSchema, selectCaseSchema } from '$lib/db/schema/rag-integration';
-import { eq, desc, and, sql } from 'drizzle-orm';
-import { randomUUID } from 'crypto';
-import type { RequestHandler } from './$types.js';
-import { URL } from "url";
 
-
-const createCaseSchema = z.object({
-  id: z.string().uuid(),
-  title: z.string().min(1).max(255),
-  description: z.string().optional(),
-  status: z.enum(['active', 'archived', 'deleted']).default('active'),
-  metadata: z.record(z.any()).optional()
+// Query parameters schema for GET requests
+const CasesQuerySchema = z.object({
+  page: z.coerce.number().min(1).default(1),
+  limit: z.coerce.number().min(1).max(100).default(20),
+  sortBy: z.enum(['title', 'created_at', 'updated_at', 'status', 'priority']).default('created_at'),
+  sortOrder: z.enum(['asc', 'desc']).default('desc'),
+  status: z.enum(['open', 'closed', 'pending', 'archived']).optional(),
+  priority: z.enum(['low', 'medium', 'high', 'urgent']).optional()
 });
 
-const updateCaseSchema = z.object({
-  title: z.string().min(1).max(255).optional(),
-  description: z.string().optional(),
-  status: z.enum(['active', 'archived', 'deleted']).optional(),
-  metadata: z.record(z.any()).optional()
-});
-
-// Create new case
-export async function POST({ request }): Promise<any> {
+/**
+ * GET /api/v1/cases
+ * List user's cases with pagination and filtering
+ */
+export const GET: RequestHandler = async ({ request, locals }) => {
   try {
-    const body = await request.json();
-    const { id, title, description, status, metadata } = createCaseSchema.parse(body);
+    // Check authentication
+    if (!locals.session || !locals.user) {
+      return error(401, { 
+        message: 'Authentication required',
+        code: 'AUTH_REQUIRED'
+      });
+    }
 
-    const [newCase] = await db
-      .insert(cases)
-      .values({
-        uuid: id,
-        title,
-        description,
-        status,
-        metadata: metadata || {}
-      })
-      .returning();
-
+    // Parse query parameters
+    const url = new URL(request.url);
+    const queryParams = Object.fromEntries(url.searchParams.entries());
+    
+    const validatedQuery = CasesQuerySchema.parse(queryParams);
+    
+    // Create service instance
+    const casesService = new CasesCRUDService(locals.user.id);
+    
+    // Get cases with pagination
+    const result = await casesService.list({
+      page: validatedQuery.page,
+      limit: validatedQuery.limit,
+      sortBy: validatedQuery.sortBy,
+      sortOrder: validatedQuery.sortOrder
+    });
+    
     return json({
       success: true,
-      case: {
-        id: newCase.uuid,
-        title: newCase.title,
-        description: newCase.description,
-        status: newCase.status,
-        metadata: newCase.metadata,
-        createdAt: newCase.createdAt,
-        updatedAt: newCase.updatedAt
+      data: result.data,
+      pagination: {
+        page: result.page,
+        limit: result.limit,
+        total: result.total,
+        totalPages: result.totalPages,
+        hasNext: result.page < result.totalPages,
+        hasPrev: result.page > 1
+      },
+      meta: {
+        userId: locals.user.id,
+        timestamp: new Date().toISOString()
+      }
+    });
+
+  } catch (err: any) {
+    console.error('Error fetching cases:', err);
+    
+    if (err instanceof z.ZodError) {
+      return error(400, {
+        message: 'Invalid query parameters',
+        code: 'INVALID_QUERY',
+        details: err.errors
+      });
+    }
+    
+    return error(500, {
+      message: 'Failed to fetch cases',
+      code: 'FETCH_FAILED',
+      details: err.message
+    });
+  }
+};
+
+/**
+ * POST /api/v1/cases
+ * Create a new case
+ */
+export const POST: RequestHandler = async ({ request, locals }) => {
+  try {
+    // Check authentication
+    if (!locals.session || !locals.user) {
+      return error(401, { 
+        message: 'Authentication required',
+        code: 'AUTH_REQUIRED'
+      });
+    }
+
+    // Parse request body
+    const body = await request.json();
+    const validatedData = CreateCaseSchema.parse(body) as CreateCaseData;
+    
+    // Create service instance
+    const casesService = new CasesCRUDService(locals.user.id);
+    
+    // Create case
+    const caseId = await casesService.create(validatedData);
+    
+    // Get the created case details
+    const createdCase = await casesService.getById(caseId);
+    
+    return json({
+      success: true,
+      data: createdCase,
+      meta: {
+        caseId,
+        userId: locals.user.id,
+        timestamp: new Date().toISOString()
       }
     }, { status: 201 });
 
-  } catch (error: any) {
-    console.error('Case creation error:', error);
+  } catch (err: any) {
+    console.error('Error creating case:', err);
     
-    if (error instanceof z.ZodError) {
-      return json({ error: 'Invalid request data', details: error.errors }, { status: 400 });
-    }
-    
-    if (error.code === '23505') { // PostgreSQL unique violation
-      return json({ error: 'Case with this ID already exists' }, { status: 409 });
-    }
-    
-    return json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
-
-// List cases with optional filtering
-export async function GET({ url }): Promise<any> {
-  try {
-    const status = url.searchParams.get('status');
-    const limit = Math.min(parseInt(url.searchParams.get('limit') || '50'), 100);
-    const offset = Math.max(parseInt(url.searchParams.get('offset') || '0'), 0);
-    const search = url.searchParams.get('search');
-    const includeStats = url.searchParams.get('includeStats') === 'true';
-
-    // Build base query
-    let query = db
-      .select({
-        id: cases.id,
-        uuid: cases.uuid,
-        title: cases.title,
-        description: cases.description,
-        status: cases.status,
-        metadata: cases.metadata,
-        createdAt: cases.createdAt,
-        updatedAt: cases.updatedAt
-      })
-      .from(cases);
-
-    // Add filters
-    const conditions = [];
-    
-    if (status) {
-      conditions.push(eq(cases.status, status));
-    }
-
-    if (search) {
-      // Search in title and description
-      conditions.push(
-        sql`(${cases.title} ILIKE ${'%' + search + '%'} OR ${cases.description} ILIKE ${'%' + search + '%'})`
-      );
-    }
-
-    if (conditions.length > 0) {
-      query = query.where(and(...conditions));
-    }
-
-    // Execute query with pagination
-    const results = await query
-      .orderBy(desc(cases.createdAt))
-      .limit(limit)
-      .offset(offset);
-
-    // Optionally include document counts
-    let casesWithStats = results;
-    
-    if (includeStats) {
-      casesWithStats = await Promise.all(
-        results.map(async (caseItem) => {
-          const [stats] = await db
-            .select({
-              documentCount: sql<number>`count(*)`,
-              processedCount: sql<number>`count(*) FILTER (WHERE processing_status = 'completed')`,
-              totalSize: sql<number>`coalesce(sum(file_size), 0)`
-            })
-            .from(documents)
-            .where(eq(documents.caseId, caseItem.id));
-
-          return {
-            ...caseItem,
-            stats: {
-              documentCount: Number(stats.documentCount || 0),
-              processedCount: Number(stats.processedCount || 0),
-              totalSize: Number(stats.totalSize || 0)
-            }
-          };
-        })
-      );
-    }
-
-    // Get total count for pagination
-    const [totalCount] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(cases)
-      .where(conditions.length > 0 ? and(...conditions) : undefined);
-
-    return json({
-      cases: casesWithStats.map(c => ({
-        id: c.uuid,
-        title: c.title,
-        description: c.description,
-        status: c.status,
-        metadata: c.metadata,
-        createdAt: c.createdAt,
-        updatedAt: c.updatedAt,
-        stats: c.stats || undefined
-      })),
-      pagination: {
-        total: Number(totalCount.count),
-        limit,
-        offset,
-        hasMore: offset + limit < Number(totalCount.count)
-      }
-    });
-
-  } catch (error: any) {
-    console.error('Case listing error:', error);
-    return json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
-
-// Update existing case
-export async function PATCH({ request, url }): Promise<any> {
-  const caseId = url.searchParams.get('id');
-  
-  if (!caseId) {
-    return json({ error: 'Case ID required' }, { status: 400 });
-  }
-
-  try {
-    const body = await request.json();
-    const updates = updateCaseSchema.parse(body);
-
-    // Check if case exists
-    const [existingCase] = await db
-      .select()
-      .from(cases)
-      .where(eq(cases.uuid, caseId))
-      .limit(1);
-
-    if (!existingCase) {
-      return json({ error: 'Case not found' }, { status: 404 });
-    }
-
-    // Update case
-    const [updatedCase] = await db
-      .update(cases)
-      .set({
-        ...updates,
-        updatedAt: new Date()
-      })
-      .where(eq(cases.uuid, caseId))
-      .returning();
-
-    return json({
-      success: true,
-      case: {
-        id: updatedCase.uuid,
-        title: updatedCase.title,
-        description: updatedCase.description,
-        status: updatedCase.status,
-        metadata: updatedCase.metadata,
-        createdAt: updatedCase.createdAt,
-        updatedAt: updatedCase.updatedAt
-      }
-    });
-
-  } catch (error: any) {
-    console.error('Case update error:', error);
-    
-    if (error instanceof z.ZodError) {
-      return json({ error: 'Invalid request data', details: error.errors }, { status: 400 });
-    }
-    
-    return json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
-
-// Delete case (soft delete by default)
-export async function DELETE({ url }): Promise<any> {
-  const caseId = url.searchParams.get('id');
-  const hard = url.searchParams.get('hard') === 'true';
-  
-  if (!caseId) {
-    return json({ error: 'Case ID required' }, { status: 400 });
-  }
-
-  try {
-    // Check if case exists
-    const [existingCase] = await db
-      .select()
-      .from(cases)
-      .where(eq(cases.uuid, caseId))
-      .limit(1);
-
-    if (!existingCase) {
-      return json({ error: 'Case not found' }, { status: 404 });
-    }
-
-    if (hard) {
-      // Hard delete - remove from database
-      // Note: This should cascade to documents and chunks
-      await db
-        .delete(cases)
-        .where(eq(cases.uuid, caseId));
-        
-      return json({ 
-        success: true, 
-        message: 'Case permanently deleted' 
-      });
-    } else {
-      // Soft delete - mark as deleted
-      const [deletedCase] = await db
-        .update(cases)
-        .set({
-          status: 'deleted',
-          updatedAt: new Date()
-        })
-        .where(eq(cases.uuid, caseId))
-        .returning();
-
-      return json({
-        success: true,
-        message: 'Case marked as deleted',
-        case: {
-          id: deletedCase.uuid,
-          status: deletedCase.status,
-          updatedAt: deletedCase.updatedAt
-        }
+    if (err instanceof z.ZodError) {
+      return error(400, {
+        message: 'Invalid case data',
+        code: 'INVALID_DATA',
+        details: err.errors
       });
     }
-
-  } catch (error: any) {
-    console.error('Case deletion error:', error);
-    return json({ error: 'Internal server error' }, { status: 500 });
+    
+    if (err.message.includes('not found') || err.message.includes('access denied')) {
+      return error(403, {
+        message: err.message,
+        code: 'ACCESS_DENIED'
+      });
+    }
+    
+    return error(500, {
+      message: 'Failed to create case',
+      code: 'CREATE_FAILED',
+      details: err.message
+    });
   }
-}
+};

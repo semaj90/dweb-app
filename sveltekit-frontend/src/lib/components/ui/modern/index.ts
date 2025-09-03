@@ -8,23 +8,59 @@ export { default as ModernButton } from './ModernButton.svelte';
 export { default as ModernDialog } from './ModernDialog.svelte';
 
 // Type exports for better TypeScript support (Svelte 5 compatible)
-import type ModernCard from './ModernCard.svelte';
-import type ModernButton from './ModernButton.svelte';
-import type ModernDialog from './ModernDialog.svelte';
+// Explicit prop interfaces (align with component internal Props declarations)
+export interface ModernCardProps {
+  title?: string;
+  subtitle?: string;
+  variant?: 'default' | 'elevated' | 'outline' | 'ghost';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  hoverable?: boolean;
+  clickable?: boolean;
+  loading?: boolean;
+  tooltip?: string;
+  children?: import('svelte').Snippet;
+  header?: import('svelte').Snippet;
+  footer?: import('svelte').Snippet;
+  actions?: import('svelte').Snippet;
+  onclick?: () => void;
+}
 
-export type ModernCardProps = InstanceType<typeof ModernCard>['$$props'];
-export type ModernButtonProps = InstanceType<typeof ModernButton>['$$props'];
-export type ModernDialogProps = InstanceType<typeof ModernDialog>['$$props'];
+export interface ModernButtonProps {
+  variant?: 'primary' | 'secondary' | 'ghost' | 'outline' | 'danger' | 'success';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  loading?: boolean;
+  disabled?: boolean;
+  type?: 'button' | 'submit' | 'reset';
+  href?: string;
+  external?: boolean;
+  tooltip?: string;
+  icon?: import('svelte').Snippet;
+  children?: import('svelte').Snippet;
+  onclick?: (event: MouseEvent) => void;
+}
+
+export interface ModernDialogProps {
+  open?: boolean;
+  title: string;
+  description?: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  persistent?: boolean;
+  showClose?: boolean;
+  children?: import('svelte').Snippet;
+  trigger?: import('svelte').Snippet;
+  footer?: import('svelte').Snippet;
+  onClose?: () => void;
+}
 
 // Component variants for easier usage
-export const cardVariants = [;
+export const cardVariants = [
   'default',
-  'elevated', 
+  'elevated',
   'outline',
   'ghost'
 ] as const;
 
-export const buttonVariants = [;
+export const buttonVariants = [
   'primary',
   'secondary',
   'ghost',
@@ -33,9 +69,9 @@ export const buttonVariants = [;
   'success'
 ] as const;
 
-export const sizes = [;
+export const sizes = [
   'xs',
-  'sm', 
+  'sm',
   'md',
   'lg',
   'xl'
@@ -43,7 +79,6 @@ export const sizes = [;
 
 // Utility functions for golden ratio calculations
 export const goldenRatio = 1.618;
-;
 export function goldenSpacing(multiplier: number = 1): string {
   return `calc(1rem * ${goldenRatio * multiplier})`;
 }
@@ -62,7 +97,7 @@ export const cssVars = {
   goldenXl: 'var(--golden-xl)',
   golden2xl: 'var(--golden-2xl)',
   golden3xl: 'var(--golden-3xl)',
-  
+
   // Typography
   textXs: 'var(--text-xs)',
   textSm: 'var(--text-sm)',
@@ -73,22 +108,22 @@ export const cssVars = {
   text3xl: 'var(--text-3xl)',
   text4xl: 'var(--text-4xl)',
   text5xl: 'var(--text-5xl)',
-  
+
   // YoRHa colors
   bgPrimary: 'var(--yorha-bg-primary)',
   bgSecondary: 'var(--yorha-bg-secondary)',
   bgTertiary: 'var(--yorha-bg-tertiary)',
   bgCard: 'var(--yorha-bg-card)',
   bgHover: 'var(--yorha-bg-hover)',
-  
+
   textPrimary: 'var(--yorha-text-primary)',
   textSecondary: 'var(--yorha-text-secondary)',
   textMuted: 'var(--yorha-text-muted)',
-  
+
   accentGold: 'var(--yorha-accent-gold)',
   accentBlue: 'var(--yorha-accent-blue)',
   accentGreen: 'var(--yorha-accent-green)',
-  
+
   borderPrimary: 'var(--yorha-border-primary)',
   borderSecondary: 'var(--yorha-border-secondary)',
   borderAccent: 'var(--yorha-border-accent)'

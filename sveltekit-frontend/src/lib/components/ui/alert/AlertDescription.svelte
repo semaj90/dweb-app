@@ -11,6 +11,6 @@
     ...restProps } = $props();
 </script>
 
-<div class="text-sm [&_p]:leading-relaxed {class}" {...restProps}>
+<div class="text-sm [&_p]:leading-relaxed {className}" {...restProps}>
   {@render children?.()}
 </div>

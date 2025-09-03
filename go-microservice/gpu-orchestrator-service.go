@@ -1,3 +1,6 @@
+//go:build experimental
+// +build experimental
+
 // GPU Orchestrator Service - Unified GPU Acceleration Hub
 // Integrates CUDA worker, WebAssembly, and QUIC protocols
 // Port: 8231 (GPU Orchestration Hub)
@@ -179,14 +182,14 @@ func (s *GPUOrchestratorService) executeCUDAJob(request RotationRequest) (*GPUJo
 		if ctx.Err() == context.DeadlineExceeded {
 			return nil, fmt.Errorf("CUDA execution timeout after 30 seconds")
 		}
-		
+
 		// Get more detailed error information
 		if exitError, ok := err.(*exec.ExitError); ok {
 			stderr := string(exitError.Stderr)
 			log.Printf("❌ CUDA worker stderr: %s", stderr)
 			return nil, fmt.Errorf("CUDA execution failed (exit code %d): %s", exitError.ExitCode(), stderr)
 		}
-		
+
 		log.Printf("❌ CUDA worker execution error: %v", err)
 		return nil, fmt.Errorf("CUDA execution failed: %v", err)
 	}

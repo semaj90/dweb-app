@@ -1,13 +1,11 @@
-//go:build legacy
-// +build legacy
+//go:build experimental || legacy
+// +build experimental legacy
 
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -169,7 +167,7 @@ func main() {
 	log.Printf("🚀 Go AI Microservice starting on port %s", port)
 	log.Printf("🔧 CUDA Available: %v", isCUDAAvailable())
 	log.Printf("💻 CPU Cores: %d", runtime.NumCPU())
-	
+
 	if err := r.Run(":" + port); err != nil {
 		log.Fatal("Failed to start server:", err)
 	}
@@ -283,11 +281,11 @@ func trainSOMHandler(c *gin.Context) {
 		req.LearningRate = 0.1
 	}
 
-	log.Printf("🧠 Training SOM: %dx%d map with %d vectors, %d iterations", 
+	log.Printf("🧠 Training SOM: %dx%d map with %d vectors, %d iterations",
 		req.Dimensions.Width, req.Dimensions.Height, len(req.Vectors), req.Iterations)
 
 	// Train SOM (simplified implementation - in production use optimized CUDA kernels)
-	mapWeights, clusters := trainSOM(req.Vectors, req.Dimensions.Width, req.Dimensions.Height, 
+	mapWeights, clusters := trainSOM(req.Vectors, req.Dimensions.Width, req.Dimensions.Height,
 		req.Iterations, req.LearningRate, req.Labels)
 
 	// Cache the trained SOM
@@ -331,7 +329,7 @@ func cudaInferHandler(c *gin.Context) {
 		return
 	}
 
-	log.Printf("🚀 CUDA inference request: model=%s, batch_size=%d, precision=%s", 
+	log.Printf("🚀 CUDA inference request: model=%s, batch_size=%d, precision=%s",
 		req.Model, req.BatchSize, req.Precision)
 
 	// Perform CUDA inference (placeholder - integrate with actual CUDA libraries)
@@ -382,7 +380,7 @@ func metricsHandler(c *gin.Context) {
 // SOM cache handlers
 func somCacheHandler(c *gin.Context) {
 	cacheInfo := make(map[string]interface{})
-	
+
 	somCache.Range(func(key, value interface{}) bool {
 		if k, ok := key.(string); ok {
 			if weights, ok := value.([][]float32); ok {
@@ -406,7 +404,7 @@ func clearSOMCacheHandler(c *gin.Context) {
 		somCache.Delete(key)
 		return true
 	})
-	
+
 	c.JSON(http.StatusOK, gin.H{"message": "SOM cache cleared"})
 }
 
@@ -469,7 +467,7 @@ func trainSOM(vectors [][]float32, width, height, iterations int, learningRate f
 	mapSize := width * height
 	vectorDim := len(vectors[0])
 	mapWeights := make([][]float32, mapSize)
-	
+
 	for i := range mapWeights {
 		mapWeights[i] = make([]float32, vectorDim)
 		for j := range mapWeights[i] {
@@ -482,26 +480,26 @@ func trainSOM(vectors [][]float32, width, height, iterations int, learningRate f
 		for i, vector := range vectors {
 			// Find best matching unit (BMU)
 			bmuIndex := findBMU(vector, mapWeights)
-			
+
 			// Update weights in neighborhood
 			radius := float32(max(width, height)) * (1.0 - float32(iter)/float32(iterations))
 			updateNeighborhood(mapWeights, bmuIndex, vector, width, height, radius, learningRate)
 		}
-		
+
 		// Decay learning rate
 		learningRate *= 0.99
 	}
 
 	// Generate clusters
 	clusters := generateClusters(mapWeights, vectors, labels, width, height)
-	
+
 	return mapWeights, clusters
 }
 
 func findBMU(vector []float32, mapWeights [][]float32) int {
 	minDist := float32(1e9)
 	bmuIndex := 0
-	
+
 	for i, weight := range mapWeights {
 		dist := euclideanDistance(vector, weight)
 		if dist < minDist {
@@ -509,7 +507,7 @@ func findBMU(vector []float32, mapWeights [][]float32) int {
 			bmuIndex = i
 		}
 	}
-	
+
 	return bmuIndex
 }
 
@@ -525,11 +523,11 @@ func euclideanDistance(a, b []float32) float32 {
 func updateNeighborhood(mapWeights [][]float32, bmuIndex int, vector []float32, width, height int, radius, learningRate float32) {
 	bmuX := bmuIndex % width
 	bmuY := bmuIndex / width
-	
+
 	for i, weight := range mapWeights {
 		x := i % width
 		y := i / width
-		
+
 		dist := float32((x-bmuX)*(x-bmuX) + (y-bmuY)*(y-bmuY))
 		if dist <= radius*radius {
 			influence := learningRate * (1.0 - dist/(radius*radius))
@@ -542,7 +540,7 @@ func updateNeighborhood(mapWeights [][]float32, bmuIndex int, vector []float32, 
 
 func generateClusters(mapWeights [][]float32, vectors [][]float32, labels []string, width, height int) []Cluster {
 	clusters := make([]Cluster, min(len(mapWeights), 10)) // Limit to 10 clusters for demo
-	
+
 	for i := range clusters {
 		clusters[i] = Cluster{
 			ID:       i,
@@ -552,7 +550,7 @@ func generateClusters(mapWeights [][]float32, vectors [][]float32, labels []stri
 			Cohesion: 0.8 + float32(i)*0.02,       // Mock cohesion score
 		}
 	}
-	
+
 	return clusters
 }
 
@@ -578,7 +576,7 @@ func getCUDADeviceCount() int {
 func performCUDAInference(req CUDAInferRequest) (interface{}, GPUMetrics) {
 	// Simulate CUDA inference
 	time.Sleep(time.Millisecond * 100) // Simulate processing time
-	
+
 	result := gin.H{
 		"model":       req.Model,
 		"batch_size":  req.BatchSize,
@@ -586,7 +584,7 @@ func performCUDAInference(req CUDAInferRequest) (interface{}, GPUMetrics) {
 		"output_size": 1024,
 		"predictions": []float32{0.95, 0.87, 0.92, 0.78},
 	}
-	
+
 	gpuMetrics := GPUMetrics{
 		TotalMemory:    8 * 1024 * 1024 * 1024, // 8GB
 		UsedMemory:     2 * 1024 * 1024 * 1024, // 2GB
@@ -595,7 +593,7 @@ func performCUDAInference(req CUDAInferRequest) (interface{}, GPUMetrics) {
 		UtilizationMem: 25.0,
 		Temperature:    65.0,
 	}
-	
+
 	return result, gpuMetrics
 }
 

@@ -1,34 +1,34 @@
-<!-- Modular Button Component - Bits UI + UnoCSS + Svelte 5 -->
 <script lang="ts">
-  import { Button as ButtonPrimitive, type ButtonProps } from 'bits-ui';
-  import { cva, type VariantProps } from 'class-variance-authority';
-  import { cn } from '$lib/utils';
+  import { cva, type VariantProps } from 'class-variance-authority'
+  import { cn } from '$lib/utils'
+  import type { HTMLButtonAttributes } from 'svelte/elements'
+  // optional: import { Button as ButtonPrimitive } from 'bits-ui'
 
-  // Svelte 5 props pattern
-  interface Props extends ButtonProps {
-    variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link' | 'yorha' | 'legal' | 'evidence' | 'case';
-    size?: 'default' | 'sm' | 'lg' | 'icon' | 'xs';
-    loading?: boolean;
-    icon?: string;
-    class?: string;
-    children?: import('svelte').Snippet;
+  type Props = HTMLButtonAttributes & {
+    variant?: VariantProps<typeof buttonVariants>['variant']
+    size?: VariantProps<typeof buttonVariants>['size']
+    loading?: boolean
+    icon?: string
+    ariaLabel?: string   // ✅ explicit aria-label when icon-only
+    class?: string
+    children?: import('svelte').Snippet
   }
 
   let {
     variant = 'default',
-    size = 'default', 
+    size = 'default',
     loading = false,
     icon,
-    class: class,
+    ariaLabel,
+    class: className = '',
     children,
     disabled,
+    type = 'button',
     ...restProps
-  }: Props = $props();
+  }: Props = $props()
 
-  // UnoCSS-based button variants with utility-first approach
   const buttonVariants = cva(
-    // Base classes - UnoCSS utilities
-    'inline-flex items-center justify-center gap-2 font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap',
+    'inline-flex items-center justify-center gap-2 font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap hover-lift',
     {
       variants: {
         variant: {
@@ -38,10 +38,11 @@
           secondary: 'bg-gray-100 text-gray-900 hover:bg-gray-200 focus-visible:ring-gray-500 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700',
           ghost: 'hover:bg-gray-100 focus-visible:ring-gray-500 text-gray-900 dark:text-gray-100 dark:hover:bg-gray-800',
           link: 'text-primary-600 underline-offset-4 hover:underline focus-visible:ring-primary-500',
-          yorha: 'bg-black/90 text-yellow-400 border-2 border-yellow-400/60 hover:border-yellow-400 hover:bg-black/80 hover:shadow-yellow-400/20 hover:shadow-lg font-mono',
+          yorha: 'bg-black/90 text-yellow-400 border-2 border-yellow-400/60 hover:border-yellow-400 hover:bg-black/80 hover:shadow-yellow-400/20 hover:shadow-lg font-mono yorha-shadow',
           legal: 'bg-blue-600 text-white border-2 border-blue-500 hover:bg-blue-700 hover:border-blue-400 shadow-md',
           evidence: 'bg-orange-600 text-white border-2 border-orange-500 hover:bg-orange-700 hover:border-orange-400 shadow-md',
-          case: 'bg-green-600 text-white border-2 border-green-500 hover:bg-green-700 hover:border-green-400 shadow-md'
+          case: 'bg-green-600 text-white border-2 border-green-500 hover:bg-green-700 hover:border-green-400 shadow-md',
+          nes: 'nes-btn is-primary' // 🎮 optional NES.css integration
         },
         size: {
           default: 'h-10 px-4 py-2 text-sm rounded-md',
@@ -56,60 +57,52 @@
         size: 'default'
       }
     }
-  );
+  )
 
-  // Computed class names
   let buttonClass = $derived(
-    cn(
-      buttonVariants({ variant, size }),
-      loading && 'cursor-not-allowed',
-      class
-    )
-  );
-
-  // Loading state handling
-  let isDisabled = $derived(disabled || loading);
+    cn(buttonVariants({ variant, size }), loading && 'cursor-not-allowed', className)
+  )
+  let isDisabled = $derived(disabled || loading)
 </script>
 
-<!-- Bits UI Button with enhanced functionality -->
-<ButtonPrimitive.Root
+<!-- Wrap in Bits-UI if desired:
+<ButtonPrimitive.Root asChild> -->
+<button
   class={buttonClass}
   disabled={isDisabled}
+  type={type}
+  aria-busy={loading ? 'true' : undefined}
+  aria-label={ariaLabel}
   {...restProps}
 >
-  <!-- Loading spinner -->
+  <!-- Loading spinner (aria-hidden so SR users just hear "busy") -->
   {#if loading}
     <div class="i-lucide-loader-2 w-4 h-4 animate-spin" aria-hidden="true"></div>
   {/if}
 
-  <!-- Icon -->
+  <!-- Icon (aria-hidden, since aria-label or text covers meaning) -->
   {#if icon && !loading}
     <div class="{icon} w-4 h-4" aria-hidden="true"></div>
   {/if}
 
-  <!-- Content -->
+  <!-- Content (snippet or text) -->
   {#if children}
     {@render children()}
   {/if}
-</ButtonPrimitive.Root>
+</button>
+<!-- </ButtonPrimitive.Root> -->
 
 <style>
-  /* UnoCSS custom utilities for YoRHa theme */
   .yorha-shadow {
-    box-shadow: 
-      0 0 10px rgba(212, 175, 55, 0.3),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
-
-  /* Animation utilities */
   .hover-lift {
     transition: all 0.2s ease;
   }
-  
   .hover-lift:hover {
     transform: translateY(-1px);
   }
-  
   .hover-lift:active {
     transform: translateY(0);
   }

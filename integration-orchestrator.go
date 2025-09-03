@@ -30,19 +30,19 @@ type IntegrationOrchestrator struct {
 	xstateManager       *ServiceClient // Port 8212
 	loadBalancer        *ServiceClient // Port 8222
 	liveAgent          *ServiceClient // Port 8200
-	
+
 	// New vector processing services
 	vectorWorker        *ServiceClient // Our new Go worker
 	embeddingService    *ServiceClient // Python FastAPI service
-	
+
 	// Infrastructure
 	postgres    *pgxpool.Pool
 	redis       *redis.Client
 	nats        *nats.Conn
-	
+
 	// Configuration from existing system
 	config      *PlatformConfig
-	
+
 	// Service registry
 	services    map[string]*ServiceInfo
 	healthMutex sync.RWMutex
@@ -67,7 +67,7 @@ type ServiceClient struct {
 type PlatformConfig struct {
 	// Existing service ports (from GO_BINARIES_CATALOG.md)
 	Services map[string]int `json:"services"`
-	
+
 	// Vector processing configuration
 	VectorConfig struct {
 		RedisStream      string `json:"redisStream"`
@@ -75,7 +75,7 @@ type PlatformConfig struct {
 		EmbeddingService string `json:"embeddingService"`
 		CUDAWorker       string `json:"cudaWorker"`
 	} `json:"vectorConfig"`
-	
+
 	// NATS subjects (from FULL_STACK_INTEGRATION_COMPLETE.md)
 	NATSSubjects struct {
 		CaseEvents     []string `json:"caseEvents"`
@@ -90,39 +90,39 @@ func NewIntegrationOrchestrator() (*IntegrationOrchestrator, error) {
 		Services: map[string]int{
 			// AI/RAG Services (from GO_BINARIES_CATALOG.md)
 			"enhanced-rag":                    8094,
-			"upload-service":                  8093, 
+			"upload-service":                  8093,
 			"ai-enhanced":                     8096,
 			"enhanced-legal-ai":               8202,
 			"live-agent-enhanced":             8200,
-			
+
 			// Orchestration Services
 			"xstate-manager":                  8212,
 			"cluster-http":                    8213,
 			"load-balancer":                   8222,
-			
-			// Protocol Services  
+
+			// Protocol Services
 			"grpc-server":                     50051,
 			"rag-kratos":                      50052,
 			"rag-quic-proxy":                  8216,
-			
+
 			// New Vector Services
 			"vector-worker":                   8095,
 			"embedding-service":               8096,
 		},
 	}
-	
+
 	// Vector processing configuration
 	config.VectorConfig.RedisStream = "vec:requests"
 	config.VectorConfig.QdrantURL = "http://localhost:6333"
 	config.VectorConfig.EmbeddingService = "http://localhost:8096"
 	config.VectorConfig.CUDAWorker = "./cuda-rotate-worker.exe"
-	
+
 	// NATS subjects (from FULL_STACK_INTEGRATION_COMPLETE.md)
 	config.NATSSubjects.CaseEvents = []string{
 		"legal.case.created", "legal.case.updated", "legal.case.closed",
 	}
 	config.NATSSubjects.DocumentEvents = []string{
-		"legal.document.uploaded", "legal.document.processed", 
+		"legal.document.uploaded", "legal.document.processed",
 		"legal.document.analyzed", "legal.document.indexed",
 	}
 	config.NATSSubjects.AIEvents = []string{
@@ -154,9 +154,9 @@ func (o *IntegrationOrchestrator) initializeInfrastructure() error {
 	ctx := context.Background()
 	dbURL := os.Getenv("DATABASE_URL")
 	if dbURL == "" {
-		dbURL = "postgresql://legal_admin:123456@localhost:5432/legal_ai_db"
+		dbURL = "postgresql://postgres:postgres@localhost:5432/legal_ai_db"
 	}
-	
+
 	pool, err := pgxpool.New(ctx, dbURL)
 	if err != nil {
 		return fmt.Errorf("failed to connect to PostgreSQL: %w", err)
@@ -168,7 +168,7 @@ func (o *IntegrationOrchestrator) initializeInfrastructure() error {
 	if redisURL == "" {
 		redisURL = "redis://localhost:6379"
 	}
-	
+
 	opt, err := redis.ParseURL(redisURL)
 	if err != nil {
 		return fmt.Errorf("failed to parse Redis URL: %w", err)
@@ -180,7 +180,7 @@ func (o *IntegrationOrchestrator) initializeInfrastructure() error {
 	if natsURL == "" {
 		natsURL = "nats://localhost:4222"
 	}
-	
+
 	nc, err := nats.Connect(natsURL,
 		nats.Name("Legal AI Integration Orchestrator"),
 		nats.UserInfo("legal_ai_client", "legal_ai_2024"),
@@ -207,7 +207,7 @@ func (o *IntegrationOrchestrator) initializeServiceClients() {
 	o.uploadService = &ServiceClient{
 		Name:     "upload-service",
 		BaseURL:  fmt.Sprintf("http://localhost:%d", o.config.Services["upload-service"]),
-		Protocol: "http", 
+		Protocol: "http",
 		Client:   httpClient,
 	}
 
@@ -226,7 +226,7 @@ func (o *IntegrationOrchestrator) initializeServiceClients() {
 	}
 
 	o.liveAgent = &ServiceClient{
-		Name:     "live-agent-enhanced", 
+		Name:     "live-agent-enhanced",
 		BaseURL:  fmt.Sprintf("http://localhost:%d", o.config.Services["live-agent-enhanced"]),
 		Protocol: "http",
 		Client:   httpClient,
@@ -277,7 +277,7 @@ func (o *IntegrationOrchestrator) performHealthChecks() {
 	defer o.healthMutex.Unlock()
 
 	services := []*ServiceClient{
-		o.enhancedRAG, o.uploadService, o.clusterManager, 
+		o.enhancedRAG, o.uploadService, o.clusterManager,
 		o.xstateManager, o.liveAgent, o.vectorWorker, o.embeddingService,
 	}
 
@@ -307,7 +307,7 @@ func (o *IntegrationOrchestrator) performHealthChecks() {
 		}
 
 		o.services[service.Name] = info
-		
+
 		// Publish service health to NATS
 		o.publishServiceHealth(info)
 	}
@@ -326,7 +326,7 @@ func (o *IntegrationOrchestrator) publishServiceHealth(info *ServiceInfo) {
 
 func (o *IntegrationOrchestrator) startNATSProcessing() {
 	// Subscribe to all legal AI subjects
-	allSubjects := append(o.config.NATSSubjects.CaseEvents, 
+	allSubjects := append(o.config.NATSSubjects.CaseEvents,
 		append(o.config.NATSSubjects.DocumentEvents,
 			append(o.config.NATSSubjects.AIEvents, o.config.NATSSubjects.SystemEvents...)...)...)
 
@@ -341,7 +341,7 @@ func (o *IntegrationOrchestrator) startNATSProcessing() {
 
 func (o *IntegrationOrchestrator) handleNATSMessage(msg *nats.Msg) {
 	log.Printf("📨 NATS Message: %s -> %s", msg.Subject, string(msg.Data))
-	
+
 	// Forward to appropriate service based on subject
 	switch {
 	case contains(o.config.NATSSubjects.CaseEvents, msg.Subject):
@@ -419,7 +419,7 @@ func (o *IntegrationOrchestrator) forwardToSystemService(msg *nats.Msg) {
 
 func (o *IntegrationOrchestrator) forwardToService(service *ServiceClient, data []byte) {
 	// Forward message to appropriate service
-	_, err := service.Client.Post(service.BaseURL+"/nats/message", "application/json", 
+	_, err := service.Client.Post(service.BaseURL+"/nats/message", "application/json",
 		bytes.NewReader(data))
 	if err != nil {
 		log.Printf("❌ Failed to forward to %s: %v", service.Name, err)
@@ -431,13 +431,13 @@ func (o *IntegrationOrchestrator) startAPIServer() error {
 
 	// Health endpoint for orchestrator
 	r.GET("/health", o.handleHealth)
-	
+
 	// Service registry endpoint
 	r.GET("/services", o.handleServices)
-	
+
 	// Vector processing status
 	r.GET("/vector/status", o.handleVectorStatus)
-	
+
 	// Integration metrics
 	r.GET("/integration/metrics", o.handleIntegrationMetrics)
 
@@ -457,7 +457,7 @@ func (o *IntegrationOrchestrator) handleHealth(c *gin.Context) {
 
 	healthy := 0
 	total := len(o.services)
-	
+
 	for _, service := range o.services {
 		if service.Status == "healthy" {
 			healthy++
@@ -496,12 +496,12 @@ func (o *IntegrationOrchestrator) handleVectorStatus(c *gin.Context) {
 	// Get Redis stream info
 	ctx := context.Background()
 	streamInfo, err := o.redis.XInfoStream(ctx, o.config.VectorConfig.RedisStream).Result()
-	
+
 	vectorStatus := gin.H{
 		"redisStream": o.config.VectorConfig.RedisStream,
 		"qdrantURL":   o.config.VectorConfig.QdrantURL,
 	}
-	
+
 	if err == nil {
 		vectorStatus["streamLength"] = streamInfo.Length
 		vectorStatus["streamGroups"] = streamInfo.Groups
@@ -553,7 +553,7 @@ func extractPortFromURL(url string) int {
 func runIntegrationOrchestrator() {
 	log.Printf("🎯 Legal AI Platform Integration Orchestrator")
 	log.Printf("🏗️ Linking Vector Pipeline with 37 Go Microservices")
-	
+
 	orchestrator, err := NewIntegrationOrchestrator()
 	if err != nil {
 		log.Fatalf("❌ Failed to create orchestrator: %v", err)

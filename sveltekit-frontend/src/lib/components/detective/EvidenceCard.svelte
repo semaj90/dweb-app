@@ -1,26 +1,21 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
+<!-- EvidenceCard.svelte - Fixed for Svelte 5 -->
 <script lang="ts">
-  import { $props } from 'svelte';
-
-  interface Props {
-    item: Evidence;
-  }
-  let {
-    item
-  }: Props = $props();
-
-
-
   import Badge from "$lib/components/ui/Badge.svelte";
   import Button from "$lib/components/ui/button/Button.svelte";
   import { Card, CardContent, CardHeader } from "$lib/components/ui/card";
   import type { Evidence } from "$lib/types/index";
-  import { createEventDispatcher } from "svelte";
 
+  // --- SVELTE 5 PROPS ---
+  // The new way to define props using runes with callback functions
+  interface Props {
+    item: Evidence;
+    onView?: (item: Evidence) => void;
+    onMoreOptions?: (item: Evidence) => void;
+  }
+  
+  let { item, onView, onMoreOptions }: Props = $props();
 
-  const dispatch = createEventDispatcher();
-
+  // --- Helper Functions ---
   function getEvidenceIcon(type: string) {
     switch (type) {
       case "document":
@@ -83,11 +78,11 @@ https://svelte.dev/e/js_parse_error -->
       <div class="flex items-center gap-3">
         <div
           class="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center {getTypeColor(
-            item.evidenceType
+            item.evidenceType || item.type || 'document'
           )}"
         >
           <i
-            class="{getEvidenceIcon(item.evidenceType)} w-5 h-5"
+            class="{getEvidenceIcon(item.evidenceType || item.type || 'document')} w-5 h-5"
             aria-hidden="true"
           ></i>
         </div>
@@ -110,6 +105,7 @@ https://svelte.dev/e/js_parse_error -->
           size="sm"
           class="h-8 w-8 p-0"
           aria-label="View Evidence"
+          on:click={() => onView?.(item)}
         >
           <i class="i-lucide-eye w-4 h-4" aria-hidden="true"></i>
         </Button>
@@ -118,6 +114,7 @@ https://svelte.dev/e/js_parse_error -->
           size="sm"
           class="h-8 w-8 p-0"
           aria-label="More Options"
+          on:click={() => onMoreOptions?.(item)}
         >
           <i class="i-lucide-more-horizontal w-4 h-4" aria-hidden="true"></i>
         </Button>
@@ -143,26 +140,26 @@ https://svelte.dev/e/js_parse_error -->
         <div class="text-center">
           <i
             class="{getEvidenceIcon(
-              item.evidenceType
+              item.evidenceType || item.type || 'document'
             )} w-8 h-8 mx-auto mb-2 text-muted-foreground"
             aria-hidden="true"
           ></i>
           <p class="text-xs text-muted-foreground capitalize">
-            {item.evidenceType}
+            {item.evidenceType || item.type || 'document'}
           </p>
         </div>
       </div>
     {/if}
 
     <!-- AI Summary Preview -->
-    {#if item.aiSummary}
+    {#if item.aiSummary || item.analysis?.aiSummary}
       <div class="bg-muted/50 rounded-md p-3 space-y-2">
         <div class="flex items-center gap-2">
           <i class="i-lucide-brain w-4 h-4 text-primary" aria-hidden="true"></i>
           <span class="text-xs font-medium text-primary">AI Summary</span>
         </div>
         <p class="text-xs text-muted-foreground line-clamp-2">
-          {item.aiSummary}
+          {item.aiSummary || item.analysis?.aiSummary}
         </p>
       </div>
     {/if}
@@ -190,7 +187,7 @@ https://svelte.dev/e/js_parse_error -->
         class="flex items-center justify-between text-xs text-muted-foreground"
       >
         <span>{formatFileSize(item.fileSize || 0)}</span>
-        <span>{formatDate(item.createdAt)}</span>
+        <span>{formatDate(item.createdAt || item.timeline?.createdAt || new Date())}</span>
       </div>
 
       <!-- Hash Verification -->

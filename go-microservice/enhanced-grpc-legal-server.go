@@ -1,12 +1,11 @@
-//go:build legacy
-// +build legacy
+//go:build experimental || legacy
+// +build experimental legacy
 
 package main
 
 import (
 	"context"
 	"crypto/tls"
-	"encoding/json"
 	"fmt"
 	"log"
 	"net"
@@ -421,7 +420,7 @@ func NewDocumentService(config *ServerConfig, ollamaClient *OllamaClient) *Docum
 
 func (s *LegalAIServer) ProcessDocument(ctx context.Context, req *DocumentProcessingRequest) (*DocumentProcessingResponse, error) {
 	startTime := time.Now()
-	
+
 	// Update metrics
 	defer func() {
 		duration := time.Since(startTime).Seconds()
@@ -505,7 +504,7 @@ func (s *LegalAIServer) ProcessDocument(ctx context.Context, req *DocumentProces
 
 func (s *LegalAIServer) SemanticSearch(ctx context.Context, req *SemanticSearchRequest) (*SemanticSearchResponse, error) {
 	startTime := time.Now()
-	
+
 	// Update metrics
 	defer func() {
 		duration := time.Since(startTime).Seconds()
@@ -740,7 +739,7 @@ func loadConfig() *ServerConfig {
 func main() {
 	log.Printf("🚀 Starting YoRHa Legal AI Go Microservice")
 	log.Printf("📊 Runtime: Go %s on %s/%s", runtime.Version(), runtime.GOOS, runtime.GOARCH)
-	
+
 	// Load configuration
 	config := loadConfig()
 	log.Printf("⚙️  Configuration loaded - Environment: %s", config.Environment)
@@ -835,7 +834,7 @@ func getIntEnv(key string, defaultValue int) int {
 
 func calculateConfidence(response *DocumentProcessingResponse) float64 {
 	confidence := 0.8 // Base confidence
-	
+
 	if response.ExtractedText != "" {
 		confidence += 0.1
 	}
@@ -845,11 +844,11 @@ func calculateConfidence(response *DocumentProcessingResponse) float64 {
 	if len(response.Entities) > 0 {
 		confidence += 0.05
 	}
-	
+
 	if confidence > 1.0 {
 		confidence = 1.0
 	}
-	
+
 	return confidence
 }
 
@@ -883,12 +882,12 @@ func (s *LegalAIServer) startGRPCServer(ctx context.Context) error {
 	}
 
 	grpcServer := grpc.NewServer(opts...)
-	
+
 	// Register health service
 	healthServer := health.NewServer()
 	grpc_health_v1.RegisterHealthServer(grpcServer, healthServer)
 	healthServer.SetServingStatus("", grpc_health_v1.HealthCheckResponse_SERVING)
-	
+
 	// Enable reflection for development
 	if s.config.Environment != "production" {
 		reflection.Register(grpcServer)
@@ -900,7 +899,7 @@ func (s *LegalAIServer) startGRPCServer(ctx context.Context) error {
 
 func (s *LegalAIServer) startHTTPServer(ctx context.Context) error {
 	router := s.setupHTTPRoutes()
-	
+
 	server := &http.Server{
 		Addr:    ":" + s.config.HTTPPort,
 		Handler: router,
@@ -918,7 +917,7 @@ func (s *LegalAIServer) startHTTPServer(ctx context.Context) error {
 func (s *LegalAIServer) startMetricsServer(ctx context.Context) error {
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", promhttp.Handler())
-	
+
 	server := &http.Server{
 		Addr:    ":" + s.config.MetricsPort,
 		Handler: mux,
@@ -940,12 +939,12 @@ func (s *LegalAIServer) corsMiddleware() gin.HandlerFunc {
 		}
 		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		c.Header("Access-Control-Allow-Headers", "Origin, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-		
+
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
 			return
 		}
-		
+
 		c.Next()
 	}
 }
@@ -960,12 +959,12 @@ func (s *LegalAIServer) rateLimitMiddleware() gin.HandlerFunc {
 func (s *LegalAIServer) metricsMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		start := time.Now()
-		
+
 		c.Next()
-		
+
 		duration := time.Since(start).Seconds()
 		status := fmt.Sprintf("%d", c.Writer.Status())
-		
+
 		s.metrics.httpRequestsTotal.WithLabelValues(
 			c.Request.Method,
 			c.Request.URL.Path,
@@ -987,7 +986,7 @@ func (s *LegalAIServer) healthCheck(c *gin.Context) {
 			"redis":      s.checkRedisHealth(),
 		},
 	}
-	
+
 	c.JSON(http.StatusOK, health)
 }
 

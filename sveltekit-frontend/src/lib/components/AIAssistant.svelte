@@ -2,12 +2,12 @@
   import { createMachine, assign } from 'xstate';
   import { useMachine } from '@xstate/svelte';
   // Toast notifications removed - using simple state instead
-  
+
   import { Button } from '$lib/components/ui/button';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
   import { Textarea } from '$lib/components/ui/textarea';
   import EnhancedButton from '$lib/components/ui/EnhancedButton.svelte';
-  
+
   // Legal AI Assistant State Machine (XState Best Practices)
   const legalAIMachine = createMachine({
     id: 'legalAI',
@@ -108,11 +108,11 @@
             }
           })
         });
-        
+
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
-        
+
         const data = await response.json();
         return { response: data.response };
       }
@@ -121,17 +121,17 @@
 
   // Initialize XState machine
   const { snapshot, send } = useMachine(legalAIMachine);
-  
+
   // Reactive state (Svelte 5 best practices)
   let promptInput = $state('');
   let isLoading = $derived(snapshot.matches('querying'));
   let currentResponse = $derived(snapshot.context.response);
   let errorMessage = $derived(snapshot.context.error);
   let canSubmit = $derived(promptInput.trim().length > 0 && !isLoading);
-  
+
   // Simple notification state (replacing melt-ui toaster)
   let notifications = $state([]);
-  
+
   function showNotification(title: string, description: string) {
     const id = Date.now();
     notifications.push({ id, title, description });
@@ -143,9 +143,9 @@
   // Enhanced query function with error handling
   function handleQuery() {
     if (!canSubmit) return;
-    
+
     send({ type: 'QUERY', prompt: promptInput });
-    
+
     // Show notification
     showNotification('Legal AI Query', 'Processing your legal question...');
   }
@@ -173,8 +173,8 @@
   <div class="fixed top-4 right-4 bg-blue-500 text-white p-4 rounded shadow-lg z-50">
     <div class="font-semibold">{notification.title}</div>
     <div class="text-sm">{notification.description}</div>
-    <button 
-      class="absolute top-2 right-2 text-white hover:text-gray-200" 
+    <button
+      class="absolute top-2 right-2 text-white hover:text-gray-200"
       on:on:onclick={() => notifications = notifications.filter(n => n.id !== notification.id)}
     >
       &times;
@@ -185,7 +185,7 @@
 <Card class="w-full max-w-4xl yorha-card">
   <CardHeader class="yorha-header">
     <CardTitle class="flex items-center gap-2">
-      <div class="w-3 h-3 rounded-full" class:bg-green-500={snapshot.matches('idle')} 
+      <div class="w-3 h-3 rounded-full" class:bg-green-500={snapshot.matches('idle')}
            class:bg-yellow-500={isLoading} class:bg-red-500={snapshot.matches('error')}></div>
       YoRHa Legal AI Assistant - Gemma3 Legal Latest
     </CardTitle>
@@ -199,15 +199,15 @@
       {/if}
     </div>
   </CardHeader>
-  
+
   <CardContent class="space-y-6">
     <!-- Input Section -->
     <div class="space-y-2">
       <label for="legal-prompt" class="text-sm font-medium">Legal Question</label>
-      <Textarea 
+      <Textarea
         id="legal-prompt"
         bind:value={promptInput}
-        keydown={handleKeydown}
+        on:keydown={handleKeydown}
         placeholder="Ask a legal question (e.g., 'What are the key elements of a valid contract?', 'Explain force majeure clauses', etc.)"
         rows={4}
         class="yorha-textarea"
@@ -221,9 +221,9 @@
 
     <!-- Action Buttons -->
     <div class="flex gap-2">
-      <EnhancedButton 
-        variant="legal" 
-        on:on:click={handleQuery} 
+      <EnhancedButton
+        variant="legal"
+        on:click={handleQuery}
         disabled={!canSubmit}
         loading={isLoading}
         loadingText="Analyzing..."
@@ -232,21 +232,21 @@
       >
         {isLoading ? 'Processing Legal Query...' : 'Ask Legal AI'}
       </EnhancedButton>
-      
+
       {#if snapshot.matches('error')}
-        <EnhancedButton 
-          variant="outline" 
-          on:on:click={handleRetry}
+        <EnhancedButton
+          variant="outline"
+          on:click={handleRetry}
           useMelt={true}
         >
           Retry
         </EnhancedButton>
       {/if}
-      
+
       {#if currentResponse}
-        <EnhancedButton 
-          variant="ghost" 
-          on:on:click={handleClear}
+        <EnhancedButton
+          variant="ghost"
+          on:click={handleClear}
           useMelt={true}
         >
           Clear
@@ -277,13 +277,13 @@
             Gemma3-Legal Latest
           </div>
         </div>
-        
+
         <div class="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg yorha-response">
           <div class="prose max-w-none">
             <p class="whitespace-pre-wrap text-sm leading-relaxed">{currentResponse}</p>
           </div>
         </div>
-        
+
         <!-- Response Actions -->
         <div class="flex gap-2 text-xs">
           <button class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors">
@@ -328,30 +328,30 @@
     border: 2px solid #e5e5e5;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   }
-  
+
   :global(.yorha-header) {
     background: linear-gradient(45deg, #ffbf00, #ffd700);
     color: #000;
     border-bottom: 2px solid #ffbf00;
   }
-  
+
   :global(.yorha-textarea) {
     background: #ffffff;
     border: 2px solid #e5e5e5;
     transition: all 0.2s ease;
     font-family: 'JetBrains Mono', monospace;
   }
-  
+
   :global(.yorha-textarea:focus) {
     border-color: #ffbf00;
     box-shadow: 0 0 0 3px rgba(255, 191, 0, 0.1);
   }
-  
+
   :global(.yorha-response) {
     position: relative;
     overflow: hidden;
   }
-  
+
   :global(.yorha-response::before) {
     content: '';
     position: absolute;
@@ -362,12 +362,12 @@
     background: linear-gradient(90deg, transparent, #ffbf00, transparent);
     animation: shimmer 2s infinite;
   }
-  
+
   :global(.yorha-error) {
     border-left: 4px solid #ef4444;
     background: #fef2f2;
   }
-  
+
   /* Toast Styling */
   :global(.yorha-toast) {
     background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
@@ -378,7 +378,7 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     min-width: 300px;
   }
-  
+
   :global(.toast-close) {
     background: none;
     border: none;
@@ -392,12 +392,12 @@
     align-items: center;
     justify-content: center;
   }
-  
+
   @keyframes shimmer {
     0% { left: -100%; }
     100% { left: 100%; }
   }
-  
+
   /* Responsive Design */
   @media (max-width: 768px) {
     :global(.yorha-card) {

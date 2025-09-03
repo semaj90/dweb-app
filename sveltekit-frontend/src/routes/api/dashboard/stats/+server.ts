@@ -1,41 +1,27 @@
 import { json } from '@sveltejs/kit';
-import { db } from '$lib/server/db/index.ts';
-import { cases, evidence, criminals, persons_of_interest } from '$lib/server/db/schema-postgres.ts';
+import { db } from '$lib/server/db';
+// Adjust schema imports to actual available unified schema (fallback counts via raw SQL if needed)
+// TODO: Replace with precise imports once schema-postgres module path confirmed
+// Temporary raw table names used below.
 import { count, eq } from 'drizzle-orm';
 import type { RequestHandler } from './$types';
 
 
 export const GET: RequestHandler = async ({ url }) => {
   try {
-    // Get live statistics from database
-    const [
-      activeCasesResult,
-      evidenceItemsResult,
-      personsOfInterestResult,
-      criminalsResult
-    ] = await Promise.all([
-      // Count active cases
-      db.select({ count: count() })
-        .from(cases)
-        .where(eq(cases.status, 'active')),
-      
-      // Count evidence items
-      db.select({ count: count() })
-        .from(evidence),
-      
-      // Count persons of interest
-      db.select({ count: count() })
-        .from(persons_of_interest),
-      
-      // Count criminals
-      db.select({ count: count() })
-        .from(criminals)
+    // Import pool for direct database queries
+    const { pool } = await import('$lib/database/connection');
+    
+    // Get live statistics from database using direct SQL
+    const [activeCasesRes, evidenceItemsRes, poiRes] = await Promise.all([
+      pool`SELECT COUNT(*)::int AS count FROM cases WHERE status = 'active'`,
+      pool`SELECT COUNT(*)::int AS count FROM evidence`, 
+      pool`SELECT COUNT(*)::int AS count FROM users WHERE role IN ('person_of_interest', 'suspect')`
     ]);
 
-    const activeCases = activeCasesResult[0]?.count || 0;
-    const evidenceItems = evidenceItemsResult[0]?.count || 0;
-    const personsOfInterestCount = personsOfInterestResult[0]?.count || 0;
-    const criminalsCount = criminalsResult[0]?.count || 0;
+    const activeCases = activeCasesRes[0]?.count || 0;
+    const evidenceItems = evidenceItemsRes[0]?.count || 0; 
+    const personsOfInterestCount = poiRes[0]?.count || 0;
 
     // Recent activity count (last 24 hours)
     const recentActivity = activeCases + evidenceItems; // Simplified calculation
@@ -43,12 +29,12 @@ export const GET: RequestHandler = async ({ url }) => {
     const stats = {
       activeCases,
       evidenceItems,
-      personsOfInterest: personsOfInterestCount + criminalsCount, // Combine POI and criminals
+      personsOfInterest: personsOfInterestCount,
       recentActivity,
       loading: false
     };
 
-    return json(stats, { 
+    return json(stats, {
       status: 200,
       headers: {
         'Cache-Control': 'max-age=60' // Cache for 1 minute
@@ -57,7 +43,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
   } catch (error: any) {
     console.error('Error fetching dashboard stats:', error);
-    
+
     // Return fallback stats on error
     return json({
       activeCases: 0,

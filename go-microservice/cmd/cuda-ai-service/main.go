@@ -1,3 +1,6 @@
+//go:build experimental
+// +build experimental
+
 // CUDA AI Service with Protocol Buffers
 // High-performance GPU computations with T5 architecture support
 // Handles dimensional arrays, kernel attention, and modular experiences

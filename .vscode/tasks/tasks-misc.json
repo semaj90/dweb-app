@@ -56,7 +56,7 @@
       }
     },
     {
-      "label": "🔍 Vector: Search",
+      "label": "�🔍 Vector: Search",
       "type": "shell",
       "command": "npm",
       "args": [
@@ -306,7 +306,56 @@
       }
     },
     {
-      "label": "🔄 Reindex Documents",
+      "label": "� Perf Monitor: Build Binary",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd go-microservice/cmd/perf-monitor; go build -o ../../bin/perf-monitor.exe ."
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Build performance monitor binary"
+    },
+    {
+      "label": "� Perf Monitor: Run (Dev)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "$env:PERF_MONITOR_PORT='8600'; if(Test-Path go-microservice/bin/perf-monitor.exe){ Start-Process -NoNewWindow go-microservice/bin/perf-monitor.exe } else { Write-Host 'perf-monitor.exe missing' -ForegroundColor Yellow }"
+      ],
+      "group": "build",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Run performance monitor service"
+    },
+    {
+      "label": "📊 Perf Monitor: Collector",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "curl -s http://localhost:8600/metrics || Write-Host 'perf monitor not responding' -ForegroundColor Yellow"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Collect metrics from perf monitor"
+    },
+    {
+      "label": "�🔄 Reindex Documents",
       "type": "shell",
       "command": "curl",
       "args": [

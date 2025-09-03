@@ -266,7 +266,7 @@ let frameCount = $state(0);
   }
 </script>
 
-<div class="phase8-demo {class}">
+<div class="phase8-demo {className}">
   <div class="demo-header yorha-panel p-6 mb-6">
     <h2 class="text-2xl font-bold text-yellow-400 mb-2">
       Phase 8: AI-Aware Matrix UI System

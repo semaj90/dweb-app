@@ -1,3 +1,6 @@
+//go:build experimental
+// +build experimental
+
 // enhanced-api-endpoints.go
 // Enhanced API service with go-llama direct integration for TypeScript error processing
 

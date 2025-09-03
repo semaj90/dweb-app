@@ -263,7 +263,7 @@
   });
 </script>
 
-<Card class="token-usage-manager {class}">
+<Card class="token-usage-manager {className}">
   <CardHeader>
     <CardTitle class="flex items-center justify-between">
       <div class="flex items-center gap-2">

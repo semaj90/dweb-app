@@ -1,4 +1,5 @@
 import Redis from 'ioredis';
+import { getRedisConfig, createServiceConfig, KEY_PATTERNS, LUA_SCRIPTS } from '$lib/config/redis-config';
 
 export interface RedisRateLimitOptions {
   limit: number;           // max requests per window
@@ -11,72 +12,89 @@ const singleton = { client: null as Redis | null };
 
 function getClient(): Redis {
   if (singleton.client) return singleton.client;
-  const url = import.meta.env.REDIS_URL || 'redis://localhost:6379';
-  singleton.client = new Redis(url);
-  (singleton.client as any).on?.('error', (e: any) => console.error('[redisRateLimit] error', e));
+  
+  // Use centralized Redis configuration for rate limiting
+  const config = createServiceConfig('RATE_LIMIT');
+  singleton.client = new Redis(config);
+  
+  singleton.client.on('error', (e: any) => {
+    console.error('[redisRateLimit] Redis error:', e.message);
+    if (e.message.includes('ECONNREFUSED')) {
+      console.error('[redisRateLimit] 💡 Tip: Start Redis with npm run redis:start');
+    }
+  });
+  
+  singleton.client.on('connect', () => {
+    console.log('[redisRateLimit] ✅ Connected to Redis for rate limiting');
+  });
+  
   return singleton.client;
 }
 
 /**
- * Sliding window approximation using Lua script (atomic):
- *  - ZADD current timestamp ms
- *  - ZREMRANGEBYSCORE older than window
- *  - ZCARD to count
- *  - Return allowed + ttl
+ * Enhanced Lua script for rate limiting with better performance
+ * Uses optimized script from centralized config
  */
-const LUA_SCRIPT = `
-local key       = KEYS[1]
-local now       = tonumber(ARGV[1])
-local window    = tonumber(ARGV[2])
-local limit     = tonumber(ARGV[3])
--- remove old
-redis.call('ZREMRANGEBYSCORE', key, 0, now - window)
--- add current
-redis.call('ZADD', key, now, now)
--- count
-local count = redis.call('ZCARD', key)
--- set ttl (window) so key expires if idle
-redis.call('PEXPIRE', key, window)
-local allowed = count <= limit
-local retryAfter = 0
-if not allowed then
-  local oldest = redis.call('ZRANGE', key, 0, 0, 'WITHSCORES')[2]
-  if oldest then
-    local diff = (oldest + window) - now
-    if diff > 0 then retryAfter = math.floor(diff / 1000) end
-  end
-
-return { allowed and 1 or 0, count, retryAfter }
-`;
-
 let sha: string | null = null;
 
-export async function redisRateLimit(opts: RedisRateLimitOptions): Promise<any> {
-  const client = opts.redis || getClient();
+// Preload the Lua script for better performance
+async function ensureScriptLoaded(client: Redis): Promise<string> {
   if (!sha) {
     try {
-      // Type cast to satisfy ioredis script overloads
-      sha = await (client as any).script('LOAD', LUA_SCRIPT) as string;
-    } catch {
-    /* ignore */
+      sha = await client.script('LOAD', LUA_SCRIPTS.RATE_LIMIT) as string;
+      console.log('[redisRateLimit] ✅ Lua script loaded with SHA:', sha.substring(0, 8) + '...');
+    } catch (error) {
+      console.error('[redisRateLimit] ❌ Failed to load Lua script:', error);
+      throw error;
     }
   }
-  const now = Date.now();
+  return sha;
+}
+
+export async function redisRateLimit(opts: RedisRateLimitOptions): Promise<{
+  allowed: boolean;
+  count: number;
+  retryAfter: number;
+}> {
+  const client = opts.redis || getClient();
+  
   try {
-    const res: any = await (client as any).evalsha(
-      sha!,
+    // Ensure Lua script is loaded
+    const scriptSha = await ensureScriptLoaded(client);
+    
+    const now = Date.now();
+    const key = KEY_PATTERNS.RATE_LIMIT(opts.key);
+    
+    const res: any = await client.evalsha(
+      scriptSha,
       1,
-      `rate:${opts.key}`,
+      key,
       now,
       opts.windowSec * 1000,
       opts.limit
     );
+    
     const allowed = res[0] === 1;
     const count = res[1];
     const retryAfter = res[2];
+    
+    // Log rate limit activity (development only)
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[redisRateLimit] ${opts.key}: ${count}/${opts.limit} requests in ${opts.windowSec}s window, allowed: ${allowed}`);
+    }
+    
     return { allowed, count, retryAfter };
   } catch (e: any) {
-    console.warn('[redisRateLimit] fallback to allowed due to error', e);
+    console.error('[redisRateLimit] ❌ Rate limit check failed:', e.message);
+    
+    // Graceful degradation - allow request but log error
+    if (e.message.includes('NOSCRIPT')) {
+      console.log('[redisRateLimit] 🔄 Script not found, reloading...');
+      sha = null; // Reset SHA to force reload
+      return redisRateLimit(opts); // Retry once
+    }
+    
+    console.warn('[redisRateLimit] ⚠️ Falling back to allowing request due to Redis error');
     return { allowed: true, count: 1, retryAfter: 0 };
   }
 }

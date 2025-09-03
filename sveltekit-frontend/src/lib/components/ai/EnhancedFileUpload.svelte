@@ -327,7 +327,7 @@ let unitIndex = $state(0);
   function getEntries() { return machineState.value?.context?.files || []; }
 </script>
 
-<div class="enhanced-file-upload {class}">
+<div class="enhanced-file-upload {className}">
   <!-- System Status -->
   <div class="system-status mb-4 grid grid-cols-2 md:grid-cols-4 gap-2">
     <div

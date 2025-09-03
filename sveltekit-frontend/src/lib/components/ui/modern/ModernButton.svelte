@@ -2,7 +2,7 @@
   import { $props, $derived } from 'svelte';
   import { Button } from "bits-ui";
   // Tooltip functionality will use CSS-only or bits-ui Tooltip when needed
-  
+
   interface Props {
     variant?: 'primary' | 'secondary' | 'ghost' | 'outline' | 'danger' | 'success';
     size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -16,8 +16,8 @@
     children?: import('svelte').Snippet;
     onclick?: (event: MouseEvent) => void;
   }
-  
-  let { 
+
+  let {
     variant = 'primary',
     size = 'md',
     loading = false,
@@ -30,21 +30,21 @@
     children,
     onclick
   }: Props = $props();
-  
+
   // Melt-UI tooltip - conditionally create only when needed
   const tooltipBuilder = tooltip ? createTooltip({
     openDelay: 500,
     closeDelay: 100
   }) : null;
-  
+
   const trigger = tooltipBuilder?.elements.trigger;
   const tooltipContent = tooltipBuilder?.elements.content;
   const open = tooltipBuilder?.states.open;
-  
+
   // Dynamic classes
   let buttonClasses = $derived(() => {
     const base = 'modern-btn golden-flex-center font-medium transition-all duration-200 focus-visible';
-    
+
     const variants = {
       primary: 'bg-yorha-accent-gold text-yorha-bg-primary hover:bg-yorha-accent-gold-hover border-yorha-accent-gold',
       secondary: 'bg-transparent text-yorha-text-primary border-yorha-border-primary hover:bg-yorha-bg-hover hover:border-yorha-border-accent',
@@ -53,7 +53,7 @@
       danger: 'bg-yorha-error text-white border-yorha-error hover:bg-red-600',
       success: 'bg-yorha-success text-yorha-bg-primary border-yorha-success hover:bg-green-400'
     };
-    
+
     const sizes = {
       xs: 'px-golden-sm py-golden-xs text-xs rounded-md',
       sm: 'px-golden-md py-golden-sm text-sm rounded-md',
@@ -61,12 +61,12 @@
       lg: 'px-golden-xl py-golden-md text-lg rounded-lg',
       xl: 'px-golden-2xl py-golden-lg text-xl rounded-xl'
     };
-    
+
     const state = disabled || loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer';
-    
+
     return `${base} ${variants[variant]} ${sizes[size]} ${state} border`;
   });
-  
+
   function handleClick(event: MouseEvent) {
     if (disabled || loading) {
       event.preventDefault();
@@ -77,114 +77,46 @@
 </script>
 
 {#if href}
-  {#if tooltip}
-    <a
-      {href}
-      class={buttonClasses}
-      target={external ? '_blank' : undefined}
-      rel={external ? 'noopener noreferrer' : undefined}
-      <!-- <!-- use:melt={$trigger}
-      on:onclick={handleClick}
-    >
-      <span class="button-content">
-        {#if loading}
-          <div class="loading-spinner"></div>
-        {:else if icon}
-          <span class="button-icon">
-            {@render icon()}
-          </span>
-        {/if}
-        
-        {#if children}
-          <span class="button-text">
-            {@render children()}
-          </span>
-        {/if}
-      </span>
-    </a>
-  {:else}
-    <a
-      {href}
-      class={buttonClasses}
-      target={external ? '_blank' : undefined}
-      rel={external ? 'noopener noreferrer' : undefined}
-      on:onclick={handleClick}
-    >
-      <span class="button-content">
-        {#if loading}
-          <div class="loading-spinner"></div>
-        {:else if icon}
-          <span class="button-icon">
-            {@render icon()}
-          </span>
-        {/if}
-        
-        {#if children}
-          <span class="button-text">
-            {@render children()}
-          </span>
-        {/if}
-      </span>
-    </a>
-  {/if}
+  <a
+    {href}
+    class={buttonClasses}
+    target={external ? '_blank' : undefined}
+    rel={external ? 'noopener noreferrer' : undefined}
+    on:click={handleClick}
+  >
+    <span class="button-content">
+      {#if loading}
+        <div class="loading-spinner"></div>
+      {:else if icon}
+        <span class="button-icon">{@render icon()}</span>
+      {/if}
+      {#if children}
+        <span class="button-text">{@render children()}</span>
+      {/if}
+    </span>
+  </a>
 {:else}
-  {#if tooltip}
-    <Button.Root
-      {type}
-      {disabled}
-      class={buttonClasses}
-      on:on:click={handleClick}
-      <!-- <!-- use:melt={$trigger}
-    >
-      <span class="button-content">
-        {#if loading}
-          <div class="loading-spinner"></div>
-        {:else if icon}
-          <span class="button-icon">
-            {@render icon()}
-          </span>
-        {/if}
-        
-        {#if children}
-          <span class="button-text">
-            {@render children()}
-          </span>
-        {/if}
-      </span>
-    </Button.Root>
-  {:else}
-    <Button.Root
-      {type}
-      {disabled}
-      class={buttonClasses}
-      on:on:click={handleClick}
-    >
-      <span class="button-content">
-        {#if loading}
-          <div class="loading-spinner"></div>
-        {:else if icon}
-          <span class="button-icon">
-            {@render icon()}
-          </span>
-        {/if}
-        
-        {#if children}
-          <span class="button-text">
-            {@render children()}
-          </span>
-        {/if}
-      </span>
-    </Button.Root>
-  {/if}
+  <Button.Root
+    {type}
+    {disabled}
+    class={buttonClasses}
+    on:click={handleClick}
+  >
+    <span class="button-content">
+      {#if loading}
+        <div class="loading-spinner"></div>
+      {:else if icon}
+        <span class="button-icon">{@render icon()}</span>
+      {/if}
+      {#if children}
+        <span class="button-text">{@render children()}</span>
+      {/if}
+    </span>
+  </Button.Root>
 {/if}
 
 {#if tooltip && $open}
-  <div
-    <!-- <!-- use:melt={$tooltipContent}
-    class="tooltip"
-  >
-    {tooltip}
-  </div>
+  <div class="tooltip">{tooltip}</div>
 {/if}
 
 <style>
@@ -196,34 +128,34 @@
     outline: none;
     user-select: none;
   }
-  
+
   .modern-btn:focus-visible {
     outline: 2px solid var(--yorha-accent-gold);
     outline-offset: 2px;
   }
-  
+
   .modern-btn:active {
     transform: translateY(1px);
   }
-  
+
   .button-content {
     display: flex;
     align-items: center;
     gap: var(--golden-sm);
   }
-  
+
   .button-icon {
     display: flex;
     align-items: center;
     justify-content: center;
   }
-  
+
   .button-text {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  
+
   .loading-spinner {
     width: 1rem;
     height: 1rem;
@@ -232,13 +164,13 @@
     border-radius: 50%;
     animation: spin 1s linear infinite;
   }
-  
+
   @keyframes spin {
     to {
       transform: rotate(360deg);
     }
   }
-  
+
   .tooltip {
     background: var(--yorha-bg-card);
     border: 1px solid var(--yorha-border-primary);
@@ -252,13 +184,13 @@
     text-transform: none;
     letter-spacing: normal;
   }
-  
+
   /* Hover effects */
   .modern-btn:hover:not(:disabled) {
     box-shadow: var(--yorha-shadow-md);
     transform: translateY(-1px);
   }
-  
+
   /* Golden ratio responsive sizing */
   @media (max-width: 768px) {
     .modern-btn {

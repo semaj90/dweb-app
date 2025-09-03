@@ -1,6 +1,8 @@
 // Multi-Protocol Gateway for Legal AI Platform
 // Routes requests between HTTP, gRPC, and QUIC protocols
 // Integrates with GPU Orchestrator and all 37 Go services
+//go:build experimental
+// +build experimental
 
 package main
 
@@ -13,8 +15,6 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"os"
-	"strconv"
 	"sync"
 	"time"
 
@@ -28,42 +28,24 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/status"
-	
-	// Embed service protobuf imports (temporarily commented out due to package conflicts)
-	// pb "legal-ai-production/proto/proto"
+
+	// Real embed protobuf package (proto restructuring complete)
+	"legal-ai-production/internal/envutil"
+	embedpb "legal-ai-production/proto/embed"
 )
 
-// Temporary placeholder types until protobuf package conflicts are resolved
-type UnimplementedEmbedderServer struct{}
-type EmbedRequest struct {
-	Id        string
-	Text      string
-	MaxTokens int32
-	Meta      map[string]string
-}
-type EmbedResponse struct {
-	Id     string
-	Vector []float64
-	Meta   map[string]string
-}
-type BatchEmbedRequest struct {
-	Requests []*EmbedRequest
-}
-type BatchEmbedResponse struct {
-	Responses []*EmbedResponse
-}
+// Type aliases to minimize code churn; migrate to direct embedpb.* later
+type EmbedRequest = embedpb.EmbedRequest
+type EmbedResponse = embedpb.EmbedResponse
+type BatchEmbedRequest = embedpb.BatchEmbedRequest
+type BatchEmbedResponse = embedpb.BatchEmbedResponse
 type EmbedderClient interface {
-	Embed(ctx context.Context, req *EmbedRequest) (*EmbedResponse, error)
-	BatchEmbed(ctx context.Context, req *BatchEmbedRequest) (*BatchEmbedResponse, error)
+	Embed(ctx context.Context, req *embedpb.EmbedRequest, opts ...grpc.CallOption) (*embedpb.EmbedResponse, error)
+	BatchEmbed(ctx context.Context, req *embedpb.BatchEmbedRequest, opts ...grpc.CallOption) (*embedpb.BatchEmbedResponse, error)
 }
 
-func RegisterEmbedderServer(server *grpc.Server, impl interface{}) {
-	// Placeholder - will implement when protobuf conflicts are resolved
-}
-func NewEmbedderClient(conn *grpc.ClientConn) EmbedderClient {
-	// Placeholder - will implement when protobuf conflicts are resolved
-	return nil
-}
+// NewEmbedderClient returns a gRPC client backed by embedpb
+func NewEmbedderClient(conn *grpc.ClientConn) EmbedderClient { return embedpb.NewEmbedderClient(conn) }
 
 // Protocol Types
 type ProtocolType string
@@ -176,37 +158,37 @@ type LegalMetadataService struct {
 
 // EmbedService provides gRPC proxy to embedding service
 type EmbedService struct {
-	UnimplementedEmbedderServer
+	embedpb.UnimplementedEmbedderServer
 	gateway *MultiProtocolGateway
 }
 
 // Embed forwards embed requests to the actual embedding service
-func (e *EmbedService) Embed(ctx context.Context, req *EmbedRequest) (*EmbedResponse, error) {
+func (e *EmbedService) Embed(ctx context.Context, req *embedpb.EmbedRequest) (*embedpb.EmbedResponse, error) {
 	log.Printf("📝 Embed request for text: %.50s...", req.Text)
-	
+
 	// Forward request to the actual embed service
 	resp, err := e.gateway.embedClient.Embed(ctx, req)
 	if err != nil {
 		log.Printf("❌ Embed service error: %v", err)
 		return nil, status.Errorf(codes.Internal, "embedding service error: %v", err)
 	}
-	
+
 	log.Printf("✅ Embed response with %d dimensions", len(resp.Vector))
 	return resp, nil
 }
 
 // BatchEmbed forwards batch embed requests to the actual embedding service
-func (e *EmbedService) BatchEmbed(ctx context.Context, req *BatchEmbedRequest) (*BatchEmbedResponse, error) {
-	log.Printf("📝 Batch embed request for %d texts", len(req.Requests))
-	
+func (e *EmbedService) BatchEmbed(ctx context.Context, req *embedpb.BatchEmbedRequest) (*embedpb.BatchEmbedResponse, error) {
+	log.Printf("📝 Batch embed request for %d texts", len(req.Texts))
+
 	// Forward request to the actual embed service
 	resp, err := e.gateway.embedClient.BatchEmbed(ctx, req)
 	if err != nil {
 		log.Printf("❌ Batch embed service error: %v", err)
 		return nil, status.Errorf(codes.Internal, "batch embedding service error: %v", err)
 	}
-	
-	log.Printf("✅ Batch embed response with %d embeddings", len(resp.Responses))
+
+	log.Printf("✅ Batch embed response with %d embeddings", len(resp.Results))
 	return resp, nil
 }
 
@@ -216,48 +198,26 @@ type Context7Service struct {
 	host    string
 }
 
-// Environment utility functions - local implementation
-func getEnv(key, defaultValue string) string {
-	if value := os.Getenv(key); value != "" {
-		return value
-	}
-	return defaultValue
-}
-
-func getEnvInt(key string, defaultValue int) int {
-	if value := os.Getenv(key); value != "" {
-		if intValue, err := strconv.Atoi(value); err == nil {
-			return intValue
-		}
-	}
-	return defaultValue
-}
-
-func getEnvBool(key string, defaultValue bool) bool {
-	if value := os.Getenv(key); value != "" {
-		return value == "true" || value == "1" || value == "yes"
-	}
-	return defaultValue
-}
+// (environment helpers moved to internal/envutil)
 
 // Initialize Multi-Protocol Gateway with Modern Stack
 func NewMultiProtocolGateway() (*MultiProtocolGateway, error) {
 	config := &GatewayConfig{
-		HTTPPort:         getEnvInt("GATEWAY_HTTP_PORT", 8230),
-		GRPCPort:         getEnvInt("GATEWAY_GRPC_PORT", 50050),
-		QUICPort:         getEnvInt("GATEWAY_QUIC_PORT", 4433),
-		RedisAddr:        getEnv("REDIS_ADDR", "localhost:6379"),
-		PostgresURL:      getEnv("POSTGRES_URL", "postgres://postgres:password@localhost:5432/legal_ai_db?sslmode=disable"),
-		TLSCertPath:      getEnv("TLS_CERT_PATH", "./certs/server.crt"),
-		TLSKeyPath:       getEnv("TLS_KEY_PATH", "./certs/server.key"),
-		MCPContext7:      getEnvBool("MCP_CONTEXT7_ENABLED", true),
-		SvelteKitHost:    getEnv("SVELTEKIT_HOST", "http://localhost:5173"),
-		EnableJSONB:      getEnvBool("ENABLE_JSONB", true),
-		EmbedServiceAddr: getEnv("EMBED_SERVICE_ADDR", "localhost:50052"),
+		HTTPPort:         envutil.GetInt("GATEWAY_HTTP_PORT", 8230),
+		GRPCPort:         envutil.GetInt("GATEWAY_GRPC_PORT", 50050),
+		QUICPort:         envutil.GetInt("GATEWAY_QUIC_PORT", 4433),
+		RedisAddr:        envutil.Get("REDIS_ADDR", "localhost:6379"),
+		PostgresURL:      envutil.Get("POSTGRES_URL", "postgres://postgres:password@localhost:5432/legal_ai_db?sslmode=disable"),
+		TLSCertPath:      envutil.Get("TLS_CERT_PATH", "./certs/server.crt"),
+		TLSKeyPath:       envutil.Get("TLS_KEY_PATH", "./certs/server.key"),
+		MCPContext7:      envutil.GetBool("MCP_CONTEXT7_ENABLED", true),
+		SvelteKitHost:    envutil.Get("SVELTEKIT_HOST", "http://localhost:5173"),
+		EnableJSONB:      envutil.GetBool("ENABLE_JSONB", true),
+		EmbedServiceAddr: envutil.Get("EMBED_SERVICE_ADDR", "localhost:50052"),
 	}
 
 	ctx := context.Background()
-	
+
 	// Initialize Redis
 	rdb := redis.NewClient(&redis.Options{
 		Addr: config.RedisAddr,
@@ -378,10 +338,10 @@ func (g *MultiProtocolGateway) Start() error {
 
 	// Start HTTP server
 	go g.startHTTPServer()
-	
+
 	// Start gRPC server
 	go g.startGRPCServer()
-	
+
 	// Start QUIC server
 	go g.startQUICServer()
 
@@ -414,14 +374,14 @@ func (g *MultiProtocolGateway) startHTTPServer() {
 		api.GET("/metrics", g.getMetrics)
 		api.POST("/route", g.routeRequest)
 		api.POST("/services", g.registerService)
-		
+
 		// Legal AI Platform specific endpoints
 		api.POST("/vector/search", g.vectorSearch)
 		api.GET("/legal/metadata/:id", g.getLegalMetadata)
 		api.POST("/legal/metadata", g.createLegalMetadata)
 		api.PUT("/legal/metadata/:id", g.updateLegalMetadata)
 		api.POST("/context7/query", g.context7Query)
-		
+
 		// Embed service HTTP endpoints
 		api.POST("/embed", g.httpEmbed)
 		api.POST("/embed/batch", g.httpBatchEmbed)
@@ -434,7 +394,7 @@ func (g *MultiProtocolGateway) startHTTPServer() {
 		protocols.POST("/http/:service/*path", g.routeHTTPRequest)
 		protocols.PUT("/http/:service/*path", g.routeHTTPRequest)
 		protocols.DELETE("/http/:service/*path", g.routeHTTPRequest)
-		
+
 		protocols.POST("/grpc/:service", g.routeGRPCRequest)
 		protocols.POST("/quic/:service", g.routeQUICRequest)
 	}
@@ -507,10 +467,10 @@ func (g *MultiProtocolGateway) startGRPCServer() {
 	}
 
 	g.grpcServer = grpc.NewServer()
-	
-	// Register embed service
+
+	// Register embed service (real protobuf server)
 	embedService := &EmbedService{gateway: g}
-	RegisterEmbedderServer(g.grpcServer, embedService)
+	embedpb.RegisterEmbedderServer(g.grpcServer, embedService)
 	log.Printf("🧠 Embed service registered on gRPC server")
 
 	log.Printf("⚡ gRPC Gateway server starting on port %d", g.config.GRPCPort)
@@ -536,7 +496,7 @@ func (g *MultiProtocolGateway) startQUICServer() {
 	_ = listener
 
 	log.Printf("🚄 QUIC Gateway server starting on port %d", g.config.QUICPort)
-	
+
 	for {
 		session, err := listener.Accept(context.Background())
 		if err != nil {
@@ -552,7 +512,7 @@ func (g *MultiProtocolGateway) startQUICServer() {
 func (g *MultiProtocolGateway) routeHTTPRequest(c *gin.Context) {
 	serviceName := c.Param("service")
 	path := c.Param("path")
-	
+
 	endpoint := g.selectEndpoint(serviceName, ProtocolHTTP)
 	if endpoint == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{
@@ -563,7 +523,7 @@ func (g *MultiProtocolGateway) routeHTTPRequest(c *gin.Context) {
 
 	// Forward request to selected endpoint
 	targetURL := fmt.Sprintf("http://%s:%d%s%s", endpoint.Address, endpoint.Port, endpoint.Path, path)
-	
+
 	start := time.Now()
 	// This is a simplified proxy - in production you'd use a proper reverse proxy
 	c.JSON(http.StatusOK, gin.H{
@@ -619,7 +579,7 @@ func (hc *HealthChecker) checkAllServices() {
 			healthy := hc.checkEndpoint(endpoint)
 			endpoint.Healthy = healthy
 			endpoint.LastCheck = time.Now()
-			
+
 			if !healthy {
 				log.Printf("⚠️ Endpoint %s (%s) health check failed", endpoint.Name, serviceName)
 			}
@@ -643,13 +603,13 @@ func (hc *HealthChecker) checkEndpoint(endpoint *ServiceEndpoint) bool {
 func (hc *HealthChecker) checkHTTPEndpoint(endpoint *ServiceEndpoint) bool {
 	client := &http.Client{Timeout: hc.timeout}
 	url := fmt.Sprintf("http://%s:%d/health", endpoint.Address, endpoint.Port)
-	
+
 	resp, err := client.Get(url)
 	if err != nil {
 		return false
 	}
 	defer resp.Body.Close()
-	
+
 	return resp.StatusCode == http.StatusOK
 }
 
@@ -668,7 +628,7 @@ func (g *MultiProtocolGateway) gatewayHealth(c *gin.Context) {
 	g.mutex.RLock()
 	totalServices := len(g.services)
 	healthyServices := 0
-	
+
 	for _, endpoints := range g.services {
 		for _, endpoint := range endpoints {
 			if endpoint.Healthy {
@@ -737,7 +697,7 @@ func (g *MultiProtocolGateway) routeRequest(c *gin.Context) {
 	}
 
 	start := time.Now()
-	
+
 	response := RouteResponse{
 		Success:  true,
 		Protocol: req.Protocol,
@@ -984,7 +944,7 @@ func (g *MultiProtocolGateway) httpEmbed(c *gin.Context) {
 	}
 
 	// Create protobuf request
-	pbRequest := &EmbedRequest{
+	pbRequest := &embedpb.EmbedRequest{
 		Id:        request.ID,
 		Text:      request.Text,
 		MaxTokens: request.MaxTokens,
@@ -1008,7 +968,8 @@ func (g *MultiProtocolGateway) httpEmbed(c *gin.Context) {
 		"id":         resp.Id,
 		"vector":     resp.Vector,
 		"dimensions": len(resp.Vector),
-		"metadata":   resp.Meta,
+		// embed.EmbedResponse has no Meta field; omit metadata for now (could join from original request map)
+		"token_count": resp.GetTokenCount(),
 		"timestamp":  time.Now().Unix(),
 	})
 }
@@ -1035,23 +996,19 @@ func (g *MultiProtocolGateway) httpBatchEmbed(c *gin.Context) {
 	}
 
 	// Convert to protobuf requests
-	pbRequests := make([]*EmbedRequest, len(request.Requests))
+	texts := make([]string, len(request.Requests))
+	meta := map[string]string{}
 	for i, req := range request.Requests {
 		if req.Text == "" {
 			c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Text field is required for request %d", i)})
 			return
 		}
-		pbRequests[i] = &EmbedRequest{
-			Id:        req.ID,
-			Text:      req.Text,
-			MaxTokens: req.MaxTokens,
-			Meta:      req.Meta,
-		}
+		texts[i] = req.Text
+		// merge meta (simple flatten)
+		for k, v := range req.Meta { meta[k] = v }
 	}
 
-	pbBatchRequest := &BatchEmbedRequest{
-		Requests: pbRequests,
-	}
+	pbBatchRequest := &embedpb.BatchEmbedRequest{Texts: texts, Meta: meta}
 
 	// Call embed service
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 60*time.Second)
@@ -1065,13 +1022,13 @@ func (g *MultiProtocolGateway) httpBatchEmbed(c *gin.Context) {
 	}
 
 	// Convert responses
-	responses := make([]gin.H, len(resp.Responses))
-	for i, embedResp := range resp.Responses {
+	responses := make([]gin.H, len(resp.Results))
+	for i, embedResp := range resp.Results {
 		responses[i] = gin.H{
 			"id":         embedResp.Id,
 			"vector":     embedResp.Vector,
 			"dimensions": len(embedResp.Vector),
-			"metadata":   embedResp.Meta,
+			"token_count": embedResp.TokenCount,
 		}
 	}
 
@@ -1094,12 +1051,12 @@ func (vs *VectorService) SearchSimilar(embedding []float64, limit int, threshold
 	embeddingVector := pgvector.NewVector(embeddingFloat32)
 
 	query := `
-		SELECT 
+		SELECT
 			case_id,
 			title,
 			metadata,
 			1 - (embedding <=> $1) as similarity_score
-		FROM legal_cases 
+		FROM legal_cases
 		WHERE 1 - (embedding <=> $1) >= $2
 		ORDER BY embedding <=> $1
 		LIMIT $3`
@@ -1127,7 +1084,7 @@ func (vs *VectorService) SearchSimilar(embedding []float64, limit int, threshold
 // Legal Metadata Service Implementation
 func (lms *LegalMetadataService) GetByID(id string) (map[string]interface{}, error) {
 	query := `SELECT metadata FROM legal_metadata WHERE id = $1`
-	
+
 	var metadataJSON []byte
 	err := lms.db.QueryRow(query, id).Scan(&metadataJSON)
 	if err != nil {
@@ -1170,7 +1127,7 @@ func (lms *LegalMetadataService) Update(id string, metadata map[string]interface
 	}
 
 	query := `UPDATE legal_metadata SET metadata = $1, updated_at = NOW() WHERE id = $2`
-	
+
 	result, err := lms.db.Exec(query, metadataJSON, id)
 	if err != nil {
 		return fmt.Errorf("failed to update metadata: %w", err)
@@ -1233,10 +1190,10 @@ func (g *MultiProtocolGateway) getSvelteKitConfig(c *gin.Context) {
 // Proxy SvelteKit API requests
 func (g *MultiProtocolGateway) proxySvelteKitAPI(c *gin.Context) {
 	endpoint := c.Param("endpoint")
-	
+
 	// Forward to SvelteKit development server
 	targetURL := fmt.Sprintf("%s/api/%s", g.config.SvelteKitHost, endpoint)
-	
+
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"proxied_to": targetURL,
@@ -1401,7 +1358,7 @@ func main() {
 	}
 
 	log.Printf("🚀 Starting Multi-Protocol Gateway for Legal AI Platform...")
-	
+
 	if err := gateway.Start(); err != nil {
 		log.Fatalf("❌ Failed to start gateway: %v", err)
 	}

@@ -221,7 +221,7 @@ Use the enhanced SearchBar component:
 
 ## 🎨 **Phase 10: CSS Framework Integration**
 
-### 10.1 PicoCSS/CSS Framework
+### 10.1 nesCSS/CSS Framework
 
 - **Check:** Inspect elements for framework classes
 - **Look for:** Modern button styles, form styling, color themes

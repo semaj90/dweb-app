@@ -11,6 +11,7 @@ import { apiSuccess, apiError, getRequestId, withErrorHandling } from '$lib/serv
 import { json, error } from "@sveltejs/kit";
 import { ollamaService } from '../../../../lib/server/services/OllamaService.js';
 import { logger } from '../../../../lib/server/production-logger.js';
+import { conversationService } from '$lib/server/services/conversation-service';
 const dev = import.meta.env.NODE_ENV === 'development';
 
 export const POST: RequestHandler = withErrorHandling(async (event) => {
@@ -22,7 +23,10 @@ export const POST: RequestHandler = withErrorHandling(async (event) => {
     model = "gemma3-legal:latest",
     temperature = 0.7,
     stream = false,
-  }: ChatRequest = await event.request.json();
+    conversationId,
+    userId = 'mock-user-id', // TODO: Get from auth session
+    caseId
+  } = await event.request.json();
 
   // Validate input
   if (!message?.trim()) {
@@ -36,19 +40,43 @@ export const POST: RequestHandler = withErrorHandling(async (event) => {
     return apiError("AI service is currently unavailable", 503, 'SERVICE_UNAVAILABLE', undefined, requestId);
   }
 
+  // Handle conversation creation/retrieval
+  let currentConversationId = conversationId;
+  
+  if (!currentConversationId) {
+    // Create new conversation
+    const conversationTitle = conversationService.generateConversationTitle(message);
+    const newConversation = await conversationService.createConversation({
+      userId,
+      title: conversationTitle,
+      caseId,
+      context: { model, temperature }
+    });
+    currentConversationId = newConversation.id;
+  }
+
+  // Save user message to conversation
+  await conversationService.addMessage({
+    conversationId: currentConversationId,
+    role: 'user',
+    content: message,
+    metadata: { requestId }
+  });
+
   // Add legal AI system prompt
   const systemPrompt = `You are a legal AI assistant. User question: ${message}`;
 
   // Handle streaming vs non-streaming responses
   if (stream) {
-    return handleStreamingResponse(model, systemPrompt, temperature);
+    return handleStreamingResponse(model, systemPrompt, temperature, currentConversationId, requestId);
   } else {
     return handleNonStreamingResponse(
       model,
       systemPrompt,
       temperature,
       startTime,
-      requestId
+      requestId,
+      currentConversationId
     );
   }
 });
@@ -56,7 +84,9 @@ export const POST: RequestHandler = withErrorHandling(async (event) => {
 async function handleStreamingResponse(
   model: string,
   prompt: string,
-  temperature: number
+  temperature: number,
+  conversationId: string,
+  requestId: string
 ): Promise<Response> {
   const encoder = new TextEncoder();
 
@@ -125,7 +155,8 @@ async function handleNonStreamingResponse(
   prompt: string,
   temperature: number,
   startTime: number,
-  requestId: string
+  requestId: string,
+  conversationId: string
 ): Promise<Response> {
   const response = await ollamaService.generate(model, prompt, { temperature });
   const endTime = Date.now();
@@ -138,6 +169,22 @@ async function handleNonStreamingResponse(
   const promptTokens = estimateTokens(prompt);
   const responseTokens = estimateTokens(response);
   const totalTokens = promptTokens + responseTokens;
+
+  // Save assistant message to conversation
+  await conversationService.addMessage({
+    conversationId,
+    role: 'assistant',
+    content: response,
+    model,
+    tokenCount: totalTokens,
+    processingTime: duration,
+    metadata: { 
+      requestId,
+      promptTokens,
+      responseTokens,
+      tokensPerSecond: duration > 0 ? totalTokens / (duration / 1000) : 0
+    }
+  });
 
   const chatResponse: ChatResponse = {
     response,
@@ -152,6 +199,7 @@ async function handleNonStreamingResponse(
     },
     suggestions,
     relatedCases: [], // Simplified - no external case lookup
+    conversationId, // Include conversation ID in response
   };
 
   return apiSuccess(chatResponse, 'Chat message processed successfully', requestId);

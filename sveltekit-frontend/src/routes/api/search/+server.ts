@@ -1,112 +1,172 @@
-import type { RequestHandler } from './$types';
-import { db } from '$lib/db';
-import { sql } from 'drizzle-orm';
-import { buildSuccessResponse, buildErrorResponse } from '$lib/server/api/response';
+// Vector Search API Endpoint
+// Bridge between frontend UI and vector search service
 
-const EMBEDDING_MODEL = 'nomic-embed-text';
+import { json, type RequestHandler } from '@sveltejs/kit';
+import { enhancedVectorSearchService } from '$lib/services/enhanced-vector-search';
+import type { VectorSearchOptions } from '$lib/types/vector-search';
 
-async function getEmbedding(text: string): Promise<number[]> {
-  const resp = await fetch('http://localhost:11434/api/embeddings', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: EMBEDDING_MODEL, prompt: text })
-  });
-  if (!resp.ok) {
-    throw new Error(`Embedding service error: ${resp.status}`);
-  }
-  const data = await resp.json();
-  if (!data?.embedding || !Array.isArray(data.embedding)) {
-    throw new Error('Invalid embedding response');
-  }
-  return data.embedding as number[];
+interface SearchRequestBody {
+  query: string;
+  options?: VectorSearchOptions & {
+    embedding?: number[];
+  };
 }
 
-function validateQuery(q: unknown): string | null {
-  if (typeof q !== 'string') return null;
-  const trimmed = q.trim();
-  if (!trimmed) return null;
-  if (trimmed.length > 512) return trimmed.slice(0, 512); // enforce cap
-  return trimmed;
-}
-
-async function performSearch(userId: string, query: string) {
-  const embedding = await getEmbedding(query);
-  // Using raw SQL due to pgvector operator requirements
-  const result = await db.execute(sql`
-    SELECT id, filename, content, summary,
-           1 - (embedding <=> ${JSON.stringify(embedding)}::vector) as similarity
-    FROM documents
-    WHERE user_id = ${userId}
-    ORDER BY embedding <=> ${JSON.stringify(embedding)}::vector
-    LIMIT 10
-  `);
-  return { rows: result.rows, embeddingDimensions: embedding.length };
-}
-
-function respond(status: number, payload: any) {
-  return new Response(JSON.stringify(payload), {
-    status,
-    headers: { 'content-type': 'application/json' }
-  });
-}
-
-export const GET: RequestHandler = async ({ url, locals }) => {
-  const start = performance.now();
-  const requestId = (locals as any).requestId || `req_${Date.now()}`;
-  if (!locals.user) {
-    return respond(401, buildErrorResponse('UNAUTHORIZED', 'Authentication required', { requestId, processingTimeMs: performance.now() - start }));
-  }
-  const qParam = url.searchParams.get('q');
-  const query = validateQuery(qParam);
-  if (!query) {
-    return respond(400, buildErrorResponse('MISSING_QUERY', 'Query parameter q is required', { requestId, processingTimeMs: performance.now() - start }));
-  }
+export const POST: RequestHandler = async ({ request }) => {
   try {
-    const searchStart = performance.now();
-    const { rows, embeddingDimensions } = await performSearch(locals.user.id, query);
-    return respond(200, buildSuccessResponse(rows, {
-      requestId,
-      processingTimeMs: performance.now() - start,
-      searchLatencyMs: performance.now() - searchStart,
-      model: EMBEDDING_MODEL,
-      resultCount: rows.length,
-      embeddingDimensions,
-      engine: 'pgvector'
-    }));
-  } catch (e: any) {
-    return respond(500, buildErrorResponse('SEARCH_ERROR', e?.message || 'Search failed', { requestId, processingTimeMs: performance.now() - start }));
+    const startTime = Date.now();
+    const body: SearchRequestBody = await request.json();
+    
+    if (!body.query || typeof body.query !== 'string') {
+      return json({
+        error: 'Query text is required',
+        code: 'MISSING_QUERY'
+      }, { status: 400 });
+    }
+
+    console.log(`🔍 Search request: "${body.query.substring(0, 100)}..."`);
+
+    let queryEmbedding: number[];
+
+    if (body.options?.embedding && Array.isArray(body.options.embedding)) {
+      console.log('🔧 Using provided embedding');
+      queryEmbedding = body.options.embedding;
+    } else {
+      console.log('🤖 Generating embedding with Ollama...');
+      try {
+        const embeddingResponse = await fetch('http://localhost:11434/api/embeddings', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'nomic-embed-text',
+            prompt: body.query
+          })
+        });
+
+        if (!embeddingResponse.ok) {
+          const errorText = await embeddingResponse.text();
+          console.error('❌ Ollama embedding error:', errorText);
+          
+          return json({
+            error: 'Failed to generate embedding from Ollama',
+            code: 'EMBEDDING_GENERATION_FAILED',
+            details: `Ollama responded with ${embeddingResponse.status}: ${errorText}`
+          }, { status: 502 });
+        }
+
+        const embeddingData = await embeddingResponse.json();
+        queryEmbedding = embeddingData.embedding;
+        
+        console.log(`✅ Generated ${queryEmbedding.length}D embedding`);
+      } catch (error) {
+        console.error('❌ Ollama connection error:', error);
+        
+        return json({
+          error: 'Unable to connect to Ollama for embedding generation',
+          code: 'OLLAMA_CONNECTION_ERROR',
+          details: error instanceof Error ? error.message : 'Unknown connection error'
+        }, { status: 502 });
+      }
+    }
+
+    if (!Array.isArray(queryEmbedding) || queryEmbedding.length === 0) {
+      return json({
+        error: 'Invalid embedding generated',
+        code: 'INVALID_EMBEDDING'
+      }, { status: 500 });
+    }
+
+    console.log('🔍 Performing vector similarity search...');
+    const searchResults = await enhancedVectorSearchService.unifiedVectorSearch(
+      queryEmbedding,
+      {
+        limit: body.options?.limit || 10,
+        threshold: body.options?.threshold || 0.6,
+        entityTypes: body.options?.entityTypes || ['evidence'],
+        includeMetadata: true,
+        ...body.options
+      }
+    );
+
+    const processingTime = Date.now() - startTime;
+    console.log(`✅ Search completed in ${processingTime}ms, found ${searchResults.length} results`);
+
+    return json({
+      success: true,
+      query: body.query,
+      results: searchResults,
+      metadata: {
+        count: searchResults.length,
+        processingTime,
+        embeddingDimensions: queryEmbedding.length,
+        threshold: body.options?.threshold || 0.6,
+        searchTypes: body.options?.entityTypes || ['evidence'],
+        timestamp: new Date().toISOString()
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Search API error:', error);
+    
+    return json({
+      error: 'Internal server error during search',
+      code: 'INTERNAL_ERROR',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 });
   }
 };
 
-export const POST: RequestHandler = async ({ request, locals }) => {
-  const start = performance.now();
-  const requestId = (locals as any).requestId || `req_${Date.now()}`;
-  if (!locals.user) {
-    return respond(401, buildErrorResponse('UNAUTHORIZED', 'Authentication required', { requestId, processingTimeMs: performance.now() - start }));
-  }
-  let body: any;
+export const GET: RequestHandler = async () => {
   try {
-    body = await request.json();
-  } catch {
-    return respond(400, buildErrorResponse('INVALID_JSON', 'Request body must be valid JSON', { requestId, processingTimeMs: performance.now() - start }));
-  }
-  const query = validateQuery(body?.query ?? body?.q);
-  if (!query) {
-    return respond(400, buildErrorResponse('MISSING_QUERY', 'Body must include query (or q) string', { requestId, processingTimeMs: performance.now() - start }));
-  }
-  try {
-    const searchStart = performance.now();
-    const { rows, embeddingDimensions } = await performSearch(locals.user.id, query);
-    return respond(200, buildSuccessResponse(rows, {
-      requestId,
-      processingTimeMs: performance.now() - start,
-      searchLatencyMs: performance.now() - searchStart,
-      model: EMBEDDING_MODEL,
-      resultCount: rows.length,
-      embeddingDimensions,
-      engine: 'pgvector'
-    }));
-  } catch (e: any) {
-    return respond(500, buildErrorResponse('SEARCH_ERROR', e?.message || 'Search failed', { requestId, processingTimeMs: performance.now() - start }));
+    console.log('📊 Search system status check');
+    
+    let ollamaStatus = 'unknown';
+    let ollamaModels: string[] = [];
+    try {
+      const ollamaResponse = await fetch('http://localhost:11434/api/tags');
+      
+      if (ollamaResponse.ok) {
+        const data = await ollamaResponse.json();
+        ollamaModels = data.models?.map((m: any) => m.name) || [];
+        ollamaStatus = ollamaModels.includes('nomic-embed-text') ? 'ready' : 'missing_model';
+      } else {
+        ollamaStatus = 'unavailable';
+      }
+    } catch {
+      ollamaStatus = 'unavailable';
+    }
+
+    const vectorHealth = await enhancedVectorSearchService.healthCheck();
+    const vectorStats = await enhancedVectorSearchService.getSearchStats();
+
+    return json({
+      success: true,
+      status: {
+        overall: vectorHealth.status === 'healthy' && ollamaStatus === 'ready' ? 'ready' : 'degraded',
+        ollama: {
+          status: ollamaStatus,
+          embeddingModel: ollamaModels.includes('nomic-embed-text') ? 'available' : 'missing',
+          availableModels: ollamaModels
+        },
+        vectorSearch: {
+          status: vectorHealth.status,
+          details: vectorHealth.details
+        }
+      },
+      capabilities: {
+        textToVector: ollamaStatus === 'ready',
+        vectorSimilarity: vectorHealth.status !== 'unhealthy',
+        maxEmbeddingDimensions: 384,
+        supportedEntityTypes: ['evidence', 'case']
+      }
+    });
+
+  } catch (error) {
+    return json({
+      error: 'Failed to get search system status',
+      code: 'STATUS_ERROR'
+    }, { status: 500 });
   }
 };

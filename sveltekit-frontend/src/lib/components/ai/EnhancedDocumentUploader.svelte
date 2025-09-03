@@ -3,11 +3,11 @@
   import { $props } from 'svelte';
 
   // Updated to use melt-ui components
-  import Button from '$lib/components/ui/MeltButton.svelte';
+  import Button from '$lib/components/ui/bitsbutton.svelte';
   import Dialog from '$lib/components/ui/MeltDialog.svelte';
   import Select from '$lib/components/ui/MeltSelect.svelte';
   import Card from '$lib/components/ui/MeltCard.svelte';
-  
+
   // TODO: Replace with melt-ui equivalents when available
   // import {
   //   Badge,
@@ -439,7 +439,7 @@ let dropZone = $state<HTMLDivElement;
 </script>
 
 <!-- Main Upload Interface -->
-<div class="enhanced-document-uploader {class}">
+<div class="enhanced-document-uploader {className}">
   <!-- Drop Zone -->
   <div
     bind:this={dropZone}

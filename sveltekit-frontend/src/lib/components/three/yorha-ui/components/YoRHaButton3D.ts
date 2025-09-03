@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
 import { YoRHa3DComponent, type YoRHaStyle, YORHA_COLORS } from '../YoRHaUI3D';
+import { resolveVariantStyle } from '../theme/yorha-theme-adapter';
 
 export interface YoRHaButton3DOptions extends Omit<YoRHaStyle, 'variant'> {
   text?: string;
@@ -26,7 +27,7 @@ export class YoRHaButton3D extends YoRHa3DComponent {
 
   constructor(options: YoRHaButton3DOptions = {}) {
     const style = YoRHaButton3D.getVariantStyle(options.variant || 'primary', options.size || 'medium');
-    
+
     super({
       ...style,
       ...options,
@@ -69,19 +70,19 @@ export class YoRHaButton3D extends YoRHa3DComponent {
         ...options.disabled
       }
     });
-    
+
     this.options = options;
-    
+
     // Add text if provided
     if (options.text) {
       this.createText();
     }
-    
+
     // Add icon if provided
     if (options.icon) {
       this.createIcon();
     }
-    
+
     // Add loading state if enabled
     if (options.loading) {
       this.createLoadingSpinner();
@@ -107,7 +108,7 @@ export class YoRHaButton3D extends YoRHa3DComponent {
     const shape = new THREE.Shape();
     const x = -width / 2;
     const y = -height / 2;
-    
+
     shape.moveTo(x + radius, y);
     shape.lineTo(x + width - radius, y);
     shape.quadraticCurveTo(x + width, y, x + width, y + radius);
@@ -134,7 +135,7 @@ export class YoRHaButton3D extends YoRHa3DComponent {
 
     // Create text using TextGeometry (requires font loader)
     const loader = new FontLoader();
-    
+
     // For now, use a placeholder - in real implementation, load actual font
     const textGeometry = new THREE.PlaneGeometry(1.5, 0.3);
     const textMaterial = new THREE.MeshBasicMaterial({
@@ -145,7 +146,7 @@ export class YoRHaButton3D extends YoRHa3DComponent {
 
     this.textMesh = new THREE.Mesh(textGeometry, textMaterial);
     this.textMesh.position.z = (this.style.depth || 0.15) / 2 + 0.01;
-    
+
     this.add(this.textMesh);
   }
 
@@ -160,16 +161,16 @@ export class YoRHaButton3D extends YoRHa3DComponent {
 
     this.iconMesh = new THREE.Mesh(iconGeometry, iconMaterial);
     this.iconMesh.position.z = (this.style.depth || 0.15) / 2 + 0.01;
-    
+
     // Position icon based on iconPosition
     this.positionIcon();
-    
+
     this.add(this.iconMesh);
   }
 
   private getIconGeometry(icon: string): THREE.BufferGeometry {
     const size = 0.2;
-    
+
     switch (icon) {
       case 'play':
         // Triangle for play button
@@ -179,15 +180,15 @@ export class YoRHaButton3D extends YoRHa3DComponent {
         playShape.lineTo(-size * 0.8, size * 0.5);
         playShape.lineTo(0, size);
         return new THREE.ShapeGeometry(playShape);
-        
+
       case 'pause':
         // Two rectangles for pause
         return new THREE.PlaneGeometry(size * 0.3, size);
-        
+
       case 'stop':
         // Square for stop
         return new THREE.PlaneGeometry(size, size);
-        
+
       case 'arrow-right':
         // Arrow pointing right
         const arrowShape = new THREE.Shape();
@@ -197,7 +198,7 @@ export class YoRHaButton3D extends YoRHa3DComponent {
         arrowShape.lineTo(size, 0);
         arrowShape.lineTo(size * 0.5, size * 0.5);
         return new THREE.ShapeGeometry(arrowShape);
-        
+
       case 'plus':
         // Plus sign
         const plusGroup = new THREE.Group();
@@ -205,7 +206,7 @@ export class YoRHaButton3D extends YoRHa3DComponent {
         const vertical = new THREE.PlaneGeometry(size * 0.2, size);
         // Combine geometries (simplified)
         return horizontal;
-        
+
       default:
         // Default circle
         return new THREE.CircleGeometry(size, 8);
@@ -216,7 +217,7 @@ export class YoRHaButton3D extends YoRHa3DComponent {
     if (!this.iconMesh || !this.options.iconPosition) return;
 
     const spacing = 0.3;
-    
+
     switch (this.options.iconPosition) {
       case 'left':
         this.iconMesh.position.x = -spacing;
@@ -224,21 +225,21 @@ export class YoRHaButton3D extends YoRHa3DComponent {
           this.textMesh.position.x = spacing * 0.5;
         }
         break;
-        
+
       case 'right':
         this.iconMesh.position.x = spacing;
         if (this.textMesh) {
           this.textMesh.position.x = -spacing * 0.5;
         }
         break;
-        
+
       case 'top':
         this.iconMesh.position.y = spacing;
         if (this.textMesh) {
           this.textMesh.position.y = -spacing * 0.5;
         }
         break;
-        
+
       case 'bottom':
         this.iconMesh.position.y = -spacing;
         if (this.textMesh) {
@@ -250,7 +251,7 @@ export class YoRHaButton3D extends YoRHa3DComponent {
 
   private createLoadingSpinner(): void {
     this.loadingSpinner = new THREE.Group();
-    
+
     // Create spinning ring
     const ringGeometry = new THREE.RingGeometry(0.15, 0.2, 16);
     const ringMaterial = new THREE.MeshStandardMaterial({
@@ -258,93 +259,50 @@ export class YoRHaButton3D extends YoRHa3DComponent {
       transparent: true,
       opacity: 0.8
     });
-    
+
     const ring = new THREE.Mesh(ringGeometry, ringMaterial);
     ring.position.z = (this.style.depth || 0.15) / 2 + 0.02;
-    
+
     this.loadingSpinner.add(ring);
     this.add(this.loadingSpinner);
-    
+
     // Add spinning animation
     this.addCustomAnimation('loading', (deltaTime) => {
       if (this.loadingSpinner) {
         this.loadingSpinner.rotation.z += deltaTime * 5; // 5 radians per second
       }
     });
-    
+
     // Hide other content during loading
     if (this.textMesh) this.textMesh.visible = false;
     if (this.iconMesh) this.iconMesh.visible = false;
   }
 
   private static getVariantStyle(variant: string, size: string): Partial<YoRHaStyle> {
-    // Size-based styles
     const sizeStyles = {
       small: { width: 1.5, height: 0.5, fontSize: 0.12 },
       medium: { width: 2, height: 0.6, fontSize: 0.16 },
       large: { width: 3, height: 0.8, fontSize: 0.2 }
-    };
-    
-    // Variant-based styles
-    const variantStyles = {
-      primary: {
-        backgroundColor: YORHA_COLORS.primary.beige,
-        borderColor: YORHA_COLORS.primary.black,
-        textColor: YORHA_COLORS.primary.black,
-        hover: {
-          backgroundColor: YORHA_COLORS.accent.gold,
-        }
-      },
-      secondary: {
-        backgroundColor: YORHA_COLORS.primary.grey,
-        borderColor: YORHA_COLORS.primary.black,
-        textColor: YORHA_COLORS.primary.white,
-        hover: {
-          backgroundColor: YORHA_COLORS.primary.white,
-          textColor: YORHA_COLORS.primary.black,
-        }
-      },
-      accent: {
-        backgroundColor: YORHA_COLORS.accent.gold,
-        borderColor: YORHA_COLORS.accent.bronze,
-        textColor: YORHA_COLORS.primary.black,
-        glow: {
-          enabled: true,
-          color: YORHA_COLORS.accent.amber,
-          intensity: 0.3
-        }
-      },
-      ghost: {
-        backgroundColor: 0x000000,
-        opacity: 0.1,
-        borderColor: YORHA_COLORS.primary.beige,
-        borderWidth: 0.03,
-        textColor: YORHA_COLORS.primary.beige,
-        hover: {
-          opacity: 0.3,
-          backgroundColor: YORHA_COLORS.primary.beige,
-        }
-      },
-      danger: {
-        backgroundColor: YORHA_COLORS.status.error,
-        borderColor: 0x8b0000,
-        textColor: YORHA_COLORS.primary.white,
-        hover: {
-          backgroundColor: 0xff4444,
-        }
-      }
-    };
-    
+    } as const;
+
+    const resolved = resolveVariantStyle(variant, { enableGlow: variant === 'accent' });
+
     return {
       ...sizeStyles[size as keyof typeof sizeStyles],
-      ...variantStyles[variant as keyof typeof variantStyles]
+      backgroundColor: resolved.backgroundColor,
+      borderColor: resolved.borderColor,
+      textColor: resolved.textColor,
+      hover: resolved.hover ? { backgroundColor: resolved.hover.backgroundColor, textColor: resolved.hover.textColor } : undefined,
+      glow: resolved.glow,
+      opacity: resolved.opacity,
+      borderWidth: resolved.borderWidth || (variant === 'ghost' ? 0.03 : 0.02)
     };
   }
 
   // Public methods
   public setText(text: string): void {
     this.options.text = text;
-    
+
     if (this.textMesh) {
       this.remove(this.textMesh);
       this.textMesh.geometry.dispose();
@@ -354,19 +312,19 @@ export class YoRHaButton3D extends YoRHa3DComponent {
         this.textMesh.material.dispose();
       }
     }
-    
+
     this.createText();
   }
 
   public setLoading(loading: boolean): void {
     this.options.loading = loading;
-    
+
     if (loading && !this.loadingSpinner) {
       this.createLoadingSpinner();
     } else if (!loading && this.loadingSpinner) {
       this.remove(this.loadingSpinner);
       this.loadingSpinner = undefined;
-      
+
       // Show content again
       if (this.textMesh) this.textMesh.visible = true;
       if (this.iconMesh) this.iconMesh.visible = true;
@@ -375,7 +333,7 @@ export class YoRHaButton3D extends YoRHa3DComponent {
 
   public setVariant(variant: YoRHaButton3DOptions['variant']): void {
     if (!variant) return;
-    
+
     this.options.variant = variant;
     const newStyle = YoRHaButton3D.getVariantStyle(variant, this.options.size || 'medium');
     this.setStyle(newStyle);
@@ -383,16 +341,16 @@ export class YoRHaButton3D extends YoRHa3DComponent {
 
   protected onClick(): void {
     if (this.isDisabled || this.options.loading) return;
-    
+
     super.onClick();
-    
+
     // Add click animation
     this.addCustomAnimation('clickPulse', (deltaTime) => {
       const time = Date.now() * 0.01;
       const pulse = Math.sin(time) * 0.05 + 1;
       this.mesh.scale.setScalar(pulse);
     });
-    
+
     // Remove click animation after short time
     setTimeout(() => {
       this.customAnimations.delete('clickPulse');
@@ -402,7 +360,7 @@ export class YoRHaButton3D extends YoRHa3DComponent {
 
   public override dispose(): void {
     super.dispose();
-    
+
     if (this.textMesh) {
       this.textMesh.geometry.dispose();
       if (Array.isArray(this.textMesh.material)) {
@@ -411,7 +369,7 @@ export class YoRHaButton3D extends YoRHa3DComponent {
         this.textMesh.material.dispose();
       }
     }
-    
+
     if (this.iconMesh) {
       this.iconMesh.geometry.dispose();
       if (Array.isArray(this.iconMesh.material)) {

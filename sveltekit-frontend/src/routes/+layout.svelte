@@ -1,5 +1,6 @@
 <script lang="ts">
   import '../app.css';
+  import 'nes.css/css/nes.min.css';
   import { onMount } from 'svelte';
   import { browser } from '$app/environment';
   import { errorHandler } from '$lib/utils/browser-performance';
@@ -8,9 +9,17 @@
   import { aiRecommendationEngine } from '$lib/services/ai-recommendation-engine';
   import FeedbackWidget from '$lib/components/feedback/FeedbackWidget.svelte';
   import type { FeedbackTrigger } from '$lib/types/feedback';
+  import type { Snippet } from 'svelte';
 
   // Modern button component
   import ModernButton from '$lib/components/ui/button/Button.svelte';
+
+  // Svelte 5 children prop
+  interface Props {
+    children: Snippet;
+  }
+
+  let { children }: Props = $props();
 
   let startupStatus = $state<StartupStatus | null>(null);
   let showStartupLog = $state(false);
@@ -21,67 +30,65 @@
   // Create store only in browser (inside onMount) to avoid hydration issues
   let store = $state<ReturnType<typeof createFeedbackStore> | null>(null);
 
-  onMount(async () => {
+  onMount(() => {
     if (!browser) return;
 
-    // create and set feedback store in browser
-    store = createFeedbackStore();
-    setFeedbackStore(store);
-
-    console.log('🚀 Initializing YoRHa Legal AI Platform...');
-
-    try {
-      // Initialize multi-library integration on app startup (browser-only)
-      const { multiLibraryStartup } = await import('$lib/services/multi-library-startup');
-      startupStatus = await multiLibraryStartup.initialize();
-
-      // Initialize feedback system (ensure store exists)
-      if (store) {
-        const userId = 'user_' + Date.now(); // In production, get from auth
-        session = store.initializeSession(userId);
-
-        // Track platform initialization
-        store.trackInteraction('platform_initialization', {
-          services: startupStatus?.services || {},
-          initTime: startupStatus?.initTime || 0
-        });
+    (async () => {
+      // Production-only service worker registration guard
+      if ('serviceWorker' in navigator && !import.meta.env.DEV) {
+        try {
+          const reg = await navigator.serviceWorker.register('/service-worker.js');
+          console.log('🛡️ Service worker registered:', reg.scope);
+        } catch (e) {
+          console.warn('Service worker registration failed:', e);
+        }
       }
 
-      if (startupStatus?.initialized) {
-        console.log('✅ YoRHa Legal AI Platform Ready');
+      // create and set feedback store in browser
+      store = createFeedbackStore();
+      setFeedbackStore(store);
 
-        // Show brief startup notification
-        showStartupLog = true;
-        setTimeout(() => {
-          showStartupLog = false;
-        }, 4000);
+      console.log('🚀 Initializing YoRHa Legal AI Platform...');
 
-        // Generate initial recommendations
-        if (session) {
-          await aiRecommendationEngine.generateEnhancedRecommendations(
-            {
-              userId: session.userId,
-              sessionId: session.id,
-              deviceType: store?.userContext?.deviceType || 'desktop',
-              userType: 'attorney' // In production, get from user profile
-            },
-            'platform startup',
-            'general'
-          );
+      try {
+        const { multiLibraryStartup } = await import('$lib/services/multi-library-startup');
+        startupStatus = await multiLibraryStartup.initialize();
+
+        if (store) {
+          const userId = 'user_' + Date.now();
+            session = store.initializeSession(userId);
+          store.trackInteraction('platform_initialization', {
+            services: startupStatus?.services || {},
+            initTime: startupStatus?.initTime || 0
+          });
         }
 
-        // Log Chrome Windows optimization status
-        const compatibilityReport = errorHandler.getCompatibilityReport();
-        console.log('🎯 Browser Performance Report:', compatibilityReport);
+        if (startupStatus?.initialized) {
+          console.log('✅ YoRHa Legal AI Platform Ready');
+          showStartupLog = true;
+          setTimeout(() => { showStartupLog = false; }, 4000);
+          if (session) {
+            await aiRecommendationEngine.generateEnhancedRecommendations(
+              {
+                userId: session.userId,
+                sessionId: session.id,
+                deviceType: store?.userContext?.deviceType || 'desktop',
+                userType: 'attorney'
+              },
+              'platform startup',
+              'general'
+            );
+          }
+          const compatibilityReport = errorHandler.getCompatibilityReport();
+          console.log('🎯 Browser Performance Report:', compatibilityReport);
+        }
+      } catch (error) {
+        console.error('❌ Platform initialization failed:', error);
+        store?.trackInteraction('platform_error', { error: (error as Error)?.message ?? String(error) });
       }
-    } catch (error) {
-      console.error('❌ Platform initialization failed:', error);
-      store?.trackInteraction('platform_error', { error: (error as Error)?.message ?? String(error) });
-    }
+    })();
 
-    return () => {
-      store?.clearSession();
-    };
+    return () => { store?.clearSession(); };
   });
 
   // Feedback handlers (use Svelte event handlers with e.detail)
@@ -176,7 +183,7 @@
         <!-- Navigation -->
         <nav class="hidden md:flex items-center gap-golden-sm">
           <ModernButton
-        href="/"
+        to="/"
         variant="ghost"
         size="sm"
         class="text-nier-text-secondary hover:text-nier-accent-warm hover:bg-nier-bg-tertiary"
@@ -184,7 +191,7 @@
         Home
           </ModernButton>
           <ModernButton
-        href="/yorha-command-center"
+        to="/yorha-command-center"
         variant="ghost"
         size="sm"
         class="text-nier-text-secondary hover:text-nier-accent-warm hover:bg-nier-bg-tertiary"
@@ -192,7 +199,7 @@
         Command Center
           </ModernButton>
           <ModernButton
-        href="/evidenceboard"
+        to="/evidenceboard"
         variant="ghost"
         size="sm"
         class="text-nier-text-secondary hover:text-nier-accent-warm hover:bg-nier-bg-tertiary"
@@ -200,7 +207,7 @@
         Evidence Board
           </ModernButton>
           <ModernButton
-        href="/demo/enhanced-rag-semantic"
+        to="/demo/enhanced-rag-semantic"
         variant="ghost"
         size="sm"
         class="text-nier-text-secondary hover:text-nier-accent-warm hover:bg-nier-bg-tertiary"
@@ -208,7 +215,7 @@
         RAG Demo
           </ModernButton>
           <ModernButton
-        href="/demo/nes-bits-ui"
+        to="/demo/nes-bits-ui"
         variant="ghost"
         size="sm"
         class="text-nier-text-secondary hover:text-nier-accent-warm hover:bg-nier-bg-tertiary"
@@ -220,7 +227,7 @@
         <!-- Auth Buttons -->
         <div class="flex items-center gap-golden-sm">
           <ModernButton
-        href="/auth/login"
+        to="/auth/login"
         variant="outline"
         size="sm"
         class="border-nier-accent-warm text-nier-accent-warm hover:bg-nier-accent-warm hover:text-nier-bg-primary"
@@ -228,7 +235,7 @@
         Login
           </ModernButton>
           <ModernButton
-        href="/auth/register"
+        to="/auth/register"
         variant="primary"
         size="sm"
         class="bg-gradient-to-r from-nier-accent-warm to-nier-accent-cool text-nier-bg-primary font-bold"
@@ -242,7 +249,7 @@
 
   <!-- Main Content with Golden Ratio Spacing -->
   <main class="container mx-auto px-golden-lg py-golden-xl min-h-[calc(100vh-theme(spacing.16))]">
-    {@render children?.()}
+  {@render children?.()}
   </main>
 </div>
 

@@ -23,7 +23,7 @@
     indeterminate = false,
     showPercentage = false,
     label,
-    class: class,
+    class: className = '',
     ...restProps
   }: Props = $props();
 

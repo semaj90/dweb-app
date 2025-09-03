@@ -9,14 +9,22 @@ import { URL } from "url";
 
 // Redis client for worker communication
 let redisClient: ReturnType<typeof createClient> | null = null;
+let redisUnavailable = false;
 
 async function getRedisClient(): Promise<any> {
+  if (redisUnavailable) return null;
   if (!redisClient) {
-    redisClient = createClient({
-      url: import.meta.env.REDIS_URL || 'redis://localhost:6379',
-      socket: { connectTimeout: 5000 }
-    });
-    await redisClient.connect();
+    try {
+      redisClient = createClient({
+        url: import.meta.env.REDIS_URL || 'redis://localhost:6379',
+        socket: { connectTimeout: 5000 }
+      });
+      await redisClient.connect();
+    } catch (e) {
+      console.warn('⚠️ Redis not available, continuing without stream worker integration');
+      redisUnavailable = true;
+      return null;
+    }
   }
   return redisClient;
 }
@@ -30,8 +38,9 @@ async function triggerWorkerProcessing(caseId: string, options: {
   metadata?: any;
 }): Promise<any> {
   const redis = await getRedisClient();
+  if (!redis) return; // silently skip if unavailable in dev
   const correlationId = `case-${caseId}-${Date.now()}`;
-  
+
   // Create Redis stream event for worker
   const eventData = {
     id: correlationId,
@@ -51,11 +60,11 @@ async function triggerWorkerProcessing(caseId: string, options: {
     retry: '0',
     timestamp: Date.now().toString()
   };
-  
+
   // Add to Redis stream for worker consumption
   const streamName = 'autotag:requests';
   await redis.xAdd(streamName, '*', eventData);
-  
+
   console.log(`📡 Worker event sent: ${streamName} -> ${correlationId}`);
 }
 
@@ -90,6 +99,11 @@ export const GET: RequestHandler = async (event: any) => {
     // Get user from session
     const user = locals.user;
     if (!user) {
+      // In development we may want a clearer hint rather than raw 401
+      if ((process.env.DEV_BYPASS_AUTH === 'true') || (import.meta as any).env?.DEV_BYPASS_AUTH === 'true') {
+        console.warn('DEV_BYPASS_AUTH enabled but locals.user missing; returning empty case list');
+        return { cases: [], pagination: createPagination(1, 1, 0), search: null, devBypass: true };
+      }
       throw CommonErrors.Unauthorized('User authentication required');
     }
 
@@ -111,10 +125,10 @@ export const GET: RequestHandler = async (event: any) => {
     // Validate search parameters
     try {
       const validatedParams = searchCasesSchema.parse(searchParams);
-      
+
       // Calculate offset from page
       const offset = (validatedParams.page - 1) * validatedParams.limit;
-      
+
       // Perform case search
       const { cases: caseResults, total } = await CaseOperations.search({
         ...validatedParams,
@@ -153,7 +167,7 @@ export const POST: RequestHandler = async (event: any) => {
 
     // Parse and validate request body
     const caseData = await parseRequestBody(request, createCaseSchema);
-    
+
     try {
       // Create case using enhanced operations
       const newCase = await CaseOperations.create({
@@ -222,7 +236,7 @@ export const PUT: RequestHandler = async (event: any) => {
 
     try {
       const updatedCase = await CaseOperations.update(caseId, updates, user.id);
-      
+
       return {
         case: updatedCase,
         message: 'Case updated successfully'

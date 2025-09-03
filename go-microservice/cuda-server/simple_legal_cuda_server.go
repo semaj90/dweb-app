@@ -484,7 +484,7 @@ func loadServerConfig() *CudaServerConfig {
 		MetricsPort: getEnv("METRICS_PORT", "9090"),
 		Environment: getEnv("ENVIRONMENT", "development"),
 
-		PostgresURL: getEnv("POSTGRES_URL", "postgresql://postgres:postgres@localhost:5432/legal_ai_db"),
+		PostgresURL: getEnv("POSTGRES_URL", "postgresql://postgres:123456@localhost:5432/legal_ai_db"),
 		RedisURL:    getEnv("REDIS_URL", "localhost:6379"),
 
 		CudaDeviceID:   0,

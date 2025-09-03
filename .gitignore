@@ -118,6 +118,10 @@ storybook-static
 # Local large artifacts / binaries
 # Avoid committing installer files, compiled binaries or extracted database storage
 sveltekit-frontend/go*.msi
+
+# Legacy neutralized CUDA prototypes (prevent Go build conflicts)
+go-microservice/cuda-server/legal_cuda_server.cpp
+go-microservice/cuda-server/*.cpp.disabled
 go-microservice/bin/
 qdrant-extracted/
 storage/
@@ -136,6 +140,12 @@ storage/collections/**/payload_index/*
 
 # Auto-ignore large binaries added by assistant
 *.dll
+
+# RAG metrics and embeddings (large files)
+.rag-metrics/
+**/.rag-metrics/
+*.jsonl
+**/*.jsonl
 
 # Explicit local large artifacts (keep locally, don't commit)
 neo4j-community-*.zip
@@ -192,3 +202,81 @@ go-microservice\enhanced-rag.exe
 
 # Local server environment
 server.env
+
+# Svelte-check temporary files and build artifacts
+.svelte-check-tmp/
+**/.svelte-check-tmp/
+
+# Large WASM and binary files
+*.wasm
+*.so
+*.dylib
+
+# Protobuf generated files (can be regenerated)
+**/*.pb.go
+**/*_grpc.pb.go
+
+# Large model files
+*.gguf
+*.ggml
+*.safetensors
+*.bin
+
+# Node modules and cache files
+**/node_modules/
+.npm/
+.pnpm-store/
+.yarn/
+**/.next/
+**/.nuxt/
+
+# VS Code temp files
+**/.vscode-server/
+**/.history/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# GPU and AI model caches
+**/*-cache/
+**/gpu-cache/
+**/model-cache/
+
+# Large documentation files (keep essential ones only)
+**/docs/generated/
+**/docs/auto/
+
+# Test coverage and reports
+coverage/
+**/test-results/
+**/playwright-report/
+
+# Package lock files (keep one, ignore others based on preference)
+# yarn.lock
+# pnpm-lock.yaml
+# package-lock.json
+
+# Build outputs and generated files
+**/dist/
+**/build/
+**/out/
+**/.output/
+**/.vercel/
+**/.netlify/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Large log files
+**/*.log.*
+**/logs/
+error*.log
+debug*.log

@@ -18,13 +18,13 @@
   let activeForm = $state<'signin' | 'signup'>('signin');
   let isLoading = $state(false);
   let showPassword = $state(false);
-let modalElement = $state<HTMLDialogElement;
+let modalElement = $state<HTMLDialogElement>();
   
   // Watch for modal state changes
-  $effect(() >(> {
+  $effect(() => {
     if (modalElement) {
       if (isOpen) {
-        modalElement.showModal());
+        modalElement.showModal();
       } else {
         modalElement.close();
       }

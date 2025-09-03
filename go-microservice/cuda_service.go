@@ -1,5 +1,5 @@
-//go:build legacy
-// +build legacy
+//go:build experimental || legacy
+// +build experimental legacy
 
 package main
 
@@ -29,6 +29,7 @@ import "C"
 import (
 	"fmt"
 	"unsafe"
+
 	"github.com/gin-gonic/gin"
 )
 

@@ -320,7 +320,7 @@ DATABASE_URL="file:./dev.db"
 
 # AI Models
 OLLAMA_HOST="http://localhost:11434"
-DEFAULT_AI_MODEL="gemma3:7b"
+DEFAULT_AI_MODEL="gemma3:legal-latest"
 THINKING_AI_MODEL="legal-gemma3-thinking"
 
 # Features
@@ -337,7 +337,6 @@ JWT_SECRET="your-secret-here"
 ```bash
 # Install required models
 ollama pull gemma3:7b
-ollama pull llama2:7b
 
 # Create custom legal model (optional)
 ollama create legal-gemma3-thinking -f Gemma3-Legal-Modelfile

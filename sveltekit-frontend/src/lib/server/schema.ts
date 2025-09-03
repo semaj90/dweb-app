@@ -71,7 +71,10 @@ export const evidenceVectorsTable = pgTable('evidence_vectors', {
   updated_at: timestamp('updated_at').defaultNow()
 }, (table) => ({
   evidenceIdModelIdx: index('evidence_vectors_evidence_id_model_idx').on(table.evidence_id, table.model),
-  vectorIdx: index('evidence_vectors_vector_idx').using('ivfflat', table.vector)
+  // IVFFlat index with L2 distance operator class for fast similarity search
+  vectorIdx: index('evidence_vectors_vector_idx')
+    .using('ivfflat', table.vector.op('vector_l2_ops'))
+    .with({ lists: 100 })
 }));
 
 // RAG analysis results

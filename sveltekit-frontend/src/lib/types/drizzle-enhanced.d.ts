@@ -74,7 +74,6 @@ declare module 'drizzle-orm/pg-core' {
 declare module 'drizzle-orm' {
   // Enhanced SQL operations with proper generics
   export const sql: {
-;
     <T = any>(strings: TemplateStringsArray, ...values: any[]): T;
     raw<T = any>(query: string): T;
     empty(): any;
@@ -83,15 +82,10 @@ declare module 'drizzle-orm' {
 
   // Enhanced query operators
   export function eq<T, U>(left: T, right: U): any;
-;
   export function ne<T, U>(left: T, right: U): any;
-;
   export function gt<T, U>(left: T, right: U): any;
-;
   export function gte<T, U>(left: T, right: U): any;
-;
   export function lt<T, U>(left: T, right: U): any;
-;
   export function lte<T, U>(left: T, right: U): any;
 ;
   export function isNull<T>(column: T): any;

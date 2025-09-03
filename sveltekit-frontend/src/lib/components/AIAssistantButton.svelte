@@ -1,23 +1,29 @@
-// Production AI Assistant Component - bits-ui Implementation
-// File: AIAssistantButton.svelte
-
+<!-- Production AI Assistant Component - bits-ui Implementation -->
 <script lang="ts">
-
-  import { createEventDispatcher } from 'svelte';
-  import { $props } from 'svelte';
-  import Button from '$lib/components/ui/MeltButton.svelte';
-  // Badge component to be created later
+  import Button from '$lib/components/ui/bitsbutton.svelte';
   import { Loader2, Brain, Zap, AlertTriangle } from 'lucide-svelte';
-  
-  let { query = $bindable() } = $props(); // '';
-  let { isProcessing = $bindable() } = $props(); // false;
-  let { systemStatus = $bindable() } = $props(); // 'unknown';
-  let { responseTime = $bindable() } = $props(); // 0;
-  
-  const dispatch = createEventDispatcher();
-let apiLogs = $state([]);
-let currentTest = $state(null);
-  
+
+  interface Props {
+    query?: string;
+    isProcessing?: boolean;
+    systemStatus?: 'operational' | 'offline' | 'unknown';
+    responseTime?: number;
+    onresponse?: (event: CustomEvent) => void;
+    onerror?: (event: CustomEvent) => void;
+  }
+
+  let {
+    query = '',
+    isProcessing = $bindable(false),
+    systemStatus = $bindable('unknown'),
+    responseTime = $bindable(0),
+    onresponse,
+    onerror
+  }: Props = $props();
+
+  let apiLogs = $state([]);
+  let currentTest = $state(null);
+
   const logAPI = (endpoint, status, time, error = null) => {
     apiLogs = [{
       endpoint,
@@ -30,11 +36,11 @@ let currentTest = $state(null);
 
   const testGemma3 = async () => {
     if (isProcessing) return;
-    
+
     isProcessing = true;
     currentTest = 'gemma3';
     const startTime = Date.now();
-    
+
     try {
       const response = await fetch('http://localhost:11434/api/generate', {
         method: 'POST',
@@ -43,46 +49,50 @@ let currentTest = $state(null);
           model: 'gemma3-legal',
           prompt: query || 'Legal AI status check',
           stream: false,
-          options: { 
+          options: {
             temperature: 0.1,
             num_ctx: 4096,
             num_gpu: 1 // Force GPU
           }
         })
       });
-      
+
       const time = Date.now() - startTime;
       responseTime = time;
-      
+
       if (response.ok) {
         const result = await response.json();
         systemStatus = 'operational';
         logAPI('Gemma3 Legal', 200, time);
-        dispatch('response', { 
-          source: 'gemma3',
-          content: result.response,
-          metadata: { time, confidence: 0.92 }
-        });
+        onresponse?.(new CustomEvent('response', {
+          detail: {
+            source: 'gemma3',
+            content: result.response,
+            metadata: { time, confidence: 0.92 }
+          }
+        }));
       } else {
         throw new Error(`HTTP ${response.status}`);
       }
     } catch (error) {
       systemStatus = 'offline';
       logAPI('Gemma3 Legal', 0, Date.now() - startTime, error.message);
-      dispatch('error', { source: 'gemma3', error: error.message });
+      onerror?.(new CustomEvent('error', {
+        detail: { source: 'gemma3', error: error.message }
+      }));
     }
-    
+
     isProcessing = false;
     currentTest = null;
   };
 
   const testSynthesis = async () => {
     if (isProcessing) return;
-    
+
     isProcessing = true;
     currentTest = 'synthesis';
     const startTime = Date.now();
-    
+
     try {
       const response = await fetch('/api/evidence/synthesize', {
         method: 'POST',
@@ -95,39 +105,43 @@ let currentTest = $state(null);
           prompt: query
         })
       });
-      
+
       const time = Date.now() - startTime;
       responseTime = time;
-      
+
       // 401 is expected without auth
       if (response.status === 401 || response.ok) {
         systemStatus = 'operational';
         logAPI('Synthesis API', response.status, time);
         const result = await response.json();
-        dispatch('response', {
-          source: 'synthesis',
-          content: JSON.stringify(result, null, 2),
-          metadata: { time, status: response.status }
-        });
+        onresponse?.(new CustomEvent('response', {
+          detail: {
+            source: 'synthesis',
+            content: JSON.stringify(result, null, 2),
+            metadata: { time, status: response.status }
+          }
+        }));
       } else {
         throw new Error(`HTTP ${response.status}`);
       }
     } catch (error) {
       logAPI('Synthesis API', 0, Date.now() - startTime, error.message);
-      dispatch('error', { source: 'synthesis', error: error.message });
+      onerror?.(new CustomEvent('error', {
+        detail: { source: 'synthesis', error: error.message }
+      }));
     }
-    
+
     isProcessing = false;
     currentTest = null;
   };
 
   const testRAG = async () => {
     if (isProcessing) return;
-    
+
     isProcessing = true;
     currentTest = 'rag';
     const startTime = Date.now();
-    
+
     try {
       const response = await fetch('/api/enhanced-rag/query', {
         method: 'POST',
@@ -138,26 +152,30 @@ let currentTest = $state(null);
           maxResults: 10
         })
       });
-      
+
       const time = Date.now() - startTime;
       responseTime = time;
-      
+
       if (response.ok) {
         const result = await response.json();
         logAPI('RAG Studio', 200, time);
-        dispatch('response', {
-          source: 'rag',
-          content: JSON.stringify(result, null, 2),
-          metadata: { time, documents: result.documents?.length }
-        });
+        onresponse?.(new CustomEvent('response', {
+          detail: {
+            source: 'rag',
+            content: JSON.stringify(result, null, 2),
+            metadata: { time, documents: result.documents?.length }
+          }
+        }));
       } else {
         throw new Error(`HTTP ${response.status}`);
       }
     } catch (error) {
       logAPI('RAG Studio', 0, Date.now() - startTime, error.message);
-      dispatch('error', { source: 'rag', error: error.message });
+      onerror?.(new CustomEvent('error', {
+        detail: { source: 'rag', error: error.message }
+      }));
     }
-    
+
     isProcessing = false;
     currentTest = null;
   };
@@ -175,7 +193,7 @@ let currentTest = $state(null);
   <!-- Action Buttons -->
   <div class="grid grid-cols-3 gap-3">
     <Button.Root
-      on:on:click={testGemma3}
+      onclick={testGemma3}
       disabled={isProcessing}
       class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
     >
@@ -188,7 +206,7 @@ let currentTest = $state(null);
     </Button.Root>
 
     <Button.Root
-      on:on:click={testSynthesis}
+      onclick={testSynthesis}
       disabled={isProcessing}
       class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white"
     >
@@ -201,7 +219,7 @@ let currentTest = $state(null);
     </Button.Root>
 
     <Button.Root
-      on:on:click={testRAG}
+      onclick={testRAG}
       disabled={isProcessing}
       class="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white"
     >
@@ -220,11 +238,11 @@ let currentTest = $state(null);
       <div class="w-3 h-3 rounded-full {getStatusColor(systemStatus)}"></div>
       <span class="text-sm font-medium capitalize">{systemStatus}</span>
     </div>
-    
+
     {#if responseTime > 0}
-      <Badge.Root class="bg-slate-100 text-slate-700">
+      <span class="px-2 py-1 bg-slate-100 text-slate-700 text-xs rounded">
         {responseTime}ms
-      </Badge.Root>
+      </span>
     {/if}
   </div>
 
@@ -246,4 +264,3 @@ let currentTest = $state(null);
   {/if}
 </div>
 
-<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

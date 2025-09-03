@@ -1,12 +1,10 @@
-//go:build legacy
-// +build legacy
+//go:build experimental || legacy
+// +build experimental legacy
 
 package main
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"runtime"
@@ -62,14 +60,14 @@ func main() {
 	router.POST("/similarity-search", handleSimilaritySearch)
 	router.POST("/rag-enhanced", handleRAGSearch)
 	router.POST("/llm-request", handleLLMRequest)
-	
+
 	// API routes
 	router.POST("/api/legal", handleLegalAPI)
 	router.GET("/api/legal/gpu", handleGPUStatus)
 
 	log.Println("✅ Legal Processor listening on :8080")
 	log.Println("📊 Mode: CPU Fallback (No CUDA required)")
-	
+
 	if err := router.Run(":8080"); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
@@ -79,10 +77,10 @@ func initializeConnections() {
 	// Database connection
 	dbURL := "postgres://legal_admin:123456@localhost:5432/legal_ai_db"
 	var err error
-	
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	
+
 	dbPool, err = pgxpool.New(ctx, dbURL)
 	if err != nil {
 		log.Printf("⚠️ Database connection failed: %v", err)
@@ -103,7 +101,7 @@ func initializeConnections() {
 
 	ctx2, cancel2 := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel2()
-	
+
 	if err := redisClient.Ping(ctx2).Err(); err != nil {
 		log.Printf("⚠️ Redis connection failed: %v", err)
 	} else {
@@ -184,7 +182,7 @@ func handleSimilaritySearch(c *gin.Context) {
 
 	// Simple CPU-based similarity (dot product)
 	results := make([]map[string]interface{}, 0)
-	
+
 	for i, docEmbedding := range request.DocumentEmbeddings {
 		if i < len(request.DocumentIDs) {
 			score := float32(0.0)
@@ -192,7 +190,7 @@ func handleSimilaritySearch(c *gin.Context) {
 			for j := 0; j < len(request.QueryEmbedding) && j < len(docEmbedding); j++ {
 				score += request.QueryEmbedding[j] * docEmbedding[j]
 			}
-			
+
 			results = append(results, map[string]interface{}{
 				"documentId": request.DocumentIDs[i],
 				"score":      score,
@@ -203,7 +201,7 @@ func handleSimilaritySearch(c *gin.Context) {
 
 	// Sort by score (simplified)
 	// In production, use proper sorting
-	
+
 	response := map[string]interface{}{
 		"results":   results,
 		"timingMs":  10,

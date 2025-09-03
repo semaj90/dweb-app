@@ -7,8 +7,8 @@ import { QdrantClient } from '@qdrant/js-client-rest';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import postgres from 'postgres';
 import { eq, and, sql } from 'drizzle-orm';
-import {
 import crypto from "crypto";
+import {
   legalDocuments,
   cases,
   vectorOperations,

@@ -706,15 +706,14 @@ export const aiError = () => aiAssistantState.error;
 export const clusterHealth = () => aiAssistantState.ollamaClusterHealth;
 export const context7Analysis = () => aiAssistantState.context7Analysis;
 export const aiUsage = () => aiAssistantState.usage;
-;
 // Convenience functions
-export const sendAIMessage = (message: string, options?: unknown) => ;
+export const sendAIMessage = (message: string, options?: unknown) => {
   aiAssistantManager.sendMessage(message, options);
+};
 export const setAIModel = (model: string) => aiAssistantManager.setModel(model);
 export const setAITemperature = (temp: number) => aiAssistantManager.setTemperature(temp);
 export const clearAIConversation = () => aiAssistantManager.clearConversation();
 export const checkAIClusterHealth = () => aiAssistantManager.checkClusterHealth();
-;
 // Initialize AI assistant manager when module loads
 if (browser) {
   // Auto-cleanup on page unload

@@ -2,6 +2,9 @@
 // Comprehensive performance monitoring and metrics collection system
 // Real-time monitoring of go-llama, GPU acceleration, and TypeScript error processing
 
+//go:build ignore
+// +build ignore
+
 package main
 
 import (

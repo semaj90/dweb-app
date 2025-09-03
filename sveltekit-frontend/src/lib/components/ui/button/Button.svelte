@@ -11,6 +11,7 @@
     iconPosition?: 'left' | 'right';
     fullWidth?: boolean;
     class?: string;
+    to?: string; // optional navigation href
     children?: Snippet;
   }
 
@@ -22,7 +23,8 @@
     iconPosition = 'left',
     fullWidth = false,
     class: className = '',
-    children,
+  to = undefined,
+  children,
     ...restProps
   }: Props = $props();
 
@@ -36,50 +38,39 @@
   ].filter(Boolean).join(' '));
 </script>
 
-<button
-  class={classes}
-  disabled={loading}
-  data-button-root
-  {...restProps}
->
-  {#if icon && iconPosition === 'left'}
-    <i class={icon} aria-hidden="true"></i>
-  {/if}
-  {#if loading}
-    <span class="loader mr-2"></span>
-  {/if}
-  {@render children?.()}
-  {#if icon && iconPosition === 'right'}
-    <i class={icon} aria-hidden="true"></i>
-  {/if}
-</button>
-
+{#if to}
+  <a class={classes} data-button-root href={to} {...restProps}>
+    {#if icon && iconPosition === 'left'}
+      <i class={icon} aria-hidden="true"></i>
+    {/if}
+    {#if loading}
+      <span class="loader mr-2"></span>
+    {/if}
+    {@render children?.()}
+    {#if icon && iconPosition === 'right'}
+      <i class={icon} aria-hidden="true"></i>
+    {/if}
+  </a>
+{:else}
+  <button
+    class={classes}
+    disabled={loading}
+    data-button-root
+    {...restProps}
+  >
+    {#if icon && iconPosition === 'left'}
+      <i class={icon} aria-hidden="true"></i>
+    {/if}
+    {#if loading}
+      <span class="loader mr-2"></span>
+    {/if}
+    {@render children?.()}
+    {#if icon && iconPosition === 'right'}
+      <i class={icon} aria-hidden="true"></i>
+    {/if}
+  </button>
+{/if}
 <style>
-  :global(.nier-btn) {
-    font-family: 'Oswald', 'Montserrat', 'Inter', 'Segoe UI', 'Arial', 'Helvetica Neue', Arial, 'Liberation Sans', 'Noto Sans', 'Gothic A1', 'Gothic', 'sans-serif';
-    font-weight: 600;
-    letter-spacing: 0.01em;
-    text-transform: uppercase;
-    background: linear-gradient(90deg, #23272e 0%, #393e46 100%);
-    color: #f3f3f3;
-    border: none;
-    border-radius: 0.5rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-    cursor: pointer;
-    min-width: 2.5rem;
-    min-height: 2.5rem;
-    outline: none;
-  }
-  :global(.nier-btn:hover) {
-    background: linear-gradient(90deg, #393e46 0%, #23272e 100%);
-    color: #fff;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-  }
-  :global(.nier-btn:active) {
-    background: #181a1b;
-    color: #e0e0e0;
-  }
   :global(.nier-btn[disabled]),
   :global(.nier-btn.btn-loading) {
     opacity: 0.6;
@@ -118,7 +109,5 @@
     display: inline-block;
     vertical-align: middle;
   }
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
+  @keyframes spin { to { transform: rotate(360deg); } }
 </style>

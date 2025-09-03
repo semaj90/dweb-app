@@ -113,7 +113,8 @@ export interface UnifiedPerformanceMetrics {
 /**
  * Main Unified WASM-GPU Orchestrator Class
  */
-export class UnifiedWASMGPUOrchestrator {;
+export class UnifiedWASMGPUOrchestrator {
+;
   private config: UnifiedWASMGPUConfig;
   private nesGPUBridge: NESStyleGPUBridge | null = null;
   private ollamaService: any | null = null;
@@ -266,7 +267,7 @@ export class UnifiedWASMGPUOrchestrator {;
     try {
       // Load YoRHa WASM module
       const wasmModule = await this.loadWASMModule('yorha_neural_processor', '/wasm/yorha-neural-processor.js');
-      
+
       if (wasmModule && wasmModule.YoRHaNeuralProcessor) {
         this.yorhaProcessor = new wasmModule.YoRHaNeuralProcessor();
         console.log('✅ YoRHa Neural Processor initialized');
@@ -354,7 +355,7 @@ export class UnifiedWASMGPUOrchestrator {;
    * Process legal document with best available service
    */
   async processLegalDocument(
-    document: string, 
+    document: string,
     options: {
       analysisType?: 'contract' | 'evidence' | 'case_brief' | 'statute';
       priority?: 'low' | 'medium' | 'high' | 'critical';
@@ -510,11 +511,11 @@ export class UnifiedWASMGPUOrchestrator {;
     // Check QUIC Gateway (via HTTP request)
     if (this.config.enableQUICGateway) {
       try {
-        const quicResponse = await fetch('https://localhost:8445/health', { 
+        const quicResponse = await fetch('https://localhost:8445/health', {
           method: 'GET',
           signal: AbortSignal.timeout(5000)
         });
-        
+
         statuses.push({
           serviceName: 'QUIC Gateway',
           available: quicResponse.ok,
@@ -547,7 +548,7 @@ export class UnifiedWASMGPUOrchestrator {;
   private insertTaskByPriority(task: WASMGPUTask): void {
     const priorities = { critical: 4, high: 3, medium: 2, low: 1 };
     const taskPriority = priorities[task.priority] || 1;
-    
+
     let insertIndex = this.taskQueue.length;
     for (let i = 0; i < this.taskQueue.length; i++) {
       const queuedPriority = priorities[this.taskQueue[i].priority] || 1;
@@ -556,7 +557,7 @@ export class UnifiedWASMGPUOrchestrator {;
         break;
       }
     }
-    
+
     this.taskQueue.splice(insertIndex, 0, task);
   }
 
@@ -631,10 +632,10 @@ export class UnifiedWASMGPUOrchestrator {;
 
         case 'ollama_llama':
           if (this.ollamaService && task.data.document) {
-            const prompt = task.data.analysisType === 'contract' 
+            const prompt = task.data.analysisType === 'contract'
               ? `Analyze this contract: ${task.data.document}`
               : `Analyze this legal document: ${task.data.document}`;
-            
+
             result = await this.ollamaService.generateCompletion({
               prompt,
               maxTokens: 1024,
@@ -662,7 +663,7 @@ export class UnifiedWASMGPUOrchestrator {;
           const gpuModule = this.wasmModules.get('gpu_compute');
           if (gpuModule && gpuModule.GPUCompute) {
             const compute = new gpuModule.GPUCompute();
-            
+
             switch (task.data.operation) {
               case 'matmul':
                 result = compute.matmul(task.data.a, task.data.b, task.data.m, task.data.n, task.data.k);
@@ -710,7 +711,7 @@ export class UnifiedWASMGPUOrchestrator {;
     }
 
     const processingTime = performance.now() - startTime;
-    
+
     return {
       taskId: task.id,
       success,
@@ -759,7 +760,7 @@ export class UnifiedWASMGPUOrchestrator {;
           resolve(result);
           return;
         }
-        
+
         setTimeout(checkResult, 100);
       };
 
@@ -805,7 +806,7 @@ export class UnifiedWASMGPUOrchestrator {;
    */
   private estimateMemoryUsage(result: any): number {
     if (!result) return 0;
-    
+
     try {
       const jsonString = JSON.stringify(result);
       return jsonString.length * 2; // Rough estimate (UTF-16)
@@ -819,51 +820,52 @@ export class UnifiedWASMGPUOrchestrator {;
    */
   async cleanup(): Promise<void> {
     console.log('🧹 Cleaning up Unified WASM-GPU Orchestrator...');
-    
+
     // Clear task queues
     this.taskQueue.length = 0;
     this.activeTasks.clear();
     this.taskResults.clear();
-    
+
     // Cleanup individual services
     if (this.nesGPUBridge) {
       this.nesGPUBridge.dispose();
     }
-    
+
     if (this.ollamaService && this.ollamaService.shutdown) {
       await this.ollamaService.shutdown();
     }
-    
+
     // Cleanup GPU service integration
     await gpuServiceIntegration.cleanup();
-    
+
     this.isInitialized = false;
     this.status.set('initializing');
-    
+
     console.log('✅ Unified WASM-GPU Orchestrator cleanup complete');
   }
 }
 
 // Factory function for Svelte integration
-export function createUnifiedWASMGPUOrchestrator(config?: Partial<UnifiedWASMGPUConfig>) {;
+export function createUnifiedWASMGPUOrchestrator(config?: Partial<UnifiedWASMGPUConfig>) {
+;
   const orchestrator = new UnifiedWASMGPUOrchestrator(config);
 
   return {
     orchestrator,
-    
+
     // Reactive stores
     status: orchestrator.status,
     performanceMetrics: orchestrator.performanceMetrics,
     serviceStatuses: orchestrator.serviceStatuses,
     queueLength: orchestrator.queueLength,
-    
+
     // Derived stores
     isReady: derived(orchestrator.status, $status => $status === 'ready'),
     totalServices: derived(orchestrator.serviceStatuses, $statuses => $statuses.length),
-    healthyServices: derived(orchestrator.serviceStatuses, $statuses => 
+    healthyServices: derived(orchestrator.serviceStatuses, $statuses =>
       $statuses.filter(s => s.healthy).length
     ),
-    
+
     // API methods
     processLegalDocument: orchestrator.processLegalDocument.bind(orchestrator),
     processCanvasState: orchestrator.processCanvasState.bind(orchestrator),
@@ -875,7 +877,7 @@ export function createUnifiedWASMGPUOrchestrator(config?: Partial<UnifiedWASMGPU
 }
 
 // Global instance
-export const unifiedWASMGPUOrchestrator = new UnifiedWASMGPUOrchestrator({;
+export const unifiedWASMGPUOrchestrator = new UnifiedWASMGPUOrchestrator({
   enableNESBridge: true,
   enableOllamaIntegration: true,
   enableYoRHaProcessor: true,

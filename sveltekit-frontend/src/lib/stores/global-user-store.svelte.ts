@@ -4,8 +4,8 @@
 import { writable, derived, type Writable } from 'svelte/store';
 import { browser } from '$app/environment';
 import type { User, Session } from 'lucia';
-import type { 
 import crypto from "crypto";
+import type { 
   UserPattern, 
   RecommendationResult, 
   ChatAnalytics 

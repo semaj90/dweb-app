@@ -1,5 +1,5 @@
-//go:build legacy
-// +build legacy
+//go:build experimental || legacy
+// +build experimental legacy
 
 package main
 
@@ -102,7 +102,7 @@ func main() {
 	// Proxy everything else to Vite
 	r.NoRoute(func(c *gin.Context) {
 		path := c.Request.URL.Path
-		
+
 		// If it's an API route, let Gin handle it
 		if strings.HasPrefix(path, "/api/") || path == "/ws" {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Endpoint not found"})
@@ -118,13 +118,13 @@ func main() {
 			req.URL.Host = viteURL.Host
 			req.Host = viteURL.Host
 		}
-		
+
 		proxy.Director = director
 		proxy.ServeHTTP(c.Writer, c.Request)
 	})
 
 	log.Printf("🚀 Go-Enhanced Vite Server starting on http://localhost%s", goServerPort)
-	log.Printf("📦 Proxying frontend to %s", viteDevServerURL) 
+	log.Printf("📦 Proxying frontend to %s", viteDevServerURL)
 	log.Printf("🤖 Go API endpoints: /api/*, /ws")
 
 	if err := r.Run(goServerPort); err != nil {
@@ -135,7 +135,7 @@ func main() {
 // Simplified batch embedding handler
 func simpleBatchEmbedHandler(c *gin.Context) {
 	start := time.Now()
-	
+
 	var req SimpleBatchEmbedRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
@@ -150,19 +150,19 @@ func simpleBatchEmbedHandler(c *gin.Context) {
 		c.JSON(http.StatusOK, cached)
 		return
 	}
-	
+
 	// Process embeddings with parallel workers
 	embeddings := make([][]float32, len(req.Chunks))
 	var wg sync.WaitGroup
 	semaphore := make(chan struct{}, 4) // Limit concurrent Ollama calls
-	
+
 	for i, chunk := range req.Chunks {
 		wg.Add(1)
 		go func(idx int, text string) {
 			defer wg.Done()
 			semaphore <- struct{}{}
 			defer func() { <-semaphore }()
-			
+
 			embedding, err := getSimpleOllamaEmbedding(text, req.Model)
 			if err != nil {
 				fmt.Printf("Error getting embedding for chunk %d: %v\n", idx, err)
@@ -172,9 +172,9 @@ func simpleBatchEmbedHandler(c *gin.Context) {
 			}
 		}(i, chunk)
 	}
-	
+
 	wg.Wait()
-	
+
 	// Prepare response
 	response := SimpleBatchEmbedResponse{
 		DocID:      req.DocID,
@@ -186,48 +186,48 @@ func simpleBatchEmbedHandler(c *gin.Context) {
 			ProcessTimeMs: time.Since(start).Milliseconds(),
 		},
 	}
-	
+
 	// Cache to memory
 	embedCache.Store(cacheKey, response)
-	
+
 	c.JSON(http.StatusOK, response)
 }
 
 func getSimpleOllamaEmbedding(text string, model string) ([]float32, error) {
 	// Check if Ollama is running
 	ollamaURL := "http://localhost:11434/api/embeddings"
-	
+
 	if model == "" {
 		model = "gemma-legal" // Default to custom model
 	}
-	
+
 	reqBody := SimpleOllamaEmbedRequest{
 		Model:  model,
 		Prompt: text,
 	}
-	
+
 	jsonData, err := json.Marshal(reqBody)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	resp, err := http.Post(ollamaURL, "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
 		// Fallback to mock embedding for development
 		return generateSimpleMockEmbedding(text), nil
 	}
 	defer resp.Body.Close()
-	
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return generateSimpleMockEmbedding(text), nil
 	}
-	
+
 	var embedResp SimpleOllamaEmbedResponse
 	if err := json.Unmarshal(body, &embedResp); err != nil {
 		return generateSimpleMockEmbedding(text), nil
 	}
-	
+
 	return embedResp.Embedding, nil
 }
 
@@ -238,7 +238,7 @@ func generateSimpleMockEmbedding(text string) []float32 {
 	for _, ch := range text {
 		hash = (hash * 31 + int(ch)) % 1000000
 	}
-	
+
 	for i := range embedding {
 		embedding[i] = float32((hash+i)%100) / 100.0
 	}
@@ -253,7 +253,7 @@ func handleWebSocket(c *gin.Context) {
 		return
 	}
 	defer conn.Close()
-	
+
 	docId := c.Query("docId")
 	log.Printf("📡 WebSocket connected - docId: %s", docId)
 

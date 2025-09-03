@@ -1,3 +1,6 @@
+//go:build experimental
+// +build experimental
+
 package main
 
 import (
@@ -96,14 +99,11 @@ func captureSnapshot() MetricSnapshot {
 
 	// Example reading from runtime/metrics (Go 1.20+)
 	// Here we just demonstrate one metric if available
-	var lastPause uint64
+	// var lastPause uint64 // removed: unused placeholder; pause info captured via ms.PauseNs
 	samples := []metrics.Sample{{Name: "/gc/pauses:seconds"}}
 	metrics.Read(samples)
 	if len(samples) > 0 && samples[0].Value.Kind() == metrics.KindFloat64Histogram {
-		h := samples[0].Value.Float64Histogram()
-		if len(h.Buckets) > 0 {
-			lastPause = uint64(h.Buckets[len(h.Buckets)-1])
-		}
+		// Removed unused lastPause assignment; keeping histogram read conditional removed to avoid unused vars
 	}
 
 	return MetricSnapshot{

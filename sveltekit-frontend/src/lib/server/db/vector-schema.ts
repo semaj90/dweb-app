@@ -15,7 +15,7 @@ import { vector } from "pgvector/drizzle-orm";
 import { sql } from "drizzle-orm";
 
 // Document embeddings for semantic search
-export const documentEmbeddings = pgTable(;
+export const documentEmbeddings = pgTable(
   "document_embeddings",
   {
     id: uuid("id")
@@ -52,7 +52,7 @@ export const documentEmbeddings = pgTable(;
 );
 
 // Search queries and their embeddings for caching
-export const searchQueries = pgTable(;
+export const searchQueries = pgTable(
   "search_queries",
   {
     id: uuid("id")
@@ -82,7 +82,7 @@ export const searchQueries = pgTable(;
 );
 
 // AI model configurations
-export const aiModels = pgTable(;
+export const aiModels = pgTable(
   "ai_models",
   {
     id: uuid("id")

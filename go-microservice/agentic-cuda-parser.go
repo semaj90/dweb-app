@@ -1,5 +1,5 @@
-//go:build legacy
-// +build legacy
+//go:build experimental || legacy
+// +build experimental legacy
 
 package main
 
@@ -10,11 +10,11 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"runtime"
+	"strings"
 	"sync"
 	"time"
-	"strings"
-	"regexp"
 )
 
 // Advanced Agentic Programming System with CUDA + Tensor Processing
@@ -262,7 +262,7 @@ func initTensorCore() *TensorCore {
 		ComputeCaps: "8.9",
 		StreamCount: 128,
 	}}
-	
+
 	return &TensorCore{
 		Devices:       devices,
 		ActiveStreams: 32,
@@ -282,14 +282,14 @@ func initSelfOrgMap(width, height int, learningRate, radius float64) *SelfOrgMap
 				Activations: 0,
 				LastUpdated: time.Now(),
 			}
-			
+
 			// Initialize random weights
 			for k := range neurons[i][j].Weights {
 				neurons[i][j].Weights[k] = float64(i+j) / float64(width+height)
 			}
 		}
 	}
-	
+
 	return &SelfOrgMap{
 		Width:        width,
 		Height:       height,
@@ -315,7 +315,7 @@ func initJSONLogger(filename string) *JSONLogger {
 func (jl *JSONLogger) Log(level, category, message string, metadata map[string]interface{}) {
 	jl.mu.Lock()
 	defer jl.mu.Unlock()
-	
+
 	logEntry := map[string]interface{}{
 		"timestamp": time.Now().Format(time.RFC3339Nano),
 		"level":     level,
@@ -324,13 +324,13 @@ func (jl *JSONLogger) Log(level, category, message string, metadata map[string]i
 		"metadata":  metadata,
 		"thread":    runtime.NumGoroutine(),
 	}
-	
+
 	// Write to file
 	if file, err := os.OpenFile(jl.LogFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644); err == nil {
 		json.NewEncoder(file).Encode(logEntry)
 		file.Close()
 	}
-	
+
 	// Update stream statistics
 	streamName := fmt.Sprintf("%s-%s", level, category)
 	if stream, exists := jl.Streams[streamName]; exists {
@@ -360,13 +360,13 @@ func initFileIndexer(rootPaths []string) *FileIndexer {
 
 func (fi *FileIndexer) ScanAndIndex() error {
 	fi.IndexedFiles = make(map[string]FileEntry)
-	
+
 	for _, rootPath := range fi.RootPaths {
 		err := filepath.Walk(rootPath, func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return nil // Continue on errors
 			}
-			
+
 			// Check if file extension is supported
 			ext := filepath.Ext(path)
 			supported := false
@@ -376,11 +376,11 @@ func (fi *FileIndexer) ScanAndIndex() error {
 					break
 				}
 			}
-			
+
 			if !supported || info.IsDir() {
 				return nil
 			}
-			
+
 			// Create file entry
 			entry := FileEntry{
 				Path:     path,
@@ -390,9 +390,9 @@ func (fi *FileIndexer) ScanAndIndex() error {
 				Metadata: make(map[string]string),
 				Patterns: make([]string, 0),
 			}
-			
+
 			// Read content for text files
-			if strings.HasSuffix(ext, ".md") || strings.HasSuffix(ext, ".txt") || 
+			if strings.HasSuffix(ext, ".md") || strings.HasSuffix(ext, ".txt") ||
 			   strings.HasSuffix(ext, ".json") || strings.HasSuffix(ext, ".js") ||
 			   strings.HasSuffix(ext, ".mjs") || strings.HasSuffix(ext, ".ts") ||
 			   strings.HasSuffix(ext, ".tsx") || strings.HasSuffix(ext, ".svelte") ||
@@ -402,17 +402,17 @@ func (fi *FileIndexer) ScanAndIndex() error {
 					entry.Patterns = fi.extractPatterns(string(content))
 				}
 			}
-			
+
 			// Store indexed file
 			fi.IndexedFiles[path] = entry
 			return nil
 		})
-		
+
 		if err != nil {
 			return err
 		}
 	}
-	
+
 	fi.LastScan = time.Now()
 	fi.generateBestPractices()
 	return nil
@@ -420,7 +420,7 @@ func (fi *FileIndexer) ScanAndIndex() error {
 
 func (fi *FileIndexer) extractPatterns(content string) []string {
 	patterns := make([]string, 0)
-	
+
 	// Extract common patterns
 	regexes := map[string]*regexp.Regexp{
 		"function":     regexp.MustCompile(`function\s+(\w+)`),
@@ -433,7 +433,7 @@ func (fi *FileIndexer) extractPatterns(content string) []string {
 		"fixme":        regexp.MustCompile(`(?i)FIXME[:\s]*(.+)`),
 		"best_practice": regexp.MustCompile(`(?i)best.practice[:\s]*(.+)`),
 	}
-	
+
 	for patternType, regex := range regexes {
 		matches := regex.FindAllStringSubmatch(content, -1)
 		for _, match := range matches {
@@ -442,24 +442,24 @@ func (fi *FileIndexer) extractPatterns(content string) []string {
 			}
 		}
 	}
-	
+
 	return patterns
 }
 
 func (fi *FileIndexer) generateBestPractices() {
 	fi.BestPractices = make([]BestPractice, 0)
-	
+
 	// Analyze patterns across files to generate best practices
 	patternCounts := make(map[string]int)
 	patternSources := make(map[string][]string)
-	
+
 	for path, entry := range fi.IndexedFiles {
 		for _, pattern := range entry.Patterns {
 			patternCounts[pattern]++
 			patternSources[pattern] = append(patternSources[pattern], path)
 		}
 	}
-	
+
 	// Generate best practices from common patterns
 	for pattern, count := range patternCounts {
 		if count >= 3 { // Pattern appears in at least 3 files
@@ -467,9 +467,9 @@ func (fi *FileIndexer) generateBestPractices() {
 			if len(parts) == 2 {
 				category := parts[0]
 				description := parts[1]
-				
+
 				confidence := float64(count) / float64(len(fi.IndexedFiles))
-				
+
 				bestPractice := BestPractice{
 					Category:    category,
 					Description: description,
@@ -478,7 +478,7 @@ func (fi *FileIndexer) generateBestPractices() {
 					Examples:    patternSources[pattern],
 					LastUpdated: time.Now(),
 				}
-				
+
 				fi.BestPractices = append(fi.BestPractices, bestPractice)
 			}
 		}
@@ -510,7 +510,7 @@ func initAutoGenAgent() *AutoGenAgent {
 			Status:       "active",
 		},
 		{
-			Name:         "Svelte Specialist", 
+			Name:         "Svelte Specialist",
 			Role:         "component_analyzer",
 			Capabilities: []string{"svelte", "ui_patterns", "runes_migration"},
 			Model:        "claude-3",
@@ -524,7 +524,7 @@ func initAutoGenAgent() *AutoGenAgent {
 			Status:       "active",
 		},
 	}
-	
+
 	return &AutoGenAgent{
 		Agents:        agents,
 		Conversations: make([]Conversation, 0),
@@ -539,7 +539,7 @@ func initConcurrentTodo() *ConcurrentTodo {
 		Running:       make(map[string]bool),
 		MaxConcurrent: 3,
 	}
-	
+
 	agents := []TodoAgent{
 		{
 			Name:        "MCP Context7 Agent",
@@ -549,7 +549,7 @@ func initConcurrentTodo() *ConcurrentTodo {
 		},
 		{
 			Name:        "File Indexer Agent",
-			Type:        "file_indexer", 
+			Type:        "file_indexer",
 			Status:      "idle",
 			Performance: AgentPerformance{},
 		},
@@ -560,7 +560,7 @@ func initConcurrentTodo() *ConcurrentTodo {
 			Performance: AgentPerformance{},
 		},
 	}
-	
+
 	return &ConcurrentTodo{
 		Tasks:     make([]Task, 0),
 		Agents:    agents,
@@ -591,10 +591,10 @@ func initNetworkLayer(port int) *NetworkLayer {
 func (as *AgenticSystem) healthHandler(w http.ResponseWriter, r *http.Request) {
 	as.mu.RLock()
 	defer as.mu.RUnlock()
-	
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	
+
 	health := map[string]interface{}{
 		"status":      "healthy",
 		"version":     "2.0.0-agentic",
@@ -617,9 +617,9 @@ func (as *AgenticSystem) healthHandler(w http.ResponseWriter, r *http.Request) {
 			"log_streams":       len(as.JSONLogger.Streams),
 		},
 	}
-	
+
 	json.NewEncoder(w).Encode(health)
-	
+
 	// Log the health check
 	as.JSONLogger.Log("info", "health", "Health check requested", map[string]interface{}{
 		"remote_addr": r.RemoteAddr,
@@ -630,10 +630,10 @@ func (as *AgenticSystem) healthHandler(w http.ResponseWriter, r *http.Request) {
 func (as *AgenticSystem) agenticStatusHandler(w http.ResponseWriter, r *http.Request) {
 	as.mu.RLock()
 	defer as.mu.RUnlock()
-	
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	
+
 	json.NewEncoder(w).Encode(as)
 }
 
@@ -656,7 +656,7 @@ func (as *AgenticSystem) Start() error {
 		"cuda_enabled": as.CUDAEnabled,
 		"components":   len(as.NetworkLayer.Endpoints),
 	})
-	
+
 	// Start file indexing
 	go func() {
 		for {
@@ -674,21 +674,21 @@ func (as *AgenticSystem) Start() error {
 			time.Sleep(5 * time.Minute) // Re-index every 5 minutes
 		}
 	}()
-	
+
 	// Start concurrent todo processing
 	go as.processConcurrentTodos()
-	
+
 	// Setup HTTP routes
 	http.HandleFunc("/health", as.healthHandler)
 	http.HandleFunc("/agentic/status", as.agenticStatusHandler)
-	
+
 	// Start HTTP server
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%d", as.NetworkLayer.Port),
 		Handler: nil,
 	}
 	as.NetworkLayer.HTTPServer = server
-	
+
 	fmt.Printf("🤖 Advanced Agentic Programming System starting on port %d\n", as.NetworkLayer.Port)
 	fmt.Printf("🚀 CUDA Enabled: %v\n", as.CUDAEnabled)
 	fmt.Printf("🧠 Self-Organizing Map: %dx%d neurons\n", as.SelfOrgMap.Width, as.SelfOrgMap.Height)
@@ -697,26 +697,26 @@ func (as *AgenticSystem) Start() error {
 	fmt.Printf("⚡ Tensor Core: %d devices, %d streams\n", len(as.TensorCore.Devices), as.TensorCore.ActiveStreams)
 	fmt.Printf("🎯 AutoGen Agents: %d active\n", len(as.AutoGenAgent.Agents))
 	fmt.Printf("📝 Todo Agents: %d concurrent\n", len(as.TodoManager.Agents))
-	
+
 	// Detect Claude CLI
 	if detected, message := detectClaudeCLI(); detected {
 		fmt.Printf("🔧 Claude CLI: %s\n", message)
 		as.JSONLogger.Log("info", "claude-cli", message, nil)
 	}
-	
+
 	fmt.Printf("\n📡 Endpoints:\n")
 	for endpoint, method := range as.NetworkLayer.Endpoints {
 		fmt.Printf("   %s http://localhost:%d%s\n", method, as.NetworkLayer.Port, endpoint)
 	}
 	fmt.Printf("\n")
-	
+
 	return server.ListenAndServe()
 }
 
 func (as *AgenticSystem) processConcurrentTodos() {
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
-	
+
 	for {
 		select {
 		case <-ticker.C:
@@ -727,15 +727,15 @@ func (as *AgenticSystem) processConcurrentTodos() {
 					taskID := as.TodoManager.Scheduler.Queue[0]
 					as.TodoManager.Scheduler.Queue = as.TodoManager.Scheduler.Queue[1:]
 					as.TodoManager.Scheduler.Running[taskID] = true
-					
+
 					// Update agent status
 					as.TodoManager.Agents[i].Status = "running"
 					as.TodoManager.Agents[i].CurrentTask = taskID
 					as.TodoManager.Agents[i].Performance.LastActive = time.Now()
-					
+
 					// Process task based on agent type
 					go as.processTaskByAgent(&as.TodoManager.Agents[i], taskID)
-					
+
 					as.JSONLogger.Log("info", "todo", "Task assigned to agent", map[string]interface{}{
 						"task_id":    taskID,
 						"agent_name": agent.Name,
@@ -750,30 +750,30 @@ func (as *AgenticSystem) processConcurrentTodos() {
 func (as *AgenticSystem) processTaskByAgent(agent *TodoAgent, taskID string) {
 	startTime := time.Now()
 	success := true
-	
+
 	defer func() {
 		duration := time.Since(startTime)
 		agent.Status = "idle"
 		agent.CurrentTask = ""
 		agent.Performance.TasksCompleted++
-		
+
 		// Update success rate
 		if success {
 			agent.Performance.SuccessRate = (agent.Performance.SuccessRate + 1.0) / 2.0
 		} else {
 			agent.Performance.SuccessRate = agent.Performance.SuccessRate / 2.0
 		}
-		
+
 		// Update average duration
 		if agent.Performance.AvgDuration == 0 {
 			agent.Performance.AvgDuration = duration
 		} else {
 			agent.Performance.AvgDuration = (agent.Performance.AvgDuration + duration) / 2
 		}
-		
+
 		// Remove from running tasks
 		delete(as.TodoManager.Scheduler.Running, taskID)
-		
+
 		as.JSONLogger.Log("info", "todo", "Task completed by agent", map[string]interface{}{
 			"task_id":    taskID,
 			"agent_name": agent.Name,
@@ -781,7 +781,7 @@ func (as *AgenticSystem) processTaskByAgent(agent *TodoAgent, taskID string) {
 			"success":    success,
 		})
 	}()
-	
+
 	switch agent.Type {
 	case "mcp":
 		// Fetch from MCP Context7
@@ -789,7 +789,7 @@ func (as *AgenticSystem) processTaskByAgent(agent *TodoAgent, taskID string) {
 			"task_id": taskID,
 		})
 		time.Sleep(2 * time.Second) // Mock processing time
-		
+
 	case "file_indexer":
 		// Index files and generate best practices
 		as.JSONLogger.Log("info", "indexer", "Processing file indexing task", map[string]interface{}{
@@ -798,7 +798,7 @@ func (as *AgenticSystem) processTaskByAgent(agent *TodoAgent, taskID string) {
 		if err := as.FileIndexer.ScanAndIndex(); err != nil {
 			success = false
 		}
-		
+
 	case "best_practices":
 		// Generate best practices from indexed files
 		as.JSONLogger.Log("info", "practices", "Processing best practices task", map[string]interface{}{

@@ -45,7 +45,7 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (event.request.method !== 'GET') return;
-  
+
   // Skip chrome-extension and other non-http requests
   if (!event.request.url.startsWith('http')) return;
 
@@ -56,7 +56,7 @@ self.addEventListener('fetch', (event) => {
         if (response) {
           return response;
         }
-        
+
         // Otherwise fetch from network
         return fetch(event.request)
           .then(response => {
@@ -67,9 +67,9 @@ self.addEventListener('fetch', (event) => {
 
             // Clone the response before caching
             const responseToCache = response.clone();
-            
+
             // Cache API responses and static assets
-            if (event.request.url.includes('/api/') || 
+            if (event.request.url.includes('/api/') ||
                 event.request.url.includes('.js') ||
                 event.request.url.includes('.css')) {
               caches.open(CACHE_NAME)
@@ -87,7 +87,7 @@ self.addEventListener('fetch', (event) => {
                 headers: { 'Content-Type': 'text/html' }
               });
             }
-            
+
             // Return empty response for other requests
             return new Response();
           });

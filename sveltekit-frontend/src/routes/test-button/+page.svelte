@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Button from '$lib/components/ui/MeltButton.svelte';
+  import Button from '$lib/components/ui/bitsbutton.svelte';
 </script>
 
 <svelte:head>

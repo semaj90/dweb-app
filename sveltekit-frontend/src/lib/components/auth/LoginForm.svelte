@@ -290,7 +290,7 @@
             <button
               type="button"
               class="absolute inset-y-0 right-0 pr-3 flex items-center"
-              on:click={togglePasswordVisibility}
+              onclick={togglePasswordVisibility}
               disabled={isLoading}
             >
               {#if showPassword}

@@ -289,7 +289,7 @@
 </script>
 
 <!-- Chat Interface -->
-<div class="ollama-chat-interface {class}">
+<div class="ollama-chat-interface {className}">
   <!-- Header with Status -->
   <Card class="mb-4">
     <CardHeader class="pb-3">

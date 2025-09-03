@@ -1,3 +1,6 @@
+//go:build experimental || legacy
+// +build experimental legacy
+
 package main
 
 import (
@@ -149,7 +152,7 @@ func (sws *SWRCacheService) Start() {
 	log.Printf("🔄 Redis SWR Cache Service starting on port %s", sws.port)
 	log.Printf("📊 Telemetry collection active (P95/P99 latency tracking)")
 	log.Printf("🐳 Docker API integration: %v", sws.cache.dockerAPI.enabled)
-	
+
 	if err := r.Run(":" + sws.port); err != nil {
 		log.Fatalf("Failed to start SWR cache service: %v", err)
 	}
@@ -204,7 +207,7 @@ func (sws *SWRCacheService) handleCacheSet(c *gin.Context) {
 	}
 
 	success := sws.setWithWriteBehind(request.Key, request.Data, request.TTL)
-	
+
 	c.JSON(http.StatusOK, gin.H{
 		"status":  "cached",
 		"key":     request.Key,
@@ -224,7 +227,7 @@ func (sws *SWRCacheService) handleNodesWithSWR(c *gin.Context) {
 		// Cache miss or stale data - fetch from graph store
 		nodes := sws.fetchNodesFromStore(label)
 		sws.setWithWriteBehind(cacheKey, nodes, 300) // Cache for 5 minutes
-		
+
 		entry = &CacheEntry{
 			Data:      nodes,
 			Timestamp: time.Now().Unix(),
@@ -234,7 +237,7 @@ func (sws *SWRCacheService) handleNodesWithSWR(c *gin.Context) {
 	}
 
 	duration := time.Since(startTime).Nanoseconds() / 1000000
-	
+
 	c.Header("X-Cache", map[bool]string{true: "HIT", false: "MISS"}[hit])
 	c.JSON(http.StatusOK, gin.H{
 		"nodes":      entry.Data,
@@ -246,13 +249,13 @@ func (sws *SWRCacheService) handleNodesWithSWR(c *gin.Context) {
 
 func (sws *SWRCacheService) handlePrecedentsWithSWR(c *gin.Context) {
 	cacheKey := "legal:precedents"
-	
+
 	entry, hit := sws.getWithSWR(cacheKey)
-	
+
 	if entry == nil {
 		precedents := sws.fetchPrecedentsFromStore()
 		sws.setWithWriteBehind(cacheKey, precedents, 600) // Cache for 10 minutes
-		
+
 		entry = &CacheEntry{
 			Data:    precedents,
 			IsStale: false,
@@ -279,13 +282,13 @@ func (sws *SWRCacheService) handleCypherWithSWR(c *gin.Context) {
 
 	// Create cache key from query hash
 	cacheKey := fmt.Sprintf("cypher:%x", query.Cypher)
-	
+
 	entry, hit := sws.getWithSWR(cacheKey)
-	
+
 	if entry == nil {
 		results := sws.executeCypherQuery(query.Cypher)
 		sws.setWithWriteBehind(cacheKey, results, 180) // Cache for 3 minutes
-		
+
 		entry = &CacheEntry{
 			Data:    results,
 			IsStale: false,
@@ -367,7 +370,7 @@ func (sws *SWRCacheService) setWithWriteBehind(key string, data interface{}, ttl
 func (sws *SWRCacheService) backgroundRefresh(key string) {
 	// Implement background data refresh logic
 	log.Printf("🔄 Background refresh triggered for key: %s", key)
-	
+
 	// This would typically fetch fresh data from the primary data source
 	// and update the cache
 }
@@ -423,7 +426,7 @@ func (sws *SWRCacheService) calculatePercentile(data []float64, percentile float
 	if len(data) == 0 {
 		return 0
 	}
-	
+
 	// Simplified percentile calculation
 	index := int(percentile/100*float64(len(data))) - 1
 	if index < 0 {
@@ -432,7 +435,7 @@ func (sws *SWRCacheService) calculatePercentile(data []float64, percentile float
 	if index >= len(data) {
 		index = len(data) - 1
 	}
-	
+
 	return data[index]
 }
 
@@ -469,7 +472,7 @@ func (sws *SWRCacheService) getRedisStatus() string {
 	if sws.cache.redis == nil {
 		return "disconnected"
 	}
-	
+
 	ctx := context.Background()
 	_, err := sws.cache.redis.Ping(ctx).Result()
 	if err != nil {
@@ -481,7 +484,7 @@ func (sws *SWRCacheService) getRedisStatus() string {
 func (sws *SWRCacheService) getCacheStats() map[string]interface{} {
 	sws.cache.hitRates.lock.RLock()
 	defer sws.cache.hitRates.lock.RUnlock()
-	
+
 	return map[string]interface{}{
 		"cache_hits":    sws.cache.hitRates.CacheHits,
 		"cache_misses":  sws.cache.hitRates.CacheMisses,
@@ -531,19 +534,19 @@ func (sws *SWRCacheService) handleTelemetryReset(c *gin.Context) {
 
 func (sws *SWRCacheService) handleCacheInvalidate(c *gin.Context) {
 	key := c.Param("key")
-	
+
 	ctx := context.Background()
-	
+
 	// Remove from Redis
 	if sws.cache.redis != nil {
 		sws.cache.redis.Del(ctx, key)
 	}
-	
+
 	// Remove from local cache
 	sws.cache.localCacheLock.Lock()
 	delete(sws.cache.localCache, key)
 	sws.cache.localCacheLock.Unlock()
-	
+
 	c.JSON(http.StatusOK, gin.H{
 		"status": "invalidated",
 		"key":    key,
@@ -552,7 +555,7 @@ func (sws *SWRCacheService) handleCacheInvalidate(c *gin.Context) {
 
 func (sws *SWRCacheService) handleCacheStats(c *gin.Context) {
 	stats := sws.getCacheStats()
-	
+
 	c.JSON(http.StatusOK, gin.H{
 		"cache_layer": "Redis + Local",
 		"redis_status": sws.getRedisStatus(),

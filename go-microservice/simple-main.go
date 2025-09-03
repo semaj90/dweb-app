@@ -1,3 +1,6 @@
+//go:build experimental
+// +build experimental
+
 package main
 
 import (
@@ -308,7 +311,7 @@ func (s *SimpleVectorService) logOperation(req VectorRequest, resp VectorRespons
 	defer cancel()
 
 	query := `
-		INSERT INTO vector_operations (request_id, operation, input_size, processing_time_ms, success) 
+		INSERT INTO vector_operations (request_id, operation, input_size, processing_time_ms, success)
 		VALUES ($1, $2, $3, $4, $5)
 		ON CONFLICT DO NOTHING
 	`
@@ -367,7 +370,7 @@ func main() {
     <div class="container">
         <h1>🚀 Simple Vector Service v2.0</h1>
         <p><strong>Native Windows Deployment</strong> - No Docker, No Complex Dependencies</p>
-        
+
         <div class="endpoint">
             <h3>API Endpoints:</h3>
             <ul>
@@ -395,7 +398,7 @@ func main() {
 
         function testVector() {
             const data = document.getElementById('vectorInput').value || '{"request_id": "test-1", "vector": [1, 2, 3, 4], "operation": "normalize"}';
-            
+
             fetch('/api/vector', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},

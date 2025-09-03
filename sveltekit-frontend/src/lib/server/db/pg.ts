@@ -1,10 +1,10 @@
-import { Pool } from "pg";
+import postgres from "postgres";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { building } from "$app/environment";
 import * as schema from "$lib/server/db/schema-postgres";
 
 let _db: ReturnType<typeof drizzle> | null = null;
-let _pool: Pool | null = null;
+let _sql: ReturnType<typeof postgres> | null = null;
 
 export function getPostgreSQLDatabase() {
   // Skip database initialization during SvelteKit build
@@ -16,16 +16,18 @@ export function getPostgreSQLDatabase() {
 
   const databaseUrl =
     process.env.DATABASE_URL ||
-    "postgresql://legal_admin:123456@localhost:5432/legal_ai_db";
+    "postgresql://postgres:123456@localhost:5432/legal_ai_db";
   const nodeEnv = process.env.NODE_ENV || "development";
 
   console.log("🐘 Connecting to PostgreSQL database:", databaseUrl);
 
-  _pool = new Pool({
-    connectionString: databaseUrl,
+  _sql = postgres(databaseUrl, {
+    max: 20,
+    idle_timeout: 30,
+    connect_timeout: 10,
   });
 
-  _db = drizzle(_pool, { schema });
+  _db = drizzle(_sql, { schema });
 
   // Run migrations (skip in test environment)
   if (nodeEnv !== "test") {
@@ -48,9 +50,9 @@ export const db = getPostgreSQLDatabase();
 
 // Cleanup function
 export async function closeDatabase(): Promise<any> {
-  if (_pool) {
-    await _pool.end();
-    _pool = null;
+  if (_sql) {
+    await _sql.end();
+    _sql = null;
     _db = null;
   }
 }

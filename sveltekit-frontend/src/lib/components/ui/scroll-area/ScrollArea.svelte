@@ -10,7 +10,7 @@
 		class?: string;
 	};
 
-	let { children, class: class, ...rest }: Props = $props();
+	let { children, class: className = '', ...rest }: Props = $props();
 </script>
 
 <ScrollAreaPrimitive.Root

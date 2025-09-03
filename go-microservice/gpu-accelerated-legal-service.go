@@ -1,20 +1,17 @@
-//go:build legacy
-// +build legacy
+//go:build experimental || legacy
+// +build experimental legacy
 
 package main
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"math"
 	"net/http"
 	"os"
 	"runtime"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -23,9 +20,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 	amqp "github.com/rabbitmq/amqp091-go"
+	"golang.org/x/sys/cpu"
 	"gorgonia.org/gorgonia"
 	"gorgonia.org/tensor"
-	"golang.org/x/sys/cpu"
 )
 
 /*
@@ -176,37 +173,37 @@ func (gp *GPUSIMDParser) cpuVectorDot(a, b []float32) float32 {
 func (gp *GPUSIMDParser) avx2VectorDot(a, b []float32) float32 {
 	sum := float32(0.0)
 	i := 0
-	
+
 	// Process 8 floats at a time with AVX2
 	for i <= len(a)-8 {
 		sum += a[i]*b[i] + a[i+1]*b[i+1] + a[i+2]*b[i+2] + a[i+3]*b[i+3] +
 			   a[i+4]*b[i+4] + a[i+5]*b[i+5] + a[i+6]*b[i+6] + a[i+7]*b[i+7]
 		i += 8
 	}
-	
+
 	// Handle remaining elements
 	for ; i < len(a); i++ {
 		sum += a[i] * b[i]
 	}
-	
+
 	return sum
 }
 
 func (gp *GPUSIMDParser) sse42VectorDot(a, b []float32) float32 {
 	sum := float32(0.0)
 	i := 0
-	
+
 	// Process 4 floats at a time with SSE4.2
 	for i <= len(a)-4 {
 		sum += a[i]*b[i] + a[i+1]*b[i+1] + a[i+2]*b[i+2] + a[i+3]*b[i+3]
 		i += 4
 	}
-	
+
 	// Handle remaining elements
 	for ; i < len(a); i++ {
 		sum += a[i] * b[i]
 	}
-	
+
 	return sum
 }
 
@@ -226,22 +223,22 @@ func (gp *GPUSIMDParser) CreateTensor(data []float32, shape ...int) (*tensor.Den
 func (gp *GPUSIMDParser) TensorMatMul(a, b *tensor.Dense) (*tensor.Dense, error) {
 	// Use Gorgonia for tensor operations with GPU acceleration
 	g := gorgonia.NewGraph()
-	
+
 	aNode := gorgonia.NewTensor(g, tensor.Float32, a.Dims(), gorgonia.WithName("a"), gorgonia.WithValue(a))
 	bNode := gorgonia.NewTensor(g, tensor.Float32, b.Dims(), gorgonia.WithName("b"), gorgonia.WithValue(b))
-	
+
 	result, err := gorgonia.Mul(aNode, bNode)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	machine := gorgonia.NewTapeMachine(g)
 	defer machine.Close()
-	
+
 	if err := machine.RunAll(); err != nil {
 		return nil, err
 	}
-	
+
 	return result.Value().(*tensor.Dense), nil
 }
 
@@ -286,7 +283,7 @@ func (rs *RedisService) GetEmbedding(ctx context.Context, key string) ([]float32
 	if err != nil {
 		return nil, err
 	}
-	
+
 	var embedding []float32
 	err = json.Unmarshal([]byte(data), &embedding)
 	return embedding, err
@@ -493,10 +490,10 @@ func (lbs *LegalBERTService) loadLegalKeywords() {
 
 func (lbs *LegalBERTService) RecognizeEntities(text string) ([]LegalEntity, error) {
 	var entities []LegalEntity
-	
+
 	// Tokenize text
 	words := strings.Fields(strings.ToLower(text))
-	
+
 	for i, word := range words {
 		// Check against legal keywords
 		for entityType, keywords := range lbs.keywords {
@@ -507,7 +504,7 @@ func (lbs *LegalBERTService) RecognizeEntities(text string) ([]LegalEntity, erro
 					if err != nil {
 						embedding = nil
 					}
-					
+
 					entity := LegalEntity{
 						Text:       word,
 						Type:       entityType,
@@ -523,7 +520,7 @@ func (lbs *LegalBERTService) RecognizeEntities(text string) ([]LegalEntity, erro
 			}
 		}
 	}
-	
+
 	return entities, nil
 }
 
@@ -533,31 +530,31 @@ func (lbs *LegalBERTService) generateEmbedding(text string) ([]float32, error) {
 	if err == nil {
 		return cached, nil
 	}
-	
+
 	// Generate embedding using simple word2vec-like approach
 	// In production, this would use a proper BERT model
 	embedding := make([]float32, 384) // Common embedding size
-	
+
 	// Simple hash-based embedding generation
 	for i, char := range text {
 		idx := (int(char) + i) % len(embedding)
 		embedding[idx] += float32(math.Sin(float64(idx) * 0.1))
 	}
-	
+
 	// Normalize the embedding
 	norm := float32(0.0)
 	for _, val := range embedding {
 		norm += val * val
 	}
 	norm = float32(math.Sqrt(float64(norm)))
-	
+
 	for i := range embedding {
 		embedding[i] /= norm
 	}
-	
+
 	// Cache the result
 	lbs.cache.SetEmbedding(context.Background(), text, embedding, time.Hour*24)
-	
+
 	return embedding, nil
 }
 
@@ -565,15 +562,15 @@ func (lbs *LegalBERTService) calculateConfidence(word, keyword string) float64 {
 	if word == keyword {
 		return 1.0
 	}
-	
+
 	// Simple Levenshtein-based confidence
 	distance := levenshteinDistance(word, keyword)
 	maxLen := float64(max(len(word), len(keyword)))
-	
+
 	if maxLen == 0 {
 		return 0.0
 	}
-	
+
 	confidence := 1.0 - (float64(distance) / maxLen)
 	return math.Max(0.0, confidence)
 }
@@ -622,19 +619,19 @@ type ProcessingResponse struct {
 func NewGPULegalAIService(redisAddr, rabbitMQURL, ollamaURL string) (*GPULegalAIService, error) {
 	// Initialize GPU SIMD parser
 	gpu := NewGPUSIMDParser()
-	
+
 	// Initialize Redis
 	redis := NewRedisService(redisAddr, "", 0)
-	
+
 	// Initialize RabbitMQ
 	rabbitmq, err := NewRabbitMQService(rabbitMQURL)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	// Initialize Legal BERT
 	legalBERT := NewLegalBERTService("models/legal-bert", redis, gpu)
-	
+
 	service := &GPULegalAIService{
 		gpu:         gpu,
 		redis:       redis,
@@ -646,13 +643,13 @@ func NewGPULegalAIService(redisAddr, rabbitMQURL, ollamaURL string) (*GPULegalAI
 			Timeout: 5 * time.Minute,
 		},
 	}
-	
+
 	// Set up RabbitMQ consumers
 	err = service.setupConsumers()
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return service, nil
 }
 
@@ -662,66 +659,66 @@ func (gls *GPULegalAIService) setupConsumers() error {
 	if err != nil {
 		return err
 	}
-	
+
 	// Embedding generation queue consumer
 	err = gls.rabbitmq.ConsumeTask("embedding.generation", gls.handleEmbeddingTask)
 	if err != nil {
 		return err
 	}
-	
+
 	// Legal analysis queue consumer
 	err = gls.rabbitmq.ConsumeTask("legal.analysis", gls.handleAnalysisTask)
 	if err != nil {
 		return err
 	}
-	
+
 	return nil
 }
 
 func (gls *GPULegalAIService) handleGPUTask(task *ProcessingTask) error {
 	log.Printf("Processing GPU task: %s", task.ID)
-	
+
 	// Extract processing request from task data
 	reqData, _ := json.Marshal(task.Data)
 	var req ProcessingRequest
 	json.Unmarshal(reqData, &req)
-	
+
 	// Process using GPU
 	response, err := gls.ProcessTextGPU(context.Background(), &req)
 	if err != nil {
 		return err
 	}
-	
+
 	// Update task with result
 	task.Result = response
 	task.Status = "completed"
 	now := time.Now()
 	task.ProcessedAt = &now
-	
+
 	return nil
 }
 
 func (gls *GPULegalAIService) handleEmbeddingTask(task *ProcessingTask) error {
 	log.Printf("Processing embedding task: %s", task.ID)
-	
+
 	text, ok := task.Data["text"].(string)
 	if !ok {
 		return fmt.Errorf("invalid text data in embedding task")
 	}
-	
+
 	// Generate embedding
 	embedding, err := gls.legalBERT.generateEmbedding(text)
 	if err != nil {
 		return err
 	}
-	
+
 	// Cache the embedding
 	cacheKey := fmt.Sprintf("embedding_%s", task.ID)
 	err = gls.redis.SetEmbedding(context.Background(), cacheKey, embedding, time.Hour*24)
 	if err != nil {
 		log.Printf("Failed to cache embedding: %v", err)
 	}
-	
+
 	task.Result = map[string]interface{}{
 		"embedding": embedding,
 		"dimensions": len(embedding),
@@ -729,24 +726,24 @@ func (gls *GPULegalAIService) handleEmbeddingTask(task *ProcessingTask) error {
 	task.Status = "completed"
 	now := time.Now()
 	task.ProcessedAt = &now
-	
+
 	return nil
 }
 
 func (gls *GPULegalAIService) handleAnalysisTask(task *ProcessingTask) error {
 	log.Printf("Processing analysis task: %s", task.ID)
-	
+
 	text, ok := task.Data["text"].(string)
 	if !ok {
 		return fmt.Errorf("invalid text data in analysis task")
 	}
-	
+
 	// Recognize legal entities
 	entities, err := gls.legalBERT.RecognizeEntities(text)
 	if err != nil {
 		return err
 	}
-	
+
 	task.Result = map[string]interface{}{
 		"entities": entities,
 		"count":    len(entities),
@@ -754,18 +751,18 @@ func (gls *GPULegalAIService) handleAnalysisTask(task *ProcessingTask) error {
 	task.Status = "completed"
 	now := time.Now()
 	task.ProcessedAt = &now
-	
+
 	return nil
 }
 
 func (gls *GPULegalAIService) ProcessTextGPU(ctx context.Context, req *ProcessingRequest) (*ProcessingResponse, error) {
 	startTime := time.Now()
-	
+
 	response := &ProcessingResponse{
 		ID:     req.ID,
 		Status: "processing",
 	}
-	
+
 	// Check cache first if enabled
 	var cacheHit bool
 	if req.CacheResults {
@@ -776,7 +773,7 @@ func (gls *GPULegalAIService) ProcessTextGPU(ctx context.Context, req *Processin
 			return &cached, nil
 		}
 	}
-	
+
 	// Generate embedding if requested
 	var embedding []float32
 	if req.GenerateEmbedding {
@@ -788,7 +785,7 @@ func (gls *GPULegalAIService) ProcessTextGPU(ctx context.Context, req *Processin
 		}
 		embedding = emb
 	}
-	
+
 	// Extract entities if requested
 	var entities []LegalEntity
 	if req.ExtractEntities {
@@ -800,7 +797,7 @@ func (gls *GPULegalAIService) ProcessTextGPU(ctx context.Context, req *Processin
 		}
 		entities = ents
 	}
-	
+
 	// Perform GPU-accelerated processing
 	var result interface{}
 	if req.UseGPU && gls.gpu.hasCUDA {
@@ -811,7 +808,7 @@ func (gls *GPULegalAIService) ProcessTextGPU(ctx context.Context, req *Processin
 			if err != nil {
 				log.Printf("GPU operation failed: %v", err)
 			}
-			
+
 			result = map[string]interface{}{
 				"gpu_similarity": similarity,
 				"text_processed": req.Text,
@@ -825,7 +822,7 @@ func (gls *GPULegalAIService) ProcessTextGPU(ctx context.Context, req *Processin
 			"cpu_processed": true,
 		}
 	}
-	
+
 	// Build response
 	response.Status = "completed"
 	response.Result = result
@@ -835,7 +832,7 @@ func (gls *GPULegalAIService) ProcessTextGPU(ctx context.Context, req *Processin
 	response.Performance.GPUUsed = req.UseGPU && gls.gpu.hasCUDA
 	response.Performance.CacheHit = cacheHit
 	response.Performance.TokensProcessed = len(strings.Fields(req.Text))
-	
+
 	// Cache result if enabled
 	if req.CacheResults {
 		err := gls.redis.CacheJSON(ctx, fmt.Sprintf("processing_%s", req.ID), response, time.Hour)
@@ -843,7 +840,7 @@ func (gls *GPULegalAIService) ProcessTextGPU(ctx context.Context, req *Processin
 			log.Printf("Failed to cache result: %v", err)
 		}
 	}
-	
+
 	return response, nil
 }
 
@@ -851,43 +848,43 @@ func (gls *GPULegalAIService) ProcessTextGPU(ctx context.Context, req *Processin
 func (gls *GPULegalAIService) SetupRoutes() *gin.Engine {
 	router := gin.New()
 	router.Use(gin.Logger(), gin.Recovery())
-	
+
 	// CORS middleware
 	router.Use(func(c *gin.Context) {
 		c.Header("Access-Control-Allow-Origin", "*")
 		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
-		
+
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
 			return
 		}
-		
+
 		c.Next()
 	})
-	
+
 	// GPU processing endpoint
 	router.POST("/api/gpu/process", gls.handleGPUProcess)
-	
+
 	// Embedding generation endpoint
 	router.POST("/api/embeddings/generate", gls.handleGenerateEmbedding)
-	
+
 	// Entity recognition endpoint
 	router.POST("/api/entities/extract", gls.handleExtractEntities)
-	
+
 	// Batch processing endpoint
 	router.POST("/api/batch/process", gls.handleBatchProcess)
-	
+
 	// Cache management endpoints
 	router.GET("/api/cache/stats", gls.handleCacheStats)
 	router.DELETE("/api/cache/clear", gls.handleClearCache)
-	
+
 	// GPU status endpoint
 	router.GET("/api/gpu/status", gls.handleGPUStatus)
-	
+
 	// Health check
 	router.GET("/health", gls.handleHealth)
-	
+
 	return router
 }
 
@@ -897,21 +894,21 @@ func (gls *GPULegalAIService) handleGPUProcess(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	// Generate ID if not provided
 	if req.ID == "" {
 		req.ID = fmt.Sprintf("gpu_%d", time.Now().UnixNano())
 	}
-	
+
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Minute)
 	defer cancel()
-	
+
 	response, err := gls.ProcessTextGPU(ctx, &req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, response)
 }
 
@@ -920,18 +917,18 @@ func (gls *GPULegalAIService) handleGenerateEmbedding(c *gin.Context) {
 		Text  string `json:"text" binding:"required"`
 		Cache bool   `json:"cache"`
 	}
-	
+
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	embedding, err := gls.legalBERT.generateEmbedding(req.Text)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, gin.H{
 		"embedding":  embedding,
 		"dimensions": len(embedding),
@@ -943,18 +940,18 @@ func (gls *GPULegalAIService) handleExtractEntities(c *gin.Context) {
 	var req struct {
 		Text string `json:"text" binding:"required"`
 	}
-	
+
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	entities, err := gls.legalBERT.RecognizeEntities(req.Text)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, gin.H{
 		"entities": entities,
 		"count":    len(entities),
@@ -966,12 +963,12 @@ func (gls *GPULegalAIService) handleBatchProcess(c *gin.Context) {
 	var req struct {
 		Items []ProcessingRequest `json:"items" binding:"required"`
 	}
-	
+
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	// Process items concurrently using RabbitMQ
 	var results []string
 	for _, item := range req.Items {
@@ -989,16 +986,16 @@ func (gls *GPULegalAIService) handleBatchProcess(c *gin.Context) {
 			CreatedAt: time.Now(),
 			Status:    "queued",
 		}
-		
+
 		err := gls.rabbitmq.PublishTask("gpu.processing", task)
 		if err != nil {
 			log.Printf("Failed to queue task: %v", err)
 			continue
 		}
-		
+
 		results = append(results, task.ID)
 	}
-	
+
 	c.JSON(http.StatusOK, gin.H{
 		"queued_tasks": results,
 		"count":        len(results),
@@ -1008,14 +1005,14 @@ func (gls *GPULegalAIService) handleBatchProcess(c *gin.Context) {
 
 func (gls *GPULegalAIService) handleCacheStats(c *gin.Context) {
 	ctx := c.Request.Context()
-	
+
 	// Get Redis info
 	info, err := gls.redis.client.Info(ctx).Result()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, gin.H{
 		"redis_info": info,
 		"gpu_cache":  len(gls.gpu.tensorCache),
@@ -1025,24 +1022,24 @@ func (gls *GPULegalAIService) handleCacheStats(c *gin.Context) {
 
 func (gls *GPULegalAIService) handleClearCache(c *gin.Context) {
 	ctx := c.Request.Context()
-	
+
 	// Clear Redis cache
 	err := gls.redis.client.FlushDB(ctx).Err()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	// Clear GPU tensor cache
 	gls.gpu.cacheMutex.Lock()
 	gls.gpu.tensorCache = make(map[string]*tensor.Dense)
 	gls.gpu.cacheMutex.Unlock()
-	
+
 	// Clear model cache
 	gls.mutex.Lock()
 	gls.modelCache = make(map[string]interface{})
 	gls.mutex.Unlock()
-	
+
 	c.JSON(http.StatusOK, gin.H{
 		"status": "cache_cleared",
 		"timestamp": time.Now(),
@@ -1055,13 +1052,13 @@ func (gls *GPULegalAIService) handleGPUStatus(c *gin.Context) {
 		// Get CUDA device properties
 		var props C.cudaDeviceProp
 		C.cudaGetDeviceProperties(&props, C.int(gls.gpu.cudaDeviceID))
-		
+
 		cudaInfo = CUDAContext{
 			DeviceID:    gls.gpu.cudaDeviceID,
 			ComputeCaps: fmt.Sprintf("%d.%d", props.major, props.minor),
 		}
 	}
-	
+
 	c.JSON(http.StatusOK, gin.H{
 		"gpu_available": gls.gpu.hasCUDA,
 		"cuda_info":     cudaInfo,
@@ -1095,24 +1092,24 @@ func levenshteinDistance(s1, s2 string) int {
 	if len(s2) == 0 {
 		return len(s1)
 	}
-	
+
 	matrix := make([][]int, len(s1)+1)
 	for i := range matrix {
 		matrix[i] = make([]int, len(s2)+1)
 		matrix[i][0] = i
 	}
-	
+
 	for j := range matrix[0] {
 		matrix[0][j] = j
 	}
-	
+
 	for i := 1; i <= len(s1); i++ {
 		for j := 1; j <= len(s2); j++ {
 			cost := 0
 			if s1[i-1] != s2[j-1] {
 				cost = 1
 			}
-			
+
 			matrix[i][j] = min(
 				matrix[i-1][j]+1,      // deletion
 				matrix[i][j-1]+1,      // insertion
@@ -1120,7 +1117,7 @@ func levenshteinDistance(s1, s2 string) int {
 			)
 		}
 	}
-	
+
 	return matrix[len(s1)][len(s2)]
 }
 
@@ -1141,26 +1138,26 @@ func max(a, b int) int {
 // Main function
 func main() {
 	log.Println("🚀 Starting GPU-Accelerated Legal AI Service")
-	
+
 	// Configuration from environment
 	redisAddr := getEnv("REDIS_ADDR", "localhost:6379")
 	rabbitMQURL := getEnv("RABBITMQ_URL", "amqp://guest:guest@localhost:5672/")
 	ollamaURL := getEnv("OLLAMA_URL", "http://localhost:11434")
 	port := getEnv("PORT", "8082")
-	
+
 	// Initialize service
 	service, err := NewGPULegalAIService(redisAddr, rabbitMQURL, ollamaURL)
 	if err != nil {
 		log.Fatalf("❌ Failed to initialize service: %v", err)
 	}
-	
+
 	// Setup HTTP router
 	router := service.SetupRoutes()
-	
+
 	log.Printf("🌐 GPU Legal AI Service listening on port %s", port)
 	log.Printf("🔧 GPU Available: %v", service.gpu.hasCUDA)
 	log.Printf("🚀 Service ready for processing")
-	
+
 	// Start server
 	if err := router.Run(":" + port); err != nil {
 		log.Fatalf("❌ Server failed to start: %v", err)

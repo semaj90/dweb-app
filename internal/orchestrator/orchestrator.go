@@ -185,7 +185,18 @@ func (s *OrchestratorService) registerRoutes(mux *http.ServeMux) {
 func (s *OrchestratorService) writeJSON(w http.ResponseWriter, status int, v interface{}) { w.Header().Set("Content-Type", "application/json"); w.WriteHeader(status); _ = json.NewEncoder(w).Encode(v) }
 func (s *OrchestratorService) handleHealth(w http.ResponseWriter, r *http.Request) { st := s.gpuStats.Load().(GPUStats); s.writeJSON(w, 200, map[string]interface{}{"status": "healthy", "cuda_available": s.config.GPUEnabled, "active_tasks": s.activeCount(), "queue_depth": len(s.taskQueue), "gpu_stats": st, "timestamp": time.Now().Unix()}) }
 func (s *OrchestratorService) handleGPUStats(w http.ResponseWriter, _ *http.Request) { s.writeJSON(w, 200, s.gpuStats.Load()) }
-func (s *OrchestratorService) handleSubmitTask(w http.ResponseWriter, r *http.Request) { if r.Method != http.MethodPost { s.writeJSON(w, 405, map[string]string{"error": "POST required"}); return }; var t OrchestratorTask; if err := json.NewDecoder(r.Body).Decode(&t); err != nil { s.writeJSON(w, 400, map[string]string{"error": err.Error()}); return }; if t.Type == "" { t.Type = TaskInference }; if t.Priority == 0 { t.Priority = 1 }; if t.ID == "" { t.ID = fmt.Sprintf("task_%d", time.Now().UnixNano()) }; t.Status = "queued"; t.added = time.Now(); s.enqueue(&t); s.writeJSON(w, 202, map[string]string{"task_id": t.ID, "status": "queued"}) }
+func (s *OrchestratorService) handleSubmitTask(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost { s.writeJSON(w, 405, map[string]string{"error": "POST required"}); return }
+	var t OrchestratorTask
+	if err := json.NewDecoder(r.Body).Decode(&t); err != nil { s.writeJSON(w, 400, map[string]string{"error": err.Error()}); return }
+	if t.Type == "" { t.Type = TaskInference }
+	if t.Priority == 0 { t.Priority = 1 }
+	if t.ID == "" { t.ID = fmt.Sprintf("task_%d", time.Now().UnixNano()) }
+	t.Status = "queued"; t.added = time.Now()
+	s.enqueue(&t)
+	// Include both task_id and id for backward compatibility with earlier client code
+	s.writeJSON(w, 202, map[string]string{"task_id": t.ID, "id": t.ID, "status": "queued"})
+}
 func (s *OrchestratorService) handleGetTask(w http.ResponseWriter, r *http.Request) { id := r.URL.Query().Get("id"); if id == "" { s.writeJSON(w, 400, map[string]string{"error": "id required"}); return }; s.activeMu.RLock(); t, ok := s.activeTasks[id]; s.activeMu.RUnlock(); if ok { s.writeJSON(w, 200, t); return }; s.writeJSON(w, 404, map[string]string{"error": "not found"}) }
 func (s *OrchestratorService) handleListTasks(w http.ResponseWriter, _ *http.Request) { s.activeMu.RLock(); list := make([]*OrchestratorTask, 0, len(s.activeTasks)); for _, t := range s.activeTasks { list = append(list, t) }; s.activeMu.RUnlock(); s.writeJSON(w, 200, map[string]interface{}{"active": list, "queue_depth": len(s.taskQueue), "completed": s.completedTasks.Load()}) }
 func (s *OrchestratorService) handleCancelTask(w http.ResponseWriter, r *http.Request) { id := r.URL.Query().Get("id"); if id == "" { s.writeJSON(w, 400, map[string]string{"error": "id required"}); return }; s.activeMu.Lock(); t, ok := s.activeTasks[id]; if ok { delete(s.activeTasks, id) }; s.activeMu.Unlock(); if ok { now := time.Now(); t.EndTime = &now; t.Status = "cancelled"; s.writeJSON(w, 200, t); return }; s.writeJSON(w, 404, map[string]string{"error": "not found"}) }
@@ -205,10 +216,31 @@ func (s *OrchestratorService) selectUCB(tasks []*OrchestratorTask) *Orchestrator
 func (s *OrchestratorService) startExecution(task *OrchestratorTask) { s.activeMu.Lock(); task.Status = "running"; task.StartTime = time.Now(); s.activeTasks[task.ID] = task; s.activeMu.Unlock(); s.broadcast(WebSocketMessage{Type: "task_started", TaskID: task.ID, Payload: map[string]interface{}{"type": task.Type}}); execStart := time.Now(); switch task.Type { case TaskEmbedding: s.executeEmbedding(task); case TaskInference: s.executeInference(task); case TaskCUDAKernel: s.executeCUDA(task); case TaskTensorOp: s.executeTensorOp(task); default: task.Status = "failed"; task.Error = "unknown task type" }; now := time.Now(); task.EndTime = &now; if task.Status == "running" { task.Status = "completed" }; s.completedTasks.Add(1); latencyMs := now.Sub(execStart).Milliseconds(); s.totalLatencyMs.Add(latencyMs); task.visits++; if task.Status == "completed" && latencyMs > 0 { task.value += 1000.0 / float64(latencyMs+10) } else if task.Status != "completed" { task.value -= 1.0 }; if taskCounter != nil { taskCounter.WithLabelValues(string(task.Type), task.Status).Inc() }; if taskLatency != nil { taskLatency.WithLabelValues(string(task.Type), task.Status).Observe(float64(latencyMs)) }; s.broadcast(WebSocketMessage{Type: "task_completed", TaskID: task.ID, Payload: task}); s.activeMu.Lock(); delete(s.activeTasks, task.ID); s.activeMu.Unlock(); s.wakeScheduler() }
 
 // --------------------------- Execution Simulations ---------------------------
-func (s *OrchestratorService) executeEmbedding(task *OrchestratorTask) { base := 120 * time.Millisecond; if s.config.GPUEnabled { base = 60 * time.Millisecond }; time.Sleep(base + time.Duration(ogpuRandJitter(50))*time.Millisecond); dim := 384; vec := make([]float64, dim); for i := range vec { vec[i] = 0.001 * float64(i%17) }; task.Result = map[string]interface{}{"embedding": vec[:8], "dimension": dim, "truncated_preview": true, "gpu": s.config.GPUEnabled} }
-func (s *OrchestratorService) executeInference(task *OrchestratorTask) { base := 220 * time.Millisecond; if s.config.GPUEnabled { base = 110 * time.Millisecond }; time.Sleep(base + time.Duration(ogpuRandJitter(120))*time.Millisecond); task.Result = map[string]interface{}{"tokens_used": 128 + ogpuRandJitter(32), "confidence": 0.9, "gpu": s.config.GPUEnabled} }
-func (s *OrchestratorService) executeCUDA(task *OrchestratorTask) { if !s.config.GPUEnabled { task.Status = "failed"; task.Error = "CUDA disabled"; return }; time.Sleep(40*time.Millisecond + time.Duration(ogpuRandJitter(40))*time.Millisecond); task.Result = map[string]interface{}{"kernel_output": "ok", "throughput_gflops": 2.1 + float64(ogpuRandJitter(30))/100.0} }
-func (s *OrchestratorService) executeTensorOp(task *OrchestratorTask) { time.Sleep(80*time.Millisecond + time.Duration(ogpuRandJitter(90))*time.Millisecond); op := "tricubic_search"; if m, ok := task.Input.(map[string]interface{}); ok { if v, ok2 := m["op"].(string); ok2 && v != "" { op = v } }; task.Result = map[string]interface{}{"operation": op, "matches": 5, "approx": true, "ucb_guided": s.config.EnableUCB} }
+func (s *OrchestratorService) executeEmbedding(task *OrchestratorTask) {
+	base := 120 * time.Millisecond; if s.config.GPUEnabled { base = 60 * time.Millisecond }
+	time.Sleep(base + time.Duration(ogpuRandJitter(50))*time.Millisecond)
+	if task.Metadata != nil { if v, ok := task.Metadata["delay_ms"].(float64); ok { time.Sleep(time.Duration(v) * time.Millisecond) } }
+	dim := 384; vec := make([]float64, dim); for i := range vec { vec[i] = 0.001 * float64(i%17) }
+	task.Result = map[string]interface{}{"embedding": vec[:8], "dimension": dim, "truncated_preview": true, "gpu": s.config.GPUEnabled}
+}
+func (s *OrchestratorService) executeInference(task *OrchestratorTask) {
+	base := 220 * time.Millisecond; if s.config.GPUEnabled { base = 110 * time.Millisecond }
+	time.Sleep(base + time.Duration(ogpuRandJitter(120))*time.Millisecond)
+	if task.Metadata != nil { if v, ok := task.Metadata["delay_ms"].(float64); ok { time.Sleep(time.Duration(v) * time.Millisecond) } }
+	task.Result = map[string]interface{}{"tokens_used": 128 + ogpuRandJitter(32), "confidence": 0.9, "gpu": s.config.GPUEnabled}
+}
+func (s *OrchestratorService) executeCUDA(task *OrchestratorTask) {
+	if !s.config.GPUEnabled { task.Status = "failed"; task.Error = "CUDA disabled"; return }
+	time.Sleep(40*time.Millisecond + time.Duration(ogpuRandJitter(40))*time.Millisecond)
+	if task.Metadata != nil { if v, ok := task.Metadata["delay_ms"].(float64); ok { time.Sleep(time.Duration(v) * time.Millisecond) } }
+	task.Result = map[string]interface{}{"kernel_output": "ok", "throughput_gflops": 2.1 + float64(ogpuRandJitter(30))/100.0}
+}
+func (s *OrchestratorService) executeTensorOp(task *OrchestratorTask) {
+	time.Sleep(80*time.Millisecond + time.Duration(ogpuRandJitter(90))*time.Millisecond)
+	if task.Metadata != nil { if v, ok := task.Metadata["delay_ms"].(float64); ok { time.Sleep(time.Duration(v) * time.Millisecond) } }
+	op := "tricubic_search"; if m, ok := task.Input.(map[string]interface{}); ok { if v, ok2 := m["op"].(string); ok2 && v != "" { op = v } }
+	task.Result = map[string]interface{}{"operation": op, "matches": 5, "approx": true, "ucb_guided": s.config.EnableUCB}
+}
 
 // --------------------------- Monitoring ---------------------------
 func (s *OrchestratorService) monitorGPU() { ticker := time.NewTicker(5 * time.Second); defer ticker.Stop(); for { select { case <-s.quit: return; case <-ticker.C: st := s.collectGPUStats(); s.gpuStats.Store(st); s.broadcast(WebSocketMessage{Type: "gpu_stats_update", Payload: st}) } } }

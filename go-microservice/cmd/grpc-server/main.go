@@ -1,3 +1,6 @@
+//go:build experimental
+// +build experimental
+
 package main
 
 import (
@@ -22,17 +25,17 @@ func findAvailablePort(startPort int, maxAttempts int) (int, error) {
 	for i := 0; i < maxAttempts; i++ {
 		port := startPort + i
 		addr := fmt.Sprintf(":%d", port)
-		
+
 		// Try to listen on the port
 		lis, err := net.Listen("tcp", addr)
 		if err == nil {
 			lis.Close() // Close immediately since we just want to test availability
 			return port, nil
 		}
-		
+
 		log.Printf("Port %d is occupied, trying next...", port)
 	}
-	
+
 	return 0, fmt.Errorf("no available port found starting from %d", startPort)
 }
 
@@ -50,7 +53,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to find available port: %v", err)
 	}
-	
+
 	if availablePort != defaultPort {
 		log.Printf("⚠️  Port %d was occupied, using port %d instead", defaultPort, availablePort)
 	}

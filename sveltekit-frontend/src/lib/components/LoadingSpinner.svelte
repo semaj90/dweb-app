@@ -1,5 +1,3 @@
-<!-- @migration-task Error while migrating Svelte code: Identifier 'size' has already been declared
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
   // $props is a Svelte rune; do not import it.
 
@@ -17,8 +15,8 @@ https://svelte.dev/e/js_parse_error -->
     color = 'blue'
   }: Props = $props();
 
-  function getSpinnerSize(size: string): string {
-    switch (size) {
+  function getSpinnerSize(sizeValue: string): string {
+    switch (sizeValue) {
       case 'sm': return 'h-4 w-4';
       case 'md': return 'h-8 w-8';
       case 'lg': return 'h-12 w-12';
@@ -26,8 +24,8 @@ https://svelte.dev/e/js_parse_error -->
     }
   }
 
-  function getSpinnerColor(color: string): string {
-    switch (color) {
+  function getSpinnerColor(colorValue: string): string {
+    switch (colorValue) {
       case 'blue': return 'border-blue-600';
       case 'green': return 'border-green-600';
       case 'purple': return 'border-purple-600';
@@ -36,8 +34,8 @@ https://svelte.dev/e/js_parse_error -->
     }
   }
 
-  function getTextSize(size: string): string {
-    switch (size) {
+  function getTextSize(sizeValue: string): string {
+    switch (sizeValue) {
       case 'sm': return 'text-sm';
       case 'md': return 'text-base';
       case 'lg': return 'text-lg';
@@ -45,8 +43,8 @@ https://svelte.dev/e/js_parse_error -->
     }
   }
 
-  function getTextColor(color: string): string {
-    switch (color) {
+  function getTextColor(colorValue: string): string {
+    switch (colorValue) {
       case 'blue': return 'text-blue-600';
       case 'green': return 'text-green-600';
       case 'purple': return 'text-purple-600';

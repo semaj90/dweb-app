@@ -20,9 +20,9 @@ const metrics = {
 // Simple stubs for missing dependencies
 const legalBERT = {
   analyze: (text: string) => Promise.resolve({ confidence: 0.8, categories: [], summary: '' }),
-  analyzeLegalText: (text: string) => Promise.resolve({ 
-    confidence: 0.8, 
-    categories: [], 
+  analyzeLegalText: (text: string) => Promise.resolve({
+    confidence: 0.8,
+    categories: [],
     summary: {
       abstractive: 'Generated summary',
       extractive: 'Key extracted content',
@@ -36,9 +36,9 @@ const legalBERT = {
     practiceAreas: []
   }),
   healthCheck: () => Promise.resolve({ status: 'healthy', uptime: 100 }),
-  calculateLegalSimilarity: (text1: string, text2: string) => Promise.resolve({ 
-    similarity: 0.8, 
-    confidence: 0.8 
+  calculateLegalSimilarity: (text1: string, text2: string) => Promise.resolve({
+    similarity: 0.8,
+    confidence: 0.8
   })
 };
 
@@ -82,6 +82,25 @@ export interface RetrievalOptions {
   enableLegalBERT?: boolean;
   enableMMR?: boolean;
   enableCrossEncoder?: boolean;
+}
+
+/**
+ * Internal retrieval result structure used before further processing/ranking.
+ */
+interface RetrievalResult {
+  sources: Array<{
+    id: string;
+    title: string;
+    content: string;
+    relevanceScore: number;
+    diversityScore: number;
+    rerankedScore: number;
+    type: 'document' | 'case' | 'statute' | 'precedent';
+    metadata: Record<string, any>;
+  }>;
+  summary: { abstractive: string; extractive: string[]; keyPoints: string[] };
+  totalSources: number;
+  searchStrategies: string[];
 }
 
 import { generateEmbedding } from "./embeddings-simple";
@@ -316,11 +335,11 @@ export class AIAssistantInputSynthesizer {
           type: e.type,
           confidence: e.confidence,
         })),
-        legalConcepts: legalAnalysis.concepts.map((c) => c.concept),
-        complexity: legalAnalysis.complexity.legalComplexity,
+        legalConcepts: (legalAnalysis.legalConcepts ?? []).map((c: any) => c.concept || c),
+        complexity: legalAnalysis.complexity?.legalComplexity ?? 0.5,
       };
     } catch (error: any) {
-      logger.warn('[Synthesizer] Query analysis failed, using fallback:', error);
+      logger.warn('[Synthesizer] Query analysis failed, returning basic structure', error);
       return {
         original: query,
         enhanced: query,
@@ -339,8 +358,20 @@ export class AIAssistantInputSynthesizer {
     processedQuery: SynthesizedOutput['processedQuery'],
     context?: SynthesizerInput['context'],
     options?: RetrievalOptions
-  ): Promise<any> {
-    const retrievalResults = {
+  ): Promise<RetrievalResult> {
+    // Default & merge options
+    const defaults: Required<Pick<RetrievalOptions,
+      'enableRAG' | 'maxSources' | 'similarityThreshold' | 'enableMMR' | 'enableCrossEncoder'
+    >> = {
+      enableRAG: true,
+      maxSources: 10,
+      similarityThreshold: 0.7,
+      enableMMR: true,
+      enableCrossEncoder: true
+    };
+    const effectiveOptions = { ...defaults, ...options };
+
+    const retrievalResults: RetrievalResult = {
       sources: [],
       summary: { abstractive: '', extractive: [], keyPoints: [] },
       totalSources: 0,
@@ -349,24 +380,24 @@ export class AIAssistantInputSynthesizer {
 
     try {
       // Strategy 1: RAG Pipeline Search
-      if (options.enableRAG) {
+      if (effectiveOptions.enableRAG) {
         try {
           const ragResults = await enhancedRAGPipeline.hybridSearch({
             query: processedQuery.enhanced,
             caseId: context?.caseId,
-            limit: options.maxSources,
-            threshold: options.similarityThreshold,
+            limit: effectiveOptions.maxSources,
+            threshold: effectiveOptions.similarityThreshold,
           });
 
           for (const doc of ragResults) {
             retrievalResults.sources.push({
               id: doc.metadata.documentId || `rag_${Date.now()}_${Math.random()}`,
               title: doc.metadata.title || 'Document',
-              content: (doc as any).pageContent || doc.content || '',
+              content: (doc as any).pageContent || (doc as any).content || '',
               relevanceScore: doc.metadata.score || 0.5,
-              diversityScore: 0.5, // Will be calculated later
-              rerankedScore: 0.5, // Will be calculated later
-              type: doc.metadata.documentType || 'document',
+              diversityScore: 0.5,
+              rerankedScore: 0.5,
+              type: (doc.metadata.documentType as any) || 'document',
               metadata: doc.metadata,
             });
           }
@@ -380,13 +411,12 @@ export class AIAssistantInputSynthesizer {
 
       // Strategy 2: Enhanced Legal Search
       try {
-        const legalSearchResults = await enhancedLegalSearch.search(processedQuery.enhanced, {
-          maxResults: options.maxSources,
+        const legalSearchResults: any[] = await enhancedLegalSearch.search(processedQuery.enhanced, {
+          maxResults: effectiveOptions.maxSources,
           useAI: true,
         });
 
         for (const result of legalSearchResults) {
-          // Avoid duplicates
           if (!retrievalResults.sources.find((s) => s.id === result.id)) {
             retrievalResults.sources.push({
               id: result.id,
@@ -406,22 +436,23 @@ export class AIAssistantInputSynthesizer {
           }
         }
 
-        retrievalResults.searchStrategies.push('enhanced_legal_search');
+        if (legalSearchResults.length > 0) {
+          retrievalResults.searchStrategies.push('enhanced_legal_search');
+        }
         logger.debug(`[Synthesizer] Legal search found ${legalSearchResults.length} results`);
       } catch (error: any) {
         logger.warn('[Synthesizer] Enhanced legal search failed:', error);
       }
 
       // Strategy 3: Context-based retrieval from provided documents
-      if (context?.documents) {
+      if (context?.documents?.length) {
         for (const doc of context.documents) {
-          // Calculate relevance using embedding similarity
           try {
-            const docEmbedding = await generateEmbedding(doc.content);
-            const queryEmbedding = await generateEmbedding(processedQuery.enhanced);
+            const docEmbedding = (await generateEmbedding(doc.content)) || [];
+            const queryEmbedding = (await generateEmbedding(processedQuery.enhanced)) || [];
             const similarity = this.calculateCosineSimilarity(docEmbedding, queryEmbedding);
 
-            if (similarity > options.similarityThreshold) {
+            if (similarity > effectiveOptions.similarityThreshold) {
               retrievalResults.sources.push({
                 id: doc.id,
                 title: doc.title,
@@ -438,13 +469,10 @@ export class AIAssistantInputSynthesizer {
           }
         }
 
-        if (context.documents.length > 0) {
-          retrievalResults.searchStrategies.push('context_documents');
-        }
+        retrievalResults.searchStrategies.push('context_documents');
       }
 
       retrievalResults.totalSources = retrievalResults.sources.length;
-
       return retrievalResults;
     } catch (error: any) {
       logger.error('[Synthesizer] Multi-strategy retrieval failed:', error);
@@ -778,11 +806,11 @@ export class AIAssistantInputSynthesizer {
 
       return {
         abstractive: summary.summary.abstractive,
-        extractive: Array.isArray(summary.summary.extractive) 
-          ? summary.summary.extractive 
+        extractive: Array.isArray(summary.summary.extractive)
+          ? summary.summary.extractive
           : [summary.summary.extractive || ''],
-        keyPoints: Array.isArray(summary.summary.keyPoints) 
-          ? summary.summary.keyPoints 
+        keyPoints: Array.isArray(summary.summary.keyPoints)
+          ? summary.summary.keyPoints
           : [summary.summary.keyPoints || ''],
       };
     } catch (error: any) {

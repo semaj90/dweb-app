@@ -1,3 +1,6 @@
+//go:build experimental
+// +build experimental
+
 // CUDA Integration Service - Legal AI Platform
 // Connects Go microservices to CUDA worker for GPU acceleration
 // Integrates with: enhanced-rag.exe, upload-service.exe, enhanced-legal-ai.exe

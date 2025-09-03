@@ -1,11 +1,10 @@
-//go:build legacy
-// +build legacy
+//go:build experimental || legacy
+// +build experimental legacy
 
 package main
 
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -57,7 +56,7 @@ type ClaudeResponse struct {
 var (
 	// TypeScript error pattern regex
 	tsErrorRegex = regexp.MustCompile(`^(.+?)\((\d+),(\d+)\): error (TS\d+): (.+)$`)
-	
+
 	// Error categorization map
 	errorCategories = map[string]string{
 		"TS2339": "property_access",     // Property does not exist
@@ -92,13 +91,13 @@ func main() {
 
 	// Parse TypeScript errors from npm run check output
 	app.Post("/api/parse-errors", parseErrorsHandler)
-	
+
 	// Analyze errors with categorization and priorities
 	app.Post("/api/analyze-errors", analyzeErrorsHandler)
-	
+
 	// Generate Claude AI prompt for error fixing
 	app.Post("/api/claude-prompt", generateClaudePromptHandler)
-	
+
 	// Process Claude response and generate action items
 	app.Post("/api/process-claude", processClaudeResponseHandler)
 
@@ -127,7 +126,7 @@ func parseErrorsHandler(c *fiber.Ctx) error {
 	}
 
 	errors := parseTypeScriptErrors(request.ErrorLog)
-	
+
 	result := ErrorAnalysisResult{
 		Timestamp:   time.Now().UTC(),
 		TotalErrors: len(errors),
@@ -141,25 +140,25 @@ func parseErrorsHandler(c *fiber.Ctx) error {
 
 func analyzeErrorsHandler(c *fiber.Ctx) error {
 	var errors []TypeScriptError
-	
+
 	if err := c.BodyParser(&errors); err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "Invalid JSON"})
 	}
 
 	analysis := analyzeErrorPatterns(errors)
-	
+
 	return c.JSON(analysis)
 }
 
 func generateClaudePromptHandler(c *fiber.Ctx) error {
 	var request ClaudeRequest
-	
+
 	if err := c.BodyParser(&request); err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "Invalid JSON"})
 	}
 
 	prompt := generateClaudePrompt(request.Errors, request.Context, request.ProjectType)
-	
+
 	return c.JSON(fiber.Map{
 		"prompt": prompt,
 		"errors": len(request.Errors),
@@ -169,20 +168,20 @@ func generateClaudePromptHandler(c *fiber.Ctx) error {
 
 func processClaudeResponseHandler(c *fiber.Ctx) error {
 	var response ClaudeResponse
-	
+
 	if err := c.BodyParser(&response); err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "Invalid JSON"})
 	}
 
 	actionItems := processClaudeAnalysis(response)
-	
+
 	return c.JSON(actionItems)
 }
 
 func parseTypeScriptErrors(errorLog string) []TypeScriptError {
 	var errors []TypeScriptError
 	scanner := bufio.NewScanner(strings.NewReader(errorLog))
-	
+
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
 		if matches := tsErrorRegex.FindStringSubmatch(line); len(matches) == 6 {
@@ -191,7 +190,7 @@ func parseTypeScriptErrors(errorLog string) []TypeScriptError {
 			colNum := 0
 			fmt.Sscanf(matches[2], "%d", &lineNum)
 			fmt.Sscanf(matches[3], "%d", &colNum)
-			
+
 			error := TypeScriptError{
 				File:      matches[1],
 				Line:      lineNum,
@@ -202,11 +201,11 @@ func parseTypeScriptErrors(errorLog string) []TypeScriptError {
 				Severity:  getErrorSeverity(matches[4]),
 				Context:   extractContext(matches[1], lineNum),
 			}
-			
+
 			errors = append(errors, error)
 		}
 	}
-	
+
 	return errors
 }
 
@@ -225,7 +224,7 @@ func getErrorSeverity(errorCode string) string {
 			return "critical"
 		}
 	}
-	
+
 	// High priority errors
 	high := []string{"TS2339", "TS2345", "TS2322", "TS2554"}
 	for _, code := range high {
@@ -233,7 +232,7 @@ func getErrorSeverity(errorCode string) string {
 			return "high"
 		}
 	}
-	
+
 	return "medium"
 }
 
@@ -260,11 +259,11 @@ func extractContext(filePath string, lineNumber int) string {
 		return ""
 	}
 	defer file.Close()
-	
+
 	scanner := bufio.NewScanner(file)
 	currentLine := 1
 	var contextLines []string
-	
+
 	for scanner.Scan() {
 		if currentLine >= lineNumber-2 && currentLine <= lineNumber+2 {
 			contextLines = append(contextLines, fmt.Sprintf("%d: %s", currentLine, scanner.Text()))
@@ -274,21 +273,21 @@ func extractContext(filePath string, lineNumber int) string {
 			break
 		}
 	}
-	
+
 	return strings.Join(contextLines, "\n")
 }
 
 func analyzeErrorPatterns(errors []TypeScriptError) ErrorAnalysisResult {
 	categories := categorizeErrors(errors)
 	priorities := prioritizeErrors(errors)
-	
+
 	// Generate summary
-	summary := fmt.Sprintf("Found %d TypeScript errors across %d categories. Critical: %d, High: %d, Medium: %d", 
+	summary := fmt.Sprintf("Found %d TypeScript errors across %d categories. Critical: %d, High: %d, Medium: %d",
 		len(errors), len(categories), priorities["critical"], priorities["high"], priorities["medium"])
-	
+
 	// Generate suggestions based on error patterns
 	suggestions := generateSuggestions(categories, errors)
-	
+
 	return ErrorAnalysisResult{
 		Timestamp:   time.Now().UTC(),
 		TotalErrors: len(errors),
@@ -302,23 +301,23 @@ func analyzeErrorPatterns(errors []TypeScriptError) ErrorAnalysisResult {
 
 func generateSuggestions(categories map[string]int, errors []TypeScriptError) []string {
 	var suggestions []string
-	
+
 	if categories["property_access"] > 5 {
 		suggestions = append(suggestions, "High number of property access errors - check type definitions and imports")
 	}
-	
+
 	if categories["module_resolution"] > 0 {
 		suggestions = append(suggestions, "Module resolution errors found - verify imports and dependencies")
 	}
-	
+
 	if categories["assignment_type"] > 3 {
 		suggestions = append(suggestions, "Multiple type assignment errors - review type compatibility")
 	}
-	
+
 	if categories["export_conflict"] > 0 {
 		suggestions = append(suggestions, "Export conflicts detected - check for duplicate exports")
 	}
-	
+
 	return suggestions
 }
 
@@ -328,7 +327,7 @@ func generateClaudePrompt(errors []TypeScriptError, context string, projectType 
 	for _, err := range errors {
 		errorsByCategory[err.Category] = append(errorsByCategory[err.Category], err)
 	}
-	
+
 	prompt := fmt.Sprintf(`# TypeScript Error Analysis Request
 
 ## Project Context
@@ -342,9 +341,9 @@ func generateClaudePrompt(errors []TypeScriptError, context string, projectType 
 	for category, categoryErrors := range errorsByCategory {
 		prompt += fmt.Sprintf("- %s: %d errors\n", category, len(categoryErrors))
 	}
-	
+
 	prompt += "\n## Top Priority Errors (First 10):\n\n"
-	
+
 	// Show first 10 errors with context
 	for i, err := range errors {
 		if i >= 10 {
@@ -361,11 +360,11 @@ func generateClaudePrompt(errors []TypeScriptError, context string, projectType 
 		}
 		prompt += "\n"
 	}
-	
+
 	if context != "" {
 		prompt += fmt.Sprintf("\n## Additional Context:\n%s\n", context)
 	}
-	
+
 	prompt += `
 ## Please provide:
 
@@ -376,14 +375,14 @@ func generateClaudePrompt(errors []TypeScriptError, context string, projectType 
 
 Focus on:
 - Schema/type definition issues
-- Import/export problems  
+- Import/export problems
 - API endpoint type mismatches
 - XState machine configurations
 - Database schema alignment
 
 Please format your response as structured JSON with the fields: analysis, priorities, suggestions, fixPlan.
 `
-	
+
 	return prompt
 }
 

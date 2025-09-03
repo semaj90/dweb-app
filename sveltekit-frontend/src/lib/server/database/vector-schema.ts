@@ -27,7 +27,7 @@ const vector = (name: string, dimensions: number) =>
   })(name);
 
 // User embeddings table
-export const userEmbeddings = pgTable(;
+export const userEmbeddings = pgTable(
   "user_embeddings",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -50,7 +50,7 @@ export const userEmbeddings = pgTable(;
 );
 
 // Case embeddings table
-export const caseEmbeddings = pgTable(;
+export const caseEmbeddings = pgTable(
   "case_embeddings",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -71,7 +71,7 @@ export const caseEmbeddings = pgTable(;
 );
 
 // Evidence embeddings table
-export const evidenceEmbeddings = pgTable(;
+export const evidenceEmbeddings = pgTable(
   "evidence_embeddings",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -94,7 +94,7 @@ export const evidenceEmbeddings = pgTable(;
 );
 
 // Document embeddings table
-export const documentEmbeddings = pgTable(;
+export const documentEmbeddings = pgTable(
   "document_embeddings",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -117,7 +117,7 @@ export const documentEmbeddings = pgTable(;
 );
 
 // Search embeddings table
-export const searchEmbeddings = pgTable(;
+export const searchEmbeddings = pgTable(
   "search_embeddings",
   {
     id: uuid("id").primaryKey().defaultRandom(),

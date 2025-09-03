@@ -600,27 +600,27 @@ export class ProductionLogger {
 
 // Singleton instance
 export const logger = new ProductionLogger();
-;
+
 // Convenience exports
-export const logDebug = (message: string, context?: LogContext, metadata?: Record<string, any>) => ;
+export const logDebug = (message: string, context?: LogContext, metadata?: Record<string, any>) =>
   logger.debug(message, context, metadata);
 
-export const logInfo = (message: string, context?: LogContext, metadata?: Record<string, any>) => ;
+export const logInfo = (message: string, context?: LogContext, metadata?: Record<string, any>) =>
   logger.info(message, context, metadata);
 
-export const logWarn = (message: string, context?: LogContext, metadata?: Record<string, any>) => ;
+export const logWarn = (message: string, context?: LogContext, metadata?: Record<string, any>) =>
   logger.warn(message, context, metadata);
 
-export const logError = (message: string, error?: Error, context?: LogContext, metadata?: Record<string, any>) => ;
+export const logError = (message: string, error?: Error, context?: LogContext, metadata?: Record<string, any>) =>
   logger.error(message, error, context, metadata);
 
-export const logApiRequest = (method: string, endpoint: string, statusCode: number, duration: number, context?: Partial<LogContext>) =>;
+export const logApiRequest = (method: string, endpoint: string, statusCode: number, duration: number, context?: Partial<LogContext>) =>
   logger.apiRequest(method, endpoint, statusCode, duration, context);
 
-export const logSecurity = (event: string, context?: LogContext, metadata?: Record<string, any>) =>;
+export const logSecurity = (event: string, context?: LogContext, metadata?: Record<string, any>) =>
   logger.security(event, context, metadata);
 
-export const logPerformance = (operation: string, duration: number, context?: LogContext) =>;
+export const logPerformance = (operation: string, duration: number, context?: LogContext) =>
   logger.performance(operation, duration, context);
 
 // Named and default exports

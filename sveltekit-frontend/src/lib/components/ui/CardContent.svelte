@@ -10,10 +10,10 @@
     children
   }: Props & { children?: unknown } = $props();
 
-  let classes = $derived(class);
+  let classes = $derived(className);
 </script>
 
-<div class="space-y-4">
+<div class="{classes} space-y-4">
   {#if children}
     {@render children()}
   {/if}

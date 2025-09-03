@@ -1,15 +1,15 @@
 import type { RequestHandler } from './$types';
 import { gemma3Client } from '$lib/gemma3Client';
-import { aiInteractions } from '$lib/database/schema';
-import { db } from '$lib/database/connection';
+import { ai_interactions as aiInteractions } from '$lib/server/db/schema-postgres';
+import { db } from '$lib/server/db/drizzle';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
   const { prompt, documentId, caseId } = await request.json();
   const start = Date.now();
-  
+
   const response = await gemma3Client.generate(prompt);
   const responseTime = Date.now() - start;
-  
+
   await db.insert(aiInteractions).values({
     userId: locals.user.id,
     caseId,

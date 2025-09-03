@@ -172,7 +172,7 @@
   "mcpContext7.serverPort": 40000,
   "mcpContext7.logLevel": "debug",
   "chat.mcp.serverSampling": {
-    "SvelteKit Frontend/.vscode/mcp.json: memory": {
+    "SvelteKit Frontend/.vscode/mcp.json: context7": {
       "allowedModels": [
         "copilot/gpt-4.1",
         "copilot/claude-opus-4",

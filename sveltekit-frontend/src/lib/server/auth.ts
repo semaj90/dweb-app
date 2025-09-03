@@ -3,51 +3,84 @@
  * Production-ready auth with Lucia v3, PostgreSQL, and vector embeddings
  */
 
-import { Lucia } from "lucia";
-import { DrizzlePostgreSQLAdapter } from "@lucia-auth/adapter-drizzle";
+import { Lucia, generateId } from "lucia";
 import { dev } from "$app/environment";
-import { db } from "./db/index";
-import { sessions, users } from "./db/schema-postgres";
+import { db } from "$lib/server/db/drizzle";
+import { sessions, users } from "$lib/server/db/schema-postgres";
 import { eq } from "drizzle-orm";
 import { Argon2id } from "oslo/password";
-import { generateId } from "lucia";
 import type { RequestEvent } from "@sveltejs/kit";
+import { FixedDrizzlePostgreSQLAdapter } from "./auth/custom-adapter";
 
-// Initialize Lucia with Drizzle adapter
-const adapter = new DrizzlePostgreSQLAdapter(db, sessions, users);
+// --- Single-instance Lucia bootstrap with identity diagnostics ---
+const globalAny = globalThis as any;
 
-export const lucia = new Lucia(adapter, {
-  sessionCookie: {
-    attributes: {
-      secure: !dev, // HTTPS in production
-      sameSite: "strict",
-      // httpOnly is set by Lucia by default
+if (!globalAny.__auth_schema_refs_logged) {
+  globalAny.__users_ref = users; // capture first reference
+  globalAny.__sessions_ref = sessions;
+  console.log("[AUTH INIT] Captured primary schema refs");
+  globalAny.__auth_schema_refs_logged = true;
+} else {
+  console.log("[AUTH REINIT] Comparing schema object identities", {
+    usersSameRef: globalAny.__users_ref === users,
+    sessionsSameRef: globalAny.__sessions_ref === sessions
+  });
+}
+
+// Force fresh instance with custom adapter (clear any cached broken instance)
+delete globalAny.__lucia_instance;
+delete globalAny.__auth_schema_refs_logged;
+
+// Also clear Node.js module cache for this auth module
+if (typeof require !== 'undefined' && require.cache) {
+  Object.keys(require.cache).forEach(key => {
+    if (key.includes('auth') || key.includes('lucia') || key.includes('adapter')) {
+      delete require.cache[key];
     }
-  },
-  getUserAttributes: (attributes) => {
-    return {
-      id: attributes.id,
-      email: attributes.email,
-      username: attributes.username,
-      first_name: attributes.first_name,
-      last_name: attributes.last_name,
-      role: attributes.role,
-      department: attributes.department,
-      jurisdiction: attributes.jurisdiction,
-      avatar_url: attributes.avatar_url,
-      email_verified: attributes.email_verified,
-      last_login_at: attributes.last_login_at,
-      is_active: attributes.is_active,
-      practice_areas: attributes.practice_areas,
-      bar_number: attributes.bar_number,
-      firm_name: attributes.firm_name,
-      permissions: attributes.permissions,
-      metadata: attributes.metadata,
-      created_at: attributes.created_at,
-      updated_at: attributes.updated_at
-    };
-  }
+  });
+}
+
+let luciaInstance: Lucia;
+const adapter = new FixedDrizzlePostgreSQLAdapter();
+luciaInstance = new Lucia(adapter, {
+    sessionCookie: {
+      attributes: {
+        secure: !dev,
+        sameSite: "strict",
+      }
+    },
+    getUserAttributes: (attributes) => {
+      return {
+        id: attributes.id,
+        email: attributes.email,
+        username: attributes.username,
+        first_name: attributes.first_name,
+        last_name: attributes.last_name,
+        role: attributes.role,
+        department: attributes.department,
+        jurisdiction: attributes.jurisdiction,
+        avatar_url: attributes.avatar_url,
+        email_verified: attributes.email_verified,
+        last_login_at: attributes.last_login_at,
+        is_active: attributes.is_active,
+        practice_areas: attributes.practice_areas,
+        bar_number: attributes.bar_number,
+        firm_name: attributes.firm_name,
+        permissions: attributes.permissions,
+        metadata: attributes.metadata,
+        created_at: attributes.created_at,
+        updated_at: attributes.updated_at
+      };
+    }
+  });
+globalAny.__lucia_instance = luciaInstance;
+console.log("[AUTH INIT] Lucia instance created with custom adapter", {
+  usersSameRef: globalAny.__users_ref === users,
+  sessionsSameRef: globalAny.__sessions_ref === sessions,
+  adapterType: 'FixedDrizzlePostgreSQLAdapter'
 });
+
+export const lucia = luciaInstance;
 
 declare module "lucia" {
   interface Register {
@@ -95,14 +128,14 @@ export class AuthService {
   }) {
     // Check if user already exists
     const existingUser = await db.select().from(users).where(eq(users.email, data.email)).limit(1);
-    
+
     if (existingUser.length > 0) {
       throw new Error("User already exists");
     }
 
     // Hash password
     const passwordHash = await this.argon2id.hash(data.password);
-    
+
     // Generate user ID
     const userId = generateId(15);
 
@@ -127,7 +160,7 @@ export class AuthService {
   async login(email: string, password: string) {
     // Find user by email
     const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
-    
+
     if (!user || !user.hashed_password) {
       throw new Error("Invalid email or password");
     }
@@ -139,14 +172,14 @@ export class AuthService {
 
     // Verify password
     const validPassword = await this.argon2id.verify(user.hashed_password, password);
-    
+
     if (!validPassword) {
       throw new Error("Invalid email or password");
     }
 
     // Update last login time
     await db.update(users)
-      .set({ 
+      .set({
         last_login_at: new Date()
       })
       .where(eq(users.id, user.id));
@@ -207,7 +240,7 @@ export class AuthService {
   async requestPasswordReset(email: string) {
     // Find user by email
     const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
-    
+
     if (!user) {
       // Don't reveal if email exists or not for security
       return { success: true };
@@ -216,7 +249,7 @@ export class AuthService {
     // TODO: Implement email sending service
     // For now, just log the reset request
     console.log(`Password reset requested for user: ${email}`);
-    
+
     return { success: true };
   }
 
@@ -236,14 +269,14 @@ export class AuthService {
   }>) {
     // Map camelCase input to snake_case database columns
     const updateData: any = {};
-    
+
     if (data.firstName !== undefined) updateData.first_name = data.firstName;
     if (data.lastName !== undefined) updateData.last_name = data.lastName;
     if (data.displayName !== undefined) updateData.username = data.displayName;
     if (data.avatarUrl !== undefined) updateData.avatar_url = data.avatarUrl;
     if (data.legalSpecialties !== undefined) updateData.practice_areas = data.legalSpecialties;
     if (data.preferences !== undefined) updateData.metadata = data.preferences;
-    
+
     // Add timestamp
     updateData.updated_at = new Date();
 
@@ -260,14 +293,14 @@ export class AuthService {
    */
   async changePassword(userId: string, currentPassword: string, newPassword: string) {
     const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
-    
+
     if (!user || !user.hashed_password) {
       throw new Error("User not found");
     }
 
     // Verify current password
     const validPassword = await this.argon2id.verify(user.hashed_password, currentPassword);
-    
+
     if (!validPassword) {
       throw new Error("Current password is incorrect");
     }
@@ -277,7 +310,7 @@ export class AuthService {
 
     // Update password
     await db.update(users)
-      .set({ 
+      .set({
         hashed_password: newPasswordHash,
         updated_at: new Date()
       })
@@ -289,19 +322,18 @@ export class AuthService {
 }
 
 export const authService = new AuthService();
-;
 /**
  * Helper function to get user from request event
  */
 export async function getUser(event: RequestEvent): Promise<any> {
   const sessionId = event.cookies.get(lucia.sessionCookieName);
-  
+
   if (!sessionId) {
     return { user: null, session: null };
   }
 
   const result = await lucia.validateSession(sessionId);
-  
+
   if (result.session && result.session.fresh) {
     const sessionCookie = lucia.createSessionCookie(result.session.id);
     event.cookies.set(sessionCookie.name, sessionCookie.value, {
@@ -309,7 +341,7 @@ export async function getUser(event: RequestEvent): Promise<any> {
       path: '/'
     });
   }
-  
+
   if (!result.session) {
     const sessionCookie = lucia.createBlankSessionCookie();
     event.cookies.set(sessionCookie.name, sessionCookie.value, {
@@ -326,7 +358,7 @@ export async function getUser(event: RequestEvent): Promise<any> {
  */
 export async function requireAuth(event: RequestEvent): Promise<any> {
   const { user, session } = await getUser(event);
-  
+
   if (!user || !session) {
     throw new Error("Authentication required");
   }

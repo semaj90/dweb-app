@@ -264,7 +264,7 @@ https://svelte.dev/e/store_invalid_scoped_subscription -->
   });
 </script>
 
-<div class="xstate-phase8-integration {class}">
+<div class="xstate-phase8-integration {className}">
   <!-- Progress Header -->
   <div class="progress-header yorha-panel p-6 mb-6">
     <div class="flex justify-between items-center mb-4">
