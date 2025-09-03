@@ -1,0 +1,3 @@
+// Archived CUDA gRPC prototype (renamed to .cpp.ignore to avoid Go build / linters)
+// Retrieve original from VCS if needed. Stub retained intentionally.
+int main() { return 0; }

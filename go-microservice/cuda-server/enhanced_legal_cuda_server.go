@@ -1,6 +1,8 @@
 //go:build enhanced
 // +build enhanced
 
+package cuda
+
 import (
 	"context"
 	"fmt"
@@ -62,7 +64,7 @@ type CudaServerConfig struct {
 	KeyFile    string `json:"key_file" env:"TLS_KEY_FILE"`
 
 	// Database Configuration
-	PostgresURL string `json:"postgres_url" env:"POSTGRES_URL" default:"postgresql://legal_admin:LegalAI2024!@localhost:5432/legal_ai_db"`
+	PostgresURL string `json:"postgres_url" env:"POSTGRES_URL" default:"postgresql://postgres:123456@localhost:5432/legal_ai_db"`
 	RedisURL    string `json:"redis_url" env:"REDIS_URL" default:"localhost:6379"`
 
 	// CUDA Configuration
@@ -1276,7 +1278,7 @@ func loadServerConfig() *CudaServerConfig {
 		MetricsPort: getEnv("METRICS_PORT", "9090"),
 		Environment: getEnv("ENVIRONMENT", "development"),
 
-		PostgresURL: getEnv("POSTGRES_URL", "postgresql://legal_admin:123456@localhost:5432/legal_ai_db"),
+		PostgresURL: getEnv("POSTGRES_URL", "postgresql://postgres:123456@localhost:5432/legal_ai_db"),
 		RedisURL:    getEnv("REDIS_URL", "localhost:6379"),
 
 		CudaDeviceID:   0,

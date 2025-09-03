@@ -1462,7 +1462,7 @@ func main() {
 	
 	postgresURL := os.Getenv("POSTGRES_URL")
 	if postgresURL == "" {
-		postgresURL = "postgresql://legal_admin:123456@localhost:5432/legal_ai_db"
+		postgresURL = "postgresql://postgres:123456@localhost:5432/legal_ai_db"
 	}
 	
 	config := &ServiceConfig{

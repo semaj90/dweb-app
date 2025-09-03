@@ -57,7 +57,7 @@ type ProcessingResult struct {
 func loadConfig() Config {
 	return Config{
 		Port:         getEnv("UPLOAD_PORT", "8093"),
-		DatabaseURL:  getEnv("DATABASE_URL", "postgresql://legal_admin:123456@localhost:5432/legal_ai_db"),
+		DatabaseURL:  getEnv("DATABASE_URL", "postgresql://postgres:123456@localhost:5432/legal_ai_db"),
 		RedisURL:     getEnv("REDIS_URL", "redis://localhost:6379"),
 		OllamaURL:    getEnv("OLLAMA_URL", "http://localhost:11434"),
 		MinIOURL:     getEnv("MINIO_URL", "http://localhost:9000"),

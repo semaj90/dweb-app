@@ -128,7 +128,7 @@ func NewGPUIndexer(dbURL string) (*GPUIndexer, error) {
 	indexer.workerPool = NewWorkerPool(numWorkers)
 	indexer.workerPool.Start(indexer)
 
-	log.Printf("🚀 GPU Indexer initialized (GPU: %v, Workers: %d, Dim: %d)", 
+	log.Printf("🚀 GPU Indexer initialized (GPU: %v, Workers: %d, Dim: %d)",
 		false, numWorkers, embeddingDim)
 
 	return indexer, nil
@@ -157,14 +157,14 @@ func (wp *WorkerPool) Start(indexer *GPUIndexer) {
 
 func (wp *WorkerPool) worker(id int, indexer *GPUIndexer) {
 	defer wp.wg.Done()
-	
+
 	log.Printf("🔧 Worker %d started", id)
-	
+
 	for {
 		select {
 		case task := <-wp.taskQueue:
 			start := time.Now()
-			
+
 			var err error
 			switch task.Type {
 			case "index":
@@ -242,7 +242,7 @@ func (gi *GPUIndexer) generateEmbeddings(text string) ([]float32, error) {
 	// Simple embedding generation (for demo)
 	tokens := gi.tokenizeText(text)
 	embeddings := make([]float32, gi.embeddingDim)
-	
+
 	// Simple feature extraction
 	for i, token := range tokens {
 		if i >= gi.embeddingDim {
@@ -250,14 +250,14 @@ func (gi *GPUIndexer) generateEmbeddings(text string) ([]float32, error) {
 		}
 		embeddings[i] = float32(len(token)) / 10.0
 	}
-	
+
 	// Normalize embeddings
 	var norm float32
 	for _, val := range embeddings {
 		norm += val * val
 	}
 	norm = float32(math.Sqrt(float64(norm)))
-	
+
 	if norm > 0 {
 		for i := range embeddings {
 			embeddings[i] /= norm
@@ -266,7 +266,7 @@ func (gi *GPUIndexer) generateEmbeddings(text string) ([]float32, error) {
 
 	// Cache the result
 	gi.embeddingCache.Store(hash, embeddings)
-	
+
 	return embeddings, nil
 }
 
@@ -319,10 +319,10 @@ func (gi *GPUIndexer) searchDatabase(queryEmbeddings []float32, query SearchQuer
 	// Build SQL query with metadata filters
 	sqlQuery := `
 		SELECT id, content, metadata, embeddings, token_count, hash, indexed_at
-		FROM documents 
+		FROM documents
 		WHERE 1=1
 	`
-	
+
 	args := []interface{}{}
 	argIndex := 1
 
@@ -372,7 +372,7 @@ func (gi *GPUIndexer) searchDatabase(queryEmbeddings []float32, query SearchQuer
 	// Compute similarities
 	if len(documents) > 0 {
 		similarities := gi.computeSimilarities(queryEmbeddings, allEmbeddings)
-		
+
 		// Filter by minimum similarity and assign search ranks
 		filteredDocs := make([]Document, 0)
 		for i, doc := range documents {
@@ -392,7 +392,7 @@ func (gi *GPUIndexer) searchDatabase(queryEmbeddings []float32, query SearchQuer
 
 func (gi *GPUIndexer) computeSimilarities(query []float32, docEmbeddings [][]float32) []float32 {
 	similarities := make([]float32, len(docEmbeddings))
-	
+
 	for i, docEmb := range docEmbeddings {
 		similarities[i] = gi.cosineSimilarity(query, docEmb)
 	}
@@ -402,24 +402,24 @@ func (gi *GPUIndexer) computeSimilarities(query []float32, docEmbeddings [][]flo
 
 func (gi *GPUIndexer) cosineSimilarity(a, b []float32) float32 {
 	var dotProduct, normA, normB float32
-	
+
 	for i := 0; i < len(a) && i < len(b); i++ {
 		dotProduct += a[i] * b[i]
 		normA += a[i] * a[i]
 		normB += b[i] * b[i]
 	}
-	
+
 	if normA == 0 || normB == 0 {
 		return 0
 	}
-	
+
 	return dotProduct / (float32(math.Sqrt(float64(normA))) * float32(math.Sqrt(float64(normB))))
 }
 
 func (gi *GPUIndexer) sortResults(documents []Document, sortBy, sortOrder string) {
 	sort.Slice(documents, func(i, j int) bool {
 		var less bool
-		
+
 		switch sortBy {
 		case "similarity", "search_rank":
 			less = documents[i].SearchRank > documents[j].SearchRank // Higher similarity first
@@ -432,11 +432,11 @@ func (gi *GPUIndexer) sortResults(documents []Document, sortBy, sortOrder string
 		default:
 			less = documents[i].SearchRank > documents[j].SearchRank
 		}
-		
+
 		if sortOrder == "asc" {
 			less = !less
 		}
-		
+
 		return less
 	})
 }
@@ -589,7 +589,7 @@ func initializeTables(db *sql.DB) error {
 		indexed_at TIMESTAMP,
 		UNIQUE(hash)
 	);
-	
+
 	CREATE INDEX IF NOT EXISTS idx_documents_metadata ON documents USING GIN(metadata);
 	CREATE INDEX IF NOT EXISTS idx_documents_indexed_at ON documents(indexed_at);
 	CREATE INDEX IF NOT EXISTS idx_documents_hash ON documents(hash);
@@ -602,7 +602,7 @@ func initializeTables(db *sql.DB) error {
 func main() {
 	databaseURL := os.Getenv("DATABASE_URL")
 	if databaseURL == "" {
-		databaseURL = "postgresql://legal_admin:123456@localhost:5432/legal_ai_db"
+		databaseURL = "postgresql://postgres:postgres@localhost:5432/legal_ai_db"
 	}
 
 	indexer, err := NewGPUIndexer(databaseURL)
