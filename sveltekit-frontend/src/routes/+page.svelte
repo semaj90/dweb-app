@@ -1,178 +1,100 @@
+<!-- YoRHa Detective Interface - Command Center Dashboard -->
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte';
-  import { writable, derived } from 'svelte/store';
-  import { aiAgentStore, isAIConnected, currentConversation, systemHealth, isProcessing } from '$lib/stores/ai-agent';
-  // import { Button } from '$lib/components/ui/button';
-  import type { API, Database } from '$lib/types';
+  import { onMount } from 'svelte';
+  import { writable } from 'svelte/store';
+  import DetectiveLayout from '$lib/components/DetectiveLayout.svelte';
+  import StatsCard from '$lib/components/ui/StatsCard.svelte';
+  import CaseItem from '$lib/components/ui/CaseItem.svelte';
+  import SystemStatusCard from '$lib/components/ui/SystemStatusCard.svelte';
+  import QuickActionButton from '$lib/components/ui/QuickActionButton.svelte';
+  import AIAssistantModal from '$lib/components/ai/AIAssistantModal.svelte';
 
-  // ======================================================================
-  // PRODUCTION AI CHAT INTERFACE
-  // Complete implementation with error handling, streaming, and features
-  // ======================================================================
+  // YoRHa Detective Interface State
+  let currentTime = writable('');
+  let systemStatus = writable('Operational');
+  let showAIAssistant = false;
 
-  interface ChatState {
-    message: string;
-    isLoading: boolean;
-    error: string | null;
-    isStreaming: boolean;
-    connectionAttempts: number;
-    lastActivity: Date;
-  }
+  // Dashboard Statistics
+  let stats = {
+    activeCases: 3,
+    evidenceItems: 27,
+    personsOfInterest: 8,
+    recentActivity: 12
+  };
 
-  // Local state
-  let chatState = writable<ChatState>({
-    message: '',
-    isLoading: false,
-    error: null,
-    isStreaming: false,
-    connectionAttempts: 0,
-    lastActivity: new Date()
-  });
-
-  let messageInput: HTMLTextAreaElement;
-  let chatContainer: HTMLDivElement;
-  let autoReconnectInterval: number | null = null;
-
-  // Reactive values
-  let canSend = $derived($chatState.message.trim().length > 0 && $isAIConnected && !$chatState.isLoading);
-  let connectionStatus = $derived($isAIConnected ? 'Connected' :
-                      $chatState.connectionAttempts > 0 ? 'Reconnecting...' : 'Disconnected');
-  let statusColor = $derived($isAIConnected ? 'text-green-600' :
-                   $chatState.connectionAttempts > 0 ? 'text-yellow-600' : 'text-red-600');
-
-  // Sample queries for user guidance
-  const sampleQueries = [
-    "What is the legal precedent for evidence admissibility?",
-    "How should I analyze digital evidence in a cybercrime case?",
-    "What are the key elements needed to prove intent in criminal law?",
-    "Can you help me understand chain of custody requirements?",
-    "What constitutional protections apply to search and seizure?"
+  // Active Cases Data
+  let activeCases = [
+    {
+      id: 'CORP-001',
+      title: 'CORPORATE ESPIONAGE INVESTIGATION',
+      items: 8,
+      timeAgo: '2 hours ago',
+      priority: 'high',
+      status: 'active'
+    },
+    {
+      id: 'MISS-002', 
+      title: 'MISSING PERSON: DR. SARAH CHEN',
+      items: 15,
+      timeAgo: '4 hours ago',
+      priority: 'high',
+      status: 'active'
+    },
+    {
+      id: 'FRAUD-003',
+      title: 'FINANCIAL FRAUD ANALYSIS',
+      items: 6,
+      timeAgo: '1 day ago',
+      priority: 'medium',
+      status: 'pending'
+    }
   ];
 
-  onMount(async () => {
-    await initializeSystem();
-    setupAutoReconnect();
-    scrollToBottom();
+  // System Status Alerts
+  let systemAlerts = [
+    {
+      type: 'success',
+      message: 'System backup completed successfully',
+      time: '10 minutes ago'
+    },
+    {
+      type: 'warning',
+      message: 'Evidence analysis queue processing slowly',
+      time: '1 hour ago'
+    },
+    {
+      type: 'success',
+      message: 'New facial recognition matches found',
+      time: '2 hours ago'
+    }
+  ];
+
+  // Update current time
+  onMount(() => {
+    const updateTime = () => {
+      const now = new Date();
+      currentTime.set(`${now.toLocaleDateString()} ${now.toLocaleTimeString()}`);
+    };
+    
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    
+    return () => clearInterval(interval);
   });
 
-  onDestroy(() => {
-    if (autoReconnectInterval) {
-      clearInterval(autoReconnectInterval);
-    }
-  });
+  // Quick Actions
+  const quickActions = [
+    { label: 'EVIDENCE BOARD', icon: 'folder', action: () => console.log('Evidence Board') },
+    { label: 'TIMELINE ANALYSIS', icon: 'clock', action: () => console.log('Timeline') },
+    { label: 'TERMINAL ACCESS', icon: 'terminal', action: () => console.log('Terminal') }
+  ];
 
-  async function initializeSystem() {
-    chatState.update(s => ({ ...s, isLoading: true, error: null }));
-
-    try {
-      console.log('🤖 Initializing AI Agent System...');
-      await aiAgentStore.connect();
-
-      chatState.update(s => ({
-        ...s,
-        isLoading: false,
-        connectionAttempts: 0,
-        lastActivity: new Date()
-      }));
-
-      console.log('✅ AI Agent System initialized successfully');
-
-    } catch (error) {
-      console.error('❌ Failed to initialize AI system:', error);
-      chatState.update(s => ({
-        ...s,
-        isLoading: false,
-        error: `Failed to connect to AI service: ${(error as Error).message}`,
-        connectionAttempts: s.connectionAttempts + 1
-      }));
-    }
+  function openAIAssistant() {
+    showAIAssistant = true;
   }
 
-  function setupAutoReconnect() {
-    autoReconnectInterval = setInterval(async () => {
-      if (!$isAIConnected && $chatState.connectionAttempts < 5) {
-        console.log('🔄 Attempting to reconnect...');
-        await initializeSystem();
-      }
-    }, 10000) as unknown as number; // Reconnect every 10 seconds
-  }
-
-  async function sendMessage() {
-    if (!canSend) return;
-
-    const userMessage = $chatState.message.trim();
-    chatState.update(s => ({ ...s, message: '', isLoading: true, error: null }));
-
-    try {
-      console.log('📤 Sending message:', userMessage);
-      await aiAgentStore.sendMessage(userMessage, {
-        timestamp: new Date(),
-        source: 'chat_interface',
-        userAgent: navigator.userAgent
-      });
-
-      chatState.update(s => ({
-        ...s,
-        isLoading: false,
-        lastActivity: new Date()
-      }));
-
-      // Auto-scroll to bottom
-      setTimeout(scrollToBottom, 100);
-
-    } catch (error) {
-      console.error('❌ Failed to send message:', error);
-      chatState.update(s => ({
-        ...s,
-        isLoading: false,
-        error: `Failed to send message: ${(error as Error).message}`
-      }));
-    }
-  }
-
-  function handleKeyDown(event: KeyboardEvent) {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault();
-      sendMessage();
-    }
-  }
-
-  function scrollToBottom() {
-    if (chatContainer) {
-      chatContainer.scrollTop = chatContainer.scrollHeight;
-    }
-  }
-
-  function clearChat() {
-    aiAgentStore.clearConversation();
-    chatState.update(s => ({ ...s, error: null }));
-  }
-
-  function useSampleQuery(query: string) {
-    chatState.update(s => ({ ...s, message: query }));
-    messageInput?.focus();
-  }
-
-  function retryConnection() {
-    chatState.update(s => ({ ...s, error: null, connectionAttempts: 0 }));
-    initializeSystem();
-  }
-
-  function formatTimestamp(date: Date): string {
-    return new Intl.DateTimeFormat('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    }).format(date);
-  }
-
-  function getMessageClasses(role: 'user' | 'assistant'): string {
-    const base = "max-w-[80%] p-4 rounded-lg shadow-sm";
-    if (role === 'user') {
-      return `${base} bg-blue-500 text-white ml-auto`;
-    } else {
-      return `${base} bg-gray-100 text-gray-800`;
-    }
+  function closeAIAssistant() {
+    showAIAssistant = false;
   }
 </script>
 
